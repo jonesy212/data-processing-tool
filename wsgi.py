@@ -2,7 +2,7 @@
 
 import subprocess
 
-from app import app
+from config import app
 
 
 def run_gunicorn():
@@ -15,7 +15,7 @@ def run_gunicorn():
         '--log-level=info',  # Log level (info, debug, warning, etc.)
         '--access-logfile', '-',  # Log requests to stdout
         '--error-logfile', '-',  # Log errors to stderr
-        'app:app',  # Replace 'your_app_module' with your actual module name
+        'config:app',  # Replace 'your_app_module' with your actual module name
     ]
 
     subprocess.run(command)

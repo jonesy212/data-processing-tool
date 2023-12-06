@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy
+from database.extensions import db
 
-db = SQLAlchemy()
 
 class DataProcessingTask(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,3 +15,6 @@ class DataProcessingTask(db.Model):
     completion_time = db.Column(db.DateTime)
 
 
+    def __repr__(self):
+        # todo verify the difference in usiing <> vs not
+        return f"<DataProcessingTask(id={self.id}, task_id={self.task_id})>"

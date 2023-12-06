@@ -1,3 +1,0 @@
-conda manage.py db init
-conda manage.py db migrate
-conda manage.py db upgrade  

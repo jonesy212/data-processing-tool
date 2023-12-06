@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy
+from database.extensions import db
 
-db = SQLAlchemy()
 
 class TaskExecutionLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,3 +9,6 @@ class TaskExecutionLog(db.Model):
     status = db.Column(db.String(20), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     logs = db.Column(db.Text)
+
+    def __repr__(self):
+        return f"<ExecutionLogModel(id={self.id}, task_id={self.task_id}, status={self.status})>"

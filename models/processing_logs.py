@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy
+from database.extensions import db
 
-db = SQLAlchemy()
 
 class DatasetProcessingLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -11,3 +10,5 @@ class DatasetProcessingLog(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     dataset_id = db.Column(db.Integer, db.ForeignKey('dataset_model.id'))
     details = db.Column(db.Text)
+    def __repr__(self):
+        return f"<ProcessingLogModel(id={self.id}, task_id={self.task_id})>"

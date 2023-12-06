@@ -3,6 +3,25 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+
+
+from datetime import datetime
+
+from database.extensions import db
+
+
+class TaskHistoryModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    action = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return f"<TaskHistoryModel(id={self.id}, task_id={self.task_id}, action={self.action})>"
+
+
+
+
 # Dummy data for task history (replace with your actual data model)
 task_history_data = [
     {'task_id': 1, 'task_name': 'Task 1', 'status': 'Completed'},
