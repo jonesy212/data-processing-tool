@@ -1,7 +1,7 @@
+# binning_numeric_data.py
 import pandas as pd
 
 
-# binning_numeric_data.py
 def bin_numeric_data(data, numeric_column, num_bins=5):
     # Group continuous data into bins or intervals
     data[f'{numeric_column}_bin'] = pd.cut(data[numeric_column], bins=num_bins, labels=False)

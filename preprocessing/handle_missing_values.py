@@ -2,7 +2,7 @@
 import pandas as pd
 
 
-def handle_missing_values(data, strategy='mean'):
+def handle_missing_values_task(data, strategy='mean'):
     # Handle missing values using specified strategy (mean, median, etc.)
     if strategy == 'mean':
         data.fillna(data.mean(), inplace=True)

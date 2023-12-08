@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.preprocessing import PolynomialFeatures
 
 
-def generate_polynomial_features(data, feature_list, degree=2):
+def generate_polynomial_features_task(data, feature_list, degree=2):
     # Generate polynomial features to capture non-linear relationships
     poly = PolynomialFeatures(degree=degree, include_bias=False)
     poly_features = poly.fit_transform(data[feature_list])

@@ -3,8 +3,6 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-
-
 from datetime import datetime
 
 from database.extensions import db

@@ -1,5 +1,5 @@
 # interaction_terms.py
-def create_interaction_terms(data, feature1, feature2):
+def create_interaction_terms_task(data, feature1, feature2):
     # Multiply or combine two or more features to capture interaction effects
     data[f'{feature1}_{feature2}_interaction'] = data[feature1] * data[feature2]
 

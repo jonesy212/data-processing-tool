@@ -1,6 +1,6 @@
 import unit_test
 
-from config import app
+from configs.config import app
 
 
 class LoginSystemTest(unit_test.TestCase):

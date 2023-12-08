@@ -1,11 +1,14 @@
 # data_preview.py
+import os
+
 import pandas as pd
+from flask import session
 
 
 def preview_dataset(file_path, num_rows=5):
     #determine the file format based on the extension
-    file_format = file_path.rsplit('.', 1)[-1].lower()
-    
+    file_format = os.path.splitext(file_path)[1].lower()
+
     # load the dataset based on the file format
     try:
         if file_format == 'csv':
@@ -28,7 +31,7 @@ def preview_dataset(file_path, num_rows=5):
 
 # Example usage:
 # Replace 'your_dataset.csv' with the actual path to your dataset file
-file_path = 'your_dataset.csv'
+file_path = session.get('file_path')
 preview_result = preview_dataset(file_path)
 
 # Display the preview result

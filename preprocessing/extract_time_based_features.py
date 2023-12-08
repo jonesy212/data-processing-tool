@@ -1,5 +1,5 @@
 # time_based_features.py
-def extract_time_based_features(data, timestamp_column):
+def extract_time_based_features_task(data, timestamp_column):
     # Extract features like day of the week, month, or quarter from timestamp data
     data['Day_of_Week'] = data[timestamp_column].dt.dayofweek
     data['Month'] = data[timestamp_column].dt.month

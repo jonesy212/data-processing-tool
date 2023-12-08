@@ -51,3 +51,18 @@ flask db heads [--verbose] [--resolve-dependencies]
 Show current available heads in the revision script directory.
 flask db branches [--verbose]
 Show current branch points.
+
+
+verify noting is running
+    lsof -i :8000 
+    lsof -i :irdmi
+    
+
+verify permissions:
+ls -l
+
+verify command:
+chmod 755 instance
+
+ex to kill running connections if server not working:
+kill PID

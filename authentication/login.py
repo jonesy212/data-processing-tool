@@ -1,8 +1,9 @@
 from auth import auth_bp
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import jsonify, redirect, render_template, request, session, url_for
+from flask_jwt_extended import create_access_token, jwt_required
 from werkzeug.security import check_password_hash
 
-from config import app
+from configs.config import app
 from models.user import User
 
 
@@ -13,8 +14,9 @@ def login_form():
 
 @auth_bp.route('/login', methods=['POST'])
 async def login():
-    #todo update flask_jwt
-    # data = await request.get_json()
+    
+    data = await request.get_json()
+    access_token = create_access_token(identity=data['username'])
     username = request.form('username')
     password = request.form('password')
     user = User.query.filter_by(username=username).first()
@@ -23,16 +25,12 @@ async def login():
         session['user_id'] = user.id
         return redirect(url_for('home'))
     
-    
-    #todo once jwt in auth is set up uncomment
-    # if user:
-    #     access_token = jwt.jwt_encode_callback(user)
-    #     return jsonify({'access_token': access_token.decode('utf-8'), 'user_id': user.id})
-    
-    # return jsonify({'message': 'Invalid credentials'}), 401
-    
+    if user:
+        access_token = jwt_required.jwt_encode_callback(user)
+        return jsonify({'access_token': access_token.decode('utf-8'), 'user_id': user.id})
     else:
-        return render_template('login.html', message='Incorrect username or password')
+        return jsonify({'message': 'Invalid credentials'}), 401
+    
 
 @app.route('/logout')
 def logout():

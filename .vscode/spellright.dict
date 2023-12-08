@@ -9,3 +9,8 @@ getattr
 xyz
 endfor
 urandom
+lsof
+irdmi
+md
+jwt
+datapreview

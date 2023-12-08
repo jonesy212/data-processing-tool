@@ -1,7 +1,9 @@
+from modules.tasks_module import process_data_task
+
 # clean-and-transform-data.py
 user_options = {
     'add_missing_indicator': True,
-    'input_missing_values': True,
+    'impute_missing_values': True,
     'feature_scaling': True,
     'remove_duplicates': False,
     'encode_categorical_data': True,
@@ -39,8 +41,8 @@ def clean_and_transform_data(data, options):
     #create  a missing value indicator for 'numeric_feature
     data['numeric_feature'] = data['numeric_feature'].isnull().astype(int)
     
-    #imputing missing values with the mean
-    if 'input_missing_values' in options and options['input_missing_values']:
+    #imputeing missing values with the mean
+    if 'impute_missing_values' in options and options['input_missing_values']:
         cleaned_data['numeric_feature'].fillna(data['numeric_feature'].mean(), inplace=True)
         
         

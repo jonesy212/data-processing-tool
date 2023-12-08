@@ -9,13 +9,12 @@ from flask_login import login_required
 from flask_migrate import Migrate
 
 from authentication.auth import auth_bp
-from config import app as config_app
+from configs.config import app as config_app
 from database.extensions import db
 from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
-from preprocessing.upload_data import load_data
 
 migrate = Migrate()
 def create_app():
@@ -25,10 +24,7 @@ def create_app():
     
     db.init_db(app)
     migrate.init_app(app, db)
-    #  todo add jwt Include the authentication blueprint
-    app.register_blueprint(auth_bp)
-
-    #todo verify if index or login is used since the userr is being directed back to login anyway 
+    
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
@@ -36,18 +32,31 @@ def create_app():
             
             if request.form['password'] == 'password':
                 session['user'] = request.form['username']
-                return redirect[url_for('protected')]
+                return redirect(url_for('auth.protected'))
             
         return render_template('home.html', session=session)   
   
-    @app.route('/home')
-    @login_required
+    @auth_bp.route('/home')
     def home():
-        #g global variable 
-        if g.user:
+        if g.user_tier == 'free':
+            # Free user logic
             return render_template('home.html', user=session['user'])
-        return redirect(url_for('index'))
-    
+        elif g.user_tier == 'standard':
+            # Standard user logic
+            return render_template('home.html', user=session['user'])
+
+        elif g.user_tier == 'premium':
+            # Premium user logic
+            return render_template('home.html', user=session['user'])
+
+        elif g.user_tier == 'enterprise':
+            # Enterprise user logic
+            return render_template('home.html', user=session['user'])
+
+        else:
+            # Handle unknown tier/ user maybe not registered and needs to go back to the index/registratiion page
+            return redirect(url_for('index'))
+        
     # middleware
     @app.before_request
     def before_request():
@@ -56,8 +65,8 @@ def create_app():
     if 'user'in session:
         g.user = session['user']
 
-    app.route('/dropdsession')
-    def dropdsession():
+    app.route('/dropsession')
+    def dropsession():
         session.pop('user', None)
         return render_template('login.html')
     
@@ -88,6 +97,6 @@ if __name__ == "__main__":
     #Display the transformed data
     print(result)
 
-    #Run the Flask app asnchronously in debug mode 
-    asyncio.run(create_app().run(debug=True))
+    #Run the Flask app in debug mode 
+    create_app().run(debug=True)
 

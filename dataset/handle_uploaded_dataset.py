@@ -1,10 +1,10 @@
 # handle_uploaded_dataset
 import pandas as pd
-from celery import Celery
 from flask import session
 
 from database.init_db import init_db
 from models.dataset import DatasetModel
+from script_commands.celery_module import Celery
 
 # todo connect datasetModel
 

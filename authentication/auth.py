@@ -4,13 +4,13 @@ import hmac
 import os
 
 from flask import (Blueprint, Flask, jsonify, redirect, render_template,
-                   request, session, url_for)
+                   request, url_for)
+from flask_jwt_extended import JWTManager, jwt_required
+#todo set up JWT
 from flask_login import LoginManager, login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash
 
-#todo set up JWT
-# from flask_jwt import JWT , jwt_required, current_identity
-from config import db
+from database.extensions import db
 from models.user import User
 
 auth_bp = Blueprint('auth', __name__)
@@ -19,14 +19,14 @@ auth_bp = Blueprint('auth', __name__)
 def authentication(username, password):
     user = User.query.filter_by(username=username).first()
     if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):
-        return user
+        return {'user_id': user.id, 'tier': user.tier, 'upload_quota': user.upload_quota}
 
 def identity(payload):
     user_id = payload('identity')
     return User.query.get(int(user_id))
 
-#todo set up jwt
-# jwt = JWT(auth_bp, authentication, identity)
+
+jwt = jwt_required(auth_bp, authentication, identity)
 
 login_manager = LoginManager()
 
@@ -46,7 +46,7 @@ login_manager.init_app(app)
 login_manager.user_loader(lambda user_id: User.query.get(int(user_id)))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -68,8 +68,10 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
+        # todo verify successMessage is set up correctly
+        successMessage= jsonify({'message': 'User registered successfully'})
         # Redirect to login page
-        return redirect(url_for('login'))
+        return redirect(url_for('login'), code=201)
 
     return render_template('register.html')
 
