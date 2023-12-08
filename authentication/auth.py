@@ -5,7 +5,8 @@ import os
 
 from flask import (Blueprint, Flask, jsonify, redirect, render_template,
                    request, url_for)
-from flask_jwt_extended import JWTManager, jwt_required
+from flask_jwt_extended import jwt_required
+from flask_limiter import Limiter
 #todo set up JWT
 from flask_login import LoginManager, login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash
@@ -46,6 +47,7 @@ login_manager.init_app(app)
 login_manager.user_loader(lambda user_id: User.query.get(int(user_id)))
 
 
+@limiter.limit("5 per minute", window_size=300)
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

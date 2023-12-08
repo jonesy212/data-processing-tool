@@ -1,7 +1,7 @@
 # task.py
 from datetime import datetime
 
-from configs.config import db
+# from configs.config import db
 from database.extensions import db
 from script_commands.celery_module import Celery
 

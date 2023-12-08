@@ -5,6 +5,7 @@ import asyncio
 import pandas as pd
 from flask import (Flask, g, redirect, render_template, request, session,
                    url_for)
+from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
 
@@ -15,6 +16,7 @@ from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
+from user.get_remote_address import get_remote_address
 
 migrate = Migrate()
 def create_app():
@@ -24,7 +26,12 @@ def create_app():
     
     db.init_db(app)
     migrate.init_app(app, db)
-    
+    limiter = Limiter(app, key_func=get_remote_address)
+
+    # Set up rate limiting rules
+    limiter.limit("5 per minute")(register)  # Limit the register route to 5 requests per minute
+
+
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
