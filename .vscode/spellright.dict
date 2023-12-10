@@ -14,3 +14,7 @@ irdmi
 md
 jwt
 datapreview
+Nginx
+nginx
+Gunicorn
+gunicorn

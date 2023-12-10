@@ -1,12 +1,9 @@
 from flask import Flask, render_template
 
-from routes.upload_routes import (handle_invalid_file_format,
-                                  handle_upload_failure,
-                                  handle_upload_file_missing)
-
-# Custom error handler for 404 Not Found
-app = Flask(__name__)
-
+from blueprint_routes.upload_routes import (handle_invalid_file_format,
+                                            handle_upload_failure,
+                                            handle_upload_file_missing)
+from configs.config import app
 
 
 # Custom error handler for 404 Not Found

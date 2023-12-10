@@ -1,10 +1,9 @@
 # task_history.py
-from flask import Flask, render_template, request
-
-app = Flask(__name__)
-
 from datetime import datetime
 
+from flask import render_template, request
+
+from configs.config import app
 from database.extensions import db
 
 

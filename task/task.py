@@ -2,10 +2,11 @@
 from datetime import datetime
 
 import pandas as pd
+from flask_login import session_protected
 
 from configs.config import db
 from data_analysis.analyze_data import analyze_data
-from dataset.dataset_upload import save_dataset
+from dataset.dataset_upload import save_dataset, upload_dataset
 from hypothesis_testing.perform_hypothesis_test import perform_hypothesis_test
 from models.execution_log import TaskExecutionLog
 from models.tasks import DataProcessingTask
@@ -17,6 +18,9 @@ from preprocessing.clean_transformed_data import clean_and_transform_data
 from preprocessing.create_binary_flags import create_binary_flags_task
 from preprocessing.engineering_features.time_since_event import \
     time_since_event_task
+from preprocessing.remove_duplicates import remove_duplicates
+from preprocessing.remove_outliers_task import remove_outliers_task
+from preprocessing.tokenize_text import tokenize_text
 from script_commands.celery_module import Celery
 
 celery = Celery(__name__, broker='pyamqp://guest:guest@localhost//', backend='rpc://')
@@ -53,11 +57,11 @@ def simulate_delay():
 def your_async_task(arg1, arg2):
     execution_log = log_task_execution_start(arg1, arg2)
     try:
-        # Your asynchronous task logic here
+        # todo add: Your asynchronous task logic here
         # Access the database or perform any other asynchronous operation
         data_processing_task = DataProcessingTask.query.get(arg1)
         # Perform data processing logic on the instance
-        data_processing_task.perform_data_processing()
+        data_processing_task.initiate_processing()
         simulate_delay()
         log_task_execution_complete(execution_log, arg1, arg2)
         return f"Task completed successfully for arguments: {arg1}, {arg2}"
@@ -65,31 +69,7 @@ def your_async_task(arg1, arg2):
     except Exception as e:
         log_task_execution_error(execution_log, e)
         
-        
-        
-@celery.task
-def perform_data_processing_task(task_id):
-    data_processing_task = DataProcessingTask.query.get(task_id)
-    if data_processing_task:
-        data_processing_task.perform_data_processing()
-        
-        #todo 
-        # Load your dataset or get it from the database
-        your_data_frame = load_data
-
-        
-        # todo update your_data_frame
-        # Calculate the time since the start of data processing and add it as a new feature
-        time_since_event_task( your_data_frame, 'EventColumn', 'TimeColumn', 'TimeSinceEvent')
-
-        print(f"Data processing task ({task_id}) completed.")
-    else:
-        print(f"Data processing task ({task_id}) not found.")
-
-
-
-
-
+       
 
 
 @celery.task
@@ -109,15 +89,83 @@ def upload_and_process_data_task(dataset_name, dataset_description, file=None, u
         print("Error: Please provide either a file or a URL for dataset upload.")
         return
 
+     
+    #todo verify data_processing_task.dataset is set
+    # Load your dataset or get it from the database
+    task_id = "some_id"
+    your_data_frame = session_protected.query(DataProcessingTask).get(task_id).dataset
+
+   # Apply log transformation to numeric columns
+    command_apply_log_transformation.apply_async(args=[your_data_frame, 'NumericColumn'])
+
+    # Bin numeric data into specified number of bins
+    command_bin_numeric_data.apply_async(args=[your_data_frame, 'NumericColumn', 5])
+
+    # Create binary flags for specified categorical columns
+    command_create_binary_flags.apply_async(args=[your_data_frame, ['CategoricalColumn1', 'CategoricalColumn2']])
+
+    # Remove outliers from specific columns
+    remove_outliers_task.apply_async(args=[your_data_frame, ['NumericColumn1', 'NumericColumn2']])
+
+    # Tokenize text in a specific column
+    tokenize_text.apply_async(args=[your_data_frame, 'TextColumn'])
+
+    # Apply custom feature engineering tasks
+    # Add your custom feature engineering tasks here
+
+    # Perform hypothesis test on specific columns
+    hypothesis_test_task.apply_async(args=[your_data_frame, 't-test'])
+
+    # Impute missing values using a specific method
+    impute_numbers_task.apply_async(args=[your_data_frame, 'mean'])
+
+    # Analyze the data for insights
+    analyze_data_task.apply_async(args=[your_data_frame])
+
+    # Other processing tasks based on your specific needs
+    # Add any additional processing tasks that are relevant to your data
+
+    # Ensure to update your_data_frame with the results of the processing tasks
+    your_data_frame = command_apply_log_transformation.apply_async(args=[your_data_frame, 'NumericColumn']).get()
+
+    
+    # Calculate the time since the start of data processing and add it as a new feature
+    time_since_event_task( your_data_frame, 'EventColumn', 'TimeColumn', 'TimeSinceEvent')
+
+    # Example: Remove duplicate rows
+    remove_duplicates.apply_async(args=[your_data_frame])
+
     # Further processing logic can be added here
     # For example, you might want to perform some analysis or transformations on the data
 
     # Print a message indicating the dataset is uploaded and processed
     print(f"Dataset {dataset_name} uploaded and processed.")
 
+        # Return the processed data or any relevant information
+    your_data_frame = clean_data_task.apply_async(args=[data, {'add_missing_indicator': True, 'impute_missing_values': True, 'feature_scaling': True, 'remove_duplicates': False}]).get()
+
+    # Use your_data_frame in further tasks or logic
+    analyze_data_task.apply_async(args=[your_data_frame])
+    hypothesis_test_task.apply_async(args=[your_data_frame, 't-test'])
+
     # Return the processed data or any relevant information
     return data
 
+
+
+
+
+
+
+def data_processing_pipeline(data):
+    # Add your common data processing tasks here
+    your_data_frame = clean_data_task.apply_async(args=[data, {'add_missing_indicator': True, 'impute_missing_values': True, 'feature_scaling': True, 'remove_duplicates': False}]).get()
+
+    # Use your_data_frame in further tasks or logic
+    analyze_data_task.apply_async(args=[your_data_frame])
+    hypothesis_test_task.apply_async(args=[your_data_frame, 't-test'])
+
+    return your_data_frame
 
 
 

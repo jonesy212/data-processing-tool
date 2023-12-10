@@ -1,3 +1,8 @@
+
+from engineering_features.encode_categorical_data import \
+    encode_categorical_data
+from remove_duplicates import remove_duplicates
+
 from modules.tasks_module import process_data_task
 
 # clean-and-transform-data.py
@@ -30,14 +35,16 @@ def setup_user_options():
 
 def clean_and_transform_data(data, options):
     # Your cleaning and transformation logic here
-    cleaned_data = data.dropna()
+    # cleaned_data = data.dropna()
+    
+    cleaned_data = data.copy()
 
     # creating a missing value indicator for 'numeric_feature'
     if 'add_missing_indicator' in options and options['add_missing_indicator']:
         cleaned_data['numeric_feature_missing'] = data['numeric_feature'].isnull().astype(int)
         
         
-        # imputing mising values with the mean
+    # imputing mising values with the mean
     #create  a missing value indicator for 'numeric_feature
     data['numeric_feature'] = data['numeric_feature'].isnull().astype(int)
     
@@ -52,6 +59,13 @@ def clean_and_transform_data(data, options):
         cleaned_data['numeric_feature_scaled'] = (
             cleaned_data['numeric_feature'] - cleaned_data['numeric_feature'].mean()
         ) / cleaned_data['numeric_feature'].std()
+
+    # Encode categorical data
+    cleaned_data = encode_categorical_data(cleaned_data, 'YourCategoricalColumn')
+    
+    # Other transformations based on options
+    if 'remove_duplicates' in options and options['remove_duplicates']:
+        cleaned_data = remove_duplicates(cleaned_data)
 
     return cleaned_data
 

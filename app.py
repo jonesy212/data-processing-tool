@@ -5,24 +5,37 @@ import asyncio
 import pandas as pd
 from flask import (Flask, g, redirect, render_template, request, session,
                    url_for)
+from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
 
-from authentication.auth import auth_bp
-from configs.config import app as config_app
-from database.extensions import db
+from authentication.auth import auth_bp, register
+from configs.config import app as configure_flask_app
+from configs.config import configure_app
+from database.extensions import create_database, db
 from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
+from loggers.log_setup import setup_logging
+from models.user import User
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
 from user.get_remote_address import get_remote_address
 
 migrate = Migrate()
-def create_app():
-    
+
+def create_app(config_file=None):
+
     app = Flask(__name__)
-    app.config.from_object(config_app.config)
+    cache = Cache(app)
+    setup_logging()
+    
+    if config_file:
+        app.config.from_envvar(config_file)
+    else:
+        app.config.from_object('config.development_config')  # Change to 'config.production_config' for production
+
+    configure_app(app)
     
     db.init_db(app)
     migrate.init_app(app, db)
@@ -31,18 +44,22 @@ def create_app():
     # Set up rate limiting rules
     limiter.limit("5 per minute")(register)  # Limit the register route to 5 requests per minute
 
-
+   
+    @cache.cached(timeout=50, key_prefix='index_data')
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
             session.pop('user', None)
             
-            if request.form['password'] == 'password':
+            user = User.query.filter_by(username=request.form['userneame']).first()
+            hashed_password = user.password
+            if request.form[hashed_password] == 'password':
                 session['user'] = request.form['username']
                 return redirect(url_for('auth.protected'))
-            
-        return render_template('home.html', session=session)   
-  
+           
+        return render_template('dashboard.html' , session=session)
+ 
+    @cache.cached(timeout=50, key_prefix='home_data')
     @auth_bp.route('/home')
     def home():
         if g.user_tier == 'free':
@@ -63,24 +80,16 @@ def create_app():
         else:
             # Handle unknown tier/ user maybe not registered and needs to go back to the index/registratiion page
             return redirect(url_for('index'))
-        
-    # middleware
-    @app.before_request
-    def before_request():
-        g.user = None
-        
-    if 'user'in session:
-        g.user = session['user']
-
-    app.route('/dropsession')
-    def dropsession():
-        session.pop('user', None)
-        return render_template('login.html')
-    
-    return config_app 
+     
+    return configure_flask_app 
  
 if __name__ == "__main__":
-   # Assuming 'your_dataset.csv' is the name of the dataset you want to upload
+    
+    # Access the environment indicator
+    environment = configure_flask_app.config.get('ENVIRONMENT', 'development')
+    print(f"Running in {environment} environment.")
+
+    # Assuming 'your_dataset.csv' is the name of the dataset you want to upload
     dataset_name = 'your_dataset.csv'
     dataset_description = 'Description of your dataset'  # Provide an appropriate description
 

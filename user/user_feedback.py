@@ -1,7 +1,8 @@
 # user_feedback.py
-from flask import Flask, render_template, request
+from flask import render_template, request
 
-app = Flask(__name__)
+from configs.config import app
+
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():

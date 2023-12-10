@@ -1,7 +1,8 @@
 from flask import Flask, render_template
 from flask_login import login_required
 
-app = Flask(__name__)
+from configs.config import app
+
 
 @app.route('/dashboard')
 @login_required

@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 import pandas as pd
 # dataset_upload.py
 from flask import Flask, redirect, render_template, request, session, url_for
-from flask_jwt import current_identity, jwt_required
+from flask_jwt_extended import current_identity, jwt_required
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 

@@ -4,9 +4,11 @@ from extensions import db
 from faker import Faker
 from faker_sqlalchemy import SqlAlchemyProvider
 from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
-                        String, create_engine)
+                        String, Text, create_engine)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+
+from models.tasks import DataProcessingTask
 
 # Use Faker-SQLAlchemy provider
 fake = Faker()
@@ -26,6 +28,9 @@ class User(Base):
     password = Column(String)
     tier = Column(String)
     upload_quota = Column(Integer)
+    full_name = Column(String)  # New property for user profile
+    bio = Column(Text)          # New property for user profile
+    profile_picture = Column(String)  # New property for user profile
     processing_tasks = relationship("DataProcessingTask")
     datasets = relationship("DatasetModel")
 
@@ -45,11 +50,7 @@ class DataProcessingTask(Base):
     user_id = Column(Integer,ForeignKey('user.id'))
     user = relationship("User", back_populates="processing_tasks")
 
-    def perform_data_processing(self):
-        # Update task status to 'in-progress' or handle any other relevant logic
-        self.status = 'in-progress'
-        self.start_time = datetime.utcnow()
-        db.session.commit()
+    DataProcessingTask.initiate_processing_task()
 
 class DatasetModel(Base):
     __tablename__ = 'dataset_model'
@@ -84,11 +85,27 @@ for _ in range(10):
         password=fake.password(),
         tier=fake.random_element(['free', 'standard', 'premium', 'enterprise']),
         upload_quota=fake.random_int(0, 1000),
-        # processing_tasks = fake.random_element('DataProcessingTask'),
-        # dataset_model = fake.random_element('DatasetModel')
+        full_name=fake.name(),
+        bio=fake.text(),
+        profile_picture=fake.image_url(),
+        processing_tasks = fake.random_element('DataProcessingTask'),
+        dataset_model = fake.random_element('DatasetModel')
     )
+    # Accessing relationships
+    fake_user.processing_tasks = [
+        DataProcessingTask(name=fake.word(), description=fake.sentence()),
+        DataProcessingTask(name=fake.word(), description=fake.sentence()),
+    ]
+
+    fake_user.datasets = [
+        DatasetModel(name=fake.word(), description=fake.sentence(), file_path_or_url=fake.image_url()),
+        DatasetModel(name=fake.word(), description=fake.sentence(), file_path_or_url=fake.image_url()),
+    ]
+    # Generate fake data for DataProcessingTask and DatasetModel
     print(fake_user)
     session.add(fake_user)
+
+
 
 # Commit the changes
 session.commit()
