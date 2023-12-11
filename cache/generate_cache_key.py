@@ -1,7 +1,9 @@
 from datetime import datetime
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_caching import Cache
+
+from user.get_remote_address import get_remote_address
 
 app = Flask(__name__)
 cache = Cache(app)
@@ -58,7 +60,7 @@ def fetch_data_from_source(user_id, data_type):
     try:
         # Simulate fetching data from a database or external API
         # Replace this with your actual logic to fetch data
-        if data_type == 'user_profile':
+        if data_type == session.user_profile:
             # Simulate fetching user profile data
             data = {'user_id': user_id, 'data_type': data_type, 'profile': {'name': 'John Doe', 'email': 'john@example.com'}}
         elif data_type == 'user_activity':

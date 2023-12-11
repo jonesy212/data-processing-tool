@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from databases import Database
 from extensions import db
 from faker import Faker
 from faker_sqlalchemy import SqlAlchemyProvider
@@ -8,6 +9,7 @@ from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 
+from configs.config import app
 from models.tasks import DataProcessingTask
 
 # Use Faker-SQLAlchemy provider
@@ -19,6 +21,7 @@ engine = create_engine('sqlite:///data.db')
 metadata = MetaData(bind=engine)
 Base = declarative_base(metadata=metadata)
 
+database = Database(app.config['SQLALCHEMY_DATABASE_URI'])
 # Define the User class using the Base
 class User(Base):
     __tablename__ = 'user'

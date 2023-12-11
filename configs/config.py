@@ -16,6 +16,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key')
+    DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'sqlite')
+
+
 def configure_app(app):
     # set the environment variab 'APP_CONFIG_FILE' with the path to your config file
     app.config.from_envvar('APP_CONFIG_FILE')  # Set the environment variable 'APP_CONFIG_FILE' with the path to your config file

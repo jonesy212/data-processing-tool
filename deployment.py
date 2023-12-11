@@ -13,6 +13,3 @@ def deployment():
         'contact_email': 'support@your-app.com'
     }
     return render_template('deployment_info.html', deployment_info=deployment_info)
-
-if __name__ == '__main__':
-    app.run()

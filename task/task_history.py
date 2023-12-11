@@ -30,6 +30,3 @@ task_history_data = [
 @app.route('/task-history')
 def task_history():
     return render_template('task_history.html', task_history_data=task_history_data)
-
-if __name__ == '__main__':
-    app.run()

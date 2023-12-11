@@ -27,7 +27,7 @@ env/
 *.swp
 
 # Configuration files
-config/*.py  # Adjust this based on the actual location of your config files
+configs/*.py  
 
 # IDE files
 .idea/
@@ -40,3 +40,6 @@ docs/_build/
 # Ignore build artifacts
 dist/
 *.egg-info/
+
+# personal content
+todos/*.txt

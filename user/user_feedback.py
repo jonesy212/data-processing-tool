@@ -13,6 +13,3 @@ def feedback():
         return render_template('feedback_response.html', message="Thank you for your feedback!")
     
     return render_template('user_feedback.html')
-
-if __name__ == '__main__':
-    app.run()

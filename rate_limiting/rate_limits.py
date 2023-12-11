@@ -35,11 +35,6 @@ def some_protected_endpoint():
     return protected_logic()
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
 
 
 @limiter.request_filter

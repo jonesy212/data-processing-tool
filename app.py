@@ -33,7 +33,7 @@ def create_app(config_file=None):
     if config_file:
         app.config.from_envvar(config_file)
     else:
-        app.config.from_object('config.development_config')  # Change to 'config.production_config' for production
+        app.config.from_object('config.Config')  # Change to 'config.ProductionConfig' for production
 
     configure_app(app)
     
@@ -55,27 +55,27 @@ def create_app(config_file=None):
             hashed_password = user.password
             if request.form[hashed_password] == 'password':
                 session['user'] = request.form['username']
-                return redirect(url_for('auth.protected'))
+                return redirect(url_for('auth.dashboard'))
            
         return render_template('dashboard.html' , session=session)
  
-    @cache.cached(timeout=50, key_prefix='home_data')
-    @auth_bp.route('/home')
-    def home():
+    @cache.cached(timeout=50, key_prefix='dashboard_data')
+    @auth_bp.route('/dashboard')
+    def dashboard():
         if g.user_tier == 'free':
             # Free user logic
-            return render_template('home.html', user=session['user'])
+                return render_template('dashboard.html', user=session['user'])
         elif g.user_tier == 'standard':
             # Standard user logic
-            return render_template('home.html', user=session['user'])
+            return render_template('dashboard.html', user=session['user'])
 
         elif g.user_tier == 'premium':
             # Premium user logic
-            return render_template('home.html', user=session['user'])
+            return render_template('dashboard.html', user=session['user'])
 
         elif g.user_tier == 'enterprise':
             # Enterprise user logic
-            return render_template('home.html', user=session['user'])
+            return render_template('dashboard.html', user=session['user'])
 
         else:
             # Handle unknown tier/ user maybe not registered and needs to go back to the index/registratiion page
@@ -104,7 +104,9 @@ if __name__ == "__main__":
         print(f"Dataset {saved_dataset.name} loaded successfully!")
     else:
         print("Failed to save dataset")# clean and transform the data
-        transformed_data = clean_and_transform_data(load_and_process_data)  
+    
+    # clean and transform the data
+    transformed_data = clean_and_transform_data(load_and_process_data)  
 
     # run the data processing asynchronously
     loop = asyncio.get_event_loop()

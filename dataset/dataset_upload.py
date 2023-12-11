@@ -152,6 +152,3 @@ else:
     # Display the error message
     print(f"Error: {error_message}")
 
-
-if __name__ == '__main__':
-    app.run()

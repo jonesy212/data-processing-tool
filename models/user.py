@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
     full_name = db.Column(db.String(100))
     bio = db.Column(db.Text)
     profile_picture = db.Column(db.String(255))  # URL or file path
-    
+    user_type = db.Column(db.String(20), nullable=False)  # 'individual', 'organization'
     def __repr__(self):
         return '<User %r>' % self.username
     

@@ -60,6 +60,3 @@ def verify_email(email):
     
     return redirect(url_for('auth.questionnaire'))
 
-
-if __name__ == '__main__':
-    app.run()
