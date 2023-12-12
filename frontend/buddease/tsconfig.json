@@ -23,6 +23,7 @@
       "@/layouts/*": ["./src/app/pages/layouts/*"],
       "@/dashboards/*": ["./src/app/pages/dashboards/*"],
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
+      "@/forms/*": ["./src/app/pages/forms/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screen_functionality/shortcut_keys.js"],
