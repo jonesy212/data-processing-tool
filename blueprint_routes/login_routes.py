@@ -6,11 +6,12 @@ from werkzeug.security import check_password_hash
 from authentication.auth import auth_bp
 from configs.config import app
 from models.user import User
+from utils.system_utils.generate_html_from_tsx import generated_html_files
 
 app.route('/dropsession')
 def dropsession():
     session.pop('user', None)
-    return render_template('login.html')
+    return render_template('Login.tsx')
 
 
 # Register 'before_request' function
@@ -32,7 +33,12 @@ def before_request():
 
 @app.route('/login', methods=['GET'])
 def login_form(): 
-    return render_template('login.html')
+    login_form_html = ''
+    for html_file in generated_html_files:
+        with open(html_file, 'r') as html_content:
+            login_form_html += html_content.read()
+
+    return render_template('Login.tsx', login_form_html=login_form_html)
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -56,6 +62,7 @@ async def login():
                 return jsonify({'message': 'Invalid credentials'}), 401
             
 # Logout route
-@app.route('/logout')
+@auth_bp.route('/logout', methods=['POST'])
+@jwt_required()
 def logout():
     return redirect(url_for('dropsession'))

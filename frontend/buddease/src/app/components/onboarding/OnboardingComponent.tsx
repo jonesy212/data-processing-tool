@@ -19,7 +19,7 @@ const OnboardingComponent: React.FC = () => {
 
     // Clean up Intro.js on component unmount
     return () => {
-      intro.exit(false);
+      intro.exit(true);
     };
   }, []);
 

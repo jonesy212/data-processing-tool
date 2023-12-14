@@ -1,5 +1,4 @@
-// components/EmailVerificationForm.tsx
-//This component assumes that users have received a verification code via email and need to enter it for confirmation.
+// EmailVerificationForm.tsx
 import React, { useState } from 'react';
 
 const EmailVerificationForm: React.FC = () => {

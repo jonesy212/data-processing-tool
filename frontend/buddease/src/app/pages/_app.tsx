@@ -1,14 +1,17 @@
 // _app.tsx
+import { Provider } from 'mobx-react-lite';
 import { AppProps } from 'next/app';
-import OnboardingComponent from '../components/OnboardingComponent';
-import { AuthProvider } from './../components/AuthContext';
-
+import { AuthProvider } from '../components/auth/AuthContext';
+import OnboardingComponent from '../components/onboarding/OnboardingComponent';
+import responsiveDesignStore from '../components/styling/ResponsiveDesign';
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-      <AuthProvider>
-          {/* Your Onboarding component */}
-      <OnboardingComponent />
-      <Component {...pageProps} />
+    <AuthProvider>
+      <Provider responsiveDesignStore={responsiveDesignStore}>
+        {/* Your Onboarding component */}
+        <OnboardingComponent />
+        <Component {...pageProps} />
+      </Provider>
     </AuthProvider>
   );
 }

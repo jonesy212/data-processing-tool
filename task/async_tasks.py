@@ -56,13 +56,8 @@ def async_hypothesis_test_(data, test_type):
 def async_impute_numbers_task(data, imputation_method):
     impute_numbers_task.apply_async(args=[data, imputation_method])
 
-
-
-
 def async_apply_log_transformation_task(data, numeric_column):
     apply_log_transformation_task.apply_async(args=[data, numeric_column])
-
-
 
 def async_create_interaction_terms_task(data, interaction_columns):
     create_interaction_terms_task.apply_async(args=[data, interaction_columns])
@@ -76,10 +71,8 @@ def async_encode_data(data, encoding_columns):
     encode_categorical_variables_task.apply_async(args=[data, encoding_columns])
 
 
-
 def async_feature_engineering(data, feature_functions):
     feature_engineering_task.apply_async(args=[data, feature_functions])
-
 
 
 def async_scaling_and_normalization(data, numeric_columns):
@@ -98,8 +91,6 @@ def async_extract_time_based_features(data, time_column):
     extract_time_based_features_task.apply_async(args=[data, time_column])
     
     
- 
-
 def async_calculate_cumulative_sum(data, columns):
     calculate_cumulative_sum_task.apply_async(args=[data, columns])
 
@@ -115,24 +106,17 @@ def async_calculate_rolling_mean(data, columns, window_size):
 def async_create_custom_feature(data, feature_expression, new_feature_name):
     create_custom_feature_task.apply_async(args=[data, feature_expression, new_feature_name])
 
-
-
 def async_count_encode(data, columns):
     count_encode_task.apply_async(args=[data, columns])
-
-
 
 def async_encode_ordinal_data(data, columns, order_mapping):
     encode_ordinal_data_task.apply_async(args=[data, columns, order_mapping])
 
-
 def async_target_encode(data, target_column, columns):
     target_encode_task.apply_async(args=[data, target_column, columns])
 
-
 def async_calculate_exponential_moving_average(data, columns, alpha):
     calculate_exponential_moving_average_task.apply_async(args=[data, columns, alpha])
-
 
 def async_time_since_event(data, event_column, time_column, new_feature_name):
     create_custom_feature_task.apply_async(args=[data, event_column, time_column, new_feature_name])
@@ -142,7 +126,7 @@ def async_time_since_event(data, event_column, time_column, new_feature_name):
 # Async version of time_since_event_task
 async def async_time_since_event_task(data, event_column, time_column, new_feature_name):
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, time_since_event_task, data, event_column, time_column, new_feature_name)
+    return await loop.run_in_executor(None, async_time_since_event_task, data, event_column, time_column, new_feature_name)
 
 # Async command for time_since_event_task
 def async_time_since_event(data, event_column, time_column, new_feature_name):

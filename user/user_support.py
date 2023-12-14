@@ -1,23 +1,10 @@
-import random
 
 from flask import flash, redirect, render_template, request, url_for
-from flask_mail import Mail, Message
 
-from configs.config import app, mail
+from configs.config import app
+from database.mock_db.users_db import (generate_verification_code,
+                                       send_verification_email, users_db)
 
-# Mock user database (replace with actual database integration)
-users_db = {}
-
-# Function to generate a random verification code
-def generate_verification_code():
-    return str(random.randint(100000, 999999))
-
-# Function to send verification code via email
-def send_verification_email(email, code):
-    subject = 'Verification Code for User Support'
-    body = f'Your verification code is: {code}'
-    message = Message(subject, recipients=[email], body=body)
-    mail.send(message)
 
 @app.route('/support', methods=['GET', 'POST'])
 def support():
@@ -44,19 +31,3 @@ def support():
             flash("Invalid user email. Please register or provide a valid email.")
     
     return render_template('user_support.html')
-
-@app.route('/verify_email/<email>', methods=['GET', 'POST'])
-def verify_email(email):
-    if request.method == 'POST':
-        entered_code = request.form.get('verification_code')
-
-        # Check if the entered verification code matches the stored code
-        stored_code = users_db[email].get('verification_code')
-        if entered_code == stored_code:
-            # Verification successful, process the support request
-            return render_template('support_response.html', message="Your support request has been received.")
-        else:
-            flash("Invalid verification code. Please try again.")
-    
-    return redirect(url_for('auth.questionnaire'))
-

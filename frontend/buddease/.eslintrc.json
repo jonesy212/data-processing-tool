@@ -1,3 +1,11 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next/babel",
+    "next/core-web-vitals",
+    "plugin:react/recommended"
+  ],
+  "plugins": ["react"],
+  "rules": {
+    // Add any additional rules or overrides as needed
+  }
 }

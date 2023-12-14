@@ -19,7 +19,12 @@ app = Flask(__name__)
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key')
     DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'sqlite')
-
+    #mobx configurations
+    SRC_PATH = 'src'
+    OUTPUT_DIR = 'output'
+    METADATA_FILENAME_JS = 'metadata.js'
+    METADATA_FILENAME_TSX = 'metadata.tsx'
+    STORES_DIR = 'src/stores'
 
 def configure_app(app):
     # set the environment variab 'APP_CONFIG_FILE' with the path to your config file

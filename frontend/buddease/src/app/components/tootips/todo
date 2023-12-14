@@ -1,0 +1,28 @@
+Feature Tooltip:
+
+Use Case: Provides additional information about a specific feature or functionality.
+Name: FeatureTooltip
+InfoTooltip:
+
+Use Case: Offers detailed information or context for an element.
+Name: InfoTooltip
+DetailTooltip:
+
+Use Case: Displays in-depth details or specifications for an element.
+Name: DetailTooltip
+ExplanationTooltip:
+
+Use Case: Explains the purpose or usage of an element.
+Name: ExplanationTooltip
+DescriptionTooltip:
+
+Use Case: Presents a detailed description of an element's functionality.
+Name: DescriptionTooltip
+InsightTooltip:
+
+Use Case: Offers insights or additional context for better understanding.
+Name: InsightTooltip
+ContextTooltip:
+
+Use Case: Provides contextual information about the element.
+Name: ContextTooltip

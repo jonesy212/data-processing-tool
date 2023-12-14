@@ -1,3 +1,4 @@
+# job_seeker.py
 from sqlalchemy import relationship
 
 from database.extensions import db
@@ -29,6 +30,10 @@ class JobSeekerProfile(db.Model):
     # Portfolio and Additional Details
     portfolio_url = db.Column(db.String(255))
     about_me = db.Column(db.Text)
+
+    # Relationships
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = relationship('User', backref='job_seeker_profile', lazy=True)
 
     def __repr__(self):
         return f"<JobSeekerProfile(id={self.id}, user_id={self.user_id}, full_name={self.full_name})>"

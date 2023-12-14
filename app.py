@@ -10,18 +10,22 @@ from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
 
-from authentication.auth import auth_bp, register
+from authentication.auth import auth_bp
+from blueprint_routes.register_routes import register
 from configs.config import app as configure_flask_app
 from configs.config import configure_app
 from database.extensions import create_database, db
 from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
-from loggers.log_setup import setup_logging
+from logging_system.audit_logger import AuditingLogger
+from logging_system.logger_config import setup_logging
 from models.user import User
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
 from user.get_remote_address import get_remote_address
 
+# create gobao instance of AuditingLogger
+auditor = AuditingLogger(log_file='auditing.log')
 migrate = Migrate()
 
 def create_app(config_file=None):
@@ -29,7 +33,6 @@ def create_app(config_file=None):
     app = Flask(__name__)
     cache = Cache(app)
     setup_logging()
-    
     if config_file:
         app.config.from_envvar(config_file)
     else:

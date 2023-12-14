@@ -14,6 +14,12 @@ class Company(db.Model):
 
     # Other Company-specific fields
     # ...
+    # Relationships
+    recruiter_profile = relationship('RecruiterProfile', back_populates='company', uselist=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    team = relationship('Team', back_populates='companies')
+
+    
 
     def __repr__(self):
         return f"<Company(id={self.id}, name={self.name}, industry={self.industry})>"

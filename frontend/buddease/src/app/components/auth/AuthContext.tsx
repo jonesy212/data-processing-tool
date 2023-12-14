@@ -12,6 +12,7 @@ interface User {
   id: number;
   username: string;
   email: string;
+  persona: string 
   // ... other user properties
 }
 

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import render_template
 
 from blueprint_routes.upload_routes import (handle_invalid_file_format,
                                             handle_upload_failure,

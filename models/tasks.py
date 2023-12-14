@@ -3,7 +3,8 @@ from datetime import datetime
 
 # from configs.config import db
 from database.extensions import db
-from loggers.logging import log_error, log_info
+from logging_system.error_logger import log_error
+from logging_system.logging import log_error, log_info
 from script_commands.celery_module import Celery
 
 celery = Celery(__name__, broker='pyamqp://guest:guest@localhost//', backend='rpc://')
