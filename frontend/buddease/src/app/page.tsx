@@ -1,6 +1,5 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-
+import LazyLoadedImage from './components/LazyLoadedImage';
+import styles from './page.module.css';
 export default function Home() {
   return (
     <main className={styles.main}>
@@ -12,31 +11,16 @@ export default function Home() {
         <div>
           <a
             href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
+              target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
+            By <LazyLoadedImage src="/vercel.svg" alt="Vercel Logo" />
           </a>
         </div>
       </div>
 
       <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+        <LazyLoadedImage src="/next.svg" alt="Next.js Logo" />
       </div>
 
       <div className={styles.grid}>
@@ -91,5 +75,36 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
+  );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// example usage:
+// // Your React component where you want to use lazy-loaded images
+// import React from 'react';
+// import LazyLoadedImage from './LazyLoadedImage';
+
+// const YourComponent = () => {
+//   return (
+//     <div>
+//       {/* Other components */}
+//       <LazyLoadedImage src="path/to/your/image.jpg" alt="Alt text" />
+//       {/* Other components */}
+//     </div>
+//   );
+// };
+
+// export default YourComponent;

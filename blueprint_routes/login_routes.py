@@ -5,7 +5,7 @@ from werkzeug.security import check_password_hash
 
 from authentication.auth import auth_bp
 from configs.config import app
-from models.user import User
+from models.user.user import User
 from utils.system_utils.generate_html_from_tsx import generated_html_files
 
 app.route('/dropsession')

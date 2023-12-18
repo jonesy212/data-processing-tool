@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Flask, jsonify, request, session
 from flask_caching import Cache
 
-from user.get_remote_address import get_remote_address
+from models.user.get_remote_address import get_remote_address
 
 app = Flask(__name__)
 cache = Cache(app)

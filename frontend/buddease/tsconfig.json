@@ -26,6 +26,6 @@
       "@/forms/*": ["./src/app/pages/forms/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screen_functionality/shortcut_keys.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js"],
   "exclude": ["node_modules"]
 }

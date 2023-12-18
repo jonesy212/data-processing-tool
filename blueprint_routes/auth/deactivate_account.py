@@ -1,12 +1,10 @@
 # Assuming 'current_user' is the authenticated user object
 from flask import jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from werkzeug.security import check_password_hash
 
+from authentication.auth import auth_bp
 from database.extensions import db
-from models.user import User
-
-from . import auth_bp
+from models.user.user import User
 
 
 @auth_bp.route('/auth/deactivate-account', methods=['DELETE'])

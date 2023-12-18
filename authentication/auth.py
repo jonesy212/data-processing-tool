@@ -9,8 +9,8 @@ from flask_jwt_extended import jwt_required
 from flask_limiter import Limiter
 from flask_login import LoginManager
 
-from models.user import User
-from user.get_remote_address import get_remote_address
+from models.user.get_remote_address import get_remote_address
+from models.user.user import User
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -46,4 +46,4 @@ login_manager.init_app(app)
 login_manager.user_loader(lambda user_id: User.query.get(int(user_id)))
 
 
-from models.user import User
+from models.user.user import User

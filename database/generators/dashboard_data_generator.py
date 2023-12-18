@@ -1,6 +1,6 @@
 from models.dataset import DatasetModel
 from models.tasks import DataProcessingTask
-from models.user import User
+from models.user.user import User
 
 
 def get_dashboard_data(username, user_tier):

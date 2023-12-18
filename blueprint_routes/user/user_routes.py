@@ -3,14 +3,14 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from database.extensions import db
-from models.user import User
+from models.user.user import User
 
 user_routes = Blueprint('user_routes', __name__)
 
 @user_routes.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
-    # Ensure the current user has the necessary permissions
+    try:# Ensure the current user has the necessary permissions
     current_user_id = get_jwt_identity()
     current_user = User.query.get(current_user_id)
     

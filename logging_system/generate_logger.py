@@ -6,6 +6,8 @@ import time
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from logging_system.activity_monitor.conditions import \
+    overall_low_activity_condition
 from logging_system.logger_config import setup_logging
 from logging_system.logger_handlers import (configure_file_handler,
                                             configure_flake8_handler)
@@ -20,7 +22,7 @@ class LoggerGenerator(FileSystemEventHandler):
         self.log_format = log_format
         self.date_format = date_format
         self.log_types = log_types
-        self.log_generators = {log_type: LoggerGenerator() for log_type in log_types}
+        self.log_generators = {log_type: LoggerGenerator(self.project_path, self.logger_config_template, self.log_format, self.date_format) for log_type in log_types}
         
     def log_change(self, log_type, change_description):
             if log_type in self.log_generators:
@@ -46,6 +48,9 @@ class LoggerGenerator(FileSystemEventHandler):
         }
         
         
+        logger_generator = start_logger_generator(project_path, logger_config_template)
+
+        
         try:
             json_template = json.loads(self.logger_config_template.format(**config_data))
         except json.JSONDecodeError:
@@ -66,6 +71,9 @@ class LoggerGenerator(FileSystemEventHandler):
         flake8_handler = configure_flake8_handler()
         logger.addHandler(flake8_handler)
 
+        # Store the logger in the loggers dictionary
+        self.loggers[config_data['logger_name']] = logger
+
         return logger
 
     def on_any_event(self, event):
@@ -83,18 +91,27 @@ class LoggerGenerator(FileSystemEventHandler):
         print(f"Logger configuration generated for {module_path} at {logger_output_path}")
 
 def start_logger_generator(project_path, logger_config_template, log_format=None, date_format=None):
-    event_handler = LoggerGenerator(project_path, logger_config_template, log_format, date_format)
+    logger_generator = LoggerGenerator(project_path, logger_config_template, log_format, date_format)
     observer = Observer()
-    observer.schedule(event_handler, path=project_path, recursive=True)
+    observer.schedule(logger_generator, path=project_path, recursive=True)
     observer.start()
 
     try:
         while True:
             # You can add additional logic or checks here
-            time.sleep(1)
+            if overall_low_activity_condition:
+                time.sleep(10)
+            else:
+                time.sleep(1)
     except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+    finally:
         observer.stop()
-    observer.join()
+        observer.join()
+    return logger_generator
+
 
 if __name__ == "__main__":
     # Example usage
@@ -106,5 +123,17 @@ if __name__ == "__main__":
         // Add more configuration options here
     }}
     """
+    
+    
+    logger_generator = start_logger_generator(project_path, logger_config_template)
 
-    start_logger_generator(project_path, logger_config_template)
+    # Accessing loggers
+        # # mobx
+    model_generation_logger = logger_generator.loggers.get('model_generation')
+    mobx_store_generation_logger = logger_generator.loggers.get('mobx_store_generation')
+    model_generation_logger = logger_generator.loggers.get('model_generation')
+    mobx_store_generation_logger = logger_generator.loggers.get('mobx_store_generation')
+    file_creation_logger = logger_generator.loggers.get('file_creation')
+    store_file_creation_logger = logger_generator.loggers.get('store_file_creation')
+    code_generation_logger = logger_generator.loggers.get('code_generation')
+    dry_run_logger = logger_generator.loggers.get('dry_run')

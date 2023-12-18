@@ -1,7 +1,6 @@
 // components/PaletteManager.tsx
-import React, { useState } from 'react';
-import { Palette } from './Palette';
-
+import React, { useState } from "react";
+import { Palette } from "./Palette";
 
 interface ColorPalette {
   name: string;
@@ -10,12 +9,15 @@ interface ColorPalette {
 
 const PaletteManager: React.FC = () => {
   const [palettes, setPalettes] = useState<ColorPalette[]>([
-    { name: 'Default Palette', colors: ['#ff5733', '#33ff57', '#3366ff', '#ff33cc'] },
+    {
+      name: "Default Palette",
+      colors: ["#ff5733", "#33ff57", "#3366ff", "#ff33cc"],
+    },
   ]);
 
   const addColor = (paletteIndex: number) => {
     const updatedPalettes = [...palettes];
-    updatedPalettes[paletteIndex].colors.push('#ffffff');
+    updatedPalettes[paletteIndex].colors.push("#ffffff");
     setPalettes(updatedPalettes);
   };
 
@@ -25,14 +27,21 @@ const PaletteManager: React.FC = () => {
     setPalettes(updatedPalettes);
   };
 
-  const updateColor = (paletteIndex: number, colorIndex: number, newColor: string) => {
+  const updateColor = (
+    paletteIndex: number,
+    colorIndex: number,
+    newColor: string
+  ) => {
     const updatedPalettes = [...palettes];
     updatedPalettes[paletteIndex].colors[colorIndex] = newColor;
     setPalettes(updatedPalettes);
   };
 
   const addPalette = () => {
-    const newPalette: ColorPalette = { name: `Palette ${palettes.length + 1}`, colors: [] };
+    const newPalette: ColorPalette = {
+      name: `Palette ${palettes.length + 1}`,
+      colors: [],
+    };
     setPalettes([...palettes, newPalette]);
   };
 
@@ -42,15 +51,16 @@ const PaletteManager: React.FC = () => {
       {palettes.map((palette, index) => (
         <div key={index}>
           <h3>{palette.name}</h3>
-              <Palette
-                  
-                  colors={palette.colors}
-                  swatches={palette.colors.map((color, colorIndex) => ({
-                    key: colorIndex,
-                    color,
-                    style: { backgroundColor: color },
-                  }))}
-            onColorChange={(colorIndex, newColor) => updateColor(index, colorIndex, newColor)}
+          <Palette
+            colors={palette.colors}
+            swatches={palette.colors.map((color, colorIndex) => ({
+              key: colorIndex,
+              color,
+              style: { backgroundColor: color },
+            }))}
+            onColorChange={(colorIndex, newColor) =>
+              updateColor(index, colorIndex, newColor)
+            }
             onAddColor={() => addColor(index)}
             onRemoveColor={(colorIndex) => removeColor(index, colorIndex)}
           />

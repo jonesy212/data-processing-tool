@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from configs.config import Config
 from database.extensions import db
 from models.dataset import DatasetModel
-from models.user import User
+from models.user.user import User
 from todos.todo_management import TodoManager
 
 fake = Faker()
@@ -144,6 +144,10 @@ def login():
 # Protected route requiring authentication
 @app.route('/generate_data', methods=['POST'])
 @jwt_required()
+
+
+
+
 async def generate_data():
     data = request.get_json()
     model_name = data.get('model')

@@ -5,7 +5,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.extensions import db
-from models.user import User
+from models.user.user import User
 
 auth_bp = Blueprint('auth_bp', __name__)
 

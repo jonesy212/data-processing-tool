@@ -3,12 +3,12 @@ import os
 
 from flask import jsonify, redirect, render_template, request, session, url_for
 from flask_limiter import Limiter
+from user.get_remote_address import get_remote_address
 from werkzeug.security import generate_password_hash
 
 from configs.config import app
 from database.extensions import db
-from models.user import User
-from user.get_remote_address import get_remote_address
+from models.user.user import User
 
 from . import auth_bp
 

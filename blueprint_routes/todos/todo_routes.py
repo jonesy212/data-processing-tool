@@ -1,3 +1,10 @@
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
+
+from configs.config import app
+from todos.todo import Todo, TodoManager
+
+todo_bp = Blueprint('auth_bp', __name__)
 
 @todo_bp.route('/todos', methods=['POST'])
 @jwt_required()

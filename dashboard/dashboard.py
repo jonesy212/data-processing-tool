@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_login import login_required
 
 from configs.config import app
+from database.generators.dashboard_data_generator import get_dashboard_data
 
 
 @app.route('/dashboard')

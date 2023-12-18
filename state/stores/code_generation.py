@@ -21,11 +21,33 @@ def generate_mobx_store(store_name, components):
     except Exception as e:
         print(f"Error generating MobX store: {str(e)}")
 
+
+
+# Function to create a store file for a model
+def create_store_file(model_class, store_path):
+    # Extract model name from the class
+    model_name = model_class.__name__
+    
+    # Components can be derived based on your project structure or other logic
+    components = [f'{model_name}Store']
+    
+    # Generate the MobX store
+    generate_mobx_store(model_name, components)
+
+    
 # Main function for code generation testing
-def main():
+def main_generator():
     # Example metadata
     store_metadata = [
         {'name': 'BrowserCompatibility', 'components': ['BrowserCompatibilityStore']},
+        {'name': 'User', 'components': ['UserStore']},
+        {'name': 'ProcessingLogs', 'components': ['ProcessingLogsStore']},
+        {'name': 'Project', 'components': ['ProjectStore']},
+        {'name': 'Task', 'components': ['TaskStore']},
+        {'name': 'Tasks', 'components': ['TasksStore']},
+        {'name': 'Team', 'components': ['TeamStore']},
+        {'name': 'Dataset', 'components': ['DatasetStore']},
+        {'name': 'ExecutionLog', 'components': ['ExecutionLogStore']},
         # Add more metadata entries as needed
     ]
 
@@ -33,4 +55,4 @@ def main():
         generate_mobx_store(metadata['name'], metadata['components'])
 
 if __name__ == "__main__":
-    main()
+    main_generator()

@@ -5,7 +5,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from database.extensions import db
 from models.company.company_recruiters import \
     CompanyRecruiters  # Import your CompanyRecruiters model
-from models.user import User
+from models.user.user import User
 
 company_recruiter_routes = Blueprint('company_recruiter_routes', __name__)
 

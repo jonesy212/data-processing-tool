@@ -19,10 +19,10 @@ from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
 from logging_system.audit_logger import AuditingLogger
 from logging_system.logger_config import setup_logging
-from models.user import User
+from models.user.get_remote_address import get_remote_address
+from models.user.user import User
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
-from user.get_remote_address import get_remote_address
 
 # create gobao instance of AuditingLogger
 auditor = AuditingLogger(log_file='auditing.log')

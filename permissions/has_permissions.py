@@ -1,9 +1,16 @@
 # Import the tier system module
-from modules.tier_system import get_user_tier
+from flask_jwt_extended import current_user
+
+from utils.user_utils.tier_system import get_user_tier
 
 
 # Function to check if a user has permission for a feature
-def has_permission(user_tier, required_permission):
+def has_permission(current_user):
+     # Assuming current_user has roles and permissions attributes
+    user_tier = get_user_tier(current_user.roles)  # Adjust based on your actual model structure
+
+    # Example permission check
+    required_permission = 'advanced_feature'
     return required_permission in user_tier.permissions
 
 # # Example usage

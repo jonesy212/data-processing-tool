@@ -3,7 +3,7 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from configs.config import app
-from models.user import User
+from models.user.user import User
 
 # Define API versions
 API_VERSION_V1 = 'application/vnd.yourapp.v1+json'
@@ -28,7 +28,32 @@ def get_data():
         return jsonify({'message': 'Invalid API version requested'}), 400
 
 
+# Export Data Endpoint
+@app.route('/api/export-data', methods=['GET'])
+@jwt_required()
+def export_data():
+    try:
+        # Example: Fetch user data from the database
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
 
+        if user:
+            # Modify this based on your actual data structure
+            exported_data = {
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'profile_picture_url': user.profile_picture_url,
+                # Add more fields as needed
+            }
+
+            return jsonify(exported_data), 200
+        else:
+            return jsonify({'message': 'User not found'}), 404
+
+    except Exception as e:
+        # Log the error or handle it based on your application needs
+        return jsonify({'message': 'An error occurred during data export'}), 500
 
 
 

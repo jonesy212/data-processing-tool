@@ -1,4 +1,4 @@
-//DynamicComponents.tsx
+// components/DynamicComponent.tsx
 import React from 'react';
 
 interface ButtonProps {
@@ -10,55 +10,44 @@ interface CardProps {
   content: string;
 }
 
-const DynamicComponents: React.FC = () => {
-  // Dynamic examples of reusable components
-  const buttonExamples: ButtonProps[] = [
-    { label: 'Click me' },
-    { label: 'Submit' },
-    // Add more button examples as needed
-  ];
+interface DynamicComponentProps {
+  dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
+}
 
-  const cardExamples: CardProps[] = [
-    { title: 'Card 1 Title', content: 'Card 1 Content' },
-    { title: 'Card 2 Title', content: 'Card 2 Content' },
-    // Add more card examples as needed
-  ];
+const DynamicComponent: React.FC<DynamicComponentProps & (ButtonProps | CardProps)> = (props) => {
+  const { dynamicContent, ...rest } = props;
 
   return (
     <div>
-      <h1>Dynamic Components</h1>
-      {/* Dynamic rendering of Button components */}
-      <div>
-        <h2>Buttons</h2>
-        {buttonExamples.map((button, index) => (
-          <Button key={index} {...button} />
-        ))}
-      </div>
-
-      {/* Dynamic rendering of Card components */}
-      <div>
-        <h2>Cards</h2>
-        {cardExamples.map((card, index) => (
-          <Card key={index} {...card} />
-        ))}
-      </div>
+      <h2>{dynamicContent ? 'Dynamic' : 'Static'} Component</h2>
+      {dynamicContent ? renderDynamicContent(rest) : renderStaticContent()}
+      {/* Add more dynamic/static content examples as needed */}
     </div>
   );
 };
 
-// Dynamic Button component
-const Button: React.FC<ButtonProps> = ({ label }) => {
-  return <button>{label}</button>;
-};
-
-// Dynamic Card component
-const Card: React.FC<CardProps> = ({ title, content }) => {
+const renderStaticContent = () => {
   return (
     <div>
-      <h3>{title}</h3>
-      <p>{content}</p>
+      <h3>Static Card</h3>
+      <p>Static Card Content</p>
     </div>
   );
 };
 
-export default DynamicComponents;
+const renderDynamicContent = (props: ButtonProps | CardProps) => {
+  if ('label' in props) {
+    // Dynamic rendering of Button component
+    return <button>{props.label}</button>;
+  } else {
+    // Dynamic rendering of Card component
+    return (
+      <div>
+        <h3>{props.title}</h3>
+        <p>{props.content}</p>
+      </div>
+    );
+  }
+};
+
+export default DynamicComponent;

@@ -5,7 +5,7 @@ from flask import (Blueprint, flash, jsonify, redirect, render_template,
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from database.extensions import db
-from models.user import User
+from models.user.user import User
 
 auth_bp = Blueprint('auth_bp', __name__)
 

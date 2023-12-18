@@ -1,25 +1,36 @@
-// IconLoader.ts
-import Image from 'next/image';
+import Image from "next/image";
 
-export const loadDuckDuckGoIcon = async () => {
-  const duckDuckGoIconModule = await import("path/to/duckduckgo-icon.png");
-  return <Image src={duckDuckGoIconModule.default} alt="DuckDuckGo Icon" />;
+type IconLoader = () => Promise<React.ReactNode>;
+
+const createIconLoader = (iconPath: string, altText: string): IconLoader => {
+  return async () => {
+    const iconModule = await import(iconPath);
+
+    // Create a promise that resolves with ReactNode
+    return Promise.resolve().then(() => {
+      return <Image src={iconModule.default} alt={altText} />;
+    });
+  };
 };
 
+export const loadDuckDuckGoIcon: IconLoader = createIconLoader(
+  "path/to/duckduckgo-icon.png",
+  "DuckDuckGo Icon"
+);
 
-export const loadLinkedInIcon = async () => {
-  const LinkedInIconModule = await import('path/to/linkedin-icon.png'); // Adjust the path accordingly
-  return <Image src={LinkedInIconModule.default} alt="LinkedIn Icon" />;
-};
+export const loadLinkedInIcon: IconLoader = createIconLoader(
+  "path/to/linkedin-icon.png",
+  "LinkedIn Icon"
+);
 
-export const loadXIcon = async () => {
-  const XIconModule = await import('path/to/x-icon.png'); // Adjust the path accordingly
-  return <Image src={XIconModule.default} alt="X Icon" />;
-};
+export const loadXIcon: IconLoader = createIconLoader(
+  "path/to/x-icon.png",
+  "X Icon"
+);
 
-export const loadYandexIcon = async () => {
-  const YandexIconModule = await import('path/to/yandex-icon.png'); // Adjust the path accordingly
-  return <Image src={YandexIconModule.default} alt="Yandex Icon" />;
-};
+export const loadYandexIcon: IconLoader = createIconLoader(
+  "path/to/yandex-icon.png",
+  "Yandex Icon"
+);
 
 // Add more functions to load other icons as needed

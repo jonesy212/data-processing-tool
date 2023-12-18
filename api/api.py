@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from configs.config import app
-from models.user import User
+from models.user.user import User
 
 
 @app.route('/api/user/profile-picture')
