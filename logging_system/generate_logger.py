@@ -12,9 +12,14 @@ from logging_system.logger_config import setup_logging
 from logging_system.logger_handlers import (configure_file_handler,
                                             configure_flake8_handler)
 from logging_system.logger_rules import LoggerRules
+from logging_system.web3_wallet.web3_libraries_changes_logger import \
+    Web3LibrariesChangesLogger
 
 
 class LoggerGenerator(FileSystemEventHandler):
+    @staticmethod
+    def get_web3_libraries_logger():
+        return Web3LibrariesChangesLogger()
     def __init__(self, project_path, logger_config_template, log_format=None, date_format=None, log_types=None):
         super().__init__()
         self.project_path = project_path

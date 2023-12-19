@@ -3,13 +3,13 @@
 import asyncio
 
 from versioning.version_generator import \
-    VersionGenerator  # Adjust the import based on your actual structure
+    BaseVersionGenerator  # Adjust the import based on your actual structure
 
 
 class Web3AsyncHandler:
     def __init__(self, name):
         self.name = name
-        self.versioning_generator = VersionGenerator()  # Initialize the versioning generator
+        self.versioning_generator = BaseVersionGenerator()  # Initialize the versioning generator
 
     async def generate_version(self, version_number):
         # Simulate asynchronous version generation

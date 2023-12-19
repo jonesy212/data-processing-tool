@@ -9,7 +9,7 @@ from data_analysis.analyze_data import analyze_data
 from dataset.dataset_upload import save_dataset, upload_dataset
 from hypothesis_testing.perform_hypothesis_test import perform_hypothesis_test
 from models.execution_log import TaskExecutionLog
-from models.tasks import DataProcessingTask
+from models.task.data_processing_task import DataProcessingTask
 from preprocessing.apply_log_transformation import \
     apply_log_transformation_task
 from preprocessing.bin_categorical_data import bin_categorical_data

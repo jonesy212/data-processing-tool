@@ -34,6 +34,7 @@ export interface CacheData {
     // Additional Collaboration Preferences
     collaborationPreference1: any;
     collaborationPreference2: any;
+
     // Add more collaboration preferences as needed
     // Appearance and Interface
     theme: string;
@@ -172,8 +173,8 @@ export interface CacheData {
       };
       stores: {
         iconStore: string;
-        rootStores: string;
-        generators: string;
+        rootStores: string[];
+        generators: string[];
         storeProvider: string;
         userPreferences: {
           modules: {

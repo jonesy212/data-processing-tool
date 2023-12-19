@@ -1,26 +1,45 @@
 // LoginForm.tsx
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import React, { Dispatch, SetStateAction, useState } from "react";
+import useHistory from "react-router-dom";
 
 interface LoginFormProps {
-  onSubmit: (username: string, password: string) => void;
+  onSubmit: (
+    username: string,
+    password: string,
+    onSuccess: () => void,
+    onError: (error: string) => void
+  ) => void;
   setUsername: Dispatch<SetStateAction<string>>;
   setPassword: Dispatch<SetStateAction<string>>;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setUsername, setPassword }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   const [username, setLocalUsername] = useState("");
   const [password, setLocalPassword] = useState("");
-
+  const history = useHistory()
   const handleSubmit = async (event: React.FormEvent) => {
     // Implement your login logic here
     try {
       event.preventDefault();
       await performLogin(
-        setUsername as unknown as string,
-        setPassword as unknown as string,
-        () => onSubmit(username, password),
-        (error) => console.log(error)
+        username,
+        password,
+        () => {
+          onSubmit(
+            username,
+            password,
+            () => {
+              // Success callback
+              history.push("/dashboard")
+            },
+            () => {
+              // Added default no-op error callback
+
+            }
+          );
+        },
+        () => {}
       );
     } catch (error) {
       console.log(error);

@@ -1,3 +1,4 @@
+.. web3_generator.py
 Web3 Class
 ===========
 
@@ -33,6 +34,6 @@ If the name of the file is `web3.py`, you can create a corresponding `web3.rst` 
 ```rst
 web3.py Documentation
 =====================
-
-.. literalinclude:: ../path/to/web3.py
-    :language: python
+.. todo verify the todo path is accurate
+.. literalinclude:: ../../handlers/web3_handlers/web3.py
+   :language: python

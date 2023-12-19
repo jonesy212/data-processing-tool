@@ -1,10 +1,16 @@
-# metadata_extraction.py
 import json
+import logging  # Import the logging module from log_config
 import os
 
 from state_error_handling.error_handling import handle_errors
 from template_engine import generate_file_from_template
 
+# Set up logging configuration
+from logging_system.logger_config import setup_logging
+
+setup_logging()  # Initialize the logging configuration
+
+logger = logging.getLogger(__name__)
 
 # Function to analyze project structure and extract metadata
 def analyze_project(project_path):
@@ -20,8 +26,6 @@ def analyze_project(project_path):
 
     return store_metadata
 
-
-
 # Function to extract metadata from the project structure
 def extract_metadata(src_path):
     metadata = []
@@ -35,7 +39,7 @@ def extract_metadata(src_path):
         print(metadata_json)
        
     except Exception as e:
-        handle_errors('metadata_extraction', 'extraction_error', str(e))
+        handle_errors('metadata_extraction', 'extraction_error', str(e), logger=logger)
 
     return metadata
 
@@ -45,9 +49,9 @@ def generate_metadata_file(metadata, output_path):
         template_path = os.path.join(os.path.dirname(__file__), 'templates', 'metadata-template.ejs')
 
         data = {'metadata': metadata}
-        generate_file_from_template(template_path, output_path, data)
+        generate_file_from_template(template_path, output_path, data, logger=logger)
     except Exception as e:
-        print(f"Error generating metadata file: {str(e)}")
+        logger.error(f"Error generating metadata file: {str(e)}")
 
 # Main function for metadata extraction and generation
 def main():

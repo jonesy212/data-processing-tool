@@ -24,6 +24,7 @@
       "@/dashboards/*": ["./src/app/pages/dashboards/*"],
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/forms/*": ["./src/app/pages/forms/*"],
+      "@/searches/*": ["./src/app/pages/searches/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js"],

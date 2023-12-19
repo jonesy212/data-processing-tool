@@ -1,9 +1,9 @@
 from datetime import datetime
 
+# Import the cache key generator
+from caching_api import fetch_data_from_source
 from flask import Flask, jsonify, request, session
 from flask_caching import Cache
-
-from models.user.get_remote_address import get_remote_address
 
 app = Flask(__name__)
 cache = Cache(app)
@@ -13,8 +13,6 @@ def generate_cache_key(prefix, *args, **kwargs):
     # Combine the prefix and property names to create a unique cache key
     key = f"{prefix}_{'_'.join(map(str, args))}_{'_'.join(f'{k}={v}' for k, v in kwargs.items())}"
     return key
-
-
 
 # Example API endpoint with caching
 @app.route('/api/resource', methods=['GET'])
@@ -46,31 +44,6 @@ def get_resource():
 
     return jsonify(data)
 
+# Rest of the code remains the same
+# ...
 
-
-
-
-
-
-
-class DataRetrievalError(Exception):
-    pass
-
-def fetch_data_from_source(user_id, data_type):
-    try:
-        # Simulate fetching data from a database or external API
-        # Replace this with your actual logic to fetch data
-        if data_type == session.user_profile:
-            # Simulate fetching user profile data
-            data = {'user_id': user_id, 'data_type': data_type, 'profile': {'name': 'John Doe', 'email': 'john@example.com'}}
-        elif data_type == 'user_activity':
-            # Simulate fetching user activity data
-            data = {'user_id': user_id, 'data_type': data_type, 'activity': {'logins': 20, 'last_login': str(datetime.now())}}
-        else:
-            # Handle unknown data type
-            raise DataRetrievalError(f"Unknown data type: {data_type}")
-        
-        return data
-    except Exception as e:
-        # Log the exception or handle it according to your application's needs
-        raise DataRetrievalError(f"Error fetching data: {str(e)}")

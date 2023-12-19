@@ -1,9 +1,10 @@
 // dummyGenerator.tsx
-import useDynamicHook from "./GenerateHooks";
+import useDynamicHook from "./DynamicHookGenerator";
 
 const generateDummyHook = (hookName: any) => {
     const condition = () => {
       // Your condition logic goes here
+      
       // Return true to use asyncEffect, false to skip it
       return true;
     };
@@ -19,7 +20,7 @@ const generateDummyHook = (hookName: any) => {
     };
   
     return {
-      hook: () => useDynamicHook(condition, asyncEffect, cleanup),
+      hook: () => useDynamicHook({ condition, asyncEffect, cleanup }),
     };
   };
   

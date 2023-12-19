@@ -31,10 +31,13 @@ def generate_fake_data(model_class, num_records=10):
                     setattr(fake_instance, column.name, fake.random_int(0, 100))
                 elif isinstance(column.type, db.DateTime):
                     setattr(fake_instance, column.name, fake.date_time_this_decade())
+                elif isinstance(column.type, db.Enum):  # Handle Enum types
+                    setattr(fake_instance, column.name, fake.random_element(column.type.enums))
 
         fake_data.append(fake_instance)
 
     return fake_data
+
 
 
 
@@ -72,7 +75,7 @@ def generate_fake_data(model_class, num_records=10):
 
 
 
-#todo verify above workks before remove
+#todo verify above works before remove
 # from datetime import datetime
 
 # from databases import Database

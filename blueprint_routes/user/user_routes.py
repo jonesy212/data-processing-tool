@@ -4,26 +4,38 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from database.extensions import db
 from models.user.user import User
+from pagiation.get_pagiation_users import (get_paginated_users,
+                                           get_pagination_parameters)
 
 user_routes = Blueprint('user_routes', __name__)
 
 @user_routes.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
-    try:# Ensure the current user has the necessary permissions
+
+    # Ensure the current user has the necessary permissions
     current_user_id = get_jwt_identity()
     current_user = User.query.get(current_user_id)
     
     if not current_user or current_user.tier != 'admin':
         return jsonify({"message": "Unauthorized"}), 401
-
-    # Your logic to get users, e.g., fetch all users from the database
-    users = User.query.all()
+    page, per_page = get_pagination_parameters()
+        
+    # Get paginated user using SQLAlchemy pagination
+    paginated_users = get_paginated_users(page, per_page)
 
     # Serialize the user data as needed
     serialized_users = [{'id': user.id, 'username': user.username, 'email': user.email} for user in users]
 
-    return jsonify(serialized_users)
+    # Your logic to get users, e.g., fetch all users from the database
+    users = User.query.all()
+    
+    return jsonify({
+        'users': serialized_users,
+        'total_pages': paginated_users.pages,
+        'current_page': paginated_users.page,
+        'total_items': paginated_users.total
+    })
 
 @user_routes.route('/users/<int:user_id>', methods=['GET'])
 @jwt_required()
@@ -41,9 +53,15 @@ def get_user(user_id):
     if not user:
         return jsonify({"message": "User not found"}), 404
 
+    paginated_users = get_pagination_parameters()
     # Serialize the user data as needed
     serialized_user = {'id': user.id, 'username': user.username, 'email': user.email}
-
+    return jsonify({
+        'users': serialized_users,
+        'total_pages': paginated_users.pages,
+        'current_page': paginated_users.page,
+        'total_items': paginated_users.total
+    })
     return jsonify(serialized_user)
 
 

@@ -1,7 +1,11 @@
 import DashboardLoader from '@/dashboards/DashboardLoader';
 import CommonLayout from '@/layouts/CommonLayout';
 
-const DashboardLayout: React.FC = ({ children }) => {
+
+type DashboardLayoutProps = {
+  children: React.ReactNode
+}
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     return (
       <CommonLayout>
         {/* Additional dashboard-specific layout elements */}

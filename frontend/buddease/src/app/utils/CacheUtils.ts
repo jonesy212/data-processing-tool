@@ -30,6 +30,7 @@ export const hydrateMobXStore = (key: string, cache: any) => {
 
 // Example usage
 const exampleUsage = async () => {
+  //todo ensur to upate with the proper store key
   const key = 'your_store_key'; // Replace with your actual store key
 
   // Read cache data

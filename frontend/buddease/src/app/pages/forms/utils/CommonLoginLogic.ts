@@ -1,3 +1,13 @@
+
+
+export const isUserLoggedIn = () => {
+  // Check if the user is logged in based on your authentication logic
+  const accessToken = localStorage.getItem("token");
+  return !!accessToken; // Returns true if the access token is not null
+};
+
+
+
 // CommonLoginLogic.ts
 export const performLogin = async (
   username: string,
@@ -18,6 +28,12 @@ export const performLogin = async (
       const data = await response.json();
       console.log("Login successful:", data);
       localStorage.setItem("isLoggedIn", "true");
+      // Save access token to local storage
+      // Call callback on success
+      const accessToken = data.access_token;
+      localStorage.setItem("token", accessToken);
+      // Redirect user to their previous dashboard configuration
+      
       onSuccess();
     } else {
       const errorData = await response.json();

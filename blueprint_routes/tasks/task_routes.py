@@ -2,8 +2,8 @@
 from flask import Blueprint, jsonify, request
 
 from database.extensions import db
-from models.tasks import DataProcessingTask
-from team.team import Team
+from models.task.tasks import DataProcessingTask
+from models.team import Team
 
 task_routes = Blueprint('task_routes', __name__)
 

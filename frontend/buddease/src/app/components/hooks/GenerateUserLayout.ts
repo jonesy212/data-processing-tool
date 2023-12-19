@@ -1,12 +1,12 @@
-// hookGenerator.tsx
+// useLayoutGenerator.tsx
 import { useEffect, useState } from 'react';
 
-const useDynamicHook = (condition: any, asyncEffect: any, cleanup: any) => {
+const useLayoutGenerator = (condition: any, layoutEffect: any, cleanup: any) => {
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     if (isActive && condition()) {
-      asyncEffect();
+      layoutEffect();
     }
 
     return () => {
@@ -14,11 +14,11 @@ const useDynamicHook = (condition: any, asyncEffect: any, cleanup: any) => {
         cleanup();
       }
     };
-  }, [condition, asyncEffect, cleanup, isActive]);
+  }, [condition, layoutEffect, cleanup, isActive]);
 
   return {
     toggleActivation: () => setIsActive((prev) => !prev),
   };
 };
 
-export default useDynamicHook;
+export default useLayoutGenerator;
