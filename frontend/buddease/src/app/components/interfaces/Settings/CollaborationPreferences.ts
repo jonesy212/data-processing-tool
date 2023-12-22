@@ -20,7 +20,7 @@ const collaborationPreferences: CollaborationPreferences = {
   },
   projectManagement: {
     enableProjectManagement: true,
-    projectManagementTools: ["ScrumBoard"],
+    projectManagementTools: ["Jira", "Trello", "Asana", "ScrumBoard"],
     projectTimeline: "mediumTerm",
     taskPrioritySystem: "urgentImportantMatrix",
     projectManagementMethodology: "custom",

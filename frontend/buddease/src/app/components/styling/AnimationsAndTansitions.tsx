@@ -1,7 +1,7 @@
 // components/AnimationsAndTransitions.tsx
 import React, { ReactNode } from 'react';
 
-interface AnimatedComponentProps {
+export interface AnimatedComponentProps {
   animationClass: string;
 }
 

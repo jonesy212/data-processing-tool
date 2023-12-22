@@ -1,18 +1,18 @@
 import React from 'react';
 
-interface PromptOption {
+export interface PromptOption {
   value: string;
   label: string;
 }
 
-interface Prompt {
+export interface Prompt {
   id: string;
   text: string;
   type: 'text' | 'multipleChoice';
   options?: PromptOption[];
 }
 
-interface PromptPageProps {
+export interface PromptPageProps {
   title: string;
   description: string;
   prompts: Prompt[];
@@ -54,4 +54,4 @@ const PromptPage: React.FC<PromptPageProps> = ({ title, description, prompts }) 
   );
 };
 
-export default PromptPage;
+export default {PromptPage};

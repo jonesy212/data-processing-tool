@@ -1,13 +1,13 @@
-# aqua.py
+                        # aqua.py
 
 from version_generator import \
-    VersionGenerator  # Adjust the import based on your actual structure
+    BaseVersionGenerator  # Adjust the import based on your actual structure
 
 
 class Aqua:
     def __init__(self, name):
         self.name = name
-        self.versioning_generator = VersionGenerator()  # Initialize the versioning generator
+        self.versioning_generator = BaseVersionGenerator()  # Initialize the versioning generator
 
     def generate_version(self, version_number):
         # Use the versioning generator to create a version for Aqua

@@ -1,3 +1,6 @@
+# generate_interfaces.py
+import os
+
 # Update this with the actual path
 frontendInterfacePath = 'path/to/frontend/interfaces'
 

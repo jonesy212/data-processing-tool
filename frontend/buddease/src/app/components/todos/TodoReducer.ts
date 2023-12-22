@@ -1,9 +1,7 @@
 // todo/TodoReducer.ts
+import { User } from "@/app/components/auth/AuthContext";
 import { Draft } from "immer";
 import { TodoActions } from "./TodoActions";
-import { DataProcessingTask } from "./tasks/DataProcessingTask";
-import { DatasetModel } from "./tasks/DataSetModel";
-
 interface ToggleAction {
   type: typeof TodoActions.toggle;
   payload?: string;
@@ -181,21 +179,6 @@ export interface Todo {
   isBeingCompleted: boolean;
   isBeingReassigned: boolean; // Indicates if the todo is currently being reassigned to another user
 }
-
-export interface User {
-    id: number;
-    username: string;
-    email: string;
-    password: string;
-    tier: 'free' | 'standard' | 'premium' | 'enterprise';
-    upload_quota: number;
-    full_name?: string;
-    bio?: string;
-    profile_picture?: string; // URL or file path
-    user_type: 'individual' | 'organization';
-    processing_tasks?: DataProcessingTask[];
-    dataset_models?: DatasetModel[];
-  }
 
 export interface Comment {
   id: string;

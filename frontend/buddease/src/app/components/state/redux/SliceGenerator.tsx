@@ -31,6 +31,7 @@ export const createEntitySlice = <T extends { id: string }>(
       removeEntity: (state, action: PayloadAction<string>) => {
         delete state.entities[action.payload];
       },
+      //todo add update, dupicate entities
       // Add other actions as needed
     },
   });

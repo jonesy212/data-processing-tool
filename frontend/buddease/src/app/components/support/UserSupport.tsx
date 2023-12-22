@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import LazyIcon from '../LazyIconProps'; // Adjust the path accordingly
 import { loadDuckDuckGoIcon, loadLinkedInIcon, loadXIcon, loadYandexIcon } from '../actions/IconLoader'; // Adjust the path accordingly
-import { useStore } from '../hooks/UseStore';
+import { useStore } from '../dynamicHooks/UseStore';
 
 const UserSupport: React.FC = () => {
   const store = useStore();

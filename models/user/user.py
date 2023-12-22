@@ -1,5 +1,6 @@
 # user.py
 from flask_login import UserMixin
+from sqlalchemy import JSON
 from sqlalchemy.orm import relationship
 
 from database.extensions import db
@@ -23,7 +24,13 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.String(255))  # URL or file path
     user_type = db.Column(db.String(20), nullable=False)  # 'individual', 'organization'
     
+    # New property for additional user data (stored as JSON)
+    data = db.Column(JSON)
     
+    @staticmethod
+    def get_paginated_users(page, per_page):
+        users = User.query.paginate(page, per_page, False)
+        return users
     
     def __repr__(self):
         return '<User %r>' % self.username

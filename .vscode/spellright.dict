@@ -33,3 +33,10 @@ wsgi
 test_lz
 huffman
 lz
+Buddease
+npm
+rst
+pyc
+__pycache__
+cpython
+pagiation

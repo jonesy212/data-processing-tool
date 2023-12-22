@@ -1,8 +1,15 @@
-import { Editor, EditorState, RichUtils } from 'draft-js';
-import 'draft-js/dist/Draft.css';
-import { useState } from 'react';
+// DocumentBuilder.tsx
+import { Editor, EditorState, RichUtils } from "draft-js";
+import "draft-js/dist/Draft.css";
+import { useState } from "react";
+import { DocumentSize } from "./DocumentOptions";
+import { DocumentBuilderProps } from "./SharedDocumentProps";
 
-const DocumentBuilder = ({ isDynamic }: { isDynamic: boolean }) => {
+const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
+  isDynamic,
+  options,
+  onOptionsChange,
+}) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -10,6 +17,11 @@ const DocumentBuilder = ({ isDynamic }: { isDynamic: boolean }) => {
 
   const toggleVisibility = () => {
     setIsPublic((prevIsPublic) => !prevIsPublic);
+  };
+
+
+  const handleSizeChange = (newSize: DocumentSize) => {
+    onOptionsChange({ ...options, size: newSize });
   };
 
   const handleKeyCommand = (command: any, state: any) => {
@@ -55,6 +67,33 @@ const DocumentBuilder = ({ isDynamic }: { isDynamic: boolean }) => {
             onChange={toggleVisibility}
           />
           {isPublic ? "Public" : "Private"}
+        </label>
+      </div>
+      <div>
+        <label>
+          Document Size:
+          <select value={options.size} onChange={(e) => handleSizeChange(e.target.value as DocumentSize)}>
+            <option value="letter">Letter</option>
+            <option value="legal">Legal</option>
+            <option value="a4">A4</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        {/* Additional options UI */}
+        <label>
+          Additional Option:
+          <input
+            type="text"
+            value={options.additionalOption}
+            onChange={(e) =>
+              onOptionsChange({
+                ...options,
+                additionalOption: e.target.value,
+              })
+            }
+          />
         </label>
       </div>
       {renderDocument()}

@@ -1,10 +1,10 @@
 import DashboardLoader from '@/dashboards/DashboardLoader';
-import CommonLayout from '@/layouts/CommonLayout';
-
+import CommonLayout from './CommonLayout';
 
 type DashboardLayoutProps = {
   children: React.ReactNode
 }
+
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     return (
       <CommonLayout>
@@ -16,4 +16,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <DashboardLoader />
       </CommonLayout>
     );
-  };
+};
+  
+export type { DashboardLayout };

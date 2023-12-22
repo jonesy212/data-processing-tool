@@ -22,7 +22,7 @@ const EmailSetupForm: React.FC = () => {
       </label>
       <button onClick={handleRegisterEmail}>Register Email</button>
     </div>
-  );
-};
+  )
+}
 
 export default EmailSetupForm;

@@ -3,9 +3,11 @@
 import { makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { IconStore } from './IconStore';
+import { TrackerStore } from './TrackerStore';
 
 export class RootStore {
-  browserCompatibilityStore: BrowserCompatibilityStore;
+  browserCompatibilityStore: BrowserCompatibilityStore
+  trackerStore: TrackerStore
   iconStore: IconStore
   // userStore: UserStore
   // todoStore: TodoStore
@@ -14,7 +16,7 @@ export class RootStore {
     // this.userStore = new this.userStore(this)
     // this.todoStore = new this.todoStore(this)
     this.iconStore = new IconStore(this);
-      // Add more stores as needed
+    this.trackerStore = new TrackerStore(this);
       
       makeAutoObservable(this);
   }
@@ -33,7 +35,6 @@ class BrowserCompatibilityStore {
   }
 }
 
-// Initialize mobx-persist
 
 // Initialize mobx-persist
 const hydrate = create();

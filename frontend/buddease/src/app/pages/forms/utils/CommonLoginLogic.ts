@@ -1,20 +1,39 @@
-
-
-export const isUserLoggedIn = () => {
-  // Check if the user is logged in based on your authentication logic
-  const accessToken = localStorage.getItem("token");
-  return !!accessToken; // Returns true if the access token is not null
+// CommonLoginLogic.ts
+type LoginResult = {
+  success: boolean;
+  error?: Error;
 };
 
 
+type UserStatus = {
+  isLoggedIn: boolean;
+  dashboardConfig?: any; // Replace 'any' with the actual type of your dashboard configuration
+};
 
-// CommonLoginLogic.ts
+
+export const isUserLoggedIn = (): UserStatus => {
+  const accessToken = localStorage.getItem("token");
+  const isLoggedIn = !!accessToken;
+
+  if (isLoggedIn) {
+    // User is logged in, retrieve their dashboard configuration
+    const dashboardConfigString = localStorage.getItem("dashboardConfig");
+    const dashboardConfig = dashboardConfigString ? JSON.parse(dashboardConfigString) : null;
+    // Add logic to use the dashboardConfig as needed
+
+    return { isLoggedIn, dashboardConfig };
+
+  }
+
+  return {isLoggedIn}
+};
+
 export const performLogin = async (
   username: string,
   password: string,
   onSuccess: () => void,
   onError: (error: string) => void
-) => {
+): Promise<LoginResult> => {
   try {
     const response = await fetch("/api/login", {
       method: "POST",
@@ -35,13 +54,22 @@ export const performLogin = async (
       // Redirect user to their previous dashboard configuration
       
       onSuccess();
+
+      // Return a success result
+      return { success: true };
     } else {
       const errorData = await response.json();
       console.error("Login error:", errorData.message);
       onError("Login failed");
+
+      // Return an error result
+      return { success: false, error: new Error("Login failed") };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error during login:", error);
     onError("Error during login");
+
+    // Return an error result
+    return { success: false, error };
   }
 };

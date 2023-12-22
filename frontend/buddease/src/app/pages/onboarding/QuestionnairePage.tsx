@@ -1,27 +1,48 @@
+// QuestionnairePage.tsx
+import baseQuestionnaireData from '@/app/components/dynamicHooks/baseQuestionnaireData';
+import generateDynamicQuestions from '@/app/components/dynamicHooks/dynamicQuestionGenerator';
 import React from 'react';
-
-interface Option {
-  value: string;
-  label: string;
-}
-
-interface Question {
-  id: string;
-  text: string;
-  type: 'text' | 'multipleChoice';
-  options?: Option[];
-}
+import { Question } from './Question'; // Adjust the import path as needed
 
 interface QuestionnairePageProps {
   title: string;
   description: string;
   questions: Question[];
+  onSubmit: (userResponses: any) => void;
 }
 
-const QuestionnairePage: React.FC<QuestionnairePageProps> = ({ title, description, questions }) => {
+const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
+  title,
+  description,
+  questions,
+  onSubmit,
+}) => {
+  const [userResponses, setUserResponses] = React.useState<any>({});
+
+  const handleQuestionResponse = (questionId: string, response: any) => {
+  setUserResponses({
+    ...userResponses, 
+    [questionId]: response
+  });
+}
+
+let handleQuestionnaireSubmit = () => {
+  onSubmit(userResponses);
+}
+  handleQuestionnaireSubmit = () => {
+    // Combine base questions with dynamically generated questions
+    const allQuestions = baseQuestionnaireData.questions.concat(
+      generateDynamicQuestions(userResponses)
+    );
+
+    // Call the onSubmit function with all questions
+    onSubmit(allQuestions);
+  };
   const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    // Add your form submission logic here
+    event.preventDefault(); // Prevent default form submission
+    // Collect user responses and call the onSubmit function
+    const userResponses = /* logic to collect user responses */;
+    onSubmit(userResponses);
   };
 
   return (
@@ -29,23 +50,12 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({ title, descriptio
       <h2>{title}</h2>
       <p>{description}</p>
       <form onSubmit={handleSubmit}>
-        {/* Map through questions and render input fields */}
         {questions.map((question) => (
+          /* Render each question based on its type */
+          /* Example: You may create a separate Question component for rendering each question */
           <div key={question.id}>
-            <label>
-              {question.text}
-              {question.type === 'text' ? (
-                <input type="text" name={question.id} required />
-              ) : question.type === 'multipleChoice' ? (
-                <select name={question.id} required>
-                  {question.options?.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : null}
-            </label>
+            <p>{question.text}</p>
+            {/* Render input fields/options based on question type */}
           </div>
         ))}
         <button type="submit">Submit</button>

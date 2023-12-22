@@ -1,8 +1,8 @@
 # build_integration.py
 import os
 
-from code_generation import generate_store
 from metadata_extraction import extract_metadata, generate_metadata_file
+from stores.generate_store import generate_store
 
 from configs.config import Config
 

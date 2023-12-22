@@ -1,5 +1,7 @@
-import { User } from "../../todos/TodoReducer";
-import { Project } from "../projects/Project";
+
+import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
+import { User } from "../../todos/tasks/User";
+import Project from "../projects/Project";
 
 interface Team {
   id: number;
@@ -23,19 +25,28 @@ const team: Team = {
       id: 1,
       username: "user1",
       email: "user1@example.com",
-      password: "password1",
       tier: "free",
-      upload_quota: 0,
-      user_type: "individual",
+      uploadQuota: 0,
+      userType: "individual",
+      fullName: "Sam Smith",
+      bio: "bio content",
+      hasQuota: true,
+      profilePicture: "",
+      processingTasks: [] as DataProcessingTask[],
     },
     {
       id: 2,
       username: "user2",
       email: "user2@example.com",
-      password: "password2",
       tier: "standard",
-      upload_quota: 100,
-      user_type: "organization",
+      uploadQuota: 100,
+      userType: "organization",
+
+      fullName: "Benny Johnson",
+      bio: "bio content",
+      hasQuota: false,
+      profilePicture: "",
+      processingTasks: [] as DataProcessingTask[],
     },
   ],
   projects: [
@@ -47,6 +58,7 @@ const team: Team = {
       tasks: [],
       startDate: new Date(),
       endDate: new Date(),
+      phase: "Project Planning",
       isActive: true,
       leader: null,
       budget: 0,
@@ -56,6 +68,7 @@ const team: Team = {
       name: "Project B",
       description: "Description of Project B",
       members: [],
+      phase: "Project Ideation",
       tasks: [
         {
           id: 1,
@@ -91,10 +104,14 @@ const team: Team = {
     id: 3,
     username: "teamLeader",
     email: "leader@example.com",
-    password: "leaderPassword",
     tier: "premium",
-    upload_quota: 200,
-    user_type: "organization",
+    uploadQuota: 200,
+    userType: "organization",
+    fullName: "Baine Sanders",
+    bio: "bio content",
+    hasQuota: false,
+    profilePicture: "profile picture",
+    processingTasks: [] as DataProcessingTask[]
   },
 };
 

@@ -25,8 +25,9 @@
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/forms/*": ["./src/app/pages/forms/*"],
       "@/searches/*": ["./src/app/pages/searches/*"],
+      "@/searches/*": ["./src/app/api/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

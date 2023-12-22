@@ -1,6 +1,7 @@
 interface ProjectManagementSettings {
+  
     enableProjectManagement: boolean;
-    projectManagementTools: string[]; // List of preferred project management tools
+    projectManagementTools: ['Jira', 'Trello', 'Asana', "ScrumBoard"],
     projectTimeline: string,
     taskPrioritySystem: "urgentImportantMatrix",
 
@@ -18,7 +19,7 @@ interface ProjectManagementSettings {
   // Example usage
   const projectManagementSettings: ProjectManagementSettings = {
     enableProjectManagement: true,
-    projectManagementTools: ['Jira', 'Trello', 'Asana'],
+    projectManagementTools: ['Jira', 'Trello', 'Asana', "ScrumBoard"],
     projectTimeline: "mediumTerm",
     taskPrioritySystem: "urgentImportantMatrix",
     projectManagementMethodology: 'agile',

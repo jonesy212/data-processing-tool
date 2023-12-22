@@ -8,12 +8,13 @@ class BaseVersionGenerator:
     def __init__(self, name):
         self.name = name
         self.version = "1.0.0"  # Set initial version
-        self.changes = []
+        self._changes = []
         self.logger = logging.getLogger(__name__)
 
     @property
     def _version(self):
-        return self._version
+        return self.version
+    
     @property
     def changes(self):
         return list(self._changes)
@@ -21,7 +22,7 @@ class BaseVersionGenerator:
     def update_version(self, new_version, changes):
         try:
             self.version = new_version
-            self.changes.append({"version": new_version, "changes": changes})
+            self._changes.append({"version": new_version, "changes": changes})
             log_warning(f"Version updated successfully: {self.version}")
         except Exception as e:
             log_error(f"Failed to update version. Error {e}")
@@ -30,6 +31,7 @@ class BaseVersionGenerator:
         try:
             await asyncio.sleep(1)  # Simulating an async operation
             self.version = new_version
+            self._changes.append({"version" : new_version, "changes": changes})
             log_warning({"version": new_version, "changes": changes})
         except Exception as e:
             log_error(f"Failed to update version. Error {e}")

@@ -1,14 +1,15 @@
-// components/DashboardLoader.tsx
-import React, { lazy, Suspense } from 'react';
+// components/DynamicDashboard.tsx
+import React from 'react';
 
-const DynamicDashboard = lazy(() => import('./DynamicDashboard'));
-
-const DashboardLoader: React.FC = () => {
+const DynamicDashboard: React.FC = () => {
+  // Add your dynamic dashboard content and logic here
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DynamicDashboard />
-    </Suspense>
+    <div>
+      <h2>Dynamic Dashboard</h2>
+      {/* Add dynamic content or components based on configurations or data */}
+      <p>This dashboard is flexible and can adapt to different configurations or data.</p>
+    </div>
   );
 };
 
-export default DashboardLoader;
+export default DynamicDashboard;

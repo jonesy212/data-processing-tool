@@ -1,7 +1,7 @@
 // components/ChatCard.tsx
 import React from 'react';
 
-interface ChatCardProps {
+export interface ChatCardProps {
   sender: string;
   message: string;
   timestamp: string;

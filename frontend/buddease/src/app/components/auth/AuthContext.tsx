@@ -1,5 +1,6 @@
 // AuthContext.tsx
 import React, { ReactNode, createContext, useContext, useReducer } from 'react';
+import { User } from '../todos/tasks/User';
 
 // Define the types for the context and state
 interface AuthState {
@@ -7,14 +8,7 @@ interface AuthState {
   user: User | null;
 }
 
-interface User {
-  // Define the properties of your user object
-  id: number;
-  username: string;
-  email: string;
-  persona: string 
-  // ... other user properties
-}
+
 
 interface AuthContextProps {
   state: AuthState;
