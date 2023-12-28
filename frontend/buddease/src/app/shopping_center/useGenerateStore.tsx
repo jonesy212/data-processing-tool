@@ -1,19 +1,37 @@
-// hooks/useStoreGenerator.ts
-import StoreConfig from './StoreConfig';
+import { useState } from 'react';
 
-type UseStoreGenerator = {
-  generateStore: (config: StoreConfig) => React.ReactNode;
-};
+const useStoreGenerator = (initialState: any, context: any) => {
+  const [state, setState] = useState(initialState);
 
-const useStoreGenerator = (): UseStoreGenerator => {
-  const generateStore = (config: StoreConfig): React.ReactNode => {
-    // Customize the store generation logic based on the provided configuration
-    return (
-      <DynamicStoreGenerator config={config}>
-        {/* Add components specific to this type of store */}
-        <p>Additional store content goes here.</p>
-      </DynamicStoreGenerator>
-    );
+  const generateStore = (config: { [key: string]: any }) => {
+    // Your store generation logic here
+    const actions = {
+      // Define your actions here
+      // Example:
+      increment: () => {
+        setState((prev:any) => ({ ...prev, count: prev.count + 1 }));
+      },
+      decrement: () => {
+        setState((prev: any) => ({ ...prev, count: prev.count - 1 }));
+      },
+      // Add more actions as needed
+    };
+
+    const selectors = {
+      // Define your selectors here
+      // Example:
+      getCount: () => state.count,
+      // Add more selectors as needed
+    };
+
+    return {
+      // Expose the state
+      state,
+      // Expose actions to update the state
+      actions,
+      // Expose selectors to retrieve specific data from the state
+      selectors,
+    };
   };
 
   return { generateStore };

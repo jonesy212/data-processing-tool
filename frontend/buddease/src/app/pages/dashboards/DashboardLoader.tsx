@@ -1,13 +1,35 @@
 // components/DashboardLoader.tsx
+import ResizablePanels from '@/app/components/hooks/userInterface/ResizablePanels';
 import React, { lazy, Suspense } from 'react';
 
 const DynamicDashboard = lazy(() => import('./DashboardLoader'));
 
-const DashboardLoader: React.FC = () => {
+interface DashboardLoaderProps {
+  dashboardConfig: {
+    title: string;
+    content: React.ReactNode;
+  };
+}
+
+
+const DashboardLoader: React.FC<DashboardLoaderProps> = ({
+  dashboardConfig,
+}) => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DynamicDashboard />
-    </Suspense>
+    <ResizablePanels
+      sizes={panelSizes}
+      onResize={(newSizes) => console.log("New sizes:", newSizes)}
+    >
+      <Suspense fallback={<div>Loading...</div>}>
+        <DynamicDashboard
+          dashboardConfig={{
+            title: "",
+            content: [<div key="content">Content</div>],
+          }}
+          {...dashboardConfig}
+        />
+      </Suspense>
+    </ResizablePanels>
   );
 };
 

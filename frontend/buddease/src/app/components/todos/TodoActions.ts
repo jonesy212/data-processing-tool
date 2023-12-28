@@ -1,10 +1,10 @@
 // todo/TodoActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { Todo } from "./TodoReducer";
+import { Todo } from "./Todo";
 
 export const TodoActions = {
   toggle: createAction<string>("toggle"),
-  add: createAction<string>("add"),
+  addTodo: createAction<string>("add"),
   type: createAction("type"),
   remove: createAction<string>("remove"),
   updateTitle: createAction<{ id: string, newTitle: string }>("updateTitle"),

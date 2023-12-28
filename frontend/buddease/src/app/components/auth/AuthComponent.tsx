@@ -1,7 +1,7 @@
 // AuthComponent.tsx
 import axios from 'axios';
 import { useState } from 'react';
-import dynamicHooks from '../dynamicHooks/DynamicHooks';
+import dynamicHooks from '../hooks/dynamicHooks/dynamicHooks';
 const AuthComponent = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -12,10 +12,11 @@ const AuthComponent = () => {
       const accessToken = response.data.access_token;
       // Save the token to localStorage or a state variable
       localStorage.setItem("token", accessToken);
-      // set user session variable
 
-      // Trigger the dynamic hook activation
-      dynamicHooks.authentication.hook().toggleActivation();
+      // Update login method to match authentication hook interface
+      dynamicHooks.authentication.hook().toggleActivation({
+        accessToken,
+      });
     } catch (error) {
       //todo: Handle error
       // Handle login error

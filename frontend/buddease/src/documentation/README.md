@@ -34,3 +34,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+
+
+**Having issues with pnpm**
+- Try these commands to see if it fixes the error.
+  pnpm add -g  pnpm-check-updates
+  npx pnpm-check-updates -u
+  pnpm install
+
+
+- Sometimes, issues can arise from a corrupted pnpm store. Try clearing the pnpm store by running:
+- pnpm store prune
+- then repeat the above commands

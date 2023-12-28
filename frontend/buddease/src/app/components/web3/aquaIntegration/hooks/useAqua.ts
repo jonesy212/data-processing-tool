@@ -1,5 +1,5 @@
 // UseAqua.tsx
-import createDynamicHook from '@/app/components/dynamicHooks/DynamicHookGenerator';
+import createDynamicHook from '@/app/components/hooks/dynamicHooks/dynamicHookGenerator';
 import { useEffect } from 'react';
 import LoadAquaState from '../../../dashboards/LoadAquaState';
 

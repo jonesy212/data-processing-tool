@@ -1,5 +1,6 @@
 // DocumentBuilderConfig.ts
 import { DocumentOptions } from "../components/documents/DocumentOptions";
+import { DocumentAnimationOptions } from "../components/documents/SharedDocumentProps";
 
 export interface DocumentBuilderConfig {
   isDynamic: boolean;
@@ -53,6 +54,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       bold: false,
       italic: false,
       underline: false,
+      animations: {} as DocumentAnimationOptions,
       strikethrough: false,
       subscript: false,
       superscript: false,

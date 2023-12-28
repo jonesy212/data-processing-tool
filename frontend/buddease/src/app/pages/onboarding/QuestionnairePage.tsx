@@ -1,6 +1,6 @@
 // QuestionnairePage.tsx
-import baseQuestionnaireData from '@/app/components/dynamicHooks/baseQuestionnaireData';
-import generateDynamicQuestions from '@/app/components/dynamicHooks/dynamicQuestionGenerator';
+import baseQuestionnaireData from '@/app/components/hooks/baseQuestionnaireData';
+import generateDynamicQuestions from '@/app/components/hooks/dynamicQuestionGenerator';
 import React from 'react';
 import { Question } from './Question'; // Adjust the import path as needed
 

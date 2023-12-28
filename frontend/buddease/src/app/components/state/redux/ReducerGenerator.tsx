@@ -1,7 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
 
-type WritableDraft<EntityData> = Draft<EntityData>;
+export type WritableDraft<EntityData> = Draft<EntityData>;
 
 interface EntityState<EntityData> {
   entities: { [id: string]: EntityData };

@@ -1,4 +1,3 @@
-// OnboardingComponent.tsx
 import introJs from 'intro.js';
 import React, { useEffect } from 'react';
 

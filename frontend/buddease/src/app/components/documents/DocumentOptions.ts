@@ -1,7 +1,12 @@
+import { DocumentAnimationOptions } from "./SharedDocumentProps";
+
 // documentOptions.ts
 export interface DocumentOptions {
   additionalOption: string | number | readonly string[] | undefined;
   isDynamic: boolean;
+  size: DocumentSize;
+  animations: DocumentAnimationOptions; // New property for animations
+
   visibility: "public" | "private";
   fontSize: number;
   textColor: string;
@@ -34,7 +39,6 @@ export interface DocumentOptions {
   content?: string; // Property for document content
   css?: string; // Property for document CSS
   html?: string; // Property for document HTML
-  size?: number;
   customSettings: Record<string, any>; // For additional custom settings
 }
 
@@ -74,9 +78,10 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     visibility: "private",
     content: "content", // Property for document content
     css: "css", // Property for document CSS
-      html: "html", // Property for document HTML
-    size: 0, // Property for
+    html: "html", // Property for document HTML
+    size: '0' as DocumentSize, // Property for
     additionalOption: [],
     customSettings: {}, //any settings not defined in the document options
+    animations: {} as DocumentAnimationOptions, //
   };
 };

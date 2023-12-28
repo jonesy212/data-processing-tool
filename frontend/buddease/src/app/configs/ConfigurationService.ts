@@ -1,11 +1,12 @@
-import Project, { isProjectInSpecialPhase } from "../components/models   /projects/Project";
+import Project, { isProjectInSpecialPhase } from "../components/projects/Project";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
 import StoreConfig from "../shopping_center/StoreConfig";
-import { backendDocumentConfig } from "./BackendDocumentConfig";
-import dataVersions from "./DataVersions";
+import { BackendDocumentConfig, backendDocumentConfig } from "./BackendDocumentConfig";
+import dataVersions from "./DataVersionsConfig";
 import frontendStructure from "./FrontendStructure";
-import LazyLoadScriptConfig from "./LazyLoadScriptConfig";
+import { LazyLoadScriptConfig } from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
+import userSettings from "./UserSettings";
 
 export interface RetryConfig {
   enabled: boolean;
@@ -34,6 +35,7 @@ export interface ApiConfig {
 }
 
 interface ConfigurationOptions {
+  namingConventions: any;
   lazyLoadScriptConfig: LazyLoadScriptConfig;
   apiConfig: ApiConfig;
   lastUpdated: string;
@@ -49,12 +51,14 @@ interface ConfigurationOptions {
     // ...other user settings
   };
  
+  backendDocumentConfig: BackendDocumentConfig; // Add backendDocumentConfig here
+
   configStructure: {
-    frontendStructure: typeof frontendStructure,
     dataVersions: typeof dataVersions,
-    userSettings: typeof frontendStructure,
+    userSettings: typeof userSettings,
     userPreferences: typeof userPreferences,
     backendDocumentConfig: typeof backendDocumentConfig; // Add backendDocumentConfig here
+    frontendStructure: typeof frontendStructure,
   };
   // other configuration options
 }

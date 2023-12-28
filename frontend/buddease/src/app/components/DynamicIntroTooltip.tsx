@@ -4,7 +4,6 @@ import IntroJs from 'intro.js';
 import { IntroStep } from 'intro.js/src/core/steps';
 
 import React, { useEffect } from 'react';
-var PropTypes = require('prop-types');
 
 interface DynamicIntroTooltipProps {
   steps: Partial<IntroStep>[];
@@ -35,14 +34,6 @@ const DynamicIntroTooltip: React.FC<DynamicIntroTooltipProps> = ({ steps }) => {
   );
 };
 
-DynamicIntroTooltip.propTypes = {
-  steps: PropTypes.arrayOf(
-    PropTypes.shape({
-      element: PropTypes.string.isRequired,
-      intro: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};
 
 export default DynamicIntroTooltip;
 

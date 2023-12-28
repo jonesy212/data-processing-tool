@@ -34,5 +34,3 @@ export interface LazyLoadScriptConfig {
     namingConventions?: string[]
   // More properties as needed
 }
-
-export default LazyLoadScriptConfig;

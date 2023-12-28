@@ -1,0 +1,55 @@
+// UserQuestionnaire.tsx
+import axios from 'axios';
+import React from 'react';
+import { Question } from './Question';
+import QuestionnairePage from './QuestionnairePage';
+
+interface UserQuestionnaireProps {
+  onSubmit: (userResponses: any) => void;
+}
+
+const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({ onSubmit }) => {
+  const onboardingQuestionnaireData: {
+    title: string;
+    description: string;
+    questions: Question[];
+  } = {
+    title: "User Questionnaire",
+    description: "Please answer the following questions, so we can best know you and how we can assist and make your profile: ",
+    questions: [
+      // ... your existing questions
+    ],
+  };
+
+  const handleQuestionnaireSubmit = async (userResponses: any) => {
+    try {
+      // Add logic to handle questionnaire submission
+
+      // Example: Send responses to the server using Axios
+      const response = await axios.post('/api/questionnaire-submit', {
+        userResponses,
+        // Include any other relevant data to send to the server
+      });
+
+      // Handle the server response if needed
+      console.log('Server response:', response.data);
+
+      // Call the parent component's onSubmit function
+      onSubmit(userResponses);
+    } catch (error) {
+      // Handle any network or unexpected errors
+      console.error('Error sending questionnaire responses:', error);
+    }
+  };
+
+  return (
+    <QuestionnairePage
+      title={onboardingQuestionnaireData.title}
+      description={onboardingQuestionnaireData.description}
+      questions={onboardingQuestionnaireData.questions}
+      onSubmit={handleQuestionnaireSubmit}
+    />
+  );
+};
+
+export default UserQuestionnaire;

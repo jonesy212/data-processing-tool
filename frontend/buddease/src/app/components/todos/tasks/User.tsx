@@ -12,8 +12,13 @@ export interface User {
   hasQuota: boolean,
   profilePicture: string | null;
   processingTasks: DataProcessingTask[];
-  data?: {
-    datasets?: string;
-    tasks?: string;
-  };
+  data?: UserData
+}
+
+
+// Placeholder for user data
+export interface UserData {
+  datasets?: string;
+  tasks?: string;
+  questionnaireResponses?: any;
 }

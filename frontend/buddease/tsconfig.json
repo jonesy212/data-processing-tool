@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+
     "plugins": [
       {
         "name": "next"
@@ -25,9 +26,9 @@
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/forms/*": ["./src/app/pages/forms/*"],
       "@/searches/*": ["./src/app/pages/searches/*"],
-      "@/searches/*": ["./src/app/api/*"],
+      "@/api/*": ["./src/app/api/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx"],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

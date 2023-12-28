@@ -3,6 +3,8 @@ import React, { ReactNode } from 'react';
 
 export interface AnimatedComponentProps {
   animationClass: string;
+  children: React.ReactNode;
+
 }
 
 interface StaticComponentProps {
@@ -41,8 +43,7 @@ const renderDynamicContent = (examples: ReactNode[]) => {
           return (
             <DynamicComponent
               key={index}
-              animationClass={example.props.animationClass}
-            />
+              animationClass={example.props.animationClass} children={undefined}            />
           );
         }
       })}

@@ -1,6 +1,6 @@
 // InformationGatheringPage.tsx
 import React from 'react';
-import generateDynamicDummyHook from '../dynamicHooks/generateDynamicDummyHook';
+import generateDynamicDummyHook from '../hooks/generateDynamicDummyHook';
 
 const InformationGatheringPage: React.FC = () => {
   // Generate a dynamic dummy hook for the Information Gathering phase

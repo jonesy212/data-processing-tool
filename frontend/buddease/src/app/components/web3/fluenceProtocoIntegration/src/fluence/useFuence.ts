@@ -1,6 +1,6 @@
 // UseFluence.tsx
 import LoadFluenceState from '@/app/components/dashboards/LoadFluenceState';
-import createDynamicHook from '@/app/components/dynamicHooks/DynamicHookGenerator';
+import createDynamicHook from '@/app/components/hooks/dynamicHooks/dynamicHookGenerator';
 import { useEffect } from 'react';
 
 

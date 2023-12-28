@@ -27,6 +27,16 @@ const frontendDocumentConfig: FrontendDocumentConfig = {
       "Content-Type": "application/json",
       Authorization: "Bearer your-access-token",
     },
+    retry: {
+      maxRetries: 3,
+      retryDelay: 1000,
+    } as RetryConfig,
+    cache: {} as CacheConfig,
+    responseType: "",
+    withCredentials: false,
+    onLoad: function (response: any): void {
+      throw new Error("Function not implemented.");
+    },
   },
   retryConfig: {
     enabled: true,
@@ -41,5 +51,6 @@ const frontendDocumentConfig: FrontendDocumentConfig = {
   },
   frontendSpecificProperty: "YourFrontendSpecificValue",
 };
+
 
 // Use frontendDocumentConfig as needed in your frontend application

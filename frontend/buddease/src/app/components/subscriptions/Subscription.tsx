@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { subscriptionService } from '../dynamicHooks/DynamicHooks';
+import { subscriptionService } from '../hooks/DynamicHooks';
 
 const SubscriptionComponent = () => {
   const [subscriptionData, setSubscriptionData] = useState(null);

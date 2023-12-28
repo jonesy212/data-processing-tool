@@ -47,7 +47,7 @@ const createEntityActions = <EntityData extends { id: string }>() => {
     }),
     // Include Todo actions
     toggleTodo: (id: string) => TodoActions.toggle(id),
-    addTodo: (id: string) => TodoActions.add(id),
+    addTodo: (id: string) => TodoActions.addTodo(id),
     // Add other actions as needed
   } as EntityActions<EntityData>;
 };

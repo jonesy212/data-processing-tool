@@ -1,19 +1,16 @@
+// PromptPage.tsx
 import React, { useState } from 'react';
+import { Prompt, PromptPageProps } from './PromptComponent';
+import { generatePrompt } from './promptGenerator';
 
-
-interface PromptPageProps {
-    title: string;
-  description: string;
-//   prompts: Prompt[];
-}
-// ... (Your imports for AutoGPT and faker)
-
-const PromptPage: React.FC<PromptPageProps> = ({ title, description }) => {
+const PromptPage: React.FC<PromptPageProps> =  ({ title, description }) => {
   const [generatedPrompts, setGeneratedPrompts] = useState<Prompt[]>([]);
 
-  const handleGeneratePrompts = () => {
-    // Use AutoGPT to generate prompts dynamically
-    // Process the AutoGPT output if needed
+  const handleGeneratePrompts = async () => {
+    // Assuming you have a function like generatePrompt or AutoGPT to get prompts
+  const generatedPrompts = generatePrompt(userIdea);
+
+    // Process the AutoGPT output or other dynamic generation if needed
 
     // For demonstration purposes, use static prompts
     const staticGeneratedPrompts: Prompt[] = [
@@ -25,7 +22,8 @@ const PromptPage: React.FC<PromptPageProps> = ({ title, description }) => {
     ];
 
     setGeneratedPrompts(staticGeneratedPrompts);
-  };
+  }  
+  ;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();

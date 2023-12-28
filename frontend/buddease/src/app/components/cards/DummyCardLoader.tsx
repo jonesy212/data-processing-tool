@@ -5,7 +5,7 @@ interface BodyTextProps {
   fontFamily: string;
 }
 
-interface HeadingProps {
+export interface HeadingProps {
   fontSize: string;
   fontFamily: string;
 }
@@ -14,7 +14,7 @@ interface DynamicTypographyProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
 }
 
-type DynamicContentProps = BodyTextProps | HeadingProps;
+export type DynamicContentProps = BodyTextProps | HeadingProps;
 
 const DynamicTypography: React.FC<DynamicTypographyProps & DynamicContentProps> = (props) => {
   const { dynamicContent, ...rest } = props;

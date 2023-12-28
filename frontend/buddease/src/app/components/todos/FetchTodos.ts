@@ -1,6 +1,5 @@
+import { Todo, TodoAction } from "./Todo";
 import { TodoActions } from "./TodoActions";
-import { Todo, TodoAction } from "./TodoReducer";
-
 // Fetch todos function (replace this with your actual asynchronous fetch logic)
 const fetchTodos = async (): Promise<Todo[]> => {
     // Simulating an API call
@@ -31,7 +30,12 @@ export const handleFetchTodos = async (
     // Dispatch the fetch todos failure action with the error message
     dispatch({
       type: TodoActions.fetchTodosFailure,
-      payload: { error: error.message || "Unknown error" },
+      payload: {
+        id: 'fetchTodosFailure',
+        title: 'Fetch Todos Failure',
+        error: error.message,
+        done: false,
+      },
     });
   }
 };

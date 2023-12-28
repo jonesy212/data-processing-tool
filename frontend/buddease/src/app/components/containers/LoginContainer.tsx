@@ -2,8 +2,27 @@
 import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import LoginForm from "@/forms/LoginForm";
-import React, { useState } from "react";
+import React, { lazy, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+
+
+interface DashboardModule {
+  default: React.ComponentType<any>;
+}
+
+const importDashboard = (path: string) =>
+  lazy(() => import(`@/app/pages/dashboards/${path}`) as Promise<DashboardModule>);
+
+// Get all files matching the pattern in the 'dashboards' directory
+const dashboardContext = require.context('@/app/pages/dashboards', true, /\.tsx$/);
+
+// Dynamically import all dashboards
+const dashboards: { [key: string]: React.ComponentType<any> } = {};
+dashboardContext.keys().forEach((key:any) => {
+  const dashboardName = key.replace(/^\.\/(.+)\/(.+)\.tsx$/, '$2');
+  dashboards[dashboardName] = importDashboard(key);
+});
 
 const LoginContainer: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -18,6 +37,7 @@ const LoginContainer: React.FC = () => {
     interface LoginResult {
       success: boolean;
       error?: Error;
+      dashboardConfig?: any;
     }
 
     // Update the type of loginResult
@@ -28,15 +48,12 @@ const LoginContainer: React.FC = () => {
       onError
     );
 
-    let isSuccess = false;
 
     if (loginResult.success) {
-      isSuccess = true;
       setLoggedIn(true);
       redirectToDashboard();
       onSuccess();
     } else {
-      isSuccess = false;
       onError(loginResult.error as unknown as string);
     }
 
@@ -57,7 +74,6 @@ const LoginContainer: React.FC = () => {
     history(dashboardRoute);
   };
 
-  // Function to determine the dashboard route based on the configuration
   // Function to determine the dashboard route based on the configuration
 const determineDashboardRoute = (dashboardConfig: any) => {
   // Example: Check if the configuration has a 'dashboardType' property
@@ -88,5 +104,8 @@ const determineDashboardRoute = (dashboardConfig: any) => {
     </div>
   );
 };
+
+
+
 
 export default LoginContainer;

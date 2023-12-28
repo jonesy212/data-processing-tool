@@ -30,7 +30,6 @@ export const hydrateMobXStore = (key: string, cache: any) => {
 
 // Example usage
 const exampleUsage = async () => {
-  //todo ensur to upate with the proper store key
   const key = 'your_store_key'; // Replace with your actual store key
 
   // Read cache data
@@ -45,10 +44,10 @@ const exampleUsage = async () => {
 
     // Write the updated cache data
     await writeAndUpdateCache(updatedCache);
-  }
 
-  // Hydrate the store
-  hydrateMobXStore(key, cache);
+    // Hydrate the store
+    hydrateMobXStore(key, cache);
+  }
 };
 
 // Run the example usage

@@ -1,8 +1,8 @@
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { DocumentOptions, DocumentSize } from "../../documents/DocumentOptions";
-import Project from "../../models   /projects/Project";
-import { Task } from "../../models   /tasks/Task";
-import { Team } from "../../models   /teams/Team";
+import { Task } from "../../models/tasks/Task";
+import { Team } from "../../models/teams/Team";
+import Project from "../../projects/Project";
 
 export interface DappProps {
   // General props

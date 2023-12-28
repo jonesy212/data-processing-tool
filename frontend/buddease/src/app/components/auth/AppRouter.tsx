@@ -1,5 +1,6 @@
 import Home from "@/app/page";
 import Dashboard from "@/app/pages/dashboards/UserDashboard";
+import RegisterForm from "@/app/pages/forms/RegisterForm";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import LoginForm from "../../pages/forms/LoginForm";
@@ -9,6 +10,14 @@ const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
+      <Route
+          path="/register"
+          element={
+            <RegisterForm
+              // Add necessary props for SignUpForm component
+            />
+          }
+        />
         <Route
           path="/login"
           element={

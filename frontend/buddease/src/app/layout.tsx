@@ -1,7 +1,7 @@
 // RootLayout.tsx
 import React from 'React';
 import { AnimatedComponent, AnimatedComponentRef } from './components/animations/AnimationComponent';
-import useLayoutGenerator from './components/dynamicHooks/GenerateUserLayout';
+import useLayoutGenerator from './components/hooks/GenerateUserLayout';
 
 type RootLayoutProps = {
   children: React.ReactNode;

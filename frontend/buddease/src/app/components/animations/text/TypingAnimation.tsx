@@ -1,17 +1,14 @@
 // TypingAnimation.tsx
-import React, { useEffect, useState } from 'react';
-
-interface AnimatedComponentProps {
-  children: React.ReactNode;
-}
+import React, { useEffect, useState } from "react";
+import { AnimatedComponentProps } from "../../styling/AnimationsAndTansitions";
 
 const AnimatedComponent: React.FC<AnimatedComponentProps> = ({ children }) => {
   return <div className="animated">{children}</div>;
 };
 
 const TypingAnimation: React.FC = () => {
-  const [typedText, setTypedText] = useState('');
-  const textToType = 'This is a typing animation.';
+  const [typedText, setTypedText] = useState("");
+  const textToType = "This is a typing animation.";
 
   useEffect(() => {
     const typingInterval = 100; // Adjust this value for typing speed
@@ -34,12 +31,13 @@ const TypingAnimation: React.FC = () => {
   return (
     <div>
       <h2>Typing Animation</h2>
-      <AnimatedComponent>
+      <AnimatedComponent
+        animationClass={""}
+      >
         <div>{typedText}</div>
       </AnimatedComponent>
     </div>
   );
 };
-
 
 export default TypingAnimation;

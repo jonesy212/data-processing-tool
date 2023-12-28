@@ -1,53 +1,77 @@
-// todo/TodoList.tsx
-import { produce } from "immer";
-import { useCallback, useReducer } from "react";
-import { TodoActions } from "./TodoActions";
-import { TodoReducer } from "./TodoReducer";
+import axios from 'axios';
+import { observer } from 'mobx-react-lite';
+import React, { useEffect } from 'react';
+import CommonDetails from '../models/CommonDetailsProps';
+import useTodoManagerStore from '../state/stores/TodoStore';
+import { Todo } from './Todo';
 
-const TodoList = () => {
-  const [todos, dispatch] = useReducer(produce(TodoReducer), [
-    /* initial todos */
-  ]);
+const TodoList: React.FC = observer(() => {
+  const todoStore = useTodoManagerStore();
 
-  const handleToggle = useCallback((id: string) => {
-    dispatch({
-      type: TodoActions.toggle,
-      payload: id,
-    });
-  }, []);
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get("/api/todos");
+        const todos = response.data as Todo[];
 
-  const handleAdd = useCallback(() => {
-    dispatch({
-      type: TodoActions.add,
-      payload: "todo_" + Math.random(),
-    });
-  }, []);
+        const mappedTodos = todos.map((todoData) => ({
+          id: todoData.id,
+          title: todoData.title,
+          done: todoData.done,
+        } as Todo));
 
-  // etc
+        todoStore.addTodos(mappedTodos);
+      } catch (error) {
+        console.error("Error fetching todos:", error);
+        // Handle the error as needed
+      }
+    };
+
+    fetchTodos();
+  }, [todoStore]);
+
+  const handleUpdateTitle = (id: string, newTitle: string) => {
+    todoStore.updateTodoTitle({ id: id, newTitle: newTitle });
+  };
+
+  const handleToggle = (id: string) => {
+    todoStore.toggleTodo(id);
+  };
+
+  const handleCompleteAll = () => {
+    setTimeout(() => {
+      todoStore.completeAllTodos();
+    }, 1000);
+  };
+
+  const handleAdd = () => {
+    const newTodoId = "todo_" + Math.random().toString(36).substr(2, 9);
+    const newTodo: Todo = {
+      id: newTodoId,
+      title: "A new todo",
+      done: false,
+    } as Todo;
+
+    todoStore.addTodo(newTodo);
+    handleUpdateTitle(newTodoId, "A new todo");
+  };
 
   return (
     <div>
-      {/* Your TodoList component JSX here */}
       <ul>
-        {todos.map((todo) => (
+        {todoStore.todos.map((todo: Todo) => (
           <li key={todo.id}>
             {todo.title} - {todo.done ? "Done" : "Not Done"}
             <button onClick={() => handleToggle(todo.id)}>Toggle</button>
+            <CommonDetails<Todo> data={todo} />
           </li>
         ))}
       </ul>
+
       <button onClick={handleAdd}>Add Todo</button>
+      <button onClick={handleCompleteAll}>Complete All</button>
     </div>
   );
-};
-
-
-
-
-
-
+});
 
 export default TodoList;
-
-
-

@@ -20,7 +20,7 @@ const validateStoreMetadata = (metadata: StoreMetadataEntry[]) => {
 
 // Analyze project structure and extract metadata
 const storeMetadata = [
-  { name: 'BrowserCompatibility', components: ['BrowserCompatibilityStore'] },
+  { name: 'BrowserCompatibility', components: ['BrowserCheckStore'] },
   { name: 'AuthenticationStore', components: ['auth', 'auth_routes'] },
   { name: 'CompanyStore', components: ['company', 'company_recruiters'] },
   { name: 'UserStore', components: ['user'] },
@@ -40,7 +40,7 @@ const storeMetadata = [
   { name: 'ScriptCommandsStore', components: ['script_commands'] },
 
   // Frontend MobX Stores
-  { name: 'BrowserCompatibilityStore', components: ['BrowserCompatibiity'] },
+  { name: 'BrowserCheckStore', components: ['BrowserCompatibiity'] },
   { name: 'FeedbackLoopStore', components: ['FeedbackLoop'] },
   { name: 'LazyIconPropsStore', components: ['LazyIconProps'] },
   { name: 'NamingConventionsStore', components: ['NamingConventions'] },
@@ -59,6 +59,7 @@ const storeMetadata = [
   { name: 'SupportStore', components: ['support'] },
   { name: 'VersionsStore', components: ['versions'] }, 
     // Add more metadata entries as needed
+
     
 ];
 

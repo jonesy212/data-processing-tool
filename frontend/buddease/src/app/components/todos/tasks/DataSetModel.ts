@@ -1,6 +1,6 @@
 // Assuming you have an interface for the User and Team models as well
 
-import { Team } from "../../models   /teams/Team";
+import { Team } from "../../models/teams/Team";
 
 interface DatasetModel {
     id: number;

@@ -2,7 +2,7 @@ import { ShippingOption } from "./ShippingOption";
 import { AffiliateMarketingConfig } from "./shopping_config/AffiliateMarketingConfig";
 
 // StoreConfig.ts
-interface StoreConfig {
+interface ShoppingCenterConfig {
     name: string;
     description: string;
     logoUrl?: string;
@@ -14,5 +14,5 @@ interface StoreConfig {
   
   
   
-  export default StoreConfig;
+  export default ShoppingCenterConfig;
   

@@ -1,61 +1,54 @@
-// rootStore.ts
-
+// RootStores.ts
 import { makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { IconStore } from './IconStore';
-import { TrackerStore } from './TrackerStore';
+import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
+import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
+import useTrackerStore, { TrackerStore } from './TrackerStore';
 
-export class RootStore {
-  browserCompatibilityStore: BrowserCompatibilityStore
-  trackerStore: TrackerStore
-  iconStore: IconStore
-  // userStore: UserStore
-  // todoStore: TodoStore
+export class RootStores {
+  browserCheckStore: BrowserCheckStore;
+  trackerStore: TrackerStore;
+  todoStore: TodoManagerStore;
+  taskManagerStore: TaskManagerStore
+  iconStore:  typeof IconStore;
+  prototype: any  
+  browsers: any
   constructor() {
-    this.browserCompatibilityStore = new BrowserCompatibilityStore(this);
-    // this.userStore = new this.userStore(this)
-    // this.todoStore = new this.todoStore(this)
-    this.iconStore = new IconStore(this);
-    this.trackerStore = new TrackerStore(this);
-      
-      makeAutoObservable(this);
-  }
-}
-
-export const rootStore = new RootStore();
-
-// BrowserCompatibilityStore.ts (generated)
-
-class BrowserCompatibilityStore {
-  // Add your store properties and methods here
-  rootStore: RootStore
-  constructor(rootStore: RootStore) {
-    this.rootStore = rootStore;
+    this.browserCheckStore = new BrowserCheckStore(this);
+    this.todoStore = useTodoManagerStore()
+    this.trackerStore = useTrackerStore(rootStores)
+    this.taskManagerStore = useTaskManagerStore()
+    this.iconStore =  IconStore
     makeAutoObservable(this);
   }
 }
 
+export const rootStores = new RootStores();
+
+class BrowserCheckStore {
+  rootStores?: RootStores;
+
+  constructor(rootStores: RootStores) {
+    this.rootStores = rootStores;
+    makeAutoObservable(this);
+  }
+}
 
 // Initialize mobx-persist
 const hydrate = create();
-hydrate('rootStore', rootStore)
+hydrate('rootStores', rootStores)
   .then(() => {
     // After hydration is complete, you can perform any additional setup here
     // #todo create stores for
-    // rootStore.loadUserPreferences();
-    // rootStore.initializeWeb3Services();
-    // rootStore.fetchProjectData();
-    // rootStore.setupAnalytics();
-    // rootStore.initiateP2PCommunication();
-    // rootStore.checkForUpdates();
-    // rootStore.notifyUser();
-
+    // rootStores.loadUserPreferences();
+    // rootStores.initializeWeb3Services();
+    // rootStores.fetchProjectData();
+    // rootStores.setupAnalytics();
+    // rootStores.initiateP2PCommunication();
+    // rootStores.checkForUpdates();
+    // rootStores.notifyUser();
   })
   .catch((error) => {
     console.error('Error hydrating store:', error);
   });
-
-// Export the hydrated root store
-export const hydratedRootStore = rootStore;
-
-export default BrowserCompatibilityStore;
