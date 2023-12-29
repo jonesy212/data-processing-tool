@@ -5,9 +5,9 @@ import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPh
 import { User, UserData } from "@/app/components/todos/tasks/User";
 import axios from "axios";
 import React, { useState } from "react";
+import UserQuestionnaire from "../personas/UserQuestionnaire";
 import OfferPage from "./OfferPage";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
-import UserQuestionnaire from "./UserQuestionnaire";
 import WelcomePage from "./WelcomePage";
 
 export enum OnboardingPhase {

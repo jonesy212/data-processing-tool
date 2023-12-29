@@ -1,9 +1,12 @@
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
+
+
 // documentOptions.ts
 export interface DocumentOptions {
   additionalOption: string | number | readonly string[] | undefined;
   isDynamic: boolean;
+  documents: Document[]; 
   size: DocumentSize;
   animations: DocumentAnimationOptions; // New property for animations
 
@@ -79,9 +82,18 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     content: "content", // Property for document content
     css: "css", // Property for document CSS
     html: "html", // Property for document HTML
-    size: '0' as DocumentSize, // Property for
+    size: "0" as DocumentSize, // Property for
     additionalOption: [],
     customSettings: {}, //any settings not defined in the document options
+    documents: [] as Document[],
     animations: {} as DocumentAnimationOptions, //
   };
 };
+
+
+
+// Extend DocumentOptions to include additional properties
+export interface ExtendedDocumentOptions extends DocumentOptions {
+  // Add any additional properties needed for robustness
+  additionalOption2: string;
+}

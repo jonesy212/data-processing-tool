@@ -1,8 +1,8 @@
 // UserQuestionnaire.tsx
 import axios from 'axios';
 import React from 'react';
-import { Question } from './Question';
-import QuestionnairePage from './QuestionnairePage';
+import { Question } from '../onboarding/Question';
+import QuestionnairePage from '../onboarding/QuestionnairePage';
 
 interface UserQuestionnaireProps {
   onSubmit: (userResponses: any) => void;

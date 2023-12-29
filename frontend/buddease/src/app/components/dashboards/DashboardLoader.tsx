@@ -6,7 +6,7 @@ const DynamicDashboard = lazy(() => import('./DynamicDashboard'));
 const DashboardLoader: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <DynamicDashboard />
+      <DynamicDashboard title={''} content={undefined} />
     </Suspense>
   );
 };

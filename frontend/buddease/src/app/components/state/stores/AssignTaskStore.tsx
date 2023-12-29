@@ -6,6 +6,7 @@ export interface AssignTaskStore {
   assignedUsers: Record<string, string[]>; // Use taskId as key and array of user IDs as value
   assignedTasks: Record<string, string[]>; // Use taskId as key and array of task IDs as value
   assignedTodos: Record<string, string[]>; // Use taskId as key and array of todo IDs as value
+  assignTask: (taskId: string, usetId: string) => void;
   assignUser: (taskId: string, userId: string) => void;
   unassignUser: (taskId: string, userId: string) => void;
   reassignUser: (taskId: string, oldUserId: string, newUserId: string) => void;
@@ -46,6 +47,17 @@ const useAssignTaskStore = (): AssignTaskStore => {
   const assignedTasks: Record<string, string[]> = {};
   const assignedTodos: Record<string, string[]> = {};
 
+  const assignTask = (taskId: string, assignedTo: string) => {
+    // Perform the task assignment logic here
+    // For example, update the assignedTasks record
+    if (!assignedTasks[taskId]) {
+      assignedTasks[taskId] = [assignedTo];
+    } else {
+      assignedTasks[taskId].push(assignedTo);
+    }
+
+    // TODO: Implement any additional logic needed when assigning a task
+  };
   const assignUser = (taskId: string, userId: string) => {
     // Check if the taskId already exists in the assignedUsers
     if (!assignedUsers[taskId]) {
@@ -245,6 +257,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
   };
 
   makeAutoObservable({
+    assignTask,
     assignedUsers,
     assignedTasks,
     assignedTodos,
@@ -267,6 +280,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
   });
 
   return {
+    assignTask,
     assignedUsers,
     assignedTasks,
     assignedTodos,

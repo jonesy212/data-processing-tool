@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useDarkModeToggle = () => {
+const useDarkModeToggle = () => {
   const [isDarkMode, setDarkMode] = useState(false);
 
   const toggleDarkMode = () => {
@@ -13,5 +13,6 @@ export const useDarkModeToggle = () => {
     toggleDarkMode,
   };
 };
+
 
 export default useDarkModeToggle;

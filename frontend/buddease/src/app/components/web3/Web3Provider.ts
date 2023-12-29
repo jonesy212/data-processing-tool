@@ -45,6 +45,12 @@ class Web3Provider {
     getWithCredentials(): boolean {
       return this.with_credentials;
     }
+  
+  // Add a method to connect to the web3 provider
+  connectWeb3Provider() {
+    // Implement your logic to connect to the web3 provider
+    console.log("Connecting to web3 provider...");
+  }
   }
   
   // Example usage:

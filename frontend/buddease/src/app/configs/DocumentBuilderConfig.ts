@@ -39,6 +39,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     defaultOptions: {
       size: "letter",
       additionalOption: "",
+      documents: {} as Document[],
       isDynamic: false,
       visibility: "public",
       fontSize: 12,
@@ -54,7 +55,6 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       bold: false,
       italic: false,
       underline: false,
-      animations: {} as DocumentAnimationOptions,
       strikethrough: false,
       subscript: false,
       superscript: false,
@@ -71,6 +71,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       orderedTodoList: false,
       unorderedTodoList: false,
       customSettings: {},
+      animations: {} as DocumentAnimationOptions,
     },
 
     fontFamily: "Arial",

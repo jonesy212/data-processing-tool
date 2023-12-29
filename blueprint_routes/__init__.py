@@ -3,7 +3,7 @@ from flask import Blueprint
 
 # Create blueprints here
 auth_bp = Blueprint('auth_bp', __name__)
-
+notification_bp = Blueprint('notification_bp', __name__)
 company_bp = Blueprint('company_bp', __name__)
 dashboard_bp = Blueprint('dashboard_bp', __name__)
 dashboard_layouts_bp = Blueprint('dashboard_layouts_bp', __name__)

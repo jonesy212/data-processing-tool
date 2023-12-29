@@ -106,7 +106,7 @@ export const PhaseManager = {
   },
 };
 function setCurrentPhase(nextPhaseConfig: PhaseHookConfig) {
-  throw new Error('Function not implemented.');
+  PhaseManager.currentPhase = nextPhaseConfig;
 }
 
 

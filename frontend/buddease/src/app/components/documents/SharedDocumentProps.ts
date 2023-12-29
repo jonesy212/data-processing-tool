@@ -8,7 +8,7 @@ export interface DocumentBuilderProps {
 }
 
 export interface DocumentAnimationOptions {
-  type: 'slide' | 'fade' | 'custom'; // Add more animation types as needed
+  type: 'slide' | 'fade' | 'show' |  'custom'; // Add more animation types as needed
   duration?: number;
   speed?: number;
   // Add more animation-related properties

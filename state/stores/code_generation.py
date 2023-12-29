@@ -60,7 +60,7 @@ def create_store_file(model_class, store_path):
 def main_generator():
     # Example metadata
     desired_store_metadata = [
-        {'name': 'BrowserCompatibility', 'components': ['BrowserCompatibilityStore']},
+        {'name': 'BrowserCompatibility', 'components': ['BrowserCheckStore']},
         {'name': 'User', 'components': ['UserStore']},
         {'name': 'ProcessingLogs', 'components': ['ProcessingLogsStore']},
         {'name': 'Project', 'components': ['ProjectStore']},

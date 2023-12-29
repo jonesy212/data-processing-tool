@@ -3,12 +3,13 @@ import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { Todo } from '../../todos/Todo';
+import SnapshotStore from './SnapshotStore';
 
 export interface TodoManagerStore {
   todos: Record<string, Todo>;
   toggleTodo: (id: string) => void;
   addTodo: (todo: Todo) => void;
-  addTodos: (todos: Todo[]) => void;
+  addTodos: (newTodos: Todo[], data: {}) => void;
   removeTodo: (id: string) => void;
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
   fetchTodosSuccess: (payload: { todos: Todo[] }) => void;
@@ -20,6 +21,7 @@ export interface TodoManagerStore {
   NOTIFICATION_MESSAGE: string; 
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES,
   setDynamicNotificationMessage: (message: string) => void; // Add this property
+  snapshotStore: SnapshotStore<Record<string, Todo[]>>; // Include a SnapshotStore for tasks
 
 }
 
@@ -27,6 +29,8 @@ export interface TodoManagerStore {
 const useTodoManagerStore = (): TodoManagerStore => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
+  // Initialize SnapshotStore
+  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>();
 
   const toggleTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -42,15 +46,17 @@ const useTodoManagerStore = (): TodoManagerStore => {
     setTodos((prevTodos) => ({ ...prevTodos, [todo.id]: todo }));
   };
 
-  const addTodos = (newTodos: Todo[]) => { // Add this function
-    setTodos((prevTodos) => {
-      const updatedTodos = { ...prevTodos };
-      newTodos.forEach((todo) => {
-        updatedTodos[todo.id] = todo;
-      });
-      return updatedTodos;
+const addTodos = (newTodos: Todo[], data: {}) => { 
+  setTodos((prevTodos) => {
+    const updatedTodos = {...prevTodos};
+    newTodos.forEach((todo) => {
+      updatedTodos[todo.id] = todo; 
+      snapshotStore.takeSnapshot(data); 
     });
-  };
+    return updatedTodos;
+  });
+};
+
 
   const removeTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -149,7 +155,9 @@ const useTodoManagerStore = (): TodoManagerStore => {
     completeAllTodosFailure,
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
-    setDynamicNotificationMessage
+    setDynamicNotificationMessage,
+    snapshotStore
+
   }, {
     setDynamicNotificationMessage: false, // Ensure this function is not considered as an action
 
@@ -170,7 +178,8 @@ const useTodoManagerStore = (): TodoManagerStore => {
     completeAllTodosFailure,
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
-    setDynamicNotificationMessage
+    setDynamicNotificationMessage,
+    snapshotStore,
   };
 };
 

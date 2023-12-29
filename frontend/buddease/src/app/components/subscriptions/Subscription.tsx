@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react';
-import { subscriptionService } from '../hooks/DynamicHooks';
+import useRealtimeData from '../hooks/commHooks/useRealtimeData';
+import { subscriptionService } from '../hooks/dynamicHooks/dynamicHooks';
 
 const SubscriptionComponent = () => {
-  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [subscriptionData, setSubscriptionData] = useState<string | null>(null);
+  const data = useRealtimeData("yourHookName");
 
   useEffect(() => {
     // Subscribe to the data service
     const subscription = subscriptionService.subscribe(
-      (data) => { 
-        setSubscriptionData(data);
-
-      },
-
+      "yourHookName",
+      () => void setSubscriptionData(data)
     );
 
     // Cleanup: Unsubscribe when the component unmounts
     return () => {
-      subscription.unsubscribe();
+        subscriptionService.unsubscribe("yourHookName");
     };
-  }, []); // Empty dependency array to run the effect only once on mount
+  }, [data]); // Update dependency array to include 'data'
 
   return (
     <div>
@@ -35,9 +34,24 @@ const SubscriptionComponent = () => {
   );
 };
 
-
-
-
-
-
 export default SubscriptionComponent;
+
+
+
+
+
+
+// Create a web3 provider instance
+const web3Provider = new Web3Provider('https://example.com/web3', 'your-api-key', 5000);
+
+// Connect the web3 provider
+subscriptionService.connectWeb3Provider(web3Provider);
+
+// Subscribe to a web3-related hook
+subscriptionService.subscribe("web3Hook", () => {
+  console.log("Web3 hook callback");
+  // Your callback logic for web3-related events
+});
+
+// Unsubscribe from the web3-related hook
+subscriptionService.unsubscribe("web3Hook");

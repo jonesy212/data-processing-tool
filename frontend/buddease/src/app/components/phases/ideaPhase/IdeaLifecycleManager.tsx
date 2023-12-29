@@ -3,12 +3,8 @@ import React, { useState } from 'react';
 import ConceptDevelopment from '../../userJourney/ConceptDevelopment';
 import IdeaValidation from '../../userJourney/IdeaValidation';
 import ProofOfConcept from '../../userJourney/ProofOfConcept';
+import { IdeaLifecyclePhase } from './IdeaLifecyclePhase';
 
-enum IdeaLifecyclePhase {
-  CONCEPT_DEVELOPMENT,
-  IDEA_VALIDATION,
-  PROOF_OF_CONCEPT,
-}
 
 const IdeaLifecycleManager: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<IdeaLifecyclePhase>(IdeaLifecyclePhase.CONCEPT_DEVELOPMENT);

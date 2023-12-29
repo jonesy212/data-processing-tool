@@ -1,10 +1,10 @@
 // mainConfig.ts
-import dataVersions from "./DataVersions";
+import dataVersions from "./DataVersionsConfig";
 import frontendStructure from "./FrontendStructure";
 import userPreferences from "./UserPreferences";
 import userSettings from "./UserSettings";
-import { ApiConfig } from "./ConfigurationService";
-import lazyLoadScriptConfig
+
+
 const cacheData = {
   lastUpdated: "",
   userPreferences,

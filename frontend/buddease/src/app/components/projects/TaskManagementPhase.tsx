@@ -1,7 +1,7 @@
 // TaskManagementPhase.tsx
 import React, { useState } from "react";
-import TaskManagerComponent from "../models/tasks/TaskManagerComponent";
 import LaunchPhase from "../phases/onboarding/LaunchPhase";
+import TaskManagerComponent from "../tasks/TaskManagerComponent";
 import DataAnalysisPhase from "./DataAnalysisPhase/DataAnalysisPhase";
 
 export enum TaskManagementPhase {
@@ -22,7 +22,7 @@ const TaskManagementManager: React.FC = () => {
   return (
     <div>
       <h1>Task Management Phase</h1>
-      <TaskManagerComponent />
+      <TaskManagerComponent taskId={() => "task1"} />
       {currentPhase === TaskManagementPhase.LAUNCH && <LaunchPhase />}
       {currentPhase === TaskManagementPhase.DATA_ANALYSIS && (
         <DataAnalysisPhase />

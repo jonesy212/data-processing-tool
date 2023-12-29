@@ -166,7 +166,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       {isDynamic && (
         <div>
           <h3>Resizable Panels</h3>
-          <ResizablePanels sizes={} onResize={handleResize}>
+          <ResizablePanels sizes={() =>panelSizes} onResize={handleResize}>
             {/* Panel contents go here */}
             <div>Panel 1</div>
             <div>Panel 2</div>

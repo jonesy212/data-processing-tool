@@ -1,12 +1,14 @@
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useEffect, useState } from 'react';
+import { DappProps } from '../../web3/dAppAdapter/DAppAdapterConfig';
+import { AquaConfig } from '../../web3/web_configs/AquaConfig';
+import { AquaChat } from './AquaChat';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 import ChatNotification from './ChatNotification';
-import useMessagingSystem from './useMessagingSystem';
 import handleMessageSend from './handleMessageSend'; // Import the handleMessageSend function
-import { Dispatch } from '@reduxjs/toolkit';
+import useMessagingSystem from './useMessagingSystem';
 
-const ChatComponent: React.FC = () => {
+const ChatComponent: React.FC<{ dappProps: DappProps }> = ({ dappProps }) => {
   const [messages, setMessages] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState<string | null>(null);
   const [inputMessage, setInputMessage] = useState<string>("");
@@ -18,13 +20,9 @@ const ChatComponent: React.FC = () => {
     },
   });
 
-  // Simulate sending the message to the server
-  const simulateMessageSend = (message: string) => {
-    // Simulate a delay for sending the message to the server
-    setTimeout(() => {
-      setNewMessage(`You: ${message}`);
-    }, 500);
-  };
+  
+  const aquaChat = new AquaChat(dappProps.aquaConfig as AquaConfig);
+  aquaChat.sendMessage(inputMessage);
 
   // Scroll to the latest message in the chat window
   const scrollToLatestMessage = () => {

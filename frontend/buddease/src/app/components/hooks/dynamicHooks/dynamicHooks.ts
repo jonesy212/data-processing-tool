@@ -162,14 +162,33 @@ const dynamicHooks = {
 
 // Subscription service using dynamic hooks
 const subscriptionService = {
+  subscriptions: new Map<string, () => void>(),
+
   subscribe: (hookName: string, callback: () => void) => {
     const dynamicHook = dynamicHooks[hookName as keyof typeof dynamicHooks];
     if (dynamicHook) {
       dynamicHook.hook();
-      callback();
+      subscriptionService.subscriptions.set(hookName, callback);
     } else {
       console.error(`Dynamic hook "${hookName}" not found.`);
     }
+  },
+
+  unsubscribe: (hookName: string) => {
+    if (subscriptionService.subscriptions.has(hookName)) {
+      subscriptionService.subscriptions.delete(hookName);
+      // Additional cleanup logic if needed
+    }
+  },
+
+  unsubscribeAll: () => {
+    subscriptionService.subscriptions.clear();
+    // Additional cleanup logic if needed
+  },
+
+  // New method to connect web3 provider
+  connectWeb3Provider: (web3Provider: Web3Provider) => {
+    web3Provider.connectWeb3Provider();
   },
 };
 

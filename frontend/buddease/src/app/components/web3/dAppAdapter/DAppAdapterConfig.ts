@@ -2,8 +2,8 @@ import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { DocumentOptions, DocumentSize } from "../../documents/DocumentOptions";
 import { Task } from "../../models/tasks/Task";
 import { Team } from "../../models/teams/Team";
+import { TeamMember } from "../../models/teams/TeamMembers";
 import Project from "../../projects/Project";
-
 export interface DappProps {
   // General props
   appName: string;
@@ -16,6 +16,7 @@ export interface DappProps {
     role: string;
     teams: Team[];
     projects: Project[];
+    teamMembers: TeamMember[]; 
   };
 
   // Project-related props
@@ -28,9 +29,8 @@ export interface DappProps {
   };
 
   // Document-related props
-  documentOptions: DocumentOptions;
   documentSize: DocumentSize;
-
+  documentOptions: DocumentOptions;
   // Real-time updates props
   enableRealTimeUpdates: boolean;
 

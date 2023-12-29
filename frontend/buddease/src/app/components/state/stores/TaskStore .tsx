@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Task } from "../../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
+import SnapshotStore from "./SnapshotStore";
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -28,6 +29,7 @@ export interface TaskManagerStore {
   NOTIFICATION_MESSAGE: string; 
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES,
   setDynamicNotificationMessage: (message: string) => void;  
+  snapshotStore: SnapshotStore<Record<string, Task[]>>; // Include a SnapshotStore for tasks
 
   // Add more methods or properties as needed
 }
@@ -46,8 +48,10 @@ const useTaskManagerStore = (): TaskManagerStore => {
   >("pending");
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
 
-    // Include the AssignTaskStore
-    const assignedTaskStore = useAssignTaskStore();
+  // Include the AssignTaskStore
+  const assignedTaskStore = useAssignTaskStore();
+  // Initialize SnapshotStore
+  const snapshotStore = new SnapshotStore<Record<string, Task[]>>();
 
   // Method to reassign a task to a new user
   const reassignTask = (taskId: string, oldUserId: string, newUserId: string) => {
@@ -254,9 +258,10 @@ const useTaskManagerStore = (): TaskManagerStore => {
     tasks,
     ...tasks,
     taskTitle,
-    taskDescription,
     taskStatus,
+    taskDescription,
     assignedTaskStore,
+    snapshotStore,
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
     updateTaskTitle,
@@ -272,7 +277,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     completeAllTasksSuccess,
     completeAllTasks,
     completeAllTasksFailure,
-    setDynamicNotificationMessage
+    setDynamicNotificationMessage,
     // Add more methods or properties as needed
   };
 };

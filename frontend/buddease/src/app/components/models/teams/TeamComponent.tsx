@@ -2,22 +2,21 @@
 
 import teamService from '@/app/services/teamService';
 import React, { useEffect, useState } from 'react';
-import { Team } from './Team';
- 
+import { Team as BackendTeam } from './Team';
+
 interface TeamComponentProps {
   teamId: string;
 }
 
 const TeamComponent: React.FC<TeamComponentProps> = ({ teamId }) => {
   const [loading, setLoading] = useState(false);
-  const [team, setTeam] = useState<Team | null>(null); // Use the 'Team' interface for strong typing
+  const [team, setTeam] = useState<BackendTeam | null>(null);
 
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
         setLoading(true);
 
-        // Fetch team data using the service method
         const fetchedTeam = await teamService.getTeamById(teamId);
 
         setTeam(fetchedTeam);
@@ -41,7 +40,7 @@ const TeamComponent: React.FC<TeamComponentProps> = ({ teamId }) => {
 
   return (
     <div>
-      <h1>{team.name}</h1>
+      <h1>{team.teamName}</h1>
       {/* Render other team details as needed */}
     </div>
   );

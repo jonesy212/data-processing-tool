@@ -11,17 +11,17 @@ interface DashboardLoaderProps {
   };
 }
 
-
 const DashboardLoader: React.FC<DashboardLoaderProps> = ({
   dashboardConfig,
 }) => {
   return (
     <ResizablePanels
-      sizes={panelSizes}
+      sizes={() => []}
       onResize={(newSizes) => console.log("New sizes:", newSizes)}
     >
       <Suspense fallback={<div>Loading...</div>}>
         <DynamicDashboard
+          key="dashboard"
           dashboardConfig={{
             title: "",
             content: [<div key="content">Content</div>],
@@ -29,6 +29,7 @@ const DashboardLoader: React.FC<DashboardLoaderProps> = ({
           {...dashboardConfig}
         />
       </Suspense>
+      <Suspense></Suspense>
     </ResizablePanels>
   );
 };

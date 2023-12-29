@@ -1,9 +1,9 @@
 # modules/tier_system.py
-
 class Tier:
-    def __init__(self, name, permissions):
+    def __init__(self, name, roles, permissions):
         self.name = name
         self.permissions = permissions
+        self.roles = roles
 
 # Define your tiers and associated permissions
 FREE_TIER = Tier(name='free', permissions=['basic_feature'])

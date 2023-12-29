@@ -10,6 +10,12 @@ interface ResizablePanelsProps {
   children: ReactNode[];
 }
 
+interface ResizablePanelsProps {
+  sizes: () => number[];
+  onResize: (newSizes: number[]) => void;
+  children: ReactNode[];
+}
+
 const ResizablePanels: React.FC<ResizablePanelsProps> = ({
   sizes,
   onResize,
@@ -28,7 +34,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
   const handleResize =
     (index: number) =>
     (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
-      const newSizes = [...sizes];
+      const newSizes: number[] = sizes();
       newSizes[index] = size.width;
       onResize(newSizes);
     };
@@ -66,7 +72,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
             {React.Children.map(children, (child, index) => (
               <ResizableBox
                 key={index}
-                width={sizes[index]}
+                width={sizes()[index]}
                 height={Infinity}
                 axis="x"
                 onResize={handleResize(index)}
@@ -93,6 +99,8 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
 
   return <>{renderDynamicContent({} as DynamicContentProps)}</>;
 };
+
+
 
 
 

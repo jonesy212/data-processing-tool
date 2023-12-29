@@ -4,7 +4,16 @@ from flask import jsonify, request
 from configs.config import app
 from logging_system.warning_events import log_exception
 
-# ... (existing code)
+# Validate updated data format
+if not updated_data:
+    raise ValueError("No data received")
+from schemas.preferences import PreferencesSchema
+
+preferences_schema = PreferencesSchema()
+if not preferences_schema.validate(updated_data):
+    raise ValueError("Invalid data format received")
+default_cache_manager.synchronize_cache_from_frontend(updated_data)
+
 
 # API endpoint for cache synchronization
 @app.route('/api/synchronize_cache', methods=['POST'])

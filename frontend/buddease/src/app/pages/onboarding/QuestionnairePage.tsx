@@ -1,6 +1,7 @@
 // QuestionnairePage.tsx
 import baseQuestionnaireData from '@/app/components/hooks/baseQuestionnaireData';
-import generateDynamicQuestions from '@/app/components/hooks/dynamicQuestionGenerator';
+import generateDynamicQuestions from '@/app/components/hooks/dynamicHooks/dynamicQuestionGenerator';
+import { UserData } from '@/app/components/todos/tasks/User';
 import React from 'react';
 import { Question } from './Question'; // Adjust the import path as needed
 
@@ -20,16 +21,13 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
   const [userResponses, setUserResponses] = React.useState<any>({});
 
   const handleQuestionResponse = (questionId: string, response: any) => {
-  setUserResponses({
-    ...userResponses, 
-    [questionId]: response
-  });
-}
+    setUserResponses({
+      ...userResponses,
+      [questionId]: response,
+    });
+  };
 
-let handleQuestionnaireSubmit = () => {
-  onSubmit(userResponses);
-}
-  handleQuestionnaireSubmit = () => {
+  const handleQuestionnaireSubmit = () => {
     // Combine base questions with dynamically generated questions
     const allQuestions = baseQuestionnaireData.questions.concat(
       generateDynamicQuestions(userResponses)
@@ -38,10 +36,20 @@ let handleQuestionnaireSubmit = () => {
     // Call the onSubmit function with all questions
     onSubmit(allQuestions);
   };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault(); // Prevent default form submission
+
     // Collect user responses and call the onSubmit function
-    const userResponses = /* logic to collect user responses */;
+    const userResponses: UserData = {};
+
+    questions.forEach((question) => {
+      userResponses[question.id as keyof UserData] = handleQuestionResponse(
+        question.id,
+        ""
+      );
+    });
+
     onSubmit(userResponses);
   };
 

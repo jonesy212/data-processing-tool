@@ -17,7 +17,7 @@ const DraggableAnimation: React.FC<DraggableAnimationProps> = ({
   children,
 }) => {
   const [{ isDragging }, drag] = useDrag({
-    type: "DRAG_ANIMATION",
+    type: "DRAG_TYPE",
     item: { id: draggableId, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),

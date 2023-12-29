@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { useAuth } from "../components/auth/AuthContext";
-import { rootStore } from "../components/state/stores/RootStores";
+import { rootStores } from "../components/state/stores/RootStores";
 import { User } from "../components/todos/tasks/User";
 import Layout from "./layouts/Layouts";
 
@@ -13,7 +13,7 @@ const hydrate = (key: string) => {
   create({
     storage: window.localStorage,
     jsonify: true,
-  })("RootStore", rootStore).rehydrate();
+  })("RootStore", rootStores).rehydrate();
 };
 
 const Index: React.FC = () => {
@@ -23,7 +23,7 @@ const Index: React.FC = () => {
 
   // Simulate redirection to the dashboard after registration
   useEffect(() => {
-    hydrate(rootStore.constructor.name);
+    hydrate(rootStores.constructor.name);
 
     const authenticateUser = async () => {
       const user: User = {
@@ -52,7 +52,8 @@ const Index: React.FC = () => {
         setSocket(newSocket);
       });
 
-      return newSocket; // Return the socket instance
+      // Return the socket instance
+      return newSocket;
     };
 
     const storedRoute = localStorage.getItem("lastRoute");

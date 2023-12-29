@@ -1,5 +1,5 @@
 from models.dataset import DatasetModel
-from models.tasks import DataProcessingTask
+from models.task.data_processing_task import DataProcessingTask
 from models.user.user import User
 
 

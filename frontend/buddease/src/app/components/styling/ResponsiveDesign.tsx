@@ -109,18 +109,7 @@ const ResponsiveDesign: React.FC<ResponsiveDesignProps> = observer(() => {
   };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+  
   // Your UI logic here
   // Add this example to your list of responsive design examples
   const mobilePortraitExample: ResponsiveExample = {

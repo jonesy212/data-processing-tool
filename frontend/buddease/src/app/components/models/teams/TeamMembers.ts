@@ -1,4 +1,4 @@
-interface TeamMember {
+export interface TeamMember {
     id: number;
     username: string;
     email: string;

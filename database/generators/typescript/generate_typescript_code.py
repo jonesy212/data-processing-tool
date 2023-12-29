@@ -66,7 +66,7 @@ def execute_typescript_generation_script(typescript_files, typescript_code, dry_
 # Handle errors from transpilation
 async def main():
     parser = argparse.ArgumentParser(description="Generate TypeScript code for models.")
-    parser.add_argument('--try-it', action='store_true', help='Perform a dry run without actually creating files.')
+    parser.add_argument('--try-it', action='store_true', help='Perform try-it as a dry-run without actually creating files.')
 
     args = parser.parse_args()
        # Perform a dry run

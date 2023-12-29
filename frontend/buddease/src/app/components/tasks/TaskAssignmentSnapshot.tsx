@@ -1,40 +1,35 @@
-// TaskManagerComponent.tsx
-import React, { useEffect, useState } from 'react';
+// TaskAssignmentSnapshot.tsx
+import React, { useState } from 'react';
 import { useTaskManagerStore } from '../state/stores/TaskStore ';
-import TaskAssignmentSnapshot from './TaskAssignmentSnapshot';
 
-
-interface TaskAssignmentSnapshotProps { 
-    taskId: () => string;
+interface TaskAssignmentSnapshotProps {
+  taskId: string;
 }
 
-
-const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({taskId}) => {
+const TaskAssignmentSnapshot: React.FC<TaskAssignmentSnapshotProps> = ({ taskId }) => {
   const taskManagerStore = useTaskManagerStore();
-  const [localState, setLocalState] = useState<string>('');
+  const [assignedTo, setAssignedTo] = useState<string>(''); // You can change the type based on your user/team structure
 
-  // Component-specific logic using localState
-  const handleLocalStateChange = (newValue: string) => {
-    setLocalState(newValue);
+  const assignTask = () => {
+    // Perform the task assignment logic here
+    taskManagerStore.assignedTaskStore.assignTask(taskId, assignedTo);
   };
 
-  useEffect(() => {
-    // Update global state when local state changes
-    taskManagerStore.updateTaskTitle(localState);
-  }, [localState, taskManagerStore]);
+  const takeSnapshot = () => {
+    // Perform the snapshot logic here
+    taskManagerStore.takeTaskSnapshot(taskId);
+  };
 
   return (
     <div>
-      <input
-        type="text"
-        value={localState}
-        onChange={(e) => handleLocalStateChange(e.target.value)}
-      />
-      <p>Task Title: {taskManagerStore.taskTitle}</p>
-      <TaskAssignmentSnapshot taskId={taskId} />
-      {/* JSX for the rest of the component */}
+      <label>
+        Assign To:
+        <input type="text" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} />
+      </label>
+      <button onClick={assignTask}>Assign Task</button>
+      <button onClick={takeSnapshot}>Take Snapshot</button>
     </div>
   );
 };
 
-export default TaskManagerComponent;
+export default TaskAssignmentSnapshot;

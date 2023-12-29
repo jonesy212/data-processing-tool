@@ -41,6 +41,14 @@ const loadPlugins = async (): Promise<DAppPlugin[]> => {
         if (loadPlugins) loadPlugins();
         else console.warn(`${pluginName} plugin does not have a loadPlugins method.`);
       },
+      enableRealtimeCollaboration: function (): void {
+        if (enableRealtimeCollaboration) this.enableRealtimeCollaboration();
+        else console.warn(`${pluginName} plugin does not have an enableRealtimeCollaboration method.`);
+      },
+      enableChatFunctionality: function (): void {
+        if (enableChatFunctionality) this.enableChatFunctionality();
+        else console.warn(`${pluginName} plugin does not have an enableChatFunctionality method.`);
+      },
     };
 
     loadedPlugins.push(plugin);

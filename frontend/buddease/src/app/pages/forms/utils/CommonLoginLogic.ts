@@ -5,7 +5,7 @@ type LoginResult = {
 };
 
 
-type UserStatus = {
+export type UserStatus = {
   isLoggedIn: boolean;
   dashboardConfig?: any; // Replace 'any' with the actual type of your dashboard configuration
 };

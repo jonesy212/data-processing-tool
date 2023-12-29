@@ -72,6 +72,34 @@ class CacheManager:
         self.unique_constraints = {}
         log_warning(f"{self.cache_name} cache cleared.")
 
+    # Additional features for the productivity app
+    def get_task_by_id(self, task_id):
+        """
+        Retrieve a task from the cache based on its ID.
+
+        Args:
+            task_id (str): The ID of the task.
+
+        Returns:
+            dict: The task data if found, None otherwise.
+        """
+        return self.cache_data.get(task_id)
+
+    def update_task_status(self, task_id, new_status):
+        """
+        Update the status of a task in the cache.
+
+        Args:
+            task_id (str): The ID of the task.
+            new_status (str): The new status of the task.
+        """
+        task = self.get_task_by_id(task_id)
+        if task:
+            task['status'] = new_status
+            log_warning(f"Task {task_id} status updated to {new_status}.")
+        else:
+            log_warning(f"Task {task_id} not found in the cache.")
+
 # Example usage
 if __name__ == "__main__":
     # Initialize a default cache manager
@@ -94,3 +122,15 @@ if __name__ == "__main__":
 
     # Get and print the current cache data for the custom cache
     print("Custom Cache Data:", custom_cache_manager.get_cache_data())
+
+    # Additional features for the productivity app
+    task_id = "task123"
+    default_cache_manager.update_cache({task_id: {"status": "pending", "description": "Task description"}})
+    
+    # Retrieve and print task data by ID
+    task_data = default_cache_manager.get_task_by_id(task_id)
+    print(f"Task Data for ID {task_id}:", task_data)
+
+    # Update task status
+    default_cache_manager.update_task_status(task_id, "completed")
+    print(f"Updated Task Data for ID {task_id}:", default_cache_manager.get_task_by_id(task_id))

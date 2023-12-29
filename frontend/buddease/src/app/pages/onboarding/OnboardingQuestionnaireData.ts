@@ -21,7 +21,7 @@ const onboardingQuestionnaireData: {
       ],
     },
     {
-      id: "1",
+      id: "2",
       text: "What is your favorite color?",
       type: "multipleChoice",
       options: [
@@ -31,8 +31,8 @@ const onboardingQuestionnaireData: {
       ],
     },
     {
-      id: "2",
-      text: "How of do you work with others?",
+      id: "3",
+      text: "How often do you work with others?",
       type: "multipleChoice",
       options: [
         { value: "daily", label: "Daily" },
@@ -42,7 +42,7 @@ const onboardingQuestionnaireData: {
       ],
     },
     {
-      id: "3",
+      id: "4",
       text: "Which best describes your primary use of the Ideas app? (e.g., note-taking, idea brainstorming, project management)",
       type: "text",
     },

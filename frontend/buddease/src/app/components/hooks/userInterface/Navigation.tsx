@@ -33,7 +33,9 @@ const NavigationGenerator: React.FC<NavigationGeneratorProps> = (props) => {
     showLabels = true,
   } = props;
     
-    
+  const [iconsVisible, setIconsVisible] = useState(showIcons);
+  const [labelsVisible, setLabelsVisible] = useState(showLabels);
+
     
   // Generate a dynamic hook for onNavigationChange
   const dynamicOnNavigationChange: DynamicHookResult = createDynamicHook({
@@ -58,29 +60,59 @@ const NavigationGenerator: React.FC<NavigationGeneratorProps> = (props) => {
   }, []);
 
 
+
   const addNavigationItem = (newItem: NavigationItem) => {
     setNavigationItems((prevItems) => [...prevItems, newItem]);
   };
 
   const removeNavigationItem = (path: string) => {
-    setNavigationItems((prevItems) => prevItems.filter((item) => item.path !== path));
+    setNavigationItems((prevItems) =>
+      prevItems.filter((item) => item.path !== path)
+    );
+  };
+
+  const toggleIconsVisibility = () => {
+    setIconsVisible((prev) => !prev);
+  };
+
+  const toggleLabelsVisibility = () => {
+    setLabelsVisible((prev) => !prev);
   };
 
   return (
     <div>
       <h2>Navigation Menu</h2>
+      <button onClick={toggleIconsVisibility}>
+        {iconsVisible ? "Hide Icons" : "Show Icons"}
+      </button>
+      <button onClick={toggleLabelsVisibility}>
+        {labelsVisible ? "Hide Labels" : "Show Labels"}
+      </button>
       <ul>
         {navigationItems.map((item) => (
           <li key={item.path}>
-            {item.icon}
-            <span>{item.label}</span>
-            <button onClick={() => removeNavigationItem(item.path)}>Remove</button>
+            {iconsVisible && item.icon}
+            {labelsVisible && <span>{item.label}</span>}
+            <button onClick={() => removeNavigationItem(item.path)}>
+              Remove
+            </button>
           </li>
+        ))}
+        {defaultNavigationItems.map((item, index) => (
+          <div key={index}>
+            {iconsVisible && item.icon}
+            {labelsVisible && <span>{item.label}</span>}
+            {/* Render other navigation item details as needed */}
+          </div>
         ))}
       </ul>
       <button
         onClick={() =>
-          addNavigationItem({ label: 'New Page', path: '/new', icon: <NewPageIcon /> })
+          addNavigationItem({
+            label: "New Page",
+            path: "/new",
+            icon: <NewPageIcon />,
+          })
         }
       >
         Add New Page

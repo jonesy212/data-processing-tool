@@ -1,5 +1,6 @@
 // components/DynamicIconsAndImages.tsx
 import React from 'react';
+import LazyIcon from '../LazyIconProps';
 
 interface IconProps {
   name: string;
@@ -56,7 +57,7 @@ const renderDynamicContent = (iconExamples: IconProps[], imageExamples: ImagePro
     <div>
       <h3>Dynamic Icons</h3>
       {iconExamples.map((icon, index) => (
-        <Icon key={index} {...icon} />
+        <LazyIcon key={index} loadIcon={() => import(`./DynamicIcons/${icon.name}`)} />
       ))}
       <h3>Dynamic Images</h3>
       {imageExamples.map((image, index) => (

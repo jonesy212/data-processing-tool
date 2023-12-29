@@ -63,7 +63,7 @@
 
 # Frontend MobX Stores:
 
-# BrowserCompatibilityStore
+# BrowserCheckStore
 # Associated with: BrowserCompatibiity.tsx.
 # FeedbackLoopStore
 # Associated with: Feedbackoop.tsx.

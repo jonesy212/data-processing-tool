@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import TypingAnimation from '../animations/text/TypingAnimation';
 import { ChatMessage } from '../communications';
-import createDynamicHook from './DynamicHookGenerator';
+import createDynamicHook from './dynamicHooks/dynamicHookGenerator';
 
 
 const useChatDashboard = createDynamicHook({

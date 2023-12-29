@@ -3,6 +3,8 @@ from flask_login import UserMixin
 from sqlalchemy import JSON
 from sqlalchemy.orm import relationship
 
+from blueprint_routes.notifications.notification_context import \
+    use_notification
 from database.extensions import db
 
 
@@ -24,6 +26,11 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.String(255))  # URL or file path
     user_type = db.Column(db.String(20), nullable=False)  # 'individual', 'organization'
     
+    
+    def some_event_occurred(self):
+        notification_context = use_notification()
+        notification_context.send_notification(f"Some event occurred for user: {self.username}")
+
     # New property for additional user data (stored as JSON)
     data = db.Column(JSON)
     
