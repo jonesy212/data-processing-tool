@@ -2,8 +2,13 @@ import React, { FC } from "react";
 import { AquaChat } from "../../communications/chat/AquaChat";
 import LoadAquaState from "../../dashboards/LoadAquaState";
 import { DocumentOptions } from "../../documents/DocumentOptions";
+import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
+import { Team } from "../../models/teams/Team";
+import { TeamMember } from "../../models/teams/TeamMembers";
+import Project from "../../projects/Project";
 import { DAppAdapterProps } from "../crossPlatformLayer/src/src/platform/DAppAdapter";
 import FluenceConnection from "../fluenceProtocoIntegration/FluenceConnection";
+import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
@@ -25,13 +30,22 @@ class CustomDAppAdapter<T extends DappProps> {
 
   const AdapterComponent: FC<AdapterProps> = (props) => {
       const { appName, appVersion, dappProps, ...rest } = props;
+      // Use the useSocialAuthentication hook
+      const socialAuth = useSocialAuthentication();
 
       // Your component logic here
 
       manageDocuments({/* newDocument */} as Document, dappProps);
-      authenticateUser("demoUser", "demoPassword", dappProps);
+      // Use initiateSocialLogin from useSocialAuthentication
+      socialAuth.initiateSocialLogin("demoProvider");
+      // Create an instance of FluencePlugin
+      const fluencePlugin = new FluencePlugin("yourPluginName");
+      // Enable realtime collaboration using FluencePlugin
+      fluencePlugin.enableRealtimeCollaboration();
+
+      // Perform analytics-related actions
       integrateAnalytics(dappProps);
-      enableRealtimeUpdates(dappProps);
+      enableRealtimeUpdates( );
       customizeTheme({/* themeConfig */}, dappProps);
       return (
         <React.Fragment>
@@ -132,8 +146,25 @@ class CustomDAppAdapter<T extends DappProps> {
     // Implement your logic here for data synchronization
     console.log("Data synchronization in progress...");
 
-    // For example, synchronize data with a central server
-    this.config.dappProps.currentUser = this.fetchUserData();
+    interface UserData {
+      id: string;
+      name: string;
+      role: string;
+      teams: Team[];
+      projects: Project[];
+      teamMembers: TeamMember[];
+    }
+
+    const userData: UserData = {
+      id: "",
+      name: "",
+      role: "",
+      teams: [],
+      projects: [],
+      teamMembers: [],
+    };
+
+    this.config.dappProps.currentUser = userData;
 
     // Additional logic...
 
@@ -148,8 +179,8 @@ class CustomDAppAdapter<T extends DappProps> {
       role: "Developer",
       teams: ["Team1", "Team2"],
       // Add more details as needed
-    };
-  }
+    } 
+  } 
 
   loadDynamicComponent(componentName: string) {
     // Implement your logic here for dynamic component loading
@@ -272,6 +303,7 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
       role: "",
       teams: [],
       projects: [],
+      teamMembers: []
     },
     currentProject: {
       id: "",
@@ -283,11 +315,17 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
     documentOptions: {} as CustomDocumentOptionProps,
     documentSize: "custom",
     enableRealTimeUpdates: false,
-    fluenceConfig: {},
+    fluenceConfig: {
+      //todo update
+      ethereumPrivateKey: "FLUENCE_API_KEY",
+      //todo verify if this is needed here
+      // projectId: "PROJECT_ID"
+    },
     aquaConfig: {},
   },
 };
 
+export { CustomDAppAdapter };
 const customDapp = new CustomDAppAdapter<DappProps>(dappConfig);
 
 // Enable realtime collaboration and chat functionality

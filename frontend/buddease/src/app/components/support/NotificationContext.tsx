@@ -1,3 +1,4 @@
+// NotificationContext.tsx
 import { ReactNode, createContext, useContext } from 'react';
 import NotificationMessagesFactory from './NotificationMessagesFactory';
 
@@ -24,6 +25,8 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       // Add more cases for other notification types
       case 'Custom':
         return NotificationMessagesFactory.createCustomMessage(userName as string);
+      case 'Success':
+        return NotificationMessagesFactory.createSuccessMessage(userName as string);
       default:
         return 'Unknown Notification Type';
     }
@@ -41,5 +44,11 @@ export const useNotification = () => {
   if (!context) {
     throw new Error('useNotification must be used within a NotificationProvider');
   }
-  return context;
+
+  const notify = (message: string, type: string) => {
+    // You can add additional logic here if needed
+    context.sendNotification(type, message);
+  };
+
+  return notify;
 };

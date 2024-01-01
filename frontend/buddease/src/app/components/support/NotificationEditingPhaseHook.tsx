@@ -16,6 +16,7 @@ export const notificationEditingPhaseHook = createPhaseHook({
     // Simulate a delay before sending the notification
     await new Promise((resolve) => setTimeout(resolve, 5000)); // 5000 milliseconds (5 seconds)
 
+
     // Add the notification with a cancel option
     const notificationMessage = "Your notification message here";
 
@@ -29,4 +30,5 @@ export const notificationEditingPhaseHook = createPhaseHook({
 
     return cancelOption; // Cleanup function
   },
+  name: ''
 });

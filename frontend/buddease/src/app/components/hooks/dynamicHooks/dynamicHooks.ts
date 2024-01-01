@@ -161,10 +161,11 @@ const dynamicHooks = {
 
 
 // Subscription service using dynamic hooks
+// Subscription service using dynamic hooks
 const subscriptionService = {
-  subscriptions: new Map<string, () => void>(),
+  subscriptions: new Map<string, (message: any) => void>(), // Modify the Map to accept a callback with a message parameter
 
-  subscribe: (hookName: string, callback: () => void) => {
+  subscribe: (hookName: string, callback: (message: any) => void) => { // Update the callback signature
     const dynamicHook = dynamicHooks[hookName as keyof typeof dynamicHooks];
     if (dynamicHook) {
       dynamicHook.hook();
@@ -186,11 +187,11 @@ const subscriptionService = {
     // Additional cleanup logic if needed
   },
 
-  // New method to connect web3 provider
   connectWeb3Provider: (web3Provider: Web3Provider) => {
     web3Provider.connectWeb3Provider();
   },
 };
+
 
 export { subscriptionService };
 export default dynamicHooks;

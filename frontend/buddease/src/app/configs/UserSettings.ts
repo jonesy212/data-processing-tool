@@ -1,4 +1,4 @@
-export const userSettings = {
+const userSettings = {
   communicationMode: "text",
   enableRealTimeUpdates: true,
 
@@ -72,6 +72,11 @@ export const userSettings = {
   webSocketsEnabled: false,
   dragAndDropEnabled: false,
   idleTimeoutEnabled: false,
+  enableAudioChat: false,
+  enableVideoChat: false,
+  enableFileSharing: false,
+  enableBlockchainCommunication: false,
+  enableDecentralizedStorage: false,
 }
 
 export default userSettings;

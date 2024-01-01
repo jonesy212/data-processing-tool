@@ -17,7 +17,7 @@ const initialState: ChatState = {
   currentChannelId: null,
 };
 
-const chatSlice = createSlice({
+const chatManagerSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
@@ -43,6 +43,6 @@ export const {
   setMessages,
   addMessage,
   // Export other chat-related actions
-} = chatSlice.actions;
+} = chatManagerSlice.actions;
 
-export default chatSlice.reducer;
+export default chatManagerSlice.reducer;

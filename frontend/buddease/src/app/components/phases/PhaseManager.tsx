@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import useAsyncHookLinker from '../hooks/useAsyncHookLinker';
-import { Phase } from './ideaPhase/Phase';
-
+import { Phase } from './Phase';
 // Function to get a phase component based on the selected phase name
 function getPhaseComponent(selectedPhaseName: string): React.FC | undefined {
   const selectedPhase = genericLifecyclePhases.find(
@@ -17,49 +16,27 @@ const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
   const linker = useAsyncHookLinker({
     hooks: phases.map((phase) => ({
       ...phase.hooks,
-      condition: () => phase.hooks.canTransitionTo("canTransitionTo"),
-      asyncEffect: async () => {
-        await phase.hooks.handleTransitionTo("handleTransitionTo");
+      enable: () => {},
+      disable: () => {},
+      condition: () => {
+        if (phase.hooks) { 
+          return phase.hooks.condition();
+        }
+        return currentPhase?.name === phase.name;
       },
-    })),
+      asyncEffect: async () => {
+        console.log('Phase condition met');
+        
+        setCurrentPhase(phase);
+
+      },
+    })
+    ),
   });
 
-  const handlePhaseTransition = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    nextPhase: Phase
-  ) => {
-    if (currentPhase) {
-      linker.moveToNextHook();
+  return <div>Phase Manager</div>;
 
-      // Determine the next phase
-      const nextPhaseIndex = phases.findIndex((phase) => phase === nextPhase);
-      const hasNextPhase =
-        nextPhaseIndex !== -1 && nextPhaseIndex < phases.length - 1;
-
-      // Add type guard to handle null case
-      if (hasNextPhase) {
-        setCurrentPhase(phases[nextPhaseIndex + 1]);
-      } else {
-        console.warn(`No next phase after ${currentPhase?.name}`);
-      }
-    }
-  };
-
-  return (
-    <div>
-      {currentPhase &&
-        getPhaseComponent(currentPhase.name) &&
-        React.createElement(getPhaseComponent(currentPhase.name)!)}
-
-      <button
-        onClick={(event) =>
-          currentPhase && handlePhaseTransition(event, currentPhase)
-        }
-      >
-        Next Phase
-      </button>
-    </div>
-  );
+  // Rest of component
 };
 
 // Specific phase components

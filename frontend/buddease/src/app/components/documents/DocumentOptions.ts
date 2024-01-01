@@ -4,6 +4,8 @@ import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
 // documentOptions.ts
 export interface DocumentOptions {
+  documentType: string; // Add documentType property
+  userIdea: string; // Add userIdea property
   additionalOption: string | number | readonly string[] | undefined;
   isDynamic: boolean;
   documents: Document[]; 
@@ -49,6 +51,8 @@ export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can exte
 
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
+    documentType: "", // Add documentType property
+    userIdea: "", // Add userIdea property
     fontSize: 14,
     textColor: "#000000",
     backgroundColor: "#ffffff",
@@ -86,6 +90,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     additionalOption: [],
     customSettings: {}, //any settings not defined in the document options
     documents: [] as Document[],
+  
     animations: {} as DocumentAnimationOptions, //
   };
 };

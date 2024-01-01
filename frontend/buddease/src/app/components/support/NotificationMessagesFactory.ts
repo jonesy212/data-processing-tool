@@ -9,6 +9,10 @@ class NotificationMessagesFactory {
     return `An ${errorType} occurred.`;
   }
 
+  static createSuccessMessge(successType: string): string {
+    return `${successType} was successful.`;
+  }
+
   // Add more methods for other notification types
 
   static createCustomMessage(customText: string): string {

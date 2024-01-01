@@ -4,7 +4,7 @@ const useMessagingSystem = ({ onMessageReceived }: { onMessageReceived: (message
   // Simulating a WebSocket connection
   useEffect(() => {
     // Subscribe to the messaging system or WebSocket events
-    const socket = new WebSocket('wss://example.com'); // Replace with your WebSocket endpoint
+    const socket = new WebSocket('wss://example.com'); //#todo// Replace with your WebSocket endpoint
 
     // Handle incoming messages
     socket.addEventListener('message', (event) => {

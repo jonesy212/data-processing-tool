@@ -43,15 +43,14 @@ export default SubscriptionComponent;
 
 // Create a web3 provider instance
 const web3Provider = new Web3Provider('https://example.com/web3', 'your-api-key', 5000);
-
 // Connect the web3 provider
 subscriptionService.connectWeb3Provider(web3Provider);
-
 // Subscribe to a web3-related hook
 subscriptionService.subscribe("web3Hook", () => {
   console.log("Web3 hook callback");
   // Your callback logic for web3-related events
+  
 });
 
 // Unsubscribe from the web3-related hook
-subscriptionService.unsubscribe("web3Hook");
+subscriptionService.unsubscribe("web3Hook"); // You might want to unsubscribe based on a certain condition or component unmount

@@ -1,34 +1,43 @@
 // NotificationProvider.tsx
+import React, { ReactNode, createContext } from 'react';
+import NotificationMessagesFactory from './NotificationMessagesFactory';
+import {
+  useAppDispatch,
+  import
+} from { addNotification };
+from '../calendar/CalendarSlice';
 
-import NOTIFICATION_MESSAGES from "./NotificationMessages";
-import { NOTIFICATION_TYPES } from "./NotificationTypes";
+export interface NotificationContextProps {
+  sendNotification: (type: string, userName?: string | number) => void;
+}
 
+export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
 
-const generateNotificationMessage = (
-  type: NOTIFICATION_TYPES,
-  userName?: string
-): string => {
-  const messageType = type.toLowerCase();
+export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const dispatch = useAppDispatch(); // Redux store dispatch function
 
-  if (messageType) {
+  const sendNotification = (type: string, userName?: string | number) => {
+    const message = generateNotificationMessage(type, userName);
+    // Dispatch an action to add the notification to the store
+    dispatch(addNotification({ id: Date.now().toString(), message }));
+  };
+
+  const generateNotificationMessage = (type: string, userName?: string | number): string => {
     switch (type) {
-      case NOTIFICATION_TYPES.WELCOME:
-        return messageType + " " + userName + " " + NOTIFICATION_MESSAGES.Welcome.DEFAULT
-
-      case NOTIFICATION_TYPES.ACCOUNT_CREATED:
-        return messageType + " " + userName + " " + NOTIFICATION_MESSAGES.Welcome.ACCOUNT_CREATED
-
-      case NOTIFICATION_TYPES.ERROR:
-        return messageType + userName + NOTIFICATION_MESSAGES.Error.DEFAULT(userName || "");
-
-      // Add cases for other notification types as needed
-
+      case 'Welcome':
+        return NotificationMessagesFactory.createWelcomeMessage(userName as string);
+      case 'Error':
+        return NotificationMessagesFactory.createErrorMessage(userName as string);
+      case 'Custom':
+        return NotificationMessagesFactory.createCustomMessage(userName as string);
       default:
-        return "Unknown Notification Type";
+        return 'Unknown Notification Type';
     }
-  }
+  };
 
-  return "Unknown Notification Type";
+  return (
+    <NotificationContext.Provider value={{ sendNotification }}>
+      {children}
+    </NotificationContext.Provider>
+  );
 };
-
-// ...

@@ -5,10 +5,21 @@ interface AsyncHook {
   asyncEffect: () => Promise<(() => void) | void>;
 }
 
-interface AsyncHookLinkerConfig {
-  hooks: AsyncHook[];
+// Library's AsyncHook type
+export interface LibraryAsyncHook {
+  enable: () => void;
+  disable: () => void;
+  condition: () => boolean;
+  asyncEffect: () => Promise<void>;
 }
 
+// Update your AsyncHook interface to match the library's expectations
+type AdaptedAsyncHook = LibraryAsyncHook;
+
+// Now use the AdaptedAsyncHook in your useAsyncHookLinker hook
+export interface AsyncHookLinkerConfig {
+  hooks: AdaptedAsyncHook[];
+}
 const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
   const [currentHookIndex, setCurrentHookIndex] = useState<number>(0);
 
@@ -18,10 +29,18 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
         const currentHook = hooks[currentHookIndex];
         if (currentHook.condition()) {
           // Execute the async effect of the current hook
-          const cleanup = await currentHook.asyncEffect();
+          let cleanup: (() => void) | undefined;
+          try {
+            const result = await currentHook.asyncEffect();
+            if (typeof result === "function") {
+              cleanup = result;
+            }
+          } catch {
+            cleanup = undefined;
+          }
           // Clean up the previous hook if it returned a cleanup function
-          if (typeof cleanup === 'function') {
-            return cleanup();
+          if (typeof cleanup === "function") {
+            cleanup();
           }
         }
       }
@@ -36,7 +55,10 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
     // Cleanup the previous hook when the component unmounts
     return () => {
       const previousHookIndex = currentHookIndex - 1;
-      if (previousHookIndex >= 0 && typeof hooks[previousHookIndex].asyncEffect === 'function') {
+      if (
+        previousHookIndex >= 0 &&
+        typeof hooks[previousHookIndex].asyncEffect === "function"
+      ) {
         hooks[previousHookIndex].asyncEffect(); // Cleanup the previous hook
       }
     };

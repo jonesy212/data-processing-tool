@@ -66,6 +66,11 @@ const NOTIFICATION_MESSAGES = {
       EVENT_OCCURRED: 'An event has occurred.',
       // Add more messages for the EventReminder type
     },
+
+    NamingConventionsError: {
+      DEFAULT: (errorType: string, details: string) => `Error in Define Naming Conventions (${errorType}): ${details}`,
+      // Add more messages for the NamingConventionsError type
+    },
   
     // Custom Notifications
     CustomNotification1: {

@@ -1,14 +1,30 @@
+
+
 // ChatMessage.tsx
 import axios, { AxiosResponse } from "axios";
-import React, { Key, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatCard from "../../cards/ChatCard";
+import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
+import connectToChatWebSocket from "../WebSocket";
+import resetUnreadMessageCount from "./ResetUnreadMessageCount";
+import { createRichTextEditor, sendChatMessage } from "./chatUtils";
+
+
 
 export interface ChatMessage {
-  [x: string]: Key | null | undefined;
+  id: string; // Unique identifier for the message
+
   sender: string;
   message: string;
-  timestamp: string;
+  senderId: string; // Unique identifier for the message sender
+  senderName: string; // Display name of the message sender
+  content: string; // The text content of the message
+  timestamp: string; // Timestamp when the message was sent
+  isRead: boolean; // Flag indicating whether the message has been read
+  // Add more properties based on your requirements
 }
+
+
 
 export interface ChatMessageProps extends ChatMessage {
   roomId: string;
@@ -45,11 +61,11 @@ const fetchChatMessages = async (
   }
 };
 
+// Subscribe to new chat messages
 const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
-    // Fetch chat messages when the component mounts
     const fetchMessages = async () => {
       try {
         const messages = await fetchChatMessages(roomId, 10);
@@ -60,12 +76,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
             sender: message.sender,
             message: message.message,
             timestamp: message.timestamp,
-          };
+          } as ChatMessage;
         });
 
         setChatMessages(mappedMessages);
       } catch (error) {
-        // Handle errors (e.g., network error, server error)
         console.error("Error fetching chat messages:", error);
       }
     };
@@ -75,12 +90,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       
       
       
-    // //   #todo impement event listeners cleanup into chat
-    // const subscription = subscribeToChatUpdates(roomId);
-    // const socket = connectToChatWebSocket(roomId);
-    // const modal = openChatSettingsModal();
-    // const request = sendChatMessage(message);
-    // const editor = createRichTextEditor();
+    //#todo impement event listeners cleanup into chat
+    subscriptionService.subscribe('chat_updates_' + roomId, (message: any) => { 
+      // Handle new message
+      const newMessage = JSON.parse(message);
+
+      setChatMessages(prevMessages => {
+        return [newMessage, ...prevMessages];
+      });
+      return newMessage;
+    });
+    // Handle unread message count reset
+    const socket = connectToChatWebSocket(roomId);
+    const modal = openChatSettingsModal();
+    const request = sendChatMessage(message);
+    const editor = createRichTextEditor();
     // const notification = sendChatNotification(message);
     
     // const unreadCount = getUnreadMessageCount(roomId);
@@ -98,9 +122,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     }, 5000)
     // Cleanup logic if needed
       return () => {
-        // subscription.unsubscribe();
-        // socket.disconnect();
-        //   resetUnreadMessageCount(roomId);
+        subscriptionService.unsubscribe('chat_updates_'+roomId);
+        socket!.close();
+        resetUnreadMessageCount(roomId);
         //   modal.close();
         //   request.cancel();
         //   editor.dispose();
@@ -177,6 +201,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     };
   }, [roomId]);
 
+
+
+  // Rest of component
+
   return (
     <div>
       <h2>Chat Dashboard</h2>
@@ -184,7 +212,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
         {chatMessages.map((message) => (
           <ChatCard
             key={message.id} // Assuming id is a property of ChatMessage
-            sender={message.sender}
+            sender={message.senderId}
             message={message.message}
             timestamp={message.timestamp}
           />

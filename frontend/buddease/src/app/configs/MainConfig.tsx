@@ -13,6 +13,7 @@ const cacheData = {
   frontendStructure,
   lazyLoadScriptConfig,
   apiConfig
+  version
 };
 
 export default cacheData;

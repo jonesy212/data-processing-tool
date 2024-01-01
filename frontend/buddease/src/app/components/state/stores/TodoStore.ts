@@ -30,7 +30,13 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
   // Initialize SnapshotStore
-  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>();
+  
+  const snapshotStore = new SnapshotStore({
+    key: 'todos',
+    onSnapshot: (snapshot) => {
+      console.log('Snapshot taken!', snapshot);
+    }
+  });
 
   const toggleTodo = (id: string) => {
     setTodos((prevTodos) => {

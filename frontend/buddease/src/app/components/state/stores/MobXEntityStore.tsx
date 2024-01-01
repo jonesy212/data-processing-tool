@@ -1,8 +1,10 @@
 // MobXEntityStore.ts
 import { makeAutoObservable } from 'mobx';
+import { DocumentOptions } from '../../documents/DocumentOptions';
 
 class MobXEntityStore {
-  globalState = {};
+globalState: DocumentOptions = { documentType: '', userIdea: '' }; // Set initial values
+
 
   constructor() {
     makeAutoObservable(this);

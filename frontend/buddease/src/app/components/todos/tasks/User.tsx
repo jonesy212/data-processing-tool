@@ -13,6 +13,7 @@ export interface User {
   profilePicture: string | null;
   processingTasks: DataProcessingTask[];
   data?: UserData
+
 }
 
 
@@ -21,4 +22,7 @@ export interface UserData {
   datasets?: string;
   tasks?: string;
   questionnaireResponses?: any;
+  // projects: Project[];
+  // teams: string[];
+  // teamMembers: TeamMember[];
 }

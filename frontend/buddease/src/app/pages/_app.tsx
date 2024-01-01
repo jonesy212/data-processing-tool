@@ -6,20 +6,35 @@ import { NotificationProvider } from "../components/support/NotificationContext"
 
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
+import SearchComponent from "./searchs/Search";
+
 
 function MyApp({ Component, pageProps }: AppProps) {
+  interface Props {
+    children: React.ReactNode;
+    componentSpecificData: any[];
+  }
+
   return (
-    <NotificationProvider>
-      <DynamicPromptProvider>
-        <AuthProvider>
-          <StoreProvider>
-            <OnboardingComponent />
-            <Component {...pageProps} />
-          </StoreProvider>
-        </AuthProvider>
-      </DynamicPromptProvider>
-    </NotificationProvider>
+    <SearchComponent
+      { ...pageProps }
+    >
+    {({ children, componentSpecificData }: Props) => (
+        <NotificationProvider>
+          <DynamicPromptProvider>
+            <AuthProvider>
+              <StoreProvider>
+                <OnboardingComponent />
+                {children}
+              </StoreProvider>
+            </AuthProvider>
+          </DynamicPromptProvider>
+        </NotificationProvider>
+      )}
+    </SearchComponent>
   );
 }
+
+
 
 export default MyApp;

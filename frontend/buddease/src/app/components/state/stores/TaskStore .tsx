@@ -16,6 +16,7 @@ export interface TaskManagerStore {
   updateTaskTitle: (title: string) => void;
   updateTaskDescription: (description: string) => void;
   updateTaskStatus: (status: "pending" | "inProgress" | "completed") => void;
+  updateTaskDueDate: (taskId: string, dueDate: Date) => void;
   addTask: (task: Task) => void;
   addTasks: (tasks: Task[]) => void;
   removeTask: (taskId: string) => void;
@@ -30,6 +31,7 @@ export interface TaskManagerStore {
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES,
   setDynamicNotificationMessage: (message: string) => void;  
   snapshotStore: SnapshotStore<Record<string, Task[]>>; // Include a SnapshotStore for tasks
+  takeTaskSnapshot: (taskId: string) => void;
 
   // Add more methods or properties as needed
 }
@@ -51,7 +53,10 @@ const useTaskManagerStore = (): TaskManagerStore => {
   // Include the AssignTaskStore
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
-  const snapshotStore = new SnapshotStore<Record<string, Task[]>>();
+
+const initialSnapshot = {};
+
+const snapshotStore = new SnapshotStore(initialSnapshot);
 
   // Method to reassign a task to a new user
   const reassignTask = (taskId: string, oldUserId: string, newUserId: string) => {
@@ -70,6 +75,22 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
   const updateTaskStatus = (status: "pending" | "inProgress" | "completed") => {
     setTaskStatus(status);
+  };
+
+
+
+  const takeTaskSnapshot = (taskId: string) => {
+    // Ensure the taskId exists in the tasks
+    if (!tasks[taskId]) {
+      console.error(`Task with ID ${taskId} does not exist.`);
+      return;
+    }
+
+    // Create a snapshot of the current tasks for the specified taskId
+    const taskSnapshot = { [taskId]: [...tasks[taskId]] };
+
+    // Store the snapshot in the SnapshotStore
+    snapshotStore.takeSnapshot(taskSnapshot);
   };
 
   const addTask = () => {
@@ -124,6 +145,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
 
 
+  
 
 
   const addTasks = (tasksToAdd: Task[]) => {
@@ -163,6 +185,35 @@ const useTaskManagerStore = (): TaskManagerStore => {
       return updatedTasks;
     });
   };
+
+
+/**
+   * Update the due date for a task
+   *
+   * @param {string} taskId - The ID of the task to update
+   * @param {Date} dueDate - The new due date
+   */
+ 
+const updateTaskDueDate = (taskId: string, dueDate: Date) => {
+  const updatedTasks = {...tasks};
+
+  // Find the task and update its due date
+  const taskToUpdate = updatedTasks.pending.find(
+    (task: Task) => task.id === taskId
+  );
+
+  if (taskToUpdate) {
+    taskToUpdate.dueDate = dueDate; 
+  } else {
+    // Task not found, throw error or handle gracefully
+  }
+
+  // Update the tasks in the store
+  setTasks(updatedTasks);
+};
+
+
+
 
 
   const completeAllTasksSuccess = () => {
@@ -220,12 +271,6 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
 
 
-
-  
-
-
-
-
   // Add more methods or properties as needed
 
   makeAutoObservable({
@@ -235,6 +280,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     taskDescription,
     taskStatus,
     assignedTaskStore,
+    updateTaskDueDate,
     updateTaskTitle,
     updateTaskDescription,
     updateTaskStatus,
@@ -267,10 +313,12 @@ const useTaskManagerStore = (): TaskManagerStore => {
     updateTaskTitle,
     updateTaskDescription,
     updateTaskStatus,
+    updateTaskDueDate,
     addTask,
     addTasks,
     removeTask,
     removeTasks,
+    takeTaskSnapshot,
     fetchTasksSuccess,
     fetchTasksFailure,
     fetchTasksRequest,

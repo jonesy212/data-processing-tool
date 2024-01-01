@@ -33,6 +33,7 @@ const todoEntitySlice = createSlice({
     
     fetchTodosFailure: (state, action: PayloadAction<{ error: string }>) => {
       // Handle fetch todos failure if needed
+      
     },
     completeAllTodosRequest: (state) => {
       // Handle complete all todos request if needed

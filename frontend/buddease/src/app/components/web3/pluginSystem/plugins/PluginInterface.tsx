@@ -6,7 +6,7 @@ interface DAppPlugin {
   initialize: () => void;
 
   // Method to perform actions when the plugin is enabled
-  enable: () => void;
+  enable: () => Promise<void>;
 
   // Method to perform actions when the plugin is disabled
   disable: () => void;

@@ -1,7 +1,8 @@
 //projects/Project.ts
 import { Task } from "../models/tasks/Task";
-import { CustomPhaseHooks, Phase } from "../phases/ideaPhase/Phase";
+import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { User } from "../todos/tasks/User";
+import CommonDetails from "./../models/CommonDetailsProps";
 
 interface Project {
   id: string;
@@ -72,13 +73,11 @@ currentProject.phases = [
       return null;
     },
     hooks: {
-      canTransitionTo: (nextPhase: string) => false, // Provide your implementation
-      handleTransitionTo: (nextPhase: string) => {
+      canTransitionTo: (nextPhase: Phase) => false,
+      handleTransitionTo: (nextPhase: Phase) => {
         // Provide your implementation
-        
       },
     } as CustomPhaseHooks,
-    // Added missing 'hooks' property
   },
 ];
 
@@ -86,7 +85,9 @@ const inSpecialPhase = isProjectInSpecialPhase(currentProject);
 console.log('Is project in special phase?', inSpecialPhase);
 
 
+const ProjectDetails: React.FC<{ project: Project }> = ({ project }) => (
+  <CommonDetails data={project} />
+);
 
-
-
+export { ProjectDetails };
 export default Project ;

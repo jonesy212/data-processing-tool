@@ -1,4 +1,4 @@
-import { Phase } from "../../phases/ideaPhase/Phase"
+import { Phase } from "../../phases/Phase"
 
 //Tracker.ts
 export interface Tracker {

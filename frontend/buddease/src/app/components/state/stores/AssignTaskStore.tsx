@@ -1,18 +1,19 @@
 // AssignTaskStore.tsx
 import { makeAutoObservable } from "mobx";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { Todo } from "../../todos/Todo";
+import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
+import SnapshotStore from "./SnapshotStore";
 
-export interface AssignTaskStore {
-  assignedUsers: Record<string, string[]>; // Use taskId as key and array of user IDs as value
-  assignedTasks: Record<string, string[]>; // Use taskId as key and array of task IDs as value
-  assignedTodos: Record<string, string[]>; // Use taskId as key and array of todo IDs as value
-  assignTask: (taskId: string, usetId: string) => void;
+export interface AssignTaskStore extends AssignBaseStore {
+  assignTask: (taskId: string, userId: string) => void;
   assignUser: (taskId: string, userId: string) => void;
   unassignUser: (taskId: string, userId: string) => void;
   reassignUser: (taskId: string, oldUserId: string, newUserId: string) => void;
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
+  snapshotStore: SnapshotStore<Record<string, Todo[]>>;
 
   reassignUsersToTasks: (
     taskIds: string[],
@@ -43,6 +44,9 @@ export interface AssignTaskStore {
 }
 
 const useAssignTaskStore = (): AssignTaskStore => {
+  const {...baseStore } =
+    useAssignBaseStore();
+
   const assignedUsers: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
   const assignedTodos: Record<string, string[]> = {};
@@ -58,6 +62,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
 
     // TODO: Implement any additional logic needed when assigning a task
   };
+
   const assignUser = (taskId: string, userId: string) => {
     // Check if the taskId already exists in the assignedUsers
     if (!assignedUsers[taskId]) {
@@ -88,11 +93,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
     // TODO: Implement any additional logic needed when unassigning a user from a task
   };
 
-  const reassignUser = (
-    taskId: string,
-    oldUserId: string,
-    newUserId: string
-  ) => {
+  const reassignUser = (taskId: string, oldUserId: string, newUserId: string) => {
     // Check if the taskId exists in the assignedUsers
     if (assignedUsers[taskId]) {
       // Remove the oldUserId from the assignedUsers for the given taskId
@@ -281,6 +282,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
 
   return {
     assignTask,
+    ...baseStore,
     assignedUsers,
     assignedTasks,
     assignedTodos,

@@ -10,14 +10,26 @@ generateInterfaces(backendModelPaths);
 
 // Read cache data
 export const readAndLogCache = async () => {
-  const cache = await readCache();
-  console.log('Current Cache:', cache);
-  return cache;
+  try {
+    const cache = await readCache();
+    console.log('Current Cache:', cache);
+    return cache;
+  } catch (error) {
+    console.error('Error reading cache:', error);
+    // Handle the error as needed, e.g., show a user-friendly message
+    throw error;
+  }
 };
 
 // Write cache data
 export const writeAndUpdateCache = async (newCacheData: any) => {
-  await writeCache(newCacheData);
+  try {
+    await writeCache(newCacheData);
+  } catch (error) {
+    console.error('Error writing cache:', error);
+    // Handle the error as needed, e.g., show a user-friendly message
+    throw error;
+  }
 };
 
 // Hydrate MobX store

@@ -33,8 +33,10 @@ export const useAnimationHook = (options: AnimationOptions): any => {
         break;
       case "react-dnd":
         animationLibrary = require("react-dnd");
+        break;
       case "react-dnd-html5-backend":
         animationLibrary = require("react-dnd-html5-backend");
+        break;
       case "custom":
         // Add your custom animation library or implementation
         break;
@@ -45,14 +47,20 @@ export const useAnimationHook = (options: AnimationOptions): any => {
     // Initialize the animation state based on the selected library and animation type
     if (animationLibrary) {
       const { animationType } = options;
-      const animation = animationLibrary[animationType];
 
-      if (animation) {
-        setAnimationState(animation);
-      } else {
-        console.error(
-          `Animation type "${animationType}" not found in the selected library.`
-        );
+      // Fix the error by checking if animationLibrary is callable before calling it
+      if (typeof animationLibrary === "function") {
+        setAnimationState(animationLibrary);
+      } else if (animationType in animationLibrary) {
+        const animation = animationLibrary[animationType];
+
+        if (typeof animation === "function") {
+          setAnimationState(animation);
+        } else {
+          console.error(
+            `Animation type "${animationType}" not found in the selected library.`
+          );
+        }
       }
     }
   }, [options.library, options.animationType]);

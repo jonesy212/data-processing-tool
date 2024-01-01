@@ -1,5 +1,5 @@
+import { Phase } from "./Phase";
 import { IdeaLifecyclePhase } from "./PhaseManager";
-import { Phase } from "./ideaPhase/Phase";
 
 // Define an array of phases
 const lifecyclePhases: Phase[] = [

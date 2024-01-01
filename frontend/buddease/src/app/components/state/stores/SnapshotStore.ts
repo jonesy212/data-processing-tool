@@ -7,10 +7,20 @@ export interface Snapshot<T> {
 }
 
 class SnapshotStore<T> {
+  snapshot: T;
   private snapshots: Snapshot<T>[] = [];
 
-  constructor() {
+  constructor(initialSnapshot: T) {
+    this.snapshot = initialSnapshot;
     makeAutoObservable(this);
+  }
+
+  initSnapShot(snapshot: T) {
+    this.takeSnapshot(snapshot);
+  }
+
+  updateSnapshot(newSnapshot: T) {
+    this.snapshot = newSnapshot;
   }
 
   takeSnapshot(data: T) {

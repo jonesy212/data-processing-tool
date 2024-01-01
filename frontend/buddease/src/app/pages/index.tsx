@@ -4,9 +4,12 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { useAuth } from "../components/auth/AuthContext";
+import useMessagingSystem from "../components/communications/chat/useMessagingSystem";
 import { rootStores } from "../components/state/stores/RootStores";
 import { User } from "../components/todos/tasks/User";
 import Layout from "./layouts/Layouts";
+
+ // pages/index.tsx
 
 // your custom hydrate function
 const hydrate = (key: string) => {
@@ -15,6 +18,7 @@ const hydrate = (key: string) => {
     jsonify: true,
   })("RootStore", rootStores).rehydrate();
 };
+
 
 const Index: React.FC = () => {
   const router = useRouter();
@@ -37,7 +41,7 @@ const Index: React.FC = () => {
         bio: null,
         profilePicture: null,
         processingTasks: [],
-        uploadQuota: 0
+        uploadQuota: 0,
       };
 
       authDispatch({ type: "LOGIN", payload: user });
@@ -55,6 +59,20 @@ const Index: React.FC = () => {
       // Return the socket instance
       return newSocket;
     };
+
+    const socket = establishSocketConnection();
+    interface MessagingSystemOptions {
+      onMessageReceived: (message: string) => void;
+      socket: Socket
+      // other properties...
+    }
+
+    // Use the useMessagingSystem hook without assigning onMessageReceived to a variable
+    useMessagingSystem({
+      onMessageReceived: (message: string) => {
+        return console.log("Received message:", message);
+      },
+    } as MessagingSystemOptions);
 
     const storedRoute = localStorage.getItem("lastRoute");
 
@@ -78,7 +96,7 @@ const Index: React.FC = () => {
         newSocket.disconnect();
       };
     }
-  }, [authState.isAuthenticated, router, authDispatch]); // Added dependencies to useEffect
+  }, [authState.isAuthenticated, router, authDispatch, socket]);
 
   return (
     <Layout>
@@ -89,4 +107,6 @@ const Index: React.FC = () => {
   );
 };
 
+  
+ 
 export default Index;

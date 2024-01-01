@@ -1,4 +1,4 @@
-interface BrainstormingSettings {
+export interface BrainstormingSettings {
     enableBrainstorming: boolean;
     brainstormingMethod: 'traditional' | 'mindMapping' | 'nominalGroup' | 'custom'; // Preferred brainstorming method
     customBrainstormingMethodDetails?: string; // Custom details for the brainstorming method if 'custom' is selected
@@ -23,3 +23,4 @@ interface BrainstormingSettings {
     // Add other specific settings based on your project needs
   };
   
+

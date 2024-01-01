@@ -36,14 +36,8 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
     lastUpdated: "",
     userPreferences: {
       modules: {} as ModuleType,
-      actions: {},
-      reducers: {
-        // Fix error by changing reducers to type object instead of never[]
-        setModules: (state: any, modules: ModuleType) => ({
-          ...state,
-          modules,
-        }),
-      },
+      actions: {} as never[],
+      reducers: {} as never[],
     },
     userSettings: {
       communicationMode: "",
@@ -53,40 +47,158 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
       enableGroupManagement: false,
       enableTeamManagement: false,
       realTimeChatEnabled: false,
-      // Add properties from CacheData interface
-      version: cacheData.version,
-      modules: cacheData.modules,
-      reducers: cacheData.reducers,
-      actions: cacheData.actions,
+      todoManagementEnabled: false,
+      notificationEmailEnabled: false,
+      analyticsEnabled: false,
+      twoFactorAuthenticationEnabled: false,
+      projectManagementEnabled: false,
+      documentationSystemEnabled: false,
+      versionControlEnabled: false,
+      userProfilesEnabled: false,
+      accessControlEnabled: false,
+      taskManagementEnabled: false,
+      loggingAndNotificationsEnabled: false,
+      securityFeaturesEnabled: false,
+      collaborationPreference1: undefined,
+      collaborationPreference2: undefined,
+      theme: "",
+      language: "",
+      fontSize: 0,
+      darkMode: false,
+      enableEmojis: false,
+      enableGIFs: false,
+      emailNotifications: false,
+      pushNotifications: false,
+      notificationSound: "",
+      timeZone: "",
+      dateFormat: "",
+      timeFormat: "",
+      defaultProjectView: "",
+      taskSortOrder: "",
+      showCompletedTasks: false,
+      projectColorScheme: "",
+      showTeamCalendar: false,
+      teamViewSettings: [],
+      defaultTeamDashboard: "",
+      passwordExpirationDays: 0,
+      privacySettings: [],
+      thirdPartyApiKeys: {} as Record<string, string>,
+      externalCalendarSync: false,
+      dataExportPreferences: [],
+      dashboardWidgets: [],
+      customTaskLabels: [],
+      customProjectCategories: [],
+      customTags: [],
+      additionalPreference1: undefined,
+      additionalPreference2: undefined,
+      formHandlingEnabled: false,
+      paginationEnabled: false,
+      modalManagementEnabled: false,
+      sortingEnabled: false,
+      notificationSoundEnabled: false,
+      localStorageEnabled: false,
+      clipboardInteractionEnabled: false,
+      deviceDetectionEnabled: false,
+      loadingSpinnerEnabled: false,
+      errorHandlingEnabled: false,
+      toastNotificationsEnabled: false,
+      datePickerEnabled: false,
+      themeSwitchingEnabled: false,
+      imageUploadingEnabled: false,
+      passwordStrengthEnabled: false,
+      browserHistoryEnabled: false,
+      geolocationEnabled: false,
+      webSocketsEnabled: false,
+      dragAndDropEnabled: false,
+      idleTimeoutEnabled: false
     },
-    dataVersions: undefined,
-    frontendStructure: undefined,
-    backendDocumentConfig: undefined,
-    notificationBarPhaseHook: undefined,
-    darkModeTogglePhaseHook: undefined,
-    authenticationPhaseHook: undefined,
-    jobSearchPhaseHook: undefined,
-    recruiterDashboardPhaseHook: undefined,
-    teamBuildingPhaseHook: () => {},
-    brainstormingPhaseHook: () => {
+    dataVersions: {
+      users: 0,
+      products: 0,
+      authentication: 0,
+      company: 0,
+      tasks: 0,
+      todos: 0,
+    },
+    frontendStructure: cacheData.frontendStructure,
+    backendDocumentConfig: cacheData.backendDocumentConfig,
+    notificationBarPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
       };
     },
-
-    meetingsPhaseHook: () => {
+    darkModeTogglePhaseHook: () => { 
       return {
         isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
       };
     },
+    authenticationPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    },
+    jobSearchPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    },
+    recruiterDashboardPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    },
+    teamBuildingPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    },
+    brainstormingPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    },
+    projectManagementPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    },
+    meetingsPhaseHook: () => { 
+      return {
+        isActive: false,
+        toggleActivation: () => { },
+        startAnimation: () => { },
+        stopAnimation: () => { },
+      };
+    }
   });
 };
+
+
+
 
 
 

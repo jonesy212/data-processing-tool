@@ -1,36 +1,84 @@
-import React, { useState } from 'react';
+// SearchComponent.tsx
+import React, { useEffect, useState } from 'react';
+import { useSearch } from './SearchContext';
 
-// Simulated data for search results (replace with actual data)
-const searchData = [
-  { id: 1, title: 'Result 1', description: 'Description for Result 1' },
-  { id: 2, title: 'Result 2', description: 'Description for Result 2' },
+// Simulated data for global search results (replace with actual data)
+const globalSearchData = [
+  {
+    id: 1,
+    title: 'local result 1',
+    description: 'Description for local result 1',
+    source: 'local'
+  },
+  {
+    id: 2,
+    title: 'global result 2',
+    description: 'Description for global result 2',
+    source: 'global'
+  },
   // Add more data as needed
 ];
 
-const SearchComponent: React.FC = () => {
+
+interface SearchComponentProps {
+  componentSpecificData: {
+    id: number;
+    title: string;
+    description: string;
+    source: string; // a 'source' property to indicate the origin
+  }[];
+}
+
+const SearchComponent: React.FC<SearchComponentProps> = ({
+  componentSpecificData,
+}) => {
   const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState<
+  const { searchQuery, updateSearchQuery } = useSearch();
+  const [componentSearchResults, setComponentSearchResults] = useState<
     {
       id: number;
       title: string;
       description: string;
+      source: string;
+    }[]
+  >([]);
+  const [globalSearchResults, setGlobalSearchResults] = useState<
+    {
+      id: number;
+      title: string;
+      description: string;
+      source: string;
     }[]
   >([]);
 
-  const performSearch = () => {
-    const query = searchInput.toLowerCase();
-    const results = searchData.filter(
+  useEffect(() => {
+    // Perform component-specific search when searchQuery changes
+    const query = searchQuery.toLowerCase();
+    const results = componentSpecificData.filter(
       (item) =>
         item.title.toLowerCase().includes(query) ||
         item.description.toLowerCase().includes(query)
     );
+    setComponentSearchResults(results);
 
-    setSearchResults(results);
-  };
+    // Perform global search
+    const globalResults = globalSearchData.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+    );
+    setGlobalSearchResults(globalResults);
+  }, [searchQuery, componentSpecificData]);
 
   const clearSearchResults = () => {
-    setSearchResults([]);
+    setComponentSearchResults([]);
+    setGlobalSearchResults([]);
   };
+
+  const handleSearchClick = () => {
+    updateSearchQuery(searchInput);
+  };
+ 
 
   return (
     <div>
@@ -41,14 +89,29 @@ const SearchComponent: React.FC = () => {
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
       />
-      <button onClick={performSearch}>Search</button>
+      <button onClick={() => { handleSearchClick(); clearSearchResults(); }}>Search</button>
 
       <div className="search-results">
-        {searchResults.length === 0 ? (
-          <p>No results found.</p>
+        <h2>Component-Specific Results</h2>
+        {componentSearchResults.length === 0 ? (
+          <p>No component-specific results found.</p>
         ) : (
-          searchResults.map((result) => (
-            <div key={result.id} className="search-result">
+          componentSearchResults.map((result) => (
+              <div key={result.id.toString()} className={`search-result ${result.source === 'component' ? 'component-result' : ''}`} >
+
+              <h3>{result.title}</h3>
+              <p>{result.description}</p>
+            </div>
+          ))
+        )}
+
+        <h2>Global Results</h2>
+        {globalSearchResults.length === 0 ? (
+          <p>No global results found.</p>
+        ) : (
+            globalSearchResults.map((result) => (
+              <div key={result.id.toString()} className={`search-result ${result.source === 'component' ? 'component-result' : ''}`} >
+
               <h3>{result.title}</h3>
               <p>{result.description}</p>
             </div>

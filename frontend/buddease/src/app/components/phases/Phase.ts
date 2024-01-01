@@ -35,7 +35,8 @@ export class PhaseImpl implements Phase {
 }
 
 export interface CustomPhaseHooks {
-  canTransitionTo: (nextPhase: string) => boolean;
-  handleTransitionTo: (nextPhase: string) => void;
+  [x: string]: any;
+  canTransitionTo: (nextPhase: Phase) => boolean;
+  handleTransitionTo: (nextPhase: Phase) => void;
   // Add other methods if needed
 }
