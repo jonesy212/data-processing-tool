@@ -6,8 +6,10 @@ interface StructureMetadata {
   [fileOrFolderId: string]: {
     originalPath: string;
     alternatePaths: string[];
+    fileType: string;
   };
 }
+
 
 const structureMetadataPath = 'structure-metadata.json';
 
@@ -25,7 +27,10 @@ const writeMetadata = (metadata: StructureMetadata) => {
   fs.writeFileSync(structureMetadataPath, data, 'utf-8');
 };
 
-const trackStructureChanges = (basePath: string, cacheStructure: CacheStructure) => {
+const trackStructureChanges = (
+  basePath: string,
+  cacheStructure: CacheStructure
+) => {
   const metadata = readMetadata();
 
   const traverseDirectory = (dir: string) => {
@@ -35,13 +40,14 @@ const trackStructureChanges = (basePath: string, cacheStructure: CacheStructure)
       const filePath = path.join(dir, file);
       const isDirectory = fs.statSync(filePath).isDirectory();
 
-      const fileOrFolderId = Buffer.from(filePath).toString('base64'); // Unique identifier
+      const fileOrFolderId = Buffer.from(filePath).toString("base64"); // Unique identifier
 
       if (!metadata[fileOrFolderId]) {
         // New file or folder, update metadata
         metadata[fileOrFolderId] = {
           originalPath: filePath,
           alternatePaths: [],
+          fileType: determineFileType(filePath),
         };
       }
 
@@ -64,4 +70,6 @@ const trackStructureChanges = (basePath: string, cacheStructure: CacheStructure)
 
 // Example usage
 const cacheStructure: CacheStructure = {}; // Initialize with your actual cache structure
-trackStructureChanges('/path/to/your/project', cacheStructure);
+// Example usage
+const basePath = path.resolve(__dirname, 'src'); // Set your base path
+trackStructureChanges(basePath, cacheStructure);

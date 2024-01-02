@@ -22,6 +22,7 @@ export interface DocumentBuilderConfig {
   // More advanced features
   
   // Integration options
+  enableSyncWithExternalCalendars: boolean;
   enableThirdPartyIntegration: boolean;
   thirdPartyAPIKey: string;
   thirdPartyEndpoint: string;
@@ -41,7 +42,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       additionalOption: "",
       documents: {} as Document[],
       isDynamic: false,
-      visibility: "public",
+      visibility: "private",
       fontSize: 12,
       textColor: "#000000",
       backgroundColor: "#FFFFFF",
@@ -72,8 +73,10 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       unorderedTodoList: false,
       customSettings: {},
       animations: {} as DocumentAnimationOptions,
+      documentType: "",
+      userIdea: "",
+      colorCoding: false
     },
-
     fontFamily: "Arial",
     fontSize: 12,
     textColor: "#000000",
@@ -84,11 +87,12 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     autoSaveInterval: 0,
     showWordCount: false,
     maxWordCount: 0,
-    enableThirdPartyIntegration: false,
     thirdPartyAPIKey: "",
     thirdPartyEndpoint: "",
-    enableAccessibilityMode: false,
     highContrastMode: false,
     screenReaderSupport: false,
+    enableAccessibilityMode: false,
+    enableThirdPartyIntegration: false,
+    enableSyncWithExternalCalendars: false,
   };
 };

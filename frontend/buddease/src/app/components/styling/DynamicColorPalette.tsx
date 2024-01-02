@@ -2,14 +2,15 @@
 import React from 'react';
 import ColorPalette, { ColorSwatchProps } from './ColorPalette';
 
-
-
 interface DynamicColorPaletteProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
+  colorCodingEnabled: boolean; 
+  brandingSwatches: ColorSwatchProps[]; // Add brandingSwatches prop
 }
 
 const DynamicColorPalette: React.FC<DynamicColorPaletteProps> = ({
   dynamicContent,
+  colorCodingEnabled
 }) => {
   // Dynamic generation of color swatches
   const dynamicColorSwatches: ColorSwatchProps[] = [
@@ -28,7 +29,7 @@ const DynamicColorPalette: React.FC<DynamicColorPaletteProps> = ({
       <h1>{dynamicContent ? "Dynamic" : "Static"} Color Palette</h1>
       <ColorPalette
         swatches={dynamicContent ? dynamicColorSwatches : staticColorSwatches}
-      />
+        colorCodingEnabled={colorCodingEnabled} brandingSwatches={[]}      />
     </div>
   );
 };

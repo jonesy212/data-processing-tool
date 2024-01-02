@@ -44,6 +44,7 @@ export interface DocumentOptions {
   content?: string; // Property for document content
   css?: string; // Property for document CSS
   html?: string; // Property for document HTML
+  colorCoding: boolean;
   customSettings: Record<string, any>; // For additional custom settings
 }
 
@@ -86,7 +87,8 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     content: "content", // Property for document content
     css: "css", // Property for document CSS
     html: "html", // Property for document HTML
-    size: "0" as DocumentSize, // Property for
+    size: "0" as DocumentSize, 
+    colorCoding: false,
     additionalOption: [],
     customSettings: {}, //any settings not defined in the document options
     documents: [] as Document[],

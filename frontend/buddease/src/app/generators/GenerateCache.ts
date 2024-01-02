@@ -38,7 +38,7 @@ export interface CacheData {
   projectManagementPhaseHook: typeof useProjectManagementPhase;
   meetingsPhaseHook: typeof useMeetingsPhase;
   // Add more top-level cache properties as needed
-
+  fileType: string;
  }
 
 // Rest of the code remains unchanged...

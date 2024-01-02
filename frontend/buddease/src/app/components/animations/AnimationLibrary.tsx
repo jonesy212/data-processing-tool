@@ -48,8 +48,7 @@ export const useAnimationHook = (options: AnimationOptions): any => {
     if (animationLibrary) {
       const { animationType } = options;
 
-      // Fix the error by checking if animationLibrary is callable before calling it
-      if (typeof animationLibrary === "function") {
+       if (typeof animationLibrary === "function") {
         setAnimationState(animationLibrary);
       } else if (animationType in animationLibrary) {
         const animation = animationLibrary[animationType];

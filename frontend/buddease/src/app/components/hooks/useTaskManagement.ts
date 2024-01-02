@@ -1,16 +1,19 @@
 // useTaskManagement.ts
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Task } from '../models/tasks/Task';
+import { useTaskManagerStore } from '../state/stores/TaskStore ';
 
 const useTaskManagement = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const taskManagerStore = useTaskManagerStore();
 
   useEffect(() => {
+    taskManagerStore.fetchTasksRequest();
+
     const fetchTasks = async () => {
       try {
         const response = await fetch('/api/tasks');
         const tasksData = await response.json();
-        setTasks(tasksData.tasks);
+        taskManagerStore.fetchTasksSuccess({ tasks: tasksData.tasks });
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -31,7 +34,7 @@ const useTaskManagement = () => {
 
       if (response.ok) {
         const createdTask: Task = await response.json();
-        setTasks((prevTasks) => [...prevTasks, createdTask]);
+        taskManagerStore.addTaskSuccess({task: createdTask});
       } else {
         console.error('Failed to add task:', response.statusText);
       }
@@ -44,7 +47,7 @@ const useTaskManagement = () => {
 
   // Add more methods as needed
 
-  return { tasks, addTask };
+  return { taskManagerStore, addTask };
 };
 
 export default useTaskManagement;

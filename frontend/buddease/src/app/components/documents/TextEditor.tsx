@@ -1,35 +1,57 @@
+import { DocumentBuilderConfig, getDefaultDocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
+import 'quill/dist/quill.snow.css';
 import { useEffect, useState } from 'react';
+import Quill from 'react-quill';
 
-const TextEditor = () => {
-  const [text, setText] = useState('');
-  const [isAllCaps, setIsAllCaps] = useState(false);
+interface TextEditorProps {
+  id: string;
+  toolbarOptions: any; // Update the type based on your actual toolbarOptions structure
+  onChange?: (content: string) => void;
+  documentBuilderConfig?: DocumentBuilderConfig;
+}
+
+const TextEditor = ({
+  id,
+  toolbarOptions,
+  onChange,
+  documentBuilderConfig = getDefaultDocumentBuilderConfig(),
+}: TextEditorProps) => {
+  const [quill, setQuill] = useState<Quill | null>(null);
 
   useEffect(() => {
-    const handleKeyboardShortcuts = (event:any) => {
-      // Check for specific key combinations
-      if (event.ctrlKey && event.key === 't') {
-        // Ctrl+T pressed, toggle between all caps and lower case
-        setIsAllCaps((prevIsAllCaps) => !prevIsAllCaps);
-      }
-    };
+    if (!quill) {
+      const editor = new Quill({
+        theme: 'snow',
+        modules: {
+          toolbar: toolbarOptions
+        }
+      });
 
-    // Attach the event listener when the component mounts
-    window.addEventListener('keydown', handleKeyboardShortcuts);
+      editor.on("text-change", () => {
+        if (onChange) {
+          onChange(editor.root.innerHTML);
+        }
+      });
 
-    // Remove the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('keydown', handleKeyboardShortcuts);
-    };
-  }, []); // Empty dependency array ensures the effect runs only once on mount
+      setQuill(editor);
+    }
+  }, [id, toolbarOptions, onChange, quill]);
 
-  const handleTextChange = (event:any) => {
-    const newText = isAllCaps ? event.target.value.toUpperCase() : event.target.value.toLowerCase();
-    setText(newText);
-  };
+  useEffect(() => {
+    if (quill && documentBuilderConfig) {
+      // Apply document builder configuration to the Quill instance
+      // You can customize this based on your configuration structure
+      quill.format("font", documentBuilderConfig.fontFamily);
+      quill.format("size", documentBuilderConfig.fontSize);
+      quill.format("color", documentBuilderConfig.textColor);
+      quill.format("background", documentBuilderConfig.backgroundColor);
+      // Apply more configurations as needed
+    }
+  }, [quill, documentBuilderConfig]);
 
   return (
     <div>
-      <textarea value={text} onChange={handleTextChange} />
+      <div id={id} style={{ height: "400px" }} />
     </div>
   );
 };

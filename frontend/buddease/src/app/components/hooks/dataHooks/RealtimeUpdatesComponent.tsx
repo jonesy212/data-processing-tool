@@ -1,30 +1,48 @@
 import { initializeUserData } from '@/app/pages/onboarding/userDataLogic';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { User, UserData } from '../../todos/tasks/User';
 
 const RealtimeUpdatesComponent = () => {
   const { state: authState } = useAuth();
-  const [realtimeData, setRealtimeData] = useState(
+  const [realtimeData, setRealtimeData] = useState<UserData | null>(
     authState.user ? initializeUserData(authState.user) : null
   );
 
   useEffect(() => {
-    // Assuming you have a function for subscribing to real-time updates
-    const unsubscribe = subscribeToRealtimeUpdates(
-      authState.user,
-      handleRealtimeUpdate
-    );
+    if (authState.user) {
+      // Only subscribe if we have a user
+      const unsubscribe = subscribeToRealtimeUpdates(
+        authState.user,
+        handleRealtimeUpdate
+      );
 
-    // Cleanup: Unsubscribe when the component unmounts
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+      // Cleanup: Unsubscribe when the component unmounts
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    }
   }, [authState.user]);
 
-  const handleRealtimeUpdate = (newData:any) => {
+  const handleRealtimeUpdate = (newData: UserData) => {
     setRealtimeData(newData);
+
+    // Ensure chatSettings is always defined
+    const chatSettings =
+      typeof newData.chatSettings === "string"
+        ? { realTimeChatEnabled: false }
+        : newData.chatSettings || {
+            realTimeChatEnabled: false,
+            // Other default values for chatSettings properties
+          };
+
+    // Update chat settings based on real-time updates
+    setChatSettings({
+      realTimeChatEnabled: chatSettings.realTimeChatEnabled,
+      // Other properties from chatSettings
+    });
   };
 
   if (!authState.user) {
@@ -44,13 +62,13 @@ const RealtimeUpdatesComponent = () => {
       <p>Username: {authState.user.username}</p>
       <p>Email: {authState.user.email}</p>
       {/* ... Other real-time data */}
-      <p>Real-time Data: {realtimeData}</p>
+      <p>Real-time Data: {JSON.stringify(realtimeData)}</p>
     </div>
   );
 };
 
 // Replace this function with your actual implementation for subscribing to real-time updates
-const subscribeToRealtimeUpdates = (user, callback) => {
+export const subscribeToRealtimeUpdates = (user: User, callback: (newData: UserData) => void) => {
   // Implement your subscription logic here
   // For example, connect to a WebSocket or use other real-time communication methods
 
@@ -68,3 +86,7 @@ const subscribeToRealtimeUpdates = (user, callback) => {
 };
 
 export default RealtimeUpdatesComponent;
+function setChatSettings(arg0: { realTimeChatEnabled: any; }) {
+  throw new Error('Function not implemented.');
+}
+

@@ -25,5 +25,5 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   );
 };
 
-export type { DashboardLayout };
+export { DashboardLayout };
    

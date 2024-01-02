@@ -22,6 +22,7 @@ export interface UserData {
   datasets?: string;
   tasks?: string;
   questionnaireResponses?: any;
+  chatSettings?: string
   // projects: Project[];
   // teams: string[];
   // teamMembers: TeamMember[];

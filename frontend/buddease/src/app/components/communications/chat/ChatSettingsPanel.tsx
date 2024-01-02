@@ -1,7 +1,12 @@
 import userSettings from '@/app/configs/UserSettings';
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../auth/AuthContext';
+import { subscribeToRealtimeUpdates } from '../../hooks/dataHooks/RealtimeUpdatesComponent';
+import { UserData } from '../../todos/tasks/User';
 const ChatSettingsPanel = () => {
+  const { state: authState } = useAuth();
+  const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);
+
   const [chatSettings, setChatSettings] = useState({
     // Define chat-related settings here
     realTimeChatEnabled: userSettings.realTimeChatEnabled,
@@ -26,8 +31,49 @@ const ChatSettingsPanel = () => {
     enableDecentralizedStorage: boolean;
     collaborationPreference1: string | undefined;
     collaborationPreference2: string | undefined;
-  });
+    });
+  
+  
+useEffect(() => {
+  // Save updated settings to backend on change
+  if (authState.user) {
+    // Only subscribe if we have a user
+    const unsubscribe = subscribeToRealtimeUpdates(
+      authState.user, 
+      (newData: UserData) => {
+        handleRealtimeUpdate({
+          ...newData,
+          realTimeChatEnabled: false,
+          notificationEmailEnabled: false,
+          enableEmojis: false,
+          enableAudioChat: false,
+          enableVideoChat: false,
+          enableFileSharing: false,
+          enableBlockchainCommunication: false,
+          enableDecentralizedStorage: false,
+          collaborationPreference1: undefined,
+          collaborationPreference2: undefined,
+        });
+      }
+    );
 
+    // Cleanup: Unsubscribe when the component unmounts
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }
+}, [authState.user]);
+
+
+
+  const handleRealtimeUpdate = (newSettings: typeof chatSettings) => {
+    // Update chat settings based on real-time updates
+    setChatSettings(newSettings);
+  };
+
+  
   const handleSettingChange = (
     settingName: keyof typeof chatSettings,
     value: boolean | string

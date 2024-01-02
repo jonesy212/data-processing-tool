@@ -1,11 +1,9 @@
 // NotificationProvider.tsx
 import React, { ReactNode, createContext } from 'react';
+import { addNotification } from './NofiticationsSlice';
 import NotificationMessagesFactory from './NotificationMessagesFactory';
-import {
-  useAppDispatch,
-  import
-} from { addNotification };
-from '../calendar/CalendarSlice';
+
+
 
 export interface NotificationContextProps {
   sendNotification: (type: string, userName?: string | number) => void;

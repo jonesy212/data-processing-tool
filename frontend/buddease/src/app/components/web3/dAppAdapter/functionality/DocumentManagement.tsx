@@ -1,5 +1,4 @@
 // DocumentManagement.tsx
-
 import { DappProps } from "../DAppAdapterConfig";
 
 export function manageDocuments(newDocument: Document, dappProps: DappProps) {

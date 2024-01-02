@@ -17,6 +17,7 @@ export interface TaskManagerStore {
   updateTaskDescription: (description: string) => void;
   updateTaskStatus: (status: "pending" | "inProgress" | "completed") => void;
   updateTaskDueDate: (taskId: string, dueDate: Date) => void;
+  addTaskSuccess: (payload: { task: Task }) => void;
   addTask: (task: Task) => void;
   addTasks: (tasks: Task[]) => void;
   removeTask: (taskId: string) => void;
@@ -77,7 +78,14 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
     setTaskStatus(status);
   };
 
+  const addTaskSuccess = (payload: { task: Task }) => {
+    const { task } = payload;
+    setTasks((prevTasks) => {
+      const taskId = task.id;
+      return { ...prevTasks, [taskId]: [...(prevTasks[taskId] || []), task] };
+    });
 
+  }
 
   const takeTaskSnapshot = (taskId: string) => {
     // Ensure the taskId exists in the tasks
@@ -289,6 +297,7 @@ const updateTaskDueDate = (taskId: string, dueDate: Date) => {
     removeTask,
     removeTasks,
     reassignTask,
+    addTaskSuccess,
     fetchTasksSuccess,
     fetchTasksFailure,
     fetchTasksRequest,
@@ -310,6 +319,7 @@ const updateTaskDueDate = (taskId: string, dueDate: Date) => {
     snapshotStore,
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
+    addTaskSuccess,
     updateTaskTitle,
     updateTaskDescription,
     updateTaskStatus,

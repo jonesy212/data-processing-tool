@@ -110,7 +110,12 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
       geolocationEnabled: false,
       webSocketsEnabled: false,
       dragAndDropEnabled: false,
-      idleTimeoutEnabled: false
+      idleTimeoutEnabled: false,
+      enableAudioChat: false,
+      enableVideoChat: false,
+      enableFileSharing: false,
+      enableBlockchainCommunication: false,
+      enableDecentralizedStorage: false
     },
     dataVersions: {
       users: 0,
@@ -130,7 +135,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    darkModeTogglePhaseHook: () => { 
+    darkModeTogglePhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -138,7 +143,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    authenticationPhaseHook: () => { 
+    authenticationPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -146,7 +151,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    jobSearchPhaseHook: () => { 
+    jobSearchPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -154,7 +159,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    recruiterDashboardPhaseHook: () => { 
+    recruiterDashboardPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -162,7 +167,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    teamBuildingPhaseHook: () => { 
+    teamBuildingPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -170,7 +175,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    brainstormingPhaseHook: () => { 
+    brainstormingPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -178,7 +183,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    projectManagementPhaseHook: () => { 
+    projectManagementPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
@@ -186,14 +191,15 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         stopAnimation: () => { },
       };
     },
-    meetingsPhaseHook: () => { 
+    meetingsPhaseHook: () => {
       return {
         isActive: false,
         toggleActivation: () => { },
         startAnimation: () => { },
         stopAnimation: () => { },
       };
-    }
+    },
+    fileType: ""
   });
 };
 

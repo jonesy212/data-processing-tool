@@ -1,5 +1,3 @@
-
-
 // ChatMessage.tsx
 import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
@@ -7,8 +5,23 @@ import ChatCard from "../../cards/ChatCard";
 import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
 import connectToChatWebSocket from "../WebSocket";
 import resetUnreadMessageCount from "./ResetUnreadMessageCount";
-import { createRichTextEditor, sendChatMessage } from "./chatUtils";
+import { createRichTextEditor, getUnreadMessageCount, initializeGeolocationService, initializeSpeechToText, leaveChatRoom, openChatSettingsModal, openChatSettingsPanel, openChatSidebar, openEmojiPicker, openFileUploadModal, sendChatMessage, sendChatNotification } from "./chatUtils";
 
+type ChatSettingsModal = {
+  close?: () => void;
+  // other properties and methods specific to the modal
+};
+
+// Update similar types for editor and notification if needed
+type ChatEditor = {
+  dispose?: () => void;
+  // other properties and methods specific to the editor
+};
+
+type ChatNotification = {
+  clear?: () => void;
+  // other properties and methods specific to the notification
+};
 
 
 export interface ChatMessage {
@@ -66,6 +79,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
+    
     const fetchMessages = async () => {
       try {
         const messages = await fetchChatMessages(roomId, 10);
@@ -100,20 +114,38 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       });
       return newMessage;
     });
-    // Handle unread message count reset
-    const socket = connectToChatWebSocket(roomId);
-    const modal = openChatSettingsModal();
-    const request = sendChatMessage(message);
-    const editor = createRichTextEditor();
-    // const notification = sendChatNotification(message);
-    
-    // const unreadCount = getUnreadMessageCount(roomId);
-    // const emojiPicker = openEmojiPicker();
-    // const sidebar = openChatSidebar();
-    // const speechToTextEngine = initializeSpeechToText();
-    // leaveChatRoom(roomId);
-    // localStorage.removeItem('chatMessages');
 
+
+    const sampleMessage: ChatMessageProps = {
+      id: "some-id",
+      sender: "Sender Name",
+      message: "Hello, this is a chat message!",
+      senderId: "sender-id",
+      senderName: "Sender Name",
+      content: "Some content",
+      timestamp: "2024-01-01T12:00:00Z",
+      isRead: false,
+      roomId: "room-id",
+    };
+    
+    
+    // Handle unread message count reset
+
+   let editor: ChatEditor | undefined;
+  let notification: ChatNotification | undefined;
+
+    const socket = connectToChatWebSocket(roomId);
+    let modal: ChatSettingsModal | void = openChatSettingsModal();
+    const request = sendChatMessage(sampleMessage.message);
+    let editor = createRichTextEditor();
+    const notification = sendChatNotification(sampleMessage.message);
+    const unreadCount = getUnreadMessageCount(roomId);
+    const emojiPicker = openEmojiPicker();
+    const sidebar = openChatSidebar();
+    const speechToTextEngine = initializeSpeechToText();
+    leaveChatRoom(roomId);
+    localStorage.removeItem('chatMessages');
+    
  
       (roomId);
     // timers for auto-refresh or any periodic tasks, clear them during cleanup.
@@ -121,21 +153,38 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
         // Auto-refresh logic
     }, 5000)
     // Cleanup logic if needed
-      return () => {
+    return () => {
+
         subscriptionService.unsubscribe('chat_updates_'+roomId);
         socket!.close();
         resetUnreadMessageCount(roomId);
-        //   modal.close();
-        //   request.cancel();
-        //   editor.dispose();
-        //   notification.clear();
-        // const fileUploadModal = openFileUploadModal();
-        // const geolocationService = initializeGeolocationService();
-        // const settingsPanel = openChatSettingsPanel();
+        
+        // Check if modal has a close method before calling it
+      if (modal && typeof modal.close === 'function') {
+        modal.close();
+      }
+
+        // Check if request is a Promise with a cancel method before calling it
+        if (request instanceof Promise && typeof (request as any).cancel === 'function') {
+          request.cancel();
+        }
+
+        // Check if editor has a dispose method before calling it
+        if (editor && typeof editor.dispose === 'function') {
+          editor.dispose();
+        }
+
+        // Check if notification is defined and has a clear method before calling it
+        if (notification !== undefined && notification && typeof notification.clear === 'function') {
+          notification.clear();
+        }
+        const fileUploadModal = openFileUploadModal();
+        const geolocationService = initializeGeolocationService();
+        const settingsPanel = openChatSettingsPanel();
 
 
     //   // 1. Clear Cache for Chat Images
-    //     clearChatImageCache();
+        // clearChatImageCache();
 
     //     // 2. Close Emoji Picker
     //     emojiPicker.close();
@@ -211,7 +260,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       <div className="chat-messages">
         {chatMessages.map((message) => (
           <ChatCard
-            key={message.id} // Assuming id is a property of ChatMessage
+            key={message.id} 
             sender={message.senderId}
             message={message.message}
             timestamp={message.timestamp}

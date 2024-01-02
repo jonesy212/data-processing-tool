@@ -20,7 +20,7 @@ class FluencePlugin implements DAppPlugin {
     console.log(`${this.name} plugin initialized.`);
   }
 
-  enable(): void {
+  async enable(): Promise<void> {
     // Enable logic goes here
     this.isEnabled = true;
     console.log(`${this.name} plugin enabled.`);
