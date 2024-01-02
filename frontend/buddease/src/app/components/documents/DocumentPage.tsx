@@ -4,7 +4,6 @@ import { ReactNode, useState } from "react";
 import DocumentBuilder from "./DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 
-
 interface DynamicHooks {
   [key: string]: {
     hook: () => ReactNode;
@@ -49,11 +48,6 @@ const DocumentPage = () => {
     }));
   };
 
-  interface DocumentBuilderProps {
-    options: DocumentOptions;
-    onOptionsChange: (newOptions: DocumentOptions) => void;
-    isDynamic: boolean;
-  }
 
   return (
     <div>

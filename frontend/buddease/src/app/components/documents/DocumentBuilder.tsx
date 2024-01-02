@@ -6,8 +6,14 @@ import { useState } from "react";
 import { useMovementAnimations } from "../animations/movementAnimations/MovementAnimationActions";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
-import { DocumentSize } from "./DocumentOptions";
-import { DocumentAnimationOptions, DocumentBuilderProps } from "./SharedDocumentProps";
+import { DocumentOptions, DocumentSize } from "./DocumentOptions";
+import { DocumentAnimationOptions } from "./SharedDocumentProps";
+
+interface DocumentBuilderProps {
+  options: DocumentOptions;
+  onOptionsChange: (newOptions: DocumentOptions) => void;
+  isDynamic: boolean;
+}
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   isDynamic,

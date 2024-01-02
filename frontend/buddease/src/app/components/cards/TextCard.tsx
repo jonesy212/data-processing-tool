@@ -1,5 +1,6 @@
 // TextCard.tsx
 import React, { useState } from 'react';
+import { ToolbarOptions } from '../documents/ToolbarOptions';
 
 interface TextCardProps {
   onSave: (text: string) => Promise<void>;
@@ -27,6 +28,8 @@ const TextCard: React.FC<TextCardProps> = ({ onSave }) => {
         placeholder="Enter text here"
       />
       <button onClick={handleSave}>Save</button>
+      <ToolbarOptions isTextCard />
+
     </div>
   );
 };
