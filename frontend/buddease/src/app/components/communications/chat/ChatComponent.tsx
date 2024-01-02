@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { DappProps } from '../../web3/dAppAdapter/DAppAdapterConfig';
+import { DappProps } from '../../web3/dAppAdapter/remove';
 import { AquaConfig } from '../../web3/web_configs/AquaConfig';
 import { AquaChat } from './AquaChat';
 import ChatInput from './ChatInput';

@@ -11,6 +11,7 @@ from flask_login import login_required
 from flask_migrate import Migrate
 
 from authentication.auth import auth_bp
+from blueprint_routes.blueprint_register import register_blueprints
 from blueprint_routes.register_routes import register
 from configs.config import app as configure_flask_app
 from configs.config import configure_app
@@ -47,8 +48,10 @@ def create_app(config_file=None):
     else:
         app.config.from_object('config.Config')  # Change to 'config.ProductionConfig' for production
 
+    register_blueprints(app)
     configure_app(app)
-    
+    # Register blueprints
+
     db.init_db(app)
     migrate.init_app(app, db)
     limiter = Limiter(app, key_func=get_remote_address)

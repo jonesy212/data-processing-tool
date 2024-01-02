@@ -11,24 +11,29 @@ auth_bp = Blueprint('auth_bp', __name__)
 @auth_bp.route('/auth/change-password', methods=['PUT'])
 @jwt_required()
 def change_password():
-    current_user_id = get_jwt_identity()
-    current_user = User.query.get(current_user_id)
+    try:
+        current_user_id = get_jwt_identity()
+        current_user = User.query.get(current_user_id)
 
-    if not current_user:
-        return jsonify({"message": "User not found"}), 404
+        if not current_user:
+            return jsonify({"message": "User not found"}), 404
 
-    data = request.json
-    current_password = data.get('current_password')
-    new_password = data.get('new_password')
+        data = request.json
+        current_password = data.get('current_password')
+        new_password = data.get('new_password')
 
-    if not current_password or not new_password:
-        return jsonify({"message": "Current password and new password are required"}), 400
+        if not current_password or not new_password:
+            return jsonify({"message": "Current password and new password are required"}), 400
 
-    if not check_password_hash(current_user.password, current_password):
-        return jsonify({"message": "Incorrect current password"}), 401
+        if not check_password_hash(current_user.password, current_password):
+            return jsonify({"message": "Incorrect current password"}), 401
 
-    # Update the user's password
-    current_user.password = generate_password_hash(new_password, method='sha256')
-    db.session.commit()
+        # Update the user's password
+        hashed_new_password = generate_password_hash(new_password, method='sha256')
+        current_user.password = hashed_new_password
+        db.session.commit()
 
-    return jsonify({"message": "Password changed successfully"}), 200
+        return jsonify({"message": "Password changed successfully"}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

@@ -1,12 +1,12 @@
-// sagas.ts
+// taskSagas.ts
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { TaskActions } from './tasks/TaskActions';
+import { TaskActions } from '../../tasks/TaskActions';
 
 // Example saga function
 function* fetchTasksSaga() {
   try {
     // Perform asynchronous operations here (e.g., API call)
-    const response = yield call(/* Your API call here */);
+    const response = yield call(fetch, '/api/tasks');
 
     // Dispatch a success action
     yield put(TaskActions.fetchTasksSuccess({ tasks: response.data }));

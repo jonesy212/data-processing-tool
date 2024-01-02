@@ -2,7 +2,7 @@
 import { ethers } from 'ethers';
 import IPFS from 'ipfs';
 import { CustomDAppAdapter } from './DApp';
-import { DAppAdapterConfig, DappProps } from './DAppAdapterConfig';
+import { DAppAdapterConfig, DappProps } from './remove';
 
 // Extend the existing DAppAdapterConfig interface
 interface ExtendedDappProps extends DappProps{

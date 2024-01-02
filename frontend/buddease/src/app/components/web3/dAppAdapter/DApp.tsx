@@ -12,7 +12,6 @@ import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-
 type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
 class CustomDAppAdapter<T extends DappProps> {

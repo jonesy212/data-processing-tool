@@ -6,7 +6,7 @@ import { DocumentAnimationOptions } from "./SharedDocumentProps";
 export interface DocumentOptions {
   documentType: string; // Add documentType property
   userIdea: string; // Add userIdea property
-  additionalOption: string | number | readonly string[] | undefined;
+  additionalOptions: string | number | readonly string[] | undefined;
   isDynamic: boolean;
   documents: Document[]; 
   size: DocumentSize;
@@ -89,7 +89,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     html: "html", // Property for document HTML
     size: "0" as DocumentSize, 
     colorCoding: false,
-    additionalOption: [],
+    additionalOptions: [],
     customSettings: {}, //any settings not defined in the document options
     documents: [] as Document[],
   

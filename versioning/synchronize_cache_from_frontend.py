@@ -4,6 +4,9 @@ from flask import jsonify, request
 from configs.config import app
 from logging_system.warning_events import log_exception
 
+# Get updated profile data from the request
+updated_data = request.json
+
 # Validate updated data format
 if not updated_data:
     raise ValueError("No data received")
