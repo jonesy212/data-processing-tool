@@ -14,7 +14,7 @@ export const TaskActions = {
   completeAllTasksRequest: createAction("completeAllTasksRequest"),
   completeAllTasksSuccess: createAction("completeAllTasksSuccess"),
   completeAllTasksFailure: createAction<{ error: string }>("completeAllTasksFailure"),
-
+  
   updateTaskSuccess: createAction<{ task: Task }>("updateTaskSuccess"),
   updateTasksSuccess: createAction<{ tasks: Task[] }>("updateTasksSuccess"),
   updateTaskFailure: createAction<{ error: string }>("updateTaskFailure"),

@@ -1,3 +1,4 @@
+//ReducerGenerator.tsx
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
 

@@ -76,9 +76,10 @@ const NOTIFICATION_MESSAGES = {
 
     TASK_ADD_ERROR: 'Error adding task. Please try again.',
     TASK_UPDATE_ERROR: 'Task did not update successfully, please try again',
-    FETCH_TASKS_ERROR: 'Error fetching tasks. Please try again.',
+    TASK_FETCH_ERROR: 'Error fetching tasks. Please try again.',
     TASK_REMOVE_ERROR: 'Error removing task. Please try again.',
     COMPLETE_ALL_TASKS_ERROR: 'Error completing all tasks. Please try again.',
+    TASK_TOGGLE_ERROR: 'Error toggling task status. Please try again.'
   },
 
     NamingConventionsError: {

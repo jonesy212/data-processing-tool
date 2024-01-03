@@ -1,3 +1,4 @@
+// SliceGenerator.tsx
 import { Draft, PayloadAction, createSlice, isDraft } from "@reduxjs/toolkit";
 import { Draft as ImmerDraft } from "immer";
 
