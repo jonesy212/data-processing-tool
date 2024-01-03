@@ -3,77 +3,108 @@
 import asyncio
 
 import pandas as pd
-from flask import (Flask, g, redirect, render_template, request, session,
-                   url_for)
+from flask import (Flask, g, jsonify, redirect, render_template, request,
+                   session, url_for)
+from flask_caching import Cache
+from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
 
 from authentication.auth import auth_bp
-from configs.config import app as config_app
-from database.extensions import db
+from blueprint_routes.blueprint_register import register_blueprints
+from blueprint_routes.register_routes import register
+from configs.config import app as configure_flask_app
+from configs.config import configure_app
+from database.extensions import create_database, db
 from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
+from logging_system.audit_logger import AuditingLogger
+from logging_system.logger_config import setup_logging
+from logging_system.warning_events import log_exception, log_warning
+from models.user.get_remote_address import get_remote_address
+from models.user.user import User
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
 
+# create gobao instance of AuditingLogger
+auditor = AuditingLogger(log_file='auditing.log')
 migrate = Migrate()
-def create_app():
-    
+
+
+def create_app(config_file=None):
+
     app = Flask(__name__)
-    app.config.from_object(config_app.config)
     
+    # Error handler for unexpected errors
+    @app.errorhandler(Exception)
+    def handle_unexpected_error(e):
+        log_warning(f"Unexpected error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    
+    cache = Cache(app)
+    setup_logging()
+    if config_file:
+        app.config.from_envvar(config_file)
+    else:
+        app.config.from_object('config.Config')  # Change to 'config.ProductionConfig' for production
+
+    register_blueprints(app)
+    configure_app(app)
+    # Register blueprints
+
     db.init_db(app)
     migrate.init_app(app, db)
-    
+    limiter = Limiter(app, key_func=get_remote_address)
+
+    # Set up rate limiting rules
+    limiter.limit("5 per minute")(register)  # Limit the register route to 5 requests per minute
+
+   
+    @cache.cached(timeout=50, key_prefix='index_data')
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
             session.pop('user', None)
             
-            if request.form['password'] == 'password':
+            user = User.query.filter_by(username=request.form['userneame']).first()
+            hashed_password = user.password
+            if request.form[hashed_password] == 'password':
                 session['user'] = request.form['username']
-                return redirect(url_for('auth.protected'))
-            
-        return render_template('home.html', session=session)   
-  
-    @auth_bp.route('/home')
-    def home():
+                return redirect(url_for('auth.dashboard'))
+           
+        return render_template('dashboard.html' , session=session)
+ 
+    @cache.cached(timeout=50, key_prefix='dashboard_data')
+    @auth_bp.route('/dashboard')
+    def dashboard():
         if g.user_tier == 'free':
             # Free user logic
-            return render_template('home.html', user=session['user'])
+                return render_template('dashboard.html', user=session['user'])
         elif g.user_tier == 'standard':
             # Standard user logic
-            return render_template('home.html', user=session['user'])
+            return render_template('dashboard.html', user=session['user'])
 
         elif g.user_tier == 'premium':
             # Premium user logic
-            return render_template('home.html', user=session['user'])
+            return render_template('dashboard.html', user=session['user'])
 
         elif g.user_tier == 'enterprise':
             # Enterprise user logic
-            return render_template('home.html', user=session['user'])
+            return render_template('dashboard.html', user=session['user'])
 
         else:
             # Handle unknown tier/ user maybe not registered and needs to go back to the index/registratiion page
             return redirect(url_for('index'))
-        
-    # middleware
-    @app.before_request
-    def before_request():
-        g.user = None
-        
-    if 'user'in session:
-        g.user = session['user']
-
-    app.route('/dropsession')
-    def dropsession():
-        session.pop('user', None)
-        return render_template('login.html')
-    
-    return config_app 
+     
+    return configure_flask_app 
  
 if __name__ == "__main__":
-   # Assuming 'your_dataset.csv' is the name of the dataset you want to upload
+    
+    # Access the environment indicator
+    environment = configure_flask_app.config.get('ENVIRONMENT', 'development')
+    print(f"Running in {environment} environment.")
+
+    # Assuming 'your_dataset.csv' is the name of the dataset you want to upload
     dataset_name = 'your_dataset.csv'
     dataset_description = 'Description of your dataset'  # Provide an appropriate description
 
@@ -88,7 +119,9 @@ if __name__ == "__main__":
         print(f"Dataset {saved_dataset.name} loaded successfully!")
     else:
         print("Failed to save dataset")# clean and transform the data
-        transformed_data = clean_and_transform_data(load_and_process_data)  
+    
+    # clean and transform the data
+    transformed_data = clean_and_transform_data(load_and_process_data)  
 
     # run the data processing asynchronously
     loop = asyncio.get_event_loop()

@@ -1,0 +1,102 @@
+{
+  "visibility": {
+    "profile": true,
+    "email": false,
+    "phone_number": true,
+    "location": false,
+    "friends_list": true,
+    "online_status": false,
+    "last_seen": true,
+    "contact_information": false,
+    "work_history": true,
+    "education_history": false,
+    "hobbies": true
+  },
+  "communication": {
+    "email": {
+      "notifications": true,
+      "marketing": false,
+      "newsletters": true,
+      "product_updates": false,
+      "promotions": true,
+      "event_invitations": false,
+      "survey_requests": true,
+      "community_updates": false,
+      "app_announcements": true,
+      "security_alerts": false
+    },
+    "sms": {
+      "notifications": true,
+      "marketing": false,
+      "order_updates": true,
+      "delivery_alerts": false,
+      "appointment_reminders": true,
+      "special_offers": false,
+      "loyalty_program": true,
+      "customer_feedback": false,
+      "service_feedback": true,
+      "emergency_alerts": false
+    },
+    "push_notifications": true
+  },
+  "tracking": {
+    "activity_logging": true,
+    "location_tracking": false,
+    "usage_statistics": true,
+    "device_usage": false,
+    "search_history": true,
+    "click_tracking": false,
+    "page_views": true,
+    "interaction_data": false,
+    "error_reporting": true,
+    "advertising_data": false
+  },
+  "preferences": {
+    "theme": "light",
+    "language": "en",
+    "timezone": "UTC",
+    "date_format": "MM/DD/YYYY",
+    "notification_sound": "default",
+    "font_size": "medium",
+    "show_images": true,
+    "auto_play_videos": false,
+    "display_name_format": "first_last",
+    "receive_news_alerts": true
+  },
+  "security": {
+    "two_factor_authentication": true,
+    "password_change_required": false,
+    "biometric_authentication": false,
+    "login_history": true,
+    "password_expiration": false,
+    "account_activity_alerts": true,
+    "login_notifications": false,
+    "session_management": true,
+    "device_recognition": false,
+    "password_strength_meter": true
+  },
+  "third_party_access": {
+    "social_media": true,
+    "app_integration": false,
+    "external_data_sharing": true,
+    "data_monetization": false,
+    "analytics_integration": true,
+    "connected_devices": false,
+    "smart_home_integration": true,
+    "fitness_app_integration": false,
+    "financial_apps_access": true,
+    "calendar_integration": false
+  },
+  "data_sharing": {
+    "with_affiliates": false,
+    "with_third_parties": true,
+    "with_research_partners": false,
+    "with_advertisers": true,
+    "with_marketing_agencies": false,
+    "with_data_brokers": true,
+    "with_healthcare_providers": false,
+    "with_financial_institutions": true,
+    "with_educational_institutions": false,
+    "with_government_agencies": true
+  }
+}

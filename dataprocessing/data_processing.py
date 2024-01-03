@@ -3,8 +3,7 @@ import asyncio
 
 import pandas as pd
 
-from preprocessing.clean_transformed_data import (clean_and_transform_data,
-                                                  process_data_async,
+from preprocessing.clean_transformed_data import (process_data_async,
                                                   user_options)
 
 

@@ -1,0 +1,5 @@
+export enum IdeaLifecyclePhase {
+  CONCEPT_DEVELOPMENT,
+  IDEA_VALIDATION,
+  PROOF_OF_CONCEPT,
+}

@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy.orm import relationship
+
 from database.init_db import db
 
 
@@ -14,6 +16,10 @@ class DatasetModel(db.Model):
     format = db.Column(db.String(20), nullable=False)
     visibility = db.Column(db.String(20), default='private') # public, private, shared
     # Add other fields as needed
+
+    # Relationships
+    uploaded_by_team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=True)
+    uploaded_by_team = relationship('Team', foreign_keys=[uploaded_by_team_id])
 
     def __repr__(self):
         return f'<DatasetModel id={self.id}, {self.name}>'

@@ -1,0 +1,81 @@
+
+# Communication
+# real_time_chat_enabled: Indicates whether real-time chat functionality is enabled.
+# file_sharing_enabled: Indicates if file sharing functionality is enabled.
+# calendar_integration_enabled: Tracks whether the team integrates with calendar tools.
+# notification_settings: Stores flexible settings for team notifications, using the JSON field for versatility.
+# meeting_scheduling_enabled: Indicates if the team uses tools for scheduling meetings.
+# polling_system_enabled: Tracks whether the team uses polling or survey tools.
+
+# Collaboration
+# collaboration_tools_enabled: Indicates whether collaboration tools are enabled.
+# task_management_enabled: Flags if task management features are activated.
+# knowledge_base_enabled: Flags if there's a knowledge base for team information.
+# feedback_system_enabled: Indicates if there's a system for providing and collecting feedback.
+# announcement_board_enabled: Flags whether there's a centralized announcement system.
+# team_roles: Stores role-related information using the JSON field for flexibility.
+
+# Workflow
+# onboarding_workflow_enabled: Flags if there's an automated onboarding process.
+# performance_metrics_enabled: Indicates if the team tracks performance metrics.
+# integration_with_external_apps: Tracks integration with external applications.
+# team_goals: Stores goal-related information using the JSON field for flexibility.
+
+# Learning and Development
+# training_resources_enabled: Flags if there are resources for team training.
+# community_forum_enabled: Indicates if the team has a community forum.
+# expense_tracking_enabled: Flags whether there's a system for tracking team expenses.
+# attendance_tracking_enabled: Indicates if there's a system for tracking team attendance.
+# mentorship_program_enabled: Flags if there's a mentorship program within the team.
+# automated_reporting_enabled: Indicates if there are automated reporting tools in place.
+
+
+# Communication and Collaboration
+# file_sharing_enabled: Indicates if file sharing functionality is enabled.
+# calendar_integration_enabled: Tracks whether the team integrates with calendar tools.
+
+# Notifications and Preferences
+# notification_settings: Stores preferences for team notifications.
+
+# Task and Project Management
+# task_management_enabled: Flags if task management features are activated.
+
+# Meetings and Scheduling
+# meeting_scheduling_enabled: Indicates if the team uses tools for scheduling meetings.
+
+# Surveys and Feedback
+# polling_system_enabled: Tracks whether the team uses polling or survey tools.
+# feedback_system_enabled: Indicates if there's a system for providing and collecting feedback.
+
+# Knowledge Management
+# knowledge_base_enabled: Flags if there's a knowledge base for team information.
+
+# Announcements and Roles
+# announcement_board_enabled: Flags whether there's a centralized announcement system.
+# team_roles: Stores information about different roles within the team.
+
+# Onboarding and Training
+# onboarding_workflow_enabled: Flags if there's an automated onboarding process.
+# training_resources_enabled: Flags if there are resources for team training.
+
+# Performance and Metrics
+# performance_metrics_enabled: Indicates if the team tracks performance metrics.
+# automated_reporting_enabled: Indicates if there are automated reporting tools in place.
+
+# Integration and Goals
+# integration_with_external_apps: Tracks integration with external applications.
+# team_goals: Stores information about the team's short-term and long-term goals.
+
+# Community and Support
+# community_forum_enabled: Indicates if the team has a community forum.
+
+# Financial and Administrative
+# expense_tracking_enabled: Flags whether there's a system for tracking team expenses.
+# attendance_tracking_enabled: Indicates if there's a system for tracking team attendance.
+
+# Mentorship Program
+# mentorship_program_enabled: Flags if there's a mentorship program within the team.
+
+
+
+
