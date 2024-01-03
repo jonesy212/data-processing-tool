@@ -15,5 +15,8 @@ export const TodoActions = {
   completeAllTodosSuccess: createAction("completeAllTodosSuccess"),
   completeAllTodosFailure: createAction<{ error: string }>("completeAllTodosFailure"),
 
+  updateTodoSuccess: createAction<{ todos: Todo[] }>("updateTodoSuccess"),
+  updateTodoFailure: createAction<{ error: string }>("updateTodoFailure"),
+
   // Add more actions as needed
 };

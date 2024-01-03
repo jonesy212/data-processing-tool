@@ -65,7 +65,21 @@ const NOTIFICATION_MESSAGES = {
       DEFAULT: 'Event reminder.',
       EVENT_OCCURRED: 'An event has occurred.',
       // Add more messages for the EventReminder type
-    },
+  },
+    
+  Tasks: {
+    DEFAULT: (errorType: string, details: string) => `Error in Tasks (${errorType}): ${details}`,
+    TASK_ADDED: 'Task added successfully',
+    TASK_DELETED: 'Task deleted successfully',
+    TASK_UPDATED: 'Task updated successfully',
+    
+
+    TASK_ADD_ERROR: 'Error adding task. Please try again.',
+    TASK_UPDATE_ERROR: 'Task did not update successfully, please try again',
+    FETCH_TASKS_ERROR: 'Error fetching tasks. Please try again.',
+    TASK_REMOVE_ERROR: 'Error removing task. Please try again.',
+    COMPLETE_ALL_TASKS_ERROR: 'Error completing all tasks. Please try again.',
+  },
 
     NamingConventionsError: {
       DEFAULT: (errorType: string, details: string) => `Error in Define Naming Conventions (${errorType}): ${details}`,
