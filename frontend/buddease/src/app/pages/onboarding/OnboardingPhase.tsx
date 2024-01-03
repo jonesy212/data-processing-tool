@@ -2,7 +2,7 @@
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
-import { User, UserData } from "@/app/components/todos/tasks/User";
+import { User, UserData } from "@/app/components/users/User";
 import axios from "axios";
 import React, { useState } from "react";
 import UserQuestionnaire from "../personas/UserQuestionnaire";

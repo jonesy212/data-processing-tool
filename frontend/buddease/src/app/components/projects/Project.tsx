@@ -1,7 +1,8 @@
 //projects/Project.ts
+import { ReactNode } from "react";
 import { Task } from "../models/tasks/Task";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
-import { User } from "../todos/tasks/User";
+import { User } from "../users/User";
 import CommonDetails from "./../models/CommonDetailsProps";
 
 interface Project {
@@ -16,6 +17,7 @@ interface Project {
   leader: User | null;
   budget: number | null;
   phases: Phase[]
+  currentPhase: Phase | null // Provide a default value or mark as optional
   // Add other project-related fields as needed
   // ...
 }
@@ -53,14 +55,27 @@ class ProjectImpl implements Project {
   leader: User | null = null; // Provide a default value or mark as optional
   budget: number | null = null; // Provide a default value or mark as optional
   phases: Phase[] = [] // Provide a default value or mark as optional
+  currentPhase: Phase | null = null // Provide a default value or mark as optional
   // project implementation
 }
 
 const currentProject = new ProjectImpl();
-const currentPhase = {
+const currentPhase: Phase = {
   name: "name",
-  startDate: "startDate",
-  endDate: "endDate",
+  startDate: new Date,
+  endDate: new Date,
+  subPhases: [],
+  component: (props: {}, context?: any): ReactNode=>{ 
+    return (
+      <div>
+        <p>Current Phase: {currentPhase.name}</p>
+        <button onClick={() => context.transitionToNextPhase()}>
+          Advance Phase
+        </button>
+      </div>
+    );
+  },
+  hooks: {} as CustomPhaseHooks
 };
 
 currentProject.phases = [

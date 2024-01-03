@@ -1,5 +1,5 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
-import { User } from '@/app/components/todos/tasks/User';
+import { User } from '@/app/components/users/User';
 import React from 'react';
 
 const UserDashboard: React.FC = () => {

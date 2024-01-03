@@ -1,5 +1,5 @@
 // dynamicComponentSlice.ts
-import { createEntitySlice } from "../redux/SliceGenerator";
+import { createEntitySlice } from "../SliceGenerator";
 
 interface DynamicComponent {
   id: string;

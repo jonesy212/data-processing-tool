@@ -17,9 +17,11 @@ class UserPreferencesStore {
   @observable collaborationPreferences: {
     teamBuilding: TeamBuildingSettings;
     // Add more collaboration preferences as needed
-  } = {
+    
+    } = {
     teamBuilding: new TeamBuildingSettings(),
-    // Initialize other collaboration preferences
+      // Initialize other collaboration preferences
+      
   };
 
   // ... other methods

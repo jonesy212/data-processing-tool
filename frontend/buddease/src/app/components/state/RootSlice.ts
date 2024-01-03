@@ -3,8 +3,8 @@ import { combineReducers, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Task } from '../models/tasks/Task';
 import { Tracker } from '../models/tracker/Tracker';
 import { WritableDraft } from './redux/ReducerGenerator';
-import { taskManagerSlice } from './Slices/TaskSlice';
-import { trackerManagerSlice } from './Slices/TrackerSlice';
+import { taskManagerSlice } from './redux/slices/TaskSlice';
+import { trackerManagerSlice } from './redux/slices/TrackerSlice';
 // Import uuid
 import { v4 as uuidv4 } from "uuid";
 import { DocumentOptions } from '../documents/DocumentOptions';

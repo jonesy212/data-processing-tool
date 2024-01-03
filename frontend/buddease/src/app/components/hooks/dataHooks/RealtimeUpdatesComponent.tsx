@@ -1,7 +1,7 @@
 import { initializeUserData } from '@/app/pages/onboarding/userDataLogic';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
-import { User, UserData } from '../../todos/tasks/User';
+import { User, UserData } from '../../users/User';
 
 const RealtimeUpdatesComponent = () => {
   const { state: authState } = useAuth();

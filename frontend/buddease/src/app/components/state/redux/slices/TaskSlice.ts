@@ -1,7 +1,7 @@
 // TaskSlice.ts
 import { generateNewTask } from '@/app/generators/GenerateNewTask';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Task } from '../../models/tasks/Task';
+import { Task } from '../../../models/tasks/Task';
 
 interface TaskManagerState {
   tasks: Task[];

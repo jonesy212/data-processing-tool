@@ -1,6 +1,6 @@
 // questionnaireLogic.ts
 import axios from 'axios';
-import { User, UserData } from '../../components/todos/tasks/User';
+import { User, UserData } from '../../components/users/User';
 export function initializeUserData(user: User): UserData {
   if (user.data) {
     return {

@@ -2,7 +2,7 @@ import userSettings from '@/app/configs/UserSettings';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { subscribeToRealtimeUpdates } from '../../hooks/dataHooks/RealtimeUpdatesComponent';
-import { UserData } from '../../todos/tasks/User';
+import { UserData } from '../../users/User';
 const ChatSettingsPanel = () => {
   const { state: authState } = useAuth();
   const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);

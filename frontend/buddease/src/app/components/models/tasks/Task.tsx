@@ -1,5 +1,5 @@
 // Task.ts
-import { User } from "@/app/components/todos/tasks/User";
+import { User } from "@/app/components/users/User";
 import CommonDetails from "../CommonDetailsProps";
 
 interface Task {

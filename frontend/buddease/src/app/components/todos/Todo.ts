@@ -1,5 +1,5 @@
 // todo/Todo.ts
-import { User } from "./tasks/User";
+import { User } from "../users/User";
 
 
 
@@ -66,7 +66,13 @@ export interface Todo {
   
   
   
-  
+// Create a state and initial state for Todo
+export interface TodoManagerState {
+  entities: Record<string, Todo>;
+}
+export const todoInitialState: TodoManagerState = {
+  entities: {},
+};
 
 
 

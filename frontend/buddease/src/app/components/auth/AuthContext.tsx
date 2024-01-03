@@ -1,6 +1,6 @@
 // AuthContext.tsx
 import React, { ReactNode, createContext, useContext, useReducer } from 'react';
-import { User } from '../todos/tasks/User';
+import { User } from '../users/User';
 
 // Define the types for the context and state
 interface AuthState {

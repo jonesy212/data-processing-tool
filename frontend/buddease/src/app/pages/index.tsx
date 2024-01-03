@@ -6,7 +6,7 @@ import io, { Socket } from "socket.io-client";
 import { useAuth } from "../components/auth/AuthContext";
 import useMessagingSystem from "../components/communications/chat/useMessagingSystem";
 import { rootStores } from "../components/state/stores/RootStores";
-import { User } from "../components/todos/tasks/User";
+import { User } from "../components/users/User";
 import Layout from "./layouts/Layouts";
 
  // pages/index.tsx

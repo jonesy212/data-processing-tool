@@ -1,6 +1,7 @@
+import { Phase } from "../../phases/Phase";
 import Project from "../../projects/Project";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
-import { User } from "../../todos/tasks/User";
+import { User } from "../../users/User";
 
 interface Team {
   id: number;
@@ -50,32 +51,59 @@ const team: Team = {
   ],
   projects: [
     {
-      id: 1,
+      id: '1',
       name: "Project A",
       description: "Description of Project A",
       members: [],
       tasks: [],
       startDate: new Date(),
       endDate: new Date(),
-      phases: "Project Planning",
+      phases: [],
+      currentPhase: null,
       isActive: true,
       leader: null,
       budget: 0,
     },
     {
-      id: 2,
+      id: '2',
       name: "Project B",
       description: "Description of Project B",
       members: [],
-      phase: "Project Ideation",
+      phases: [],
+      currentPhase: "Planning" as unknown as Phase,
       tasks: [
         {
-          id: 1,
+          id: '1',
           title: "Task 1",
           description: "Description of Task 1",
           assignedTo: [
             /* ... */
           ],
+          then(arg0: (newTask: any) => void): unknown{
+            const newTask = {
+              id: '2',
+              title: "Task 2",
+              description: "Description of Task 2",
+              assignedTo: [],
+              previouslyAssignedTo:[],
+              done: false,
+              dueDate: new Date(),
+              status: "todo",
+              priority: "low",
+              estimatedHours: null,
+              actualHours: null,
+              startDate: null,
+              endDate: new Date(),
+              completionDate: new Date(),
+              isActive: true,
+              tags: [],
+              dependencies: [],
+            }
+            arg0(newTask);
+            return;
+          },
+          previouslyAssignedTo:[],
+          done: false,
           dueDate: new Date(),
           status: "todo",
           priority: "low",

@@ -3,11 +3,12 @@ import { createAction } from "@reduxjs/toolkit";
 import { Task } from "../models/tasks/Task";
 
 export const TaskActions = {
-  toggle: createAction<number>("toggleTask"),
+  //standard actions
   add: createAction<Task>("addTask"),
   remove: createAction<number>("removeTask"),
-  updateTask: createAction<{ id: number, newTitle: string,  }>("updateTaskTitle"),
-  updateTitle: createAction<{ id: number, newTitle: string }>("updateTaskTitle"),
+  toggle: createAction<number>("toggleTask"),
+  updateTask: createAction<{ id: number, newTitle: string, }>("updateTaskTitle"),
+  
   fetchTasksRequest: createAction("fetchTasksRequest"),
   fetchTasksSuccess: createAction<{ tasks: Task[] }>("fetchTasksSuccess"),
   fetchTasksFailure: createAction<{ error: string }>("fetchTasksFailure"),
@@ -15,9 +16,13 @@ export const TaskActions = {
   completeAllTasksSuccess: createAction("completeAllTasksSuccess"),
   completeAllTasksFailure: createAction<{ error: string }>("completeAllTasksFailure"),
   
+  updateTitle: createAction<{ id: number, newTitle: string }>("updateTaskTitle"),
   updateTaskSuccess: createAction<{ task: Task }>("updateTaskSuccess"),
   updateTasksSuccess: createAction<{ tasks: Task[] }>("updateTasksSuccess"),
   updateTaskFailure: createAction<{ error: string }>("updateTaskFailure"),
-
+  
+  removeTaskSuccess: createAction<number>("removeTaskSuccess"),
+  removeTasksSuccess: createAction<{ tasks: Task[] }>("removeTasksSuccess"),
+  removeTaskFailure: createAction<{ error: string }>("removeTaskFailure"),
   // Add more actions as needed
 };

@@ -7,16 +7,19 @@ export const TodoActions = {
   addTodo: createAction<string>("add"),
   type: createAction("type"),
   remove: createAction<string>("remove"),
+  updateTodo: createAction<{ id: number, newTitle: string,  }>("updateTodoTitle"),
   updateTitle: createAction<{ id: string, newTitle: string }>("updateTitle"),
   fetchTodosRequest: createAction("fetchTodosRequest"),
+  fetchTodoSuccess: createAction<{ todo: Todo }>("fetchTodosSuccess"),
   fetchTodosSuccess: createAction<{ todos: Todo[] }>("fetchTodosSuccess"),
   fetchTodosFailure: createAction<{ error: string }>("fetchTodosFailure"),
   completeAllTodosRequest: createAction("completeAllTodosRequest"),
   completeAllTodosSuccess: createAction("completeAllTodosSuccess"),
   completeAllTodosFailure: createAction<{ error: string }>("completeAllTodosFailure"),
-
-  updateTodoSuccess: createAction<{ todos: Todo[] }>("updateTodoSuccess"),
+  
+  updateTodoSuccess: createAction<{ todo: Todo }>("updateTodoSuccess"),
+  updateTodosSuccess: createAction<{ todos: Todo[] }>("updateTodoSuccess"),
   updateTodoFailure: createAction<{ error: string }>("updateTodoFailure"),
-
+  
   // Add more actions as needed
 };

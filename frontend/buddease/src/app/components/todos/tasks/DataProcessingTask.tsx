@@ -1,4 +1,4 @@
-import { User } from "./User";
+import { User } from "../../users/User";
 
 // dataProcessingTaskInterfaces.tsx
 export interface DataProcessingTask {

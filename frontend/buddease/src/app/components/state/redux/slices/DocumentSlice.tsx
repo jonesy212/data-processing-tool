@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../RootSlice";
+import { RootState } from "../../RootSlice";
 
 // Add a new slice for documentType and userIdeaexp
 export interface DocumentSliceState {

@@ -1,9 +1,9 @@
 import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
-import { Todo } from './Todo';
+import { Todo, todoInitialState } from './Todo';
 
 const todoEntitySlice = createSlice({
-  name: 'todos',
-  initialState: { entities: {} } as EntityState<Todo, string>,
+  name: "todos",
+  initialState: todoInitialState as EntityState<Todo, string>,
   reducers: {
     toggleTodo: (state, action: PayloadAction<string>) => {
       const todo = state.entities[action.payload];
@@ -18,7 +18,10 @@ const todoEntitySlice = createSlice({
     removeTodo: (state, action: PayloadAction<string>) => {
       delete state.entities[action.payload];
     },
-    updateTodoTitle: (state, action: PayloadAction<{ id: string; newTitle: string }>) => {
+    updateTodoTitle: (
+      state,
+      action: PayloadAction<{ id: string; newTitle: string }>
+    ) => {
       const todo = state.entities[action.payload.id];
       if (todo) {
         todo.title = action.payload.newTitle;
@@ -30,10 +33,9 @@ const todoEntitySlice = createSlice({
         state.entities[todo.id] = todo;
       });
     },
-    
+
     fetchTodosFailure: (state, action: PayloadAction<{ error: string }>) => {
       // Handle fetch todos failure if needed
-      
     },
     completeAllTodosRequest: (state) => {
       // Handle complete all todos request if needed
@@ -41,6 +43,7 @@ const todoEntitySlice = createSlice({
       Object.values(state.entities).forEach((todo) => {
         todo.done = true;
       });
+
     },
     completeAllTodosSuccess: (state) => {
       // Mark all todos as done
@@ -51,7 +54,15 @@ const todoEntitySlice = createSlice({
   },
 });
 
-export const { toggleTodo, addTodo, removeTodo, updateTodoTitle, fetchTodosSuccess, fetchTodosFailure, completeAllTodosRequest, completeAllTodosSuccess } = todoEntitySlice.actions;
+export const {
+  toggleTodo,
+  addTodo,
+  removeTodo,
+  updateTodoTitle,
+  fetchTodosSuccess,
+  fetchTodosFailure,
+  completeAllTodosRequest,
+  completeAllTodosSuccess } = todoEntitySlice.actions;
 export const selectTodos = (state: { todos: EntityState<Todo, string> }) =>
   state.todos.entities;
 

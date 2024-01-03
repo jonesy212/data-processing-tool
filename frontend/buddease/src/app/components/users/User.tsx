@@ -1,4 +1,4 @@
-import { DataProcessingTask } from "./DataProcessingTask";
+import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 // users.tsx
 export interface User {
   id: number;

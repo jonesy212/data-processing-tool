@@ -1,7 +1,7 @@
 // UserJourneyManager.tsx
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
-import { User, UserData } from "@/app/components/todos/tasks/User";
+import { User, UserData } from "@/app/components/users/User";
 import React, { useState } from "react";
 import OfferPage from "../onboarding/OfferPage";
 import { OnboardingPhase } from "../onboarding/OnboardingPhase";

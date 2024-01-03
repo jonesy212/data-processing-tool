@@ -1,29 +1,21 @@
 // taskSagas.ts
+import { taskService } from "@/app/components/tasks/TaskService";
 import axios, { AxiosResponse } from "axios";
-import { Effect, call, put, select, takeLatest } from "redux-saga/effects";
-import { Task } from "../../models/tasks/Task";
-import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import { TaskActions } from "../../tasks/TaskActions";
+import { Effect, call, put, takeLatest } from "redux-saga/effects";
+import { Task } from "../../../models/tasks/Task";
+import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
+import { TaskActions } from "../../../tasks/TaskActions";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTasksAPI = () => axios.get('/api/tasks');
 
 
-function* addTaskSaga(
-  action: ReturnType<typeof TaskActions.add>
-): Generator<Effect, void, any> {
+
+function* addTaskSaga(action: ReturnType<typeof TaskActions.add>): Generator {
   try {
     const { payload: newTask } = action;
-
-    const response: AxiosResponse<Task> = yield call(() =>
-      axios.post("/api/tasks", newTask, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-    );
-
-    yield put(TaskActions.updateTasksSuccess({ tasks: [response.data] }));
+    const response = yield call(taskService.addTask, newTask as Task);
+    yield put(TaskActions.updateTasksSuccess({ tasks: [response as Task] }));
   } catch (error) {
     yield put(
       TaskActions.updateTaskFailure({
@@ -32,6 +24,7 @@ function* addTaskSaga(
     );
   }
 }
+
 
 
 
@@ -51,23 +44,12 @@ function* fetchTaskSaga(): Generator<Effect, void, any> {
 }
 
 
-function* removeTaskSaga(
-  action: ReturnType<typeof TaskActions.remove>
-): Generator<Effect, void, any> {
+function* removeTaskSaga(action: ReturnType<typeof TaskActions.remove>): Generator {
   try {
-    const { id } = action.payload as unknown as { id: number };
-
-    yield call(() => axios.delete(`/api/tasks/${id}`));
-
-    yield put(
-      TaskActions.updateTasksSuccess({
-        tasks: yield select((state) =>
-          state.tasks.filter(
-            (task: Task) => task.id.toString() !== id.toString()
-          )
-        ),
-      })
-    );
+    const { payload: taskId } = action;
+    yield call(taskService.removeTask, taskId);
+    // Update the state or handle success if needed
+    yield put(TaskActions.removeTaskSuccess(taskId));
   } catch (error) {
     yield put(
       TaskActions.updateTaskFailure({
@@ -91,11 +73,10 @@ function* updateTaskSuccessSaga(
 }
 
 
-function* completeAllTasksSaga(): Generator<Effect, void, any> {
+function* completeAllTasksSaga(): Generator {
   try {
-    // Assuming there is an endpoint to mark all tasks as complete
-    yield call(() => axios.post('/api/tasks/complete-all'));
-
+    yield call(taskService.completeAllTasks);
+    // Update the state or handle success if needed
     yield put(TaskActions.completeAllTasksSuccess());
   } catch (error) {
     yield put(TaskActions.completeAllTasksFailure({ error: NOTIFICATION_MESSAGES.Tasks.COMPLETE_ALL_TASKS_ERROR }));
@@ -103,46 +84,30 @@ function* completeAllTasksSaga(): Generator<Effect, void, any> {
 }
 
 
+
 function* toggleTaskSaga(
   action: ReturnType<typeof TaskActions.toggle>
-): Generator<Effect, void, any> {
+): Generator {
   try {
     const { payload: taskId } = action;
+    const updatedTask = (yield call(taskService.toggleTask, taskId)) as Task;
 
-    const tasks = yield select((state) => state.tasks);
-    const task = tasks.find((t:any) => t.id === taskId);
-
-    if (task) {
-      task.completed = !task.completed;
-
-      yield call(() => axios.put(`/api/tasks/${taskId}`, task));
-
-      yield put(TaskActions.updateTasksSuccess({ tasks }));
-    }
+    yield put(TaskActions.updateTasksSuccess({ tasks: [updatedTask] }));
   } catch (error) {
     yield put(
       TaskActions.updateTaskFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_TOGGLE_ERROR
+        error: NOTIFICATION_MESSAGES.Tasks.TASK_TOGGLE_ERROR,
       })
     );
   }
 }
 
-function* updateTaskSaga(
-  action: ReturnType<typeof TaskActions.updateTask>
-): Generator<Effect, void, any> {
+
+function* updateTaskSaga(action: ReturnType<typeof TaskActions.updateTask>): Generator {
   try {
-    const { id, newTitle } = action.payload;
-
-    const response: AxiosResponse<Task> = yield call(() =>
-      axios.put(`/api/tasks/${id}`, { title: newTitle }, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-    );
-
-    yield put(TaskActions.updateTasksSuccess({ tasks: [response.data] }));
+    const { payload: { id, newTitle } } = action;
+    const response = yield call(taskService.updateTask, id, newTitle);
+    yield put(TaskActions.updateTasksSuccess({ tasks: [response] as Task[] }));
   } catch (error) {
     yield put(
       TaskActions.updateTaskFailure({
@@ -152,6 +117,19 @@ function* updateTaskSaga(
   }
 }
 
+function* fetchTasksSaga(): Generator {
+  try {
+    yield put(TaskActions.fetchTasksRequest());
+    const response = yield call(taskService.fetchTasks);
+    yield put(TaskActions.fetchTasksSuccess({ tasks: response as Task[] }));
+  } catch (error) {
+    yield put(
+      TaskActions.fetchTasksFailure({
+        error: NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
+      })
+    );
+  }
+}
 
 
 // Implementation for fetchTasksRequestSaga
@@ -159,9 +137,10 @@ function* fetchTasksRequestSaga(): Generator<Effect, void, any> {
   try {
     yield put(TaskActions.fetchTasksRequest());
 
-    const response: AxiosResponse<Task[]> = yield call(fetchTasksAPI);
+    // Use taskService to fetch tasks
+    const tasks: Task[] = yield call(taskService.fetchTasks);
 
-    yield put(TaskActions.fetchTasksSuccess({ tasks: response.data }));
+    yield put(TaskActions.fetchTasksSuccess({ tasks }));
   } catch (error) {
     yield put(TaskActions.fetchTasksFailure({ error: String(error) }));
   }
@@ -170,8 +149,8 @@ function* fetchTasksRequestSaga(): Generator<Effect, void, any> {
 // Implementation for completeAllTasksRequestSaga
 function* completeAllTasksRequestSaga(): Generator<Effect, void, any> {
   try {
-    // Assuming there is an endpoint to mark all tasks as complete
-    yield call(() => axios.post('/api/tasks/complete-all'));
+    // Use taskService to mark all tasks as complete
+    yield call(taskService.completeAllTasks);
 
     yield put(TaskActions.completeAllTasksSuccess());
   } catch (error) {
@@ -200,7 +179,6 @@ function* fetchTasksSuccessSaga(
     console.error("Error in fetchTasksSuccessSaga:", error);
   }
 }
-
 
 
 
@@ -314,6 +292,7 @@ export const taskSagas = [
   takeLatest(TaskActions.updateTaskSuccess.type, updateTaskSuccessSaga),
   takeLatest(TaskActions.updateTasksSuccess.type, updateTasksSuccessSaga),
   takeLatest(TaskActions.fetchTasksRequest.type, fetchTaskSaga), 
+  takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksSaga),
   takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksRequestSaga),
   takeLatest(TaskActions.fetchTasksSuccess.type, fetchTasksSuccessSaga),
   takeLatest(TaskActions.fetchTasksFailure.type, fetchTasksFailureSaga),

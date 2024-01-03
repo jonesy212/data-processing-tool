@@ -1,6 +1,5 @@
 // ChatDashboard.tsx
 import Project from '@/app/components/projects/Project';
-import { User } from '@/app/components/todos/tasks/User';
 import { AquaConfig } from '@/app/components/web3/web_configs/AquaConfig';
 import React from 'react';
 
@@ -16,7 +15,7 @@ interface ChatDashboardProps {
 interface DappProps extends DAppAdapterDappProps {
   currentUser: {
     id: string;
-    name?: string;
+    name: string;
     role?: string;
     teams?: Team[];
     projects?: Project[];
@@ -24,33 +23,66 @@ interface DappProps extends DAppAdapterDappProps {
   };
 }
 
+
 const ChatDashboard: React.FC<ChatDashboardProps> = ({ aquaConfig }) => {
   // Rest of component implementation
 
-  const dappProps: DappProps = {
+  const dappProps: DAppAdapterDappProps = {
     ...aquaConfig,
     currentUser: {
-      id: '0',
-      username: "",
-      email: "",
-      tier: "",
-      uploadQuota: 0,
-      // Add any other missing properties from User type
-    } as unknown as User,
-    appName: '',
-    appVersion: '',
-    currentProject: {
-      id: '',
-      name: '',
-      description: '',
-      tasks: [],
-      teamMembers: []
+      id: "0",
+      name: "",
+      role: "",
+      teams: [] as Team[],
+      projects: [] as Project[],
+      teamMembers: [] as TeamMember[],
     },
-    documentSize: 'letter',
+    appName: "",
+    appVersion: "",
+    currentProject: {
+      id: "",
+      name: "",
+      description: "",
+      tasks: [],
+      teamMembers: [],
+    },
+    documentSize: "letter",
     documentOptions: {} as DocumentOptions,
     enableRealTimeUpdates: false,
-    fluenceConfig: {},
-    aquaConfig: {} as AquaConfig
+    fluenceConfig: {} as DappProps['fluenceConfig'],
+    aquaConfig: {} as DappProps['aquaConfig'],
+    realtimeCommunicationConfig: {
+      audio: true,
+      video: true,
+      text: true,
+      collaboration: true
+    },
+    phasesConfig: {
+      ideation: true,
+      teamCreation: true,
+      productBrainstorming: true,
+      productLaunch: true,
+      dataAnalysis: true
+    },
+    communicationPreferences: {
+      defaultCommunicationMode: 'text',
+      enableRealTimeUpdates: true
+    },
+    dataAnalysisConfig: {
+      meaningfulResultsThreshold: 80
+    },
+    collaborationOptionsConfig: {
+      collaborativeEditing: true,
+      documentVersioning: true
+    },
+    projectTeamConfig: {
+      maxTeamMembers: 10,
+      teamRoles: []
+    },
+    securityConfig: {
+      encryptionEnabled: true,
+      twoFactorAuthentication: true
+    }
   };
 
   return <div>Chat Dashboard</div>;

@@ -1,7 +1,7 @@
 // ChatPage.tsx
 
 import { Channel, ChannelMember, ChannelMessage, ChannelRole, ChannelType } from '@/app/components/interfaces/chat/Channel';
-import { User } from '@/app/components/todos/tasks/User';
+import { User } from '@/app/components/users/User';
 import React, { useEffect, useState } from 'react';
 
 // Expand the ChatPageProps interface
