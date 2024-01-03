@@ -77,7 +77,21 @@ const ChatDashboard: React.FC<ChatDashboardProps> = ({ aquaConfig }) => {
     },
     projectTeamConfig: {
       maxTeamMembers: 10,
-      teamRoles: []
+      teamRoles: [
+        "Project Manager",
+        "Product Owner",
+        "Scrum Master",
+        "Business Analyst",
+        "UI/UX Designer",
+        "Software Developer",
+        "Quality Assurance Engineer",
+        "DevOps Engineer",
+        "Data Scientist",
+        "Marketing Specialist",
+        "Sales Representative",
+        "Customer Support",
+        "Legal Counsel"
+      ]
     },
     securityConfig: {
       encryptionEnabled: true,

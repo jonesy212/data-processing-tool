@@ -13,10 +13,10 @@ export interface DappProps {
   currentUser: {
     id: string;
     name: string;
-    role: string;
-    teams: Team[];
-    projects: Project[];
-    teamMembers: TeamMember[]; 
+    role?: string;
+    teams?: Team[];
+    projects?: Project[];
+    teamMembers?: TeamMember[]; 
   };
 
   // Project-related props
