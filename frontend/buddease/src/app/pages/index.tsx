@@ -7,6 +7,7 @@ import { useAuth } from "../components/auth/AuthContext";
 import useMessagingSystem from "../components/communications/chat/useMessagingSystem";
 import { rootStores } from "../components/state/stores/RootStores";
 import { User } from "../components/users/User";
+import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
 
  // pages/index.tsx
@@ -101,6 +102,7 @@ const Index: React.FC = () => {
   return (
     <Layout>
       <div>
+      <YourApp />
         <h1>Redirecting to the Dashboard...</h1>
       </div>
     </Layout>

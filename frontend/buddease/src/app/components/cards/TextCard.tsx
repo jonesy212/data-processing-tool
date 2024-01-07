@@ -1,4 +1,5 @@
 // TextCard.tsx
+import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
 import { ToolbarOptions } from '../documents/ToolbarOptions';
 
@@ -22,9 +23,9 @@ const TextCard: React.FC<TextCardProps> = ({ onSave }) => {
   return (
     <div>
       <h2>Text Card</h2>
-      <textarea
+      <DynamicTextArea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(newText) => setText(newText)}
         placeholder="Enter text here"
       />
       <button onClick={handleSave}>Save</button>

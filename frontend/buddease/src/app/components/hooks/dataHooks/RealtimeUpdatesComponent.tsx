@@ -1,4 +1,4 @@
-import { initializeUserData } from '@/app/pages/onboarding/userDataLogic';
+import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData.tsx';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { User, UserData } from '../../users/User';

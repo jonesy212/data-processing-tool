@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from blueprint_routes import user_history
 from blueprint_routes.auth import (change_password, deactivate_account,
                                    export_user_data, forgot_password,
                                    oauth_login, reactivate_account,
@@ -10,8 +11,8 @@ from blueprint_routes.auth import (change_password, deactivate_account,
                                    update_notification_settings,
                                    update_privacy_settings_db, update_profile,
                                    upload_avatar, user_activity_log,
-                                   user_history, user_roles_permissions_route,
-                                   user_search, verify_2fa, verify_email)
+                                   user_roles_permissions_route, user_search,
+                                   verify_2fa, verify_email)
 from database.extensions import db
 from models.user.user import User
 from state.stores.template_engine import render_template

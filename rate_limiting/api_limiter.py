@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_limiter import Limiter
 
 from configs.config import app
-from user.get_remote_address import get_remote_address
+from models.user.get_remote_address import get_remote_address
 
 limiter = Limiter(app, key_func=get_remote_address)
 

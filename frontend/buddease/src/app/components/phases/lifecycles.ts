@@ -1,180 +1,132 @@
-import { Phase } from "./Phase";
+import { enhancedPhaseHook } from "../hooks/phaseHooks/EnhancePhase";
+import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
+import { CustomPhaseHooks, Phase } from "./Phase";
 import { IdeaLifecyclePhase } from "./PhaseManager";
+
+interface PhaseOptions {
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  subPhases: string[];
+}
+
+// Define a function to generate a phase object
+const generatePhase = (name: string, subPhases: string[]): Phase => {
+  return {
+    name,
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases,
+    component: IdeaLifecyclePhase,
+    hooks: {
+      canTransitionTo: (nextPhase: Phase) => {
+        return !!enhancedPhaseHook.canTransitionTo(
+          nextPhase as Phase & PhaseHookConfig
+        );
+      },
+      handleTransitionTo: (nextPhase: Phase) => {
+        console.log("Transitioning to", nextPhase);
+        enhancedPhaseHook.handleTransitionTo(
+          nextPhase as Phase & PhaseHookConfig
+        );
+        return true;
+      },
+      resetIdleTimeout: async () => {},
+      isActive: false,
+    } as CustomPhaseHooks,
+  };
+};
 
 // Define an array of phases
 const lifecyclePhases: Phase[] = [
-  {
-    name: "Idea Lifecycle",
-    startDate: new Date(), // Added missing startDate property
-    endDate: new Date(), // Added missing startDate property
-    subPhases: ["Idea", "Team Building", "Ideation"],
+  generatePhase("Idea Lifecycle", ["Idea", "Team Building", "Ideation"]),
+  // Add more phases as needed using the generatePhase function
+];
+
+// Define an array of phases for the development app process
+const generateGenericPhase = ({
+  name,
+  startDate,
+  endDate,
+  subPhases,
+}: PhaseOptions): Phase => {
+  return {
+    name,
+    startDate,
+    endDate,
+    subPhases,
     component: IdeaLifecyclePhase,
     hooks: {
-      canTransitionTo: (nextPhase: string) => {
+      canTransitionTo: (nextPhase: Phase) => {
+        return !!enhancedPhaseHook.canTransitionTo(
+          nextPhase as Phase & PhaseHookConfig
+        );
+      },
+      handleTransitionTo: (nextPhase: Phase) => {
+        console.log("Transitioning to", nextPhase);
+        enhancedPhaseHook.handleTransitionTo(
+          nextPhase as Phase & PhaseHookConfig
+        );
         return true;
       },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-  {
-    name: "Project Execution",
-    subPhases: ["Project Planning", "Task Management", "Launch"],
-    component: IdeaLifecyclePhase,
-    startDate: new Date(), // Added missing startDate property
-    endDate: new Date(), // Added missing startDate property
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-  {
+      resetIdleTimeout: async () => {},
+      isActive: false,
+    } as CustomPhaseHooks,
+  };
+};
+
+// Define an array of phases for the development app process
+export const genericLifecyclePhases: Phase[] = [
+  generateGenericPhase({
+    name: "App Planning",
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases: ["Idea Validation", "Feature Planning", "Timeline Setup"],
+  }),
+  generateGenericPhase({
+    name: "Development",
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases: ["Coding", "Testing", "Debugging", "Deployment"],
+  }),
+  generateGenericPhase({
     name: "UX/UI Design",
+    startDate: new Date(),
+    endDate: new Date(),
     subPhases: ["User Research", "Wireframing", "Prototyping", "Testing"],
-    component: IdeaLifecyclePhase,
-    startDate: new Date(), // Added missing startDate property
-    endDate: new Date(), // Added missing startDate property
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-  {
-      name: "Development",
-      subPhases: ["Planning", "Coding", "Testing", "Deployment"],
-      component: IdeaLifecyclePhase,
-      startDate: new Date(), // Added missing startDate property
-      endDate: new Date(),
-
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-
-  {
+  }),
+  generateGenericPhase({
     name: "Post-Launch Activities",
+    startDate: new Date(),
+    endDate: new Date(),
     subPhases: [
       "Data Analysis",
       "Refactoring/Rebranding",
       "Collaboration Settings",
     ],
-    component: IdeaLifecyclePhase,
-    startDate: new Date(), // Added missing startDate property
-    endDate: new Date(), // Added missing startDate property
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-];
-
-// Define an array of phases for the development app process
-export const genericLifecyclePhases: Phase[] = [
-  {
-    name: "App Planning",
-        startDate: new Date(),
-        endDate: new Date(),
-
-    subPhases: ["Idea Validation", "Feature Planning", "Timeline Setup"],
-    component: IdeaLifecyclePhase,
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-  {
-    name: "Development",
-      startDate: new Date(),
-      endDate: new Date(),
-
-    subPhases: ["Coding", "Testing", "Debugging", "Deployment"],
-    component: IdeaLifecyclePhase,
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-  {
+  }),
+  generateGenericPhase({
     name: "User Experience",
     startDate: new Date(),
     endDate: new Date(),
     subPhases: ["User Testing", "Feedback Incorporation", "UI Refinement"],
-    component: IdeaLifecyclePhase,
-    hooks: {
-      canTransitionTo: (nextPhase: string) => {
-        return true;
-      },
-      handleTransitionTo: (nextPhase: string) => {
-        console.log("Transitioning to", nextPhase);
-      },
-    },
-  },
-  // Add more development app phases as needed
+  }),
+  generateGenericPhase({
+    name: "Maintenance",
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases: [
+      "Bug Fixing",
+      "Feature Enhancement",
+      "Performance Optimization",
+    ],
+  }),
+  generateGenericPhase({
+    name: "End of Life",
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases: ["Deprecation", "Sunsetting", "Archival"],
+  }),
 ];
 
-// Example usage:
-const selectedDevelopmentPhaseName = "Development";
-// const selectedPhaseName = "Development";
-
-const developmentSubPhases = getSubPhases(
-  genericLifecyclePhases,
-  selectedDevelopmentPhaseName
-);
-
-if (developmentSubPhases) {
-  console.log(
-    `Sub-phases of ${selectedDevelopmentPhaseName}:`,
-    developmentSubPhases
-  );
-} else {
-  console.log(`Phase "${selectedDevelopmentPhaseName}" not found.`);
-}
-
-// Function to get sub-phases based on the selected phase name
-function getSubPhases(
-  phases: Phase[],
-  selectedPhaseName: string
-): string[] | undefined {
-  const selectedPhase = phases.find(
-    (phase) => phase.name === selectedPhaseName
-  );
-  return selectedPhase?.subPhases;
-}
-
-// Example usage:
-const selectedPhaseName = "Project Execution";
-// const selectedPhaseName = "App Planning";
-
-const subPhases = getSubPhases(genericLifecyclePhases, selectedPhaseName);
-
-if (subPhases) {
-  console.log(`Sub-phases of ${selectedPhaseName}:`, subPhases);
-} else {
-  console.log(`Phase "${selectedPhaseName}" not found.`);
-}
+// Rest of the code remains unchanged

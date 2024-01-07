@@ -1,4 +1,3 @@
-// CommonLoginLogic.ts
 // CommonLayout.ts
 
 import React from 'React';

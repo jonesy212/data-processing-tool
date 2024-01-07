@@ -317,10 +317,53 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
     fluenceConfig: {
       //todo update
       ethereumPrivateKey: "FLUENCE_API_KEY",
-      //todo verify if this is needed here
-      // projectId: "PROJECT_ID"
+      networkId: 1,
+      gasPrice: 1000000000,
+      contractAddress: "0x..."
     },
-    aquaConfig: {},
+    aquaConfig: {} as DappProps["aquaConfig"],
+    realtimeCommunicationConfig: {
+      audio: true,
+      video: true,
+      text: true,
+      collaboration: true
+    },
+    phasesConfig: {
+      ideation: true,
+      teamCreation: true,
+      productBrainstorming: true,
+      productLaunch: true,
+      dataAnalysis: true
+    },
+    communicationPreferences: {
+      defaultCommunicationMode: "text",
+      enableRealTimeUpdates: true
+    },
+    dataAnalysisConfig: {
+      meaningfulResultsThreshold: 80
+    },
+    collaborationOptionsConfig: {
+      collaborativeEditing: true,
+      documentVersioning: true
+    },
+    projectTeamConfig: {
+      maxTeamMembers: 10,
+      teamRoles: [
+        "Project Manager", "Product Owner",
+        "Scrum Master", "Business Analyst",
+        "UI/UX Designer", "Software Developer",
+        "Quality Assurance Engineer", "DevOps Engineer",
+      "Data Scientist",
+      "Marketing Specialist",
+      "Sales Representative",
+      "Customer Support",
+      "Legal Counsel",
+      ]
+    },
+    securityConfig: {
+      encryptionEnabled: true,
+      twoFactorAuthentication: true
+    }
   },
 };
 

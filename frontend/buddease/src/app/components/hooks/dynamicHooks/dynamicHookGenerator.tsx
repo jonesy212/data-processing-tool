@@ -1,29 +1,40 @@
 // DynamicHookGenerator.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export type DynamicHookParams = {
-  condition: () => boolean;
+  condition: () => Promise<boolean>;
   asyncEffect: () => Promise<void>;
   cleanup?: () => void;
+  resetIdleTimeout: () => void;
+  isActive: boolean;
 };
 
 export type DynamicHookResult = {
   isActive: boolean;
+  animateIn: (selector: string) => void;
   toggleActivation: () => void;
-  startAnimation: () => void; // Add startAnimation method
-  stopAnimation: () => void; // Add stopAnimation method
+  startAnimation: () => void;
+  stopAnimation: () => void;
+  resetIdleTimeout?: () => void;
+  intervalId?: number
 };
 
-
-
-const createDynamicHook = ({ condition, asyncEffect, cleanup }: DynamicHookParams) => {
+const createDynamicHook = ({
+  condition,
+  asyncEffect,
+  cleanup,
+}: DynamicHookParams) => {
   return () => {
     const [isActive, setIsActive] = useState(true);
 
     useEffect(() => {
-      if (isActive && condition()) {
-        asyncEffect();
-      }
+      const runAsyncEffect = async () => {
+        if (isActive && await condition()) {
+          await asyncEffect();
+        }
+      };
+
+      runAsyncEffect();
 
       return () => {
         if (cleanup) {
@@ -37,15 +48,14 @@ const createDynamicHook = ({ condition, asyncEffect, cleanup }: DynamicHookParam
       toggleActivation: (options?: { accessToken?: string }) => {
         setIsActive((prev) => !prev);
         if (options?.accessToken) {
-          // Handle accessToken as needed
-          console.log('Received accessToken:', options.accessToken);
+          console.log("Received accessToken:", options.accessToken);
         }
       },
       startAnimation: () => {},
       stopAnimation: () => {},
+      animateIn: () => {},
     };
   };
 };
-
 
 export default createDynamicHook;

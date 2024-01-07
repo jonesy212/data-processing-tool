@@ -228,6 +228,11 @@ function* updateTodosSuccessSaga(
   try {
     // Implement the logic to handle the updateTodosSuccess action
     const { todos } = action.payload;
+    // For example, you might want to update the state with the updated todos
+    yield put({
+      type: "UPDATE_TASKS_ACTION_TYPE",
+      payload: { todos }
+    })
     // Additional logic can be added here if needed
   } catch (error) {
     // Handle errors if necessary
@@ -295,4 +300,5 @@ export const todoSagas = [
     TodoActions.completeAllTodosFailure.type,
     completeAllTodosFailureSaga
   ),
+  takeLatest(TodoActions.completeAllTodosSuccess.type, completeAllTodosSaga)
 ];

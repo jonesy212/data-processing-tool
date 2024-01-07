@@ -66,6 +66,7 @@ interface ConfigurationOptions {
     userPreferences: typeof userPreferences;
     backendDocumentConfig: typeof backendDocumentConfig; // Add backendDocumentConfig here
     frontendStructure: typeof frontendStructure;
+    
   };
   // other configuration options
 }

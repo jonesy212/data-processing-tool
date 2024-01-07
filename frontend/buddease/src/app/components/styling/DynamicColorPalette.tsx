@@ -6,11 +6,13 @@ interface DynamicColorPaletteProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
   colorCodingEnabled: boolean; 
   brandingSwatches: ColorSwatchProps[]; // Add brandingSwatches prop
+  colors: ColorSwatchProps[]; 
 }
 
 const DynamicColorPalette: React.FC<DynamicColorPaletteProps> = ({
   dynamicContent,
-  colorCodingEnabled
+  colorCodingEnabled,
+  colors, 
 }) => {
   // Dynamic generation of color swatches
   const dynamicColorSwatches: ColorSwatchProps[] = [
@@ -28,8 +30,9 @@ const DynamicColorPalette: React.FC<DynamicColorPaletteProps> = ({
     <div>
       <h1>{dynamicContent ? "Dynamic" : "Static"} Color Palette</h1>
       <ColorPalette
-        swatches={dynamicContent ? dynamicColorSwatches : staticColorSwatches}
-        colorCodingEnabled={colorCodingEnabled} brandingSwatches={[]}      />
+        swatches={dynamicContent ? colors : staticColorSwatches}
+        colorCodingEnabled={colorCodingEnabled} brandingSwatches={[]}
+      />
     </div>
   );
 };

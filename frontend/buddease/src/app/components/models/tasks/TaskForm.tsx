@@ -1,4 +1,5 @@
 // TaskForm.tsx
+import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
 import { Task } from './Task';
 
@@ -45,9 +46,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit }) => {
       <br />
       <label>
         Task Description:
-        <textarea
+        <DynamicTextArea
           value={taskDescription}
-          onChange={(e) => setTaskDescription(e.target.value)}
+          onChange={(newText) => setTaskDescription(newText)}
+
         />
       </label>
       <br />

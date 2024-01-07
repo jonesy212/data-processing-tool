@@ -1,7 +1,24 @@
-// questionnaireLogic.ts
-import axios from 'axios';
-import { User, UserData } from '../../components/users/User';
-export function initializeUserData(user: User): UserData {
+// PersonaBuilderData.ts
+import axios from "axios";
+import { Question } from "./Question";
+
+export interface PersonaData {
+  [key: string]: string[];
+}
+
+export const onboardingQuestionnaireData: {
+  title: string;
+  description: string;
+  questions: Question[];
+} = {
+  title: "User Questionnaire",
+  description: "Please answer the following questions to know you better:",
+  questions: [
+    // ... (your questionnaire questions)
+  ],
+};
+
+export function initializeUserData(user: any) {
   if (user.data) {
     return {
       datasets: '',
@@ -25,27 +42,19 @@ export function initializeUserData(user: User): UserData {
   };
 }
 
-export async function handleQuestionnaireSubmit(
-  userResponses: { [key: string]: string },
-  userData: UserData,
-  setCurrentPhase: (phase: string) => void
-): Promise<void> {
+export async function handleQuestionnaireSubmit(userResponses: any, userData: any, setCurrentPhase: any) {
   try {
-    // Mock the axios.post function for testing
     const axiosResponse = { status: 200, data: {} };
     (axios.post as any).mockResolvedValue(axiosResponse);
 
-    // Perform the actual axios post (in a real scenario, this would be the actual API call)
     const response = await axios.post("/api/questionnaire-submit", {
       userResponses,
     });
 
-    // If the API call is successful, update the current phase
     if (response.status === 200) {
       setCurrentPhase("OFFER");
     }
   } catch (error) {
-    // Handle errors if needed
     console.error("Error submitting questionnaire:", error);
   }
 }

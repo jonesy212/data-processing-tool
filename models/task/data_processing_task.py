@@ -1,6 +1,8 @@
 # tasks.py
 from datetime import datetime
 
+from sqlalchemy.orm import relationship
+
 # from configs.config import db
 from database.extensions import db
 from logging_system.error_logger import log_error
@@ -19,6 +21,11 @@ class DataProcessingTask(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     start_time = db.Column(db.DateTime)
     completion_time = db.Column(db.DateTime)
+    due_date = db.Column(db.DateTime)
+    priority = db.Column(db.String(20))  # You can adjust the type based on your needs
+    tags = db.Column(db.String(255))  # Comma-separated list or JSON array for tags
+    assigned_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    assigned_user = relationship('User', foreign_keys=[assigned_user_id])
 
     def initiate_processing(self):
         #update taskk status 'in-progress' or handle any other relavant logic

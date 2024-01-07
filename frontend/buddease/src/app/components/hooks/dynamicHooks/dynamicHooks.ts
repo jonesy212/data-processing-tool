@@ -7,7 +7,6 @@ import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuen
 import useAuthentication from "../useAuthentication";
 import createDynamicHook from "./dynamicHookGenerator";
 
-
 const handleLogin = () => {
   performLogin(
     "exampleUsername",
@@ -16,8 +15,7 @@ const handleLogin = () => {
       // On successful login
       console.log("Login successful!");
       // Redirect or perform other actions
-      loadDashboardState()
-
+      loadDashboardState();
     },
     (error) => {
       // On login error
@@ -29,7 +27,7 @@ const handleLogin = () => {
 
 // Authentication
 const authenticationHook = createDynamicHook({
-  condition: () => {
+  condition: async () => {
     const accessToken = localStorage.getItem("token");
     return !!accessToken;
   },
@@ -48,11 +46,16 @@ const authenticationHook = createDynamicHook({
       };
     }, []);
   },
+  resetIdleTimeout: () => {
+    // add logic to reset idle timeout
+  },
+  isActive: true, // set hook to be active
 });
+
 
 // Job Search
 const jobSearchHook = createDynamicHook({
-  condition: () => true,
+  condition: async () => true,
   asyncEffect: async () => {
     return useEffect(() => {
       console.log("useEffect triggered for JobSearch");
@@ -61,12 +64,16 @@ const jobSearchHook = createDynamicHook({
       };
     }, []);
   },
+  resetIdleTimeout: () => {
+    // add logic to reset idle timeout
+  },
+  isActive: true, // set hook to be active
 });
 
 
 // Recruiter Dashboard
 const recruiterDashboardHook = createDynamicHook({
-  condition: () => true,
+  condition: async () => true,
   asyncEffect: async () => {
     return useEffect(() => {
       console.log("useEffect triggered for RecruiterDashboard");
@@ -75,11 +82,15 @@ const recruiterDashboardHook = createDynamicHook({
       };
     }, []);
   },
+  resetIdleTimeout: () => {
+    // add logic to reset idle timeout
+  },
+  isActive: true, // set hook to be active
 });
 
 // Chat Dashboard
 const chatDashboardHook = createDynamicHook({
-  condition: () => true,
+  condition: async () => true,
   asyncEffect: async () => {
     return useEffect(() => {
       console.log("useEffect triggered for ChatDashboard");
@@ -88,11 +99,15 @@ const chatDashboardHook = createDynamicHook({
       };
     }, []);
   },
+  resetIdleTimeout: () => {
+    // add logic to reset idle timeout
+  },
+  isActive: true, // set hook to be active
 });
 
 // User Profile
 const userProfileHook = createDynamicHook({
-  condition: () => true,
+  condition: async () => true,
   asyncEffect: async () =>
     useEffect(() => {
       console.log("useEffect triggered for UserProfile");
@@ -100,15 +115,20 @@ const userProfileHook = createDynamicHook({
         console.log("useEffect cleanup for UserProfile");
       };
     }, []),
+  resetIdleTimeout: () => {
+    // add logic to reset idle timeout
+  },
+  isActive: true, // set hook to be active
 });
 
-
-
 // Function to generate prompts based on user ideas
-const generatePrompt = (userIdea: any) => {
-  // Replace this logic with your actual prompt generation based on user ideas
-  if (userIdea === 'web development') {
-    return 'You are a professional in web development. You have the expertise and experiences to answer any questions.';
+const generatePrompt = (userIdea: string, roles: string[]): string | null => {
+  // Replace this logic with your actual prompt generation based on user ideas and roles
+  if (userIdea === "web development") {
+    const rolePrompt = roles.length > 0
+      ? `You are a professional in web development with expertise in roles such as ${roles.join(", ")}.`
+      : "You are a professional in web development.";
+    return `${rolePrompt} You have the skills and experiences to contribute effectively to a project, from conception to product launch. Your expertise can cover a wide range of areas, including ideation, team creation, product brainstorming, and more.`;
   } else {
     return null; // Handle other cases or return a default prompt
   }
@@ -119,7 +139,7 @@ const useDynamicPrompt = (userIdea: any) => {
   const [prompt, setPrompt] = useState<string | null>(null);
 
   useEffect(() => {
-    const generatedPrompt = generatePrompt(userIdea);
+    const generatedPrompt = generatePrompt(userIdea, []);
     if (typeof generatedPrompt === "string") {
       setPrompt(generatedPrompt);
     } else {
@@ -131,16 +151,14 @@ const useDynamicPrompt = (userIdea: any) => {
 };
 
 // Example usage:
-const userIdea = 'web development'; // Replace with the actual user's idea
+const userIdea = "web development"; // Replace with the actual user's idea
 const generatedPrompt = useDynamicPrompt(userIdea);
 
 if (generatedPrompt) {
   console.log(generatedPrompt);
 } else {
-  console.log('Prompt generation failed. Please provide a valid user idea.');
+  console.log("Prompt generation failed. Please provide a valid user idea.");
 }
-
-
 
 // Fluence
 const fluenceHook = useFluence;
@@ -158,14 +176,13 @@ const dynamicHooks = {
   aqua: { hook: aquaHook },
 };
 
-
-
 // Subscription service using dynamic hooks
 // Subscription service using dynamic hooks
 const subscriptionService = {
   subscriptions: new Map<string, (message: any) => void>(), // Modify the Map to accept a callback with a message parameter
 
-  subscribe: (hookName: string, callback: (message: any) => void) => { // Update the callback signature
+  subscribe: (hookName: string, callback: (message: any) => void) => {
+    // Update the callback signature
     const dynamicHook = dynamicHooks[hookName as keyof typeof dynamicHooks];
     if (dynamicHook) {
       dynamicHook.hook();
@@ -191,7 +208,6 @@ const subscriptionService = {
     web3Provider.connectWeb3Provider();
   },
 };
-
 
 export { subscriptionService };
 export default dynamicHooks;

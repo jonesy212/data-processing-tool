@@ -5,7 +5,7 @@ import { DocumentAnimationOptions } from "./SharedDocumentProps";
 // documentOptions.ts
 export interface DocumentOptions {
   documentType: string; // Add documentType property
-  userIdea: string; // Add userIdea property
+  userIdea: string; 
   additionalOptions: string | number | readonly string[] | undefined;
   isDynamic: boolean;
   documents: Document[]; 

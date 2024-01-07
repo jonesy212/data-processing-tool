@@ -3,10 +3,10 @@ import React from 'react';
 import { Task, TaskDetails } from '../models/tasks/Task';
 
 interface TaskListProps{
-  tasks: Task[];
+  tasks?: Task[];
 }
 
-const TaskList: React.FC<TaskListProps> = observer(({tasks}) => {
+const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
   // Explicitly type tasks as an array of Task
 
   return (

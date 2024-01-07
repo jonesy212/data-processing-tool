@@ -27,8 +27,7 @@ export const Palette: React.FC<PaletteProps> = ({
           >
             <ColorPicker
               color={color}
-              onChange={(newColor) => onColorChange(index, newColor)}
-            />
+              onChange={(newColor) => onColorChange(index, newColor)} colorCodingEnabled={false}            />
             <button onClick={() => onRemoveColor(index)}>Remove</button>
           </div>
         ))}

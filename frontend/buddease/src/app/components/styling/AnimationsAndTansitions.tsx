@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 
 export interface AnimatedComponentProps {
   animationClass: string;
-  children: React.ReactNode;
+  // children: React.ReactNode;
 
 }
 
@@ -43,7 +43,7 @@ const renderDynamicContent = (examples: ReactNode[]) => {
           return (
             <DynamicComponent
               key={index}
-              animationClass={example.props.animationClass} children={undefined}            />
+              animationClass={example.props.animationClass} />
           );
         }
       })}

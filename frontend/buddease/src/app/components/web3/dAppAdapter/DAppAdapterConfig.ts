@@ -35,7 +35,7 @@ export interface DappProps {
   enableRealTimeUpdates: boolean;
 
   fluenceConfig: {
-    ethereumPrivateKey: "your_private_key_here",
+    ethereumPrivateKey: "FLUENCE_API_KEY",
     networkId: 1, // Mainnet, 3 for Ropsten, etc.
     gasPrice: 1000000000, // Gas price in wei
     contractAddress: "0x...", // Replace with your contract address

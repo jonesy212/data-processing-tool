@@ -1,12 +1,11 @@
 // ChatDashboard.tsx
-import Project from '@/app/components/projects/Project';
-import { AquaConfig } from '@/app/components/web3/web_configs/AquaConfig';
-import React from 'react';
-
 import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
 import { Team } from '@/app/components/models/teams/Team';
 import { TeamMember } from '@/app/components/models/teams/TeamMembers';
+import Project from '@/app/components/projects/Project';
 import { DappProps as DAppAdapterDappProps } from "@/app/components/web3/dAppAdapter/DAppAdapterConfig";
+import { AquaConfig } from '@/app/components/web3/web_configs/AquaConfig';
+import React from 'react';
 
 interface ChatDashboardProps {
   aquaConfig: AquaConfig;

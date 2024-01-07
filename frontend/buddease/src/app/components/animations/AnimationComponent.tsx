@@ -1,6 +1,6 @@
 // AnimatedComponent.tsx
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import createDynamicHook, { DynamicHookResult } from '../hooks/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook, { DynamicHookParams, DynamicHookResult } from '../hooks/dynamicHooks/dynamicHookGenerator';
 import { AnimatedComponentProps } from '../styling/AnimationsAndTansitions';
 
 import DraggableAnimation from './DraggableAnimation'; // Import DraggableAnimation
@@ -11,6 +11,8 @@ export interface AnimatedComponentRef extends DynamicHookResult {
   setOpacity: (opacity: number) => void;
   startAnimation: () => void;
   stopAnimation: () => void; 
+  animateIn: (selector: string) => void; 
+
 }
 
 const AnimatedComponent = forwardRef<
@@ -21,14 +23,19 @@ const AnimatedComponent = forwardRef<
   const [animationTime, setAnimationTime] = useState(1000);
   const [opacity, setOpacity] = useState(1);
 
-  const { toggleActivation, startAnimation, stopAnimation } = createDynamicHook(
-    {
+  const { toggleActivation, startAnimation, stopAnimation, animateIn } =
+    createDynamicHook({
       condition: () => isVisible,
       asyncEffect: async () => {
         setIsVisible(true);
       },
-    }
-  )();
+      resetIdleTimeout: () => {
+        // Reset idle timeout
+        
+      },
+      isActive: false,
+    } as unknown as DynamicHookParams)();
+
 
   useImperativeHandle(
     ref,
@@ -40,11 +47,15 @@ const AnimatedComponent = forwardRef<
       setOpacity: (opacity: number) => {
         setOpacity(opacity);
       },
+      
       startAnimation,
       stopAnimation,
+      animateIn: () => {
+        startAnimation();
+      },
       isActive: isVisible,
     }),
-    [toggleActivation, startAnimation, stopAnimation, isVisible]
+    [toggleActivation, startAnimation, animateIn, stopAnimation, isVisible]
   );
 
   useEffect(() => {
@@ -73,6 +84,8 @@ const AnimatedComponent = forwardRef<
         <button onClick={() => toggleActivation()}>Toggle Activation</button>
         <button onClick={startAnimation}>Start Animation</button>
         <button onClick={stopAnimation}>Stop Animation</button>
+        <button onClick={() => animateIn()}>Animate In</button>
+
       </div>
     </DraggableAnimation>
   );

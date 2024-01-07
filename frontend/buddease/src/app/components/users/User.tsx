@@ -1,3 +1,5 @@
+import { TeamMember } from "../models/teams/TeamMembers";
+import Project from "../projects/Project";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 // users.tsx
 export interface User {
@@ -23,7 +25,8 @@ export interface UserData {
   tasks?: string;
   questionnaireResponses?: any;
   chatSettings?: string
-  // projects: Project[];
-  // teams: string[];
-  // teamMembers: TeamMember[];
+  projects: Project[];
+  teams: string[];
+  teamMembers: TeamMember[];
+  
 }

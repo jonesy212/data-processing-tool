@@ -2,7 +2,7 @@
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
-import { User, UserData } from "@/app/components/users/User";
+import { UserData } from "@/app/components/users/User";
 import axios from "axios";
 import React, { useState } from "react";
 import UserQuestionnaire from "../personas/UserQuestionnaire";
@@ -25,8 +25,12 @@ const UserJourneyManager: React.FC = () => {
     OnboardingPhase.REGISTER
   );
 
-  let userData: UserData = {
-    ...(state.user as User)?.data,
+  interface TempUserData extends UserData {
+    questionnaireResponses: { [key: string]: string };
+  }
+
+  let userData: TempUserData = {
+    ...(state.user?.data || {}),
     questionnaireResponses: {},
   };
 
@@ -37,7 +41,7 @@ const UserJourneyManager: React.FC = () => {
   const handleQuestionnaireSubmit = async (userResponses: any) => {
     try {
       // handle questionnaire submission
-      
+
       // Update user data locally
       userData = {
         ...userData,

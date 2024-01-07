@@ -39,7 +39,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     isDynamic: true,
     defaultOptions: {
       size: "letter",
-      additionalOption: "",
+      additionalOptions: "",
       documents: {} as Document[],
       isDynamic: false,
       visibility: "private",

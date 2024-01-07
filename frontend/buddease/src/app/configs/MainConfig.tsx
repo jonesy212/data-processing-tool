@@ -4,7 +4,6 @@ import frontendStructure from "./FrontendStructure";
 import userPreferences from "./UserPreferences";
 import userSettings from "./UserSettings";
 
-
 const cacheData = {
   lastUpdated: "",
   userPreferences,

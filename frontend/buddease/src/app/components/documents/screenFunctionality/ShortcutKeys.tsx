@@ -1,24 +1,40 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React, { MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 
 const DynamicEventHandlerExample = () => {
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
+
+
+
 
   // Helper function to add messages
   const addMessage = (message: string) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-  //   // Separate event handlers for keyboard and mouse events
-  // const handleKeyboardEvent = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //   const syntheticEvent = event as React.SyntheticEvent<Element, Event>;
-  //   handleKeyboardShortcuts(syntheticEvent);
-  // };
 
-  // const handleMouseEvent = (event: MouseEvent & SyntheticEvent) => {
-  //   const syntheticEvent = event as React.SyntheticEvent;
-  //   handleMouseClick(syntheticEvent);
-  // };
+
+
+  // Separate event handlers for keyboard and mouse events
+  const handleKeyboardEvent = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    const syntheticEvent = event as React.SyntheticEvent<Element, Event>;
+    handleKeyboardShortcuts(syntheticEvent);
+  };
+
+
+
+
+
+  const handleMouseEvent = (event: MouseEvent & SyntheticEvent) => {
+    const syntheticEvent = event as React.SyntheticEvent;
+    handleMouseClick(syntheticEvent);
+  };
+
+
+
+
 
   // Simulating the functions you want to call
   const handleKeyboardShortcuts = (event: React.SyntheticEvent) => {
@@ -26,49 +42,125 @@ const DynamicEventHandlerExample = () => {
     console.log("Handling keyboard shortcuts:", event);
   };
 
+
+
+
+
+
+
+
+
   const handleMouseClick = (event: React.SyntheticEvent) => {
     // Logic for handling mouse click
     console.log("Handling mouse click:", event);
   };
 
-  const handleDragAndDrop = (event: React.SyntheticEvent) => {
-    // Logic for handling drag and drop
-    console.log("Handling drag and drop:", event);
+
+
+
+  const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
+    // Accessing scroll-related information
+    const scrollTop = event.currentTarget.scrollTop;
+    const scrollLeft = event.currentTarget.scrollLeft;
+
+    // Your custom logic for handling scrolling
+    console.log("Handling scrolling:");
+    console.log("Scroll Top:", scrollTop);
+    console.log("Scroll Left:", scrollLeft);
+
+    // Additional logic based on scroll position or other scroll-related information
+    if (scrollTop > 100) {
+      // Perform an action when the scroll position is beyond a certain point
+      console.log("You scrolled beyond 100 pixels from the top.");
+    }
+
+    // Add more specific logic based on your application's requirements
   };
 
-  const handleScrolling = (event: React.SyntheticEvent) => {
-    // Logic for handling scrolling
-    console.log("Handling scrolling:", event);
-  };
 
-  const handleResize = (event: React.SyntheticEvent) => {
-    // Logic for handling resize
-    console.log("Handling resize:", event);
-    // Additional logic for resizing...
-  };
 
-  const handleZoom = (event: React.SyntheticEvent) => {
-    // Logic for handling zoom
-    console.log("Handling zoom:", event);
+
+  const handleZoom = (event: React.WheelEvent<HTMLDivElement>) => {
+    // Accessing zoom-related information
+    const scale = event.deltaY;
+  
+    // Your custom logic for handling zoom
+    console.log("Handling zoom:");
+    console.log("Zoom Scale:", scale);
+  
     // Additional logic for zooming...
+    if (scale > 0) {
+      // Perform an action when zoomed in
+      console.log("You zoomed in.");
+    } else if (scale < 0) {
+      // Perform an action when zoomed out
+      console.log("You zoomed out.");
+    }
+  
+    // Add more specific logic based on your application's requirements
   };
+  
+
+
+
+
 
   const handleHighlighting = (event: React.SyntheticEvent) => {
-    // Logic for handling highlighting
-    console.log("Handling highlighting:", event);
+    const highlightEvent = event as React.MouseEvent<HTMLDivElement>;
+
+    // Accessing highlighting-related information
+    const selectedText = window.getSelection()?.toString();
+
+    // Your custom logic for handling highlighting
+    console.log("Handling highlighting:");
+    console.log("Selected Text:", selectedText);
+
     // Additional logic for highlighting...
+    if (selectedText) {
+      // Perform an action when text is highlighted
+      console.log("You highlighted some text:", selectedText);
+    }
+
+    // Add more specific logic based on your application's requirements
   };
 
-  const handleAnnotations = (event: React.SyntheticEvent) => {
-    // Logic for handling annotations
-    console.log("Handling annotations:", event);
+
+
+
+
+
+  const handleAnnotations = (event: React.MouseEvent<HTMLDivElement>) => {
+    // Accessing annotation-related information
+    const annotationDetails = "Some annotation details"; // Replace with actual annotation details
+
+    // Your custom logic for handling annotations
+    console.log("Handling annotations:");
+    console.log("Annotation Details:", annotationDetails);
+
     // Additional logic for annotations...
+    // For example, update UI based on annotations or trigger further actions.
+
+    // Add more specific logic based on your application's requirements
   };
 
-  const handleCopyPaste = (event: React.SyntheticEvent) => {
-    // Logic for handling copy/paste
-    console.log("Handling copy/paste:", event);
+
+
+
+
+
+
+  const handleCopyPaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+    // Accessing copy/paste-related information
+    const copiedText = event.clipboardData?.getData("text"); // Retrieve copied text
+
+    // Your custom logic for handling copy/paste
+    console.log("Handling copy/paste:");
+    console.log("Copied Text:", copiedText);
+
     // Additional logic for copy/paste...
+    // For example, process copied text or update UI based on copy/paste actions.
+
+    // Add more specific logic based on your application's requirements
   };
 
   const handleUndoRedo = (event: React.SyntheticEvent) => {
@@ -76,6 +168,11 @@ const DynamicEventHandlerExample = () => {
     console.log("Handling undo/redo:", event);
     // Additional logic for undo/redo...
   };
+
+
+
+
+
 
   const DynamicEventHandlerExample = () => {
     // State to track messages
@@ -85,29 +182,39 @@ const DynamicEventHandlerExample = () => {
     const addMessage = (message: string) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     };
-
-    const handleContextMenus = (event: React.SyntheticEvent) => {
+    const handleContextMenus = (event: React.MouseEvent<HTMLDivElement>) => {
       // Logic for handling context menus
       console.log("Handling context menus:", event);
-      // Additional logic for context menus...
-    };
 
-    const handleNotifications = (event: React.SyntheticEvent) => {
-      // Logic for handling notifications
-      console.log("Handling notifications:", event);
-      // Additional logic for notifications...
+      // Additional logic for context menus...
+      // For example, display a custom context menu or perform specific actions.
+      const customContextMenu = document.getElementById("customContextMenu");
+
+      if (customContextMenu) {
+        // Show the custom context menu at the mouse position
+        customContextMenu.style.display = "block";
+        customContextMenu.style.left = `${event.clientX}px`;
+        customContextMenu.style.top = `${event.clientY}px`;
+      }
+
+      // Add more specific logic based on your application's requirements
     };
 
     const handleFullscreenMode = (event: React.SyntheticEvent) => {
       // Logic for handling fullscreen mode
       console.log("Handling fullscreen mode:", event);
-      // Additional logic for fullscreen mode...
-    };
 
-    const handleDarkLightMode = (event: React.SyntheticEvent) => {
-      // Logic for handling dark/light mode
-      console.log("Handling dark/light mode:", event);
-      // Additional logic for dark/light mode...
+      // Additional logic for fullscreen mode...
+      // For example, toggle fullscreen mode or update UI based on fullscreen changes.
+      const isFullscreen = document.fullscreenElement !== null;
+
+      if (isFullscreen) {
+        console.log("Exiting fullscreen mode.");
+      } else {
+        console.log("Entering fullscreen mode.");
+      }
+
+      // Add more specific logic based on your application's requirements
     };
 
     const handleSettingsPanel = (event: React.SyntheticEvent) => {
@@ -129,26 +236,43 @@ const DynamicEventHandlerExample = () => {
       // Additional logic for search functionality...
     };
 
-    const handleFiltering = (event: React.SyntheticEvent) => {
-      // Logic for handling filtering
-      console.log("Handling filtering:", event);
-      // Additional logic for filtering...
-    };
-
-    const handleSorting = (event: React.SyntheticEvent) => {
-      // Logic for handling sorting
-      console.log("Handling sorting:", event);
-      // Additional logic for sorting...
-    };
-
     // Simulating the function you want to call
     const handleProgressIndicators = (event: React.SyntheticEvent) => {
+      // Assuming you have some progress-related information in your application state
+      const currentProgress = 50; // Example: current progress is 50%
+
       // Logic for handling progress indicators
       console.log("Handling progress indicators:", event);
 
       // Additional logic for progress indicators...
-      // For example, update a progress bar or display loading spinner.
+      // For example, update a progress bar or display a loading spinner.
+
+      // Assuming you have a progress bar element in your UI
+      const progressBar = document.getElementById("progressBar");
+
+      if (progressBar) {
+        // Update the progress bar based on the current progress
+        progressBar.style.width = `${currentProgress}%`;
+
+        // Display a loading spinner when progress is ongoing
+        if (currentProgress < 100) {
+          const loadingSpinner = document.getElementById("loadingSpinner");
+          if (loadingSpinner) {
+            loadingSpinner.style.display = "block";
+          }
+        } else {
+          // Hide the loading spinner when progress is complete
+          const loadingSpinner = document.getElementById("loadingSpinner");
+          if (loadingSpinner) {
+            loadingSpinner.style.display = "none";
+          }
+        }
+      }
     };
+
+
+
+
 
     // Dynamic event handler generator
     const createEventHandler =
@@ -180,30 +304,199 @@ const DynamicEventHandlerExample = () => {
       createEventHandler("handleMouseMove")(event);
     };
 
+    // Simulating the functions you want to call
+    const handleSorting = createEventHandler(
+      "handleSorting",
+      (event: React.SyntheticEvent) => {
+        // Logic for handling sorting
+        console.log("Handling sorting:", event);
+
+        // Additional logic for sorting...
+        // For example, trigger a sorting algorithm or update UI based on sorting action.
+        const sortableList = document.getElementById("sortableList");
+
+        if (sortableList) {
+          // Simulate sorting algorithm (e.g., sorting list items alphabetically)
+          const listItems = Array.from(sortableList.children);
+          const sortedItems = listItems.sort(
+            (a, b) => a.textContent?.localeCompare(b.textContent || "") || 0
+          );
+
+          // Update UI with sorted items
+          sortableList.innerHTML = "";
+          sortedItems.forEach((item) => sortableList.appendChild(item));
+        }
+      }
+    );
+
+
     useEffect(() => {
+      const handleSortingEvent = createEventHandler(
+        "handleSorting",
+        (event: React.SyntheticEvent) => {
+          // Logic for handling sorting
+          console.log("Handling sorting:", event);
+
+          // Additional logic for sorting...
+          // For example, trigger a sorting algorithm or update UI based on sorting action.
+          const sortableList = document.getElementById("sortableList");
+
+          if (sortableList) {
+            // Simulate sorting algorithm (e.g., sorting list items alphabetically)
+            const listItems = Array.from(sortableList.children);
+            const sortedItems = listItems.sort(
+              (a, b) => a.textContent?.localeCompare(b.textContent || "") || 0
+            );
+
+            // Update UI with sorted items
+            sortableList.innerHTML = "";
+            sortedItems.forEach((item) => sortableList.appendChild(item));
+          }
+
+          // Remove event listener on unmount
+          return () => {
+            const sortingButton = document.getElementById("sortingButton");
+            if (sortingButton) {
+              sortingButton.removeEventListener("click", handleSortingEvent);
+            }
+          };
+        }
+      );
+
       // Example usage
       const keyboardEventHandler = createEventHandler(
         "handleKeyboardShortcuts",
         handleKeyboardShortcuts
       );
+
       const mouseClickEventHandler = createEventHandler(
         "handleMouseClick",
         handleMouseClick
       );
 
+      const handleHighlighting = createEventHandler(
+        "handleHighlighting",
+        (event: React.SyntheticEvent) => {
+          const highlightEvent = event as React.MouseEvent<HTMLDivElement>;
+
+          // Accessing highlighting-related information
+          const selectedText = window.getSelection()?.toString();
+
+          // Your custom logic for handling highlighting
+          console.log("Handling highlighting:");
+          console.log("Selected Text:", selectedText);
+
+          // Additional logic for highlighting...
+          if (selectedText) {
+            // Perform an action when text is highlighted
+            console.log("You highlighted some text:", selectedText);
+          }
+          return () => {
+            highlightEvent.preventDefault();
+            // Perform an action when highlighting ends
+            console.log("Highlighting ended");
+          };
+        }
+      );
+
+      const handleDynamicEvent = createEventHandler(
+        "handleDynamicEvent",
+        (event: React.SyntheticEvent) => {
+          handleFullscreenMode(event);
+        }
+      );
+
+      const handleContextMenu = createEventHandler(
+        "contextMenu",
+        (event: React.SyntheticEvent) => {
+          // Logic for handling context menu
+
+          console.log("Handling context menu:", event);
+
+          // Additional logic for context menu...
+
+          const contextMenuElement = document.getElementById("contextMenu");
+          if (contextMenuElement) {
+            contextMenuElement.style.display = "block";
+            // Simulate additional actions when the context menu is opened
+            // For example, update the context menu content dynamically
+            contextMenuElement.innerHTML = "<p>Custom Context Menu</p>";
+          }
+
+          return () => {
+            event.preventDefault();
+            console.log("Context menu closed");
+          };
+        }
+      );
+
+      window.addEventListener("contextmenu", handleContextMenu);
+      window.addEventListener("selectionchange", handleHighlighting);
       // Attach the event listeners
       window.addEventListener("keydown", keyboardEventHandler);
       window.addEventListener("click", mouseClickEventHandler);
+      window.addEventListener("fullscreen", handleDynamicEvent);
+      window.addEventListener("customEvent1", handleDynamicEvent);
+      window.addEventListener("customEvent2", handleDynamicEvent);
 
       // Clean up the event listeners
       return () => {
         window.removeEventListener("keydown", keyboardEventHandler);
         window.removeEventListener("click", mouseClickEventHandler);
+        window.removeEventListener("keydown", keyboardEventHandler);
+        window.removeEventListener("click", mouseClickEventHandler);
+        window.removeEventListener("fullscreen", handleDynamicEvent);
+        window.removeEventListener("customEvent1", handleDynamicEvent);
+        window.removeEventListener("customEvent2", handleDynamicEvent);
       };
-    }, []);
+    }, [handleSorting]);
+
+    const handleDynamicEvent = (
+      event: Event &
+        React.KeyboardEvent<HTMLInputElement> &
+        MouseEvent<HTMLDivElement, MouseEvent> &
+        MouseEvent
+    ) => {
+      // Handle dynamic events based on their names
+      switch (event.type) {
+        case "fullscreen":
+          handleFullscreenMode(event);
+          break;
+        case "contextMenus":
+          handleContextMenus(event);
+          break;
+        case "settingsPanel":
+          handleSettingsPanel(event);
+          break;
+        case "helpFAQ":
+          handleHelpFAQ(event);
+          break;
+        case "searchFunctionality":
+          handleSearchFunctionality(event);
+          break;
+        case "sorting":
+          handleSorting(event);
+          break;
+        case "progressIndicators":
+          handleProgressIndicators(event);
+          break;
+        // Add other cases for different event types if needed
+        default:
+          break;
+      }
+    };
 
     return (
       <div>
+        <div
+          onScroll={handleScrolling}
+          onWheel={handleZoom}
+          onMouseDown={handleAnnotations}
+          onCopy={handleCopyPaste}
+          style={{ border: "1px solid black", padding: "20px" }}
+        >
+          Hover over me
+        </div>
         <h2>Dynamic Event Handlers</h2>
         <button onClick={handleButtonClick}>Click Me</button>
         <div
@@ -212,6 +505,8 @@ const DynamicEventHandlerExample = () => {
         >
           Hover over me
         </div>
+        <button onClick={handleSettingsPanel}>Open Settings Panel</button>
+        <button onClick={handleHelpFAQ}>Help/FAQ</button>
         <ul>
           {messages.map((message, index) => (
             <li key={index}>{message}</li>

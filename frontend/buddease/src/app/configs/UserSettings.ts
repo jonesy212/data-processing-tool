@@ -1,3 +1,6 @@
+import useIdleTimeout from '../components/hooks/commHooks/useIdleTimeout';
+
+
 const userSettings = {
   communicationMode: "text",
   enableRealTimeUpdates: true,
@@ -7,6 +10,9 @@ const userSettings = {
   enableGroupManagement: true,
   enableTeamManagement: true,
 
+  idleTimeout: useIdleTimeout(),
+  idleTimeoutDuration: 0,
+  activePhase: "current phase",
   realTimeChatEnabled: false,
   todoManagementEnabled: false,
   notificationEmailEnabled: false,
@@ -79,4 +85,7 @@ const userSettings = {
   enableDecentralizedStorage: false,
 }
 
+
+
 export default userSettings;
+

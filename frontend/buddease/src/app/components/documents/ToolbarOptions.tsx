@@ -3,7 +3,7 @@ import React from 'react';
 export interface ToolbarOptionsProps {
   isDocumentEditor?: boolean;
   isTextCard?: boolean;
-  fontSize?: boolean; // Add this line to include fontSize property
+  fontSize?: boolean;
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;
@@ -11,11 +11,13 @@ export interface ToolbarOptionsProps {
   code?: boolean;
   link?: boolean;
   image?: boolean;
+  audio?: boolean
 }
 
 const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
   isDocumentEditor,
   isTextCard,
+  audio,
   fontSize,
   bold,
   italic,
@@ -24,14 +26,21 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
   code,
   link,
   image,
-  
-
 }) => {
   interface Options {
     [key: string]: string[];
   }
 
   let options: Options = {};
+
+  const addOptions = (property: string, propertyOptions: string[]) => {
+    if (property) {
+      options = {
+        ...options,
+        [`${property}Options`]: propertyOptions,
+      };
+    }
+  };
 
   if (isDocumentEditor) {
     options = {
@@ -40,19 +49,23 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
       colorOptions: ["color", "background"],
       listOptions: ["list", "bullet", "ordered"],
       headingOptions: ["header", "1", "2", "3", "4", "5", "6"],
-      linkOptions: ["link", "image", "video"],
+      linkOptions: ["link", "image", "video", "audio"],
     };
   } else if (isTextCard) {
     options = {
       textCardOptions: ["align", "color", "italic"],
+
     };
 
-    if (fontSize) {
-      options = {
-        ...options,
-        fontSizeOptions: ["fontSize"], // Add fontSize options if specified
-      };
-    }
+    addOptions("fontSize", ["fontSize"]);
+    addOptions("bold", ["bold"]);
+    addOptions("italic", ["italic"]);
+    addOptions("underline", ["underline"]);
+    addOptions("strike", ["strike"]);
+    addOptions("code", ["code"]);
+    addOptions("link", ["link"]);
+    addOptions("image", ["image"]);
+    // Add more properties/options as needed
   }
 
   return (
@@ -69,4 +82,3 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
 };
 
 export { ToolbarOptions };
-

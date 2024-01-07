@@ -1,36 +1,38 @@
-import configurationService, {
+import {
   ApiConfig,
 } from "@/app/configs/ConfigurationService";
 import { useEffect, useState } from "react";
 import { useDynamicComponents } from "../DynamicComponentsContext";
 import DynamicNamingConventions from "../DynamicNamingConventions";
+import YourComponent, { YourComponentProps } from "../hooks/YourComponent";
+import useIdleTimeout from "../hooks/commHooks/useIdleTimeout";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { ConfigCard } from "./DashboardConfigCard";
 
-interface AdminDashboardProps {
-  children: React.ReactNode;
-}
+interface AdminDashboardProps extends YourComponentProps {}
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ children }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({
+  apiConfig,
+  children,
+}) => {
   // Create state to hold API config
-  const [apiConfig, setApiConfig] = useState<ApiConfig>({} as ApiConfig);
-
+  const [config, setConfig] = useState(apiConfig);
   // Function to update state when config changes
   const updateApiConfig = (config: ApiConfig) => {
-    setApiConfig(config);
+    setConfig(config);
   };
 
-  // Subscribe to config changes on mount
+  
+  // Use the subscription to call any config change callbacks
   useEffect(() => {
-    // Unsubscribe on unmount
-    const subscription = configurationService.subscribeToApiConfigChanges(updateApiConfig);
-    return () => {
-      configurationService.unsubscribeFromApiConfigChanges(updateApiConfig);
-    };
-  }, []);
+    subscriptionService.subscriptions.forEach((callback) =>
+      callback(updateApiConfig)
+    );
+  }, [config]);
+
 
   // Call any config change callbacks
-  subscriptionService.subscriptions.forEach((callback) => callback());
+  subscriptionService.subscriptions.forEach((callback) => callback(onmessage));
 
   // Get config change callback
   const apiConfigChangesSubscription =
@@ -38,33 +40,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ children }) => {
 
   // Call config change callback if exists
   if (apiConfigChangesSubscription) {
-    apiConfigChangesSubscription();
+    apiConfigChangesSubscription(onmessage);
   }
 
   // Return children instead of apiConfig
-  return children;
+  return <YourComponent apiConfig={apiConfig}>{children}</YourComponent>;
 };
 
 // Use DynamicNamingConventions in AdminDashboard
 const AdminDashboardWithDynamicNaming = () => {
   const { dynamicConfig, setDynamicConfig } = useDynamicComponents();
+  const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout();
 
   // Check if dynamicConfig exists
-  if (!dynamicConfig) {
-    return null;
-  }
-  // Pass dynamicContent prop based on dynamicConfig
-  const dynamicContent = dynamicConfig.someCondition; // Adjust the condition based on your dynamicConfig structure
+  if (dynamicConfig) {
+    // Pass dynamicContent prop based on dynamicConfig
+    const dynamicContent = dynamicConfig.someCondition; // Adjust the condition based on your dynamicConfig structure
 
-  return (
-    <div>
-      {/* Other AdminDashboard content */}
-      <DynamicNamingConventions dynamicContent={dynamicContent} />
-    </div>
-  );
+    useEffect(() => {
+      // Reset idle timeout when the component mounts or user becomes active
+      resetIdleTimeout?.(); // Use optional chaining here
+    }, [resetIdleTimeout]);
+
+    return (
+      <div>
+        {/* Other AdminDashboard content */}
+        <DynamicNamingConventions dynamicContent={dynamicContent} />
+      </div>
+    );
+  }
+
+  return null;
 };
 
-export default
-ConfigCard;
-AdminDashboard;
-AdminDashboardWithDynamicNaming
+export default ConfigCard;
+export { AdminDashboard, AdminDashboardWithDynamicNaming };

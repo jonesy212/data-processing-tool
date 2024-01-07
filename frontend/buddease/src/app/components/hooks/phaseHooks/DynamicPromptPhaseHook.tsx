@@ -1,26 +1,37 @@
 // DynamicPromptPhaseHook.ts
 
 import { useEffect, useState } from 'react';
-import createDynamicHook from '../dynamicHooks/dynamicHookGenerator';
+import createDynamicHook, { DynamicHookParams } from '../dynamicHooks/dynamicHookGenerator';
 
 interface DynamicPromptPhaseHookConfig {
   condition: () => boolean;
   asyncEffect: () => Promise<() => void>;
 }
 
-export const createDynamicPromptPhaseHook = (config: DynamicPromptPhaseHookConfig) => {
+
+interface DynamicPromptPhaseHookConfig {
+  condition: () => boolean;
+  asyncEffect: () => Promise<() => void>;
+}
+
+export const createDynamicPromptPhaseHook = (
+  config: DynamicPromptPhaseHookConfig & DynamicHookParams
+) => {
   return createDynamicHook({
-    condition: config.condition,
-    asyncEffect: async () => {
-      const cleanup = await config.asyncEffect();
-      if (typeof cleanup === "function") {
-        return cleanup();
-      }
+    ...config,
+    resetIdleTimeout: () => void {
+      // reset any idle timeouts
+    
+        },
+    cleanup: () => {
+      console.log('DynamicPromptPhaseHook - Cleanup');
     },
+    isActive: true,
   });
-};
+}
 
 // useDynamicPrompt Phase Hook
+
 const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
   condition: () => {
     // Add condition logic based on your requirements
@@ -30,36 +41,35 @@ const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
   asyncEffect: async () => {
     try {
       // Add dynamic prompt generation logic here
-      console.log('useEffect triggered for Dynamic Prompt Phase');
+      console.log("useEffect triggered for Dynamic Prompt Phase");
 
       // Example: Fetch user idea from an API or use a predefined idea
-      const userIdea = 'web development'; // Replace with your logic to fetch or determine the user's idea
+      const userIdea = "web development"; // Replace with your logic to fetch or determine the user's idea
 
       // Generate prompt based on user idea
       const generatedPrompt = generatePrompt(userIdea);
-      
+
       if (typeof generatedPrompt === "string") {
-        console.log('Generated Prompt:', generatedPrompt);
+        console.log("Generated Prompt:", generatedPrompt);
       } else {
-        console.log('Prompt generation failed. Please provide a valid user idea.');
+        console.log(
+          "Prompt generation failed. Please provide a valid user idea."
+        );
       }
 
-      return () => {
-        // Cleanup logic for Dynamic Prompt Phase
-        
-        console.log('Cleanup for Dynamic Prompt Phase');
-      };
+      return () => {};
     } catch (error) {
-      console.error('Error during Dynamic Prompt Phase:', error);
+      console.error("Error during Dynamic Prompt Phase:", error);
       // Handle errors or log them as needed
-      return () => {
-        // Cleanup logic in case of error
-        
-        console.log('Cleanup for Dynamic Prompt Phase (Error)');
-      };
+
+      return () => {};
     }
   },
-});
+} as DynamicPromptPhaseHookConfig
+  & DynamicHookParams
+);
+
+
 
 // Add more phase hooks as needed
 

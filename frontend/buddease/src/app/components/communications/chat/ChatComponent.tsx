@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { DappProps } from '../../web3/dAppAdapter/remove';
+import { DappProps } from '../../web3/dAppAdapter/DAppAdapterConfig';
 import { AquaConfig } from '../../web3/web_configs/AquaConfig';
 import { AquaChat } from './AquaChat';
 import ChatInput from './ChatInput';
@@ -63,8 +63,7 @@ const ChatComponent: React.FC<{ dappProps: DappProps }> = ({ dappProps }) => {
             roomId={""}
             sender={""}
             message={""}
-            timestamp={""}
-          />
+            timestamp={""} id={''} senderId={''} senderName={''} isRead={false}          />
         ))}
       </div>
       <ChatInput

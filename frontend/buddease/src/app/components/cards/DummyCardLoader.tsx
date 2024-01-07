@@ -12,6 +12,7 @@ export interface HeadingProps {
 
 interface DynamicTypographyProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
+  children: React.ReactNode;
 }
 
 export type DynamicContentProps = BodyTextProps | HeadingProps;

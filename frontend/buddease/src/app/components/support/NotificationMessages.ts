@@ -75,6 +75,9 @@ const NOTIFICATION_MESSAGES = {
     TASK_DELETED: 'Task deleted successfully',
     TASK_UPDATED: 'Task updated successfully',
     
+    // New Error Messages for Tasks
+    TASK_DUPLICATE_ERROR: 'Duplicate task found. Please choose a different name.',
+    TASK_ASSIGN_ERROR: 'Error assigning task. Please try again.',
 
     TASK_ADD_ERROR: 'Error adding task. Please try again.',
     TASK_UPDATE_ERROR: 'Task did not update successfully, please try again',
@@ -91,6 +94,12 @@ const NOTIFICATION_MESSAGES = {
     TODO_UPDATED: 'Todo updated successfully',
     
 
+
+  // New Error Messages for Todos
+  TODO_DUPLICATE_ERROR: 'Duplicate todo found. Please choose a different name.',
+  TODO_ASSIGN_ERROR: 'Error assigning todo. Please try again.',
+  // Add more error messages for Todos as needed
+
     TODO_ADD_ERROR: 'Error adding todo. Please try again.',
     TODO_UPDATE_ERROR: 'Todo did not update successfully, please try again',
     TODO_FETCH_ERROR: 'Error fetching todo. Please try again.',
@@ -101,8 +110,20 @@ const NOTIFICATION_MESSAGES = {
 
     NamingConventionsError: {
       DEFAULT: (errorType: string, details: string) => `Error in Define Naming Conventions (${errorType}): ${details}`,
+      
+
+        // New Error Messages for Naming Conventions
+  INVALID_NAME_FORMAT: 'Invalid name format. Please follow the specified conventions.',
+  DUPLICATE_NAME: 'Duplicate name found. Choose a unique name.',
       // Add more messages for the NamingConventionsError type
-    },
+
+  },
+    
+  MessagingSystem: {
+    DEFAULT: 'New message received.', // Default message for the messaging system
+    MESSAGE_SENT: 'Your message has been sent successfully.',
+    // Add more messages for the MessagingSystem type
+  },
   
     // Custom Notifications
     CustomNotification1: {

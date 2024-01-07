@@ -1,22 +1,23 @@
-import React from 'react';
+import React from "react";
 
-import { notificationBarPhaseHook } from '../hooks/userInterface/UIPhaseHooks';
-import RefactoringRebrandingPhase from '../projects/RefactoringRebrandingPhase';
-import ColorPalette from './ColorPalette';
-import DynamicSpacingAndLayout from './DynamicSpacingAndLayout';
+import { notificationBarPhaseHook } from "../hooks/userInterface/UIPhaseHooks";
+import RefactoringRebrandingPhase from "../projects/RefactoringRebrandingPhase";
+import ColorPalette from "./ColorPalette";
+import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
 
-import AnimatedDashboard from '@/app/pages/layouts/AnimatedDashboard';
-import CommonLayout from '@/app/pages/layouts/CommonLayout';
-import { DashboardLayout } from '@/app/pages/layouts/DashboardLayout';
-import AnimationControls from '../animations/AnimationControls';
-import useLayoutGenerator from '../hooks/GenerateUserLayout';
-import { darkModeTogglePhaseHook } from '../hooks/userInterface/UIPhaseHooks';
+import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
+import CommonLayout from "@/app/pages/layouts/CommonLayout";
+import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
+import AnimationControls from "../animations/AnimationControls";
+import DynamicSelectionControls from "../animations/DynamicSelectionControls";
+import useLayoutGenerator from "../hooks/GenerateUserLayout";
+import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
+import { darkModeTogglePhaseHook } from "../hooks/userInterface/UIPhaseHooks";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox
 }
 
- 
 interface UsageExamplesBoxProps {
   // Add any props needed for the UsageExamplesBox
 }
@@ -84,6 +85,60 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
     },
   });
 
+  const dynamicInputFieldsExample = (
+    <DynamicInputFields
+      fields={[
+        { label: 'Text Input', type: 'text' },
+        { label: 'Password Input', type: 'password' },
+        { label: 'Email Input', type: 'email' },
+        { label: 'Number Input', type: 'number' },
+        { label: 'Date Input', type: 'date' },
+        { label: 'Time Input', type: 'time' },
+        { label: 'File Upload Input', type: 'file' },
+        { label: 'Textarea Input', type: 'textarea' },
+      ]}
+    />
+  );
+  
+  // Usage example for DynamicSelectionControls
+  const dynamicSelectionControlsExample = (
+    <>
+      <DynamicSelectionControls
+        options={[
+          { label: 'Option 1', value: 'option1' },
+          { label: 'Option 2', value: 'option2' },
+          { label: 'Option 3', value: 'option3' },
+        ]}
+        controlType="checkbox"
+      />
+  
+      <DynamicSelectionControls
+        options={[
+          { label: 'Option A', value: 'optionA' },
+          { label: 'Option B', value: 'optionB' },
+          { label: 'Option C', value: 'optionC' },
+        ]}
+        controlType="radio"
+      />
+  
+      <DynamicSelectionControls
+        options={[
+          { label: 'Option X', value: 'optionX' },
+          { label: 'Option Y', value: 'optionY' },
+          { label: 'Option Z', value: 'optionZ' },
+        ]}
+        controlType="select"
+      />
+  
+      <DynamicSelectionControls
+        options={[
+          { label: 'Toggle Switch', value: 'toggleSwitch' },
+        ]}
+        controlType="toggle"
+      />
+    </>
+  );
+  
   return (
     <div>
       {/* ColorPalette Example */}
@@ -108,10 +163,21 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
       ]}
 
 
+      {/* Dynamic Input Fields Example */}
+      <h2>Dynamic Input Fields Example</h2>
+      {dynamicInputFieldsExample}
+
+      {/* Dynamic Selection Controls Example */}
+      <h2>Dynamic Selection Controls Example</h2>
+      {dynamicSelectionControlsExample}
 
       {/* Animated Dashboard Example */}
       <h2>Animated Dashboard Example</h2>
       <AnimatedDashboard />
+
+      {/* Dynamic Input Fields Example */}
+      <h2>Dynamic Input Fields Example</h2>
+      {dynamicInputFieldsExample}
 
       {/* Animation Controls Example */}
       <h2>Animation Controls Example</h2>

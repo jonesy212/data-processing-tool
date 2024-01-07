@@ -55,7 +55,12 @@ const genericLifecyclePhases: Phase[] = [
     subPhases: [],
     hooks: {
       canTransitionTo: () => true,
-      handleTransitionTo: () => {},
+      handleTransitionTo: () => { },
+      resetIdleTimeout: function (): Promise<void> {
+        this.resetIdleTimeout();
+        return Promise.resolve();
+      },
+      isActive: false
     },
   },
   // Add more generic phases as needed

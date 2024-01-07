@@ -8,11 +8,10 @@ interface AuthState {
   user: User | null;
 }
 
-
-
 interface AuthContextProps {
   state: AuthState;
   dispatch: React.Dispatch<AuthAction>;
+  resetAuthState: () => void; 
 }
 
 interface AuthAction {
@@ -41,8 +40,13 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+    // Function to reset the auth state
+    const resetAuthState = () => {
+      dispatch({ type: 'LOGOUT' });
+    };
+  
   return (
-    <AuthContext.Provider value={{ state, dispatch }}>
+    <AuthContext.Provider value={{ state, dispatch ,resetAuthState}}>
       {children}
     </AuthContext.Provider>
   );

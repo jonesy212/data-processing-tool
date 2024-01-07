@@ -2,6 +2,7 @@ import {
   DocumentBuilderConfig,
   getDefaultDocumentBuilderConfig,
 } from "@/app/configs/DocumentBuilderConfig";
+import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import "quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import Quill from "react-quill";
@@ -37,6 +38,7 @@ const TextEditor = ({
   documentBuilderConfig = getDefaultDocumentBuilderConfig(),
 }: TextEditorProps) => {
   const [quill, setQuill] = useState<any | null>(null);
+  const [text, setText] = useState('');
 
   useEffect(() => {
     if (!quill) {
@@ -94,6 +96,11 @@ const TextEditor = ({
         />
       </div>
       <div id={id} style={{ height: "400px" }} />
+      <DynamicTextArea
+        value={text}
+        onChange={(newText) => setText(newText)}
+        placeholder="Start typing..."
+      />
     </div>
   );
 };

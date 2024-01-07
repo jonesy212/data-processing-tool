@@ -2,15 +2,14 @@
 from flask import Blueprint, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from authentication.auth import auth_bp
-from database.extensions import db
 from models.user.user_history import UserHistory
 
-auth_bp = Blueprint('user_history_bp', __name__)
+user_history_bp = Blueprint('user_history_bp', __name__)
 
 # Function to retrieve user history
-@auth_bp.route('/auth/user-history', methods=['GET'])
+@user_history_bp.route('/user-history', methods=['GET'])
 @jwt_required()
+
 def user_history():
     current_user_id = get_jwt_identity()
     user_history = UserHistory.query.filter_by(user_id=current_user_id).all()

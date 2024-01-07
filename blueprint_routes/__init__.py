@@ -2,6 +2,7 @@
 from flask import Blueprint
 
 # Create blueprints here
+user_history_bp = Blueprint('user_history_bp', __name__)
 auth_bp = Blueprint('auth_bp', __name__)
 notification_bp = Blueprint('notification_bp', __name__)
 company_bp = Blueprint('company_bp', __name__)
@@ -24,4 +25,13 @@ upload_bp = Blueprint('upload_bp', __name__)
 user_bp = Blueprint('user_bp', __name__)
 verify_email_bp = Blueprint('verify_email_bp', __name__)
 welcome_bp = Blueprint('welcome_bp', __name__)
+
+
+
+
+
+
+
+
+nlp_bp = Blueprint('nlp_bp', __name__)
 

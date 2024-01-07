@@ -1,4 +1,5 @@
 // ChatRoom.tsx
+import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useEffect, useState } from 'react';
 import ChatMessageData from './ChatRoomDashboard';
 
@@ -44,10 +45,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
         ))}
       </div>
       <div className="chat-input">
-        <textarea
+        <DynamicTextArea
+          value=""
           placeholder="Type your message..."
-          rows={3}
-          onChange={(e) => sendMessage(e.target.value)}
+          onChange={(newText) => sendMessage(newText)}
+
         />
         <button onClick={() => sendMessage("Send")}>Send</button>
       </div>

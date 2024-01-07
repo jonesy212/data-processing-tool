@@ -37,6 +37,30 @@ class NotificationMessagesFactory {
       return `${failureType} failed.`;
     }
   }
+
+
+
+  static createTaskErrorMessage(taskType: string, customText?: string): string { 
+    if(customText) {
+      return customText;
+    } else {
+      return `${taskType} task failed.`;
+    }
+  }
+  static createTodoErrorMessage(todoType: string, customText?: string): string { 
+    if (customText) {
+      return customText;
+    } else {
+      return `${todoType} todo failed.`;
+    }
+  }
+  static createNamingConventionsErrorMessage(name: string, customText?: string): string { 
+    if (customText) {
+      return customText;
+    } else {
+      return `The name ${name} does not follow conventions.`;
+    }
+  }
 }
 
 export default NotificationMessagesFactory;

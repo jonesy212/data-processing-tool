@@ -22,7 +22,8 @@ export interface TodoManagerStore {
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES,
   setDynamicNotificationMessage: (message: string) => void; // Add this property
   snapshotStore: SnapshotStore<Record<string, Todo[]>>; // Include a SnapshotStore for tasks
-
+  snapshot: Record<string, Todo[]>;
+  updateSnapshot: (snapshot: Record<string, Todo[]>) => void;
 }
 
 
@@ -31,12 +32,38 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
   // Initialize SnapshotStore
   
-  const snapshotStore = new SnapshotStore({
-    key: 'todos',
-    onSnapshot: (snapshot) => {
-      console.log('Snapshot taken!', snapshot);
+  interface SnapshotStoreConfig<T> {
+    key: string;
+    initialState: T;
+    onSnapshot?: (snapshot: T) => void;
+  }
+
+  class SnapshotStore<T> {
+    key: string;
+    state: T;
+    onSnapshot?: (snapshot: T) => void;
+
+    constructor(config: SnapshotStoreConfig<T>) {
+      this.key = config.key;
+      this.state = config.initialState;
+      this.onSnapshot = config.onSnapshot;
     }
+
+    takeSnapshot() {
+      if (this.onSnapshot) {
+        this.onSnapshot(this.state);
+      }
+    }
+  }
+
+  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
+    key: "todos",
+    initialState: {},
+    onSnapshot: (snapshot) => {
+      console.log("Snapshot taken!", snapshot);
+    },
   });
+
 
   const toggleTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -52,16 +79,28 @@ const useTodoManagerStore = (): TodoManagerStore => {
     setTodos((prevTodos) => ({ ...prevTodos, [todo.id]: todo }));
   };
 
-const addTodos = (newTodos: Todo[], data: {}) => { 
-  setTodos((prevTodos) => {
-    const updatedTodos = {...prevTodos};
-    newTodos.forEach((todo) => {
-      updatedTodos[todo.id] = todo; 
-      snapshotStore.takeSnapshot(data); 
+
+
+  const addTodos = (newTodos: Todo[]) => {
+    setTodos((prevTodos) => {
+      const updatedTodos = { ...prevTodos };
+      newTodos.forEach((todo) => {
+        updatedTodos[todo.id] = todo;
+      });
+  
+      // Take the snapshot before updating the state
+      if (snapshotStore.onSnapshot) {
+        snapshotStore.takeSnapshot();
+      }
+  
+      // Update the state with the new todos
+      return updatedTodos;
     });
-    return updatedTodos;
-  });
-};
+  };
+  
+
+  
+
 
 
   const removeTodo = (id: string) => {
@@ -143,8 +182,14 @@ const addTodos = (newTodos: Todo[], data: {}) => {
     setNotificationMessage(message);
   };
 
+  const initSnapShot = () => {
+    snapshotStore.takeSnapshot();
+  }
 
-
+  const updateSnapshot = (snapshot: Record<string, Todo[]>) => { 
+    snapshotStore.state = snapshot;
+    snapshotStore.takeSnapshot();
+  }
 
   makeAutoObservable({
     todos,
@@ -162,7 +207,10 @@ const addTodos = (newTodos: Todo[], data: {}) => {
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
     setDynamicNotificationMessage,
-    snapshotStore
+    snapshotStore,
+    updateSnapshot,
+    initSnapShot
+
 
   }, {
     setDynamicNotificationMessage: false, // Ensure this function is not considered as an action

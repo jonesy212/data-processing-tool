@@ -38,5 +38,7 @@ export interface CustomPhaseHooks {
   [x: string]: any;
   canTransitionTo: (nextPhase: Phase) => boolean;
   handleTransitionTo: (nextPhase: Phase) => void;
+  resetIdleTimeout: () => Promise<void>;
+  isActive: boolean;
   // Add other methods if needed
 }

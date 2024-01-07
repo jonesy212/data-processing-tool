@@ -12,7 +12,8 @@ const handleTransitionToCalendarPhase = async () => {
     // Example: Fetch additional data needed for the Calendar Phase using Axios
     const additionalData = await fetchDataUsingAxios();
 
-    // Example: Update state or perform other actions based on the additional data
+    // Example: Update state 
+
     updateStateWithAdditionalData(additionalData);
 
     // Example: Navigate to a different page or perform other navigation actions

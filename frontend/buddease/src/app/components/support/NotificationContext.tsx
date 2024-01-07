@@ -41,6 +41,18 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
         return NotificationMessagesFactory.createErrorMessage(
           userName as string
         );
+      case "TaskError":
+        return NotificationMessagesFactory.createTaskErrorMessage(
+          userName as string
+        );
+      case "TodoError":
+        return NotificationMessagesFactory.createTodoErrorMessage(
+          userName as string
+        );
+      case "NamingConventionsError":
+        return NotificationMessagesFactory.createNamingConventionsErrorMessage(
+          userName as string
+        );
       // Add more cases for other notification types
       case "Custom":
         return NotificationMessagesFactory.createCustomMessage(

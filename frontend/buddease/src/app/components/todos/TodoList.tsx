@@ -14,13 +14,13 @@ const TodoList: React.FC = observer(() => {
         const response = await axios.get("/api/todos");
         const todos = response.data as Todo[];
 
-        const mappedTodos = todos.map((todoData) => ({
+        const mappedTodos = todos.map((todoData: Todo) => ({
           id: todoData.id,
           title: todoData.title,
           done: todoData.done,
-        } as Todo));
+        }));
 
-        todoStore.addTodos(mappedTodos);
+        todoStore.addTodos(mappedTodos as Todo[], {});
       } catch (error) {
         console.error("Error fetching todos:", error);
         // Handle the error as needed
@@ -50,7 +50,7 @@ const TodoList: React.FC = observer(() => {
       id: newTodoId,
       title: "A new todo",
       done: false,
-    } as Todo;
+    };
 
     todoStore.addTodo(newTodo);
     handleUpdateTitle(newTodoId, "A new todo");
@@ -63,7 +63,7 @@ const TodoList: React.FC = observer(() => {
           <li key={todo.id}>
             {todo.title} - {todo.done ? "Done" : "Not Done"}
             <button onClick={() => handleToggle(todo.id)}>Toggle</button>
-            <CommonDetails<Todo> data={todo} />
+            <CommonDetails data={todo} />
           </li>
         ))}
       </ul>

@@ -36,7 +36,7 @@ interface DatasetModel {
     uploaded_by_team_id: 1, // Assuming team ID 1
     uploaded_by_team: {
       id: 1,
-      name: 'Development Team',
+      teamName: 'Development Team',
       description: 'A team focused on software development',
       members: [],
       projects: [],

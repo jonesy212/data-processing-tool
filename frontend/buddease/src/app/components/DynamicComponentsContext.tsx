@@ -5,7 +5,7 @@ type DynamicComponentContextProps = {
   dynamicConfig: any;
   setDynamicConfig: React.Dispatch<React.SetStateAction<any>>;
   children: React.ReactNode;
-};
+};  
 
 type DynamicComponentsContextType = {
   dynamicConfig: any;

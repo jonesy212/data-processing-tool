@@ -1,3 +1,5 @@
+import { Tracker } from "./Tracker";
+
 //TrackerService.ts
 class TrackerService {
     private trackers: Tracker[] = [];

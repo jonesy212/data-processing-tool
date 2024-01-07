@@ -1,8 +1,6 @@
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { useEffect } from "react";
 
-
-
 interface DashboardConfigCardProps {
     apiConfig: ApiConfig;
     updateApiConfig: (config: ApiConfig) => void;
@@ -51,7 +49,7 @@ interface DashboardConfigCardProps {
   };
   
 
-export const ConfigCard = ({
+export const  ConfigCard = ({
     apiConfig,
     updateApiConfig,
   }: {

@@ -6,8 +6,9 @@ export type DynamicPromptHookParams = DynamicHookParams;
 
 export type DynamicPromptHookResult = DynamicHookResult;
 
-const createDynamicPromptHook = ({ condition, asyncEffect, cleanup }: DynamicPromptHookParams) => {
-  return createDynamicHook({ condition, asyncEffect, cleanup });
+const createDynamicPromptHook = ({ condition, asyncEffect, cleanup, resetIdleTimeout, isActive }: DynamicPromptHookParams) => {
+  return createDynamicHook({ condition, asyncEffect, cleanup, resetIdleTimeout,     isActive
+});
 };
 
 export default createDynamicPromptHook;

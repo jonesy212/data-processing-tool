@@ -115,7 +115,39 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
       enableVideoChat: false,
       enableFileSharing: false,
       enableBlockchainCommunication: false,
-      enableDecentralizedStorage: false
+      enableDecentralizedStorage: false,
+      idleTimeout: {
+        isActive: false,
+        animateIn: function (selector: string): void {
+          const element = document.querySelector(selector);
+          if (element) { 
+            element.classList.add('animate-in');
+
+          } else {
+            console.error('Element not found');
+          }
+
+        },
+        toggleActivation: function (): void {
+          this.isActive = !this.isActive;
+          if(this.isActive) {
+            this.startAnimation();
+          } else {
+            this.stopAnimation();
+          }
+
+        },
+        startAnimation: function (): void {
+
+        },
+        stopAnimation: function (): void {
+          this.isActive = false;
+          clearInterval(this.intervalId);
+        },
+        resetIdleTimeout: undefined
+      },
+      idleTimeoutDuration: 0,
+      activePhase: ""
     },
     dataVersions: {
       users: 0,
@@ -130,84 +162,87 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
     notificationBarPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     darkModeTogglePhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     authenticationPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     jobSearchPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     recruiterDashboardPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     teamBuildingPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     brainstormingPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     projectManagementPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
     meetingsPhaseHook: () => {
       return {
         isActive: false,
-        toggleActivation: () => { },
-        startAnimation: () => { },
-        stopAnimation: () => { },
+        toggleActivation: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
       };
     },
-    fileType: ""
+    fileType: "",
   });
 };
-
-
-
-
-
-
 
 // Hydrate MobX store
 export const hydrateMobXStore = (key: string, cache: any) => {

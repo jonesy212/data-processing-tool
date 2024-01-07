@@ -1,5 +1,5 @@
 // src/app/prompts/AutoGPTPromptsConfig.ts
-import { Prompt } from "../prompts/PromptComponent";
+import { Prompt } from "../prompts/PromptPage";
 
 const autoGPTPrompts: Prompt[] = [
   {
