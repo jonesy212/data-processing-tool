@@ -14,7 +14,7 @@ interface CalendarEntitySliceState {
   notifications: Record<string, Notification>;
 }
 
-const calendarEntitySlice = createSlice({
+export const useCalendarManagerSlice = createSlice({
   name: 'calendarEvents',
   initialState: { entities: {}, milestones: {}, notifications: {} } as CalendarEntitySliceState,
   reducers: {
@@ -57,7 +57,7 @@ export const {
   removeMilestone,
   addNotification,
   removeNotification,
-} = calendarEntitySlice.actions;
+} = useCalendarManagerSlice.actions;
 
 export const selectCalendarEvents = (state: {
   calendarEvents: CalendarEntitySliceState;
@@ -71,4 +71,4 @@ export const selectNotifications = (state: {
   calendarEvents: CalendarEntitySliceState;
 }) => state.calendarEvents.notifications;
 
-export default calendarEntitySlice.reducer;
+export default useCalendarManagerSlice.reducer;

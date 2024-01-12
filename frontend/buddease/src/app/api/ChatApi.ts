@@ -5,6 +5,11 @@ import Group from '../components/communications/chat/Group';
 class ChatApi {
   private static API_BASE_URL = 'https://example.com/api/chat';
 
+
+
+
+
+
   static async fetchMessages(groupId: string, limit: number): Promise<ChatMessage[]> {
     try {
       const response: AxiosResponse<ChatMessage[]> = await axios.get(`${this.API_BASE_URL}/messages`, {
@@ -55,6 +60,17 @@ class ChatApi {
   //   // Implementation
   // }
 }
+
+
+
+export const getChatData = async () => {
+  try {
+    const response = await axios.get('/api/chat');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching chat data:', error);
+  }
+};
 
 export { ChatApi };
 

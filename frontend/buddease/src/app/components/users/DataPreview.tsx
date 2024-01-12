@@ -16,3 +16,4 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
 };
 
 export default DataPreview;
+export type { DataPreviewProps };

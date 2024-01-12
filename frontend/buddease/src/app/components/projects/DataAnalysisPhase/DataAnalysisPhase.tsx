@@ -1,6 +1,10 @@
 import { useAuth } from "@/app/components/auth/AuthContext";
+import { sendDataToBackend } from "@/app/services/dataAnalysisService";
+import { DataAnalysisAction, DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
+import { fetchData } from "../../utils/dataAnalysisUtils";
+
 
 enum DataAnalysisSubPhase {
   DEFINE_OBJECTIVE,
@@ -15,11 +19,38 @@ interface DataAnalysisPhaseProps {
   onSubmit: () => void;
 }
 
+
+
+const dataAnalysisReducer = (state: DataAnalysisState, action: DataAnalysisAction): DataAnalysisState => {
+  switch (action.type) {
+    case "SET_USER_DATA":
+      return { ...state, userSpecificData: action.payload };
+    // Add more cases as needed for other actions
+    default:
+      return state;
+  }
+};
+
 const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
   const { state } = useAuth();
+
+  const [allWalks, setAllWalks] = useState<number[][]>([]);
+
   const [currentSubPhase, setCurrentSubPhase] = useState<DataAnalysisSubPhase>(
     DataAnalysisSubPhase.DEFINE_OBJECTIVE
   );
+
+
+
+
+  const [state, dispatch] = useReducer(dataAnalysisReducer, {
+    userSpecificData: null,
+  });
+
+  useEffect(() => {
+    const userId = state.user?.id;
+    fetchData(userId as unknown as string, dispatch);
+  }, [state]);
 
   useEffect(() => {
     // Access state.user or other properties from the auth context if needed
@@ -39,6 +70,25 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
       }
     };
 
+    const simulateRandomWalks = () => {
+      const walks = [];
+      for (let i = 0; i < 20; i++) {
+        const randomWalk = [0];
+        for (let x = 0; x < 100; x++) {
+          // ... (existing random walk logic)
+
+          if (Math.random() <= 0.005) {
+            step = 0;
+          }
+
+          randomWalk.push(step);
+        }
+        walks.push(randomWalk);
+      }
+      setAllWalks(walks);
+    };
+
+    simulateRandomWalks();
     // Call the fetchData function when the component mounts
     fetchData();
   }, [state, currentSubPhase]); // Include currentSubPhase if needed in the dependency array
@@ -71,6 +121,7 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
     setCurrentSubPhase(nextSubPhase);
 
     if (nextSubPhase > DataAnalysisSubPhase.TRANSFORM_INSIGHTS) {
+      sendDataToBackend(state.userSpecificData);
       onSubmit();
     }
   };
@@ -93,6 +144,21 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
         </div>
       )}
 
+
+      {currentSubPhase === DataAnalysisSubPhase.TRANSFORM_INSIGHTS && (
+        <div>
+          <p>
+            Translate the insights gained from the analysis into actionable
+            strategies, business opportunities, or decision-making processes.
+          </p>
+          
+          {/* Add the Visualization component */}
+          <Visualization data={allWalks} labels={['Step 1', 'Step 2', /*...*/, 'Step 100']} />
+
+          {/* Add form elements or UI components as needed */}
+        </div>
+      )}
+      
       {currentSubPhase === DataAnalysisSubPhase.CLEAN_DATA && (
         <div>
           <p>

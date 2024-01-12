@@ -4,7 +4,7 @@ import { createDynamicPromptPhaseHook } from './DynamicPromptPhaseHook';
 
 // Team Building Phase Hook
 export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
-  condition: () => {
+  condition: async () => {
     // Add condition logic based on your requirements for the Team Building Phase
     const isTeamBuildingPhase = true; // Replace with your condition
     return isTeamBuildingPhase;
@@ -12,24 +12,27 @@ export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
   asyncEffect: async () => {
     try {
       // Add dynamic logic for the Team Building Phase
-      console.log('useEffect triggered for Team Building Phase');
-      
+      console.log("useEffect triggered for Team Building Phase");
+
       // Your logic specific to the Team Building Phase
 
       return () => {
         // Cleanup logic for Team Building Phase
-        console.log('Cleanup for Team Building Phase');
+        console.log("Cleanup for Team Building Phase");
       };
     } catch (error) {
-      console.error('Error during Team Building Phase:', error);
+      console.error("Error during Team Building Phase:", error);
       // Handle errors or log them as needed
       return () => {
         // Cleanup logic in case of error
-        console.log('Cleanup for Team Building Phase (Error)');
+        console.log("Cleanup for Team Building Phase (Error)");
       };
     }
   },
 });
+
+
+
 
 // Brainstorming Phase Hook
 export const useBrainstormingPhase = createDynamicPromptPhaseHook({

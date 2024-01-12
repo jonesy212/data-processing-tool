@@ -8,7 +8,7 @@ docs
 │   │   └── auth.py
 │   ├── blueprint_routes
 │   │   ├── change_password.rst
-│   │   └── user_routes.rst
+│   │   └── user_bp.rst
 │   ├── cache
 │   │   └── caching_api.rst
 │   ├── configs

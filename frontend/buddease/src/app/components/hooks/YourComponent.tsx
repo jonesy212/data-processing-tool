@@ -1,10 +1,13 @@
+import DataFrameAPI from "@/app/api/DataframeApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import React, { useEffect } from "react";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar from "../models/tracker/ProgresBar";
 import { Tracker } from "../models/tracker/Tracker";
+import { Prompt } from "../prompts/PromptPage";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
+import { userService } from "../users/UserService";
 import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
@@ -86,8 +89,10 @@ const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
   children,
 }) => {
-  const realtimeData = useRealtimeData([]); // Initialize with an empty array or appropriate initial value
+  const { realtimeData, fetchData } = useRealtimeData([]);
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout(); // Destructure the idle timeout properties
+  const dataFrameAPI = new DataFrameAPI();
+  const { calendarData, updateCalendarData } = useCalendarContext();
 
   const hooks: HooksObject = Object.keys(categoryHooks).reduce(
     (acc, category) => {
@@ -117,19 +122,50 @@ const YourComponent: React.FC<YourComponentProps> = ({
   useEffect(() => {
     // Simulate fetching trackers from an API
     const fetchData = async () => {
+      await dataFrameAPI.fetchDataFromBackend();
       const data = getTrackers();
       data.forEach((tracker: any) => addTracker(tracker));
     };
 
     fetchData();
-  }, [addTracker, getTrackers]);
+  }, [dataFrameAPI, addTracker, getTrackers]);
 
 
+  const handleNextPage = () => {
+    // Increment the page number
+    const nextPage = currentPage + 1;
+
+    // Check if there is a next page
+    if (nextPage < promptPages.length) {
+      // Set the next page
+      setCurrentPage(nextPage);
+
+      // Fetch data for the next page
+      const nextPageData = promptPages[nextPage];
+      // Example: Assuming the data for the next page has an 'id' property
+      const newData = dataFrameAPI.getDataFrame().filter((row) =>
+        nextPageData.prompts.some((prompt: Prompt) => row.id === prompt.id)
+      );
+      dataFrameAPI.setData(newData.toArray());
+    } else {
+      // Optionally, handle the case where there are no more pages
+      console.log("No more pages available");
+    }
+  };
+
+
+  const handleAppendData = async () => {
+      const userId = await userService.fetchUser(userId);
+        const newData = [{ column1: 'value1', column2: 'value2' }];
+    // Append data to the backend and trigger a manual update
+    await dataFrameAPI.appendDataToBackend(newData);
+    fetchData(userId, data);
+  };
   
   return (
     <div>
       {/* Display the progress bar and loading spinner */}
-      <ProgressBar progress={tracker.progress} />
+      <ProgressBar progress={calendarData[0].projects[0].progress} />
       <LoadingSpinner loading={tracker.loading} />
 
       {Object.keys(hooks).map((key) => {
@@ -168,6 +204,8 @@ const YourComponent: React.FC<YourComponentProps> = ({
       <button onClick={() => removeTracker(tracker.id as unknown as Tracker)}>Remove Tracker</button>
 
       {children}
+      <button onClick={handleAppendData}>Append Data</button>
+      <button onSubmit={handleNextPage}>Next</button>
     </div>
   );
 };

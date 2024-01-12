@@ -8,9 +8,9 @@ from models.user import User
 from pagination.get_pagination_users import (get_paginated_teams,
                                              get_pagination_parameters)
 
-team_routes = Blueprint('team_routes', __name__)
+team_bp = Blueprint('team_bp', __name__)
 
-@team_routes.route('/teams', methods=['GET'])
+@team_bp.route('/teams', methods=['GET'])
 @jwt_required()
 def get_teams():
     current_user_id = get_jwt_identity()
@@ -32,7 +32,7 @@ def get_teams():
         'total_items': paginated_teams.total
     })
 
-@team_routes.route('/teams/<int:team_id>', methods=['GET'])
+@team_bp.route('/teams/<int:team_id>', methods=['GET'])
 @jwt_required()
 def get_team(team_id):
     current_user_id = get_jwt_identity()
@@ -50,7 +50,7 @@ def get_team(team_id):
 
     return jsonify(serialized_team)
 
-@team_routes.route('/teams', methods=['POST'])
+@team_bp.route('/teams', methods=['POST'])
 @jwt_required()
 def create_team():
     current_user_id = get_jwt_identity()
@@ -70,7 +70,7 @@ def create_team():
 
     return jsonify(serialized_team), 201
 
-@team_routes.route('/teams/<int:team_id>', methods=['PUT'])
+@team_bp.route('/teams/<int:team_id>', methods=['PUT'])
 @jwt_required()
 def update_team(team_id):
     current_user_id = get_jwt_identity()
@@ -96,7 +96,7 @@ def update_team(team_id):
 
     return jsonify(serialized_team)
 
-@team_routes.route('/teams/<int:team_id>', methods=['DELETE'])
+@team_bp.route('/teams/<int:team_id>', methods=['DELETE'])
 @jwt_required()
 def delete_team(team_id):
     current_user_id = get_jwt_identity()

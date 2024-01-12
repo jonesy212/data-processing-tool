@@ -53,13 +53,35 @@ class SnapshotStore<T> {
     });
   }
 
-  getSnapshots() {
-    return this.snapshots;
+  getSnapshot(snapshot: string) {
+    return this.snapshots.find(snap => snap.id === snapshot);
   }
 
-  clearSnapshots() {
-    this.snapshots = [];
+  getSnapshots(snapshot: string[]): Snapshot<T>[] {
+    return snapshot.map(key => { 
+      const snapshot = this.getSnapshot(key);
+      if(snapshot) return snapshot;
+      throw new Error('Snapshot not found');
+    });
+    }
+    
+    clearSnapshots() {
+      this.snapshots = [];
+    }
+    
+    getLatestSnapshot() {
+      return this.snapshots[this.snapshots.length - 1]?.data;
+    }
+    
+    getAllSnapshots() {
+      return this.snapshots.map((snapshot) => snapshot.data);
+    }
+    
+    takeLatestSnapshot() {
+      this.takeSnapshot(this.getLatestSnapshot());
+    }
   }
-}
 
+  
 export default SnapshotStore;
+  

@@ -1,4 +1,4 @@
-# user_routes.py
+# user_bp.py
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
@@ -7,9 +7,9 @@ from models.user.user import User
 from pagination.get_pagination_users import (get_paginated_users,
                                              get_pagination_parameters)
 
-user_routes = Blueprint('user_routes', __name__)
+user_bp = Blueprint('user_bp', __name__)
 
-@user_routes.route('/users', methods=['GET'])
+@user_bp.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
 
@@ -35,7 +35,7 @@ def get_users():
         'total_items': paginated_users.total
     })
 
-@user_routes.route('/users/<int:user_id>', methods=['GET'])
+@user_bp.route('/users/<int:user_id>', methods=['GET'])
 @jwt_required()
 def get_user(user_id):
     # Ensure the current user has the necessary permissions
@@ -57,7 +57,7 @@ def get_user(user_id):
     return jsonify(serialized_user)
 
 
-@user_routes.route('/users/<int:user_id>', methods=['PUT'])
+@user_bp.route('/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
 def update_user(user_id):
     # Ensure the current user has the necessary permissions
@@ -86,7 +86,7 @@ def update_user(user_id):
 
     return jsonify(serialized_user)
 
-@user_routes.route('/users/<int:user_id>', methods=['DELETE'])
+@user_bp.route('/users/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
     # Ensure the current user has the necessary permissions
@@ -108,7 +108,7 @@ def delete_user(user_id):
 
     return jsonify({"message": "User deleted successfully"})
 
-@user_routes.route('/users/search', methods=['GET'])
+@user_bp.route('/users/search', methods=['GET'])
 @jwt_required()
 def search_users():
     # Ensure the current user has the necessary permissions

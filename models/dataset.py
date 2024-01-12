@@ -20,6 +20,7 @@ class DatasetModel(db.Model):
     # Relationships
     uploaded_by_team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=True)
     uploaded_by_team = relationship('Team', foreign_keys=[uploaded_by_team_id])
+    uploaded_by_user = relationship('User', foreign_keys=[uploaded_by])
 
     def __repr__(self):
         return f'<DatasetModel id={self.id}, {self.name}>'

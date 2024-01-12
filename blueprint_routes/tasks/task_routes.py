@@ -1,14 +1,14 @@
-# blueprint_routes/task_routes.py
+# blueprint_routes/task_bp.py
 from flask import Blueprint, jsonify, request
 
 from database.extensions import db
 from models.task.data_processing_task import DataProcessingTask
 from models.team.team import Team
 
-task_routes = Blueprint('task_routes', __name__)
+task_bp = Blueprint('task_bp', __name__)
 
 # Route to get all tasks
-@task_routes.route('/tasks', methods=['GET'])
+@task_bp.route('/tasks', methods=['GET'])
 def get_tasks():
     tasks = DataProcessingTask.query.all()
     task_list = [
@@ -25,7 +25,7 @@ def get_tasks():
 
 
 # Route to get a specific task by ID
-@task_routes.route('/tasks/<int:task_id>', methods=['GET'])
+@task_bp.route('/tasks/<int:task_id>', methods=['GET'])
 def get_task(task_id):
     task = DataProcessingTask.query.get_or_404(task_id)
     task_data = {
@@ -39,7 +39,7 @@ def get_task(task_id):
 
 
 # Route to create a new task
-@task_routes.route('/tasks', methods=['POST'])
+@task_bp.route('/tasks', methods=['POST'])
 def create_task():
     data = request.get_json()
     new_task = DataProcessingTask(
@@ -54,7 +54,7 @@ def create_task():
 
 
 # Route to update an existing task
-@task_routes.route('/tasks/<int:task_id>', methods=['PUT'])
+@task_bp.route('/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
     task = DataProcessingTask.query.get_or_404(task_id)
     data = request.get_json()
@@ -67,7 +67,7 @@ def update_task(task_id):
 
 
 # Route to delete a task
-@task_routes.route('/tasks/<int:task_id>', methods=['DELETE'])
+@task_bp.route('/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     task = DataProcessingTask.query.get_or_404(task_id)
     db.session.delete(task)
@@ -75,7 +75,7 @@ def delete_task(task_id):
     return jsonify({'message': 'Task deleted successfully'})
 
 
-@task_routes.route('/tasks/<int:task_id>/assign/<int:team_id>', methods=['POST'])
+@task_bp.route('/tasks/<int:task_id>/assign/<int:team_id>', methods=['POST'])
 def assign_task_to_team(task_id, team_id):
     task = DataProcessingTask.query.get_or_404(task_id)
     # Assuming you have a relationship between tasks and teams
@@ -88,7 +88,7 @@ def assign_task_to_team(task_id, team_id):
 
 
 # Route to unassign a task from a team
-@task_routes.route('/tasks/<int:task_id>/unassign', methods=['POST'])
+@task_bp.route('/tasks/<int:task_id>/unassign', methods=['POST'])
 def unassign_task(task_id):
     task = DataProcessingTask.query.get_or_404(task_id)
     

@@ -1,6 +1,7 @@
 // CacheManager.ts
 import axios from "axios";
 import { create } from "mobx-persist";
+import { CustomPhaseHooks } from "../components/phases/Phase";
 import cacheData from "../configs/MainConfig";
 import { ModuleType } from "../configs/UserPreferences";
 import { generateInterfaces } from "../generators/GenerateInterfaces";
@@ -177,33 +178,9 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         animateIn: () => {},
       };
     },
-    authenticationPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
-    jobSearchPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
-    recruiterDashboardPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
+    authenticationPhaseHook: {} as CustomPhaseHooks,
+    jobSearchPhaseHook: {} as CustomPhaseHooks,
+    recruiterDashboardPhaseHook:  {} as CustomPhaseHooks,
     teamBuildingPhaseHook: () => {
       return {
         isActive: false,

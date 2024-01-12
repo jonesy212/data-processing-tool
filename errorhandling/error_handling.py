@@ -1,8 +1,8 @@
 from flask import render_template
 
-from blueprint_routes.upload_routes import (handle_invalid_file_format,
-                                            handle_upload_failure,
-                                            handle_upload_file_missing)
+from blueprint_routes.handle_upload_routes import (handle_invalid_file_format,
+                                                   handle_upload_failure,
+                                                   handle_upload_file_missing)
 from configs.config import app
 
 

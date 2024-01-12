@@ -1,8 +1,15 @@
 // ProgressBar.tsx
 import React from "react";
 
+
+interface Progress {
+  value: number;
+  label: string;
+  // additional properties as needed
+}
+
 interface ProgressBarProps {
-  progress: number; // Progress value between 0 and 100
+  progress: Progress | null; // Progress value between 0 and 100
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => (
@@ -20,4 +27,5 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => (
   </div>
 );
 
-export default ProgressBar;
+export default ProgressBar
+export type { Progress };

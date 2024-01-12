@@ -16,7 +16,7 @@ export const CalendarProvider = ({ children }) => {
           taskManagerStore.tasks.pending
         );
         // Assuming you have a todos.realtimeData array
-        const todosAsEvents = transformTodosToEvents(todos.realtimeData);
+        const todosAsEvents = transformTodosToEvents(taskManagerStore.todos.realtimeData);
 
         setCalendarData([...tasksAsEvents, ...todosAsEvents]);
       } catch (error) {

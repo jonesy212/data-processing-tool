@@ -1,8 +1,14 @@
-import FullCalendar from '@fullcalendar/react';
-import { useCalendarContext } from './CalendarContext';
+Calendar;
+
+import DataFrameAPI from "@/app/api/DataframeApi";
+import FullCalendar from "@fullcalendar/react";
+import ProgressBar from "../models/tracker/ProgresBar";
+import { useCalendarContext } from "./CalendarContext";
 
 const CalendarWrapper = () => {
   const { calendarData, updateCalendarData } = useCalendarContext();
+  const dataFrameAPI = new DataFrameAPI(); // Initialize your DataFrameAPI instance
+  const progress = calendarData.length > 0 ? calendarData[0].projects[0].progress : 0;
 
   const handleEventDrop = (event) => {
     try {
@@ -13,8 +19,17 @@ const CalendarWrapper = () => {
         );
         return updatedData;
       });
+
+      // Assuming DataFrameAPI has a method to update data
+      const newData = [...calendarData]; // Replace with your actual data
+      newData.forEach((item, index) => {
+        if (item.id === event.id) {
+          newData[index].start = event.start;
+        }
+      });
+      dataFrameAPI.updateData(newData);
     } catch (error) {
-      console.error('Error handling event drop:', error);
+      console.error("Error handling event drop:", error);
     }
   };
 
@@ -22,6 +37,7 @@ const CalendarWrapper = () => {
     <div>
       <h2>Task Calendar</h2>
       <FullCalendar events={calendarData} eventDrop={handleEventDrop} />
+      <ProgressBar progress={progress} />
     </div>
   );
 };

@@ -2,6 +2,8 @@ import { Phase } from "../../phases/Phase";
 import Project from "../../projects/Project";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
+import CommonDetails from "../CommonDetailsProps";
+import { Progress } from "../tracker/ProgresBar";
 
 interface Team {
   id: number;
@@ -12,6 +14,8 @@ interface Team {
   creationDate: Date;
   isActive: boolean;
   leader: User | null;
+  progress: Progress | null;
+  then: (callback: (newTeam: Team) => void) => void;
   // Add other team-related fields as needed
 }
 
@@ -105,7 +109,7 @@ const team: Team = {
           previouslyAssignedTo:[],
           done: false,
           dueDate: new Date(),
-          status: "todo",
+          status: "pending",
           priority: "low",
           estimatedHours: null,
           actualHours: null,
@@ -126,6 +130,7 @@ const team: Team = {
     },
   ],
   creationDate: new Date(),
+  progress: {} as Progress,
   isActive: true,
   leader: {
     id: 3,
@@ -140,7 +145,32 @@ const team: Team = {
     profilePicture: "profile picture",
     processingTasks: [] as DataProcessingTask[]
   },
+  then(callback: (newTeam: Team) => void) {
+    const newTeam = {
+      id: 2,
+      teamName: 'New Team',
+      description: null,
+      members: [],
+      projects: [],
+      creationDate: new Date(),
+      isActive: true,
+      leader: null,
+      progress: null,
+      then: callback,
+    };
+  }
 };
 
 
-export type { Team };
+
+
+// using commong detais we genrate detais for components by mapping through the objects.
+const TeamDetails: React.FC<{ team: Team }> = ({ team }) => (
+  
+  <CommonDetails<Team> data= { team } />
+);
+
+export { TeamDetails };
+
+  export type { Team };
+

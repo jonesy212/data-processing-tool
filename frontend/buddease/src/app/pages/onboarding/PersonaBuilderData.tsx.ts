@@ -1,4 +1,7 @@
 // PersonaBuilderData.ts
+import { Team } from "@/app/components/models/teams/Team";
+import { TeamMember } from "@/app/components/models/teams/TeamMembers";
+import Project from "@/app/components/projects/Project";
 import axios from "axios";
 import { Question } from "./Question";
 
@@ -39,6 +42,9 @@ export function initializeUserData(user: any) {
     datasets: '',
     tasks: '',
     questionnaireResponses: {},
+    projects: {} as Project[],
+    teams: {} as Team[],
+    teamMembers: {} as TeamMember[]
   };
 }
 

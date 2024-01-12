@@ -17,7 +17,7 @@ const initialState: UserManagerState = {
   bio: '',
   profilePicture: '',
   notification: '',
-  data: {},
+  data: {} as UserData,
   uploadQuota: 0,
 };
 

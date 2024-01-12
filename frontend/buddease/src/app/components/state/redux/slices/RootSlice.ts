@@ -1,13 +1,16 @@
 // rootSlice.ts
 import { combineReducers, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Task } from '../models/tasks/Task';
-import { Tracker } from '../models/tracker/Tracker';
-import { WritableDraft } from './redux/ReducerGenerator';
-import { taskManagerSlice } from './redux/slices/TaskSlice';
-import { trackerManagerSlice } from './redux/slices/TrackerSlice';
+import { Task } from '../../../models/tasks/Task';
+import { Tracker } from '../../../models/tracker/Tracker';
+import { userManagerSlice } from '../../../users/UserSlice';
+import { WritableDraft } from '../ReducerGenerator';
+import { useDataAnalysisManagerSlice } from './DataAnalysisSlice';
+import { taskManagerSlice } from './TaskSlice';
+import { trackerManagerSlice } from './TrackerSlice';
 // Import uuid
+import { useCalendarManagerSlice } from '@/app/components/calendar/CalendarSlice';
 import { v4 as uuidv4 } from "uuid";
-import { DocumentOptions } from '../documents/DocumentOptions';
+import { DocumentOptions } from '../../../documents/DocumentOptions';
 
 
 const randomTaskId = uuidv4().toString();
@@ -15,6 +18,9 @@ const randomTaskId = uuidv4().toString();
 export interface RootState {
   taskManager: ReturnType<typeof taskManagerSlice.reducer>;
   trackerManager: ReturnType<typeof trackerManagerSlice.reducer>
+  userManager: ReturnType<typeof userManagerSlice.reducer>
+  dataAnalysisManager: ReturnType<typeof useDataAnalysisManagerSlice.reducer>
+  calendarManager: ReturnType<typeof useCalendarManagerSlice.reducer>
   document: {
     documentType: DocumentOptions['documentType'],
     userIdea: DocumentOptions['userIdea'];
@@ -25,6 +31,9 @@ export interface RootState {
 const initialState: RootState = {
   taskManager: taskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
+  userManager: userManagerSlice.reducer(undefined, { type: "init" }),
+  dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, { type: "init" }),
+  calendarManager: useCalendarManagerSlice.reducer(undefined, { type: "init" }),
   document: {
     documentType: "",
     userIdea: "",
@@ -57,6 +66,19 @@ const rootReducerSlice = createSlice({
         state.taskManager.taskStatus = action.payload;
       }
     );
+    builder.addCase(
+      taskManagerSlice.actions.updateTaskDetails, // Replace with your specific action
+      (state, action: PayloadAction<{ taskId: string, updatedDetails: Partial<Task> }>) => {
+        // Handle the action for updating task details
+        const { taskId, updatedDetails } = action.payload;
+        const taskToUpdate = state.taskManager.tasks.find((task) => task.id === taskId);
+
+        if (taskToUpdate) {
+          // Update the task details
+          Object.assign(taskToUpdate, updatedDetails);
+        }
+      }
+    );
     builder.addCase(taskManagerSlice.actions.addTask, (state) => {
       // Handle the action for adding a task
       const newTask: WritableDraft<Task> = {
@@ -65,7 +87,7 @@ const rootReducerSlice = createSlice({
         description: "",
         assignedTo: [],
         dueDate: new Date(), // Changed to Date object
-        status: "todo",
+        status: "pending",
         priority: 'medium',
         estimatedHours: 0,
         actualHours: 0,
@@ -133,12 +155,18 @@ const rootReducer = combineReducers({
   root: rootReducerSlice.reducer,
   taskManager: taskManagerSlice.reducer,
   trackerManager: trackerManagerSlice.reducer,
+  userManager: userManagerSlice.reducer,
+  dataAnalyisManager: useDataAnalysisManagerSlice.reducer,
+  useCalendarManager: useCalendarManagerSlice.reducer,
+  
   // Add other slices as needed
 });
 
 // Export selectors for accessing state from slices
 export const selectTaskManager = (state: RootState) => state.taskManager;
 export const selectTrackers = (state: RootState) => state.trackerManager;
+export const selectCalendarManager = (state: RootState) => state.calendarManager;
+export const selectDataAnalysisManager = (state: RootState) => state.dataAnalysisManager;
 // Add other selectors as needed
 
 export default rootReducer;

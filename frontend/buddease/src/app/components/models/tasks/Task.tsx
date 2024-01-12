@@ -9,7 +9,7 @@ interface Task {
   description?: string;
   assignedTo: User[];
   dueDate: Date;
-  status: 'pending' | 'todo' | 'inProgress' | 'completed';
+  status: 'pending' | 'inProgress' | 'completed';
   priority: 'low' | 'medium' | 'high';
   estimatedHours?: number | null;
   actualHours?: number | null;

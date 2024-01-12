@@ -3,12 +3,31 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { subscribeToRealtimeUpdates } from '../../hooks/dataHooks/RealtimeUpdatesComponent';
 import { UserData } from '../../users/User';
+
+// Define a type for chat settings
+interface ChatSettings {
+  realTimeChatEnabled: boolean;
+  notificationEmailEnabled: boolean;
+  enableEmojis: boolean;
+  enableAudioChat: boolean;
+  enableVideoChat: boolean;
+  enableFileSharing: boolean;
+  enableBlockchainCommunication: boolean;
+  enableDecentralizedStorage: boolean;
+  collaborationPreference1: string | undefined;
+  collaborationPreference2: string | undefined;
+  // Add more settings as needed
+}
+
+
 const ChatSettingsPanel = () => {
   const { state: authState } = useAuth();
+
   const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);
 
-  const [chatSettings, setChatSettings] = useState({
+  const [chatSettings, setChatSettings] = useState<ChatSettings>({
     // Define chat-related settings here
+    
     realTimeChatEnabled: userSettings.realTimeChatEnabled,
     notificationEmailEnabled: userSettings.notificationEmailEnabled,
     enableEmojis: userSettings.enableEmojis,

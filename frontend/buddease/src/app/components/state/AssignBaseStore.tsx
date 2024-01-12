@@ -9,12 +9,20 @@ export interface AssignBaseStore {
   assignedItems: Record<string, string[]>; // Use ID as key and array of item IDs as value
   assignedTodos: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTasks: Record<string, string[]>; // Use ID as key and array of todo IDs as value
+  assignedTeams: Record<string, string[]>; // Use ID as key and array of todo IDs as value
+  
   assignItem: (itemId: string, userId: string) => void;
   assignUser: (itemId: string, userId: string) => void;
+  assignTeam: (itemId: string, teamId: string) => void;
   unassignUser: (itemId: string, userId: string) => void;
   reassignUser: (itemId: string, oldUserId: string, newUserId: string) => void;
   assignUsersToItems: (itemIds: string[], userId: string) => void;
   unassignUsersFromItems: (itemIds: string[], userId: string) => void;
+  
+  assignTaskToTeam: (taskId: string, userId: string) => Promise<void>;
+  assignTodoToTeam: (todoId: string, teamId: string) => Promise<void>;
+  assignTeamMemberToTeam: (teamId: string, userId: string) => void;
+  unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
   snapshotStore: SnapshotStore<Record<string, Todo[]>>
 
@@ -39,6 +47,23 @@ export interface AssignBaseStore {
     oldUserId: string,
     newUserId: string
   ) => void;
+
+  assignTeamToTodo: (todoId: string, teamId: string) => void;
+  unassignTeamToTodo: (todoId: string, teamId: string) => void;
+  reassignTeamToTodo: (
+    todoId: string,
+    oldTeamId: string,
+    newTeamId: string
+  ) => void;
+  
+  assignTeamToTodos: (todoIds: string[], teamId: string) => void;
+  unassignTeamFromTodos: (todoIds: string[], teamId: string) => void;
+  reassignTeamToTodos: (
+    teamIds: string[],
+    teamId: string,
+    newTeamId: string
+
+  ) => void;
   // Success and Failure methods
   assignUserSuccess: () => void;
   assignUserFailure: (error: string) => void;
@@ -50,6 +75,9 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignedUsers: Record<string, string[]> = {};
   const assignedItems: Record<string, string[]> = {};
   const assignedTodos: Record<string, string[]> = {};
+  const assignedTeams: Record<string, string[]> = {};
+  const assignedTasks: Record<string, string[]> = {};
+  
   // Create an instance of SnapshotStore
   const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({});
 
@@ -78,6 +106,19 @@ const useAssignBaseStore = (): AssignBaseStore => {
 
     // TODO: Implement any additional logic needed when assigning a user to an item
   };
+
+
+  const assignTeam = (itemId: string, teamId: string) => {
+    // Check if the itemId already exists in the assignedTeams
+    if (!assignedTeams[itemId]) {
+      assignedTeams[itemId] = [teamId];
+    } else {
+      // Check if the team is not already assigned to the item
+      if (!assignedTeams[itemId].includes(teamId)) {
+        assignedTeams[itemId].push(teamId);
+      }
+    }
+  }
 
   const unassignUser = (itemId: string, userId: string) => {
     // Check if the itemId exists in the assignedUsers
@@ -254,7 +295,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     console.error("Assign user failure:", error);
     // You can add additional error handling or trigger notifications as needed
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.User_Error.ASSIGN_USER_FAILURE
+      NOTIFICATION_MESSAGES.User.ASSIGN_USER_FAILURE
     );
   };
 
@@ -262,6 +303,166 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const setDynamicNotificationMessage = (message: string) => {
     setDynamicNotificationMessage(message);
   };
+
+
+
+  const assignTaskToTeam = async (taskId: string, teamId: string) => {
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>((resolve) => {
+      // Perform the task assignment logic here
+      // For example, update the assignedTasks record
+      if (!assignedTasks[taskId]) {
+        assignedTasks[taskId] = [teamId];
+      } else {
+        assignedTasks[taskId].push(teamId);
+      }
+
+      // TODO: Implement any additional logic needed when assigning a task to a team
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  };
+
+  const assignTodoToTeam = async (todoId: string, teamId: string) => {
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>((resolve) => {
+      // Perform the todo assignment logic here
+      // For example, update the assignedTodos record
+      if (!assignedTodos[todoId]) {
+        assignedTodos[todoId] = [teamId];
+      } else {
+        assignedTodos[todoId].push(teamId);
+      }
+
+      // TODO: Implement any additional logic needed when assigning a todo to a team
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  };
+
+  const assignTeamMemberToTeam = (itemId: string, userId: string) => {
+    // Perform the team member assignment logic here
+    // For example, update the assignedTeams record
+    if (!assignedTeams[itemId]) {
+      assignedTeams[itemId] = [userId];
+    } else {
+      assignedTeams[itemId].push(userId);
+    }
+
+    // TODO: Implement any additional logic needed when assigning a team member to an item
+  };
+
+  const unassignTeamMemberFromItem = (itemId: string, userId: string) => {
+    // Check if the itemId exists in the assignedTeams
+    if (assignedTeams[itemId]) {
+      // Remove the team member from the assignedTeams for the given itemId
+      assignedTeams[itemId] = assignedTeams[itemId].filter(
+        (id) => id !== userId
+      );
+
+      // Remove the itemId entry if there are no more assigned team members
+      if (assignedTeams[itemId].length === 0) {
+        delete assignedTeams[itemId];
+      }
+    }
+    // TODO: Implement any additional logic needed when unassigning a team member from an item
+  };
+
+
+  const assignTeamToTodo = async (todoId: string, teamId: string) => { 
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>((resolve) => {
+      // Perform the todo assignment logic here
+      // For example, update the assignedTodos record
+      if (!assignedTodos[todoId]) {
+        assignedTodos[todoId] = [teamId];
+      } else {
+        assignedTodos[todoId].push(teamId);
+      }
+
+      // TODO: Implement any additional logic needed when assigning a team to a todo
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  }
+
+  const unassignTeamToTodo = async (todoId: string, teamId: string) => { 
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>((resolve) => {
+      // Check if the todoId exists in the assignedTodos
+      if (assignedTodos[todoId]) {
+        // Remove the team from the assignedTodos for the given todoId
+        assignedTodos[todoId] = assignedTodos[todoId].filter(
+          (id) => id !== teamId
+        );
+
+        // Remove the todoId entry if there are no more assigned teams
+        if (assignedTodos[todoId].length === 0) {
+          delete assignedTodos[todoId];
+        }
+      }
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  }
+
+
+  const reassignTeamToTodo = async (todoId: string, oldTeamId: string, newTeamId: string) => { 
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>((resolve) => {
+      // Unassign old team and assign new team to todo
+      unassignTeamToTodo(todoId, oldTeamId);
+      assignTeamToTodo(todoId, newTeamId);
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  }
+
+
+  const assignTeamToTodos = async (todoIds: string[], teamId: string) => { 
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>(async (resolve) => {
+      // Loop through todos and assign team to each
+      for(let todoId of todoIds) {
+        await assignTeamToTodo(todoId, teamId);
+      }
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  }
+
+  const unassignTeamFromTodos = async (todoIds: string[], teamId: string) => { 
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>(async (resolve) => {
+      // Loop through todos and unassign team from each
+      for(let todoId of todoIds) {
+        await unassignTeamToTodo(todoId, teamId);
+      }
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  }
+
+  const reassignTeamToTodos = async (todoIds: string[], oldTeamId: string, newTeamId: string) => { 
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<void>(async (resolve) => {
+      // Loop through todos and reassign team for each
+      for(let todoId of todoIds) {
+        await reassignTeamToTodo(todoId, oldTeamId, newTeamId);
+      }
+
+      // Resolve the promise after completing the operation
+      resolve();
+    });
+  }
+
 
   makeAutoObservable({
     assignItem,
@@ -283,16 +484,31 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignUserSuccess,
     assignUserFailure,
     setDynamicNotificationMessage,
+    assignTeamToTodo
     // Add more properties or methods as needed
   });
+
+
+
+ 
 
   return {
     assignItem,
     assignedUsers,
+    snapshotStore,
     assignedItems: {},
     assignedTasks: {},
     assignedTodos: {},
-    snapshotStore,
+    assignedTeams: {},
+    assignTeamToTodo,
+    unassignTeamToTodo,
+    reassignTeamToTodo,
+    assignTeamToTodos, 
+    assignTeamMemberToTeam,
+    assignTeam,
+    assignTaskToTeam,
+    assignTodoToTeam,
+    unassignTeamMemberFromItem,
     assignUser,
     unassignUser,
     reassignUser,
@@ -307,7 +523,9 @@ const useAssignBaseStore = (): AssignBaseStore => {
     reassignUsersInTodos,
     assignUserSuccess,
     assignUserFailure,
-      setDynamicNotificationMessage,
+    setDynamicNotificationMessage,
+    reassignTeamToTodos,
+    unassignTeamFromTodos,
     // Add more properties or methods as needed
   };
 };

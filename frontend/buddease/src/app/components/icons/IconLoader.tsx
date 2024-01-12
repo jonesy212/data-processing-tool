@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-type IconLoader = () => Promise<React.ReactNode>;
+export type IconLoader = () => Promise<React.ReactNode>;
 
-const createIconLoader = (iconPath: string, altText: string): IconLoader => {
+export const createIconLoader = (iconPath: string, altText: string): IconLoader => {
   return async () => {
     const iconModule = await import(iconPath);
 
@@ -12,6 +12,23 @@ const createIconLoader = (iconPath: string, altText: string): IconLoader => {
     });
   };
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const loadDuckDuckGoIcon: IconLoader = createIconLoader(
   "path/to/duckduckgo-icon.png",
@@ -32,6 +49,7 @@ export const loadYandexIcon: IconLoader = createIconLoader(
   "path/to/yandex-icon.png",
   "Yandex Icon"
 );
+
 
 
 

@@ -50,7 +50,7 @@ const TodoList: React.FC = observer(() => {
       id: newTodoId,
       title: "A new todo",
       done: false,
-    };
+    } as Todo;
 
     todoStore.addTodo(newTodo);
     handleUpdateTitle(newTodoId, "A new todo");
@@ -73,5 +73,7 @@ const TodoList: React.FC = observer(() => {
     </div>
   );
 });
+
+
 
 export default TodoList;

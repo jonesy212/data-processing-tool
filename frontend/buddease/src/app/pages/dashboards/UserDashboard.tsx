@@ -14,6 +14,8 @@ const UserDashboard: React.FC = () => {
       <h1>Welcome to the Dashboard</h1>
       <p>User's Datasets: {userData?.datasets}</p>
       <p>Preprocessing Tasks: {userData?.tasks}</p>
+      {/* Display the new ProjectTimelineDashboard component */}
+      <ProjectTimelineDashboard />
       {/* Add any additional content based on the user's data */}
     </div>
   );

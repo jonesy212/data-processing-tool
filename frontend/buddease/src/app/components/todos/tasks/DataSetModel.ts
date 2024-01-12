@@ -21,31 +21,32 @@ interface DatasetModel {
     // Optional: Add other relationships as needed
   }
   
-  
-  // Example usage:
-  const dataset: DatasetModel = {
+// Example usage:
+const dataset: DatasetModel = {
+  id: 1,
+  name: 'Example Dataset', 
+  description: 'An example dataset',
+  file_path_or_url: '/datasets/example.csv',
+  uploaded_by: 1, // Assuming user ID 1
+  uploaded_at: '2023-01-01T12:00:00Z', // Example date string
+  tags_or_categories: 'tag1, tag2',
+  format: 'csv',
+  visibility: 'private',
+  uploaded_by_team_id: 1, // Assuming team ID 1
+  uploaded_by_team: {
     id: 1,
-    name: 'Example Dataset',
-    description: 'An example dataset',
-    file_path_or_url: '/datasets/example.csv',
-    uploaded_by: 1, // Assuming user ID 1
-    uploaded_at: '2023-01-01T12:00:00Z', // Example date string
-    tags_or_categories: 'tag1, tag2',
-    format: 'csv',
-    visibility: 'private',
-    uploaded_by_team_id: 1, // Assuming team ID 1
-    uploaded_by_team: {
-      id: 1,
-      teamName: 'Development Team',
-      description: 'A team focused on software development',
-      members: [],
-      projects: [],
-      creationDate: new Date(),
-      isActive: false,
-      leader: null
-      
-      // Other team fields
-    },
-    // Other fields
-  };
+    teamName: 'Development Team',
+    description: 'A team focused on software development', 
+    members: [],
+    projects: [],
+    creationDate: new Date(),
+    isActive: false,
+    leader: null,
+    progress: null // Added missing 'progress' property
+    
+    // Other team fields
+  },
+  // Other fields
+};
+
   export type { DatasetModel };

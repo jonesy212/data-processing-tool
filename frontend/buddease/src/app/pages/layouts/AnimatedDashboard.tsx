@@ -6,7 +6,6 @@ import SwingCard from "@/app/components/cards/animation/SwingCard";
 import React from "react";
 
 import ClickableList from "@/app/components/actions/ClickableList";
-import { loadDuckDuckGoIcon } from "@/app/components/actions/IconLoader";
 import { AnimatedComponentRef } from "@/app/components/animations/AnimationComponent";
 import { ImageCard } from "@/app/components/cards";
 import {
@@ -18,6 +17,7 @@ import {
   notificationBarPhaseHook,
 } from "@/app/components/hooks/userInterface/UIPhaseHooks";
 import useDarkModeToggle from "@/app/components/hooks/userInterface/useDarkModeToggle";
+import { loadDuckDuckGoIcon } from "@/app/components/icons/IconLoader";
 import TaskList from "@/app/components/lists/TaskList";
 import { useTaskManagerStore } from "@/app/components/state/stores/TaskStore ";
 import useTodoManagerStore from "@/app/components/state/stores/TodoStore";

@@ -25,7 +25,7 @@ const TaskManagementManager: React.FC = () => {
       <TaskManagerComponent taskId={() => "task1"} />
       {currentPhase === TaskManagementPhase.LAUNCH && <LaunchPhase />}
       {currentPhase === TaskManagementPhase.DATA_ANALYSIS && (
-        <DataAnalysisPhase />
+        <DataAnalysisPhase onSubmit={() => handlePhaseTransition} />
       )}
       {/* Add more phases as needed */}
     </div>

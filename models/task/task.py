@@ -154,6 +154,16 @@ def upload_and_process_data_task(dataset_name, dataset_description, file=None, u
 
 
 
+@app.route('/api/dataframe/info', methods=['GET'])
+def get_dataframe_info():
+    # Assuming 'your_data_frame' is the DataFrame you want to get information from
+    dataframe_info = {
+        'values': your_data_frame.values.tolist(),
+        'columns': your_data_frame.columns.tolist(),
+        'index': your_data_frame.index.tolist(),
+    }
+    return jsonify(dataframe_info)
+
 
 
 

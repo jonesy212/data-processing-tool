@@ -11,7 +11,11 @@ class Company(db.Model):
 
     # Bidirectional Relationship: Linking to the RecruiterProfile model
     recruiter_profile = relationship('RecruiterProfile', back_populates='company', uselist=False)
+    # Bidirectional Relationship: Linking to the User model for employees
+    employees = relationship('User', back_populates='company', foreign_keys='User.company_id', uselist=True)
 
+    # Bidirectional Relationship: Linking to the User model for contractors
+    contractors = relationship('User', back_populates='contractor_company', foreign_keys='User.contractor_company_id', uselist=True)
     # Other Company-specific fields
     # ...
     # Relationships

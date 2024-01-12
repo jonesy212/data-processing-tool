@@ -20,7 +20,7 @@ const globalSearchData = [
 ];
 
 
-interface SearchComponentProps {
+export interface SearchComponentProps {
   componentSpecificData: {
     id: number;
     title: string;

@@ -1,6 +1,5 @@
 import useIdleTimeout from '../components/hooks/commHooks/useIdleTimeout';
 
-
 const userSettings = {
   communicationMode: "text",
   enableRealTimeUpdates: true,

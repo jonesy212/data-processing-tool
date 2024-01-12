@@ -1,10 +1,10 @@
 // TodoManagerStore.ts
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
+import { useAuth } from '../../auth/AuthContext';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { Todo } from '../../todos/Todo';
 import SnapshotStore from './SnapshotStore';
-
 export interface TodoManagerStore {
   todos: Record<string, Todo>;
   toggleTodo: (id: string) => void;
@@ -21,9 +21,13 @@ export interface TodoManagerStore {
   NOTIFICATION_MESSAGE: string; 
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES,
   setDynamicNotificationMessage: (message: string) => void; // Add this property
-  snapshotStore: SnapshotStore<Record<string, Todo[]>>; // Include a SnapshotStore for tasks
+  
   snapshot: Record<string, Todo[]>;
+  snapshotStore: SnapshotStore<Record<string, Todo[]>>;
   updateSnapshot: (snapshot: Record<string, Todo[]>) => void;
+  initSnapshot: () => void;
+  fetchSnapshot: SnapshotStore<Record<string, Todo[]>>;
+  
 }
 
 
@@ -36,17 +40,28 @@ const useTodoManagerStore = (): TodoManagerStore => {
     key: string;
     initialState: T;
     onSnapshot?: (snapshot: T) => void;
+    snapshot?: () => void;
+    initSnapShot: () => void;
+    updateSnapshot: (snapshot: T) => void;
+    snapshots: () => Record<string, T>;
+    getSnapshots: () => Record<string, Record<string, Todo[]>>;
   }
 
   class SnapshotStore<T> {
     key: string;
     state: T;
     onSnapshot?: (snapshot: T) => void;
-
+    snapshot?: () => void;
+    // initSnapShot?: () => void;
+    // updateSnapshot?: (snapshot: Record<string, Todo[]>) => void;
+    
     constructor(config: SnapshotStoreConfig<T>) {
       this.key = config.key;
       this.state = config.initialState;
       this.onSnapshot = config.onSnapshot;
+      this.snapshot = config.snapshot
+      // this.initSnapShot = config.initSnapShot
+      // this.updateSnapshot = config.updateSnapshot
     }
 
     takeSnapshot() {
@@ -54,15 +69,67 @@ const useTodoManagerStore = (): TodoManagerStore => {
         this.onSnapshot(this.state);
       }
     }
+    updateSnapshot() {
+      if (this.onSnapshot) {
+        // get current snapshot from database
+        const currentSnapshot = snapshotStore(this.key);
+        // update snapshot state
+        this.state = currentSnapshot;
+        // call init snapshot to trigger snapshot
+        snapshotStore.initSnapShot(this.state);
+        // update snapshot store state
+        this.onSnapshot(this.state);
+      }
+    }
+    initSnapShot(snapshot: Record<string, Todo[]>) { 
+      snapshotStore.state = snapshot;
+    }
   }
 
-  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
-    key: "todos",
-    initialState: {},
-    onSnapshot: (snapshot) => {
-      console.log("Snapshot taken!", snapshot);
+  const {state: authState }= useAuth();
+const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
+  key: "todos",
+  initialState: {},
+  onSnapshot: (snapshot) => {
+    console.log("Snapshot taken!", snapshot);
+  },
+  snapshot: () => {
+    console.log("Snapshot taken!");
+    const snapshotValues = Object.values(todos);
+    const snapshotRecord: Record<string, Todo[]> = {};
+    snapshotValues.forEach((value) => {
+      snapshotRecord[value.id] = [value];
+    });
+    snapshotStore.state = snapshotRecord;
+  },
+  initSnapShot: () => {
+    snapshotStore.takeSnapshot();
+  },
+  updateSnapshot: (snapshot: Record<string, Todo[]>) => {
+    snapshotStore.state = snapshot;
+    if (snapshotStore.onSnapshot) {
+      snapshotStore.takeSnapshot();
+    }
+  },
+  snapshots: () => {
+    return snapshotStore.getSnapshots(); 
+  },
+  getSnapshot: (id: string) => {
+    return snapshotStore.state[id];
+  },
+  getSnapshots: (snapshots: Record<string, Todo[]>) => {
+
     },
-  });
+
+
+  clearSnapshots: () => {
+    snapshotStore.state = {};
+  }
+});
+
+
+
+
 
 
   const toggleTodo = (id: string) => {
@@ -191,6 +258,9 @@ const useTodoManagerStore = (): TodoManagerStore => {
     snapshotStore.takeSnapshot();
   }
 
+
+
+
   makeAutoObservable({
     todos,
     toggleTodo,
@@ -209,32 +279,36 @@ const useTodoManagerStore = (): TodoManagerStore => {
     setDynamicNotificationMessage,
     snapshotStore,
     updateSnapshot,
-    initSnapShot
-
-
+    initSnapShot,
+    
   }, {
     setDynamicNotificationMessage: false, // Ensure this function is not considered as an action
 
   });
 
-  return {
-    todos,
-    toggleTodo,
-    addTodo,
-    addTodos,
-    removeTodo,
-    updateTodoTitle,
-    fetchTodosSuccess,
-    fetchTodosFailure,
-    fetchTodosRequest,
-    completeAllTodosSuccess,
-    completeAllTodos,
-    completeAllTodosFailure,
-    NOTIFICATION_MESSAGE,
-    NOTIFICATION_MESSAGES,
-    setDynamicNotificationMessage,
-    snapshotStore,
-  };
+return {
+  todos,
+  toggleTodo,
+  addTodo,
+  addTodos,
+  removeTodo,
+  updateTodoTitle,
+  fetchTodosSuccess,
+  fetchTodosFailure,
+  fetchTodosRequest,
+  completeAllTodosSuccess,
+  completeAllTodos,
+  completeAllTodosFailure,
+  NOTIFICATION_MESSAGE,
+  NOTIFICATION_MESSAGES,
+  setDynamicNotificationMessage,
+  fetchSnapshot: snapshotStore.fetchSnapshot,
+  initSnapshot: snapshotStore.initSnapshot,
+  snapshot: snapshotStore.snapshots,
+  snapshotStore: snapshotStore, 
+  updateSnapshot: snapshotStore.updateSnapshot,
+};
+
 };
 
 export default useTodoManagerStore;

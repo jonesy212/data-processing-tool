@@ -1,4 +1,4 @@
-.. _user_routes:
+.. _user_bp:
 
 User Routes
 ===========
@@ -6,12 +6,12 @@ User Routes
 Module Overview
 ----------------
 
-The `user_routes.py` module contains API routes related to user management.
+The `user_bp.py` module contains API routes related to user management.
 
 Routes
 ------
 
-.. automodule:: user_routes
+.. automodule:: user_bp
    :members:
 
    .. autofunction:: get_users

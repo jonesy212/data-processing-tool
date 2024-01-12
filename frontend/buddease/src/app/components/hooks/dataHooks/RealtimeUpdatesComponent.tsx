@@ -9,6 +9,10 @@ const RealtimeUpdatesComponent = () => {
     authState.user ? initializeUserData(authState.user) : null
   );
 
+  const [chatSettings, setChatSettings] = useState<{
+    realTimeChatEnabled: boolean;
+  } | null>();
+
   useEffect(() => {
     if (authState.user) {
       // Only subscribe if we have a user

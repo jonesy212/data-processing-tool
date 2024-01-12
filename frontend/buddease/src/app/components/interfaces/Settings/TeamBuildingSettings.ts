@@ -1,3 +1,5 @@
+import { BrainstormingSettings } from "../BrainstormingSettings";
+
 interface TeamBuildingSettings {
   enableTeamBuilding: boolean;
   teamBuildingMethod: "iceBreakers" | "workshops" | "teamRetreat" | "custom"; // Preferred team-building method

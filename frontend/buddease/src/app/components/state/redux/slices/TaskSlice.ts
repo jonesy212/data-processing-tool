@@ -36,6 +36,20 @@ export const taskManagerSlice = createSlice({
       state.taskStatus = action.payload;
     },
 
+
+    updateTaskDetails: (
+      state,
+      action: PayloadAction<{ taskId: string; updatedDetails: Partial<Task> }>
+    ) => {
+      const { taskId, updatedDetails } = action.payload;
+      const taskToUpdate = state.tasks.find((task) => task.id === taskId);
+
+      if (taskToUpdate) {
+        // Update the task details
+        Object.assign(taskToUpdate, updatedDetails);
+      }
+    },
+
     addTask: (state, action: PayloadAction<{ id: string; title: string }>) => {
       const { id, title } = action.payload;
       if (state.taskTitle.trim() === "") {
@@ -43,7 +57,7 @@ export const taskManagerSlice = createSlice({
         return;
       }
 
-      generateNewTask().then((newTask, ) => {
+      generateNewTask().then((newTask: any) => {
         state.tasks.push(newTask);
       });
 
@@ -55,8 +69,13 @@ export const taskManagerSlice = createSlice({
     removeTask: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
+
+
+    
   },
+  
 });
+
 
 
 // Export actions

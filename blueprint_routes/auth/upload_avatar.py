@@ -3,6 +3,7 @@ import imghdr
 from flask import Blueprint, jsonify, request
 
 from database.extensions import db
+from dataset.dataset_upload import allowed_file
 from models.user import User
 
 # Assuming you have an 'auth_bp' Blueprint instance
@@ -40,8 +41,6 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = 'path/to/your/upload/folder'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 MAX_FILE_SIZE = 5 * 1024 * 1024 # 5MB
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def handle_avatar_upload(user_id, avatar_file):
     try:

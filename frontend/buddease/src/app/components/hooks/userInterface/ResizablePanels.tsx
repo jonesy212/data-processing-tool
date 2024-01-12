@@ -2,8 +2,7 @@
 import React, { ReactNode, useEffect, useRef } from "react";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 import "react-resizable/css/styles.css";
-import { DynamicContentProps } from "../../cards/DummyCardLoader";
-
+import { DynamicDashboardProps } from "../../dashboards/DynamicDashboard";
 interface ResizablePanelsProps {
   sizes: () => number[];
   onResize: (newSizes: number[]) => void;
@@ -50,7 +49,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
     );
   };
 
-  const renderDynamicContent = (props: DynamicContentProps) => {
+  const renderDynamicContent = (props: DynamicDashboardProps) => {
     if ("fontSize" in props && "fontFamily" in props) {
       // Dynamic rendering based on the type of props
       if ("fontSize" in props) {
@@ -80,10 +79,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
                 <div ref={(ref) => (panelRefs.current[index] = ref)}>
                   {/* You can conditionally render static or dynamic content here */}
                   {renderStaticContent()}
-                  {renderDynamicContent({
-                    fontSize: "16px",
-                    fontFamily: "Arial, sans-serif",
-                  })}
+                  {renderDynamicContent({ title: "Example Dashboard", content: child })}
                   {child}
                 </div>
               </ResizableBox>
@@ -97,13 +93,7 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
     return null;
   };
 
-  return <>{renderDynamicContent({} as DynamicContentProps)}</>;
+  return <>{renderDynamicContent({} as DynamicDashboardProps)}</>;
 };
-
-
-
-
-
-
 
 export default ResizablePanels;

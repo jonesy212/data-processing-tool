@@ -8,6 +8,7 @@ export interface Todo {
   id: string;
   title: string;
   done: boolean;
+  status: string;
   todos: Todo[];
   description: string;
   dueDate: Date | null;

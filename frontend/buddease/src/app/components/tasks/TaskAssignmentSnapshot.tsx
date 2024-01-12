@@ -7,7 +7,6 @@ interface TaskAssignmentSnapshotProps {
 }
 
 
-
 const TaskAssignmentSnapshot: React.FC<TaskAssignmentSnapshotProps> = ({ taskId }) => {
   const taskManagerStore = useTaskManagerStore();
   const [assignedTo, setAssignedTo] = useState<string>(''); // You can change the type based on your user/team structure

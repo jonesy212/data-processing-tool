@@ -248,7 +248,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
     console.error("Assign user failure:", error);
     // You can add additional error handling or trigger notifications as needed
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.User_Error.ASSIGN_USER_FAILURE
+      NOTIFICATION_MESSAGES.User.ASSIGN_USER_FAILURE
     );
   };
 

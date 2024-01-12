@@ -2,6 +2,7 @@
 # app.py
 import asyncio
 
+import matplotlib.pyplot as plt
 import pandas as pd
 from flask import (Flask, g, jsonify, redirect, render_template, request,
                    session, url_for)
@@ -18,6 +19,7 @@ from configs.config import configure_app
 from database.extensions import create_database, db
 from dataprocessing.data_processing import load_and_process_data
 from dataset.dataset_upload import upload_dataset
+from hypothesis_testing.perform_hypothesis_test import perform_hypothesis_test
 from logging_system.audit_logger import AuditingLogger
 from logging_system.logger_config import setup_logging
 from logging_system.warning_events import log_exception, log_warning
@@ -93,11 +95,63 @@ def create_app(config_file=None):
             return render_template('dashboard.html', user=session['user'])
 
         else:
+            
             # Handle unknown tier/ user maybe not registered and needs to go back to the index/registratiion page
             return redirect(url_for('index'))
      
-    return configure_flask_app 
- 
+    return configure_flask_app
+
+
+
+@data_bp.route('/upload', methods=['POST'])
+def upload_dataset():
+    file = request.files['dataset']
+    if file:
+        # Process the uploaded dataset
+        data = pd.read_csv(file)
+        # Perform any processing using iloc or loc as needed
+        
+        # Example: Display the first 5 rows using iloc
+        preview_data = data.iloc[:5, :]
+        print("Preview of the uploaded dataset:")
+        print(preview_data)
+        
+        # Save the dataset or perform other operations
+        # ...
+
+        return redirect(url_for('dashboard'))
+    else:
+        return "Error: No file provided for upload."
+
+
+@app.route('/hypothesis-test', methods=['POST'])
+def run_hypothesis_test():
+    test_type = request.form.get('test-type')
+    if test_type:
+        # Perform hypothesis test on the dataset
+        # Use iloc or loc to select specific columns or rows based on user input
+        num_rows = int(request.form.get('num_rows', 5))
+        test_results = perform_hypothesis_test(data.iloc[:num_rows, :], test_type)
+        print(f"Hypothesis Test Results ({test_type}):")
+        print(test_results)
+
+        # Visualize the results (you can use any plotting library)
+        visualize_results(test_results)
+
+        return redirect(url_for('dashboard'))
+    else:
+        return "Error: No hypothesis test selected."
+
+# Function to visualize hypothesis test results
+def visualize_results(results):
+    # Example: Create a bar chart for t-test results
+    plt.bar(['t_statistic', 'p_value'], [results['t_statistic'], results['p_value']])
+    plt.title('T-Test Results')
+    plt.xlabel('Test Statistic')
+    plt.ylabel('P-Value')
+    plt.savefig('static/t_test_results.png')  # Save the plot to a static file
+    plt.close()
+
 if __name__ == "__main__":
     
     # Access the environment indicator
