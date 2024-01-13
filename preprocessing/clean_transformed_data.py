@@ -3,8 +3,6 @@ from engineering_features.encode_categorical_data import \
     encode_categorical_data
 from remove_duplicates import remove_duplicates
 
-from modules.tasks_module import process_data_task
-
 # clean-and-transform-data.py
 user_options = {
     'add_missing_indicator': True,

@@ -1,9 +1,12 @@
 // NotificationContext.tsx
 import { ReactNode, createContext, useContext } from "react";
+import { Notification } from "./NofiticationsSlice";
 import NotificationMessagesFactory from "./NotificationMessagesFactory";
 
 export interface NotificationContextProps {
   sendNotification: (type: string, userName?: string | number) => void;
+  addNotification: (notification: Notification) => void;
+  notify: (type: string, userName?: string | number | undefined) => void
   // Add more notification functions as needed
 }
 
@@ -14,10 +17,29 @@ export const NotificationContext = createContext<
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const notificationStore = useContext(NotificationContext);
+
+  const addNotification = (notification: Notification) => { 
+    notificationStore?.addNotification(notification);
+  }
+
+  const notify = (type: string, userName?: string | number) => { 
+    sendNotification(type, userName);
+
+  }
+
   const sendNotification = (type: string, userName?: string | number) => {
     const message = generateNotificationMessage(type, userName);
-    // Handle the logic to display notifications
-    console.log(`Notification: ${message}`);
+
+    if (notificationStore) {
+      const notification = { id: Date.now().toString(), content: message, date: new Date() };
+      // Handle the logic to display notifications
+      // Dispatch the addNotification action directly from your MobX store
+      notificationStore?.addNotification(notification as Notification);
+      console.log(`Notification: ${message}`);
+    } else {
+      console.error("NotificationStore is undefined");
+    }
   };
 
   const generateNotificationMessage = (
@@ -64,13 +86,13 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   return (
-    <NotificationContext.Provider value={{ sendNotification }}>
+    <NotificationContext.Provider value={{ sendNotification, addNotification, notify }}>
       {children}
     </NotificationContext.Provider>
   );
 };
 
-export const useNotification = () => {
+export const useNotification = (): NotificationContextProps => {
   const context = useContext(NotificationContext);
   if (!context) {
     throw new Error(
@@ -83,5 +105,5 @@ export const useNotification = () => {
     context.sendNotification(type, message);
   };
 
-  return notify;
+  return { sendNotification: context.sendNotification, addNotification: context.addNotification, notify: context.notify };
 };

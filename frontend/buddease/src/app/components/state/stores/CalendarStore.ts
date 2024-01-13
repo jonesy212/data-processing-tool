@@ -1,8 +1,8 @@
 // CalendarStore.ts
 import { makeAutoObservable } from 'mobx';
-import { useState } from 'react';
-import { CalendarEvent } from "../../models/calendar/CalendarEvent";
+import useRealtimeData from '../../hooks/commHooks/useRealtimeData';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import { AssignEventStore, useAssignEventStore } from './AssignEventStore';
 import SnapshotStore from "./SnapshotStore";
 
 export interface CalendarEvent {
@@ -13,161 +13,181 @@ export interface CalendarEvent {
   startTime?: string;
   endTime?: string;
   recurring?: boolean;
-  recurrenceRule?: string; // You can use a specific format for recurring rules
+  recurrenceRule?: string;
   category?: string;
-  // Add other properties as needed
+  status?: "tentative" | "inProgress"  | "confirmed" | "cancelled" | "scheduled" | "completed";
 }
-
 
 export interface CalendarManagerStore {
   events: Record<string, CalendarEvent[]>;
   eventTitle: string;
   eventDescription: string;
-  eventStatus: "scheduled" | "inProgress" | "completed";
+  eventStatus: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined;
   assignedEventStore: AssignEventStore;
+  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>;
+  NOTIFICATION_MESSAGE: string;
+  NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateEventTitle: (title: string) => void;
   updateEventDescription: (description: string) => void;
-  updateEventStatus: (status: "scheduled" | "inProgress" | "completed") => void;
+  updateEventStatus: (status: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined) => void;
   updateEventDate: (eventId: string, eventDate: Date) => void;
-  addEvent: (event: CalendarEvent) => void;
-  addEvents: (events: CalendarEvent[]) => void;
+  addEvent: () => void;
+  addEvents: (eventsToAdd: CalendarEvent[]) => void;
   removeEvent: (eventId: string) => void;
   removeEvents: (eventIds: string[]) => void;
-  fetchEventsSuccess: (payload: { events: CalendarEvent[] }) => void;
+  reassignEvent: (eventId: string, oldUserId: string, newUserId: string) => void;
+
+  addEventSuccess: (payload: { event: CalendarEvent }) => void;
+  fetchEventsSuccess: (payload: { calendarEvents: CalendarEvent[] }) => void;
   fetchEventsFailure: (payload: { error: string }) => void;
   fetchEventsRequest: () => void;
   completeAllEventsSuccess: () => void;
   completeAllEvents: () => void;
   completeAllEventsFailure: (payload: { error: string }) => void;
-  NOTIFICATION_MESSAGE: string;
-  NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>; // Include a SnapshotStore for events
-
-  // Add more methods or properties as needed
 }
 
-
-const useCalendarManagerStore = (): CalendarManagerStore => {
-  const [events, setEvents] = useState<Record<string, CalendarEvent[]>>({
+class CalendarManagerStoreClass implements CalendarManagerStore {
+  events: Record<string, CalendarEvent[]> = {
     scheduled: [],
     inProgress: [],
     completed: [],
-  });
-  const [eventTitle, setEventTitle] = useState<string>("");
-  const [eventDescription, setEventDescription] = useState<string>("");
-  const [eventStatus, setEventStatus] = useState<
-    "scheduled" | "inProgress" | "completed"
-  >("scheduled");
-  const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
-
-  // Include the AssignEventStore
-  const assignedEventStore = useAssignEventStore();
-  // Initialize SnapshotStore
-  const snapshotStore = new SnapshotStore<Record<string, CalendarEvent[]>>();
-
-  // Method to reassign an event to a new user
-  const reassignEvent = (eventId: string, oldUserId: string, newUserId: string) => {
-    assignedEventStore.reassignUser(eventId, oldUserId, newUserId);
-    // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
   };
+  eventTitle = "";
+  eventDescription = "";
+  eventStatus: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined = undefined;
+  assignedEventStore: AssignEventStore;
+  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>> = new SnapshotStore<Record<string, CalendarEvent[]>>({});
+  NOTIFICATION_MESSAGE = "";
+  NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
-  const updateEventTitle = (title: string) => {
-    setEventTitle(title);
-  };
+  useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
 
-  const updateEventDescription = (description: string) => {
-    setEventDescription(description);
-  };
+  constructor() {
+    this.assignedEventStore = useAssignEventStore();
+    this.useRealtimeDataInstance = useRealtimeData(this.events, this.handleRealtimeUpdate);
+    makeAutoObservable(this);
+  }
 
-  const updateEventStatus = (status: "scheduled" | "inProgress" | "completed") => {
-    setEventStatus(status);
-  };
+  updateEventTitle(title: string): void {
+    this.eventTitle = title;
+  }
 
-  const addEvent = () => {
+  updateEventDescription(description: string): void {
+    this.eventDescription = description;
+  }
+
+  updateEventStatus(status: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined): void {
+    this.eventStatus = status;
+  }
+
+  addEventSuccess(payload: { event: CalendarEvent }): void {
+    const { event } = payload;
+    
+    // Assuming 'event' has a valid 'status' property
+    const status:
+      "scheduled" | "inProgress"
+      | "tentative" | "confirmed"
+      | "cancelled" | "completed"
+      | undefined = event.status || "scheduled";
+
+    this.events = {
+      ...this.events,
+      [status]: [...(this.events[status] || []), event],
+    };
+
+    // Optionally, you can trigger notifications or perform other actions on success
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+  }
+
+  addEvent(): void {
     // Ensure the title is not empty before adding an event
-    if (eventTitle.trim().length === 0) {
+    if (this.eventTitle.trim().length === 0) {
       console.error("Event title cannot be empty.");
       return;
     }
 
     const newEvent: CalendarEvent = {
       id: Date.now().toString(),
-      title: eventTitle,
-      description: eventDescription,
-      status: eventStatus,
+      title: this.eventTitle,
+      description: this.eventDescription,
+      status: this.eventStatus,
       date: new Date(), // You may want to replace this with the actual date logic
     };
 
-    setEvents((prevEvents) => {
-      const eventId = newEvent.id;
-      return { ...prevEvents, [eventId]: [...(prevEvents[eventId] || []), newEvent] };
-    });
+    this.events = {
+      ...this.events,
+      [newEvent.id]: [...(this.events[newEvent.id] || []), newEvent],
+    };
 
     // Reset input fields after adding an event
-    setEventTitle("");
-    setEventDescription("");
-    setEventStatus("scheduled");
-  };
+    this.eventTitle = "";
+    this.eventDescription = "";
+    this.eventStatus = "scheduled";
+  }
 
-  const removeEvent = (eventId: string) => {
-    setEvents((prevEvents: Record<string, CalendarEvent[]>) => {
-      const updatedEvents = { ...prevEvents };
+  removeEvent(eventId: string): void {
+    const updatedEvents = { ...this.events };
+    delete updatedEvents[eventId];
+    this.events = updatedEvents;
+  }
+
+  removeEvents(eventIds: string[]): void {
+    const updatedEvents = { ...this.events };
+    eventIds.forEach((eventId) => {
       delete updatedEvents[eventId];
-      return updatedEvents;
     });
-  };
+    this.events = updatedEvents;
+  }
 
-  const removeEvents = (eventIds: string[]) => {
-    setEvents((prevEvents) => {
-      const updatedEvents = { ...prevEvents };
-      eventIds.forEach((eventId) => {
-        delete updatedEvents[eventId];
-      });
-      return updatedEvents;
-    });
-  };
-
-  const addEvents = (eventsToAdd: CalendarEvent[]) => {
+  addEvents(eventsToAdd: CalendarEvent[]): void {
     // Ensure at least one event is passed
     if (eventsToAdd.length === 0) {
       console.error("At least one event must be passed");
       return;
     }
 
-    setEvents((prevEvents) => {
-      eventsToAdd.forEach((event) => {
-        const eventId = event.id;
-        prevEvents[eventId] = [...(prevEvents[eventId] || []), event];
-      });
-      return prevEvents;
+    eventsToAdd.forEach((event) => {
+      // Ensure the event has a valid status
+      if (event.status && !["scheduled", "inProgress", "completed"].includes(event.status)) {
+        console.error(`Invalid status "${event.status}" for event "${event.title}"`);
+        return;
+      }
+
+      const eventId = event.id;
+      this.events = {
+        ...this.events,
+        [eventId]: [...(this.events[eventId] || []), event],
+      };
     });
 
     // Reset input fields after adding events
-    setEventTitle("");
-    setEventDescription("");
-    setEventStatus("scheduled");
-  };
+    this.eventTitle = "";
+    this.eventDescription = "";
+    this.eventStatus = undefined; // Set to undefined when resetting
+  }
 
-  const fetchEventsSuccess = (payload: { events: CalendarEvent[] }) => {
-    const { events: newEvents } = payload;
-    setEvents((prevEvents) => {
-      const updatedEvents = { ...prevEvents };
 
-      newEvents.forEach((event) => {
-        if (!prevEvents[event.id]) {
-          prevEvents[event.id] = [];
-        }
-        prevEvents[event.id].push(event);
-      });
+  reassignEvent(eventId: string, oldUserId: string, newUserId: string): void {
+    this.assignedEventStore.reassignUser(eventId, oldUserId, newUserId);
+    // You can add additional logic or trigger notifications as needed
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+  }
 
-      return updatedEvents;
-    });
-  };
+  fetchEventsSuccess(payload: { calendarEvents: CalendarEvent[] }): void {
+    const { calendarEvents: newEvents } = payload;
+    this.events = {
+      ...this.events,
+      ...newEvents.reduce((acc, event) => {
+        const eventId = event.id;
+        acc[eventId] = [...(this.events[eventId] || []), event];
+        return acc;
+      }, {} as Record<string, CalendarEvent[]>),
+    };
+  }
 
-  const updateEventDate = (eventId: string, eventDate: Date) => {
-    const updatedEvents = { ...events };
+  updateEventDate(eventId: string, eventDate: Date): void {
+    const updatedEvents = { ...this.events };
 
     // Find the event and update its date
     const eventToUpdate = updatedEvents.scheduled.find(
@@ -181,115 +201,63 @@ const useCalendarManagerStore = (): CalendarManagerStore => {
     }
 
     // Update the events in the store
-    setEvents(updatedEvents);
-  };
+    this.events = updatedEvents;
+  }
 
-  const completeAllEventsSuccess = () => {
+  completeAllEventsSuccess(): void {
     console.log("All Events completed successfully!");
     // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
-  };
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+  }
 
-  const completeAllEvents = () => {
+  completeAllEvents(): void {
     console.log("Completing all Events...");
     // You can add loading indicators or other UI updates here
 
     // Simulate asynchronous completion
     setTimeout(() => {
       // Update events to mark all as done
-      setEvents((prevEvents: Record<string, CalendarEvent[]>) => {
-        const updatedEvents = { ...prevEvents };
-        Object.keys(updatedEvents).forEach((id) => {
-          updatedEvents[id] = prevEvents[id].map((event) => ({
-            ...event,
-            status: 'completed',
-          }));
-        });
-        return updatedEvents;
-      });
+      this.events = Object.keys(this.events).reduce((acc, id) => {
+        acc[id] = this.events[id].map((event) => ({
+          ...event,
+          status: 'completed' as const, // Ensure 'completed' is the only allowed value
+        }));
+        return acc;
+      }, {} as Record<string, CalendarEvent[]>);
 
       // Trigger success
-      completeAllEventsSuccess();
+      this.completeAllEventsSuccess();
     }, 1000);
-  };
+  }
 
-  const fetchEventsFailure = (payload: { error: string }) => {
+    // Function to set a dynamic notification message
+    setDynamicNotificationMessage = (message: string) => {
+      this.setDynamicNotificationMessage(message);
+    };
+  
+  fetchEventsFailure(payload: { error: string }): void {
     console.error("Fetch Events Failure:", payload.error);
     // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA);
-  };
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA);
+  }
 
-  const fetchEventsRequest = () => {
+  fetchEventsRequest(): void {
     console.log("Fetching Events...");
-    // You can add loading indicators or other UI updates here
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING);
-  };
+    // todo You can add loading indicators or other UI updates here
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING);
+  }
 
-  const completeAllEventsFailure = (payload: { error: string }) => {
+  completeAllEventsFailure(payload: { error: string }): void {
     console.error("Complete All Events Failure:", payload.error);
     // You can add additional error handling or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.PROCESSING_BATCH);
-  };
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.PROCESSING_BATCH);
+  }
 
-  // Function to set a dynamic notification message
-  const setDynamicNotificationMessage = (message: string) => {
-    setNotificationMessage(message);
-  };
+  // Implement the rest of the methods and properties
+}
 
-  // Add more methods or properties as needed
-
-  makeAutoObservable({
-    events,
-    eventTitle,
-    eventDescription,
-    eventStatus,
-    assignedEventStore,
-    updateEventTitle,
-    updateEventDescription,
-    updateEventStatus,
-    updateEventDate,
-    addEvent,
-    addEvents,
-    removeEvent,
-    removeEvents,
-    reassignEvent,
-    fetchEventsSuccess,
-    fetchEventsFailure,
-    fetchEventsRequest,
-    completeAllEventsSuccess,
-    completeAllEvents,
-    completeAllEventsFailure,
-    NOTIFICATION_MESSAGE,
-    NOTIFICATION_MESSAGES,
-    setDynamicNotificationMessage,
-  });
-
-  return {
-    events,
-    eventTitle,
-    eventDescription,
-    eventStatus,
-    assignedEventStore,
-    snapshotStore,
-    NOTIFICATION_MESSAGE,
-    NOTIFICATION_MESSAGES,
-    updateEventTitle,
-    updateEventDescription,
-    updateEventStatus,
-    updateEventDate,
-    addEvent,
-    addEvents,
-    removeEvent,
-    removeEvents,
-    fetchEventsSuccess,
-    fetchEventsFailure,
-    fetchEventsRequest,
-    completeAllEventsSuccess,
-    completeAllEvents,
-    completeAllEventsFailure,
-    setDynamicNotificationMessage,
-    // Add more methods or properties as needed
-  };
+const useCalendarManagerStore = (): CalendarManagerStore => {
+  return new CalendarManagerStoreClass();
 };
 
 export { useCalendarManagerStore };

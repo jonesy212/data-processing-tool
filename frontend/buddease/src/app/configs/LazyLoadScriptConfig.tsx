@@ -29,8 +29,8 @@ export interface LazyLoadScriptConfig {
   // Additional security measures
   nonce?: string; // Nonce value for script integrity checks
 
-    apiConfig?: ApiConfig;
-    
-    namingConventions?: string[]
+  apiConfig?: ApiConfig;
+
+  namingConventions?: string[];
   // More properties as needed
 }

@@ -7,9 +7,11 @@ import { NotificationProvider } from "../components/support/NotificationContext"
 import React, { useState } from "react";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
+import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
+import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import SearchComponent from "./searchs/Search";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -37,7 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
 
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const utilities = generateUtilityFunctions(); 
+  const utilities = generateUtilityFunctions();
 
   const handleConfirm = () => {
     console.log("Confirmed");
@@ -96,6 +98,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <SearchComponent {...pageProps}>
       {({ children, componentSpecificData }: Props) => (
         <ThemeConfigProvider>
+          <ThemeCustomization />
+          <CollaborationDashboard />
           <NotificationProvider>
             <DynamicPromptProvider>
               <AuthProvider>

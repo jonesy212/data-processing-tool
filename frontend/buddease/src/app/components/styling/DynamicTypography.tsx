@@ -107,3 +107,5 @@ const renderDynamicContent = ({
 };
 
 export default DynamicTypography;
+export type { BodyTextProps, DynamicTypographyProps, HeadingProps };
+

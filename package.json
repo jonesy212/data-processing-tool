@@ -1,1 +1,13 @@
-{"dependencies":{"@fullcalendar/daygrid":"^6.1.10","@fullcalendar/react":"^6.1.10","@fullcalendar/timegrid":"^6.1.10"}}
+{
+    "dependencies": {
+        "@fullcalendar/daygrid": "^6.1.10",
+        "@fullcalendar/react": "^6.1.10",
+        "@fullcalendar/timegrid": "^6.1.10",
+        "docxtemplater": "^3.43.0",
+        "excel4node": "^1.8.2",
+        "jszip": "^3.10.1"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.0"
+    }
+}

@@ -23,7 +23,6 @@ interface ChatSettings {
 const ChatSettingsPanel = () => {
   const { state: authState } = useAuth();
 
-  const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);
 
   const [chatSettings, setChatSettings] = useState<ChatSettings>({
     // Define chat-related settings here

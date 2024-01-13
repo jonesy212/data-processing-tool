@@ -27,6 +27,5 @@ def register_blueprints(app):
     app.register_blueprint(logging_bp, url_prefix='/logging')
     app.register_blueprint(company_bp, url_prefix='/company')
     
-    
     app.register_blueprint(register)
     # Add more blueprint registrations here

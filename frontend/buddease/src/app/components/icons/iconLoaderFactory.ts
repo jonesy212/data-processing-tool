@@ -1,7 +1,5 @@
     // iconLoaderFactory.ts
-
 import { IconLoader, createIconLoader } from "./IconLoader";
-
 
 const iconPathBase = 'path/to/icons/';
 

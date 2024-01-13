@@ -1,9 +1,8 @@
 // fontAwesomeIconOptions.ts
-
-import { FontAwesomeIcon } from "./fontAwesomeIconLoader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface FontAwesomeIconOptions {
-    icon: FontAwesomeIcon;
+    icon: typeof FontAwesomeIcon;
 }
 
 

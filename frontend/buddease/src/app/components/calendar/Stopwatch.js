@@ -36,4 +36,6 @@ const Stopwatch = () => {
         <button onClick={resetStopwatch}>Reset</button>
       </div>
     );
-  };
+};
+  
+export default Stopwatch;

@@ -39,3 +39,6 @@ interface CollaborationPreferences {
   meetings: MeetingsSettings;
   brainstorming: BrainstormingSettings;
 }
+
+
+export type { TeamBuildingSettings };

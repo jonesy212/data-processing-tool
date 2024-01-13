@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useMovementAnimations } from "../animations/movementAnimations/MovementAnimationActions";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
+import { createPdfDocument, getFormattedOptions } from "./DocumentCreationUtils";
 import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
@@ -27,6 +28,13 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();
 
+  const handleCreateDocument = () => {
+    const documentContent = editorState.getCurrentContent().getPlainText(); // Extract content from the editor
+    const formattedOptions = getFormattedOptions(userOptions); // Implement a function to get formatting options
+    
+    // Call a utility function to create a document (PDF or other formats)
+    createPdfDocument(documentContent, formattedOptions);
+  };
   const toggleVisibility = () => {
     setIsPublic((prevIsPublic) => !prevIsPublic);
   };

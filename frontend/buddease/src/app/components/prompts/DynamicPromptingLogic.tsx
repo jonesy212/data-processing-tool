@@ -20,7 +20,27 @@ const generateDynamicPrompts = (documentContent: string, documentType: string): 
     ];
   
     return prompts;
-  };
+};
+  
+
+// Example usage:
+const handleGenerateDynamicPrompts = async () => {
+  // Assuming you have access to the uploaded document content and document type
+  const uploadedDocument = text; // Use the actual uploaded document content
+  const documentType = "CSV"; // Replace with the actual document type (CSV, XLSX, JSON)
+  const dynamicPrompts = generateDynamicPrompts(
+    uploadedDocument,
+    documentType
+  );
+
+  // For demonstration purposes, use static prompts if dynamicPrompts is falsy
+  const staticDynamicPrompts = dynamicPrompts.length > 0 ? dynamicPrompts : [
+    "Unable to generate dynamic prompts. Please provide a valid document with meaningful content.",
+  ];
+
+  setGeneratedPrompts(staticDynamicPrompts);
+};
+
   
   // Example usage:
   const uploadedDocument = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Web development is a crucial aspect of modern businesses.';

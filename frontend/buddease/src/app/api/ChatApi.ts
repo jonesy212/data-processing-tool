@@ -6,10 +6,6 @@ class ChatApi {
   private static API_BASE_URL = 'https://example.com/api/chat';
 
 
-
-
-
-
   static async fetchMessages(groupId: string, limit: number): Promise<ChatMessage[]> {
     try {
       const response: AxiosResponse<ChatMessage[]> = await axios.get(`${this.API_BASE_URL}/messages`, {

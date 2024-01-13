@@ -44,7 +44,22 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
         case 'switch-layout':
           return <button key={type} onClick={() => onSwitchLayout && onSwitchLayout('yourLayout')}>Switch Layout</button>;
         case 'open-dashboard':
-          return <button key={type} onClick={() => onOpenDashboard && onOpenDashboard('yourDashboard')}>Open Dashboard</button>;
+        return <button key={type} onClick={() => onOpenDashboard && onOpenDashboard('yourDashboard')}>Open Dashboard</button>;
+        // iOS-specific buttons
+        case 'ios-specific-button':
+          return <button key={type} onClick={() => console.log('iOS Button')}>iOS Specific Button</button>;
+        // Android-specific buttons
+        case 'android-specific-button':
+          return <button key={type} onClick={() => console.log('Android Button')}>Android Specific Button</button>;
+        // Web-specific buttons
+        case 'web-specific-button':
+          return <button key={type} onClick={() => console.log('Web Button')}>Web Specific Button</button>;
+        // Shared buttons
+        case 'shared-button-1':
+          return <button key={type} onClick={() => console.log('Shared Button 1')}>Shared Button 1</button>;
+        case 'shared-button-2':
+          return <button key={type} onClick={() => console.log('Shared Button 2')}>Shared Button 2</button>;
+        // Add more shared buttons as needed  
         default:
         return null;
     }

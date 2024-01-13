@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { fetchData } from '../../utils/dataAnalysisUtils';
 
-const ENDPOINT = 'http://your-backend-endpoint'; // Update with your actual backend endpoint
+export const ENDPOINT = 'http://your-backend-endpoint'; // Update with your actual backend endpoint
 
 const useRealtimeData = (initialData: any) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
@@ -16,6 +16,27 @@ const useRealtimeData = (initialData: any) => {
 
       // Emit an event to trigger further updates, if needed
       socket.emit('realtimeUpdate', data);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
+      // Implement error handling, such as retry logic or showing an error message
+      // For example, you can attempt to reconnect after a delay
+      setTimeout(() => {
+        socket.connect();
+      }, 3000); // Retry connection after 3 seconds (adjust as needed)
+    });
+    
+    socket.on('disconnect', (reason) => {
+      console.log('WebSocket disconnected:', reason);
+      // Implement logic for reconnection or notifying the user
+      // You may want to check the reason for disconnection and handle accordingly
+      if (reason === 'io server disconnect') {
+        // Automatic reconnection is attempted
+      } else {
+        // Manually attempt reconnection
+        socket.connect();
+      }
     });
 
     const fetchData = async () => {

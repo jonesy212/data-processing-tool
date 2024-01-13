@@ -6,17 +6,17 @@ interface DatasetModel {
     id: number;
     name: string;
     description: string | null;
-    file_path_or_url: string;
-    uploaded_by: number; // Assuming this is the user ID
-    uploaded_at: string; // Assuming the date is sent as a string
-    tags_or_categories: string; // Comma-separated list or JSON array
+    filePathOrUrl: string;
+    uploadedBy: number; // Assuming this is the user ID
+    uploadedAt: string; // Assuming the date is sent as a string
+    tagsOrCategories: string; // Comma-separated list or JSON array
     format: string;
     visibility: 'public' | 'private' | 'shared'; // Assuming visibility can only be one of these values
     // Add other fields as needed
   
     // Relationships
-    uploaded_by_team_id: number | null; // Assuming this is the team ID
-    uploaded_by_team: Team | null; // Assuming you have a Team interface
+    uploadedByTeamId: number | null; // Assuming this is the team ID
+    uploadedByTeam: Team | null; // Assuming you have a Team interface
   
     // Optional: Add other relationships as needed
   }
@@ -26,14 +26,14 @@ const dataset: DatasetModel = {
   id: 1,
   name: 'Example Dataset', 
   description: 'An example dataset',
-  file_path_or_url: '/datasets/example.csv',
-  uploaded_by: 1, // Assuming user ID 1
-  uploaded_at: '2023-01-01T12:00:00Z', // Example date string
-  tags_or_categories: 'tag1, tag2',
+  filePathOrUrl: '/datasets/example.csv',
+  uploadedBy: 1, // Assuming user ID 1
+  uploadedAt: '2023-01-01T12:00:00Z', // Example date string
+  tagsOrCategories: 'tag1, tag2',
   format: 'csv',
   visibility: 'private',
-  uploaded_by_team_id: 1, // Assuming team ID 1
-  uploaded_by_team: {
+  uploadedByTeamId: 1, // Assuming team ID 1
+  uploadedByTeam: {
     id: 1,
     teamName: 'Development Team',
     description: 'A team focused on software development', 
@@ -42,8 +42,10 @@ const dataset: DatasetModel = {
     creationDate: new Date(),
     isActive: false,
     leader: null,
-    progress: null // Added missing 'progress' property
-    
+    progress: null,// Added missing 'progress' property
+    then(callback) {
+        callback(dataset as DatasetModel & Team);
+    }, 
     // Other team fields
   },
   // Other fields

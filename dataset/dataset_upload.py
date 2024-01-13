@@ -15,6 +15,10 @@ from models.dataset import DatasetModel
 def allowed_file(file_format):
     return file_format.lower() in app.config['ALLOWED_FORMATS']
 
+def allowed_format(file_format):
+    allowed_formats = ['csv', 'xls', 'xlsx', 'json']
+    return file_format.lower() in allowed_formats
+
 
 def save_dataset(file, url, name, description):
     if file and allowed_file(file.filename):
@@ -25,7 +29,7 @@ def save_dataset(file, url, name, description):
         # You might want to add validation for the URL
         file_path = url
     else:
-        if not allowed_format(file_format):
+        if not allowed_format(file.filename):
             return None
 
 
@@ -56,6 +60,7 @@ def convert_file(file_path, output_format):
 @auth_bp.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_dataset():
+    file_format = secure_filename(file.filename).split('.')[-1]
     # Check if the current user has remaining quota
     if current_user.is_authenticated and current_user.has_quota() > 0:
         # Perform the upload

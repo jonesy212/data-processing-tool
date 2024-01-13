@@ -1,4 +1,5 @@
 import { BrainstormingSettings } from "../BrainstormingSettings";
+import { TeamBuildingSettings } from "./TeamBuildingSettings";
 
 interface CollaborationPreferences {
     teamBuilding: TeamBuildingSettings;

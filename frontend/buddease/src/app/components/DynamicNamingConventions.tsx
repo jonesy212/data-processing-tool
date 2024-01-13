@@ -11,7 +11,7 @@ interface DynamicNamingConventionsProps {
 
 
 
-const notify = useNotification();
+const { notify } = useNotification();  // Destructure notify from useNotification
 
 const handleNamingConventionsErrors = (
   error: NamingConventionsError,

@@ -3,9 +3,9 @@ import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import ChatCard from "../../cards/ChatCard";
 import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
-import connectToChatWebSocket from "../WebSocket";
+import connectToChatWebSocket, { retryConfig } from "../WebSocket";
 import resetUnreadMessageCount from "./ResetUnreadMessageCount";
-import { createRichTextEditor, getUnreadMessageCount, initializeGeolocationService, initializeSpeechToText, leaveChatRoom, openChatSettingsModal, openChatSettingsPanel, openChatSidebar, openEmojiPicker, openFileUploadModal, sendChatMessage, sendChatNotification } from "./chatUtils";
+import { createRichTextEditor, getUnreadMessageCount, initializeGeolocationService, initializeSpeechToText, leaveChatRoom, openChatSettingsModal, openChatSettingsPanel, openChatSidebar, openEmojiPicker, openFileUploadModal, sendChatMessage } from "./chatUtils";
 
 type ChatSettingsModal = {
   close?: () => void;
@@ -35,6 +35,10 @@ export interface ChatMessage {
   timestamp: string; // Timestamp when the message was sent
   isRead: boolean; // Flag indicating whether the message has been read
   // Add more properties based on your requirements
+}
+
+interface CancellablePromise<T> extends Promise<T> {
+  cancel?: () => void;
 }
 
 
@@ -131,14 +135,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     
     // Handle unread message count reset
 
-   let editor: ChatEditor | undefined;
-  let notification: ChatNotification | undefined;
-
-    const socket = connectToChatWebSocket(roomId);
+    //todo verify which editor and notification to use
+    
+    const socket = connectToChatWebSocket(roomId, retryConfig);
     let modal: ChatSettingsModal | void = openChatSettingsModal();
-    const request = sendChatMessage(sampleMessage.message);
+    const request: CancellablePromise<void> = sendChatMessage(sampleMessage.message);
+    let editor: ChatEditor | undefined;
+   let notification: ChatNotification | undefined;
     let editor = createRichTextEditor();
-    const notification = sendChatNotification(sampleMessage.message);
+    // const notification = sendChatNotification(sampleMessage.message);
     const unreadCount = getUnreadMessageCount(roomId);
     const emojiPicker = openEmojiPicker();
     const sidebar = openChatSidebar();
@@ -165,7 +170,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       }
 
         // Check if request is a Promise with a cancel method before calling it
-        if (request instanceof Promise && typeof (request as any).cancel === 'function') {
+        if (request instanceof Promise && typeof request.cancel === 'function') {
           request.cancel();
         }
 

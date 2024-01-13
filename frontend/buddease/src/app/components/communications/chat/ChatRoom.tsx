@@ -1,6 +1,7 @@
 // ChatRoom.tsx
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useEffect, useState } from 'react';
+import { useThemeConfig } from '../../hooks/userInterface/ThemeConfigContext';
 import ChatMessageData from './ChatRoomDashboard';
 
 interface ChatRoomProps {
@@ -9,6 +10,7 @@ interface ChatRoomProps {
 
 const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessageData[]>([]);
+  const { primaryColor, fontSize } = useThemeConfig();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -34,7 +36,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   };
 
   return (
-    <div>
+    <div style={{ borderColor: primaryColor, fontSize }}>
       <h2>Chat Room {roomId}</h2>
       <div className="chat-messages">
         {chatMessages.map((message) => (

@@ -1,5 +1,5 @@
 // DocumentManagement.tsx
-import { DappProps } from "../remove";
+import { DappProps } from "../DAppAdapterConfig";
 
 export function manageDocuments(newDocument: Document, dappProps: DappProps) {
   // Implement your logic here for document management

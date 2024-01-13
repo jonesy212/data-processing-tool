@@ -1,4 +1,5 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
+import ProjectTimelineDashboard from '@/app/components/projects/projectManagement/ProjectTimelineDashboard';
 import { User } from '@/app/components/users/User';
 import React from 'react';
 

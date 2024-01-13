@@ -1,10 +1,13 @@
+import { useState } from 'react';
+import { NotificationContextProps } from '../../support/NotificationContext';
 // chatUtils.ts
-
+  import RichTextEditor from '@/documents/RichTextEditor';
 // Import any necessary libraries or modules
 // ...
 
 // Function to send a chat message
 export const sendChatMessage = async (message: string) => {
+  
   try {
     // Replace this with the actual API call or WebSocket logic to send a chat message
     const response = await fetch('https://example.com/api/chat', {
@@ -31,18 +34,16 @@ export const createRichTextEditor = () => {
   console.log('Rich text editor created');
   // Example: Instantiate and return the rich text editor component/library
   // Replace this with the actual code for creating a rich text editor
-  const richTextEditor = new RichTextEditor(document)
+  const richTextEditor =  RichTextEditor()
   return richTextEditor;
 };
 
 // Function to send a chat notification
-export const sendChatNotification = (message: string) => {
+export const sendChatNotification = (message: string, sendNotification: NotificationContextProps['sendNotification']) => {
   // Replace this with the actual logic to send a notification (e.g., using a notification library)
   console.log(`Notification sent: ${message}`);
   // Example: Use a notification library to send a notification
-  // Replace this with the actual code for sending a notification
-  const notificationLibrary = require('notification-library');
-  notificationLibrary.sendNotification(message);
+  return sendNotification("Notification sent: " + message);
 };
 
 // Function to get the unread message count
@@ -133,27 +134,23 @@ export const initializeGeolocationService = () => {
 
 // chatUtils.ts
 
-// Function to open the chat settings panel
-export const openChatSettingsPanel = () => {
-  // Replace this with the actual logic to open the chat settings panel
-  // You might use a state management library or a settings component
-  // Ensure to handle the panel state and UI interactions appropriately
-  
-  // Example: Toggle a state to indicate whether the settings panel is open
-  const isSettingsPanelOpen = true; // Replace with your state management logic
+  // Function to open the chat settings panel
+  export const openChatSettingsPanel = () => {
+  const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);
 
-  if (isSettingsPanelOpen) {
-    console.log('Chat settings panel is already open');
-    // Additional logic if needed when the panel is already open
-  } else {
-    // Example: Set the state to indicate that the settings panel is now open
-    // Replace this with your state management logic
-    setSettingsPanelOpen(true);
+    // using state management logic from React
+    // Ensure to handle the panel state and UI interactions appropriately
+    if (settingsPanelOpen) {
+      console.log('Chat settings panel is already open');
+      // Additional logic if needed when the panel is already open
+    } else {
+      // Example: Set the state to indicate that the settings panel is now open
+      setSettingsPanelOpen(true);
 
-    console.log('Chat settings panel opened');
-    // Additional logic to handle UI interactions or open a settings panel component
-  }
-};
+      console.log('Chat settings panel opened');
+      // Additional logic to handle UI interactions or open a settings panel component
+    }
+  };
 
 
 

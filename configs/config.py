@@ -10,6 +10,7 @@ from flask_migrate import Migrate
 
 from blueprint_routes import auth_bp, task_bp
 from database.extensions import create_database, db
+from migrations.env import get_engine_url
 
 # Define the base directory of the Flask application
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -66,7 +67,7 @@ def configure_app(app):
     @migrate.configure
     def configure_alembic(config):
         # Modify config object or replace it with a different one
-        config.set_main_option('custom_option', 'custom_value')
+        config.set_main_option('sqlalchemy.url', get_engine_url())
         return config
     # Add an environment indicator to the config
     app.config['ENVIRONMENT'] = os.environ.get('FLASK_ENV', 'development')

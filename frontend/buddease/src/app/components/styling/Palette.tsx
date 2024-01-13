@@ -1,3 +1,4 @@
+// Palette.tsx
 import { ColorSwatchProps } from "./ColorPalette";
 import ColorPicker from "./ColorPicker";
 

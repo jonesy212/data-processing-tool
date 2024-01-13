@@ -25,7 +25,7 @@ upload_bp = Blueprint('upload_bp', __name__)
 user_bp = Blueprint('user_bp', __name__)
 verify_email_bp = Blueprint('verify_email_bp', __name__)
 welcome_bp = Blueprint('welcome_bp', __name__)
-
+data_bp = Blueprint('data_bp', __name__)
 
 
 

@@ -6,6 +6,9 @@ const useMessagingSystem = ({ onMessageReceived }: { onMessageReceived: (message
     // Subscribe to the messaging system or WebSocket events
     const socket = new WebSocket('wss://example.com'); //#todo// Replace with your WebSocket endpoint
 
+    socket.addEventListener('open', () => {
+      console.log('Connection established');
+    })
     // Handle incoming messages
     socket.addEventListener('message', (event) => {
       const message = event.data;
@@ -14,7 +17,10 @@ const useMessagingSystem = ({ onMessageReceived }: { onMessageReceived: (message
 
     // Clean up the WebSocket connection on unmount or when needed
     return () => {
-      socket.close();
+      if (socket.readyState === WebSocket.OPEN
+        || socket.readyState === WebSocket.CONNECTING) {
+        socket.close();
+      }
     };
   }, [onMessageReceived]);
 };

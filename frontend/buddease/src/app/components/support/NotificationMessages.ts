@@ -66,6 +66,14 @@ const NOTIFICATION_MESSAGES = {
   NewChatMessage: {
     DEFAULT: "New chat message received.",
     CHAT_MENTION: "You were mentioned in a chat.",
+    CHAT_ARCHIVED: "Chat archived successfully.",
+    CHAT_PINNED: "Chat message pinned successfully.",
+    CHAT_DELETED: "Chat message deleted successfully.",
+    CHAT_EDITED: "Chat message edited successfully.",
+    CHAT_FORWARD_SUCCESS: "Chat message forwarded successfully.",
+    CHAT_UNDO_DELETE: "Chat message deletion undone successfully.",
+    CHAT_REACTION_ADDED: "Reaction added to chat message.",
+    CHAT_REACTION_REMOVED: "Reaction removed from chat message.",
     // Add more messages for the NewChatMessage type
   },
 
@@ -73,6 +81,7 @@ const NOTIFICATION_MESSAGES = {
   EventReminder: {
     DEFAULT: "Event reminder.",
     EVENT_OCCURRED: "An event has occurred.",
+
     // Add more messages for the EventReminder type
   },
 

@@ -11,8 +11,10 @@ from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
 
+from api.app_context_helper import AppContextHelper
 from authentication.auth import auth_bp
 from blueprint_routes.blueprint_register import register_blueprints
+from blueprint_routes.data_routes import data_bp
 from blueprint_routes.register_routes import register
 from configs.config import app as configure_flask_app
 from configs.config import configure_app
@@ -37,6 +39,9 @@ def create_app(config_file=None):
 
     app = Flask(__name__)
     
+    # Initialize the app context using AppContextHelper
+    AppContextHelper.init_app_context(app)
+
     # Error handler for unexpected errors
     @app.errorhandler(Exception)
     def handle_unexpected_error(e):
@@ -124,7 +129,7 @@ def upload_dataset():
         return "Error: No file provided for upload."
 
 
-@app.route('/hypothesis-test', methods=['POST'])
+@data_bp.route('/hypothesis-test', methods=['POST'])
 def run_hypothesis_test():
     test_type = request.form.get('test-type')
     if test_type:

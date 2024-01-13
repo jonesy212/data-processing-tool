@@ -27,7 +27,9 @@
       "@/forms/*": ["./src/app/pages/forms/*"],
       "@/searches/*": ["./src/app/pages/searches/*"],
       "@/api/*": ["./src/app/api/*"],
-      "@/projects/*": ["./src/app/components/projects/*"]
+      "@/projects/*": ["./src/app/components/projects/*"],
+      "@/calendar/*": ["./src/app/components/calendar/*"],
+      "@/documents/*": ["./src/app/components/documents/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx", "src/app/components/calendar/CalendarEvents.jsx", "src/app/components/calendar/CalendarComponent.jsx", "src/app/components/calendar/YourCalendarLibrary.js", "src/app/components/projects/Project.jsx", "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx", "src/app/components/phases/coaborationPhase/CollaborationContext.js"],
