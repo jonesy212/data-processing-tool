@@ -10,19 +10,40 @@ const AuthComponent = () => {
     try {
       const response = await axios.post("/auth/login", { username, password });
       const accessToken = response.data.access_token;
-      // Save the token to localStorage or a state variable
       localStorage.setItem("token", accessToken);
-
-      // Update login method to match authentication hook interface
+  
+      // Set the authorization token in axios headers
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+  
       dynamicHooks.authentication.hook().toggleActivation({
         accessToken,
       });
     } catch (error) {
-      //todo: Handle error
-      // Handle login error
       console.error(error);
     }
   };
+
+  
+  const handleSearch = async (event: React.FormEvent) => {
+    event.preventDefault();
+  
+    try {
+      const accessToken = localStorage.getItem('token');
+  
+      const response = await fetch(`/api/users/search?q=${searchQuery}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
+        },
+      });
+  
+      // Rest of the code remains the same...
+    } catch (error) {
+      console.error("Error fetching search results", error);
+    }
+  };
+  
 
   return (
     <div>

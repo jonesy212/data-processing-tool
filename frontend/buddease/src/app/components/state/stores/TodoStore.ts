@@ -1,7 +1,7 @@
 // TodoManagerStore.ts
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
-import { useAuth } from '../../auth/AuthContext';
+import useSnapshotManager from '../../hooks/useSnapshotManager';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { Todo } from '../../todos/Todo';
 import SnapshotStore from './SnapshotStore';
@@ -28,106 +28,33 @@ export interface TodoManagerStore {
   initSnapshot: () => void;
   fetchSnapshot: SnapshotStore<Record<string, Todo[]>>;
   
+  onSnapshot: (callback: (snapshotData: Record<string, Todo[]>) => void) => void;
+  takeSnapshot: (data: Record<string, Todo[]>) => void;
 }
 
 
 const useTodoManagerStore = (): TodoManagerStore => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
-  // Initialize SnapshotStore
   
-  interface SnapshotStoreConfig<T> {
-    key: string;
-    initialState: T;
-    onSnapshot?: (snapshot: T) => void;
-    snapshot?: () => void;
-    initSnapShot: () => void;
-    updateSnapshot: (snapshot: T) => void;
-    snapshots: () => Record<string, T>;
-    getSnapshots: () => Record<string, Record<string, Todo[]>>;
-  }
-
-  class SnapshotStore<T> {
-    key: string;
-    state: T;
-    onSnapshot?: (snapshot: T) => void;
-    snapshot?: () => void;
-    // initSnapShot?: () => void;
-    // updateSnapshot?: (snapshot: Record<string, Todo[]>) => void;
-    
-    constructor(config: SnapshotStoreConfig<T>) {
-      this.key = config.key;
-      this.state = config.initialState;
-      this.onSnapshot = config.onSnapshot;
-      this.snapshot = config.snapshot
-      // this.initSnapShot = config.initSnapShot
-      // this.updateSnapshot = config.updateSnapshot
-    }
-
-    takeSnapshot() {
-      if (this.onSnapshot) {
-        this.onSnapshot(this.state);
-      }
-    }
-    updateSnapshot() {
-      if (this.onSnapshot) {
-        // get current snapshot from database
-        const currentSnapshot = snapshotStore(this.key);
-        // update snapshot state
-        this.state = currentSnapshot;
-        // call init snapshot to trigger snapshot
-        snapshotStore.initSnapShot(this.state);
-        // update snapshot store state
-        this.onSnapshot(this.state);
-      }
-    }
-    initSnapShot(snapshot: Record<string, Todo[]>) { 
-      snapshotStore.state = snapshot;
-    }
-  }
-
-  const {state: authState }= useAuth();
-const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
-  key: "todos",
-  initialState: {},
-  onSnapshot: (snapshot) => {
-    console.log("Snapshot taken!", snapshot);
-  },
-  snapshot: () => {
-    console.log("Snapshot taken!");
-    const snapshotValues = Object.values(todos);
-    const snapshotRecord: Record<string, Todo[]> = {};
-    snapshotValues.forEach((value) => {
-      snapshotRecord[value.id] = [value];
-    });
-    snapshotStore.state = snapshotRecord;
-  },
-  initSnapShot: () => {
-    snapshotStore.takeSnapshot();
-  },
-  updateSnapshot: (snapshot: Record<string, Todo[]>) => {
-    snapshotStore.state = snapshot;
-    if (snapshotStore.onSnapshot) {
-      snapshotStore.takeSnapshot();
-    }
-  },
-  snapshots: () => {
-    return snapshotStore.getSnapshots(); 
-  },
-  getSnapshot: (id: string) => {
-    return snapshotStore.state[id];
-  },
-  getSnapshots: (snapshots: Record<string, Todo[]>) => {
-
-    },
+  // Initialize SnapshotStore
+  const onSnapshotCallbacks: ((snapshotData: Record<string, Todo[]>) => void)[] = [];
 
 
-  clearSnapshots: () => {
-    snapshotStore.state = {};
-  }
-});
+  const takeSnapshot = (data: Record<string, Todo[]>) => {
+    const timestamp = Date.now();
+    const snapshot: Record<string, Todo[]> = {
+      ...data,
+      [timestamp]: todos,
+      snapshots: [],
+    };
+
+    onSnapshotCallbacks.forEach(callback => callback(snapshot));
+  };
 
 
+  
+  
 
 
 
@@ -159,10 +86,11 @@ const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
       if (snapshotStore.onSnapshot) {
         snapshotStore.takeSnapshot();
       }
-  
+      takeSnapshot(todos as unknown as Record<string, Todo[]>)
       // Update the state with the new todos
       return updatedTodos;
     });
+    
   };
   
 
@@ -249,15 +177,6 @@ const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
     setNotificationMessage(message);
   };
 
-  const initSnapShot = () => {
-    snapshotStore.takeSnapshot();
-  }
-
-  const updateSnapshot = (snapshot: Record<string, Todo[]>) => { 
-    snapshotStore.state = snapshot;
-    snapshotStore.takeSnapshot();
-  }
-
 
 
 
@@ -277,38 +196,38 @@ const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
     setDynamicNotificationMessage,
-    snapshotStore,
-    updateSnapshot,
-    initSnapShot,
+    snapshot: useSnapshotManager().addSnapshot,
+    takeSnapshot
     
   }, {
     setDynamicNotificationMessage: false, // Ensure this function is not considered as an action
 
   });
 
-return {
-  todos,
-  toggleTodo,
-  addTodo,
-  addTodos,
-  removeTodo,
-  updateTodoTitle,
-  fetchTodosSuccess,
-  fetchTodosFailure,
-  fetchTodosRequest,
-  completeAllTodosSuccess,
-  completeAllTodos,
-  completeAllTodosFailure,
-  NOTIFICATION_MESSAGE,
-  NOTIFICATION_MESSAGES,
-  setDynamicNotificationMessage,
-  fetchSnapshot: snapshotStore.fetchSnapshot,
-  initSnapshot: snapshotStore.initSnapshot,
-  snapshot: snapshotStore.snapshots,
-  snapshotStore: snapshotStore, 
-  updateSnapshot: snapshotStore.updateSnapshot,
-};
-
+  return {
+    todos,
+    toggleTodo,
+    addTodo,
+    addTodos,
+    removeTodo,
+    updateTodoTitle,
+    fetchTodosSuccess,
+    fetchTodosFailure,
+    fetchTodosRequest,
+    completeAllTodosSuccess,
+    completeAllTodos,
+    completeAllTodosFailure,
+    NOTIFICATION_MESSAGE,
+    NOTIFICATION_MESSAGES,
+    setDynamicNotificationMessage,
+    fetchSnapshot: snapshotStore.fetchSnapshot,
+    initSnapshot: snapshotStore.initSnapshot,
+    getSnapshots: snapshotStore.snapshots,
+    snapshotStore: snapshotStore, 
+    updateSnapshot: snapshotStore.updateSnapshot,
+    onSnapshot: snapshotStore.onSnapshot,
+    takeSnapshot
+  };
 };
 
 export default useTodoManagerStore;

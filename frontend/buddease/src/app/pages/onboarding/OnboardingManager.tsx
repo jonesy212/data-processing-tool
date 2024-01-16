@@ -15,6 +15,10 @@ const OnboardingManager: React.FC = () => {
         break;
       case OnboardingPhase.REGISTER:
         // Handle registration completion and navigate to the next phase
+        setCurrentPhase(OnboardingPhase.OFFER);
+        break;
+      case OnboardingPhase.OFFER:
+        // Handle registration completion and navigate to the next phase
         setCurrentPhase(OnboardingPhase.PROFILE_SETUP);
         break;
       case OnboardingPhase.PROFILE_SETUP:
@@ -31,7 +35,7 @@ const OnboardingManager: React.FC = () => {
       case OnboardingPhase.WELCOME:
         return <WelcomePage />;
       case OnboardingPhase.REGISTER:
-        return <RegistrationPhase />;
+        return <RegistrationPhase onSuccess={handleNextPhase} />;
       case OnboardingPhase.PROFILE_SETUP:
         return <ProfileSetupPhase onSubmit={handleNextPhase} />;
       default:

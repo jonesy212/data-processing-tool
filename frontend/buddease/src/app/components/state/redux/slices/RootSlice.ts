@@ -6,16 +6,20 @@ import { userManagerSlice } from '../../../users/UserSlice';
 import { WritableDraft } from '../ReducerGenerator';
 import { useDataAnalysisManagerSlice } from './DataAnalysisSlice';
 import { taskManagerSlice } from './TaskSlice';
+import { useTodoManagerSlice } from './TodoSlice';
 import { trackerManagerSlice } from './TrackerSlice';
 // Import uuid
 import { useCalendarManagerSlice } from '@/app/components/calendar/CalendarSlice';
 import { v4 as uuidv4 } from "uuid";
 import { DocumentOptions } from '../../../documents/DocumentOptions';
+import { useDataManagerSlice } from './DataSlice';
 
 
 const randomTaskId = uuidv4().toString();
 
 export interface RootState {
+  dataManager: ReturnType<typeof useDataManagerSlice.reducer>;
+  todoManager: ReturnType<typeof useTodoManagerSlice.reducer>
   taskManager: ReturnType<typeof taskManagerSlice.reducer>;
   trackerManager: ReturnType<typeof trackerManagerSlice.reducer>
   userManager: ReturnType<typeof userManagerSlice.reducer>
@@ -29,11 +33,13 @@ export interface RootState {
 
 
 const initialState: RootState = {
+  dataManager: useDataManagerSlice.reducer(undefined, {type: "inid"}),
   taskManager: taskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
   userManager: userManagerSlice.reducer(undefined, { type: "init" }),
   dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, { type: "init" }),
   calendarManager: useCalendarManagerSlice.reducer(undefined, { type: "init" }),
+  todoManager: useTodoManagerSlice.reducer(undefined,{type: "init"}),
   document: {
     documentType: "",
     userIdea: "",
@@ -100,12 +106,14 @@ const rootReducerSlice = createSlice({
         then: function (onFulfill: (newTask: Task) => void): unknown {
           // Example implementation: Call onFulfill with the new task after some asynchronous operation
           setTimeout(() => {
-            onFulfill(newTask);
+            return onFulfill(newTask);
           }, 1000);
           return this; // Return the current object for chaining if needed
         },
         previouslyAssignedTo: [],
-        done: false
+        done: false,
+        analysisType: '',
+        analysisResults: []
       };
       state.taskManager.tasks.push(newTask);
     });
@@ -129,7 +137,9 @@ const rootReducerSlice = createSlice({
           isActive: false,
           tags: [],
           previouslyAssignedTo: [],
-          done: false
+          done: false,
+          analysisType: '',
+          analysisResults: []
         };
         state.taskManager.tasks.push(newTask);
         state.taskManager.taskTitle = '';
@@ -153,12 +163,14 @@ const rootReducerSlice = createSlice({
 // Combine reducers
 const rootReducer = combineReducers({
   root: rootReducerSlice.reducer,
+  dataManager: useDataManagerSlice.reducer,
   taskManager: taskManagerSlice.reducer,
   trackerManager: trackerManagerSlice.reducer,
   userManager: userManagerSlice.reducer,
   dataAnalyisManager: useDataAnalysisManagerSlice.reducer,
   useCalendarManager: useCalendarManagerSlice.reducer,
-  
+  todoManager: useTodoManagerSlice.reducer,
+
   // Add other slices as needed
 });
 

@@ -29,20 +29,25 @@ const OtherModal: React.FC<OtherModalProps> = ({ /* Add props */ }) => {
   );
 };
 
+
+
+
+
 interface ModalProps {
-  children: React.ReactElement;
-  isOpen: boolean;
+  children: React.ReactNode;
+  isOpen?: boolean;
   closeModal: () => void;
   modalComponent: React.FC<any>; // Accept any React functional component as modalComponent
-
+  onFileUpload: (files: FileList) => void; // Add file upload callback
   // Add other modal-specific props here
 }
 
 const ModalGenerator: React.FC<ModalProps> = ({
   isOpen,
   closeModal,
-  children,
   modalComponent: ModalComponent,
+  children,
+  onFileUpload
 }) => {
   // You can use state or props to control the content of the modal
 
@@ -63,3 +68,4 @@ const ModalGenerator: React.FC<ModalProps> = ({
 
 export { ChatSettingsModal, ModalGenerator, OtherModal };
 
+  export type { ModalProps };

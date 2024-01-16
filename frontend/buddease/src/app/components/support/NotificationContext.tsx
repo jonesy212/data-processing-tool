@@ -1,23 +1,27 @@
 // NotificationContext.tsx
-import { ReactNode, createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 import { Notification } from "./NofiticationsSlice";
-import NotificationMessagesFactory from "./NotificationMessagesFactory";
+import NOTIFICATION_MESSAGES from "./NotificationMessages";
 
+type NotificationType = "Welcome" | "Success" | "Failure" | "Error";
+
+// Modify NotificationContextProps interface
 export interface NotificationContextProps {
-  sendNotification: (type: string, userName?: string | number) => void;
+  sendNotification: (type: NotificationType, userName?: string | number) => void;
   addNotification: (notification: Notification) => void;
-  notify: (type: string, userName?: string | number | undefined) => void
+  notify: (type: NotificationType, userName?: string | number | undefined) => void;
+  notifications: Notification[];
   // Add more notification functions as needed
 }
-
-export const NotificationContext = createContext<
+export const NotificationContext: React.Context<
   NotificationContextProps | undefined
->(undefined);
+> = createContext<NotificationContextProps | undefined>(undefined);
 
-export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
+export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const notificationStore = useContext(NotificationContext);
+
 
   const addNotification = (notification: Notification) => { 
     notificationStore?.addNotification(notification);
@@ -46,48 +50,27 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
     type: string,
     userName?: string | number
   ): string => {
-    switch (type) {
-      case "Welcome":
-        return NotificationMessagesFactory.createWelcomeMessage(
-          userName as string
-        );
-      case "Success":
-        return NotificationMessagesFactory.createSuccessMessage(
-          userName as string
-        );
-      case "Failure":
-        return NotificationMessagesFactory.createFailureMessage(
-          userName as string
-        );
-      case "Error":
-        return NotificationMessagesFactory.createErrorMessage(
-          userName as string
-        );
-      case "TaskError":
-        return NotificationMessagesFactory.createTaskErrorMessage(
-          userName as string
-        );
-      case "TodoError":
-        return NotificationMessagesFactory.createTodoErrorMessage(
-          userName as string
-        );
-      case "NamingConventionsError":
-        return NotificationMessagesFactory.createNamingConventionsErrorMessage(
-          userName as string
-        );
-      // Add more cases for other notification types
-      case "Custom":
-        return NotificationMessagesFactory.createCustomMessage(
-          userName as string
-        );
-      default:
-        return "Unknown Notification Type";
+    // Access the centralized NOTIFICATION_MESSAGES
+    const messages = (NOTIFICATION_MESSAGES as unknown as Record<string, Record<string, string>>)[type];
+
+    if (messages) {
+      const { DEFAULT } = messages as unknown as { DEFAULT: (userName: string) => string };
+
+      // Check if there's a custom message function
+      if (typeof DEFAULT === 'function') {
+        return DEFAULT(userName as string);
+      }
+
+      // Return the default message
+      return DEFAULT;
+    } else {
+      return 'Unknown Notification Type';
     }
   };
 
-  return (
-    <NotificationContext.Provider value={{ sendNotification, addNotification, notify }}>
-      {children}
+  return (  
+<NotificationContext.Provider value={notificationStore ? { sendNotification, addNotification, notify, notifications: [] } : undefined}>
+    {children}
     </NotificationContext.Provider>
   );
 };
@@ -100,10 +83,10 @@ export const useNotification = (): NotificationContextProps => {
     );
   }
 
-  const notify = (message: string, type: string) => {
+  const notify = (message: string, type: NotificationType) => {
     // You can add additional logic here if needed
     context.sendNotification(type, message);
   };
 
-  return { sendNotification: context.sendNotification, addNotification: context.addNotification, notify: context.notify };
+  return { sendNotification: context.sendNotification, addNotification: context.addNotification, notify: context.notify , notifications: context.notifications || [] };
 };

@@ -11,7 +11,7 @@ const cacheData = {
   dataVersions,
   frontendStructure,
   lazyLoadScriptConfig,
-  apiConfig
+  apiConfig,
   version
 };
 

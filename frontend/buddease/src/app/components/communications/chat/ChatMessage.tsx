@@ -1,11 +1,25 @@
 // ChatMessage.tsx
+import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
+import { initializeGeolocationService } from "@/app/utils/GeolocationServiceUtils";
 import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import ChatCard from "../../cards/ChatCard";
 import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
 import connectToChatWebSocket, { retryConfig } from "../WebSocket";
 import resetUnreadMessageCount from "./ResetUnreadMessageCount";
-import { createRichTextEditor, getUnreadMessageCount, initializeGeolocationService, initializeSpeechToText, leaveChatRoom, openChatSettingsModal, openChatSettingsPanel, openChatSidebar, openEmojiPicker, openFileUploadModal, sendChatMessage } from "./chatUtils";
+import {
+  createRichTextEditor,
+  getUnreadMessageCount,
+
+  initializeSpeechToText,
+  leaveChatRoom,
+  openChatSettingsModal,
+
+  openChatSidebar,
+  openEmojiPicker,
+  openFileUploadModal,
+  sendChatMessage,
+} from "./chatUtils";
 
 type ChatSettingsModal = {
   close?: () => void;
@@ -23,10 +37,8 @@ type ChatNotification = {
   // other properties and methods specific to the notification
 };
 
-
 export interface ChatMessage {
   id: string; // Unique identifier for the message
-
   sender: string;
   message: string;
   senderId: string; // Unique identifier for the message sender
@@ -40,8 +52,6 @@ export interface ChatMessage {
 interface CancellablePromise<T> extends Promise<T> {
   cancel?: () => void;
 }
-
-
 
 export interface ChatMessageProps extends ChatMessage {
   roomId: string;
@@ -83,7 +93,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
-    
+    const geolocationService = initializeGeolocationService();
+  // Additional logic if needed
+
+  // Run this effect once when the component mounts
     const fetchMessages = async () => {
       try {
         const messages = await fetchChatMessages(roomId, 10);
@@ -105,20 +118,16 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
 
     fetchMessages();
 
-      
-      
-      
     //#todo impement event listeners cleanup into chat
-    subscriptionService.subscribe('chat_updates_' + roomId, (message: any) => { 
+    subscriptionService.subscribe("chat_updates_" + roomId, (message: any) => {
       // Handle new message
       const newMessage = JSON.parse(message);
 
-      setChatMessages(prevMessages => {
+      setChatMessages((prevMessages) => {
         return [newMessage, ...prevMessages];
       });
       return newMessage;
     });
-
 
     const sampleMessage: ChatMessageProps = {
       id: "some-id",
@@ -131,17 +140,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       isRead: false,
       roomId: "room-id",
     };
-    
-    
+
     // Handle unread message count reset
 
     //todo verify which editor and notification to use
-    
+
     const socket = connectToChatWebSocket(roomId, retryConfig);
     let modal: ChatSettingsModal | void = openChatSettingsModal();
-    const request: CancellablePromise<void> = sendChatMessage(sampleMessage.message);
-    let editor: ChatEditor | undefined;
-   let notification: ChatNotification | undefined;
+    const request: CancellablePromise<void> = sendChatMessage(
+      sampleMessage.message
+    );
+    // let editor: ChatEditor | undefined;
+    let notification: ChatNotification | undefined;
     let editor = createRichTextEditor();
     // const notification = sendChatNotification(sampleMessage.message);
     const unreadCount = getUnreadMessageCount(roomId);
@@ -149,113 +159,116 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     const sidebar = openChatSidebar();
     const speechToTextEngine = initializeSpeechToText();
     leaveChatRoom(roomId);
-    localStorage.removeItem('chatMessages');
-    
- 
-      (roomId);
+    localStorage.removeItem("chatMessages");
+
+    roomId;
     // timers for auto-refresh or any periodic tasks, clear them during cleanup.
     const timerId = setInterval(() => {
-        // Auto-refresh logic
-    }, 5000)
+      // Auto-refresh logic
+    }, 5000);
     // Cleanup logic if needed
     return () => {
+      subscriptionService.unsubscribe("chat_updates_" + roomId);
+      socket!.close();
+      resetUnreadMessageCount(roomId);
 
-        subscriptionService.unsubscribe('chat_updates_'+roomId);
-        socket!.close();
-        resetUnreadMessageCount(roomId);
-        
-        // Check if modal has a close method before calling it
-      if (modal && typeof modal.close === 'function') {
+      // Check if modal has a close method before calling it
+      if (modal && typeof modal.close === "function") {
         modal.close();
       }
 
-        // Check if request is a Promise with a cancel method before calling it
-        if (request instanceof Promise && typeof request.cancel === 'function') {
-          request.cancel();
-        }
+      // Check if request is a Promise with a cancel method before calling it
+      if (request instanceof Promise && typeof request.cancel === "function") {
+        request.cancel();
+      }
 
-        // Check if editor has a dispose method before calling it
-        if (editor && typeof editor.dispose === 'function') {
-          editor.dispose();
-        }
+      // Check if editor has a dispose method before calling it
+      // Check if editor has a dispose method before calling it
+      if (editor && typeof (editor as ChatEditor).dispose === "function") {
+        editor.props.dispose();
+      }
 
-        // Check if notification is defined and has a clear method before calling it
-        if (notification !== undefined && notification && typeof notification.clear === 'function') {
-          notification.clear();
-        }
+      // Check if notification is defined and has a clear method before calling it
+      if (
+        notification !== undefined &&
+        notification &&
+        typeof notification.clear === "function"
+      ) {
+        notification.clear();
+      }
+      const fileUploadModal = openFileUploadModal();
+      const geolocationService = initializeGeolocationService();
+      const settingsPanel = openChatSettingsPanel();
+
+      const handleFileUploadClick = () => {
         const fileUploadModal = openFileUploadModal();
-        const geolocationService = initializeGeolocationService();
-        const settingsPanel = openChatSettingsPanel();
+        // Additional logic if needed
+      };
+      //   // 1. Clear Cache for Chat Images
+      // clearChatImageCache();
 
+      //     // 2. Close Emoji Picker
+      //     emojiPicker.close();
 
-    //   // 1. Clear Cache for Chat Images
-        // clearChatImageCache();
+      //     // 3. Revoke Media Permissions
+      //     revokeMediaPermissions();
 
-    //     // 2. Close Emoji Picker
-    //     emojiPicker.close();
+      //     // 4. Stop Background Audio
+      //     stopBackgroundChatAudio();
 
-    //     // 3. Revoke Media Permissions
-    //     revokeMediaPermissions();
+      //     // 5. Clear Draft Messages
+      //     clearDraftMessages(roomId);
 
-    //     // 4. Stop Background Audio
-    //     stopBackgroundChatAudio();
+      //     // 6. Close Chat Sidebar
+      //     sidebar.close();
 
-    //     // 5. Clear Draft Messages
-    //     clearDraftMessages(roomId);
+      //     // 7. Reset Chat Preferences
+      //     resetChatPreferences();
 
-    //     // 6. Close Chat Sidebar
-    //     sidebar.close();
+      //     // 8. Dispose of Speech-to-Text Engine
+      //     speechToTextEngine.dispose();
 
-    //     // 7. Reset Chat Preferences
-    //     resetChatPreferences();
+      //     // 9. Remove User from Typing Indicators
+      //     removeUserFromTypingIndicators(roomId, currentUser);
 
-    //     // 8. Dispose of Speech-to-Text Engine
-    //     speechToTextEngine.dispose();
+      //     // 10. Clear Chat Analytics Data
+      //   clearChatAnalyticsData();
 
-    //     // 9. Remove User from Typing Indicators
-    //     removeUserFromTypingIndicators(roomId, currentUser);
+      //   // 11. Clear Interval Timer
+      //   clearInterval(timerId);
+      //   // Any cleanup logic can go here
 
-    //     // 10. Clear Chat Analytics Data
-    //   clearChatAnalyticsData();
-        
-    //   // 11. Clear Interval Timer
-    //   clearInterval(timerId);
-    //   // Any cleanup logic can go here
-        
-    // // 11. Disconnect from Real-time Chat Server
-    // disconnectFromChatServer();
+      // // 11. Disconnect from Real-time Chat Server
+      // disconnectFromChatServer();
 
-    // // 12. Close File Upload Modal
-    // fileUploadModal.close();
+      // // 12. Close File Upload Modal
+      // fileUploadModal.close();
 
-    // // 13. Unsubscribe from Chat Notifications
-    // unsubscribeFromChatNotifications();
+      // // 13. Unsubscribe from Chat Notifications
+      // unsubscribeFromChatNotifications();
 
-    // // 14. Reset Unread Message Count
-    // resetUnreadMessageCount(roomId);
+      // // 14. Reset Unread Message Count
+      // resetUnreadMessageCount(roomId);
 
-    // // 15. Remove Expired Chat Tokens
-    // removeExpiredChatTokens();
+      // // 15. Remove Expired Chat Tokens
+      // removeExpiredChatTokens();
 
-    // // 16. Stop Animated Emoticons
-    // stopAnimatedEmoticons();
+      // // 16. Stop Animated Emoticons
+      // stopAnimatedEmoticons();
 
-    // // 17. Clear Chat Search History
-    // clearChatSearchHistory();
+      // // 17. Clear Chat Search History
+      // clearChatSearchHistory();
 
-    // // 18. Dispose of Geolocation Services
-    // geolocationService.dispose();
+      // // 18. Dispose of Geolocation Services
+      // geolocationService.dispose();
 
-    // // 19. Close Chat Settings Panel
-    // settingsPanel.close();
+      // // 19. Close Chat Settings Panel
+      // settingsPanel.close();
 
-    // // 20. Remove Stale Chat Sessions
-    // removeStaleChatSessions();
-
+      // // 20. Remove Stale Chat Sessions
+      // removeStaleChatSessions();
     };
   }, [roomId]);
-
-
 
   // Rest of component
 
@@ -265,7 +278,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       <div className="chat-messages">
         {chatMessages.map((message) => (
           <ChatCard
-            key={message.id} 
+            key={message.id}
             sender={message.senderId}
             message={message.message}
             timestamp={message.timestamp}

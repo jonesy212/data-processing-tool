@@ -9,14 +9,14 @@ import Quill from "react-quill";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 export interface TextEditorProps extends ToolbarOptionsProps {
   id: string;
-  fontSize: boolean,
-  bold: boolean,
-  italic: boolean,
-  underline: boolean,
-  strike: boolean,
-  code: boolean,
-  link: boolean,
-  image: boolean,
+  fontSize: boolean;
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  strike: boolean;
+  code: boolean;
+  link: boolean;
+  image: boolean;
   toolbarOptions: typeof ToolbarOptions;
   isDocumentEditor?: boolean;
   isTextCard?: boolean;
@@ -38,13 +38,12 @@ const TextEditor = ({
   documentBuilderConfig = getDefaultDocumentBuilderConfig(),
 }: TextEditorProps) => {
   const [quill, setQuill] = useState<any | null>(null);
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
 
   useEffect(() => {
     if (!quill) {
       try {
-        const editor: any = new Quill(
-          {
+        const editor: any = new Quill({
           theme: "snow",
           modules: {
             container: `#${id}-toolbar`,
@@ -58,6 +57,12 @@ const TextEditor = ({
               code,
               link,
               image,
+              onEditorStateChange: function (newEditorState: any): void {
+                setText(newEditorState.getText());
+              },
+              handleEditorStateChange: function (newEditorState: any): void {
+                setText(newEditorState.getText());
+              },
             }),
           },
         });
@@ -73,7 +78,19 @@ const TextEditor = ({
         console.error("Error initializing Quill:", error);
       }
     }
-  },  [id, fontSize, bold, italic, underline, strike, code, link, image, onChange, quill]);
+  }, [
+    id,
+    fontSize,
+    bold,
+    italic,
+    underline,
+    strike,
+    code,
+    link,
+    image,
+    onChange,
+    quill,
+  ]);
 
   useEffect(() => {
     if (quill) {
@@ -91,8 +108,14 @@ const TextEditor = ({
     <div>
       <div id={`${id}-toolbar`}>
         <ToolbarOptions
-          isDocumentEditor={true} 
-          isTextCard={false} 
+          isDocumentEditor={true}
+          isTextCard={false}
+          onEditorStateChange={function (newEditorState: any): void {
+            setText(newEditorState.getText());
+          }}
+          handleEditorStateChange={function (newEditorState: any): void {
+            setText(newEditorState.getText());
+          }}
         />
       </div>
       <div id={id} style={{ height: "400px" }} />
@@ -105,4 +128,4 @@ const TextEditor = ({
   );
 };
 
-export default TextEditor; 
+export default TextEditor;

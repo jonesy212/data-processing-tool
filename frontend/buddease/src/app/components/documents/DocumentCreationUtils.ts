@@ -1,11 +1,22 @@
 // DocumentCreationUtils.ts
 import { PDFDocument, rgb } from 'pdf-lib';
 
+interface DocumentFormattingOptions {
+  fontSize?: number;
+  textColor?: string;
+  backgroundColor?: string;
+  fontFamily?: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  // Add more formatting options as needed
+}
 
 
-export const getFormattedOptions = (userOptions: any) => {
-    // Define default options
-    const defaultOptions = {
+
+export const getFormattedOptions = (userOptions: DocumentFormattingOptions): DocumentFormattingOptions => {
+  // Define default options
+    const defaultOptions:DocumentFormattingOptions  = {
       fontSize: 12,
       textColor: '#000000',
       backgroundColor: '#ffffff',
@@ -32,10 +43,11 @@ export const createPdfDocument = async (content: string, options: any) => {
 
   // Add content to the page
   const { width, height } = page.getSize();
-  const font = await pdfDoc.embedFont(PDFDocument.Font.Helvetica);
+ // Use the `embedFont` method without referencing `Font.Helvetica`
+ const font = await pdfDoc.embedFont("Helvetica");
 
-  // Format the content based on options
-  const formattedContent = formatContent(content, options);
+ // Format the content based on options
+ const formattedContent = formatContent(content, options, width);
 
   // Add formatted content to the page
   page.drawText(formattedContent, {
@@ -56,7 +68,7 @@ export const createPdfDocument = async (content: string, options: any) => {
   window.open(pdfUrl, '_blank');
 };
 
-const formatContent = (content: string, options: any) => {
+const formatContent = (content: string, options: DocumentFormattingOptions, width: number): string => {
   // Implement logic to format content based on options
   let formattedContent = content;
 
@@ -64,6 +76,12 @@ const formatContent = (content: string, options: any) => {
   if (options.bold) {
     formattedContent = `<b>${formattedContent}</b>`;
   }
+
+    // Example: Apply width-based formatting
+    if (width > 500) {
+      formattedContent = `<div style="font-size: 18px;">${formattedContent}</div>`;
+    }
+  
 
   // Add more formatting options as needed
 

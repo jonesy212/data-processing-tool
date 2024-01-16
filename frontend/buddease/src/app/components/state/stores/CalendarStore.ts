@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx';
 import useRealtimeData from '../../hooks/commHooks/useRealtimeData';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { AssignEventStore, useAssignEventStore } from './AssignEventStore';
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
 
 export interface CalendarEvent {
   id: string;
@@ -45,6 +45,7 @@ export interface CalendarManagerStore {
   completeAllEvents: () => void;
   completeAllEventsFailure: (payload: { error: string }) => void;
   setDynamicNotificationMessage: (message: string) => void;
+  handleRealtimeUpdate: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => void;
 }
 
 class CalendarManagerStoreClass implements CalendarManagerStore {
@@ -57,17 +58,24 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   eventDescription = "";
   eventStatus: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined = undefined;
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>> = new SnapshotStore<Record<string, CalendarEvent[]>>({});
+  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>> = new SnapshotStore<Record<string, CalendarEvent[]>>({} as SnapshotStoreConfig<Record<string, CalendarEvent[]>>);
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
-
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
+  handleRealtimeUpdate: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => void;
+
 
   constructor() {
     this.assignedEventStore = useAssignEventStore();
+    this.handleRealtimeUpdate = (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => {
+      this.events = events;
+      this.snapshotStore = snapshotStore; // Use the provided snapshotStore
+    };
+  
     this.useRealtimeDataInstance = useRealtimeData(this.events, this.handleRealtimeUpdate);
     makeAutoObservable(this);
   }
+  
 
   updateEventTitle(title: string): void {
     this.eventTitle = title;

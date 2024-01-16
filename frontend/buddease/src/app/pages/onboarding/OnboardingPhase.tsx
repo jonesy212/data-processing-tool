@@ -30,6 +30,7 @@ const UserJourneyManager: React.FC = () => {
   }
 
   let userData: TempUserData = {
+    id: state.user?.data?.id,
     ...(state.user?.data || {}),
     questionnaireResponses: {},
   };

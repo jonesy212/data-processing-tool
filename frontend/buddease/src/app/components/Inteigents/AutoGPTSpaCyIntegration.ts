@@ -1,5 +1,5 @@
 // AutoGPTSpaCyIntegration.ts
-export const processTextWithSpaCy = async (text: any) => {
+export const processTextWithSpaCy = async (text: any, appTree: any[]) => {
     const response = await fetch('http://localhost:5000/process-text', {
         method: 'POST',
         headers: {
@@ -28,12 +28,13 @@ export const processAutoGPTOutputWithSpaCy = async (userIdea: any): Promise<stri
   
     try {
       // Use processTextWithSpaCy to process the prompt and extract relevant entities
-      const spaCyOutput = await processTextWithSpaCy(prompt);
+      //[] = appTree
+      const spaCyOutput = await processTextWithSpaCy(prompt, []);
   
       // Process spaCy output and enhance the prompt or perform other actions as needed
       // Example: Extracting entities and enhancing the prompt
       const extractedEntities = spaCyOutput.entities;
-      const enhancedPrompt = enhancePromptWithEntities(prompt, extractedEntities);
+      const enhancedPrompt = enhancePromptWithEntities(prompt, extractedEntities, [], {});
   
       return enhancedPrompt;
     } catch (error) {
@@ -42,16 +43,18 @@ export const processAutoGPTOutputWithSpaCy = async (userIdea: any): Promise<stri
     }
   };
   
+    
   // Function to enhance the prompt with spaCy extracted entities
-  const enhancePromptWithEntities = (prompt: string, entities: any): string => {
+  const enhancePromptWithEntities = (prompt: string, entities: any, appTree: any[], userContext: any): string => {
     // Your logic to enhance the prompt based on spaCy entities
-    // Example: Replace placeholders in the prompt with extracted entity values
     // Make sure to handle different types of entities and customize as needed
   
-    // Placeholder replacement logic (replace with your actual logic)
-    const enhancedPrompt = prompt.replace('{entity1}', entities.entity1);
-    // Add more enhancements as needed
-  
-    return enhancedPrompt;
-  };
+ // Placeholder replacement logic (replace with your actual logic)
+  const enhancedPrompt = prompt
+    .replace('{entity1}', entities.entity1)
+    .replace('{activeDashboard}', userContext.activeDashboard);
+  // Add more enhancements as needed
+
+  return enhancedPrompt;
+};
   

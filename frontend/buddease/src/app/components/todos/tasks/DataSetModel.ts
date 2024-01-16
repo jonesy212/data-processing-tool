@@ -42,7 +42,11 @@ const dataset: DatasetModel = {
     creationDate: new Date(),
     isActive: false,
     leader: null,
-    progress: null,// Added missing 'progress' property
+    progress: null,
+    title: "",
+    status: "inProgress",
+    tags: ["tag1", "tag2"],
+    analysisType:"analysisType", analysisResults:["anaylsis results"],
     then(callback) {
         callback(dataset as DatasetModel & Team);
     }, 

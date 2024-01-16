@@ -29,6 +29,7 @@ import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ReferralSystem from "@/app/components/referrals/ReferralSystem";
 import SendEmail from "@/app/components/referrals/SendEmail";
 import ProtectedRoute from "@/app/components/routing/ProtectedRoute";
+import TodoSlice from "@/app/components/state/redux/slices/TodoSlice";
 import { Accessibility } from "@/app/components/styling/Accessibility";
 import { AnimationsAndTransitions } from "@/app/components/styling/AnimationsAndTansitions";
 import ColorPalette from "@/app/components/styling/ColorPalette";
@@ -39,8 +40,8 @@ import DynamicComponents from "@/app/components/styling/DynamicComponents";
 import DynamicIconsAndImages from "@/app/components/styling/DynamicIconsAndImages";
 import DynamicSpacingAndLayout from "@/app/components/styling/DynamicSpacingAndLayout";
 import DynamicTypography, {
-    BodyTextProps,
-    DynamicTypographyProps,
+  BodyTextProps,
+  DynamicTypographyProps,
 } from "@/app/components/styling/DynamicTypography";
 import { Palette } from "@/app/components/styling/Palette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
@@ -48,8 +49,8 @@ import ResponsiveDesign from "@/app/components/styling/ResponsiveDesign";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
 import NofiticationsSlice from "@/app/components/support/NofiticationsSlice";
 import {
-    NotificationContext,
-    NotificationProvider,
+  NotificationContext,
+  NotificationProvider,
 } from "@/app/components/support/NotificationContext";
 import NotificationMessages from "@/app/components/support/NotificationMessages";
 import NotificationMessagesFactory from "@/app/components/support/NotificationMessagesFactory";
@@ -59,7 +60,6 @@ import TaskAssignmentSnapshot from "@/app/components/tasks/TaskAssignmentSnapsho
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
 import { TodoActions } from "@/app/components/todos/TodoActions";
 import TodoList from "@/app/components/todos/TodoList";
-import TodoSlice from "@/app/components/todos/TodoSlice";
 import { UserActions } from "@/app/components/users/UserActions";
 import UserSlice from "@/app/components/users/UserSlice";
 import ConceptDevelopment from "@/app/components/users/userJourney/ConceptDevelopment";
@@ -79,11 +79,11 @@ import UserPreferences from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";
 import BatchProcessingAndCache from "@/app/utils/BatchProcessingAndCache";
 import React, {
-    ComponentType,
-    JSXElementConstructor,
-    ReactElement,
-    useEffect,
-    useState,
+  ComponentType,
+  JSXElementConstructor,
+  ReactElement,
+  useEffect,
+  useState,
 } from "react";
 import OnboardingManager from "../onboarding/OnboardingManager";
 import PersonaBuilderDashboard from "../personas/recruiter_dashboard/PersonaBuilderDashboard";
@@ -129,10 +129,12 @@ import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import ProjectList from "@/app/components/lists/ProjectList";
 import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
+import DynamicPromptingLogic from "@/app/components/prompts/DynamicPromptingLogic";
+import NotificationManager from "@/app/components/support/NotificationManager";
 import { UserData } from "@/app/components/users/User";
 import { ModalGenerator } from "@/app/generators/GenerateModal";
 import DataPreview, {
-    DataPreviewProps,
+  DataPreviewProps,
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/Search";
 
@@ -245,7 +247,7 @@ useEffect(() => {
           <TeamList />
           <ProjectList tasks={[]} />
 
-          <NotificationManager notifications={[]} />
+          <NotificationManager notifications={{} as Notification[]} />
 
           <ModalGenerator
             isOpen={false}
@@ -283,8 +285,9 @@ useEffect(() => {
       <IdeaLifecyclePhase />
       <LaunchPhase />
       <ProfileSetupPhase
-        onSubmit={function (profileData: any): void {
+        onSubmit={function (profileData: any): Promise<void> {
           // Save profile data
+          return profileDataService.saveProfile(profileData);
         }}
       />
       <PostLaunchActivitiesPhase />
@@ -310,9 +313,7 @@ useEffect(() => {
         resetIdleTimeout={function (): void {
           throw new Error("Function not implemented.");
         }}
-        isActive={function (selector: string): void {
-          throw new Error("Function not implemented.");
-        }}
+        isActive={false}
       />
       <DynamicPromptingLogic />
       <PromptComponent title={""} description={""} prompts={[]} />

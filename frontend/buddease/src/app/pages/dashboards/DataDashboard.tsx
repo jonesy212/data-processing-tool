@@ -1,5 +1,7 @@
 // DataDashboard.tsx
-import DataFilterForm from "@/app/components/models/data/DataFilterForm";
+import DataFilterForm, {
+  DataFilterFormProps,
+} from "@/app/components/models/data/DataFilterForm";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -142,12 +144,11 @@ const DataDashboard: React.FC = () => {
     }
   };
 
-
   const handleRunTest = () => {
     // Implement your hypothesis testing logic here using the selectedTest state
     console.log("Running test:", selectedTest);
   };
-  
+
   useEffect(() => {
     // Fetch initial data or any other initialization logic
     // ...
@@ -203,7 +204,10 @@ const DataDashboard: React.FC = () => {
         </div>
       )}
       {/* Form for data filtering */}
-      <DataFilterForm onSubmit={onSubmit} options={filterOptions} />
+      <DataFilterForm
+        onSubmit={fetchData as unknown as DataFilterFormProps["onSubmit"]}
+        options={{}}
+      />
 
       {/* Buttons for selecting chart type */}
       <div>
@@ -260,7 +264,8 @@ const DataDashboard: React.FC = () => {
       {/* File upload section */}
       <div>
         <h2>File Upload</h2>
-        <input type="file" onChange={handleFileChange} />
+        <input type="file"
+          onChange={handleFileChange} />
         <button onClick={handleUpload}>Upload File</button>
       </div>
 

@@ -54,3 +54,6 @@ const collaborationPreferences: CollaborationPreferences = {
   },
   // Add other collaboration preferences as needed
 };
+
+
+export type { CollaborationPreferences };

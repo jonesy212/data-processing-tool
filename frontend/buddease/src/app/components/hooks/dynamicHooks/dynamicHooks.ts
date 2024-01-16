@@ -31,8 +31,8 @@ const authenticationHook = createDynamicHook({
     const accessToken = localStorage.getItem("token");
     return !!accessToken;
   },
-  asyncEffect: async () => {
-    return useEffect(() => {
+  asyncEffect: async (): Promise<() => void> => {
+    useEffect(() => {
       console.log("useEffect triggered for Authentication");
       const user = useAuthentication();
       if (user.isLoggedIn) {
@@ -45,6 +45,7 @@ const authenticationHook = createDynamicHook({
         console.log("useEffect cleanup for Authentication");
       };
     }, []);
+    return async () => {};
   },
   resetIdleTimeout: () => {
     // add logic to reset idle timeout
@@ -52,17 +53,17 @@ const authenticationHook = createDynamicHook({
   isActive: true, // set hook to be active
 });
 
-
 // Job Search
 const jobSearchHook = createDynamicHook({
   condition: async () => true,
-  asyncEffect: async () => {
-    return useEffect(() => {
+  asyncEffect: async (): Promise<() => void> => {
+    useEffect(() => {
       console.log("useEffect triggered for JobSearch");
       return () => {
         console.log("useEffect cleanup for JobSearch");
       };
     }, []);
+    return async () => {};
   },
   resetIdleTimeout: () => {
     // add logic to reset idle timeout
@@ -70,17 +71,18 @@ const jobSearchHook = createDynamicHook({
   isActive: true, // set hook to be active
 });
 
-
 // Recruiter Dashboard
 const recruiterDashboardHook = createDynamicHook({
   condition: async () => true,
-  asyncEffect: async () => {
-    return useEffect(() => {
+  asyncEffect: async (): Promise<() => void> => {
+    useEffect(() => {
       console.log("useEffect triggered for RecruiterDashboard");
       return () => {
         console.log("useEffect cleanup for RecruiterDashboard");
       };
     }, []);
+    // Return a cleanup function
+    return async () => {};
   },
   resetIdleTimeout: () => {
     // add logic to reset idle timeout
@@ -91,13 +93,49 @@ const recruiterDashboardHook = createDynamicHook({
 // Chat Dashboard
 const chatDashboardHook = createDynamicHook({
   condition: async () => true,
-  asyncEffect: async () => {
-    return useEffect(() => {
-      console.log("useEffect triggered for ChatDashboard");
+  asyncEffect: async (): Promise<() => void> => {
+    useEffect(() => {
+      console.log("useEffect triggered for ChatDashboard"), useFluence();
+      useAqua();
+
       return () => {
         console.log("useEffect cleanup for ChatDashboard");
       };
     }, []);
+
+    // Return a cleanup function
+    return async () => {};
+  },
+
+  resetIdleTimeout: () => {
+    // add logic to reset idle timeout
+  },
+  isActive: true,
+});
+// User Profile
+const userProfileHook = createDynamicHook({
+  condition: async () => true,
+  asyncEffect: async (): Promise<() => void> => {
+    // Create a promise that resolves when the cleanup function is called
+    let cleanupPromise: Promise<void> | null = null;
+
+    useEffect(() => {
+      console.log("useEffect triggered for UserProfile");
+
+      cleanupPromise = new Promise<void>((resolve) => {
+        // Return the cleanup function
+        const cleanupFunction = () => {
+          console.log("useEffect cleanup for UserProfile");
+          // Resolve the promise when the cleanup function is called
+          resolve();
+        };
+
+        return cleanupFunction;
+      });
+    }, []);
+
+    // Return a function that resolves the cleanup promise
+    return () => cleanupPromise || Promise.resolve();
   },
   resetIdleTimeout: () => {
     // add logic to reset idle timeout
@@ -105,29 +143,18 @@ const chatDashboardHook = createDynamicHook({
   isActive: true, // set hook to be active
 });
 
-// User Profile
-const userProfileHook = createDynamicHook({
-  condition: async () => true,
-  asyncEffect: async () =>
-    useEffect(() => {
-      console.log("useEffect triggered for UserProfile");
-      return () => {
-        console.log("useEffect cleanup for UserProfile");
-      };
-    }, []),
-  resetIdleTimeout: () => {
-    // add logic to reset idle timeout
-  },
-  isActive: true, // set hook to be active
-});
+
 
 // Function to generate prompts based on user ideas
 const generatePrompt = (userIdea: string, roles: string[]): string | null => {
   // Replace this logic with your actual prompt generation based on user ideas and roles
   if (userIdea === "web development") {
-    const rolePrompt = roles.length > 0
-      ? `You are a professional in web development with expertise in roles such as ${roles.join(", ")}.`
-      : "You are a professional in web development.";
+    const rolePrompt =
+      roles.length > 0
+        ? `You are a professional in web development with expertise in roles such as ${roles.join(
+            ", "
+          )}.`
+        : "You are a professional in web development.";
     return `${rolePrompt} You have the skills and experiences to contribute effectively to a project, from conception to product launch. Your expertise can cover a wide range of areas, including ideation, team creation, product brainstorming, and more.`;
   } else {
     return null; // Handle other cases or return a default prompt

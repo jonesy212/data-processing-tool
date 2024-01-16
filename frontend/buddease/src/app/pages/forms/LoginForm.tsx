@@ -1,19 +1,15 @@
 // LoginForm.tsx
+import authService from "@/app/components/auth/AuthService";
+import { NotificationContext } from "@/app/components/support/NotificationContext";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
-  onSubmit: (
-    username: string,
-    password: string,
-    onSuccess: () => void,
-    onError: (error: string) => void
-  ) => void;
   setUsername: Dispatch<SetStateAction<string>>;
   setPassword: Dispatch<SetStateAction<string>>;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setUsername, setPassword }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
   const [username, setLocalUsername] = useState("");
   const [password, setLocalPassword] = useState("");
   const history = useNavigate();
@@ -21,25 +17,29 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setUsername, setPasswor
   const handleSubmit = async (event: React.FormEvent) => {
     try {
       event.preventDefault();
-      if (onSubmit) {
-        await onSubmit(
-          username,
-          password,
-          () => {
-            // Success callback
-            history("/frontend/buddease/src/app/pages/dashboards/Dashboard.tsx");
-          },
-          (error) => {
-            // Error callback
-            console.error(error);
-            history("/frontend/buddease/src/app/pages/onboarding/Welcome.tsx");
-          }
-        );
+  
+      // Use AuthService to handle login
+      const { accessToken } = await authService.login(username, password);
+  
+      if (accessToken) {
+        // Retrieve the last visited page from local storage
+        const lastVisitedPage = localStorage.getItem("lastVisitedPage");
+  
+        // Navigate to the last visited page or a default page if none is stored
+        history(lastVisitedPage || "/default-page");
+      } else {
+        // Error callback
+        console.error("Error during login:", error);
+
+        NotificationContext.notify("Login failed", "Error");
+
+        history("/frontend/buddease/src/app/pages/onboarding/Welcome.tsx");
       }
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   return (
     <div>

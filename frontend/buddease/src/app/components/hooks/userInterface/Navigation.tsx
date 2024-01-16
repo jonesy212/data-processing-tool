@@ -40,7 +40,7 @@ const NavigationGenerator: React.FC<NavigationGeneratorProps> = (props) => {
   // Generate a dynamic hook for onNavigationChange
   const dynamicOnNavigationChange: DynamicHookResult = createDynamicHook({
     condition: async () => !!onNavigationChange,
-    asyncEffect: async () => {
+    asyncEffect:  async ()  => {
       // Fetch additional information or perform actions as needed
       console.log('Dynamic onNavigationChange hook triggered');
       onNavigationChange && onNavigationChange(defaultNavigationItems);

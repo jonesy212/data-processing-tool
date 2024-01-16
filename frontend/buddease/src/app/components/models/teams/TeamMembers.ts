@@ -1,4 +1,4 @@
-export interface TeamMember {
+interface TeamMember {
     id: number;
     username: string;
     email: string;
@@ -21,3 +21,4 @@ export interface TeamMember {
     // Add other TeamMember-related field values
   };
   
+  export type { TeamMember };

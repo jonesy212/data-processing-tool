@@ -25,4 +25,20 @@ export const TaskActions = {
   removeTasksSuccess: createAction<{ tasks: Task[] }>("removeTasksSuccess"),
   removeTaskFailure: createAction<{ error: string }>("removeTaskFailure"),
   // Add more actions as needed
+
+  // Batch actions for fetching
+  batchFetchTasksRequest: createAction("batchFetchTasksRequest"),
+  batchFetchTasksSuccess: createAction<{ tasks: Task[] }>("batchFetchTasksSuccess"),
+  batchFetchTasksFailure: createAction<{ error: string }>("batchFetchTasksFailure"),
+
+  // Batch actions for updating
+  batchUpdateTasksRequest: createAction<{ ids: number[], newTitles: string[] }>("batchUpdateTasksRequest"),
+  batchUpdateTasksSuccess: createAction<{ tasks: Task[] }>("batchUpdateTasksSuccess"),
+  batchUpdateTasksFailure: createAction<{ error: string }>("batchUpdateTasksFailure"),
+
+  // Batch actions for removing
+  batchRemoveTasksRequest: createAction<number[]>("batchRemoveTasksRequest"),
+  batchRemoveTasksSuccess: createAction<number[]>("batchRemoveTasksSuccess"),
+  batchRemoveTasksFailure: createAction<{ error: string }>("batchRemoveTasksFailure"),
+
 };

@@ -1,7 +1,7 @@
 // RootStores.ts
 import { makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
-import { CalendarStore } from './CalendarStore';
+import useCalendarStore, { CalendarManagerStore } from './CalendarStore';
 import { IconStore } from './IconStore';
 import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
 import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
@@ -13,7 +13,7 @@ export class RootStores {
   todoStore: TodoManagerStore;
   taskManagerStore: TaskManagerStore
   iconStore: typeof IconStore;
-  calendarStore: CalendarStore;
+  calendarStore: CalendarManagerStore;
   prototype: any  
   browsers: any
   constructor() {
@@ -21,7 +21,7 @@ export class RootStores {
     this.todoStore = useTodoManagerStore()
     this.trackerStore = useTrackerStore(rootStores)
     this.taskManagerStore = useTaskManagerStore()
-    this.calendarStore
+    this.calendarStore = useCalendarStore()
     this.iconStore =  IconStore
     makeAutoObservable(this);
   }

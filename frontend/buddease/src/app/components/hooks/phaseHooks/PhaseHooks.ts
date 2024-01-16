@@ -3,6 +3,7 @@
 import userSettings from "@/app/configs/UserSettings";
 import { useEffect } from "react";
 import { useAuth } from "../../auth/AuthContext";
+import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { CustomPhaseHooks } from "../../phases/Phase";
 import createDynamicHook, {
   DynamicHookResult,
@@ -23,12 +24,14 @@ const createPhaseHook = (config: PhaseHookConfig) => {
     condition: async () => {
       return config.condition();
     },
-    asyncEffect: async () => {
+    asyncEffect: async (): Promise<() => void> => {
       const cleanup = await config.asyncEffect();
       if (typeof cleanup === "function") {
-        return cleanup();
+        cleanup();
       }
+      return config.asyncEffect();
     },
+
     resetIdleTimeout: async () => {
       clearTimeout(userSettings.idleTimeout as unknown as number);
       userSettings.idleTimeout = setTimeout(() => {

@@ -11,6 +11,8 @@ const NOTIFICATION_MESSAGES = {
   Error: {
     DEFAULT: (errorType: string) => `An ${errorType} occurred.`,
     INVALID_CREDENTIALS: "Invalid credentials. Please try again.",
+    ERROR_UPDATING_DATA: "Error updating data. Please try again later.",
+    ERROR_REMOVING_DATA: "Error removing data. Please try again",
     ERROR_FETCHING_DATA: "Error fetching data. Please try again later.",
     PROCESSING_BATCH: "Processing batch of notifications...",
     NETWORK_ERROR:
@@ -123,6 +125,17 @@ const NOTIFICATION_MESSAGES = {
     TODO_REMOVE_ERROR: "Error removing todo. Please try again.",
     COMPLETE_ALL_TODOS_ERROR: "Error completing all todo. Please try again.",
     TODO_TOGGLE_ERROR: "Error toggling todo status. Please try again.",
+  },
+
+   // Calendar Events
+   CalendarEvents: {
+    ADD_EVENT_SUCCESS: "Calendar event added successfully.",
+    ADD_EVENT_ERROR: "Failed to add calendar event.",
+    FETCH_EVENTS_SUCCESS: "Calendar events fetched successfully.",
+    FETCH_EVENTS_ERROR: "Failed to fetch calendar events.",
+    REMOVE_EVENT_SUCCESS: "Calendar event removed successfully.",
+    REMOVE_EVENT_ERROR: "Failed to remove calendar event.",
+    // Add more messages for other calendar events actions
   },
 
   NamingConventionsError: {

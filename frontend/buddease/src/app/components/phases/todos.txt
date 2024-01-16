@@ -1,0 +1,64 @@
+Project Information:
+
+Project ID
+Project Title
+Description
+Start Date
+End Date
+Status (e.g., ongoing, completed)
+Team Information:
+
+Team Members
+Roles and Responsibilities
+Team Communication (e.g., chat, audio, video)
+Phases:
+
+Phase ID
+Phase Title
+Description
+Start Date
+End Date
+Status (e.g., planned, in progress, completed)
+Tasks:
+
+Task ID
+Task Title
+Description
+Assigned Team Members
+Due Date
+Status (e.g., pending, in progress, completed)
+Priority (e.g., low, medium, high)
+Communication:
+
+Chat Logs
+Audio Logs
+Video Logs
+Communication Channels
+Collaboration:
+
+Shared Documents
+Real-time Editing
+File Sharing
+Feedback and Comments
+Product Details (for each phase):
+
+Ideation Details
+Team Creation Details
+Product Brainstorming Details
+Product Launch Details
+Data Analysis Details
+Results and Analysis:
+
+Data Analysis Results
+Insights
+Recommendations for Reiterations
+User Information:
+
+User ID
+User Details
+Roles and Permissions
+Real-time Features:
+
+Real-time Collaboration Status
+Notifications
+Updates

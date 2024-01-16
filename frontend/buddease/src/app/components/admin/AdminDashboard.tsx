@@ -1,6 +1,4 @@
-import {
-  ApiConfig,
-} from "@/app/configs/ConfigurationService";
+import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { useEffect, useState } from "react";
 import { useDynamicComponents } from "../DynamicComponentsContext";
 import DynamicNamingConventions from "../DynamicNamingConventions";
@@ -22,14 +20,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setConfig(config);
   };
 
-  
   // Use the subscription to call any config change callbacks
   useEffect(() => {
     subscriptionService.subscriptions.forEach((callback) =>
       callback(updateApiConfig)
     );
   }, [config]);
-
 
   // Call any config change callbacks
   subscriptionService.subscriptions.forEach((callback) => callback(onmessage));
@@ -75,3 +71,5 @@ const AdminDashboardWithDynamicNaming = () => {
 
 export default ConfigCard;
 export { AdminDashboard, AdminDashboardWithDynamicNaming };
+export type { AdminDashboardProps };
+

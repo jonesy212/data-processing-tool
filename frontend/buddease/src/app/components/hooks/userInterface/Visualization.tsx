@@ -65,10 +65,10 @@ const Visualization: React.FC<VisualizationProps> = ({
   const getChartComponent = () => {
     switch (type) {
       case "line":
-        return <Line data={chartData} />;
+        return <Line data={chartData} options={{ maintainAspectRatio: false, responsive: true }} />;
       case "bar":
-        return <Bar data={chartData} />;
-     default:
+        return <Bar data={chartData} options={{ maintainAspectRatio: false, responsive: true }} />;
+      default:
         return null;
     }
   };
@@ -94,3 +94,5 @@ const Visualization: React.FC<VisualizationProps> = ({
 };
 
 export default Visualization;
+export type { VisualizationProps };
+

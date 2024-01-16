@@ -1,80 +1,57 @@
 // todo/Todo.ts
+import { Data } from "../models/data/Data";
 import { User } from "../users/User";
-
-
-
   
-export interface Todo {
-  id: string;
-  title: string;
+
+export interface Todo extends Data {
   done: boolean;
-  status: string;
+  status: "pending" | "inProgress" | "completed";
   todos: Todo[];
   description: string;
   dueDate: Date | null;
   priority: "low" | "medium" | "high";
-  assignee: string | null; // User ID of the assigned person
-  collaborators: string[]; // User IDs of collaborators
-  labels: string[]; // Tags or labels associated with the todo
-  comments: Comment[];
+  assignee: string | null;
+  collaborators: string[];
+  labels: string[];
+  comments: Comment[] ;
   attachments: Attachment[];
   subtasks: Todo[];
-  createdAt: Date;
-  updatedAt: Date; //
-  createdBy: string; // User ID of the creator
-  updatedBy: string; // User ID of the last updater
   isArchived: boolean;
   isCompleted: boolean;
-  isBeingEdited: boolean; // Indicates if the todo is currently being edited
-  isBeingDeleted: boolean; // Indicates if the todo is currently being deleted
+  isBeingEdited: boolean;
+  isBeingDeleted: boolean;
   isBeingCompleted: boolean;
-  isBeingReassigned: boolean; // Indicates if the todo is currently being reassigned to another user
+  isBeingReassigned: boolean;
 }
 
+export interface Comment extends Data, CharacterData {
+  text: string;
+  editedAt?: Date;
+  editedBy?: string;
+  attachments?: Attachment[];
+  replies?: Comment[];
+  likes?: User[];
+  
+}
 
-  export interface Comment {
-    id: string;
-    text: string;
-    createdAt: Date;
-    createdBy: string; // User ID of the commenter
-    editedAt?: Date; // Timestamp indicating when the comment was last edited
-    editedBy?: string; // User ID of the person who last edited the comment
-    attachments?: Attachment[]; // List of attachments associated with the comment
-    replies?: Comment[]; // List of replies to the comment
-    likes?: User[]; // List of users who liked the comment
-  }
-  
-  export interface Attachment {
-    id: string;
-    url: string;
-    name: string;
-    fileType: FileType;
-    size: number; // Size of the attachment in bytes
-    uploadedAt: Date;
-    uploadedBy: string; // User ID of the person who uploaded the attachment
-    isImage?: boolean; // Indicates if the attachment is an image
-    metadata?: Record<string, any>; // Additional metadata specific to the attachment type
-  }
-  
-  export type FileType =
-    | "image"
-    | "document"
-    | "link"
-    | "audio"
-    | "video"
-    | "other";
-  
-  
-  
-  
-// Create a state and initial state for Todo
+export interface Attachment extends Data {
+  url: string;
+  name: string;
+  fileType: FileType;
+  size: number;
+  isImage?: boolean;
+  metadata?: Record<string, any>;
+}
+
+export type FileType = "image" | "document" | "link" | "audio" | "video" | "other";
+
 export interface TodoManagerState {
   entities: Record<string, Todo>;
 }
+
 export const todoInitialState: TodoManagerState = {
   entities: {},
 };
-
 
 
 

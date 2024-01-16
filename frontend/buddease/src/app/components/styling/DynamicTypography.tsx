@@ -1,5 +1,6 @@
 // components/DynamicTypography.tsx
 import React from "react";
+import DummyCardLoader from "../cards/DummyCardLoader";
 
 interface BodyTextProps {
   fontSize?: string;
@@ -15,12 +16,14 @@ interface DynamicTypographyProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
   dynamicFont: "Aria, sans-serif";
   dynamicColor: "#000000";
-  children?: React.ReactNode; // Add children prop here
+  children?: React.ReactNode;
+  items?: { type: 'file' | 'folder'; name: string }[]; // Include items prop for DummyCardLoader
 }
+
 const DynamicTypography: React.FC<
   DynamicTypographyProps & (BodyTextProps | HeadingProps)
 > = (props) => {
-  const { dynamicContent, dynamicFont, dynamicColor, children, ...rest } =
+  const { dynamicContent, dynamicFont, dynamicColor, children, items, ...rest } =
     props;
 
   return (
@@ -54,7 +57,9 @@ const DynamicTypography: React.FC<
         </div>
       )}
       {/* Add more dynamic/static content examples as needed */}
-      {children} {/* Include children here */}
+      {children}
+      {/* Include children here */}
+      <DummyCardLoader items={items || []} /> {/* Render DummyCardLoader with items */}
     </div>
   );
 };
@@ -108,4 +113,3 @@ const renderDynamicContent = ({
 
 export default DynamicTypography;
 export type { BodyTextProps, DynamicTypographyProps, HeadingProps };
-

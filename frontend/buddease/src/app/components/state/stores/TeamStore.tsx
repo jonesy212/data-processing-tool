@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Team } from "../../models/teams/Team";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
-import { generateNewTeam } from "@/app/generators/GenerateNewTask";
+import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
 import {
   AssignTeamMemberStore,

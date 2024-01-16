@@ -10,11 +10,19 @@ import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConf
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
+import { DocumentTree } from "../components/users/User";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
+import generateAppTree, { AppTree } from "../generators/generateAppTree";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
+import TreeView from "./dashboards/TreeView";
 import SearchComponent from "./searchs/Search";
 
-function MyApp({ Component, pageProps }: AppProps) {
+
+
+
+
+async function MyApp({ Component, pageProps }: AppProps) {
+ 
   interface Props {
     children: (props: { hooks: any; utilities: any }) => React.ReactNode;
     componentSpecificData: any[];
@@ -89,11 +97,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     // Replace with your actual logic to rollback to the previous phase
   };
 
-  const undoLastAction = () => {
-    console.log("Undoing the last action...");
-    // Replace with your actual logic to undo the last action
-  };
+  
+  
 
+  const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
     <SearchComponent {...pageProps}>
       {({ children, componentSpecificData }: Props) => (
@@ -119,6 +126,16 @@ function MyApp({ Component, pageProps }: AppProps) {
                     onConfirm={handleConfirm}
                     onCancel={handleCancel}
                   />
+                  {/* Generate appTree and render TreeView */}
+                  {appTree && (
+                    <TreeView
+                      data={[appTree]} 
+                      onClick={(node) => {
+                        // Handle node click if needed
+                        console.log("Node clicked:", node);
+                      }}
+                    />
+                  )}
                 </StoreProvider>
               </AuthProvider>
             </DynamicPromptProvider>

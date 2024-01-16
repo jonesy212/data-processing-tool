@@ -1,18 +1,18 @@
 // CommonDetails.tsx
 import { useState } from "react";
+import { Data } from "./data/Data";
 
-interface DetailsProps<T> {
-  data: T;
+interface DetailsProps {
+  data: Data;
 }
 
-const CommonDetails = <T extends Record<string, any>>({
-  data,
-}: DetailsProps<T>) => {
+const CommonDetails: React.FC<DetailsProps> = ({ data }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const toggleDetails = () => {
     setShowDetails((prev) => !prev);
   };
+
   return (
     <div>
       <button onClick={toggleDetails}>Toggle Details</button>

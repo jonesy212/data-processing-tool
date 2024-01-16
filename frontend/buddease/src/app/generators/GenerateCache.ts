@@ -1,14 +1,14 @@
 // generateCache.ts
 import {
-  useBrainstormingPhase,
-  useMeetingsPhase,
-  useProjectManagementPhase,
-  useTeamBuildingPhase,
+    useBrainstormingPhase,
+    useMeetingsPhase,
+    useProjectManagementPhase,
+    useTeamBuildingPhase,
 } from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
 import {
-  authenticationPhaseHook,
-  jobSearchPhaseHook,
-  recruiterDashboardPhaseHook,
+    authenticationPhaseHook,
+    jobSearchPhaseHook,
+    recruiterDashboardPhaseHook,
 } from "../components/hooks/phaseHooks/PhaseHooks";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
 import { backendDocumentConfig } from "../configs/BackendDocumentConfig";

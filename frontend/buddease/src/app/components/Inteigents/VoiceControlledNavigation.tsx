@@ -1,60 +1,60 @@
-// import React, { useEffect, useState } from 'react';
-// import IntroJs from 'intro.js';
-// import 'intro.js/introjs.css';
-// import { startVoiceRecognition, stopVoiceRecognition } from './VoiceControl';
+import IntroJs from 'intro.js';
+import 'intro.js/introjs.css';
+import React, { useEffect, useState } from 'react';
+import { startVoiceRecognition, stopVoiceRecognition } from './VoiceControl';
 
-// const VoiceControlledNavigation: React.FC = () => {
-//   const [isVoiceRecognitionActive, setVoiceRecognitionActive] = useState(false);
+const VoiceControlledNavigation: React.FC = () => {
+  const [isVoiceRecognitionActive, setVoiceRecognitionActive] = useState(false);
 
-//   useEffect(() => {
-//     const intro = IntroJs();
+  useEffect(() => {
+    const intro = IntroJs();
 
-//     intro.setOptions({
-//       steps: [
-//         {
-//           element: '#voiceControlButton',
-//           intro: 'Click here to activate voice-controlled navigation.',
-//         },
-//         // Add more steps as needed.
-//       ],
-//     });
+    intro.setOptions({
+      steps: [
+        {
+          element: '#voiceControlButton',
+          intro: 'Click here to activate voice-controlled navigation.',
+        },
+        // Add more steps as needed.
+      ],
+    });
 
-//     // Start the Intro.js tour when the component mounts
-//     intro.start();
+    // Start the Intro.js tour when the component mounts
+    intro.start();
 
-//     // Clean up the Intro.js instance when the component unmounts
-//     return () => {
-//       intro.exit(true);
-//     };
-//   }, []);
+    // Clean up the Intro.js instance when the component unmounts
+    return () => {
+      intro.exit(true);
+    };
+  }, []);
 
-//   const handleVoiceControlToggle = () => {
-//     setVoiceRecognitionActive((prev) => !prev);
-//   };
+  const handleVoiceControlToggle = () => {
+    setVoiceRecognitionActive((prev) => !prev);
+  };
 
-//   useEffect(() => {
-//     let recognition: SpeechRecognition | undefined;
+  useEffect(() => {
+    let recognition: SpeechRecognition | undefined;
 
-//     if (isVoiceRecognitionActive) {
-//       recognition = startVoiceRecognition((speechResult) => {
-//         // Handle speech result, e.g., trigger navigation based on speechResult
-//         console.log('Speech Result:', speechResult);
-//       });
-//     }
+    if (isVoiceRecognitionActive) {
+      recognition = startVoiceRecognition((speechResult) => {
+        // Handle speech result, e.g., trigger navigation based on speechResult
+        console.log('Speech Result:', speechResult);
+      });
+    }
 
-//     return () => {
-//       stopVoiceRecognition(recognition);
-//     };
-//   }, [isVoiceRecognitionActive]);
+    return () => {
+      stopVoiceRecognition(recognition);
+    };
+  }, [isVoiceRecognitionActive]);
 
-//   return (
-//     <div>
-//       <button id="voiceControlButton" onClick={handleVoiceControlToggle}>
-//         {isVoiceRecognitionActive ? 'Deactivate Voice Control' : 'Activate Voice Control'}
-//       </button>
-//       {/* Other components related to voice-controlled navigation */}
-//     </div>
-//   );
-// };
+  return (
+    <div>
+      <button id="voiceControlButton" onClick={handleVoiceControlToggle}>
+        {isVoiceRecognitionActive ? 'Deactivate Voice Control' : 'Activate Voice Control'}
+      </button>
+      {/* Other components related to voice-controlled navigation */}
+    </div>
+  );
+};
 
-// export default VoiceControlledNavigation;
+export default VoiceControlledNavigation;

@@ -1,13 +1,66 @@
 // RegistrationPhase.tsx
-import React from 'react';
-import RegisterForm from '../forms/RegisterForm';
+import { UserData } from "@/app/components/users/User";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const RegistrationPhase: React.FC = () => {
+interface RegistrationPhaseProps {
+  onSuccess: (userData: UserData) => void; // Update the type to return Promise<void>
+}
+
+const RegistrationPhase: React.FC<RegistrationPhaseProps> =  ({ onSuccess }) => {
+  const history = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegister = async () => {
+    try {
+      // Perform signup logic here using Axios (e.g., send data to the server)
+      const response = await axios.post("/api/signup", { username, password });
+
+      // Assuming signup is successful (adjust the condition based on your API response)
+      if (response.status === 201) {
+        // Call the parent component's onSuccess prop
+        await onSuccess(response.data); // Adjust the type as needed
+
+        // Redirect to the next page based on the onboarding process
+        history("/api/questionnaire-submit"); // Adjust the path as needed
+      } else {
+        // Handle unsuccessful signup (show an error message, etc.)
+        console.error("Signup failed:", response.data.error);
+      }
+    } catch (error) {
+      // Handle any network or unexpected errors
+      console.error("An error occurred during signup:", error);
+    }
+  };
+
   return (
     <div>
-      <h1>Registration Phase</h1>
-      <RegisterForm />
-      {/* Add registration phase content */}
+      <h2>Sign Up</h2>
+      <form>
+        <label>
+          Username:
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </label>
+        <br />
+        <label>
+          Password:
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <br />
+        <button type="button" onClick={handleRegister}>
+          Sign Up
+        </button>
+      </form>
     </div>
   );
 };

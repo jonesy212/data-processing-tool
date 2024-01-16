@@ -3,19 +3,19 @@ import Project from "../../projects/Project";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
 import CommonDetails from "../CommonDetailsProps";
+import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgresBar";
 
-interface Team {
+interface Team extends Data {
   id: number;
   teamName: string;
-  description: string | null;
+  description?: string | undefined;
   members: User[];
   projects: Project[];
   creationDate: Date;
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
-  then: (callback: (newTeam: Team) => void) => void;
   // Add other team-related fields as needed
 }
 
@@ -55,7 +55,7 @@ const team: Team = {
   ],
   projects: [
     {
-      id: '1',
+      id: "1",
       name: "Project A",
       description: "Description of Project A",
       members: [],
@@ -69,7 +69,7 @@ const team: Team = {
       budget: 0,
     },
     {
-      id: '2',
+      id: "2",
       name: "Project B",
       description: "Description of Project B",
       members: [],
@@ -77,19 +77,19 @@ const team: Team = {
       currentPhase: "Planning" as unknown as Phase,
       tasks: [
         {
-          id: '1',
+          id: "1",
           title: "Task 1",
           description: "Description of Task 1",
           assignedTo: [
             /* ... */
           ],
-          then(arg0: (newTask: any) => void): unknown{
+          then(arg0: (newTask: any) => void): unknown {
             const newTask = {
-              id: '2',
+              id: "2",
               title: "Task 2",
               description: "Description of Task 2",
               assignedTo: [],
-              previouslyAssignedTo:[],
+              previouslyAssignedTo: [],
               done: false,
               dueDate: new Date(),
               status: "todo",
@@ -102,23 +102,25 @@ const team: Team = {
               isActive: true,
               tags: [],
               dependencies: [],
-            }
+            };
             arg0(newTask);
             return;
           },
-          previouslyAssignedTo:[],
+          previouslyAssignedTo: [],
           done: false,
           dueDate: new Date(),
           status: "pending",
           priority: "low",
           estimatedHours: null,
           actualHours: null,
-          startDate: null,
+          startDate: undefined,
           endDate: new Date(),
           completionDate: new Date(),
           isActive: true,
           tags: [], // Assuming tasks can have tags
           dependencies: [],
+          analysisType: "Text Analysis",
+          analysisResults: [],
         },
         // Add more tasks as needed
       ],
@@ -143,12 +145,12 @@ const team: Team = {
     bio: "bio content",
     hasQuota: false,
     profilePicture: "profile picture",
-    processingTasks: [] as DataProcessingTask[]
+    processingTasks: [] as DataProcessingTask[],
   },
   then(callback: (newTeam: Team) => void) {
     const newTeam = {
       id: 2,
-      teamName: 'New Team',
+      teamName: "New Team",
       description: null,
       members: [],
       projects: [],
@@ -158,16 +160,17 @@ const team: Team = {
       progress: null,
       then: callback,
     };
-  }
+  },
+  title: "",
+  status: "pending",
+  tags: [],
+  analysisType: "",
+  analysisResults: []
 };
-
-
-
 
 // using commong detais we genrate detais for components by mapping through the objects.
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => (
-  
-  <CommonDetails<Team> data= { team } />
+  <CommonDetails data={team} />
 );
 
 export { TeamDetails };

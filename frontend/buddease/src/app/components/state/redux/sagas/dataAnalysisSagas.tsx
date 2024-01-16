@@ -1,18 +1,16 @@
 // dataAnalysisSagas.ts
+import DataFrameAPI from "@/app/api/DataframeApi";
 import { DataAnalysis } from "@/app/components/projects/DataAnalysisPhase/DataAnalysis";
 import { DataAnalysisActions } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisActions";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { dataAnalysisService } from "@/app/components/typings/dataAnalysisTypes";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
-
-// Replace 'yourApiEndpoint' with the actual API endpoint
-const fetchDataAnalysisAPI = () => axios.get('/api/data-analysis');
 
 function* fetchDataAnalysisSaga(): Generator<Effect, void, any> {
   try {
     yield put(DataAnalysisActions.fetchDataAnalysisRequest());
-    const response: AxiosResponse<DataAnalysis[]> = yield call(fetchDataAnalysisAPI);
+    const response: AxiosResponse<any> = yield call(DataFrameAPI.fetchDataFromBackend);
     yield put(DataAnalysisActions.fetchDataAnalysisSuccess({ dataAnalysis: response.data }));
   } catch (error) {
     yield put(

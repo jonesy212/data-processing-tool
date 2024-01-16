@@ -1,6 +1,6 @@
 import React from 'react';
 import RefactoringRebrandingPhase from '../../projects/RefactoringRebrandingPhase';
-import CollaborationSettingsPhase from '../coaborationPhase/CollaborationSettingsPhase';
+import CollaborationSettingsPhase from '../collaborationPhase/CollaborationSettingsPhase';
 
 interface PostLaunchActivitiesPhaseProps {
   // Add any specific props needed for the PostLaunchActivitiesPhase

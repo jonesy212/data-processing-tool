@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export type DynamicHookParams = {
   condition: () => Promise<boolean>;
-  asyncEffect: () => Promise<void>;
+  asyncEffect: () => Promise<() => void>;
   cleanup?: () => void;
   resetIdleTimeout: () => void;
   isActive: boolean;
@@ -16,20 +16,22 @@ export type DynamicHookResult = {
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout?: () => void;
-  intervalId?: number
+  intervalId?: number;
 };
 
 const createDynamicHook = ({
   condition,
   asyncEffect,
+  resetIdleTimeout,
   cleanup,
+  isActive: initialIsActive
 }: DynamicHookParams) => {
   return () => {
-    const [isActive, setIsActive] = useState(true);
+    const [isActive, setIsActive] = useState(initialIsActive);
 
     useEffect(() => {
       const runAsyncEffect = async () => {
-        if (isActive && await condition()) {
+        if (isActive && (await condition())) {
           await asyncEffect();
         }
       };
@@ -45,15 +47,15 @@ const createDynamicHook = ({
 
     return {
       isActive,
-      toggleActivation: (options?: { accessToken?: string }) => {
+      toggleActivation: () => {
         setIsActive((prev) => !prev);
-        if (options?.accessToken) {
-          console.log("Received accessToken:", options.accessToken);
-        }
       },
       startAnimation: () => {},
       stopAnimation: () => {},
       animateIn: () => {},
+      asyncEffect,
+      cleanup,
+      resetIdleTimeout,
     };
   };
 };

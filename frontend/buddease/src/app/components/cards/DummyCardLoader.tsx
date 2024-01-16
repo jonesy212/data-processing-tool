@@ -1,67 +1,23 @@
 import React from 'react';
+import FileCard from './FileCard';
+import FolderCard from './FolderCard';
 
-interface BodyTextProps {
-  fontSize: string;
-  fontFamily: string;
+interface DummyCardLoaderProps {
+  items: { type: 'file' | 'folder'; name: string }[];
 }
 
-export interface HeadingProps {
-  fontSize: string;
-  fontFamily: string;
-}
-
-interface DynamicTypographyProps {
-  dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
-  children: React.ReactNode;
-}
-
-export type DynamicContentProps = BodyTextProps | HeadingProps;
-
-const DynamicTypography: React.FC<DynamicTypographyProps & DynamicContentProps> = (props) => {
-  const { dynamicContent, ...rest } = props;
-
+const DummyCardLoader: React.FC<DummyCardLoaderProps> = ({ items }) => {
   return (
     <div>
-      <h2>{dynamicContent ? 'Dynamic' : 'Static'} Typography</h2>
-      {dynamicContent ? renderDynamicContent(rest) : renderStaticContent()}
-      {/* Add more dynamic/static content examples as needed */}
+      <h3>Dummy Card Loader</h3>
+      {items.map((item, index) => (
+        <div key={index}>
+          {item.type === 'file' && <FileCard fileName={item.name} />}
+          {item.type === 'folder' && <FolderCard folderName={item.name} />}
+        </div>
+      ))}
     </div>
   );
 };
 
-const renderStaticContent = () => {
-  return (
-    <div>
-      <h3>Static Typography Example</h3>
-      <p style={{ fontSize: '16px', fontFamily: 'Arial, sans-serif' }}>Static Body Text</p>
-    </div>
-  );
-};
-
-const renderDynamicContent = (props: DynamicContentProps) => {
-  if ("fontSize" in props && "fontFamily" in props) {
-    // Dynamic rendering based on the type of props
-    if ("fontSize" in props) {
-      // Dynamic rendering of BodyText component
-      return (
-        <p style={{ fontSize: props.fontSize as string, fontFamily: props.fontFamily as string }}>
-          Dynamic Body Text
-        </p>
-      );
-    } else {
-      // Dynamic rendering of Heading component
-      return (
-        <h3 style={{ fontSize: props['fontSize'] as string, fontFamily: props['fontFamily'] as string }}>
-          Dynamic Heading
-        </h3>
-      );
-    }
-  }
-
-  // Handle the case where neither "fontSize" nor "fontFamily" is present
-  return null;
-};
-
-
-
-export default DynamicTypography;
+export default DummyCardLoader;

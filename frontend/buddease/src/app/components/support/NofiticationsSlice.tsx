@@ -1,9 +1,11 @@
+// NotificationSlice.tsx
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Notification {
   id: string;
   content: string;
   date: Date;
+  message: string;
 }
 
 interface NotificationsState {
@@ -22,13 +24,11 @@ const notificationsSlice = createSlice({
       state.notifications.push(action.payload);
     },
     removeNotification: (state, action: PayloadAction<string>) => {
-      // Assuming each notification has a unique id
       state.notifications = state.notifications.filter((notification) => notification.id !== action.payload);
     },
     clearNotifications: (state) => {
       state.notifications = [];
     },
-    // Add other notification-related actions as needed
   },
 });
 

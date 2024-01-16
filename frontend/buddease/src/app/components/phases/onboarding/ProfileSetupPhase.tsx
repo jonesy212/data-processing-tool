@@ -22,12 +22,12 @@ const ProfileSetupPhase: React.FC<ProfileSetupPhaseProps> = ({ onSubmit }) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Add any additional validation or logic here before submitting
 
     // Call the onSubmit callback with the profileData
-    onSubmit(profileData);
+    await onSubmit(profileData);
   };
 
   return (

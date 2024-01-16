@@ -1,10 +1,8 @@
 // userSaga.ts
-import { NotificationContext } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { User } from "@/app/components/users/User";
 import { UserActions } from "@/app/components/users/UserActions";
 import { userService } from "@/app/components/users/UserService";
-import { useContext } from "react";
 import { call, put, takeLatest } from "redux-saga/effects";
 
 // Worker Saga: Fetch User
@@ -21,15 +19,20 @@ function* fetchUserSaga(action: any) {
     );
   }
 }
-function* updateUserFailureSaga(action: any) {
-  // handle failure
+
+function* updateUserFailureSaga(action: any): Generator {
   try {
+    // handle failure
     const error = action.payload.error;
-    // show notification
-    const notificationContext = useContext(NotificationContext);
-    if (notificationContext) {
-      notificationContext.sendNotification("Error", error);
-    }
+
+    // You might want to dispatch a failure action to update the state or show a notification
+    yield put({
+      type: "SHOW_NOTIFICATION", // Replace with a valid action type for notifications
+      payload: {
+        message: `Error updating user: ${error}`,
+        type: "error",
+      },
+    });
   } catch (error) {
     console.error("Failed to handle update user failure", error);
   }
@@ -70,6 +73,8 @@ function* updateUsersRequestSaga(
     );
   }
 }
+
+
 
 function* updateUsersFailureSaga(
   action: ReturnType<typeof UserActions.updateUsersFailure>

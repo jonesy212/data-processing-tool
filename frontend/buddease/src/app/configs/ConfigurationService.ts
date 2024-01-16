@@ -1,3 +1,5 @@
+import { SystemConfigs } from "../api/systemConfigs";
+import { UserConfigs } from "../api/userConfigs";
 import Project, {
   isProjectInSpecialPhase,
 } from "../components/projects/Project";
@@ -13,6 +15,7 @@ import frontendStructure from "./FrontendStructure";
 import { LazyLoadScriptConfig } from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
+
 
 export interface RetryConfig {
   enabled: boolean;
@@ -194,6 +197,24 @@ class ConfigurationService {
 
   // Add more configuration methods as needed
 
+
+  async getSystemConfigs() {
+    // Simulate asynchronous fetching, replace with actual async logic
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(SystemConfigs);
+      }, 500);
+    });
+  }
+
+  async getUserConfigs() {
+    // Simulate asynchronous fetching, replace with actual async logic
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(UserConfigs);
+      }, 500);
+    });
+  }
   getApiConfig(): ApiConfig {
     // Example API configuration
     // You can modify this based on your application's needs

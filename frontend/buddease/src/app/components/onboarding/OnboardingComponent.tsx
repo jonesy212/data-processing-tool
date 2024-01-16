@@ -1,3 +1,4 @@
+import OnboardingManager from '@/app/pages/onboarding/OnboardingManager';
 import introJs from 'intro.js';
 import React, { useEffect } from 'react';
 
@@ -25,6 +26,7 @@ const OnboardingComponent: React.FC = () => {
   return (
     <div>
       <div id="step1">Onboarding Step 1 Content</div>
+      <OnboardingManager />
       {/* Add more content and steps */}
     </div>
   );

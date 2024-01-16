@@ -1,9 +1,6 @@
-import { useState } from 'react';
-import { NotificationContextProps } from '../../support/NotificationContext';
 // chatUtils.ts
-  import RichTextEditor from '@/documents/RichTextEditor';
-// Import any necessary libraries or modules
-// ...
+import RichTextEditor from '@/documents/RichTextEditor';
+import { NotificationContextProps } from '../../support/NotificationContext';
 
 // Function to send a chat message
 export const sendChatMessage = async (message: string) => {
@@ -30,6 +27,7 @@ export const sendChatMessage = async (message: string) => {
 
 // Function to create a rich text editor
 export const createRichTextEditor = () => {
+  
   // Replace this with the actual library or component instantiation for a rich text editor
   console.log('Rich text editor created');
   // Example: Instantiate and return the rich text editor component/library
@@ -108,50 +106,6 @@ export const openFileUploadModal = () => {
 };
 
 // chatUtils.ts
-
-// Function to initialize geolocation service
-export const initializeGeolocationService = () => {
-  // Replace this with the actual library or component for initializing geolocation service
-  // You might use a geolocation library or API
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log('Geolocation service initialized');
-        console.log('Latitude:', position.coords.latitude);
-        console.log('Longitude:', position.coords.longitude);
-        // You can further handle the geolocation data here
-      },
-      (error) => {
-        console.error('Error initializing geolocation service:', error.message);
-        // Handle geolocation initialization error
-      }
-    );
-  } else {
-    console.error('Geolocation is not supported by your browser');
-    // Handle the case where geolocation is not supported
-  }
-};
-
-// chatUtils.ts
-
-  // Function to open the chat settings panel
-  export const openChatSettingsPanel = () => {
-  const [settingsPanelOpen, setSettingsPanelOpen] = useState<boolean>(false);
-
-    // using state management logic from React
-    // Ensure to handle the panel state and UI interactions appropriately
-    if (settingsPanelOpen) {
-      console.log('Chat settings panel is already open');
-      // Additional logic if needed when the panel is already open
-    } else {
-      // Example: Set the state to indicate that the settings panel is now open
-      setSettingsPanelOpen(true);
-
-      console.log('Chat settings panel opened');
-      // Additional logic to handle UI interactions or open a settings panel component
-    }
-  };
-
 
 
 

@@ -3,6 +3,7 @@ import { sendDataToBackend } from "@/app/services/dataAnalysisService";
 import { DataAnalysisAction, DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
 import axios from "axios";
 import React, { useEffect, useReducer, useState } from "react";
+import Visualization from "../../hooks/userInterface/Visualization";
 import { fetchData } from "../../utils/dataAnalysisUtils";
 
 
@@ -39,9 +40,6 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
   const [currentSubPhase, setCurrentSubPhase] = useState<DataAnalysisSubPhase>(
     DataAnalysisSubPhase.DEFINE_OBJECTIVE
   );
-
-
-
 
   const [state, dispatch] = useReducer(dataAnalysisReducer, {
     userSpecificData: null,
@@ -153,7 +151,12 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
           </p>
           
           {/* Add the Visualization component */}
-          <Visualization data={allWalks} labels={['Step 1', 'Step 2', /*...*/, 'Step 100']} />
+          <Visualization
+            data={allWalks}
+            labels={["Random Walks"]}
+            type={"line"}
+            datasets={[]}
+          />
 
           {/* Add form elements or UI components as needed */}
         </div>

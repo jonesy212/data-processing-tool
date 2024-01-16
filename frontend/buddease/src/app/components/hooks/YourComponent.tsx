@@ -1,17 +1,17 @@
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useCalendarContext } from "../calendar/CalendarContext";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar from "../models/tracker/ProgresBar";
 import { Tracker } from "../models/tracker/Tracker";
-import { Prompt } from "../prompts/PromptPage";
+import { PromptPageProps } from "../prompts/PromptPage";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
 import { userService } from "../users/UserService";
 import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
-
 
 
 interface HooksObject {
@@ -91,8 +91,11 @@ const YourComponent: React.FC<YourComponentProps> = ({
 }) => {
   const { realtimeData, fetchData } = useRealtimeData([]);
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout(); // Destructure the idle timeout properties
-  const dataFrameAPI = new DataFrameAPI();
+  const dataFrameAPI = DataFrameAPI; // Initialize the dataframe API class
   const { calendarData, updateCalendarData } = useCalendarContext();
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [promptPages, setPromptPages] = useState<PromptPageProps[]>([]);
+
 
   const hooks: HooksObject = Object.keys(categoryHooks).reduce(
     (acc, category) => {
@@ -131,7 +134,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
   }, [dataFrameAPI, addTracker, getTrackers]);
 
 
-  const handleNextPage = () => {
+  const handleNextPage = async () => {
     // Increment the page number
     const nextPage = currentPage + 1;
 
@@ -143,9 +146,9 @@ const YourComponent: React.FC<YourComponentProps> = ({
       // Fetch data for the next page
       const nextPageData = promptPages[nextPage];
       // Example: Assuming the data for the next page has an 'id' property
-      const newData = dataFrameAPI.getDataFrame().filter((row) =>
-        nextPageData.prompts.some((prompt: Prompt) => row.id === prompt.id)
-      );
+      const newData = (await dataFrameAPI.fetchDataFrame()).filter((row) =>
+        row.id === nextPageData.id
+      )
       dataFrameAPI.setData(newData.toArray());
     } else {
       // Optionally, handle the case where there are no more pages
@@ -154,12 +157,14 @@ const YourComponent: React.FC<YourComponentProps> = ({
   };
 
 
-  const handleAppendData = async () => {
-      const userId = await userService.fetchUser(userId);
+  const handleAppendData = async ():Promise<void> => {
+
+      const user = await userService.fetchUser(useCalendarContext().userId);
+      const userId = await userService.fetchUser();
         const newData = [{ column1: 'value1', column2: 'value2' }];
     // Append data to the backend and trigger a manual update
     await dataFrameAPI.appendDataToBackend(newData);
-    fetchData(userId, data);
+    fetchData("", {} as dispatch);
   };
   
   return (

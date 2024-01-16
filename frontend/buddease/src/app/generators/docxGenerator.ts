@@ -25,7 +25,7 @@ export class DocxGenerator {
       this.data = options.data;
       this.user = options.user;
   }
-
+ 
   async generateDocument(): Promise<void> {
     const content = fs.readFileSync(this.templatePath, "binary");
     

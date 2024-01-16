@@ -1,4 +1,7 @@
-import React from 'react';
+import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
+import React, { useState } from "react";
+import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
+import CustomModifier from "./CustomModifier";
 
 export interface ToolbarOptionsProps {
   isDocumentEditor?: boolean;
@@ -11,7 +14,10 @@ export interface ToolbarOptionsProps {
   code?: boolean;
   link?: boolean;
   image?: boolean;
-  audio?: boolean
+  audio?: boolean;
+  onEditorStateChange: (newEditorState: any) => void;
+  handleEditorStateChange: (newEditorState: EditorState) => void; // Updated prop name
+
 }
 
 const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
@@ -26,12 +32,94 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
   code,
   link,
   image,
+  onEditorStateChange,
+  handleEditorStateChange
 }) => {
   interface Options {
     [key: string]: string[];
   }
 
   let options: Options = {};
+
+  const [editorState, setEditorState] = useState(() => {
+    // Initialize the editor state (you can modify this based on your requirements)
+    return EditorState.createEmpty();
+  });
+
+  const handleFontSizeChange = (newFontSize: ThemeConfigProps["fontSize"]) => {
+    // Placeholder logic for font size change
+    // Replace this with your actual implementation
+    const currentContent = editorState.getCurrentContent();
+    const selection = editorState.getSelection();
+    
+    const newContentState = CustomModifier.setInlineStyle(
+      currentContent,
+      selection,
+      newFontSize as unknown as DraftInlineStyle
+    );
+
+    const newEditorState = EditorState.push(
+      editorState,
+      newContentState,
+      "change-inline-style"
+    );
+
+
+    // Updated function call
+    handleEditorStateChange(newEditorState);
+
+    onEditorStateChange(newEditorState);
+  };
+
+  const handleItalicClick = () => {
+    // Toggle italic style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "ITALIC");
+    // Updated function call
+    handleEditorStateChange(newEditorState);
+  };
+
+  const handleUnderlineClick = () => {
+    // Toggle italic style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "underline");
+    // Updated function call
+    handleEditorStateChange(newEditorState);
+  };
+  
+ 
+  const handleBoldClick = () => {
+    // Toggle bold style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "BOLD");
+    // Update the editor state in DocumentBuilder
+    onEditorStateChange(newEditorState);
+  };
+ 
+  const handleStrikeClick = () => {
+    // Toggle bold style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "strike");
+    // Update the editor state in DocumentBuilder
+    onEditorStateChange(newEditorState);
+  };
+ 
+  const handleCodeClick = () => {
+    // Toggle bold style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "strike");
+    // Update the editor state in DocumentBuilder
+    onEditorStateChange(newEditorState);
+  };
+
+  const handleLinkClick = () => {
+    // Toggle bold style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "strike");
+    // Update the editor state in DocumentBuilder
+    onEditorStateChange(newEditorState);
+  };
+
+  const handleImageClick = () => {
+    // Toggle bold style in the editor state
+    const newEditorState = RichUtils.toggleInlineStyle(editorState, "strike");
+    // Update the editor state in DocumentBuilder
+    onEditorStateChange(newEditorState);
+  };
 
   const addOptions = (property: string, propertyOptions: string[]) => {
     if (property) {
@@ -54,7 +142,6 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
   } else if (isTextCard) {
     options = {
       textCardOptions: ["align", "color", "italic"],
-
     };
 
     addOptions("fontSize", ["fontSize"]);
@@ -77,6 +164,19 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
           </li>
         ))}
       </ul>
+      <button onClick={handleBoldClick}>Bold</button>
+      <button onClick={handleItalicClick}>Italic</button>
+      <button onClick={handleUnderlineClick}>Underline</button>
+      <button onClick={handleStrikeClick}>Strike</button>
+      <button onClick={handleCodeClick}>Code</button>
+      <button onClick={handleLinkClick}>Link</button>
+      <button onClick={handleImageClick}>Image</button>
+      {fontSize && (
+        <button onClick={() => handleFontSizeChange("yourFontSizeValue")}>
+          Change Font Size
+        </button>
+      )}
+      {/* Add buttons or controls for other formatting options */}
     </div>
   );
 };

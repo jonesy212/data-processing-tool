@@ -61,3 +61,5 @@ export const useThemeConfig = (): ThemeConfigProps => {
   }
   return context;
 };
+
+export type { ThemeConfigProps };

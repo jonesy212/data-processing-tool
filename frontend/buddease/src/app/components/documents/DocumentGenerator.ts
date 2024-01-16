@@ -1,11 +1,18 @@
 // DocumentGenerator.ts
 
-import * as Docxtemplater from 'docxtemplater';
+import Docxtemplater from 'docxtemplater';
 import * as xl from 'excel4node';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DocumentOptions } from './DocumentOptions';
 
+
+enum DocumentType {
+  Text = 'text',
+  Spreadsheet = 'spreadsheet',
+  Diagram = 'diagram',
+  CalendarEvents = 'calendarEvents'
+}
 class DocumentGenerator {
   createTextDocument(options: DocumentOptions): string {
     // Real-world logic to create a text document using docxtemplater
@@ -31,6 +38,7 @@ class DocumentGenerator {
 
   createSpreadsheet(options: DocumentOptions): string {
     // Real-world logic to create a spreadsheet using excel4node
+
     const wb = new xl.Workbook();
     const ws = wb.addWorksheet('Sheet 1');
 
