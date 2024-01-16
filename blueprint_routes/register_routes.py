@@ -38,8 +38,10 @@ def register():
         # Create a new user instance
         new_user = User(username=username, email=email, password=hashed_password)
 
+
         # Add the user to the database
         db.session.add(new_user)
+
         db.session.commit()
 
         # Log user registration activity

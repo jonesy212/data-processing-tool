@@ -112,6 +112,35 @@ def delete_data(data_id):
 
     return jsonify({"message": "Data deleted successfully"})
 
+@data_bp.route('/data/update_title', methods=['POST'])
+@jwt_required()
+def update_data_title():
+    try:
+        # Ensure the current user has the necessary permissions
+        current_user_id = get_jwt_identity()
+        # Add your logic to check user permissions if required
+
+        # Example: Assuming JSON data is sent in the request body
+        update_data = request.json
+
+        # Your logic to update data title in the DataSetModel or your data source
+        data_id = update_data.get('id')
+        new_title = update_data.get('title')
+
+        specific_data = DatasetModel.query.get(data_id)
+
+        if not specific_data:
+            return jsonify({"message": "Data not found"}), 404
+
+        # Update the data title
+        specific_data.title = new_title
+        db.session.commit()
+
+        return jsonify({"message": "Data title updated successfully"})
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
 @data_bp.route('/stream_data', methods=['POST'])
 @jwt_required()
 def stream_data():

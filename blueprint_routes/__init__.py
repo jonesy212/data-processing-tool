@@ -2,10 +2,11 @@
 from flask import Blueprint
 
 # Create blueprints here
-user_history_bp = Blueprint('user_history_bp', __name__)
 auth_bp = Blueprint('auth_bp', __name__)
 notification_bp = Blueprint('notification_bp', __name__)
 company_bp = Blueprint('company_bp', __name__)
+data_analysis_bp = Blueprint('data_analysis_bp', __name__)
+data_bp = Blueprint('data_bp', __name__)
 dashboard_bp = Blueprint('dashboard_bp', __name__)
 dashboard_layouts_bp = Blueprint('dashboard_layouts_bp', __name__)
 onboarding_bp = Blueprint('onboarding_bp', __name__)
@@ -23,9 +24,9 @@ todo_bp = Blueprint('todo_bp', __name__)
 tutorial_bp = Blueprint('tutorial_bp', __name__)
 upload_bp = Blueprint('upload_bp', __name__)
 user_bp = Blueprint('user_bp', __name__)
+user_history_bp = Blueprint('user_history_bp', __name__)
 verify_email_bp = Blueprint('verify_email_bp', __name__)
 welcome_bp = Blueprint('welcome_bp', __name__)
-data_bp = Blueprint('data_bp', __name__)
 
 
 
