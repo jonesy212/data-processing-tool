@@ -7,7 +7,7 @@ interface BodyTextProps {
   fontFamily: string;
 }
 
-interface HeadingProps {
+export interface HeadingProps {
   fontSize: string;
   fontFamily: string;
 }
@@ -112,4 +112,4 @@ const renderDynamicContent = ({
 };
 
 export default DynamicTypography;
-export type { BodyTextProps, DynamicTypographyProps, HeadingProps };
+export type { BodyTextProps, DynamicTypographyProps };

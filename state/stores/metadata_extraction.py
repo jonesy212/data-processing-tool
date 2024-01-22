@@ -1,6 +1,7 @@
 import json
 import logging  # Import the logging module from log_config
 import os
+import re
 
 from state_error_handling.error_handling import handle_errors
 from template_engine import generate_file_from_template
@@ -18,10 +19,10 @@ def analyze_project(project_path):
 
     for root, dirs, files in os.walk(project_path):
         for file in files:
-            if file.endswith('.tsx'):
+            if file.endswith('.tsx', '.js'):
                 folder_name = os.path.basename(root)
-                store_name = ''.join(word.capitalize() for word in folder_name.split('_'))
-                components = [file.replace('.tsx', '')]
+                store_name = ''.join(word.capitalize() for word in re.split(r'[_\s]', folder_name))
+                components = [file.replace('.tsx', '').replace('.js', '')]
                 store_metadata.append({'name': store_name, 'components': components})
 
     return store_metadata

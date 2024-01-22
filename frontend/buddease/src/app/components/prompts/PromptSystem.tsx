@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
 import { DocumentOptions } from '../documents/DocumentOptions';
+import { generateDynamicPrompts } from '../prompts/promptGenerator';
 
 interface PromptSystemProps {
   onUserResponse: (response: string) => void;

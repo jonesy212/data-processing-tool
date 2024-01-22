@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Define different modal components (you can have more)
 interface ChatSettingsModalProps {
@@ -41,6 +41,21 @@ interface ModalProps {
   onFileUpload: (files: FileList) => void; // Add file upload callback
   // Add other modal-specific props here
 }
+
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+const handleCloseModal = () => {
+  // Implement the logic to close the modal here
+  setIsModalOpen(false);
+};
+
+const handleFileUpload = (files: FileList) => {
+  // Implement the logic to handle file upload here
+  console.log("Files uploaded:", files);
+
+  // For demonstration purposes, let's open the modal after file upload
+  setIsModalOpen(true);
+};
 
 const ModalGenerator: React.FC<ModalProps> = ({
   isOpen,

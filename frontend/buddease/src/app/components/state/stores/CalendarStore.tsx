@@ -57,4 +57,5 @@ const useCalendarStore = (): CalendarStore => {
   };
 };
 
-export default useCalendarStore;
+export { useCalendarStore };
+

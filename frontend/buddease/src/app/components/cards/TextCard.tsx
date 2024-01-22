@@ -29,7 +29,13 @@ const TextCard: React.FC<TextCardProps> = ({ onSave }) => {
         placeholder="Enter text here"
       />
       <button onClick={handleSave}>Save</button>
-      <ToolbarOptions isTextCard />
+      <ToolbarOptions
+        isTextCard onEditorStateChange={function (newEditorState: any): void {
+          setText(newEditorState.getCurrentContent().getPlainText());
+                }}
+        handleEditorStateChange={function (newEditorState: Draft.EditorState): void {
+          setText(newEditorState.getCurrentContent().getPlainText());
+        } }      />
 
     </div>
   );

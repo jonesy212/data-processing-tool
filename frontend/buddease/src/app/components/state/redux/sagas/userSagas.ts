@@ -2,7 +2,7 @@
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { User } from "@/app/components/users/User";
 import { UserActions } from "@/app/components/users/UserActions";
-import { userService } from "@/app/components/users/UserService";
+import userService from "@/app/components/users/UserService";
 import { call, put, takeLatest } from "redux-saga/effects";
 
 // Worker Saga: Fetch User
@@ -101,7 +101,8 @@ function* updateUsersFailureSaga(
 }
 
 // Watcher Saga: Watches for the fetch and update user actions
-function* watchUserActions() {
+function* watchUserSagas() {
+  
   yield takeLatest(UserActions.fetchUserRequest.type, fetchUserSaga);
   yield takeLatest(UserActions.updateUserRequest.type, updateUserSaga);
   yield takeLatest(UserActions.updateUserFailure.type, updateUserFailureSaga);
@@ -110,6 +111,6 @@ function* watchUserActions() {
 }
 
 // Export the user saga
-export function* userSaga() {
-  yield watchUserActions();
+export function* userSagas() {
+  yield watchUserSagas();
 }

@@ -1,7 +1,7 @@
 // ChatPage.tsx
-
 import { Channel, ChannelMember, ChannelMessage, ChannelRole, ChannelType } from '@/app/components/interfaces/chat/Channel';
 import { User } from '@/app/components/users/User';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import React, { useEffect, useState } from 'react';
 
 // Expand the ChatPageProps interface
@@ -105,6 +105,27 @@ const ChatPage: React.FC<ChatPageProps> = (props) => {
           </div>
         </div>
       )}
+
+
+
+
+       {/* Display user status */}
+       <div>
+        <h2>User Status</h2>
+        {/* Render user status information */}
+      </div>
+
+      {/* Display message timestamps */}
+      <div>
+        <h2>Message Timestamps</h2>
+        <ul>
+          {props.messages.map((message) => (
+            <li key={message.id}>
+              <strong>{message.username}:</strong> {message.content} - {message.timestamp.toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

@@ -2,10 +2,14 @@
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
+import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
+import { NotificationType, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { TaskActions } from "../../tasks/TaskActions";
+import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -21,49 +25,58 @@ export interface TaskManagerStore {
   addTask: (task: Task) => void;
   addTasks: (tasks: Task[]) => void;
   removeTask: (taskId: string) => void;
-  removeTasks: (taskIds: string[]) => void; 
-  fetchTasksSuccess: (payload: { tasks: Task[] }) => void; 
-  fetchTasksFailure: (payload: { error: string }) => void;  
-  fetchTasksRequest: () => void; 
-  completeAllTasksSuccess: () => void; 
-  completeAllTasks: () => void; 
-  completeAllTasksFailure: (payload: { error: string }) => void; 
-  NOTIFICATION_MESSAGE: string; 
-  NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES,
-  setDynamicNotificationMessage: (message: string) => void;  
+  removeTasks: (taskIds: string[]) => void;
+  fetchTasksSuccess: (payload: { tasks: Task[] }) => void;
+  fetchTasksFailure: (payload: { error: string }) => void;
+  fetchTasksRequest: () => void;
+  completeAllTasksSuccess: () => void;
+  completeAllTasks: () => void;
+  completeAllTasksFailure: (payload: { error: string }) => void;
+  NOTIFICATION_MESSAGE: string;
+  NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
+  setDynamicNotificationMessage: (message: string) => void;
   snapshotStore: SnapshotStore<Record<string, Task[]>>; // Include a SnapshotStore for tasks
   takeTaskSnapshot: (taskId: string) => void;
-
+  markTaskAsComplete: (taskId: string) => void;
   // Add more methods or properties as needed
+  batchFetchSnapshotsRequest: (snapshotData: Record<string, Task[]>) => void;
 }
 
 const useTaskManagerStore = (): TaskManagerStore => {
+  const { notify } = useNotification();
+  const { markTaskAsCompleteSuccess, markTaskAsCompleteFailure } = TaskActions; // Update import
+
   const [tasks, setTasks] = useState<Record<string, Task[]>>({
     pending: [],
     inProgress: [],
-    completed: []
+    completed: [],
   });
   const [taskTitle, setTaskTitle] = useState<string>("");
   const [taskDescription, setTaskDescription] = useState<string>("");
   const [taskStatus, setTaskStatus] = useState<
-  
     "pending" | "inProgress" | "completed"
   >("pending");
-  const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(''); // Initialize it with an empty string
+  const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(""); // Initialize it with an empty string
 
   // Include the AssignTaskStore
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
 
-const initialSnapshot = {};
-
-const snapshotStore = new SnapshotStore(initialSnapshot);
+  const snapshotStore = new SnapshotStore(
+    {} as SnapshotStoreConfig<Record<string, Task[]>>
+  );
 
   // Method to reassign a task to a new user
-  const reassignTask = (taskId: string, oldUserId: string, newUserId: string) => {
+  const reassignTask = (
+    taskId: string,
+    oldUserId: string,
+    newUserId: string
+  ) => {
     assignedTaskStore.reassignUser(taskId, oldUserId, newUserId);
     // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+    );
   };
 
   const updateTaskTitle = (title: string) => {
@@ -84,8 +97,7 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
       const taskId = task.id;
       return { ...prevTasks, [taskId]: [...(prevTasks[taskId] || []), task] };
     });
-
-  }
+  };
 
   const takeTaskSnapshot = (taskId: string) => {
     // Ensure the taskId exists in the tasks
@@ -98,7 +110,7 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
     const taskSnapshot = { [taskId]: [...tasks[taskId]] };
 
     // Store the snapshot in the SnapshotStore
-    snapshotStore.takeSnapshot(taskSnapshot);
+    snapshotStore.takeSnapshot(taskSnapshot as unknown as Data);
   };
 
   const addTask = () => {
@@ -107,7 +119,7 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
       console.error("Task title cannot be empty.");
       return;
     }
-    
+
     const newTask = generateNewTask();
 
     // Ensure the title is not empty before adding a task
@@ -123,10 +135,6 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
       });
     });
 
-
-
-    
-
     // Reset input fields after adding a task
     setTaskTitle("");
     setTaskDescription("");
@@ -141,7 +149,6 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
     });
   };
 
-
   const removeTasks = (taskIds: string[]) => {
     setTasks((prevTasks) => {
       const updatedTasks = { ...prevTasks };
@@ -151,10 +158,6 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
       return updatedTasks;
     });
   };
-
-
-  
-
 
   const addTasks = (tasksToAdd: Task[]) => {
     // Ensure at least one task is passed
@@ -177,57 +180,75 @@ const snapshotStore = new SnapshotStore(initialSnapshot);
     setTaskStatus("pending");
   };
 
-
   const fetchTasksSuccess = (payload: { tasks: Task[] }) => {
     const { tasks: newTasks } = payload;
     setTasks((prevTasks) => {
       const updatedTasks = { ...prevTasks };
-      
+
       newTasks.forEach((task) => {
         if (!prevTasks[task.id]) {
-          prevTasks[task.id] = [];  
+          prevTasks[task.id] = [];
         }
         prevTasks[task.id].push(task);
       });
-      
+
       return updatedTasks;
     });
   };
 
+  const addTaskFailure = (payload: { error: string }) => {
+    console.error(payload.error);
+  };
 
-/**
+  const batchFetchSnapshotsRequest = (
+    snapshotData: Record<string, Task[]>
+  ): void => {
+    const snapshots = Object.values(snapshotData);
+
+    snapshots.forEach(async (snapshot) => {
+      const taskId = Object.keys(snapshot)[0];
+      const tasks = Object.values(snapshot)[0];
+
+      setTasks((prevTasks) => {
+        return {
+          ...prevTasks,
+          [taskId]: [...(prevTasks[taskId] || []), ...tasks],
+        };
+      });
+    });
+  };
+
+  /**
    * Update the due date for a task
    *
    * @param {string} taskId - The ID of the task to update
    * @param {Date} dueDate - The new due date
    */
- 
-const updateTaskDueDate = (taskId: string, dueDate: Date) => {
-  const updatedTasks = {...tasks};
 
-  // Find the task and update its due date
-  const taskToUpdate = updatedTasks.pending.find(
-    (task: Task) => task.id === taskId
-  );
+  const updateTaskDueDate = (taskId: string, dueDate: Date) => {
+    const updatedTasks = { ...tasks };
 
-  if (taskToUpdate) {
-    taskToUpdate.dueDate = dueDate; 
-  } else {
-    // Task not found, throw error or handle gracefully
-  }
+    // Find the task and update its due date
+    const taskToUpdate = updatedTasks.pending.find(
+      (task: Task) => task.id === taskId
+    );
 
-  // Update the tasks in the store
-  setTasks(updatedTasks);
-};
+    if (taskToUpdate) {
+      taskToUpdate.dueDate = dueDate;
+    } else {
+      // Task not found, throw error or handle gracefully
+    }
 
-
-
-
+    // Update the tasks in the store
+    setTasks(updatedTasks);
+  };
 
   const completeAllTasksSuccess = () => {
     console.log("All Tasks completed successfully!");
     // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+    );
   };
 
   const completeAllTasks = () => {
@@ -253,18 +274,20 @@ const updateTaskDueDate = (taskId: string, dueDate: Date) => {
     }, 1000);
   };
 
-
-
   const fetchTasksFailure = (payload: { error: string }) => {
     console.error("Fetch Tasks Failure:", payload.error);
     // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA);
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA
+    );
   };
 
   const fetchTasksRequest = () => {
     console.log("Fetching Tasks...");
     // You can add loading indicators or other UI updates here
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING);
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING
+    );
   };
 
   const completeAllTasksFailure = (payload: { error: string }) => {
@@ -273,18 +296,54 @@ const updateTaskDueDate = (taskId: string, dueDate: Date) => {
     setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.PROCESSING_BATCH);
   };
 
+  const markTaskAsComplete = (taskId: string) => async (dispatch: any) => {
+    try {
+      // Update task status to complete
+      // Assuming setTasks is a local state updater
+      setTasks((prevTasks) => {
+        const updatedTasks = { ...prevTasks };
+        const taskToUpdate = updatedTasks[taskId];
+        if (taskToUpdate) {
+          taskToUpdate[0].status = "completed";
+        }
+        return updatedTasks;
+      });
+
+      // Dispatch the synchronous action immediately
+      dispatch(markTaskAsCompleteSuccess(taskId));
+
+      const { markTaskComplete } = useApiManagerSlice.actions;
+
+      // Dispatch the asynchronous action (no need to await)
+      markTaskComplete(taskId as unknown as number);
+
+      // Simulating asynchronous operation
+      setTimeout((error) => {
+        notify(
+          error as NotificationType,
+          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+      }, 1000);
+    } catch (error) {
+      console.error(`Error marking task ${taskId} as complete`, error);
+
+      dispatch(markTaskAsCompleteFailure({ taskId: "taskId", error: "error" })),
+      notify(
+        error as NotificationType,
+        NOTIFICATION_MESSAGES.Error.DEFAULT("Error marking task as complete")),
+        "Error"
+          }
+  };
   // Function to set a dynamic notification message
   const setDynamicNotificationMessage = (message: string) => {
     setNotificationMessage(message);
   };
 
-
   // Add more methods or properties as needed
 
-  makeAutoObservable({
+  const useTaskManagerStore=  makeAutoObservable({
     tasks,
     ...tasks,
-     taskTitle,
+    taskTitle,
     taskDescription,
     taskStatus,
     assignedTaskStore,
@@ -306,40 +365,15 @@ const updateTaskDueDate = (taskId: string, dueDate: Date) => {
     completeAllTasksFailure,
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
-    setDynamicNotificationMessage
-  })
-
-  return {
-    tasks,
-    ...tasks,
-    taskTitle,
-    taskStatus,
-    taskDescription,
-    assignedTaskStore,
-    snapshotStore,
-    NOTIFICATION_MESSAGE,
-    NOTIFICATION_MESSAGES,
-    addTaskSuccess,
-    updateTaskTitle,
-    updateTaskDescription,
-    updateTaskStatus,
-    updateTaskDueDate,
-    addTask,
-    addTasks,
-    removeTask,
-    removeTasks,
-    takeTaskSnapshot,
-    fetchTasksSuccess,
-    fetchTasksFailure,
-    fetchTasksRequest,
-    completeAllTasksSuccess,
-    completeAllTasks,
-    completeAllTasksFailure,
     setDynamicNotificationMessage,
-    // Add more methods or properties as needed
-  };
+    markTaskAsComplete,
+    addTaskFailure,
+    snapshotStore,
+    takeTaskSnapshot,
+    batchFetchSnapshotsRequest,
+  });
+
+  return useTaskManagerStore
 };
 
-
 export { useTaskManagerStore };
-

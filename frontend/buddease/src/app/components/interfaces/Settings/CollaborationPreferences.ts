@@ -5,7 +5,8 @@ interface CollaborationPreferences {
     teamBuilding: TeamBuildingSettings;
     projectManagement: ProjectManagementSettings;
     meetings: MeetingsSettings;
-    brainstorming: BrainstormingSettings;
+  brainstorming: BrainstormingSettings;
+  branding: BrandingSettings; // Add branding settings
     // Add other collaboration preferences as needed
   }
 // Example usage
@@ -51,6 +52,11 @@ const collaborationPreferences: CollaborationPreferences = {
     collaborationTools: "onlinePlatform",
     feedbackMechanism: "named",
     // Add other specific settings for brainstorming based on project needs
+  },
+  branding: {
+    logoUrl: "https://example.com/logo.png",
+    themeColor: "#3366cc",
+    // Add more branding-related settings
   },
   // Add other collaboration preferences as needed
 };

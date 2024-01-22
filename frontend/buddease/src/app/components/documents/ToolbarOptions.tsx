@@ -15,6 +15,7 @@ export interface ToolbarOptionsProps {
   link?: boolean;
   image?: boolean;
   audio?: boolean;
+  type: DocumentType
   onEditorStateChange: (newEditorState: any) => void;
   handleEditorStateChange: (newEditorState: EditorState) => void; // Updated prop name
 

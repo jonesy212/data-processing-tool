@@ -2,6 +2,7 @@ import React, { ReactNode, useState } from "react";
 
 import { Prompt } from "../prompts/PromptPage";
 import PromptSystem from "../prompts/PromptSystem";
+import { generatePrompt } from "../prompts/promptGenerator";
 import TextEditor from "./TextEditor"; // Assuming the correct path
 import { ToolbarOptionsProps } from "./ToolbarOptions";
 
@@ -97,7 +98,7 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
 
   const handleGeneratePrompts = async () => {
     // Assuming you have a function like generatePrompt or AutoGPT to get prompts
-    const generatedPrompts: Prompt[] | null = generatePrompt(userIdea) as
+    const generatedPrompts: Prompt[] | null = generatePrompt("userIdea") as
       | Prompt[]
       | null;
 
@@ -133,9 +134,28 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
       <TextEditor
         id="text-editor"
         onChange={handleTextChange}
-        toolbarOptions={(props: ToolbarOptionsProps, context?: any): ReactNode =>
-          props as ReactNode
-        }
+        type= {{} as DocumentType}
+        onEditorStateChange={(editorState) => {
+          const content = editorState.getCurrentContent().getPlainText('\u0001');
+          setText(content);
+        }}
+        handleEditorStateChange={(editorState) => {
+          const content = editorState.getCurrentContent().getPlainText('\u0001');
+          setText(content);
+        }}
+        toolbarOptions={(props: ToolbarOptionsProps, context?: any): ReactNode => {
+          return (
+            <div>
+              <b>Bold</b>
+              <i>Italic</i>
+              <u>Underline</u>
+              <s>Strike</s> 
+              <code>Code</code>
+              <a href="#">Link</a>
+              <img src="#" alt="Image" />
+            </div>
+          );
+        }}
         fontSize={false}
         bold={false}
         italic={false}

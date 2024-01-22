@@ -1,23 +1,18 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { selectNotifications } from './NofiticationsSlice';
-import { useNotification } from './NotificationContext';
-
-interface NotificationManagerProps {
-  notifications: Notification[];
-}
-
-interface Notification {
-  id: string;
-  message: string;
-}
+// NotificationManager.tsx
+import React from "react";
+import { useSelector } from "react-redux";
+import { Notification, selectNotifications } from "./NofiticationsSlice";
+import { NotificationType, useNotification } from "./NotificationContext";
 
 interface NotificationContextValue {
   notifications: Notification[];
-  notify: (message: string, type: string) => void;
+  notify: (
+    message: string,
+    content: any,
+    date: Date | undefined,
+    type: NotificationType
+  ) => Promise<void>;  
 }
-
-// ... (previous imports and interfaces)
 
 const NotificationManager: React.FC<NotificationContextValue> = () => {
   const { notify } = useNotification();
@@ -25,10 +20,19 @@ const NotificationManager: React.FC<NotificationContextValue> = () => {
 
   return (
     <div>
-      {notifications.map(notification => (
+      {notifications.map((notification) => (
         <div key={notification.id}>
           {notification.message}
-          <button onClick={() => notify(notification.message, 'delete')}>
+          <button
+            onClick={() =>
+              notify(
+                "Message dismissed",
+                "content", 
+                new Date(),
+                "Dismiss" as NotificationType
+              )
+            }
+          >
             Dismiss
           </button>
         </div>
@@ -38,3 +42,4 @@ const NotificationManager: React.FC<NotificationContextValue> = () => {
 };
 
 export default NotificationManager;
+export type { NotificationContextValue };

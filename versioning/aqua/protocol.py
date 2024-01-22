@@ -2,6 +2,7 @@
 from protocol import Protocol
 
 
+# todo ensure to finsih updating defsb
 class AquaProtocol(Protocol):
     def __init__(self, name):
         super().__init__(name="AquaProtocol")

@@ -1,7 +1,7 @@
 // useApiManager.ts
 import { ApiConfig } from '@/app/configs/ConfigurationService';
 import { useEffect } from 'react';
-import { useApiManagerStore } from '../state/stores/ApiManagerStore';
+import { useApiManagerStore } from '../../state/stores/ApiStore';
 
 const useApiManager = () => {
   const apiManagerStore = useApiManagerStore();
@@ -31,10 +31,10 @@ const useApiManager = () => {
         },
         body: JSON.stringify(newConfig),
       });
-
+  
       if (response.ok) {
         const updatedConfig: ApiConfig = await response.json();
-        apiManagerStore.updateApiConfigSuccess({ apiConfig: updatedConfig });
+        apiManagerStore.updateApiConfigSuccess({ apiConfig: updatedConfig }); // Corrected payload structure
       } else {
         console.error('Failed to update API configuration:', response.statusText);
       }
@@ -42,6 +42,7 @@ const useApiManager = () => {
       console.error('Error updating API configuration:', error);
     }
   };
+  
 
   // Add more methods as needed
 

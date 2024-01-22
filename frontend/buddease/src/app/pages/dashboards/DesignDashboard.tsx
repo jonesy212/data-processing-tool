@@ -3,65 +3,40 @@ import { AdminDashboard } from "@/app/components/admin/AdminDashboard";
 import GoogleAnalyticsScript from "@/app/components/analytics/GoogleAnalyticsScript";
 import CalendarComponent from "@/app/components/calendar/CalendarComponent";
 import ChatCard from "@/app/components/cards/ChatCard";
-import WebSocket from "@/app/components/communications/WebSocket";
 import DynamicDashboard from "@/app/components/dashboards/DynamicDashboard";
-import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import { IdeaLifecyclePhase } from "@/app/components/phases/PhaseManager";
 import IdeaLifecycleManager from "@/app/components/phases/ideaPhase/IdeaLifecycleManager";
 import LaunchPhase from "@/app/components/phases/onboarding/LaunchPhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import PostLaunchActivitiesManager from "@/app/components/projects/PostLaunchActivitiesManager";
-import RefactoringRebrandingPhase from "@/app/components/projects/RefactoringRebrandingPhase";
 import TaskManagementManager from "@/app/components/projects/TaskManagementPhase";
 import ClearingTimer from "@/app/components/projects/projectManagement/ClearingTimer";
 import MainApplicationLogic from "@/app/components/projects/projectManagement/MainApplicationLogic";
 import ProjectPhaseService from "@/app/components/projects/projectManagement/ProjectPhaseService.ts";
 import RemovingEventListeners from "@/app/components/projects/projectManagement/RemovingEventListeners";
-
-import { DynamicPromptContext } from "@/app/components/prompts/DynamicPromptContext";
-import DynamicPromptHookGenerator from "@/app/components/prompts/DynamicPromptHookGenerator";
-import PromptComponent from "@/app/components/prompts/PromptComponent";
-import PromptPage from "@/app/components/prompts/PromptPage";
-import PromptSystem from "@/app/components/prompts/PromptSystem";
 import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ReferralSystem from "@/app/components/referrals/ReferralSystem";
 import SendEmail from "@/app/components/referrals/SendEmail";
 import ProtectedRoute from "@/app/components/routing/ProtectedRoute";
-import TodoSlice from "@/app/components/state/redux/slices/TodoSlice";
-import { Accessibility } from "@/app/components/styling/Accessibility";
 import { AnimationsAndTransitions } from "@/app/components/styling/AnimationsAndTansitions";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import ColorPicker from "@/app/components/styling/ColorPicker";
 import Documentation from "@/app/components/styling/Documentation";
-import DynamicColorPalette from "@/app/components/styling/DynamicColorPalette";
 import DynamicComponents from "@/app/components/styling/DynamicComponents";
 import DynamicIconsAndImages from "@/app/components/styling/DynamicIconsAndImages";
 import DynamicSpacingAndLayout from "@/app/components/styling/DynamicSpacingAndLayout";
 import DynamicTypography, {
   BodyTextProps,
   DynamicTypographyProps,
+  HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
-import { Palette } from "@/app/components/styling/Palette";
-import PaletteManager from "@/app/components/styling/PaletteManager";
 import ResponsiveDesign from "@/app/components/styling/ResponsiveDesign";
-import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
-import NofiticationsSlice from "@/app/components/support/NofiticationsSlice";
-import {
-  NotificationContext,
-  NotificationProvider,
-} from "@/app/components/support/NotificationContext";
-import NotificationMessages from "@/app/components/support/NotificationMessages";
-import NotificationMessagesFactory from "@/app/components/support/NotificationMessagesFactory";
-import UserSupport from "@/app/components/support/UserSupport";
 import { TaskActions } from "@/app/components/tasks/TaskActions";
 import TaskAssignmentSnapshot from "@/app/components/tasks/TaskAssignmentSnapshot";
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
-import { TodoActions } from "@/app/components/todos/TodoActions";
 import TodoList from "@/app/components/todos/TodoList";
 import { UserActions } from "@/app/components/users/UserActions";
-import UserSlice from "@/app/components/users/UserSlice";
 import ConceptDevelopment from "@/app/components/users/userJourney/ConceptDevelopment";
 import ConceptValidation from "@/app/components/users/userJourney/ConceptValidation";
 import IdeaLifecycle from "@/app/components/users/userJourney/IdeaLifecycle";
@@ -73,19 +48,12 @@ import TeamBuildingPhaseManagement from "@/app/components/users/userJourney/Team
 import Versioning from "@/app/components/versions/Versioning";
 import ConfigurationService from "@/app/configs/ConfigurationService";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
-import FrontendStructure from "@/app/configs/FrontendStructure";
 import MainConfig from "@/app/configs/MainConfig";
 import UserPreferences from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";
+import { ModalGenerator } from "@/app/generators/GenerateModal";
 import BatchProcessingAndCache from "@/app/utils/BatchProcessingAndCache";
-import React, {
-  ComponentType,
-  JSXElementConstructor,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
-import OnboardingManager from "../onboarding/OnboardingManager";
+import React, { useEffect, useState } from "react";
 import PersonaBuilderDashboard from "../personas/recruiter_dashboard/PersonaBuilderDashboard";
 import UserDashboard from "./UserDashboard";
 
@@ -101,7 +69,6 @@ import UserDashboard from "./UserDashboard";
 //   GenerateCache,
 //   GenerateComponent
 // } from "@/app/components/generators";
-import SubscriptionComponent from "@/app/components/subscriptions/Subscription";
 // import { NotificationStore, NotificationTypes } from "@/app/components/support";
 // import { TaskService } from "@/app/components/tasks";
 // import {
@@ -122,22 +89,35 @@ import { ApiConfig } from "@/app/configs/ConfigurationService";
 // // import AppCacheManager
 
 // // import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
-import { HeadingProps } from "@/app/components/cards/DummyCardLoader";
-import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
 import connectToChatWebSocket from "@/app/components/communications/WebSocket";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import ProjectList from "@/app/components/lists/ProjectList";
 import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
-import DynamicPromptingLogic from "@/app/components/prompts/DynamicPromptingLogic";
-import NotificationManager from "@/app/components/support/NotificationManager";
+import NotificationManager, {
+  NotificationContextValue,
+} from "@/app/components/support/NotificationManager";
 import { UserData } from "@/app/components/users/User";
-import { ModalGenerator } from "@/app/generators/GenerateModal";
+
+import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
+import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
+import { Notification } from "@/app/components/support/NofiticationsSlice";
+import { NotificationType } from "@/app/components/support/NotificationContext";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
+import ExtendedBackendStructure from "@/app/configs/appStructure/ExtendedBackendStructure";
+import { FrontendStructure } from "@/app/configs/appStructure/FrontendStructureComponent";
+import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import getAppPath from "../../../../appPath";
+import ChatRoom from "../../components/communications/chat/ChatRoom";
 import DataPreview, {
   DataPreviewProps,
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/Search";
-
+import useModalFunctions from "./ModalFunctions";
+type customNotifications = "customNotifications1" | "customNotifications2";
 interface DynamicComponentWrapperProps<T> {
   component: T;
   dynamicProps: {
@@ -177,38 +157,128 @@ const DynamicComponentWrapper = <T extends {}>({
   return <>{children(component)}</>;
 };
 
-const DesignDashboard: React.FC<{ colors: string[] }> = ({ colors }) => {
-    const [socket, setSocket] = useState<WebSocket | null>(null);
+// Update the type of backendStructure
+const backendStructure: ExtendedBackendStructure = {
+  ...responsiveDesignStore.backendStructure,
+  structure: {} as Record<string, AppStructureItem>,
+  customMethod: async () => {},
+  traverseDirectory: {} as (dir: string) => Promise<AppStructureItem[]>,
+  getStructure: async () => {
+    const structure = {} as Record<string, AppStructureItem>;
+    const files = traverseDirectory(getAppPath());
+    files.forEach((file: AppStructureItem) => {
+      structure[file.path] = file;
+    });
+    return structure;
+  },
+};
 
-useEffect(() => {
-  // Replace 'roomId' with the actual room ID you want to connect to
-  const roomId = "your_room_id";
-  
-  // Your retry configuration
-  const retryConfig = {
-    enabled: true,
-    maxRetries: 3,
-    retryDelay: 1000,
+const DesignDashboard: React.FC<{
+  colors: string[];
+  frontendStructure: FrontendStructure;
+  backendStructure: BackendStructure;
+
+  onHandleFileUpload: (file: FileList | null) => void;
+}> = ({
+  colors,
+  frontendStructure,
+  backendStructure,
+  onHandleFileUpload,
+}) => {
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const { isModalOpen, handleCloseModal, handleFileUpload } =
+    useModalFunctions();
+  const [isFileUploadModalOpen, setFileUploadModalOpen] = useState(false);
+  const backendStructureWrapper = new BackendStructureWrapper(getAppPath());
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const initialNotification: Notification = {
+    id: UniqueIDGenerator.generateNotificationID(
+      {} as Notification & NotificationType,
+      Date.now() as Date & number,
+      "customNotifications1" as NotificationType
+    ),
+    date: new Date(),
+    type: "customNotifications1" as NotificationType,
+    message: "New notification added",
+    content: "This is a test notification",
   };
 
-  // Establish WebSocket connection
-  const newSocket = connectToChatWebSocket(roomId, retryConfig) as WebSocket;
+  // Function to add a notification
+  const notify =  (
+    message: string,
+    type: NotificationType,
+    content: any,
+    date: Date
+  ) =>  {
+    let newNotification:  Notification = {
+      id: UniqueIDGenerator.generateNotificationID(
+        initialNotification, // Pass the actual notification object
+        date,
+        type
+      ),
+      date,
+      type,
+      message,
+      content,
+    };
 
-  // Check if the newSocket is not null before attempting to set it
-  if (newSocket) {
-    setSocket(newSocket);
-  }
+    setNotifications((prevNotifications) => [
+      ...prevNotifications,
+      newNotification,
+    ]);
+  };
 
-  // Cleanup on component unmount
-  return () => {
-    // Check if socket is not null and in the OPEN or CONNECTING state
-    if (socket && [socket.OPEN, socket.CONNECTING].includes(0 || 1)) {
-      socket.close();
+  // Sample usage of the notify function
+  notify(
+    "New message",
+    "customNotifications1" as NotificationType,
+    "Notification content",
+    new Date()
+  );
+
+  // Notification context value
+  const notificationContextValue: NotificationContextValue = {
+    notifications,
+    notify(
+      message: string,
+      content: any,
+      date: Date = new Date(),
+      type: NotificationType
+    ) {
+      notify(message, type, content, date);
+      return Promise.resolve();
+    },
+  };
+
+  useEffect(() => {
+    // Replace 'roomId' with the actual room ID you want to connect to
+    const roomId = "your_room_id";
+
+    // Your retry configuration
+    const retryConfig = {
+      enabled: true,
+      maxRetries: 3,
+      retryDelay: 1000,
+    };
+
+    // Establish WebSocket connection
+    const newSocket = connectToChatWebSocket(roomId, retryConfig) as WebSocket;
+
+    // Check if the newSocket is not null before attempting to set it
+    if (newSocket) {
+      setSocket(newSocket);
     }
-  };
-}, [socket]);
 
-    
+    // Cleanup on component unmount
+    return () => {
+      // Check if socket is not null and in the OPEN or CONNECTING state
+      if (socket && [socket.OPEN, socket.CONNECTING].includes(0 || 1)) {
+        socket.close();
+      }
+    };
+  }, [socket]);
+
   const handleColorChange = (
     colorIndex: number,
     newColor: string
@@ -217,6 +287,8 @@ useEffect(() => {
     updatedColors.splice(colorIndex, 1, newColor);
     return updatedColors;
   };
+
+  // return notificationContextValue;
 
   return (
     <div>
@@ -230,114 +302,87 @@ useEffect(() => {
           asyncEffect: () => Promise.resolve(),
         }}
       >
-        {(component) => component}
+        {(component: any) => component}
       </DynamicComponentWrapper>
 
-      {/* Display different sections or components */}
+      {/* User Communication and Collaboration */}
+      <ChatRoom roomId={""} />
+      <CalendarComponent />
+      <FeedbackLoop feedback={""} feedbackType={""} />
+      <GoogleAnalyticsScript />
+      <ChatCard sender={""} message={""} timestamp={""} />
+
+      {/* User and Team Management */}
       <UserDashboard />
       <PersonaBuilderDashboard />
-
-      {/* Admin Dashboard  */}
       <AdminDashboard apiConfig={{} as ApiConfig}>
         <div>
           <h2>Admin Dashboard</h2>
-
-          {/* Admin Components */}
           <UserList />
           <TeamList />
           <ProjectList tasks={[]} />
-
-          <NotificationManager notifications={{} as Notification[]} />
+          <NotificationManager {...notificationContextValue} />
 
           <ModalGenerator
-            isOpen={false}
+            isOpen={isModalOpen}
             closeModal={() => {
-              // close modal logic
+              console.log("Modal closed");
+              // Change from onCloseFileUploadModal(); to handleCloseModal();
+              handleCloseModal();
             }}
-            modalComponent={
-              <ConfirmationModal
-                isOpen={false}
-                onConfirm={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-                onCancel={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-              >
-                Are you sure you want to close this modal?
-              </ConfirmationModal>
-            }
+            
+            modalComponent={FileUploadModal}
+            onFileUpload={(files: FileList) => {
+              // Implement logic to handle file upload
+              console.log("Files uploaded:", files);
+              onHandleFileUpload(files); // Call the provided function to handle file upload
+            }}
+            children={null}
           />
         </div>
       </AdminDashboard>
-      <FeedbackLoop feedback={""} />
-      <GoogleAnalyticsScript />
-      <ChatCard sender={""} message={""} timestamp={""} />
-      <WebSocket />
-      <CalendarComponent />
 
-      {/* Existing Components */}
-      <DynamicDashboard title={""} content={undefined} />
-      <EditorWithPrompt userId="123" teamId="456" project="Project XYZ" />
-
-      {/* New Components */}
+      {/* Project Lifecycle */}
       <IdeaLifecycleManager />
       <IdeaLifecyclePhase />
       <LaunchPhase />
       <ProfileSetupPhase
-        onSubmit={function (profileData: any): Promise<void> {
+        onSubmit={(profileData: any): Promise<void> => {
           // Save profile data
-          return profileDataService.saveProfile(profileData);
+          return  profileService.saveProfile(profileData);
         }}
       />
       <PostLaunchActivitiesPhase />
       <AnalyzeData projectId={""} />
+
+      {/* Data Management */}
       <DataPreview data={{} as DataPreviewProps & UserData} />
       <DataProcessing />
-      <PostLaunchActivitiesManager />
-      <Project />
-      <RefactoringRebrandingPhase />
+
+      {/* Task Management */}
       <TaskManagementManager />
       <ClearingTimer />
+
+      {/* Main Application Logic */}
       <MainApplicationLogic />
       <ProjectPhaseService />
       <RemovingEventListeners documentOptions={{} as DocumentOptions} />
-      <DynamicPromptContext />
-      <DynamicPromptHookGenerator
-        condition={function (): Promise<boolean> {
-          return Promise.resolve(true);
-        }}
-        asyncEffect={function (): Promise<void> {
-          throw new Error("Function not implemented.");
-        }}
-        resetIdleTimeout={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-        isActive={false}
+
+      {/* Dynamic Components */}
+      <DynamicDashboard title={""} content={undefined} />
+      <DynamicComponents
+        dynamicContent
+        label="Click me"
+        title="Card Title"
+        content="Card Content"
       />
-      <DynamicPromptingLogic />
-      <PromptComponent title={""} description={""} prompts={[]} />
-      <PromptPage title={""} description={""} prompts={[]} />
-      <PromptSystem
-        onUserResponse={function (response: string): void {
-          throw new Error("Function not implemented.");
-        }}
-        documentType={""}
-        userIdea={""}
+      <DynamicIconsAndImages />
+      <DynamicSpacingAndLayout />
+      <DynamicTypography
+        {...({} as DynamicTypographyProps & (BodyTextProps | HeadingProps))}
       />
-      <generatePromptIdea />
-      <promptGenerator />
-      <InviteFriends />
-      <ReferralSystem />
-      <SendEmail />
-      <ProtectedRoute component={} />
-      <search />
-      <AssignBaseStore />
-      <RootSlice />
-      <mobx_react />
-      <reactions />
-      <Accessibility examples={[]} />
-      <AnimationsAndTransitions examples={[]} />
+
+      {/* Design and Styling */}
       <ColorPalette
         swatches={[]}
         colorCodingEnabled={false}
@@ -347,88 +392,32 @@ useEffect(() => {
         color={""}
         onChange={(newColor: string): void => {
           const updatedColors = handleColorChange(0, newColor);
-          // Now you can use the updatedColors array as needed in your component
           console.log(updatedColors);
         }}
         colorCodingEnabled={false}
       />
-      <Documentation />
-      <DynamicColorPalette
-        colorCodingEnabled={false}
-        brandingSwatches={[]}
-        colors={[]}
-      />
-      {/* New Components */}
-      <DynamicComponents
-        dynamicContent
-        label="Click me"
-        // OR
-        title="Card Title"
-        content="Card Content"
-      />
-      <DynamicIconsAndImages />
-      <DynamicSpacingAndLayout />
-      <DynamicTypography
-        {...({} as DynamicTypographyProps & (BodyTextProps | HeadingProps))}
-      />
-      <Palette
-        colors={colors}
-        swatches={[]}
-        onColorChange={handleColorChange}
-        onAddColor={() => {
-          throw new Error("Function not implemented.");
-        }}
-        onRemoveColor={(colorIndex: number) => {
-          throw new Error("Function not implemented.");
-        }}
-      />
-      <PaletteManager />
+      <AnimationsAndTransitions examples={[]} />
       <ResponsiveDesign />
-      <UsageExamplesBox />
-      <SubscriptionComponent />
-      <NofiticationsSlice notifications={[]} />
-      <NotificationContext />
-      <NotificationEditingPhaseHook />
-      <NotificationMessages />
-      <NotificationMessagesFactory />
-      <NotificationProvider children={undefined} />
-      <NotificationStore />
-      <NotificationTypes />
-      <UserSupport />
-      <updateNotificationSettings />
+
+      {/* User Interaction */}
+      <SearchComponent componentSpecificData={{ componentSpecificData }} />
       <TaskActions />
       <TaskAssignmentSnapshot taskId={""} />
       <TaskManagerComponent
-        taskId={function (): string {
+        taskId={() => {
           throw new Error("Function not implemented.");
         }}
       />
-      <TaskService />
-      <FetchTodos />
-      <Todo />
-      <TodoActions />
       <TodoList />
-      <TodoService />
-      <TodoSlice ids={[]} entities={undefined} />
-      <DataProcessingTask />
-      <DataSetModel />
       <InviteFriends />
       <ReferralSystem />
       <SendEmail />
-      <ProtectedRoute component={{} as ComponentType} />
+      <ProtectedRoute component={{}} />
       <SearchComponent componentSpecificData={{ componentSpecificData }} />
       <User />
       <UserActions />
-      <UserService />
-      <UserSlice
-        users={[]}
-        fullName={""}
-        bio={""}
-        profilePicture={""}
-        notification={""}
-        data={{} as UserData}
-        uploadQuota={0}
-      />
+
+      {/* Idea and Concept Development */}
       <ConceptDevelopment />
       <ConceptValidation />
       <IdeaLifecycle />
@@ -437,23 +426,8 @@ useEffect(() => {
       <ProofOfConcept />
       <RequirementsGathering />
       <TeamBuildingPhaseManagement />
-      <commonUtils />
-      <dataAnalysisUtils />
-      <chat />
-      <search />
-      <generate />
-      <directMessaging />
-      <OnboardingManager />
-      <userManagement />
-      <Versioning version={""} />
-      <Web3Provider />
-      <useAqua />
-      <crossPlatformLayer />
-      <dAppAdapter />
-      <fluenceProtocolIntegration />
-      <pluginSystem />
-      <webConfigs />
-      <aquaConfig />
+
+      {/* Configuration and Settings */}
       <ApiConfig />
       <BackendDocumentConfig />
       <ConfigurationService />
@@ -469,50 +443,16 @@ useEffect(() => {
       <UpdatePreferences />
       <UserPreferences />
       <UserSettings />
-      <global />
-      <traverseFrontend />
-      <chat />
-      <search />
-      <stylesheet />
-      <favicon />
+      <Global />
+      <TraverseFrontend />
+      <Stylesheet />
+      <Favicon />
       <GenerateCache />
-      <generateChatInterfaces />
+      <GenerateChatInterfaces />
       <GenerateComponent />
-      <generatedInterfaces />
-      <ModalGenerator
-        children={{} as ReactElement<any, string | JSXElementConstructor<any>>}
-        isOpen={false}
-        closeModal={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-        modalComponent={{
-          close: function (): void {},
-          isOpen: function (): boolean {
-            return false;
-          },
-          setNotificationPreferences: function (
-            preferences: NotificationPreferences
-          ): void {
-            modalComponent.setNotificationPreferences(preferences);
-          },
-          setAudioOptions: function (options: AudioOptions): void {
-            throw new Error("Function not implemented.");
-          },
-          setVideoOptions: function (options: VideoOptions): void {
-            throw new Error("Function not implemented.");
-          },
-          setCollaborationPreferences: function (
-            preferences: CollaborationPreferences
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-        }}
-      />
-      <generateNewTask />
-      <getUserIdeaFromForm />
-      <clipboard />
-      <events />
-      <dataAnalysisTypes />
+      <GeneratedInterfaces />
+
+      {/* Cache Management */}
       <AppCacheManager />
       <BatchProcessingAndCache />
       <CacheManager />
@@ -520,7 +460,15 @@ useEffect(() => {
       <CleanupUtil />
       <FrontendCacheManager />
       <ReadAndWriteCache />
-      {/* Add more components or sections as needed */}
+
+      {/* Miscellaneous */}
+      <Documentation />
+      <Versioning version={""} />
+      <generateNewTask />
+      <getUserIdeaFromForm />
+      <Clipboard />
+      <Events />
+      <DataAnalysisTypes />
     </div>
   );
 };

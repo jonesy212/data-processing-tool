@@ -27,7 +27,7 @@ export interface ApiManagerStore {
   fetchApiConfigsSuccess: (payload: { apiConfigs: ApiConfig[] }) => void;
   fetchApiConfigsFailure: (payload: { error: string }) => void;
   fetchApiConfigsRequest: () => void;
-  updateApiConfigSuccess: () => void;
+  updateApiConfigSuccess: (apiConfig: any ) => void;
   updateApiConfig: (apiConfigId: number, newConfig: ApiConfig) => void;
   updateApiConfigFailure: (payload: { error: string }) => void;
   removeApiConfigSuccess: (payload: { apiConfigId: number }) => void;
@@ -47,7 +47,11 @@ const useApiManagerStore = (): ApiManagerStore => {
   const [apiConfigUrl, setApiConfigUrl] = useState<string>("");
   const [apiConfigTimeout, setApiConfigTimeout] = useState<number>(0);
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
-  const snapshotStore = new SnapshotStore<ApiConfig[]>(config as  SnapshotStoreConfig<ApiConfig[]>);
+  const snapshotStore = new SnapshotStore<ApiConfig[]>(
+    {
+      initialState: apiConfigs
+    } as SnapshotStoreConfig<ApiConfig[]>
+  );
 
 
   // Method to update the name of the API configuration

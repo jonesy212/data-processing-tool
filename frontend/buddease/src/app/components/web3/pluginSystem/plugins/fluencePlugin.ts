@@ -1,15 +1,19 @@
 // Import AquaChat and other necessary modules based on your actual structure
+
+
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
+import YourClass from "@/app/utils/YourClass";
 import FluenceConnection from "../../fluenceProtocoIntegration/FluenceConnection";
 import { AquaConfig } from "../../web_configs/AquaConfig";
 import { DAppPlugin } from "./PluginInterface";
 
-class FluencePlugin implements DAppPlugin {
+class FluencePlugin extends YourClass implements DAppPlugin {
   public name: string;
   private isEnabled: boolean;
   private fluenceConnection: FluenceConnection;
-
+  
   constructor(name: string) {
+    super()
     this.name = name;
     this.isEnabled = false;
     this.fluenceConnection = new FluenceConnection();
@@ -57,34 +61,33 @@ class FluencePlugin implements DAppPlugin {
     // Return loaded plugins or relevant information
   }
 
-  enableRealtimeCollaboration(): void {
+  enableRealtimeCollaboration(): YourClass {
     console.log("Realtime collaboration enabled");
 
     // Check if the plugin is enabled
     if (!this.isEnabled) {
       console.log(
         `${this.name} plugin is not enabled. Cannot enable realtime collaboration.`
-      );
-      return;
-    }
-
-    // For example, use Fluence for P2P communications
-    // Simulate connecting to Fluence
-    this.fluenceConnection.connect();
-
-    // Additional logic...
-
-    // Implement specific logic for Fluence collaboration
-    console.log(`${this.name} plugin: Realtime collaboration enabled.`);
+        );
+      }
+      
+      // For example, use Fluence for P2P communications
+      // Simulate connecting to Fluence
+      this.fluenceConnection.connect();
+      
+      // Additional logic...
+      
+      // Implement specific logic for Fluence collaboration
+      console.log(`${this.name} plugin: Realtime collaboration enabled.`);
+      return this;;
   }
-
-  enableChatFunctionality(aquaConfig?: Record<string, any>): void {
+  
+  enableChatFunctionality(aquaConfig?: Record<string, any>): YourClass {
     // Check if the plugin is enabled
     if (!this.isEnabled) {
       console.log(
         `${this.name} plugin is not enabled. Cannot enable chat functionality.`
       );
-      return;
     }
 
     // For example, use Aqua for serverless chat
@@ -95,9 +98,10 @@ class FluencePlugin implements DAppPlugin {
     }
 
     // Additional logic...
-
+    
     // Implement specific logic for chat functionality
     console.log(`${this.name} plugin: Chat functionality enabled.`);
+    return this;
   }
 }
 

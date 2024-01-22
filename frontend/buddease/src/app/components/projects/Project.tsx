@@ -1,14 +1,13 @@
 //projects/Project.ts
 import { ReactNode } from "react";
+import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { User } from "../users/User";
-import CommonDetails from "./../models/CommonDetailsProps";
-
-interface Project {
+interface Project extends Data{
   id: string;
   name: string;
-  description: string | null;
+  description: string | null; // Updated this line
   members: User[];
   tasks: Task[]
   startDate: Date;
@@ -16,6 +15,7 @@ interface Project {
   isActive: boolean;
   leader: User | null;
   budget: number | null;
+  phase: Phase
   phases: Phase[]
   currentPhase: Phase | null // Provide a default value or mark as optional
   // Add other project-related fields as needed
@@ -44,9 +44,9 @@ export function isProjectInSpecialPhase(project: Project): boolean {
 }
 
 class ProjectImpl implements Project {
+  _id: string = '0'
   id: string = '0'; // Initialize id property to avoid error
   name: string = "projectName";
-  description: string | null = null; // Provide a default value or mark as optional
   members: User[] = []; // Provide a default value or mark as optional
   tasks: Task[] = []; // Provide a default value or mark as optional
   startDate: Date = new Date(); // Provide a default value or mark as optional
@@ -56,6 +56,16 @@ class ProjectImpl implements Project {
   budget: number | null = null; // Provide a default value or mark as optional
   phases: Phase[] = [] // Provide a default value or mark as optional
   currentPhase: Phase | null = null // Provide a default value or mark as optional
+  description: string | null = null
+  title: string = "project_title"
+  status: "pending" | "inProgress" | "completed" = "pending"
+  tags: string[] = []
+  then: () => {
+    // project implementation
+
+  }
+  analysisType: string = "default";
+  analysisResults: string[] = [];
   // project implementation
 }
 
@@ -77,6 +87,15 @@ const currentPhase: Phase = {
   },
   hooks: {} as CustomPhaseHooks
 };
+
+
+export interface ProjectData {
+  project: Project;
+  projects: Project[];
+  phases: Phase[];
+  transitionToNextPhase: () => void;
+
+}
 
 currentProject.phases = [
   {

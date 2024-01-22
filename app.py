@@ -7,6 +7,7 @@ import pandas as pd
 from flask import (Flask, g, jsonify, redirect, render_template, request,
                    session, url_for)
 from flask_caching import Cache
+from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
@@ -38,7 +39,7 @@ migrate = Migrate()
 def create_app(config_file=None):
 
     app = Flask(__name__)
-    
+    CORS(app)
     # Initialize the app context using AppContextHelper
     AppContextHelper.init_app_context(app)
 

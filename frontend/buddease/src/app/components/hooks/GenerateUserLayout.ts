@@ -16,7 +16,7 @@ type LayoutGeneratorProps = {
   condition: () => boolean;
   layoutEffect: () => void;
   cleanup?: () => void;
-  generateDocument: () => Promise<DocumentGenerationResult>;
+  generateDocument: (options: DocxGeneratorOptions) => Promise<DocumentGenerationResult>; // Pass options to generateDocument
   documentGeneratorOptions: DocxGeneratorOptions;
   layoutConfigGetter: () => Promise<{
     documentGeneration: string;
@@ -44,7 +44,7 @@ export const useLayoutGenerator = ({
         layoutEffect();
 
         // Generate the document and handle the result
-        const documentResult = await generateDocument();
+        const documentResult = await generateDocument(documentGeneratorOptions);
 
         if (documentResult.success) {
           // Access layoutConfig properties as needed
@@ -73,4 +73,3 @@ export const useLayoutGenerator = ({
 
 export default useLayoutGenerator;
 export type { DocumentGenerationResult, LayoutGeneratorProps };
-

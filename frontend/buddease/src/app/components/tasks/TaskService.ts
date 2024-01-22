@@ -1,53 +1,79 @@
-// taskService.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
 import axios from "axios";
+import { action, observable, runInAction } from 'mobx';
 import { Task } from "../models/tasks/Task";
 
-const BASE_URL = "https://your-api-base-url"; // Replace with your actual API base URL
+class TaskService {
+  @observable tasks: Task[] = [];
+  @observable loading = false;
+  @observable error: string | null = null;
 
-export const taskService = {
-  fetchTasks: async (): Promise<Task[]> => {
+  @action
+  fetchTasks = async (): Promise<void> => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/tasks`);
-      return response.data;
+      this.loading = true;
+
+      const response = await axios.get(endpoints.tasks.list);
+
+      runInAction(() => {
+        this.tasks = response.data;
+        this.error = null; // Clear any previous errors on success
+      });
     } catch (error) {
-      throw new Error("Failed to fetch tasks");
+      runInAction(() => {
+        this.error = "Failed to fetch tasks";
+      });
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
     }
-  },
+  };
 
-  fetchTask: async (taskId: number): Promise<Task> => {
+  @action
+  fetchTask = async (taskId: number): Promise<Task> => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/tasks/${taskId}`);
+      const response = await axios.get(endpoints.tasks.single(taskId));
       return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch task with ID ${taskId}`);
     }
-  },
+  };
 
-  addTask: async (newTask: Task): Promise<Task> => {
+  @action
+  addTask = async (newTask: Task): Promise<Task> => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/tasks`, newTask, {
+      const response = await axios.post(endpoints.tasks.add, newTask, {
         headers: {
           "Content-Type": "application/json",
         },
       });
+
+      runInAction(() => {
+        this.tasks.push(response.data);
+        this.error = null; // Clear any previous errors on success
+      });
+
       return response.data;
     } catch (error) {
       throw new Error("Failed to add task");
     }
-  },
+  };
 
-  removeTask: async (taskId: number): Promise<void> => {
+  @action
+  removeTask = async (taskId: number): Promise<void> => {
     try {
-      await axios.delete(`${BASE_URL}/api/tasks/${taskId}`);
+      await axios.delete(endpoints.tasks.remove(taskId));
     } catch (error) {
       throw new Error("Failed to remove task");
     }
-  },
+  };
 
-  updateTask: async (taskId: number, newTitle: string): Promise<Task> => {
+  @action
+  updateTask = async (taskId: number, newTitle: string): Promise<Task> => {
     try {
       const response = await axios.put(
-        `${BASE_URL}/api/tasks/${taskId}`,
+        endpoints.tasks.update(taskId),
         { title: newTitle },
         {
           headers: {
@@ -55,47 +81,62 @@ export const taskService = {
           },
         }
       );
+
+      runInAction(() => {
+        const updatedTask = response.data;
+        const index = this.tasks.findIndex(task => task.id === updatedTask.id);
+
+        if (index !== -1) {
+          this.tasks[index] = updatedTask;
+        }
+
+        this.error = null; // Clear any previous errors on success
+      });
+
       return response.data;
     } catch (error) {
       throw new Error("Failed to update task");
     }
-  },
+  };
 
-  completeAllTasks: async (): Promise<void> => {
+  @action
+  completeAllTasks = async (): Promise<void> => {
     try {
-      await axios.post(`${BASE_URL}/api/tasks/complete-all`);
+      await axios.post(endpoints.tasks.completeAll);
     } catch (error) {
       throw new Error("Failed to complete all tasks");
     }
-  },
+  };
 
-  toggleTask: async (taskId: number): Promise<void> => {
+  @action
+  toggleTask = async (taskId: number): Promise<void> => {
     try {
-      const response = await axios.put(
-        `${BASE_URL}/api/tasks/${taskId}/toggle`
-      );
-      return response.data;
+      await axios.put(endpoints.tasks.toggle(taskId));
     } catch (error) {
       throw new Error("Failed to toggle task");
     }
-  },
+  };
 
   // multiple/bulk action
-  removeTasks: async (taskIds: number[]): Promise<void> => {
+  @action
+  removeTasks = async (taskIds: number[]): Promise<void> => {
     try {
       // Assuming there is an endpoint to remove multiple tasks
-      await axios.post(`${BASE_URL}/api/tasks/remove-multiple`, { taskIds });
+      await axios.post(endpoints.tasks.removeMultiple, { taskIds });
     } catch (error) {
       throw new Error("Failed to remove tasks");
     }
-  },
+  };
 
-  toggleTasks: async (taskIds: number[]): Promise<void> => {
+  @action
+  toggleTasks = async (taskIds: number[]): Promise<void> => {
     try {
       // Assuming there is an endpoint to toggle multiple tasks
-      await axios.post(`${BASE_URL}/api/tasks/toggle-multiple`, { taskIds });
+      await axios.post(endpoints.tasks.toggleMultiple, { taskIds });
     } catch (error) {
       throw new Error("Failed to toggle tasks");
     }
-  },
-};
+  };
+}
+
+export const taskService = new TaskService();

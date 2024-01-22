@@ -1,7 +1,8 @@
 // LoginForm.tsx
 import authService from "@/app/components/auth/AuthService";
-import { NotificationContext } from "@/app/components/support/NotificationContext";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { NotificationContext, NotificationContextProps } from "@/app/components/support/NotificationContext";
+import { NOTIFICATION_TYPES } from "@/app/components/support/NotificationTypes";
+import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
@@ -13,6 +14,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
   const [username, setLocalUsername] = useState("");
   const [password, setLocalPassword] = useState("");
   const history = useNavigate();
+  const notificationContext = useContext(NotificationContext) as NotificationContextProps;
 
   const handleSubmit = async (event: React.FormEvent) => {
     try {
@@ -29,9 +31,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
         history(lastVisitedPage || "/default-page");
       } else {
         // Error callback
-        console.error("Error during login:", error);
+        console.error("Error during login:", Error);
 
-        NotificationContext.notify("Login failed", "Error");
+        // Use notify directly without checking notificationContext
+        notificationContext.notify(NOTIFICATION_TYPES.ERROR, "Login failed");
 
         history("/frontend/buddease/src/app/pages/onboarding/Welcome.tsx");
       }

@@ -267,6 +267,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
 
       // // 20. Remove Stale Chat Sessions
       // removeStaleChatSessions();
+      localStorage.setItem("chatMessages", JSON.stringify(chatMessages));
     };
   }, [roomId]);
 

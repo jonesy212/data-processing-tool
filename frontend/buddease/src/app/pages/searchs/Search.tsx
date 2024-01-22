@@ -1,6 +1,10 @@
-// SearchComponent.tsx
+// Search.tsx
+import { DocumentData } from '@/app/components/documents/DocumentBuilder';
+import { getDefaultDocumentOptions } from '@/app/components/documents/DocumentOptions';
 import React, { useEffect, useState } from 'react';
 import { useSearch } from './SearchContext';
+
+type DocumentDataPartial = Partial<DocumentData>;
 
 // Simulated data for global search results (replace with actual data)
 const globalSearchData = [
@@ -18,6 +22,22 @@ const globalSearchData = [
   },
   // Add more data as needed
 ];
+
+
+
+const globalDocumentData: DocumentDataPartial[] = [
+  {
+    ...getDefaultDocumentOptions(),
+    id: 1,
+    title: 'Document 1',
+    content: 'Content for Document 1',
+  },
+  // Add more document data as needed
+];
+
+export interface SearchComponentProps {
+  documentData: DocumentData[];
+}
 
 
 export interface SearchComponentProps {

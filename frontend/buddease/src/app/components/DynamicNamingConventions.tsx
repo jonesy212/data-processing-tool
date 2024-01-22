@@ -3,8 +3,9 @@ import React from 'react';
 import configurationService from '../configs/ConfigurationService';
 import { NamingConventionsError } from '../shared/shared-error-handling';
 import { useDynamicComponents } from './DynamicComponentsContext';
-import { useNotification } from './support/NotificationContext';
+import { NotificationType, useNotification } from './support/NotificationContext';
 import NOTIFICATION_MESSAGES from './support/NotificationMessages';
+import { NOTIFICATION_TYPES } from './support/NotificationTypes';
 interface DynamicNamingConventionsProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
 }
@@ -25,7 +26,7 @@ const handleNamingConventionsErrors = (
     error.message, // Pass error message instead of error object
     errorDetails
   );
-  notify(errorMessage, "error");
+  notify(NOTIFICATION_TYPES.ERROR, "Error", new Date, {} as NotificationType);
 };
 
 const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
@@ -47,19 +48,26 @@ const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
       configurationService.getConfigurationOptions().namingConventions;
 
     const handleDynamicContentClick = () => {
-      setDynamicConfig({
-        ...dynamicConfig,
-        namingConventions: [
-          "Updated Dynamic Convention 1",
-          "Updated Dynamic Convention 2",
-        ],
-      });
+      if (dynamicConfig) {
+
+        setDynamicConfig({
+          ...dynamicConfig,
+          namingConventions: [
+            "Updated Dynamic Convention 1",
+            "Updated Dynamic Convention 2",
+          ],
+        });
+      }else {
+        // Handle the case when dynamicConfig is null
+        console.error("DynamicConfig is null. Unable to update naming conventions.");
+    }
     };
 
     return (
       <div>
         <h2 onClick={handleDynamicContentClick}>
-          {dynamicContent ? "Dynamic" : "Static"} Naming Conventions
+          {dynamicContent ? "Dynamic" : "Static"}
+          Naming Conventions
         </h2>
         {dynamicContent
           ? renderDynamicContent(conventions)
@@ -71,7 +79,11 @@ const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
     if(error instanceof NamingConventionsError){
       handleNamingConventionsErrors(error);
     } else {
-      notify(NOTIFICATION_MESSAGES.Error.DEFAULT('SomeErrorType'), 'error');
+      notify(
+        NOTIFICATION_TYPES.ERROR,
+        "Error", new Date,
+        {} as NotificationType
+      );
     }
     handleNamingConventionsErrors(error);}
     return null;

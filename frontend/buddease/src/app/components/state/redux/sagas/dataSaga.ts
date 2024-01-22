@@ -1,7 +1,7 @@
 import { Data } from "@/app/components/models/data/Data";
 import { DataActions } from "@/app/components/projects/DataAnalysisPhase/DataActions";
 import axios, { AxiosResponse } from "axios";
-import { Effect, all, call, put, takeLatest } from "redux-saga/effects";
+import { Effect, call, put, takeLatest } from "redux-saga/effects";
 import {
     addData,
     removeData,
@@ -19,7 +19,7 @@ const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
       const response = await axios.post(`${BASE_URL}/data/update_title`, { title }, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${yourAuthToken}` // Include your authentication token if needed
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
       });
   
@@ -75,32 +75,32 @@ const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
     }
   };
 
-function* handleUpdateDataTitle(
-  action: ReturnType<typeof updateDataTitle>
+  function* handleUpdateDataTitle(
+    action: ReturnType<typeof updateDataTitle>
 ): Generator<Effect, void, any> {
-  try {
-    const { payload } = action;
-    // Call the function to perform the API call
-    yield call(UpdateDataTitle, payload);
+    try {
+        const { payload } = action;
+        // Call the function to perform the API call
+        yield call(UpdateDataTitle, payload);
 
-    // Replace this with your API call using axios
-    const response: AxiosResponse<Data> = yield call(() =>
-      axios.post("api/data", payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-    );
+        // Replace this with your API call using axios
+        const response: AxiosResponse<Data> = yield call(() =>
+            axios.post("api/data", payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+        );
 
-    yield put(
-      DataActions.updateDataTitleSuccess({
-        id: response.data.id as number,
-        title: response.data.title,
-      })
-    );
-  } catch (error) {
-    // Handle error if needed
-  }
+        yield put(
+            DataActions.updateDataTitleSuccess({
+                id: response.data.id as number,
+                title: response.data.title,
+            })
+        );
+    } catch (error) {
+        // Handle error if needed
+    }
 }
 
 function* handleUpdateDataDescription(
@@ -158,13 +158,16 @@ function* handleRemoveData(
   }
 }
 
-export default function* dataSagas() {
-  yield all([
-    takeLatest(updateDataTitle.type, handleUpdateDataTitle),
-    takeLatest(updateDataDescription.type, handleUpdateDataDescription),
-    takeLatest(updateDataStatus.type, handleUpdateDataStatus),
-    takeLatest(updateDataDetails.type, handleUpdateDataDetails),
-    takeLatest(addData.type, handleAddData),
-    takeLatest(removeData.type, handleRemoveData),
-  ]);
+function* watchDataActions() { 
+    yield takeLatest(DataActions.updateDataTitle.type, handleUpdateDataTitle);
+    yield takeLatest(DataActions.updateDataDescription.type, handleUpdateDataDescription);
+    yield takeLatest(DataActions.updateDataStatus.type, handleUpdateDataStatus);
+    yield takeLatest(DataActions.updateDataDetails.type, handleUpdateDataDetails);
+    yield takeLatest(DataActions.addData.type, handleAddData);
+    yield takeLatest(DataActions.removeData.type, handleRemoveData);
+}
+
+
+export function* dataSagas() { 
+    yield watchDataActions();
 }

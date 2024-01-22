@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { User, UserData } from '../../users/User';
 
-const RealtimeUpdatesComponent = () => {
+const RealtimeUpdatesComponent = async () => {
   const { state: authState } = useAuth();
+  const id =  authState.user?.id;
   const [realtimeData, setRealtimeData] = useState<UserData | null>(
     authState.user ? initializeUserData(authState.user) : null
   );

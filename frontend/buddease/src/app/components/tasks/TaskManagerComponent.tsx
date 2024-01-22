@@ -23,6 +23,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
   useEffect(() => {
     // Update global state when local state changes
     taskManagerStore.updateTaskTitle(taskManagerStore.taskTitle);
+
   }, [localState, taskManagerStore]);
 
   return (

@@ -7,23 +7,29 @@ import {
 } from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
 import {
     authenticationPhaseHook,
+    dataAnalysisPhaseHook,
+    generalCommunicationFeaturesPhaseHook,
+    ideationPhaseHook,
     jobSearchPhaseHook,
+    productBrainstormingPhaseHook,
+    productLaunchPhaseHook,
     recruiterDashboardPhaseHook,
+    teamCreationPhaseHook,
 } from "../components/hooks/phaseHooks/PhaseHooks";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
 import { backendDocumentConfig } from "../configs/BackendDocumentConfig";
-import dataVersions from "../configs/DataVersionsConfig";
-import frontendStructure from "../configs/FrontendStructure";
-import userPreferences from "../configs/UserPreferences";
+import { DataVersions } from "../configs/DataVersionsConfig";
 import userSettings from "../configs/UserSettings";
+import BackendStructure from "../configs/appStructure/BackendStructure";
+import FrontendStructure from "../configs/appStructure/FrontendStructure";
 
 // Updated cache data structure based on the provided tree structure
 export interface CacheData {
   lastUpdated: string;
-  userPreferences: typeof userPreferences;
   userSettings: typeof userSettings;
-  dataVersions: typeof dataVersions;
-  frontendStructure: typeof frontendStructure;
+  dataVersions: DataVersions
+    frontendStructure: FrontendStructure;
+    backendStructure: BackendStructure
   backendDocumentConfig: typeof backendDocumentConfig;
   // Add new top-level cache properties for UI phases
   notificationBarPhaseHook: typeof notificationBarPhaseHook;
@@ -36,7 +42,17 @@ export interface CacheData {
   teamBuildingPhaseHook: typeof useTeamBuildingPhase;
   brainstormingPhaseHook: typeof useBrainstormingPhase;
   projectManagementPhaseHook: typeof useProjectManagementPhase;
-  meetingsPhaseHook: typeof useMeetingsPhase;
+    meetingsPhaseHook: typeof useMeetingsPhase;
+    
+
+  // Add the new top-level cache properties for additional phases
+  ideationPhaseHook: typeof ideationPhaseHook;
+  teamCreationPhaseHook: typeof teamCreationPhaseHook;
+  productBrainstormingPhaseHook: typeof productBrainstormingPhaseHook;
+  productLaunchPhaseHook: typeof productLaunchPhaseHook;
+  dataAnalysisPhaseHook: typeof dataAnalysisPhaseHook;
+  generalCommunicationFeaturesPhaseHook: typeof generalCommunicationFeaturesPhaseHook;
+  
   // Add more top-level cache properties as needed
   fileType: string;
  }

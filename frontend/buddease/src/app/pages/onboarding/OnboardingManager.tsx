@@ -8,26 +8,25 @@ import WelcomePage from './WelcomePage';
 const OnboardingManager: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>(OnboardingPhase.WELCOME);
 
-  const handleNextPhase = () => {
+  const getNextPhase = (currentPhase: OnboardingPhase): OnboardingPhase => {
     switch (currentPhase) {
       case OnboardingPhase.WELCOME:
-        setCurrentPhase(OnboardingPhase.REGISTER);
-        break;
+        return OnboardingPhase.REGISTER;
       case OnboardingPhase.REGISTER:
-        // Handle registration completion and navigate to the next phase
-        setCurrentPhase(OnboardingPhase.OFFER);
-        break;
+        return OnboardingPhase.OFFER;
       case OnboardingPhase.OFFER:
-        // Handle registration completion and navigate to the next phase
-        setCurrentPhase(OnboardingPhase.PROFILE_SETUP);
-        break;
+        return OnboardingPhase.PROFILE_SETUP;
       case OnboardingPhase.PROFILE_SETUP:
-        // Handle profile setup completion and navigate to the next phase
-        // For example, you might redirect to the main application after onboarding
-        break;
+        // Handle the last phase or redirect to the main application
+        return OnboardingPhase.WELCOME;
       default:
-        break;
+        return OnboardingPhase.WELCOME;
     }
+  };
+
+  const handleNextPhase = () => {
+    const nextPhase = getNextPhase(currentPhase);
+    setCurrentPhase(nextPhase);
   };
 
   const renderCurrentPhase = () => {

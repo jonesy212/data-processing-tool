@@ -1,23 +1,31 @@
 // ApiSlice.ts
-import { ApiConfig } from '@/app/configs/ConfigurationService';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Task } from "@/app/components/models/tasks/Task";
+import { Todo } from "@/app/components/todos/Todo";
+import { ApiConfig } from "@/app/configs/ConfigurationService";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ApiManagerState {
   apiConfigs: ApiConfig[];
   apiConfigName: string;
   apiConfigUrl: string;
   apiConfigTimeout: number;
+  tasks: TasksApi[];
+  todos: Todo[];
+  
 }
 
 const initialState: ApiManagerState = {
   apiConfigs: [],
-  apiConfigName: '',
-  apiConfigUrl: '',
+  apiConfigName: "",
+  apiConfigUrl: "",
   apiConfigTimeout: 0,
+  tasks: [],
+  todos: [],
+
 };
 
-export const apiManagerSlice = createSlice({
-  name: 'apiManager',
+export const useApiManagerSlice = createSlice({
+  name: "apiManager",
   initialState,
   reducers: {
     updateApiConfigName: (state, action: PayloadAction<string>) => {
@@ -34,16 +42,25 @@ export const apiManagerSlice = createSlice({
 
     addApiConfig: (state, action: PayloadAction<ApiConfig>) => {
       state.apiConfigs.push(action.payload);
-      state.apiConfigName = '';
-      state.apiConfigUrl = '';
+      state.apiConfigName = "";
+      state.apiConfigUrl = "";
       state.apiConfigTimeout = 0;
     },
 
     removeApiConfig: (state, action: PayloadAction<number>) => {
-      state.apiConfigs = state.apiConfigs.filter(config => config.id !== action.payload);
+      state.apiConfigs = state.apiConfigs.filter(
+        (config) => config.id !== action.payload
+      );
     },
 
-    // Add more actions as needed
+    markTaskComplete: (state, action: PayloadAction<number>) => {
+      const task = state.tasks.find((t: any) => t.id === action.payload) as
+        | Task
+        | undefined;
+      if (task) {
+        task.data.isCompleted = true
+      }
+    },
   },
 });
 
@@ -54,10 +71,24 @@ export const {
   updateApiConfigTimeout,
   addApiConfig,
   removeApiConfig,
-} = apiManagerSlice.actions;
+} = useApiManagerSlice.actions;
+
+
+
+// Extend the method to mark tasks as complete
+export const markTaskAsComplete = (taskId: string, task: string) => async (dispatch: any) => {
+  markTaskAsComplete(taskId, "task");
+};
+
+// Extend the method to mark todos as complete
+export const markTodoAsComplete = (todoId: string, todo: string) => async (dispatch: any) => {
+  markTaskAsComplete(todoId, "todo");
+};
+
 
 // Export selector for accessing the API configurations from the state
-export const selectApiConfigs = (state: { apiManager: ApiManagerState }) => state.apiManager.apiConfigs;
+export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
+  state.apiManager.apiConfigs;
 
 // Export reducer for the API manager slice
-export default apiManagerSlice.reducer;
+export default useApiManagerSlice.reducer;

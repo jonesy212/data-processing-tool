@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { RootStore } from '../state/stores/RootStores';
+import { RootStores } from '../state/stores/RootStores';
 import { StoreContext } from '../state/stores/StoreProvider';
 // Define the useStore hook
-export const useStore = (): RootStore => {
+export const useStore = (): RootStores => {
   const store = useContext(StoreContext);
 
   if (!store) {

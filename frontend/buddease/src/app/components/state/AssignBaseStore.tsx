@@ -2,7 +2,8 @@
 import { makeAutoObservable } from "mobx";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
-import SnapshotStore from "./stores/SnapshotStore";
+import { User } from "../users/User";
+import SnapshotStore, { SnapshotStoreConfig } from "./stores/SnapshotStore";
 
 export interface AssignBaseStore {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
@@ -21,8 +22,11 @@ export interface AssignBaseStore {
   
   assignTaskToTeam: (taskId: string, userId: string) => Promise<void>;
   assignTodoToTeam: (todoId: string, teamId: string) => Promise<void>;
+  assignTodosToUsersOrTeams: (todoIds: string[], assignees: string[]) => Promise<void>;
+
   assignTeamMemberToTeam: (teamId: string, userId: string) => void;
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
+
   setDynamicNotificationMessage: (message: string) => void;
   snapshotStore: SnapshotStore<Record<string, Todo[]>>
 
@@ -79,7 +83,9 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignedTasks: Record<string, string[]> = {};
   
   // Create an instance of SnapshotStore
-  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({});
+  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>(
+    {} as SnapshotStoreConfig<Record<string, Todo[]>>
+  );
 
   const assignItem = (itemId: string, assignedTo: string) => {
     // Perform the item assignment logic here
@@ -119,6 +125,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
       }
     }
   }
+
 
   const unassignUser = (itemId: string, userId: string) => {
     // Check if the itemId exists in the assignedUsers
@@ -324,6 +331,14 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   };
 
+   const assignTodoToUser = async (user: User, todo: Todo) => { 
+    // Add user to todo's assignedUsers
+    todo.assignedUsers.push(user._id);
+
+    // Save updates to todo
+    await todo.save();
+  }
+
   const assignTodoToTeam = async (todoId: string, teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>((resolve) => {
@@ -389,6 +404,25 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   }
 
+  const assignTodosToUsersOrTeams = async (todoIds: string[], assignees: string[]) => { 
+    for (let i = 0; i < todoIds.length; i++) {
+      const todoId = todoIds[i];
+      for (let j = 0; j < assignees.length; j++) {
+        const assignee = assignees[j];
+        if (assignee.includes("user-")) {
+          // Assign todo to user
+          await assignTodoToUser(
+            assignee as unknown as User,
+            todoId as unknown as Todo
+          );
+        } else {
+          // Assign todo to team
+          await assignTodoToTeam(todoId, assignee);
+        }
+      }
+    }
+  };
+
   const unassignTeamToTodo = async (todoId: string, teamId: string) => { 
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>((resolve) => {
@@ -450,6 +484,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   }
 
+
   const reassignTeamToTodos = async (todoIds: string[], oldTeamId: string, newTeamId: string) => { 
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>(async (resolve) => {
@@ -484,7 +519,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignUserSuccess,
     assignUserFailure,
     setDynamicNotificationMessage,
-    assignTeamToTodo
+    assignTeamToTodo,
+    assignTodosToUsersOrTeams
     // Add more properties or methods as needed
   });
 
@@ -526,6 +562,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     setDynamicNotificationMessage,
     reassignTeamToTodos,
     unassignTeamFromTodos,
+    assignTodosToUsersOrTeams
     // Add more properties or methods as needed
   };
 };

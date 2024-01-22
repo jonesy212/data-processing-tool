@@ -1,8 +1,8 @@
 // authorizationSagas.ts
+import authService from '@/app/components/auth/AuthService';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { authService } from '../services'; // Replace with your actual authentication service
-import { loginSuccess, logout } from '../slices/authorizationSlice';
+import { loginSuccess, logout } from '../slices/AuthorizationSlice';
 
 function* handleLogin(action: PayloadAction<{ username: string; password: string }>) {
   try {

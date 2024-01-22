@@ -8,12 +8,16 @@ import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
 export interface UserStore {
   users: Record<string, User[]>;
   assignedTaskStore: AssignTaskStore;
-    snapshotStore: SnapshotStore<Record<string, User[]>>;
-    updateUserState: (newUsers: Record<string, User[]>) => void;
+  snapshotStore: SnapshotStore<Record<string, User[]>>;
+  updateUserState: (newUsers: Record<string, User[]>) => void;
+
+  batchFetchSnapshotsRequest: (snapshots: Record<string, Record<string, User[]>>) => void;
+    batchFetchSnapshotsSuccess: (snapshots: Record<string, Record<string, User[]>>) => void;
+    batchFetchSnapshotsFailure: (error: string) => void;
   // Add other user-related properties as needed
 }
 
-const useUserStore = (): UserStore => {
+const userManagerStore = (): UserStore => {
   const [users, setUsers] = useState<Record<string, User[]>>({
     // Initialize with the required structure
   });
@@ -32,21 +36,38 @@ const useUserStore = (): UserStore => {
     setUsers(newUsers);
   };
 
-  makeAutoObservable({
-    users,
-    assignedTaskStore,
-    snapshotStore,
-    updateUserState,
-    // Add other user-related properties as needed
-  });
-
-  return {
-    users,
-    assignedTaskStore,
-    snapshotStore,
-    updateUserState,
-    // Add other user-related properties as needed
+  
+  const batchFetchSnapshotsRequest = (snapshots: Record<string, Record<string, User[]>>) => void {
+    //make api call to fetch snapshots
+    
   };
+
+  const batchFetchSnapshotsSuccess = (
+    snapshots: Record<string, Record<string, User[]>>
+  ) => {
+    snapshotStore.state = snapshots;
+  };
+
+  const batchFetchSnapshotsFailure = (error: string) => {
+    console.error("Error fetching snapshots: ", error);
+  };
+
+
+
+  const userStore = makeAutoObservable({
+  users,
+  assignedTaskStore,
+  snapshotStore,
+  updateUserState,
+  batchFetchSnapshotsRequest,
+  batchFetchSnapshotsSuccess,
+  batchFetchSnapshotsFailure,
+  // Add other user-related properties as needed
+});
+
+
+return userStore;
+
 };
 
-export { useUserStore };
+export { userManagerStore };

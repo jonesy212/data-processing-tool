@@ -1,27 +1,35 @@
+import { FrontendStructure } from "../configs/appStructure/FrontendStructureComponent";
+
+// FrontendCacheManager.ts
 class FrontendCacheManager {
-    private cacheData: Record<string, any> = {};
-    private uniqueConstraints: Record<string, Set<any>> = {};
-  
-    updateCache(data: Record<string, any>): void {
-      // Similar logic to the backend, check unique constraints, and update the cache
-    }
-  
-    getCacheData(): Record<string, any> {
-      return this.cacheData;
-    }
-  
-    clearCache(): void {
-      this.cacheData = {};
-      this.uniqueConstraints = {};
-    }
-  
-    // Additional features for the frontend cache
+  private frontendStructure: FrontendStructure= {} as FrontendStructure;
+  private uniqueConstraints: Record<string, Set<any>> = {};
+
+  updateCache(frontendStructure: FrontendStructure): void {
+    // Similar logic to the backend, check unique constraints, and update the cache
+    // You can modify the logic based on your requirements
+    this.frontendStructure = frontendStructure;
+  }
+
+  getCacheData(): FrontendStructure {
+    return this.frontendStructure;
+  }
+
+  clearCache(): void {
+    this.frontendStructure = {} as FrontendStructure;
+    this.uniqueConstraints = {};
   }
   
-  // Example usage
-  const frontendCacheManager = new FrontendCacheManager();
-  frontendCacheManager.updateCache({ key5: "value5", key6: "value6" });
-  
-  // Get and print the current frontend cache data
-  console.log("Frontend Cache Data:", frontendCacheManager.getCacheData());
-  
+  // Additional features for the frontend cache
+}
+
+// Example usage
+const frontendStructure: FrontendStructure = {} as FrontendStructure;
+
+const frontendCacheManager = new FrontendCacheManager();
+frontendCacheManager.updateCache(frontendStructure);
+
+// Get and print the current frontend cache data
+console.log("Frontend Cache Data:", frontendCacheManager.getCacheData());
+
+export default FrontendCacheManager;

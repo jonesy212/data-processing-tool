@@ -1,6 +1,6 @@
 // AdapterDashboard.tsx
-import { AnimatedComponent, AnimatedComponentRef } from '@/app/components/animations/AnimationComponent';
 import useLayoutGenerator from '@/app/components/hooks/GenerateUserLayout';
+import { AnimatedComponent, AnimatedComponentRef } from '@/app/components/libraries/animations/AnimationComponent';
 import ColorPalette from '@/app/components/styling/ColorPalette';
 import DashboardLoader from '@/dashboards/DashboardLoader';
 import React, { ReactNode, useRef } from 'react';

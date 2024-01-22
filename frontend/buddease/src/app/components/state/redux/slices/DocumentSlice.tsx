@@ -7,7 +7,7 @@ export interface DocumentSliceState {
     userIdea: string;
   }
   
-  export const documentSlice = createSlice({
+  export const useDocumentManagerSlice = createSlice({
     name: "document",
     initialState: {
       documentType: '',
@@ -24,7 +24,7 @@ export interface DocumentSliceState {
   });
   
   // Export actions for the new slice
-  export const { setDocumentType, setUserIdea } = documentSlice.actions;
+  export const { setDocumentType, setUserIdea } = useDocumentManagerSlice.actions;
   
   // Export selectors for accessing the new slice from the state
   export const selectDocumentType = (state: RootState) => state.document.documentType

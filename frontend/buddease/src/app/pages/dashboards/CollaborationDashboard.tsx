@@ -61,6 +61,7 @@ const CollaborationDashboard = () => {
             fontSize,
           }}
         >
+          
           <h1 style={{ color: primaryColor }}>Collaboration Dashboard</h1>
           {/* Project Timeline Dashboard */}
           <ProjectTimelineDashboard />

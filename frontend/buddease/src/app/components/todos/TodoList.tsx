@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
-import CommonDetails from '../models/CommonDetailsProps';
+import CommonDetails from '../models/CommonData';
 import useTodoManagerStore from '../state/stores/TodoStore';
 import { Todo } from './Todo';
 

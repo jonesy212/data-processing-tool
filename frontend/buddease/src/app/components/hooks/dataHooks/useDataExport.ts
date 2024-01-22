@@ -1,40 +1,47 @@
 // useDataExport.ts
 import axios from 'axios';
 import { useState } from 'react';
+import { useNotification } from '../../support/NotificationContext';
 import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 
-const { ERROR } = NOTIFICATION_TYPES; // Destructure the ERROR type
+const { ERROR } = NOTIFICATION_TYPES;
 
-// Function to export data to the server
-export const exportDataToServer = async (
-  data: any
-): Promise<{ status: number; data: any[] }> => {
-  try {
-    // Replace '/api/export' with your actual API endpoint
-    const response = await axios.post('/api/export', data);
+interface DataExportResult {
+  status: number;
+  data: any[];
+}
 
-    if (response.status === 200) {
-      console.log('Data exported successfully:', response.data);
-      // Perform any additional actions on success
-      return { status: response.status, data: response.data };
-    } else {
-      console.error('Error exporting data:', response.data);
-      // Handle error response using ERROR type
-      throw new Error(ERROR);
-    }
-  } catch (error: any) {
-    console.error('Error exporting data:', error.message);
-    // Handle network errors or other issues using ERROR type
-    throw new Error(ERROR);
-  }
-};
-
-const useDataExport = () => {
+export const useDataExport = () => {
   const [exportedData, setExportedData] = useState<any[]>([]);
+  const notificationContext = useNotification();
 
-  const exportData = async (
-    data: any
-  ): Promise<{ status: number; data: any[] }> => {
+  const handleExportError = (errorMessage: string): never => {
+    notificationContext.notify(ERROR, errorMessage);
+    throw new Error(ERROR);
+  };
+
+  const exportDataToServer = async (data: any): Promise<DataExportResult> => {
+    try {
+      // Replace '/api/export' with your actual API endpoint
+      const response = await axios.post('/api/export', data);
+
+      if (response.status === 200) {
+        console.log('Data exported successfully:', response.data);
+        return { status: response.status, data: response.data };
+      } else {
+        console.error('Error exporting data:', response.data);
+        handleExportError('Error exporting data');
+      }
+    } catch (error: any) {
+      console.error('Error exporting data:', error.message);
+      handleExportError('Error exporting data');
+    }
+
+    // Add a default return statement to satisfy TypeScript
+    return handleExportError('Unexpected error exporting data');
+  };
+
+  const exportData = async (data: any): Promise<DataExportResult> => {
     try {
       const exportedResult = await exportDataToServer(data);
 
@@ -42,18 +49,19 @@ const useDataExport = () => {
         setExportedData(exportedResult.data);
         return exportedResult;
       } else {
-        // Handle error using ERROR type
-        throw new Error(ERROR);
+        handleExportError('Error exporting data');
       }
     } catch (error) {
       console.error('Error exporting data:', error);
-      // Return a rejected promise with the ERROR type
       return Promise.reject({
         status: 500,
         data: [],
         errorType: ERROR,
       });
     }
+
+    // Add a default return statement to satisfy TypeScript
+    return handleExportError('Unexpected error exporting data');
   };
 
   return { exportedData, exportData };

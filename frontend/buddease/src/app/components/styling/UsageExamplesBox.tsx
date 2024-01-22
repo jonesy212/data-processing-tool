@@ -8,11 +8,11 @@ import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
 import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/app/pages/layouts/CommonLayout";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
-import AnimationControls from "../animations/AnimationControls";
-import DynamicSelectionControls from "../animations/DynamicSelectionControls";
 import useLayoutGenerator from "../hooks/GenerateUserLayout";
 import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
 import { darkModeTogglePhaseHook } from "../hooks/userInterface/UIPhaseHooks";
+import AnimationControls from "../libraries/animations/AnimationControls";
+import DynamicSelectionControls from "../libraries/animations/DynamicSelectionControls";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox

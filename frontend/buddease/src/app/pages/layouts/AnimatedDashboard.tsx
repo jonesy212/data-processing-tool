@@ -1,12 +1,11 @@
 // AnimatedDashboard.tsx
 import DynamicIntroTooltip from "@/app/components/DynamicIntroTooltip";
-import { AnimatedComponent } from "@/app/components/animations/AnimationComponent";
+import { AnimatedComponent } from "@/app/components/libraries/animations/AnimationComponent";
 
 import SwingCard from "@/app/components/cards/animation/SwingCard";
 import React from "react";
 
 import ClickableList from "@/app/components/actions/ClickableList";
-import { AnimatedComponentRef } from "@/app/components/animations/AnimationComponent";
 import { ImageCard } from "@/app/components/cards";
 import {
   default as GenerateUserLayout,
@@ -18,6 +17,7 @@ import {
 } from "@/app/components/hooks/userInterface/UIPhaseHooks";
 import useDarkModeToggle from "@/app/components/hooks/userInterface/useDarkModeToggle";
 import { loadDuckDuckGoIcon } from "@/app/components/icons/IconLoader";
+import { AnimatedComponentRef } from "@/app/components/libraries/animations/AnimationComponent";
 import TaskList from "@/app/components/lists/TaskList";
 import { useTaskManagerStore } from "@/app/components/state/stores/TaskStore ";
 import useTodoManagerStore from "@/app/components/state/stores/TodoStore";

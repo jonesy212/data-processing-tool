@@ -1,13 +1,14 @@
 // chat/ChatSlice.ts
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Channel } from '../../../interfaces/chat/Channel';
 import { User } from '../../../users/User';
 
 interface ChatState {
   users: User[]
+  messages: Message[];
   channels: Channel[];
   currentChannelId: string | null;
-  messages: Message[];
 }
 
 const initialState: ChatState = {

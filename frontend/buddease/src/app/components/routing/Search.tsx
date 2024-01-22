@@ -1,3 +1,4 @@
+// SearchComponent.tsx
 import SearchComponent from '@/app/pages/searchs/Search';
 import Script from 'next/script';
 import React from 'react';
@@ -23,6 +24,7 @@ const SearchPage: React.FC = () => {
 
         </Script>
         <SearchComponent
+          documentData={[]}
           componentSpecificData={[]}
         />
 

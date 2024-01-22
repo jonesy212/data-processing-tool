@@ -1,10 +1,12 @@
 import axios from 'axios';
 import configurationService from '../configs/ConfigurationService';
+import { SystemConfigs } from './systemConfigs';
+import { UserConfigs } from './userConfigs';
 
 export const getConfigsData = async () => {
   try {
-    const systemConfigs = await configurationService.getSystemConfigs();
-    const userConfigs = await configurationService.getUserConfigs();
+    const systemConfigs: typeof SystemConfigs = await configurationService.getSystemConfigs();
+    const userConfigs: typeof UserConfigs = await configurationService.getUserConfigs();
 
     // Make API requests using the obtained configurations
     const systemApiResponse = await axios.get(systemConfigs.apiUrl);

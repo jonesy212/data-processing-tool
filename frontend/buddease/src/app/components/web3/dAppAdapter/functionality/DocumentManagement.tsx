@@ -1,7 +1,7 @@
 // DocumentManagement.tsx
+import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DappProps } from "../DAppAdapterConfig";
-
-export function manageDocuments(newDocument: Document, dappProps: DappProps) {
+export function manageDocuments(newDocument: DocumentData, dappProps: DappProps) {
   // Implement your logic here for document management
   console.log("Document management functionality enabled");
 

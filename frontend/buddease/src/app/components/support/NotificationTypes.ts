@@ -5,8 +5,8 @@ export const NOTIFICATION_TYPES = {
     ACCOUNT_CREATED: 'AccountCreated',
   
     // Error and Authentication
-    ERROR: 'Error',
-    INVALID_CREDENTIALS: 'InvalidCredentials',
+  ERROR: 'Error' as const,
+  INVALID_CREDENTIALS: 'InvalidCredentials',
   
     // Team-related
     TEAM_LOADING: 'TeamLoading',
@@ -44,4 +44,4 @@ export const NOTIFICATION_TYPES = {
   
 
 
-export type NOTIFICATION_TYPES = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];
+  export type NOTIFICATION_TYPES = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];

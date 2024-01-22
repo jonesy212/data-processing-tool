@@ -4,14 +4,13 @@ import Project, {
   isProjectInSpecialPhase,
 } from "../components/projects/Project";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
-import StoreConfig from "../shopping_center/StoreConfig";
+import StoreConfig from "../shopping_center/ShoppingCenterConfig";
 import {
   BackendDocumentConfig,
   backendDocumentConfig,
 } from "./BackendDocumentConfig";
 import dataVersions from "./DataVersionsConfig";
 import { frontendDocumentConfig } from "./FrontendDocumentConfig";
-import frontendStructure from "./FrontendStructure";
 import { LazyLoadScriptConfig } from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
@@ -32,6 +31,7 @@ export interface CacheConfig {
 
 export interface ApiConfig {
   [x: string]: any;
+  name: any
   baseURL: string;
   timeout: number;
   headers: {
@@ -64,13 +64,16 @@ interface ConfigurationOptions {
   backendDocumentConfig: BackendDocumentConfig; // Add backendDocumentConfig here
 
   configStructure: {
+    systemConfigs: typeof SystemConfigs;
+    userConfigs: typeof UserConfigs;
+    aquaConfig: AquaConfig;
+    storeConfig: StoreConfig;
     dataVersions: typeof dataVersions;
-    userSettings: typeof userSettings;
+    frontendDocumentConfig: typeof frontendDocumentConfig;
+    lazyLoadScriptConfig: LazyLoadScriptConfig;
     userPreferences: typeof userPreferences;
-    backendDocumentConfig: typeof backendDocumentConfig; // Add backendDocumentConfig here
-    frontendStructure: typeof frontendStructure;
-    
-  };
+    userSettings: typeof userSettings;
+  }
   // other configuration options
 }
 
@@ -83,6 +86,7 @@ class ConfigurationService {
   private constructor() {
     // Initialize apiConfig with default values
     this.apiConfig = {
+      name: "apiConfigName",
       baseURL: "",
       timeout: 0,
       headers: {},
@@ -149,6 +153,7 @@ class ConfigurationService {
     const isCustomConfigNeeded = aquaConfig.maxConnections > 5;
     if (isCustomConfigNeeded) {
       const customApiConfig: ApiConfig = {
+        name: "customApiConfig",
         baseURL: "https://custom-api.com",
         timeout: 10000,
         headers: {
@@ -198,16 +203,17 @@ class ConfigurationService {
   // Add more configuration methods as needed
 
 
-  async getSystemConfigs() {
-    // Simulate asynchronous fetching, replace with actual async logic
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(SystemConfigs);
-      }, 500);
-    });
-  }
+  
+async getSystemConfigs(): Promise<typeof SystemConfigs> {
+  // Simulate asynchronous fetching, replace with actual async logic
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(SystemConfigs);
+    }, 500);
+  });
+}
 
-  async getUserConfigs() {
+  async getUserConfigs(): Promise<typeof UserConfigs>  {
     // Simulate asynchronous fetching, replace with actual async logic
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -219,6 +225,7 @@ class ConfigurationService {
     // Example API configuration
     // You can modify this based on your application's needs
     return {
+      name: "defaultApiConfig",
       baseURL: "https://api.example.com",
       timeout: 10000,
       headers: {

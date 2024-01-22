@@ -21,5 +21,9 @@ export const TodoActions = {
   updateTodosSuccess: createAction<{ todos: Todo[] }>("updateTodoSuccess"),
   updateTodoFailure: createAction<{ error: string }>("updateTodoFailure"),
   
+  batchAssignTodos: createAction<{ todoIds: string[], assigneeId: string }>("batchAssignTodos"),
+  batchAssignSuccess: createAction<{ todoIds: string[], assigneeId: string }>("batchAssignSuccess"),
+  
+  batchAssignFailure: createAction<{ error: string }>("batchAssignFailure")
   // Add more actions as needed
 };

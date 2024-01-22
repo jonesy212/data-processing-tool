@@ -1,44 +1,51 @@
 // _app.tsx
+import { Refine } from "@refinedev/core";
 import { AppProps } from "next/app";
 import { AuthProvider } from "../components/auth/AuthContext";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { NotificationProvider } from "../components/support/NotificationContext";
 
+import { uuidV4 } from "ethers";
 import React, { useState } from "react";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
+import EditorWithPrompt from "../components/documents/EditorWithPrompt";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
+import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
+import undoLastAction from '../components/projects/projectManagement/ProjectManager';
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
+import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
+import ChartComponent from "./forms/ChartComponent";
 import SearchComponent from "./searchs/Search";
 
 
-
+const phases: Phase[] = [
+  {
+    name: "Calendar Phase",
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases: ["Research", "Planning", "Design"],
+    component: {} as (props: {}, context?: any)=> React.ReactElement,
+    hooks: {} as CustomPhaseHooks
+  },
+  // Add more phases
+];
 
 
 async function MyApp({ Component, pageProps }: AppProps) {
- 
+  const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
+
   interface Props {
     children: (props: { hooks: any; utilities: any }) => React.ReactNode;
     componentSpecificData: any[];
   }
 
-  // Define your phases
-  interface Phase {
-    name: string;
-  }
-
-  const phases: Phase[] = [
-    {
-      name: "Calendar Phase",
-    },
-    // Add more phases
-  ];
 
   // Generate hooks dynamically based on your phases
   const hooks: { [key: string]: Function } = {};
@@ -77,13 +84,23 @@ async function MyApp({ Component, pageProps }: AppProps) {
     rollbackToPreviousPhase();
 
     // Example: Undo the last action
-    undoLastAction();
+    undoLastAction({}, utilities);
 
     // Additional actions...
   };
 
+
+  const getNextPhase = (currentPhase: Phase): Phase => {
+    // Add your logic to determine the next phase
+    const currentIndex = phases.findIndex((phase) => phase.name === currentPhase.name);
+    const nextIndex = (currentIndex + 1) % phases.length;
+    return phases[nextIndex];
+  };
+  
   const advanceToNextPhase = () => {
-    console.log("Advancing to the next project phase...");
+    const nextPhase = getNextPhase(currentPhase);
+    setCurrentPhase(nextPhase);
+    console.log(`Advancing to the next phase: ${nextPhase.name}`);
     // Replace with your actual logic to move to the next phase
   };
 
@@ -102,6 +119,23 @@ async function MyApp({ Component, pageProps }: AppProps) {
 
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
+    <Refine 
+    dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+      routerProvider={routerProvider}
+      resources={[
+        {
+          name: "posts",
+          list: "/posts",
+          show: "/posts/show/:id",
+        },
+        {
+          name: "categories",
+          list: "/categories",
+          show: "/categories/show/:id",
+        },
+      ]}
+    >
+
     <SearchComponent {...pageProps}>
       {({ children, componentSpecificData }: Props) => (
         <ThemeConfigProvider>
@@ -135,14 +169,34 @@ async function MyApp({ Component, pageProps }: AppProps) {
                         console.log("Node clicked:", node);
                       }}
                     />
-                  )}
+                    )}
+                          <EditorWithPrompt userId="user1" teamId="team1" project="project1" />
+
                 </StoreProvider>
               </AuthProvider>
-            </DynamicPromptProvider>
+              </DynamicPromptProvider>
+              <NotificationManager
+                notifications={[]}
+                notify={(message) => {
+                 addNotifications((prevNotifications) => [
+                    ...prevNotifications,
+                    {
+                      message,
+                      id: uuidV4(),
+                    },
+                  ]);
+                }}
+              />
           </NotificationProvider>
         </ThemeConfigProvider>
-      )}
+        )}
+       <ChartComponent {...pageProps} />
+
+    <Layout>
+    {Component && <Component {...pageProps} />}
+    </Layout>
     </SearchComponent>
+    </Refine>
   );
 }
 

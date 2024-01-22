@@ -1,11 +1,11 @@
 // AdapterContent.tsx
 import React, { useState } from "react";
-import DraggableAnimation from "../../animations/DraggableAnimation";
 import NavigationGenerator from "../../hooks/userInterface/Navigation";
+import DraggableAnimation from "../../libraries/animations/DraggableAnimation";
 import Link from "../../routing/Link";
 import {
-    AnimatedComponent,
-    AnimatedComponentProps,
+  AnimatedComponent,
+  AnimatedComponentProps,
 } from "../../styling/AnimationsAndTansitions";
 import ColorPalette, { ColorSwatchProps } from "../../styling/ColorPalette";
 interface ScreenElementProps {

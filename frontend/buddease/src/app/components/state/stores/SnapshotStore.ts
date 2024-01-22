@@ -6,6 +6,7 @@ import { Todo } from "../../todos/Todo";
 import { UserData } from "../../users/User";
 
 interface SnapshotStoreConfig<T> {
+  [x: string]: any;
   key: string;
   initialState: T;
   onSnapshot?: (snapshot: T) => void;
@@ -16,27 +17,80 @@ interface SnapshotStoreConfig<T> {
   // snapshots: () => Record<string, Todo[]>; // Correct the return type
   getSnapshots: (snapshots: Record<string, Record<string, Todo[]>>) => void;
   clearSnapshot: () => void;
-  getSnapshotsArray: () => Snapshot<T>[];
-
 }
+
+
+const snapshotStoreConfig: SnapshotStoreConfig<Record<string, Data[]>> = {
+  key: "todos",
+  initialState: {},
+  onSnapshot: (snapshot) => {
+    console.log("Snapshot taken!", snapshot);
+  },
+  
+  snapshot: () => {
+    console.log("Snapshot taken!");
+    const snapshotValues = Object.values(snapshotStore.state);
+    const snapshotRecord: Record<string, Data[]> = {};
+    snapshotValues.forEach((value: any) => {
+      snapshotRecord[value] = [value];
+    });
+    snapshotStore.state = snapshotRecord;
+  },
+
+  initSnapshot: () => {
+    const { state: authState } = useAuth();
+    snapshotStore.initSnapShot(authState as unknown as Data);
+  },
+
+  updateSnapshot: (snapshot) => {
+    snapshotStore.updateSnapshot(
+      snapshotStore.getLatestSnapshot(snapshot as Snapshot<Record<string, Data[]>>)
+    );
+  },
+
+  takeSnapshot: (snapshot) => {
+    snapshotStore.takeSnapshot(snapshot as Snapshot<Record<string, Data[]>> & Data);
+    snapshotStore.state = snapshot;
+  },
+
+  getSnapshot(snapshot: string): Record<string, Todo[]> {
+    const { state } = useAuth();
+    return this.state[snapshot];
+  },
+
+  getSnapshots(snapshots: Record<string, Record<string, Todo[]>>): Record<string, Todo[]>[] {
+    return this.snapshots.filter((snapshot: Snapshot<Record<string, Todo[]>>) => {
+      return Object.keys(snapshots).includes(snapshot.timestamp.toString());
+        }).map((snapshot: Snapshot<Data>) => snapshot.snapshot);
+  },
+
+  clearSnapshot: () => {
+    snapshotStore.clearSnapshots();
+  },
+
+  
+};
+
+
 
 export interface Snapshot<T> {
   [x: string]: any;
   timestamp: number;
   data: UserData | Data;
   snapshot: T;
-  snapshots: Snapshot<T>[];
   initSnapShot: (snapshot: T) => void;
   takeSnapShot: (data: T) => void;
   updateSnapshot: (snapshot: Snapshot<T>) => void;
 }
+
+
 
 class SnapshotStore<T> {
   key: string;
   state: T;
   onSnapshot?: (snapshot: T) => void;
   snapshot?: () => void;
- 
+
   private snapshots: Snapshot<T>[] = [];
 
   constructor(config: SnapshotStoreConfig<T>) {
@@ -47,12 +101,8 @@ class SnapshotStore<T> {
     makeAutoObservable(this);
   }
 
-  initSnapShot(snapshot: UserData) {
+  initSnapShot(snapshot: Data) {
     this.takeSnapshot(snapshot);
-  }
-
-  getSnapshotsArray() {
-    return this.snapshots;
   }
 
   updateSnapshot(newSnapshot: T) {
@@ -62,12 +112,11 @@ class SnapshotStore<T> {
     }
   }
 
-
   takeSnapshot(data: Data) {
     const timestamp = Date.now();
     this.snapshots.push({
       timestamp,
-      data ,
+      data,
       snapshots: [],
       initSnapShot: function (snapshot: T): void {
         this.takeSnapshot(snapshot);
@@ -86,7 +135,7 @@ class SnapshotStore<T> {
   }
 
   fetchSnapshot(snapshot: Snapshot<T>): void {
-    this.snapshots.push(snapshot );
+    this.snapshots.push(snapshot);
   }
 
   getSnapshot(snapshot: string) {
@@ -111,7 +160,7 @@ class SnapshotStore<T> {
 
   getLatestSnapshot(snapshot: Snapshot<T>): T {
     return this.snapshots[this.snapshots.length - 1].snapshot;
-    }
+  }
 
   takeLatestSnapshot(snapshot: T) {
     const { state: authState } = useAuth();
@@ -124,29 +173,29 @@ class SnapshotStore<T> {
         snapshots: [],
         initSnapShot: () => {
           const userData: UserData = {
-            id: authState.user?.id || 0
-          }
-          snapshotStore.initSnapShot(userData)
+            id: authState.user?.id || 0,
+          };
+          snapshotStore.initSnapShot(userData as UserData & Data);
         },
         takeSnapShot: (data: T) => {
           this.takeLatestSnapshot(data);
         },
         updateSnapshot(data: Snapshot<T>) {
           const existingSnapshot = this.getSnapshot(data.id);
-        
+
           if (existingSnapshot) {
             existingSnapshot.snapshots.push(data);
           } else {
             this.snapshots.push(data);
           }
-        }
-      }
+        },
+      },
     ];
   }
 }
 
 const { state: authState } = useAuth();
-const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
+const snapshotStore = new SnapshotStore<Record<string, Data[]>>({
   key: "todos",
   initialState: {},
   onSnapshot: (snapshot) => {
@@ -155,27 +204,30 @@ const snapshotStore = new SnapshotStore<Record<string, Todo[]>>({
   snapshot: () => {
     console.log("Snapshot taken!");
     const snapshotValues = Object.values(snapshotStore.state);
-    const snapshotRecord: Record<string, Todo[]> = {};
+    const snapshotRecord: Record<string, Data[]> = {};
     snapshotValues.forEach((value: any) => {
       snapshotRecord[value] = [value];
     });
     snapshotStore.state = snapshotRecord;
   },
   initSnapshot: () => {
-    snapshotStore.initSnapShot(authState);
+    snapshotStore.initSnapShot(authState as unknown as Data);
   },
-  updateSnapshot:  (snapshot) => {
-    snapshotStore.updateSnapshot( snapshotStore.getLatestSnapshot(snapshot as Snapshot<Record<string, Todo[]>>));
+  updateSnapshot: (snapshot) => {
+    snapshotStore.updateSnapshot(
+      snapshotStore.getLatestSnapshot(
+        snapshot as Snapshot<Record<string, Data[]>>
+      )
+    );
   },
   takeSnapshot: (snapshot) => {
-    
-    snapshotStore.takeSnapshot(snapshot as UserData);
+    snapshotStore.takeSnapshot(
+      snapshot as Snapshot<Record<string, Data[]>> & Data
+    );
     snapshotStore.state = snapshot;
   },
-  snapshots: (): Record<string, Todo[]> => {
-    return snapshotStore.state;
-  },
-  getSnapshots: (snapshots: Record<string, Record<string, Todo[]>>) => {
+
+  getSnapshots: (snapshots: Record<string, Record<string, Data[]>>) => {
     return snapshots;
   },
   clearSnapshot: () => {

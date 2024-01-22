@@ -204,7 +204,6 @@ const dynamicHooks = {
 };
 
 // Subscription service using dynamic hooks
-// Subscription service using dynamic hooks
 const subscriptionService = {
   subscriptions: new Map<string, (message: any) => void>(), // Modify the Map to accept a callback with a message parameter
 
@@ -228,7 +227,7 @@ const subscriptionService = {
 
   unsubscribeAll: () => {
     subscriptionService.subscriptions.clear();
-    // Additional cleanup logic if needed
+
   },
 
   connectWeb3Provider: (web3Provider: Web3Provider) => {

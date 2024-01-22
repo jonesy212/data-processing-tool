@@ -1,14 +1,15 @@
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
+import { DataAnalysisAction } from "@/app/typings/dataAnalysisTypes";
 import React, { useEffect, useState } from "react";
 import { useCalendarContext } from "../calendar/CalendarContext";
+import DynamicContent from "../documents/DynamicContent";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar from "../models/tracker/ProgresBar";
 import { Tracker } from "../models/tracker/Tracker";
 import { PromptPageProps } from "../prompts/PromptPage";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
-import { userService } from "../users/UserService";
 import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
@@ -89,7 +90,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
   children,
 }) => {
-  const { realtimeData, fetchData } = useRealtimeData([]);
+  const { realtimeData, fetchData } = useRealtimeData(initialState, 'tracker');
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout(); // Destructure the idle timeout properties
   const dataFrameAPI = DataFrameAPI; // Initialize the dataframe API class
   const { calendarData, updateCalendarData } = useCalendarContext();
@@ -157,16 +158,18 @@ const YourComponent: React.FC<YourComponentProps> = ({
   };
 
 
-  const handleAppendData = async ():Promise<void> => {
+  const handleAppendData = async (): Promise<void> => {
 
-      const user = await userService.fetchUser(useCalendarContext().userId);
-      const userId = await userService.fetchUser();
-        const newData = [{ column1: 'value1', column2: 'value2' }];
+    // const userId = await userService.fetchUser(calendarData[0].userId);
+    const newData = [{ column1: 'value1', column2: 'value2' }];
     // Append data to the backend and trigger a manual update
     await dataFrameAPI.appendDataToBackend(newData);
-    fetchData("", {} as dispatch);
-  };
-  
+    fetchData("", {} as (action: DataAnalysisAction) => {
+      // trigger update after append
+      updateCalendarData()
+    });
+  }
+  // Render UI components to display appended data
   return (
     <div>
       {/* Display the progress bar and loading spinner */}
@@ -207,6 +210,8 @@ const YourComponent: React.FC<YourComponentProps> = ({
 
       {/* Example usage of removeTracker */}
       <button onClick={() => removeTracker(tracker.id as unknown as Tracker)}>Remove Tracker</button>
+
+      <DynamicContent fontSize="16px" fontFamily="Arial, sans-serif" content={<p>Hello, Dynamic Content!</p>} />
 
       {children}
       <button onClick={handleAppendData}>Append Data</button>

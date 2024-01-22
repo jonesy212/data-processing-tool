@@ -32,6 +32,8 @@ const Index: React.FC = () => {
 
     const authenticateUser = async () => {
       const user: User = {
+        // user object
+        _id: "123",
         id: 1,
         username: "testUser",
         email: "test@test.com",

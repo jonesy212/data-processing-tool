@@ -1,10 +1,10 @@
-import { DynamicContentProps } from "@/app/components/cards/DummyCardLoader";
+import DynamicContentProps from '@/app/components/cards/DummyCardLoader';
 import React from "react";
 import { PersonaData } from "./PersonaData";
 
 interface PersonaPanelProps {
   persona: string;
-  contentProps: DynamicContentProps; // Pass dynamic content props to render
+  contentProps: typeof DynamicContentProps; // Pass dynamic content props to render
   personaData: PersonaData;
   userPersonas: string[];
   businessPersonas: string[];
@@ -40,7 +40,7 @@ const renderPersonaData = (data: string[]) => {
     </ul>
   );
 };
-const renderDynamicContent = (props: DynamicContentProps) => {
+const renderDynamicContent = (props: typeof DynamicContentProps) => {
   if ("fontSize" in props && "fontFamily" in props) {
     // Dynamic rendering based on the type of props
     if ("fontSize" in props) {

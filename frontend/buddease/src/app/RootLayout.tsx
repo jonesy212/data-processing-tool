@@ -1,17 +1,19 @@
 // RootLayout.tsx
 import React, { useEffect } from "react";
 import { useDynamicComponents } from "./components/DynamicComponentsContext";
-import {
-  AnimatedComponent,
-  AnimatedComponentRef,
-} from "./components/animations/AnimationComponent";
 import useLayoutGenerator, {
   DocumentGenerationResult,
 } from "./components/hooks/GenerateUserLayout";
 import { useThemeConfig } from "./components/hooks/userInterface/ThemeConfigContext";
+import {
+  AnimatedComponent,
+  AnimatedComponentRef,
+} from "./components/libraries/animations/AnimationComponent";
 import { Data } from "./components/models/data/Data";
 import responsiveDesignStore from "./components/styling/ResponsiveDesign";
 import { User } from "./components/users/User";
+import { layoutConfig } from "./configs/LayoutConfig";
+import { DocxGeneratorOptions } from "./generators/docxGenerator";
 import DesignDashboard from "./pages/dashboards/DesignDashboard";
 import { useLayout } from "./pages/layouts/LayoutContext";
 
@@ -37,10 +39,10 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   };
 
   // Change this line in RootLayout
-const layoutEffect = () => {
+const layoutEffect = async () => {
   // Your layout effect logic goes here
   // For example, toggle the animated component
-  const backgroundColor = isDarkMode ? "#1a1a1a" : "#fff";
+  
   if (animatedComponentRef.current) {
     // Use the values in your logic or UI
     animatedComponentRef.current.toggleActivation();
@@ -52,7 +54,8 @@ const layoutEffect = () => {
     setFontFamily("Arial, sans-serif");
     // Set background color through the context
     setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
-  
+    const configResult = await layoutConfig();
+    console.log(configResult);
     // You can use other theme properties here
     console.log("Is Dark Mode:", isDarkMode);
     console.log("Primary Color:", setPrimaryColor);
@@ -65,46 +68,71 @@ const layoutEffect = () => {
   const cleanup = () => {
     // Your cleanup logic goes here
   };
-
   const documentGenerator = {
-    generateDocument: async () => {
+    generateDocument: async (documentGeneratorOptions: DocxGeneratorOptions) => {
       // Your document generation logic goes here
-      return "Generated document content";
+      const { templatePath, outputPath, data, user } = documentGeneratorOptions;
+      // Generate document
+      return {
+        templatePath: templatePath,
+        outputPath: outputPath,
+        data: data,
+        user: user
+      };
     },
   };
-
+ 
   
+
 
   const animatedComponentRef = React.useRef<AnimatedComponentRef>(null);
   const { toggleActivation } = useLayoutGenerator({
-    condition: () => true, // Provide your condition logic
+    condition: () => true,
     layoutEffect,
     documentGeneratorOptions: {
-      templatePath: "", // Provide your templatePath
-      outputPath: "", // Provide your outputPath
-      data: {} as Data, // Adjust the type according to your Data type
-      user: {} as User, // Adjust the type according to your User type
+      templatePath: "",
+      outputPath: "",
+      data: {} as Data,
+      user: {} as User,
     },
     generateDocument: async (): Promise<DocumentGenerationResult> => {
-      // Generate document logic
       try {
-        // Assuming documentGenerator is a function, call it here
-        await documentGenerator.generateDocument();
+        await documentGenerator.generateDocument({} as DocxGeneratorOptions);
       } catch (error) {
         console.error("Error generating document:", error);
       }
-      // If an error occurs, return a default result or handle it accordingly
       return {
         message: "Document generated successfully.",
-        success: true
-            };
+        success: true,
+      };
     },
     layoutConfigGetter: async () => {
-      // Your layout config logic
       return {
         documentGeneration: "Document generated successfully.",
         designDashboard: (
-          <DesignDashboard colors={responsiveDesignStore.colors} />
+          <DesignDashboard
+            colors={responsiveDesignStore.colors}
+            frontendStructure={responsiveDesignStore.frontendStructure}
+            backendStructure={responsiveDesignStore.backendStructure}
+            onCloseFileUploadModal={() => {}}
+            onHandleFileUpload={async (file: FileList | null) => {
+              if (file) {
+                // Handle file upload logic here
+                const fileReader = new FileReader();
+                fileReader.onload = async () => {
+           
+                  // Pass file content to document generator
+                  await documentGenerator.generateDocument({
+                    templatePath: "",
+                    outputPath: "",
+                    data: {} as Data,
+                    user: {} as User,
+                  });
+                }
+                fileReader.readAsText(file[0]);
+              }
+            }}
+          />
         ),
         responsiveDesignStore: responsiveDesignStore,
       };

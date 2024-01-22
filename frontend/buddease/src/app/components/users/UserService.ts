@@ -1,101 +1,102 @@
 // UserService.ts
-import axios from "axios";
+import axiosInstance from "@/app/api/axiosInstance";
+import { makeAutoObservable } from 'mobx';
 import { UserActions } from "../users/UserActions";
-import { User } from "./User";
+import { User } from './User';
 
-const API_BASE_URL = "/api/users";
+const API_BASE_URL = '/api/users';
 
-export const userService = {
-  fetchUser: async (userId: number) => {
+class UserService {
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  fetchUser = async (userId: User['id']) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${userId}`);
-      const user = response.data as User;
-      // Dispatch the success action
-      UserActions.fetchUserSuccess({ user });
-      return user;
+      const response = await axiosInstance.get(`${API_BASE_URL}/${userId}`);
+      UserActions.fetchUserSuccess({ user: response.data });
+      return response.data;
     } catch (error) {
       // Dispatch the failure action
       UserActions.fetchUserFailure({ error: String(error) });
-      console.error("Error fetching user:", error);
+      console.error('Error fetching user:', error);
       throw error;
     }
-  },
+  };
 
-  updateUser: async (userId: number, updatedUserData: any) => {
+  updateUser = async (userId: User['id'], updatedUserData: User) => {
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}/${userId}`,
-        updatedUserData
-      );
-      const updatedUser = response.data as User;
+      const response = await axiosInstance.put(`${API_BASE_URL}/${userId}`, updatedUserData);
+      const updatedUser = response.data;
       // Dispatch the success action
       UserActions.updateUserSuccess({ user: updatedUser });
       return updatedUser;
     } catch (error) {
       // Dispatch the failure action
       UserActions.updateUserFailure({ error: String(error) });
-      console.error("Error updating user:", error);
+      console.error('Error updating user:', error);
       throw error;
     }
-  },
+  };
 
-  updateUserFailure: async () => {
+  updateUserFailure = async () => {
     try {
-      const response = await axios.get(API_BASE_URL);
-      const user = response.data as User
+      const response = await axiosInstance.get(API_BASE_URL);
+      const user = response.data;
       // Dispatch the failure action
       UserActions.updateUserFailure({ error: 'Update user failed' });
-      return user
+      return user;
     } catch (error) {
       UserActions.fetchUsersFailure({ error: String(error) });
-      console.error("Error updating user:", error);
+      console.error('Error updating user:', error);
       throw error;
     }
-  },
+  };
 
-
-  // buk requests
-  fetchUsers: async () => {
+  // Bulk requests
+  fetchUsers = async () => {
     try {
-      const response = await axios.get(API_BASE_URL);
-      const users = response.data as User[];
+      const response = await axiosInstance.get(API_BASE_URL);
+      const users = response.data;
       // Dispatch the success action
       UserActions.fetchUsersSuccess({ users });
       return users;
     } catch (error) {
       // Dispatch the failure action
       UserActions.fetchUsersFailure({ error: String(error) });
-      console.error("Error fetching users:", error);
+      console.error('Error fetching users:', error);
       throw error;
     }
-  },
+  };
 
-  updateUsers: async (updatedUsersData: { id: number; newData: any }[]) => {
+  updateUsers = async (updatedUsersData: User) => {
     try {
-      const response = await axios.put(API_BASE_URL, updatedUsersData);
-      const updatedUsers = response.data as User[];
+      const response = await axiosInstance.put(API_BASE_URL, updatedUsersData);
+      const updatedUsers = response.data;
       // Dispatch the success action
       UserActions.updateUsersSuccess({ users: updatedUsers });
       return updatedUsers;
     } catch (error) {
       // Dispatch the failure action
       UserActions.updateUsersFailure({ error: String(error) });
-      console.error("Error updating users:", error);
+      console.error('Error updating users:', error);
       throw error;
     }
-  },
+  };
 
-  deleteUsers: async (userIds: number[]) => {
+  deleteUsers = async (userIds: User['id'][]) => {
     try {
-      await axios.delete(`${API_BASE_URL}`, { data: { userIds } });
+      await axiosInstance.delete(`${API_BASE_URL}`, { data: { userIds } });
       // Dispatch the success action
-      UserActions.deleteUsersSuccess(userIds);
+      UserActions.deleteUsersSuccess(userIds as User['id'][] as number[]);
     } catch (error) {
       // Dispatch the failure action
       UserActions.deleteUsersFailure({ error: String(error) });
-      console.error("Error deleting users:", error);
+      console.error('Error deleting users:', error);
       throw error;
     }
-  },
-};
+  };
+}
 
+const userService = new UserService();
+export default userService;

@@ -21,17 +21,22 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/layouts/*": ["./src/app/pages/layouts/*"],
-      "@/dashboards/*": ["./src/app/pages/dashboards/*"],
-      "@/onboarding/*": ["./src/app/pages/onboarding/*"],
-      "@/forms/*": ["./src/app/pages/forms/*"],
-      "@/searches/*": ["./src/app/pages/searches/*"],
       "@/api/*": ["./src/app/api/*"],
-      "@/projects/*": ["./src/app/components/projects/*"],
       "@/calendar/*": ["./src/app/components/calendar/*"],
-      "@/documents/*": ["./src/app/components/documents/*"]
+      "@/documents/*": ["./src/app/components/documents/*"],
+      "@/projects/*": ["./src/app/components/projects/*"],
+      "@/support/*": ["./src/app/components/support/*"],
+      "@/animations/*": ["./src/app/components/animations*"],
+      
+      "@/onboarding/*": ["./src/app/pages/onboarding/*"],
+      "@/dashboards/*": ["./src/app/pages/dashboards/*"],
+      "@/forms/*": ["./src/app/pages/forms/*"],
+      "@/layouts/*": ["./src/app/pages/layouts/*"],
+      "@/searches/*": ["./src/app/pages/searches/*"],
+      "@/backendStructure/*": ["./src/app/configs/appStructure/*"],
+      "@/frontendStructure/*": ["./src/app/configs/appStructure/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx", "src/app/components/calendar/CalendarEvents.jsx", "src/app/components/calendar/CalendarComponent.jsx", "src/app/components/calendar/YourCalendarLibrary.js", "src/app/components/projects/Project.jsx", "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx", "src/app/components/phases/collaborationPhase/CollaborationContext.js", "src/app/utils/EmojiPickerUtils.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx", "src/app/components/calendar/CalendarEvents.jsx", "src/app/components/calendar/CalendarComponent.jsx", "src/app/components/calendar/YourCalendarLibrary.js", "src/app/components/projects/Project.jsx", "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx", "src/app/components/phases/collaborationPhase/CollaborationContext.js", "src/app/utils/EmojiPickerUtils.jsx", "src/app/components/libraries/ui/UILibrary.tsx", "src/app/pages/dashboards/DashboardOverview.jsx", "src/app/components/phases/PhasesNavigation.jsx", "src/app/utils/MyPromise.tjsx"],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

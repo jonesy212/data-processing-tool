@@ -1,26 +1,27 @@
 // Update import statements as needed
 import { ModalGenerator } from "@/app/generators/GenerateModal";
-import React, { useState } from "react";
+import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
+import React from "react";
 import FileUploadModal from "./FileUploadModal";
 
-const FileUploadModalLauncher: React.FC = () => {
-  const [isFileUploadModalOpen, setFileUploadModalOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+interface FileUploadModalLauncherProps {
+  onCloseFileUploadModal: () => void;
+}
+
+const FileUploadModalLauncher: React.FC<FileUploadModalLauncherProps> = ({
+  onCloseFileUploadModal,
+}) => {
+  const { isModalOpen, handleCloseModal, handleFileUpload, uploadedFiles } = useModalFunctions(); // Use useModalFunctions
 
   const openFileUploadModal = () => {
-    setFileUploadModalOpen(true);
+    // You can perform any additional logic here before opening the modal
+    handleFileUpload(null); // For demonstration purposes, let's call handleFileUpload with null
   };
 
   const closeFileUploadModal = () => {
-    setFileUploadModalOpen(false);
-  };
-
-  const handleFileUpload = (files: FileList | null) => {
-    if (files) {
-      // Process the uploaded files (you can perform additional logic here)
-      const fileNames = Array.from(files).map((file) => file.name);
-      setUploadedFiles(fileNames);
-    }
+    // You can perform any cleanup logic here before closing the modal
+    handleCloseModal();
+    onCloseFileUploadModal();
   };
 
   return (
@@ -42,7 +43,7 @@ const FileUploadModalLauncher: React.FC = () => {
 
       {/* Include the modal generator where needed */}
       <ModalGenerator
-        isOpen={isFileUploadModalOpen}
+        isOpen={isModalOpen}
         closeModal={closeFileUploadModal}
         modalComponent={FileUploadModal}
         onFileUpload={handleFileUpload}

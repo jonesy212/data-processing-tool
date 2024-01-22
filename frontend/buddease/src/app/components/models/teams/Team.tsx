@@ -2,11 +2,9 @@ import { Phase } from "../../phases/Phase";
 import Project from "../../projects/Project";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
-import CommonDetails from "../CommonDetailsProps";
-import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgresBar";
 
-interface Team extends Data {
+interface Team extends TeamData {
   id: number;
   teamName: string;
   description?: string | undefined;
@@ -26,6 +24,7 @@ const team: Team = {
   description: "A team focused on software development",
   members: [
     {
+      _id: 'member-1',
       id: 1,
       username: "user1",
       email: "user1@example.com",
@@ -39,6 +38,7 @@ const team: Team = {
       processingTasks: [] as DataProcessingTask[],
     },
     {
+      _id: 'member-2',
       id: 2,
       username: "user2",
       email: "user2@example.com",
@@ -55,7 +55,15 @@ const team: Team = {
   ],
   projects: [
     {
+      _id: 'project-1',
       id: "1",
+      title: "Team Projects",
+      status: "pending",
+      phase: {} as Phase,
+      then: () => { },
+      analysisType: "image",
+      analysisResults: ["analysisResults"],
+      tags: [],
       name: "Project A",
       description: "Description of Project A",
       members: [],
@@ -69,7 +77,15 @@ const team: Team = {
       budget: 0,
     },
     {
+      _id: 'project-2',
       id: "2",
+      title: "Team Projects",
+      status: "pending",
+      phase: {} as Phase,
+      then: () => { },
+      analysisType: "image",
+      analysisResults: ["analysisResults"],
+      tags: [],
       name: "Project B",
       description: "Description of Project B",
       members: [],
@@ -77,6 +93,7 @@ const team: Team = {
       currentPhase: "Planning" as unknown as Phase,
       tasks: [
         {
+          _id: "project",
           id: "1",
           title: "Task 1",
           description: "Description of Task 1",
@@ -85,6 +102,7 @@ const team: Team = {
           ],
           then(arg0: (newTask: any) => void): unknown {
             const newTask = {
+              _id: "task-2",
               id: "2",
               title: "Task 2",
               description: "Description of Task 2",
@@ -135,6 +153,7 @@ const team: Team = {
   progress: {} as Progress,
   isActive: true,
   leader: {
+    _id: '3',
     id: 3,
     username: "teamLeader",
     email: "leader@example.com",
@@ -165,8 +184,23 @@ const team: Team = {
   status: "pending",
   tags: [],
   analysisType: "",
-  analysisResults: []
+  analysisResults: [],
+  _id: ""
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // using commong detais we genrate detais for components by mapping through the objects.
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => (

@@ -1,5 +1,8 @@
 // ThemeConfigContext.tsx
+import { ThemeConfig } from "@/app/theme/ThemeConfig";
+import YourClass from "@/app/utils/YourClass";
 import React, { createContext, useContext, useState } from "react";
+import { DappProps } from "../../web3/dAppAdapter/DAppAdapterConfig";
 
 interface ThemeConfigProps {
   fontSize: string;
@@ -12,7 +15,9 @@ interface ThemeConfigProps {
     setSecondaryColor: React.Dispatch<React.SetStateAction<string>>;
     setFontSize: React.Dispatch<React.SetStateAction<string>>;
     setFontFamily: React.Dispatch<React.SetStateAction<string>>;
-    children: React.ReactNode;
+  children: React.ReactNode;
+  themeConfig: ThemeConfig
+  applyThemeConfig: (themeConfig: ThemeConfig) => void
   // Add more theme-related options as needed
 }
 
@@ -28,10 +33,22 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   const [secondaryColor, setSecondaryColor] = useState("#e74c3c");
   const [fontSize, setFontSize] = useState("16px");
   const [fontFamily, setFontFamily] = useState("Arial, sans-serif");
+  const [themeConfig, setThemeConfig] = useState<ThemeConfig>({});
+  
+  let yourClassInstance: YourClass;
 
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
   };
+
+
+  const applyThemeConfig = (config: ThemeConfig) => {
+    
+    setThemeConfig(config);
+    // Additional logic for theme customization
+    yourClassInstance.customizeTheme(config, {} as DappProps); // Assuming yourClassInstance is accessible here
+  };
+
 
   return (
     <ThemeConfigContext.Provider
@@ -46,6 +63,8 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
         setFontSize,
         fontFamily,
         setFontFamily,
+        themeConfig,
+        applyThemeConfig,
         children,
       }}
     >

@@ -1,8 +1,9 @@
 // GenerateChatInterfaces.ts
 
-  interface Message {
+import { User, UserData } from "../components/users/User";
+
+  interface Message extends User, UserData {
     id: string;
-    userId: string;
     channelId: string;
     content: string;
     timestamp: Date;
@@ -45,6 +46,8 @@
   
     return interfaces;
   };
+
+  export type { Message };
   
   // Example usage
   const generatedInterfaces = generateChatInterfaces(['User', 'Channel', 'Message']);

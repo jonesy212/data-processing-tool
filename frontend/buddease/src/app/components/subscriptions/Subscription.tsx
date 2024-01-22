@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import useRealtimeData from '../hooks/commHooks/useRealtimeData';
 import { subscriptionService } from '../hooks/dynamicHooks/dynamicHooks';
+import { Data } from '../models/data/Data';
 
-const SubscriptionComponent = () => {
+const SubscriptionComponent = (initialData: Data, updateCallback: (data: Data) => void) => {
   const [subscriptionData, setSubscriptionData] = useState<string | null>(null);
-  const data = useRealtimeData("yourHookName");
+  const data = useRealtimeData(initialData, updateCallback);
 
   useEffect(() => {
     // Subscribe to the data service

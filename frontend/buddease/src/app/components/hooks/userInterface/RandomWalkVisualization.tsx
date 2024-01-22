@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DatasetModel } from '../../todos/tasks/DataSetModel';
 import Visualization from './Visualization'; // Assuming you have the Visualization component
 
 // Function to generate a random walk
@@ -58,7 +59,7 @@ const RandomWalkVisualization = () => {
 
       {/* Visualize the random walk */}
       {randomWalk.length > 0 && (
-        <Visualization type="line" data={[randomWalk]} labels={['Steps']} />
+        <Visualization datasets={{} as DatasetModel[]} type="line" data={[randomWalk]} labels={['Steps']} />
       )}
 
       {/* Display suggestions */}

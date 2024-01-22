@@ -41,4 +41,8 @@ export const TaskActions = {
   batchRemoveTasksSuccess: createAction<number[]>("batchRemoveTasksSuccess"),
   batchRemoveTasksFailure: createAction<{ error: string }>("batchRemoveTasksFailure"),
 
+  markTaskAsCompleteRequest: createAction<string>("markTaskAsCompleteRequest"),
+  markTaskAsCompleteSuccess: createAction<string>("markTaskAsCompleteSuccess"),
+  markTaskAsCompleteFailure: createAction<{ taskId: string, error: string }>("markTaskAsCompleteFailure"),
+
 };

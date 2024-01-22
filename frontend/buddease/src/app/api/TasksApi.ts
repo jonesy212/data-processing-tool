@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Task } from '../components/models/tasks/Task';
+import { useTaskManagerStore } from '../components/state/stores/TaskStore ';
 
 
 const API_BASE_URL = '/api/tasks';  // Replace with your actual API endpoint
@@ -14,13 +15,26 @@ export const fetchTasks = async (): Promise<Task[]> => {
   }
 };
 
-export const addTask = async (newTask: Task): Promise<Task> => {
+export const addTask = async (newTask: Omit<Task, 'id'>) => {
   try {
-    const response = await axios.post(API_BASE_URL, newTask);
-    return response.data;
+    const response = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newTask),
+    });
+
+    if (response.ok) {
+      const createdTask: Task = await response.json();
+      const taskManagerStore = useTaskManagerStore();
+      taskManagerStore.addTaskSuccess({ task: createdTask })
+      
+    } else {
+      console.error('Failed to add task:', response.statusText);
+    }
   } catch (error) {
     console.error('Error adding task:', error);
-    throw error;
   }
 };
 
@@ -108,7 +122,3 @@ export const deleteTask = async (taskId: number): Promise<void> => {
     throw error;
   }
 };
-
-// Add more functions as needed for your specific use cases
-
-// Add more functions as needed for your specific use cases

@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import useRealtimeData from '../components/hooks/commHooks/useRealtimeData';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { CacheData } from '../generators/GenerateCache';
 import { writeCache } from './ReadAndWriteCache';
 
 interface BatchProcessingResult {
@@ -40,11 +41,11 @@ export const processBatchOnServer = async (batchData: any[]): Promise<BatchProce
 };
 
 // Function to synchronize cache from the frontend
-export const synchronizeCacheFromFrontend = async (initialData: any) => {
+export const synchronizeCacheFromFrontend = async (initialData: any, updateCallback: any) => {
   try {
     // Get the latest data from the useRealtimeData hook
-    const updatedData = useRealtimeData(initialData);
-    await writeCache(updatedData);
+    const updatedData = useRealtimeData(initialData, updateCallback);
+    await writeCache(updatedData as CacheData);
     console.log("Cache synchronized from frontend successfully");
   } catch (error) {
     console.error("Error synchronizing cache from frontend:", error);

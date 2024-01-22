@@ -1,4 +1,6 @@
 // ChatRoom.tsx
+import axiosInstance from '@/app/api/axiosInstance';
+import Logger from '@/app/pages/logging/Logger';
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useEffect, useState } from 'react';
 import { useThemeConfig } from '../../hooks/userInterface/ThemeConfigContext';
@@ -27,9 +29,36 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     return () => {};
   }, [roomId]);
 
-  const sendMessage = (message: string) => {
-    console.log(`Sending message to room ${roomId}: ${message}`);
+ 
+  const sendMessage = async (message: string) => {
+    try {
+      // Ensure the message is not empty
+      if (!message.trim()) {
+        console.warn("Cannot send an empty message.");
+        return;
+      }
+
+      // Send the message to the server
+      const response = await axiosInstance.post('/api/chat/send', {
+        roomId,
+        message,
+      });
+
+      // Check if the message was sent successfully
+      if (response.status === 200) {
+
+        console.log('Message sent successfully:', response.data);
+
+        // Log chat message
+        Logger.log("Chat", `Sending message to room ${roomId}: ${message}`, "uniqueID");
+      } else {
+        console.error('Failed to send message. Server response:', response);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
+
 
   const fetchMessagesFromAPI = async (): Promise<ChatMessageData[]> => {
     return [];

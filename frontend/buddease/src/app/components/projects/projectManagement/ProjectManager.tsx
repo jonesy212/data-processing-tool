@@ -1,6 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
+import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
 import { Snapshot } from "../../state/stores/SnapshotStore";
 
@@ -49,7 +50,7 @@ const ProjectManager: React.FC = () => {
     // Implement your logic to retrieve the action history (array of actions)
     // Include snapshots from the SnapshotStore
   
-    const snapshotStoreSnapshots: Snapshot<T>[] = useSnapshotManager().getSnapshots();
+    const snapshotStoreSnapshots: Snapshot<Data>[] = useSnapshotManager().getSnapshots();
     const snapshotActions = snapshotStoreSnapshots.map((snapshot) =>
       entityActions.addSnapshot(snapshot)
     );
@@ -64,7 +65,7 @@ const ProjectManager: React.FC = () => {
   };
 
   // Function to undo the last action
-  const undoLastAction = () => {
+  export const undoLastAction = () => {
     const actionHistory: PayloadAction[] = getActionHistory();
 
     console.log("Undoing the last action...");

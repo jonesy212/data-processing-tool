@@ -4,15 +4,19 @@ import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, select, takeLatest } from "redux-saga/effects";
 import { CalendarEvent } from "../../stores/CalendarStore";
+import {
+  CommunicationActions
+  // Replace 'yourApiEndpoint' with the actual API endpoint
+  ,
 
-// Replace 'yourApiEndpoint' with the actual API endpoint
-const fetchCalendarEventsAPI = () => axios.get("/api/calendar-events");
+  // Replace 'yourApiEndpoint' with the actual API endpoint
+  const, fetchCalendarEventsAPI
+} from () => axios.get("/api/calendar-events");
 
 function* addCalendarEventSaga(
   action: ReturnType<typeof CalendarActions.addEvent>
 ): Generator<Effect, void, any> {
   try {
-    // Add your logic to handle adding a calendar event
     const { payload: newEvent } = action;
 
     // Assuming there's an API endpoint to add a calendar event
@@ -36,7 +40,6 @@ function* addCalendarEventSaga(
 
 function* fetchCalendarEventsSaga(): Generator<Effect, void, any> {
   try {
-    // Fetch calendar events logic
     yield put(CalendarActions.fetchCalendarEventsRequest());
     const response: AxiosResponse<CalendarEvent[]> = yield call(fetchCalendarEventsAPI);
     yield put(CalendarActions.fetchCalendarEventsSuccess({ events: response.data }));
@@ -53,7 +56,6 @@ function* removeCalendarEventSaga(
   action: ReturnType<typeof CalendarActions.removeEvent>
 ): Generator<Effect, void, any> {
   try {
-    // Remove calendar event logic
     const { payload: eventId } = action;
 
     yield call(() => axios.delete(`/api/calendar-events/${eventId}`));
@@ -74,11 +76,42 @@ function* removeCalendarEventSaga(
   }
 }
 
+// Additional Sagas for Communication and Collaboration
+function* startCommunicationSaga(
+  action: ReturnType<typeof CommunicationActions.startCommunication>
+): Generator<Effect, void, any> {
+  try {
+    // Logic to initiate communication (audio, video, text)
+    // ...
+  } catch (error) {
+    // Handle communication initiation failure
+    console.error('Communication initiation error:', error);
+  }
+}
+
+function* collaborationSaga(
+  action: ReturnType<typeof CommunicationActions.collaborate>
+): Generator<Effect, void, any> {
+  try {
+    // Logic for real-time collaboration
+    // ...
+  } catch (error) {
+    // Handle collaboration failure
+    console.error('Collaboration error:', error);
+  }
+}
+
 // Add other sagas as needed (update, complete, etc.)
 
-export const calendarSagas = [
-  takeLatest(CalendarActions.addEvent.type, addCalendarEventSaga),
-  takeLatest(CalendarActions.removeEvent.type, removeCalendarEventSaga),
-  takeLatest(CalendarActions.fetchCalendarEventsRequest.type, fetchCalendarEventsSaga),
-  // Add other sagas watchers here
-];
+export function* watchCalendarEventUpdateSagas() {
+  yield takeLatest(CalendarActions.addEvent.type, addCalendarEventSaga);
+  yield takeLatest(CalendarActions.removeEvent.type, removeCalendarEventSaga);
+  yield takeLatest(CalendarActions.fetchCalendarEventsRequest.type, fetchCalendarEventsSaga);
+  // Communication sagas
+  yield takeLatest(CommunicationActions.startCommunication.type, startCommunicationSaga);
+  yield takeLatest(CommunicationActions.collaborate.type, collaborationSaga);
+}
+
+export function* calendarSagas() {
+  yield watchCalendarEventUpdateSagas();
+}

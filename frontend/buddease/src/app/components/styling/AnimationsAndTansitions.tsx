@@ -3,8 +3,7 @@ import React, { ReactNode } from 'react';
 
 export interface AnimatedComponentProps {
   animationClass: string;
-  // children: React.ReactNode;
-
+  children?: ReactNode; 
 }
 
 interface StaticComponentProps {
@@ -13,7 +12,7 @@ interface StaticComponentProps {
 
 interface AnimationsAndTransitionsProps {
   examples: ReactNode[];
-  dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
+  dynamicContent?: boolean;
 }
 
 const AnimationsAndTransitions: React.FC<AnimationsAndTransitionsProps> = ({ examples, dynamicContent }) => {
@@ -40,12 +39,15 @@ const renderDynamicContent = (examples: ReactNode[]) => {
     <div>
       {examples.map((example, index) => {
         if (React.isValidElement(example)) {
+          const animationClass = example.props.animationClass;
           return (
             <DynamicComponent
               key={index}
-              animationClass={example.props.animationClass} />
+              animationClass={animationClass}
+            />
           );
         }
+        return null;
       })}
     </div>
   );
@@ -56,14 +58,11 @@ const StaticComponent: React.FC<StaticComponentProps> = ({ content }) => {
 };
 
 const DynamicComponent: React.FC<AnimatedComponentProps> = ({ animationClass }) => {
+  return <AnimatedContent animationClass={animationClass} />;
+};
+
+const AnimatedContent: React.FC<AnimatedComponentProps> = ({ animationClass }) => {
   return <div className={animationClass}>Animated Content</div>;
 };
 
-
-const AnimatedComponent: React.FC<AnimatedComponentProps> = ({ animationClass }) => {
-  // You can use CSS classes or a library like react-spring for animations
-  return <div className={animationClass}>Animated Content</div>;
-};
-
-export { AnimatedComponent, AnimationsAndTransitions };
-
+export { AnimationsAndTransitions };

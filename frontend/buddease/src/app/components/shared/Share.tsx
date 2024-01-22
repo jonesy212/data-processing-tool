@@ -36,6 +36,13 @@ const Share: React.FC<ShareProps> = ({ projectId }) => {
     alert('Project shared successfully!');
   };
 
+
+    // Add collaboration features
+    const handleCollaborate = () => {
+      // Implement collaboration logic
+      // ...
+    };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -48,6 +55,8 @@ const Share: React.FC<ShareProps> = ({ projectId }) => {
 
       {/* Add your sharing form or UI components here */}
       <button onClick={handleShare}>Share Project</button>
+      <button onClick={handleCollaborate}>Collaborate</button>
+
     </div>
   );
 };

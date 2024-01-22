@@ -1,3 +1,5 @@
+import { generatePrompt } from "../prompts/promptGenerator";
+
 // AutoGPTSpaCyIntegration.ts
 export const processTextWithSpaCy = async (text: any, appTree: any[]) => {
     const response = await fetch('http://localhost:5000/process-text', {

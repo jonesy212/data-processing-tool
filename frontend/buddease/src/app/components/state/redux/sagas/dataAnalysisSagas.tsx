@@ -55,9 +55,13 @@ function* fetchDataAnalysisSuccessSaga(
   }
 }
 
-export const dataAnalysisSagas = [
-  takeLatest(DataAnalysisActions.fetchDataAnalysisRequest.type, fetchDataAnalysisSaga),
-  takeLatest(DataAnalysisActions.fetchDataAnalysisRequest.type, fetchDataAnalysisRequestSaga),
-  takeLatest(DataAnalysisActions.fetchDataAnalysisSuccess.type, fetchDataAnalysisSuccessSaga),
+export function* watchDataAnalysisSagas() {
+  yield takeLatest(DataAnalysisActions.fetchDataAnalysisRequest.type, fetchDataAnalysisSaga);
+  yield takeLatest(DataAnalysisActions.fetchDataAnalysisRequest.type, fetchDataAnalysisRequestSaga);
+  yield takeLatest(DataAnalysisActions.fetchDataAnalysisSuccess.type, fetchDataAnalysisSuccessSaga);
   // Add more sagas as needed for other data analysis actions
-];
+}
+
+export function* dataAnalysisSagas() {
+  yield watchDataAnalysisSagas();
+}

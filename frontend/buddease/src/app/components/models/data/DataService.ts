@@ -1,21 +1,71 @@
 // DataService.ts
+import { action, observable, runInAction } from 'mobx';
+import DATA_NOTIFICATIONS from '../../support/DataNotifications';
+import { NotificationContextProps } from '../../support/NotificationContext';
+import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 
-import { useDispatch } from 'react-redux';
-import { fetchDataAnalysisFailure, fetchDataAnalysisSuccess } from '../../state/redux/slices/DataAnalysisSlice';
+class DataService {
+  @observable notification: NotificationContextProps | null = null;
+  @observable dataAnalysis = null;
+  @observable loading = false;
+  @observable error = null;
 
-const fetchData = async () => {
-  const dispatch = useDispatch();
+  @action
+  fetchData = async () => {
+    try {
+      this.loading = true;
 
-  try {
-    dispatch(fetchDataAnalysisRequest());
+      // Perform data fetching logic
+      const response = await fetch("/api/dataAnalysis");
 
-    // Perform data fetching logic
-    const dataAnalysis = await fetch('/api/dataAnalysis');
-    
-    dispatch(fetchDataAnalysisSuccess({ dataAnalysis }));
-  } catch (error) {
-    dispatch(fetchDataAnalysisFailure({ error: error.message }));
-  }
-};
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch data: ${response.status} ${response.statusText}`
+        );
+      }
 
-export { fetchData };
+      const dataAnalysis = await response.json();
+
+      runInAction(() => {
+        if (this.notification) {
+          this.notification.notify(
+            NOTIFICATION_TYPES.ERROR,
+            DATA_NOTIFICATIONS.DataError.FETCH_ERROR,
+            new Date(),
+            NOTIFICATION_TYPES.ERROR
+          );
+        }
+        this.dataAnalysis = dataAnalysis;
+        this.error = null; // Clear any previous errors on success
+      });
+    } catch (error) {
+      runInAction(() => {
+        if (this.notification) {
+          this.notification.notify(
+            NOTIFICATION_TYPES.ERROR,
+            DATA_NOTIFICATIONS.DataError.FETCH_ERROR,
+            new Date(),
+            NOTIFICATION_TYPES.ERROR
+          );
+        }
+      });
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
+    }
+  };
+
+  @action
+  resetData = () => {
+    this.dataAnalysis = null;
+    this.loading = false;
+    this.error = null;
+  };
+  // Additional actions can be added here...
+
+}
+
+const dataService = new DataService();
+
+export default dataService;

@@ -1,14 +1,17 @@
 import React from "react";
-import DynamicTypography, { DynamicContentProps } from "./DummyCardLoader";
+import { DynamicContentProps } from "../documents/DynamicContent";
+import DynamicTypography from "./DummyCardLoader";
+
 interface PersonaCardProps {
   persona: string;
   data: any; // Add the actual data structure for persona here
-  children: React.ReactNode;
+  children: React.ReactNode; // Add children prop
 }
 
 const PersonaCard: React.FC<PersonaCardProps & DynamicContentProps> = ({
   persona,
   data,
+  children
 }) => {
   return (
     <div>
@@ -27,6 +30,9 @@ const PersonaCard: React.FC<PersonaCardProps & DynamicContentProps> = ({
             <p>{`Judging: ${data.judging}`}</p>
           </>
         )}
+
+        {children} {/* Include 'children' here */}
+
       </DynamicTypography>
     </div>
   );
@@ -39,15 +45,13 @@ const CardGenerator: React.FC<{
   data: any;
   fontFamily: any;
   fontSize: any;
-  children: React.ReactNode;
-}> = ({ cardType, persona, fontFamily, fontSize, data, children }) => {
+}> = ({ cardType, persona, fontFamily, fontSize, data }) => {
   switch (cardType) {
     case "PersonaCard":
       return (
         <PersonaCard
           persona={persona}
           data={data}
-          children={children}
           fontSize={fontSize}
           fontFamily={fontFamily}
         />

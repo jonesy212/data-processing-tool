@@ -9,6 +9,7 @@ type DynamicComponentContextProps = {
 
 type DynamicComponentsContextType = {
   dynamicConfig: any;
+  dynamicContent: boolean;
   setDynamicConfig: React.Dispatch<React.SetStateAction<any>>;
 };
 
@@ -28,6 +29,7 @@ export const DynamicComponentsProvider: React.FC<DynamicComponentContextProps> =
   const contextValue: DynamicComponentsContextType = {
     dynamicConfig,
     setDynamicConfig,
+    dynamicContent: false,
   };
 
   return (

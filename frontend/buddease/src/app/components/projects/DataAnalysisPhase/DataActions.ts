@@ -9,25 +9,48 @@ export const DataActions = {
 
   addData: createAction<Data>("addData"),
   removeData: createAction<number>("removeData"),
-  updateData: createAction<{ id: number, newData: Data }>("updateData"),
-    updateDataTitleSuccess: createAction<{ id: number, title: string }>("updateDataTitleSuccess"),
-  
+  updateData: createAction<{ id: number; newData: Data }>("updateData"),
+  updateDataTitleSuccess: createAction<{ id: number; title: string }>(
+    "updateDataTitleSuccess"
+  ),
+  updateDataTitle: createAction<{ id: number; title: string }>(
+    "updateDataTitle"
+  ),
+
   // Batch actions for fetching
   batchFetchDataRequest: createAction("batchFetchDataRequest"),
-  batchFetchDataSuccess: createAction<{ data: Data[] }>("batchFetchDataSuccess"),
-  batchFetchDataFailure: createAction<{ error: string }>("batchFetchDataFailure"),
+  batchFetchDataSuccess: createAction<{ data: Data[] }>(
+    "batchFetchDataSuccess"
+  ),
+  batchFetchDataFailure: createAction<{ error: string }>(
+    "batchFetchDataFailure"
+  ),
 
   // Batch actions for updating
-  batchUpdateDataRequest: createAction<{ ids: number[], newDatas: Data[] }>("batchUpdateDataRequest"),
-  batchUpdateDataSuccess: createAction<{ data: Data[] }>("batchUpdateDataSuccess"),
-  batchUpdateDataFailure: createAction<{ error: string }>("batchUpdateDataFailure"),
+  batchUpdateDataRequest: createAction<{ ids: number[]; newDatas: Data[] }>(
+    "batchUpdateDataRequest"
+  ),
+  batchUpdateDataSuccess: createAction<{ data: Data[] }>(
+    "batchUpdateDataSuccess"
+  ),
+  batchUpdateDataFailure: createAction<{ error: string }>(
+    "batchUpdateDataFailure"
+  ),
 
   // Batch actions for removing
   batchRemoveDataRequest: createAction<number[]>("batchRemoveDataRequest"),
   batchRemoveDataSuccess: createAction<number[]>("batchRemoveDataSuccess"),
-  batchRemoveDataFailure: createAction<{ error: string }>("batchRemoveDataFailure"),
+  batchRemoveDataFailure: createAction<{ error: string }>(
+    "batchRemoveDataFailure"
+  ),
 
   // Additional actions similar to TaskSlice
-  updateDataTitle: createAction<PayloadAction<string>>("updateDataTitle"),
-  updateDataDescription: createAction<PayloadAction<string>>("updateDataDescription"),
+  updateDataDescription: createAction<PayloadAction<string>>(
+    "updateDataDescription"
+  ),
+  updateDataStatus:
+    createAction<PayloadAction<"pending" | "inProgress" | "completed">>(
+      "updateDataStatus"
+    ),
+  updateDataDetails: createAction<PayloadAction<Data>>("updateDataDetails"),
 };

@@ -1,3 +1,4 @@
+import { DocumentData } from "./DocumentBuilder";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
 
@@ -8,7 +9,6 @@ export interface DocumentOptions {
   userIdea: string; 
   additionalOptions: string | number | readonly string[] | undefined;
   isDynamic: boolean;
-  documents: Document[]; 
   size: DocumentSize;
   animations: DocumentAnimationOptions; // New property for animations
 
@@ -41,11 +41,12 @@ export interface DocumentOptions {
   todoList: boolean;
   orderedTodoList: boolean;
   unorderedTodoList: boolean;
-  content?: string; // Property for document content
-  css?: string; // Property for document CSS
-  html?: string; // Property for document HTML
+  content?: string; 
+  css?: string; 
+  html?: string; 
   colorCoding: boolean;
-  customSettings: Record<string, any>; // For additional custom settings
+  customSettings: Record<string, any>; 
+  documents: DocumentData[]; 
 }
 
 export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
@@ -90,8 +91,8 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     size: "0" as DocumentSize, 
     colorCoding: false,
     additionalOptions: [],
-    customSettings: {}, //any settings not defined in the document options
-    documents: [] as Document[],
+    customSettings: {},
+    documents: [] as DocumentData[],
   
     animations: {} as DocumentAnimationOptions, //
   };

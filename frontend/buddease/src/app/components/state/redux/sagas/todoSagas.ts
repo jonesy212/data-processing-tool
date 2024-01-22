@@ -156,6 +156,24 @@ function* updateTodoSaga(
   }
 }
 
+function* batchAssignTodosSaga(
+  action: ReturnType<typeof TodoActions.batchAssignTodos>
+): Generator<Effect, void, any> {
+  try {
+    // Implementation for batchAssignTodos
+    const { payload } = action;
+
+    yield call(() => axios.post("/api/todos/batch-assign", payload));
+
+    yield put(TodoActions.batchAssignSuccess(payload));
+  } catch (error) {
+    yield put(
+      TodoActions.batchAssignFailure({
+        error: NOTIFICATION_MESSAGES.Todos.BATCH_ASSIGN_ERROR,
+      })
+    );
+  }
+}
 // Implementation for fetchTodosRequestSaga
 function* fetchTodosRequestSaga(): Generator<Effect, void, any> {
   try {
@@ -231,8 +249,8 @@ function* updateTodosSuccessSaga(
     // For example, you might want to update the state with the updated todos
     yield put({
       type: "UPDATE_TASKS_ACTION_TYPE",
-      payload: { todos }
-    })
+      payload: { todos },
+    });
     // Additional logic can be added here if needed
   } catch (error) {
     // Handle errors if necessary
@@ -282,6 +300,7 @@ export const todoSagas = [
   takeLatest(TodoActions.remove.type, removeTodoSaga),
   takeLatest(TodoActions.toggle.type, toggleTodoSaga),
   takeLatest(TodoActions.updateTodo.type, updateTodoSaga),
+  
   takeLatest(TodoActions.updateTodoSuccess.type, updateTodoSuccessSaga),
   takeLatest(TodoActions.updateTodosSuccess.type, updateTodosSuccessSaga),
   takeLatest(TodoActions.fetchTodosRequest.type, fetchTodoSaga),
@@ -300,5 +319,6 @@ export const todoSagas = [
     TodoActions.completeAllTodosFailure.type,
     completeAllTodosFailureSaga
   ),
-  takeLatest(TodoActions.completeAllTodosSuccess.type, completeAllTodosSaga)
+  takeLatest(TodoActions.completeAllTodosSuccess.type, completeAllTodosSaga),
+  takeLatest(TodoActions.batchAssignTodos.type, batchAssignTodosSaga),
 ];

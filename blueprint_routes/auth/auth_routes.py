@@ -7,12 +7,13 @@ from blueprint_routes.auth import (change_password, deactivate_account,
                                    export_user_data, forgot_password,
                                    oauth_login, reactivate_account,
                                    resend_verification_email, reset_password,
-                                   revoke_user_token, setup_2fa,
-                                   update_notification_settings,
-                                   update_privacy_settings_db, update_profile,
+                                   setup_2fa, update_notification_settings,
+                                   update_privacy_settings, update_profile,
                                    upload_avatar, user_activity_log,
-                                   user_roles_permissions_route, user_search,
-                                   verify_2fa, verify_email)
+                                   user_search, verify_2fa, verify_email)
+from blueprint_routes.auth.revoke_token import revoke_user_token
+from blueprint_routes.auth.user_roles_permissisons_route import \
+    user_roles_permissions_route
 from database.extensions import db
 from models.user.user import User
 from state.stores.template_engine import render_template
@@ -41,7 +42,7 @@ add_auth_url_rule('/auth/user-activity-log', 'user_activity_log', user_activity_
 add_auth_url_rule('/auth/user-search', 'user_search', user_search, methods=['GET'])
 add_auth_url_rule('/auth/export-user-data', 'export_user_data', export_user_data, methods=['GET'])
 add_auth_url_rule('/auth/update-notification-settings', 'update_notification_settings', update_notification_settings, methods=['PUT'])
-add_auth_url_rule('/auth/update-privacy-settings', 'update_privacy_settings', update_privacy_settings_db, methods=['PUT'])
+add_auth_url_rule('/auth/update-privacy-settings', 'update_privacy_settings', update_privacy_settings, methods=['PUT'])
 add_auth_url_rule('/auth/upload-avatar', 'upload_avatar', upload_avatar, methods=['POST'])
 add_auth_url_rule('/auth/revoke-token', 'revoke_token', revoke_user_token, methods=['POST'])
 

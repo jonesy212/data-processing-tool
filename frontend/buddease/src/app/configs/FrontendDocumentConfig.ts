@@ -4,7 +4,6 @@ export interface FrontendDocumentConfig {
   // Common properties for frontend document configuration
   appName: string;
   appVersion: string;
-  // Add more common properties as needed
   apiConfig: ApiConfig;
   retryConfig: RetryConfig;
   cacheConfig: CacheConfig;

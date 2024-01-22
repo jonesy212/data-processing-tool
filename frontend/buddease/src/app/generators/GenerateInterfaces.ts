@@ -1,6 +1,7 @@
 // GenerateInterfaces.ts
 import * as fs from 'fs';
 import { readCache, writeCache } from '../utils/ReadAndWriteCache';
+import { generateUniqueId } from './generateNewApiConfig';
 
 export function generateInterfaces(backendModelPaths: string[]): void {
   backendModelPaths.forEach(async (backendModelPath) => {
@@ -22,9 +23,6 @@ export function generateInterfaces(backendModelPaths: string[]): void {
     }
   });
 }
-
-
-
 
 
 
@@ -51,10 +49,4 @@ function generateInterfaceCode(modelName: string): string {
          `  tags: string[];\n` +
          `  dependencies: Task[];\n` +
          `}\n`;
-}
-
-function generateUniqueId(): string {
-  // Generate a unique identifier (you can use a library like uuid)
-  // For simplicity, using a timestamp in this example
-  return Date.now().toString();
 }

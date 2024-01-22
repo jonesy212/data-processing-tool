@@ -86,8 +86,9 @@ const onboardingQuestionnaireData: {
     },
   ],
   forEach: function (arg0: (question: any) => void): unknown {
-    throw new Error("Function not implemented.");
-  }
+    this.questions.forEach(arg0);
+    return 
+    }
 };
 
 export default onboardingQuestionnaireData;

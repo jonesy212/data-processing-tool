@@ -1,3 +1,4 @@
+import authService from "@/app/components/auth/AuthService"; // Import authService
 import Home from "@/app/page";
 import Dashboard from "@/app/pages/dashboards/UserDashboard";
 import RegisterForm from "@/app/pages/forms/RegisterForm";
@@ -7,6 +8,21 @@ import LoginForm from "../../pages/forms/LoginForm";
 import ProtectedRoute from "../routing/ProtectedRoute";
 
 const AppRouter: React.FC = () => {
+  const handleLoginSubmit = async (username: string, password: string): Promise<void> => {
+    try {
+      // Use AuthService to handle login
+      const { accessToken } = await authService.login(username, password);
+
+      if (accessToken) {
+        // Logic after successful login
+      } else {
+        // Handle login failure
+        console.error("Login failed");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
   return (
     <Router>
       <Routes>
@@ -22,9 +38,7 @@ const AppRouter: React.FC = () => {
           path="/login"
           element={
             <LoginForm
-              onSubmit={function (username: string, password: string): void {
-                throw new Error("Function not implemented.");
-              }}
+              onSubmit={handleLoginSubmit} // Pass the onSubmit function
               setUsername={() => {}}
               setPassword={() => {}}
             />

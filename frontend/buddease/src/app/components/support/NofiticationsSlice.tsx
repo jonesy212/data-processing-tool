@@ -6,6 +6,7 @@ export interface Notification {
   content: string;
   date: Date;
   message: string;
+  type: string;
 }
 
 interface NotificationsState {

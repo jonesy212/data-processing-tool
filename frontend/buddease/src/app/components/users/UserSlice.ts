@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User, UserData } from './User';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { WritableDraft } from "../state/redux/ReducerGenerator";
+import { User, UserData } from "./User";
 
 interface UserManagerState {
   users: User[];
@@ -13,10 +14,10 @@ interface UserManagerState {
 
 const initialState: UserManagerState = {
   users: [],
-  fullName: '',
-  bio: '',
-  profilePicture: '',
-  notification: '',
+  fullName: "",
+  bio: "",
+  profilePicture: "",
+  notification: "",
   data: {} as UserData,
   uploadQuota: 0,
 };
@@ -42,7 +43,7 @@ export const userManagerSlice = createSlice({
     },
 
     updateData: (state, action: PayloadAction<UserData>) => {
-      state.data = action.payload;
+      state.data = action.payload as WritableDraft<UserData>;
     },
 
     updateQuota: (state, action: PayloadAction<number>) => {
@@ -50,7 +51,7 @@ export const userManagerSlice = createSlice({
     },
 
     fetchUsersSuccess: (state, action: PayloadAction<{ users: User[] }>) => {
-      state.users = action.payload.users;
+      state.users = action.payload.users as WritableDraft<User[]>;
     },
   },
 });
@@ -65,6 +66,7 @@ export const {
   fetchUsersSuccess,
 } = userManagerSlice.actions;
 
-export const selectUsers = (state: { userManager: UserManagerState }) => state.userManager.users;
+export const selectUsers = (state: { userManager: UserManagerState }) =>
+  state.userManager.users;
 
 export default userManagerSlice.reducer;

@@ -3,9 +3,9 @@ import Clipboard from "@/app/ts/clipboard";
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { useState } from "react";
-import { useMovementAnimations } from "../animations/movementAnimations/MovementAnimationActions";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
+import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
 import SharingOptions from "../shared/SharingOptions";
 import {
   createPdfDocument,
@@ -15,6 +15,17 @@ import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+
+
+
+
+// DocumentData.tsx
+export interface DocumentData extends Document {
+  id: number;
+  title: string;
+  content: string;
+  // Add more properties if needed
+}
 
 interface DocumentBuilderProps {
   options: DocumentOptions;
@@ -119,6 +130,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       link: true,
       image: true,
       audio: true,
+      type: {} as DocumentType,
       onEditorStateChange: (newEditorState: any): void => {
         // Update the editor state in DocumentBuilder
         setEditorState(newEditorState);
@@ -180,11 +192,13 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           code={true}
           link={true}
           image={true}
+          type={{} as DocumentType} 
           audio={true} onEditorStateChange={function (newEditorState: any): void {
             throw new Error("Function not implemented.");
           } } handleEditorStateChange={function (newEditorState: EditorState): void {
             throw new Error("Function not implemented.");
-          } }        />
+          }}
+        />
         <h1>Document Builder</h1>
         <Clipboard onCopy={handleCopy} onPaste={handlePaste} />
 

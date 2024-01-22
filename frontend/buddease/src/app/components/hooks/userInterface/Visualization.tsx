@@ -1,3 +1,4 @@
+import ChartComponent from "@/app/pages/forms/ChartComponent";
 import { NextApiRequest, NextApiResponse } from "next";
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
@@ -5,7 +6,7 @@ import { ImageCard } from "../../cards";
 import { DatasetModel } from "../../todos/tasks/DataSetModel";
 
 interface VisualizationProps {
-  type: "line" | "bar" | "histogram";
+  type: "line" | "bar";
   data: number[][];
   labels: string[];
   datasets: DatasetModel[];
@@ -75,6 +76,9 @@ const Visualization: React.FC<VisualizationProps> = ({
 
   return (
     <div>
+      {/* ChartComponent is used here */}
+      <ChartComponent type={type} data={chartData} />
+
       {getChartComponent()}
       <div>
         <h1>Visualization</h1>

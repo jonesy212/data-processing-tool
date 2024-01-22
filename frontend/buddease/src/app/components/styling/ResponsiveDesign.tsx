@@ -1,7 +1,10 @@
 // components/ResponsiveDesign.tsx
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
+import getAppPath from "../../../../appPath";
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
   ariaLabel?: string;
   dataTip?: string;
@@ -9,22 +12,37 @@ interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
 let currentIndex: number; // Declare currentIndex before using it
 let indexToUpdate: number | null = null; // Declare the variable
 let newExample: ResponsiveExample | null = null; // Declare the variable
+const projectPath = getAppPath(); 
 
 const getButtonProps = ({ index }: { index: number }): CustomDivProps => {
   return {
     onClick: (e: React.MouseEvent<HTMLDivElement>) =>
       handleSelectExample(responsiveDesignStore.examples[index], index),
     onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) =>
-      handleKeyPress(
-        0 as unknown as React.KeyboardEvent<HTMLInputElement>,
-        currentIndex, responsiveDesignStore.examples.length
-      ),
-    "aria-label": responsiveDesignStore.examples[index].title, // Use 'aria-label'
+      handleKeyPress(e, index, responsiveDesignStore.examples.length),
+    "aria-label": responsiveDesignStore.examples[index].title,
     dataTip: responsiveDesignStore.examples[index].description,
     className: index === indexToUpdate ? "selected-example" : "normal-example",
     tabIndex: 0,
     // Add other div properties as needed
   };
+};
+
+const handleKeyPress = (
+  e: React.KeyboardEvent<HTMLDivElement>,
+  index: number,
+  examplesLength: number
+) => {
+  if (e.key === "Enter") {
+    // Use the global 'newExample' variable
+    newExample = {
+      title: "",
+      description: "",
+    };
+
+    responsiveDesignStore.updateExample(indexToUpdate!, newExample);
+    indexToUpdate = null;
+  }
 };
 
 interface ResponsiveDesignProps {
@@ -124,6 +142,15 @@ class ResponsiveDesignStore {
   @observable
   colors: string[] = [];
 
+  @observable
+  frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
+
+  @observable
+  backendStructure: BackendStructure = new BackendStructure(projectPath);
+
+  @observable structure: FrontendStructure & BackendStructure = Object.assign(
+    this.frontendStructure, this.backendStructure);
+  
   @observable
   responsiveProps: ResponsiveDesignProps = {
     breakpoints: {
@@ -481,27 +508,6 @@ const handleClearExamples = () => {
   responsiveDesignStore.clearExamples();
 };
 
-const handleKeyPress = (
-  e: React.KeyboardEvent,
-  index: number,
-  examplesLength: number
-) => {
-  if (e.key === "Enter") {
-    // Use setNewExample to access newExample
-    setNewExample({
-      title: "",
-      description: "",
-    });
-
-    let newExample: ResponsiveExample = {
-      title: "",
-      description: "",
-    };
-  
-    responsiveDesignStore.updateExample(indexToUpdate!, newExample);
-    indexToUpdate = null;
-  }
-};
 
 const handleSelectExample = (example: ResponsiveExample, index: number) => {
   // Store the selected index
@@ -648,6 +654,8 @@ const ResponsiveDesign: React.FC<ResponsiveDesignProps> = observer(() => {
             onKeyDown={(e) => handleKeyPress(e, example, index)}
             aria-label={example.title}
             data-tip={example.description}
+            className={index === currentIndex ? "selected-example" : ""}
+            {...getButtonProps({ index })}
           >
             <h3>{example.title}</h3>
             <p>{example.description}</p>
@@ -728,15 +736,6 @@ const ResponsiveDesign: React.FC<ResponsiveDesignProps> = observer(() => {
   );
 });
 
-const responsiveDesignStore = new ResponsiveDesignStore();
-export default responsiveDesignStore;
-
-// Examples
-// Now you can use these actions in your application to dynamically update breakpoints, media queries, and other responsive properties.
-// For example:
-
-responsiveDesignStore.updateBreakpoint("small", 480);
-responsiveDesignStore.updateMediaQuery("small", `(max-width: ${480}px)`);
 
 function handleNewExample(newExample: any) {
   setNewExample(newExample);
@@ -750,5 +749,13 @@ function setNewExample(arg0: { title: string; description: string }) {
   responsiveDesignStore.addExample(newExample);
 }
 
-export type { ResponsiveDesignProps, ResponsiveDesignStore, ResponsiveDesignStoreProps };
 
+const responsiveDesignStore = new ResponsiveDesignStore();
+export default responsiveDesignStore;
+
+// Examples
+// Now you can use these actions in your application to dynamically update breakpoints, media queries, and other responsive properties.
+// For example:
+responsiveDesignStore.updateBreakpoint("small", 480);
+responsiveDesignStore.updateMediaQuery("small", `(max-width: ${480}px)`);
+responsiveDesignStore.addExample({} as ResponsiveExample)

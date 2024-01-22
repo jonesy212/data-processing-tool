@@ -10,7 +10,9 @@ export interface Todo extends Data {
   description: string;
   dueDate: Date | null;
   priority: "low" | "medium" | "high";
-  assignee: string | null;
+  assignedTo: User | null;
+  assignee: User | null;
+  assignedUsers: string[];
   collaborators: string[];
   labels: string[];
   comments: Comment[] ;
@@ -22,7 +24,9 @@ export interface Todo extends Data {
   isBeingDeleted: boolean;
   isBeingCompleted: boolean;
   isBeingReassigned: boolean;
+  save: () => Promise<void>;
 }
+
 
 export interface Comment extends Data, CharacterData {
   text: string;
