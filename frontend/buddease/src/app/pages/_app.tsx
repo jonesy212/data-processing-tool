@@ -1,29 +1,29 @@
 // _app.tsx
 import { Refine } from "@refinedev/core";
+import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
-import { AuthProvider } from "../components/auth/AuthContext";
-import OnboardingComponent from "../components/onboarding/OnboardingComponent";
-import { NotificationProvider } from "../components/support/NotificationContext";
-
-import { uuidV4 } from "ethers";
 import React, { useState } from "react";
+import { AuthProvider } from "../components/auth/AuthContext";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
+import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
-import undoLastAction from '../components/projects/projectManagement/ProjectManager';
+import undoLastAction from "../components/projects/projectManagement/ProjectManager";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
-import NotificationManager from "../components/support/NotificationManager";
+import { Notification } from "../components/support/NofiticationsSlice";
+import { NotificationProvider } from "../components/support/NotificationContext";
+import NotificationManager from "../components/support/NotificationNotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
 import ChartComponent from "./forms/ChartComponent";
-import SearchComponent from "./searchs/Search";
-
+import Layout from "./layouts/Layouts";
+import SearchComponent from "./searchs/SearchComponent";
 
 const phases: Phase[] = [
   {
@@ -31,21 +31,47 @@ const phases: Phase[] = [
     startDate: new Date(),
     endDate: new Date(),
     subPhases: ["Research", "Planning", "Design"],
-    component: {} as (props: {}, context?: any)=> React.ReactElement,
-    hooks: {} as CustomPhaseHooks
+    component: {} as (props: {}, context?: any) => React.ReactElement,
+    hooks: {} as CustomPhaseHooks,
   },
   // Add more phases
 ];
 
-
 async function MyApp({ Component, pageProps }: AppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
+  const [progress, setProgress] = useState(0);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Define the 'addNotifications' function to add new notifications
+  const addNotifications = (message: string, randomBytes: BytesLike) => {
+    // Generate a unique ID for the new notification
+    const id = uuidV4(randomBytes);
+
+    // Create a new notification object
+    const newNotification: Notification = {
+      message,
+      id,
+      date: new Date(),
+      createdAt: new Date(),
+      type: "",
+    };
+
+    // Update notifications state by appending the new notification
+    setNotifications((prevNotifications) => [
+      ...prevNotifications,
+      newNotification,
+    ]);
+  };
+
+  const handleButtonClick = () => {
+    // Example: Update progress when a button is clicked
+    setProgress((prevProgress) => prevProgress + 10); // Increase progress by 10%
+  };
 
   interface Props {
     children: (props: { hooks: any; utilities: any }) => React.ReactNode;
     componentSpecificData: any[];
   }
-
 
   // Generate hooks dynamically based on your phases
   const hooks: { [key: string]: Function } = {};
@@ -89,14 +115,15 @@ async function MyApp({ Component, pageProps }: AppProps) {
     // Additional actions...
   };
 
-
   const getNextPhase = (currentPhase: Phase): Phase => {
     // Add your logic to determine the next phase
-    const currentIndex = phases.findIndex((phase) => phase.name === currentPhase.name);
+    const currentIndex = phases.findIndex(
+      (phase) => phase.name === currentPhase.name
+    );
     const nextIndex = (currentIndex + 1) % phases.length;
     return phases[nextIndex];
   };
-  
+
   const advanceToNextPhase = () => {
     const nextPhase = getNextPhase(currentPhase);
     setCurrentPhase(nextPhase);
@@ -114,13 +141,10 @@ async function MyApp({ Component, pageProps }: AppProps) {
     // Replace with your actual logic to rollback to the previous phase
   };
 
-  
-  
-
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
-    <Refine 
-    dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+    <Refine
+      dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
       routerProvider={routerProvider}
       resources={[
         {
@@ -135,67 +159,61 @@ async function MyApp({ Component, pageProps }: AppProps) {
         },
       ]}
     >
-
-    <SearchComponent {...pageProps}>
-      {({ children, componentSpecificData }: Props) => (
-        <ThemeConfigProvider>
-          <ThemeCustomization />
-          <CollaborationDashboard />
-          <NotificationProvider>
-            <DynamicPromptProvider>
-              <AuthProvider>
-                <StoreProvider>
-                  <OnboardingComponent />
-                  {/* Use componentSpecificData wherever it's needed */}
-                  {componentSpecificData.map((data, index) => (
-                    <div key={index}>
-                      {/* Your component logic here using data */}
-                    </div>
-                  ))}
-                  {/* Pass hooks and utilities to children */}
-                  {children({ hooks, utilities })}{" "}
-                  {/* Render ConfirmationModal with appropriate props */}
-                  <ConfirmationModal
-                    isOpen={confirmationOpen}
-                    onConfirm={handleConfirm}
-                    onCancel={handleCancel}
-                  />
-                  {/* Generate appTree and render TreeView */}
-                  {appTree && (
-                    <TreeView
-                      data={[appTree]} 
-                      onClick={(node) => {
-                        // Handle node click if needed
-                        console.log("Node clicked:", node);
-                      }}
+      <SearchComponent {...pageProps}>
+        {({ children, componentSpecificData }: Props) => (
+          <ThemeConfigProvider>
+            <ThemeCustomization />
+            <CollaborationDashboard />
+            <NotificationProvider>
+              <DynamicPromptProvider>
+                <AuthProvider>
+                  <StoreProvider>
+                    <OnboardingComponent />
+                    {/* Use componentSpecificData wherever it's needed */}
+                    {componentSpecificData.map((data, index) => (
+                      <div key={index}>
+                        {/* Your component logic here using data */}
+                      </div>
+                    ))}
+                    {/* Pass hooks and utilities to children */}
+                    {children({ hooks, utilities })}{" "}
+                    {/* Render ConfirmationModal with appropriate props */}
+                    <ConfirmationModal
+                      isOpen={confirmationOpen}
+                      onConfirm={handleConfirm}
+                      onCancel={handleCancel}
                     />
+                    {/* Generate appTree and render TreeView */}
+                    {appTree && (
+                      <TreeView
+                        data={[appTree]}
+                        onClick={(node) => {
+                          // Handle node click if needed
+                          console.log("Node clicked:", node);
+                        }}
+                      />
                     )}
-                          <EditorWithPrompt userId="user1" teamId="team1" project="project1" />
-
-                </StoreProvider>
-              </AuthProvider>
+                    <EditorWithPrompt
+                      userId="user1"
+                      teamId="team1"
+                      project="project1"
+                    />
+                  </StoreProvider>
+                </AuthProvider>
               </DynamicPromptProvider>
               <NotificationManager
-                notifications={[]}
-                notify={(message) => {
-                 addNotifications((prevNotifications) => [
-                    ...prevNotifications,
-                    {
-                      message,
-                      id: uuidV4(),
-                    },
-                  ]);
-                }}
-              />
-          </NotificationProvider>
-        </ThemeConfigProvider>
+                  notifications={{
+                    notifications: notifications,
+                    setNotifications: setNotifications,
+                  }}
+                />
+            </NotificationProvider>
+          </ThemeConfigProvider>
         )}
-       <ChartComponent {...pageProps} />
+        <ChartComponent {...pageProps} />
 
-    <Layout>
-    {Component && <Component {...pageProps} />}
-    </Layout>
-    </SearchComponent>
+        <Layout>{Component && <Component {...pageProps} />}</Layout>
+      </SearchComponent>
     </Refine>
   );
 }

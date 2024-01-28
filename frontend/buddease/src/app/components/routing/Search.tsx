@@ -1,5 +1,5 @@
 // SearchComponent.tsx
-import SearchComponent from '@/app/pages/searchs/Search';
+import SearchComponent from '@/app/pages/searchs/SearchComponent';
 import Script from 'next/script';
 import React from 'react';
 

@@ -1,9 +1,8 @@
 // DynamicPromptContext.tsx
 import React, { ReactNode, createContext, useContext } from "react";
 import createDynamicPromptHook, {
-  DynamicPromptHookParams,
-  DynamicPromptHookResult,
 } from "./DynamicPromptHookGenerator";
+import { DynamicPromptHookParams, DynamicPromptHookResult } from "../hooks/dynamicHooks/createDynamicPromptHook";
 
 type DynamicPromptContextType = {
   dynamicPromptHook: (
@@ -22,27 +21,11 @@ type DynamicPromptProviderProps = {
 export const DynamicPromptProvider: React.FC<DynamicPromptProviderProps> = ({
   children,
 }) => {
-  const dynamicPromptHook = createDynamicPromptHook({
-    condition: () => true,
-    asyncEffect: async () => {
-      console.log("Dynamic prompt generated!");
-    },
-    cleanup: () => {
-      console.log("Cleanup for dynamic prompt");
-    },
-    // Add the missing property resetIdleTimeout with its implementation
-    resetIdleTimeout: () => {
-      // Implement the logic for resetIdleTimeout if needed
-      console.log("Resetting idle timeout");
-    },
-    isActive: false, // Assuming isActive is a boolean property in DynamicPromptHookResult
-  });
+  const dynamicPromptHook = createDynamicPromptHook();
 
   return (
     <DynamicPromptContext.Provider
-      value={{
-        dynamicPromptHook,
-      }}
+      value={{} as DynamicPromptContextType}
     >
       {children}
     </DynamicPromptContext.Provider>

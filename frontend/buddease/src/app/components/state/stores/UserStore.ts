@@ -11,7 +11,7 @@ export interface UserStore {
   snapshotStore: SnapshotStore<Record<string, User[]>>;
   updateUserState: (newUsers: Record<string, User[]>) => void;
 
-  batchFetchSnapshotsRequest: (snapshots: Record<string, Record<string, User[]>>) => void;
+  batchFetchSnapshotsRequest: (snapshots: Record<string, User[]>) => void;
     batchFetchSnapshotsSuccess: (snapshots: Record<string, Record<string, User[]>>) => void;
     batchFetchSnapshotsFailure: (error: string) => void;
   // Add other user-related properties as needed

@@ -8,7 +8,6 @@ const CalendarContext = React.createContext();
 export const CalendarProvider = ({ children }) => {
   const [calendarData, setCalendarData] = useState([]);
   const taskManagerStore = useTaskManagerStore();
-
   useEffect(() => {
     const fetchData = async () => {
       try {

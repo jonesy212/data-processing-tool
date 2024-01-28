@@ -45,7 +45,7 @@ const handleKeyPress = (
   }
 };
 
-interface ResponsiveDesignProps {
+export interface ResponsiveDesignProps {
   examples: ResponsiveExample[];
   breakpoints: Record<string, number>;
   mediaQueries: Record<string, string>;
@@ -748,7 +748,6 @@ function setNewExample(arg0: { title: string; description: string }) {
   };
   responsiveDesignStore.addExample(newExample);
 }
-
 
 const responsiveDesignStore = new ResponsiveDesignStore();
 export default responsiveDesignStore;

@@ -20,6 +20,7 @@ interface Task extends Data {
   done: boolean; 
   data: Data;
   [Symbol.iterator](): Iterator<any>;
+  source: "user" | "system";
   some: (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any) => boolean;
 }
 

@@ -3,6 +3,7 @@ import React, { ReactNode, useState } from "react";
 import { Prompt } from "../prompts/PromptPage";
 import PromptSystem from "../prompts/PromptSystem";
 import { generatePrompt } from "../prompts/promptGenerator";
+import { DocumentType } from "./DocumentGenerator";
 import TextEditor from "./TextEditor"; // Assuming the correct path
 import { ToolbarOptionsProps } from "./ToolbarOptions";
 
@@ -134,7 +135,7 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
       <TextEditor
         id="text-editor"
         onChange={handleTextChange}
-        type= {{} as DocumentType}
+        type= {DocumentType.Text}
         onEditorStateChange={(editorState) => {
           const content = editorState.getCurrentContent().getPlainText('\u0001');
           setText(content);

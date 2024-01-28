@@ -7,9 +7,11 @@ import DynamicContent from "../documents/DynamicContent";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar from "../models/tracker/ProgresBar";
 import { Tracker } from "../models/tracker/Tracker";
+import useNotificationManagerService, { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import { PromptPageProps } from "../prompts/PromptPage";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
+import NotificationManager from "../support/NotificationNotificationManager";
 import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
@@ -89,13 +91,15 @@ export interface YourComponentProps {
 const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
   children,
+  
 }) => {
-  const { realtimeData, fetchData } = useRealtimeData(initialState, 'tracker');
+  const { realtimeData, fetchData } = useRealtimeData(initialState, updateCallback);
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout(); // Destructure the idle timeout properties
   const dataFrameAPI = DataFrameAPI; // Initialize the dataframe API class
   const { calendarData, updateCalendarData } = useCalendarContext();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [promptPages, setPromptPages] = useState<PromptPageProps[]>([]);
+  const notificationManagerProps: NotificationManagerServiceProps = useNotificationManagerService();
 
 
   const hooks: HooksObject = Object.keys(categoryHooks).reduce(
@@ -150,7 +154,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
       const newData = (await dataFrameAPI.fetchDataFrame()).filter((row) =>
         row.id === nextPageData.id
       )
-      dataFrameAPI.setData(newData.toArray());
+      dataFrameAPI.setDataFrame(newData);
     } else {
       // Optionally, handle the case where there are no more pages
       console.log("No more pages available");
@@ -174,6 +178,10 @@ const YourComponent: React.FC<YourComponentProps> = ({
     <div>
       {/* Display the progress bar and loading spinner */}
       <ProgressBar progress={calendarData[0].projects[0].progress} />
+      {/* Display the notification manager */}
+
+      <NotificationManager {...notificationManagerProps} />
+
       <LoadingSpinner loading={tracker.loading} />
 
       {Object.keys(hooks).map((key) => {

@@ -2,6 +2,7 @@ import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
 import React, { useState } from "react";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
 import CustomModifier from "./CustomModifier";
+import { DocumentType } from "./DocumentGenerator";
 
 export interface ToolbarOptionsProps {
   isDocumentEditor?: boolean;

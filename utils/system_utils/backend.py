@@ -3,8 +3,23 @@
 from flask import Flask, jsonify, render_template, request
 from html_manager import HTMLManager
 
+# backend.py
+
+
 app = Flask(__name__)
 
+@app.route('/update-realtime-data', methods=['POST'])
+def update_realtime_data():
+    data = request.get_json()
+
+    # Call the function to process and update the realtime data
+    # You may need to parse the received data and perform necessary operations
+    # Example:
+    # process_realtime_data(data)
+
+    return jsonify({'message': 'Realtime data updated successfully'})
+ 
+ 
 @app.route('/process-text', methods=['POST'])
 def process_text():
     data = request.get_json()

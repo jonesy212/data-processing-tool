@@ -15,16 +15,14 @@ const AuthComponent = () => {
       // Set the authorization token in axios headers
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   
-      dynamicHooks.authentication.hook().toggleActivation({
-        accessToken,
-      });
+      dynamicHooks.authentication.hook().toggleActivation();
     } catch (error) {
       console.error(error);
     }
   };
 
   
-  const handleSearch = async (event: React.FormEvent) => {
+  const handleSearch = async (event: React.FormEvent, searchQuery: string) => {
     event.preventDefault();
   
     try {

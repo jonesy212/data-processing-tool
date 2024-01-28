@@ -1,17 +1,18 @@
 // calendar/CalendarSagas.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
+import axiosInstance from "@/app/api/axiosInstance";
 import { CalendarActions } from "@/app/components/calendar/CalendarActions";
+import { CommunicationActions } from '@/app/components/community/CommunicationActions';
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { Effect, call, put, select, takeLatest } from "redux-saga/effects";
 import { CalendarEvent } from "../../stores/CalendarStore";
-import {
-  CommunicationActions
   // Replace 'yourApiEndpoint' with the actual API endpoint
-  ,
+  const API_BASE_URL = endpoints.calendar.events
+
 
   // Replace 'yourApiEndpoint' with the actual API endpoint
-  const, fetchCalendarEventsAPI
-} from () => axios.get("/api/calendar-events");
+  const fetchCalendarEventsAPI = () => axiosInstance.get(API_BASE_URL);
 
 function* addCalendarEventSaga(
   action: ReturnType<typeof CalendarActions.addEvent>
@@ -21,7 +22,7 @@ function* addCalendarEventSaga(
 
     // Assuming there's an API endpoint to add a calendar event
     const response: AxiosResponse<CalendarEvent> = yield call(() =>
-      axios.post("/api/calendar-events", newEvent, {
+      axiosInstance.post("/api/calendar-events", newEvent, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -58,7 +59,7 @@ function* removeCalendarEventSaga(
   try {
     const { payload: eventId } = action;
 
-    yield call(() => axios.delete(`/api/calendar-events/${eventId}`));
+    yield call(() => axiosInstance.delete(`/api/calendar-events/${eventId}`));
 
     yield put(
       CalendarActions.fetchCalendarEventsSuccess({

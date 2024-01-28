@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
-import { Snapshot } from "../../state/stores/SnapshotStore";
+import { SnapshotStoreConfig } from "../../state/stores/SnapshotStore";
 
 // Define project phases
 enum ProjectPhase {
@@ -46,26 +46,23 @@ const ProjectManager: React.FC = () => {
     // and perform any other necessary actions
   };
 
-  const getActionHistory = () => {
-    // Implement your logic to retrieve the action history (array of actions)
-    // Include snapshots from the SnapshotStore
+  const getActionHistory = ():  Promise<SnapshotStoreConfig<Data>> => {
+    const entityActions =  useSnapshotManager(); // Ensure to await the async function
+    const snapshotStoreSnapshots: Promise<SnapshotStoreConfig<Data>> = entityActions.getSnapshots();
+
+    return snapshotStoreSnapshots.then((snapshotActions: SnapshotStoreConfig<Data>) => {
+      // Replace the following line with your actual implementation to retrieve other actions
+      const otherActions: PayloadAction[] = [];
   
-    const snapshotStoreSnapshots: Snapshot<Data>[] = useSnapshotManager().getSnapshots();
-    const snapshotActions = snapshotStoreSnapshots.map((snapshot) =>
-      entityActions.addSnapshot(snapshot)
-    );
+      // Combine snapshot actions with other actions
+      const actionHistory: PayloadAction[] = [...snapshotActions, ...otherActions];
   
-    // Replace the following line with your actual implementation to retrieve other actions
-    const otherActions: PayloadAction[] = [];
-  
-    // Combine snapshot actions with other actions
-    const actionHistory: PayloadAction[] = [...snapshotActions, ...otherActions];
-  
-    return actionHistory;
+      return actionHistory;
+    })
   };
 
   // Function to undo the last action
-  export const undoLastAction = () => {
+  const undoLastAction = () => {
     const actionHistory: PayloadAction[] = getActionHistory();
 
     console.log("Undoing the last action...");

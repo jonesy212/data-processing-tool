@@ -295,30 +295,36 @@ function* completeAllTodosFailureSaga(
   }
 }
 
-export const todoSagas = [
-  takeLatest(TodoActions.addTodo.type, addTodoSaga),
-  takeLatest(TodoActions.remove.type, removeTodoSaga),
-  takeLatest(TodoActions.toggle.type, toggleTodoSaga),
-  takeLatest(TodoActions.updateTodo.type, updateTodoSaga),
+
+export function* watchTodoSagas() {
+  yield takeLatest(TodoActions.addTodo.type, addTodoSaga),
+  yield takeLatest(TodoActions.remove.type, removeTodoSaga),
+  yield takeLatest(TodoActions.toggle.type, toggleTodoSaga),
+  yield takeLatest(TodoActions.updateTodo.type, updateTodoSaga),
   
-  takeLatest(TodoActions.updateTodoSuccess.type, updateTodoSuccessSaga),
-  takeLatest(TodoActions.updateTodosSuccess.type, updateTodosSuccessSaga),
-  takeLatest(TodoActions.fetchTodosRequest.type, fetchTodoSaga),
-  takeLatest(TodoActions.fetchTodosRequest.type, fetchTodosRequestSaga),
-  takeLatest(TodoActions.fetchTodosSuccess.type, fetchTodosSuccessSaga),
-  takeLatest(TodoActions.fetchTodosFailure.type, fetchTodosFailureSaga),
-  takeLatest(
+  yield takeLatest(TodoActions.updateTodoSuccess.type, updateTodoSuccessSaga),
+  yield takeLatest(TodoActions.updateTodosSuccess.type, updateTodosSuccessSaga),
+  yield takeLatest(TodoActions.fetchTodosRequest.type, fetchTodoSaga),
+  yield takeLatest(TodoActions.fetchTodosRequest.type, fetchTodosRequestSaga),
+  yield takeLatest(TodoActions.fetchTodosSuccess.type, fetchTodosSuccessSaga),
+  yield takeLatest(TodoActions.fetchTodosFailure.type, fetchTodosFailureSaga),
+  yield takeLatest(
     TodoActions.completeAllTodosSuccess.type,
     completeAllTodosSuccessSaga
   ),
-  takeLatest(
+  yield takeLatest(
     TodoActions.completeAllTodosRequest.type,
     completeAllTodosRequestSaga
   ),
-  takeLatest(
+  yield takeLatest(
     TodoActions.completeAllTodosFailure.type,
     completeAllTodosFailureSaga
   ),
-  takeLatest(TodoActions.completeAllTodosSuccess.type, completeAllTodosSaga),
-  takeLatest(TodoActions.batchAssignTodos.type, batchAssignTodosSaga),
-];
+  yield takeLatest(TodoActions.completeAllTodosSuccess.type, completeAllTodosSaga),
+  yield takeLatest(TodoActions.batchAssignTodos.type, batchAssignTodosSaga)
+
+}
+
+export function* todoSagas(){
+  yield watchTodoSagas()
+}

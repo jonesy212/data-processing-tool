@@ -7,9 +7,6 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the DataLoading type
   },
 
-  
-  
-  
   // Error and Authentication
   Error: {
     DEFAULT: (errorType: string) => `An ${errorType} occurred.`,
@@ -119,6 +116,7 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the DataAnalysis type
     // You can customize the messages based on your application's needs
   },
+  
   FrontendStructure: {
     DEFAULT: "Frontend structure operation completed.",
     ERROR_GETTING_STRUCTURE: "Error getting frontend structure.",
@@ -148,6 +146,14 @@ const NOTIFICATION_MESSAGES = {
     DUPLICATE_NAME: "Duplicate name found. Choose a unique name.",
     // Add more messages for the NamingConventionsError type
   },
+
+  Persona: {
+    DEFAULT: (errorType: string, details: string) =>
+    `Error in Tasks (${errorType}): ${details}`,
+    WELCOME: "Welcome to the Persona Builder!",
+    QUESTIONNAIRE_COMPLETE: "Thank you for completing the questionnaire!",
+    // Add more personalized messages for the PersonMessages type
+  },
   
   Snapshot: {
     FETCHING_SNAPSHOTS: "Fetching snapshots...",
@@ -172,6 +178,14 @@ const NOTIFICATION_MESSAGES = {
     TASK_REMOVE_ERROR: "Error removing task. Please try again.",
     COMPLETE_ALL_TASKS_ERROR: "Error completing all tasks. Please try again.",
     TASK_TOGGLE_ERROR: "Error toggling task status. Please try again.",
+    success: {
+      userGenerated: 'User-generated task was successful.',
+      systemGenerated: 'System-generated task was successful.',
+    },
+    failure: {
+      userGenerated: 'Error in user-generated task.',
+      systemGenerated: 'Error in system-generated task.',
+    },
     // New Error Messages for Tasks
   },
   
@@ -240,7 +254,6 @@ const NOTIFICATION_MESSAGES = {
     INSUFFICIENT_FUNDS: "Insufficient funds for the operation.",
     // Add more messages for the TokenUtils type
   },
-   
 } as const;
 
 export default NOTIFICATION_MESSAGES;

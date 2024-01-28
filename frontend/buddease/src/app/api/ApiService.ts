@@ -1,8 +1,8 @@
-import axios from "axios";
 import { observable, runInAction } from 'mobx';
 import { useAuth } from "../components/auth/AuthContext";
 import { User } from "../components/users/User";
 import { UserActions } from "../components/users/UserActions";
+import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = "/api/users";
 
@@ -43,7 +43,7 @@ export const userApiService = observable({
   fetchUser: handleSuccess((payload: { user: User }) => UserActions.fetchUserSuccess(payload))(
     async (userId: number): Promise<{ user: User }> => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/${userId}`);
+        const response = await axiosInstance.get(`${API_BASE_URL}/${userId}`);
         return { user: response.data as User };
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -55,7 +55,7 @@ export const userApiService = observable({
   updateUser: handleSuccess((payload: { user: User }) => UserActions.updateUserSuccess(payload))(
     async (userId: number, updatedUserData: any): Promise<{ user: User }> => {
       try {
-        const response = await axios.put(`${API_BASE_URL}/${userId}`, updatedUserData);
+        const response = await axiosInstance.put(`${API_BASE_URL}/${userId}`, updatedUserData);
         return { user: response.data as User };
       } catch (error) {
         console.error("Error updating user:", error);
@@ -67,7 +67,7 @@ export const userApiService = observable({
   updateUserFailure: handleFailure(UserActions.updateUserFailure)(
     async (): Promise<void> => {
       try {
-        await axios.get(API_BASE_URL);
+        await axiosInstance.get(API_BASE_URL);
       } catch (error) {
         console.error("Error updating user:", error);
         throw error;
@@ -78,7 +78,7 @@ export const userApiService = observable({
   fetchUsers: handleSuccess(UserActions.fetchUsersSuccess)(
     async (): Promise<{ users: User[] }> => {
       try {
-        const response = await axios.get(API_BASE_URL);
+        const response = await axiosInstance.get(API_BASE_URL);
         return { users: response.data as User[] };
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -90,7 +90,7 @@ export const userApiService = observable({
   updateUsers: handleSuccess(UserActions.updateUsersSuccess)(
     async (updatedUsersData: any): Promise<{ users: User[] }> => {
       try {
-        const response = await axios.put(API_BASE_URL, updatedUsersData);
+        const response = await axiosInstance.put(API_BASE_URL, updatedUsersData);
         return { users: response.data as User[] };
       } catch (error) {
         console.error("Error updating users:", error);
@@ -103,7 +103,7 @@ export const userApiService = observable({
     async (userIds: number[]): Promise<void> => {
       try {
         if (useAuth() && useAuth().state.isAuthenticated) {
-          const response = await axios.delete(`${API_BASE_URL}`, {
+          const response = await axiosInstance.delete(`${API_BASE_URL}`, {
             data: { userIds },
           });
           runInAction(() => {

@@ -1,25 +1,28 @@
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
 
-export interface PromptOption {
+interface PromptOption {
   value: string;
   label: string;
 }
 
-export interface Prompt {
+interface Prompt {
   id: string;
   text: string;
   type: 'text' | 'multipleChoice';
   options?: PromptOption[];
 }
 
-export interface PromptPageProps {
+interface PromptPageProps {
   title: string;
   description: string;
   prompts?: Prompt[]; // Optional prompts for static rendering
   onGeneratePrompts?: () => void; // Optional callback for dynamic prompts
 
 }
+
+
+
 
 const PromptPage: React.FC<PromptPageProps> = ({
   title,
@@ -80,3 +83,7 @@ const PromptPage: React.FC<PromptPageProps> = ({
 };
 
 export default PromptPage;
+export type { Prompt, PromptOption, PromptPageProps };
+
+
+

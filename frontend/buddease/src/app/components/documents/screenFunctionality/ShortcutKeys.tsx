@@ -1,10 +1,9 @@
 import React, { MouseEvent, SyntheticEvent, useEffect, useState } from "react";
+import { sanitizeData, sanitizeInput } from '../../security/SanitizationFunctions';
 
 const DynamicEventHandlerExample = () => {
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
-
-
 
 
   // Helper function to add messages
@@ -12,23 +11,23 @@ const DynamicEventHandlerExample = () => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-
-
-
   // Separate event handlers for keyboard and mouse events
   const handleKeyboardEvent = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    // Sanitize input value before processing
     const syntheticEvent = event as React.SyntheticEvent<Element, Event>;
-    handleKeyboardShortcuts(syntheticEvent);
+    const sanitizedInput = sanitizeInput(event.currentTarget.value);
+    console.log("Sanitized input:", sanitizedInput);
+    handleKeyboardShortcuts(event);
+    handleKeyboardShortcuts(syntheticEvent);  
   };
 
-
-
-
-
   const handleMouseEvent = (event: MouseEvent & SyntheticEvent) => {
+    // Sanitize input value before processing
     const syntheticEvent = event as React.SyntheticEvent;
+    const sanitizedData = sanitizeData(syntheticEvent.currentTarget.toString());
+    console.log("Sanitized data:", sanitizedData);
     handleMouseClick(syntheticEvent);
   };
 
@@ -36,26 +35,18 @@ const DynamicEventHandlerExample = () => {
 
 
 
-  // Simulating the functions you want to call
-  const handleKeyboardShortcuts = (event: React.SyntheticEvent) => {
-    // Logic for handling keyboard shortcuts
-    console.log("Handling keyboard shortcuts:", event);
-  };
+ // Simulating the functions you want to call
+ const handleKeyboardShortcuts = (event: React.SyntheticEvent) => {
+  // Logic for handling keyboard shortcuts
+  console.log("Handling keyboard shortcuts:", event);
+  addMessage("Handling keyboard shortcuts");
+};
 
-
-
-
-
-
-
-
-
-  const handleMouseClick = (event: React.SyntheticEvent) => {
-    // Logic for handling mouse click
-    console.log("Handling mouse click:", event);
-  };
-
-
+const handleMouseClick = (event: React.SyntheticEvent) => {
+  // Logic for handling mouse click
+  console.log("Handling mouse click:", event);
+  addMessage("Handling mouse click");
+};
 
 
   const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
@@ -492,6 +483,8 @@ const DynamicEventHandlerExample = () => {
           onScroll={handleScrolling}
           onWheel={handleZoom}
           onMouseDown={handleAnnotations}
+          onKeyDown={handleKeyboardEvent}
+          onMouseUp={handleHighlighting}
           onCopy={handleCopyPaste}
           style={{ border: "1px solid black", padding: "20px" }}
         >
@@ -500,6 +493,7 @@ const DynamicEventHandlerExample = () => {
         <h2>Dynamic Event Handlers</h2>
         <button onClick={handleButtonClick}>Click Me</button>
         <div
+          onMouseDown={handleMouseEvent}
           onMouseMove={handleDivMouseMove}
           style={{ border: "1px solid black", padding: "20px" }}
         >

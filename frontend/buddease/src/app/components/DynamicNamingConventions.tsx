@@ -23,7 +23,7 @@ const handleNamingConventionsErrors = (
     errorDetails = "";
   }
   const errorMessage = NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT(
-    error.message, // Pass error message instead of error object
+    error.message,  
     errorDetails
   );
   notify(NOTIFICATION_TYPES.ERROR, "Error", new Date, {} as NotificationType);
@@ -81,7 +81,8 @@ const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
     } else {
       notify(
         NOTIFICATION_TYPES.ERROR,
-        "Error", new Date,
+        "Error",
+        new Date,
         {} as NotificationType
       );
     }

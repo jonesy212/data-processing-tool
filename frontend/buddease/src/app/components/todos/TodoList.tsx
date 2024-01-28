@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
-import CommonDetails from '../models/CommonData';
+import CommonDetails, { CommonData, SupportedData } from '../models/CommonData';
 import useTodoManagerStore from '../state/stores/TodoStore';
 import { Todo } from './Todo';
+import { Data } from '../models/data/Data';
 
 const TodoList: React.FC = observer(() => {
   const todoStore = useTodoManagerStore();
@@ -20,7 +21,7 @@ const TodoList: React.FC = observer(() => {
           done: todoData.done,
         }));
 
-        todoStore.addTodos(mappedTodos as Todo[], {});
+        todoStore.addTodos(mappedTodos, {}); // Remove the unnecessary cast
       } catch (error) {
         console.error("Error fetching todos:", error);
         // Handle the error as needed
@@ -33,9 +34,8 @@ const TodoList: React.FC = observer(() => {
   const handleUpdateTitle = (id: string, newTitle: string) => {
     todoStore.updateTodoTitle({ id: id, newTitle: newTitle });
   };
-
   const handleToggle = (id: string) => {
-    todoStore.toggleTodo(id);
+    todoStore.toggleTodo(id as keyof typeof todoStore.todos);
   };
 
   const handleCompleteAll = () => {
@@ -50,7 +50,37 @@ const TodoList: React.FC = observer(() => {
       id: newTodoId,
       title: "A new todo",
       done: false,
-    } as Todo;
+      status: 'pending',
+      todos: [],
+      description: '',
+      dueDate: null,
+      priority: 'low',
+      assignedTo: null,
+      assignee: null,
+      assignedUsers: [],
+      collaborators: [],
+      labels: [],
+      comments: [],
+      attachments: [],
+      subtasks: [],
+      isArchived: false,
+      isCompleted: false,
+      isBeingEdited: false,
+      isBeingDeleted: false,
+      isBeingCompleted: false,
+      isBeingReassigned: false,
+      save: function (): Promise<void> {
+        throw new Error('Function not implemented.');
+      },
+      _id: '',
+      isActive: false,
+      tags: [],
+      then: function (callback: (newData: Data) => void): void {
+        throw new Error('Function not implemented.');
+      },
+      analysisType: '',
+      analysisResults: []
+    }; // Remove the unnecessary cast
 
     todoStore.addTodo(newTodo);
     handleUpdateTitle(newTodoId, "A new todo");
@@ -59,10 +89,10 @@ const TodoList: React.FC = observer(() => {
   return (
     <div>
       <ul>
-        {todoStore.todos.map((todo: Todo) => (
+        {todoStore.todos.map((todo: Todo & CommonData<Data>) => (
           <li key={todo.id}>
             {todo.title} - {todo.done ? "Done" : "Not Done"}
-            <button onClick={() => handleToggle(todo.id)}>Toggle</button>
+            <button onClick={() => handleToggle(todo.id as string)}>Toggle</button>
             <CommonDetails data={todo} />
           </li>
         ))}
@@ -73,7 +103,5 @@ const TodoList: React.FC = observer(() => {
     </div>
   );
 });
-
-
 
 export default TodoList;

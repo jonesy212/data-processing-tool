@@ -5,12 +5,13 @@ import Stopwatch from "@/app/components/calendar/Stopwatch";
 import { ChatRoom } from "@/app/components/communications";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import { useThemeConfig } from "@/app/components/hooks/userInterface/ThemeConfigContext";
-import { CollaborationProvider } from "@/app/components/phases/coaborationPhase/CollaborationContext";
+import { CollaborationProvider } from "@/app/components/phases/collaborationPhase/CollaborationContext";
 import ProjectTimelineDashboard from "@/app/components/projects/projectManagement/ProjectTimelineDashboard";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
 import { useNotification } from "@/app/components/support/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
 import { useState } from "react";
 import { SearchProvider, useSearch } from "../searchs/SearchContext";
@@ -22,7 +23,7 @@ const CollaborationDashboard = () => {
   const { isDarkMode, primaryColor, fontSize } = useThemeConfig();
   const [showCollaborationPanel, setShowCollaborationPanel] = useState(false);
 
-  const notify = useNotification(); // Use the useNotification hook
+  const {notify} = useNotification(); // Use the useNotification hook
   const auth = useAuth();
 
   const startBrainstorming = () => {
@@ -30,11 +31,11 @@ const CollaborationDashboard = () => {
       // Check if the user is authenticated before starting brainstorming
       if (auth.state.isAuthenticated) {
         // Example: Notify users about the start of brainstorming activity
-        notify("Brainstorming session started!", "Info");
+        notify("Brainstorming session started!", NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED ,new Date(),  "Ideation:Brainstorming");
         // You can also start the Stopwatch or perform other actions related to brainstorming
       } else {
         // Notify users about the need to log in before starting the activity
-        notify("Please log in to start the brainstorming session.", "Error");
+        notify("Please log in to start the brainstorming session.", NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED ,new Date(),"Error");
       }
       // You can also start the Stopwatch or perform other actions related to brainstorming
     };

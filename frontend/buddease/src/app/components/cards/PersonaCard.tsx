@@ -1,27 +1,31 @@
-import React from "react";
-import { DynamicContentProps } from "../documents/DynamicContent";
+import React, { FC, ReactNode } from "react";
+import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
+import { DetailsProps, SupportedData } from '../models/CommonData';
 import DynamicTypography from "./DummyCardLoader";
+
 
 interface PersonaCardProps {
   persona: string;
-  data: any; // Add the actual data structure for persona here
-  children: React.ReactNode; // Add children prop
+  data: any;
+  title: FC<DetailsProps<SupportedData>>;
+  fontSize: ThemeConfigProps['fontSize'];
+  fontFamily: ThemeConfigProps['fontFamily'];
+  children: React.ReactNode;
 }
-
-const PersonaCard: React.FC<PersonaCardProps & DynamicContentProps> = ({
+const PersonaCard: React.FC<PersonaCardProps> = ({
   persona,
   data,
-  children
+  title,
+  fontSize,
+  fontFamily,
+  children,
 }) => {
   return (
     <div>
       <h1>{persona} Card</h1>
       {/* Render specific persona data here */}
-      <DynamicTypography
-        fontSize="18px"
-        fontFamily="Arial, sans-serif"
-        dynamicContent
-      >
+      
+      <DynamicTypography fontSize="18px" fontFamily="Arial, sans-serif"  {...title}>
         {data && (
           <>
             <p>{`Extraversion: ${data.extraversion}`}</p>
@@ -29,10 +33,8 @@ const PersonaCard: React.FC<PersonaCardProps & DynamicContentProps> = ({
             <p>{`Thinking: ${data.thinking}`}</p>
             <p>{`Judging: ${data.judging}`}</p>
           </>
-        )}
-
-        {children} {/* Include 'children' here */}
-
+        )} 
+        {children}
       </DynamicTypography>
     </div>
   );
@@ -54,6 +56,15 @@ const CardGenerator: React.FC<{
           data={data}
           fontSize={fontSize}
           fontFamily={fontFamily}
+          children={null}
+          title={(props: DetailsProps<SupportedData>, context?: any): ReactNode => {
+            return (
+              <>
+                <h2>{props.data.title}</h2>
+                <p>{props.data.description}</p>
+              </>
+            );
+          }}
         />
       );
     // Add more cases for other card types

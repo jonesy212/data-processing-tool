@@ -1,5 +1,6 @@
 // User.tsx
-import CommonDetails from "../models/CommonData";
+import { ReactNode } from "react";
+import CommonDetails, { DetailsProps , SupportedData} from "../models/CommonData";
 // import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
@@ -33,6 +34,7 @@ export interface UserData {
   teamMembers?: TeamMember[];
   yourDocuments?: DocumentTree;
   visualizations?: VisualizationData[];
+  traits: typeof CommonDetails;
 }
 
 // Add a new type for visualization data
@@ -63,12 +65,15 @@ const userData: UserData = {
     group: {} as DocumentNode,
     visualizations: {} as DocumentNode,
   },
-  // Other user data properties
+  traits: (props: DetailsProps<SupportedData>, context?: any): ReactNode => {
+    return <CommonDetails {...props} />
+  }
 };
 
 
 // using common details we generate details for components by mapping through the objects.
-const UserDetails: React.FC<{ user: User }> = ({ user }) =>
-  user ? <CommonDetails data={{ data: user }} /> : <div>User not available</div>;
+const UserDetails: React.FC<{ user: User }> = ({ user }) => (
+  user ? <CommonDetails data={{ title: 'User Details', description: 'User data', data: user }} /> : <div>User not available</div>
+);
 
 export { UserDetails };

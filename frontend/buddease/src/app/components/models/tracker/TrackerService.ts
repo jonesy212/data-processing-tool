@@ -1,4 +1,5 @@
 // TrackerService.ts
+import { DocumentData } from "../../documents/DocumentBuilder";
 import { Tracker } from "./Tracker";
 
 class TrackerService {
@@ -19,9 +20,9 @@ class TrackerService {
   // Add more methods as needed
 
   // Method to initiate tracking for all trackers
-  startTrackingAll(): void {
-    this.trackers.forEach((tracker) => {
-      tracker.trackFileChanges();
+  startTrackingAll(file: DocumentData): void {
+    this.trackers.forEach((tracker: Tracker) => {
+      tracker.trackFileChanges(file);
       tracker.trackFolderChanges();
       // Add more tracking methods as needed
     });

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 interface LoginFormProps {
   setUsername: Dispatch<SetStateAction<string>>;
   setPassword: Dispatch<SetStateAction<string>>;
+  onSubmit: (username: string, password: string) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
@@ -34,7 +35,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
         console.error("Error during login:", Error);
 
         // Use notify directly without checking notificationContext
-        notificationContext.notify(NOTIFICATION_TYPES.ERROR, "Login failed");
+        notificationContext.notify(NOTIFICATION_TYPES.ERROR,"Login failed", new Date, "Error");
 
         history("/frontend/buddease/src/app/pages/onboarding/Welcome.tsx");
       }

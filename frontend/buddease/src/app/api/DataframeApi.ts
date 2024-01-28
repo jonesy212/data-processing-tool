@@ -1,10 +1,10 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = "/api/data-frame";
 
 export const fetchDataFrame = async (): Promise<any[]> => {
   try {
-    const response = await axios.get(API_BASE_URL);
+    const response = await axiosInstance.get(API_BASE_URL);
     return response.data; // Adjust based on your actual response structure
   } catch (error) {
     console.error("Error fetching data frame:", error);
@@ -14,16 +14,18 @@ export const fetchDataFrame = async (): Promise<any[]> => {
 
 export const setDataFrame = async (data: any): Promise<void> => {
   try {
-    await axios.post(API_BASE_URL, data);
+    await axiosInstance.post(API_BASE_URL, data);
   } catch (error) {
     console.error("Error setting data frame:", error);
     throw error;
   }
 };
 
+
+
 export const updateDataFrame = async (updatedData: any): Promise<void> => {
   try {
-    await axios.put(API_BASE_URL, updatedData);
+    await axiosInstance.put(API_BASE_URL, updatedData);
   } catch (error) {
     console.error("Error updating data frame:", error);
     throw error;
@@ -32,7 +34,7 @@ export const updateDataFrame = async (updatedData: any): Promise<void> => {
 
 export const deleteDataFrame = async (): Promise<void> => {
   try {
-    await axios.delete(API_BASE_URL);
+    await axiosInstance.delete(API_BASE_URL);
   } catch (error) {
     console.error("Error deleting data frame:", error);
     throw error;
@@ -41,20 +43,28 @@ export const deleteDataFrame = async (): Promise<void> => {
 
 const fetchDataFromBackend = async () => { 
   try {
-    const response = await axios.get('/api/data');
+    const response = await axiosInstance.get('/api/data');
     return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
     throw error;
   }
 }
-
+const appendDataToBackend = async (data: any) => { 
+  try {
+    await axiosInstance.post('/api/data', data);
+  } catch (error) {
+    console.error('Error appending data:', error);
+    throw error;
+  }
+}
 const DataFrameAPI = {
   fetchDataFrame,
   setDataFrame,
   updateDataFrame,
   deleteDataFrame,
-  fetchDataFromBackend
+  fetchDataFromBackend,
+  appendDataToBackend
 };
 
 export default DataFrameAPI;

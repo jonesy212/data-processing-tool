@@ -1,4 +1,4 @@
-import dataProcessingService, { DataProcessing, DataProcessingResult } from './DataProcessing';
+import dataProcessingService, { DataProcessing, DataProcessingResult } from './DataProcessingService';
 
 // Usage
 async function processData() {

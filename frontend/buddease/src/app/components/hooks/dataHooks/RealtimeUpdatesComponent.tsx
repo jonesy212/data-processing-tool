@@ -1,4 +1,4 @@
-import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData.tsx';
+import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { User, UserData } from '../../users/User';
@@ -7,7 +7,7 @@ const RealtimeUpdatesComponent = async () => {
   const { state: authState } = useAuth();
   const id =  authState.user?.id;
   const [realtimeData, setRealtimeData] = useState<UserData | null>(
-    authState.user ? initializeUserData(authState.user) : null
+     await initializeUserData(id as string | number, authState.user)
   );
 
   const [chatSettings, setChatSettings] = useState<{

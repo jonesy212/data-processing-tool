@@ -2,6 +2,7 @@
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
 import { ToolbarOptions } from '../documents/ToolbarOptions';
+import { DocumentType } from '../documents/DocumentGenerator';
 
 interface TextCardProps {
   onSave: (text: string) => Promise<void>;
@@ -35,7 +36,9 @@ const TextCard: React.FC<TextCardProps> = ({ onSave }) => {
                 }}
         handleEditorStateChange={function (newEditorState: Draft.EditorState): void {
           setText(newEditorState.getCurrentContent().getPlainText());
-        } }      />
+        }}
+        type={DocumentType.Text}
+      />
 
     </div>
   );

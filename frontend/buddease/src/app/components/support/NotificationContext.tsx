@@ -5,11 +5,15 @@ import { Notification } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
 import { notificationStore } from "./NotificationProvider";
 
-// NotificationContext.tsx
+
+type CustomNotificationType = "RandomDismiss";
+
 type NotificationType =
   | "Welcome"
   | "AccountCreated"
+  | "Announcement"
   | "Error"
+  | "Info"
   | "InvalidCredentials"
   | "TeamLoading"
   | "TeamJoinRequest"
@@ -24,13 +28,16 @@ type NotificationType =
   | "SystemUpdateInProgress"
   | "NewChatMessage"
   | "ChatMention"
+  | "PushNotification"
   | "ProfileUpdated"
   | "PasswordChanged"
   | "EventReminder"
   | "EventOccurred"
   | "Dismiss"
   | "CustomNotification1"
-  | "CustomNotification2";
+  | "CustomNotification2"
+  | "Ideation:Brainstorming"
+  | CustomNotificationType;
 
 export interface NotificationContextProps {
   sendNotification: (
@@ -44,8 +51,10 @@ export interface NotificationContextProps {
     date: Date | undefined,
     type: NotificationType
   ) => Promise<void>;
+
   notifications: Notification[];
   // Add more notification functions as needed
+  showMessage: (message: string) => void;
 }
 
 const DefaultNotificationContext: NotificationContextProps = {
@@ -64,6 +73,9 @@ const DefaultNotificationContext: NotificationContextProps = {
     });
   },
   notifications: [],
+  showMessage(message) {
+    message = message || "Loading...";
+  },
 };
 
 // Modify NotificationContextProps interface
@@ -174,6 +186,7 @@ export const useNotification = (): NotificationContextProps => {
     addNotification: context.addNotification,
     notify: context.notify,
     notifications: context.notifications || [],
+    showMessage: context.showMessage
   };
 };
 

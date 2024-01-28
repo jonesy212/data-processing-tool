@@ -1,11 +1,11 @@
 // NotificationSlice.tsx
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface Notification {
+interface Notification {
   id: string;
-  content: string;
   date: Date;
   message: string;
+  createdAt: Date;
   type: string;
 }
 
@@ -38,3 +38,4 @@ export const selectNotifications = (state: { notifications: NotificationsState }
   state.notifications.notifications;
 
 export default notificationsSlice.reducer;
+export type { Notification };

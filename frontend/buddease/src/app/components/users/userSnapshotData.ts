@@ -1,6 +1,7 @@
 // userSnapshotData.ts
 import MyPromise from '../../utils/MyPromise';
 import useUserProfile from '../hooks/useUserProfile';
+import { DetailsProps, SupportedData } from '../models/CommonData';
 import { User, UserData } from './User';
 
 type UserProfile = UserData & User;
@@ -76,6 +77,7 @@ const myProfileData: UserProfile = {
   hasQuota: false,
   profilePicture: null,
   processingTasks: [],
+  traits: {} as (props: DetailsProps<SupportedData>, context?: any)=> React.ReactNode,
 };
 
 const myGenericData = {

@@ -1,22 +1,30 @@
 // DashboardFramework.tsx
 import { ApiConfig } from "@/app/configs/ConfigurationService";
+import {
+  AppTree,
+  generateInitialAppTree,
+} from "@/app/generators/generateAppTree";
 import ChatDashboard from "@/app/pages/dashboards/ChatDashboard";
 import DataDashboard from "@/app/pages/dashboards/DataDashboard";
 import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { processAutoGPTOutputWithSpaCy } from "../Inteigents/AutoGPTSpaCyIntegration";
 import { AdminDashboard, AdminDashboardProps } from "../admin/AdminDashboard";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
-import { selectUserIdea } from '../state/redux/slices/DocumentSlice';
+import { selectUserIdea } from "../state/redux/slices/DocumentSlice";
+import { RootState } from "../state/redux/slices/RootSlice";
 import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import { AquaConfig } from "../web3/web_configs/AquaConfig";
 import MeetingScheduler from "./../communications/scheduler/MeetingScheduler";
-import { default as MeetingSchedulerToolbar, default as TeamOverview, default as TeamOverviewToolbar } from "./../communications/scheduler/TeamOverview";
+import {
+  default as MeetingSchedulerToolbar,
+  default as TeamOverview,
+  default as TeamOverviewToolbar,
+} from "./../communications/scheduler/TeamOverview";
 import PhaseDashboard from "./PhaseDashboard";
-
 interface DashboardFrameworkProps {
   children: React.ReactNode;
   activeDashboard: string;
@@ -31,15 +39,37 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
   const { slide, hide, isSliding, isDragging } = useMovementAnimations();
   const leftPaneRef = useRef<HTMLElement>(null);
   const rightPaneRef = useRef<HTMLElement>(null);
-  const appTree = 
+  // Update appTree with the result from generateInitialAppTree
+  const [appTree, setAppTree] = useState<AppTree | null>(null);
 
-  const handleUserIdeaSubmission = async (userIdea: typeof selectUserIdea) => {
-      const enhancedPrompt = await processAutoGPTOutputWithSpaCy(userIdea, appTree);
+  const handleUserIdeaSubmission = async (
+    userIdea: typeof selectUserIdea,
+  ) => {
+    const enhancedPrompt = await processAutoGPTOutputWithSpaCy(
+      userIdea,
+    );
+
+    if (enhancedPrompt) {
+      // Perform actions with the enhanced prompt
+      console.log("Enhanced Prompt:", enhancedPrompt);
 
       // Rest of the code...
-  }
-    
-    
+    } else {
+      console.log(
+        "Prompt enhancement failed. Please provide a valid user idea."
+      );
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const tree = await generateInitialAppTree();
+      setAppTree(tree);
+    };
+
+    fetchData();
+  }, []);
+
   const handleFullscreenMode = () => {
     // Toggle full-screen mode
     const isFullscreen = document.fullscreenElement !== null;
@@ -179,10 +209,13 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
         <button onClick={handleToggleLeftPane}>Toggle Left Pane</button>
         {/* Toggle right pane button */}
         <button onClick={handleToggleRightPane}>Toggle Right Pane</button>
+        {/* Idea Submission */}
+        <button onClick={() => handleUserIdeaSubmission((state: RootState) => "userIdeaManager")}>Submit Idea</button>
       </footer>
       {/* Display feedback for sliding or dragging animations */}
       {isSliding && <p>Sliding...</p>}
-      {isDragging && <p>Dragging...</p>}P{/* Render common layout content */}
+      {isDragging && <p>Dragging...</p>}
+      {/* Render common layout content */}
       {children}
       {/* Additional toolbar for Meeting Scheduler */}
       {activeDashboard === "meetingScheduler" && <MeetingSchedulerToolbar />}

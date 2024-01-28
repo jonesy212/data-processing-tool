@@ -2,7 +2,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { Data } from '../models/data/Data';
-import { Snapshot } from '../state/stores/SnapshotStore';
+import Snapshot from '../state/stores/SnapshotStore';
 
 export const SnapshotActions = {
     add: createAction<Snapshot<Data>>('addSnapshot'),

@@ -1,19 +1,20 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
+import { Data } from '../../models/data/Data';
 import { CalendarEvent } from '../../state/stores/CalendarStore';
 import SnapshotStore from '../../state/stores/SnapshotStore';
 import { fetchData } from '../../utils/dataAnalysisUtils';
 
 export const ENDPOINT = 'http://your-backend-endpoint'; // Update with your actual backend endpoint
 
-const useRealtimeData = (initialData: any, updateCallback: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => void) => {
+const useRealtimeData = (initialData: any, updateCallback: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Data>) => void) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
 
-    socket.on('updateData', (data: any, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => {
+    socket.on('updateData', (data: any, snapshotStore: SnapshotStore<Data>) => {
       // Call the provided updateCallback with the updated data
       updateCallback(data, snapshotStore);
 
@@ -77,3 +78,19 @@ const useRealtimeData = (initialData: any, updateCallback: (events: Record<strin
 };
 
 export default useRealtimeData;
+
+// Define your update callback function
+const updateCallback = (events: Record<string, CalendarEvent[]>) => {
+  // Your update logic here
+
+  // Perform any additional logic based on the updated events data
+  // For example, you can iterate through the events and perform specific actions
+  Object.keys(events).forEach((eventId) => {
+    const calendarEvents = events[eventId];
+    // Perform actions based on each calendar event
+    calendarEvents.forEach((event) => {
+      // Example: Update UI or trigger notifications based on the event
+      console.log(`Updated event with ID ${eventId}:`, event);
+    });
+  });
+};

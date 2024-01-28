@@ -29,7 +29,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
   const [column, setColumn] = useState("");
   const [operation, setOperation] = useState("==");
   const [value, setValue] = useState("");
-  const [realtimeData, setRealtimeData] = useRealtimeData([]);
+  const [realtimeData, setRealtimeData] = useRealtimeData(snapshotStore,updateCallback);
 
   const addFilter = () => {
     if (column.trim() === '' || operation.trim() === '' || value.trim() === '') {

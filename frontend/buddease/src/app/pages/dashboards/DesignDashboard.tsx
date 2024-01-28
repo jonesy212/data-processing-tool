@@ -31,7 +31,6 @@ import DynamicTypography, {
   DynamicTypographyProps,
   HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
-import ResponsiveDesign from "@/app/components/styling/ResponsiveDesign";
 import { TaskActions } from "@/app/components/tasks/TaskActions";
 import TaskAssignmentSnapshot from "@/app/components/tasks/TaskAssignmentSnapshot";
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
@@ -56,7 +55,6 @@ import BatchProcessingAndCache from "@/app/utils/BatchProcessingAndCache";
 import React, { useEffect, useState } from "react";
 import PersonaBuilderDashboard from "../personas/recruiter_dashboard/PersonaBuilderDashboard";
 import UserDashboard from "./UserDashboard";
-
 // import {
 //   DocumentBuilderConfig,
 //   FrontendDocumentConfig,
@@ -74,7 +72,6 @@ import UserDashboard from "./UserDashboard";
 // import {
 //   FetchTodos,
 // } from "@/app/components/todos";
-
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 
 // import {
@@ -96,26 +93,32 @@ import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
 import NotificationManager, {
   NotificationContextValue,
-} from "@/app/components/support/NotificationManager";
+} from "@/app/components/support/NotificationNotificationManager";
 import { UserData } from "@/app/components/users/User";
 
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
+import DataProcessingComponent from "@/app/components/models/data/DataProcessingComponent";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { Notification } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType } from "@/app/components/support/NotificationContext";
+import { saveProfile } from "@/app/components/users/userSnapshotData";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
 import ExtendedBackendStructure from "@/app/configs/appStructure/ExtendedBackendStructure";
 import { FrontendStructure } from "@/app/configs/appStructure/FrontendStructureComponent";
 import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
+import DesignComponent from "@/app/css/DesignComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import AppCacheManagerBase from "@/app/utils/AppCacheManager";
+import MyPromise from "@/app/utils/MyPromise";
 import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
+import YourParentComponent from '../../components/prompts/YourParentComponent';
 import DataPreview, {
   DataPreviewProps,
 } from "../../components/users/DataPreview";
-import SearchComponent from "../searchs/Search";
+import SearchComponent, { SearchComponentProps } from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
 type customNotifications = "customNotifications1" | "customNotifications2";
 interface DynamicComponentWrapperProps<T> {
@@ -157,6 +160,12 @@ const DynamicComponentWrapper = <T extends {}>({
   return <>{children(component)}</>;
 };
 
+
+
+
+
+
+
 // Update the type of backendStructure
 const backendStructure: ExtendedBackendStructure = {
   ...responsiveDesignStore.backendStructure,
@@ -172,6 +181,12 @@ const backendStructure: ExtendedBackendStructure = {
     return structure;
   },
 };
+
+
+
+
+
+
 
 const DesignDashboard: React.FC<{
   colors: string[];
@@ -347,9 +362,10 @@ const DesignDashboard: React.FC<{
       <IdeaLifecyclePhase />
       <LaunchPhase />
       <ProfileSetupPhase
-        onSubmit={(profileData: any): Promise<void> => {
+        onSubmit={ (profileData: any): MyPromise => {
           // Save profile data
-          return  profileService.saveProfile(profileData);
+
+          return  saveProfile(profileData);
         }}
       />
       <PostLaunchActivitiesPhase />
@@ -357,7 +373,7 @@ const DesignDashboard: React.FC<{
 
       {/* Data Management */}
       <DataPreview data={{} as DataPreviewProps & UserData} />
-      <DataProcessing />
+      <DataProcessingComponent />
 
       {/* Task Management */}
       <TaskManagementManager />
@@ -397,23 +413,24 @@ const DesignDashboard: React.FC<{
         colorCodingEnabled={false}
       />
       <AnimationsAndTransitions examples={[]} />
-      <ResponsiveDesign />
+      <DesignComponent />
+
 
       {/* User Interaction */}
       <SearchComponent componentSpecificData={{ componentSpecificData }} />
       <TaskActions />
       <TaskAssignmentSnapshot taskId={""} />
       <TaskManagerComponent
-        taskId={() => {
-          throw new Error("Function not implemented.");
-        }}
+        taskId={() => "taskId"}
       />
       <TodoList />
       <InviteFriends />
       <ReferralSystem />
       <SendEmail />
-      <ProtectedRoute component={{}} />
-      <SearchComponent componentSpecificData={{ componentSpecificData }} />
+      {/* how to set up a protected rout */}
+      <ProtectedRoute component={YourParentComponent} />
+
+      <SearchComponent componentSpecificData={{ } as SearchComponentProps} />
       <User />
       <UserActions />
 
@@ -431,7 +448,7 @@ const DesignDashboard: React.FC<{
       <ApiConfig />
       <BackendDocumentConfig />
       <ConfigurationService />
-      <DataVersionsConfig />
+      <DataVersionsConfig dataPath="" />
       <DetermineFileType />
       <DocumentBuilderConfig />
       <FrontendDocumentConfig />
@@ -453,7 +470,7 @@ const DesignDashboard: React.FC<{
       <GeneratedInterfaces />
 
       {/* Cache Management */}
-      <AppCacheManager />
+      <AppCacheManagerBase />
       <BatchProcessingAndCache />
       <CacheManager />
       <CacheUtils />

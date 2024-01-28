@@ -11,7 +11,10 @@ enum DocumentType {
   Text = 'text',
   Spreadsheet = 'spreadsheet',
   Diagram = 'diagram',
-  CalendarEvents = 'calendarEvents'
+  CalendarEvents = 'calendarEvents',
+  Drawing = 'drawing',
+  Presentation = 'presentation',
+
 }
 class DocumentGenerator {
   createTextDocument(type: DocumentType, options: DocumentOptions): string {
@@ -90,6 +93,49 @@ wb.write('spreadsheet.xlsx');
     }
   }
 
+
+  createDrawing(options: DocumentOptions): string {
+    const templatePath = path.join(__dirname, 'templates', 'drawingTemplate.svg');
+    const content = options.content || 'Default Drawing Content';
+
+    // Example: Use a placeholder library for drawings
+    const drawingLibrary = require('drawingLibrary');
+
+    // Replace 'drawingLibrary.createDrawing' with the actual method
+    const drawing = drawingLibrary.createDrawing(templatePath, content);
+
+    try {
+      // Perform any additional logic specific to the chosen drawing library
+      // Save the drawing or perform other operations as needed
+
+      return 'Drawing created successfully.';
+    } catch (error) {
+      console.error('Error creating drawing:', error);
+      return 'Error creating drawing.';
+    }
+  }
+
+  createPresentation(options: DocumentOptions): string {
+    const templatePath = path.join(__dirname, 'templates', 'presentationTemplate.pptx');
+    const content = options.content || 'Default Presentation Content';
+
+    // Example: Use a placeholder library for presentations
+    const presentationLibrary = require('presentationLibrary');
+
+    // Replace 'presentationLibrary.createPresentation' with the actual method
+    const presentation = presentationLibrary.createPresentation(templatePath, content);
+
+    try {
+      // Perform any additional logic specific to the chosen presentation library
+      // Save the presentation or perform other operations as needed
+
+      return 'Presentation created successfully.';
+    } catch (error) {
+      console.error('Error creating presentation:', error);
+      return 'Error creating presentation.';
+    }
+  }
+
   // Add methods for other document types (e.g., createPresentation, createDrawing, etc.)
 
   createDiagram(): string {
@@ -120,3 +166,4 @@ wb.write('spreadsheet.xlsx');
 }
 
 export default DocumentGenerator;
+export { DocumentType };

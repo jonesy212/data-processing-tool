@@ -284,22 +284,25 @@ function* completeAllTasksFailureSaga(action: ReturnType<typeof TaskActions.comp
 
 
 
-export const taskSagas = [
-  takeLatest(TaskActions.add.type, addTaskSaga),
-  takeLatest(TaskActions.remove.type, removeTaskSaga),
-  takeLatest(TaskActions.toggle.type, toggleTaskSaga),
-  takeLatest(TaskActions.updateTask.type, updateTaskSaga),
-  takeLatest(TaskActions.updateTaskSuccess.type, updateTaskSuccessSaga),
-  takeLatest(TaskActions.updateTasksSuccess.type, updateTasksSuccessSaga),
-  takeLatest(TaskActions.fetchTasksRequest.type, fetchTaskSaga), 
-  takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksSaga),
-  takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksRequestSaga),
-  takeLatest(TaskActions.fetchTasksSuccess.type, fetchTasksSuccessSaga),
-  takeLatest(TaskActions.fetchTasksFailure.type, fetchTasksFailureSaga),
-  takeLatest(TaskActions.completeAllTasksSuccess.type, completeAllTasksSuccessSaga),
-  takeLatest(TaskActions.completeAllTasksRequest.type, completeAllTasksRequestSaga),
-  takeLatest(TaskActions.completeAllTasksFailure.type, completeAllTasksFailureSaga),
-];  
+export function* watchTaskSagas() {
+  yield takeLatest(TaskActions.add.type, addTaskSaga),
+  yield takeLatest(TaskActions.remove.type, removeTaskSaga),
+  yield takeLatest(TaskActions.toggle.type, toggleTaskSaga),
+  yield takeLatest(TaskActions.updateTask.type, updateTaskSaga),
+  yield takeLatest(TaskActions.updateTaskSuccess.type, updateTaskSuccessSaga),
+  yield takeLatest(TaskActions.updateTasksSuccess.type, updateTasksSuccessSaga),
+  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTaskSaga), 
+  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksSaga),
+  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksRequestSaga),
+  yield takeLatest(TaskActions.fetchTasksSuccess.type, fetchTasksSuccessSaga),
+  yield takeLatest(TaskActions.fetchTasksFailure.type, fetchTasksFailureSaga),
+  yield takeLatest(TaskActions.completeAllTasksSuccess.type, completeAllTasksSuccessSaga),
+  yield takeLatest(TaskActions.completeAllTasksRequest.type, completeAllTasksRequestSaga),
+  yield takeLatest(TaskActions.completeAllTasksFailure.type, completeAllTasksFailureSaga)
+};  
 
 
-
+export function* taskSagas()
+{
+  yield watchTaskSagas()
+}

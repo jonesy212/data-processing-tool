@@ -8,60 +8,118 @@ import useTodoManagerStore from "../state/stores/TodoStore";
 import { userManagerStore } from "../state/stores/UserStore";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
+import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 
+
+const { notify } = useNotification();
 
 const useSnapshotManager = () => {
   const todoManagerStore = useTodoManagerStore();
   const taskManagerStore = useTaskManagerStore();
   const userManagedStore = userManagerStore();
+
   useEffect(() => {
     // Fetch snapshots or perform any initialization logic
     todoManagerStore.batchFetchSnapshotsRequest({} as Record<string, Todo[]>);
     taskManagerStore.batchFetchSnapshotsRequest({} as Record<string, Task[]>);
     userManagedStore.batchFetchSnapshotsRequest({} as Record<string, User[]>);
-    
-    const fetchSnapshots = async () => {
-      try {
-        // Adjust the API endpoint based on your project
-        const response = await fetch("/api/snapshots");
-        const snapshotsData = await response.json();
-        todoManagerStore.batchFetchSnapshotsRequest({ snapshots: snapshotsData });
-      } catch (error) {
-        console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({ error: error.message });
-      }
-    };
 
     fetchSnapshots();
+    createSnapshot();
   }, [todoManagerStore]);
 
-  const fetchSnapshot = async (id: string) => {
+  const createSnapshot = async () => {
     try {
-      const response = await fetch(`/api/snapshots/${id}`);
+      // Make API call to create snapshot using the defined endpoint
+      const response = await fetch(endpoints.snapshots.add, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          // Pass snapshot data
+        })
+      });
       const snapshot = await response.json();
-      todoManagerStore.fetchSnapshotSuccess({ snapshot });
+      todoManagerStore.createSnapshotSuccess({ snapshot });
+      // Notify success
+      notify("Snapshot created successfully!", NOTIFICATION_MESSAGES.Generic.DEFAULT, undefined, "OperationSuccess");
     } catch (error) {
-      console.error("Error fetching snapshot:", error);
+      // Notify failure
+      todoManagerStore.createSnapshotFailure("error creating snapshot: " + error);
+      // Using a custom error message
+      notify('Snapshot creation was unsuccessful', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
     }
   };
 
-  
-  const getSnapshot = async ( id: string, snapshot: SnapshotStore<Snapshot<Data>>) => { 
+
+  const fetchSnapshot = async (id: string): Promise<Snapshot<Data>> => {
     try {
       const response = await fetch(`/api/snapshots/${id}`);
       const snapshot = await response.json();
-      useSnapshotManager
+      todoManagerStore.fetchSnapshotSuccess({ snapshot } as Todo[] & Snapshot<Data>);
+      return snapshot; // Return the fetched snapshot
+    } catch (error) {
+      console.error(NOTIFICATION_MESSAGES.Snapshot.FETCHING_SNAPSHOTS_ERROR); // Log error using notification message
+      throw error; // Throw the error to handle it in the caller function
+    }
+  };
+
+
+  const getSnapshot = async (id: string, snapshotStore: SnapshotStore<Snapshot<Data>>) => {
+    try {
+      const response = await fetch(`/api/snapshots/${id}`);
+      const snapshotData = await response.json();
+
+      // Store the snapshot data using the provided SnapshotStore
+      const snapshot = useSnapshotManager().initSnapshot(snapshotStore, snapshotData);
+
       return snapshot;
     } catch (error) {
       console.error("Error fetching snapshot:", error);
       throw error;
     }
+  };
+
+  const setSnapshot = async (snapshotId: string, snapshotData: Todo) => {
+    try {
+      const response = await fetch(`/api/snapshots/${snapshotId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(snapshotData)
+      });
+
+      // Check if the response is okay and handle accordingly
+      if (response.ok) {
+        // Adjust the response handling based on your project
+        const updatedSnapshot: Todo[] = await response.json();
+        todoManagerStore.updateSnapshotSuccess({ snapshot: updatedSnapshot });
+        // Notify success
+        notify('Snapshot updated successfully', NOTIFICATION_MESSAGES.Generic.DEFAULT, undefined, 'OperationSuccess');
+      } else {
+        console.error('Failed to update snapshot:', response.statusText);
+        // Notify failure
+        notify('Snapshot update failed', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
+      }
+    } catch (error) {
+      console.error('Error updating snapshot:', error);
+      todoManagerStore.updateSnapshotFailure({ error: 'Error updating snapshot: ' + error });
+      // Notify failure
+      notify('Snapshot update failed', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
+    }
+  };
+
+  const takeSnapshotSuccess = (snapshot: Todo) => {
+    todoManagerStore.takeSnapshotSuccess({ snapshot });
   }
 
-  const takeSnapshotSuccess = (snapshots: Todo[]) => { 
-    todoManagerStore.takeSnapshotSuccess({snapshots});
+  const takeSnapshotsSuccess = (snapshots: Todo[]) => {
+    todoManagerStore.takeSnapshotsSuccess({ snapshots });
   }
-
   const addSnapshot = async (newSnapshot: Omit<Todo, "id">) => {
     try {
       // Adjust the API endpoint and request details based on your project
@@ -107,8 +165,9 @@ const useSnapshotManager = () => {
     }
   };
 
-  const getSnapshots = async () => {
+  const getSnapshots = async (snapshot: SnapshotStore<Snapshot<Data>[]>) => {
     try {
+
       const response = await fetch("/api/snapshots");
       const snapshots = await response.json();
       return snapshots;
@@ -116,18 +175,32 @@ const useSnapshotManager = () => {
       console.error("Error fetching snapshots:", error);
     }
   };
-
+  
+  
   const onSnapshot = (snapshotId: string, callback: (snapshot: Todo) => void) => {
     todoManagerStore.subscribeToSnapshot(snapshotId, callback);
-    };
+  }
 
-  const initSnapshot = async () => {
+  const initSnapshot = async (snapshotStore: SnapshotStore<Snapshot<Data>>, snapshotData: Snapshot<Data>) => {
     try {
-      await fetchSnapshot('initialSnapshot');
+      // Assuming fetchSnapshot is a function to fetch the initial snapshot
+      const initialSnapshotData = await fetchSnapshot('initialSnapshot');
+        
+      // Use the useSnapshotManager hook to create and set the initial snapshot
+      const snapshotManager = useSnapshotManager();
+      const initialSnapshot = await snapshotManager.initSnapshot(snapshotStore, initialSnapshotData);
+        
+      snapshotManager.getSnapshot("snapshotId", snapshotStore);
+        
+      // Log the initial snapshot data
+      console.log('Initial snapshot data:', initialSnapshot);
+    
+      // Initialize the snapshot manager with the initial snapshot data
     } catch (error) {
       console.error("Error initializing snapshot:", error);
     }
   };
+
   const updateSnapshot = async (snapshotId: string, updatedSnapshot: Omit<Todo, "id">) => {
     try {
       // Update snapshot logic
@@ -138,45 +211,109 @@ const useSnapshotManager = () => {
         },
         body: JSON.stringify(updatedSnapshot)
       });
-  
+
       if (response.ok) {
         const updated = await response.json();
         todoManagerStore.updateSnapshotSuccess({ snapshot: updated });
+        // Notify success
+        notify('Snapshot updated successfully', NOTIFICATION_MESSAGES.Generic.DEFAULT, undefined, 'OperationSuccess');
       } else {
         console.error("Failed to update snapshot:", response.statusText);
+        // Notify failure
+        notify('Failed to update snapshot', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
       }
-    } catch (error) { 
+    } catch (error) {
       console.error("Error updating snapshot:", error);
-      todoManagerStore.updateSnapshotFailure({ error: error.message });
+      if (typeof error === 'object' && error !== null && 'message' in error) {
+        todoManagerStore.updateSnapshotFailure({ error: (error as Error).message });
+      } else {
+        console.error('An unknown error occurred:', error);
+      }
+      // Notify failure
+      notify('Error updating snapshot', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
+    }
+  }
+
+
+
+  const updateSnapshots = async (updatedSnapshots: Todo[]) => {
+    try {
+      // Adjust the API endpoint based on your project
+      const response = await fetch("/api/snapshots/batch", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedSnapshots)
+      });
+
+      if (response.ok) {
+        const updated = await response.json();
+        todoManagerStore.batchUpdateSnapshotsSuccess({ snapshots: updated });
+        // Notify success
+        notify('Snapshots updated successfully', NOTIFICATION_MESSAGES.Generic.DEFAULT, undefined, 'OperationSuccess');
+      } else {
+        console.error("Failed to update snapshots:", response.statusText);
+        // Notify failure
+        notify('Failed to update snapshots', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
+      }
+    } catch (error) {
+      console.error("Error updating snapshots:", error);
+      if (typeof error === 'object' && error !== null && 'message' in error) {
+        todoManagerStore.batchUpdateSnapshotsFailure({ error: (error as Error).message });
+      } else {
+        console.error('An unknown error occurred:', error);
+      }
+      // Notify
+    }
+  }
+
+
+  const fetchSnapshots = async () => {
+    try {
+      // Adjust the API endpoint based on your project
+      const response = await fetch("/api/snapshots");
+      const snapshotsData = await response.json();
+      todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+      // Notify success
+      notify('Snapshots fetched successfully', NOTIFICATION_MESSAGES.Generic.DEFAULT, undefined, 'OperationSuccess');
+    } catch (error) {
+      if (typeof error === 'object' && error !== null && 'message' in error) {
+        console.error("Error fetching snapshots:", error);
+        todoManagerStore.batchFetchSnapshotsFailure({ error: (error as Error).message });
+      } else {
+        console.error("Error fetching snapshots:", error);
+        todoManagerStore.batchFetchSnapshotsFailure({ error: String(error) });
+      }
+      // Notify failure
+      notify('Failed to fetch snapshots', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
     }
   }
   
-    const fetchSnapshots = async () => {
-      try {
-        // Adjust the API endpoint based on your project
-        const response = await fetch("/api/snapshots");
-        const snapshotsData = await response.json();
-        todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
-      } catch (error) {
+  const batchFetchSnapshotsFailure = async (payload: { error: string }) => {
+    try {
+      // Adjust the API endpoint based on your project
+      const response = await fetch("/api/snapshots");
+      const snapshotsData = await response.json();
+      todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+      // Notify success
+      notify('Snapshots fetched successfully', NOTIFICATION_MESSAGES.Generic.DEFAULT, undefined, 'OperationSuccess');
+    } catch (error) {
+      if (typeof error === 'object' && error !== null && 'message' in error) {
         console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({ error: error.message });
+        todoManagerStore.batchFetchSnapshotsFailure({ error: (error as Error).message });
+      } else {
+        console.error("Error fetching snapshots:", error);
+        todoManagerStore.batchFetchSnapshotsFailure({ error: String(error) });
       }
+      // Notify failure
+      notify('Failed to fetch snapshots', NOTIFICATION_MESSAGES.Generic.ERROR, new Date(), 'Error' as NotificationType);
     }
-  
-  const batchFetchSnapshotsFailure = (payload: { error: string }) => { 
-    async () => { 
-      try {
-        // Adjust the API endpoint based on your project
-        const response = await fetch("/api/snapshots");
-        const snapshotsData = await response.json();
-        todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
-      } catch (error) {
-        console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({ error: error.message });
-      }
-    };
-  
+  }
 
+  const { notify } = useNotification();
+  const subscribeToSnapshot = (snapshotId: string, callback: (snapshot: Todo) => void) => {
+    todoManagerStore.subscribeToSnapshot(snapshotId, callback);
   }
 
   // Add more methods as needed
@@ -188,14 +325,18 @@ const useSnapshotManager = () => {
     fetchSnapshot,
     onSnapshot,
     initSnapshot,
-    updateSnapshot,
     getSnapshot,
+    setSnapshot,
+    updateSnapshot,
+    updateSnapshots,
     fetchSnapshots,
     takeSnapshotSuccess,
+    takeSnapshotsSuccess,
     batchFetchSnapshotsFailure,
+    subscribeToSnapshot,
     loading: todoManagerStore.loading,
     error: todoManagerStore.error,
   };
-};
+}
 
 export default useSnapshotManager;

@@ -1,6 +1,8 @@
 // components/ColorPicker.tsx
 import React from "react";
 import { ChromePicker, ColorResult } from "react-color";
+import { validateHexColor } from "../libraries/ui/theme/ThemeConfig";
+
 
 interface ColorPickerProps {
   color: string;
@@ -14,7 +16,8 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   colorCodingEnabled,
 }) => {
   const handleColorChange = (newColor: ColorResult) => {
-    onChange(newColor.hex);
+    const validatedColor = validateHexColor(newColor.hex);
+    onChange(validatedColor);
   };
 
   return (
@@ -23,7 +26,10 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
       {colorCodingEnabled && (
         <ChromePicker
           color={color}
-          onChange={(newColor) => onChange(newColor.hex)}
+          onChange={(newColor) => {
+            const validatedColor = validateHexColor(newColor.hex);
+            onChange(validatedColor);
+          }}
         />
       )}
     </div>

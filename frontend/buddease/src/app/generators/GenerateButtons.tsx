@@ -2,6 +2,7 @@
 import React from "react";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
+import useNotificationManagerService from "../components/notifications/NotificationService";
 
 /**
  * ButtonGenerator Component
@@ -13,7 +14,9 @@ import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
  * @example
  * // Import ButtonGenerator and its props
  * import { ButtonGenerator, ButtonGeneratorProps } from "./path/to/ButtonGenerator";
- *
+ *import NotificationManager from '../components/support/NotificationManager';
+import NotificationManager from '../components/notifications/NotificationManager';
+
  * // Define buttonGeneratorProps
  * const buttonGeneratorProps: ButtonGeneratorProps = {
  *   onSubmit: () => console.log("Submit clicked"),
@@ -171,7 +174,18 @@ const buttonGeneratorProps: ButtonGeneratorProps = {
   onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
   onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
   onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
-  onOpenDashboard: (dashboard) => console.log(`Open Dashboard clicked: ${dashboard}`),
+  onOpenDashboard: (dashboard) => {
+    // Send push notification
+    const message = `Opened Dashboard: ${dashboard}`;
+    const sender = "User";
+    // Send push notification
+    useNotificationManagerService().sendPushNotification(
+      message, sender
+    );
+    // Additional logic if needed
+    console.log(`Open Dashboard clicked: ${dashboard}`);
+  },
+  
   // ... (other props)
 };
 

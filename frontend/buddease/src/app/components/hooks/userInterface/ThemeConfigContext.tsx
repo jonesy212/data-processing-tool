@@ -1,5 +1,5 @@
 // ThemeConfigContext.tsx
-import { ThemeConfig } from "@/app/theme/ThemeConfig";
+import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
 import YourClass from "@/app/utils/YourClass";
 import React, { createContext, useContext, useState } from "react";
 import { DappProps } from "../../web3/dAppAdapter/DAppAdapterConfig";
@@ -33,7 +33,10 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   const [secondaryColor, setSecondaryColor] = useState("#e74c3c");
   const [fontSize, setFontSize] = useState("16px");
   const [fontFamily, setFontFamily] = useState("Arial, sans-serif");
-  const [themeConfig, setThemeConfig] = useState<ThemeConfig>({});
+  
+  const [themeConfig, setThemeConfig] = useState<ThemeConfig>(
+    {} as ThemeConfig | (() => ThemeConfig)
+  );
   
   let yourClassInstance: YourClass;
 

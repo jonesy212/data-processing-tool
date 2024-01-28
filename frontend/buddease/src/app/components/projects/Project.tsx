@@ -1,5 +1,6 @@
 //projects/Project.ts
 import { ReactNode } from "react";
+import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
@@ -15,11 +16,10 @@ interface Project extends Data{
   isActive: boolean;
   leader: User | null;
   budget: number | null;
-  phase: Phase
+  phase: Phase | null
   phases: Phase[]
   currentPhase: Phase | null // Provide a default value or mark as optional
   // Add other project-related fields as needed
-  // ...
 }
 
 // Function to determine if the project is in a special phase
@@ -54,16 +54,14 @@ class ProjectImpl implements Project {
   isActive: boolean = false; // Provide a default value or mark as optional
   leader: User | null = null; // Provide a default value or mark as optional
   budget: number | null = null; // Provide a default value or mark as optional
+  phase: Phase | null =  null   // Provide a default value or mark as optional
   phases: Phase[] = [] // Provide a default value or mark as optional
   currentPhase: Phase | null = null // Provide a default value or mark as optional
   description: string | null = null
   title: string = "project_title"
   status: "pending" | "inProgress" | "completed" = "pending"
   tags: string[] = []
-  then: () => {
-    // project implementation
-
-  }
+  then: () => void = () => {};
   analysisType: string = "default";
   analysisResults: string[] = [];
   // project implementation
@@ -89,7 +87,7 @@ const currentPhase: Phase = {
 };
 
 
-export interface ProjectData {
+export interface ProjectData extends Project {
   project: Project;
   projects: Project[];
   phases: Phase[];
@@ -120,7 +118,7 @@ console.log('Is project in special phase?', inSpecialPhase);
 
 
 const ProjectDetails: React.FC<{ project: Project }> = ({ project }) => (
-  <CommonDetails data={project} />
+  project ? <CommonDetails data={{} as CommonData<SupportedData>} /> : null
 );
 
 export { ProjectDetails };

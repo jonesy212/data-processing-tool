@@ -4,6 +4,8 @@ import Logger from '@/app/pages/logging/Logger';
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useEffect, useState } from 'react';
 import { useThemeConfig } from '../../hooks/userInterface/ThemeConfigContext';
+import { setMessages } from '../../state/redux/slices/ChatSlice';
+import connectToChatWebSocket, { retryConfig } from '../WebSocket';
 import ChatMessageData from './ChatRoomDashboard';
 
 interface ChatRoomProps {
@@ -15,6 +17,17 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
   const { primaryColor, fontSize } = useThemeConfig();
 
   useEffect(() => {
+
+
+    const socket = connectToChatWebSocket(roomId, retryConfig);
+
+    if (socket) {
+      socket.addEventListener('message', (event) => {
+        const newMessage = JSON.parse(event.data);
+        setMessages((prevMessages: Messages) => [...prevMessages, newMessage]);
+      });
+    }
+
     const fetchMessages = async () => {
       try {
         const messages = await fetchMessagesFromAPI();

@@ -3,9 +3,12 @@ import { createAction } from "@reduxjs/toolkit";
 import { User } from "./User";
 
 export const UserActions = {
+  
   // General User Actions
   updateUser: createAction<{ id: number, newData: any }>("updateUser"),
   deleteUser: createAction<number>("deleteUser"),
+  createUserSuccess: createAction<User>("createUserSuccess"),
+  createUserFailure: createAction<{ error: string }>("createUserFailure"),
   // User Profile Actions
   updateProfile: createAction<{ id: number, newFullName: string, newBio: string, newProfilePicture: string }>("updateProfile"),
   // Notification Actions
@@ -22,17 +25,35 @@ export const UserActions = {
   updateUserRequest: createAction<{ updatedUserData: any }>("updateUserRequest"),
   updateUserSuccess: createAction<{ user: User }>("updateUserSuccess"),
   updateUserFailure: createAction<{ error: string }>("updateUserFailure"),
-
+  
+  //Search Requests
+  searchUsersSuccess: createAction<{ users: User[] }>("searchUsersSuccess"),
+  searchUsersRequest: createAction<{ searchTerm: string }>("searchUsersRequest"),
+  searchUsersFailure: createAction<{ error: string }>("searchUsersFailure"),
+  
   // Bulk Requests
+  
+    batchCreate: createAction<any[]>("batchCreate"),
+    batchDelete: createAction<number[]>("batchDelete"),
+    batchDeleteSuccess: createAction<number[]>("batchDeleteSuccess"),
+    batchDeleteFailure: createAction<{ error: string }>("batchDeleteFailure"),
+  
+  createUsers: createAction<User[]>("createUsers"),
   deleteUsers: createAction<number[]>("deleteUsers"),
-  updateUsers: createAction<{ ids: number[], newData: any[] }>("updateUsers"),
+  deleteUserSuccess: createAction<number>("deleteUserSuccess"),
+  deleteUserFailure: createAction<{ error: string }>("deleteUserFailure"),
+  deleteUsersSuccess: createAction<number[]>("deleteUsersSuccess"),
+  deleteUsersFailure: createAction<{ error: string }>("deleteUsersFailure"),
+  
   fetchUsersRequest: createAction("fetchUsersRequest"),
   fetchUsersSuccess: createAction<{ users: any[] }>("fetchUsersSuccess"),
   fetchUsersFailure: createAction<{ error: string }>("fetchUsersFailure"),
+  
+  updateUsers: createAction<{ ids: number[], newData: any[] }>("updateUsers"),
   updateUsersRequest: createAction<{ updatedUsersData: any }>("updateUserRequest"),
   updateUsersSuccess: createAction<{ users: User[] }>("updateUserSuccess"),
   updateUsersFailure: createAction<{ error: string }>("updateUsersFailure"),
-  deleteUsersSuccess: createAction<number[]>("deleteUsersSuccess"),
-  deleteUsersFailure: createAction<{ error: string }>("deleteUsersFailure"),
+  
+
   
 };

@@ -1,1 +1,4 @@
 a project management app with the ability to allow users to communicate via audio, video, text, collaboration options for realtime communication.  we have 'phases' we go through that different aspects of the creation process from ideation, to creating the team, brainstorming the product, launching the product and then doing data-analysis for meaningful results at the end for reiterations.
+
+
+The app is a community-based global project aiming to facilitate collaboration among users from different countries. Its purpose is to promote unity and achieve results that benefit humanity. We aim to provide tools and features that enhance connectivity and enable users to collaborate effectively, ultimately creating solutions that have a positive impact on everyone involved.

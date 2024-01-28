@@ -13,6 +13,7 @@ export interface DataStore {
   updateDataTitle: (id: number, title: string) => void;
   updateDataDescription: (description: string) => void;
   updateDataStatus: (status: "pending" | "inProgress" | "completed") => void;
+  addDataSuccess: (payload: { data: Data[] }) => void;
 }
 
 const useDataStore = (): DataStore => {
@@ -47,17 +48,32 @@ const useDataStore = (): DataStore => {
 
   const updateDataDescription = (description: string) => {
     // Dispatch the updateDataDescription action
-    dispatch(DataActions.updateDataDescription(description));
+    dispatch(DataActions.updateDataDescription({ type: "updateDataDescription", payload: "Updated description" }));
   };
 
   const updateDataStatus = (status: "pending" | "inProgress" | "completed") => {
     // Dispatch the updateDataStatus action
-    dispatch(DataActions.updateDataStatus(status));
+    dispatch(DataActions.updateDataStatus(
+      {
+        type: "updateDataStatus",
+        payload: status
+      }));
   };
+
+
+  const addDataSuccess = (
+    payload: { data: Data[] }
+  ) => { 
+    // Add data to store
+    const { data: newData } = payload;
+    data.push(...newData); // Assuming 'data' is intended to store the array of Data objects
+  }
 
   // Add more methods or properties as needed
 
-  makeAutoObservable({
+
+
+ const useDataStore = makeAutoObservable({
     data,
     fetchData,
     addData,
@@ -66,6 +82,7 @@ const useDataStore = (): DataStore => {
     updateDataTitle,
     updateDataDescription,
     updateDataStatus,
+    addDataSuccess
   });
 
   return {
@@ -77,6 +94,7 @@ const useDataStore = (): DataStore => {
     updateDataTitle,
     updateDataDescription,
     updateDataStatus,
+    addDataSuccess
     // Add more methods or properties as needed
   };
 };

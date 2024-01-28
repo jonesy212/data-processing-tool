@@ -11,7 +11,8 @@ const DynamicPromptingLogic: React.FC = () => {
       const documentContent = await readFileAsync(file);
       const documentType = 'CSV'; // Replace with the actual document type
       const userQuery = 'Generate prompts for document summarization';
-      const dynamicPrompts = generateDynamicPrompts(documentContent, documentType, userQuery);
+      const userIdea = '';
+      const dynamicPrompts = generateDynamicPrompts(documentContent, documentType, userQuery, userIdea);
 
       setGeneratedPrompts(dynamicPrompts);
     }

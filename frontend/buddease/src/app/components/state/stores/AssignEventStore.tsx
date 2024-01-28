@@ -1,6 +1,13 @@
 // AssignEventStore.tsx
 import { useNotification } from "../../support/NotificationContext";
 import { useAssignBaseStore } from "../AssignBaseStore";
+interface ReassignEventResponse {
+  eventId: string;       // Unique identifier for the event
+  responseId: string;    // Unique identifier for the response
+  userId: string;        // User ID of the responder
+  comment: string;       // Comment or feedback provided by the responder
+  timestamp: Date;       // Timestamp indicating when the response was submitted
+}
 
 export interface AssignEventStore {
   assignedUsers: Record<string, string[]>; // Use eventId as key and array of user IDs as value
@@ -97,6 +104,7 @@ const useAssignEventStore = (): AssignEventStore => {
 
   const setDynamicNotificationMessage = (message: string) => {
     // Implement the logic for setting dynamic notification message
+    useNotification().showMessage(message); // Assuming useNotification() returns an object with a showMessage method
   };
 
   const reassignUsersToEvents = (
@@ -160,8 +168,9 @@ const useAssignEventStore = (): AssignEventStore => {
   // Helper function to get responses based on eventId (replace with actual implementation)
   const getResponsesByEventId = (eventId: string) => {
     // Simulated method, replace with actual implementation
-    return [
-      {
+   const responses= [
+     {
+        eventId: "event1",
         responseId: "response1",
         userId: "user1",
         comment: "Great work!",
@@ -169,28 +178,28 @@ const useAssignEventStore = (): AssignEventStore => {
       },
       // Add more responses
     ];
+
+  // Filter responses based on the eventId
+  return responses.filter(response => response.eventId === eventId);
   };
 
-  
-// // Helper function to convert responses to todos
-const convertResponsesToTodos = (responses: any[]): string[] => {
-  // Replace with the actual implementation based on your response structure
+  // Helper function to convert responses to todos
+const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] => {
+  // Map over the responses and extract the responseId property
   return responses.map((response) => response.responseId);
 };
 
-const connectResponsesToTodos = (eventId: string) => {
-  // Assuming there is a method to get responses based on eventId
-  const responses = getResponsesByEventId(eventId);
-
-  // Assuming there is a method to convert responses to todo IDs (strings)
-  const todoIds = convertResponsesToTodos(responses);
-
-  // Assuming there is a method to assign todo IDs to users or teams
-  baseStore.assignTodosToUsersOrTeams(todoIds);
-};
-
-
+  const connectResponsesToTodos = (eventId: string) => {
+    // Assuming there is a method to get responses based on eventId
+    const responses: ReassignEventResponse[] = getResponsesByEventId(eventId);
   
+    // Assuming there is a method to convert responses to todo IDs (strings)
+    const todoIds: string[] = convertResponsesToTodos(responses);
+  
+    // Assuming there is a method to assign todo IDs to users or teams
+    baseStore.assignTodosToUsersOrTeams(todoIds, ["assignees"]);
+  };
+
   const assignUserSuccess = () => {
     useNotification();
   };
@@ -198,6 +207,8 @@ const connectResponsesToTodos = (eventId: string) => {
   const assignUserFailure = (error: string) => {
     useNotification();
   };
+
+  
 
   return {
     assignedUsers,

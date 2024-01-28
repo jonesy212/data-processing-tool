@@ -1,14 +1,15 @@
 // Community.tsx
 import React from 'react';
+import BlogComponent from '../blogs/BlogComponent';
 import { Team } from '../models/teams/Team';
 import { TeamMember } from '../models/teams/TeamMembers';
 import { Product } from '../products/Product';
 import Project from '../projects/Project';
 import ProjectManagementApp from '../projects/projectManagement/ProjectManagementApp';
 import ProjectManagementSimulation from '../projects/projectManagement/ProjectManagementSimulation';
-import { ExtendedDAppAdapter, ExtendedDappProps } from '../web3/dAppAdapter/IPFS';
+import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '../web3/dAppAdapter/IPFS';
 import CommunityDetails from './CommunityDetails';
-
+import WeThePeoplePage from './WeThePeoplePage';
 const LibertyPulse: React.FC = () => {
   // Assuming you have the necessary data structures
   const communityData = {
@@ -29,7 +30,7 @@ const LibertyPulse: React.FC = () => {
     },
     ethereumRpcUrl: "https://your-ethereum-rpc-url",
     dappProps: {} as ExtendedDappProps,
-  };
+  } as ExtendedDAppAdapterConfig;
 
   const extendedDApp = new ExtendedDAppAdapter(extendedConfig);
 
@@ -46,6 +47,10 @@ const LibertyPulse: React.FC = () => {
           </ul>
           
 
+      {/* Display Community Details */}
+      <CommunityDetails community={communityData} />
+
+     
 
           {/* Display WeThePeople Page */}
       <WeThePeoplePage />
@@ -106,18 +111,6 @@ const LibertyPulse: React.FC = () => {
   );
 };
 
+
 export default LibertyPulse;
 
-
-
-
-
-
-
-
-
-
-
-
-const responsiveDesignStore = new ResponsiveDesignStore();
-export default responsiveDesignStore;

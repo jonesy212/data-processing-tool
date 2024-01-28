@@ -17,7 +17,7 @@ const PromptSystem: React.FC<PromptSystemProps> = ({ onUserResponse, documentTyp
   const { transcript, resetTranscript, browserSupportsSpeechRecognition, isMicrophoneAvailable } = useSpeechRecognition();
 
   // Assuming you have the function generateDynamicPrompt defined
-  const prompts = generateDynamicPrompts(`You have uploaded a ${documentType} document.`, userIdea) || [];
+  const prompts = generateDynamicPrompts('User Content from the prompt',`You have uploaded a ${documentType} document.`, "userIdea", "user query", ) || [];
 
   const handleUserResponse = (response: string) => {
     // Process and send the user response to the parent component

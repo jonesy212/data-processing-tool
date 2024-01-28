@@ -31,7 +31,8 @@ const extractKeywords = (documentContent: string): string[] => {
 export const generateDynamicPrompts = (
   documentContent: string,
   documentType: string,
-  userQuery: string
+  userQuery: string,
+  userIdea: string
 ): string[] => {
   // Ensure the document content is not empty
   if (!documentContent.trim()) {

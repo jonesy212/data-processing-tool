@@ -2,6 +2,11 @@
 import { BrandingSettings } from '@/app/components/projects/branding/BrandingSettings';
 import { action, observable, runInAction } from 'mobx';
 
+
+
+
+
+
 class ThemeService {
   @observable private static instance: ThemeService;
   @observable private currentTheme: BrandingSettings;

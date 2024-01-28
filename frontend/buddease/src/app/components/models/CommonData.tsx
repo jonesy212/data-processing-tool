@@ -2,29 +2,33 @@
 import React, { useState } from "react";
 import { CommunityData } from "../community/CommunityDetails";
 import { DocumentData } from "../documents/DocumentBuilder";
+import { ProjectData } from "../projects/Project";
 import { Todo } from "../todos/Todo";
 import { UserData } from "../users/User";
-import { TaskData } from "./data/Data";
+import { Data } from "./data/Data";
 // Define a generic type for data
 interface CommonData<T> {
+  title: React.ReactNode
+  description: React.ReactNode;
   data: T;
 }
 
 // Define a union type for the supported data types
 type SupportedData =
   UserData
-  | TaskData
-  | DocumentData
-  | CommunityData
+  | Data
   | Todo
+  | CommunityData
+  | DocumentData
+  | ProjectData
   | { [key: string]: any };
 
 // Define the DetailsProps interface with the generic CommonData type
-interface DetailsProps {
-  data: CommonData<SupportedData>;
+interface DetailsProps<T> {
+  data: CommonData<T>;
 }
 
-const CommonDetails: React.FC<DetailsProps> = ({ data }) => {
+const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({ data }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const toggleDetails = () => {
@@ -51,3 +55,5 @@ const CommonDetails: React.FC<DetailsProps> = ({ data }) => {
 
 
 export default CommonDetails;
+export type { CommonData, DetailsProps, SupportedData };
+

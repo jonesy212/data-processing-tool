@@ -7,13 +7,13 @@ const useApiManager = () => {
   const apiManagerStore = useApiManagerStore();
 
   useEffect(() => {
-    apiManagerStore.fetchApiConfigRequest();
+    apiManagerStore.fetchApiConfigsRequest();
 
     const fetchApiConfigs = async () => {
       try {
         const response = await fetch('/api/configs');
         const apiConfigsData = await response.json();
-        apiManagerStore.fetchApiConfigSuccess({ apiConfig: apiConfigsData.apiConfig });
+        apiManagerStore.fetchApiConfigsSuccess({ apiConfigs: apiConfigsData.apiConfig });
       } catch (error) {
         console.error('Error fetching API configurations:', error);
       }
@@ -46,7 +46,9 @@ const useApiManager = () => {
 
   // Add more methods as needed
 
-  return { apiManagerStore, updateApiConfig };
+  return {
+    apiManagerStore, updateApiConfig
+  };
 };
 
 export default useApiManager;

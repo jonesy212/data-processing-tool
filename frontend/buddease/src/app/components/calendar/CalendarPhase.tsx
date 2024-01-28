@@ -1,7 +1,6 @@
-
-import axios from "axios";
 import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import axiosInstance from "../security/csrfToken";
 
 // Define the handleTransitionTo function
 const handleTransitionToCalendarPhase = async () => {
@@ -30,7 +29,7 @@ const fetchDataUsingAxios = async () => {
     const API_BASE_URL = 'http://your-backend-api-base-url';
 
     // Implement this method based on your actual backend API endpoint
-    const response = await axios.get(`${API_BASE_URL}/api/data`, {
+    const response = await axiosInstance.get(`${API_BASE_URL}/api/data`, {
       headers: { Accept: 'application/vnd.yourapp.v1+json' },
     });
 

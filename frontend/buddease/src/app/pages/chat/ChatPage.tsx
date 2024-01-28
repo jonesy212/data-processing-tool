@@ -1,8 +1,10 @@
 // ChatPage.tsx
+import connectToChatWebSocket, { retryConfig } from '@/app/components/communications/WebSocket';
 import { Channel, ChannelMember, ChannelMessage, ChannelRole, ChannelType } from '@/app/components/interfaces/chat/Channel';
 import { User } from '@/app/components/users/User';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import React, { useEffect, useState } from 'react';
+
 
 // Expand the ChatPageProps interface
 interface ChatPageProps {
@@ -59,6 +61,12 @@ const ChatPage: React.FC<ChatPageProps> = (props) => {
   };
 
   useEffect(() => {
+    const socket = connectToChatWebSocket(roomId, retryConfig);
+
+    socket.addEventListener('message', (event) => {
+      const newMessage = JSON.parse(event.data);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
     // Initial setup, you may load channels from an API here
     switchChannel('1');
   }, []); // Empty dependency array to run the effect only once on mount

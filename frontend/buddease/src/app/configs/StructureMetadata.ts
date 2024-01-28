@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { CacheStructure } from '../utils/CacheManager';
+import determineFileType from './DetermineFileType';
 
 interface StructureMetadata {
   [fileOrFolderId: string]: {
@@ -73,3 +74,6 @@ const cacheStructure: CacheStructure = {}; // Initialize with your actual cache 
 // Example usage
 const basePath = path.resolve(__dirname, 'src'); // Set your base path
 trackStructureChanges(basePath, cacheStructure);
+
+
+export type { StructureMetadata };

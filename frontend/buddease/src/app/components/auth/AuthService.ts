@@ -1,3 +1,6 @@
+import userService from "../users/UserService";
+import { useAuth } from "./AuthContext";
+
 // AuthService.ts
 class AuthService {
   private accessTokenKey = "accessToken"; // Key used to store the access token in local storage
@@ -82,6 +85,39 @@ class AuthService {
       .then((res) => res.json())
       .then((data) => data.access_token);
   }
+
+
+  // New method using useAuth for login with roles
+  loginWithRoles = async (
+    username: string,
+    password: string,
+    roles: string[]
+  ): Promise<{ accessToken: string }> => {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Use the useAuth hook to update the auth state with roles
+        const { loginWithRoles } = useAuth();
+        const user = await userService.fetchUser(username);
+        loginWithRoles(user, roles); // You may need to adjust this based on your User object structure
+        return { accessToken: data.accessToken };
+      } else {
+        throw new Error("Login failed");
+            }
+    } catch (error) {
+      throw new Error("Login failed");
+    }
+  };
+
+
 }
 
 // Create a singleton instance of the AuthService

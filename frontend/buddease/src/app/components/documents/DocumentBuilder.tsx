@@ -11,10 +11,15 @@ import {
   createPdfDocument,
   getFormattedOptions,
 } from "./DocumentCreationUtils";
+import { DocumentType } from "./DocumentGenerator";
 import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import PromptViewer, { PromptViewerProps } from "../prompts/PromptViewer";
+import { Prompt } from "../prompts/PromptPage";
+import axiosInstance from "../security/csrfToken";
+import { endpoints } from "@/app/api/ApiEndpoints";
 
 
 
@@ -24,6 +29,8 @@ export interface DocumentData extends Document {
   id: number;
   title: string;
   content: string;
+  topics: string[]
+  highlights: string[];
   // Add more properties if needed
 }
 
@@ -46,8 +53,8 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   const { slide, drag, show } = useMovementAnimations();
 
   const handleCreateDocument = (userOptions: any) => {
-    const documentContent = editorState.getCurrentContent().getPlainText(); // Extract content from the editor
-    const formattedOptions = getFormattedOptions(userOptions); // Implement a function to get formatting options
+    const documentContent = editorState.getCurrentContent().getPlainText(); 
+    const formattedOptions = getFormattedOptions(userOptions); 
 
     // Call a utility function to create a document (PDF or other formats)
     createPdfDocument(documentContent, formattedOptions);
@@ -117,7 +124,20 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     return "not-handled";
   };
 
-  const handleCreateButtonClick = () => {
+
+
+  const handleEditorStateChange = (newEditorState: EditorState): void => {
+    // Update the editor state in DocumentBuilder
+    setEditorState(newEditorState);
+
+    // Accessing the content from the new editor state
+    const content = newEditorState.getCurrentContent();
+    console.log("New Editor State Content:", content.getPlainText());
+  };
+  
+
+  
+  const handleCreateButtonClick = async () => {
     // Call handleCreateDocument with userOptions
     const userOptions: ToolbarOptionsProps = {
       isDocumentEditor: true,
@@ -131,23 +151,41 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       image: true,
       audio: true,
       type: {} as DocumentType,
-      onEditorStateChange: (newEditorState: any): void => {
-        // Update the editor state in DocumentBuilder
-        setEditorState(newEditorState);
-
-        // Accessing the content from the new editor state
-        const content = newEditorState.getCurrentContent();
-        console.log("New Editor State Content:", content.getPlainText());
-      },
       handleEditorStateChange: function (newEditorState: EditorState): void {
         throw new Error("Function not implemented.");
-      }
+      },
+      onEditorStateChange: handleEditorStateChange,
     };
 
-    // Call handleCreateDocument with userOptions
-    handleCreateDocument(userOptions);
-  };
 
+
+   const handleEditorStateChange = async (newEditorState: EditorState): Promise<void> => {
+      // Update the editor state in DocumentBuilder
+      setEditorState(newEditorState);
+  
+      // Accessing the content from the new editor state
+      const content = newEditorState.getCurrentContent();
+      console.log("New Editor State Content:", content.getPlainText());
+  
+      try {
+        // Example: Perform a POST request to add data
+        await axiosInstance.post(endpoints.data.addData, {
+          data: content.getPlainText(),
+        });
+  
+        // Example: Perform a GET request to fetch data
+        const response = await axiosInstance.get(endpoints.data.list);
+        console.log("Fetched data:", response.data);
+  
+        // You can perform other HTTP requests using Axios as needed
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+      // Call handleCreateDocument with userOptions
+      handleCreateDocument(userOptions);
+    };
+  
   const handleDrag = () => {
     // Use the drag function here
     drag();
@@ -177,11 +215,14 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   return (
     <div>
       <div>
+        {/* Sharing Options */}
+
         <SharingOptions
           onShareEmail={() => console.log("Share via Email")}
           onShareLink={() => console.log("Generate Shareable Link")}
           onShareSocialMedia={() => console.log("Share on Social Media")}
         />
+        {/* Toolbar Options */}
         <ToolbarOptions
           isDocumentEditor={true}
           fontSize={true}
@@ -192,11 +233,19 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           code={true}
           link={true}
           image={true}
-          type={{} as DocumentType} 
-          audio={true} onEditorStateChange={function (newEditorState: any): void {
-            throw new Error("Function not implemented.");
-          } } handleEditorStateChange={function (newEditorState: EditorState): void {
-            throw new Error("Function not implemented.");
+          type={{} as ToolbarOptionsProps &
+            DocumentType
+          } 
+          audio={true}
+          onEditorStateChange={(newEditorState: any) => {
+            setEditorState(newEditorState);
+            const content = newEditorState.getCurrentContent();
+            console.log("New Editor State Content:", content.getPlainText());
+          }}
+          handleEditorStateChange={(newEditorState: EditorState) => {
+            // Handle editor state change
+            // You can perform any custom logic here
+            // For example, update state or trigger additional actions
           }}
         />
         <h1>Document Builder</h1>
@@ -284,6 +333,11 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           </div>
         )}
       </div>
+            {/* Separate Prompt Viewer component */}
+      <PromptViewer
+        prompts={[]} 
+        children={null}
+        />
       {isDynamic && (
         <div>
           <h3>Resizable Panels</h3>

@@ -1,5 +1,5 @@
+import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
 import YourClass from "@/app/utils/YourClass";
-import { ThemeConfig } from "antd";
 import React, { FC } from "react";
 import winston from "winston";
 import { AquaChat } from "../../communications/chat/AquaChat";
@@ -243,6 +243,7 @@ type CustomDocumentOptionProps = DocumentOptions & DappProps;
       case "FormComponent":
         component = await import("../../components/forms/FormComponent");
         break;
+
       default:
         throw new Error("Component not found");
     }

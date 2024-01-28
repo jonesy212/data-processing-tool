@@ -14,9 +14,10 @@ const loadPlugins = async (): Promise<DAppPlugin[]> => {
     const plugin: Plugin = {
       name: pluginName,
       initialize,
-      enable: function (): void {
+      enable: function (): Promise<void> {
         if (enable) enable();
         else console.warn(`${pluginName} plugin does not have an enable method.`);
+        return new Promise<void>((resolve) => resolve());
       },
       disable: function (): void {
         if (disable) disable();
@@ -42,11 +43,11 @@ const loadPlugins = async (): Promise<DAppPlugin[]> => {
         else console.warn(`${pluginName} plugin does not have a loadPlugins method.`);
       },
       enableRealtimeCollaboration: function (): void {
-        if (enableRealtimeCollaboration) this.enableRealtimeCollaboration();
+        if (this.enableRealtimeCollaboration) this.enableRealtimeCollaboration();
         else console.warn(`${pluginName} plugin does not have an enableRealtimeCollaboration method.`);
       },
       enableChatFunctionality: function (): void {
-        if (enableChatFunctionality) this.enableChatFunctionality();
+        if (this.enableChatFunctionality) this.enableChatFunctionality();
         else console.warn(`${pluginName} plugin does not have an enableChatFunctionality method.`);
       },
     };

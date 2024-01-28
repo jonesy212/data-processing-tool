@@ -1,5 +1,5 @@
+import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
 import { DappProps } from "../components/web3/dAppAdapter/DAppAdapterConfig";
-import { ThemeConfig } from "../theme/ThemeConfig";
 
 // YourClass.ts
 abstract class YourClass {

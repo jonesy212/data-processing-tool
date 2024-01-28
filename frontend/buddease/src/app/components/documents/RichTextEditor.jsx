@@ -1,7 +1,8 @@
 // RichTextEditor.jsx
 import 'quill/dist/quill.snow.css';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Quill from 'react-quill';
+import { sanitizeData } from './SanitizationFunctions'; // Import the sanitizeData function
 
 const RichTextEditor = ({ onChange }) => {
   const [quill, setQuill] = useState(null);
@@ -15,6 +16,7 @@ const RichTextEditor = ({ onChange }) => {
 
         editor.on('text-change', () => {
           if (onChange) {
+            const sanitizedContent = sanitizeData(editor.root.innerHTML); // Sanitize the content
             onChange(editor.root.innerHTML);
           }
         });

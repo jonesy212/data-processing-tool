@@ -1,4 +1,5 @@
 // DocumentBuilderConfig.ts
+import { DocumentData } from "../components/documents/DocumentBuilder";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { DocumentAnimationOptions } from "../components/documents/SharedDocumentProps";
 
@@ -40,7 +41,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     defaultOptions: {
       size: "letter",
       additionalOptions: "",
-      documents: {} as Document[],
+      documents: [] as DocumentData[],
       isDynamic: false,
       visibility: "private",
       fontSize: 12,

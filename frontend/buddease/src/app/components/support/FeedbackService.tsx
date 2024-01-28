@@ -1,6 +1,6 @@
 // FeedbackService.tsx
 import { YourProductContentType } from '../products/YourProductContentType';
-import dataProcessingService, { DataProcessing, DataProcessingResult } from '../projects/DataAnalysisPhase/DataProcessing/DataProcessing';
+import dataProcessingService, { DataProcessing, DataProcessingResult } from '../projects/DataAnalysisPhase/DataProcessing/DataProcessingService';
 import { Feedback } from './Feedback';
 
 class FeedbackService {

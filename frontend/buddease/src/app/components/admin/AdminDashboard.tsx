@@ -6,6 +6,10 @@ import YourComponent, { YourComponentProps } from "../hooks/YourComponent";
 import useIdleTimeout from "../hooks/commHooks/useIdleTimeout";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { ConfigCard } from "./DashboardConfigCard";
+import NotificationManager from "../notifications/NotificationService";
+import PushNotificationManager from "../support/PushNotificationManager";
+import { NotificationType } from "../support/NotificationContext";
+import useNotificationManagerService from "../notifications/NotificationService";
 
 interface AdminDashboardProps extends YourComponentProps {}
 
@@ -47,7 +51,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 const AdminDashboardWithDynamicNaming = () => {
   const { dynamicConfig, setDynamicConfig } = useDynamicComponents();
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout();
-
+const useNotificationManager = useNotificationManagerService();
   // Check if dynamicConfig exists
   if (dynamicConfig) {
     // Pass dynamicContent prop based on dynamicConfig
@@ -55,6 +59,7 @@ const AdminDashboardWithDynamicNaming = () => {
 
     useEffect(() => {
       // Reset idle timeout when the component mounts or user becomes active
+      useNotificationManager.sendPushNotification("yourmessage", "sendersname");
       resetIdleTimeout?.(); // Use optional chaining here
     }, [resetIdleTimeout]);
 
@@ -62,6 +67,13 @@ const AdminDashboardWithDynamicNaming = () => {
       <div>
         {/* Other AdminDashboard content */}
         <DynamicNamingConventions dynamicContent={dynamicContent} />
+        {/* Include NotificationManager */}
+        <NotificationManager
+          notifications={Notification[]}
+          notify={(message: string, content: any, date: Date | undefined, type: NotificationType) => Promise<void>}
+          sendPushNotification={(message: string, sender: string) => PushNotificationManager.sendPushNotification(message, sender)}
+          sendAnnouncement={{} as (message: string, sender: string) => void}
+        />
       </div>
     );
   }
@@ -72,4 +84,3 @@ const AdminDashboardWithDynamicNaming = () => {
 export default ConfigCard;
 export { AdminDashboard, AdminDashboardWithDynamicNaming };
 export type { AdminDashboardProps };
-

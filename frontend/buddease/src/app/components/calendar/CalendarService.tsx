@@ -1,9 +1,10 @@
+import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
-import { NotificationType } from '@/app/components/support/NotificationContext';
 import { CalendarEvent } from '../state/stores/CalendarStore';
 import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
-import { useNotification } from '@/app/components/support/NotificationContext';
+
+
 interface FetchEventsResponse {
   [key: string]: CalendarEvent[];
 }
@@ -23,11 +24,12 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_SUCCESS, NotificationType.Success);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_SUCCESS, "Fetch Event Success",new Date, {} as NotificationType);
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to fetch calendar events');
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_ERROR, NotificationType.Error);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR, "Remove Event Error",new Date, {} as NotificationType);
+
       throw error;
     }
   },
@@ -41,7 +43,7 @@ export const calendarService = observable({
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to fetch calendar event with ID ${eventId}`);
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR, new Date, NotificationType, "Error");
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR, "Error", new Date, {} as NotificationType);
       throw error;
     }
   },
@@ -52,10 +54,12 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS, NotificationType.Success);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS, "Complete All Batch Event Succss",new Date, "OperationSuccess" as NotificationType);
+
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to complete all calendar events');
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_ERROR, NotificationType.Error);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_ERROR, "Error", new Date, {} as NotificationType);
+
       throw error;
     }
   },
@@ -66,10 +70,11 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS, NotificationType.Success);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS, "Reassign Event Success",new Date, "OperationSuccess" as NotificationType);
+
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to reassign calendar event with ID ${eventId}`);
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR, NotificationType.Error);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR, "Reassign Event Error",new Date, "Error" as NotificationType);
       throw error;
     }
   },
@@ -83,12 +88,16 @@ const handleApiError = (error: AxiosError<unknown>, errorMessage: string): void 
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
       console.error('Response headers:', error.response.headers);
+      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
     } else if (error.request) {
       console.error('No response received. Request details:', error.request);
+      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
     } else {
       console.error('Error details:', error.message);
+      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
     }
   } else {
     console.error('Non-Axios error:', error);
+    notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
   }
 };
