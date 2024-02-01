@@ -25,6 +25,7 @@ export interface Todo extends Data {
   isBeingCompleted: boolean;
   isBeingReassigned: boolean;
   save: () => Promise<void>;
+  snapshot: Snapshot<Data>; 
 }
 
 

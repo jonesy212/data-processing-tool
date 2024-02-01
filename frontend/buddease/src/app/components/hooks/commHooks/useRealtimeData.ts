@@ -3,18 +3,18 @@ import { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { Data } from '../../models/data/Data';
 import { CalendarEvent } from '../../state/stores/CalendarStore';
-import SnapshotStore from '../../state/stores/SnapshotStore';
+import SnapshotStore, { Snapshot } from '../../state/stores/SnapshotStore';
 import { fetchData } from '../../utils/dataAnalysisUtils';
 
 export const ENDPOINT = 'http://your-backend-endpoint'; // Update with your actual backend endpoint
 
-const useRealtimeData = (initialData: any, updateCallback: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Data>) => void) => {
+const useRealtimeData = (initialData: any, updateCallback: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Snapshot<Data>>) => void) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
 
-    socket.on('updateData', (data: any, snapshotStore: SnapshotStore<Data>) => {
+    socket.on('updateData', (data: any, snapshotStore: SnapshotStore<Snapshot<Data>>) => {
       // Call the provided updateCallback with the updated data
       updateCallback(data, snapshotStore);
 

@@ -1,26 +1,30 @@
 // DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
+import { CommunicationActionTypes } from "../../community/CommunicationActions";
+import { Data } from "../../models/data/Data";
+import { TeamMember } from "../../models/teams/TeamMembers";
 import { Phase } from "../../phases/Phase";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
-export interface DetailsItem {
+// Define a generic interface for details
+interface DetailsItem<T> {
   id: string;
   title: string;
   status: "pending" | "inProgress" | "completed";
-  description: string;
-  phase: Phase;
-  startDate: Date;
-  endDate: Date;
-  // Add more properties as needed
+  description?: string;
+  phase: Phase
+  data?: T; 
+  teamMembers?: TeamMember[];
+  communication?: CommunicationActionTypes
 }
 
 export interface DetailsListStore {
-  details: Record<string, DetailsItem[]>;
+  details: Record<string, DetailsItem<Data>[]> 
   detailsTitle: string;
   detailsDescription: string;
   detailsStatus: "pending" | "inProgress" | "completed" | undefined;
-  snapshotStore: SnapshotStore<Record<string, DetailsItem[]>>;
+  snapshotStore: SnapshotStore<Snapshot<Data>>
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
@@ -31,16 +35,17 @@ export interface DetailsListStore {
   updateDetailsStatus: (
     status: "pending" | "inProgress" | "completed" | undefined
   ) => void;
-  addDetails: () => void;
-  addDetailsItem: (detailsItem: DetailsItem) => void;
-  setDetails: (details: Record<string, DetailsItem[]>) => void;
+  addDetails: (id: string, description: string) => void;
+  addDetail: (newDetail: Data) => void;
+  addDetailsItem: (detailsItem: DetailsItem<Data>) => void;
+  setDetails: (details: Record<string, DetailsItem<Data>[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
   setDynamicNotificationMessage: (message: string) => void;
 }
 
 class DetailsListStoreClass implements DetailsListStore {
-  details: Record<string, DetailsItem[]> = {
+  details: Record<string, DetailsItem<Data>[]> = {
     pending: [],
     inProgress: [],
     completed: [],
@@ -48,17 +53,18 @@ class DetailsListStoreClass implements DetailsListStore {
   detailsTitle = "";
   detailsDescription = "";
   detailsStatus: "pending" | "inProgress" | "completed" | undefined = undefined;
-  snapshotStore: SnapshotStore<Record<string, DetailsItem[]>> =
-    new SnapshotStore<Record<string, DetailsItem[]>>(
-      {} as SnapshotStoreConfig<Record<string, DetailsItem[]>>
+  snapshotStore: SnapshotStore<Snapshot<Data>> =
+    new SnapshotStore<Snapshot<Data>>(
+      {} as SnapshotStoreConfig<Snapshot<Data>>
     );
+  
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
   constructor() {
     makeAutoObservable(this);
   }
-
+ 
   updateDetailsTitle(id: string, newTitle: string): void {
     const details = this.details;
 
@@ -104,9 +110,8 @@ class DetailsListStoreClass implements DetailsListStore {
         description: this.detailsDescription,
         title: this.detailsTitle,
         status: this.detailsStatus as "pending" | "inProgress" | "completed",
-        phase: {} as Phase,
-        startDate: new Date,
-        endDate: new Date,
+        phase: {} as DetailsItem<Data>["phase"],
+        data: {} as DetailsItem<Data>["data"]
       });
     }
 
@@ -144,7 +149,7 @@ class DetailsListStoreClass implements DetailsListStore {
     this.detailsStatus = status;
   }
 
-  addDetailsItem(detailsItem: DetailsItem): void {
+  addDetailsItem(detailsItem: DetailsItem<Data>): void {
     const status: "pending" | "inProgress" | "completed" | undefined =
       detailsItem.status || "pending";
 
@@ -166,14 +171,13 @@ class DetailsListStoreClass implements DetailsListStore {
       return;
     }
 
-    const newDetailsItem: DetailsItem = {
+    const newDetailsItem: DetailsItem<Data> = {
       id: Date.now().toString(),
       title: this.detailsTitle,
       status: "pending",
       description: this.detailsDescription,
-      phase: {} as Phase,
-      startDate: new Date,
-      endDate: new Date,
+      data: {} as Data,
+      phase: {} as DetailsItem<Data>["phase"]
     };
 
     this.addDetailsItem(newDetailsItem);
@@ -184,9 +188,10 @@ class DetailsListStoreClass implements DetailsListStore {
     this.detailsStatus = "pending";
   }
 
-  setDetails(details: Record<string, DetailsItem[]>): void {
+  setDetails(details: Record<string, DetailsItem<Data>[]>): void {
     this.details = details;
   }
+
   removeDetails(detailsId: string): void {
     const updatedDetails = { ...this.details };
     delete updatedDetails[detailsId];
@@ -206,11 +211,47 @@ class DetailsListStoreClass implements DetailsListStore {
     this.setDynamicNotificationMessage(message);
   };
 
-  // Implement the rest of the methods and properties
-}
+  addDetail(detail: Data): void {
+    // Assuming 'detail' is a valid Data object to be added
+    const status: "pending"
+      | "inProgress" | "completed"
+      | undefined = detail.status || "pending";
 
-const useDetailsListStore = (): DetailsListStore => {
-  return new DetailsListStoreClass();
-};
+    // Ensure detail.id is not null or undefined before assigning
+    const id: string = String(detail.id) ?? "";
+
+    // Ensure detail.description is always a string or undefined
+    const description: string | undefined = typeof detail.description === 'string' ? detail.description : undefined;
+
+    // Create a copy of the current state of details
+    const updatedDetails = { ...this.details };
+
+    // Get the array associated with the current status or create a new empty array
+    const statusArray = updatedDetails[status] || [];
+
+    // Add the new detail to the status array
+    statusArray.push({
+      id: id,
+      title: detail.title,
+      status: detail.status,
+      description: description,
+      phase: detail.phase,
+      data: detail,
+    });
+
+    // Update the details object with the new status array
+    updatedDetails[status] = statusArray;
+
+    // Set the updated details object to the class property
+    this.details = updatedDetails;
+  }
+}
+  
+  const useDetailsListStore = (): DetailsListStore => {
+    return new DetailsListStoreClass();
+  };
+
 
 export { useDetailsListStore };
+export type { DetailsItem };
+

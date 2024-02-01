@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
-import CommonDetails, { CommonData, SupportedData } from '../models/CommonData';
+import CommonDetails, { CommonData } from '../models/CommonData';
+import { Data } from '../models/data/Data';
+import { Phase } from '../phases/Phase';
+import { Snapshot } from '../state/stores/SnapshotStore';
 import useTodoManagerStore from '../state/stores/TodoStore';
 import { Todo } from './Todo';
-import { Data } from '../models/data/Data';
 
 const TodoList: React.FC = observer(() => {
   const todoStore = useTodoManagerStore();
@@ -75,11 +77,12 @@ const TodoList: React.FC = observer(() => {
       _id: '',
       isActive: false,
       tags: [],
-      then: function (callback: (newData: Data) => void): void {
-        throw new Error('Function not implemented.');
-      },
+      then: (callback: (newData: Snapshot<Data>) => void) => callback,
+
       analysisType: '',
-      analysisResults: []
+      analysisResults: [],
+      phase: {} as Phase,
+      videoData: {} as VideoData
     }; // Remove the unnecessary cast
 
     todoStore.addTodo(newTodo);
@@ -105,3 +108,23 @@ const TodoList: React.FC = observer(() => {
 });
 
 export default TodoList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
 import CustomModifier from "./CustomModifier";
 import { DocumentType } from "./DocumentGenerator";
+import ToolbarItem from "./ToolbarItem";
 
 export interface ToolbarOptionsProps {
   isDocumentEditor?: boolean;
@@ -19,7 +20,6 @@ export interface ToolbarOptionsProps {
   type: DocumentType
   onEditorStateChange: (newEditorState: any) => void;
   handleEditorStateChange: (newEditorState: EditorState) => void; // Updated prop name
-
 }
 
 const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
@@ -159,27 +159,56 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
 
   return (
     <div>
-      <ul>
-        {Object.keys(options).map((key) => (
-          <li key={key}>
-            {key}: {JSON.stringify(options[key])}
-          </li>
+    {Object.keys(options).map((key) => (
+      <ul key={key}>
+        {options[key].map((option: string) => (
+          <ToolbarItem
+            key={option}
+            id={option}
+            label={option.charAt(0).toUpperCase() + option.slice(1)}
+            onClick={() => {
+              // Handle onClick logic for each toolbar item
+              switch (option) {
+                case "bold":
+                  handleBoldClick();
+                  break;
+                case "italic":
+                  handleItalicClick();
+                  break;
+                case "underline":
+                  handleUnderlineClick();
+                  break;
+                case "strike":
+                  handleStrikeClick();
+                  break;
+                case "code":
+                  handleCodeClick();
+                  break;
+                case "link":
+                  handleLinkClick();
+                  break;
+                case "image":
+                  handleImageClick();
+                  break;
+                // Add cases for additional options if needed
+                default:
+                  break;
+              }
+            }}
+          />
         ))}
       </ul>
-      <button onClick={handleBoldClick}>Bold</button>
-      <button onClick={handleItalicClick}>Italic</button>
-      <button onClick={handleUnderlineClick}>Underline</button>
-      <button onClick={handleStrikeClick}>Strike</button>
-      <button onClick={handleCodeClick}>Code</button>
-      <button onClick={handleLinkClick}>Link</button>
-      <button onClick={handleImageClick}>Image</button>
-      {fontSize && (
-        <button onClick={() => handleFontSizeChange("yourFontSizeValue")}>
-          Change Font Size
-        </button>
-      )}
-      {/* Add buttons or controls for other formatting options */}
-    </div>
+    ))}
+    {fontSize && (
+      <ToolbarItem
+        id="fontSize"
+        label="Change Font Size"
+        onClick={() => handleFontSizeChange("yourFontSizeValue")}
+      />
+    )}
+    {/* Add buttons or controls for other formatting options */}
+  </div>
+
   );
 };
 

@@ -250,7 +250,7 @@ function* watchDataActions() {
   yield takeLatest(DataActions.addData.type, handleAddData);
   yield takeLatest(DataActions.removeData.type, handleRemoveData);
   yield takeLatest(DataActions.fetchDataFrame.type, handleFetchDataFrame);
-  yield take
+  yield takeLatest(DataActions.setDataFrame.type, handleSetDataFrame);
 }
 
 export function* dataSagas() {

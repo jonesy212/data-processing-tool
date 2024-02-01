@@ -1,5 +1,8 @@
 import FeedbackLoop from "@/app/components/FeedbackLoop";
-import { AdminDashboard } from "@/app/components/admin/AdminDashboard";
+import {
+  AdminDashboard,
+  AdminDashboardProps,
+} from "@/app/components/admin/AdminDashboard";
 import GoogleAnalyticsScript from "@/app/components/analytics/GoogleAnalyticsScript";
 import CalendarComponent from "@/app/components/calendar/CalendarComponent";
 import ChatCard from "@/app/components/cards/ChatCard";
@@ -72,7 +75,6 @@ import UserDashboard from "./UserDashboard";
 // import {
 //   FetchTodos,
 // } from "@/app/components/todos";
-import { ApiConfig } from "@/app/configs/ConfigurationService";
 
 // import {
 //   AppCacheManager,
@@ -91,9 +93,7 @@ import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import ProjectList from "@/app/components/lists/ProjectList";
 import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
-import NotificationManager, {
-  NotificationContextValue,
-} from "@/app/components/support/NotificationNotificationManager";
+import NotificationManager from "@/app/components/support/NotificationNotificationManager";
 import { UserData } from "@/app/components/users/User";
 
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
@@ -114,11 +114,13 @@ import AppCacheManagerBase from "@/app/utils/AppCacheManager";
 import MyPromise from "@/app/utils/MyPromise";
 import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
-import YourParentComponent from '../../components/prompts/YourParentComponent';
+import YourParentComponent from "../../components/prompts/YourParentComponent";
 import DataPreview, {
   DataPreviewProps,
 } from "../../components/users/DataPreview";
-import SearchComponent, { SearchComponentProps } from "../searchs/SearchComponent";
+import SearchComponent, {
+  SearchComponentProps,
+} from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
 type customNotifications = "customNotifications1" | "customNotifications2";
 interface DynamicComponentWrapperProps<T> {
@@ -131,6 +133,19 @@ interface DynamicComponentWrapperProps<T> {
     isActive?: (selector: string) => void;
   };
   children: (props: T) => React.ReactNode;
+}
+
+// Define the shape of the Notification context value
+export interface NotificationContextValue {
+  notifications: Notification[];
+  addNotification: (notification: Notification) => void;
+  removeNotification: (id: string) => void;
+  notify: (
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType
+  ) => void;
 }
 
 const DynamicComponentWrapper = <T extends {}>({
@@ -160,12 +175,6 @@ const DynamicComponentWrapper = <T extends {}>({
   return <>{children(component)}</>;
 };
 
-
-
-
-
-
-
 // Update the type of backendStructure
 const backendStructure: ExtendedBackendStructure = {
   ...responsiveDesignStore.backendStructure,
@@ -182,24 +191,13 @@ const backendStructure: ExtendedBackendStructure = {
   },
 };
 
-
-
-
-
-
-
 const DesignDashboard: React.FC<{
   colors: string[];
   frontendStructure: FrontendStructure;
   backendStructure: BackendStructure;
-
+  onCloseFileUploadModal: () => void;
   onHandleFileUpload: (file: FileList | null) => void;
-}> = ({
-  colors,
-  frontendStructure,
-  backendStructure,
-  onHandleFileUpload,
-}) => {
+}> = ({ colors, frontendStructure, backendStructure, onHandleFileUpload }) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const { isModalOpen, handleCloseModal, handleFileUpload } =
     useModalFunctions();
@@ -213,6 +211,7 @@ const DesignDashboard: React.FC<{
       Date.now() as Date & number,
       "customNotifications1" as NotificationType
     ),
+    createdAt: new Date(),
     date: new Date(),
     type: "customNotifications1" as NotificationType,
     message: "New notification added",
@@ -220,13 +219,13 @@ const DesignDashboard: React.FC<{
   };
 
   // Function to add a notification
-  const notify =  (
+  const notify = (
     message: string,
     type: NotificationType,
     content: any,
     date: Date
-  ) =>  {
-    let newNotification:  Notification = {
+  ) => {
+    let newNotification: Notification = {
       id: UniqueIDGenerator.generateNotificationID(
         initialNotification, // Pass the actual notification object
         date,
@@ -236,6 +235,7 @@ const DesignDashboard: React.FC<{
       type,
       message,
       content,
+      createdAt: new Date(),
     };
 
     setNotifications((prevNotifications) => [
@@ -263,6 +263,17 @@ const DesignDashboard: React.FC<{
     ) {
       notify(message, type, content, date);
       return Promise.resolve();
+    },
+    addNotification: function (notification: Notification): void {
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        notification,
+      ]);
+    },
+    removeNotification: function (id: string): void {
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notification) => notification.id !== id)
+      );
     },
   };
 
@@ -330,13 +341,48 @@ const DesignDashboard: React.FC<{
       {/* User and Team Management */}
       <UserDashboard />
       <PersonaBuilderDashboard />
-      <AdminDashboard apiConfig={{} as ApiConfig}>
+      <AdminDashboard {...({} as AdminDashboardProps)}>
         <div>
           <h2>Admin Dashboard</h2>
           <UserList />
           <TeamList />
           <ProjectList tasks={[]} />
-          <NotificationManager {...notificationContextValue} />
+          <NotificationManager
+            notifications={notifications}
+            addNotification={(notification: Notification) =>
+              setNotifications([...notifications, notification])
+            }
+            removeNotification={(id: string) =>
+              setNotifications((prevNotifications) =>
+                prevNotifications.filter(
+                  (notification) => notification.id !== id
+                )
+              )
+            }
+            notify={(
+              message: string,
+              content: any,
+              date: Date = new Date(),
+              type: NotificationType
+            ) => {
+              const newNotification: Notification = {
+                id: UniqueIDGenerator.generateNotificationID(
+                  initialNotification, // Pass the actual notification object
+                  date,
+                  type
+                ),
+                date,
+                type,
+                message,
+                content,
+                createdAt: new Date(),
+              };
+              setNotifications((prevNotifications) => [
+                ...prevNotifications,
+                newNotification,
+              ]);
+            }}
+          />
 
           <ModalGenerator
             isOpen={isModalOpen}
@@ -345,7 +391,6 @@ const DesignDashboard: React.FC<{
               // Change from onCloseFileUploadModal(); to handleCloseModal();
               handleCloseModal();
             }}
-            
             modalComponent={FileUploadModal}
             onFileUpload={(files: FileList) => {
               // Implement logic to handle file upload
@@ -362,10 +407,10 @@ const DesignDashboard: React.FC<{
       <IdeaLifecyclePhase />
       <LaunchPhase />
       <ProfileSetupPhase
-        onSubmit={ (profileData: any): MyPromise => {
+        onSubmit={(profileData: any): MyPromise => {
           // Save profile data
 
-          return  saveProfile(profileData);
+          return saveProfile(profileData);
         }}
       />
       <PostLaunchActivitiesPhase />
@@ -373,7 +418,7 @@ const DesignDashboard: React.FC<{
 
       {/* Data Management */}
       <DataPreview data={{} as DataPreviewProps & UserData} />
-      <DataProcessingComponent />
+      <DataProcessingComponent datasetPath={""} onDataProcessed={() => {}} />
 
       {/* Task Management */}
       <TaskManagementManager />
@@ -415,14 +460,11 @@ const DesignDashboard: React.FC<{
       <AnimationsAndTransitions examples={[]} />
       <DesignComponent />
 
-
       {/* User Interaction */}
       <SearchComponent componentSpecificData={{ componentSpecificData }} />
       <TaskActions />
       <TaskAssignmentSnapshot taskId={""} />
-      <TaskManagerComponent
-        taskId={() => "taskId"}
-      />
+      <TaskManagerComponent taskId={() => "taskId"} />
       <TodoList />
       <InviteFriends />
       <ReferralSystem />
@@ -430,7 +472,7 @@ const DesignDashboard: React.FC<{
       {/* how to set up a protected rout */}
       <ProtectedRoute component={YourParentComponent} />
 
-      <SearchComponent componentSpecificData={{ } as SearchComponentProps} />
+      <SearchComponent componentSpecificData={{} as SearchComponentProps} />
       <User />
       <UserActions />
 

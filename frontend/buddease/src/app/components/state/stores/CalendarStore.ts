@@ -1,9 +1,15 @@
 // CalendarStore.ts
+import { endpoints } from '@/app/api/ApiEndpoints';
 import { makeAutoObservable } from 'mobx';
 import useRealtimeData from '../../hooks/commHooks/useRealtimeData';
+import { Data } from '../../models/data/Data';
+import axiosInstance from '../../security/csrfToken';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import { UserData } from '../../users/User';
 import { AssignEventStore, useAssignEventStore } from './AssignEventStore';
 import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
+
+const API_BASE_URL = endpoints.calendar.events
 
 export interface CalendarEvent {
   id: string;
@@ -24,7 +30,7 @@ export interface CalendarManagerStore {
   eventDescription: string;
   eventStatus: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined;
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>;
+  snapshotStore: SnapshotStore<UserData | Data>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateEventTitle: (title: string) => void;
@@ -45,7 +51,7 @@ export interface CalendarManagerStore {
   completeAllEvents: () => void;
   completeAllEventsFailure: (payload: { error: string }) => void;
   setDynamicNotificationMessage: (message: string) => void;
-  handleRealtimeUpdate: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => void;
+  handleRealtimeUpdate: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<UserData | Data>) => void;
 }
 
 class CalendarManagerStoreClass implements CalendarManagerStore {
@@ -58,21 +64,21 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   eventDescription = "";
   eventStatus: "scheduled" | "inProgress" | "tentative" | "confirmed" | "cancelled" | "completed" | undefined = undefined;
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>> = new SnapshotStore<Record<string, CalendarEvent[]>>({} as SnapshotStoreConfig<Record<string, CalendarEvent[]>>);
+  snapshotStore: SnapshotStore<UserData | Data> = new SnapshotStore<UserData | Data>({} as SnapshotStoreConfig<UserData | Data>);
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
-  handleRealtimeUpdate: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => void;
+  handleRealtimeUpdate: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<UserData | Data>) => void
 
 
   constructor() {
     this.assignedEventStore = useAssignEventStore();
-    this.handleRealtimeUpdate = (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>) => {
+    this.handleRealtimeUpdate = (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<UserData | Data>) => {
       this.events = events;
       this.snapshotStore = snapshotStore; // Use the provided snapshotStore
     };
   
-    this.useRealtimeDataInstance = useRealtimeData(this.events, this.handleRealtimeUpdate);
+    this.useRealtimeDataInstance = useRealtimeData(this.events, updateCallback);
     makeAutoObservable(this);
   }
   
@@ -238,21 +244,41 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     }, 1000);
   }
 
-    // Function to set a dynamic notification message
-    setDynamicNotificationMessage = (message: string) => {
-      this.setDynamicNotificationMessage(message);
-    };
+  // Function to set a dynamic notification message
+  setDynamicNotificationMessage = (message: string) => {
+    this.setDynamicNotificationMessage(message);
+  };
   
   fetchEventsFailure(payload: { error: string }): void {
     console.error("Fetch Events Failure:", payload.error);
     // You can add additional logic or trigger notifications as needed
     this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA);
   }
-
+  
   fetchEventsRequest(): void {
     console.log("Fetching Events...");
-    // todo You can add loading indicators or other UI updates here
-    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING);
+    
+    // Construct the API endpoint based on any internal state or configuration
+    const apiUrl = `${API_BASE_URL}?type=default&timeframe=default`;
+    
+    // Make the API request using axiosInstance
+    axiosInstance.get(apiUrl)
+      .then(response => {
+        // Handle the successful response from the API
+        console.log('Events fetched successfully:', response.data);
+
+        // You can update the state or perform any necessary actions with the fetched events here
+      })
+      .catch(error => {
+        // Handle errors if the API request fails
+        console.error('Error fetching events:', error);
+
+        // You can show an error message to the user or handle the error in any other way
+      })
+      .finally(() => {
+        // Clear the loading indicator or perform any necessary cleanup actions
+        this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
+      });
   }
 
   completeAllEventsFailure(payload: { error: string }): void {
@@ -268,4 +294,20 @@ const useCalendarManagerStore = (): CalendarManagerStore => {
   return new CalendarManagerStoreClass();
 };
 
-export { useCalendarManagerStore };
+function updateCallback(events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Data>): void {
+// Convert events to the appropriate data format if needed
+const eventData: Data = convertEventsToData(events);
+
+// Update the snapshot store with the latest events data
+snapshotStore.updateSnapshot(eventData);
+}
+
+// Example function to convert events to the appropriate data format
+function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
+// Implement conversion logic here based on your data structure
+return {} as Data;
+}
+
+
+  export { updateCallback, useCalendarManagerStore };
+

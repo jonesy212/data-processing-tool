@@ -42,8 +42,8 @@ export const userManagerSlice = createSlice({
       state.notification = action.payload;
     },
 
-    updateData: (state, action: PayloadAction<UserData>) => {
-      state.data = action.payload as WritableDraft<UserData>;
+    updateData: (state, action: PayloadAction<User>) => {
+      state.data = action.payload as WritableDraft<User>;
     },
 
     updateQuota: (state, action: PayloadAction<number>) => {

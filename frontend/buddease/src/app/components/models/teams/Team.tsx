@@ -2,9 +2,10 @@ import { Phase } from "../../phases/Phase";
 import Project from "../../projects/Project";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
+import CommonDetails from '../CommonData';
 import { Progress } from "../tracker/ProgresBar";
 
-interface Team extends TeamData {
+interface Team {
   id: number;
   teamName: string;
   description?: string | undefined;
@@ -36,6 +37,7 @@ const team: Team = {
       hasQuota: true,
       profilePicture: "",
       processingTasks: [] as DataProcessingTask[],
+      traits: "traits" as unknown as typeof CommonDetails
     },
     {
       _id: 'member-2',
@@ -45,12 +47,13 @@ const team: Team = {
       tier: "standard",
       uploadQuota: 100,
       userType: "organization",
-
+      
       fullName: "Benny Johnson",
       bio: "bio content",
       hasQuota: false,
       profilePicture: "",
       processingTasks: [] as DataProcessingTask[],
+      traits: "traits" as unknown as typeof CommonDetails
     },
   ],
   projects: [
@@ -97,6 +100,7 @@ const team: Team = {
           id: "1",
           title: "Task 1",
           description: "Description of Task 1",
+          phase: {} as Phase,
           assignedTo: [
             /* ... */
           ],
@@ -139,6 +143,19 @@ const team: Team = {
           dependencies: [],
           analysisType: "Text Analysis",
           analysisResults: [],
+          [Symbol.iterator]: () => { 
+            return {
+              current: 0,
+              length: 0,
+              next() {
+                if (this.current < this.length) {
+                  return { done: false, value: null };
+                } else {
+                  return { done: true };
+                }
+              }
+            };
+          }
         },
         // Add more tasks as needed
       ],

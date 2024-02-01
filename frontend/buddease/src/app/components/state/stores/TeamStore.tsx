@@ -5,11 +5,13 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
+import { Data } from "../../models/data/Data";
+import { UserData } from "../../users/User";
 import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
 
 export interface TeamManagerStore {
   teams: Record<string, Team[]>;
@@ -34,7 +36,7 @@ export interface TeamManagerStore {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Record<string, Team[]>>; // Include a SnapshotStore for teams
+  snapshotStore: SnapshotStore<Data>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
 
   // Add more methods or properties as needed
@@ -56,7 +58,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
-  const initialSnapshot = {};
+  const initialSnapshot = {} as SnapshotStoreConfig<Data | UserData>;
   const snapshotStore = new SnapshotStore(initialSnapshot);
 
   const updateTeamName = (name: string) => {

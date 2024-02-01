@@ -1,6 +1,7 @@
 // ActionManager.ts
 
 import { Task } from "../../models/tasks/Task";
+import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 
 
@@ -19,8 +20,8 @@ class ActionManager {
             throw new Error(`Unsupported source: ${task.source}`);
           }
         } catch (error) {
-          console.error('Error handling action:', error.message);
-          // Optionally, you can log or handle the error in a centralized logging service
+          console.error('Error handling action:', NOTIFICATION_MESSAGES.Error.DEFAULT('user action'));
+
         }
       }
     
@@ -32,9 +33,10 @@ class ActionManager {
     
           // Logic for handling user-generated task
           console.log('Handling user-generated task:', task);
-        } catch (error) {
-          console.error('Error handling user action:', error.message);
-          // Optionally, you can log or handle the error in a centralized logging service
+        } catch (error: any) {
+           // Optionally, you can log or handle the error in a centralized logging service
+           console.error('Error handling user action:', NOTIFICATION_MESSAGES.Error.DEFAULT('user action'));
+       
         }
       }
     
@@ -46,7 +48,7 @@ class ActionManager {
     
           // Logic for handling system-generated task
           console.log('Handling system-generated task:', task);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error handling system action:', error.message);
           // Optionally, you can log or handle the error in a centralized logging service
         }

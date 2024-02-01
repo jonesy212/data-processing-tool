@@ -14,7 +14,8 @@ interface AuthContextProps {
   state: AuthState;
   dispatch: React.Dispatch<AuthAction>;
   resetAuthState: () => void;
-  loginWithRoles: (user: User, roles: string[]) => void; // New action for login with roles
+  loginWithRoles: (user: User, roles: string[]) => void; 
+  token: string | null;
 }
 
 interface AuthAction {
@@ -44,9 +45,9 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthProvider: React.FC<{ children: React.ReactNode, token: string }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-
+  const token = 'your-token-value'; // Sample token
   // Function to reset the auth state
   const resetAuthState = () => {
     dispatch({ type: 'LOGOUT' });
@@ -58,7 +59,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   };
 
   return (
-    <AuthContext.Provider value={{ state, dispatch, resetAuthState, loginWithRoles }}>
+    <AuthContext.Provider value={{ state, dispatch, resetAuthState, loginWithRoles, token }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,4 @@
-const startVoiceRecognition = (onSpeechResult: (result: string) => void): SpeechRecognitionAlternative | undefined => {
+const startVoiceRecognition = (onSpeechResult: (result: string) => void): SpeechRecognition | undefined => {
     const recognition = new (window.SpeechRecognition || (window as any).webkitSpeechRecognition)() as SpeechRecognition;
     recognition.continuous = true;
     recognition.interimResults = false;
@@ -21,6 +21,9 @@ const startVoiceRecognition = (onSpeechResult: (result: string) => void): Speech
       recognition.stop();
     }
   };
+
+  
+  
   
   export { startVoiceRecognition, stopVoiceRecognition };
   

@@ -114,7 +114,7 @@ const layoutEffect = async () => {
             colors={responsiveDesignStore.colors}
             frontendStructure={responsiveDesignStore.frontendStructure}
             backendStructure={responsiveDesignStore.backendStructure}
-            onCloseFileUploadModal={() => {}}
+            onCloseFileUploadModal={async function(){}}
             onHandleFileUpload={async (file: FileList | null) => {
               if (file) {
                 // Handle file upload logic here

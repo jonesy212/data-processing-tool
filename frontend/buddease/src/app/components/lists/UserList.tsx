@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-import { User, UserDetails } from '../users/User';
+import ListGenerator from '@/app/generators/ListGenerator';
+import { User } from '../users/User';
 interface UserListProps{
   users?: User[];
 }
@@ -12,14 +13,7 @@ const UserList: React.FC<UserListProps> = observer(({ users = [] }) => {
   return (
     <div>
       <h2>User List</h2>
-      <ul>
-        {users.map((user: User) => (
-          <li key={user.id}>
-            {user.id} - {user.username}
-            <UserDetails user={user} />
-          </li>
-        ))}
-      </ul>
+      <ListGenerator items={users} />
     </div>
   );
 });

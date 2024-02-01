@@ -1,6 +1,6 @@
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
-import Project from "../components/projects/Project";
+import Project, { isProjectInSpecialPhase } from "../components/projects/Project";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
 import StoreConfig from "../shopping_center/ShoppingCenterConfig";
 import {

@@ -1,4 +1,4 @@
-import { Phase, CustomPhaseHooks } from './Phase'; // Assuming Phase and CustomPhaseHooks are defined in a separate file
+import { Phase } from './Phase'; // Assuming Phase and CustomPhaseHooks are defined in a separate file
 
 class PhaseService {
   private phases: Phase[];
@@ -21,6 +21,11 @@ class PhaseService {
 
   removePhase(phaseName: string): void {
     this.phases = this.phases.filter(phase => phase.name !== phaseName);
+  }
+
+  updatePhase(phaseId: number, updatedPhase: Phase): void { 
+    const phaseIndex = this.phases.findIndex(phase => phase.data.id === phaseId);
+    this.phases[phaseIndex] = updatedPhase;
   }
 
   // Other methods for managing phases, such as updating phase details, validating phase transitions, etc.

@@ -47,6 +47,9 @@ export interface DocumentOptions {
   colorCoding: boolean;
   customSettings: Record<string, any>; 
   documents: DocumentData[]; 
+
+  // Properties specific to DocumentGenerator
+  title?: string;
 }
 
 export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
@@ -93,8 +96,11 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     additionalOptions: [],
     customSettings: {},
     documents: [] as DocumentData[],
-  
-    animations: {} as DocumentAnimationOptions, //
+    animations: {} as DocumentAnimationOptions, 
+    
+
+      // Default values for properties specific to DocumentGenerator
+      title: "",
   };
 };
 

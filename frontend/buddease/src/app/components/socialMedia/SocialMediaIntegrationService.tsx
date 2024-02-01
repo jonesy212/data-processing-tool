@@ -3,10 +3,9 @@
 // Import necessary modules and types
 import { FacebookIntegration } from './FacebookIntegration';
 import { InstagramIntegration } from './InstagramIntegration';
+import { TikTokIntegration } from './TikTokIntegration';
 import { TwitterIntegration } from './TwitterIntegration';
 import { YouTubeIntegration } from './YouTubeIntegration';
-import { TikTokIntegration } from './TikTokIntegration';
-import { NotificationType } from './NotificationContext'; // Assuming this contains notification types
 
 // Define a type for the social media platform
 type SocialMediaPlatform = 'Facebook' | 'Instagram' | 'Twitter' | 'YouTube' | 'TikTok';

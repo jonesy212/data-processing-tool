@@ -37,6 +37,7 @@ type NotificationType =
   | "CustomNotification1"
   | "CustomNotification2"
   | "Ideation:Brainstorming"
+  | "OperationError"
   | CustomNotificationType;
 
 export interface NotificationContextProps {
@@ -61,12 +62,13 @@ const DefaultNotificationContext: NotificationContextProps = {
   sendNotification: () => {},
   addNotification: () => {},
   notify: (message, content, date, type) => {
-    const notificationMessage = (NOTIFICATION_MESSAGES.DataLoading.DEFAULT)[0] || message;
+    const notificationMessage = (NOTIFICATION_MESSAGES.Data.DEFAULT)[0] || message;
     content = { ...content, date };
     return new Promise((resolve) => {
       const id = UniqueIDGenerator.generateNotificationID;
       notificationStore.addNotification({
         id,
+        content: notificationMessage,
         ...content
       });
       resolve();

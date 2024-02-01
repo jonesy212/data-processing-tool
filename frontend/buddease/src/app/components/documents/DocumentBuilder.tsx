@@ -1,4 +1,5 @@
 // DocumentBuilder.tsx
+import { endpoints } from "@/app/api/ApiEndpoints";
 import Clipboard from "@/app/ts/clipboard";
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
@@ -6,6 +7,8 @@ import { useState } from "react";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
+import PromptViewer from "../prompts/PromptViewer";
+import axiosInstance from "../security/csrfToken";
 import SharingOptions from "../shared/SharingOptions";
 import {
   createPdfDocument,
@@ -16,10 +19,6 @@ import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import PromptViewer, { PromptViewerProps } from "../prompts/PromptViewer";
-import { Prompt } from "../prompts/PromptPage";
-import axiosInstance from "../security/csrfToken";
-import { endpoints } from "@/app/api/ApiEndpoints";
 
 
 
@@ -51,14 +50,6 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   const [isPublic, setIsPublic] = useState(false);
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();
-
-  const handleCreateDocument = (userOptions: any) => {
-    const documentContent = editorState.getCurrentContent().getPlainText(); 
-    const formattedOptions = getFormattedOptions(userOptions); 
-
-    // Call a utility function to create a document (PDF or other formats)
-    createPdfDocument(documentContent, formattedOptions);
-  };
 
   const toggleVisibility = () => {
     setIsPublic((prevIsPublic) => !prevIsPublic);
@@ -120,23 +111,43 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       setEditorState(newState);
       return "handled";
     }
-
     return "not-handled";
   };
 
+  const handleCreateDocument = (userOptions: any) => {
+    const documentContent = editorState.getCurrentContent().getPlainText(); 
+    const formattedOptions = getFormattedOptions(userOptions); 
 
+    // Call a utility function to create a document (PDF or other formats)
+    createPdfDocument(documentContent, formattedOptions);
+  };
 
-  const handleEditorStateChange = (newEditorState: EditorState): void => {
+  
+  const handleEditorStateChange = async (newEditorState: EditorState): Promise<void> => {
     // Update the editor state in DocumentBuilder
     setEditorState(newEditorState);
 
     // Accessing the content from the new editor state
     const content = newEditorState.getCurrentContent();
     console.log("New Editor State Content:", content.getPlainText());
-  };
-  
 
-  
+    try {
+      // Example: Perform a POST request to add data
+      await axiosInstance.post(endpoints.data.addData, {
+        data: content.getPlainText(),
+      });
+
+      // Example: Perform a GET request to fetch data
+      const response = await axiosInstance.get(endpoints.data.list);
+      console.log("Fetched data:", response.data);
+
+      // You can perform other HTTP requests using Axios as needed
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+
   const handleCreateButtonClick = async () => {
     // Call handleCreateDocument with userOptions
     const userOptions: ToolbarOptionsProps = {
@@ -151,37 +162,12 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       image: true,
       audio: true,
       type: {} as DocumentType,
-      handleEditorStateChange: function (newEditorState: EditorState): void {
-        throw new Error("Function not implemented.");
-      },
+      handleEditorStateChange: handleEditorStateChange, // Corrected assignment here
       onEditorStateChange: handleEditorStateChange,
     };
 
 
 
-   const handleEditorStateChange = async (newEditorState: EditorState): Promise<void> => {
-      // Update the editor state in DocumentBuilder
-      setEditorState(newEditorState);
-  
-      // Accessing the content from the new editor state
-      const content = newEditorState.getCurrentContent();
-      console.log("New Editor State Content:", content.getPlainText());
-  
-      try {
-        // Example: Perform a POST request to add data
-        await axiosInstance.post(endpoints.data.addData, {
-          data: content.getPlainText(),
-        });
-  
-        // Example: Perform a GET request to fetch data
-        const response = await axiosInstance.get(endpoints.data.list);
-        console.log("Fetched data:", response.data);
-  
-        // You can perform other HTTP requests using Axios as needed
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
       // Call handleCreateDocument with userOptions
       handleCreateDocument(userOptions);
     };

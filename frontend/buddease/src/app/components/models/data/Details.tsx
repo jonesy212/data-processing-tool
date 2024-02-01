@@ -1,37 +1,68 @@
 // components/Details.tsx
-import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { DetailsItem } from '../../state/stores/DetailsListStore';
+import { observer } from "mobx-react-lite";
+import React from "react";
+import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { Data } from "./Data";
 
-interface DetailsProps {
-  details: DetailsItem;
+interface DetailsProps<T> {
+  details: DetailsItem<T>;
 }
 
-const Details: React.FC<DetailsProps> = observer(({ details }) => {
-  // Assuming details has properties like title, description, etc.
+const Details: React.FC<DetailsProps<Data>> = observer(({ details }) => {
   return (
     <div>
       <h3>{details.title}</h3>
-      <p>{details.description}</p>
-      <p>Phase: {details.phase}</p>
-      <p>Team Members: {details.teamMembers.join(', ')}</p>
-      <p>Start Date: {new Date(details.startDate).toLocaleDateString()}</p>
-      <p>End Date: {new Date(details.endDate).toLocaleDateString()}</p>
-      {/* Add more properties rendering as needed */}
+      <p>Phase Description: {details.phase.description}</p>
+      <p>Phase Name: {details.phase.name}</p>
+      <p>
+        Team Members: {details.teamMembers?.join(", ") || "No team members"}
+      </p>
+      <p>
+        Start Date:{" "}
+        {details.phase.startDate
+          ? new Date(details.phase.startDate).toLocaleDateString()
+          : "N/A"}
+      </p>
+      <p>
+        End Date:{" "}
+        {details.phase.endDate
+          ? new Date(details.phase.endDate).toLocaleDateString()
+          : "N/A"}
+      </p>
       <div>
         <strong>Communication:</strong>
         <ul>
-          <li>Audio: {details.communication.audio ? 'Supported' : 'Not Supported'}</li>
-          <li>Video: {details.communication.video ? 'Supported' : 'Not Supported'}</li>
-          <li>Text: {details.communication.text ? 'Supported' : 'Not Supported'}</li>
+          {/* Update the logic based on the structure of details.communication */}
+          {/* For example, if details.communication represents a specific action, access its properties accordingly */}
+          <li>
+            Audio:{" "}
+            {details.communication && "audio" in details.communication
+              ? details.communication.audio
+              : "N/A"}
+          </li>
+          <li>
+            Video:{" "}
+            {details.communication && "video" in details.communication
+              ? details.communication.video
+              : "N/A"}
+          </li>
+          <li>
+            Text:{" "}
+            {details.communication && "text" in details.communication
+              ? details.communication.text
+              : "N/A"}
+          </li>
         </ul>
       </div>
       <div>
         <strong>Collaboration Options:</strong>
         <ul>
-          {details.collaborationOptions.map((option, index) => (
-            <li key={index}>{option}</li>
-          ))}
+          {/* Ensure collaborationOptions exists before mapping over it */}
+          {details.data?.collaborationOptions?.map(
+            (option: any, index: any) => (
+              <li key={index}>{option}</li>
+            )
+          )}
         </ul>
       </div>
     </div>

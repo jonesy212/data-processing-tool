@@ -1,11 +1,11 @@
 // AutomatioProcess.ts
 
-import RandomWalkSuggestions
-
+import SnapshotStoreConfig from '../../state/stores/SnapshotStore';
+import RandomWalkSuggestions from './components/RandomWalkSuggestions';
 // Automated system setup process
 const setupAutomationSystem = () => {
   // Configure SnapshotStore
-  SnapshotStoreConfig.configure_snapshot_store();
+  typeof SnapshotStoreConfig.configureSnapshotStore();
 
   // Create and render RandomWalkSuggestions component
   // (Assuming you have a root element with id 'root' in your HTML)

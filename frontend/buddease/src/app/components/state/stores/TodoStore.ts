@@ -1,21 +1,23 @@
 // TodoManagerStore.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
 import omit from "lodash/omit";
 import { makeAutoObservable } from "mobx";
 import { useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
+import { Phase } from "../../phases/Phase";
 import { subscriptionService } from "../../subscriptions/SubscriptionService";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
-import SnapshotStore, { Snapshot } from "./SnapshotStore";
-import { CommonData } from "../../models/CommonData";
-import myInitUserSnapshotData from "../../users/userSnapshotData";
 import { UserData } from "../../users/User";
+import SnapshotStore, { Snapshot } from "./SnapshotStore";
 export interface TodoManagerStore {
   todos: Record<string, Todo>;
+  todoList: Todo[]
   toggleTodo: (id: string) => void;
   addTodo: (todo: Todo) => void;
-  addTodos: (newTodos: Todo[], data: SnapshotStore<Data | UserData>) => void; // Update this line
+  addTodos: (newTodos: Todo[], data: SnapshotStore<Data | UserData>) => void;
+  
   removeTodo: (id: string) => void;
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
   fetchTodosSuccess: (payload: { todos: Todo[] }) => void;
@@ -111,7 +113,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
       snapshotStore.createSnapshot(data, snapshot); // Provide both data and snapshot parameters
       setNotificationMessage(NOTIFICATION_MESSAGES.Snapshot.CREATED);
     } catch (error) {
-      setNotificationMessage(NOTIFICATION_MESSAGES.Snapshot);
+      setNotificationMessage(NOTIFICATION_MESSAGES.Snapshot.Error);
     }
   }
   
@@ -134,7 +136,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
 
   const addTodos = (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<Data>>
+    data: SnapshotStore<Data | UserData>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
@@ -155,11 +157,12 @@ const useTodoManagerStore = (): TodoManagerStore => {
             analysisResults: todoWithoutId.analysisResults,
             status: todoWithoutId.status,
             isActive: todoWithoutId.isActive,
-            then: (callback: (newData: Data) => void) => {
+            then: (callback: (newData: Snapshot<Data>) => void) => {
               // Placeholder implementation, can be empty or throw an error
               console.warn("Placeholder implementation for 'then' property");
             },
-            // Add other properties as needed
+            phase: {} as Phase,
+            videoData: {} as VideoData
           };
           data.takeSnapshot(updatedSnapshots);
         }
@@ -238,14 +241,14 @@ const useTodoManagerStore = (): TodoManagerStore => {
     console.log("Fetching Todos...");
     // You can add loading indicators or other UI updates here
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING
+      NOTIFICATION_MESSAGES.Data.PAGE_LOADING
     );
   };
 
   const batchFetchSnapshotsRequest = () => {
     console.log("Fetching snapshots...");
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING
+      NOTIFICATION_MESSAGES.Data.PAGE_LOADING
     );
     snapshotStore.fetchSnapshots();
   };
@@ -262,7 +265,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
   };
 
   const getSnapshots = async (
-    snapshot: SnapshotStore<Snapshot<Data>[]>
+    snapshot: SnapshotStore<Data | UserData>
   ): Promise<Record<string, Todo[]>[]> => {
     // Assuming snapshotStore.getSnapshots() returns a Promise
     const snapshots = await snapshotStore.getSnapshots(snapshot);
@@ -278,6 +281,11 @@ const useTodoManagerStore = (): TodoManagerStore => {
     );
 
     return transformedSnapshots;
+  };
+
+  // Define function to open todo settings page
+  const openTodoSettingsPage = (todoId: number, teamId: number) => {
+    window.location.href = endpoints.todos.assign(todoId, teamId);
   };
 
   const getSnapshot = async (snapshotId: string) => {
@@ -342,35 +350,36 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const setSubscriptions = (prevSubscriptions: Record<string, () => void>) =>
     prevSubscriptions;
 
-  const updateSnapshot = async (
-    snapshot: SnapshotStore<Snapshot<Todo>[]>,
-    snapshotId: string,
-    updatedSnapshot: Snapshot<Todo>
-  ) => {
-    try {
-      loading.current = true;
-
-      // Convert updatedSnapshot to the required type (Omit<Todo, "id">)
-      const updatedData: Omit<Todo, "id"> = updatedSnapshot as unknown as Omit<
-        Todo,
-        "id"
-      >;
-
-      await snapshotStore.updateSnapshot(snapshotId, updatedData);
-      fetchSnapshotSuccess(snapshot);
-      setDynamicNotificationMessage(
-        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
-      );
-    } catch (error) {
-      const errorMessage =
-        typeof error === "string"
-          ? error
-          : "An error occurred during the update.";
-      batchFetchSnapshotsFailure({ error: errorMessage });
-    } finally {
-      loading.current = false;
-    }
-  };
+    const updateSnapshot = async (
+      snapshotStore: SnapshotStore<Snapshot<Todo>>,
+      snapshotId: string,
+      updatedSnapshot: Snapshot<Todo>
+    ) => {
+      try {
+        loading.current = true;
+    
+        // Convert updatedSnapshot to the required type (Omit<Todo, "id">)
+        const updatedData: Omit<Todo, "id"> = updatedSnapshot as unknown as Omit<
+          Todo,
+          "id"
+        >;
+    
+        await snapshotStore.updateSnapshot(snapshotId, updatedData);
+        fetchSnapshotSuccess(snapshot);
+        setDynamicNotificationMessage(
+          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+        );
+      } catch (error) {
+        const errorMessage =
+          typeof error === "string"
+            ? error
+            : "An error occurred during the update.";
+        batchFetchSnapshotsFailure({ error: errorMessage });
+      } finally {
+        loading.current = false;
+      }
+    };
+    
 
   const updateSnapshotFailure = (error: string) => {
     console.error("Update snapshot failure:", error);
@@ -503,6 +512,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
 
       // Miscellaneous
       snapshotStore,
+      openTodoSettingsPage
     },
     {
       // Exclude the following function from being considered as an action

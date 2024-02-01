@@ -5,13 +5,50 @@ import DynamicNamingConventions from "../DynamicNamingConventions";
 import YourComponent, { YourComponentProps } from "../hooks/YourComponent";
 import useIdleTimeout from "../hooks/commHooks/useIdleTimeout";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
+import { default as NotificationManager, default as useNotificationManagerService } from "../notifications/NotificationService";
+import { Notification } from "../support/NofiticationsSlice";
+import { User } from "../users/User";
 import { ConfigCard } from "./DashboardConfigCard";
-import NotificationManager from "../notifications/NotificationService";
-import PushNotificationManager from "../support/PushNotificationManager";
-import { NotificationType } from "../support/NotificationContext";
-import useNotificationManagerService from "../notifications/NotificationService";
 
-interface AdminDashboardProps extends YourComponentProps {}
+interface AdminDashboardProps extends YourComponentProps {
+    // Props related to user authentication and authorization
+    isAuthenticated: boolean; // Indicates whether the user is authenticated
+    isAdmin: boolean; // Indicates whether the authenticated user is an admin
+  
+    // Props related to user management
+    users: User[]; // Array of user objects
+    deleteUser: (userId: string) => void; // Function to delete a user
+    updateUserRole: (userId: string, newRole: UserRole) => void; // Function to update user role
+  
+    // Props related to notifications
+    notifications: Notification[]; // Array of notification objects
+    dismissNotification: (notificationId: string) => void; // Function to dismiss a notification
+  
+    // Props related to configurations
+    config: AppConfig; // Object containing application configuration
+    updateConfig: (newConfig: Partial<AppConfig>) => void; // Function to update application configuration
+  
+    // Props related to data management
+    fetchData: () => void; // Function to fetch data from an external source
+    data: Data[]; // Array of data objects
+  
+    // Props related to UI customization
+    theme: Theme; // Object representing the current theme
+    changeTheme: (newTheme: Theme) => void; // Function to change the theme
+  
+    // Props related to navigation
+    navigateTo: (route: string) => void; // Function to navigate to a specific route
+  
+    // Add any other necessary props specific to your admin dashboard application
+  
+}
+
+
+
+interface AdminDashboardWithDynamicNamingProps {
+  // Add any necessary props here
+}
+
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
   apiConfig,
@@ -48,10 +85,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 };
 
 // Use DynamicNamingConventions in AdminDashboard
-const AdminDashboardWithDynamicNaming = () => {
+const AdminDashboardWithDynamicNaming: React.FC<AdminDashboardWithDynamicNamingProps> = () => {
   const { dynamicConfig, setDynamicConfig } = useDynamicComponents();
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout();
-const useNotificationManager = useNotificationManagerService();
+  const useNotificationManager = useNotificationManagerService();
+  const { notifications, notify, sendPushNotification, sendAnnouncement } = useNotificationManagerService();
+
   // Check if dynamicConfig exists
   if (dynamicConfig) {
     // Pass dynamicContent prop based on dynamicConfig
@@ -63,17 +102,16 @@ const useNotificationManager = useNotificationManagerService();
       resetIdleTimeout?.(); // Use optional chaining here
     }, [resetIdleTimeout]);
 
+
+
+
+    
     return (
       <div>
         {/* Other AdminDashboard content */}
         <DynamicNamingConventions dynamicContent={dynamicContent} />
         {/* Include NotificationManager */}
-        <NotificationManager
-          notifications={Notification[]}
-          notify={(message: string, content: any, date: Date | undefined, type: NotificationType) => Promise<void>}
-          sendPushNotification={(message: string, sender: string) => PushNotificationManager.sendPushNotification(message, sender)}
-          sendAnnouncement={{} as (message: string, sender: string) => void}
-        />
+        <NotificationManager/>
       </div>
     );
   }
@@ -84,3 +122,4 @@ const useNotificationManager = useNotificationManagerService();
 export default ConfigCard;
 export { AdminDashboard, AdminDashboardWithDynamicNaming };
 export type { AdminDashboardProps };
+

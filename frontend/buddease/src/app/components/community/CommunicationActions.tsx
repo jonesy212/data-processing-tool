@@ -6,11 +6,8 @@ export const CommunicationActions = {
   startCommunication: createAction<string>("startCommunication"),
   endCommunication: createAction<string>("endCommunication"),
   collaborate: createAction<string>("collaborate"),
-
-  // Batch actions for communication
-  batchStartCommunication: createAction<string[]>("batchStartCommunication"),
-  batchEndCommunication: createAction<string[]>("batchEndCommunication"),
-  batchCollaborate: createAction<string[]>("batchCollaborate"),
+  inviteCollaborator: createAction<string>("inviteCollaborator"),
+  inviteCollaborators: createAction<string[]>("inviteCollaborators"),
 
   // Actions for handling communication requests
   startCommunicationRequest: createAction<string>("startCommunicationRequest"),
@@ -33,6 +30,20 @@ export const CommunicationActions = {
     "collaborateFailure"
   ),
 
+  // Collaboration actions
+  startCollaborationSession: createAction("startCollaborationSession"),
+  endCollaborationSession: createAction("endCollaborationSession"),
+
+  joinCollaborationSession: createAction<{ sessionId: string }>(
+    "joinCollaborationSession"
+  ),
+  leaveCollaborationSession: createAction("leaveCollaborationSession"),
+
+  // Batch actions for communication
+  batchStartCommunication: createAction<string[]>("batchStartCommunication"),
+  batchEndCommunication: createAction<string[]>("batchEndCommunication"),
+  batchCollaborate: createAction<string[]>("batchCollaborate"),
+
   // Actions for batch communication failures
   batchStartCommunicationFailure: createAction<{ error: string }>(
     "batchStartCommunicationFailure"
@@ -53,6 +64,8 @@ export const CommunicationActions = {
   // Add more actions as needed
 };
 
-export type CommunicationActionTypes = ReturnType<
-  (typeof CommunicationActions)[keyof typeof CommunicationActions]
->;
+export type CommunicationActionTypes =
+  | ReturnType<typeof CommunicationActions[keyof typeof CommunicationActions]>
+  | { audio: string } // Define 'audio' property in CommunicationActionTypes
+  | { video: string } // Define 'audio' property in CommunicationActionTypes
+  | { text: string }; // Define 'audio' property in CommunicationActionTypes

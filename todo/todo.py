@@ -15,8 +15,9 @@ class Todo:
 
     def toggle(self):
         self.finished = not self.finished
+        user_id = get_jwt_identity()
         # Log the todo toggle
-        self.todo_manager.log_todo(f'Toggle todo "{self.title}"', user='user_id', category='individual')
+        self.todo_manager.log_todo(f'Toggle todo "{self.title}"', user=user_id, category='individual')
 
 @todo_bp.route('/todos', methods=['GET'])
 @jwt_required()

@@ -1,9 +1,30 @@
 // NotificationMessages.ts
 const NOTIFICATION_MESSAGES = {
-  // Loading and Data
-  DataLoading: {
+
+  Auth: {
+    DEFAULT: "Authentication required",
+    INVALID_CREDENTIALS: "Invalid username or password",
+    ACCOUNT_DISABLED: "Your account has been disabled",
+    ACCOUNT_NOT_FOUND: "No account found with provided credentials",
+    PASSWORD_RESET: "Password reset email sent successfully",
+    PASSWORD_RESET_FAILED: "Password reset failed, please try again later"
+  },
+
+  Brainstorming: {
+    DEFAULT: "New idea generated",
+    IDEA_ACCEPTED: "Idea accepted",
+    IDEA_REJECTED: "Idea rejected",
+    IDEA_EDITED: "Idea updated",
+    SESSION_STARTED: "Brainstorming session started",
+    SESSION_ENDED: "Brainstorming session ended"
+  },
+
+
+  // Data
+  Data: {
     DEFAULT: "Loading data...",
     PAGE_LOADING: "Loading page...",
+    ERROR_EXPORTING_DATA: "Error exporting data. Please try again.",
     // Add more messages for the DataLoading type
   },
 
@@ -20,6 +41,8 @@ const NOTIFICATION_MESSAGES = {
     UI_THEME: "User theme did no upate as expected",
     // Add more messages for the Error type
     BROWSER_CHECKER_ERROR: `There was an error connecting to the browser. Please check your network connection and try again.`,
+    ONBOARDING_ERROR: "Error in the onboarding process. Please try again.",
+
   },
   NO_NOTIFICATIONS: {
     DEFAULT: "NO NOTIFICATION WENT OFF..",
@@ -30,6 +53,8 @@ const NOTIFICATION_MESSAGES = {
   OperationSuccess: {
     DEFAULT: "Operation successful.",
     PAYMENT_RECEIVED: "Payment received successfully.",
+    ONBOARDING_SUCCESS: "Onboarding process completed successfully.",
+
     // Add more messages for the OperationSuccess type
   },
 
@@ -55,13 +80,7 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the NewChatMessage type
   },
   
-  // Event-related
-  EventReminder: {
-    DEFAULT: "Event reminder.",
-    EVENT_OCCURRED: "An event has occurred.",
-    
-    // Add more messages for the EventReminder type
-  },
+ 
   
   
   // Calendar Events
@@ -116,6 +135,36 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the DataAnalysis type
     // You can customize the messages based on your application's needs
   },
+  Details: {
+    DEFAULT: (errorType: string, details: string) =>
+      `Error in Details Service (${errorType}): ${details}`,
+    UPDATE_DETAILS_ITEM_ERROR: "Error updating details item. Please try again.",
+    UPDATE_DETAILS_ITEM_SUCCESS: "Details item updated successfully.",
+    FETCH_DETAILS_ITEMS_SUCCESS: "Details items fetched successfully.",
+    FETCH_DETAILS_ITEMS_ERROR: "Error fetching details items. Please try again.",
+    FETCH_DETAILS_ITEM_SUCCESS: "Details item fetched successfully.",
+    FETCH_DETAILS_ITEM_ERROR: "Error fetching details item. Please try again.",
+
+    UPDATE_DETAILS_ITEMS_SUCCESS: "Details items updated successfully.",
+    UPDATE_DETAILS_ITEMS_ERROR: "Error updating details items. Please try again.",
+    DELETE_DETAILS_ITEMS_SUCCESS: "Details items deleted successfully.",
+    DELETE_DETAILS_ITEMS_ERROR: "Error deleting details items. Please try again.",
+    INVALID_NAME: "Name contains invalid characters",
+    TOO_LONG: "Name is too long",
+    TAKEN: "Name is already taken",
+    // other details messages
+  },
+   // Event-related
+   EventReminder: {
+    DEFAULT: "Event reminder.",
+    EVENT_OCCURRED: "An event has occurred.",
+    
+    // Add more messages for the EventReminder type
+  },
+   
+  Freelancer: {
+    SUBMIT_PROPOSAL_ERROR: "Error submitting proposal.",
+  },
   
   FrontendStructure: {
     DEFAULT: "Frontend structure operation completed.",
@@ -126,10 +175,19 @@ const NOTIFICATION_MESSAGES = {
 
    // Generic Messages
    Generic: {
-    DEFAULT: "Notification message...",
+     DEFAULT: "Notification message...",
+     ERROR: "An error occurred. Please try again later.",
+
     // Add more generic messages
   },
-  
+   
+  Notifications: {
+    DEFAULT: (errorType: string, details: string) =>
+    `Error in Notifications (${errorType}): ${details}`,
+    NOTIFICATION_SENT: "Notification sent successfully",
+    NOTIFICATION_SEND_FAILED: "Failed to send notification. Please try again later."
+  },
+
   MessagingSystem: {
     DEFAULT: "New message received.", // Default message for the messaging system
     MESSAGE_SENT: "Your message has been sent successfully.",
@@ -147,19 +205,54 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the NamingConventionsError type
   },
 
+  Onboarding: {
+    DEFAULT: "Welcome to the onboarding process!",
+    QUESTIONNAIRE_SUBMITTED: "Questionnaire submitted successfully.",
+    PROFILE_SETUP_SUCCESS: "Profile setup completed successfully.",
+    PROFILE_SETUP_ERROR: "Error in profile setup. Please try again later.",
+    TRANSITION_TO_OFFER: "Transitioning to the offer phase.",
+  },
+ 
+
   Persona: {
     DEFAULT: (errorType: string, details: string) =>
-    `Error in Tasks (${errorType}): ${details}`,
+    `Error in Personas (${errorType}): ${details}`,
     WELCOME: "Welcome to the Persona Builder!",
     QUESTIONNAIRE_COMPLETE: "Thank you for completing the questionnaire!",
     // Add more personalized messages for the PersonMessages type
   },
-  
-  Snapshot: {
-    FETCHING_SNAPSHOTS: "Fetching snapshots...",
-    UPDATING_SNAPSHOT: "Updating snapshot...",
+  Phase: {
+    FETCH_PHASE_ERROR: "Error fetching phases. Please try again.",
+    UPDATE_PHASE_ERROR: "Error updating phase. Please try again.",
+  },
+  Prompts: {
+    FETCH_PROMPTS_REQUEST: "Fetching prompts...",
+    FETCH_PROMPTS_SUCCESS: "Prompts fetched successfully.",
+    FETCH_PROMPTS_FAILURE: "Failed to fetch prompts. Please try again."
+    
   },
   
+  Snapshot: {
+    DEFAULT: (errorType: string, details: string) =>
+    `Error in Snapshots (${errorType}): ${details}`,
+    FETCHING_SNAPSHOTS: "Fetching snapshots...",
+    UPDATING_SNAPSHOT: "Updating snapshot...",
+    FETCHING_SNAPSHOTS_ERROR: "Error fetching snapshots. Please try again.",
+    UPDATING_SNAPSHOTS: "Updating snapshots...",
+    CREATED: "Snapshot created successfully",
+    Error: "Error creating snapshot. Please try again.",
+  },
+  StateGovCities: {
+    DEFAULT: (errorType: string, details: string) =>
+    `Error in "State/Government Cities (${errorType}): ${details}`,
+    ERROR_FETCHING_CITIES: "Error fetching state/government cities. Please try again.",
+    SUCCESS_FETCHING_CITIES: "State/government cities fetched successfully.",
+    SUCCESS_REMOVING_CITY: "State/government city removed successfully.",
+    SUCCESS_UPDATING_CITY: "State/government city updated successfully.",
+    SUCCESS_ADDING_NEW_CITY: "New state/government city added successfully.",
+    
+    // Add more messages for the StateGovCities type
+  },
   Tasks: {
     DEFAULT: (errorType: string, details: string) =>
     `Error in Tasks (${errorType}): ${details}`,
@@ -170,14 +263,15 @@ const NOTIFICATION_MESSAGES = {
     // New Error Messages for Tasks
     TASK_DUPLICATE_ERROR:
     "Duplicate task found. Please choose a different name.",
-    TASK_ASSIGN_ERROR: "Error assigning task. Please try again.",
     
+    TASK_ASSIGN_ERROR: "Error assigning task. Please try again.",
     TASK_ADD_ERROR: "Error adding task. Please try again.",
     TASK_UPDATE_ERROR: "Task did not update successfully, please try again",
     TASK_FETCH_ERROR: "Error fetching tasks. Please try again.",
     TASK_REMOVE_ERROR: "Error removing task. Please try again.",
     COMPLETE_ALL_TASKS_ERROR: "Error completing all tasks. Please try again.",
     TASK_TOGGLE_ERROR: "Error toggling task status. Please try again.",
+    
     success: {
       userGenerated: 'User-generated task was successful.',
       systemGenerated: 'System-generated task was successful.',
@@ -188,17 +282,26 @@ const NOTIFICATION_MESSAGES = {
     },
     // New Error Messages for Tasks
   },
+
+
+  Toolbar: {
+    DEFAULT: "New item added to toolbar",
+    ITEM_SELECTED: "Item selected in toolbar",
+    ITEM_REMOVED: "Item removed from toolbar",
+    ITEM_UPDATED: "Item updated in toolbar"
+  },
   
   // Team-related
   Team: {
-    DEFAULT: "Loading team data...",
-    
+    DEFAULT: (errorType: string, details: string) =>
+    `Error in Teams (${errorType}): ${details}`,
+
     //success
     ASSIGN_TEAM_MEMBER_FAILURE:
     "Failed to assign team member. Please try again.",
     
     //failure
-    
+    FETCH_TEAM_ERROR: "Error fetching team. Please try again.",
     // Add more messages for the TeamLoading type
   },
 
@@ -222,13 +325,11 @@ const NOTIFICATION_MESSAGES = {
     BATCH_ASSIGN_ERROR: "Error assigning todos in batch. Please try again.",
   },
   
-  
   User: {
     FETCH_USER_ERROR: "Error fetching user data. Please try again later.",
     ASSIGN_USER_FAILURE: "Failed to assign user. Please try again.",
     UPDATE_USER_ERROR: "Error updating user data. Please try again later.",
   },
-
 
   // User Profile
   UserProfile: {
@@ -237,7 +338,17 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the UserProfile type
   },
 
- 
+  Video: {
+    DEFAULT: (errorType: string, details: string) => `Error in Videos (${errorType}): ${details}`,
+    UPLOAD_STARTED: "Video upload started",
+    UPLOAD_COMPLETED: "Video upload completed",
+    UPLOAD_FAILED: "Video upload failed. Please try again.",
+    PROCESSING_VIDEO: "Processing video...",
+    PROCESSING_COMPLETE: "Video processed successfully",
+    PROCESSING_FAILED: "Video processing failed. Please try again.",
+    CREATE_VIDEO_SUCCESS: "Video created successfully",
+    CREATE_VIDEO_ERROR: "Error creating video. Please try again.",
+  },
   // Welcome and Account
   Welcome: {
     DEFAULT: (userName: string) => `Welcome, ${userName}!`,

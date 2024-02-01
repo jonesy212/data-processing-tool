@@ -7,6 +7,7 @@ interface Notification {
   message: string;
   createdAt: Date;
   type: string;
+  content: string
 }
 
 interface NotificationsState {

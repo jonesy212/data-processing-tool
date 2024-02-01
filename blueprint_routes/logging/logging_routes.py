@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from todos.todo_management import TodoManager
+from todo.todo_management import TodoManager
 
 logging_bp = Blueprint('logging', __name__)
 
@@ -45,6 +45,7 @@ def log_error():
     # Add the error message to the system to-do list
     todo_item = {'type': 'error', 'message': message, 'user': user}
     if todo_item:
+        global central_todo_list
         central_todo_list = TodoManager.get_central_todo_list()
         central_todo_list.append(todo_item)
 

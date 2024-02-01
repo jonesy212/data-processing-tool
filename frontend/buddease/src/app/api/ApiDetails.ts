@@ -1,3 +1,4 @@
+import { Data } from '../components/models/data/Data';
 import { useDetailsContext } from '../components/models/data/DetailsContext';
 import { DetailsItem } from '../components/state/stores/DetailsListStore';
 import { endpoints } from './ApiEndpoints';
@@ -5,7 +6,7 @@ import axiosInstance from './axiosInstance';
 
 const API_BASE_URL = endpoints.details.list;  // Assuming you have a 'list' endpoint in ApiEndpoints
 
-export const fetchDetails = async (): Promise<DetailsItem[]> => {
+export const fetchDetails = async (): Promise<DetailsItem<Data>[]> => {
   try {
     const response = await axiosInstance.get(API_BASE_URL);
     return response.data;  // Assuming your API returns an array of DetailsItem
@@ -15,7 +16,7 @@ export const fetchDetails = async (): Promise<DetailsItem[]> => {
   }
 };
 
-export const createdDetails = async (newDetails: DetailsItem) => {
+export const createdDetails = async (newDetails: DetailsItem<Data>) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL, newDetails);
 
@@ -26,12 +27,12 @@ export const createdDetails = async (newDetails: DetailsItem) => {
   }
 }
 
-export const addDetails = async (newDetails: Omit<DetailsItem, 'id'>) => {
+export const addDetails = async (newDetails: Omit<DetailsItem<Data>, 'id'>) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL, newDetails);
 
     if (response.status === 200 || response.status === 201) {
-      const createdDetails: DetailsItem = response.data;
+      const createdDetails: DetailsItem<Data> = response.data;
       const { updateDetailsData } = useDetailsContext();
       updateDetailsData((prevData) => [...prevData, createdDetails]);
     } else {
@@ -52,7 +53,7 @@ export const removeDetails = async (detailsId: string): Promise<void> => {
   }
 };
 
-export const updateDetails = async (detailsId: string, newData: any): Promise<DetailsItem> => {
+export const updateDetails = async (detailsId: string, newData: any): Promise<DetailsItem<Data>> => {
   try {
     const response = await axiosInstance.put(endpoints.details.single(detailsId), newData);
     return response.data;  // Assuming your API returns the updated DetailsItem

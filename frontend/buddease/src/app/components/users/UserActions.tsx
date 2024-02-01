@@ -7,7 +7,7 @@ export const UserActions = {
   // General User Actions
   updateUser: createAction<{ id: number, newData: any }>("updateUser"),
   deleteUser: createAction<number>("deleteUser"),
-  createUserSuccess: createAction<User>("createUserSuccess"),
+  createUserSuccess: createAction<{user: User}>("createUserSuccess"),
   createUserFailure: createAction<{ error: string }>("createUserFailure"),
   // User Profile Actions
   updateProfile: createAction<{ id: number, newFullName: string, newBio: string, newProfilePicture: string }>("updateProfile"),

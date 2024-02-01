@@ -1,7 +1,7 @@
 // useLayoutGenerator.tsx
 import { DocxGenerator, DocxGeneratorOptions } from '@/app/generators/docxGenerator';
 import { useEffect, useState } from 'react';
-import { ResponsiveDesignStore } from '../styling/ResponsiveDesign';
+import responsiveDesignStore from '../styling/ResponsiveDesign';
 
 // Define DocumentGenerationResult type (replace with your actual type)
 type DocumentGenerationResult = {
@@ -21,7 +21,7 @@ type LayoutGeneratorProps = {
   layoutConfigGetter: () => Promise<{
     documentGeneration: string;
     designDashboard: JSX.Element;
-    responsiveDesignStore: ResponsiveDesignStore; // Update the type accordingly
+    responsiveDesignStore: typeof responsiveDesignStore
   }>;
 };
 

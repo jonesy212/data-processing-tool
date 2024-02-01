@@ -1,4 +1,4 @@
-//todo imipement for the chat settings pane
+//todo imipement for the chat settings panel
 
 // closeChatSettingsPanel.ts
 

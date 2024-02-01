@@ -31,3 +31,4 @@ class NotificationManager extends React.Component<React.Component<NotificationMa
 }
 
 export default NotificationManager;
+export type { NotificationManagerProps };

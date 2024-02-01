@@ -1,12 +1,17 @@
-import React, { useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import CommonDetails from '../models/CommonData';
-import { useDetailsListStore } from '../state/stores/DetailsListStore';
-import axiosInstance from '../security/csrfToken';
-import Details from '../models/data/Details';
+import { observer } from "mobx-react-lite";
+import React, { useEffect } from "react";
+import CommonDetails from "../models/CommonData";
+import { Data } from "../models/data/Data";
+import { Phase } from "../phases/Phase";
+import axiosInstance from "../security/csrfToken";
+import {
+  DetailsItem,
+  useDetailsListStore,
+} from "../state/stores/DetailsListStore";
+import { Snapshot } from "../state/stores/SnapshotStore";
 
 const DetailsList: React.FC = observer(() => {
-  const detailsListStore = useDetailsListStore(); // Update to your actual store
+  const detailsListStore = useDetailsListStore(); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +40,20 @@ const DetailsList: React.FC = observer(() => {
 
   const handleAdd = () => {
     const newDetailId = "detail_" + Math.random().toString(36).substr(2, 9);
-    const newDetail = {
+    const newDetail: Data = {
+      _id: "",
       id: newDetailId,
       title: "A new detail",
-      // Add more properties as needed
+      status: "pending",
+      isActive: true,
+      tags: [],
+      phase: {} as Phase,
+      then: function (callback: (newData: Snapshot<Data>) => void): void {
+        detailsListStore.snapshotStore.subscribe(callback);
+      },
+      analysisType: "Analysis Type",
+      analysisResults: [],
+      videoData: {} as VideoData,
     };
 
     detailsListStore.addDetail(newDetail);
@@ -48,13 +63,16 @@ const DetailsList: React.FC = observer(() => {
   return (
     <div>
       <ul>
-        {detailsListStore.details.map((detail: Details) => (
-          <li key={detail.id}>
-            {detail.title} - {detail.done ? "Done" : "Not Done"}
-            <button onClick={() => handleToggle(detail.id)}>Toggle</button>
-            <CommonDetails data={detail} />
-          </li>
-        ))}
+        {Object.values(detailsListStore.details).map(
+          (detailsArray: DetailsItem<Data>[]) =>
+            detailsArray.map((detail: DetailsItem<Data>) => (
+              <li key={detail.id}>
+                {detail.title} - {detail.status ? "Done" : "Not Done"}
+                <button onClick={() => handleToggle(detail.id)}>Toggle</button>
+                <CommonDetails data={{ title: "Title", description: "Description", data: detail }} />
+              </li>
+            ))
+        )}
       </ul>
 
       <button onClick={handleAdd}>Add Detail</button>

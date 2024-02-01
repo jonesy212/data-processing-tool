@@ -2,7 +2,41 @@
 const BASE_URL = "https://your-api-base-url";
 
 export const endpoints = {
+  userRoles: {
+    list: `${BASE_URL}/api/user-roles`,
+    single: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
+    add: `${BASE_URL}/api/user-roles`,
+    remove: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
+    update: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
+    
+  },
 
+  collaborationTools: {
+    createTask: `${BASE_URL}/api/collaboration/tasks/create`,
+    updateTask: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}/update`,
+    deleteTask: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}/delete`,
+    getTaskDetails: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}`,
+    listTasks: `${BASE_URL}/api/collaboration/tasks`,
+
+
+    //todo impeement
+    startBrainstorming: `${BASE_URL}/api/collaboration/start-brainstorming`,
+    endBrainstorming: `${BASE_URL}/api/collaboration/end-brainstorming`,
+    createWhiteboard: `${BASE_URL}/api/collaboration/create-whiteboard`,
+    updateWhiteboard: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/update`,
+    deleteWhiteboard: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/delete`,
+    getWhiteboardDetails: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}`,
+    listWhiteboards: `${BASE_URL}/api/collaboration/whiteboards`,
+    shareDocument: `${BASE_URL}/api/collaboration/share-document`,
+    commentOnDocument: `${BASE_URL}/api/collaboration/comment-on-document`,
+    resolveComment: `${BASE_URL}/api/collaboration/resolve-comment`,
+    updateDocument: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}/update`,
+    deleteDocument: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}/delete`,
+    getDocumentDetails: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}`,
+    listDocuments: `${BASE_URL}/api/collaboration/documents`,
+    // Add more collaboration endpoints as needed
+
+  },
   tasks: {
     list: `${BASE_URL}/api/tasks`,
     single: (taskId: number) => `${BASE_URL}/api/tasks/${taskId}`,
@@ -103,6 +137,15 @@ export const endpoints = {
     search: `${BASE_URL}/api/calendar/events/search`,
   },
 
+  communityInteraction: {
+    createPost: `${BASE_URL}/api/community-interaction/create-post`,
+    getPosts: `${BASE_URL}/api/community-interaction/posts`,
+    getPostDetails: (postId: string) => `${BASE_URL}/api/community-interaction/posts/${postId}`,
+    updatePost: (postId: string) => `${BASE_URL}/api/community-interaction/posts/${postId}`,
+    deletePost: (postId: string) => `${BASE_URL}/api/community-interaction/posts/${postId}`,
+  },
+
+  
   data: {
     single: (dataId: number) => `${BASE_URL}/api/data/${dataId}`,
     list: `${BASE_URL}/api/data`,
@@ -124,6 +167,12 @@ export const endpoints = {
       `${BASE_URL}/api/highlights/${highlightId}`, // Delete highlight endpoint
     // Add data-processing endpoint
   },
+
+  donations: {
+    makeDonation: (userId: string, amount: number) => `${BASE_URL}/api/donations/make-donation/${userId}/${amount}`,
+    getDonationHistory: (userId: string) => `${BASE_URL}/api/donations/donation-history/${userId}`,  
+  },
+
   users: {
     list: `${BASE_URL}/users`, // GET request for fetching all users
     single: (userId: number) => `${BASE_URL}/users/${userId}`, // GET request for fetching a specific user by ID
@@ -140,6 +189,7 @@ export const endpoints = {
     add: `${BASE_URL}/api/phases`,
     remove: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
     update: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
+
     createPhase: `${BASE_URL}/api/phases/create`,
     updatePhase: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}/update`,
     deletePhase: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}/delete`,
@@ -239,6 +289,9 @@ export const endpoints = {
     videoCall: `${BASE_URL}/api/communication/video-call`,
     textChat: `${BASE_URL}/api/communication/text-chat`,
     collaboration: `${BASE_URL}/api/communication/collaboration`,
+    startSession: `${BASE_URL}/api/communication/start-session`,
+    endSession: `${BASE_URL}/api/communication/end-session`,
+    getSessionDetails: (sessionId: string) => `${BASE_URL}/api/communication/session-details/${sessionId}`,
   },
 
   userManagement: {
@@ -248,38 +301,34 @@ export const endpoints = {
     getUserDetails: (userId: number) => `${BASE_URL}/api/users/${userId}`,
     listUsers: `${BASE_URL}/api/users`,
   },
-  collaborationTools: {
-    createTask: `${BASE_URL}/api/collaboration/tasks/create`,
-    updateTask: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}/update`,
-    deleteTask: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}/delete`,
-    getTaskDetails: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}`,
-    listTasks: `${BASE_URL}/api/collaboration/tasks`,
-
-
-    //todo impeement
-    startBrainstorming: `${BASE_URL}/api/collaboration/start-brainstorming`,
-    endBrainstorming: `${BASE_URL}/api/collaboration/end-brainstorming`,
-    createWhiteboard: `${BASE_URL}/api/collaboration/create-whiteboard`,
-    updateWhiteboard: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/update`,
-    deleteWhiteboard: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/delete`,
-    getWhiteboardDetails: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}`,
-    listWhiteboards: `${BASE_URL}/api/collaboration/whiteboards`,
-    shareDocument: `${BASE_URL}/api/collaboration/share-document`,
-    commentOnDocument: `${BASE_URL}/api/collaboration/comment-on-document`,
-    resolveComment: `${BASE_URL}/api/collaboration/resolve-comment`,
-    updateDocument: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}/update`,
-    deleteDocument: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}/delete`,
-    getDocumentDetails: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}`,
-    listDocuments: `${BASE_URL}/api/collaboration/documents`,
-    // Add more collaboration endpoints as needed
-
+   // Video content endpoints
+   videos: {
+    list: `${BASE_URL}/api/videos`,
+    single: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`,
+    add: `${BASE_URL}/api/videos`,
+    remove: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`,
+    update: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`,
+    // Add more video content endpoints as needed
+  },
+  screenSharing: {
+    startSession: `${BASE_URL}/api/screen-sharing/start-session`,
+    endSession: `${BASE_URL}/api/screen-sharing/end-session`,
+    getSessionDetails: (sessionId: string) => `${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
   },
   dataAnalysis: {
     analyzeData: `${BASE_URL}/api/data-analysis/analyze`,
     getAnalysisResults: `${BASE_URL}/api/data-analysis/results`,
     exportAnalysisResults: `${BASE_URL}/api/data-analysis/export`,
+    startAnalysis: `${BASE_URL}/api/data-analysis/start-analysis`,
+    exportResults: `${BASE_URL}/api/data-analysis/export-results`,
   },
+
   globalCollaboration: {
+    startProject: `${BASE_URL}/api/global-collaboration/start-project`,
+    getProjects: `${BASE_URL}/api/global-collaboration/projects`,
+    getProjectDetails: (projectId: string) => `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
+    updateProjectDetails: (projectId: string) => `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
+    deleteProject: (projectId: string) => `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
     translateContent: `${BASE_URL}/api/global-collaboration/translate`,
     culturalAdaptation: `${BASE_URL}/api/global-collaboration/adapt`,
   },
@@ -307,6 +356,24 @@ export const endpoints = {
     participateInDecisions: `${BASE_URL}/api/moderators/participate-decisions`,
     // Add more moderator-related endpoints as needed
   },
+  monetization: {
+    
+    startClientProject: `${BASE_URL}/api/monetization/start-client-project`,
+    getClientProjects: `${BASE_URL}/api/monetization/client-projects`,
+    getClientProjectDetails: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    updateClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    deleteClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+
+    sendGift: (userId: string, giftId: string) => `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
+    getReceivedGifts: (userId: string) => `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
+    redeemGift: (giftId: string) => `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
+  
+  },
+  toolbar: {
+    fetchToolbarSize: `${BASE_URL}/api/toolbar/size`,
+    updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
+  }
+
   
   // Add more sections as needed
 };

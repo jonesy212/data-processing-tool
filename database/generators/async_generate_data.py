@@ -9,7 +9,7 @@ from configs.config import Config
 from database.extensions import db
 from models.dataset import DatasetModel
 from models.user.user import User
-from todos.todo_management import TodoManager
+from todo.todo_management import TodoManager
 
 fake = Faker()
 fake.add_provider(date_time)

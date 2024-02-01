@@ -1,6 +1,6 @@
 // User.tsx
 import { ReactNode } from "react";
-import CommonDetails, { DetailsProps , SupportedData} from "../models/CommonData";
+import CommonDetails, { DetailsProps, SupportedData } from "../models/CommonData";
 // import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
@@ -50,7 +50,7 @@ export type DocumentTree = {
 
 // Define the DocumentNode type
 export interface DocumentNode {
-  [key: string]: string[] | DocumentNode; // Add this index signature
+  [key: string]: string[] | DocumentNode;
 }
 
 // Example usage:

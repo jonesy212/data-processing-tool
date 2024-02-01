@@ -1,3 +1,4 @@
+import { Data } from "../components/models/data/Data";
 import { useDetailsContext } from "../components/models/data/DetailsContext";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { useNotification } from "../components/support/NotificationContext"; // Import the notification context
@@ -7,7 +8,7 @@ import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.stateGovCities.list;
 
-export const fetchStateGovCities = async (): Promise<DetailsItem[]> => {
+export const fetchStateGovCities = async (): Promise<DetailsItem<Data>[]> => {
   try {
     const response = await axiosInstance.get(API_BASE_URL);
     return response.data;
@@ -17,7 +18,7 @@ export const fetchStateGovCities = async (): Promise<DetailsItem[]> => {
   }
 };
 
-export const createStateGovCity = async (newCity: DetailsItem) => {
+export const createStateGovCity = async (newCity: DetailsItem<Data>) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL, newCity);
     // Use notification after creating the city
@@ -53,7 +54,7 @@ export const removeStateGovCity = async (cityId: number): Promise<void> => {
 export const updateStateGovCity = async (
   cityId: number,
   newData: any
-): Promise<DetailsItem> => {
+): Promise<DetailsItem<Data>> => {
   try {
     const response = await axiosInstance.put(
       endpoints.stateGovCities.single(cityId),
@@ -80,12 +81,12 @@ export const updateStateGovCity = async (
     
 };
 
-export const addStateGovCity = async (newCity: Omit<DetailsItem, 'id'>) => {
+export const addStateGovCity = async (newCity: Omit<DetailsItem<Data>, 'id'>) => {
     try {
       const response = await axiosInstance.post(API_BASE_URL, newCity);
   
       if (response.status === 200 || response.status === 201) {
-        const createdCity: DetailsItem = response.data;
+        const createdCity: DetailsItem<Data> = response.data;
           const { updateDetailsData } = useDetailsContext();
           
 
@@ -102,7 +103,7 @@ export const addStateGovCity = async (newCity: Omit<DetailsItem, 'id'>) => {
             "OperationSuccess"
           );
       
-        useNotification().notify('New city added',NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_ADDING_NEW_CITY,new Date, 'OperationSuccess');
+        useNotification().notify('New city added',NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_ADDING_NEW_CITY, new Date, 'OperationSuccess');
       } else {
         console.error('Failed to add state government city:', response.statusText);
       }

@@ -8,8 +8,8 @@ import React from "react";
 import ClickableList from "@/app/components/actions/ClickableList";
 import { ImageCard } from "@/app/components/cards";
 import {
-  default as GenerateUserLayout,
-  default as useLayoutGenerator,
+  LayoutGeneratorProps,
+  default as useLayoutGenerator
 } from "@/app/components/hooks/GenerateUserLayout";
 import {
   darkModeTogglePhaseHook,
@@ -22,7 +22,9 @@ import TaskList from "@/app/components/lists/TaskList";
 import { useTaskManagerStore } from "@/app/components/state/stores/TaskStore ";
 import useTodoManagerStore from "@/app/components/state/stores/TodoStore";
 import TodoList from "@/app/components/todos/TodoList";
-import ButtonGenerator from "@/app/generators/GenerateButtons";
+import { ButtonGenerator } from "@/app/generators/GenerateButtons";
+import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
+import responsiveDesignStore from '../../components/styling/ResponsiveDesign';
 import { useLayout } from "./LayoutContext";
 
 interface ClickableListItem {
@@ -40,15 +42,13 @@ const AnimatedDashboard: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkModeToggle();
   const { setLayout } = useLayout();
 
-  // Toggle activation functions
-  const toggleAnimatedComponent = () =>
-    animatedComponentRef.current?.toggleActivation();
-  const toggleNotificationBar = () => notificationBarHook.toggleActivation();
-  const toggleDarkModeToggle = () => darkModeToggleHook.toggleActivation();
 
-  // Condition for layout effect
-  const shouldApplyLayoutEffect = true; // You can customize this condition
-
+  // Define your layout effect function
+  const layoutEffect = () => {
+    setLayout({ backgroundColor: isDarkMode ? '#1a1a1a' : '#fff' });
+    console.log("Layout effect applied!");
+  }
+ 
   // Layout effect function
   const layoutEffectFunction = () => {
     // Your layout effect logic here
@@ -63,13 +63,47 @@ const AnimatedDashboard: React.FC = () => {
     console.log("Cleanup function called!");
   };
 
+
+  const shouldApplyLayoutEffect = true;
+
+
+   // Define your layout config getter function
+   const layoutConfigGetter = async () => ({
+    documentGeneration: "Generate Document",
+    designDashboard: <div>Layout Config Content</div>,
+    responsiveDesignStore: {} as typeof responsiveDesignStore
+  });
+
   // Use the layout generator hook
   const layoutGenerator = useLayoutGenerator({
     condition: () => shouldApplyLayoutEffect,
     layoutEffect: layoutEffectFunction,
+    generateDocument: async (options: DocxGeneratorOptions) => options.data.generateDocument(options),
+    documentGeneratorOptions: {} as DocxGeneratorOptions,
+    layoutConfigGetter: async () => ({ 
+      documentGeneration: "Generate Document",
+      designDashboard: <div>Layout Config Content</div>,
+      responsiveDesignStore: {} as typeof responsiveDesignStore
+    }),
     cleanup: cleanupFunction,
   });
 
+
+
+
+   // Use the useLayoutGenerator hook
+   const { toggleActivation } = useLayoutGenerator({
+    condition: () => shouldApplyLayoutEffect,
+    layoutEffect,
+    generateDocument: async (options: DocxGeneratorOptions) => {
+      // Implement your document generation logic here
+      return { success: true, message: "Document generated successfully" };
+    },
+     documentGeneratorOptions: {} as DocxGeneratorOptions,
+    layoutConfigGetter,
+   });
+  
+  
   const taskListItems: ClickableListItem[] = [
     {
       id: 1,
@@ -82,118 +116,74 @@ const AnimatedDashboard: React.FC = () => {
     // Add more items as needed
   ];
 
+  // Toggle activation functions
+
+  const toggleAnimatedComponent = () => animatedComponentRef.current?.toggleActivation();
+  const toggleNotificationBar = () => notificationBarHook.toggleActivation();
+  const toggleDarkModeToggle = () => darkModeToggleHook.toggleActivation();
+
     // Button generator configurations
     const buttonTypes = ['submit', 'reset', 'cancel'];
 
   return (
     <SwingCard
-      draggableId="uniqueId" // Replace with a unique ID for each card
-      index={0} // Replace with the card's index
+      draggableId="uniqueId"
+      index={0}
       onDragStart={() => console.log("Drag started")}
       onDragEnd={() => console.log("Drag ended")}
     >
-
       <h1>Animated Dashboard</h1>
-
-      {/* Animated Component */}
       <AnimatedComponent ref={animatedComponentRef} animationClass={""} />
-
-      {/* Toggle Dark Mode Button */}
       <button onClick={toggleDarkMode}>
         Toggle Dark Mode: {isDarkMode ? "On" : "Off"}
       </button>
-
-      {/* Dynamic Intro Tooltip */}
       <DynamicIntroTooltip
         steps={[
-          {
-            element: ".task-list",
-            content: "This is the task list",
-          },
-          {
-            element: ".todo-list",
-            content: "This is the todo list",
-          },
+          { element: ".task-list", content: "This is the task list" },
+          { element: ".todo-list", content: "This is the todo list" },
         ]}
       />
-
-      {/* Toggle Buttons using ButtonGenerator */}
       <ButtonGenerator
         buttonTypes={buttonTypes}
         onSubmit={toggleAnimatedComponent}
         onReset={toggleNotificationBar}
         onCancel={toggleDarkModeToggle}
       />
-
-      {/* Task List */}
       <TaskList />
-
-      {/* Todo List */}
       <TodoList />
-      {/* Image Card */}
-      <ImageCard id={0} label={""} onClick={function (): void {
-        animatedComponentRef.current?.animateIn(".image-card");
-      }}
-      {...{
-        imageSrc: '/path/to/image.png',
-        title: 'Image Card',
-        description: 'A card displaying an image'
-      }}/>
-      
-
-      {/* Clickable List */}
+      <ImageCard
+        id={0}
+        label={""}
+        onClick={() => animatedComponentRef.current?.animateIn(".image-card")}
+        imageSrc="/path/to/image.png"
+      />
       <ClickableList
         items={[
           {
             id: 1,
             label: "Tasks",
             imageSrc: "",
-            onClick: () => {
-              animatedComponentRef.current?.animateIn(".task-list");
-            },
+            onClick: () =>
+              animatedComponentRef.current?.animateIn(".task-list"),
           },
           {
             id: 2,
             label: "Todos",
             imageSrc: "",
-            onClick: () => {
-              animatedComponentRef.current?.animateIn(".todo-list");
-            },
+            onClick: () =>
+              animatedComponentRef.current?.animateIn(".todo-list"),
           },
         ]}
       />
-
-      {/* Icon Loader */}
       {loadDuckDuckGoIcon()}
-
-   
-
-        {/* Generate User Layout */}
-        {GenerateUserLayout({
-        condition: () => {
-          throw new Error("Function not implemented.");
-        },
-        layoutEffect: () => {
-          throw new Error("Function not implemented.");
-        },
-        cleanup: () => {
-          throw new Error("Function not implemented.");
-        },
-      })}
-
-      {/* Toggle Buttons */}
       <button onClick={toggleAnimatedComponent}>
         Toggle Animated Component
       </button>
       <button onClick={toggleNotificationBar}>Toggle Notification Bar</button>
       <button onClick={toggleDarkModeToggle}>Toggle Dark Mode Toggle</button>
-
-      {/* Toggle Dark Mode Button */}
       <button onClick={toggleDarkModeToggle}>
         Toggle Dark Mode: {isDarkMode ? "On" : "Off"}
       </button>
-
-      {/* Toggle other components */}
       <button
         onClick={() => animatedComponentRef.current?.animateIn(".todo-list")}
       >
@@ -204,7 +194,6 @@ const AnimatedDashboard: React.FC = () => {
       >
         Toggle Image Card
       </button>
-      {/* Add more components/tools as needed */}
     </SwingCard>
   );
 };
@@ -212,4 +201,4 @@ const AnimatedDashboard: React.FC = () => {
 const notificationBarHook = notificationBarPhaseHook();
 const darkModeToggleHook = darkModeTogglePhaseHook();
 
-export default AnimatedDashboard;
+export default AnimatedDashboard; useLayoutGenerator({} as LayoutGeneratorProps);

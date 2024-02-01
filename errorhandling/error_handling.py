@@ -1,10 +1,12 @@
 import logging
 
 from flask import Flask, jsonify, render_template
+from flask_jwt_extended import jwt_required
 
 from blueprint_routes.handle_upload_routes import (handle_invalid_file_format,
                                                    handle_upload_failure,
                                                    handle_upload_file_missing)
+from blueprint_routes.logging.logging_routes import logging_bp
 from configs.config import app
 
 # Centralized logging configuration
@@ -48,3 +50,33 @@ def handle_file_upload_errors(error):
         return handle_invalid_file_format()
     else:
         return handle_upload_failure()
+
+
+# Centralized tracking system for todos
+central_todo_list = []
+
+# Custom error handling for specific status codes
+@app.errorhandler(404)
+def handle_not_found(e):
+    return jsonify({'error': 'Resource not found'}), 404
+
+# Custom error handling for JWT errors
+@jwt_required.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({'error': 'Token has expired'}), 401
+
+@jwt_required.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({'error': 'Invalid token'}), 401
+
+@jwt_required.unauthorized_loader
+def unauthorized_callback(error):
+    return jsonify({'error': 'Authorization required'}), 401
+
+@jwt_required.needs_fresh_token_loader
+def needs_fresh_token_callback(jwt_header, jwt_payload):
+    return jsonify({'error': 'Fresh token required'}), 401
+
+@jwt_required.revoked_token_loader
+def revoked_token_callback(jwt_header, jwt_payload):
+    return jsonify({'error': 'Token has been revoked'}), 401

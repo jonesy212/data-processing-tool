@@ -11,7 +11,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react",
     "incremental": true,
 
     "plugins": [
@@ -35,8 +35,10 @@
       "@/searches/*": ["./src/app/pages/searches/*"],
       "@/backendStructure/*": ["./src/app/configs/appStructure/*"],
       "@/frontendStructure/*": ["./src/app/configs/appStructure/*"],
+      "@/hooks/*": ["./src/app/components/hooks/*"],
+      "@/users/*": ["./src/app/components/users/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx", "src/app/components/calendar/CalendarEvents.jsx", "src/app/components/calendar/CalendarComponent.tsx", "src/app/components/calendar/YourCalendarLibrary.js", "src/app/components/projects/Project.jsx", "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx", "src/app/components/phases/collaborationPhase/CollaborationContext.js", "src/app/utils/EmojiPickerUtils.jsx", "src/app/components/libraries/ui/UILibrary.tsx", "src/app/pages/dashboards/DashboardOverview.jsx", "src/app/components/phases/PhasesNavigation.jsx", "src/app/utils/MyPromise.tjsx", "src/app/components/communications/chat/features/clearChatImageCache.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx", "src/app/components/calendar/CalendarEvents.jsx", "src/app/components/calendar/CalendarComponent.jsx", "src/app/components/calendar/YourCalendarLibrary.js", "src/app/components/projects/Project.jsx", "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx", "src/app/components/phases/collaborationPhase/CollaborationContext.js", "src/app/utils/EmojiPickerUtils.jsx", "src/app/components/libraries/ui/UILibrary.tsx", "src/app/pages/dashboards/DashboardOverview.jsx", "src/app/components/phases/PhasesNavigation.jsx", "src/app/utils/MyPromise.tjsx", "src/app/components/communications/chat/features/clearChatImageCache.js"],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

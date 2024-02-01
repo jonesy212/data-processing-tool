@@ -2,12 +2,14 @@
 import { Refine } from "@refinedev/core";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
-import React, { useState } from "react";
+import React, { Component, useState } from "react";
 import { AuthProvider } from "../components/auth/AuthContext";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
+import Toolbar from "../components/documents/Toolbar";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
+import { Data } from "../components/models/data/Data";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
 import undoLastAction from "../components/projects/projectManagement/ProjectManager";
@@ -15,7 +17,7 @@ import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContex
 import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { Notification } from "../components/support/NofiticationsSlice";
 import { NotificationProvider } from "../components/support/NotificationContext";
-import NotificationManager from "../components/support/NotificationNotificationManager";
+import NotificationManager, { NotificationManagerProps } from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
@@ -33,6 +35,7 @@ const phases: Phase[] = [
     subPhases: ["Research", "Planning", "Design"],
     component: {} as (props: {}, context?: any) => React.ReactElement,
     hooks: {} as CustomPhaseHooks,
+    data: {} as Data
   },
   // Add more phases
 ];
@@ -41,6 +44,11 @@ async function MyApp({ Component, pageProps }: AppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activeDashboard, setActiveDashboard] = useState<
+    "communication" | "documents" | "tasks" | "settings"
+  >("communication");
+  const token = 'your-token-value'; // Initialize the token here or get it from wherever it's stored
+
 
   // Define the 'addNotifications' function to add new notifications
   const addNotifications = (message: string, randomBytes: BytesLike) => {
@@ -54,6 +62,7 @@ async function MyApp({ Component, pageProps }: AppProps) {
       date: new Date(),
       createdAt: new Date(),
       type: "",
+      content: ""
     };
 
     // Update notifications state by appending the new notification
@@ -166,7 +175,7 @@ async function MyApp({ Component, pageProps }: AppProps) {
             <CollaborationDashboard />
             <NotificationProvider>
               <DynamicPromptProvider>
-                <AuthProvider>
+                <AuthProvider token={token}>
                   <StoreProvider>
                     <OnboardingComponent />
                     {/* Use componentSpecificData wherever it's needed */}
@@ -202,11 +211,10 @@ async function MyApp({ Component, pageProps }: AppProps) {
                 </AuthProvider>
               </DynamicPromptProvider>
               <NotificationManager
-                  notifications={{
-                    notifications: notifications,
-                    setNotifications: setNotifications,
-                  }}
-                />
+                {...{} as Readonly<Component<NotificationManagerProps, {}, any>>}
+              />
+              {/* Toolbar component with activeDashboard and progress props */}
+              <Toolbar activeDashboard={activeDashboard} progress={{ value: progress, label: "Progress" }} />
             </NotificationProvider>
           </ThemeConfigProvider>
         )}

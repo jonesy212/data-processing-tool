@@ -52,6 +52,7 @@ import NotificationManager from '../components/notifications/NotificationManager
 interface ButtonGeneratorProps {
   variant?: Record<string, string>;
   label?: Record<string, string>;
+  buttonTypes?: string[];
   onSubmit?: () => void;
   onReset?: () => void;
   onCancel?: () => void;

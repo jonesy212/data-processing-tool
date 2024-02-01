@@ -1,15 +1,15 @@
 // CommonDetails.tsx
 import React, { useState } from "react";
-import { CommunityData } from "../community/CommunityDetails";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { ProjectData } from "../projects/Project";
 import { Todo } from "../todos/Todo";
 import { UserData } from "../users/User";
+import { CommunityData } from "./CommunityData";
 import { Data } from "./data/Data";
 // Define a generic type for data
 interface CommonData<T> {
-  title: React.ReactNode
-  description: React.ReactNode;
+  title?: React.ReactNode
+  description?: React.ReactNode;
   data: T;
 }
 

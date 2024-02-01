@@ -1,5 +1,4 @@
 // DashboardFramework.tsx
-import { ApiConfig } from "@/app/configs/ConfigurationService";
 import {
   AppTree,
   generateInitialAppTree,
@@ -120,6 +119,8 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
         />
       </aside>
       {/* Render common layout content and resizable panels */}
+
+
       <main>
         {/* Resizable panels with dynamic content */}
         <div style={{ display: "flex", height: "100%" }}>
@@ -130,12 +131,7 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
           {activeDashboard === "phaseDashboard" && <PhaseDashboard />}
           {activeDashboard === "phaseDashboard" && (
             <AdminDashboard
-              {...({
-                ...{},
-                children,
-                activeDashboard,
-                apiConfig: {} as ApiConfig,
-              } as AdminDashboardProps)}
+              {...{} as AdminDashboardProps}
             />
           )}
           {activeDashboard === "chatDashboard" && (
@@ -201,17 +197,29 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
           border="1px solid #ccc"
         />
       </aside>
-      {/* Additional dashboard-specific layout elements */}
+      {/* Additional dashboard-specific layout elements */}   
+      {/* Footer Section */}
       <footer>
         {/* Full-screen button */}
         <button onClick={handleFullscreenMode}>Toggle Fullscreen</button>
-        {/* Toggle left pane button */}
+        {/* Toggle Left Pane Button */}
         <button onClick={handleToggleLeftPane}>Toggle Left Pane</button>
-        {/* Toggle right pane button */}
+        {/* Toggle Right Pane Button */}
         <button onClick={handleToggleRightPane}>Toggle Right Pane</button>
-        {/* Idea Submission */}
-        <button onClick={() => handleUserIdeaSubmission((state: RootState) => "userIdeaManager")}>Submit Idea</button>
+        {/* Additional Toolbars for Meeting Scheduler and Team Overview */}
+        {appTree && (
+          <>
+            {activeDashboard === "meetingScheduler" && <MeetingSchedulerToolbar />}
+            {activeDashboard === "teamOverview" && <TeamOverviewToolbar />}
+          </>
+        )}
+        {/* Button for Idea Submission */}
+        <button onClick={() => handleUserIdeaSubmission((state: RootState) => "userIdeaManager")}>Submit Idea</button>      
       </footer>
+
+
+
+
       {/* Display feedback for sliding or dragging animations */}
       {isSliding && <p>Sliding...</p>}
       {isDragging && <p>Dragging...</p>}

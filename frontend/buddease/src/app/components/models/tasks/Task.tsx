@@ -19,7 +19,7 @@ interface Task extends Data {
   previouslyAssignedTo: User[]
   done: boolean; 
   data: Data;
-  [Symbol.iterator](): Iterator<any>;
+  [Symbol.iterator](): Iterator<any, any, undefined>; // Define Symbol.iterator with correct type
   source: "user" | "system";
   some: (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any) => boolean;
 }
@@ -29,6 +29,8 @@ const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
   
   <CommonDetails data= { task } />
 );
+
+
 
 export { TaskDetails };
 export type { Task };

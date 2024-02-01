@@ -104,6 +104,7 @@ export const useDataManagerSlice = createSlice({
         },
         analysisType: "",
         analysisResults: [],
+        _id: ""
       };
       state.data.push(newData as WritableDraft<Data>);
     },

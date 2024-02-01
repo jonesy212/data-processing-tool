@@ -1,4 +1,6 @@
 // useSnapshotManager.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import { useEffect } from "react";
 import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
@@ -6,11 +8,9 @@ import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { userManagerStore } from "../state/stores/UserStore";
+import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
-import { endpoints } from "@/app/api/ApiEndpoints";
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
-import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 
 
 const { notify } = useNotification();
@@ -59,7 +59,7 @@ const useSnapshotManager = () => {
     try {
       const response = await fetch(`/api/snapshots/${id}`);
       const snapshot = await response.json();
-      todoManagerStore.fetchSnapshotSuccess({ snapshot } as Todo[] & Snapshot<Data>);
+      todoManagerStore.fetchSnapshotSuccess({ snapshot } as unknown as Todo[]);
       return snapshot; // Return the fetched snapshot
     } catch (error) {
       console.error(NOTIFICATION_MESSAGES.Snapshot.FETCHING_SNAPSHOTS_ERROR); // Log error using notification message
@@ -83,7 +83,7 @@ const useSnapshotManager = () => {
     }
   };
 
-  const setSnapshot = async (snapshotId: string, snapshotData: Todo) => {
+  const setSnapshot = async (snapshotId: string, snapshotData: Snapshot<Data>) => {
     try {
       const response = await fetch(`/api/snapshots/${snapshotId}`, {
         method: "PUT",
@@ -165,7 +165,7 @@ const useSnapshotManager = () => {
     }
   };
 
-  const getSnapshots = async (snapshot: SnapshotStore<Snapshot<Data>[]>) => {
+  const getSnapshots = async (snapshot: SnapshotStore<Snapshot<Data>>) => {
     try {
 
       const response = await fetch("/api/snapshots");
@@ -334,8 +334,9 @@ const useSnapshotManager = () => {
     takeSnapshotsSuccess,
     batchFetchSnapshotsFailure,
     subscribeToSnapshot,
-    loading: todoManagerStore.loading,
-    error: todoManagerStore.error,
+    //todo add these do manager
+    // loading: todoManagerStore.loading,
+    // error: todoManagerStore.error,
   };
 }
 

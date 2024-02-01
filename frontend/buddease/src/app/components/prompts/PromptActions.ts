@@ -46,17 +46,7 @@ export const PromptActions = {
   ),
   markTaskAsComplete: createAction<{ taskId: string }>("markTaskAsComplete"),
 
-  // Collaboration actions
-  startCollaborationSession: createAction("startCollaborationSession"),
-  endCollaborationSession: createAction("endCollaborationSession"),
-  inviteCollaborators: createAction<{ emails: string[] }>(
-    "inviteCollaborators"
-  ),
-  joinCollaborationSession: createAction<{ sessionId: string }>(
-    "joinCollaborationSession"
-  ),
-  leaveCollaborationSession: createAction("leaveCollaborationSession"),
-
+ 
   // Community-based actions
   createCommunity: createAction<{ name: string; description: string }>(
     "createCommunity"

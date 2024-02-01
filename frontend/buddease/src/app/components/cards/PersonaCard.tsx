@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
 import { DetailsProps, SupportedData } from '../models/CommonData';
 import DynamicTypography from "./DummyCardLoader";
@@ -7,7 +7,7 @@ import DynamicTypography from "./DummyCardLoader";
 interface PersonaCardProps {
   persona: string;
   data: any;
-  title: FC<DetailsProps<SupportedData>>;
+  title: any
   fontSize: ThemeConfigProps['fontSize'];
   fontFamily: ThemeConfigProps['fontFamily'];
   children: React.ReactNode;

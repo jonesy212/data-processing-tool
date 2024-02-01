@@ -1,4 +1,4 @@
-// detailsService.ts
+// ApiDetails.ts
 import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import axios, { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
@@ -6,6 +6,7 @@ import axiosInstance from '../../security/csrfToken';
 import { DetailsListActions } from '../../state/redux/actions/DetailsListActions';
 import { DetailsItem } from '../../state/stores/DetailsListStore';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import { Data } from './Data';
 
 const API_BASE_URL = "/api/details";
 
@@ -33,14 +34,14 @@ const handleApiError = (error: AxiosError<unknown>, errorMessage: string): void 
 };
 
 export const detailsApiService = observable({
-  fetchDetailsItem: async (detailsItemId: string): Promise<{ detailsItem: DetailsItem }> => {
+  fetchDetailsItem: async (detailsItemId: string): Promise<{ detailsItem: DetailsItem<Data> }> => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}/${detailsItemId}`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
       notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_SUCCESS, "Fetch Details Item Success", new Date(), {} as NotificationType);
-      return { detailsItem: response.data as DetailsItem };
+      return { detailsItem: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to fetch details item');
       notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_ERROR, "Fetch Details Item Error", new Date(), {} as NotificationType);
@@ -48,7 +49,7 @@ export const detailsApiService = observable({
     }
   },
 
-  updateDetailsItem: async (detailsItemId: string, updatedDetailsItemData: any): Promise<{ detailsItemId: string, detailsItem: DetailsItem }> => {
+  updateDetailsItem: async (detailsItemId: string, updatedDetailsItemData: any): Promise<{ detailsItemId: string, detailsItem: DetailsItem<Data> }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${detailsItemId}`, updatedDetailsItemData);
       runInAction(() => {
@@ -57,7 +58,7 @@ export const detailsApiService = observable({
       notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS, "Update Details Item Success", new Date(), {} as NotificationType);
       return {
         detailsItemId: response.data.id,
-        detailsItem: response.data as DetailsItem
+        detailsItem: response.data
       };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to update details item');
@@ -75,14 +76,14 @@ export const detailsApiService = observable({
     }
   },
 
-  fetchDetailsItems: async (): Promise<{ detailsItems: DetailsItem[] }> => {
+  fetchDetailsItems: async (): Promise<{ detailsItems: DetailsItem<Data>[] }> => {
     try {
       const response = await axiosInstance.get(API_BASE_URL);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
       notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_SUCCESS, "Fetch Details Items Success", new Date(), {} as NotificationType);
-      return { detailsItems: response.data as DetailsItem[] };
+      return { detailsItems: response.data as DetailsItem<Data>[] };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to fetch details items');
       notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_ERROR, "Fetch Details Items Error", new Date(), {} as NotificationType);
@@ -90,14 +91,14 @@ export const detailsApiService = observable({
     }
   },
 
-  updateDetailsItems: async (updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem[] }> => {
+  updateDetailsItems: async (updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<Data>[] }> => {
     try {
       const response = await axiosInstance.put(API_BASE_URL, updatedDetailsItemsData);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
       notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_SUCCESS, "Update Details Items Success", new Date(), {} as NotificationType);
-      return { detailsItems: response.data as DetailsItem[] };
+      return { detailsItems: response.data as DetailsItem<Data>[] };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to update details items');
       notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_ERROR, "Update Details Items Error", new Date(), {} as NotificationType);

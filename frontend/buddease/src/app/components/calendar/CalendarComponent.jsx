@@ -48,6 +48,7 @@ const CalendarWrapper = () => {
       await addCalendarEvent(newEvent);
 
       // Optionally, you can update the local calendar data after adding the event
+      
       updateCalendarData((prevData) => [...prevData, newEvent]);
 
     } catch (error) {

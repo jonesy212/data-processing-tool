@@ -3,14 +3,15 @@ import { combineReducers, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Task } from "../../../models/tasks/Task";
 import { Tracker } from "../../../models/tracker/Tracker";
 import { userManagerSlice } from "../../../users/UserSlice";
-import { WritableDraft } from "../ReducerGenerator";
 import { useDataAnalysisManagerSlice } from "./DataAnalysisSlice";
 import { taskManagerSlice } from "./TaskSlice";
 import { useTodoManagerSlice } from "./TodoSlice";
 import { trackerManagerSlice } from "./TrackerSlice";
 // Import uuid
 import { useCalendarManagerSlice } from "@/app/components/calendar/CalendarSlice";
+import { Data } from "@/app/components/models/data/Data";
 import { v4 as uuidv4 } from "uuid";
+import { useApiManagerSlice } from "./ApiSlice";
 import { useDataManagerSlice } from "./DataSlice";
 import { useDocumentManagerSlice } from "./DocumentSlice";
 
@@ -40,6 +41,8 @@ const initialState: RootState = {
   calendarManager: useCalendarManagerSlice.reducer(undefined, { type: "init" }),
   todoManager: useTodoManagerSlice.reducer(undefined, { type: "init" }),
   documentManager: useDocumentManagerSlice.reducer(undefined, { type: "init" }),
+  userTodoManager: userManagerSlice.reducer(undefined, { type: "init" }),
+  apiManager: useApiManagerSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -90,7 +93,7 @@ const rootReducerSlice = createSlice({
     );
     builder.addCase(taskManagerSlice.actions.addTask, (state) => {
       // Handle the action for adding a task
-      const newTask: WritableDraft<Task> = {
+      const newTask: Task = {
         _id: "newTaskId2",
         id: randomTaskId, // generate unique id
         title: "",
@@ -118,6 +121,47 @@ const rootReducerSlice = createSlice({
         done: false,
         analysisType: "",
         analysisResults: [],
+        data: {} as Data,
+        source: "user",
+              // Implementation of some method
+              some(callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+                // Check if 'this' is an array
+                if (Array.isArray(this)) {
+                  for (let i = 0; i < this.length; i++) {
+                    if (callbackfn(this[i], i, this)) {
+                      return true;
+                    }
+                  }
+                  return false;
+                } else {
+                  throw new Error("'some' method can only be used on arrays.");
+                }
+              },
+            
+        [Symbol.iterator](): IterableIterator<any> {
+          // Check if 'this' is an object
+          if (typeof this === 'object' && this !== null) {
+            const taskKeys = Object.keys(this);
+            let index = 0;
+            return {
+              next: () => {
+                if (index < taskKeys.length) {
+                  const key = taskKeys[index++] as keyof Task; // Explicitly specify the type of 'key' as keyof Task
+                  return { value: this[key] , done: false };
+                } else {
+                  return { value: undefined, done: true };
+                }
+              },
+              [Symbol.iterator]: function () {
+                return this;
+              }
+            };
+          } else {
+            throw new Error("'Symbol.iterator' can only be used on objects.");
+          }
+              },
+        phase: null,
+        videoData: {} as VideoData
       };
       state.taskManager.tasks.push(newTask);
     });
@@ -144,8 +188,28 @@ const rootReducerSlice = createSlice({
         done: false,
         analysisType: "",
         analysisResults: [],
+        data: {} as VideoData & Data,
+        source: "user",
+        some(callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+          // Check if 'this' is an array
+          if (Array.isArray(this)) {
+            for (let i = 0; i < this.length; i++) {
+              if (callbackfn(this[i], i, this)) {
+                return true; // Return true if the callback returns true for any element
+              }
+            }
+            return false; // Return false if the callback returns false for all elements
+          } else {
+            throw new Error("'some' method can only be used on arrays.");
+          }
+        },
+        [Symbol.iterator]: function (): Iterator<any, any, undefined> {
+          throw new Error("Function not implemented.");
+        },
+        phase: null,
+        videoData: {} as Record<string, VideoData>
       };
-      state.taskManager.tasks.push(newTask as Task);
+      state.taskManager.tasks.push(newTask);
       state.taskManager.taskTitle = "";
       state.taskManager.taskDescription = "";
       state.taskManager.taskStatus = "pending";
@@ -161,6 +225,15 @@ const rootReducerSlice = createSlice({
     );
   },
 });
+
+
+
+
+
+
+
+
+
 
 // Combine reducers
 const rootReducer = combineReducers({
@@ -185,4 +258,4 @@ export const selectDataAnalysisManager = (state: RootState) =>
   state.dataAnalysisManager;
 // Add other selectors as needed
 
-export default rootReducer;
+export default rootReducer; 

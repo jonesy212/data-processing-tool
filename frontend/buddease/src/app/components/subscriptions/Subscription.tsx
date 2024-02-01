@@ -3,13 +3,13 @@ import useRealtimeData from "../hooks/commHooks/useRealtimeData";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { Data } from "../models/data/Data";
 import { CalendarEvent } from "../state/stores/CalendarStore";
-import SnapshotStore from "../state/stores/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
 
 const SubscriptionComponent = (
   initialData: Data,
   updateCallback: (
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Record<string, CalendarEvent[]>>
+    snapshotStore: SnapshotStore<Snapshot<Data>>
   ) => void
 ) => {
   const [subscriptionData, setSubscriptionData] = useState<string | null>(null);

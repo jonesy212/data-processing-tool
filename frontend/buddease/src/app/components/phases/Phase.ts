@@ -1,5 +1,8 @@
+import { CommonData } from "../models/CommonData";
+import { Data } from "../models/data/Data";
+
 // Define a type for a phase
-export interface Phase {
+export interface Phase extends CommonData<Data> {
   name: string;
   startDate: Date;
   endDate: Date;
@@ -15,22 +18,29 @@ export class PhaseImpl implements Phase {
   subPhases: string[];
   component: React.FC;
   hooks: CustomPhaseHooks;
-
+  title: string;
+  description: string;
+  data: any;
   constructor(
     name: string,
     startDate: Date,
     endDate: Date,
     subPhases: string[],
     component: React.FC,
-    hooks: CustomPhaseHooks
+    hooks: CustomPhaseHooks,
+    data: any,
+    description: string,
+    title: string
   ) {
     this.name = name;
+    this.title = title
     this.startDate = startDate
     this.endDate = endDate
     this.subPhases = subPhases;
-    this.component = component;
     this.hooks = hooks
-
+    this.data = data
+    this.description = description
+    this.component = component;
   }
 }
 

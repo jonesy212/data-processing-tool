@@ -1,7 +1,8 @@
 // useDataExport.ts
-import axios from 'axios';
 import { useState } from 'react';
+import axiosInstance from '../../security/csrfToken';
 import { useNotification } from '../../support/NotificationContext';
+import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 
 const { ERROR } = NOTIFICATION_TYPES;
@@ -16,14 +17,14 @@ export const useDataExport = () => {
   const notificationContext = useNotification();
 
   const handleExportError = (errorMessage: string): never => {
-    notificationContext.notify(ERROR, errorMessage);
+    notificationContext.notify('Error trying to export data, try again', NOTIFICATION_MESSAGES.DataLoading.ERROR_EXPORTING_DATA, new Date, 'Error');
     throw new Error(ERROR);
   };
 
   const exportDataToServer = async (data: any): Promise<DataExportResult> => {
     try {
       // Replace '/api/export' with your actual API endpoint
-      const response = await axios.post('/api/export', data);
+      const response = await axiosInstance.post('/api/export', data);
 
       if (response.status === 200) {
         console.log('Data exported successfully:', response.data);
@@ -36,7 +37,6 @@ export const useDataExport = () => {
       console.error('Error exporting data:', error.message);
       handleExportError('Error exporting data');
     }
-
     // Add a default return statement to satisfy TypeScript
     return handleExportError('Unexpected error exporting data');
   };
