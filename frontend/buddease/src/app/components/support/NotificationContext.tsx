@@ -34,6 +34,7 @@ type NotificationType =
   | "EventReminder"
   | "EventOccurred"
   | "Dismiss"
+  |"LoggingError"
   | "CustomNotification1"
   | "CustomNotification2"
   | "Ideation:Brainstorming"
@@ -177,12 +178,7 @@ export const useNotification = (): NotificationContextProps => {
       "useNotification must be used within a NotificationProvider"
     );
   }
-
-  const notify = (message: string, type: NotificationType) => {
-    // You can add additional logic here if needed
-    context.sendNotification(type, message);
-  };
-
+  // Complete context with same properties and methods
   return {
     sendNotification: context.sendNotification,
     addNotification: context.addNotification,

@@ -1,12 +1,13 @@
 // NotificationSlice.tsx
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { NotificationType } from './NotificationContext';
 
 interface Notification {
   id: string;
   date: Date;
   message: string;
   createdAt: Date;
-  type: string;
+  type: NotificationType;
   content: string
 }
 

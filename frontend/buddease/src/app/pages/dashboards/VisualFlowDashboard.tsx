@@ -9,6 +9,7 @@ import TreeView from "./TreeView"; // Import or create your tree view component
 
 interface VisualFlowDashboardProps {
   user: User;
+  searchQuery: string
 }
 
 // Replace 'yourTreeData' with your actual tree data source
@@ -16,7 +17,7 @@ const yourTreeData: DocumentTree[] = [
   // Your tree data structure
 ];
 
-const VisualFlowDashboard: React.FC<VisualFlowDashboardProps> = ({ user }) => {
+const VisualFlowDashboard: React.FC<VisualFlowDashboardProps> = ({ user, searchQuery }) => {
   let visualizationComponent: JSX.Element | null = null;
 
   const handleNodeClick = (selectedNode: any) => {
@@ -68,7 +69,11 @@ const VisualFlowDashboard: React.FC<VisualFlowDashboardProps> = ({ user }) => {
       <div style={{ display: "flex" }}>
         <div style={{ flex: 1 }}>
           {/* Tree view component */}
-          <TreeView data={yourTreeData} onClick={handleNodeClick} />
+          <TreeView
+            data={yourTreeData}
+            onClick={handleNodeClick}
+            searchQuery={searchQuery}
+          />
         </div>
         <div style={{ flex: 2 }}>
           {/* Display generated document and visualization here */}

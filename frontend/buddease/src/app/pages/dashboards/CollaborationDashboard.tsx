@@ -50,6 +50,12 @@ const CollaborationDashboard = () => {
     setShowCollaborationPanel(false);
   };
 
+
+
+  // Function to handle search query updates
+  const handleSearchQueryUpdate = (newSearchQuery) => {
+    updateSearchQuery(newSearchQuery);
+  };
   // Use searchQuery in your components or functions based on your requirements
   console.log("Search Query:", searchQuery);
   return (

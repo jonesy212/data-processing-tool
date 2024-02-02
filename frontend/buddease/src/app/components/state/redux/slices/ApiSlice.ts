@@ -1,16 +1,14 @@
 // ApiSlice.ts
 import { Task } from "@/app/components/models/tasks/Task";
-import { Todo } from "@/app/components/todos/Todo";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 interface ApiManagerState {
   apiConfigs: ApiConfig[];
   apiConfigName: string;
   apiConfigUrl: string;
   apiConfigTimeout: number;
-  tasks: TasksApi[];
-  todos: Todo[];
+  todos: string[],
+  tasks: string[]
   
 }
 
@@ -19,9 +17,8 @@ const initialState: ApiManagerState = {
   apiConfigName: "",
   apiConfigUrl: "",
   apiConfigTimeout: 0,
-  tasks: [],
   todos: [],
-
+  tasks: [],
 };
 
 export const useApiManagerSlice = createSlice({

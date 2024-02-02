@@ -1,7 +1,5 @@
 // TreeView.tsx
-
 import { useState } from "react";
-
 
 // Define a TreeNode component for individual nodes
 const TreeNode = ({ node, onClick } : {node: any, onClick: (node: any) => void}) => {
@@ -28,10 +26,15 @@ const TreeNode = ({ node, onClick } : {node: any, onClick: (node: any) => void})
 };
 
 // Define the main TreeView component
-const TreeView = ({ data, onClick }: { data: any[], onClick: (node: any) => void }) => {
+
+// Define the main TreeView component
+const TreeView = ({ data, onClick, searchQuery }: { data: any[]; onClick: (node: any) => void; searchQuery: string }) => {
+  // Filter the data based on the search query
+  const filteredData = data.filter((node) => node.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
   return (
     <div>
-      {data.map((node) => (
+      {filteredData.map((node) => (
         <TreeNode key={node.id} node={node} onClick={onClick} />
       ))}
     </div>

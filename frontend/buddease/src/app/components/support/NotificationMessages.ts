@@ -180,6 +180,13 @@ const NOTIFICATION_MESSAGES = {
 
     // Add more generic messages
   },
+  Logger: {
+    DEFAULT: "Log message",
+    LOG_INFO: "Info log message",
+    LOG_DEBUG: "Debug log message",
+    LOG_WARNING: "Warning log message",
+    LOG_ERROR: "Error log message"
+  },
    
   Notifications: {
     DEFAULT: (errorType: string, details: string) =>

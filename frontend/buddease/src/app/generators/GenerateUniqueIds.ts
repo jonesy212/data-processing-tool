@@ -8,8 +8,9 @@ class UniqueIDGenerator {
     return `${folderName}_${fileName}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
   }
   static generateNotificationID(notification: Notification, date: Date, type: NotificationType): string { 
-    return `${type}_${notification.message}_${date.getTime()}`;
+    return `${type}_${notification.message}_${date.getTime()}`; // Access message property of notification
   }
+  
   
 }
 

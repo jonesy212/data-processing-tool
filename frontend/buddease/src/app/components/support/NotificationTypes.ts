@@ -42,6 +42,8 @@ export const NOTIFICATION_TYPES = {
   EVENT_REMINDER: "EventReminder",
   EVENT_OCCURRED: "EventOccurred",
 
+
+  LOGGING_ERROR: "LoggingError",
   // Custom Notifications
   CUSTOM_NOTIFICATION_1: "CustomNotification1",
   CUSTOM_NOTIFICATION_2: "CustomNotification2",

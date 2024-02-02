@@ -1,14 +1,21 @@
-// AuthComponent.tsx
 import axios from 'axios';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import dynamicHooks from '../hooks/dynamicHooks/dynamicHooks';
-const AuthComponent = () => {
+import axiosInstance from '../security/csrfToken';
+
+interface AuthComponentProps {
+  onSuccess: () => void;
+  onSearch: (event: React.FormEvent, searchQuery: string) => void;
+}
+
+const AuthComponent: React.FC<AuthComponentProps> = ({ onSuccess, onSearch }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("/auth/login", { username, password });
+      const response = await axiosInstance.post("/auth/login", { username, password });
       const accessToken = response.data.access_token;
       localStorage.setItem("token", accessToken);
   
@@ -16,12 +23,21 @@ const AuthComponent = () => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   
       dynamicHooks.authentication.hook().toggleActivation();
+      onSuccess(); 
+
+      // Update searchQuery state using setSearchQuery
+      if (searchQuery) {
+        setSearchQuery(searchQuery);
+        // Call handleSearch and process the response in the try statement
+        const searchResponse = await handleSearch({} as FormEvent<Element>, searchQuery);
+        // Process the searchResponse here
+        console.log("Search Response:", searchResponse);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
-  
   const handleSearch = async (event: React.FormEvent, searchQuery: string) => {
     event.preventDefault();
   
@@ -35,13 +51,15 @@ const AuthComponent = () => {
           "Authorization": `Bearer ${accessToken}`,
         },
       });
-  
-      // Rest of the code remains the same...
+
+      // Process the response here
+      const searchResponse = await response.json();
+      return searchResponse;
     } catch (error) {
       console.error("Error fetching search results", error);
+      throw error;
     }
   };
-  
 
   return (
     <div>

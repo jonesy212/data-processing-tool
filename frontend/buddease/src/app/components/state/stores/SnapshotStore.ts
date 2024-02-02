@@ -13,6 +13,47 @@ interface SnapshotStoreConfig<T> {
   getSnapshots: (snapshots: Record<string, T>) => void;
   clearSnapshot: () => void;
   configureSnapshotStore: (snapshot: Snapshot<Data>) => void
+
+
+
+
+
+
+
+
+
+
+  snapshot: (newSnapshot: Omit<Todo, "id">) => Promise<void>;
+  // snapshotStore: SnapshotStore<Record<string, Todo[]>>
+  initSnapshot: (
+    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    snapshotData: Snapshot<Data>
+  ) => Promise<void>;
+  takeSnapshotSuccess: (snapshot: Record<string, Todo>) => void;
+  updateSnapshot: (
+    snapshotId: string,
+    updatedData: Omit<Todo, "id">
+  ) => Promise<void>;
+  updateSnapshotFailure: (payload: { error: string }) => void;
+  takeSnapshotsSuccess: (snapshots: Record<string, Todo[]>) => void;
+
+  fetchSnapshot: (snapshotId: string) => void;
+  onSnapshot: (snapshot: Record<string, Todo>) => void;
+  getSnapshot: (snapshot: Record<string, Todo>) => Record<string, Todo[]>;
+  getSnapshots: (snapshots: Record<string, Record<string, Todo[]>>) => void;
+  takeSnapshot: (data: Record<string, Todo[]>) => void;
+  updateSnapshotSuccess: (snapshot: Record<string, Todo[]>) => void;
+
+  fetchSnapshotSuccess: (snapshot: Todo[]) => void;
+  createSnapshotSuccess: (snapshot: Record<string, Todo[]>) => void;
+  createSnapshotFailure: (error: string) => void;
+
+  batchUpdateSnapshotsSuccess: (snapshotData: Record<string, Todo[]>) => void;
+  batchFetchSnapshotsRequest: (snapshotData: Record<string, Todo[]>) => void;
+  batchFetchSnapshotsSuccess: (snapshotData: Record<string, Todo[]>) => void;
+  batchFetchSnapshotsFailure: (payload: { error: string }) => void;
+  batchUpdateSnapshotsFailure: (payload: { error: string }) => void;
+
   [Symbol.iterator]: () => IterableIterator<[string, T[]]>;
 }
 
@@ -154,6 +195,7 @@ const snapshotStore = new SnapshotStore<Snapshot<Data>>({
     // 2. Initialize default state
     snapshotStore.updateSnapshot(getDefaultState());
     // 3. Configure middleware
+
   // 4. Connect to external services
   // 5. Any other initialization or configuration steps
 

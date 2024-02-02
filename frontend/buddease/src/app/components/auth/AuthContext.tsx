@@ -8,6 +8,7 @@ interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   userRoles: string[]; // New property for user roles
+  timestamp: number; 
 }
 
 interface AuthContextProps {
@@ -29,7 +30,8 @@ const initialState: AuthState = {
   id: '0',
   isAuthenticated: false,
   user: null,
-  userRoles: [], // Initial empty array for user roles
+  userRoles: [],
+  timestamp: 0
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {

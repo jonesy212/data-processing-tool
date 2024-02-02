@@ -1,3 +1,4 @@
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React from "react";
 import { Notification } from "./NofiticationsSlice";
 import { NotificationType } from "./NotificationContext";
@@ -9,7 +10,7 @@ interface NotificationManagerProps {
 
 }
 
-class NotificationManager extends React.Component<React.Component<NotificationManagerProps>> {
+class NotificationManager extends React.Component<NotificationManagerProps> {
   private notifications: Notification[] = [];
 
   // Method to get notifications
@@ -18,10 +19,18 @@ class NotificationManager extends React.Component<React.Component<NotificationMa
   }
 
   // Method to add a notification
-  addNotification(message: string, type: NotificationType): void {
-    // Implementation remains the same
-  }
+  addNotification(message: Notification, date: Date, type: NotificationType): void {
+    const newNotification: Notification = {
+      id: UniqueIDGenerator.generateNotificationID(message, date, type), // Corrected parameter type
+      type,
+      createdAt: new Date(),
+      date: new Date(),
+      content: "",
+      message: ""
+    }
 
+    this.notifications.push(newNotification); 
+  }
   // Method to clear notifications
   clearNotifications(): void {
     this.notifications = [];
@@ -31,4 +40,5 @@ class NotificationManager extends React.Component<React.Component<NotificationMa
 }
 
 export default NotificationManager;
-export type { NotificationManagerProps };
+  export type { NotificationManagerProps };
+
