@@ -54,6 +54,9 @@ export const UserActions = {
   updateUsersSuccess: createAction<{ users: User[] }>("updateUserSuccess"),
   updateUsersFailure: createAction<{ error: string }>("updateUsersFailure"),
   
+  updateUserRoleSuccess: createAction<{ user: User }>("updateUserRoleSuccess"),
+  updateUserRoleFailure: createAction<{ error: string }>("updateUserRoleFailure"),
 
+  updateUserRoles: createAction<{ ids: number[], newRole: string }>("updateUserRoles"),
   
 };

@@ -17,6 +17,7 @@ const CalendarWrapper = () => {
         return updatedData;
       });
 
+      await axiosInstance.addCalendarEvent(event);
       // Call DataFrameAPI to update the backend data
       await dataFrameAPI.updateDataFrame(calendarData); // Corrected method call
 

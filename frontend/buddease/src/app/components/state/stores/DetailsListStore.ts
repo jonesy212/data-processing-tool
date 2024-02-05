@@ -12,7 +12,7 @@ interface DetailsItem<T> {
   id: string;
   title: string;
   status: "pending" | "inProgress" | "completed";
-  description?: string;
+  description: string;
   phase: Phase
   data?: T; 
   teamMembers?: TeamMember[];
@@ -221,8 +221,9 @@ class DetailsListStoreClass implements DetailsListStore {
     const id: string = String(detail.id) ?? "";
 
     // Ensure detail.description is always a string or undefined
-    const description: string | undefined = typeof detail.description === 'string' ? detail.description : undefined;
-
+    const description: string = detail.description || ""; // Provide a default empty string if description is null or undefined
+    const phase: Phase = detail.phase || {} as Phase; // Provide a default empty object if phase is null or undefined
+  
     // Create a copy of the current state of details
     const updatedDetails = { ...this.details };
 
@@ -235,7 +236,7 @@ class DetailsListStoreClass implements DetailsListStore {
       title: detail.title,
       status: detail.status,
       description: description,
-      phase: detail.phase,
+      phase: phase,
       data: detail,
     });
 

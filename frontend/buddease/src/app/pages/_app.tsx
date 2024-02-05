@@ -2,7 +2,8 @@
 import { Refine } from "@refinedev/core";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
+import Switch, { Router } from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
@@ -16,8 +17,11 @@ import undoLastAction from "../components/projects/projectManagement/ProjectMana
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { Notification } from "../components/support/NofiticationsSlice";
-import { NotificationProvider } from "../components/support/NotificationContext";
-import NotificationManager, { NotificationManagerProps } from "../components/support/NotificationManager";
+import {
+  NotificationProvider,
+  NotificationType,
+} from "../components/support/NotificationContext";
+import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
@@ -26,10 +30,6 @@ import TreeView from "./dashboards/TreeView";
 import ChartComponent from "./forms/ChartComponent";
 import Layout from "./layouts/Layouts";
 import SearchComponent from "./searchs/SearchComponent";
-
-
-
-
 const phases: Phase[] = [
   {
     name: "Calendar Phase",
@@ -38,7 +38,7 @@ const phases: Phase[] = [
     subPhases: ["Research", "Planning", "Design"],
     component: {} as (props: {}, context?: any) => React.ReactElement,
     hooks: {} as CustomPhaseHooks,
-    data: {} as Data
+    data: {} as Data,
   },
   // Add more phases
 ];
@@ -50,8 +50,7 @@ async function MyApp({ Component, pageProps }: AppProps) {
   const [activeDashboard, setActiveDashboard] = useState<
     "communication" | "documents" | "tasks" | "settings"
   >("communication");
-  const token = 'your-token-value'; // Initialize the token here or get it from wherever it's stored
-
+  const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
 
   // Define the 'addNotifications' function to add new notifications
   const addNotifications = (message: string, randomBytes: BytesLike) => {
@@ -64,8 +63,8 @@ async function MyApp({ Component, pageProps }: AppProps) {
       id,
       date: new Date(),
       createdAt: new Date(),
-      type: "",
-      content: ""
+      type: {} as NotificationType,
+      content: "",
     };
 
     // Update notifications state by appending the new notification
@@ -156,8 +155,14 @@ async function MyApp({ Component, pageProps }: AppProps) {
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
     <Refine
-      dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
-      routerProvider={routerProvider}
+      authProvider={{
+        login: () => Promise.resolve(),
+        logout: () => Promise.resolve(),
+        checkError: () => Promise.resolve(),
+        checkAuth: () => Promise.resolve(),
+        getPermissions: () => Promise.resolve(),
+      }}
+      routerProvider={{routerProvider}}  
       resources={[
         {
           name: "posts",
@@ -203,6 +208,7 @@ async function MyApp({ Component, pageProps }: AppProps) {
                           // Handle node click if needed
                           console.log("Node clicked:", node);
                         }}
+                        searchQuery={""}
                       />
                     )}
                     <EditorWithPrompt
@@ -214,10 +220,17 @@ async function MyApp({ Component, pageProps }: AppProps) {
                 </AuthProvider>
               </DynamicPromptProvider>
               <NotificationManager
-                {...{} as Readonly<Component<NotificationManagerProps, {}, any>>}
+                notifications={notifications}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                notify={addNotifications}
+                setNotifications={setNotifications}
               />
               {/* Toolbar component with activeDashboard and progress props */}
-              <Toolbar activeDashboard={activeDashboard} progress={{ value: progress, label: "Progress" }} />
+              <Toolbar
+                activeDashboard={activeDashboard}
+                progress={{ value: progress, label: "Progress" }}
+              />
             </NotificationProvider>
           </ThemeConfigProvider>
         )}
@@ -230,3 +243,68 @@ async function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const routerProvider = () => { 
+  return (
+    <Router>
+      <Switch>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <Route path="/register">
+          <Register />
+        </Route>
+        <Route path="/forgot-password">
+          <ForgotPassword />
+        </Route>
+        <Route path="/reset-password">
+          <ResetPassword />
+        </Route>
+        <Route path="/app">
+          <Layout>
+            <NotificationManager
+              notifications={notifications}
+              onConfirm={handleConfirm}
+              onCancel={handleCancel}
+              notify={addNotifications}
+              setNotifications={setNotifications}
+            />
+            <StoreProvider
+              initialState={appTree}
+              phases={phases}
+              currentPhase={currentPhase}
+              setCurrentPhase={setCurrentPhase}
+              progress={progress}
+              setProgress={setProgress}
+              activeDashboard={activeDashboard}
+              setActiveDashboard={setActiveDashboard}
+              addNotifications={addNotifications}
+            >
+              <Component
+                {...pageProps}
+                hooks={hooks}
+                utilities={utilities}
+                componentSpecificData={componentSpecificData}
+              />
+            </StoreProvider>
+          </Layout>
+        </Route>
+      </Switch>
+    </Router>
+  );
+}

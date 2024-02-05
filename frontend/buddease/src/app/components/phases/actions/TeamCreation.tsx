@@ -1,10 +1,10 @@
 import { useAuth } from "@/app/components/auth/AuthContext";
 import { useNotification } from "@/app/components/hooks/commHooks/useNotification";
 import React, { useState } from "react";
+import TeamData from "../../models/teams/TeamData";
 import TeamCreationConfirmationPage from "../team/TeamCreationConfirmationPage";
 import TeamCreationQuestionnaire from "../team/TeamCreationQuestionnaire";
 import TeamCreationAPI from "./teamCreationAPI";
-import { TeamData } from "./types";
 
 enum TeamCreationPhase {
   QUESTIONNAIRE,
@@ -79,3 +79,4 @@ const TeamCreationPhaseManager: React.FC = () => {
 };
 
 export default TeamCreationPhaseManager;
+export { TeamCreationPhase };

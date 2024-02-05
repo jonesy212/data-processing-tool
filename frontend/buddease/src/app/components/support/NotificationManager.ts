@@ -4,9 +4,11 @@ import { Notification } from "./NofiticationsSlice";
 import { NotificationType } from "./NotificationContext";
 
 interface NotificationManagerProps {
-    notifications: Notification[];
-    notify: (message: string, randomBytes: any) => void; // Corrected spelling of notify
-    setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  notifications: Notification[];
+  notify: (message: string, randomBytes: any) => void; // Corrected spelling of notify
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  onConfirm: (message: string, randomBytes: any) => void; // Corrected spelling of onConfirm
+  onCancel: (message: string, randomBytes: any) => void; // Corrected spelling of onCancel
 }
 
 class NotificationManager extends React.Component<NotificationManagerProps> {
@@ -18,18 +20,22 @@ class NotificationManager extends React.Component<NotificationManagerProps> {
   }
 
   // Method to add a notification
-  addNotification(message: Notification, date: Date, type: NotificationType): void {
+  addNotification(
+    message: Notification,
+    date: Date,
+    type: NotificationType
+  ): void {
     const newNotification: Notification = {
       id: UniqueIDGenerator.generateNotificationID(message, date, type), // Corrected parameter type
       type,
       createdAt: new Date(),
       date: new Date(),
       content: "",
-      message: ""
-    }
-    this.notifications.push(newNotification); 
+      message: "",
+    };
+    this.notifications.push(newNotification);
   }
-  
+
   // Method to clear notifications
   clearNotifications(): void {
     this.notifications = [];
@@ -39,5 +45,4 @@ class NotificationManager extends React.Component<NotificationManagerProps> {
 }
 
 export default NotificationManager;
-  export type { NotificationManagerProps };
-
+export type { NotificationManagerProps };

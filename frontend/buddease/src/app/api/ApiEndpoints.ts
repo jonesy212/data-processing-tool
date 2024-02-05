@@ -15,6 +15,8 @@ export const endpoints = {
     update: (userId: number) => `${BASE_URL}/users/${userId}`, // PUT request for updating a user by ID
     updateList: `${BASE_URL}/users/update-list`, // PUT request for updating multiple users
     search: `${BASE_URL}/users/search`, // GET request for searching users
+    updateRole: (userId: number) => `${BASE_URL}/users/${userId}/update-role`, // PUT request for updating a user's role by ID
+    updateRoles: (userId: number) => `${BASE_URL}/users/${userId}/update-roles`, // PUT request for updating a user's roles by ID
   },
 
   userRoles: {

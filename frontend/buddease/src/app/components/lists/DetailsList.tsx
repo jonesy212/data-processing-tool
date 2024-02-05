@@ -10,7 +10,13 @@ import {
 } from "../state/stores/DetailsListStore";
 import { Snapshot } from "../state/stores/SnapshotStore";
 
-const DetailsList: React.FC = observer(() => {
+
+interface DetailsListInterface{
+  items: string[];
+  renderItem: (item: DetailsItem<Data>) => JSX.Element;
+}
+
+const DetailsList: React.FC<DetailsListInterface> = observer(() => {
   const detailsListStore = useDetailsListStore(); 
 
   useEffect(() => {

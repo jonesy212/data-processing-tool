@@ -1,9 +1,9 @@
-// UserService.ts
+// ApiUser.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
 import { makeAutoObservable } from 'mobx';
-import { UserActions } from "../users/UserActions";
 import { User } from './User';
+import { UserActions } from "./UserActions";
 import { sendNotification } from "./UserSlice";
 
 const API_BASE_URL = endpoints.users;
@@ -154,6 +154,21 @@ class UserService {
     }
   }
   
+
+  updateUserRole = async (userId: User['id'], role: User['role']) => { 
+    try {
+      const response = await axiosInstance.put(`${API_BASE_URL.updateRole(userId as number)}`, { role });
+      const updatedUser = response.data;
+      UserActions.updateUserRoleSuccess({ user: updatedUser });
+      sendNotification(`User with ID ${userId} updated successfully`);
+      return updatedUser;
+    } catch (error) {
+      UserActions.updateUserRoleFailure({ error: String(error) });
+      sendNotification(`Error updating user with ID ${userId}: ${error}`);
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
   // Other methods follow the same pattern as above
 
 }

@@ -6,6 +6,7 @@ import { Todo } from "../todos/Todo";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
 import { Data } from "./data/Data";
+import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 
 

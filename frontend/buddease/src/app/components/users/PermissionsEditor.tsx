@@ -1,31 +1,32 @@
+// PermissionsEditor.tsx
+import { generateNFT } from '@/app/generators/NFTGenerator';
+import UserRoles from './UserRoles';
 
-// PermissionsEditor component
-const PermissionsEditor = ({ permissions }) => {
-    const [editedPermissions, setEditedPermissions] = useState(permissions);
-  
-    // Function to handle editing permissions
-    const handleEditPermissions = (newPermissions) => {
-      // Logic to update permissions
-      setEditedPermissions(newPermissions);
-    };
-  
-    return (
-      <div>
-        <h3>Permissions Editor</h3>
-        <ul>
-          {/* Render permissions */}
-          {editedPermissions.map((permission, index) => (
-            <li key={index}>{permission}</li>
-          ))}
-        </ul>
-        {/* Example: Input field to edit permissions */}
-        <input
-          type="text"
-          value={editedPermissions.join(', ')}
-          onChange={(e) => handleEditPermissions(e.target.value.split(', '))}
-        />
-      </div>
-    );
+const PermissionsEditor = () => {
+  const assignNFT = () => {
+    // Simulate assigning NFTs to users
+    const nft = generateNFT();
+    console.log('Assigned NFT:', nft);
   };
-  
-export { PermissionsEditor };
+
+  return (
+    <div>
+      <h2>Permissions Editor</h2>
+      <button onClick={assignNFT}>Assign NFT</button>
+      <h3>User Roles</h3>
+      <ul>
+        {UserRoles.map((role) => (
+          <li key={role.role}>
+            <strong>{role.role}</strong>
+            <ul>
+              <li>Responsibilities: {role.responsibilities.join(', ')}</li>
+              <li>Permissions: {role.permissions.join(', ')}</li>
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default PermissionsEditor;

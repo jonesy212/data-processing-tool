@@ -6,6 +6,7 @@ import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
 import Project from "../projects/Project";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
+import { UserRole } from "./UserRole";
 export interface User extends UserData {
   _id: string; // Add this line
   id: string | number;
@@ -20,6 +21,7 @@ export interface User extends UserData {
   profilePicture: string | null;
   processingTasks: DataProcessingTask[];
   data?: UserData;
+  role: UserRole
 }
 
 // Placeholder for user data
@@ -34,7 +36,7 @@ export interface UserData {
   teamMembers?: TeamMember[];
   yourDocuments?: DocumentTree;
   visualizations?: VisualizationData[];
-  traits: typeof CommonDetails;
+  traits?: typeof CommonDetails;
 }
 
 // Add a new type for visualization data
