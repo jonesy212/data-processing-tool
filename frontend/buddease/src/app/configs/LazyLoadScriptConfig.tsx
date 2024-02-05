@@ -1,7 +1,7 @@
 import { ApiConfig } from "./ConfigurationService";
 
 // LazyLoadScriptConfig.ts
-export interface LazyLoadScriptConfig {
+interface LazyLoadScriptConfig {
   // Add any configuration properties related to lazy loading scripts
   // Example:
   timeout?: number; // Timeout for script loading in milliseconds
@@ -34,3 +34,37 @@ export interface LazyLoadScriptConfig {
   namingConventions?: string[];
   // More properties as needed
 }
+
+class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
+  timeout?: number;
+  onLoad?: () => void;
+  retryCount?: number;
+  retryDelay?: number;
+  onBeforeLoad?: () => void;
+  onScriptError?: (error: ErrorEvent) => void;
+  asyncLoad?: boolean;
+  deferLoad?: boolean;
+  thirdPartyLibrary?: string;
+  thirdPartyAPIKey?: string;
+  nonce?: string;
+  apiConfig?: ApiConfig;
+  namingConventions?: string[];
+
+  constructor(timeout?: number, onLoad?: () => void, retryCount?: number, retryDelay?: number, onBeforeLoad?: () => void, onScriptError?: (error: ErrorEvent) => void, asyncLoad?: boolean, deferLoad?: boolean, thirdPartyLibrary?: string, thirdPartyAPIKey?: string, nonce?: string, apiConfig?: ApiConfig, namingConventions?: string[]) {
+    this.timeout = timeout;
+    this.onLoad = onLoad;
+    this.retryCount = retryCount;
+    this.retryDelay = retryDelay;
+    this.onBeforeLoad = onBeforeLoad;
+    this.onScriptError = onScriptError;
+    this.asyncLoad = asyncLoad;
+    this.deferLoad = deferLoad;
+    this.thirdPartyLibrary = thirdPartyLibrary;
+    this.thirdPartyAPIKey = thirdPartyAPIKey;
+    this.nonce = nonce;
+    this.apiConfig = apiConfig;
+    this.namingConventions = namingConventions;
+  }
+}
+
+export default LazyLoadScriptConfigImpl;

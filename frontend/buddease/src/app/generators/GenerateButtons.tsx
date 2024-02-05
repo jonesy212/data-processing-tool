@@ -16,6 +16,7 @@ import useNotificationManagerService from "../components/notifications/Notificat
  * import { ButtonGenerator, ButtonGeneratorProps } from "./path/to/ButtonGenerator";
  *import NotificationManager from '../components/support/NotificationManager';
 import NotificationManager from '../components/notifications/NotificationManager';
+import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
 
  * // Define buttonGeneratorProps
  * const buttonGeneratorProps: ButtonGeneratorProps = {
@@ -53,6 +54,8 @@ interface ButtonGeneratorProps {
   variant?: Record<string, string>;
   label?: Record<string, string>;
   buttonTypes?: string[];
+  type?: "submit" | "reset" | "button" | undefined;
+  htmlType?: string;
   onSubmit?: () => void;
   onReset?: () => void;
   onCancel?: () => void;
@@ -62,6 +65,7 @@ interface ButtonGeneratorProps {
   onEndPhase?: (phase: string) => void;
   onSwitchLayout?: (layout: string) => void;
   onOpenDashboard?: (dashboard: string) => void;
+
   // ... (other props)
 }
 
@@ -77,7 +81,32 @@ const defaultLabels: Record<string, string> = {
   "end-phase": "End Phase",
   "switch-layout": "Switch Layout",
   "open-dashboard": "Open Dashboard",
-  // ... (other cases)
+  // Add additional labels here
+  "phase-management": "Enable Phase-Based Project Management",
+  "task-tracking": "Enable Task Assignment and Tracking",
+  "data-analysis": "Enable Data Analysis Tools",
+  "file-upload": "Enable File Upload and Sharing",
+  "task-prioritization": "Enable Task Prioritization and Sorting",
+  "custom-templates": "Enable Customizable Project Templates",
+  "time-tracking": "Enable Time Tracking and Reporting",
+  
+  "external-tools":
+    "Enable Integration with External Tools (e.g., GitHub, Jira)",
+  "deadline-reminders": "Enable Project Deadline Reminders",
+  "team-availability": "Enable Team Member Availability Status",
+  "dashboard-widgets": "Enable Customizable Dashboard Widgets",
+  "automated-assignment": "Enable Automated Task Assignment",
+  "access-control": "Enable Role-based Access Control",
+  "progress-tracking": "Enable Progress Tracking and Visualization",
+  "export-project-data": "Enable Exporting Project Data to CSV/PDF",
+  "user-feedback": "Enable User Feedback and Suggestions",
+  "notification-preferences": "Enable Customizable Notification Preferences",
+  "document-version-control": "Enable Document Version Control",
+  "milestone-management": "Enable Project Milestone Management",
+  "calendar-integration": "Enable Integration with Calendar Services",
+  "multi-language-support": "Enable Multi-language Support",
+  "data-encryption": "Enable Data Encryption for Security",
+  "offline-mode": "Enable Offline Mode for Working Without Internet Access",
 };
 
 const defaultVariants: Record<string, string> = {
@@ -154,40 +183,45 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
       />
     );
   };
+  
+  // Define buttonGeneratorProps
+  const buttonGeneratorProps: ButtonGeneratorProps = {
+    label: defaultLabels,
+    variant: defaultVariants,
+    onSubmit: () => console.log("Submit clicked"),
+    onReset: () => console.log("Reset clicked"),
+    onCancel: () => console.log("Cancel clicked"),
+    onLogicalAnd: () => console.log("Logical And clicked"),
+    onLogicalOr: () => console.log("Logical Or clicked"),
+    onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
+    onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
+    onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
+    onOpenDashboard: (dashboard) => {
+      // Send push notification
+      const message = `Opened Dashboard: ${dashboard}`;
+      const sender = "User";
+      // Send push notification
+      useNotificationManagerService().sendPushNotification(message, sender);
+      // Additional logic if needed
+      console.log(`Open Dashboard clicked: ${dashboard}`);
+    },
+  };
 
   return (
     <div>
       <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
       {buttonTypes.map((type) => renderButton(type))}
+      {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
+      <button
+        type={buttonGeneratorProps.type} // Add the type attribute
+        onSubmit={buttonGeneratorProps.onSubmit} // Add the onClick attribute if needed
+      >
+ 
+      </button>;
     </div>
   );
 };
 
-// Define buttonGeneratorProps
-const buttonGeneratorProps: ButtonGeneratorProps = {
-  label: defaultLabels,
-  variant: defaultVariants,
-  onSubmit: () => console.log("Submit clicked"),
-  onReset: () => console.log("Reset clicked"),
-  onCancel: () => console.log("Cancel clicked"),
-  onLogicalAnd: () => console.log("Logical And clicked"),
-  onLogicalOr: () => console.log("Logical Or clicked"),
-  onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
-  onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
-  onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
-  onOpenDashboard: (dashboard) => {
-    // Send push notification
-    const message = `Opened Dashboard: ${dashboard}`;
-    const sender = "User";
-    // Send push notification
-    useNotificationManagerService().sendPushNotification(
-      message, sender
-    );
-    // Additional logic if needed
-    console.log(`Open Dashboard clicked: ${dashboard}`);
-  },
-  
-  // ... (other props)
-};
+export { ButtonGenerator };
+export type { ButtonGeneratorProps };
 
-export { ButtonGenerator, buttonGeneratorProps };

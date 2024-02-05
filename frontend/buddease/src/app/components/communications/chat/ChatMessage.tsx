@@ -5,7 +5,9 @@ import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import ChatCard from "../../cards/ChatCard";
 import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
+import FluenceConnection from "../../web3/fluenceProtocoIntegration/FluenceConnection";
 import connectToChatWebSocket, { retryConfig } from "../WebSocket";
+import { AquaChat } from "./AquaChat";
 import resetUnreadMessageCount from "./ResetUnreadMessageCount";
 import {
   createRichTextEditor,
@@ -20,6 +22,7 @@ import {
   openFileUploadModal,
   sendChatMessage,
 } from "./chatUtils";
+import disconnectFromChatServer from "./features/disconnectFromChatServer";
 
 type ChatSettingsModal = {
   close?: () => void;
@@ -89,7 +92,7 @@ const fetchChatMessages = async (
 };
 
 // Subscribe to new chat messages
-const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
@@ -199,13 +202,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       const fileUploadModal = openFileUploadModal();
       const geolocationService = initializeGeolocationService();
       const settingsPanel = openChatSettingsPanel();
-
+      const aquaConfig = createAquaConfig
+      const aquaChat = new AquaChat(aquaConfig)
+      const fluenceConnection = new FluenceConnection
       const handleFileUploadClick = () => {
         const fileUploadModal = openFileUploadModal();
         // Additional logic if needed
       };
+
+
+
+      
       //   // 1. Clear Cache for Chat Images
-      // clearChatImageCache();
+      //     clearChatImageCache();
 
       //     // 2. Close Emoji Picker
       //     emojiPicker.close();
@@ -238,8 +247,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       //   clearInterval(timerId);
       //   // Any cleanup logic can go here
 
-      // // 11. Disconnect from Real-time Chat Server
-      // disconnectFromChatServer();
+      // 11. Disconnect from Real-time Chat Server
+      disconnectFromChatServer(fluenceConnection, aquaChat)
 
       // // 12. Close File Upload Modal
       // fileUploadModal.close();

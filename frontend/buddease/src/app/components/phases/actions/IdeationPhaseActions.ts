@@ -3,7 +3,8 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const IdeationPhaseActions = {
     // Ideation Phase Actions
-    addPhase: createAction<typeof IdeationPhase>('addIdeationPhase'),
+  addPhase: createAction<typeof IdeationPhase>('addIdeationPhase'),
+  
   updateIdeationPhase: createAction<{ id: string; newData: any }>("updateIdeationPhase"),
   deleteIdeationPhase: createAction<string>("deleteIdeationPhase"),
   // Ideation Phase Metadata Actions

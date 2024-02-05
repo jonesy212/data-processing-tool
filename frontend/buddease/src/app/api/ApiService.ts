@@ -2,9 +2,10 @@ import { observable, runInAction } from 'mobx';
 import { useAuth } from "../components/auth/AuthContext";
 import { User } from "../components/users/User";
 import { UserActions } from "../components/users/UserActions";
+import { endpoints } from './ApiEndpoints';
 import axiosInstance from "./axiosInstance";
 
-const API_BASE_URL = "/api/users";
+const API_BASE_URL = endpoints.users;
 
 const handleSuccess = <T>(action: (payload: T) => void) => async (
   request: (...args: any[]) => Promise<T>,
@@ -67,7 +68,7 @@ export const userApiService = observable({
   updateUserFailure: handleFailure(UserActions.updateUserFailure)(
     async (): Promise<void> => {
       try {
-        await axiosInstance.get(API_BASE_URL);
+        await axiosInstance.get(API_BASE_URL.updateList);
       } catch (error) {
         console.error("Error updating user:", error);
         throw error;
@@ -78,7 +79,7 @@ export const userApiService = observable({
   fetchUsers: handleSuccess(UserActions.fetchUsersSuccess)(
     async (): Promise<{ users: User[] }> => {
       try {
-        const response = await axiosInstance.get(API_BASE_URL);
+        const response = await axiosInstance.get(API_BASE_URL.list);
         return { users: response.data as User[] };
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -90,7 +91,7 @@ export const userApiService = observable({
   updateUsers: handleSuccess(UserActions.updateUsersSuccess)(
     async (updatedUsersData: any): Promise<{ users: User[] }> => {
       try {
-        const response = await axiosInstance.put(API_BASE_URL, updatedUsersData);
+        const response = await axiosInstance.put(API_BASE_URL.updateList, updatedUsersData);
         return { users: response.data as User[] };
       } catch (error) {
         console.error("Error updating users:", error);

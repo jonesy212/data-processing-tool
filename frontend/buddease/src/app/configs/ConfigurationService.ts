@@ -10,7 +10,7 @@ import {
 
 import dataVersions from "./DataVersionsConfig";
 import { frontendDocumentConfig } from "./FrontendDocumentConfig";
-import { LazyLoadScriptConfig } from "./LazyLoadScriptConfig";
+import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
 
@@ -45,7 +45,7 @@ export interface ApiConfig {
 
 interface ConfigurationOptions {
   namingConventions: any;
-  lazyLoadScriptConfig: LazyLoadScriptConfig;
+  lazyLoadScriptConfig: LazyLoadScriptConfigImpl;
   apiConfig: ApiConfig;
   lastUpdated: string;
   userPreferences: {
@@ -69,7 +69,7 @@ interface ConfigurationOptions {
     storeConfig: StoreConfig;
     dataVersions: typeof dataVersions;
     frontendDocumentConfig: typeof frontendDocumentConfig;
-    lazyLoadScriptConfig: LazyLoadScriptConfig;
+    lazyLoadScriptConfig: LazyLoadScriptConfigImpl;
     userPreferences: typeof userPreferences;
     userSettings: typeof userSettings;
   }
@@ -79,7 +79,7 @@ interface ConfigurationOptions {
 class ConfigurationService {
   private static instance: ConfigurationService;
   private apiConfig: ApiConfig;
-  private cachedConfig: LazyLoadScriptConfig | null = null;
+  private cachedConfig: LazyLoadScriptConfigImpl | null = null;
   private apiConfigSubscribers: ((config: ApiConfig) => void)[] = [];
 
   private constructor() {
@@ -113,18 +113,18 @@ class ConfigurationService {
     return ConfigurationService.instance;
   }
 
-  setCachedConfig(config: LazyLoadScriptConfig): void {
+  setCachedConfig(config: LazyLoadScriptConfigImpl): void {
     this.cachedConfig = config;
   }
 
   // Get the cached configuration
-  getCachedConfig(): LazyLoadScriptConfig | null {
+  getCachedConfig(): LazyLoadScriptConfigImpl | null {
     return this.cachedConfig;
   }
 
-  getLazyLoadScriptConfig(): LazyLoadScriptConfig {
+  getLazyLoadScriptConfig(): LazyLoadScriptConfigImpl {
     // Example: Default configuration
-    const defaultConfig: LazyLoadScriptConfig = {
+    const defaultConfig: LazyLoadScriptConfigImpl = {
       timeout: 5000, // 5 seconds timeout for script loading
       onLoad: () => console.log("Script loaded successfully"),
       retryCount: 3, // Retry loading script up to 3 times

@@ -11,6 +11,7 @@ import { AquaChat } from "../AquaChat";
 const disconnectFromChatServer = (
   fluenceConnection: FluenceConnection,
   aquaChat: AquaChat
+
 ): void => {
   // Disconnect from Fluence server
   fluenceConnection.disconnect();

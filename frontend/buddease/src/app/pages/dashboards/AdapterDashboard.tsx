@@ -2,10 +2,10 @@
 import useLayoutGenerator from '@/app/components/hooks/GenerateUserLayout';
 import { AnimatedComponent, AnimatedComponentRef } from '@/app/components/libraries/animations/AnimationComponent';
 import ColorPalette from '@/app/components/styling/ColorPalette';
+import AdapterContent from '@/app/components/web3/dAppAdapter/AdapterContent';
 import DashboardLoader from '@/dashboards/DashboardLoader';
 import React, { ReactNode, useRef } from 'react';
 import CommonLayout from '../layouts/CommonLayout';
-import AdapterContent
 
 // Import specific icons for each platform
 import AndroidIcon from './icons/AndroidIcon';

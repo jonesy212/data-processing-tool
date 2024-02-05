@@ -39,6 +39,7 @@ type NotificationType =
   | "CustomNotification2"
   | "Ideation:Brainstorming"
   | "OperationError"
+  | "ButtonClick"
   | CustomNotificationType;
 
 export interface NotificationContextProps {

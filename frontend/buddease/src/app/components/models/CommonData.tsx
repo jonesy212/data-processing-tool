@@ -6,6 +6,9 @@ import { Todo } from "../todos/Todo";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
 import { Data } from "./data/Data";
+import TeamData from "./teams/TeamData";
+
+
 // Define a generic type for data
 interface CommonData<T> {
   title?: React.ReactNode
@@ -18,10 +21,14 @@ type SupportedData =
   UserData
   | Data
   | Todo
+  | Task
   | CommunityData
   | DocumentData
   | ProjectData
+  | TeamData
   | { [key: string]: any };
+
+
 
 // Define the DetailsProps interface with the generic CommonData type
 interface DetailsProps<T> {
@@ -42,16 +49,27 @@ const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({ data }) => {
         <div>
           <h3>Details</h3>
           {/* Handle different data types here */}
-          {Object.entries(data.data).map(([key, value]) => (
-            <p key={key}>
-              {key}: {value}
-            </p>
-          ))}
+          {Object.entries(data.data).map(([key, value]) => {
+            if (React.isValidElement(value)) {
+              return (
+                <p key={key}>
+                  {key}: {value}
+                </p>
+              );
+            } else {
+              return (
+                <p key={key}>
+                  {key}: {String(value)}
+                </p>
+              );
+            }
+          })}
         </div>
       )}
     </div>
   );
 };
+
 
 
 export default CommonDetails;

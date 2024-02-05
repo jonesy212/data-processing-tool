@@ -13,6 +13,35 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onSuccess, onSearch }) =>
   const [password, setPassword] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); 
 
+
+
+
+
+
+
+  const handleAdminLogin = async () => {
+    try {
+      // Implement administrator login using Transfer Tokens
+      // Send a request to authenticate the administrator using Transfer Token instead of username/password
+      
+      // Example:
+      const response = await axios.post("/api/admin/login", { token: transferToken });
+      const accessToken = response.data.access_token;
+
+      // Store the access token in local storage
+      localStorage.setItem("adminToken", accessToken);
+  
+      // Set the authorization token in axios headers
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+  
+      // Activate dynamic components for administrators
+      dynamicHooks.authentication.hook().toggleActivation({
+        accessToken,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleLogin = async () => {
     try {
       const response = await axiosInstance.post("/auth/login", { username, password });

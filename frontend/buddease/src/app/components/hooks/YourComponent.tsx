@@ -11,7 +11,7 @@ import useNotificationManagerService, { NotificationManagerServiceProps } from "
 import { PromptPageProps } from "../prompts/PromptPage";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
-import NotificationManager from "../support/NotificationNotificationManager";
+import NotificationManager from "../support/NotificationManager";
 import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
@@ -171,7 +171,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     await dataFrameAPI.appendDataToBackend(newData);
     fetchData("", {} as (action: DataAnalysisAction) => {
       // trigger update after append
-      updateCalendarData()
+      updateCalendarData(newData)
     });
   }
   // Render UI components to display appended data
@@ -181,7 +181,15 @@ const YourComponent: React.FC<YourComponentProps> = ({
       <ProgressBar progress={calendarData[0].projects[0].progress} />
       {/* Display the notification manager */}
 
-      <NotificationManager {...notificationManagerProps} />
+      <NotificationManager
+            notifications={[]}
+            setNotifications={() => { }}
+            notify={() => {
+              // Implement logic to handle notification
+              console.log("Notification triggered");
+              return Promise.resolve();
+             }}
+          />
 
       <LoadingSpinner loading={tracker.loading} />
 

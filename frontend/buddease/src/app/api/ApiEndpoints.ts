@@ -2,6 +2,11 @@
 const BASE_URL = "https://your-api-base-url";
 
 export const endpoints = {
+  apiConfig: {
+    getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
+    updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
+  },
+
   users: {
     list: `${BASE_URL}/users`, // GET request for fetching all users
     single: (userId: number) => `${BASE_URL}/users/${userId}`, // GET request for fetching a specific user by ID
@@ -18,7 +23,6 @@ export const endpoints = {
     add: `${BASE_URL}/api/user-roles`,
     remove: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
     update: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
-    
   },
 
   userManagement: {
@@ -27,6 +31,15 @@ export const endpoints = {
     deleteUserAccount: (userId: number) => `${BASE_URL}/api/users/${userId}/delete`,
     getUserDetails: (userId: number) => `${BASE_URL}/api/users/${userId}`,
     listUsers: `${BASE_URL}/api/users`,
+  },
+
+  userRolesNFT: {
+    list: `${BASE_URL}/api/user-roles-nft`,
+    single: (roleId: number) => `${BASE_URL}/api/user-roles-nft/${roleId}`,
+    add: `${BASE_URL}/api/user-roles-nft`,
+    remove: (roleId: number) => `${BASE_URL}/api/user-roles-nft/${roleId}`,
+    update: (roleId: number) => `${BASE_URL}/api/user-roles-nft/${roleId}`,
+    // Add more endpoints as needed
   },
 
   collaborationTools: {
@@ -53,6 +66,9 @@ export const endpoints = {
     getDocumentDetails: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}`,
     listDocuments: `${BASE_URL}/api/collaboration/documents`,
     // Add more collaboration endpoints as needed
+
+
+
 
   },
   
@@ -277,9 +293,6 @@ export const endpoints = {
     updatePaginationOptions: `${BASE_URL}/api/pagination/update-options`,
   },
 
-
-
-
   todos: {
     assign: (todoId: number, teamId: number) =>
       `${BASE_URL}/api/tasks/${todoId}/assign/${teamId}`,
@@ -338,6 +351,8 @@ export const endpoints = {
     joinProject: (projectId: number) => `${BASE_URL}/api/freelancers/projects/${projectId}/join`,
     // Add more freelancer-related endpoints as needed
   },
+
+
   globalCollaboration: {
     startProject: `${BASE_URL}/api/global-collaboration/start-project`,
     getProjects: `${BASE_URL}/api/global-collaboration/projects`,
@@ -365,7 +380,6 @@ export const endpoints = {
   },
 
   monetization: {
-    
     startClientProject: `${BASE_URL}/api/monetization/start-client-project`,
     getClientProjects: `${BASE_URL}/api/monetization/client-projects`,
     getClientProjectDetails: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
@@ -377,6 +391,7 @@ export const endpoints = {
     redeemGift: (giftId: string) => `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
   
   },
+
   projectOwners: {
     list: `${BASE_URL}/api/project-owners`,
     single: (ownerId: number) => `${BASE_URL}/api/project-owners/${ownerId}`,
@@ -385,6 +400,7 @@ export const endpoints = {
     inviteMember: (projectId: number, memberId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
     // Add more project owner-related endpoints as needed
   },
+
   toolbar: {
     fetchToolbarSize: `${BASE_URL}/api/toolbar/size`,
     updateToolbarSize: `${BASE_URL}/api/toolbar/size`,

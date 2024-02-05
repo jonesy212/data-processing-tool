@@ -1,3 +1,4 @@
+import IdeaCreationPhase from './IdeaCreationPhase';
 import IdeaPhase from './IdeationPhase';
 
 const IdeaLifecycle = () => {
@@ -5,6 +6,7 @@ const IdeaLifecycle = () => {
     <div>
       <h2>Idea Lifecycle</h2>
       {/* Render different phases based on your application state */}
+      <IdeaCreationPhase />
       <IdeaPhase phaseName="Idea" />
       <IdeaPhase phaseName="Team Building" />
       <IdeaPhase phaseName="Ideation" />

@@ -40,3 +40,13 @@ export const deleteUserRole = async (roleId: number): Promise<void> => {
     throw error;
   }
 };
+
+
+export const removeUserRoleSaga = async (roleId: number): Promise<void> => { 
+  try {
+    await axiosInstance.delete(endpoints.userRoles.single(roleId));
+  } catch (error) {
+    console.error('Error deleting user role:', error);
+    throw error;
+  }
+}

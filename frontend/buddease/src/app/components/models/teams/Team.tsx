@@ -3,7 +3,9 @@ import Project from "../../projects/Project";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
 import CommonDetails from '../CommonData';
+import { DataDetailsProps } from "../data/Data";
 import { Progress } from "../tracker/ProgresBar";
+import TeamData from "./TeamData";
 
 interface Team {
   id: number;
@@ -15,6 +17,7 @@ interface Team {
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
+  data: TeamData
   // Add other team-related fields as needed
 }
 
@@ -71,6 +74,7 @@ const team: Team = {
       description: "Description of Project A",
       members: [],
       tasks: [],
+      videoData: [],
       startDate: new Date(),
       endDate: new Date(),
       phases: [],
@@ -182,6 +186,8 @@ const team: Team = {
     hasQuota: false,
     profilePicture: "profile picture",
     processingTasks: [] as DataProcessingTask[],
+    traits: "traits" as unknown as typeof CommonDetails
+
   },
   then(callback: (newTeam: Team) => void) {
     const newTeam = {
@@ -206,25 +212,17 @@ const team: Team = {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// using commong detais we genrate detais for components by mapping through the objects.
+// Refactored CommonDetails component to handle specific data types
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => (
   <CommonDetails data={team} />
 );
 
-export { TeamDetails };
+
+const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
+  <CommonDetails data={{ data: team }} />
+);
+
+export { DataDetailsComponent, TeamDetails };
 
   export type { Team };
 

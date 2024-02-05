@@ -93,14 +93,16 @@ import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import ProjectList from "@/app/components/lists/ProjectList";
 import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
-import NotificationManager from "@/app/components/support/NotificationNotificationManager";
-import { UserData } from "@/app/components/users/User";
+import NotificationManager from "@/app/components/support/NotificationManager";
+import { User, UserData, UserDetails } from "@/app/components/users/User";
 
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
 import DataProcessingComponent from "@/app/components/models/data/DataProcessingComponent";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { Notification } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType } from "@/app/components/support/NotificationContext";
+import { PermissionsEditor } from "@/app/components/users/PermissionsEditor";
+import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
 import { saveProfile } from "@/app/components/users/userSnapshotData";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
@@ -348,40 +350,13 @@ const DesignDashboard: React.FC<{
           <TeamList />
           <ProjectList tasks={[]} />
           <NotificationManager
-            notifications={notifications}
-            addNotification={(notification: Notification) =>
-              setNotifications([...notifications, notification])
-            }
-            removeNotification={(id: string) =>
-              setNotifications((prevNotifications) =>
-                prevNotifications.filter(
-                  (notification) => notification.id !== id
-                )
-              )
-            }
-            notify={(
-              message: string,
-              content: any,
-              date: Date = new Date(),
-              type: NotificationType
-            ) => {
-              const newNotification: Notification = {
-                id: UniqueIDGenerator.generateNotificationID(
-                  initialNotification, // Pass the actual notification object
-                  date,
-                  type
-                ),
-                date,
-                type,
-                message,
-                content,
-                createdAt: new Date(),
-              };
-              setNotifications((prevNotifications) => [
-                ...prevNotifications,
-                newNotification,
-              ]);
-            }}
+            notifications={[]}
+            setNotifications={() => { }}
+            notify={() => {
+              // Implement logic to handle notification
+              console.log("Notification triggered");
+              return Promise.resolve();
+             }}
           />
 
           <ModalGenerator
@@ -528,6 +503,14 @@ const DesignDashboard: React.FC<{
       <Clipboard />
       <Events />
       <DataAnalysisTypes />
+
+      {/*User Managment Components */}
+      <UserList />
+      <UserDetails user={{} as User} />
+      <UserRolesEditor />
+      <PermissionsEditor permissions={{}} />
+
+      {/*User Managment Functionalities */}
     </div>
   );
 };

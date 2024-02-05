@@ -78,7 +78,7 @@ const UserJourneyManager: React.FC = () => {
     } catch (error) {
       // Handle any network or unexpected errors
       console.error("Error sending questionnaire responses:", error);
-      notify("There was an error saving your submission, try again", NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED, new Date, 'Oper');
+      notify("There was an error saving your submission, try again", NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR, new Date, 'OperationError');
     }
   };
 

@@ -5,8 +5,8 @@ interface CollaborationPreferences {
     teamBuilding: TeamBuildingSettings;
     projectManagement: ProjectManagementSettings;
     meetings: MeetingsSettings;
-  brainstorming: BrainstormingSettings;
-  branding: BrandingSettings; // Add branding settings
+    brainstorming: BrainstormingSettings;
+    branding: BrandingSettings; // Add branding settings
     // Add other collaboration preferences as needed
   }
 // Example usage
@@ -56,7 +56,36 @@ const collaborationPreferences: CollaborationPreferences = {
   branding: {
     logoUrl: "https://example.com/logo.png",
     themeColor: "#3366cc",
-    // Add more branding-related settings
+    secondaryThemeColor: "",
+    backgroundColor: "",
+    textColor: "",
+    linkColor: "",
+    buttonColor: "",
+    borderColor: "",
+    shadowColor: "",
+    hoverColor: "",
+    accentColor: "",
+    successColor: "",
+    errorColor: "",
+    warningColor: "",
+    infoColor: "",
+    darkModeBackground: "",
+    darkModeText: "",
+    fontPrimary: "",
+    fontSecondary: "",
+    fontHeading: "",
+    fontSizeSmall: "",
+    fontSizeMedium: "",
+    fontSizeLarge: "",
+    lineHeightNormal: "",
+    lineHeightMedium: "",
+    lineHeightLarge: "",
+    borderRadiusSmall: "",
+    borderRadiusMedium: "",
+    borderRadiusLarge: "",
+    spacingSmall: "",
+    spacingMedium: "",
+    spacingLarge: ""
   },
   // Add other collaboration preferences as needed
 };

@@ -89,3 +89,5 @@ export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
 
 // Export reducer for the API manager slice
 export default useApiManagerSlice.reducer;
+
+export type { ApiManagerState };

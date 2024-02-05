@@ -3,7 +3,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import Clipboard from "@/app/ts/clipboard";
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
@@ -22,7 +22,6 @@ import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
 
 
 
-
 // DocumentData.tsx
 export interface DocumentData extends Document {
   id: number;
@@ -30,6 +29,8 @@ export interface DocumentData extends Document {
   content: string;
   topics: string[]
   highlights: string[];
+  load: () => void;
+  files: any[]; 
   // Add more properties if needed
 }
 

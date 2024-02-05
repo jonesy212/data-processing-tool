@@ -9,7 +9,7 @@ export interface TrackerManagerState extends EntityState<WritableDraft<Todo>, st
 
 export const useTodoManagerSlice = createSlice({
   name: "todoManager",
-  initialState: todoInitialState as unknown as TrackerManagerState,
+  initialState: todoInitialState,
   reducers: {
     toggleTodo: (state, action: PayloadAction<string>) => {
       const todo = state.entities[action.payload] as WritableDraft<Todo>;

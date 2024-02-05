@@ -14,21 +14,38 @@ const useIdeationPhase = () => {
   }, []);
 };
 
+
+const useIdeaCreationPhase = () => {
+  useEffect(() => {
+    // Add logic for the Idea Creation phase
+    console.log('Idea Creation Phase Hook triggered');
+    // Perform actions specific to the Idea Creation phase
+
+    return () => {
+      // Cleanup logic for the Idea Creation phase
+      console.log('Cleanup for Idea Creation Phase Hook');
+    };
+  }, []);
+};
+
 const IdeationPhase = ({ phaseName }: { phaseName: string }) => {
   // Use the corresponding phase hook based on the phaseName
   switch (phaseName) {
     case 'Idea':
       useIdeationPhase();
       break;
-  case 'ConceptDevelopment':
-    useIdeationPhase();
-    break;
-  case 'FurtherConceptDetails':
-    // You can add another hook if needed
-    break;
-    // Add more cases for other phases as needed
-    default:
+    case 'IdeaCreation':
+        useIdeaCreationPhase();
+        break
+    case 'ConceptDevelopment':
+      useIdeationPhase();
       break;
+    case 'FurtherConceptDetails':
+      // You can add another hook if needed
+      break;
+      // Add more cases for other phases as needed
+      default:
+        break;
   }
 
   return (
@@ -39,6 +56,13 @@ const IdeationPhase = ({ phaseName }: { phaseName: string }) => {
         <div>
           {/* Add components or content specific to the Idea phase */}
           <p>Content for the Idea phase</p>
+        </div>
+      )}
+      {/* Render content specific to the Idea Creation phase */}
+      {phaseName === 'IdeaCreation' && (
+        <div>
+          {/* Add components or content specific to the Idea Creation phase */}
+          <p>Content for the Idea Creation phase</p>
         </div>
       )}
       {/* Render content specific to the Ideation phase */}

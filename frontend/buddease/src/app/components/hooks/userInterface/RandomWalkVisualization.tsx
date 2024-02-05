@@ -1,9 +1,13 @@
-import { useState } from 'react';
-import { DatasetModel } from '../../todos/tasks/DataSetModel';
-import Visualization from './Visualization'; // Assuming you have the Visualization component
-import { endpoints } from '@/app/api/ApiEndpoints';
-import axiosInstance from '../../security/csrfToken';
-import { DocumentData } from '../../documents/DocumentBuilder';
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { useState } from "react";
+import { DocumentData } from "../../documents/DocumentBuilder";
+import axiosInstance from "../../security/csrfToken";
+import { DatasetModel } from "../../todos/tasks/DataSetModel";
+import Visualization from "./Visualization"; // Assuming you have the Visualization component
+
+interface RandomWalkVisualizationProps {
+  updateTeamData: (randomWalk: number[]) => void; // Define the prop type
+}
 
 // Function to generate a random walk
 const generateRandomWalk = (steps = 100) => {
@@ -27,6 +31,8 @@ const generateRandomWalk = (steps = 100) => {
   return randomWalk;
 };
 
+
+
 // Function to connect with the prompting system
 const suggestBasedOnRandomWalk = (randomWalk: any) => {
   // Implement your logic to suggest based on the random walk
@@ -36,63 +42,76 @@ const suggestBasedOnRandomWalk = (randomWalk: any) => {
   // Example: Suggest based on the final position of the random walk
   const finalPosition = randomWalk[randomWalk.length - 1];
   if (finalPosition > 50) {
-    suggestions.push('You reached a high position in the random walk!');
+    suggestions.push("You reached a high position in the random walk!");
   }
 
   return suggestions;
 };
 
-const RandomWalkVisualization = () => {
-  const [randomWalk, setRandomWalk] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-
-
+const RandomWalkVisualization: React.FC<RandomWalkVisualizationProps> = ({
+  updateTeamData,
+}) => {
+  const [randomWalk, setRandomWalk] = useState<number[]>([]); // Define the type as number[]
+  const [suggestions, setSuggestions] = useState<string[]>([]); // Define the type as string[]
 
   // Function to suggest related documents based on the random walk
-const suggestRelatedDocuments = async (randomWalk: Random) => {
-  try {
-    // Make API call to retrieve documents based on topics identified in the random walk
-    const response = await axiosInstance.get(endpoints.data.list);
-    const documents = response.data; // Assuming the response contains a list of documents
+  const suggestRelatedDocuments = async (randomWalk: number[]) => {
+    try {
+      // Make API call to retrieve documents based on topics identified in the random walk
+      const response = await axiosInstance.get(endpoints.data.list);
+      const documents = response.data; // Assuming the response contains a list of documents
 
-    // Perform content analysis on documents and identify key topics
-    // Compare topics with topics identified in the random walk
-    // Implement your logic to suggest related documents
+      // Perform content analysis on documents and identify key topics
+      // Compare topics with topics identified in the random walk
+      // Implement your logic to suggest related documents
 
-    // Placeholder logic for demonstration purposes
-    const suggestedDocuments = documents.filter((document: DocumentData) =>
-      document.topics.includes('placeholderTopic')
-    );
+      // Placeholder logic for demonstration purposes
+      const suggestedDocuments = documents.filter((document: DocumentData) =>
+        document.topics.includes("placeholderTopic")
+      );
 
-    // Return suggested documents
-    return suggestedDocuments;
-  } catch (error) {
-    console.error('Error suggesting related documents:', error);
-    // Log the error for debugging purposes
-    // Notify the user or handle the error gracefully based on the application requirements
-    return []; // Return an empty array in case of error
-  }
-};
+      // Return suggested documents
+      return suggestedDocuments;
+    } catch (error) {
+      console.error("Error suggesting related documents:", error);
+      // Log the error for debugging purposes
+      // Notify the user or handle the error gracefully based on the application requirements
+      return []; // Return an empty array in case of error
+    }
+  };
 
   // Function to handle the generation of a new random walk
+
   const handleGenerateRandomWalk = () => {
     const newRandomWalk = generateRandomWalk();
     setRandomWalk(newRandomWalk);
 
-    // Get suggestions based on the new random walk
     const newSuggestions = suggestBasedOnRandomWalk(newRandomWalk);
     setSuggestions(newSuggestions);
+
+    // Call suggestRelatedDocuments to retrieve suggested documents based on the new random walk
+    suggestRelatedDocuments(newRandomWalk)
+      .then((suggestedDocuments) => {
+        console.log("Suggested documents:", suggestedDocuments);
+        // Optionally update the state or perform other actions based on the suggested documents
+      })
+      .catch((error) => {
+        console.error("Error retrieving suggested documents:", error);
+      });
   };
 
   return (
     <div>
       <button onClick={handleGenerateRandomWalk}>Generate Random Walk</button>
-
       {/* Visualize the random walk */}
       {randomWalk.length > 0 && (
-        <Visualization datasets={{} as DatasetModel[]} type="line" data={[randomWalk]} labels={['Steps']} />
+        <Visualization
+          datasets={{} as DatasetModel[]}
+          type="line"
+          data={[randomWalk]}
+          labels={["Steps"]}
+        />
       )}
-
       {/* Display suggestions */}
       {suggestions.length > 0 && (
         <div>

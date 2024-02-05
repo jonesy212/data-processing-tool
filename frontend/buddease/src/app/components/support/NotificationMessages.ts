@@ -238,6 +238,12 @@ const NOTIFICATION_MESSAGES = {
     FETCH_PROMPTS_FAILURE: "Failed to fetch prompts. Please try again."
     
   },
+  RandomWalk:{
+    FETCH_WALK_SUCCESS: "Random walk completed successfully.",
+    FETCH_WALK_ERROR: "Error fetching random walk. Please try again.",
+    
+  },
+
   
   Snapshot: {
     DEFAULT: (errorType: string, details: string) =>

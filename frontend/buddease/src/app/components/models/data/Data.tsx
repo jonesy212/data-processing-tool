@@ -32,7 +32,7 @@ interface Data {
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
   tags: string[];
-  phase: Phase | nu
+  phase: Phase | null
   then: (callback: (newData: Snapshot<Data>) => void) => void;
   // Add other common data properties as needed
 
@@ -67,7 +67,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
 );
 
 
-export type { Data };
+export type { Data, DataDetailsComponent, DataDetailsProps };
 
 
 

@@ -38,7 +38,7 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       date: new Date(),
       message: message,
       createdAt: new Date(),
-      type: "push",
+      type: "PushNotification",
       content: sender
     }));
     // Use the PushNotificationManager to send push notifications
@@ -52,7 +52,7 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       date: new Date(),
       message: message,
       createdAt: new Date(),
-      type: "announcement",
+      type: "Announcement",
       content: sender
     }));
     // Use the AnnouncementManager to send announcements
@@ -66,7 +66,7 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       date: new Date(),
       message: "New message!",
       createdAt: new Date(),
-      type: "buttonClick",
+      type: "ButtonClick",
       content: "App"
     }));
     // Send push notification on button click

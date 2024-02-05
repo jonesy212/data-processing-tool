@@ -1,4 +1,5 @@
 // DataDashboard.tsx
+import { Data } from "@/app/components/models/data/Data";
 import DataFilterForm, {
   DataFilterFormProps,
 } from "@/app/components/models/data/DataFilterForm";
@@ -9,7 +10,7 @@ const DataDashboard: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedTest, setSelectedTest] = useState<string>("t-test");
 
-  const [filteredData, setFilteredData] = useState<any[]>([]); // Assuming your data is an array of objects
+  const [filteredData, setFilteredData] = useState<Data[]>([]); // Initialize with an empty array
   const [loading, setLoading] = useState(false);
   const [dataframeInfo, setDataframeInfo] = React.useState<any | null>(null);
   const [chartType, setChartType] = useState<"line" | "bar" | "histogram">(
@@ -211,11 +212,22 @@ const DataDashboard: React.FC = () => {
 
       {/* Buttons for selecting chart type */}
       <div>
-        <button onClick={() => handleChartTypeChange("line")}>
+        <button
+          onClick={() => handleChartTypeChange("line")}
+          className={chartType === "line" ? "active" : ""}
+        >
           Line Chart
         </button>
-        <button onClick={() => handleChartTypeChange("bar")}>Bar Chart</button>
-        <button onClick={() => handleChartTypeChange("histogram")}>
+        <button
+          onClick={() => handleChartTypeChange("bar")}
+          className={chartType === "bar" ? "active" : ""}
+        >
+          Bar Chart
+        </button>
+        <button
+          onClick={() => handleChartTypeChange("histogram")}
+          className={chartType === "histogram" ? "active" : ""}
+        >
           Histogram
         </button>
       </div>
@@ -264,8 +276,7 @@ const DataDashboard: React.FC = () => {
       {/* File upload section */}
       <div>
         <h2>File Upload</h2>
-        <input type="file"
-          onChange={handleFileChange} />
+        <input type="file" onChange={handleFileChange} />
         <button onClick={handleUpload}>Upload File</button>
       </div>
 

@@ -1,5 +1,34 @@
 interface BrandingSettings {
-    logoUrl: string;
-    themeColor: string;
-    // ... align with ThemeConfig properties
-  }
+  logoUrl: string;
+  themeColor: string;
+  secondaryThemeColor: string;
+  backgroundColor: string;
+  textColor: string;
+  linkColor: string;
+  buttonColor: string;
+  borderColor: string;
+  shadowColor: string;
+  hoverColor: string;
+  accentColor: string;
+  successColor: string;
+  errorColor: string;
+  warningColor: string;
+  infoColor: string;
+  darkModeBackground: string;
+  darkModeText: string;
+  fontPrimary: string;
+  fontSecondary: string;
+  fontHeading: string;
+  fontSizeSmall: string;
+  fontSizeMedium: string;
+  fontSizeLarge: string;
+  lineHeightNormal: string;
+  lineHeightMedium: string;
+  lineHeightLarge: string;
+  borderRadiusSmall: string;
+  borderRadiusMedium: string;
+  borderRadiusLarge: string;
+  spacingSmall: string;
+  spacingMedium: string;
+  spacingLarge: string;
+}

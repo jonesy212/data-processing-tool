@@ -1,3 +1,5 @@
+import avoidCollisions from "./avoidCollisions";
+
 const generateRandomWalkPositions = (steps = 100) => {
   const positions = [{ x: 0, y: 0 }];
 

@@ -2,16 +2,16 @@
 import { useAuth } from "../../auth/AuthContext";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { Phase } from "../../phases/Phase";
-import { UserData } from "../../users/User";
+import { User } from "../../users/User";
 export interface Tracker {
     id: string;
     name: string;
     phases: Phase[];
     trackFileChanges: (file: DocumentData) => void;
-    trackFolderChanges: () => void;
+    trackFolderChanges: (fileLoader: DocumentData) => void;
   getName: (trackerName: string) => string;
-  updateUserProfile: (userData: UserData) => void; // New method to update user profile
-  sendNotification: (notification: string) => void; // New method to send notification
+  updateUserProfile: (userData: User) => void; // New method to update user profile
+  sendNotification: (notification: string, userData: User) => void; // New method to send notification
 
     // Add more properties as needed
 }
@@ -63,29 +63,30 @@ class TrackerClass implements Tracker {
   
   
   
-    updateUserProfile(userData: UserData): void {
+    updateUserProfile(userData: User): void {
       // Access dispatch function from AuthContext
       const { dispatch } = useAuth();
 
       // Dispatch action to update user profile
-      dispatch(updateData(userData));
+      dispatch({ type: 'LOGIN_WITH_ROLES', payload: { user: userData } });
       console.log("Updating user profile:", userData);
-      // Dispatch update actions using userManagerSlice.actions
+     // Dispatch update actions using userManagerSlice.actions
       // For example:
-      dispatch(updateFullName(userData.fullName));
+      // dispatch(updateFullName(userData.fullName));
       // dispatch(updateBio(userData.bio));
       // dispatch(updateProfilePicture(userData.profilePicture));
-      // dispatch(updateData(userData)); // If using updateData action
   }
 
-  sendNotification(notification: string): void {
-      // Access dispatch function from AuthContext
-      const { dispatch } = useAuth();
+  sendNotification(notification: string, userData: User): void {
+    // Access dispatch function from AuthContext
+    const { dispatch } = useAuth();
+  
+    // Dispatch sendNotification action using userManagerSlice.actions
+    dispatch({ type: 'LOGIN_WITH_ROLES', payload: { user: userData } });
 
-      // Dispatch sendNotification action using userManagerSlice.actions
-    dispatch(sendNotification(notification));
     console.log("Sending notification:", notification);
   }
+  
 
 
 

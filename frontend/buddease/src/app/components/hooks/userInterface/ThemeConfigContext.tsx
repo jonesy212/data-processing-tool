@@ -9,6 +9,7 @@ interface ThemeConfigProps {
   fontFamily: string;
   primaryColor: string;
   secondaryColor: string;
+  backgroundColor: string;
   isDarkMode: boolean;
     toggleDarkMode: () => void;
     setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;
@@ -53,6 +54,8 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
 
+  const backgroundColor = isDarkMode? "#1a1a1a" : "#fff";
+
   return (
     <ThemeConfigContext.Provider
       value={{
@@ -68,6 +71,7 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
         setFontFamily,
         themeConfig,
         applyThemeConfig,
+        backgroundColor,
         children,
       }}
     >

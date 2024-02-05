@@ -47,7 +47,8 @@ const createDynamicHook = ({
 
     return {
       isActive,
-      toggleActivation: () => {
+      toggleActivation: (accessToken: string) => {
+        
         setIsActive((prev) => !prev);
       },
       startAnimation: () => {},
