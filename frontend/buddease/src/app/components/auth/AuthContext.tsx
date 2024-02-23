@@ -9,19 +9,22 @@ interface AuthState {
   user: User | null;
   userRoles: string[]; // New property for user roles
   timestamp: number; 
+  userNFTs: string[]; // New property for user NFTs
+
 }
 
 interface AuthContextProps {
   state: AuthState;
   dispatch: React.Dispatch<AuthAction>;
   resetAuthState: () => void;
-  loginWithRoles: (user: User, roles: string[]) => void; 
+  loginWithRoles: (user: User, roles: string[], nfts: string[]) => void; 
   token: string | null;
+  user?: User | null;
 }
 
 interface AuthAction {
   type: 'LOGIN' | 'LOGOUT' | 'LOGIN_WITH_ROLES'; // New action type
-  payload?: { user: User; roles?: string[] }; // Updated payload
+  payload?: { user: User; roles?: string[], nfts?: string[] }; // Updated payload
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -31,7 +34,8 @@ const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   userRoles: [],
-  timestamp: 0
+  timestamp: 0,
+  userNFTs: []
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
@@ -41,7 +45,13 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case 'LOGOUT':
       return initialState;
     case 'LOGIN_WITH_ROLES':
-      return { ...state, id: '0', isAuthenticated: true, user: action.payload?.user || null, userRoles: action.payload?.roles || [] };
+      return {
+        ...state, id: '0',
+        isAuthenticated: true,
+        user: action.payload?.user || null,
+        userRoles: action.payload?.roles || [],
+        userNFTs: action.payload?.nfts|| []
+      };
     default:
       return state;
   }
@@ -56,8 +66,17 @@ const AuthProvider: React.FC<{ children: React.ReactNode, token: string }> = ({ 
   };
 
   // Function to login with roles
-  const loginWithRoles = (user: User, roles: string[]) => {
-    dispatch({ type: 'LOGIN_WITH_ROLES', payload: { user, roles } });
+  const loginWithRoles = (user: User, roles: string[], nfts: string[]) => {
+   // Verify user's NFTs and add corresponding roles
+  const verifiedRoles = roles.filter(role => {
+    // Logic to check if user has the required NFT for each role
+    return nfts.includes(role);
+  });
+    
+  dispatch({
+    type: 'LOGIN_WITH_ROLES',
+    payload: { user, roles: verifiedRoles, nfts }, // Update payload with verified roles and NFTs
+  });
   };
 
   return (

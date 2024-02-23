@@ -8,7 +8,7 @@ import { fetchData } from '../../utils/dataAnalysisUtils';
 
 export const ENDPOINT = 'http://your-backend-endpoint'; // Update with your actual backend endpoint
 
-const useRealtimeData = (initialData: any, updateCallback: (events: Record<string, CalendarEvent[]>, snapshotStore: SnapshotStore<Snapshot<Data>>) => void) => {
+const useRealtimeData = (initialData: any, updateCallback: (events: Record<string, CalendarEvent[]>) => void) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const useRealtimeData = (initialData: any, updateCallback: (events: Record<strin
 
     socket.on('updateData', (data: any, snapshotStore: SnapshotStore<Snapshot<Data>>) => {
       // Call the provided updateCallback with the updated data
-      updateCallback(data, snapshotStore);
+      updateCallback(data);
 
       // Emit an event to trigger further updates, if needed
       socket.emit('realtimeUpdate', data);
@@ -77,7 +77,6 @@ const useRealtimeData = (initialData: any, updateCallback: (events: Record<strin
   return {realtimeData, fetchData}
 };
 
-export default useRealtimeData;
 
 // Define your update callback function
 const updateCallback = (events: Record<string, CalendarEvent[]>) => {
@@ -94,3 +93,5 @@ const updateCallback = (events: Record<string, CalendarEvent[]>) => {
     });
   });
 };
+
+export default useRealtimeData;updateCallback

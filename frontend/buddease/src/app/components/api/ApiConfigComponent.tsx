@@ -10,6 +10,8 @@ import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { DocumentData } from "../documents/DocumentBuilder";
+import { ComponentActions } from '../libraries/ui/components/ComponentActions';
+import CreateComponentForm from "../libraries/ui/components/CreateComponentForm";
 import TaskTrackingComponent from "../models/tracker/TaskTrackingComponent";
 import { Phase } from "../phases/Phase";
 import ProfileSetupPhase from "../phases/onboarding/ProfileSetupPhase";
@@ -32,7 +34,9 @@ const ApiConfigComponent: React.FC = () => {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission
-    const csrfTokenInput = document.querySelector<HTMLInputElement>('[name="csrfmiddlewaretoken"]');
+    const csrfTokenInput = document.querySelector<HTMLInputElement>(
+      '[name="csrfmiddlewaretoken"]'
+    );
     
     axiosInstance.defaults.headers.post["X-CSRFToken"] = csrfTokenInput?.value;
     axiosInstance
@@ -95,7 +99,9 @@ const ApiConfigComponent: React.FC = () => {
   const renderActionContent = () => {
     switch (userPreferences.actions) {
       case "create":
-        return <CreateComponent />;
+        return <CreateComponentForm
+          dispatch={{}  as typeof ComponentActions}
+          ComponentActions={{} as typeof ComponentActions} />;;
       case "update":
         return <UpdateComponent />;
       case "delete":
@@ -144,9 +150,8 @@ const ApiConfigComponent: React.FC = () => {
           <Input />
         </Form.Item>
         <Form.Item>
-          <ButtonGenerator type="primary" htmlType="submit">
-            Save
-          </ButtonGenerator>
+        <ButtonGenerator type="button" htmlType="submit" />
+
         </Form.Item>
       </Form>
       {/* Configuration and Settings */}

@@ -18,6 +18,7 @@ interface PromptComponentProps extends Omit<PromptPageProps, "prompts"> {
 const PromptComponent: React.FC<PromptComponentProps> = ({
   title,
   description,
+  // userIdea,
   currentPage,
   onNextPage,
   onPreviousPage
@@ -40,10 +41,12 @@ const PromptComponent: React.FC<PromptComponentProps> = ({
   return (
     <div>
       <PromptPage
+        id={0}
         title={currentPage.title}
         description={currentPage.description}
         prompts={currentPage.prompts as Prompt[]}
         onGeneratePrompts={handleGeneratePrompts}
+        // userIdea={userIdea}
       />
       <button onClick={onPreviousPage}>Previous</button>
       <button onClick={handlePageSubmit}>Next</button>

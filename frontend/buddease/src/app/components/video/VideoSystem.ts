@@ -16,7 +16,7 @@ interface Video {
   id: string; // Unique identifier for the video
   title: string; // Title of the video
   description: string; // Description of the video
-  // Add other properties as needed
+  playlists: string[]; // List of playlists that the video belongs to
   url: string;
   thumbnailUrl: string;
   duration: number;
@@ -41,7 +41,7 @@ interface Video {
   isFamilyFriendly: boolean;
   isEmbeddable: boolean;
   isDownloadable: boolean;
-  videoData: Record<string, any>;
+  videoData: VideoData;
 }
 
 class VideoGenerator {
@@ -92,7 +92,11 @@ class VideoGenerator {
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {},
+      videoData: {} as VideoData,
+      videoDislikes: 0,
+      videoAuthor: "videoAuthor",
+      videoDurationInSeconds: 0,
+      playlists: [],
     };
   }
 }
@@ -128,3 +132,16 @@ if (
 } else {
   console.log("Cannot access feature name: Video Calling");
 }
+
+
+
+
+
+
+// Necessary Properties for VideoGenerator
+// Your VideoGenerator class already includes properties for generating videos. It covers essential properties such as id, title, description, url, etc. However, you might consider adding properties like author, genre, releaseDate, etc., depending on your application's requirements.
+
+// Summary
+// With the addition of VideoNode and VideoFeature interfaces, your system now has the capability to represent the hierarchical structure of video features. The VideoGenerator class can generate videos with default values for essential properties. You can further enhance the VideoGenerator to include additional properties based on your system's requirements.
+
+// If you have any specific properties or features in mind that you'd like to add or discuss further, please let me know!

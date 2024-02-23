@@ -4,9 +4,10 @@ from flask_limiter import Limiter
 
 from authentication.auth import register
 from configs.config import app
+from models.user.get_remote_address import get_remote_address
+from models.user.user import User
 # Import the tier system module
-from modules.tier_system import get_user_tier
-from user.get_remote_address import get_remote_address
+from utils.user_utils.tier_system import get_user_tier
 
 limiter = Limiter(app, key_func=get_remote_address)
 

@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTaskManagerStore } from '../state/stores/TaskStore';
 import { transformTasksToEvents, transformTodosToEvents } from './CalendarEvents';
-
-// Create a context to manage shared state
-const CalendarContext = React.createContext();
-
+ // Create a context to manage shared state
+const CalendarContext = React.createContext<any>(null);
+ 
 export const CalendarProvider = ({ children }) => {
-  const [calendarData, setCalendarData] = useState([]);
+  const [calendarData, setCalendarData] = useState<CalendarEvent>([]);
   const taskManagerStore = useTaskManagerStore();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +24,7 @@ export const CalendarProvider = ({ children }) => {
     };
 
     fetchData();
-  }, [taskManagerStore.tasks.pending, todos.realtimeData]);
+  }, [taskManagerStore.tasks.pending, taskManagerStore.todos.realtimeData]);
 
   const value = {
     calendarData,

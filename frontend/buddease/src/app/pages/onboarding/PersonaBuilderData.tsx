@@ -1,17 +1,15 @@
 // PersonaBuilderData.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
-import { CommonData, DetailsProps } from "@/app/components/models/CommonData";
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import Project from "@/app/components/projects/Project";
-import { NotificationType } from "@/app/components/support/NotificationContext";
+import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { User } from "@/app/components/users/User";
 import axios from "axios";
-import { FC } from "react";
+import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import { Question } from "./Question";
-import { useNotification } from '@/app/components/support/NotificationContext';
-import { Data } from "@/app/components/models/data/Data";
 
 const { notify } = useNotification();  // Destructure notify from useNotification
 
@@ -31,7 +29,7 @@ export const onboardingQuestionnaireData: {
   ],
 };
 
-export async function initializeUserData(id: string | number, user: any) {
+export async function initializeUserData(id: string | number, user: User) {
   try {
     const response = await axiosInstance.get(endpoints.tasks.initializeUserData, {
       params: {
@@ -41,22 +39,30 @@ export async function initializeUserData(id: string | number, user: any) {
     });
 
     // Move the logic inside the try block to handle the case when user.data is present
-    if (user.data) {
-      return {
-        datasets: '',
-        tasks: user.data.tasks,
-        questionnaireResponses: {
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-        },
-        id: id ? String(id) : '',
-        traits: {} as FC<DetailsProps<CommonData<Data>>>,
-      };
+    const timeBaseCode = generateTimeBasedCode()
+
+
+    if (response.status === 200) {
+      const userData = response.data; // Assuming the response data contains the user data
+
+      if (user.data) {
+        return {
+          datasets: '',
+          tasks: user.data.tasks,
+          questionnaireResponses: {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "6": "",
+            "7": "",
+          },
+          id: id ? String(id) : '',
+          traits: {},
+          timeBasedCode: timeBaseCode
+        };
+      }
     }
 
     return {
@@ -65,7 +71,7 @@ export async function initializeUserData(id: string | number, user: any) {
       id: id ? String(id) : '',
       questionnaireResponses: {},
       projects: {} as Project[],
-      traits: {} as FC<DetailsProps<CommonData<Data>>>,
+      traits: {},
       teams: {} as Team[],
       teamMembers: {} as TeamMember[],
     };

@@ -3,7 +3,9 @@
 import userSettings from "@/app/configs/UserSettings";
 import { useEffect } from "react";
 import { useAuth } from "../../auth/AuthContext";
+import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
+import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
 import { CustomPhaseHooks, Phase } from "../../phases/Phase";
 import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from "../../web3/dAppAdapter/IPFS";
 import createDynamicHook, {
@@ -207,7 +209,12 @@ async function initializeCollaborationPreferences() {
     const unsubscribe = await subscribeToBlockchainEvents(web3);
     const storageClient = initializeDecentralizedStorage();
     const brainstorming = await initializeCollaborationPreferences();
+    const teamBuilding = await initializeCollaborationPreferences();
+    const projectManagement = await initializeCollaborationPreferences();
+    const meetings = await initializeCollaborationPreferences();
+    const branding = await initializeCollaborationPreferences();
 
+    
 
     return  () => {
        unsubscribe();
@@ -215,8 +222,21 @@ async function initializeCollaborationPreferences() {
     };
   }
   
+  async function initializeBranding() {
+    // Replace with your branding preferences initialization logic
+    console.log("Initializing branding preferences");
+  
+    // Example: Initialize branding preferences with default values
+    return {
+      logoUrl: "https://example.com/logo.png",
+      primaryColor: "#3498db",
+      secondaryColor: "#2ecc71",
+      // Add more branding preferences as needed
+    };
+  }
+  
+  const branding = await initializeBranding();
 
-   
   // Example: Initialize collaboration preferences with default values
   return {
     enableRealTimeUpdates: true,
@@ -231,12 +251,11 @@ async function initializeCollaborationPreferences() {
     theme: "light",
     language: "en",
     fontSize: 14,
-    // teamBuilding: projectManagement, // Add the missing property
-    // projectManagement: projectManagement, // Add the missing property
-    // meetings: projectManagement, // Add the missing property
-    // brainstorming: projectManagement, 
-    
-    // Add more preferences as needed
+    teamBuilding: {} as TeamBuildingSettings, // Placeholder for teamBuilding
+    projectManagement: {} as ProjectManagementSettings, // Placeholder for projectManagement
+    meetings: {} as MeetingsSettings, // Placeholder for meetings
+    brainstorming: {} as BrainstormingSettings, // Placeholder for brainstorming
+    branding: {} as BrandingSettings,
   };
 }
 
@@ -315,15 +334,15 @@ async function fetchPhaseData(storageClient: any, keys: string[]) {
 }
 
 // Example: Initialize all phases in the app
-export function initializeAllPhases() {
+export async function initializeAllPhases() {
   // Replace with your logic to initialize all phases
   console.log("Initializing all phases");
 
   const allPhaseNames = Object.keys(allPhaseHooks);
   // Example: Initialize collaboration preferences
-  const collaborationPreferences = initializeCollaborationPreferences();
+  const collaborationPreferences = await initializeCollaborationPreferences(); // Wait for the promise to resolve
   applyCollaborationPreferences(collaborationPreferences);
-
+  
   // Example: Initialize web3 and decentralized storage
   const web3Instance = initializeWeb3();
   const unsubscribeFromBlockchainEvents = subscribeToBlockchainEvents(web3Instance);

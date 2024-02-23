@@ -61,4 +61,29 @@ export const CommonPersonaActions = {
   engageWithAudience: createAction("engageWithAudience"),
   collaborateOnPartnerships: createAction("collaborateOnPartnerships"),
 
+
+
+
+  // Collaboration Actions
+  initiateAudioCall: createAction<{ userId: string }>("initiateAudioCall"),
+  initiateVideoCall: createAction<{ userId: string }>("initiateVideoCall"),
+  initiateTextChat: createAction<{ userId: string }>("initiateTextChat"),
+  shareProjectResources: createAction<{ projectId: string, resources: any[] }>("shareProjectResources"),
+
+  // Project Management Actions
+  trackMilestoneProgress: createAction<{ milestoneId: string, progress: number }>("trackMilestoneProgress"),
+  submitBetaFeedback: createAction<{ feedback: string }>("submitBetaFeedback"),
+  analyzeProjectData: createAction("analyzeProjectData"),
+
+  // Community Involvement Actions
+  voteOnFeatureRequest: createAction<{ featureId: string, vote: 'up' | 'down' }>("voteOnFeatureRequest"),
+  participateInHackathon: createAction("participateInHackathon"),
+  earnCommunityRewards: createAction<{ rewardType: string, amount: number }>("earnCommunityRewards"),
+
+  // Monetization Actions
+  showcaseProjectInMarketplace: createAction<{ projectId: string }>("showcaseProjectInMarketplace"),
+  subscribeToPremiumFeatures: createAction("subscribeToPremiumFeatures"),
+  shareRevenueWithContributors: createAction<{ contributorId: string, revenue: number }>("shareRevenueWithContributors"),
+
+
 };

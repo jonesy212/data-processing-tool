@@ -1,73 +1,54 @@
-// user/UserStore.ts
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
+import { useAuth } from "../../auth/AuthContext";
+import { Task } from "../../models/tasks/Task";
+import { sanitizeData } from "../../security/SanitizationFunctions";
 import { User } from "../../users/User";
-import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
+import { AssignBaseStore } from "../AssignBaseStore";
+import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 
-export interface UserStore {
+// Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
+interface CustomUserStore extends Pick<AssignEventStore, 'assignedUsers' | 'updateEventStatus' | 'assignedEvents' | 'assignedTodos' | 'assignEvent' | 'assignUser' | 'unassignUser' | 'reassignUser' | 'assignUsersToEvents' | 'unassignUsersFromEvents' | 'setDynamicNotificationMessage' | 'reassignUsersToEvents' | 'assignUserToTodo' | 'unassignUserFromTodo' | 'reassignUserInTodo' | 'assignUsersToTodos' | 'unassignUsersFromTodos' | 'reassignUsersInTodos' | 'assignUserSuccess' | 'assignUserFailure'>, AssignBaseStore {
+  // Add additional properties specific to UserStore if needed
   users: Record<string, User[]>;
-  assignedTaskStore: AssignTaskStore;
-  snapshotStore: SnapshotStore<Record<string, User[]>>;
+  currentUser: User | null;
   updateUserState: (newUsers: Record<string, User[]>) => void;
-
-  batchFetchSnapshotsRequest: (snapshots: Record<string, User[]>) => void;
-    batchFetchSnapshotsSuccess: (snapshots: Record<string, Record<string, User[]>>) => void;
-    batchFetchSnapshotsFailure: (error: string) => void;
-  // Add other user-related properties as needed
+  assignTask: (task: Task, user: User) => void;
 }
 
-const userManagerStore = (): UserStore => {
+const userManagerStore = (): CustomUserStore => {
   const [users, setUsers] = useState<Record<string, User[]>>({
     // Initialize with the required structure
   });
 
-  // Include the AssignTaskStore
-  const assignedTaskStore = useAssignTaskStore();
-  // Initialize SnapshotStore
-  const initialSnapshot = {};
-  const snapshotStore = new SnapshotStore(
-    {} as SnapshotStoreConfig<typeof initialSnapshot>
-  );
+  // Accessing the currentUser from AuthContext
+  const { state: { user: currentUser } } = useAuth();
 
-  // Add other user-related methods and properties as needed
-
+  // Sanitize input before updating user state
   const updateUserState = (newUsers: Record<string, User[]>) => {
-    setUsers(newUsers);
+    // Sanitize the data before updating
+    const sanitizedUsers = sanitizeData(JSON.stringify(newUsers)); // Sanitize the data and convert it back to JSON
+    setUsers(JSON.parse(sanitizedUsers)); // Convert the sanitized data back to its original format and set the state
   };
 
-  
-  const batchFetchSnapshotsRequest = (snapshots: Record<string, Record<string, User[]>>) => void {
-    //make api call to fetch snapshots
-    
+  // Implement assignTask action
+  const assignTask = (task: Task, user: User) => {
+    // Logic to assign task to user
   };
 
-  const batchFetchSnapshotsSuccess = (
-    snapshots: Record<string, Record<string, User[]>>
-  ) => {
-    snapshotStore.state = snapshots;
-  };
-
-  const batchFetchSnapshotsFailure = (error: string) => {
-    console.error("Error fetching snapshots: ", error);
-  };
-
-
+  // Use the useAssignEventStore hook to access methods and properties from AssignEventStore
+  const assignEventStore = useAssignEventStore();
 
   const userStore = makeAutoObservable({
-  users,
-  assignedTaskStore,
-  snapshotStore,
-  updateUserState,
-  batchFetchSnapshotsRequest,
-  batchFetchSnapshotsSuccess,
-  batchFetchSnapshotsFailure,
-  // Add other user-related properties as needed
-});
+    users,
+    currentUser,
+    updateUserState,
+    assignTask,
+    ...assignEventStore,
+    // Add other user-related properties as needed
+  });
 
-
-return userStore;
-
+  return userStore;
 };
 
 export { userManagerStore };

@@ -1,6 +1,7 @@
 import { Theme } from "../components/libraries/ui/theme/Theme";
 import { Data } from "../components/models/data/Data";
 import { User } from "../components/users/User";
+import { UserRole } from "../components/users/UserRole";
 import { ApiConfig } from "./ConfigurationService";
 
 // Define the AppConfig interface

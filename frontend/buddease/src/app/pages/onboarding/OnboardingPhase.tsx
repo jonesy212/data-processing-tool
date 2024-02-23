@@ -3,7 +3,11 @@ import axiosInstance from "@/app/api/axiosInstance";
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import { useNotification } from "@/app/components/hooks/commHooks/useNotification";
-import CommonDetails, { DetailsProps, SupportedData } from "@/app/components/models/CommonData";
+import CommonDetails, {
+  DetailsProps,
+  SupportedData,
+} from "@/app/components/models/CommonData";
+import PaymentProcess from "@/app/components/payment/PaymentProcess";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { UserData } from "@/app/components/users/User";
@@ -20,11 +24,12 @@ export enum OnboardingPhase {
   QUESTIONNAIRE,
   PROFILE_SETUP,
   OFFER,
+  PAYMENT_PROCESS,
 }
 
 const UserJourneyManager: React.FC = () => {
   const { state } = useAuth();
-  const {notify} = useNotification()
+  const { notify } = useNotification();
   const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>(
     OnboardingPhase.REGISTER
   );
@@ -34,14 +39,13 @@ const UserJourneyManager: React.FC = () => {
   }
 
   let userData: TempUserData = {
-    id: state.user?.data?.id ?? '', // Use optional chaining and nullish coalescing operator to handle undefined id
+    id: state.user?.data?.id ?? "", // Use optional chaining and nullish coalescing operator to handle undefined id
     ...(state.user?.data || {}),
     questionnaireResponses: {},
     traits: (props: DetailsProps<SupportedData>, context?: any): ReactNode => {
-      return <CommonDetails {...props} />
-    }
+      return <CommonDetails {...props} />;
+    },
   };
-  
 
   onboardingQuestionnaireData.forEach((question: any) => {
     userData.questionnaireResponses[question.id] = "";
@@ -71,14 +75,23 @@ const UserJourneyManager: React.FC = () => {
 
       // Transition to the next phase (OFFER)
       setCurrentPhase(OnboardingPhase.OFFER);
-     
+
       // Notify user of successful questionnaire submission
-      notify("Your information has been successfully submitted", NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED, new Date, 'OperationSuccess');
-      
+      notify(
+        "Your information has been successfully submitted",
+        NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED,
+        new Date(),
+        "OperationSuccess"
+      );
     } catch (error) {
       // Handle any network or unexpected errors
       console.error("Error sending questionnaire responses:", error);
-      notify("There was an error saving your submission, try again", NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR, new Date, 'OperationError');
+      notify(
+        "There was an error saving your submission, try again",
+        NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR,
+        new Date(),
+        "OperationError"
+      );
     }
   };
 
@@ -102,6 +115,13 @@ const UserJourneyManager: React.FC = () => {
         console.error("Error sending profile setup data:", error);
       });
   };
+    
+    
+    const handlePaymentProcess = (profileData: any) => { 
+        // Logic for handling profile setup data
+        console.log("Profile setup data:", profileData);
+        // todo update to use
+    }
 
   const handleQuestionnaireSubmitWrapper = async (userResponses: any) => {
     await handleQuestionnaireSubmit(userResponses);
@@ -116,11 +136,14 @@ const UserJourneyManager: React.FC = () => {
       {currentPhase === OnboardingPhase.QUESTIONNAIRE && (
         <UserQuestionnaire onSubmit={handleQuestionnaireSubmitWrapper} />
       )}
-      {currentPhase === OnboardingPhase.OFFER && <OfferPage />}
-      {/* Add more phases as needed */}
       {currentPhase === OnboardingPhase.PROFILE_SETUP && (
         <ProfileSetupPhase onSubmit={handleProfileSetup} />
       )}
+      {currentPhase === OnboardingPhase.OFFER && <OfferPage />}
+      {/* Add more phases as needed */}
+          {currentPhase === OnboardingPhase.PAYMENT_PROCESS && (
+              <PaymentProcess onSubmit={handlePaymentProcess} />
+          )}
     </div>
   );
 };

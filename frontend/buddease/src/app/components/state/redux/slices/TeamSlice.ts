@@ -11,7 +11,7 @@ const initialState: TeamManagerState = {
   teamName: '',
 };
 
-export const teamManagerSlice = createSlice({
+export const useTeamManagerSlice = createSlice({
   name: 'teamManager',
   initialState,
   reducers: {
@@ -38,10 +38,10 @@ export const teamManagerSlice = createSlice({
 });
 
 // Export actions
-export const { updateTeamName, addTeam, removeTeam } = teamManagerSlice.actions;
+export const { updateTeamName, addTeam, removeTeam } = useTeamManagerSlice.actions;
 
 // Export selector for accessing the teams from the state
 export const selectTeams = (state: { teams: TeamManagerState }) => state.teams.teams;
 
 // Export reducer for the team entity slice
-export default teamManagerSlice.reducer;
+export default useTeamManagerSlice.reducer;

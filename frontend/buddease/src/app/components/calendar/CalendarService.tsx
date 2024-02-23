@@ -1,7 +1,7 @@
 import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
-import { CalendarEvent } from '../state/stores/CalendarStore';
+import { CalendarEvent } from '../state/stores/CalendarEvent';
 import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
 
 

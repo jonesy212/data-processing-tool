@@ -16,7 +16,7 @@ class ProjectPhaseService {
       // Use fetch or your preferred HTTP library
       const response = await fetch('/api/project/phase');
       const data = await response.json();
-      return data.phase; // Assuming the backend responds with the current project phase
+      return data.phase;
     }
   
     // Add more methods as needed

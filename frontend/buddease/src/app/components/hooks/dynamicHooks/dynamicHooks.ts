@@ -4,13 +4,17 @@ import { useEffect, useState } from "react";
 import { loadDashboardState } from "../../dashboards/LoadDashboard";
 import useAqua from "../../web3/aquaIntegration/hooks/useAqua";
 import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuence";
+import useIdleTimeout from "../commHooks/useIdleTimeout";
 import useAuthentication from "../useAuthentication";
 import createDynamicHook from "./dynamicHookGenerator";
 
-const handleLogin = () => {
+const [username, setUsername] = useState("");
+const [password, setPassword] = useState("");
+
+export const handleLogin = (username: string, password: string) => {
   performLogin(
-    "exampleUsername",
-    "examplePassword",
+    username,
+    password,
     () => {
       // On successful login
       console.log("Login successful!");
@@ -31,12 +35,15 @@ const authenticationHook = createDynamicHook({
     const accessToken = localStorage.getItem("token");
     return !!accessToken;
   },
-  asyncEffect: async (): Promise<() => void> => {
+
+  // Your async effect function
+  asyncEffect: async (idleTimeoutId, startIdleTimeout): Promise<() => void> => {
     useEffect(() => {
       console.log("useEffect triggered for Authentication");
       const user = useAuthentication();
       if (user.isLoggedIn) {
-        handleLogin();
+        // Use setUsername and setPassword to update the state
+        handleLogin(username, password);
       } else {
         console.log("User not logged in, show login prompt");
       }
@@ -44,14 +51,18 @@ const authenticationHook = createDynamicHook({
       return () => {
         console.log("useEffect cleanup for Authentication");
       };
-    }, []);
+    }, [username, password]); // Add dependencies if needed
     return async () => {};
   },
+
   resetIdleTimeout: () => {
-    // add logic to reset idle timeout
+    const { idleTimeoutId, startIdleTimeout } = useIdleTimeout(); // Get idleTimeoutId from the useIdleTimeout hook
+    clearTimeout(idleTimeoutId); // Clear the existing idle timeout
+    startIdleTimeout(); // Restart the idle timeout
   },
   isActive: true, // set hook to be active
 });
+
 
 // Job Search
 const jobSearchHook = createDynamicHook({
@@ -143,8 +154,6 @@ const userProfileHook = createDynamicHook({
   isActive: true, // set hook to be active
 });
 
-
-
 // Function to generate prompts based on user ideas
 const generatePrompt = (userIdea: string, roles: string[]): string | null => {
   // Replace this logic with your actual prompt generation based on user ideas and roles
@@ -227,7 +236,6 @@ const subscriptionService = {
 
   unsubscribeAll: () => {
     subscriptionService.subscriptions.clear();
-
   },
 
   connectWeb3Provider: (web3Provider: Web3Provider) => {

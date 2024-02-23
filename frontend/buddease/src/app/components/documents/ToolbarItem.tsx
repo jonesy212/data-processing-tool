@@ -8,8 +8,6 @@ interface ToolbarItemProps {
 }
 
 
-
-
 const ToolbarItem: React.FC<ToolbarItemProps> = ({ id, label, onClick }) => {
   return (
     <button id={id} onClick={onClick}>

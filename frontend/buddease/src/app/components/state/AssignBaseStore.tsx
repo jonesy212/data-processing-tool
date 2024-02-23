@@ -1,9 +1,10 @@
 // AssignBaseStore.tsx
 import { makeAutoObservable } from "mobx";
+import { Data } from "../models/data/Data";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
-import SnapshotStore, { SnapshotStoreConfig } from "./stores/SnapshotStore";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./stores/SnapshotStore";
 
 export interface AssignBaseStore {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
@@ -11,7 +12,7 @@ export interface AssignBaseStore {
   assignedTodos: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTasks: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTeams: Record<string, string[]>; // Use ID as key and array of todo IDs as value
-  
+  events: Record<string, Data[]>;
   assignItem: (itemId: string, userId: string) => void;
   assignUser: (itemId: string, userId: string) => void;
   assignTeam: (itemId: string, teamId: string) => void;
@@ -28,7 +29,7 @@ export interface AssignBaseStore {
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
 
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Record<string, Todo[]>>
+  snapshotStore: SnapshotStore<Snapshot<Data>>
 
   reassignUsersToItems: (
     itemIds: string[],
@@ -81,10 +82,10 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignedTodos: Record<string, string[]> = {};
   const assignedTeams: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
-  
+  const events: Record<string, Data[]> = {};
   // Create an instance of SnapshotStore
-  const snapshotStore = new SnapshotStore<Record<string, Todo[]>>(
-    {} as SnapshotStoreConfig<Record<string, Todo[]>>
+  const snapshotStore = new SnapshotStore<Snapshot<Data>>(
+    {} as SnapshotStoreConfig<Snapshot<Data>>
   );
 
   const assignItem = (itemId: string, assignedTo: string) => {
@@ -499,72 +500,47 @@ const useAssignBaseStore = (): AssignBaseStore => {
   }
 
 
-  makeAutoObservable({
-    assignItem,
-    assignedUsers,
-    assignedItems,
-    assignedTodos,
-    assignUser,
-    unassignUser,
-    reassignUser,
-    assignUsersToItems,
-    unassignUsersFromItems,
-    reassignUsersToItems,
-    assignUserToTodo,
-    unassignUserFromTodo,
-    reassignUserInTodo,
-    assignUsersToTodos,
-    unassignUsersFromTodos,
-    reassignUsersInTodos,
-    assignUserSuccess,
-    assignUserFailure,
-    setDynamicNotificationMessage,
-    assignTeamToTodo,
-    assignTodosToUsersOrTeams
-    // Add more properties or methods as needed
-  });
-
-
-
- 
-
-  return {
-    assignItem,
-    assignedUsers,
-    snapshotStore,
-    assignedItems: {},
-    assignedTasks: {},
-    assignedTodos: {},
-    assignedTeams: {},
-    assignTeamToTodo,
-    unassignTeamToTodo,
-    reassignTeamToTodo,
-    assignTeamToTodos, 
-    assignTeamMemberToTeam,
-    assignTeam,
-    assignTaskToTeam,
-    assignTodoToTeam,
-    unassignTeamMemberFromItem,
-    assignUser,
-    unassignUser,
-    reassignUser,
-    assignUsersToItems,
-    unassignUsersFromItems,
-    reassignUsersToItems,
-    assignUserToTodo,
-    unassignUserFromTodo,
-    reassignUserInTodo,
-    assignUsersToTodos,
-    unassignUsersFromTodos,
-    reassignUsersInTodos,
-    assignUserSuccess,
-    assignUserFailure,
-    setDynamicNotificationMessage,
-    reassignTeamToTodos,
-    unassignTeamFromTodos,
-    assignTodosToUsersOrTeams
-    // Add more properties or methods as needed
-  };
+  const store: AssignBaseStore = makeAutoObservable({
+      assignItem,
+      assignedUsers,
+      snapshotStore,
+      events: {},
+      assignedItems: {},
+      assignedTasks: {},
+      assignedTodos: {},
+      assignedTeams: {},
+      assignTeamToTodo,
+      unassignTeamToTodo,
+      reassignTeamToTodo,
+      assignTeamToTodos, 
+      assignTeamMemberToTeam,
+      assignTeam,
+      assignTaskToTeam,
+      assignTodoToTeam,
+      unassignTeamMemberFromItem,
+      assignUser,
+      unassignUser,
+      reassignUser,
+      assignUsersToItems,
+      unassignUsersFromItems,
+      reassignUsersToItems,
+      assignUserToTodo,
+      unassignUserFromTodo,
+      reassignUserInTodo,
+      assignUsersToTodos,
+      unassignUsersFromTodos,
+      reassignUsersInTodos,
+      assignUserSuccess,
+      assignUserFailure,
+      setDynamicNotificationMessage,
+      reassignTeamToTodos,
+      unassignTeamFromTodos,
+      assignTodosToUsersOrTeams
+      // Add more properties or methods as needed
+    
+  })
+  return store
+   
 };
 
 export { useAssignBaseStore };

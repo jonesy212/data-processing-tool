@@ -16,8 +16,10 @@ import {
 import { Notification } from "../support/NofiticationsSlice";
 import NotificationManager from '../support/NotificationManager';
 import { User } from "../users/User";
+import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
- 
+
+
 interface AdminDashboardProps extends YourComponentProps {
   // Props related to user authentication and authorization
   isAuthenticated: boolean; // Indicates whether the user is authenticated
@@ -132,13 +134,15 @@ const AdminDashboardWithDynamicNaming: React.FC<
         <DynamicNamingConventions dynamicContent={dynamicContent} />
         {/* Include NotificationManager */}
         <NotificationManager
-            notifications={[]}
-            setNotifications={() => {}}
-            notify={() => {
-              // Implement logic to handle notification
-              console.log("Notification triggered");
-              return Promise.resolve();
-            }}
+          notifications={[]}
+          setNotifications={() => { }}
+          notify={() => {
+            // Implement logic to handle notification
+            console.log("Notification triggered");
+            return Promise.resolve();
+          }}
+          onConfirm={(message) => console.log(message)}
+          onCancel={() => { }}
         />
         <ConfigurationServiceComponent apiConfigs={[]} />
 

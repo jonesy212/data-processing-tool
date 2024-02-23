@@ -5,22 +5,41 @@ import LoginForm from "@/forms/LoginForm";
 import React, { lazy, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Define a custom type for require.context
+interface RequireContext {
+  keys(): string[];
+  <T>(id: string): T;
+  <T>(id: string, recursive: boolean): T;
+  <T>(id: string, recursive: boolean, pattern: RegExp): T;
+  context: (directory: string, useSubdirectories?: boolean, regExp?: RegExp) => any;
+}
 
+interface LoginResult {
+  success: boolean;
+  error?: Error;
+  dashboardConfig?: any;
+}
 
 interface DashboardModule {
   default: React.ComponentType<any>;
 }
 
 const importDashboard = (path: string) =>
-  lazy(() => import(`@/app/pages/dashboards/${path}`) as Promise<DashboardModule>);
+  lazy(
+    () => import(`@/app/pages/dashboards/${path}`) as Promise<DashboardModule>
+  );
 
 // Get all files matching the pattern in the 'dashboards' directory
-const dashboardContext = require.context('@/app/pages/dashboards', true, /\.tsx$/);
+const dashboardContext = (require as RequireContext).context(
+  "@/app/pages/dashboards",
+  true,
+  /\.tsx$/
+);
 
 // Dynamically import all dashboards
 const dashboards: { [key: string]: React.ComponentType<any> } = {};
-dashboardContext.keys().forEach((key:any) => {
-  const dashboardName = key.replace(/^\.\/(.+)\/(.+)\.tsx$/, '$2');
+dashboardContext.keys().forEach((key: any) => {
+  const dashboardName = key.replace(/^\.\/(.+)\/(.+)\.tsx$/, "$2");
   dashboards[dashboardName] = importDashboard(key);
 });
 
@@ -34,12 +53,6 @@ const LoginContainer: React.FC = () => {
     onSuccess: () => void,
     onError: (error: string) => void
   ) => {
-    interface LoginResult {
-      success: boolean;
-      error?: Error;
-      dashboardConfig?: any;
-    }
-
     // Update the type of loginResult
     const loginResult: LoginResult = await performLogin(
       username,
@@ -47,7 +60,6 @@ const LoginContainer: React.FC = () => {
       onSuccess,
       onError
     );
-
 
     if (loginResult.success) {
       setLoggedIn(true);
@@ -75,37 +87,42 @@ const LoginContainer: React.FC = () => {
   };
 
   // Function to determine the dashboard route based on the configuration
-const determineDashboardRoute = (dashboardConfig: any) => {
-  // Example: Check if the configuration has a 'dashboardType' property
-  if (dashboardConfig && dashboardConfig.dashboardType) {
-    const dashboardType = dashboardConfig.dashboardType;
+  const determineDashboardRoute = (dashboardConfig: any) => {
+    // Example: Check if the configuration has a 'dashboardType' property
+    if (dashboardConfig && dashboardConfig.dashboardType) {
+      const dashboardType = dashboardConfig.dashboardType;
 
-    // Example: Map different dashboard types to corresponding routes
-    switch (dashboardType) {
-      case 'analytics':
-        return '/dashboard/analytics';
-      case 'sales':
-        return '/dashboard/sales';
-      // Add more cases as needed based on your dashboard types
-      default:
-        // Fallback route for unknown dashboard types
-        return '/dashboard/default';
+      // Example: Map different dashboard types to corresponding routes
+      switch (dashboardType) {
+        case "analytics":
+          return "/dashboard/analytics";
+        case "sales":
+          return "/dashboard/sales";
+        // Add more cases as needed based on your dashboard types
+        default:
+          // Fallback route for unknown dashboard types
+          return "/dashboard/default";
+      }
+    } else {
+      // Fallback route when there's no specific dashboard type in the configuration
+      return "/dashboard/default";
     }
-  } else {
-    // Fallback route when there's no specific dashboard type in the configuration
-    return '/dashboard/default';
-  }
-};
-
+  };
 
   return (
     <div>
-      {loggedIn ? <Dashboard /> : <LoginForm onSubmit={handleLoginSubmit} setUsername={() => {}} setPassword={() => {}} />}
+      {loggedIn ? (
+        <Dashboard />
+      ) : (
+        <LoginForm
+          onSubmit={handleLoginSubmit}
+          setUsername={() => {}}
+          setPassword={() => {}}
+        />
+      )}
     </div>
   );
 };
 
-
-
-
 export default LoginContainer;
+export type { LoginResult };

@@ -1,5 +1,6 @@
 // SearchableVisualFlowDashboard.tsx
 
+import { User } from '@/app/components/users/User';
 import React, { useState } from 'react';
 import TreeView from './TreeView'; // Assuming you have the TreeView component
 import VisualFlowDashboard from './VisualFlowDashboard';
@@ -24,11 +25,17 @@ const SearchableVisualFlowDashboard: React.FC = () => {
       <div style={{ display: 'flex' }}>
         <div style={{ flex: 1 }}>
           {/* Enhanced TreeView with search capabilities */}
-          <TreeView searchQuery={searchQuery} />
+          <TreeView
+            data={{} as any}
+            onClick={() => { }}
+            searchQuery={searchQuery}
+          />
         </div>
         <div style={{ flex: 2 }}>
           {/* Display generated document and visualization here */}
-          <VisualFlowDashboard user={{ /* user data */ }} searchQuery={searchQuery} />
+          <VisualFlowDashboard
+            user={{} as User}
+            searchQuery={searchQuery} />
           {/* You can add components or UI elements based on user interactions */}
         </div>
       </div>

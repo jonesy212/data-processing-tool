@@ -1,11 +1,10 @@
-import axios from 'axios';
 import { Team } from '../components/models/teams/Team';
-
-const API_BASE_URL = '/api/teams'; // Replace with your actual API endpoint
+import { endpoints } from './ApiEndpoints';
+import axiosInstance from './axiosInstance';
 
 export const fetchTeams = async (): Promise<Team[]> => {
   try {
-    const response = await axios.get(API_BASE_URL);
+    const response = await axiosInstance.get(endpoints.teams.list); // Use the list endpoint
     return response.data.teams;
   } catch (error) {
     console.error('Error fetching teams:', error);
@@ -15,8 +14,7 @@ export const fetchTeams = async (): Promise<Team[]> => {
 
 export const addTeam = async (newTeam: Team): Promise<void> => {
   try {
-    const response = await axios.post(API_BASE_URL, newTeam);
-    return response.data;
+    await axiosInstance.post(endpoints.teams.add, newTeam); // Use the add endpoint
   } catch (error) {
     console.error('Error adding team:', error);
     throw error;
@@ -25,7 +23,7 @@ export const addTeam = async (newTeam: Team): Promise<void> => {
 
 export const removeTeam = async (teamId: number): Promise<void> => {
   try {
-    await axios.delete(`${API_BASE_URL}/${teamId}`);
+    await axiosInstance.delete(endpoints.teams.remove(teamId)); // Use the remove endpoint with teamId
   } catch (error) {
     console.error('Error removing team:', error);
     throw error;
@@ -34,8 +32,7 @@ export const removeTeam = async (teamId: number): Promise<void> => {
 
 export const updateTeam = async (teamId: number, newTeam: Team): Promise<void> => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/${teamId}`, newTeam);
-    return response.data;
+    await axiosInstance.put(endpoints.teams.update(teamId), newTeam); // Use the update endpoint with teamId
   } catch (error) {
     console.error('Error updating team:', error);
     throw error;
@@ -44,7 +41,7 @@ export const updateTeam = async (teamId: number, newTeam: Team): Promise<void> =
 
 export const fetchTeam = async (teamId: number): Promise<void> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/${teamId}`);
+    const response = await axiosInstance.get(endpoints.teams.single(teamId)); // Use the single endpoint with teamId
     return response.data.team;
   } catch (error) {
     console.error('Error fetching team:', error);
@@ -54,20 +51,30 @@ export const fetchTeam = async (teamId: number): Promise<void> => {
 
 export const createTeam = async (newTeam: Team): Promise<void> => {
   try {
-    await axios.post(API_BASE_URL, newTeam);
+    await axiosInstance.post(endpoints.teams.add, newTeam); // Use the add endpoint
   } catch (error) {
     console.error('Error creating team:', error);
     throw error;
   }
 };
 
+export const updateTeams = async (updatedTeams: Team[]): Promise<void> => { 
+  try {
+    const teamIds = updatedTeams.map(team => team.id);
+    await axiosInstance.put(endpoints.teams.updateTeams(teamIds), updatedTeams);
+  } catch (error) {
+    console.error('Error updating teams:', error);
+    throw error;
+  }
+}
+
 export const deleteTeam = async (teamId: number): Promise<void> => {
   try {
-    await axios.delete(`${API_BASE_URL}/${teamId}`);
+    await axiosInstance.delete(endpoints.teams.remove(teamId)); // Use the remove endpoint with teamId
   } catch (error) {
     console.error('Error deleting team:', error);
     throw error;
   }
 };
 
-// Add more functions as needed for your specific use cases
+

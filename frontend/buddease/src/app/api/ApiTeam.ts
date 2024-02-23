@@ -2,6 +2,11 @@
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 const API_BASE_URL = endpoints.teams.list;
+
+
+
+
+
 export const fetchTeams = async (): Promise<any[]> => {
   try {
     const response = await axiosInstance.get(API_BASE_URL);

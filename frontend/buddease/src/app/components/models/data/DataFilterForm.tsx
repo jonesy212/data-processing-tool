@@ -2,6 +2,8 @@
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
+// import  DataFrameAPI  from '@/app/api/DataframeApi';
+// import DataFrameComponent from './DataFrameComponent';
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -133,7 +135,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
   // Apply filters
   const filteredDataFrame = dataFrame
   .where(query)
-  .transform((df: any) => {
+  .transform((df: DataFrame) => {
     // Apply transformations if needed
     return df;
   })
@@ -153,9 +155,9 @@ if (options.topN) {
 }
 
 // Convert data-forge DataFrame to an array of objects
-const filteredData = filteredDataFrame.toArray();
+const filteredData = filteredDataFrame.toArray(filters);
 
-onSubmit(filters, transform, options);
+onSubmit(filteredData, transform);
 
 // Clear all filters
 clearAllFilters();

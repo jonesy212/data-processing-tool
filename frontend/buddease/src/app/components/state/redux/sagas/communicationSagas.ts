@@ -2,6 +2,8 @@
 import { CommunicationActions } from "@/app/components/community/CommunicationActions";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { all, call, put, takeLatest } from "redux-saga/effects";
+import { watchIdeationPhase } from "./watchers/onboarding/watchIdeationPhase";
+import { watchTeamCreationPhase } from "./watchers/watchTeamCreationPhase";
 
 type CustomError = {
   message: string;
@@ -99,16 +101,15 @@ function* watchCommunicationActions() {
 export function* communicationSagas() {
   yield all([
     watchCommunicationActions(),
-      // Add other communication sagas here if needed
-      
-
-
-          // Add other communication sagas here if needed
+    // Add other communication sagas here if needed
+    
+    // Add other communication sagas here if needed
     watchIdeationPhase(),
     watchTeamCreationPhase(),
     watchProductBrainstormingPhase(),
     watchProductLaunchPhase(),
     watchDataAnalysisPhase(),
+    watchSchedulePlanningPhase(),
     watchAudioVideoCalls(),
     watchTextMessaging(),
     watchCollaborativeEditing(),

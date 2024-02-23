@@ -23,7 +23,7 @@ const CollaborationDashboard = () => {
   const { isDarkMode, primaryColor, fontSize } = useThemeConfig();
   const [showCollaborationPanel, setShowCollaborationPanel] = useState(false);
 
-  const {notify} = useNotification(); // Use the useNotification hook
+  const {notify} = useNotification();
   const auth = useAuth();
 
   const startBrainstorming = () => {
@@ -53,12 +53,12 @@ const CollaborationDashboard = () => {
 
 
   // Function to handle search query updates
-  const handleSearchQueryUpdate = (newSearchQuery) => {
+  const handleSearchQueryUpdate = (newSearchQuery: string) => {
     updateSearchQuery(newSearchQuery);
   };
   // Use searchQuery in your components or functions based on your requirements
   console.log("Search Query:", searchQuery);
-  return (
+    return (
     <SearchProvider>
       <CollaborationProvider>
         <div
@@ -76,6 +76,13 @@ const CollaborationDashboard = () => {
           <button onClick={openCollaborationPanel}>
             Create Collaboration Panel
           </button>
+          {/* Additional components and elements */}
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearchQueryUpdate(e.target.value)}
+            placeholder="Search..."
+          />
           <h1>Collaboration Dashboard</h1>
           {/* Your existing components */}
           <button onClick={openCollaborationPanel}>

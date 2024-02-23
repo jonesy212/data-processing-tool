@@ -1,5 +1,23 @@
 import React, { MouseEvent, SyntheticEvent, useEffect, useState } from "react";
+import { initiateBitcoinPayment, initiateEthereumPayment } from "../../payment/initCryptoPayments";
 import { sanitizeData, sanitizeInput } from '../../security/SanitizationFunctions';
+
+
+export const handleCryptoPaymentSelect = (cryptoOption: string) => {
+  // Implement logic to handle the selected crypto payment option
+  switch (cryptoOption) {
+    case "Bitcoin":
+      initiateBitcoinPayment();
+      break;
+    case "Ethereum":
+      initiateEthereumPayment();
+      break;
+    // Add cases for other crypto payment options as needed
+    default:
+      console.error("Invalid crypto payment option");
+  }
+};
+
 
 const DynamicEventHandlerExample = () => {
   // State to track messages
@@ -30,6 +48,7 @@ const DynamicEventHandlerExample = () => {
     console.log("Sanitized data:", sanitizedData);
     handleMouseClick(syntheticEvent);
   };
+
 
 
 

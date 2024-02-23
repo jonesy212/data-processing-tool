@@ -162,7 +162,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
   };
 
   
-
+  
   const handleAppendData = async (): Promise<void> => {
 
     // const userId = await userService.fetchUser(calendarData[0].userId);
@@ -182,14 +182,16 @@ const YourComponent: React.FC<YourComponentProps> = ({
       {/* Display the notification manager */}
 
       <NotificationManager
-            notifications={[]}
-            setNotifications={() => { }}
-            notify={() => {
-              // Implement logic to handle notification
-              console.log("Notification triggered");
-              return Promise.resolve();
-             }}
-          />
+          notifications={[]}
+          setNotifications={() => { }}
+          notify={() => {
+            // Implement logic to handle notification
+            console.log("Notification triggered");
+            return Promise.resolve();
+          }}
+          onConfirm={(message) => console.log(message)}
+          onCancel={() => { }}
+        />
 
       <LoadingSpinner loading={tracker.loading} />
 
@@ -233,6 +235,9 @@ const YourComponent: React.FC<YourComponentProps> = ({
       {children}
       <button onClick={handleAppendData}>Append Data</button>
       <button onSubmit={handleNextPage}>Next</button>
+
+
+  
     </div>
   );
 };

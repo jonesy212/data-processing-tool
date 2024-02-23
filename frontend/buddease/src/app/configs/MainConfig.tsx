@@ -1,12 +1,43 @@
-import { Button, Card, Divider, Typography } from "antd";
-import React from "react";
+import { Button, Card, Divider, Tabs, Typography } from "antd";
+import React, { useState } from "react";
+import getAppPath from "../../../appPath";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
 } from "../generators/GenerateButtons";
+import { BackendConfig } from "./BackendConfig";
+import { FrontendConfig } from "./FrontendConfig";
+import BackendStructure from "./appStructure/BackendStructure";
+import FrontendStructure from "./appStructure/FrontendStructure";
+const { TabPane } = Tabs;
 
-const MainConfig: React.FC = () => {
-  // Your component logic here
+interface MainConfigProps {
+  frontendStructure: FrontendStructure;
+  backendStructure: BackendStructure;
+  frontendConfig: FrontendConfig;
+  backendConfig: BackendConfig;
+}
+const MainConfig: React.FC<MainConfigProps> = ({
+  frontendStructure,
+  frontendConfig,
+  backendStructure,
+  backendConfig,
+}) => {
+  const [activeTab, setActiveTab] = useState("frontend"); // Default to frontend
+
+  // Determine the type of structure (frontend or backend)
+  const isBackend = true; // Example: Set to true for backend, false for frontend
+  const projectPath = getAppPath();
+  const structureType = isBackend ? "backend" : "frontend";
+
+  // Instantiate the appropriate structure based on the type
+  const structure = isBackend ? backendStructure : frontendStructure;
+  const config = isBackend ? backendConfig : frontendConfig;
+
+  // Function to handle tab change
+  const handleTabChange = (key: string) => {
+    setActiveTab(key);
+  };
 
   return (
     <div>
@@ -16,6 +47,32 @@ const MainConfig: React.FC = () => {
 
       <Typography.Title level={2}>Project Management Settings</Typography.Title>
       <Divider />
+
+      {/* Tabs for frontend and backend structures */}
+      <Tabs activeKey={activeTab} onChange={handleTabChange}>
+        <TabPane tab="Frontend Structure" key="frontend">
+          {/* Display frontend structure details here */}
+          {structureType === "frontend" && (
+            <>
+              <p>Frontend Structure: {JSON.stringify(structure)}</p>
+              <p>Frontend Config: {JSON.stringify(config)}</p>
+              <p>Project Path: {projectPath}</p>
+
+            </>
+          )}
+        </TabPane>
+        <TabPane tab="Backend Structure" key="backend">
+          {/* Display backend structure details here */}
+          {structureType === "backend" && (
+            <>
+              <p>Backend Structure: {JSON.stringify(structure)}</p>
+              <p>Backend Config: {JSON.stringify(backendConfig)}</p>
+              <p>Project Path: {projectPath}</p>
+
+            </>
+          )}
+        </TabPane>
+      </Tabs>
 
       {/* Communication Settings */}
       <Card title="Communication Settings">

@@ -1,4 +1,4 @@
-import userService from "../users/UserService";
+import userService from "../users/ApiUser";
 import { useAuth } from "./AuthContext";
 
 // AuthService.ts
@@ -27,6 +27,31 @@ class AuthService {
     }
   }
 
+  async adminLogin(
+    username: string,
+    password: string
+  ): Promise<{ accessToken: string }> {
+    try {
+      const response = await fetch("/api/auth/admin/login", { // Adjust the endpoint path accordingly
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.setAccessToken(data.accessToken);
+        return { accessToken: data.accessToken };
+      } else {
+        throw new Error("Admin login failed");
+      }
+    } catch (error) {
+      throw new Error("Admin login failed");
+    }
+  }
+  
   // Simulate a logout request (replace with actual implementation)
   async logout(): Promise<void> {
     // Example: Perform a request to your logout endpoint
@@ -91,7 +116,8 @@ class AuthService {
   loginWithRoles = async (
     username: string,
     password: string,
-    roles: string[]
+    roles: string[],
+    nfts: string[]
   ): Promise<{ accessToken: string }> => {
     try {
       const response = await fetch("/api/auth/login", {
@@ -107,7 +133,7 @@ class AuthService {
         // Use the useAuth hook to update the auth state with roles
         const { loginWithRoles } = useAuth();
         const user = await userService.fetchUser(username);
-        loginWithRoles(user, roles); // You may need to adjust this based on your User object structure
+        loginWithRoles(user, roles, nfts); // You may need to adjust this based on your User object structure
         return { accessToken: data.accessToken };
       } else {
         throw new Error("Login failed");

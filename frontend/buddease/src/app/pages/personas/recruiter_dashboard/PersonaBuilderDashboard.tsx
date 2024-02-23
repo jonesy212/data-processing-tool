@@ -211,10 +211,11 @@ const PersonaBuilderDashboard = () => {
                   items={Object.entries(props.data).map(([key]) => key)}
                   renderItem={(item: DetailsItem<Data>) => (
                     <DetailsListItem
-                      item={{} as DetailsItem<Data>}
-                      key={"key"}
-                      label={"label"}
-                      value={"value"}
+                    item={item}
+                    key={item.id} // Assuming item has an id property
+                    label={item.title} // Assuming item has a title property
+                    value={item.description} // Assuming item has a description property
+                  
                     />
                   )}
                 />

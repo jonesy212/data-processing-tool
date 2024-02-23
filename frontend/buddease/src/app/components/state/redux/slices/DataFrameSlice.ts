@@ -4,15 +4,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 
 interface DataFrameSliceState {
-    dataFrames: DataFrameResponse[]; // Update to DataFrameResponse[]
-    error: string | null; // Added error property
-    dataFrameStatus: "pending" | "inProgress" | "completed";
-    dataFrameTitle: string | null;
-    dataFrameDescription: string | null;
-    pushDataFrame: (state: any, action: PayloadAction<DataFrameResponse>) => {};
+  dataFrames: DataFrameResponse[]; // Update to DataFrameResponse[]
+  error: string | null; // Added error property
+  dataFrameStatus: "pending" | "inProgress" | "completed";
+  dataFrameTitle: string | null;
+  dataFrameDescription: string | null;
+  pushDataFrame: (state: any, action: PayloadAction<DataFrameResponse>) => {};
 }
 
-type DataFrameResponse = typeof DataFrameAPI;
+type DataFrameResponse = typeof DataFrameAPI & { id: string }; // Assuming 'id' is of type string
 const initialState: DataFrameSliceState = {
   dataFrames: [],
   error: null,
@@ -23,7 +23,7 @@ const initialState: DataFrameSliceState = {
     state: any,
     action: {
       payload: {
-            fetchDataFrame: () => {}
+        fetchDataFrame: () => {};
         setDataFrame: (data: any) => Promise<void>;
         updateDataFrame: (updatedData: any) => Promise<void>;
         deleteDataFrame: () => Promise<void>;
@@ -65,26 +65,26 @@ export const useDataFrameManagerSlice = createSlice({
     fetchDataFrameRequest: (state) => {
       // Your logic for initiating data frame fetch
       state.error = null; // Reset error on new fetch request
-      },
-    
-      fetchDataFrameSuccess: (
-        state,
-        action: PayloadAction<{ dataFrames: (typeof DataFrameAPI)[][] }>
-      ) => {
-        // Your logic for successful data frame fetch
-        const { dataFrames } = action.payload;
-      
-        // Map over dataFrames and call functions from DataFrameAPI
-        state.dataFrames = dataFrames.map(frame => ({
-          fetchDataFrame: DataFrameAPI.fetchDataFrame,
-          setDataFrame: DataFrameAPI.setDataFrame,
-          updateDataFrame: DataFrameAPI.updateDataFrame,
-          deleteDataFrame: DataFrameAPI.deleteDataFrame,
-          fetchDataFromBackend: DataFrameAPI.fetchDataFromBackend,
-          appendDataToBackend: DataFrameAPI.appendDataToBackend,
-        })) as WritableDraft<DataFrameResponse>[];
-      },
-      
+    },
+
+    fetchDataFrameSuccess: (
+      state,
+      action: PayloadAction<{ dataFrames: (typeof DataFrameAPI)[][] }>
+    ) => {
+      // Your logic for successful data frame fetch
+      const { dataFrames } = action.payload;
+
+      // Map over dataFrames and call functions from DataFrameAPI
+      state.dataFrames = dataFrames.map((frame) => ({
+        fetchDataFrame: DataFrameAPI.fetchDataFrame,
+        setDataFrame: DataFrameAPI.setDataFrame,
+        updateDataFrame: DataFrameAPI.updateDataFrame,
+        deleteDataFrame: DataFrameAPI.deleteDataFrame,
+        fetchDataFromBackend: DataFrameAPI.fetchDataFromBackend,
+        appendDataToBackend: DataFrameAPI.appendDataToBackend,
+      })) as WritableDraft<DataFrameResponse>[];
+    },
+
     fetchDataFrameFailure: (
       state,
       action: PayloadAction<{ error: string }>
@@ -94,31 +94,26 @@ export const useDataFrameManagerSlice = createSlice({
       state.error = error;
     },
     addDataFrame: (
-        state,
-        action: PayloadAction<{ id: string; title: string }>
-      ) => {
-        const { id, title } = action.payload;
-      
-        // Create a new DataFrame object with the required properties
-        const newDataFrame: DataFrameResponse = {
-          fetchDataFrame: DataFrameAPI.fetchDataFrame,
-          setDataFrame: DataFrameAPI.setDataFrame,
-          updateDataFrame: DataFrameAPI.updateDataFrame,
-          deleteDataFrame: DataFrameAPI.deleteDataFrame,
-          fetchDataFromBackend: DataFrameAPI.fetchDataFromBackend,
-          appendDataToBackend: DataFrameAPI.appendDataToBackend,
-          id, // Include the 'id' property
-          title, // Include the 'title' property
-          status: "pending",
-          isActive: false,
-          // Add any other properties as needed
-        };
-      
-        // Push the new DataFrame to the state
-        state.dataFrames.push(newDataFrame);
-      },
-      
-      
+      state,
+      action: PayloadAction<{ id: string; dataFrameTitle: string }>
+    ) => {
+      const { id } = action.payload;
+
+      // Create a new DataFrame object with the required properties
+      const newDataFrame: DataFrameResponse = {
+        id: id,
+        fetchDataFrame: DataFrameAPI.fetchDataFrame,
+        setDataFrame: DataFrameAPI.setDataFrame,
+        updateDataFrame: DataFrameAPI.updateDataFrame,
+        deleteDataFrame: DataFrameAPI.deleteDataFrame,
+        fetchDataFromBackend: DataFrameAPI.fetchDataFromBackend,
+        appendDataToBackend: DataFrameAPI.appendDataToBackend,
+      };
+
+      // Push the new DataFrame to the state
+      state.dataFrames.push(newDataFrame);
+    },
+
     removeDataFrame: (state, action: PayloadAction<string>) => {
       // Your logic to remove data frame
       const dataFrameIdToRemove = action.payload;
@@ -146,3 +141,4 @@ export const selectDataFrames = (state: { dataFrame: DataFrameSliceState }) =>
 
 // Export reducer for the data frame entity slice
 export default useDataFrameManagerSlice.reducer;
+export type { DataFrameResponse };

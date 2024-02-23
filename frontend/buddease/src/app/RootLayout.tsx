@@ -22,8 +22,6 @@ type RootLayoutProps = {
 };
 
 
-
-
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   const { setLayout } = useLayout();
   const {

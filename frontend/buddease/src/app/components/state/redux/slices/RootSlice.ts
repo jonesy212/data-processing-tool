@@ -10,14 +10,24 @@ import { trackerManagerSlice } from "./TrackerSlice";
 // Import uuid
 import { useCalendarManagerSlice } from "@/app/components/calendar/CalendarSlice";
 import { Data } from "@/app/components/models/data/Data";
+import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
+import { WritableDraft } from "../ReducerGenerator";
 import { useApiManagerSlice } from "./ApiSlice";
 import { useDataManagerSlice } from "./DataSlice";
 import { useDocumentManagerSlice } from "./DocumentSlice";
+import { usePagingManagerSlice } from './pagingSlice';
+import { useProjectManagerSlice } from "./ProjectSlice";
+import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
+import { useTeamManagerSlice } from './TeamSlice';
+import { useToolbarManagerSlice } from "./toolbarSlice";
+import { useVideoManagerSlice } from "./VideoSlice";
 
 const randomTaskId = uuidv4().toString();
 
 export interface RootState {
+  toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
+  useProjectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
   userTodoManager: ReturnType<typeof userManagerSlice.reducer>;
   todoManager: ReturnType<typeof useTodoManagerSlice.reducer>;
   taskManager: ReturnType<typeof taskManagerSlice.reducer>;
@@ -26,12 +36,18 @@ export interface RootState {
   dataAnalysisManager: ReturnType<typeof useDataAnalysisManagerSlice.reducer>;
   dataManager: ReturnType<typeof useDataManagerSlice.reducer>;
   calendarManager: ReturnType<typeof useCalendarManagerSlice.reducer>;
-  documentManager: ReturnType<typeof useDocumentManagerSlice.reducer>
+  documentManager: ReturnType<typeof useDocumentManagerSlice.reducer>;
   apiManager: ReturnType<typeof useApiManagerSlice.reducer>
+  videoManager: ReturnType<typeof useVideoManagerSlice.reducer>
+  randomWalkManager: ReturnType<typeof useRandomWalkManagerSlice.reducer>
+  pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>
+  teamManager: ReturnType<typeof useTeamManagerSlice.reducer>
 }
 
 const initialState: RootState = {
-  dataManager: useDataManagerSlice.reducer(undefined, { type: "inid" }),
+  toolbarManager: useToolbarManagerSlice.reducer(undefined, { type: "init" }),
+  useProjectManager: useProjectManagerSlice.reducer(undefined, { type: "init"}),
+  dataManager: useDataManagerSlice.reducer(undefined, { type: "init" }),
   taskManager: taskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
   userManager: userManagerSlice.reducer(undefined, { type: "init" }),
@@ -43,6 +59,10 @@ const initialState: RootState = {
   documentManager: useDocumentManagerSlice.reducer(undefined, { type: "init" }),
   userTodoManager: userManagerSlice.reducer(undefined, { type: "init" }),
   apiManager: useApiManagerSlice.reducer(undefined, { type: "init" }),
+  randomWalkManager: useRandomWalkManagerSlice.reducer(undefined, { type: "init" }),
+  pagingManager: usePagingManagerSlice.reducer(undefined, { type: "init" }),
+  videoManager: useVideoManagerSlice.reducer(undefined, { type: "init" }),
+  teamManager: useTeamManagerSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -82,7 +102,7 @@ const rootReducerSlice = createSlice({
         // Handle the action for updating task details
         const { taskId, updatedDetails } = action.payload;
         const taskToUpdate = state.taskManager.tasks.find(
-          (task) => task.id === taskId
+          (task: WritableDraft<Task>) => task.id === taskId
         );
 
         if (taskToUpdate) {
@@ -123,21 +143,21 @@ const rootReducerSlice = createSlice({
         analysisResults: [],
         data: {} as Data,
         source: "user",
-              // Implementation of some method
-              some(callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
-                // Check if 'this' is an array
-                if (Array.isArray(this)) {
-                  for (let i = 0; i < this.length; i++) {
-                    if (callbackfn(this[i], i, this)) {
-                      return true;
-                    }
-                  }
-                  return false;
-                } else {
-                  throw new Error("'some' method can only be used on arrays.");
-                }
-              },
-            
+        // Implementation of some method
+        some(callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+          // Check if 'this' is an array
+          if (Array.isArray(this)) {
+            for (let i = 0; i < this.length; i++) {
+              if (callbackfn(this[i], i, this)) {
+                return true;
+              }
+            }
+            return false;
+          } else {
+            throw new Error("'some' method can only be used on arrays.");
+          }
+        },
+
         [Symbol.iterator](): IterableIterator<any> {
           // Check if 'this' is an object
           if (typeof this === 'object' && this !== null) {
@@ -147,7 +167,7 @@ const rootReducerSlice = createSlice({
               next: () => {
                 if (index < taskKeys.length) {
                   const key = taskKeys[index++] as keyof Task; // Explicitly specify the type of 'key' as keyof Task
-                  return { value: this[key] , done: false };
+                  return { value: this[key], done: false };
                 } else {
                   return { value: undefined, done: true };
                 }
@@ -159,11 +179,18 @@ const rootReducerSlice = createSlice({
           } else {
             throw new Error("'Symbol.iterator' can only be used on objects.");
           }
-              },
+        },
         phase: null,
-        videoData: {} as VideoData
+        videoData: {} as VideoData,
+        assigneeId: "",
+        payload: undefined,
+        type: "addTask",
+        videoThumbnail: "",
+        videoDuration: 0,
+        videoUrl: "",
+        ideas: []
       };
-      state.taskManager.tasks.push(newTask);
+      state.taskManager.tasks.push(newTask as WritableDraft<Task>);
     });
     builder.addCase(taskManagerSlice.actions.addTask, (state) => {
       // Handle the action for adding a task
@@ -203,36 +230,103 @@ const rootReducerSlice = createSlice({
             throw new Error("'some' method can only be used on arrays.");
           }
         },
-        [Symbol.iterator]: function (): Iterator<any, any, undefined> {
-          throw new Error("Function not implemented.");
+        [Symbol.iterator](): IterableIterator<any> {
+          // Check if 'this' is an object
+          if (typeof this === 'object' && this !== null) {
+            const taskKeys = Object.keys(this);
+            let index = 0;
+            return {
+              next: () => {
+                if (index < taskKeys.length) {
+                  const key = taskKeys[index++];
+                  return { value: this[key as keyof Task], done: false }; // Cast 'key' to keyof Task
+                } else {
+                  return { value: undefined, done: true };
+                }
+              },
+              [Symbol.iterator]: function () {
+                return this;
+              }
+            };
+          } else {
+            throw new Error("'Symbol.iterator' can only be used on objects.");
+          }
         },
         phase: null,
-        videoData: {} as Record<string, VideoData>
+        videoData: {} as VideoData,
+        assigneeId: "",
+        payload: undefined,
+        type: "addTask",
+        startDate: new Date,
+        endDate: new Date,
+        videoThumbnail: "",
+        videoDuration: 0,
+        videoUrl: "",
+        ideas: []
       };
-      state.taskManager.tasks.push(newTask);
+      state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";
       state.taskManager.taskDescription = "";
       state.taskManager.taskStatus = "pending";
+      state.taskManager.priority = "medium";
+      state.taskManager.dueDate = new Date();
+
     });
 
     // Add other slices as needed
+
+// Inside your reducer function
+builder.addCase(
+  trackerManagerSlice.actions.addTracker,
+  (state, action: PayloadAction<Tracker>) => {
+    // Create a draft of the payload
+    const draftPayload = createDraft(action.payload);
+    // Push the draft into the trackers array
+    state.trackerManager.trackers.push(draftPayload);
+  }
+);
+
+
+
+
+    // Add video-related actions
     builder.addCase(
-      trackerManagerSlice.actions.addTracker,
-      (state, action: PayloadAction<Tracker>) => {
-        // Handle the action for trackerSlice
-        state.trackerManager.trackers.push(action.payload);
+      useVideoManagerSlice.actions.setVideos,
+      (state, action: PayloadAction<Video[]>) => {
+      state.videoManager.videos = action.payload;
+    });
+    builder.addCase(
+      useVideoManagerSlice.actions.setCurrentVideoId, (state, action: PayloadAction<string | null>) => {
+      state.videoManager.currentVideoId = action.payload;
+    });
+    builder.addCase(
+      useVideoManagerSlice.actions.updateVideoThumbnail, (state, action: PayloadAction<{ id: string, newThumbnail: string }>) => {
+      const { id, newThumbnail } = action.payload;
+      const videoIndex = state.videoManager.videos.findIndex(video => video.id === id);
+      if (videoIndex !== -1) {
+        state.videoManager.videos[videoIndex].thumbnailUrl = newThumbnail;
       }
-    );
-  },
+    });
+    builder.addCase(
+      useVideoManagerSlice.actions.updateVideoTitle,
+      (state, action: PayloadAction<{ id: string, newTitle: string }>) => {
+      const { id, newTitle } = action.payload;
+      const videoIndex = state.videoManager.videos.findIndex(video => video.id === id);
+      if (videoIndex !== -1) {
+        state.videoManager.videos[videoIndex].title = newTitle;
+      }
+    });
+    builder.addCase(
+      useVideoManagerSlice.actions.updateVideoDescription,
+      (state, action: PayloadAction<{ id: string, newDescription: string }>) => {
+      const { id, newDescription } = action.payload;
+      const videoIndex = state.videoManager.videos.findIndex(video => video.id === id);
+      if (videoIndex !== -1) {
+        state.videoManager.videos[videoIndex].description = newDescription;
+      }
+    });
+  }
 });
-
-
-
-
-
-
-
-
 
 
 // Combine reducers
@@ -245,7 +339,17 @@ const rootReducer = combineReducers({
   dataAnalyisManager: useDataAnalysisManagerSlice.reducer,
   useCalendarManager: useCalendarManagerSlice.reducer,
   todoManager: useTodoManagerSlice.reducer,
-
+  calendarManager: useCalendarManagerSlice.reducer,
+  videoManager: useVideoManagerSlice.reducer,
+  useUserManager: userManagerSlice.reducer,
+  useProjectManager: useProjectManagerSlice.reducer,
+  dataAnalysisManager: useDataAnalysisManagerSlice.reducer,
+  documentManager: useDocumentManagerSlice.reducer,
+  userTodoManager: userManagerSlice.reducer,
+  apiManager: useApiManagerSlice.reducer,
+  randomWalkManager: useRandomWalkManagerSlice.reducer,
+  pagingManager: usePagingManagerSlice.reducer,
+  teamManager: useTeamManagerSlice.reducer,
   // Add other slices as needed
 });
 

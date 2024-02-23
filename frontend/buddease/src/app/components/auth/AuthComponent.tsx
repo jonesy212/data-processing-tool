@@ -1,7 +1,11 @@
-import axios from 'axios';
+import { endpoints } from '@/app/api/ApiEndpoints';
+import { generateTransferToken } from '@/app/generators/GenerateTokens';
 import { FormEvent, useState } from 'react';
+import { loadDashboardState } from '../dashboards/LoadDashboard';
 import dynamicHooks from '../hooks/dynamicHooks/dynamicHooks';
 import axiosInstance from '../security/csrfToken';
+
+
 
 interface AuthComponentProps {
   onSuccess: () => void;
@@ -14,58 +18,64 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onSuccess, onSearch }) =>
   const [searchQuery, setSearchQuery] = useState(""); 
 
 
-
-
-
-
-
   const handleAdminLogin = async () => {
     try {
       // Implement administrator login using Transfer Tokens
       // Send a request to authenticate the administrator using Transfer Token instead of username/password
       
-      // Example:
-      const response = await axios.post("/api/admin/login", { token: transferToken });
+      const transferToken = await generateTransferToken();
+      const response = await axiosInstance.post(endpoints.auth.admin, { token: transferToken });
       const accessToken = response.data.access_token;
 
       // Store the access token in local storage
       localStorage.setItem("adminToken", accessToken);
   
       // Set the authorization token in axios headers
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   
       // Activate dynamic components for administrators
-      dynamicHooks.authentication.hook().toggleActivation({
-        accessToken,
-      });
+      dynamicHooks.authentication.hook().toggleActivation(accessToken);
     } catch (error) {
       console.error(error);
     }
   };
+
+
+
+
   const handleLogin = async () => {
     try {
+      // Perform login using axiosInstance or performLogin function
       const response = await axiosInstance.post("/auth/login", { username, password });
       const accessToken = response.data.access_token;
       localStorage.setItem("token", accessToken);
   
       // Set the authorization token in axios headers
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   
-      dynamicHooks.authentication.hook().toggleActivation();
-      onSuccess(); 
-
-      // Update searchQuery state using setSearchQuery
+      // Toggle authentication hooks and perform other actions
+      dynamicHooks.authentication.hook().toggleActivation(accessToken);
+  
+      // Update searchQuery state using setSearchQuery if needed
       if (searchQuery) {
         setSearchQuery(searchQuery);
-        // Call handleSearch and process the response in the try statement
+        // Call handleSearch and process the response if needed
         const searchResponse = await handleSearch({} as FormEvent<Element>, searchQuery);
         // Process the searchResponse here
         console.log("Search Response:", searchResponse);
       }
+  
+      // On successful login
+      console.log("Login successful!");
+      // Redirect or perform other actions
+      loadDashboardState();
     } catch (error) {
-      console.error(error);
+      // On login error
+      console.error("Login failed:", error);
+      // Display error message to the user or perform other error-handling actions
     }
   };
+  
 
   const handleSearch = async (event: React.FormEvent, searchQuery: string) => {
     event.preventDefault();

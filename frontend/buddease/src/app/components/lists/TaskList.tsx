@@ -16,7 +16,7 @@ const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
         {tasks.map((task: Task) => (
           <li key={task.id}>
             {task.title} - {task.status}
-            <TaskDetails task={task} />
+            {task.details && <TaskDetails task={task} />} {/* Only render TaskDetails if details exists */}
           </li>
         ))}
       </ul>

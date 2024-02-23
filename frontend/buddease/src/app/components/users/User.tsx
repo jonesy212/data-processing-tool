@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import CommonDetails, { DetailsProps, SupportedData } from "../models/CommonData";
 // import { Data } from "../models/data/Data";
+import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
 import Project from "../projects/Project";
@@ -24,6 +25,8 @@ export interface User extends UserData {
   role: UserRole
 }
 
+const timeBasedCode: string = generateTimeBasedCode();
+
 // Placeholder for user data
 export interface UserData {
   id: User["id"];
@@ -37,6 +40,8 @@ export interface UserData {
   yourDocuments?: DocumentTree;
   visualizations?: VisualizationData[];
   traits?: typeof CommonDetails;
+  timeBasedCode:typeof timeBasedCode, // Generate the time-based code for the user
+
 }
 
 // Add a new type for visualization data
@@ -68,8 +73,9 @@ const userData: UserData = {
     visualizations: {} as DocumentNode,
   },
   traits: (props: DetailsProps<SupportedData>, context?: any): ReactNode => {
-    return <CommonDetails {...props} />
-  }
+    return <CommonDetails {...props} />;
+  },
+  timeBasedCode: timeBasedCode, // Generate the time-based code for the user
 };
 
 

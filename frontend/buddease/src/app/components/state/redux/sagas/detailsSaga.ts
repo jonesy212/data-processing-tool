@@ -1,15 +1,16 @@
 // detailsSaga.ts
+import { Data } from "@/app/components/models/data/Data";
+import { detailsApiService } from "@/app/components/models/data/DetailsService";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { call, put, takeLatest } from "redux-saga/effects";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { DetailsListActions } from "../actions/DetailsListActions";
-import { detailsApiService } from "@/app/components/models/data/DetailsService";
-import { call, put, takeLatest } from "redux-saga/effects";
 
 // Worker Saga: Fetch DetailsItem
 function* fetchDetailsItemSaga(action: any) {
   try {
     const detailsItemId = action.payload;
-    const detailsItem: DetailsItem = yield call(detailsApiService.fetchDetailsItem, detailsItemId); // Adjust the service method accordingly
+    const detailsItem: DetailsItem<Data> = yield call(detailsApiService.fetchDetailsItem, detailsItemId); // Adjust the service method accordingly
     yield put(DetailsListActions.fetchDetailsItemSuccess({ detailsItem }));
   } catch (error) {
     yield put(
@@ -24,7 +25,7 @@ function* fetchDetailsItemSaga(action: any) {
 function* updateDetailsItemSaga(action: any) {
   try {
     const { detailsItemId, detailsItemData } = action.payload;
-    const updatedDetailsItem: DetailsItem = yield call(
+    const updatedDetailsItem: DetailsItem<Data> = yield call(
       detailsApiService.updateDetailsItem,
       detailsItemId,
       detailsItemData
@@ -39,12 +40,13 @@ function* updateDetailsItemSaga(action: any) {
   }
 }
 
+
 // Worker Saga: Update DetailsItems
-function* updateDetailsItemsSaga(action: any) {
+function* updateDetailsItemsSaga(action: { type: string, payload: { updatedDetailsItemsData: any } }): Generator<any, void, DetailsItem<Data>[]> {
   try {
     const { updatedDetailsItemsData } = action.payload;
-    const response = yield call(detailsApiService.updateDetailsItems, updatedDetailsItemsData);
-    yield put(DetailsListActions.updateDetailsItemsSuccess({ detailsItems: response as DetailsItem[] }));
+    const response: DetailsItem<Data>[] = yield call(detailsApiService.updateDetailsItems, updatedDetailsItemsData);
+    yield put(DetailsListActions.updateDetailsItemsSuccess({ detailsItems: response }));
   } catch (error) {
     // Handle error
     console.error("Error updating details items:", error);

@@ -1,5 +1,5 @@
 // randomWalkSagas.ts
-import { RandomWalkActions } from "@/app/components/actions/RandomWalkActions";
+import { RandomWalkActions } from "@/app/components/hooks/userInterface/RandomWalkActions";
 import { useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { all, call, put, takeLatest } from "redux-saga/effects";
@@ -31,13 +31,13 @@ function* handleRandomWalkRequest(action: ReturnType<typeof RandomWalkActions.fe
     yield put(RandomWalkActions.fetchRandomWalkSuccess({ randomWalk }));
 
     // Notify success
-    addNotification(NOTIFICATION_MESSAGES.RandomWalk.FETCH_WALK_SUCCESS, Success);
+    addNotification({} as Notification);
   } catch (error: any) {
     // Dispatch failure action
     yield put(RandomWalkActions.fetchRandomWalkFailure({ error: error.message }));
 
     // Notify failure
-    addNotification(NOTIFICATION_MESSAGES.Error.DEFAULT("random walk"), "error");
+    addNotification(NOTIFICATION_MESSAGES.Error.DEFAULT("random walk"));
     console.error("Error fetching random walk:", error);
   }
 }

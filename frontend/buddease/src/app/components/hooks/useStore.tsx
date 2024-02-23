@@ -5,6 +5,8 @@ import { StoreContext } from '../state/stores/StoreProvider';
 export const useStore = (): RootStores => {
   const store = useContext(StoreContext);
 
+
+  
   if (!store) {
     throw new Error('useStore must be used within a StoreProvider');
   }

@@ -7,6 +7,8 @@ import { useAuth } from '../auth/AuthContext';
 import { Tracker } from '../models/tracker/Tracker';
 import { rootStores } from '../state/stores/RootStores';
 import TrackerStore from '../state/stores/TrackerStore';
+import { DocumentData } from '../documents/DocumentBuilder.jsx';
+import { User } from '../users/User.jsx';
 
 class OnboardingPhase {
   id: string;
@@ -39,6 +41,21 @@ export const useDynamicOnboarding = (): void => {
           id: phase.id,
           name: phase.description,
           phases: [],
+          trackFileChanges: function (file: DocumentData): void {
+            throw new Error('Function not implemented.');
+          },
+          trackFolderChanges: function (fileLoader: DocumentData): void {
+            throw new Error('Function not implemented.');
+          },
+          getName: function (trackerName: string): string {
+            throw new Error('Function not implemented.');
+          },
+          updateUserProfile: function (userData: User): void {
+            throw new Error('Function not implemented.');
+          },
+          sendNotification: function (notification: string, userData: User): void {
+            throw new Error('Function not implemented.');
+          }
         };
 
         trackerStore.addTracker(tracker);

@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { useState } from 'react';
 
+import UserSettings from '@/app/configs/UserSettings';
 import useRealtimeData from '../components/hooks/commHooks/useRealtimeData';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { DataVersions } from '../configs/DataVersionsConfig';
+import FrontendStructure from '../configs/appStructure/FrontendStructure';
 import { CacheData } from '../generators/GenerateCache';
 import { writeCache } from './ReadAndWriteCache';
 
@@ -39,13 +42,25 @@ export const processBatchOnServer = async (batchData: any[]): Promise<BatchProce
     return { success: false, message: 'Error processing batch' };
   }
 };
-
 // Function to synchronize cache from the frontend
 export const synchronizeCacheFromFrontend = async (initialData: any, updateCallback: any) => {
   try {
     // Get the latest data from the useRealtimeData hook
     const updatedData = useRealtimeData(initialData, updateCallback);
-    await writeCache(updatedData as CacheData);
+
+    // Ensure updatedData matches CacheData interface
+    const updatedCacheData: CacheData = {
+      lastUpdated: "lastUpdated",
+      userSettings: {} as typeof UserSettings,
+      dataVersions: {} as DataVersions,
+      frontendStructure: {} as FrontendStructure,
+      // Add other properties as needed to match the CacheData interface
+      realtimeData: updatedData.realtimeData,
+      fetchData: updatedData.fetchData,
+    } as CacheData;
+
+    // Call writeCache with updatedCacheData
+    await writeCache(updatedCacheData);
     console.log("Cache synchronized from frontend successfully");
   } catch (error) {
     console.error("Error synchronizing cache from frontend:", error);
@@ -62,11 +77,20 @@ const useBatchProcessingAndCache = () => {
       setBatchResults(processedResult.data);
     }
 
-    // Synchronize cache from the frontend after processing the batch
-    synchronizeCacheFromFrontend(initialData);
+    const updateCallback = (updatedData: any) => { 
+      // Update the cache with the latest data from the useRealtimeData hook
+      writeCache(updatedData as CacheData);
+    }
+      // Synchronize cache from the frontend after processing the batch
+      useRealtimeData(initialData, updateCallback);
+      
   };
 
   return { batchResults, processBatch };
 };
+
+
+
+
 
 export default useBatchProcessingAndCache;

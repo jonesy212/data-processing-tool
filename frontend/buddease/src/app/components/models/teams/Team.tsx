@@ -1,9 +1,14 @@
+import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { Phase } from "../../phases/Phase";
 import Project from "../../projects/Project";
+import { Snapshot } from "../../state/stores/SnapshotStore";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
+import { UserRole } from "../../users/UserRole";
+import UserRoles from "../../users/UserRoles";
 import CommonDetails from '../CommonData';
-import { DataDetailsProps } from "../data/Data";
+import { Data, DataDetailsProps } from "../data/Data";
+import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgresBar";
 import TeamData from "./TeamData";
 
@@ -18,12 +23,13 @@ interface Team {
   leader: User | null;
   progress: Progress | null;
   data: TeamData
+  then: (callback: (newData: Snapshot<Team>) => void) => void;
   // Add other team-related fields as needed
 }
 
 // Example usage:
 const team: Team = {
-  id: 1,
+  id: 1,  
   teamName: "Development Team",
   description: "A team focused on software development",
   members: [
@@ -40,7 +46,9 @@ const team: Team = {
       hasQuota: true,
       profilePicture: "",
       processingTasks: [] as DataProcessingTask[],
-      traits: "traits" as unknown as typeof CommonDetails
+      traits: "traits" as unknown as typeof CommonDetails,
+      role: {} as UserRole,
+      timeBasedCode: generateTimeBasedCode,
     },
     {
       _id: 'member-2',
@@ -56,7 +64,9 @@ const team: Team = {
       hasQuota: false,
       profilePicture: "",
       processingTasks: [] as DataProcessingTask[],
-      traits: "traits" as unknown as typeof CommonDetails
+      role: {} as UserRole,
+      traits: "traits" as unknown as typeof CommonDetails,
+      timeBasedCode: generateTimeBasedCode,
     },
   ],
   projects: [
@@ -74,7 +84,10 @@ const team: Team = {
       description: "Description of Project A",
       members: [],
       tasks: [],
-      videoData: [],
+      videoData: {} as VideoData,
+      videoUrl: "videoUrl",
+      videoThumbnail: "videoThumbnail",
+      videoDuration: 0,
       startDate: new Date(),
       endDate: new Date(),
       phases: [],
@@ -98,6 +111,10 @@ const team: Team = {
       members: [],
       phases: [],
       currentPhase: "Planning" as unknown as Phase,
+      videoUrl: "videoUrl",
+      videoThumbnail: "videoThumbnail",
+      videoDuration: 0,
+      videoData: {} as VideoData,
       tasks: [
         {
           _id: "project",
@@ -139,7 +156,7 @@ const team: Team = {
           priority: "low",
           estimatedHours: null,
           actualHours: null,
-          startDate: undefined,
+          startDate: new Date(),
           endDate: new Date(),
           completionDate: new Date(),
           isActive: true,
@@ -147,21 +164,53 @@ const team: Team = {
           dependencies: [],
           analysisType: "Text Analysis",
           analysisResults: [],
-          [Symbol.iterator]: () => { 
+          assigneeId: "1",
+          payload: {},
+          type: "addTask",
+          videoThumbnail: "",
+          videoDuration: 0,
+          videoUrl: "",
+          [Symbol.iterator]: () => {
+            // Add more tasks as needed
             return {
-              current: 0,
-              length: 0,
-              next() {
-                if (this.current < this.length) {
-                  return { done: false, value: null };
-                } else {
-                  return { done: true };
-                }
-              }
-            };
-          }
-        },
-        // Add more tasks as needed
+              next: () => {
+                return {
+                  done: true,
+                  value: {
+                    _id: "task-2",
+                    id: "2",
+                    title: "Task 2",
+                    description: "Description of Task 2",
+                    assignedTo: [],
+                    previouslyAssignedTo: [],
+                    done: false,
+                    dueDate: new Date(),
+                    status: "todo",
+                    priority: "low",
+                    estimatedHours: null,
+                    actualHours: null,
+                    startDate: null,
+                    endDate: new Date(),
+                    completionDate: new Date(),
+                    isActive: true,
+                    tags: [],
+                    dependencies: [],
+                    
+                  },
+                };
+              },
+            }
+          },
+          data: {} as Data,
+          source: "user",
+          some: (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any) => {
+            // Add more tasks as needed
+            return true;
+          },
+          videoData: {} as VideoData
+
+          // Add more tasks as needed
+        }
       ],
       startDate: new Date(),
       endDate: new Date(),
@@ -186,29 +235,30 @@ const team: Team = {
     hasQuota: false,
     profilePicture: "profile picture",
     processingTasks: [] as DataProcessingTask[],
-    traits: "traits" as unknown as typeof CommonDetails
-
+    traits: "traits" as unknown as typeof CommonDetails,
+    role: UserRoles.find(role => role.role === 'TeamLeader') || UserRoles.find(role => role.role === 'Guest') || { role: 'Guest', responsibilities: [], permissions: [] },
+    timeBasedCode: generateTimeBasedCode,
   },
-  then(callback: (newTeam: Team) => void) {
-    const newTeam = {
-      id: 2,
-      teamName: "New Team",
-      description: null,
+  
+  then(callback: (newData: Snapshot<Team>) => void) {
+    const newData = {
+      _id: "team-1",
+      id: "1",
+      name: "Team A",
+      description: "Description of Team A",
       members: [],
       projects: [],
       creationDate: new Date(),
+      progress: {} as Progress,
       isActive: true,
       leader: null,
-      progress: null,
-      then: callback,
+      budget: 0,
+      timestamp: 0,
+      data: {} as TeamData & Team,
     };
-  },
-  title: "",
-  status: "pending",
-  tags: [],
-  analysisType: "",
-  analysisResults: [],
-  _id: ""
+    callback(newData);
+  } ,
+  data: {} as TeamData & Team,
 };
 
 

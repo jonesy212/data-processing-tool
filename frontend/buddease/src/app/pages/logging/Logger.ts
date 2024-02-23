@@ -1,5 +1,6 @@
 // Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { Task } from "@/app/components/models/tasks/Task";
 import { useNotification } from '@/app/components/support/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 
@@ -147,9 +148,49 @@ class DocumentLogger extends Logger {
       console.error('Error logging document event:', error);
     });
   }
+  
 }
+
+
+class TaskLogger extends Logger {
+  static logTaskCreated(taskTitle: string, uniqueID: string) {
+    super.log("Task Created", taskTitle, uniqueID);
+    // Additional logic specific to logging task creation
+  }
+
+  static logTaskUpdated(taskID: string, updatedDetails: Partial<Task>) {
+    super.log("Task Updated", `Task ${taskID} updated`, taskID);
+    // Additional logic specific to logging task updates
+    
+  }
+
+  static logTaskCompleted(taskID: string) {
+    super.log("Task Completed", `Task ${taskID} completed`, taskID);
+    // Additional logic specific to logging task completion
+    
+  }
+
+  static logTaskAssigned(taskID: string, assignedTo: string) {
+    super.log("Task Assigned", `Task ${taskID} assigned to ${assignedTo}`, taskID);
+    // Additional logic specific to logging task assignment
+  }
+
+  static logTaskUnassigned(taskID: string) {
+    super.log("Task Unassigned", `Task ${taskID} unassigned`, taskID);
+    // Additional logic specific to logging task unassignment
+   }
+
+  static logTaskReassigned(taskID: string, reassignedTo: string) {
+    super.log("Task Reassigned", `Task ${taskID} reassigned to ${reassignedTo}`, taskID);
+    // Additional logic specific to logging task reassignment
+  }
+
+  // Add more methods as needed for other task-related events
+}
+
+
 
 export default Logger;
 
-export { AudioLogger, ChannelLogger, CollaborationLogger, DocumentLogger, VideoLogger };
+export { AudioLogger, ChannelLogger, CollaborationLogger, DocumentLogger, TaskLogger, VideoLogger };
 

@@ -1,13 +1,26 @@
 // _app.tsx
 import { Refine } from "@refinedev/core";
+import { IDataContextProvider } from "@refinedev/core/dist/interfaces";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
-import Switch, { Router } from "react-router-dom";
+import { Navigator, Routes } from "react-router-dom";
+
+import {
+  Link,
+  Route,
+  Router,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
 import Toolbar from "../components/documents/Toolbar";
+import ChildComponent from "../components/hooks/ChildComponent";
+import { handleLogin } from "../components/hooks/dynamicHooks/dynamicHooks";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import { Data } from "../components/models/data/Data";
@@ -23,13 +36,19 @@ import {
 } from "../components/support/NotificationContext";
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
+import { ButtonGenerator } from "../generators/GenerateButtons";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
+import ChangePasswordForm from "./forms/ChangePasswordForm";
 import ChartComponent from "./forms/ChartComponent";
+import ForgotPasswordForm from "./forms/ForgotPasswordForm";
+import LoginForm from "./forms/LoginForm";
+import RegisterForm from "./forms/RegisterForm";
 import Layout from "./layouts/Layouts";
 import SearchComponent from "./searchs/SearchComponent";
+
 const phases: Phase[] = [
   {
     name: "Calendar Phase",
@@ -43,7 +62,12 @@ const phases: Phase[] = [
   // Add more phases
 ];
 
-async function MyApp({ Component, pageProps }: AppProps) {
+async function MyApp({
+  Component,
+  pageProps,
+  router,
+  brandingSettings,
+}: AppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -51,7 +75,8 @@ async function MyApp({ Component, pageProps }: AppProps) {
     "communication" | "documents" | "tasks" | "settings"
   >("communication");
   const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
-
+  const [username, setUsername] = useState<string>("defaultUsername");
+  const [password, setPassword] = useState<string>("<PASSWORD>");
   // Define the 'addNotifications' function to add new notifications
   const addNotifications = (message: string, randomBytes: BytesLike) => {
     // Generate a unique ID for the new notification
@@ -122,8 +147,6 @@ async function MyApp({ Component, pageProps }: AppProps) {
 
     // Example: Undo the last action
     undoLastAction({}, utilities);
-
-    // Additional actions...
   };
 
   const getNextPhase = (currentPhase: Phase): Phase => {
@@ -155,14 +178,21 @@ async function MyApp({ Component, pageProps }: AppProps) {
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
     <Refine
-      authProvider={{
-        login: () => Promise.resolve(),
-        logout: () => Promise.resolve(),
-        checkError: () => Promise.resolve(),
-        checkAuth: () => Promise.resolve(),
-        getPermissions: () => Promise.resolve(),
+      dataProvider={{
+        AuthProvider: AuthProvider,
+        default: {} as IDataContextProvider,
       }}
-      routerProvider={{routerProvider}}  
+      routerProvider={{
+        basename: "",
+        Link: Link,
+        Router: Router,
+        Route: Route,
+        Routes: Routes,
+        useParams: useParams,
+        useLocation: useLocation,
+        useNavigate: useNavigate,
+        useSearchParams: useSearchParams,
+      }}
       resources={[
         {
           name: "posts",
@@ -185,37 +215,129 @@ async function MyApp({ Component, pageProps }: AppProps) {
               <DynamicPromptProvider>
                 <AuthProvider token={token}>
                   <StoreProvider>
-                    <OnboardingComponent />
-                    {/* Use componentSpecificData wherever it's needed */}
-                    {componentSpecificData.map((data, index) => (
-                      <div key={index}>
-                        {/* Your component logic here using data */}
-                      </div>
-                    ))}
-                    {/* Pass hooks and utilities to children */}
-                    {children({ hooks, utilities })}{" "}
-                    {/* Render ConfirmationModal with appropriate props */}
-                    <ConfirmationModal
-                      isOpen={confirmationOpen}
-                      onConfirm={handleConfirm}
-                      onCancel={handleCancel}
-                    />
-                    {/* Generate appTree and render TreeView */}
-                    {appTree && (
-                      <TreeView
-                        data={[appTree]}
-                        onClick={(node) => {
-                          // Handle node click if needed
-                          console.log("Node clicked:", node);
-                        }}
-                        searchQuery={""}
+                    <Router location={location} navigator={{} as Navigator}>
+                      <Routes location={location}>
+                        {" "}
+                        {/* Routes to render only the first matching route */}
+                        <Route path="/login">
+                          <LoginForm
+                            onSubmit={(username: string, password: string) =>
+                              handleLogin(username, password)
+                            }
+                            setUsername={setUsername}
+                            setPassword={setPassword}
+                          />
+                          <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                          />
+                          <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                          />
+                        </Route>
+                        <Route path="/register">
+                          <RegisterForm />
+                        </Route>
+                        <Route path="/forgot-password">
+                          <ForgotPasswordForm />
+                        </Route>
+                        <Route path="/reset-password">
+                          <ChangePasswordForm
+                            onSuccess={() => {}}
+                            onChangePassword={(
+                              currentPassword: string,
+                              newPassword: string
+                            ): Promise<void> => {
+                              // Perform password change logic here
+                              return new Promise<void>((resolve, reject) => {
+                                currentPassword = newPassword;
+                                // Simulate password change operation
+                                // For example, you can make an API call to change the password
+                                // Replace the setTimeout with your actual password change logic
+                                setTimeout(() => {
+                                  // Resolve the Promise when the password change is successful
+                                  resolve();
+                                }, 1000); // Simulating a delay of 1 second
+                              });
+                            }}
+                          />
+                        </Route>
+                        <Route path="/app">
+                          <Layout>
+                            <NotificationManager
+                              notifications={notifications}
+                              onConfirm={handleConfirm}
+                              onCancel={handleCancel}
+                              notify={addNotifications}
+                              setNotifications={setNotifications}
+                            />
+                            <StoreProvider>
+                              <Component
+                                {...pageProps}
+                                initialState={appTree}
+                                utilities={utilities}
+                                hooks={hooks}
+                                phases={phases}
+                                currentPhase={currentPhase}
+                                setCurrentPhase={setCurrentPhase}
+                                progress={progress}
+                                setProgress={setProgress}
+                                activeDashboard={activeDashboard}
+                                setActiveDashboard={setActiveDashboard}
+                                addNotifications={addNotifications}
+                                componentSpecificData={componentSpecificData}
+                              />
+                            </StoreProvider>
+                          </Layout>
+                        </Route>
+                      </Routes>
+                      <OnboardingComponent />
+                      {/* Use componentSpecificData wherever it's needed */}
+                      {componentSpecificData.map((data, index) => (
+                        <div key={index}>
+                          {/* Your component logic here using data */}
+                        </div>
+                      ))}
+                      {/* Pass hooks and utilities to children */}
+                      {children({ hooks, utilities })}{" "}
+                      {/* Render ConfirmationModal with appropriate props */}
+                      <ConfirmationModal
+                        isOpen={confirmationOpen}
+                        onConfirm={handleConfirm}
+                        onCancel={handleCancel}
                       />
-                    )}
-                    <EditorWithPrompt
-                      userId="user1"
-                      teamId="team1"
-                      project="project1"
-                    />
+                      {/* Generate appTree and render TreeView */}
+                      {appTree && (
+                        <TreeView
+                          data={[appTree]}
+                          onClick={(node) => {
+                            // Handle node click if needed
+                            console.log("Node clicked:", node);
+                          }}
+                          searchQuery={""}
+                        />
+                      )}
+                      <EditorWithPrompt
+                        userId="user1"
+                        teamId="team1"
+                        project="project1"
+                      />
+                      {/* ButtonGenerator component with handleButtonClick */}
+                      <ButtonGenerator
+                        onSubmit={handleButtonClick}
+                        onReset={handleButtonClick}
+                        onCancel={handleButtonClick}
+                        onLogicalAnd={handleButtonClick}
+                        onLogicalOr={handleButtonClick}
+                        onStartPhase={handleButtonClick}
+                        onEndPhase={handleButtonClick}
+                        onRoutesLayout={handleButtonClick}
+                        onOpenDashboard={handleButtonClick}
+                      />
+                    </Router>
                   </StoreProvider>
                 </AuthProvider>
               </DynamicPromptProvider>
@@ -231,6 +353,19 @@ async function MyApp({ Component, pageProps }: AppProps) {
                 activeDashboard={activeDashboard}
                 progress={{ value: progress, label: "Progress" }}
               />
+              <div>
+                {/* Include router and brandingSettings in JSX */}
+                <Component
+                  {...pageProps}
+                  router={router}
+                  brandingSettings={brandingSettings}
+                />
+                {/* You can also pass them down to child components */}
+                <ChildComponent
+                  router={router}
+                  brandingSettings={brandingSettings}
+                />
+              </div>
             </NotificationProvider>
           </ThemeConfigProvider>
         )}
@@ -243,68 +378,3 @@ async function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const routerProvider = () => { 
-  return (
-    <Router>
-      <Switch>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/register">
-          <Register />
-        </Route>
-        <Route path="/forgot-password">
-          <ForgotPassword />
-        </Route>
-        <Route path="/reset-password">
-          <ResetPassword />
-        </Route>
-        <Route path="/app">
-          <Layout>
-            <NotificationManager
-              notifications={notifications}
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
-              notify={addNotifications}
-              setNotifications={setNotifications}
-            />
-            <StoreProvider
-              initialState={appTree}
-              phases={phases}
-              currentPhase={currentPhase}
-              setCurrentPhase={setCurrentPhase}
-              progress={progress}
-              setProgress={setProgress}
-              activeDashboard={activeDashboard}
-              setActiveDashboard={setActiveDashboard}
-              addNotifications={addNotifications}
-            >
-              <Component
-                {...pageProps}
-                hooks={hooks}
-                utilities={utilities}
-                componentSpecificData={componentSpecificData}
-              />
-            </StoreProvider>
-          </Layout>
-        </Route>
-      </Switch>
-    </Router>
-  );
-}

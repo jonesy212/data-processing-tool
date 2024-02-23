@@ -8,6 +8,7 @@ export interface TrackerStore {
   getTracker: (id: string) => Tracker | undefined;
   getTrackers: (filter?: { id?: string; name?: string }) => Tracker[];
   removeTracker: (trackerToRemove: Tracker) => void;
+  dispatch: (action: any) => void;
 }
 
 const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
@@ -31,7 +32,12 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
     delete trackers[trackerToRemove.id];
   };
 
+  const dispatch = (action: any) => { 
+    rootStore.trackerStore.dispatch(action);
+  }
+
   makeAutoObservable({
+    dispatch,
     trackers,
     addTracker,
     getTracker,
@@ -40,6 +46,7 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
   });
 
   return {
+    dispatch,
     trackers,
     addTracker,
     getTracker,

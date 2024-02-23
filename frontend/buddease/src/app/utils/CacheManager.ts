@@ -1,16 +1,30 @@
 // CacheManager.ts
 import axios from "axios";
 import { create } from "mobx-persist";
+import getAppPath from "../../../appPath";
+import { Data } from "../components/models/data/Data";
 import { CustomPhaseHooks } from "../components/phases/Phase";
-import cacheData from "../configs/MainConfig";
-import { ModuleType } from "../configs/UserPreferences";
+import { Snapshot } from "../components/state/stores/SnapshotStore";
+import { backendConfig } from "../configs/BackendConfig";
+import BackendStructure from "../configs/appStructure/BackendStructure";
+import FrontendStructure from "../configs/appStructure/FrontendStructure";
 import { generateInterfaces } from "../generators/GenerateInterfaces";
+import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
 import { readCache, writeCache } from "./ReadAndWriteCache";
 
 const backendModelPaths = ["path/to/backend/models"]; // Update this with the actual path
 
 // Generate interfaces
 generateInterfaces(backendModelPaths);
+
+
+
+
+interface MainConfigProps {
+  frontendStructure: FrontendStructure; // Define frontendStructure in props interface
+  backendConfig: any; // Define backendConfig in props interface with appropriate type
+}
+
 
 // Define the keys for your stores
 export const STORE_KEYS = {
@@ -30,16 +44,22 @@ export const readAndLogCache = async () => {
   return cache;
 };
 
+
+// Define or import projectPath here
+const projectPath = getAppPath()
+
+const frontendStructure = new FrontendStructure(projectPath);
+const backendStructure = new BackendStructure(projectPath);
 // Write cache data
 export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
   await writeCache({
     [key]: newCacheData,
     lastUpdated: "",
-    userPreferences: {
-      modules: {} as ModuleType,
-      actions: {} as never[],
-      reducers: {} as never[],
-    },
+    // userPreferences: {
+    //   modules: {} as ModuleType,
+    //   actions: {} as never[],
+    //   reducers: {} as never[],
+    // },
     userSettings: {
       communicationMode: "",
       enableRealTimeUpdates: false,
@@ -121,7 +141,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         isActive: false,
         animateIn: function (selector: string): void {
           const element = document.querySelector(selector);
-          if (element) { 
+          if (element) {
             element.classList.add('animate-in');
 
           } else {
@@ -131,7 +151,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
         },
         toggleActivation: function (): void {
           this.isActive = !this.isActive;
-          if(this.isActive) {
+          if (this.isActive) {
             this.startAnimation();
           } else {
             this.stopAnimation();
@@ -139,7 +159,6 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
 
         },
         startAnimation: function (): void {
-
         },
         stopAnimation: function (): void {
           this.isActive = false;
@@ -158,66 +177,45 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
       tasks: 0,
       todos: 0,
     },
-    frontendStructure: cacheData.frontendStructure,
-    backendDocumentConfig: cacheData.backendDocumentConfig,
-    notificationBarPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
-    darkModeTogglePhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
+
+
     authenticationPhaseHook: {} as CustomPhaseHooks,
     jobSearchPhaseHook: {} as CustomPhaseHooks,
-    recruiterDashboardPhaseHook:  {} as CustomPhaseHooks,
-    teamBuildingPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
-    brainstormingPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
-    projectManagementPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
-    meetingsPhaseHook: () => {
-      return {
-        isActive: false,
-        toggleActivation: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-      };
-    },
+    recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
+
     fileType: "",
+    frontendStructure: frontendStructure,
+    backendStructure: backendStructure,
+    backendConfig: backendConfig,
+    realtimeData: realtimeData,
+    fetchData: function (userId: string, dispatch: DataAnalysisDispatch): Promise<void> {
+      throw new Error("Function not implemented.");
+    },
+    notificationBarPhaseHook: undefined,
+    darkModeTogglePhaseHook: undefined,
+    teamBuildingPhaseHook: undefined,
+    brainstormingPhaseHook: undefined,
+    projectManagementPhaseHook: undefined,
+    meetingsPhaseHook: undefined,
+    ideationPhaseHook: undefined,
+    teamCreationPhaseHook: undefined,
+    productBrainstormingPhaseHook: undefined,
+    productLaunchPhaseHook: undefined,
+    dataAnalysisPhaseHook: undefined,
+    generalCommunicationFeaturesPhaseHook: undefined,
+    _id: "",
+    id: "",
+    title: "",
+    status: "pending",
+    isActive: false,
+    tags: [],
+    phase: null,
+    then: function (callback: (newData: Snapshot<Data>) => void): void {
+      throw new Error("Function not implemented.");
+    },
+    analysisType: "",
+    analysisResults: [],
+    videoData: {} as VideoData
   });
 };
 
@@ -271,5 +269,3 @@ const exampleUsage = async () => {
   }
   exampleUsage();
 };
-
-// Run the example usage

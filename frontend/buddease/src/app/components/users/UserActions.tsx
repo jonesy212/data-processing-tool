@@ -22,6 +22,8 @@ export const UserActions = {
   fetchUserFailure: createAction<{ error: string }>("fetchUserFailure"),
   fetchUserRequest: createAction("fetchUserRequest"),
   
+  fetchUserByIdSuccess: createAction<{ user: User }>("fetchUserByIdSuccess"),
+  fetchUserByIdFailure: createAction<{ error: string }>("fetchUserByIdFailure"),
   updateUserRequest: createAction<{ updatedUserData: any }>("updateUserRequest"),
   updateUserSuccess: createAction<{ user: User }>("updateUserSuccess"),
   updateUserFailure: createAction<{ error: string }>("updateUserFailure"),

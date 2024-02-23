@@ -4,7 +4,7 @@ import { createAction } from "@reduxjs/toolkit";
 export const UserRoleActions = {
   // Existing single actions
   fetchUserRolesRequest: createAction("fetchUserRolesRequest"),
-  fetchUserRolesSuccess: createAction<any[]>("fetchUserRolesSuccess"),
+  fetchUserRolesSuccess: createAction<{userRoles: any[]}>("fetchUserRolesSuccess"),
   fetchUserRolesFailure: createAction<{ error: string }>("fetchUserRolesFailure"),
 
   createUserRoleRequest: createAction<any>("createUserRoleRequest"),

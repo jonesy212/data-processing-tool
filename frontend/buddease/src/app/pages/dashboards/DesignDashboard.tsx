@@ -16,7 +16,6 @@ import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData
 import TaskManagementManager from "@/app/components/projects/TaskManagementPhase";
 import ClearingTimer from "@/app/components/projects/projectManagement/ClearingTimer";
 import MainApplicationLogic from "@/app/components/projects/projectManagement/MainApplicationLogic";
-import ProjectPhaseService from "@/app/components/projects/projectManagement/ProjectPhaseService.ts";
 import RemovingEventListeners from "@/app/components/projects/projectManagement/RemovingEventListeners";
 import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ReferralSystem from "@/app/components/referrals/ReferralSystem";
@@ -34,11 +33,9 @@ import DynamicTypography, {
   DynamicTypographyProps,
   HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
-import { TaskActions } from "@/app/components/tasks/TaskActions";
 import TaskAssignmentSnapshot from "@/app/components/tasks/TaskAssignmentSnapshot";
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
 import TodoList from "@/app/components/todos/TodoList";
-import { UserActions } from "@/app/components/users/UserActions";
 import ConceptDevelopment from "@/app/components/users/userJourney/ConceptDevelopment";
 import ConceptValidation from "@/app/components/users/userJourney/ConceptValidation";
 import IdeaLifecycle from "@/app/components/users/userJourney/IdeaLifecycle";
@@ -48,7 +45,6 @@ import ProofOfConcept from "@/app/components/users/userJourney/ProofOfConcept";
 import RequirementsGathering from "@/app/components/users/userJourney/RequirementsGathering";
 import TeamBuildingPhaseManagement from "@/app/components/users/userJourney/TeamBuildingPhaseManagement";
 import Versioning from "@/app/components/versions/Versioning";
-import ConfigurationService from "@/app/configs/ConfigurationService";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import MainConfig from "@/app/configs/MainConfig";
 import UserPreferences from "@/app/configs/UserPreferences";
@@ -96,14 +92,22 @@ import UserList from "@/app/components/lists/UserList";
 import NotificationManager from "@/app/components/support/NotificationManager";
 import { User, UserData, UserDetails } from "@/app/components/users/User";
 
+import ApiConfigComponent from "@/app/components/api/ApiConfigComponent";
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
 import DataProcessingComponent from "@/app/components/models/data/DataProcessingComponent";
+import ProjectPhaseComponent from "@/app/components/projects/projectManagement/ProjectPhaseComponent";
+import { selectApiConfigs } from "@/app/components/state/redux/slices/ApiSlice";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { Notification } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType } from "@/app/components/support/NotificationContext";
-import { PermissionsEditor } from "@/app/components/users/PermissionsEditor";
+import PermissionsEditor from "@/app/components/users/PermissionsEditor";
 import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
 import { saveProfile } from "@/app/components/users/userSnapshotData";
+import { BackendConfig } from "@/app/configs/BackendConfig";
+import BackendConfigComponent from "@/app/configs/BackendConfigComponent";
+import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
+import { FrontendConfig } from "@/app/configs/FrontendConfig";
+import FrontendConfigComponent from "@/app/configs/FrontendConfigComponent";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
@@ -114,17 +118,17 @@ import DesignComponent from "@/app/css/DesignComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import AppCacheManagerBase from "@/app/utils/AppCacheManager";
 import MyPromise from "@/app/utils/MyPromise";
+import { useSelector } from "react-redux";
 import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
 import YourParentComponent from "../../components/prompts/YourParentComponent";
 import DataPreview, {
   DataPreviewProps,
 } from "../../components/users/DataPreview";
-import SearchComponent, {
-  SearchComponentProps,
-} from "../searchs/SearchComponent";
+import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
-type customNotifications = "customNotifications1" | "customNotifications2";
+
+
 interface DynamicComponentWrapperProps<T> {
   component: T;
   dynamicProps: {
@@ -205,6 +209,7 @@ const DesignDashboard: React.FC<{
     useModalFunctions();
   const [isFileUploadModalOpen, setFileUploadModalOpen] = useState(false);
   const backendStructureWrapper = new BackendStructureWrapper(getAppPath());
+  const apiConfigs = useSelector(selectApiConfigs);
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const initialNotification: Notification = {
@@ -351,12 +356,22 @@ const DesignDashboard: React.FC<{
           <ProjectList tasks={[]} />
           <NotificationManager
             notifications={[]}
-            setNotifications={() => { }}
+            setNotifications={() => {}}
             notify={() => {
               // Implement logic to handle notification
               console.log("Notification triggered");
               return Promise.resolve();
-             }}
+            }}
+            onConfirm={() => { 
+              // Implement logic to handle notification confirmation
+              console.log("Notification confirmed");
+              return Promise.resolve();
+            }}
+            onCancel={() => {
+              // Implement logic to handle notification cancellation
+              console.log("Notification cancelled");
+              return Promise.resolve();
+          }}
           />
 
           <ModalGenerator
@@ -365,14 +380,14 @@ const DesignDashboard: React.FC<{
               console.log("Modal closed");
               // Change from onCloseFileUploadModal(); to handleCloseModal();
               handleCloseModal();
-            }}
+            } }
             modalComponent={FileUploadModal}
             onFileUpload={(files: FileList) => {
               // Implement logic to handle file upload
               console.log("Files uploaded:", files);
               onHandleFileUpload(files); // Call the provided function to handle file upload
-            }}
-            children={null}
+            } }
+            children={null} title={""}
           />
         </div>
       </AdminDashboard>
@@ -401,7 +416,7 @@ const DesignDashboard: React.FC<{
 
       {/* Main Application Logic */}
       <MainApplicationLogic />
-      <ProjectPhaseService />
+      <ProjectPhaseComponent />
       <RemovingEventListeners documentOptions={{} as DocumentOptions} />
 
       {/* Dynamic Components */}
@@ -436,9 +451,18 @@ const DesignDashboard: React.FC<{
       <DesignComponent />
 
       {/* User Interaction */}
-      <SearchComponent componentSpecificData={{ componentSpecificData }} />
-      <TaskActions />
-      <TaskAssignmentSnapshot taskId={""} />
+      <SearchComponent
+        componentSpecificData={[
+          {
+            id: 1,
+            title: "Sample Title",
+            description: "Sample Description",
+            source: "Sample Source",
+          },
+        ]}
+        documentData={[]}
+      />
+      <TaskAssignmentSnapshot taskId={"taskSnapshotId"} />
       <TaskManagerComponent taskId={() => "taskId"} />
       <TodoList />
       <InviteFriends />
@@ -446,10 +470,6 @@ const DesignDashboard: React.FC<{
       <SendEmail />
       {/* how to set up a protected rout */}
       <ProtectedRoute component={YourParentComponent} />
-
-      <SearchComponent componentSpecificData={{} as SearchComponentProps} />
-      <User />
-      <UserActions />
 
       {/* Idea and Concept Development */}
       <ConceptDevelopment />
@@ -462,9 +482,10 @@ const DesignDashboard: React.FC<{
       <TeamBuildingPhaseManagement />
 
       {/* Configuration and Settings */}
-      <ApiConfig />
-      <BackendDocumentConfig />
-      <ConfigurationService />
+      <ApiConfigComponent />
+      <BackendConfigComponent backendConfig={{}  as BackendConfig} />
+      <FrontendConfigComponent config={{} as FrontendConfig} />
+      <ConfigurationServiceComponent apiConfigs={apiConfigs} />
       <DataVersionsConfig dataPath="" />
       <DetermineFileType />
       <DocumentBuilderConfig />
@@ -479,7 +500,7 @@ const DesignDashboard: React.FC<{
       <UserSettings />
       <Global />
       <TraverseFrontend />
-      <Stylesheet />
+      <StyleSheet />
       <Favicon />
       <GenerateCache />
       <GenerateChatInterfaces />
@@ -511,6 +532,7 @@ const DesignDashboard: React.FC<{
       <PermissionsEditor permissions={{}} />
 
       {/*User Managment Functionalities */}
+
     </div>
   );
 };

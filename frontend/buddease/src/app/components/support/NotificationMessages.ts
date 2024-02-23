@@ -16,7 +16,9 @@ const NOTIFICATION_MESSAGES = {
     IDEA_REJECTED: "Idea rejected",
     IDEA_EDITED: "Idea updated",
     SESSION_STARTED: "Brainstorming session started",
-    SESSION_ENDED: "Brainstorming session ended"
+    SESSION_ENDED: "Brainstorming session ended",
+    DEFAULT_IdeationPhase_SUCCESS: "Ideation phase set successfully",
+    DEFAULT_IdeationPhase_FAILURE: "Error setting ideation phase"
   },
 
 
@@ -43,6 +45,36 @@ const NOTIFICATION_MESSAGES = {
     BROWSER_CHECKER_ERROR: `There was an error connecting to the browser. Please check your network connection and try again.`,
     ONBOARDING_ERROR: "Error in the onboarding process. Please try again.",
 
+  },
+
+  FeatureToggle: {
+    DEFAULT: "Feature toggle updated",
+    FEATURE_ENABLED: "Feature enabled",
+    FEATURE_DISABLED: "Feature disabled",
+    FEATURE_DELETED: "Feature deleted",
+    FEATURE_CREATED: "Feature created",
+    FEATURE_UPDATED: "Feature updated",
+    
+    FEATURE_IMPORT_SUCCESS: "Feature import successful",
+    FEATURE_IMPORT_FAILURE: "Feature import failed",
+    FEATURE_EXPORT_SUCCESS: "Feature export successful",
+    FEATURE_EXPORT_FAILURE: "Feature export failed",
+    
+    FEATURE_EXPORT_DOWNLOAD_SUCCESS: "Feature export download successful",
+    FEATURE_EXPORT_DOWNLOAD_FAILURE: "Feature export download failed",
+    FEATURE_EXPORT_DOWNLOAD_STARTED: "Feature export download started",
+    FEATURE_EXPORT_DOWNLOAD_PROGRESS: "Feature export download progress",
+    FEATURE_EXPORT_DOWNLOAD_COMPLETE: "Feature export download complete",
+    FEATURE_EXPORT_DOWNLOAD_CANCELLED: "Feature export download cancelled",
+    FEATURE_EXPORT_DOWNLOAD_ERROR: "Feature export download error",
+    FEATURE_EXPORT_DOWNLOAD_ABORTED: "Feature export download aborted",
+    FEATURE_EXPORT_DOWNLOAD_TIMEOUT: "Feature export download timeout",
+    FEATURE_EXPORT_DOWNLOAD_REJECTED: "Feature export download rejected",
+    FEATURE_EXPORT_DOWNLOAD_RESOLVED: "Feature export download resolved",
+
+
+    ENABLE_SUCCESS: "Feature enabled successfully",
+    DISABLE_SUCCESS: "Feature disabled successfully",
   },
   NO_NOTIFICATIONS: {
     DEFAULT: "NO NOTIFICATION WENT OFF..",
@@ -164,6 +196,7 @@ const NOTIFICATION_MESSAGES = {
    
   Freelancer: {
     SUBMIT_PROPOSAL_ERROR: "Error submitting proposal.",
+    JOIN_PROJECT_ERROR: "Error joining project.",
   },
   
   FrontendStructure: {
@@ -180,6 +213,14 @@ const NOTIFICATION_MESSAGES = {
 
     // Add more generic messages
   },
+   
+  Info: {
+    DEFAULT: (errorType: string, details: string) =>
+      `Error in Action Manager (${errorType}): ${details}`,
+    GENERAATED_INFO_ITEMS_SUCCESS: "Info items generated successfully.",
+    GENERAATED_INFO_ITEMS_ERROR: "Error generating info items. Please try again.",
+  },
+  
   Logger: {
     DEFAULT: "Log message",
     LOG_INFO: "Info log message",
@@ -194,6 +235,16 @@ const NOTIFICATION_MESSAGES = {
     NOTIFICATION_SENT: "Notification sent successfully",
     NOTIFICATION_SEND_FAILED: "Failed to send notification. Please try again later."
   },
+
+  Markers: {
+    DEFAULT: "Marker added successfully.",
+    MARKER_UPDATED: "Marker updated successfully.",
+    MARKER_REMOVED: "Marker removed successfully.",
+    MARKER_ADD_ERROR: "Error adding marker. Please try again.",
+    MARKER_UPDATE_ERROR: "Error updating marker. Please try again.",
+    MARKER_FETCH_ERROR: "Error fetching markers. Please try again."
+  },
+  
 
   MessagingSystem: {
     DEFAULT: "New message received.", // Default message for the messaging system
@@ -232,6 +283,18 @@ const NOTIFICATION_MESSAGES = {
     FETCH_PHASE_ERROR: "Error fetching phases. Please try again.",
     UPDATE_PHASE_ERROR: "Error updating phase. Please try again.",
   },
+  Preferences: {
+    DEFAULT: "Preferences updated successfully.",
+    DEFAULT_SETTINGS_ERROR: "Error updating default settings. Please try again.",
+    FETCH_PREFERENCES_ERROR: "Error fetching preferences. Please try again.",
+    UPDATE_PREFERENCES_ERROR: "Error updating preferences. Please try again.",
+    FETCH_PREFERENCES_SUCCESS: "Preferences fetched successfully.",
+    UPDATE_PREFERENCES_SUCCESS: "Preferences updated successfully.",
+    FETCH_PREFERENCES_REQUEST: "Fetching preferences...",
+    UPDATE_PREFERENCES_REQUEST: "Updating preferences...",
+    ERROR_REMOVING_PREFERENCES: "Error removing preferences. Please try again.",
+    SUCCESS_REMOVING_PREFERENCES: "Preferences removed successfully.",
+  },
   Prompts: {
     FETCH_PROMPTS_REQUEST: "Fetching prompts...",
     FETCH_PROMPTS_SUCCESS: "Prompts fetched successfully.",
@@ -244,6 +307,26 @@ const NOTIFICATION_MESSAGES = {
     
   },
 
+  Sagas: {
+    DEFAULT: (errorType: string, details: string) =>
+    `Error in Saga (${errorType}): ${details}`,
+    FETCHING_SAGA: "Fetching saga...",
+    FETCHING_SAGA_ERROR: "Error fetching saga. Please try again.",
+    CREATING_SAGA: "Creating saga...",
+    CREATING_SAGA_ERROR: "Error creating saga. Please try again.",
+    SUCCESS_CREATING_SAGA: "Saga created successfully.",
+    SUCCESS_FETCHING_SAGA: "Saga fetched successfully.",
+    SUCCESS_UPDATING_SAGA: "Saga updated successfully.",
+    SUCCESS_DELETING_SAGA: "Saga deleted successfully.",
+    UPDATING_SAGA: "Updating saga...",
+    UPDATING_SAGA_ERROR: "Error updating saga. Please try again.",
+    DELETING_SAGA: "Deleting saga...",
+    DELETING_SAGA_ERROR: "Error deleting saga. Please try again.",
+    SUCCESS_FETCHING_SAGAS: "Sagas fetched successfully.",
+    FETCHING_SAGAS: "Fetching sagas...",
+    FETCHING_SAGAS_ERROR: "Error fetching sagas. Please try again.",
+    ROOT_SAGA_ERROR: "Error in root saga. Please try again.",
+  },
   
   Snapshot: {
     DEFAULT: (errorType: string, details: string) =>
@@ -296,6 +379,19 @@ const NOTIFICATION_MESSAGES = {
     // New Error Messages for Tasks
   },
 
+  Theme: {
+    DEFAULT: "Theme updated successfully.",
+    DEFAULT_SETTINGS_ERROR: "Error updating default settings. Please try again.",
+    FETCH_THEME_ERROR: "Error fetching theme. Please try again.",
+    UPDATE_THEME_ERROR: "Error updating theme. Please try again.",
+    FETCH_THEME_SUCCESS: "Theme fetched successfully.",
+    UPDATE_THEME_SUCCESS: "Theme updated successfully.",
+    FETCH_THEME_REQUEST: "Fetching theme...",
+    UPDATE_THEME_REQUEST: "Updating theme...",
+    ERROR_REMOVING_THEME: "Error removing theme. Please try again.",
+    SUCCESS_REMOVING_THEME: "Theme removed successfully.",
+  },
+
 
   Toolbar: {
     DEFAULT: "New item added to toolbar",
@@ -308,14 +404,21 @@ const NOTIFICATION_MESSAGES = {
   Team: {
     DEFAULT: (errorType: string, details: string) =>
     `Error in Teams (${errorType}): ${details}`,
-
     //success
     ASSIGN_TEAM_MEMBER_FAILURE:
-    "Failed to assign team member. Please try again.",
+      "Failed to assign team member. Please try again.",
+    
     
     //failure
+    ADD_TEAM_ERROR: "Error adding team. Please try again.",
     FETCH_TEAM_ERROR: "Error fetching team. Please try again.",
     // Add more messages for the TeamLoading type
+    UPDATE_TEAM_ERROR: "Error updating team. Please try again.",
+    REMOVE_TEAM_ERROR: "Error removing team. Please try again.",
+    
+    //Batch
+    FETCH_TEAMS_ERROR: "Error fetching teams. Please try again.",
+    UPDATE_TEAMS_ERROR: "Error updating teams. Please try again.",  
   },
 
   Todos: {
@@ -351,6 +454,13 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the UserProfile type
   },
 
+  UserPreferences: {
+    SET_THEME_ERROR: "Error setting theme. Please try again.",
+    SET_THEME_SUCCESS: "Theme set successfully!",
+    SET_LANGUAGE_ERROR: "Error setting language. Please try again.",
+    SET_LANGUAGE_SUCCESS: "Language set successfully!",
+    SET_IDEATION_PHASE_ERROR: "Error setting ideation phase. Please try again.",
+  },
   Video: {
     DEFAULT: (errorType: string, details: string) => `Error in Videos (${errorType}): ${details}`,
     UPLOAD_STARTED: "Video upload started",
@@ -361,6 +471,11 @@ const NOTIFICATION_MESSAGES = {
     PROCESSING_FAILED: "Video processing failed. Please try again.",
     CREATE_VIDEO_SUCCESS: "Video created successfully",
     CREATE_VIDEO_ERROR: "Error creating video. Please try again.",
+    FETCH_VIDEO_ERROR: "Error fetching video. Please try again.",
+    UPDATE_VIDEO_SUCCESS: "Video updated successfully",
+    UPDATE_VIDEO_ERROR: "Error updating video. Please try again.",
+    REMOVE_VIDEO_ERROR: "Error removing video. Please try again.",  
+    ADD_VIDEO_ERROR: "Error adding video. Please try again.",
   },
   // Welcome and Account
   Welcome: {

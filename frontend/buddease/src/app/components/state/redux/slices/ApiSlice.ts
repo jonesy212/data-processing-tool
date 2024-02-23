@@ -1,5 +1,4 @@
 // ApiSlice.ts
-import { Task } from "@/app/components/models/tasks/Task";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface ApiManagerState {
@@ -50,14 +49,6 @@ export const useApiManagerSlice = createSlice({
       );
     },
 
-    markTaskComplete: (state, action: PayloadAction<number>) => {
-      const task = state.tasks.find((t: any) => t.id === action.payload) as
-        | Task
-        | undefined;
-      if (task) {
-        task.data.isCompleted = true
-      }
-    },
   },
 });
 
@@ -91,3 +82,17 @@ export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
 export default useApiManagerSlice.reducer;
 
 export type { ApiManagerState };
+
+
+
+
+
+
+
+
+
+
+
+
+
+

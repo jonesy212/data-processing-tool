@@ -105,16 +105,20 @@ class UserManagement {
       throw error;
     }
   };
-
-  // Update user role
   updateUserRole = async (userId: User['id'], newRole: string) => {
     try {
-      // Implement logic to update the user's role
+      // Call a service or API endpoint to update the user's role
+      const response = await userService.updateUserRole(userId, newRole);
+      
+      // Optionally, handle any additional logic based on the response from the backend
+  
+      return response; // Return any relevant data from the backend response
     } catch (error) {
       // Handle role update failure
       throw error;
     }
   };
+  
 
   // Ensure NFT reflects user role accurately
   updateNFTUserRole = async (userId: User['id'], role: string) => {

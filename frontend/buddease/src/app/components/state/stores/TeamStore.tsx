@@ -6,12 +6,11 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
-import { UserData } from "../../users/User";
 import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
-import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
 export interface TeamManagerStore {
   teams: Record<string, Team[]>;
@@ -36,9 +35,9 @@ export interface TeamManagerStore {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Data>; // Include a SnapshotStore for teams
+  snapshotStore: SnapshotStore<Snapshot<Data>>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
-
+  getTeamId: (team: Team) => number;
   // Add more methods or properties as needed
 }
 
@@ -58,7 +57,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
-  const initialSnapshot = {} as SnapshotStoreConfig<Data | UserData>;
+  const initialSnapshot = {} as SnapshotStoreConfig<Snapshot<Data>>;
   const snapshotStore = new SnapshotStore(initialSnapshot);
 
   const updateTeamName = (name: string) => {
@@ -81,6 +80,9 @@ const useTeamManagerStore = (): TeamManagerStore => {
     });
   };
 
+  const getTeamId = (team: Team) => { 
+    return team.id;
+  }
   const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
     // Ensure the teamId exists in the teams
     if (!teams[teamId]) {
@@ -89,7 +91,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
     }
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot = { [teamId]: [...teams[teamId]] };
+    const teamSnapshot = { [teamId]: [...teams[teamId]] } 
 
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);
@@ -232,7 +234,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
     console.log("Fetching Teams...");
     // You can add loading indicators or other UI updates here
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING
+      NOTIFICATION_MESSAGES.Data.PAGE_LOADING
     );
   };
 
@@ -273,6 +275,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
     NOTIFICATION_MESSAGE,
     NOTIFICATION_MESSAGES,
     setDynamicNotificationMessage,
+    getTeamId
   });
 
   return {
@@ -301,6 +304,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
     completeAllTeams,
     completeAllTeamsFailure,
     setDynamicNotificationMessage,
+    getTeamId
     // Add more methods or properties as needed
   };
 };

@@ -1,5 +1,9 @@
 // CommonDetails.tsx
+import { CacheData } from "@/app/generators/GenerateCache";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import RealtimeData from "../../../../models/realtime/RealtimeData";
+import { ScheduledData } from "../calendar/ScheduledData";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { ProjectData } from "../projects/Project";
 import { Todo } from "../todos/Todo";
@@ -14,7 +18,7 @@ import TeamData from "./teams/TeamData";
 interface CommonData<T> {
   title?: React.ReactNode
   description?: React.ReactNode;
-  data: T;
+  data?: T;
 }
 
 // Define a union type for the supported data types
@@ -27,6 +31,8 @@ type SupportedData =
   | DocumentData
   | ProjectData
   | TeamData
+  | CacheData
+  | ScheduledData
   | { [key: string]: any };
 
 
@@ -38,7 +44,9 @@ interface DetailsProps<T> {
 
 const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({ data }) => {
   const [showDetails, setShowDetails] = useState(false);
-
+  const userId = localStorage.getItem("id");
+  const dispatch = useDispatch();
+  
   const toggleDetails = () => {
     setShowDetails((prev) => !prev);
   };
@@ -46,7 +54,7 @@ const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({ data }) => {
   return (
     <div>
       <button onClick={toggleDetails}>Toggle Details</button>
-      {showDetails && (
+      {showDetails && data.data &&  (
         <div>
           <h3>Details</h3>
           {/* Handle different data types here */}
@@ -67,6 +75,9 @@ const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({ data }) => {
           })}
         </div>
       )}
+         {/* Include RealtimeData component */}
+         <RealtimeData userId={userId} dispatch={dispatch} />
+   
     </div>
   );
 };

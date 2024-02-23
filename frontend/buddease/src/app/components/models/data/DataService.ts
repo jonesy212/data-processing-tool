@@ -1,9 +1,9 @@
 // DataService.ts
 
 
-import axios from 'axios';
 import { action, observable, runInAction } from 'mobx';
 import { useAuth } from '../../auth/AuthContext';
+import axiosInstance from '../../security/csrfToken';
 import DATA_NOTIFICATIONS from '../../support/DataNotifications';
 import { NotificationContextProps } from '../../support/NotificationContext';
 import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
@@ -21,7 +21,7 @@ fetchData = async () => {
     this.loading = true;
 
     const authStore = useAuth();
-    const response = await axios.get('/api/data', { headers: { Authorization: `Bearer ${authStore.token}` } });
+    const response = await axiosInstance.get('/api/data', { headers: { Authorization: `Bearer ${authStore.token}` } });
 
     if (response.status !== 200) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);

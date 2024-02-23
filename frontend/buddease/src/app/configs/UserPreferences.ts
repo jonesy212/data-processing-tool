@@ -1,4 +1,39 @@
 
+interface UserPreferences {
+  theme: string;
+  ideationPhase: boolean;
+  brainstormingPhase: boolean;
+  launchPhase: boolean;
+  dataAnalysisPhase: boolean;
+  audioCommunicationEnabled: boolean;
+  videoCommunicationEnabled: boolean;
+  textCommunicationEnabled: boolean;
+  realTimeCollaborationEnabled: boolean;
+  language: string;
+  notificationPreferences: any; // Define the structure for notification preferences as needed
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsNotifications: boolean;
+  desktopNotifications: boolean;
+  customNotifications: any; // Define the structure for custom notifications as needed
+
+  // Project Phases Preferences
+  ideationPhaseEnabled: boolean;
+  teamFormationPhaseEnabled: boolean;
+  brainstormingPhaseEnabled: boolean;
+  launchPhaseEnabled: boolean;
+  dataAnalysisPhaseEnabled: boolean;
+
+  // Community Involvement Preferences
+  communityParticipationEnabled: boolean;
+  unityPromotionEnabled: boolean;
+  earningsReinvestmentEnabled: boolean;
+
+  // Monetization Opportunities Preferences
+  customAppDevelopmentEnabled: boolean;
+  teamIncentivesEnabled: boolean;
+  revenueContributionEnabled: boolean;
+}
 //todo update to modue names
 export type ModuleType =
   "profileManagement"
@@ -47,4 +82,4 @@ const userPreferences = {
   };
   
   export default userPreferences;
-  
+  export type { UserPreferences };

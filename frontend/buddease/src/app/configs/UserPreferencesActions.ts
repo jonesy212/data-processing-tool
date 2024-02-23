@@ -2,10 +2,14 @@
 import { createAction } from "@reduxjs/toolkit";
 
 // Communication Preferences
-export const UserCommunicationPreferences = {
+export const UserCommunicationPreferencesActions = {
   setTheme: createAction<string>("setTheme"),
+  setThemeFailure: createAction<{ error: string }>("setThemeFailure"),
   // Actions for project phases
-  setIdeationPhase: createAction("setIdeationPhase"),
+  setIdeationPhase: createAction<{
+    ideaId: string;
+    idea: { title: string; description: string };
+  }>("setIdeationPhase"),
   setBrainstormingPhase: createAction("setBrainstormingPhase"),
   setLaunchPhase: createAction("setLaunchPhase"),
   setDataAnalysisPhase: createAction("setDataAnalysisPhase"),
@@ -30,6 +34,9 @@ export const UserCommunicationPreferences = {
     "generateRevenueForSustainability"
   ),
 
+  setIdeationPhaseFailure: createAction<{ error: string }>(
+    "setIdeationPhaseFailure"
+  ),
   setLanguage: createAction<string>("setLanguage"),
   setNotificationPreferences: createAction<any>("setNotificationPreferences"),
   setEmailNotifications: createAction<boolean>("setEmailNotifications"),
@@ -39,8 +46,166 @@ export const UserCommunicationPreferences = {
   setCustomNotifications: createAction<any>("setCustomNotifications"),
 };
 
+export const UserBrandingPreferencesActions = {
+  setTheme: createAction<string>("setTheme"),
+  setUserBrandColors: createAction<string[]>(
+    "userPreferences/setUserBrandColors"
+  ),
+  setUserLogo: createAction<string>("userPreferences/setUserLogo"),
+  setFontStyles: createAction<string>("userPreferences/setFontStyles"),
+  setBackgroundImage: createAction<string>(
+    "userPreferences/setBackgroundImage"
+  ),
+  setIconography: createAction<string>("userPreferences/setIconography"),
+  setButtonStyles: createAction<string>("userPreferences/setButtonStyles"),
+  setTypography: createAction<string>("userPreferences/setTypography"),
+  setColors: createAction<string>("userPreferences/setColors"),
+  setShadows: createAction<string>("userPreferences/setShadows"),
+  setSpacing: createAction<string>("userPreferences/setSpacing"),
+  setHeaderColor: createAction<string>("userPreferences/setHeaderColor"), // New action for setting header color
+  setBorderColor: createAction<string>("userPreferences/setBorderColor"),
+  setBackgroundColor: createAction<string>(
+    "userPreferences/setBackgroundColor"
+  ), // New action for setting background color
+  setHoverColor: createAction<string>("userPreferences/setHoverColor"), // New action for setting hover color
+  setHoverTextColor: createAction<string>("userPreferences/setHoverTextColor"), // New action for setting hover text color
+  setHoverBackgroundColor: createAction<string>(
+    "userPreferences/setHoverBackgroundColor"
+  ), // New action for setting hover background color
+  setLinkColor: createAction<string>("userPreferences/setLinkColor"), // New action for setting link color
+  setLinkHoverColor: createAction<string>("userPreferences/setLinkHoverColor"), // New action for setting link hover color
+  setLinkVisitedColor: createAction<string>(
+    "userPreferences/setLinkVisitedColor"
+  ), // New action for setting link visited color
+  setLinkActiveColor: createAction<string>(
+    "userPreferences/setLinkActiveColor"
+  ), // New action for setting link active color
+  setLinkVisitedHoverColor: createAction<string>(
+    "userPreferences/setLinkVisitedHoverColor"
+  ), // New action for setting link visited hover
+  setLinkActiveHoverColor: createAction<string>(
+    "userPreferences/setLinkActiveHoverColor"
+  ), // New action for setting link active hover color
+  setLinkDisabledColor: createAction<string>(
+    "userPreferences/setLinkDisabledColor"
+  ), // New action for setting link disabled color
+  setLinkDisabledHoverColor: createAction<string>(
+    "userPreferences/setLinkDisabledHoverColor"
+  ), // New action for setting link disabled hover color
+  setLinkDisabledVisitedColor: createAction<string>(
+    "userPreferences/setLinkDisabledVisitedColor"
+  ), // New action for setting link disabled visited
+  setLinkDisabledActiveColor: createAction<string>(
+    "userPreferences/setLinkDisabledActiveColor"
+  ), // New action for setting link disabled active color
+  setLinkDisabledVisitedHoverColor: createAction<string>(
+    "userPreferences/setLinkDisabledVisitedHoverColor"
+  ), // New action for setting link
+  setLinkDisabledActiveHoverColor: createAction<string>(
+    "userPreferences/setLinkDisabledActiveHoverColor"
+  ), // New action for setting link disabled active
+  setLinkDisabledBackgroundColor: createAction<string>(
+    "userPreferences/setLinkDisabledBackgroundColor"
+  ), // New action for setting link disabled background color
+  setLinkDisabledHoverBackgroundColor: createAction<string>(
+    "userPreferences/setLinkDisabledHoverBackgroundColor"
+  ), // New action for setting link disabled hover background color
+  setLinkDisabledVisitedBackgroundColor: createAction<string>(
+    "userPreferences/setLinkDisabledVisitedBackgroundColor"
+  ), // New action for setting link disabled visited
+  setLinkDisabledActiveBackgroundColor: createAction<string>(
+    "userPreferences/setLinkDisabledActiveBackgroundColor"
+  ), // New action for setting link disabled active background color
+  setLinkDisabledVisitedHoverBackgroundColor: createAction<string>(
+    "userPreferences/setLinkDisabledVisitedHoverBackgroundColor"
+  ), // New action for setting link
+
+  setButtonColor: createAction<string>("userPreferences/setButtonColor"), // New action for setting button color
+  setButtonTextColor: createAction<string>(
+    "userPreferences/setButtonTextColor"
+  ), // New action for setting button text color
+  setButtonBackgroundColor: createAction<string>(
+    "userPreferences/setButtonBackgroundColor"
+  ), // New action for setting button background color
+  setButtonHoverColor: createAction<string>(
+    "userPreferences/setButtonHoverColor"
+  ), // New action for setting button hover color
+  setButtonHoverTextColor: createAction<string>(
+    "userPreferences/setButtonHoverTextColor"
+  ), // New action for setting button hover text color
+  setButtonHoverBackgroundColor: createAction<string>(
+    "userPreferences/setButtonHoverBackgroundColor"
+  ), // New action for setting button hover background color
+  setButtonActiveColor: createAction<string>(
+    "userPreferences/setButtonActiveColor"
+  ), // New action for setting button active color
+  setButtonActiveTextColor: createAction<string>(
+    "userPreferences/setButtonActiveTextColor"
+  ), // New action for setting button active text color
+  setButtonActiveBackgroundColor: createAction<string>(
+    "userPreferences/setButtonActiveBackgroundColor"
+  ), // New action for setting button active background color
+  setButtonDisabledColor: createAction<string>(
+    "userPreferences/setButtonDisabledColor"
+  ), // New action for setting button disabled color
+  setButtonDisabledTextColor: createAction<string>(
+    "userPreferences/setButtonDisabledTextColor"
+  ), // New action for setting button disabled text color
+  setButtonDisabledBackgroundColor: createAction<string>(
+    "userPreferences/setButtonDisabledBackgroundColor"
+  ), // New action for setting button disabled background color
+  setButtonFocusColor: createAction<string>(
+    "userPreferences/setButtonFocusColor"
+  ), // New action for setting button focus color
+  setButtonFocusTextColor: createAction<string>(
+    "userPreferences/setButtonFocusTextColor"
+  ), // New action for setting button focus text color
+  setButtonFocusBackgroundColor: createAction<string>(
+    "userPreferences/setButtonFocusBackgroundColor"
+  ), // New action for setting button focus background color
+  setButtonBorderColor: createAction<string>(
+    "userPreferences/setButtonBorderColor"
+  ), // New action for setting button border color
+  setButtonBorderRadius: createAction<string>(
+    "userPreferences/setButtonBorderRadius"
+  ), // New action for setting button border radius
+  setButtonBorderWidth: createAction<string>(
+    "userPreferences/setButtonBorderWidth"
+  ), // New action for setting button border width
+  setButtonShadow: createAction<string>("userPreferences/setButtonShadow"), // New action for setting button shadow
+  setButtonPadding: createAction<string>("userPreferences/setButtonPadding"), // New action for setting button padding
+  setButtonTransition: createAction<string>(
+    "userPreferences/setButtonTransition"
+  ), // New action for setting button transition
+  setButtonFontFamily: createAction<string>(
+    "userPreferences/setButtonFontFamily"
+  ), // New action for setting button font family
+  setButtonFontSize: createAction<string>("userPreferences/setButtonFontSize"), // New action for setting button font size
+  setButtonFontWeight: createAction<string>(
+    "userPreferences/setButtonFontWeight"
+  ), // New action for setting button font weight
+  setButtonLineHeight: createAction<string>(
+    "userPreferences/setButtonLineHeight"
+  ), // New action for setting button line height
+  setButtonLetterSpacing: createAction<string>(
+    "userPreferences/setButtonLetterSpacing"
+  ), // New action for setting button letter spacing
+  setButtonTextTransform: createAction<string>(
+    "userPreferences/setButtonTextTransform"
+  ), // New action for setting button text transform
+  setButtonTextDecoration: createAction<string>(
+    "userPreferences/setButtonTextDecoration"
+  ), // New action for setting button text decoration
+  setButtonTextShadow: createAction<string>(
+    "userPreferences/setButtonTextShadow"
+  ), // New action for setting button text shadow
+  setButtonOpacity: createAction<string>("userPreferences/setButtonOpacity"), // New action for setting button opacity
+  setButtonCursor: createAction<string>("userPreferences/setButtonCursor"), // New action for setting button cursor
+  setButtonOutline: createAction<string>("userPreferences/setButtonOutline"), // New action for setting button outline
+};
+
 // Visual Preferences
-export const UserVisualPreferences = {
+export const UserVisualPreferencesActions = {
   setTheme: createAction<string>("setTheme"),
   setDarkMode: createAction<boolean>("setDarkMode"),
   setFontSize: createAction<number>("setFontSize"),
@@ -52,7 +217,7 @@ export const UserVisualPreferences = {
 };
 
 // Data Management Preferences
-export const UserDataManagementPreferences = {
+export const UserDataManagementPreferencesActions = {
   setTimeZone: createAction<string>("setTimeZone"),
   setCurrency: createAction<string>("setCurrency"),
   setPreferredUnits: createAction<string>("setPreferredUnits"),
@@ -63,7 +228,7 @@ export const UserDataManagementPreferences = {
 };
 
 // Collaboration Preferences
-export const UserCollaborationPreferences = {
+export const UserCollaborationPreferencesActions = {
   setAccessibilityOptions: createAction<any>("setAccessibilityOptions"),
   setPrivacySettings: createAction<any>("setPrivacySettings"),
   setSecurityPreferences: createAction<any>("setSecurityPreferences"),
@@ -72,12 +237,12 @@ export const UserCollaborationPreferences = {
 };
 
 // Task Management Preferences
-export const UserTaskManagementPreferences = {
+export const UserTaskManagementPreferencesActions = {
   setTaskManagementSettings: createAction<any>("setTaskManagementSettings"),
 };
 
 // Event Management Preferences
-export const UserEventManagementPreferences = {
+export const UserEventManagementPreferencesActions = {
   setCalendarPreferences: createAction<any>("setCalendarPreferences"),
   setEventRegistrationPreferences: createAction<any>(
     "setEventRegistrationPreferences"
@@ -103,7 +268,7 @@ export const UserEventManagementPreferences = {
 };
 
 // User Profile Preferences
-export const UserProfilePreferences = {
+export const UserProfilePreferencesActions = {
   setProfilePreferences: createAction<any>("setProfilePreferences"),
   setBioPreferences: createAction<any>("setBioPreferences"),
   setContactPreferences: createAction<any>("setContactPreferences"),
@@ -112,7 +277,7 @@ export const UserProfilePreferences = {
 };
 
 // Support and Feedback Preferences
-export const UserSupportFeedbackPreferences = {
+export const UserSupportFeedbackPreferencesActions = {
   setFeedbackPreferences: createAction<any>("setFeedbackPreferences"),
   setRatingPreferences: createAction<any>("setRatingPreferences"),
   setReviewPreferences: createAction<any>("setReviewPreferences"),
@@ -133,7 +298,7 @@ export const UserSupportFeedbackPreferences = {
 };
 
 // Training and Education Preferences
-export const UserTrainingEducationPreferences = {
+export const UserTrainingEducationPreferencesActions = {
   setTrainingPreferences: createAction<any>("setTrainingPreferences"),
   setTutorialPreferences: createAction<any>("setTutorialPreferences"),
   setDemoPreferences: createAction<any>("setDemoPreferences"),
@@ -144,7 +309,8 @@ export const UserTrainingEducationPreferences = {
 };
 
 // Event Preferences
-export const UserEventPreferences = {
+
+export const UserEventPreferencesActions = {
   setGatheringPreferences: createAction<any>("setGatheringPreferences"),
   setSummitPreferences: createAction<any>("setSummitPreferences"),
   setSymposiumPreferences: createAction<any>("setSymposiumPreferences"),
@@ -178,7 +344,7 @@ export const UserEventPreferences = {
 };
 
 // Team Role Preferences
-export const UserTeamRolePreferences = {
+export const UserTeamRolePreferencesActions = {
   setTeamFormationPhase: createAction("setTeamFormationPhase"),
   setEventManagerialPreferences: createAction<any>(
     "setEventManagerialPreferences"
@@ -244,8 +410,35 @@ export const UserTeamRolePreferences = {
 };
 
 // Miscellaneous Preferences
-export const UserMiscellaneousPreferences = {
+export const UserMiscellaneousPreferencesActions = {
   setMiscellaneousPreferences: createAction<any>("setMiscellaneousPreferences"),
+};
+
+export const UserPreferencesActions = {
+  fetchUserPreferencesRequest: createAction("fetchUserPreferencesRequest"),
+  fetchUserPreferencesSuccess: createAction<{ userPreferences: any }>(
+    "fetchUserPreferencesSuccess"
+  ),
+  fetchUserPreferencesFailure: createAction<{ error: string }>(
+    "fetchUserPreferencesFailure"
+  ),
+  ...UserBrandingPreferencesActions,
+  ...UserCommunicationPreferencesActions,
+  ...UserVisualPreferencesActions,
+  ...UserDataManagementPreferencesActions,
+  ...UserCollaborationPreferencesActions,
+  ...UserBrandingPreferencesActions,
+  ...UserTaskManagementPreferencesActions,
+  ...UserEventManagementPreferencesActions,
+  ...UserProfilePreferencesActions,
+  ...UserSupportFeedbackPreferencesActions,
+  ...UserTrainingEducationPreferencesActions,
+  ...UserEventPreferencesActions,
+  ...UserMiscellaneousPreferencesActions,
+  ...UserTeamRolePreferencesActions,
+  //todo check to see if we need it
+  // ...UserNotificationPreferencesActions,
+  // ...UserGeneralPreferencesActions
 };
 
 // exampe usage:

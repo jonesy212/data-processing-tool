@@ -25,3 +25,5 @@ const generateRandomWalkPositions = (steps = 100) => {
 
   return adjustedPositions;
 };
+
+export default generateRandomWalkPositions

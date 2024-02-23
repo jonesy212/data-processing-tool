@@ -1,8 +1,8 @@
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
-import { BackendDocumentConfig } from "../configs/BackendDocumentConfig";
+import { BackendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
-import { FrontendDocumentConfig } from "../configs/FrontendDocumentConfig";
-import { LazyLoadScriptConfig } from "../configs/LazyLoadScriptConfig";
+import { FrontendConfig } from "../configs/FrontendConfig";
+import LazyLoadScriptConfig from "../configs/LazyLoadScriptConfig";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 
 import { FrontendStructure } from "../configs/appStructure/FrontendStructureComponent";
@@ -22,8 +22,8 @@ export const SystemConfigs = {
   storeConfig: {} as ShoppingCenterConfig, // Example addition for StoreConfig
   dataVersions: {} as DataVersions, // Example addition for DataVersions
   frontendStructure: {} as FrontendStructure,
-  frontendDocumentConfig: {} as FrontendDocumentConfig,
+  frontendDocumentConfig: {} as FrontendConfig,
   backendStructure: {} as BackendStructure,
-  backendDocumentConfig: {} as BackendDocumentConfig,
+  backendDocumentConfig: {} as BackendConfig,
   lazyLoadScriptConfig: {} as LazyLoadScriptConfig, // Example addition for LazyLoadScriptConfig
 };

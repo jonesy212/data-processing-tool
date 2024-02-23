@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import RandomWalkVisualization from './RandomWalkVisualization';
-import { TeamData } from './TeamData'; // Assuming the location of TeamData file
+import RandomWalkVisualization from '../../hooks/userInterface/RandomWalkVisualization';
+import { CollaborationPreferences } from '../../interfaces/settings/CollaborationPreferences';
+import TeamData from './TeamData';
 
 const TeamManagementApp: React.FC = () => {
   const [teamData, setTeamData] = useState<TeamData>({
     // Initialize teamData object with default values
+    _id: "uniqueId",
     id: 1,
+
     teamName: "Development Team",
     description: "A team focused on software development",
     members: [],
@@ -25,8 +28,9 @@ const TeamManagementApp: React.FC = () => {
       communicationChannels: [],
       collaborationPlatforms: []
     },
-    collaborationPreferences: {} // Initialize with empty collaboration preferences
-  });
+    collaborationPreferences: {} as CollaborationPreferences // Initialize with empty collaboration preferences
+  } 
+  ) 
 
   // Function to update teamData with the generated random walk
   const updateTeamDataWithRandomWalk = (randomWalk: number[]) => {

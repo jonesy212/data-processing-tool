@@ -1,24 +1,14 @@
 // MyAppWrapper.tsx
-import { AppProps } from 'next/app';
-import { NextRouter, Router, useRouter } from 'next/router';
-import { PhaseHookConfig, createPhaseHook } from '../components/hooks/phaseHooks/PhaseHooks';
-import { generateUtilityFunctions } from '../generators/GenerateUtilityFunctions';
-import MyApp from './_app';
-function MyAppWrapper({ Component, pageProps }: AppProps) {
-  // Extend AppProps to include hooks
-
-  // Define a generic type for hooks
-  type Hooks = Record<string, PhaseHookConfig>;
-
-  // interface ExtendedAppProps extends AppProps {
-  //   hooks: Record<string, any>;
-  // }
+import { AppProps } from "next/app";
+import { NextRouter, Router, useRouter } from "next/router";
+import {
+  PhaseHookConfig,
+  createPhaseHook,
+} from "../components/hooks/phaseHooks/PhaseHooks";
+import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
+import MyApp from "./_app";
 
 
-  const router = useRouter();
-
-  // Generate utility functions
-  const utilities = generateUtilityFunctions();
 
   // Extend NextRouter with additional properties
   type ExtendedRouter = NextRouter & {
@@ -30,6 +20,27 @@ function MyAppWrapper({ Component, pageProps }: AppProps) {
     pageLoader: any;
     _bps: any;
     _wrapApp: any;
+  };
+
+function MyAppWrapper({ Component, pageProps }: AppProps) {
+  // Extend AppProps to include hooks
+
+  // Define a generic type for hooks
+  type Hooks = Record<string, PhaseHookConfig>;
+
+  const router = useRouter();
+
+  // Generate utility functions
+  const utilities = generateUtilityFunctions();
+
+  // Update BrandingSettings with actual values or retrieve them from a source
+  const brandingSettings: BrandingSettings = {
+    // Populate with actual branding settings values
+    logoUrl: "https://example.com/logo.png",
+    themeColor: "#3366cc",
+    secondaryThemeColor: "#ff9900",
+    borderRadiusLarge: "10px",
+    // Add other branding settings as needed
   };
 
   // Generate hooks dynamically based on your phases
@@ -87,12 +98,10 @@ function MyAppWrapper({ Component, pageProps }: AppProps) {
   };
 
   // Extend AppProps to include hooks
- 
 
   type ExtendedAppProps = AppProps & {
     hooks: Record<string, any>;
     utilities: any;
-
   };
 
   return (
@@ -100,10 +109,13 @@ function MyAppWrapper({ Component, pageProps }: AppProps) {
       Component={Component}
       pageProps={pageProps}
       router={router as ExtendedRouter & Router}
-      // hooks={hooks as ExtendedAppProps['hooks'] as Hooks}
-      // utilities={utilities}
+      brandingSettings={brandingSettings} // Pass branding settings to MyApp
+      utilities={utilities}
+      hooks={hooks}
     />
   );
 }
 
 export default MyAppWrapper;
+export type { ExtendedRouter };
+

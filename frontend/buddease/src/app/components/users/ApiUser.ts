@@ -1,5 +1,6 @@
 // ApiUser.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { getUsersData } from "@/app/api/UsersApi";
 import axiosInstance from "@/app/api/axiosInstance";
 import { makeAutoObservable } from 'mobx';
 import { User } from './User';
@@ -40,6 +41,43 @@ class UserService {
       throw error;
     }
   };
+
+  fetchUserById = async (userId: string) => { 
+    try {
+      const response = await axiosInstance.get(`${API_BASE_URL.single(userId  as unknown as number)}`)
+      const user = response.data;
+      // Dispatch the success action
+      UserActions.fetchUserByIdSuccess({ user });
+      sendNotification(`User with ID ${userId} fetched successfully`);
+      return user;
+    } catch (error) {
+      // Dispatch the failure action
+      UserActions.fetchUserByIdFailure({ error: String(error) });
+      sendNotification(`Error fetching user with ID ${userId}: ${error}`);
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  }
+
+
+  fetchUserByIdSuccess = async () => { 
+    try {
+      const response = await axiosInstance.get(API_BASE_URL.list);
+      const user = response.data;
+      // Dispatch the success action
+      UserActions.fetchUserByIdSuccess({ user: user.id });
+      sendNotification(`User with ID ${user} fetched successfully`);
+      return user;
+    } catch (error) {
+      const userId = await userService.fetchUserById();
+      const userId: string = getUsersData(userId); 
+      // Dispatch the failure action
+      UserActions.fetchUserByIdFailure({ error: String(error) });
+      sendNotification(`Error fetching user with ID ${user.id}: ${error}`);
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  }
 
   updateUser = async (userId: User['id'], updatedUserData: User) => {
     try {

@@ -1,12 +1,15 @@
-import axios from 'axios';
-import { observer } from 'mobx-react-lite';
-import React, { useEffect } from 'react';
-import CommonDetails, { CommonData } from '../models/CommonData';
-import { Data } from '../models/data/Data';
-import { Phase } from '../phases/Phase';
-import { Snapshot } from '../state/stores/SnapshotStore';
-import useTodoManagerStore from '../state/stores/TodoStore';
-import { Todo } from './Todo';
+import axios from "axios";
+import { observer } from "mobx-react-lite";
+import React, { useEffect } from "react";
+import CommonDetails, { CommonData } from "../models/CommonData";
+import { Data } from "../models/data/Data";
+import { Phase } from "../phases/Phase";
+import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
+import useTodoManagerStore from "../state/stores/TodoStore";
+import { Todo } from "./Todo";
+
+type MappedTodo = Pick<Todo, "id" | "title" | "done">;
+type MappedAndTodo = Todo & MappedTodo;
 
 const TodoList: React.FC = observer(() => {
   const todoStore = useTodoManagerStore();
@@ -17,13 +20,18 @@ const TodoList: React.FC = observer(() => {
         const response = await axios.get("/api/todos");
         const todos = response.data as Todo[];
 
-        const mappedTodos = todos.map((todoData: Todo) => ({
-          id: todoData.id,
-          title: todoData.title,
-          done: todoData.done,
-        }));
+        const mappedTodos: Todo[] = todos.map((todo: Todo) => {
+          return {
+            ...todo,
+            id: todo.id as string,
+            title: todo.title as string,
+            done: todo.done as boolean,
+          } as Todo;
+        });
 
-        todoStore.addTodos(mappedTodos, {}); // Remove the unnecessary cast
+        const todoSnapShotData = {} as SnapshotStore<Snapshot<Data>>;
+
+        todoStore.addTodos(mappedTodos, todoSnapShotData); // Remove the unnecessary cast
       } catch (error) {
         console.error("Error fetching todos:", error);
         // Handle the error as needed
@@ -46,59 +54,84 @@ const TodoList: React.FC = observer(() => {
     }, 1000);
   };
 
+
+  const videoData: VideoData = {
+    resolution: "",
+    aspectRatio: "",
+    language: "",
+    subtitles: false,
+    duration: 0,
+    campaignId: 0
+  }
+
   const handleAdd = () => {
     const newTodoId = "todo_" + Math.random().toString(36).substr(2, 9);
-    const newTodo: Todo = {
-      id: newTodoId,
-      title: "A new todo",
-      done: false,
-      status: 'pending',
-      todos: [],
-      description: '',
-      dueDate: null,
-      priority: 'low',
-      assignedTo: null,
-      assignee: null,
-      assignedUsers: [],
-      collaborators: [],
-      labels: [],
-      comments: [],
-      attachments: [],
-      subtasks: [],
-      isArchived: false,
-      isCompleted: false,
-      isBeingEdited: false,
-      isBeingDeleted: false,
-      isBeingCompleted: false,
-      isBeingReassigned: false,
-      save: function (): Promise<void> {
-        throw new Error('Function not implemented.');
-      },
-      _id: '',
-      isActive: false,
-      tags: [],
-      then: (callback: (newData: Snapshot<Data>) => void) => callback,
+    const addRecurringTodo = () => {
+      const newTodo: Todo = {
+        id: newTodoId,
+        title: "A new todo",
+        done: false,
+        status: "pending",
+        todos: [],
+        description: "",
+        dueDate: null,
+        priority: "low",
+        assignedTo: null,
+        assignee: null,
+        assignedUsers: [],
+        collaborators: [],
+        labels: [],
+        comments: [],
+        attachments: [],
+        subtasks: [],
+        isArchived: false,
+        isCompleted: false,
+        isBeingEdited: false,
+        isBeingDeleted: false,
+        isBeingCompleted: false,
+        isBeingReassigned: false,
+        save: function (): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        _id: "",
+        isActive: false,
+        tags: [],
+        then: (callback: (newData: Snapshot<Data>) => void) => callback,
 
-      analysisType: '',
-      analysisResults: [],
-      phase: {} as Phase,
-      videoData: {} as VideoData
-    }; // Remove the unnecessary cast
-
-    todoStore.addTodo(newTodo);
+        analysisType: "",
+        analysisResults: [],
+        phase: {} as Phase,
+        videoData: {} as VideoData,
+        isDeleted: false,
+        isRecurring: false,
+        recurringRule: "",
+        recurringEndDate: new Date(),
+        recurringFrequency: "",
+        recurringCount: 0,
+        recurringDaysOfWeek: [],
+        recurringDaysOfMonth: [],
+        recurringMonthsOfYear: [],
+        snapshot: {} as Snapshot<Data>,
+        entities: [],
+        videoUrl: "",
+        videoThumbnail: "",
+        videoDuration: 0
+      }; // Remove the unnecessary cast
+      todoStore.addTodo(newTodo);
+    };
     handleUpdateTitle(newTodoId, "A new todo");
   };
 
   return (
     <div>
       <ul>
-        {todoStore.todos.map((todo: Todo & CommonData<Data>) => (
-          <li key={todo.id}>
-            {todo.title} - {todo.done ? "Done" : "Not Done"}
-            <button onClick={() => handleToggle(todo.id as string)}>Toggle</button>
-            <CommonDetails data={todo} />
-          </li>
-        ))}
+      {Object.values(todoStore.todos).map((todo: MappedAndTodo & CommonData<Data>) => (
+  <li key={todo.id}>
+    {todo.title} - {todo.done ? "Done" : "Not Done"}
+    <button onClick={() => handleToggle(todo.id as string)}>Toggle</button>
+    <CommonDetails data={todo} />
+  </li>
+))}
       </ul>
 
       <button onClick={handleAdd}>Add Todo</button>
@@ -108,23 +141,3 @@ const TodoList: React.FC = observer(() => {
 });
 
 export default TodoList;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

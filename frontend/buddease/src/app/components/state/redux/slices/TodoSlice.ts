@@ -2,11 +2,15 @@ import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { Todo, todoInitialState } from '../../../todos/Todo';
 import { WritableDraft } from '../ReducerGenerator';
 
-export interface TrackerManagerState extends EntityState<WritableDraft<Todo>, string>  {
+export interface TodoManagerState extends EntityState<WritableDraft<Todo>, string>  {
   todos: WritableDraft<Todo>[];
   ids: string[];
+  loading: boolean;
+  error: string | null;
 }
 
+
+// const initialState: TodoManagerState = todoInitialState;
 export const useTodoManagerSlice = createSlice({
   name: "todoManager",
   initialState: todoInitialState,
@@ -45,7 +49,21 @@ export const useTodoManagerSlice = createSlice({
 
     fetchTodosFailure: (state, action: PayloadAction<{ error: string }>) => {
       // Handle fetch todos failure if needed
+      const { error } = action.payload;
+      
+      // You can update the state to reflect the failure, such as setting an error message
+      state.error = error;
+    
+      // You can also update other parts of the state as needed
+      state.loading = false; // Assuming there's a loading state in your slice
+      
+      // Optionally, you can log the error or perform any additional actions
+      
+      // For example, if you're using Redux Toolkit's `createAsyncThunk`, you can access the `rejectWithValue` callback
+      // and handle the error within the thunk, then dispatch this action with the error payload
+      // return rejectWithValue(error);
     },
+    
     completeAllTodosRequest: (state) => {
       // Handle complete all todos request if needed
       // update UI state to indicate that all todos are being completed

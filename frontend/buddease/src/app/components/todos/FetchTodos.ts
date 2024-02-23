@@ -1,5 +1,7 @@
-import { Todo, TodoAction } from "./Todo";
+import { Todo } from "./Todo";
 import { TodoActions } from "./TodoActions";
+
+
 // Fetch todos function (replace this with your actual asynchronous fetch logic)
 const fetchTodos = async (): Promise<Todo[]> => {
     // Simulating an API call
@@ -12,7 +14,7 @@ const fetchTodos = async (): Promise<Todo[]> => {
   
 
 export const handleFetchTodos = async (
-  dispatch: React.Dispatch<TodoAction>
+  dispatch: React.Dispatch<TodoActions>
 ) => {
   // Dispatch the fetch todos request action
   dispatch({ type: TodoActions.fetchTodosRequest });

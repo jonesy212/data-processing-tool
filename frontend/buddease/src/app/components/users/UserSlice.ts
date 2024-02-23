@@ -53,6 +53,39 @@ export const userManagerSlice = createSlice({
     fetchUsersSuccess: (state, action: PayloadAction<{ users: User[] }>) => {
       state.users = action.payload.users as WritableDraft<User[]>;
     },
+
+    updateUserFirstName: (
+      state,
+      action: PayloadAction<{ userId: string; firstName: string }>
+    ) => {
+      const { userId, firstName } = action.payload;
+      const userIndex = state.users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        state.users[userIndex].firstName = firstName;
+      }
+    },
+
+    updateUserLastName: (
+      state,
+      action: PayloadAction<{ userId: string; lastName: string }>
+    ) => {
+      const { userId, lastName } = action.payload;
+      const userIndex = state.users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        state.users[userIndex].lastName = lastName;
+      }
+    },
+
+    updateUserEmail: (
+      state,
+      action: PayloadAction<{ userId: string; email: string }>
+    ) => {
+      const { userId, email } = action.payload;
+      const userIndex = state.users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        state.users[userIndex].email = email;
+      }
+    },
   },
 });
 
@@ -64,6 +97,72 @@ export const {
   updateData,
   updateQuota,
   fetchUsersSuccess,
+  updateUserFirstName,
+  updateUserLastName,
+  updateUserEmail,
+
+  // addUserFriend,
+  // removeUserFriend,
+  // blockUser,
+  // unblockUser,
+  // updateUserSettings,
+  // updateUserLocation,
+  // updateUserInterests,
+  // updateUserPrivacySettings,
+  // updateUserNotifications,
+  // updateUserActivityLog,
+
+
+
+  // // Additional user-related actions for project management
+  // assignUserToProject,
+  // removeUserFromProject,
+  // updateUserProjectRole,
+  // updateUserProjectPermissions,
+  // updateUserProjectTasks,
+  // updateUserProjectProgress,
+  // updateUserProjectCollaborators,
+  // updateUserProjectDeadlines,
+  // updateUserProjectResources,
+  // updateUserProjectBudget,
+  // updateUserProjectReports,
+  // updateUserProjectNotifications,
+
+  // // Additional user-related actions
+  // updateUserPhoneNumber,
+  // updateUserAddress,
+  // updateUserDateOfBirth,
+  // updateUserGender,
+  // updateUserLanguage,
+  // updateUserEducation,
+  // updateUserEmployment,
+  // updateUserSocialLinks,
+  // updateUserRelationshipStatus,
+  // updateUserHobbies,
+  // updateUserSkills,
+  // updateUserAchievements,
+  // updateUserProfileVisibility,
+  // updateUserProfileAccessControl,
+  // updateUserActivityStatus,
+  // updateUserSecuritySettings,
+  // updateUserNotificationPreferences,
+  // updateUserEmailVerificationStatus,
+  // updateUserPhoneVerificationStatus,
+
+  // // Additional user-related actions for web3 app
+  // updateUserWalletAddress,
+  // updateUserTransactionHistory,
+  // updateUserTokenBalance,
+  // updateUserSmartContractInteractions,
+  // updateUserBlockchainPermissions,
+  // updateUserBlockchainIdentity,
+  // updateUserBlockchainAssets,
+  // updateUserNFTCollection,
+  // updateUserDAOMemberships,
+  // updateUserDecentralizedStorageUsage,
+  // updateUserDecentralizedIdentity,
+  // updateUserDecentralizedMessagingKeys,
+  // updateUserDecentralizedAuthentication,
 } = userManagerSlice.actions;
 
 export const selectUsers = (state: { userManager: UserManagerState }) =>

@@ -4,12 +4,12 @@ import Project, { isProjectInSpecialPhase } from "../components/projects/Project
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
 import StoreConfig from "../shopping_center/ShoppingCenterConfig";
 import {
-  BackendDocumentConfig,
-  backendDocumentConfig,
-} from "./BackendDocumentConfig";
+    BackendConfig,
+    backendConfig,
+} from "./BackendConfig";
 
 import dataVersions from "./DataVersionsConfig";
-import { frontendDocumentConfig } from "./FrontendDocumentConfig";
+import { frontendConfig } from "./FrontendConfig";
 import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
@@ -60,7 +60,7 @@ interface ConfigurationOptions {
     // ...other user settings
   };
 
-  backendDocumentConfig: BackendDocumentConfig; // Add backendDocumentConfig here
+  backendConfig: BackendConfig; // Add backendDocumentConfig here
 
   configStructure: {
     systemConfigs: typeof SystemConfigs;
@@ -68,7 +68,7 @@ interface ConfigurationOptions {
     aquaConfig: AquaConfig;
     storeConfig: StoreConfig;
     dataVersions: typeof dataVersions;
-    frontendDocumentConfig: typeof frontendDocumentConfig;
+    frontendConfig: typeof frontendConfig;
     lazyLoadScriptConfig: LazyLoadScriptConfigImpl;
     userPreferences: typeof userPreferences;
     userSettings: typeof userSettings;
@@ -101,8 +101,8 @@ class ConfigurationService {
     return {
       // default config values
       baseURL: process.env.REACT_APP_API_BASE_URL || "",
-      backendDocumentConfig: backendDocumentConfig,
-      frontendDocumentConfig: frontendDocumentConfig // Add frontendDocumentConfig
+      backendConfig: backendConfig,
+      frontendConfig: frontendConfig // Add frontendConfig
     };
   }
 
@@ -111,6 +111,34 @@ class ConfigurationService {
       ConfigurationService.instance = new ConfigurationService();
     }
     return ConfigurationService.instance;
+  }
+
+  getSnapshotConfig(): LazyLoadScriptConfigImpl {
+    // Example: Default configuration
+    const defaultConfig: LazyLoadScriptConfigImpl = {
+      timeout: 5000, // 5 seconds timeout for script loading
+      onLoad: () => console.log("Script loaded successfully"),
+      retryCount: 3, // Retry loading script up to 3 times
+      retryDelay: 1000, // 1 second delay between retry attempts
+      asyncLoad: true, // Asynchronously load scripts
+      deferLoad: false, // Do not defer script execution
+      onBeforeLoad: () => console.log("Loading script..."),
+      onScriptError: (error:ErrorEvent) => console.log("Error loading script", error),
+      onTimeout: () => console.log("Timeout loading script"),
+      onCachedLoad: () => console.log("Script loaded from cache"),
+      onCachedTimeout: () => console.log("Timeout loading script from cache"),
+      onCachedError: (error: Error) =>
+        console.log("Error loading script from cache", error),
+      // Example: Add configuration options here
+      systemConfigs: SystemConfigs,
+      userConfigs: UserConfigs,
+      aquaConfig: AquaConfig,
+      storeConfig: StoreConfig,
+      dataVersions: dataVersions,
+      frontend: frontendConfig,
+      backend: backendConfig
+    }
+    return defaultConfig;
   }
 
   setCachedConfig(config: LazyLoadScriptConfigImpl): void {

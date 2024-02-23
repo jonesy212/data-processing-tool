@@ -1,36 +1,49 @@
 // generateCache.ts
+import useRealtimeData from "../components/hooks/commHooks/useRealtimeData";
 import {
-    useBrainstormingPhase,
-    useMeetingsPhase,
-    useProjectManagementPhase,
-    useTeamBuildingPhase,
+  useBrainstormingPhase,
+  useMeetingsPhase,
+  useProjectManagementPhase,
+  useTeamBuildingPhase,
 } from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
 import {
-    authenticationPhaseHook,
-    dataAnalysisPhaseHook,
-    generalCommunicationFeaturesPhaseHook,
-    ideationPhaseHook,
-    jobSearchPhaseHook,
-    productBrainstormingPhaseHook,
-    productLaunchPhaseHook,
-    recruiterDashboardPhaseHook,
-    teamCreationPhaseHook,
+  authenticationPhaseHook,
+  dataAnalysisPhaseHook,
+  generalCommunicationFeaturesPhaseHook,
+  ideationPhaseHook,
+  jobSearchPhaseHook,
+  productBrainstormingPhaseHook,
+  productLaunchPhaseHook,
+  recruiterDashboardPhaseHook,
+  teamCreationPhaseHook,
 } from "../components/hooks/phaseHooks/PhaseHooks";
-import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
-import { backendDocumentConfig } from "../configs/BackendDocumentConfig";
+import {
+  darkModeTogglePhaseHook,
+  notificationBarPhaseHook,
+} from "../components/hooks/userInterface/UIPhaseHooks";
+import { Data } from "../components/models/data/Data";
+import { CalendarEvent, updateCallback } from "../components/state/stores/CalendarStore";
+import { backendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
 import userSettings from "../configs/UserSettings";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
+import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
 
+const initialData: any = {}; 
+
+
+const realtimeData = useRealtimeData(initialData, updateCallback);
 // Updated cache data structure based on the provided tree structure
-export interface CacheData {
+export interface CacheData extends Data {
   lastUpdated: string;
   userSettings: typeof userSettings;
-  dataVersions: DataVersions
-    frontendStructure: FrontendStructure;
-    backendStructure: BackendStructure
-  backendDocumentConfig: typeof backendDocumentConfig;
+  dataVersions: DataVersions;
+  frontendStructure: FrontendStructure;
+  backendStructure: BackendStructure;
+  backendConfig: typeof backendConfig;
+  realtimeData: typeof realtimeData;
+  fetchData: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
   // Add new top-level cache properties for UI phases
   notificationBarPhaseHook: typeof notificationBarPhaseHook;
   darkModeTogglePhaseHook: typeof darkModeTogglePhaseHook;
@@ -42,8 +55,7 @@ export interface CacheData {
   teamBuildingPhaseHook: typeof useTeamBuildingPhase;
   brainstormingPhaseHook: typeof useBrainstormingPhase;
   projectManagementPhaseHook: typeof useProjectManagementPhase;
-    meetingsPhaseHook: typeof useMeetingsPhase;
-    
+  meetingsPhaseHook: typeof useMeetingsPhase;
 
   // Add the new top-level cache properties for additional phases
   ideationPhaseHook: typeof ideationPhaseHook;
@@ -52,9 +64,9 @@ export interface CacheData {
   productLaunchPhaseHook: typeof productLaunchPhaseHook;
   dataAnalysisPhaseHook: typeof dataAnalysisPhaseHook;
   generalCommunicationFeaturesPhaseHook: typeof generalCommunicationFeaturesPhaseHook;
-  
+
   // Add more top-level cache properties as needed
   fileType: string;
- }
+}
 
 // Rest of the code remains unchanged...

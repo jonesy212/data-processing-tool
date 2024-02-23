@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { CalendarEvent } from '../state/stores/CalendarStore';
+import { CalendarEvent } from '../state/stores/CalendarEvent';
 import { Notification } from '../support/NofiticationsSlice';
 
 interface Milestone {
@@ -18,11 +18,27 @@ export const useCalendarManagerSlice = createSlice({
   name: 'calendarEvents',
   initialState: { entities: {}, milestones: {}, notifications: {} } as CalendarEntitySliceState,
   reducers: {
+    events: (state, action: PayloadAction<Record<string, CalendarEvent>>) => {  
+      state.entities = action.payload;
+    },
+    milestones: (state, action: PayloadAction<Record<string, Milestone>>) => { 
+      state.milestones = action.payload;
+    },
     addCalendarEvent: (state, action: PayloadAction<CalendarEvent>) => {
       state.entities[action.payload.id] = action.payload;
     },
+
     removeCalendarEvent: (state, action: PayloadAction<string>) => {
       delete state.entities[action.payload];
+    },
+
+    updateCalendarEvent: (state, action: PayloadAction<CalendarEvent>) => { 
+      const event = state.entities[action.payload.id];
+      if (event) {
+        event.title = action.payload.title;
+        event.startTime = action.payload.startTime;
+        event.endTime = action.payload.endTime;
+      }
     },
     updateCalendarEventTitle: (
       state,
@@ -33,15 +49,19 @@ export const useCalendarManagerSlice = createSlice({
         event.title = action.payload.newTitle;
       }
     },
+
     addMilestone: (state, action: PayloadAction<Milestone>) => {
       state.milestones[action.payload.id] = action.payload;
     },
+
     removeMilestone: (state, action: PayloadAction<string>) => {
       delete state.milestones[action.payload];
     },
+
     addNotification: (state, action: PayloadAction<Notification>) => {
       state.notifications[action.payload.id] = action.payload;
     },
+    
     removeNotification: (state, action: PayloadAction<string>) => {
       delete state.notifications[action.payload];
     },

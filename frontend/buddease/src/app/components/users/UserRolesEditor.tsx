@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { PermissionsEditor } from './PermissionsEditor';
 
+
+
+interface UserRoleEditorProps extends PermissionsEditor{
+  roleName: string;
+  permissions: string[];
+}
 // UserRolesEditor component
-const UserRolesEditor = () => {
+const UserRolesEditor: React.FC<UserRoleEditorProps> = ({ roleName, permissions }) => {
   const [userRoles, setUserRoles] = useState([]);
 
   // Function to handle adding a new user role

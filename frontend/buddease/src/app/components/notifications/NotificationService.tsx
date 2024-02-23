@@ -1,12 +1,12 @@
 import { useNotification } from "@/app/components/support/NotificationContext";
 import { BytesLike } from "ethers";
 import { useDispatch, useSelector } from "react-redux";
+import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import AnnouncementManager from "../support/AnnouncementManager";
 import { Notification, selectNotifications } from "../support/NofiticationsSlice";
 import { NotificationActions } from "../support/NotificationActions";
 import { NotificationType } from "../support/NotificationContext";
 import PushNotificationManager from "../support/PushNotificationManager";
-
 interface NotificationManagerServiceProps {
   notifications: Notification[];
   notify: (
@@ -24,6 +24,11 @@ interface NotificationManagerServiceProps {
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
 }
+
+export const eventHandler = typeof DynamicEventHandlerExample
+
+
+
 
 const useNotificationManagerService = (): NotificationManagerServiceProps => {
   const { notify } = useNotification();
@@ -93,6 +98,8 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
     // Dispatch action to clear all notifications
     dispatch(NotificationActions.clearNotifications());
   }
+
+
 
   return {
     notifications,

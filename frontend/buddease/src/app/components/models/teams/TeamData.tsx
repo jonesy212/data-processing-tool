@@ -2,14 +2,13 @@ import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
 import Project from "../../projects/Project";
-import { Snapshot } from "../../state/stores/SnapshotStore";
 import { User } from "../../users/User";
 import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgresBar";
 
-interface TeamData extends Data{
+interface TeamData{
   id: number;
-  teamName: string;
+  teamName: Data["title"];
   description?: string;
   members: User[];
   projects: Project[];
@@ -65,17 +64,6 @@ const teamData: TeamData = {
     communicationChannels: [],
     collaborationPlatforms: []
   },
-  _id: "",
-  title: "",
-  status: "pending",
-  tags: [],
-  phase: null,
-  then: function (callback: (newData: Snapshot<Data>) => void): void {
-    throw new Error("Function not implemented.");
-  },
-  analysisType: "",
-  analysisResults: [],
-  videoData: {} as Record<string, any>
 };
 
 

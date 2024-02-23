@@ -5,6 +5,7 @@ export const endpoints = {
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
+    aquaConfig: `${BASE_URL}/api/aqua-config`, // Endpoint for fetching AquaConfig
   },
 
   users: {
@@ -16,7 +17,8 @@ export const endpoints = {
     updateList: `${BASE_URL}/users/update-list`, // PUT request for updating multiple users
     search: `${BASE_URL}/users/search`, // GET request for searching users
     updateRole: (userId: number) => `${BASE_URL}/users/${userId}/update-role`, // PUT request for updating a user's role by ID
-    updateRoles: (userId: number) => `${BASE_URL}/users/${userId}/update-roles`, // PUT request for updating a user's roles by ID
+    updateRoles: (userIds: number[]) =>
+      `${BASE_URL}/users/${userIds}/update-roles`, // PUT request for updating a user's roles by ID
   },
 
   userRoles: {
@@ -29,8 +31,10 @@ export const endpoints = {
 
   userManagement: {
     registerUser: `${BASE_URL}/api/users/register`,
-    updateUserProfile: (userId: number) => `${BASE_URL}/api/users/${userId}/update`,
-    deleteUserAccount: (userId: number) => `${BASE_URL}/api/users/${userId}/delete`,
+    updateUserProfile: (userId: number) =>
+      `${BASE_URL}/api/users/${userId}/update`,
+    deleteUserAccount: (userId: number) =>
+      `${BASE_URL}/api/users/${userId}/delete`,
     getUserDetails: (userId: number) => `${BASE_URL}/api/users/${userId}`,
     listUsers: `${BASE_URL}/api/users`,
   },
@@ -44,36 +48,66 @@ export const endpoints = {
     // Add more endpoints as needed
   },
 
+  auth: {
+    admin: `${BASE_URL}/api/admin/login`,
+    forgotPassword: `${BASE_URL}/auth/forgot-password`,
+    resetPassword: `${BASE_URL}/auth/reset-password`,
+    verifyEmail: (token: string) => `${BASE_URL}/auth/verify-email/${token}`,
+    resendVerificationEmail: `${BASE_URL}/auth/resend-verification-email`,
+    changePassword: `${BASE_URL}/auth/change-password`,
+    updateProfile: `${BASE_URL}/auth/update-profile`,
+    deactivateAccount: `${BASE_URL}/auth/deactivate-account`,
+    reactivateAccount: `${BASE_URL}/auth/reactivate-account`,
+    userHistory: `${BASE_URL}/auth/user-history`,
+    oauthLogin: `${BASE_URL}/auth/oauth-login`,
+    setup2FA: `${BASE_URL}/auth/setup-2fa`,
+    verify2FA: `${BASE_URL}/auth/verify-2fa`,
+    userRolesPermissions: `${BASE_URL}/auth/user-roles-permissions`,
+    userActivityLog: `${BASE_URL}/auth/user-activity-log`,
+    userSearch: `${BASE_URL}/auth/user-search`,
+    exportUserData: `${BASE_URL}/auth/export-user-data`,
+    updateNotificationSettings: `${BASE_URL}/auth/update-notification-settings`,
+    updatePrivacySettings: `${BASE_URL}/auth/update-privacy-settings`,
+    uploadAvatar: `${BASE_URL}/auth/upload-avatar`,
+    revokeToken: `${BASE_URL}/auth/revoke-token`,
+    profile: `${BASE_URL}/auth/profile`,
+    logout: `${BASE_URL}/auth/logout`,
+  },
+
   collaborationTools: {
     createTask: `${BASE_URL}/api/collaboration/tasks/create`,
-    updateTask: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}/update`,
-    deleteTask: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}/delete`,
-    getTaskDetails: (taskId: number) => `${BASE_URL}/api/collaboration/tasks/${taskId}`,
+    updateTask: (taskId: number) =>
+      `${BASE_URL}/api/collaboration/tasks/${taskId}/update`,
+    deleteTask: (taskId: number) =>
+      `${BASE_URL}/api/collaboration/tasks/${taskId}/delete`,
+    getTaskDetails: (taskId: number) =>
+      `${BASE_URL}/api/collaboration/tasks/${taskId}`,
     listTasks: `${BASE_URL}/api/collaboration/tasks`,
-
 
     //todo impeement
     startBrainstorming: `${BASE_URL}/api/collaboration/start-brainstorming`,
     endBrainstorming: `${BASE_URL}/api/collaboration/end-brainstorming`,
     createWhiteboard: `${BASE_URL}/api/collaboration/create-whiteboard`,
-    updateWhiteboard: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/update`,
-    deleteWhiteboard: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/delete`,
-    getWhiteboardDetails: (whiteboardId: number) => `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}`,
+    updateWhiteboard: (whiteboardId: number) =>
+      `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/update`,
+    deleteWhiteboard: (whiteboardId: number) =>
+      `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/delete`,
+    getWhiteboardDetails: (whiteboardId: number) =>
+      `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}`,
     listWhiteboards: `${BASE_URL}/api/collaboration/whiteboards`,
     shareDocument: `${BASE_URL}/api/collaboration/share-document`,
     commentOnDocument: `${BASE_URL}/api/collaboration/comment-on-document`,
     resolveComment: `${BASE_URL}/api/collaboration/resolve-comment`,
-    updateDocument: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}/update`,
-    deleteDocument: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}/delete`,
-    getDocumentDetails: (documentId: number) => `${BASE_URL}/api/collaboration/documents/${documentId}`,
+    updateDocument: (documentId: number) =>
+      `${BASE_URL}/api/collaboration/documents/${documentId}/update`,
+    deleteDocument: (documentId: number) =>
+      `${BASE_URL}/api/collaboration/documents/${documentId}/delete`,
+    getDocumentDetails: (documentId: number) =>
+      `${BASE_URL}/api/collaboration/documents/${documentId}`,
     listDocuments: `${BASE_URL}/api/collaboration/documents`,
     // Add more collaboration endpoints as needed
-
-
-
-
   },
-  
+
   calendar: {
     events: `${BASE_URL}/api/calendar/events`,
     singleEvent: (eventId: string) =>
@@ -88,28 +122,105 @@ export const endpoints = {
     search: `${BASE_URL}/api/calendar/events/search`,
   },
 
-   //todo create actions.sagas.ist.ice.backkend_routes:
-   communication: {
+  //todo create actions.sagas.ist.ice.backkend_routes:
+  communication: {
     audioCall: `${BASE_URL}/api/communication/audio-call`,
     videoCall: `${BASE_URL}/api/communication/video-call`,
     textChat: `${BASE_URL}/api/communication/text-chat`,
     collaboration: `${BASE_URL}/api/communication/collaboration`,
     startSession: `${BASE_URL}/api/communication/start-session`,
     endSession: `${BASE_URL}/api/communication/end-session`,
-    getSessionDetails: (sessionId: string) => `${BASE_URL}/api/communication/session-details/${sessionId}`,
+    getSessionDetails: (sessionId: string) =>
+      `${BASE_URL}/api/communication/session-details/${sessionId}`,
   },
-
 
   communityInteraction: {
     createPost: `${BASE_URL}/api/community-interaction/create-post`,
     getPosts: `${BASE_URL}/api/community-interaction/posts`,
-    getPostDetails: (postId: string) => `${BASE_URL}/api/community-interaction/posts/${postId}`,
-    updatePost: (postId: string) => `${BASE_URL}/api/community-interaction/posts/${postId}`,
-    deletePost: (postId: string) => `${BASE_URL}/api/community-interaction/posts/${postId}`,
+    getPostDetails: (postId: string) =>
+      `${BASE_URL}/api/community-interaction/posts/${postId}`,
+    updatePost: (postId: string) =>
+      `${BASE_URL}/api/community-interaction/posts/${postId}`,
+    deletePost: (postId: string) =>
+      `${BASE_URL}/api/community-interaction/posts/${postId}`,
   },
-  
 
-  
+  crypto: {
+    settings: `${BASE_URL}/api/crypto/settings`,
+    list: `${BASE_URL}/api/crypto/list`,
+    fetchCryptoData: `${BASE_URL}/api/crypto/data`,
+    fetchCryptoDetails: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}`,
+    addCrypto: `${BASE_URL}/api/crypto/add`,
+    removeCrypto: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/remove`,
+    updateCrypto: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/update`,
+    getHistoricalData: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/historical-data`,
+    getNews: (cryptoId: string) => `${BASE_URL}/api/crypto/${cryptoId}/news`,
+    getPricePrediction: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/price-prediction`,
+    getTransactions: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/transactions`,
+    getExchangeRates: `${BASE_URL}/api/crypto/exchange-rates`,
+    getMarketCap: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/market-cap`,
+    getSocialSentiment: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/social-sentiment`,
+    getCommunityDiscussions: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/community-discussions`,
+    getTechnicalAnalysis: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/technical-analysis`,
+    getMarketTrend: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/market-trend`,
+    getTradingVolume: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/trading-volume`,
+
+    // Additional endpoints related to community-driven global collaboration:
+    getCommunitySentiment: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/community-sentiment`,
+    getSocialImpactAnalysis: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/social-impact-analysis`,
+    getGlobalAdoptionTrends: (cryptoId: string) =>
+      `${BASE_URL}/api/crypto/${cryptoId}/global-adoption-trends`,
+    getUserContributionRewards: (userId: string) =>
+      `${BASE_URL}/api/crypto/users/${userId}/contribution-rewards`,
+
+    // New endpoints:
+    getCommunityProjects: `${BASE_URL}/api/crypto/community-projects`, // Endpoint for retrieving community-driven crypto projects
+    getDeveloperCompensation: `${BASE_URL}/api/crypto/developer-compensation`, // Endpoint for calculating developer compensation based on project quality and complexity
+    getGlobalCollaborationTools: `${BASE_URL}/api/crypto/global-collaboration-tools`, // Endpoint for accessing global collaboration tools for crypto projects
+    getMonetizationOpportunities: `${BASE_URL}/api/crypto/monetization-opportunities`, // Endpoint for exploring monetization opportunities for developers within the crypto ecosystem
+    getRevenueDistribution: `${BASE_URL}/api/crypto/revenue-distribution`, // Endpoint for managing revenue distribution among contributors within crypto projects
+    getImpactAssessment: `${BASE_URL}/api/crypto/impact-assessment`, // Endpoint for assessing the impact of crypto projects on the community and ecosystem
+
+    getMarketData: `${BASE_URL}/api/crypto/market-data`, // Endpoint for retrieving market data related to cryptocurrencies
+    getPortfolioSummary: `${BASE_URL}/api/crypto/portfolio-summary`, // Endpoint for fetching summary data of user portfolios
+    getTopGainers: `${BASE_URL}/api/crypto/top-gainers`, // Endpoint for retrieving top gaining cryptocurrencies
+    getTopLosers: `${BASE_URL}/api/crypto/top-losers`, // Endpoint for retrieving top losing cryptocurrencies
+    getExchangeListings: `${BASE_URL}/api/crypto/exchange-listings`, // Endpoint for fetching listings of cryptocurrency exchanges
+    getMarketTrends: `${BASE_URL}/api/crypto/market-trends`, // Endpoint for retrieving trends in the cryptocurrency market
+    getTransactionHistory: `${BASE_URL}/api/crypto/transaction-history`, // Endpoint for fetching transaction history related to cryptocurrencies
+    getWalletBalance: `${BASE_URL}/api/crypto/wallet-balance`, // Endpoint for retrieving wallet balances for cryptocurrencies
+    getAlertSettings: `${BASE_URL}/api/crypto/alert-settings`, // Endpoint for managing alert settings for cryptocurrencies
+    getPriceAlerts: `${BASE_URL}/api/crypto/price-alerts`, // Endpoint for retrieving price alerts for specific cryptocurrencies
+    getInsights: `${BASE_URL}/api/crypto/insights`, // Endpoint for fetching insights and analytics related to cryptocurrencies
+    getStakingRewards: `${BASE_URL}/api/crypto/staking-rewards`, // Endpoint for retrieving staking rewards for cryptocurrencies
+    getLiquidityPools: `${BASE_URL}/api/crypto/liquidity-pools`, // Endpoint for fetching liquidity pool data for cryptocurrencies
+    getNFTMarketplace: `${BASE_URL}/api/crypto/nft-marketplace`, // Endpoint for accessing the NFT marketplace for cryptocurrencies
+    getGovernanceProposals: `${BASE_URL}/api/crypto/governance-proposals`, // Endpoint for retrieving governance proposals for cryptocurrency projects
+    getChainAnalysis: `${BASE_URL}/api/crypto/chain-analysis`, // Endpoint for conducting chain analysis on specific cryptocurrencies
+    getDEXTransactions: `${BASE_URL}/api/crypto/dex-transactions`, // Endpoint for retrieving decentralized exchange transactions for cryptocurrencies
+    getRegulatoryCompliance: `${BASE_URL}/api/crypto/regulatory-compliance`, // Endpoint for managing regulatory compliance related to cryptocurrencies
+    getDeveloperDocumentation: `${BASE_URL}/api/crypto/developer-docs`, // Endpoint for accessing developer documentation for cryptocurrency projects
+    getIntegrationGuides: `${BASE_URL}/api/crypto/integration-guides`, // Endpoint for accessing integration guides for using cryptocurrencies in applications
+    getDeveloperTools: `${BASE_URL}/api/crypto/developer-tools`, // Endpoint for accessing developer tools for crypto
+    getDeveloperResources: `${BASE_URL}/api/crypto/developer-resources`, // Endpoint for accessing developer resources for crypto
+    getDeveloperEcosystem: `${BASE_URL}/api/crypto/developer-ecosystem`, // Endpoint for accessing
+    getDeveloperCommunity: `${BASE_URL}/api/crypto/developer-community`, // Endpoint for accessing developer community for
+  },
+
   data: {
     single: (dataId: number) => `${BASE_URL}/api/data/${dataId}`,
     list: `${BASE_URL}/api/data`,
@@ -133,11 +244,34 @@ export const endpoints = {
   },
 
   donations: {
-    makeDonation: (userId: string, amount: number) => `${BASE_URL}/api/donations/make-donation/${userId}/${amount}`,
-    getDonationHistory: (userId: string) => `${BASE_URL}/api/donations/donation-history/${userId}`,  
+    makeDonation: (userId: string, amount: number) =>
+      `${BASE_URL}/api/donations/make-donation/${userId}/${amount}`,
+    getDonationHistory: (userId: string) =>
+      `${BASE_URL}/api/donations/donation-history/${userId}`,
   },
 
-  
+  generators: {
+    generateTransferToken: `${BASE_URL}/api/generators/generate-transfer-token`,
+    // Add more generator endpoints as needed...
+  },
+
+  theme: {
+    list: `${BASE_URL}/api/themes`,
+    single: (themeId: number) => `${BASE_URL}/api/themes/${themeId}`,
+    add: `${BASE_URL}/api/themes`,
+    remove: (themeId: number) => `${BASE_URL}/api/themes/${themeId}`,
+    settings: `${BASE_URL}/api/theme-settings`, // Endpoint for fetching theme settings
+    updateSettings: `${BASE_URL}/api/theme-settings/update`, // Endpoint for updating theme settings
+    // Add more theme endpoints as needed
+  },
+
+  marker: {
+    list: `${BASE_URL}/api/markers`,
+    fetchMarkers: "/api/markers",
+    addMarker: "/api/markers/add",
+    removeMarker: (markerId: number) => `/api/markers/${markerId}/remove`,
+  },
+
   phases: {
     list: `${BASE_URL}/api/phases`,
     single: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
@@ -146,10 +280,12 @@ export const endpoints = {
     update: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
 
     createPhase: `${BASE_URL}/api/phases/create`,
-    updatePhase: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}/update`,
-    deletePhase: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}/delete`,
+    updatePhase: (phaseId: number) =>
+      `${BASE_URL}/api/phases/${phaseId}/update`,
+    deletePhase: (phaseId: number) =>
+      `${BASE_URL}/api/phases/${phaseId}/delete`,
     getPhaseDetails: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
-  
+
     addSuccess: `${BASE_URL}/api/phases/add-success`,
     addFailure: `${BASE_URL}/api/phases/add-failure`,
 
@@ -159,7 +295,6 @@ export const endpoints = {
     // Add more phase-related endpoints as needed
   },
 
-  
   details: {
     list: `${BASE_URL}/api/details`,
     single: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
@@ -205,11 +340,89 @@ export const endpoints = {
     },
   },
 
+  payment: {
+    initiatePayment: `${BASE_URL}/api/payment/initiate`, // Endpoint for initiating a payment transaction
+    verifyPayment: `${BASE_URL}/api/payment/verify`, // Endpoint for verifying a payment transaction
+    cancelPayment: `${BASE_URL}/api/payment/cancel`, // Endpoint for cancelling a payment transaction
+    processRefund: `${BASE_URL}/api/payment/refund`, // Endpoint for processing a refund transaction
+    getPaymentStatus: `${BASE_URL}/api/payment/status`, // Endpoint for retrieving the status of a payment transaction
+    addPaymentMethod: `${BASE_URL}/api/payment/method/add`, // Endpoint for adding a new payment method
+    removePaymentMethod: `${BASE_URL}/api/payment/method/remove`, // Endpoint for removing an existing payment method
+    updatePaymentMethod: `${BASE_URL}/api/payment/method/update`, // Endpoint for updating payment method details
+    listPaymentMethods: `${BASE_URL}/api/payment/methods`, // Endpoint for listing available payment methods
+    getUserPayments: `${BASE_URL}/api/payment/user`, // Endpoint for retrieving payment history for a user
+    getPaymentDetails: (paymentId: string) =>
+      `${BASE_URL}/api/payment/${paymentId}`, // Endpoint for retrieving details of a specific payment transaction
+    generateInvoice: `${BASE_URL}/api/payment/invoice/generate`, // Endpoint for generating an invoice
+    sendInvoice: `${BASE_URL}/api/payment/invoice/send`, // Endpoint for sending an invoice to a recipient
+    viewInvoice: `${BASE_URL}/api/payment/invoice/view`, // Endpoint for viewing an invoice
+    trackInvoice: `${BASE_URL}/api/payment/invoice/track`, // Endpoint for tracking invoice views and payments
+    markInvoicePaid: `${BASE_URL}/api/payment/invoice/mark-paid`, // Endpoint for marking an invoice as paid
+    updateInvoiceStatus: `${BASE_URL}/api/payment/invoice/update-status`, // Endpoint for updating invoice status
+    getInvoiceHistory: `${BASE_URL}/api/payment/invoice/history`, // Endpoint for retrieving invoice payment history
+  },
+
+  projects: {
+    list: `${BASE_URL}/api/projects`,
+    single: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
+    add: `${BASE_URL}/api/projects`,
+    remove: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
+    update: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
+    tasks: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/tasks`,
+    members: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/members`,
+    phases: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/phases`,
+    milestones: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/milestones`,
+
+    // Additional endpoints based on Redux actions
+    teams: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/teams`,
+    identifyTeamNeeds: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/identifyTeamNeeds`,
+    defineJobRoles: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/defineJobRoles`,
+    createJobDescriptions: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/createJobDescriptions`,
+    advertisePositions: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/advertisePositions`,
+    reviewApplications: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/reviewApplications`,
+    conductInterviews: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/conductInterviews`,
+    assessCulturalFit: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/assessCulturalFit`,
+    checkReferences: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/checkReferences`,
+    coordinateSelectionProcess: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/coordinateSelectionProcess`,
+    onboardNewTeamMembers: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/onboardNewTeamMembers`,
+    brainstormProduct: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/brainstormProduct`,
+    launchProduct: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/launchProduct`,
+    analyzeData: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/analyzeData`,
+    rewardContributors: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/rewardContributors`,
+    reinvestEarnings: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/reinvestEarnings`,
+    buildCustomApp: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/buildCustomApp`,
+    meetProjectMetrics: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/meetProjectMetrics`,
+    generateRevenue: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/generateRevenue`,
+    joinCommunityProject: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/joinCommunityProject`,
+    promoteUnity: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/promoteUnity`,
+    shareProjectProgress: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/shareProjectProgress`,
+    celebrateMilestones: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/celebrateMilestones`,
+    provideFeedback: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/provideFeedback`,
+    inviteMembers: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/inviteMembers`,
+    assignTasks: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/assignTasks`,
+    scheduleMeetings: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/scheduleMeetings`,
+    shareResources: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/shareResources`,
+    trackProgress: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/trackProgress`,
+    resolveConflicts: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/resolveConflicts`,
+    resolveBugs: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/resolveBugs`,
+    conductSurveys: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/conductSurveys`,
+    facilitateTraining: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/facilitateTraining`,
+    provideMentorship: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/provideMentorship`,
+    ensureAccessibility: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/ensureAccessibility`,
+    implementSecurityMeasures: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/implementSecurityMeasures`,
+    ensurePrivacy: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/ensurePrivacy`,
+    implementDataProtection: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/implementDataProtection`,
+    // Add more project-related endpoints as needed
+  },
+
   projectManagement: {
     createProject: `${BASE_URL}/api/project-management/create`,
-    updateProject: (projectId: number) => `${BASE_URL}/api/project-management/${projectId}/update`,
-    deleteProject: (projectId: number) => `${BASE_URL}/api/project-management/${projectId}/delete`,
-    getProjectDetails: (projectId: number) => `${BASE_URL}/api/project-management/${projectId}`,
+    updateProject: (projectId: number) =>
+      `${BASE_URL}/api/project-management/${projectId}/update`,
+    deleteProject: (projectId: number) =>
+      `${BASE_URL}/api/project-management/${projectId}/delete`,
+    getProjectDetails: (projectId: number) =>
+      `${BASE_URL}/api/project-management/${projectId}`,
     listProjects: `${BASE_URL}/api/project-management/projects`,
   },
 
@@ -221,7 +434,17 @@ export const endpoints = {
     update: (walkId: string) => `${BASE_URL}/api/random-walks/${walkId}`,
     // Add other random walk endpoints as needed
   },
- 
+
+  registration: {
+    registerUser: `${BASE_URL}/api/users/register`, // POST request for registering a new user
+    updateUserProfile: (userId: number) =>
+      `${BASE_URL}/api/users/${userId}/update`, // PUT request for updating a user's profile by ID
+    deleteUserAccount: (userId: number) =>
+      `${BASE_URL}/api/users/${userId}/delete`, // DELETE request for deleting a user's account by ID
+    getUserDetails: (userId: number) => `${BASE_URL}/api/users/${userId}`, // GET request for fetching details of a specific user by ID
+    listUsers: `${BASE_URL}/api/users`, // GET request for fetching a list of all users
+  },
+
   snapshots: {
     list: `${BASE_URL}/api/snapshots`,
     single: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}`,
@@ -264,11 +487,9 @@ export const endpoints = {
 
     bulkAssign: `${BASE_URL}/api/tasks/bulk-assign`,
     bulkUnassign: `${BASE_URL}/api/tasks/bulk-unassign`,
-
     // Filter endpoints
     filter: (status: string, dueDate: string, assignedUser: string) =>
       `${BASE_URL}/api/tasks?status=${status}&dueDate=${dueDate}&assignedUser=${assignedUser}`,
-
     setFilterOptions: `${BASE_URL}/api/filter/options`,
     clearFilter: `${BASE_URL}/api/filter/clear`,
     applyFilter: `${BASE_URL}/api/filter/apply`,
@@ -289,13 +510,13 @@ export const endpoints = {
     // Combined filter and sort endpoints
     getFilteredAndSortedData: `${BASE_URL}/api/filter-sort/data`,
     resetFilterAndSort: `${BASE_URL}/api/filter-sort/reset`,
-
     // Pagination endpoints
     applyPagination: `${BASE_URL}/api/pagination/apply`,
     updatePaginationOptions: `${BASE_URL}/api/pagination/update-options`,
   },
 
   todos: {
+    fetch: `${BASE_URL}/api/todos`,
     assign: (todoId: number, teamId: number) =>
       `${BASE_URL}/api/tasks/${todoId}/assign/${teamId}`,
     reassign: (todoId: number, newTeamId: number) =>
@@ -303,12 +524,9 @@ export const endpoints = {
     unassign: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/unassign`,
     toggle: (entityId: number, entityType: string) =>
       `${BASE_URL}/api/toggle/${entityType}/${entityId}`,
-
     search: `${BASE_URL}/api/todos/search`,
-
     bulkAssign: `${BASE_URL}/api/todos/bulk-assign`,
     bulkUnassign: `${BASE_URL}/api/todos/bulk-unassign`,
-
     // Define todo endpoints here
   },
 
@@ -318,25 +536,71 @@ export const endpoints = {
     add: `${BASE_URL}/api/teams`,
     remove: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
     update: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
+    updateTeams: (teamIds: number[]) =>
+      `${BASE_URL}/api/teams/${teamIds.join(",")}`,
     // Add other team-related endpoints as needed
   },
 
- 
- 
-   // Video content endpoints
-   videos: {
-    list: `${BASE_URL}/api/videos`,
-    single: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`,
-    add: `${BASE_URL}/api/videos`,
-    remove: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`,
-    update: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`,
-    // Add more video content endpoints as needed
+  // Video content endpoints
+  videos: {
+    list: `${BASE_URL}/api/videos`, // Endpoint to list all videos
+    uploadVideo: `${BASE_URL}/api/videos/upload`, // Endpoint to upload a video
+
+    single: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`, // Endpoint to fetch a single video by ID
+    add: `${BASE_URL}/api/videos`, // Endpoint to add a new video
+    remove: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`, // Endpoint to remove a video by ID
+    update: (videoId: string) => `${BASE_URL}/api/videos/${videoId}`, // Endpoint to update a video by ID
+
+    conference: {
+      create: `${BASE_URL}/conference/create`,
+      join: `${BASE_URL}/conference/join`,
+      end: `${BASE_URL}/conference/end`,
+    },
+    messages: {
+      send: `${BASE_URL}/messages/send`,
+      retrieve: `${BASE_URL}/messages/retrieve`,
+    },
+    annotations: {
+      add: `${BASE_URL}/annotations/add`,
+      retrieve: `${BASE_URL}/annotations/retrieve`,
+    },
+    playback: {
+      speed: `${BASE_URL}/playback/speed`,
+      frame: `${BASE_URL}/playback/frame`,
+    },
+    analytics: `${BASE_URL}/analytics`,
+    live: {
+      start: `${BASE_URL}/live/start`,
+      end: `${BASE_URL}/live/end`,
+      status: `${BASE_URL}/live/status`,
+    },
+    edit: `${BASE_URL}/edit`,
+    transcribe: `${BASE_URL}/transcribe`,
+    collaboration: {
+      create: `${BASE_URL}/collaboration/create`,
+      invite: `${BASE_URL}/collaboration/invite`,
+      join: `${BASE_URL}/collaboration/join`,
+    },
+    manage: `${BASE_URL}/manage`,
+
+    updateVideoTags: `${BASE_URL}/api/videos/update-tags`,
   },
+  batch: {
+    fetchVideos: `${BASE_URL}/api/videos/batch`, // Endpoint for batch fetching videos
+    uploadVideos: `${BASE_URL}/api/videos/batch/upload`, // Endpoint for batch uploading videos
+    addVideos: `${BASE_URL}/api/videos/batch/add`, // Endpoint for batch adding videos
+    removeVideos: `${BASE_URL}/api/videos/batch/remove`, // Endpoint for batch removing videos
+    updateVideos: `${BASE_URL}/api/videos/batch/update`, // Endpoint for batch updating videos
+    // Add more batch operations as needed
+  },
+
   screenSharing: {
     startSession: `${BASE_URL}/api/screen-sharing/start-session`,
     endSession: `${BASE_URL}/api/screen-sharing/end-session`,
-    getSessionDetails: (sessionId: string) => `${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
+    getSessionDetails: (sessionId: string) =>
+      `${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
   },
+
   dataAnalysis: {
     analyzeData: `${BASE_URL}/api/data-analysis/analyze`,
     getAnalysisResults: `${BASE_URL}/api/data-analysis/results`,
@@ -347,23 +611,28 @@ export const endpoints = {
 
   freelancers: {
     list: `${BASE_URL}/api/freelancers`,
-    single: (freelancerId: number) => `${BASE_URL}/api/freelancers/${freelancerId}`,
+    single: (freelancerId: number) =>
+      `${BASE_URL}/api/freelancers/${freelancerId}`,
     submitProposal: `${BASE_URL}/api/freelancers/submit-proposal`,
     engageInDiscussion: `${BASE_URL}/api/freelancers/engage-discussion`,
-    joinProject: (projectId: number) => `${BASE_URL}/api/freelancers/projects/${projectId}/join`,
+    joinProject: (projectId: number) =>
+      `${BASE_URL}/api/freelancers/projects/${projectId}/join`,
     // Add more freelancer-related endpoints as needed
   },
-
 
   globalCollaboration: {
     startProject: `${BASE_URL}/api/global-collaboration/start-project`,
     getProjects: `${BASE_URL}/api/global-collaboration/projects`,
-    getProjectDetails: (projectId: string) => `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
-    updateProjectDetails: (projectId: string) => `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
-    deleteProject: (projectId: string) => `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
+    getProjectDetails: (projectId: string) =>
+      `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
+    updateProjectDetails: (projectId: string) =>
+      `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
+    deleteProject: (projectId: string) =>
+      `${BASE_URL}/api/global-collaboration/projects/${projectId}`,
     translateContent: `${BASE_URL}/api/global-collaboration/translate`,
     culturalAdaptation: `${BASE_URL}/api/global-collaboration/adapt`,
   },
+
   logs: {
     logSession: `${BASE_URL}/api/log/session`,
     logVideoEvent: `${BASE_URL}/api/log/video-event`,
@@ -372,9 +641,11 @@ export const endpoints = {
     logDocumentEvent: `${BASE_URL}/api/log/document-event`,
     logCollaborationEvent: `${BASE_URL}/api/log/collaboration-event`,
   },
+
   moderators: {
     list: `${BASE_URL}/api/moderators`,
-    single: (moderatorId: number) => `${BASE_URL}/api/moderators/${moderatorId}`,
+    single: (moderatorId: number) =>
+      `${BASE_URL}/api/moderators/${moderatorId}`,
     manageCommunity: `${BASE_URL}/api/moderators/manage-community`,
     moderateContent: `${BASE_URL}/api/moderators/moderate-content`,
     participateInDecisions: `${BASE_URL}/api/moderators/participate-decisions`,
@@ -384,30 +655,36 @@ export const endpoints = {
   monetization: {
     startClientProject: `${BASE_URL}/api/monetization/start-client-project`,
     getClientProjects: `${BASE_URL}/api/monetization/client-projects`,
-    getClientProjectDetails: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    updateClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    deleteClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    getClientProjectDetails: (projectId: string) =>
+      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    updateClientProject: (projectId: string) =>
+      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    deleteClientProject: (projectId: string) =>
+      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
 
-    sendGift: (userId: string, giftId: string) => `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
-    getReceivedGifts: (userId: string) => `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
-    redeemGift: (giftId: string) => `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
-  
+    sendGift: (userId: string, giftId: string) =>
+      `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
+    getReceivedGifts: (userId: string) =>
+      `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
+    redeemGift: (giftId: string) =>
+      `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
   },
 
   projectOwners: {
     list: `${BASE_URL}/api/project-owners`,
     single: (ownerId: number) => `${BASE_URL}/api/project-owners/${ownerId}`,
     createProject: `${BASE_URL}/api/project-owners/create-project`,
-    manageProject: (projectId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
-    inviteMember: (projectId: number, memberId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
+    manageProject: (projectId: number) =>
+      `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
+    inviteMember: (projectId: number, memberId: number) =>
+      `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
     // Add more project owner-related endpoints as needed
   },
 
   toolbar: {
     fetchToolbarSize: `${BASE_URL}/api/toolbar/size`,
     updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
-  }
+  },
 
-  
   // Add more sections as needed
 };

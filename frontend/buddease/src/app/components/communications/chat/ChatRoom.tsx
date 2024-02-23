@@ -24,7 +24,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     if (socket) {
       socket.addEventListener('message', (event) => {
         const newMessage = JSON.parse(event.data);
-        setMessages((prevMessages: Messages) => [...prevMessages, newMessage]);
+        setMessages([...chatMessages, newMessage]);
       });
     }
 

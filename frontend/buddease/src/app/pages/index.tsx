@@ -3,10 +3,13 @@ import { create } from "mobx-persist";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
+import generateTimeBasedCode from "../../../models/realtime/TimeBasedCodeGenerator";
 import { useAuth } from "../components/auth/AuthContext";
 import useMessagingSystem from "../components/communications/chat/useMessagingSystem";
+import PaymentForm from "../components/payment/PaymentForm";
 import { rootStores } from "../components/state/stores/RootStores";
 import { User } from "../components/users/User";
+import { UserRole } from "../components/users/UserRole";
 import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
 
@@ -31,6 +34,7 @@ const Index: React.FC = () => {
     hydrate(rootStores.constructor.name);
 
     const authenticateUser = async () => {
+      const timeBasedCode = generateTimeBasedCode()
       const user: User = {
         // user object
         _id: "123",
@@ -45,9 +49,11 @@ const Index: React.FC = () => {
         profilePicture: null,
         processingTasks: [],
         uploadQuota: 0,
+        role: {} as UserRole,
+        timeBasedCode: timeBasedCode
       };
 
-      authDispatch({ type: "LOGIN", payload: user });
+      authDispatch({ type: "LOGIN", payload: { user: user } });
     };
 
     const establishSocketConnection = () => {
@@ -106,6 +112,8 @@ const Index: React.FC = () => {
       <div>
       <YourApp />
         <h1>Redirecting to the Dashboard...</h1>
+        <PaymentForm /> {/* Include the PaymentForm component */}
+     
       </div>
     </Layout>
   );

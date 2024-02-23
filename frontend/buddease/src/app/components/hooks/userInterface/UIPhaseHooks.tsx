@@ -53,7 +53,6 @@ export const darkModeTogglePhaseHook = createPhaseHook({
 
 
 
-
 export const notificationBarPhaseHook = createPhaseHook({
   condition: () => {
     // Add your condition logic for when the notification bar should be active
@@ -105,9 +104,7 @@ export const notificationBarPhaseHook = createPhaseHook({
         NotificationMessagesFactory.createCustomMessage("User data fetched"),
         "success"
       );
-      return {
-        userData: userData,
-      };
+      return userData;
     };
 
     await fetchData();

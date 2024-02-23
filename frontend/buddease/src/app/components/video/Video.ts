@@ -13,8 +13,11 @@ interface Video extends VideoProperties {
   uploadedBy: string;
   viewsCount: number;
   likesCount: number;
+  videoDislikes: number;
   dislikesCount: number;
   commentsCount: number;
+  videoAuthor: string;
+  videoDurationInSeconds: number;
   tags: string[];
   uploadDate: Date;
   category: string;
@@ -41,6 +44,9 @@ interface VideoData {
   aspectRatio: string;
   language: string;
   subtitles: boolean;
+  duration: number; // Duration of the video in seconds
+  campaignId: number; // ID of the associated campaign
+ 
   // Add more properties as needed
 }
 
@@ -76,7 +82,13 @@ class BasicVideoGenerator {
       };
 
       // Merge default values with provided properties
-      const video: Video = { ...defaultValues, id, title, description };
+      const video: Video = {
+        ...defaultValues, id, title, description,
+        videoDislikes: 0,
+        videoAuthor: "",
+        videoDurationInSeconds: 0,
+        playlists: [],
+      };
 
       return video;
   }

@@ -3,6 +3,7 @@ import { Snapshot } from "../../state/stores/SnapshotStore";
 import { Attachment, Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import CommonDetails from "../CommonData";
+import { Idea } from "../tasks/Task";
 
 // Define the interface for DataDetails
 export interface DataDetails {
@@ -29,6 +30,8 @@ interface Data {
   description?: string | null; // Updated this line
   startDate?: Date;
   endDate?: Date | null;
+  scheduled?: boolean;
+  
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
   tags: string[];
@@ -56,26 +59,23 @@ interface Data {
   isBeingReassigned?: boolean;
   analysisType: string;
   analysisResults: string[];
+  videoUrl: string;
+  videoThumbnail: string;
+  videoDuration: number;
   collaborationOptions?: CollaborationOption[]; // Or whatever type is appropriate
-  videoData: Record<string, any>;
-}
+  videoData: VideoData
 
+  [key: string]: any;
+  ideas: Idea[];
+
+}
 
 // Define the UserDetails component
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
   <CommonDetails data={{ title: 'Data Details', description: 'Data details', data }} />
 );
 
-
 export type { Data, DataDetailsComponent, DataDetailsProps };
-
-
-
-
-
-
-
-
 
 
 

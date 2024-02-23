@@ -37,6 +37,7 @@ interface ModalProps {
   children: React.ReactNode;
   isOpen?: boolean;
   closeModal: () => void;
+  title: string;
   modalComponent: React.FC<any>; // Accept any React functional component as modalComponent
   onFileUpload: (files: FileList) => void; // Add file upload callback
   // Add other modal-specific props here
@@ -61,6 +62,7 @@ const ModalGenerator: React.FC<ModalProps> = ({
   isOpen,
   closeModal,
   modalComponent: ModalComponent,
+  title,
   children,
   onFileUpload
 }) => {

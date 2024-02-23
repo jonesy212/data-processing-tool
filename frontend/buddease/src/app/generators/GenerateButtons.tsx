@@ -1,9 +1,12 @@
 // ButtonGenerator.tsx
 import React from "react";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
+import { startVoiceRecognition, stopVoiceRecognition } from "../components/Inteigents/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 
+
+startVoiceRecognition
 /**
  * ButtonGenerator Component
  *
@@ -63,9 +66,10 @@ interface ButtonGeneratorProps {
   onLogicalOr?: () => void;
   onStartPhase?: (phase: string) => void;
   onEndPhase?: (phase: string) => void;
+  onRoutesLayout?: (phase: string) => void;
   onSwitchLayout?: (layout: string) => void;
   onOpenDashboard?: (dashboard: string) => void;
-
+  // generateButtonDispatch?: React.Dispatch<React.SetStateAction<any>>;
   // ... (other props)
 }
 
@@ -134,10 +138,36 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
   onEndPhase,
   onSwitchLayout,
   onOpenDashboard,
+  // generateButtonDispatch
   // ... (other props)
 }) => {
   const buttonTypes = Object.keys(label);
   const { dynamicContent } = useDynamicComponents(); // Access the dynamicContent flag from the naming convention context
+
+  // generateButtonDispatch({
+  //   onSubmit,
+  //   onReset,
+  //   onCancel,
+  //   onLogicalAnd,
+  //   onLogicalOr,
+  //   onStartPhase,
+  //   onEndPhase,
+  //   onSwitchLayout,
+  //   onOpenDashboard,
+  // })
+
+
+  const handleVoiceControl = () => {
+    const recognition = startVoiceRecognition((result: string) => {
+      console.log("Speech Recognition Result:", result);
+      // Handle speech recognition result here
+    });
+    
+    if (recognition) {
+      stopVoiceRecognition(recognition);
+    }
+  };
+
 
   const renderButton = (type: string) => {
     return (
@@ -184,6 +214,24 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
     );
   };
   
+  return (
+    <div>
+      <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
+      {buttonTypes.map((type) => renderButton(type))}
+      {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
+      <button
+        type={buttonGeneratorProps.type} // Add the type attribute
+        onSubmit={buttonGeneratorProps.onSubmit} // Add the onClick attribute if needed
+      >
+ 
+      </button>;
+       {/* New voiceControlButton */}
+       <button id="voiceControlButton" onClick={handleVoiceControl}>Activate Voice Control</button>
+    
+    </div>
+  );
+};
+
   // Define buttonGeneratorProps
   const buttonGeneratorProps: ButtonGeneratorProps = {
     label: defaultLabels,
@@ -196,6 +244,16 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
     onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
     onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
     onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
+    // generateButtonDispatch: (dispatch) => { 
+    //   // Send push notification
+    //   const message = `Generated Buttons: ${JSON.stringify(dispatch)}`;
+    //   const sender = "User";
+    //   // Send push notification
+    //   useNotificationManagerService().sendPushNotification(message, sender);
+    //   // Additional logic if needed
+    //   console.log(`Generated Buttons: ${JSON.stringify(dispatch)}`);
+    // },
+
     onOpenDashboard: (dashboard) => {
       // Send push notification
       const message = `Opened Dashboard: ${dashboard}`;
@@ -207,21 +265,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
     },
   };
 
-  return (
-    <div>
-      <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
-      {buttonTypes.map((type) => renderButton(type))}
-      {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
-      <button
-        type={buttonGeneratorProps.type} // Add the type attribute
-        onSubmit={buttonGeneratorProps.onSubmit} // Add the onClick attribute if needed
-      >
- 
-      </button>;
-    </div>
-  );
-};
 
-export { ButtonGenerator };
+export { ButtonGenerator, buttonGeneratorProps };
 export type { ButtonGeneratorProps };
 

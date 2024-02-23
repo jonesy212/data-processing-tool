@@ -6,13 +6,15 @@ export type DynamicHookParams = {
   asyncEffect: () => Promise<() => void>;
   cleanup?: () => void;
   resetIdleTimeout: () => void;
+  idleTimeoutId: string
+  startIdleTimeout: () => void;
   isActive: boolean;
 };
 
 export type DynamicHookResult = {
   isActive: boolean;
   animateIn: (selector: string) => void;
-  toggleActivation: () => void;
+  toggleActivation: (accessToken: string) => void;
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout?: () => void;

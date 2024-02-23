@@ -11,6 +11,7 @@ interface ReassignEventResponse {
 
 export interface AssignEventStore {
   assignedUsers: Record<string, string[]>; // Use eventId as key and array of user IDs as value
+  updateEventStatus: (eventId: string, status: string) => void;
   assignedEvents: Record<string, string[]>; // Use eventId as key and array of event IDs as value
   assignedTodos: Record<string, string[]>; // Use eventId as key and array of todo IDs as value
   assignEvent: (eventId: string, userId: string) => void;
@@ -20,7 +21,6 @@ export interface AssignEventStore {
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
-
   connectResponsesToTodos: (eventId: string) => void;
   reassignUsersToEvents: (
     eventIds: string[],
@@ -67,6 +67,10 @@ const useAssignEventStore = (): AssignEventStore => {
     // Notify success
     return assignUserSuccess();
   };
+
+  const updateEventStatus = (eventId: string, status: string) => {
+    const event = baseStore.events[eventId];
+   }
 
   const assignUser = (eventId: string, userId: string) => {
     const users = assignedUsers[eventId];
@@ -209,11 +213,11 @@ const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] =
   };
 
   
-
   return {
     assignedUsers,
     assignedEvents,
     assignedTodos,
+    updateEventStatus,
     assignEvent,
     assignUser,
     unassignUser,

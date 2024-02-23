@@ -20,7 +20,7 @@ export const processTextWithSpaCy = async (text: any, appTree: any[]) => {
 };
 
 // Function to process AutoGPT output with spaCy
-export const processAutoGPTOutputWithSpaCy = async (userIdea: any): Promise<string | null> => {
+export const processAutoGPTOutputWithSpaCy = async (userIdea: string): Promise<string | null> => {
     // Generate prompt using userIdea
     const prompt = generatePrompt(userIdea);
   

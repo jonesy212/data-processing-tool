@@ -14,11 +14,12 @@ interface Prompt {
 }
 
 interface PromptPageProps {
+  id: any;
   title: string;
   description: string;
   prompts?: Prompt[]; // Optional prompts for static rendering
   onGeneratePrompts?: () => void; // Optional callback for dynamic prompts
-
+  userIdea?: string; // User input that influences dynamic content
 }
 
 

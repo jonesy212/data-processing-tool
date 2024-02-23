@@ -1,5 +1,7 @@
 // RootSaga.ts
-import { all } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
+import { useNotification } from '../../hooks/commHooks/useNotification';
+import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { apiSagas } from './sagas/apiSagas';
 import { calendarSagas } from './sagas/calendarSagas';
 import { dataAnalysisSagas } from './sagas/dataAnalysisSagas';
@@ -11,26 +13,27 @@ import { taskSagas } from './sagas/taskSagas';
 import { todoSagas } from './sagas/todoSagas';
 import { userSagas } from './sagas/userSagas';
 
-  // import { calendarSagas } from './calendar/calendarSagas';
+// Add more sagas as needed...
 
-// import { calendarSagas } from './calendar/calendarSagas';
+const { notify } = useNotification()
 
 export function* rootSaga() {
-  yield all([
-    taskSagas,
-    todoSagas,
-    calendarSagas,
-    apiSagas,
-    dataSagas,
-    dataAnalysisSagas,
-    userSagas,
-    snapshotSagas,
-    detailsSagas,
-    phaseSagas,
-     
-    // Add more sagas as needed
-
-    
-  ]);
+  try {
+    yield all([
+      fork(taskSagas),
+      fork(todoSagas),
+      fork(calendarSagas),
+      fork(apiSagas),
+      fork(dataSagas),
+      fork(dataAnalysisSagas),
+      fork(userSagas),
+      fork(snapshotSagas),
+      fork(detailsSagas),
+      fork(phaseSagas),
+      // Add more sagas here...
+    ]);
+  } catch (error) {
+    console.error('Error in rootSaga:', error);
+    notify("Error in rootSaga", NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR, new Date, "OperationError");
+  }
 }
-

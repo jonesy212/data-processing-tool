@@ -2,8 +2,9 @@
 import { ReactNode } from "react";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
-import { Task } from "../models/tasks/Task";
+import { Idea, Task } from "../models/tasks/Task";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import { Attachment, Todo } from "../todos/Todo";
 import { User } from "../users/User";
 interface Project extends Data{
   id: string;
@@ -44,6 +45,29 @@ export function isProjectInSpecialPhase(project: Project): boolean {
 }
 
 class ProjectImpl implements Project {
+  [key: string]: any;
+  scheduled?: boolean | undefined;
+  ideas: Idea[]=[];
+  dueDate?: Date | null | undefined;
+  priority?: "low" | "medium" | "high" | undefined;
+  assignee?: User | null | undefined;
+  collaborators?: string[] | undefined;
+  comments?: Comment[] | undefined;
+  attachments?: Attachment[] | undefined;
+  
+  subtasks?: Todo[] | undefined;
+  createdAt?: Date | undefined;
+  updatedAt?: Date | undefined;
+  createdBy?: string | undefined;
+  updatedBy?: string | undefined;
+  isArchived?: boolean | undefined;
+  isCompleted?: boolean | undefined;
+  isBeingEdited?: boolean | undefined;
+  isBeingDeleted?: boolean | undefined;
+  isBeingCompleted?: boolean | undefined;
+  isBeingReassigned?: boolean | undefined;
+  collaborationOptions?: CollaborationOption[] | undefined;
+  videoData: VideoData = {} as VideoData;
   _id: string = '0'
   id: string = '0'; // Initialize id property to avoid error
   name: string = "projectName";
@@ -54,7 +78,7 @@ class ProjectImpl implements Project {
   isActive: boolean = false; // Provide a default value or mark as optional
   leader: User | null = null; // Provide a default value or mark as optional
   budget: number | null = null; // Provide a default value or mark as optional
-  phase: Phase | null =  null   // Provide a default value or mark as optional
+  phase: Phase | null = null; 
   phases: Phase[] = [] // Provide a default value or mark as optional
   currentPhase: Phase | null = null // Provide a default value or mark as optional
   description: string | null = null
@@ -64,6 +88,40 @@ class ProjectImpl implements Project {
   then: () => void = () => {};
   analysisType: string = "default";
   analysisResults: string[] = [];
+
+
+  videoUrl: string = "videoUrl";
+  videoThumbnail: string = "thumbnail";
+  videoDuration: number = 0;
+  videoStartTime: Date = new Date(0); // Initialize with the epoch (1970-01-01T00:00:00.000Z)
+  videoEndTime: Date = new Date(0); // Initialize with the epoch (1970-01-01T00:00:00.000Z)
+
+  // Function to format time as HH:MM:SS
+  formatTime(time: Date): string {
+    return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+  }
+
+  // Getters for formatted time strings
+  get videoStartTimeString(): string {
+    return this.formatTime(this.videoStartTime);
+  }
+
+  get videoEndTimeString(): string {
+    return this.formatTime(this.videoEndTime);
+  }
+
+  // Function to format duration as HH:MM:SS
+  formatDuration(durationInSeconds: number): string {
+    const hours = Math.floor(durationInSeconds / 3600);
+    const minutes = Math.floor((durationInSeconds % 3600) / 60);
+    const seconds = durationInSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  // Getter for formatted duration string
+  get formattedVideoDuration(): string {
+    return this.formatDuration(this.videoDuration);
+  }
   // project implementation
 }
 
@@ -73,7 +131,7 @@ const currentPhase: Phase = {
   startDate: new Date,
   endDate: new Date,
   subPhases: [],
-  component: (props: {}, context?: any): ReactNode=>{ 
+  component: (props: {}, context?: any): ReactNode => {
     return (
       <div>
         <p>Current Phase: {currentPhase.name}</p>
@@ -83,7 +141,9 @@ const currentPhase: Phase = {
       </div>
     );
   },
-  hooks: {} as CustomPhaseHooks
+
+  hooks: {} as CustomPhaseHooks,
+  data: {} as Data
 };
 
 
@@ -101,6 +161,7 @@ currentProject.phases = [
     startDate: new Date(currentPhase.startDate),
     endDate: new Date(currentPhase.endDate),
     subPhases: [],
+    data: {} as Data,
     component: () => {
       return null;
     },
@@ -117,8 +178,8 @@ const inSpecialPhase = isProjectInSpecialPhase(currentProject);
 console.log('Is project in special phase?', inSpecialPhase);
 
 
-const ProjectDetails: React.FC<{ project: Project }> = ({ project }) => (
-  project ? <CommonDetails data={{} as CommonData<SupportedData>} /> : null
+const ProjectDetails: React.FC<{ project: Project }> = async ({ project }) => (
+  await project ? <CommonDetails data={{} as CommonData<SupportedData>} /> : null
 );
 
 export { ProjectDetails };

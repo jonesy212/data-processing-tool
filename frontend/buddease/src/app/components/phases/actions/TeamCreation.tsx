@@ -2,8 +2,9 @@ import { useAuth } from "@/app/components/auth/AuthContext";
 import { useNotification } from "@/app/components/hooks/commHooks/useNotification";
 import React, { useState } from "react";
 import TeamData from "../../models/teams/TeamData";
-import TeamCreationConfirmationPage from "../team/TeamCreationConfirmationPage";
-import TeamCreationQuestionnaire from "../team/TeamCreationQuestionnaire";
+
+import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
+import TeamCreationQuestionnaire from "@/app/pages/teams/TeamCreationQuestionnaire";
 import TeamCreationAPI from "./teamCreationAPI";
 
 enum TeamCreationPhase {
@@ -17,6 +18,7 @@ const TeamCreationPhaseManager: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<TeamCreationPhase>(
     TeamCreationPhase.QUESTIONNAIRE
   );
+
 
   const [teamData, setTeamData] = useState<TeamData>({
     // Initialize empty team data
@@ -71,7 +73,7 @@ const TeamCreationPhaseManager: React.FC = () => {
       {currentPhase === TeamCreationPhase.CONFIRMATION && (
         <TeamCreationConfirmationPage
           teamData={teamData}
-          onConfirm={handleConfirmation}
+          onConfirm={() => handleConfirmation}
         />
       )}
     </div>

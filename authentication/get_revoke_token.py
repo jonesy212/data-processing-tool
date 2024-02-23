@@ -1,4 +1,3 @@
-
 from database.extensions import db
 from models.security.token_owner import TokenOwner
 
@@ -18,12 +17,6 @@ def get_token_owner(token_jti):
         # Log the error or handle it based on your application needs
         print(f"Error in get_token_owner: {str(e)}")
         return None
-
-
-
-
-
-
 
 
 # Full use case with edge cases

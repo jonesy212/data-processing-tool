@@ -6,7 +6,8 @@ import { CommunicationActions } from '@/app/components/community/CommunicationAc
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { AxiosResponse } from "axios";
 import { Effect, call, put, select, takeLatest } from "redux-saga/effects";
-import { CalendarEvent } from "../../stores/CalendarStore";
+import { CalendarEvent } from "../../stores/CalendarEvent";
+
   // Replace 'yourApiEndpoint' with the actual API endpoint
   const API_BASE_URL = endpoints.calendar.events
 
@@ -53,6 +54,23 @@ function* fetchCalendarEventsSaga(): Generator<Effect, void, any> {
   }
 }
 
+
+function* updateCalendarEventSaga(action: ReturnType<typeof CalendarActions.updateCalendarEventRequest>): Generator<Effect, void, any> {
+  const { id, newEvent } = action.payload;
+  const { title, startDate, endDate, description } = newEvent;
+  
+  try {
+    yield call(() => axiosInstance.put(`/api/calendar-events/${id}`, { title, startDate, endDate, description }));
+    yield put(CalendarActions.updateCalendarEventSuccess({ event: newEvent }));
+  } catch (error) {
+    yield put(
+      CalendarActions.updateCalendarEventFailure({
+        error: NOTIFICATION_MESSAGES.CalendarEvents.UPDATE_EVENT_ERROR,
+      })
+    );
+  }
+}
+
 function* removeCalendarEventSaga(
   action: ReturnType<typeof CalendarActions.removeEvent>
 ): Generator<Effect, void, any> {
@@ -76,6 +94,36 @@ function* removeCalendarEventSaga(
     );
   }
 }
+
+
+function* shareCalendarSaga(event: ReturnType<typeof CalendarActions.shareEvent>): Generator<Effect, void, any> { 
+  const { payload: eventId } = event;
+  try {
+    yield call(() => axiosInstance.post(`/api/calendar-events/${eventId}/share`));
+    yield put(CalendarActions.shareEventSuccess({ eventId: "view" }));
+  } catch (error) {
+    yield put(
+      CalendarActions.shareEventFailure({
+        error: NOTIFICATION_MESSAGES.CalendarEvents.SHARE_EVENT_ERROR,
+      })
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Additional Sagas for Communication and Collaboration
 function* startCommunicationSaga(
@@ -105,12 +153,76 @@ function* collaborationSaga(
 // Add other sagas as needed (update, complete, etc.)
 
 export function* watchCalendarEventUpdateSagas() {
-  yield takeLatest(CalendarActions.addEvent.type, addCalendarEventSaga);
-  yield takeLatest(CalendarActions.removeEvent.type, removeCalendarEventSaga);
-  yield takeLatest(CalendarActions.fetchCalendarEventsRequest.type, fetchCalendarEventsSaga);
+
+
+// Standard Calendar Actions
+yield takeLatest(CalendarActions.addEvent.type, addCalendarEventSaga);
+yield takeLatest(CalendarActions.removeEvent.type, removeCalendarEventSaga);
+yield takeLatest(CalendarActions.fetchCalendarEventsRequest.type, fetchCalendarEventsSaga);
+
+// Async Event Actions
+yield takeLatest(CalendarActions.updateCalendarEventRequest.type, updateCalendarEventSaga);
+yield takeLatest(CalendarActions.removeCalendarEventRequest.type, removeCalendarEventSaga);
+
+// Sharing and Syncing Actions
+yield takeLatest(CalendarActions.shareCalendar.type, shareCalendarSaga);
+yield takeLatest(CalendarActions.syncCalendar.type, syncCalendarSaga);
+yield takeLatest(CalendarActions.exportCalendar.type, exportCalendarSaga);
+yield takeLatest(CalendarActions.importCalendar.type, importCalendarSaga);
+
+// Event Manipulation and History Actions
+yield takeLatest(CalendarActions.createRecurringEvent.type, createRecurringEventSaga);
+yield takeLatest(CalendarActions.dragAndDropEvent.type, dragAndDropEventSaga);
+yield takeLatest(CalendarActions.createEventTemplate.type, createEventTemplateSaga);
+yield takeLatest(CalendarActions.revertEventChanges.type, revertEventChangesSaga);
+yield takeLatest(CalendarActions.setTimeZone.type, setTimeZoneSaga);
+yield takeLatest(CalendarActions.resolveEventConflict.type, resolveEventConflictSaga);
+yield takeLatest(CalendarActions.duplicateEvent.type, duplicateEventSaga);
+yield takeLatest(CalendarActions.viewEventHistory.type, viewEventHistorySaga);
+
+// Event Feedback and Communication Actions
+yield takeLatest(CalendarActions.provideEventFeedback.type, provideEventFeedbackSaga);
+yield takeLatest(CalendarActions.scheduleMeeting.type, scheduleMeetingSaga);
+yield takeLatest(CalendarActions.addEventComment.type, addEventCommentSaga);
+yield takeLatest(CalendarActions.sendEventCollaborationInvitation.type, sendEventCollaborationInvitationSaga);
+
+// Event Search and Organization Actions
+yield takeLatest(CalendarActions.searchEvents.type, searchEventsSaga);
+yield takeLatest(CalendarActions.eventCategoriesTags.type, eventCategoriesTagsSaga);
+yield takeLatest(CalendarActions.eventPrivacy.type, eventPrivacySaga);
+yield takeLatest(CalendarActions.eventAttachments.type, eventAttachmentsSaga);
+
+// Event Management and Customization Actions
+yield takeLatest(CalendarActions.setEventReminder.type, setEventReminderSaga);
+yield takeLatest(CalendarActions.setEventColor.type, setEventColorSaga);
+yield takeLatest(CalendarActions.setEventPermissions.type, setEventPermissionsSaga);
+yield takeLatest(CalendarActions.setEventPriority.type, setEventPrioritySaga);
+yield takeLatest(CalendarActions.editRecurringEventInstance.type, editRecurringEventInstanceSaga);
+yield takeLatest(CalendarActions.setEventLabels.type, setEventLabelsSaga);
+yield takeLatest(CalendarActions.customizeEventView.type, customizeEventViewSaga);
+
+// Event Tagging and Labeling Actions
+yield takeLatest(CalendarActions.createEventCategory.type, createEventCategorySaga);
+yield takeLatest(CalendarActions.assignEventCategory.type, assignEventCategorySaga);
+yield takeLatest(CalendarActions.createEventLabel.type, createEventLabelSaga);
+yield takeLatest(CalendarActions.assignEventLabel.type, assignEventLabelSaga);
+yield takeLatest(CalendarActions.createEventTag.type, createEventTagSaga);
+yield takeLatest(CalendarActions.assignEventTag.type, assignEventTagSaga);
+
+// Miscellaneous Event Actions
+yield takeLatest(CalendarActions.respondToEventRSVP.type, respondToEventRSVPSaga);
+yield takeLatest(CalendarActions.shareEventExternally.type, shareEventExternallySaga);
+yield takeLatest(CalendarActions.suggestEventLocation.type, suggestEventLocationSaga);
+
+// Communication sagas
+yield takeLatest(CommunicationActions.startCommunication.type, startCommunicationSaga);
+yield takeLatest(CommunicationActions.collaborate.type, collaborationSaga);
+
+
   // Communication sagas
   yield takeLatest(CommunicationActions.startCommunication.type, startCommunicationSaga);
   yield takeLatest(CommunicationActions.collaborate.type, collaborationSaga);
+
 }
 
 export function* calendarSagas() {

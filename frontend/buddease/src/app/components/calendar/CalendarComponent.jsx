@@ -1,6 +1,5 @@
 import DataFrameAPI from "@/app/api/DataframeApi";
 import FullCalendar from "@fullcalendar/react";
-import ProgressBar from "../models/tracker/ProgressBar"; // Corrected import
 import { useCalendarContext } from "./CalendarContext";
 
 const CalendarWrapper = () => {

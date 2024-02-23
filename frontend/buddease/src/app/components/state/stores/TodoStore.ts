@@ -9,6 +9,7 @@ import { Todo } from "../../todos/Todo";
 import SnapshotStore, { Snapshot } from "./SnapshotStore";
 
 export interface TodoManagerStore {
+  dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
   toggleTodo: (id: string) => void;
@@ -18,6 +19,10 @@ export interface TodoManagerStore {
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
   fetchTodosSuccess: (payload: { todos: Todo[] }) => void;
   fetchTodosFailure: (payload: { error: string }) => void;
+
+  openTodoSettingsPage: (todoId: number, teamId: number) => void;
+  getTodoId: (todo: Todo) => string;
+  
   fetchTodosRequest: () => void;
   completeAllTodosSuccess: () => void;
   completeAllTodos: () => void;
@@ -29,12 +34,16 @@ export interface TodoManagerStore {
     snapshotId: string,
     callback: (snapshot: Todo) => void
   ) => void;
-  
+  batchFetchSnapshotsRequest: (payload: { snapshotIds: string[] }) => void;
 }
-
 
 const useTodoManagerStore = (): TodoManagerStore => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
+  const [subscriptions, setSubscriptions] = useState<
+    Record<string, () => void>
+    >({});
+    const [uiState, setUIState] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
+  
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
 
   // Inside useTodoManagerStore function
@@ -43,6 +52,36 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const onSnapshotCallbacks: ((
     snapshotData: Record<string, Todo[]>
   ) => void)[] = [];
+
+
+
+  const dispatch = (action: any) => {
+    switch (action.type) {
+      case "FETCH_TODOS_REQUEST":
+        fetchTodosRequest();
+        break;
+      case "FETCH_TODOS_SUCCESS":
+        fetchTodosSuccess(action.payload);
+        break;
+      case "FETCH_TODOS_FAILURE":
+        fetchTodosFailure(action.payload);
+        break;
+      case "COMPLETE_ALL_TODOS_REQUEST":
+        completeAllTodosRequest(action.payload);
+        break;
+      case "COMPLETE_ALL_TODOS_SUCCESS":
+        completeAllTodosSuccess();
+        break;
+      case "COMPLETE_ALL_TODOS_FAILURE":
+        completeAllTodosFailure(action.payload);
+        break;
+      case "BATCH_FETCH_SNAPSHOTS_REQUEST":
+        batchFetchSnapshotsRequest();
+        break;
+      case "BATCH_FETCH_SNAPSHOTS_SUCCESS":
+        batchFetchSnapshotsSuccess(action.payload);        break;
+    }
+  }
 
   const toggleTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -75,7 +114,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
           // Use lodash omit to exclude 'id' property
           const updatedSnapshots: Snapshot<Data> = {
             timestamp: Date.now(),
-            data: {} as Data
+            data: {} as Data,
           };
           data.takeSnapshot(updatedSnapshots);
         }
@@ -86,6 +125,17 @@ const useTodoManagerStore = (): TodoManagerStore => {
     });
   };
 
+  const todoList = Object.values(todos);
+
+  const subscribeToSnapshot = (
+    snapshotId: string,
+    callback: (snapshot: Todo) => void
+  ) => {
+    onSnapshotCallbacks.push();
+    snapshotStore.subscribeToSnapshot(snapshotId, (snapshot) => {
+      callback(snapshot);
+    });
+  };
 
   const removeTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -93,6 +143,30 @@ const useTodoManagerStore = (): TodoManagerStore => {
       delete updatedTodos[id];
       return updatedTodos;
     });
+  };
+
+
+  const getTodoId = (todo: Todo): string => { 
+    return todo.id as string;
+  }
+
+  const fetchTodo = async (): Promise<void> => {
+    if (loading.current) {
+      return;
+    }
+    loading.current = true;
+    try {
+      const response = await fetch(endpoints.todos.fetch);
+      const todos = await response.json();
+      fetchTodosSuccess({ todos });
+    } catch (error: any) {
+      fetchTodosFailure({ error: error.message });
+      setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.Todos.TODO_FETCH_ERROR
+      );
+    } finally {
+      loading.current = false;
+    }
   };
 
   const updateTodoTitle = (payload: { id: string; newTitle: string }) => {
@@ -115,6 +189,26 @@ const useTodoManagerStore = (): TodoManagerStore => {
       return updatedTodos;
     });
   };
+
+  const completeAllTodosRequest = (payload: { todos: Todo[] }) => {
+    console.log("Completing all Todos...");
+    // Show loading indicator
+    setUIState({ loading: true, error: null });
+    // Simulate asynchronous completion
+    setTimeout(() => {
+      // Your logic to handle completion of all todos
+      // Hide loading indicator
+      setUIState({ loading: false, error: null });
+      completeAllTodos(); // Trigger completion logic
+    }, 1000);
+    // You can add additional logic or trigger notifications as needed
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+    );
+  };
+
+
+
 
   const completeAllTodosSuccess = () => {
     console.log("All Todos completed successfully!");
@@ -151,12 +245,11 @@ const useTodoManagerStore = (): TodoManagerStore => {
     );
   };
 
+
   const fetchTodosRequest = () => {
     console.log("Fetching Todos...");
     // You can add loading indicators or other UI updates here
-    setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.Data.PAGE_LOADING
-    );
+    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
   };
 
   const completeAllTodosFailure = (payload: { error: string }) => {
@@ -169,12 +262,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const setDynamicNotificationMessage = (message: string) => {
     setNotificationMessage(message);
   };
-// / Define function to open todo settings page
-  const openTodoSettingsPage = (todoId: number, teamId: number) => {
-    window.location.href = endpoints.todos.assign(todoId, teamId);
-  };
 
-  
   const createSnapshotSuccess = () => {
     console.log("Snapshot created successfully!");
     setDynamicNotificationMessage(
@@ -182,58 +270,78 @@ const useTodoManagerStore = (): TodoManagerStore => {
     );
   };
 
+  const openTodoSettingsPage = (todoId: number, teamId: number) => {
+    window.location.href = endpoints.todos.assign(todoId, teamId);
+  };
 
-
-  const batchFetchSnapshotsRequest = () => { 
+  const batchFetchSnapshotsRequest = () => {
     console.log("Fetching snapshots...");
     // You can add loading indicators or other UI updates here
-    setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.Data.PAGE_LOADING
-    );
-  
-  }
-  const setSubscriptions = (prevSubscriptions: Record<string, () => void>) =>
-    prevSubscriptions;
+    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
+  };
 
+  const batchFetchSnapshotsSuccess = (payload: {
+    snapshots: Snapshot<Data>[];
+  }) => {
+    console.log("Snapshots fetched successfully!");
+    const { snapshots } = payload;
+    snapshotStore.setSnapshots(snapshots);
+    // You can add additional logic or trigger notifications as needed
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+    );
+  };
   
+  // For example, if the user has previous subscriptions stored in localStorage
+  const prevSubscriptions = localStorage.getItem("subscriptions");
+  if (prevSubscriptions) {
+    setSubscriptions(JSON.parse(prevSubscriptions));
+  }
+
   const useTodoManagerStore = makeAutoObservable(
     {
       // Todos
+      dispatch,
       todos,
       toggleTodo,
       addTodo,
       addTodos,
+      todoList,
       removeTodo,
       updateTodoTitle,
-  
+      setSubscriptions,
       // Fetching Todos
       fetchTodosSuccess,
       fetchTodosRequest,
       fetchTodosFailure,
-  
+      getTodoId,
       // Completing Todos
       completeAllTodosSuccess,
       completeAllTodos,
       completeAllTodosFailure,
-  
+
       // Notifications
       NOTIFICATION_MESSAGE,
       NOTIFICATION_MESSAGES,
       setDynamicNotificationMessage,
-  
+
       // Miscellaneous
       snapshotStore,
       openTodoSettingsPage,
 
       // batch actions
       batchFetchSnapshotsRequest,
+
+      // snapshot subscriptions
+      subscribeToSnapshot,
     },
     {
       // Exclude the following function from being considered as an action
       setDynamicNotificationMessage: false,
+      setSubscriptions: false,
     }
   );
-  
+
   return useTodoManagerStore;
-}  
+};
 export default useTodoManagerStore;

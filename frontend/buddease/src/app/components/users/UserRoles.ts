@@ -54,6 +54,11 @@ const UserRoles: UserRole[] = [
     responsibilities: ['Limited access to view public content'],
     permissions: ['View public content without registration'],
   },
+  {
+    role: 'TeamLeader',
+    responsibilities: ['Team Management', 'Data Analysis'],
+    permissions: ['Manage team members access', 'Access sales analytics data'],
+  }
 ];
 
 export default UserRoles;

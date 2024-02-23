@@ -2,6 +2,7 @@
 import { OnboardingPhase } from "@/app/pages/onboarding/OnboardingPhase";
 import { DndProvider, useDrag } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import EmailSetupForm from "../communications/email/EmailSetUpForm";
 import ProjectManager from "../projects/projectManagement/ProjectManager";
 
 const DraggablePhaseCard: React.FC<{ phase: OnboardingPhase }> = ({
@@ -28,6 +29,8 @@ const PhaseDashboard: React.FC = () => {
         <DraggablePhaseCard phase={OnboardingPhase.WELCOME} />
         {/* Add more draggable cards for other phases */}
       </div>
+      {/* Include EmailSetupForm component */}
+      <EmailSetupForm />
     </DndProvider>
   );
 };
@@ -47,4 +50,4 @@ const getPhaseTitle = (phase: OnboardingPhase): string => {
   }
 };
 
-export default PhaseDashboard
+export default PhaseDashboard;

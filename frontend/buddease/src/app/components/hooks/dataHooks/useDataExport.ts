@@ -17,7 +17,7 @@ export const useDataExport = () => {
   const notificationContext = useNotification();
 
   const handleExportError = (errorMessage: string): never => {
-    notificationContext.notify('Error trying to export data, try again', NOTIFICATION_MESSAGES.DataLoading.ERROR_EXPORTING_DATA, new Date, 'Error');
+    notificationContext.notify('Error trying to export data, try again', NOTIFICATION_MESSAGES.Data.ERROR_EXPORTING_DATA, new Date, 'Error');
     throw new Error(ERROR);
   };
 

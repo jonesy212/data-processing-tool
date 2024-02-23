@@ -1,0 +1,130 @@
+// projects/ProjectActions.ts
+import { createAction } from "@reduxjs/toolkit";
+import { Task } from "../models/tasks/Task";
+import { Phase } from "../phases/Phase";
+import Project from "../projects/Project";
+import { User } from "../users/User";
+
+export const ProjectActions = {
+  // Standard actions
+  add: createAction<Project>("addProject"),
+  remove: createAction<number>("removeProject"),
+  updateTitle: createAction<{ id: number; newTitle: string }>("updateProjectTitle"),
+  updateProjectSuccess: createAction<{ project: Project }>("updateProjectSuccess"),
+  updateProjectFailure: createAction<{ error: string }>("updateProjectFailure"), 
+  
+  deleteProjectSuccess: createAction<{projectId: string, project: Project}>("deleteProjectSuccess"),
+  deleteProjectFailure: createAction<{ error: string }>("deleteProjectFailure"),
+  // Create actions
+  createProjectSuccess: createAction<{ project: Project }>("createProjectSuccess"),
+  createProjectFailure: createAction<{ error: string }>("createProjectFailure"),  
+  // Fetch actions
+  fetchProjectSuccess: createAction<{ project: Project }>("fetchProjectSuccess"),
+  fetchProjectsRequest: createAction("fetchProjectsRequest"),
+  fetchProjectsSuccess: createAction<{ projects: Project[] }>(
+    "fetchProjectsSuccess"
+    ),
+  fetchProjectFailure: createAction<{ error: string }>("fetchProjectFailure"),
+  fetchProjectsFailure: createAction<{ error: string }>("fetchProjectsFailure"),
+  // Batch actions for fetching
+  batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),
+  batchFetchProjectsSuccess: createAction<{ projects: Project[] }>(
+    "batchFetchProjectsSuccess"
+  ),
+  batchFetchProjectsFailure: createAction<{ error: string }>(
+    "batchFetchProjectsFailure"
+  ),
+
+  
+  // Batch actions for updating
+  batchUpdateProjectsRequest: createAction<{
+    ids: number[];
+    newTitles: string[];
+  }>("batchUpdateProjectsRequest"),
+  batchUpdateProjectsSuccess: createAction<{ projects: Project[] }>(
+    "batchUpdateProjectsSuccess"
+  ),
+  batchUpdateProjectsFailure: createAction<{ error: string }>(
+    "batchUpdateProjectsFailure"
+  ),
+
+  // Batch actions for removing
+  batchRemoveProjectsRequest: createAction<number[]>(
+    "batchRemoveProjectsRequest"
+  ),
+  batchRemoveProjectsSuccess: createAction<number[]>(
+    "batchRemoveProjectsSuccess"
+  ),
+  batchRemoveProjectsFailure: createAction<{ error: string }>(
+    "batchRemoveProjectsFailure"
+  ),
+
+  // Additional actions
+  updateDescription: createAction<{
+    id: number;
+    newDescription: string | null;
+  }>("updateProjectDescription"),
+  updateStartDate: createAction<{ id: number; newStartDate: Date }>(
+    "updateProjectStartDate"
+  ),
+  updateEndDate: createAction<{ id: number; newEndDate: Date | null }>(
+    "updateProjectEndDate"
+  ),
+  toggleActiveStatus: createAction<{ id: number; isActive: boolean }>(
+    "toggleProjectActiveStatus"
+  ),
+  updateLeader: createAction<{ id: number; newLeader: User | null }>(
+    "updateProjectLeader"
+  ),
+  updateBudget: createAction<{ id: number; newBudget: number | null }>(
+    "updateProjectBudget"
+  ),
+  addMember: createAction<{ id: number; member: User }>("addProjectMember"),
+  removeMember: createAction<{ id: number; memberId: string }>(
+    "removeProjectMember"
+  ),
+  updatePhase: createAction<{ id: number; newPhase: Phase | null }>(
+    "updateProjectPhase"
+  ),
+  addPhase: createAction<{ id: number; newPhase: Phase }>("addProjectPhase"),
+  removePhase: createAction<{ id: number; phaseId: number, phaseName: Phase["name"] }>(
+    "removeProjectPhase"
+  ),
+
+  addTaskToProject: createAction<{ projectId: number; task: Task }>(
+    "addTaskToProject"
+  ),
+  removeTaskFromProject: createAction<{ projectId: number; taskId: number }>(
+    "removeTaskFromProject"
+  ),
+  updateProjectStatus: createAction<{
+    id: number;
+    newStatus: "pending" | "inProgress" | "completed";
+  }>("updateProjectStatus"),
+  markProjectAsActive: createAction<number>("markProjectAsActive"),
+  markProjectAsInactive: createAction<number>("markProjectAsInactive"),
+  assignLeaderToProject: createAction<{ id: number; leaderId: string }>(
+    "assignLeaderToProject"
+  ),
+  archiveProject: createAction<number>("archiveProject"),
+  unarchiveProject: createAction<number>("unarchiveProject"),
+
+  // New actions
+  createTeam: createAction<{ projectId: number; teamMembers: User[] }>(
+    "createTeam"
+  ),
+  brainstormProduct: createAction<{ projectId: number; ideas: string[] }>(
+    "brainstormProduct"
+  ),
+  launchProduct: createAction<number>("launchProduct"),
+  performDataAnalysis: createAction<number>("performDataAnalysis"),
+  rewardContributors: createAction<{
+    projectId: number;
+    contributors: User[];
+    earnings: number;
+  }>("rewardContributors"),
+  investInCommunityCoin: createAction<number>("investInCommunityCoin"),
+  launchCommunityCoin: createAction<number>("launchCommunityCoin"),
+
+  // Add more actions as needed
+};

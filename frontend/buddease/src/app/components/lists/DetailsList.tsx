@@ -54,7 +54,7 @@ const DetailsList: React.FC<DetailsListInterface> = observer(() => {
       isActive: true,
       tags: [],
       phase: {} as Phase,
-      then: function (callback: (newData: Snapshot<Data>) => void): void {
+      then: function (callback: (newData: Snapshot<Snapshot<Data>>) => void): void {
         detailsListStore.snapshotStore.subscribe(callback);
       },
       analysisType: "Analysis Type",

@@ -3,6 +3,8 @@ import axios from 'axios';
 import useSnapshotManager from '../components/hooks/useSnapshotManager';
 import { Data } from '../components/models/data/Data';
 import { Snapshot } from '../components/state/stores/SnapshotStore';
+import { Todo } from '../components/todos/Todo';
+
 const API_BASE_URL = '/api/snapshots';  // Replace with your actual API endpoint
 
 export const fetchSnapshots = async (): Promise<Snapshot<Data>[]> => {
@@ -28,7 +30,50 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, 'id'>) => {
     if (response.ok) {
       const createdSnapshot: Snapshot<Data> = await response.json();
       const snapshotManagerStore = useSnapshotManager();
-      snapshotManagerStore.takeSnapshotSuccess({ snapshot: createdSnapshot });
+
+      // Transform the createdSnapshot into a Todo object
+      const todo: Todo = {
+        ...createdSnapshot,
+        // Add additional properties as needed
+        done: false,
+        status: 'pending',
+        todos: [],
+        description: '',
+        dueDate: null,
+        priority: 'low',
+        assignedTo: null,
+        assignee: null,
+        assignedUsers: [],
+        collaborators: [],
+        labels: [],
+        comments: [],
+        attachments: [],
+        subtasks: [],
+        isArchived: false,
+        isCompleted: false,
+        isBeingEdited: false,
+        isBeingDeleted: false,
+        isBeingCompleted: false,
+        isBeingReassigned: false,
+        save: function (): Promise<void> {
+          throw new Error('Function not implemented.');
+        },
+        snapshot: undefined,
+        _id: '',
+        id: '',
+        title: '',
+        isActive: false,
+        tags: [],
+        phase: null,
+        then: function (callback: (newData: Snapshot<Data>) => void): void {
+          throw new Error('Function not implemented.');
+        },
+        analysisType: '',
+        analysisResults: [],
+        videoData: {} as VideoData
+      };
+
+      snapshotManagerStore.takeSnapshotSuccess(todo); // Pass the transformed Todo object to takeSnapshotSuccess
     } else {
       console.error('Failed to add snapshot:', response.statusText);
     }
@@ -45,6 +90,7 @@ export const removeSnapshot = async (snapshotId: number): Promise<void> => {
     throw error;
   }
 };
+
 
 // Add more methods as needed for snapshot-related operations
 

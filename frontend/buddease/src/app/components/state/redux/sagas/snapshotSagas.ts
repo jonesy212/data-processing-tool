@@ -37,7 +37,7 @@ function* handleRemoveSnapshots(action: ReturnType<typeof SnapshotActions.batchF
   try {
     // Replace 'removeSnapshots' with your actual API call to remove snapshots
     const response = yield call(api.removeSnapshots, action.payload);
-    yield put(SnapshotActions.batchRemoveSnapshotsSuccess(action.payload as Snapshot<Data>[]));
+    yield put(SnapshotActions.batchRemoveSnapshotsSuccess(action.payload as Snapshot<Data>));
   } catch (error) {
     yield put(SnapshotActions.batchRemoveSnapshotsFailure({ error: error.message }));
   }

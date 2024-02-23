@@ -14,7 +14,8 @@ interface Snapshot {
 }
 
 interface SnapshotState {
-    snapshots: WritableDraft<Snapshot>[];  loading: boolean;
+  snapshots: WritableDraft<Snapshot>[];
+  loading: boolean;
   error: string | null;
 }
 

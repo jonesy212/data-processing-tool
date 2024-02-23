@@ -27,7 +27,7 @@
       "@/projects/*": ["./src/app/components/projects/*"],
       "@/support/*": ["./src/app/components/support/*"],
       "@/animations/*": ["./src/app/components/animations*"],
-      
+      "@/stores/*": ["./src/app/components/state/stores/*"],
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/dashboards/*": ["./src/app/pages/dashboards/*"],
       "@/forms/*": ["./src/app/pages/forms/*"],

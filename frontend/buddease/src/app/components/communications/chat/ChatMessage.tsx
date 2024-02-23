@@ -1,4 +1,5 @@
 // ChatMessage.tsx
+import { AquaConfig } from '@/app/components/web3/web_configs/AquaConfig';
 import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
 import { initializeGeolocationService } from "@/app/utils/GeolocationServiceUtils";
 import axios, { AxiosResponse } from "axios";
@@ -202,7 +203,51 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
       const fileUploadModal = openFileUploadModal();
       const geolocationService = initializeGeolocationService();
       const settingsPanel = openChatSettingsPanel();
-      const aquaConfig = createAquaConfig
+      const aquaConfig: AquaConfig = {
+        appId: "app-id",
+        appSecret: "app-secret",
+        relayUrl: "relay-url",
+        relayToken: "relay-token",
+        chatToken: "chat-token",
+        chatUrl: "chat-url",
+        chatWebsocketUrl: "chat-websocket-url",
+        chatImageUploadUrl: "chat-image-upload-url",
+        chatImageUploadHeaders: {
+          "Content-Type": "application/json",
+        },
+        chatImageUploadParams: {
+          chat_id: roomId,
+        },
+        chatImageUploadUrlParams: {
+          chat_id: roomId,
+        },
+        chatImageDownloadUrl: "chat-image-download-url",
+        chatImageDownloadHeaders: {
+          "Content-Type": "application/json",
+        },
+        chatImageDownloadParams: {
+          chat_id: roomId,
+        },
+        chatImageDownloadUrlParams: {
+          chat_id: roomId,
+        },
+        chatImageCacheUrl: "chat-image-cache-url",
+        chatImageCacheHeaders: {
+          "Content-Type": "application/json",
+        },
+        chatImageCacheParams: {
+          chat_id: roomId,
+        },
+        apiUrl: '',
+        maxConnections: 0,
+        timeout: 0,
+        secureConnection: false,
+        reconnectAttempts: 0,
+        autoReconnect: false
+      }
+
+
+      
       const aquaChat = new AquaChat(aquaConfig)
       const fluenceConnection = new FluenceConnection
       const handleFileUploadClick = () => {
