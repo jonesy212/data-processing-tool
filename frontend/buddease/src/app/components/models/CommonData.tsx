@@ -33,6 +33,7 @@ type SupportedData =
   | TeamData
   | CacheData
   | ScheduledData
+  | LogData
   | { [key: string]: any };
 
 

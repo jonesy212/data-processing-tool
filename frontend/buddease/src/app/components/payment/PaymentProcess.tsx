@@ -1,7 +1,11 @@
 // PaymentProcess.tsx
 import React from 'react';
 
-const PaymentProcess: React.FC = () => {
+
+interface PaymentProcessProps {
+  onSubmit: (payload: any) => void;
+}
+const PaymentProcess: React.FC<PaymentProcessProps> = () => {
   // Add logic for guiding the user through the payment process
   return (
     <div>

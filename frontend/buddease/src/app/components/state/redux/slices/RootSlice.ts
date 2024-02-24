@@ -10,6 +10,7 @@ import { trackerManagerSlice } from "./TrackerSlice";
 // Import uuid
 import { useCalendarManagerSlice } from "@/app/components/calendar/CalendarSlice";
 import { Data } from "@/app/components/models/data/Data";
+import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
 import { WritableDraft } from "../ReducerGenerator";
@@ -42,6 +43,7 @@ export interface RootState {
   randomWalkManager: ReturnType<typeof useRandomWalkManagerSlice.reducer>
   pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>
   teamManager: ReturnType<typeof useTeamManagerSlice.reducer>
+  projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>
 }
 
 const initialState: RootState = {
@@ -63,6 +65,7 @@ const initialState: RootState = {
   pagingManager: usePagingManagerSlice.reducer(undefined, { type: "init" }),
   videoManager: useVideoManagerSlice.reducer(undefined, { type: "init" }),
   teamManager: useTeamManagerSlice.reducer(undefined, { type: "init" }),
+  projectOwner: useProjectOwnerSlice.reducer(undefined, { type: " Init" }),
 };
 
 const rootReducerSlice = createSlice({

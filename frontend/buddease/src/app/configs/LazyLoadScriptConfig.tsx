@@ -3,11 +3,11 @@ import { SystemConfigs } from '../api/systemConfigs';
 import { UserConfigs } from "../api/userConfigs";
 import { AquaConfig } from '../components/web3/web_configs/AquaConfig';
 import ShoppingCenterConfig from '../shopping_center/ShoppingCenterConfig';
-import { BackendConfig } from './BackendConfig';
+import { BackendConfig, backendConfig } from './BackendConfig';
 import { ApiConfig } from "./ConfigurationService";
 import { DataVersions } from './DataVersionsConfig';
 import { DocumentBuilderConfig } from './DocumentBuilderConfig';
-import { FrontendConfig } from './FrontendConfig';
+import { FrontendConfig, frontendConfig } from './FrontendConfig';
 
 // LazyLoadScriptConfig.ts
 interface LazyLoadScriptConfig {
@@ -45,6 +45,11 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
   onBeforeLoad?: () => void;
   onScriptError?: (error: ErrorEvent) => void;
   onTimeout?: () => void;
+  onCachedLoad?: () => void;
+  onCachedTimeout?: () => void;
+  onCachedError?: (error: Error) => void;
+  frontend?: typeof frontendConfig
+  backend?: typeof backendConfig
   thirdPartyLibrary?: string;
   thirdPartyAPIKey?: string;
   namingConventions?: string[];

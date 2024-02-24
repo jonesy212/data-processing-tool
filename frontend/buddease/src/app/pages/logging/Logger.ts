@@ -3,8 +3,28 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { Task } from "@/app/components/models/tasks/Task";
 import { useNotification } from '@/app/components/support/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+const { notify } = useNotification()
 
-const {notify} = useNotification()
+const generateUniqueId = new UniqueIDGenerator
+
+const errorLogger = {
+  error: (errorMessage: string, extraInfo: any) => {
+    console.error(errorMessage, extraInfo);
+    notify('Error occurred', NOTIFICATION_MESSAGES.Logger.LOG_ERROR, new Date(), 'Error');
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 class Logger {
   static log(type: string, message: string, uniqueID: string) {
     // You can implement different logging mechanisms based on the type
@@ -28,7 +48,22 @@ class Logger {
       console.error( error);
     });
   }
+
+
+  static logError(errorMessage: string, user: string | null = null) {
+    // Log the error message with user information if available
+    const extraInfo = user ? { user } : {};
+    errorLogger.error(errorMessage, extraInfo);
+  }
 }
+
+
+
+
+
+
+
+
 
 // Extend Logger for audio logs
 
@@ -80,6 +115,13 @@ class VideoLogger extends Logger {
   }
 }
 
+
+
+
+
+
+
+
 // Extend Logger for communication channels logs
 class ChannelLogger extends Logger {
   static logChannel(message: string, uniqueID: string, channelID: string) {
@@ -104,6 +146,13 @@ class ChannelLogger extends Logger {
   }
 }
 
+
+
+
+
+
+
+
 class CollaborationLogger extends Logger {
   static logCollaboration(message: string, uniqueID: string, collaborationID: string) {
     super.log("Collaboration", message, uniqueID);
@@ -126,6 +175,12 @@ class CollaborationLogger extends Logger {
     });
   }
 }
+
+
+
+
+
+
 
 class DocumentLogger extends Logger {
   static logDocument(message: string, uniqueID: string, documentID: string) {
@@ -152,6 +207,14 @@ class DocumentLogger extends Logger {
 }
 
 
+
+
+
+
+
+
+
+
 class TaskLogger extends Logger {
   static logTaskCreated(taskTitle: string, uniqueID: string) {
     super.log("Task Created", taskTitle, uniqueID);
@@ -167,8 +230,12 @@ class TaskLogger extends Logger {
   static logTaskCompleted(taskID: string) {
     super.log("Task Completed", `Task ${taskID} completed`, taskID);
     // Additional logic specific to logging task completion
-    
-  }
+    const completionMessage = `Task ${taskID} has been completed.`;
+    const uniqueID = generateUniqueId
+    // Log the completion event
+    TaskLogger.logTaskEvent(uniqueID, taskID, completionMessage);
+}
+
 
   static logTaskAssigned(taskID: string, assignedTo: string) {
     super.log("Task Assigned", `Task ${taskID} assigned to ${assignedTo}`, taskID);
@@ -185,12 +252,38 @@ class TaskLogger extends Logger {
     // Additional logic specific to logging task reassignment
   }
 
+
   // Add more methods as needed for other task-related events
 }
 
 
 
+class CalendarLogger extends Logger {
+  static logCalendarEvent(message: string, uniqueID: string, eventID: string) {
+    super.log("Calendar", message, uniqueID);
+    this.logCalendarEventEvent(uniqueID, eventID);
+  }
+
+  private static logCalendarEventEvent(uniqueID: string, eventID: string) {
+    fetch(endpoints.logs.logCalendarEvent, {
+      method: 'POST',
+      body: JSON.stringify({ uniqueID, eventID }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to log calendar event');
+      }
+    }).catch(error => {
+      notify('Error logging calendar event.', NOTIFICATION_MESSAGES.Logger.LOG_ERROR, new Date, error);
+    });
+  }
+}
+
 export default Logger;
 
-export { AudioLogger, ChannelLogger, CollaborationLogger, DocumentLogger, TaskLogger, VideoLogger };
+export {
+  AudioLogger, CalendarLogger, ChannelLogger, CollaborationLogger, DocumentLogger, TaskLogger, VideoLogger
+};
 

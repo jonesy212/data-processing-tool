@@ -1,7 +1,34 @@
+import axiosInstance from '@/app/api/axiosInstance';
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { User, UserData } from '../../users/User';
+
+// Define the type for participant data
+interface ParticipantData {
+  id: string; // Unique identifier for the participant
+  name: string; // Participant's name
+  email: string; // Participant's email address
+  role: string; // Participant's role in the app (e.g., admin, moderator, member)
+  // Add more fields as per your app's requirements
+}
+// Function to fetch participant data from the backend API
+export const fetchParticipantData = async (userId: string | number): Promise<ParticipantData> => {
+  try {
+    // Make a GET request to fetch participant data
+    const response = await axiosInstance.get(`/api/participants/${userId}`);
+    
+    // Return the fetched participant data
+    return response.data as ParticipantData;
+  } catch (error) {
+    // Handle errors gracefully
+    console.error('Error fetching participant data:', error);
+    throw new Error('Failed to fetch participant data');
+  }
+};
+
+
+
 
 const RealtimeUpdatesComponent = async () => {
   const { state: authState } = useAuth();
@@ -90,8 +117,9 @@ export const subscribeToRealtimeUpdates = (user: User, callback: (newData: UserD
   };
 };
 
-export default RealtimeUpdatesComponent;
+export default ParticipantData; RealtimeUpdatesComponent;
 function setChatSettings(arg0: { realTimeChatEnabled: any; }) {
   throw new Error('Function not implemented.');
 }
+
 

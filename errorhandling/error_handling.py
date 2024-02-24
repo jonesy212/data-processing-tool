@@ -12,6 +12,47 @@ from configs.config import app
 # Centralized logging configuration
 logging.basicConfig(level=logging.INFO)  # Set the appropriate logging level
 
+
+# Custom error handler for 404 Not Found
+@app.errorhandler(404)
+def page_not_found(error):
+    app.logger.error("404 Not Found: The requested page does not exist.")
+    return render_template('404.html'), 404
+
+# Custom error handler for other exceptions
+@app.errorhandler(Exception)
+def handle_exception(error):
+    app.logger.exception("An unhandled exception occurred:")
+    return jsonify(error="Internal Server Error"), 500
+
+# Route that intentionally raises an exception for testing
+@app.route('/error')
+def raise_error():
+    raise Exception("This is a test exception")
+
+# Custom error handler for 400 Bad Request
+@app.errorhandler(400)
+def handle_file_upload_errors(error):
+    if 'No file provided' in str(error):
+        return handle_upload_file_missing()
+    elif 'Invalid file format' in str(error):
+        return handle_invalid_file_format()
+    else:
+        return handle_upload_failure()
+
+# Centralized tracking system for todos
+central_todo_list = []
+
+# Custom error handling for specific status codes
+@app.errorhandler(404)
+def handle_not_found(e):
+    return jsonify({'error': 'Resource not found'}), 404
+
+# Custom error handling for JWT errors
+@jwt_required.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    return jsonify({'error': 'Token has expired'}), 401
+
 # Custom error handler for 404 Not Found
 def handle_404_error():
     app.logger.error("404 Not Found: The requested page does not exist.")

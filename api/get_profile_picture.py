@@ -8,6 +8,12 @@ from configs.config import app
 from models.user.user import User
 
 
+@app.route('/generate-transfer-token', methods=['POST'])
+def generate_transfer_token():
+    # Generate the transferToken (example: using JWT)
+    transfer_token = generate_transfer_token_somehow() 
+    return jsonify({'transferToken': transfer_token}), 200
+
 @app.route('/api/user/profile-picture')
 @jwt_required()
 def get_profile_picture():

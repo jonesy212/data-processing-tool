@@ -1,6 +1,8 @@
+import { handleApiError } from '@/app/api/ApiLogs';
 import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
+import axiosInstance from '../security/csrfToken';
 import { CalendarEvent } from '../state/stores/CalendarEvent';
 import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
 
@@ -18,9 +20,14 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://default-api-base
 const { notify } = useNotification();  // Destructure notify from useNotification
 
 export const calendarService = observable({
+
+
+
+
+
   fetchEvents: async (): Promise<FetchEventsResponse> => {
     try {
-      const response: AxiosResponse<FetchEventsResponse> = await axios.get(`${BASE_URL}/api/calendar/events`);
+      const response: AxiosResponse<FetchEventsResponse> = await axiosInstance.get(`${BASE_URL}/api/calendar/events`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
@@ -36,7 +43,7 @@ export const calendarService = observable({
 
   fetchEvent: async (eventId: string): Promise<FetchEventResponse> => {
     try {
-      const response: AxiosResponse<FetchEventResponse> = await axios.get(`${BASE_URL}/api/calendar/events/${eventId}`);
+      const response: AxiosResponse<FetchEventResponse> = await axiosInstance.get(`${BASE_URL}/api/calendar/events/${eventId}`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
@@ -50,7 +57,7 @@ export const calendarService = observable({
 
   completeAllEvents: async (): Promise<void> => {
     try {
-      await axios.post(`${BASE_URL}/api/calendar/events/complete-all`);
+      await axiosInstance.post(`${BASE_URL}/api/calendar/events/complete-all`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
@@ -66,7 +73,7 @@ export const calendarService = observable({
 
   reassignEvent: async (eventId: string, newUserId: string): Promise<void> => {
     try {
-      await axios.put(`${BASE_URL}/api/calendar/events/${eventId}/reassign`, { newUserId });
+      await axiosInstance.put(`${BASE_URL}/api/calendar/events/${eventId}/reassign`, { newUserId });
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
@@ -80,24 +87,3 @@ export const calendarService = observable({
   },
 });
 
-// Helper function to handle API errors
-const handleApiError = (error: AxiosError<unknown>, errorMessage: string): void => {
-  console.error(`API Error: ${errorMessage}`);
-  if (axios.isAxiosError(error)) {
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
-      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-    } else if (error.request) {
-      console.error('No response received. Request details:', error.request);
-      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-    } else {
-      console.error('Error details:', error.message);
-      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-    }
-  } else {
-    console.error('Non-Axios error:', error);
-    notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-  }
-};

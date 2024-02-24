@@ -243,6 +243,52 @@ export const endpoints = {
     // Add data-processing endpoint
   },
 
+
+  details: {
+    list: `${BASE_URL}/api/details`,
+    single: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
+    add: `${BASE_URL}/api/details`,
+    remove: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
+    update: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
+    // Add more details-related endpoints as needed
+
+    //SOCIA MEDIA:
+    // Facebook integration endpoints
+    facebook: {
+      fetchMessages: `${BASE_URL}/api/facebook/messages`,
+      postMessage: `${BASE_URL}/api/facebook/post`,
+      // Add more endpoints as needed
+    },
+
+    // Instagram integration endpoints
+    instagram: {
+      fetchMessages: `${BASE_URL}/api/instagram/messages`,
+      postMessage: `${BASE_URL}/api/instagram/post`,
+      // Add more endpoints as needed
+    },
+
+    // Twitter integration endpoints
+    twitter: {
+      fetchMessages: `${BASE_URL}/api/twitter/messages`,
+      postMessage: `${BASE_URL}/api/twitter/post`,
+      // Add more endpoints as needed
+    },
+
+    // YouTube integration endpoints
+    youtube: {
+      fetchMessages: `${BASE_URL}/api/youtube/messages`,
+      postMessage: `${BASE_URL}/api/youtube/post`,
+      // Add more endpoints as needed
+    },
+
+    // TikTok integration endpoints
+    tiktok: {
+      fetchMessages: `${BASE_URL}/api/tiktok/messages`,
+      postMessage: `${BASE_URL}/api/tiktok/post`,
+      // Add more endpoints as needed
+    },
+  },
+
   donations: {
     makeDonation: (userId: string, amount: number) =>
       `${BASE_URL}/api/donations/make-donation/${userId}/${amount}`,
@@ -295,49 +341,11 @@ export const endpoints = {
     // Add more phase-related endpoints as needed
   },
 
-  details: {
-    list: `${BASE_URL}/api/details`,
-    single: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
-    add: `${BASE_URL}/api/details`,
-    remove: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
-    update: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
-    // Add more details-related endpoints as needed
 
-    //SOCIA MEDIA:
-    // Facebook integration endpoints
-    facebook: {
-      fetchMessages: `${BASE_URL}/api/facebook/messages`,
-      postMessage: `${BASE_URL}/api/facebook/post`,
-      // Add more endpoints as needed
-    },
-
-    // Instagram integration endpoints
-    instagram: {
-      fetchMessages: `${BASE_URL}/api/instagram/messages`,
-      postMessage: `${BASE_URL}/api/instagram/post`,
-      // Add more endpoints as needed
-    },
-
-    // Twitter integration endpoints
-    twitter: {
-      fetchMessages: `${BASE_URL}/api/twitter/messages`,
-      postMessage: `${BASE_URL}/api/twitter/post`,
-      // Add more endpoints as needed
-    },
-
-    // YouTube integration endpoints
-    youtube: {
-      fetchMessages: `${BASE_URL}/api/youtube/messages`,
-      postMessage: `${BASE_URL}/api/youtube/post`,
-      // Add more endpoints as needed
-    },
-
-    // TikTok integration endpoints
-    tiktok: {
-      fetchMessages: `${BASE_URL}/api/tiktok/messages`,
-      postMessage: `${BASE_URL}/api/tiktok/post`,
-      // Add more endpoints as needed
-    },
+  logging: {
+    logInfo: `${BASE_URL}/logging/info`,
+    logWarning: `${BASE_URL}/logging/warning`,
+    logError: `${BASE_URL}/logging/error`,
   },
 
   payment: {
@@ -361,7 +369,9 @@ export const endpoints = {
     updateInvoiceStatus: `${BASE_URL}/api/payment/invoice/update-status`, // Endpoint for updating invoice status
     getInvoiceHistory: `${BASE_URL}/api/payment/invoice/history`, // Endpoint for retrieving invoice payment history
   },
-
+  projectOwner: {
+    base: `${BASE_URL}/api/project/owner`, // Endpoint for
+  },
   projects: {
     list: `${BASE_URL}/api/projects`,
     single: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
@@ -640,6 +650,7 @@ export const endpoints = {
     logChannelEvent: `${BASE_URL}/api/log/channel-event`,
     logDocumentEvent: `${BASE_URL}/api/log/document-event`,
     logCollaborationEvent: `${BASE_URL}/api/log/collaboration-event`,
+    logCalendarEvent: `${BASE_URL}/api/log/calendar-event`
   },
 
   moderators: {
@@ -674,10 +685,8 @@ export const endpoints = {
     list: `${BASE_URL}/api/project-owners`,
     single: (ownerId: number) => `${BASE_URL}/api/project-owners/${ownerId}`,
     createProject: `${BASE_URL}/api/project-owners/create-project`,
-    manageProject: (projectId: number) =>
-      `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
-    inviteMember: (projectId: number, memberId: number) =>
-      `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
+    manageProject: (projectId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
+    inviteMember: (projectId: number, memberId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
     // Add more project owner-related endpoints as needed
   },
 

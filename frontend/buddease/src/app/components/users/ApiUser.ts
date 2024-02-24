@@ -1,13 +1,31 @@
 // ApiUser.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { getUsersData } from "@/app/api/UsersApi";
 import axiosInstance from "@/app/api/axiosInstance";
 import { makeAutoObservable } from 'mobx';
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import { User } from './User';
 import { UserActions } from "./UserActions";
 import { sendNotification } from "./UserSlice";
 
 const API_BASE_URL = endpoints.users;
+
+
+
+
+const fetchUserRequest = (userId: string) => ({
+  type: 'FETCH_USER_REQUEST',
+  payload: userId,
+});
+const dispatch = useDispatch()
+// Dispatching the action
+const { userId } = useParams(); // Extract userId from URL params
+
+// Calling API_BASE_URL.single to get the URL string
+const url: string = API_BASE_URL.single(Number(userId));
+
+// Dispatching the action with the correct userId
+dispatch(UserActions.fetchUserRequest({userId: url}));
 
 class UserService {
   constructor() {
@@ -28,9 +46,9 @@ class UserService {
     }
   }
 
-  fetchUser = async (userId: User['id']) => {
+  fetchUser = async (userId: User) => {
     try {
-      const response = await axiosInstance.get(API_BASE_URL.single(userId as number));
+      const response = await axiosInstance.get(API_BASE_URL.single(Number(userId)));
       UserActions.fetchUserSuccess({ user: response.data });
       sendNotification(`User with ID ${userId} fetched successfully`);
       return response.data;
@@ -59,7 +77,6 @@ class UserService {
     }
   }
 
-
   fetchUserByIdSuccess = async () => { 
     try {
       const response = await axiosInstance.get(API_BASE_URL.list);
@@ -69,11 +86,9 @@ class UserService {
       sendNotification(`User with ID ${user} fetched successfully`);
       return user;
     } catch (error) {
-      const userId = await userService.fetchUserById();
-      const userId: string = getUsersData(userId); 
       // Dispatch the failure action
       UserActions.fetchUserByIdFailure({ error: String(error) });
-      sendNotification(`Error fetching user with ID ${user.id}: ${error}`);
+      sendNotification(`Error fetching user with ID ${userId}: ${error}`);
       console.error('Error fetching user:', error);
       throw error;
     }

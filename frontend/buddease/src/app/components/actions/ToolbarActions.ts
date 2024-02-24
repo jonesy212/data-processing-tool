@@ -2,7 +2,9 @@
 // todo move 
 // toolbar/ToolbarActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import ParticipantData from "../hooks/dataHooks/RealtimeUpdatesComponent";
 import { Theme } from "../libraries/ui/theme/Theme";
+import { User } from "../users/User";
 
 export const ToolbarActions = {
   // General Toolbar Actions
@@ -21,8 +23,9 @@ export const ToolbarActions = {
   startScreenSharing: createAction("startScreenSharing"),
   stopScreenSharing: createAction("stopScreenSharing"),
 
+  
   // Feature Actions
-  toggleFeature: createAction<{ feature: string, isEnabled: boolean }>("toggleFeature"),
+  toggleFeature: createAction<{ userId: User, feature: string, isEnabled: boolean }>("toggleFeature"),
   enableFeature: createAction<string>("enableFeature"),
   disableFeature: createAction<string>("disableFeature"),
   // Visibility Actions
@@ -45,6 +48,12 @@ export const ToolbarActions = {
   setLanguage: createAction<string>("setLanguage"),
   // User Preferences Actions
   setUserPreferences: createAction<{ preferences: Record<string, any> }>("setUserPreferences"),
+
+
+
+  fetchParticipantData: createAction<{ participantData: ParticipantData }>("fetchParticipantData"),
+
+  showParticipantManagementModal: createAction<boolean>("showParticipantManagementModal"),
   // Add more toolbar actions as needed
 };
 

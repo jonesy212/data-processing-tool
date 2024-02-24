@@ -18,12 +18,17 @@ export const UserActions = {
   // Quota Actions
   updateQuota: createAction<{ id: number, newQuota: number }>("updateQuota"),
   // Pagination Actions
+  
+  
   fetchUserSuccess: createAction<{ user: User }>("fetchUserSuccess"),
   fetchUserFailure: createAction<{ error: string }>("fetchUserFailure"),
-  fetchUserRequest: createAction("fetchUserRequest"),
+  fetchUserRequest: createAction<{userId: User["id"]}>("fetchUserRequest"),
   
+  
+  fetchUserById: createAction<{ userId: number }>("fetchUserById"),
   fetchUserByIdSuccess: createAction<{ user: User }>("fetchUserByIdSuccess"),
   fetchUserByIdFailure: createAction<{ error: string }>("fetchUserByIdFailure"),
+  
   updateUserRequest: createAction<{ updatedUserData: any }>("updateUserRequest"),
   updateUserSuccess: createAction<{ user: User }>("updateUserSuccess"),
   updateUserFailure: createAction<{ error: string }>("updateUserFailure"),

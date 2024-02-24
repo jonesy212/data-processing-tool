@@ -1,11 +1,12 @@
+import { useNotification } from '@/app/components/support/NotificationContext';
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import Project, { isProjectInSpecialPhase } from "../components/projects/Project";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
 import StoreConfig from "../shopping_center/ShoppingCenterConfig";
 import {
-    BackendConfig,
-    backendConfig,
+  BackendConfig,
+  backendConfig,
 } from "./BackendConfig";
 
 import dataVersions from "./DataVersionsConfig";
@@ -76,6 +77,8 @@ interface ConfigurationOptions {
   // other configuration options
 }
 
+
+const notify = useNotification
 class ConfigurationService {
   private static instance: ConfigurationService;
   private apiConfig: ApiConfig;
@@ -96,14 +99,45 @@ class ConfigurationService {
       onLoad: () => {},
     };
   }
+// Update the getDefaultApiConfig method
+private getDefaultApiConfig(): ApiConfig {
+  return {
+    name: "defaultName",
+    timeout: 5000,
+    headers: {},
+    retry: {} as RetryConfig,
+    cache: {} as CacheConfig,
+    responseType: "json",
+    withCredentials: false,
+    baseURL: process.env.REACT_APP_API_BASE_URL || "",
+    backendConfig: backendConfig,
+    frontendConfig: frontendConfig,
+    onLoad: function (response: Response) {
+      // Check if the response status is within the success range (200-299)
+      if (response.status >= 200 && response.status < 300) {
+        // Convert the response to JSON format
+        response.json().then((data) => {
+          // Process the response data here
+          console.log("Response data:", data);
+        }).catch((error) => {
+          console.error("Error parsing response:", error);
+        });
+      } else {
+        // Handle non-successful response status
+        console.error("Request failed with status:", response.status);
 
-  private getDefaultApiConfig() {
-    return {
-      // default config values
-      baseURL: process.env.REACT_APP_API_BASE_URL || "",
-      backendConfig: backendConfig,
-      frontendConfig: frontendConfig // Add frontendConfig
-    };
+        // Use the notify function to display a notification message
+        const errorMessage = `Request failed with status: ${response.status}`;
+        notify();
+
+      }
+    }
+  };
+}
+
+  // New public method to expose getDefaultApiConfig
+  getPublicDefaultApiConfig(): ApiConfig {
+    return this.getDefaultApiConfig();
   }
 
   static getInstance(): ConfigurationService {
@@ -132,11 +166,11 @@ class ConfigurationService {
       // Example: Add configuration options here
       systemConfigs: SystemConfigs,
       userConfigs: UserConfigs,
-      aquaConfig: AquaConfig,
-      storeConfig: StoreConfig,
-      dataVersions: dataVersions,
+      dataVersions: () => dataVersions,
       frontend: frontendConfig,
-      backend: backendConfig
+      backend: backendConfig,
+      aquaConfig:{} as AquaConfig,
+      storeConfig: {} as StoreConfig,
     }
     return defaultConfig;
   }
@@ -172,7 +206,25 @@ class ConfigurationService {
       timeout: 0,
       secureConnection: false,
       reconnectAttempts: 0,
-      autoReconnect: false
+      autoReconnect: false,
+      appId: "",
+      appSecret: "",
+      relayUrl: "",
+      relayToken: "",
+      chatToken: "",
+      chatUrl: "",
+      chatWebsocketUrl: "",
+      chatImageUploadUrl: "",
+      chatImageUploadHeaders: {} as Record<string, string>,
+      chatImageUploadParams: {} as Record<string, string>,
+      chatImageUploadUrlParams: {} as Record<string, string>,
+      chatImageDownloadUrl: "",
+      chatImageDownloadHeaders: {} as Record<string, string>,
+      chatImageDownloadParams: {} as Record<string, string>,
+      chatImageDownloadUrlParams: {} as Record<string, string>,
+      chatImageCacheUrl: "",
+      chatImageCacheHeaders: {} as Record<string, string>,
+      chatImageCacheParams: {} as Record<string, string>
     };
     // Additional edge cases and use cases
     // Case 1: Custom configuration based on a condition

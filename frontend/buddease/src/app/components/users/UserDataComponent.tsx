@@ -1,8 +1,11 @@
 import { FC } from 'react';
+import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
 import { DetailsProps, SupportedData } from '../models/CommonData';
 import { User, UserDetails } from './User';
+import UserRoles from './UserRoles';
 
 const UserDataComponent = () => {
+  const timeBasedCode = generateTimeBasedCode()
   const user: User = {
     _id: '',
     id: '',
@@ -16,7 +19,9 @@ const UserDataComponent = () => {
     hasQuota: false,
     profilePicture: null,
     processingTasks: [],
-    traits: {} as FC<DetailsProps<SupportedData>>
+    traits: {} as FC<DetailsProps<SupportedData>>,
+    timeBasedCode: timeBasedCode,
+    role: UserRoles.Guest
   };
 
   return (

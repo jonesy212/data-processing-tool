@@ -5,41 +5,52 @@ import { Notification } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
 import { notificationStore } from "./NotificationProvider";
 
-
 type CustomNotificationType = "RandomDismiss";
 
 type NotificationType =
-  | "Welcome"
   | "AccountCreated"
   | "Announcement"
-  | "Error"
-  | "Info"
-  | "InvalidCredentials"
-  | "TeamLoading"
-  | "TeamJoinRequest"
-  | "TeamJoinApproved"
-  | "DataLoading"
-  | "PageLoading"
-  | "OperationSuccess"
-  | "PaymentReceived"
-  | "LowDiskSpace"
-  | "DataLimitApproaching"
-  | "NewFeatureAvailable"
-  | "SystemUpdateInProgress"
-  | "NewChatMessage"
+  | "BrainstormingSessionID"
+  | "ButtonClick"
+  | "CalendarEvent"
+  | "CalendarNotification"
   | "ChatMention"
-  | "PushNotification"
-  | "ProfileUpdated"
-  | "PasswordChanged"
-  | "EventReminder"
-  | "EventOccurred"
-  | "Dismiss"
-  |"LoggingError"
+  | "ContributionID"
   | "CustomNotification1"
   | "CustomNotification2"
+  | "DataLimitApproaching"
+  | "DataLoading"
+  | "Dismiss"
+  | "DocumentEditID"
+  | "Error"
+  | "EventOccurred"
+  | "EventReminder"
+  | "GeneratedID"
+  | "PhaseID"
+  | "ProjectRevenueID"
   | "Ideation:Brainstorming"
+  | "Info"
+  | "InvalidCredentials"
+  | "LoggingError"
+  | "LoggingInfo"
+  | "LoggingWarning"
+  | "LowDiskSpace"
+  | "Milestone"
+  | "NewChatMessage"
+  | "NewFeatureAvailable"
   | "OperationError"
-  | "ButtonClick"
+  | "OperationSuccess"
+  | "PageLoading"
+  | "PasswordChanged"
+  | "PaymentReceived"
+  | "ProfileUpdated"
+  | "PushNotification"
+  | "SystemUpdateInProgress"
+  | "TaskBoardID"
+  | "TeamJoinApproved"
+  | "TeamJoinRequest"
+  | "TeamLoading"
+  | "Welcome"
   | CustomNotificationType;
 
 export interface NotificationContextProps {
@@ -64,14 +75,15 @@ const DefaultNotificationContext: NotificationContextProps = {
   sendNotification: () => {},
   addNotification: () => {},
   notify: (message, content, date, type) => {
-    const notificationMessage = (NOTIFICATION_MESSAGES.Data.DEFAULT)[0] || message;
+    const notificationMessage =
+      NOTIFICATION_MESSAGES.Data.DEFAULT[0] || message;
     content = { ...content, date };
     return new Promise((resolve) => {
       const id = UniqueIDGenerator.generateNotificationID;
       notificationStore.addNotification({
         id,
         content: notificationMessage,
-        ...content
+        ...content,
       });
       resolve();
     });
@@ -185,7 +197,7 @@ export const useNotification = (): NotificationContextProps => {
     addNotification: context.addNotification,
     notify: context.notify,
     notifications: context.notifications || [],
-    showMessage: context.showMessage
+    showMessage: context.showMessage,
   };
 };
 
