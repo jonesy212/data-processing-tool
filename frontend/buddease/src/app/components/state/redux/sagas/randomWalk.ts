@@ -1,9 +1,9 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
-import { RandomWalkActions } from "@/app/components/actions/RandomWalkActions";
-import { Effect, call, put, takeLatest } from "redux-saga/effects";
-import { AxiosResponse } from "axios";
+import { RandomWalkActions } from "@/app/components/hooks/userInterface/RandomWalkActions";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { AxiosResponse } from "axios";
+import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const API_BASE_URL = endpoints.randomWalk.data;

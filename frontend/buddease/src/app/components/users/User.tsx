@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import CommonDetails, { DetailsProps, SupportedData } from "../models/CommonData";
 // import { Data } from "../models/data/Data";
 import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
+import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
 import Project from "../projects/Project";
@@ -33,7 +34,7 @@ export interface UserData {
   datasets?: string;
   tasks?: string;
   questionnaireResponses?: any;
-  chatSettings?: string;
+  chatSettings?: ChatSettings;
   projects?: Project[];
   teams?: Team[];
   teamMembers?: TeamMember[];
@@ -81,7 +82,7 @@ const userData: UserData = {
 
 // using common details we generate details for components by mapping through the objects.
 const UserDetails: React.FC<{ user: User }> = ({ user }) => (
-  user ? <CommonDetails data={{ title: 'User Details', description: 'User data', data: user }} /> : <div>User not available</div>
+  user ? <CommonDetails data={{ title: 'User Details', description: 'User data', data: undefined }} /> : <div>User not available</div>
 );
 
 export { UserDetails };

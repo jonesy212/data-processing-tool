@@ -12,7 +12,7 @@ export const initialState: RealtimeDataState = {
 };
 
 // Create slice
-export const realtimeDataSlice = createSlice({
+export const useRealtimeDataSlice = createSlice({
   name: 'realtimeData',
   initialState,
   reducers: {
@@ -36,10 +36,10 @@ export const realtimeDataSlice = createSlice({
 });
 
 // Export actions
-export const { addRealtimeData, updateRealtimeData, removeRealtimeData } = realtimeDataSlice.actions;
+export const { addRealtimeData, updateRealtimeData, removeRealtimeData } = useRealtimeDataSlice.actions;
 
 // Export selector for accessing the realtime data list from the state
 export const selectRealtimeDataList = (state: { realtimeData: RealtimeDataState }) => state.realtimeData.realtimeDataList;
 
 // Export reducer for the realtime data slice
-export default realtimeDataSlice.reducer;
+export default useRealtimeDataSlice.reducer;

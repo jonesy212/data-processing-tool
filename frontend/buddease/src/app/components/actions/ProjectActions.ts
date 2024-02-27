@@ -19,8 +19,9 @@ export const ProjectActions = {
   createProjectSuccess: createAction<{ project: Project }>("createProjectSuccess"),
   createProjectFailure: createAction<{ error: string }>("createProjectFailure"),  
   // Fetch actions
+  fetchProject: createAction<{ project: Project }>("fetchProject"),
   fetchProjectSuccess: createAction<{ project: Project }>("fetchProjectSuccess"),
-  fetchProjectsRequest: createAction("fetchProjectsRequest"),
+  fetchProjectsRequest: createAction<{request: string}>("fetchProjectsRequest"),
   fetchProjectsSuccess: createAction<{ projects: Project[] }>(
     "fetchProjectsSuccess"
     ),

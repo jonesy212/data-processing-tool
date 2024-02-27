@@ -1,11 +1,11 @@
-import DetailsListItem from './DetailsListItem';
-import { DetailsItem } from './DetailsListStore';
+import DetailsListItem from "../components/models/data/DetailsListItem";
+import { DetailsItem } from "../components/state/stores/DetailsListStore";
 
 interface ListGeneratorProps<T> {
-  items: DetailsItem<T>[];
+  items: DetailsItem<T>[]; // Ensure DetailsItem type is imported and defined correctly
 }
 
-const ListGenerator = <T extends {}>({ items }: ListGeneratorProps<T>) => {
+const ListGenerator = <T,>({ items }: ListGeneratorProps<T>) => { // Added comma after <T,
   return (
     <div>
       {items.map((item, index) => (

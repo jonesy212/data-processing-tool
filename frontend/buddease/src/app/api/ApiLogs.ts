@@ -1,8 +1,9 @@
 //ApiLogs.ts
 
 import {
-    NotificationType,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/components/support/NotificationContext";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
@@ -16,6 +17,7 @@ const API_BASE_URL = endpoints.logging; // Assuming logging endpoints are define
 const { notify } = useNotification(); // Destructure notify from useNotification
 
 // Helper function to handle API errors
+
 
 export const handleApiError = (
   error: AxiosError<unknown>,
@@ -90,7 +92,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_ERROR,
         "Log Info Error",
         new Date(),
-        "LoggingInfo"
+        NotificationTypeEnum.LoggingInfo
       );
       throw error;
     }
@@ -112,7 +114,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_WARNING_SUCCESS,
         "Log Warning Success",
         new Date(),
-        "LoggingWarning"
+        NotificationTypeEnum.LoggingWarning
       );
       return response;
     } catch (error) {
@@ -124,7 +126,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_WARNING_ERROR,
         "Log Warning Error",
         new Date(),
-        "LoggingWarning"
+        NotificationTypeEnum.LoggingWarning
       );
       throw error;
     }
@@ -158,7 +160,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_ERROR_FAILURE,
         "Log Error Error",
         new Date(),
-        "LoggingError"
+        NotificationTypeEnum.LoggingError
       );
       throw error;
     }

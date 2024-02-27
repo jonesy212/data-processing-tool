@@ -1,21 +1,19 @@
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React from "react";
-import { Notification } from "./NofiticationsSlice";
-import { NotificationType } from "./NotificationContext";
 
 interface NotificationManagerProps {
-  notifications: Notification[];
+  notifications: NotificationData[];;
   notify: (message: string, randomBytes: any) => void; // Corrected spelling of notify
-  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[];>>;
   onConfirm: (message: string, randomBytes: any) => void; // Corrected spelling of onConfirm
   onCancel: (message: string, randomBytes: any) => void; // Corrected spelling of onCancel
 }
 
 class NotificationManager extends React.Component<NotificationManagerProps> {
-  private notifications: Notification[] = [];
+  private notifications: NotificationData[]; = [];
 
   // Method to get notifications
-  getNotifications(): Notification[] {
+  getNotifications(): NotificationData[]; {
     return this.notifications;
   }
 

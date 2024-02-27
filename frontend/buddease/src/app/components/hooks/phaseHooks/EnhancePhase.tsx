@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PhaseHookConfig, createPhaseHook, usePhaseHooks } from "./PhaseHooks";
+import usePhaseHooks, { PhaseHookConfig, createPhaseHook } from "./PhaseHooks";
 
 const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
   const [currentPhase, setCurrentPhase] = useState<PhaseHookConfig | null>(
@@ -30,7 +30,7 @@ const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
     }
   };
 
-  usePhaseHooks(phaseHook); // Use the usePhaseHooks here
+  usePhaseHooks(); // Use the usePhaseHooks here
   return {
     ...phaseHook,
     canTransitionTo,

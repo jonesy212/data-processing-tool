@@ -1,9 +1,12 @@
 // TaskSlice.ts
+import { tasksDataSource } from "../../../models/tasks/Task";
+
 import useWebNotifications from "@/app/components/hooks/commHooks/useWebNotifications";
+import { Data } from "@/app/components/models/data/Data";
 import { Progress } from "@/app/components/models/tracker/ProgresBar";
 import Project from "@/app/components/projects/Project";
 import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { Comment } from "@/app/components/todos/Todo";
 import { User } from "@/app/components/users/User";
@@ -11,13 +14,14 @@ import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { TaskLogger } from "@/app/pages/logging/Logger";
 import { NamingConventionsError } from "@/app/shared/shared-error-handling";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import FileSaver from "file-saver";
 import * as Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { Task, TaskDetails } from "../../../models/tasks/Task";
 import { userManagerStore } from "../../stores/UserStore";
 import { WritableDraft } from "../ReducerGenerator";
+import { useProjectManagerSlice } from "./ProjectSlice";
 
 const { notify } = useNotification();
 const { showNotification } = useWebNotifications();
@@ -30,15 +34,13 @@ interface TaskManagerState extends Task {
   taskDescription: string;
   taskStatus: "pending" | "inProgress" | "completed";
   priority: "low" | "medium" | "high";
-  
-  pendingTasks: [], // Initialize pendingTasks array
-  inProgressTasks: [], // Initialize inProgressTasks array
-  completedTasks: [], // Initialize completedTasks array
 
+  pendingTasks: []; // Initialize pendingTasks array
+  inProgressTasks: []; // Initialize inProgressTasks array
+  completedTasks: []; // Initialize completedTasks array
 }
 
-
-const tasks: typeof tasksDataSource
+const tasks: Record<string, Task> = { ...tasksDataSource };
 const initialState: TaskManagerState = {
   tasks: [],
   taskTitle: "",
@@ -50,7 +52,42 @@ const initialState: TaskManagerState = {
   pendingTasks: [],
   inProgressTasks: [],
   completedTasks: [],
-  ...tasks
+  ...tasks,
+  id: "",
+  title: "",
+  description: "",
+  assignedTo: null,
+  assigneeId: "",
+  dueDate: new Date(),
+  payload: undefined,
+  type: "addTask",
+  status: "pending",
+  previouslyAssignedTo: [],
+  done: false,
+  data: {} as Data, 
+  source: "user",
+  some: function (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+    throw new Error("Function not implemented.");
+  },
+  then: function (arg0: (newTask: any) => void): unknown {
+    throw new Error("Function not implemented.");
+  },
+  startDate: undefined,
+  endDate: new Date(),
+  isActive: false,
+  tags: [],
+  analysisType: "",
+  analysisResults: [],
+  videoThumbnail: "",
+  videoDuration: 0,
+  videoUrl: "",
+  [Symbol.iterator]: function (): Iterator<any, any, undefined> {
+    throw new Error("Function not implemented.");
+  },
+  _id: "",
+  phase: null,
+  videoData: {} as VideoData,
+  ideas: []
 };
 
 const handleNumberPriority = (priority: number): "low" | "medium" | "high" => {
@@ -98,11 +135,17 @@ export const taskManagerSlice = createSlice({
       }
     },
 
-    dueDate: (state, action: PayloadAction<{ id: string | number; updatedDetails: typeof TaskDetails; dueDate: Date }>) => { 
-
+    dueDate: (
+      state,
+      action: PayloadAction<{
+        id: string | number;
+        updatedDetails: typeof TaskDetails;
+        dueDate: Date;
+      }>
+    ) => {
       const { id, dueDate, updatedDetails } = action.payload; // Include id in the destructuring
-      const taskToUpdateIndex = state.tasks.findIndex(task => task.id === id);
-      
+      const taskToUpdateIndex = state.tasks.findIndex((task) => task.id === id);
+
       if (taskToUpdateIndex !== -1) {
         const taskToUpdate = state.tasks[taskToUpdateIndex];
         const updatedTask = {
@@ -110,12 +153,11 @@ export const taskManagerSlice = createSlice({
           dueDate,
           ...updatedDetails, // Assuming updatedDetails contains other properties to update
         };
-    
+
         state.tasks[taskToUpdateIndex] = updatedTask;
       }
     },
-    
-    
+
     addTask: (state, action: PayloadAction<{ id: string; title: string }>) => {
       const { id, title } = action.payload;
       // Generate a unique ID for the new task
@@ -164,7 +206,7 @@ export const taskManagerSlice = createSlice({
           "Could not find task to complete.",
           NOTIFICATION_MESSAGES.Notifications.DEFAULT,
           new Date(),
-          "Error"
+          NotificationTypeEnum.Error
         );
         return;
       }
@@ -179,7 +221,7 @@ export const taskManagerSlice = createSlice({
           "Notification permission not granted.",
           NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SEND_FAILED,
           new Date(),
-          "OperationError"
+          NotificationTypeEnum.OperationError
         );
       }
     },
@@ -236,14 +278,16 @@ export const taskManagerSlice = createSlice({
     ) => {
       const { taskId, destination } = action.payload;
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-    
+
       if (taskIndex !== -1) {
         // Update the task status
         state.tasks[taskIndex].status = destination;
-    
+
         // Create a new array excluding the moved task
-        const updatedTasks = state.tasks.filter((task, index) => index !== taskIndex);
-    
+        const updatedTasks = state.tasks.filter(
+          (task, index) => index !== taskIndex
+        );
+
         // Determine the target array based on the destination
         let targetArray: WritableDraft<Task[]> = [];
         if (destination === "pending") {
@@ -253,15 +297,15 @@ export const taskManagerSlice = createSlice({
         } else if (destination === "completed") {
           targetArray = state.completedTasks;
         }
-    
+
         // Add the moved task to the target array
         targetArray.push(state.tasks[taskIndex]);
-    
+
         // Update the tasks array with the updated tasks
         state.tasks = updatedTasks;
       }
     },
-    
+
     // Update the setTaskPriority action to accept priority as a number
     setTaskPriority: (
       state,
@@ -298,7 +342,10 @@ export const taskManagerSlice = createSlice({
 
     editTask: (
       state,
-      action: PayloadAction<{ taskId: string; updatedTask: WritableDraft<Task> }>
+      action: PayloadAction<{
+        taskId: string;
+        updatedTask: WritableDraft<Task>;
+      }>
     ) => {
       const { taskId, updatedTask } = action.payload;
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
@@ -467,7 +514,7 @@ export const taskManagerSlice = createSlice({
             "Export Error",
             `An error occurred while exporting tasks: ${error.message}`,
             new Date(),
-            "Error"
+            NotificationTypeEnum.Error
           );
         } else {
           // Handle other types of errors
@@ -477,7 +524,7 @@ export const taskManagerSlice = createSlice({
             "Export Error",
             `An error occurred while exporting tasks. Please try again later.`,
             new Date(),
-            "Error"
+            NotificationTypeEnum.Error
           );
         }
       }
@@ -541,7 +588,10 @@ export const taskManagerSlice = createSlice({
     // Method to handle task dependencies
     addTaskDependency: (
       state,
-      action: PayloadAction<{ taskId: string; dependencyId: WritableDraft<Task> }>
+      action: PayloadAction<{
+        taskId: string;
+        dependencyId: WritableDraft<Task>;
+      }>
     ) => {
       const { taskId, dependencyId } = action.payload;
       const taskToUpdate = state.tasks.find((task) => task.id === taskId);
@@ -597,10 +647,7 @@ export const taskManagerSlice = createSlice({
     },
 
     // Method to handle task history/logs
-    getTaskHistory: (
-      state,
-      action: PayloadAction<{ taskId: string }>
-    ) => {
+    getTaskHistory: (state, action: PayloadAction<{ taskId: string }>) => {
       const { taskId } = action.payload;
       const taskToUpdate = state.tasks.find((task) => task.id === taskId);
 
@@ -694,21 +741,21 @@ export const taskManagerSlice = createSlice({
         | Task
         | undefined;
       if (task) {
-        task.data.isCompleted = true
+        task.data.isCompleted = true;
       }
     },
-    
+
     markTaskPending: (state, action: PayloadAction<number>) => {
       const task = state.tasks.find((t: any) => t.id === action.payload) as
         | Task
         | undefined;
       if (task) {
-        task.data.isCompleted = false
+        task.data.isCompleted = false;
       }
     },
 
     batchFetchTaskSnapshots: (state, action: PayloadAction<Task[]>) => {
-      const newTasks = action.payload.map(task => task.someProperty); // Extract necessary information from Task objects
+      const newTasks = action.payload.map((task) => task.someProperty); // Extract necessary information from Task objects
       state.tasks = newTasks; // Now assigning an array of strings
     },
 
@@ -717,202 +764,199 @@ export const taskManagerSlice = createSlice({
         | Task
         | undefined;
       if (task) {
-        task.data.isCompleted = false
+        task.data.isCompleted = false;
       }
     },
 
-    updateTaskAssignee: (state, action: PayloadAction<{ taskId: string; assignee: User }>) => {
+    updateTaskAssignee: (
+      state,
+      action: PayloadAction<{ taskId: string; assignee: User }>
+    ) => {
       const { taskId, assignee } = action.payload;
       const task = state.tasks.find((t: any) => t.id === taskId) as
         | Task
         | undefined;
       if (task) {
-        task.data.assignee = assignee
+        task.data.assignee = assignee;
       }
     },
 
-    updateTaskProgress: (state, action: PayloadAction<{ taskId: string; progress: Progress }>) => {
+    updateTaskProgress: (
+      state,
+      action: PayloadAction<{ taskId: string; progress: Progress }>
+    ) => {
       const { taskId, progress } = action.payload;
       const task = state.tasks.find((t: any) => t.id === taskId) as
         | Task
         | undefined;
       if (task) {
-        task.data.progress = progress
+        task.data.progress = progress;
       }
     },
 
-
-    captureIdeas: (state, action: PayloadAction<{ taskId: string; ideas: Idea[] }>) => { 
+    captureIdeas: (
+      state,
+      action: PayloadAction<{ taskId: string; ideas: Idea[] }>
+    ) => {
       const { taskId, ideas } = action.payload;
       const task = state.tasks.find((t: any) => t.id === taskId) as
         | Task
         | undefined;
       if (task) {
-        task.data.ideas = ideas
+        task.data.ideas = ideas;
       }
     },
 
     // 1. Facilitate Ideation Phase
-   
+
     startIdeationSession: () => {
-
-
-
       // Function to create a new task for the ideation session
       const createNewTask = () => {
         return {
-          id: 'unique_task_id', // Generate a unique task ID
-          title: 'Ideation Session Task', // Title for the ideation session task
-          description: 'Task created for the ideation session', // Description for the task
-          status: 'pending', // Initial status of the task
+          id: "unique_task_id", // Generate a unique task ID
+          title: "Ideation Session Task", // Title for the ideation session task
+          description: "Task created for the ideation session", // Description for the task
+          status: "pending", // Initial status of the task
         };
-      }
+      };
 
+      // Function to assign the task to the current user
+      const assignTaskToCurrentUser = (task: Task, currentUser: User) => {
+        // Assuming there is a function or method to assign the task to the current user
+        task.assignedUser = currentUser; // Assigning the task to the current user
+        return task;
+      };
 
-            // Function to assign the task to the current user
-            const assignTaskToCurrentUser = (task: Task, currentUser: User) => {
-              // Assuming there is a function or method to assign the task to the current user
-              task.assignedUser = currentUser; // Assigning the task to the current user
-              return task;
-            }
-
+   
       const newTask = createNewTask(); 
-      const currentUser =  userManagerStore()
-      const assignedTask = assignTaskToCurrentUser(newTask, currentUser); // Assign the task to the current user
-      const currentProject  = projectManagerStore().currentProject;
-      const projectAssignedTask = assignTaskToProject(project, assignedTask); // Assign the task to a specific project
-      const phaseAssignedTask = assignTaskToIdeationPhase(projectAssignedTask); // Assign the task to the ideation phase within the project
-      assignTaskToProjectPhase(phaseAssignedTask); // Assign the task to a specific phase within the project (e.g., ideation phase)
+      const currentUser = userManagerStore()
+      const project = useProjectManagerSlice().currentProject;
+      const assignedTask = useProjectManagerSlice.assignTaskToCurrentUser(newTask as Task, currentUser); // Assign the task to the current user
+      const projectAssignedTask = useProjectManagerSlice.assignTaskToProject(project, assignedTask); // Assign the task to a specific project
+      const phaseAssignedTask = useProjectManagerSlice.assignTaskToIdeationPhase(projectAssignedTask); // Assign the task to the ideation phase within the project
+      useProjectManagerSlice.assignTaskToProjectPhase(phaseAssignedTask); // Assign the task to a specific phase within the project (e.g., ideation phase)
     
-
-      
-
 
       // Function to assign the task to a specific project
       const assignTaskToProject = (task: Task, project: Project) => {
         // Assuming there is a function or method to assign the task to a specific project
         task.project = project; // Assigning the task to the specified project
         return task;
-      }
+      };
 
       // Function to assign the task to the ideation phase within the project
       const assignTaskToIdeationPhase = (task: Task) => {
         // Logic to assign the task to the ideation phase within the project goes here.
         return task; // Placeholder return for demonstration
-      }
+      };
 
       // Function to assign the task to a specific phase within the project (e.g., ideation phase)
       const assignTaskToProjectPhase = (task: Task) => {
         // Logic to assign the task to a specific phase within the project goes here.
-      }
+      };
 
-       const captureIdeas = () => {
-         // Implement logic to capture ideas
-         return 
-        }
+      const captureIdeas = () => {
+        // Implement logic to capture ideas
+        return;
+      };
 
-        const collaborateOnIdeas = () => {
-          // Implement logic to collaborate on ideas
-        }
+      const collaborateOnIdeas = () => {
+        // Implement logic to collaborate on ideas
+      };
 
-        // 2. Team Formation Phase
-        const createTeam: () => {
-          // Implement logic to create a team
-        }
+      // 2. Team Formation Phase
+      const createTeam: () => {
+        // Implement logic to create a team
+      };
 
-        const inviteTeamMembers: () => {
-          // Implement logic to invite team members
-        }
+      const inviteTeamMembers: () => {
+        // Implement logic to invite team members
+      };
 
-        const manageTeamMembers: () => {
-          // Implement logic to manage team members
-        }
+      const manageTeamMembers: () => {
+        // Implement logic to manage team members
+      };
 
-        // 3. Product Brainstorming Phase
-        const conductBrainstormingSessions: () => {
-          // Implement logic to conduct brainstorming sessions
-        }
+      // 3. Product Brainstorming Phase
+      const conductBrainstormingSessions: () => {
+        // Implement logic to conduct brainstorming sessions
+      };
 
-        const collectFeedback: () => {
-          // Implement logic to collect feedback
-        }
+      const collectFeedback: () => {
+        // Implement logic to collect feedback
+      };
 
-        const iterateOnProductConcepts: () => {
-          // Implement logic to iterate on product concepts
-        }
+      const iterateOnProductConcepts: () => {
+        // Implement logic to iterate on product concepts
+      };
 
-        // 4. Launch Process Phase
-        const planLaunchStrategy: () => {
-          // Implement logic to plan launch strategy
-        }
+      // 4. Launch Process Phase
+      const planLaunchStrategy: () => {
+        // Implement logic to plan launch strategy
+      };
 
-        const coordinateLaunchActivities: () => {
-          // Implement logic to coordinate launch activities
-        }
+      const coordinateLaunchActivities: () => {
+        // Implement logic to coordinate launch activities
+      };
 
-        const monitorLaunchProgress: () => {
-          // Implement logic to monitor launch progress
-        }
+      const monitorLaunchProgress: () => {
+        // Implement logic to monitor launch progress
+      };
 
-        // 5. Data Analysis Phase
-        const collectData: () => {
-          // Implement logic to collect data
-        }
+      // 5. Data Analysis Phase
+      const collectData: () => {
+        // Implement logic to collect data
+      };
 
-        const analyzeData: () => {
-          // Implement logic to analyze data
-        }
+      const analyzeData: () => {
+        // Implement logic to analyze data
+      };
 
-        const iterativeImprovements: () => {
-          // Implement logic for iterative improvements
-        }
+      const iterativeImprovements: () => {
+        // Implement logic for iterative improvements
+      };
 
-        // 6. Community Engagement
-        const communityDiscussions: () => {
-          // Implement logic for community discussions
-        }
+      // 6. Community Engagement
+      const communityDiscussions: () => {
+        // Implement logic for community discussions
+      };
 
-        const communityEvents: () => {
-          // Implement logic for community events
-        }
+      const communityEvents: () => {
+        // Implement logic for community events
+      };
 
-        const recognizeContributions: () => {
-          // Implement logic to recognize contributions
-        }
+      const recognizeContributions: () => {
+        // Implement logic to recognize contributions
+      };
 
-        // 7. Platform Maintenance
-        const bugReporting: () => {
-          // Implement logic for bug reporting
-        }
+      // 7. Platform Maintenance
+      const bugReporting: () => {
+        // Implement logic for bug reporting
+      };
 
-        const featureRequests: () => {
-          // Implement logic for feature requests
-        }
+      const featureRequests: () => {
+        // Implement logic for feature requests
+      };
 
-        const platformUpdates: () => {
-          // Implement logic for platform updates
-        }
+      const platformUpdates: () => {
+        // Implement logic for platform updates
+      };
 
-        // 8. User Support
-        const helpDesk: () => {
-          // Implement logic for help desk
-        }
+      // 8. User Support
+      const helpDesk: () => {
+        // Implement logic for help desk
+      };
 
-        const knowledgeBase: () => {
-          // Implement logic for knowledge base
-        }
+      const knowledgeBase: () => {
+        // Implement logic for knowledge base
+      };
 
-        const userTraining: () => {
-          // Implement logic for user training
-        }
-
-    }
-
+      const userTraining: () => {
+        // Implement logic for user training
+      };
     },
-  
+  },
 });
-
-
 
 export const {
   completeTask,
@@ -932,8 +976,8 @@ export const {
   redoAction,
   exportTasks,
   importTasks,
-  import { tasksDataSource } from '../../../models/tasks/Task';
 updateTaskDetails,
+
   updateTaskTags,
   updateTaskDueDate,
   updateTaskPriority,
@@ -949,8 +993,7 @@ updateTaskDetails,
   updateTaskAssignee,
   batchFetchTaskSnapshots,
   updateTaskProgress,
-  captureIdeas
-  
+  captureIdeas,
 } = taskManagerSlice.actions;
 
 // Export selector for accessing the tasks from the state

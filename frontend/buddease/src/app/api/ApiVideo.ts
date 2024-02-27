@@ -1,10 +1,10 @@
 // ApiVideo.ts
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import useVideoStore from "../components/state/stores/VideoStore";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { VideoMetadata } from "../configs/StructureMetadata";
+import { VideoMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
 
@@ -26,7 +26,7 @@ const handleApiError = (
         NOTIFICATION_MESSAGES.Generic.ERROR,
         errorMessage,
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
@@ -34,7 +34,7 @@ const handleApiError = (
         NOTIFICATION_MESSAGES.Generic.NO_RESPONSE,
         errorMessage,
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
     } else {
       console.error("Error details:", error.message);
@@ -42,7 +42,7 @@ const handleApiError = (
         NOTIFICATION_MESSAGES.Details.ERROR,
         errorMessage,
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     }
   } else {
@@ -51,7 +51,7 @@ const handleApiError = (
       NOTIFICATION_MESSAGES.Generic.ERROR,
       errorMessage,
       new Date(),
-      "OperationError"
+      NotificationTypeEnum.OperationError
     );
   }
 };
@@ -73,7 +73,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_SUCCESS,
         "Create Video Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -82,7 +82,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_ERROR,
         "Create Video Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -104,7 +104,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
         "Update Video Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -113,7 +113,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
         "Update Video Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -136,7 +136,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
         "Update Video Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -145,7 +145,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
         "Update Video Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -161,7 +161,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_SUCCESS,
         "Fetch Video Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: (await response).data };
     } catch (error) {
@@ -170,7 +170,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
         "Fetch Video Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -186,7 +186,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
         "Delete Video Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -195,7 +195,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_ERROR,
         "Delete Video Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -215,7 +215,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
         "Delete Video Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -224,7 +224,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_ERROR,
         "Delete Video Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -249,7 +249,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.SEND_VIDEO_NOTIFICATION_SUCCESS,
         "Send Video Notification Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -261,7 +261,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.SEND_VIDEO_NOTIFICATION_ERROR,
         "Send Video Notification Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -286,7 +286,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_METADATA_SUCCESS,
         "Update Video Metadata Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
       return { video: response.data };
     } catch (error) {
@@ -298,7 +298,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_METADATA_ERROR,
         "Update Video Metadata Error",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
       throw error;
     }
@@ -356,7 +356,7 @@ export const videoService = observable({
         NOTIFICATION_MESSAGES.Video.ADD_VIDEO_TAGS_SUCCESS,
         "Add Video Tags Success",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
 
       return { video: { ...dummyVideo, id, tags: newTags } };

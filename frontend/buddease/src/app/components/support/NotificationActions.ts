@@ -1,20 +1,20 @@
 // notification/NotificationActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { Notification } from "./NofiticationsSlice";
+import { NotificationData } from "./NofiticationsSlice";
 
 export const NotificationActions = {
   // Single notification actions
-  addNotification: createAction<Notification>("addNotification"),
+  addNotification: createAction<NotificationData>("addNotification"),
   removeNotification: createAction<string>("removeNotification"),
   clearNotifications: createAction("clearNotifications"),
 
   // Request, success, and failure actions
   fetchNotificationsRequest: createAction("fetchNotificationsRequest"),
-  fetchNotificationsSuccess: createAction<Notification[]>("fetchNotificationsSuccess"),
+  fetchNotificationsSuccess: createAction<NotificationData[]>("fetchNotificationsSuccess"),
   fetchNotificationsFailure: createAction<string>("fetchNotificationsFailure"),
 
   // Batch actions
-  batchAddNotifications: createAction<Notification[]>("batchAddNotifications"),
+  batchAddNotifications: createAction<NotificationData[]>("batchAddNotifications"),
   batchRemoveNotifications: createAction<string[]>("batchRemoveNotifications"),
   // Add more batch actions as needed
 };

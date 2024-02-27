@@ -3,12 +3,15 @@ import { BytesLike } from "ethers";
 import { useDispatch, useSelector } from "react-redux";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import AnnouncementManager from "../support/AnnouncementManager";
-import { Notification, selectNotifications } from "../support/NofiticationsSlice";
+import { NotificationData, selectNotifications } from "../support/NofiticationsSlice";
 import { NotificationActions } from "../support/NotificationActions";
 import { NotificationType } from "../support/NotificationContext";
 import PushNotificationManager from "../support/PushNotificationManager";
+
+
+
 interface NotificationManagerServiceProps {
-  notifications: Notification[];
+  notifications: NotificationData[];
   notify: (
     message: string,
     content: any,
@@ -19,8 +22,8 @@ interface NotificationManagerServiceProps {
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
   handleButtonClick: () => Promise<void>;
-  dismissNotification: (notification: Notification) => void;
-  addNotification: (notification: Notification) => void;
+  dismissNotification: (notification: NotificationData) => void;
+  addNotification: (notification: NotificationData) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
 }
@@ -43,7 +46,7 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       date: new Date(),
       message: message,
       createdAt: new Date(),
-      type: "PushNotification",
+      type: "PushNotification" as NotificationType,
       content: sender
     }));
     // Use the PushNotificationManager to send push notifications
@@ -78,14 +81,14 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
     sendPushNotification("New message!", "App");
   };
 
-  const dismissNotification = (notification: Notification): void => {
+  const dismissNotification = (notification: NotificationData): void => {
     // Dispatch action to dismiss notification
     dispatch(NotificationActions.removeNotification(notification.id));
     // Implement dismissal logic here
     console.log("Notification dismissed:", notification);
   };
 
-  const addNotification = (notification: Notification): void => { 
+  const addNotification = (notification: NotificationData): void => { 
     dispatch(NotificationActions.addNotification(notification));
   }
 

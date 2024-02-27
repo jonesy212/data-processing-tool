@@ -1,12 +1,17 @@
 // ButtonGenerator.tsx
 import React from "react";
+import RealtimeData from "../../../models/realtime/RealtimeData";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
-import { startVoiceRecognition, stopVoiceRecognition } from "../components/Inteigents/VoiceControl";
+import {
+  startVoiceRecognition,
+  stopVoiceRecognition,
+} from "../components/Inteigents/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
 import useNotificationManagerService from "../components/notifications/NotificationService";
+import { Phase } from "../components/phases/Phase";
+import { nextPhase, previousPhase } from "../components/phases/PhaseTransitions";
 
-
-startVoiceRecognition
+startVoiceRecognition;
 /**
  * ButtonGenerator Component
  *
@@ -53,6 +58,13 @@ import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
  * @param {(dashboard: string) => void} [props.onOpenDashboard] - Handler for the "open-dashboard" button click event.
  * @returns {JSX.Element} - The rendered ButtonGenerator component.
  */
+
+
+
+
+
+
+
 interface ButtonGeneratorProps {
   variant?: Record<string, string>;
   label?: Record<string, string>;
@@ -61,6 +73,7 @@ interface ButtonGeneratorProps {
   htmlType?: string;
   onSubmit?: () => void;
   onReset?: () => void;
+  onCanceVideoChannel?: () => void;
   onCancel?: () => void;
   onLogicalAnd?: () => void;
   onLogicalOr?: () => void;
@@ -69,6 +82,14 @@ interface ButtonGeneratorProps {
   onRoutesLayout?: (phase: string) => void;
   onSwitchLayout?: (layout: string) => void;
   onOpenDashboard?: (dashboard: string) => void;
+  onTransitionToPreviousPhase?: (
+    setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
+    currentPhase: Phase
+  ) => void;
+  onTransitionToNextPhase?: (
+    setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
+    currentPhase: Phase
+  ) => void;
   // generateButtonDispatch?: React.Dispatch<React.SetStateAction<any>>;
   // ... (other props)
 }
@@ -86,6 +107,8 @@ const defaultLabels: Record<string, string> = {
   "switch-layout": "Switch Layout",
   "open-dashboard": "Open Dashboard",
   // Add additional labels here
+  "transition-to-previous-phase": "Transition To Previous Phase",
+  "transition-to-next-phase": "Transition To Next Phase",
   "phase-management": "Enable Phase-Based Project Management",
   "task-tracking": "Enable Task Assignment and Tracking",
   "data-analysis": "Enable Data Analysis Tools",
@@ -93,7 +116,7 @@ const defaultLabels: Record<string, string> = {
   "task-prioritization": "Enable Task Prioritization and Sorting",
   "custom-templates": "Enable Customizable Project Templates",
   "time-tracking": "Enable Time Tracking and Reporting",
-  
+
   "external-tools":
     "Enable Integration with External Tools (e.g., GitHub, Jira)",
   "deadline-reminders": "Enable Project Deadline Reminders",
@@ -131,6 +154,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
   variant = defaultVariants,
   onSubmit,
   onReset,
+  onCanceVideoChannel,
   onCancel,
   onLogicalAnd,
   onLogicalOr,
@@ -138,6 +162,8 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
   onEndPhase,
   onSwitchLayout,
   onOpenDashboard,
+  onTransitionToPreviousPhase,
+  onTransitionToNextPhase,
   // generateButtonDispatch
   // ... (other props)
 }) => {
@@ -156,20 +182,18 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
   //   onOpenDashboard,
   // })
 
-
   const handleVoiceControl = () => {
     const recognition = startVoiceRecognition((result: string) => {
       console.log("Speech Recognition Result:", result);
       // Handle speech recognition result here
     });
-    
+
     if (recognition) {
       stopVoiceRecognition(recognition);
     }
   };
 
-
-  const renderButton = (type: string) => {
+  const renderButton = (type: string, setCurrentPhase: any, currentPhase: any) => {
     return (
       <ReusableButton
         key={type}
@@ -203,7 +227,12 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
             case "open-dashboard":
               onOpenDashboard && onOpenDashboard(type);
               break;
-            // ... (other cases)
+              case "transition-to-previous-phase":
+                onTransitionToPreviousPhase && onTransitionToPreviousPhase(setCurrentPhase, currentPhase);
+                break;
+              case "transition-to-next-phase":
+                onTransitionToNextPhase && onTransitionToNextPhase(setCurrentPhase, currentPhase);
+                break;// ... (other cases)
             default:
               break;
           }
@@ -213,58 +242,74 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
       />
     );
   };
-  
+
   return (
     <div>
       <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
-      {buttonTypes.map((type) => renderButton(type))}
+      {buttonTypes.map((type, setCurrentPhase, currentPhase) => renderButton(type, setCurrentPhase, currentPhase))}
       {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
       <button
         type={buttonGeneratorProps.type} // Add the type attribute
         onSubmit={buttonGeneratorProps.onSubmit} // Add the onClick attribute if needed
-      >
- 
-      </button>;
-       {/* New voiceControlButton */}
-       <button id="voiceControlButton" onClick={handleVoiceControl}>Activate Voice Control</button>
-    
+      ></button>
+      ;{/* New voiceControlButton */}
+      <button id="voiceControlButton" onClick={handleVoiceControl}>
+        Activate Voice Control
+      </button>
+
+            {/* Include RealtimeData component */}
+      <RealtimeData
+        userId={userId}
+        dispatch={dispatch}
+      />
     </div>
   );
 };
 
-  // Define buttonGeneratorProps
-  const buttonGeneratorProps: ButtonGeneratorProps = {
-    label: defaultLabels,
-    variant: defaultVariants,
-    onSubmit: () => console.log("Submit clicked"),
-    onReset: () => console.log("Reset clicked"),
-    onCancel: () => console.log("Cancel clicked"),
-    onLogicalAnd: () => console.log("Logical And clicked"),
-    onLogicalOr: () => console.log("Logical Or clicked"),
-    onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
-    onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
-    onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
-    // generateButtonDispatch: (dispatch) => { 
-    //   // Send push notification
-    //   const message = `Generated Buttons: ${JSON.stringify(dispatch)}`;
-    //   const sender = "User";
-    //   // Send push notification
-    //   useNotificationManagerService().sendPushNotification(message, sender);
-    //   // Additional logic if needed
-    //   console.log(`Generated Buttons: ${JSON.stringify(dispatch)}`);
-    // },
+// Define buttonGeneratorProps
+const buttonGeneratorProps: ButtonGeneratorProps = {
+  label: defaultLabels,
+  variant: defaultVariants,
+  onSubmit: () => console.log("Submit clicked"),
+  onReset: () => console.log("Reset clicked"),
+  onCancel: () => console.log("Cancel clicked"),
+  onLogicalAnd: () => console.log("Logical And clicked"),
+  onLogicalOr: () => console.log("Logical Or clicked"),
+  onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
+  onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
+  onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
+  // generateButtonDispatch: (dispatch) => {
+  //   // Send push notification
+  //   const message = `Generated Buttons: ${JSON.stringify(dispatch)}`;
+  //   const sender = "User";
+  //   // Send push notification
+  //   useNotificationManagerService().sendPushNotification(message, sender);
+  //   // Additional logic if needed
+  //   console.log(`Generated Buttons: ${JSON.stringify(dispatch)}`);
+  // },
 
-    onOpenDashboard: (dashboard) => {
-      // Send push notification
-      const message = `Opened Dashboard: ${dashboard}`;
-      const sender = "User";
-      // Send push notification
-      useNotificationManagerService().sendPushNotification(message, sender);
-      // Additional logic if needed
-      console.log(`Open Dashboard clicked: ${dashboard}`);
-    },
-  };
-
+  onTransitionToPreviousPhase: (setCurrentPhase, currentPhase) => {
+    // Implement transition to previous phase logic
+    console.log("Transition to previous phase logic here");
+    // Example: setCurrentPhase to previous phase
+    setCurrentPhase(previousPhase);
+  },
+  onTransitionToNextPhase: (setCurrentPhase, currentPhase) => {
+    // Implement transition to next phase logic
+    console.log("Transition to next phase logic here");
+    // Example: setCurrentPhase to next phase
+    setCurrentPhase(nextPhase);
+  },
+  onOpenDashboard: (dashboard) => {
+    // Send push notification
+    const message = `Opened Dashboard: ${dashboard}`;
+    const sender = "User";
+    // Send push notification
+    useNotificationManagerService().sendPushNotification(message, sender);
+    // Additional logic if needed
+    console.log(`Open Dashboard clicked: ${dashboard}`);
+  },
+};
 
 export { ButtonGenerator, buttonGeneratorProps };
 export type { ButtonGeneratorProps };

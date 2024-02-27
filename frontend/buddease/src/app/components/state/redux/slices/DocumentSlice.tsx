@@ -27,6 +27,6 @@ export interface DocumentSliceState {
   export const { setDocumentType, setUserIdea } = useDocumentManagerSlice.actions;
   
   // Export selectors for accessing the new slice from the state
-  export const selectDocumentType = (state: RootState) => state.document.documentType
-  export const selectUserIdea = (state: RootState) => state.document.userIdea;
+  export const selectDocumentType = (state: RootState) => state.documentManager.documentType
+  export const selectUserIdea = (state: RootState) => state.documentManager.userIdea;
   

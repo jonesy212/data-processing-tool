@@ -10,7 +10,10 @@ import ProjectManagementSimulation from '../projects/projectManagement/ProjectMa
 import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '../web3/dAppAdapter/IPFS';
 import CommunityDetails from './CommunityDetails';
 import WeThePeoplePage from './WeThePeoplePage';
-const LibertyPulse: React.FC = () => {
+import CommunityProjectsPage from './CommunityProjectsPage';
+
+
+const CommunityPulse: React.FC = () => {
   // Assuming you have the necessary data structures
   const communityData = {
     projects: {} as Project[],
@@ -36,10 +39,10 @@ const LibertyPulse: React.FC = () => {
 
   return (
     <div>
-      <h1>Welcome to LibertyPulse!</h1>
+      <h1>Welcome to CommunityPulse!</h1>
       <p>Your decentralized hub for civic engagement and political discourse.</p>
 
-      {/* Display LibertyPulse key features */}
+      {/* Display CommunityPulse key features */}
       <ul>
         <li>DecentralVoteHub: Explore a decentralized voting platform that ensures transparency and trust in the electoral process.</li>
         <li>WeThePeopleWatch: Stay informed with our community-driven watch feature, where members contribute information about politicians, their activities, and the happenings within their districts.</li>
@@ -48,7 +51,10 @@ const LibertyPulse: React.FC = () => {
           
 
       {/* Display Community Details */}
-      <CommunityDetails community={communityData} />
+      <CommunityDetails community={
+        communityData
+
+      } />
 
      
 
@@ -84,7 +90,7 @@ const LibertyPulse: React.FC = () => {
 
 {/* Add more blog posts as needed */}
 
-      {/* Display LibertyPulse community details */}
+      {/* Display CommunityPulse community details */}
       <CommunityDetails community={communityData} />
 
       {/* Display Project Management App */}
@@ -93,12 +99,19 @@ const LibertyPulse: React.FC = () => {
       {/* Display Project Management Simulation */}
       <ProjectManagementSimulation />
 
-      {/* Connect to LibertyPulse DApp and utilize its functionality */}
+      
+
+       {/* Render CommunityProjectsPage */}
+       <CommunityProjectsPage community={communityData} />
+     
+      {/* Connect to CommunityPulse DApp and utilize its functionality */}
       <button onClick={() => extendedDApp.enableRealtimeCollaboration().enableChatFunctionality()}>
         Enable Real-time Collaboration and Chat
       </button>
 
-      {/* Store a file on IPFS and Ethereum using LibertyPulse DApp */}
+      
+
+      {/* Store a file on IPFS and Ethereum using CommunityPulse DApp */}
       <button onClick={() => {
         const fileContent = Buffer.from("Hello, IPFS and Ethereum!");
         extendedDApp.storeFileOnIPFS(fileContent).then((ipfsHash) => {
@@ -107,10 +120,14 @@ const LibertyPulse: React.FC = () => {
       }}>
         Store File on IPFS and Ethereum
       </button>
+
+
     </div>
   );
 };
 
 
-export default LibertyPulse;
+
+
+export default CommunityPulse;
 

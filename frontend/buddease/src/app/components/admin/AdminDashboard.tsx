@@ -13,11 +13,11 @@ import { Data } from "../models/data/Data";
 import {
   default as useNotificationManagerService,
 } from "../notifications/NotificationService";
-import { Notification } from "../support/NofiticationsSlice";
 import NotificationManager from '../support/NotificationManager';
 import { User } from "../users/User";
 import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
+import { NotificationData } from "../support/NofiticationsSlice";
 
 
 interface AdminDashboardProps extends YourComponentProps {
@@ -31,7 +31,7 @@ interface AdminDashboardProps extends YourComponentProps {
   updateUserRole: (userId: string, newRole: UserRole) => void; // Function to update user role
 
   // Props related to notifications
-  notifications: Notification[]; // Array of notification objects
+  notifications: NotificationData[]; // Array of notification objects
   dismissNotification: (notificationId: string) => void; // Function to dismiss a notification
 
   // Props related to configurations

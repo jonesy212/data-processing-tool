@@ -3,7 +3,6 @@ import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import React, { useEffect } from "react";
 
 
-
 interface RealtimeDataItem {
   id: string;
   name: string;
@@ -18,8 +17,8 @@ interface RealtimeData {
 }
 
 interface RealtimeDataProps {
-  userId: any; // Define the type of userId here
-  dispatch: (action: any) => void; // Assuming dispatch is a function that takes an action
+  userId: string;
+  dispatch: (action: any) => void; 
 }
 
 const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
@@ -42,8 +41,6 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
   };
 
 
-
-
   // Get realtime data and fetchData function from the hook
   const { realtimeData, fetchData } = useRealtimeData(
     initialData,
@@ -63,6 +60,8 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
         <div key={index}>
           {/* Display each data item */}
           {/* Example: <p>{dataItem}</p> */}
+
+          <RealtimeData userId={userId} dispatch={dispatch} />
         </div>
       ))}
     </div>

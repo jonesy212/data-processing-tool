@@ -1,11 +1,13 @@
 // HighlightEvent.ts
 
-interface HighlightEvent {
-    id: number;
+import CommonEvent from "../../state/stores/CommonEvent";
+import { DocumentData } from '../DocumentBuilder';
+
+interface HighlightEvent extends CommonEvent {
+    id: string;
     highlightedText: string;
-    documentId: number;
+    documentId: DocumentData;
     userId: number;
-    metadata: Record<string, any>; // Additional metadata can be stored in a key-value format
   }
   
   export default HighlightEvent;

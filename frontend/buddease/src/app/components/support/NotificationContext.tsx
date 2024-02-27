@@ -1,64 +1,70 @@
 // NotificationContext.tsx
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { createContext, useContext } from "react";
-import { Notification } from "./NofiticationsSlice";
+import { NotificationData } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
 import { notificationStore } from "./NotificationProvider";
 
 type CustomNotificationType = "RandomDismiss";
 
-type NotificationType =
-  | "AccountCreated"
-  | "Announcement"
-  | "BrainstormingSessionID"
-  | "ButtonClick"
-  | "CalendarEvent"
-  | "CalendarNotification"
-  | "ChatMention"
-  | "ContributionID"
-  | "CustomNotification1"
-  | "CustomNotification2"
-  | "DataLimitApproaching"
-  | "DataLoading"
-  | "Dismiss"
-  | "DocumentEditID"
-  | "Error"
-  | "EventOccurred"
-  | "EventReminder"
-  | "GeneratedID"
-  | "PhaseID"
-  | "ProjectRevenueID"
-  | "Ideation:Brainstorming"
-  | "Info"
-  | "InvalidCredentials"
-  | "LoggingError"
-  | "LoggingInfo"
-  | "LoggingWarning"
-  | "LowDiskSpace"
-  | "Milestone"
-  | "NewChatMessage"
-  | "NewFeatureAvailable"
-  | "OperationError"
-  | "OperationSuccess"
-  | "PageLoading"
-  | "PasswordChanged"
-  | "PaymentReceived"
-  | "ProfileUpdated"
-  | "PushNotification"
-  | "SystemUpdateInProgress"
-  | "TaskBoardID"
-  | "TeamJoinApproved"
-  | "TeamJoinRequest"
-  | "TeamLoading"
-  | "Welcome"
-  | CustomNotificationType;
+export enum NotificationTypeEnum {
+  AccountCreated = "AccountCreated",
+  Announcement = "Announcement",
+  BrainstormingSessionID = "BrainstormingSessionID",
+  ButtonClick = "ButtonClick",
+  CalendarEvent = "CalendarEvent",
+  CalendarNotification = "CalendarNotification",
+  ChatMention = "ChatMention",
+  ContributionID = "ContributionID",
+  CreationSuccess = "CreationSuccess",
+  CustomNotification1 = "CustomNotification1",
+  CustomNotification2 = "CustomNotification2",
+  DataLimitApproaching = "DataLimitApproaching",
+  DataLoading = "DataLoading",
+  Dismiss = "Dismiss",
+  DocumentEditID = "DocumentEditID",
+  Error = "Error",
+  EventOccurred = "EventOccurred",
+  EventReminder = "EventReminder",
+  GeneratedID = "GeneratedID",
+  PhaseID = "PhaseID",
+  ProjectRevenueID = "ProjectRevenueID",
+  IdeationBrainstorming = "Ideation:Brainstorming",
+  Info = "Info",
+  InvalidCredentials = "InvalidCredentials",
+  LoggingError = "LoggingError",
+  LoggingInfo = "LoggingInfo",
+  LoggingWarning = "LoggingWarning",
+  LowDiskSpace = "LowDiskSpace",
+  Milestone = "Milestone",
+  NewChatMessage = "NewChatMessage",
+  NewFeatureAvailable = "NewFeatureAvailable",
+  OperationError = NotificationTypeEnum.OperationError,
+  OperationSuccess = NotificationTypeEnum.OperationSuccess,
+  PageLoading = "PageLoading",
+  PasswordChanged = "PasswordChanged",
+  PaymentReceived = "PaymentReceived",
+  ProfileUpdated = "ProfileUpdated",
+  PushNotification = "PushNotification",
+  SnapshotDetails = "SnapshotDetails",
+  Success = "Success",
+  SystemUpdateInProgress = "SystemUpdateInProgress",
+  TaskLogged = "TaskLogged",
+  TaskBoardID = "TaskBoardID",
+  TeamJoinApproved = "TeamJoinApproved",
+  TeamJoinRequest = "TeamJoinRequest",
+  TeamLoading = "TeamLoading",
+  Unsubscribed = "Unsubscribed",
+  Warning = "Warning",
+  Welcome = "Welcome",
+}
 
 export interface NotificationContextProps {
   sendNotification: (
     type: NotificationType,
     userName?: string | number
   ) => void;
-  addNotification: (notification: Notification) => void;
+  addNotification: (notification: NotificationData) => void;
   notify: (
     message: string,
     content: any,
@@ -66,7 +72,7 @@ export interface NotificationContextProps {
     type: NotificationType
   ) => Promise<void>;
 
-  notifications: Notification[];
+  notifications: NotificationData[];
   // Add more notification functions as needed
   showMessage: (message: string) => void;
 }
@@ -100,14 +106,14 @@ export interface NotificationContextProps {
     type: NotificationType,
     userName?: string | number
   ) => void;
-  addNotification: (notification: Notification) => void;
+  addNotification: (notification: NotificationData) => void;
   notify: (
     message: string,
     content: any,
     date: Date | undefined,
     type: NotificationType
   ) => Promise<void>;
-  notifications: Notification[];
+  notifications: NotificationData[];
   // Add more notification functions as needed
 }
 
@@ -120,7 +126,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const notificationStore = useContext(NotificationContext);
 
-  const addNotification = (notification: Notification) => {
+  const addNotification = (notification: NotificationData) => {
     notificationStore?.addNotification(notification);
   };
 
@@ -141,7 +147,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
         date: new Date(),
       };
       notificationStore?.addNotification(
-        notification as unknown as Notification
+        notification as unknown as NotificationData
       );
       console.log(`Notification: ${message}`);
     } else {
@@ -200,5 +206,4 @@ export const useNotification = (): NotificationContextProps => {
     showMessage: context.showMessage,
   };
 };
-
-export type { NotificationType };
+export type NotificationType = NotificationTypeEnum | CustomNotificationType;

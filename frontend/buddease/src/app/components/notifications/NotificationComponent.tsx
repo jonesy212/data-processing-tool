@@ -1,11 +1,10 @@
 import { randomBytes } from "ethers"; // Import randomBytes from ethers
 import React from "react";
-import { Notification } from "../support/NofiticationsSlice";
 import { NotificationType } from "../support/NotificationContext";
 import useNotificationManagerService from "./NotificationService";
 
 interface NotificationComponentProps {
-  notifications: Notification[];
+  notifications: NotificationData[];;
 }
 
 const NotificationComponent: React.FC<NotificationComponentProps> = ({ notifications }) => {

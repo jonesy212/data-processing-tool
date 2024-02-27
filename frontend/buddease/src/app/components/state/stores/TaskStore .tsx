@@ -322,7 +322,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error marking task ${taskId} as complete`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          "OperationSuccess"
+          NotificationTypeEnum.OperationSuccess
         );
       }, 1000);
     } catch (error) {
@@ -333,7 +333,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error marking task ${taskId} as complete`,
           NOTIFICATION_MESSAGES.Error.DEFAULT("Error marking task as complete"),
           new Date(new Date().getTime()),
-          "OperationError"
+          NotificationTypeEnum.OperationError
         );
     }
   };
@@ -362,7 +362,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         `Error marking task ${taskId} as in progress`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     }, 1000);
   }
@@ -413,7 +413,7 @@ const getTaskById = async (taskId: string): Promise<Task | null> => {
         `Error updating task ${taskId} assignee`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     }, 1000);
   }
@@ -497,7 +497,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
       `Task ${taskId} fetched`,
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
   
     // Assuming you have a method to fetch tasks by taskId from your data source
@@ -514,7 +514,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
           `Error fetching task ${taskId}`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          "OperationSuccess"
+          NotificationTypeEnum.OperationSuccess
         );
       }, 1000);
     } else {
@@ -529,7 +529,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
       `Task ${taskId} marked as in progress`,
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
     dispatch(markTaskAsInProgressSuccess(taskId));
     const { markTaskAsInProgress } = useApiManagerSlice.actions;
@@ -540,7 +540,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
         `Error marking task ${taskId} as in progress`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     }, 1000);
   }
@@ -569,7 +569,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
         `Error marking task ${taskId} as pending`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     }, 1000);
     // Dispatch the asynchronous action (no need to await)

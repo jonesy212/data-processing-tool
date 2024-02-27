@@ -59,7 +59,7 @@ import UserDashboard from "./UserDashboard";
 //   FrontendDocumentConfig,
 //   GenerateUserPreferences,
 //   LazyLoadScriptConfig,
-//   StructureMetadata,
+//   StructuredMetadata,
 //   UpdatePreferences,
 // } from "@/app/components/configs";
 // import {
@@ -98,7 +98,6 @@ import DataProcessingComponent from "@/app/components/models/data/DataProcessing
 import ProjectPhaseComponent from "@/app/components/projects/projectManagement/ProjectPhaseComponent";
 import { selectApiConfigs } from "@/app/components/state/redux/slices/ApiSlice";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
-import { Notification } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType } from "@/app/components/support/NotificationContext";
 import PermissionsEditor from "@/app/components/users/PermissionsEditor";
 import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
@@ -143,7 +142,7 @@ interface DynamicComponentWrapperProps<T> {
 
 // Define the shape of the Notification context value
 export interface NotificationContextValue {
-  notifications: Notification[];
+  notifications: NotificationData[];;
   addNotification: (notification: Notification) => void;
   removeNotification: (id: string) => void;
   notify: (
@@ -211,7 +210,7 @@ const DesignDashboard: React.FC<{
   const backendStructureWrapper = new BackendStructureWrapper(getAppPath());
   const apiConfigs = useSelector(selectApiConfigs);
 
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<NotificationData[];>([]);
   const initialNotification: Notification = {
     id: UniqueIDGenerator.generateNotificationID(
       {} as Notification & NotificationType,
@@ -494,7 +493,7 @@ const DesignDashboard: React.FC<{
       <GenerateUserPreferences />
       <LazyLoadScriptConfig />
       <MainConfig />
-      <StructureMetadata />
+      <StructuredMetadata />
       <UpdatePreferences />
       <UserPreferences />
       <UserSettings />

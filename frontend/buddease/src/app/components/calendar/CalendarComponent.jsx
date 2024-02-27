@@ -42,6 +42,8 @@ const CalendarWrapper = () => {
         globalProject: true, // Indicates if the project is global
         purpose: "Promote unity and achieve results that benefit humanity",
         impact: "Create solutions with a positive impact on everyone involved",
+        guestSpeakers: ["Speaker2", "Speaker3", "Speaker4"], // List of guest speakers
+        hosts: ["Host1", "Host2", "Host3",], // Speaker for the project
       };
 
       // Call the addCalendarEvent function to add the new event

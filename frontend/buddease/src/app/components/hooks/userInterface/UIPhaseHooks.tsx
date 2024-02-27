@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { NotificationData } from '../../support/NofiticationsSlice';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import NotificationMessagesFactory from '../../support/NotificationMessagesFactory';
 import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 import useNotificationBar from '../commHooks/useNotificationBar';
 import { createPhaseHook } from '../phaseHooks/PhaseHooks';
-import useDarkModeToggle from './useDarkModeToggle';
+import useDarkModeToggle from './useNotificationMessagesFactoryDarkModeToggle';
 
 
 
@@ -70,11 +71,11 @@ export const notificationBarPhaseHook = createPhaseHook({
       const response = await axios.get("/api/notifications"); // Adjust the API endpoint
 
       // Handle the response data
-      const notifications = response.data as Notification[];
+      const notifications = response.data as NotificationData[];
 
       if (notifications.length > 0) {
         // Display each notification
-        notifications.forEach((notification: Notification) => {
+        notifications.forEach((notification: NotificationData) => {
           addNotification(notification.data.message);
         });
       } else {

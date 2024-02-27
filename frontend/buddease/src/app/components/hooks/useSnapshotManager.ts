@@ -1,8 +1,8 @@
 // useSnapshotManager.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import {
-  NotificationType,
-  useNotification,
+    NotificationType,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import { useEffect } from "react";
 import { Data } from "../models/data/Data";
@@ -51,7 +51,7 @@ const useSnapshotManager = () => {
         "Snapshot created successfully!",
         NOTIFICATION_MESSAGES.Generic.DEFAULT,
         undefined,
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {
       // Notify failure
@@ -124,7 +124,7 @@ const useSnapshotManager = () => {
           "Snapshot updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
           undefined,
-          "OperationSuccess"
+          NotificationTypeEnum.OperationSuccess
         );
       } else {
         console.error("Failed to update snapshot:", response.statusText);
@@ -283,7 +283,7 @@ const useSnapshotManager = () => {
           "Snapshot updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
           undefined,
-          "OperationSuccess"
+          NotificationTypeEnum.OperationSuccess
         );
       } else {
         console.error("Failed to update snapshot:", response.statusText);
@@ -333,7 +333,7 @@ const useSnapshotManager = () => {
           "Snapshots updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
           undefined,
-          "OperationSuccess"
+          NotificationTypeEnum.OperationSuccess
         );
       } else {
         console.error("Failed to update snapshots:", response.statusText);
@@ -369,7 +369,7 @@ const useSnapshotManager = () => {
         "Snapshots fetched successfully",
         NOTIFICATION_MESSAGES.Generic.DEFAULT,
         undefined,
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {
@@ -402,7 +402,7 @@ const useSnapshotManager = () => {
         "Snapshots fetched successfully",
         NOTIFICATION_MESSAGES.Generic.DEFAULT,
         undefined,
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {

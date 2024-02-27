@@ -3,13 +3,12 @@ import { createAction } from "@reduxjs/toolkit";
 
 
 
-
 export const ValidationActions = {
   validateTaskRequest: createAction<{ taskData: any }>("validateTaskRequest"),
   validateTaskSuccess: createAction<{ validatedTaskData: any }>("validateTaskSuccess"),
   validateTaskFailure: createAction<{ error: string }>("validateTaskFailure"),
   checkUserPermissions: createAction<string>("checkUserPermissions"),
-
+  injectEvents: createAction<{ events: any[] }>("injectEvents"), // New action for injecting events
   // Add more validation actions as needed
 };
 
@@ -17,7 +16,9 @@ export const ValidationActions = {
 export enum ValidationActionTypes {
     START_VALIDATION = 'START_VALIDATION',
     VALIDATION_SUCCESS = 'VALIDATION_SUCCESS',
-    VALIDATION_FAILURE = 'VALIDATION_FAILURE',
+  VALIDATION_FAILURE = 'VALIDATION_FAILURE',
+  INJECT_EVENTS = 'INJECT_EVENTS', // New action type for injecting events
+
   }
   
   // Define action interfaces
@@ -53,4 +54,7 @@ export enum ValidationActionTypes {
     type: ValidationActionTypes.VALIDATION_FAILURE,
     error,
   });
+  
+
+
   

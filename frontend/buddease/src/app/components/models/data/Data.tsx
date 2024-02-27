@@ -23,6 +23,7 @@ export interface DataDetails {
 interface DataDetailsProps {
   data: DataDetails;
 }
+
 interface Data {
   _id: string;
   id: string | number;
@@ -64,15 +65,13 @@ interface Data {
   videoDuration: number;
   collaborationOptions?: CollaborationOption[]; // Or whatever type is appropriate
   videoData: VideoData
-
   [key: string]: any;
   ideas: Idea[];
-
 }
 
 // Define the UserDetails component
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
-  <CommonDetails data={{ title: 'Data Details', description: 'Data details', data }} />
+  <CommonDetails data={{ title: 'Data Details', description: 'Data details', data: undefined }} />
 );
 
 export type { Data, DataDetailsComponent, DataDetailsProps };

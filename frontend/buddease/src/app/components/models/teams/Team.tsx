@@ -6,9 +6,9 @@ import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
-import CommonDetails from '../CommonData';
+import CommonDetails from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
-import { Task } from "../tasks/Task";
+import { Idea, Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgresBar";
 import TeamData from "./TeamData";
 
@@ -22,19 +22,20 @@ interface Team {
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
-  data: TeamData
+  data: TeamData;
   then: (callback: (newData: Snapshot<Team>) => void) => void;
   // Add other team-related fields as needed
 }
 
+const timeBasedCode = generateTimeBasedCode()
 // Example usage:
 const team: Team = {
-  id: 1,  
+  id: 1,
   teamName: "Development Team",
   description: "A team focused on software development",
   members: [
     {
-      _id: 'member-1',
+      _id: "member-1",
       id: 1,
       username: "user1",
       email: "user1@example.com",
@@ -48,17 +49,17 @@ const team: Team = {
       processingTasks: [] as DataProcessingTask[],
       traits: "traits" as unknown as typeof CommonDetails,
       role: {} as UserRole,
-      timeBasedCode: generateTimeBasedCode,
+      timeBasedCode: timeBasedCode,
     },
     {
-      _id: 'member-2',
+      _id: "member-2",
       id: 2,
       username: "user2",
       email: "user2@example.com",
       tier: "standard",
       uploadQuota: 100,
       userType: "organization",
-      
+
       fullName: "Benny Johnson",
       bio: "bio content",
       hasQuota: false,
@@ -66,17 +67,17 @@ const team: Team = {
       processingTasks: [] as DataProcessingTask[],
       role: {} as UserRole,
       traits: "traits" as unknown as typeof CommonDetails,
-      timeBasedCode: generateTimeBasedCode,
+      timeBasedCode: timeBasedCode,
     },
   ],
   projects: [
     {
-      _id: 'project-1',
+      _id: "project-1",
       id: "1",
       title: "Team Projects",
       status: "pending",
       phase: {} as Phase,
-      then: () => { },
+      then: () => {},
       analysisType: "image",
       analysisResults: ["analysisResults"],
       tags: [],
@@ -95,14 +96,15 @@ const team: Team = {
       isActive: true,
       leader: null,
       budget: 0,
+      ideas: {} as Idea[],
     },
     {
-      _id: 'project-2',
+      _id: "project-2",
       id: "2",
       title: "Team Projects",
       status: "pending",
       phase: {} as Phase,
-      then: () => { },
+      then: () => {},
       analysisType: "image",
       analysisResults: ["analysisResults"],
       tags: [],
@@ -115,6 +117,7 @@ const team: Team = {
       videoThumbnail: "videoThumbnail",
       videoDuration: 0,
       videoData: {} as VideoData,
+      ideas: {} as Idea[],
       tasks: [
         {
           _id: "project",
@@ -195,22 +198,24 @@ const team: Team = {
                     isActive: true,
                     tags: [],
                     dependencies: [],
-                    
                   },
                 };
               },
-            }
+            };
           },
           data: {} as Data,
           source: "user",
-          some: (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any) => {
+          some: (
+            callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+            thisArg?: any
+          ) => {
             // Add more tasks as needed
             return true;
           },
-          videoData: {} as VideoData
-
+          videoData: {} as VideoData,
+          ideas: {} as Idea[],
           // Add more tasks as needed
-        }
+        },
       ],
       startDate: new Date(),
       endDate: new Date(),
@@ -223,7 +228,7 @@ const team: Team = {
   progress: {} as Progress,
   isActive: true,
   leader: {
-    _id: '3',
+    _id: "3",
     id: 3,
     username: "teamLeader",
     email: "leader@example.com",
@@ -236,10 +241,10 @@ const team: Team = {
     profilePicture: "profile picture",
     processingTasks: [] as DataProcessingTask[],
     traits: "traits" as unknown as typeof CommonDetails,
-    role: UserRoles.find(role => role.role === 'TeamLeader') || UserRoles.find(role => role.role === 'Guest') || { role: 'Guest', responsibilities: [], permissions: [] },
-    timeBasedCode: generateTimeBasedCode,
+    role: UserRoles.Guest,
+    timeBasedCode: timeBasedCode,
   },
-  
+
   then(callback: (newData: Snapshot<Team>) => void) {
     const newData = {
       _id: "team-1",
@@ -257,16 +262,14 @@ const team: Team = {
       data: {} as TeamData & Team,
     };
     callback(newData);
-  } ,
+  },
   data: {} as TeamData & Team,
 };
-
 
 // Refactored CommonDetails component to handle specific data types
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => (
   <CommonDetails data={team} />
 );
-
 
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
   <CommonDetails data={{ data: team }} />

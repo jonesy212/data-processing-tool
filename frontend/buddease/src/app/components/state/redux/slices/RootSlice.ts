@@ -10,7 +10,9 @@ import { trackerManagerSlice } from "./TrackerSlice";
 // Import uuid
 import { useCalendarManagerSlice } from "@/app/components/calendar/CalendarSlice";
 import { Data } from "@/app/components/models/data/Data";
+import { useRealtimeDataSlice } from "@/app/components/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
+import { User } from "@/app/components/users/User";
 import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
 import { WritableDraft } from "../ReducerGenerator";
@@ -23,7 +25,6 @@ import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
 import { useTeamManagerSlice } from './TeamSlice';
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
-
 const randomTaskId = uuidv4().toString();
 
 export interface RootState {
@@ -44,6 +45,7 @@ export interface RootState {
   pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>
   teamManager: ReturnType<typeof useTeamManagerSlice.reducer>
   projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>
+  realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>
 }
 
 const initialState: RootState = {
@@ -53,9 +55,7 @@ const initialState: RootState = {
   taskManager: taskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
   userManager: userManagerSlice.reducer(undefined, { type: "init" }),
-  dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, {
-    type: "init",
-  }),
+  dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, {type: "init",}),
   calendarManager: useCalendarManagerSlice.reducer(undefined, { type: "init" }),
   todoManager: useTodoManagerSlice.reducer(undefined, { type: "init" }),
   documentManager: useDocumentManagerSlice.reducer(undefined, { type: "init" }),
@@ -65,7 +65,8 @@ const initialState: RootState = {
   pagingManager: usePagingManagerSlice.reducer(undefined, { type: "init" }),
   videoManager: useVideoManagerSlice.reducer(undefined, { type: "init" }),
   teamManager: useTeamManagerSlice.reducer(undefined, { type: "init" }),
-  projectOwner: useProjectOwnerSlice.reducer(undefined, { type: " Init" }),
+  projectOwner: useProjectOwnerSlice.reducer(undefined, { type: "init" }),
+  realtimeManager: useRealtimeDataSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -121,7 +122,7 @@ const rootReducerSlice = createSlice({
         id: randomTaskId, // generate unique id
         title: "",
         description: "",
-        assignedTo: [],
+        assignedTo: {} as WritableDraft<User>,
         dueDate: new Date(), // Changed to Date object
         status: "pending",
         priority: "medium",
@@ -209,7 +210,7 @@ const rootReducerSlice = createSlice({
           return newTask;
           // You can add any further logic here if needed
         },
-        assignedTo: [],
+        assignedTo: {} as WritableDraft<User>,
         dueDate: new Date(),
         priority: "medium",
         isActive: false,

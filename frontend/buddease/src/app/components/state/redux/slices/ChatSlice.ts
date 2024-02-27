@@ -1,4 +1,5 @@
 // chat/ChatSlice.ts
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Channel } from "../../../interfaces/chat/Channel";
@@ -10,7 +11,7 @@ interface ChatState {
   channels: Channel[];
   currentChannelId: string | null;
   onlineUsers: User[];
-  notifications: Notification[];
+  notifications: NotificationData[];
   // Additional communication properties
   audioEnabled: boolean;
   videoEnabled: boolean;

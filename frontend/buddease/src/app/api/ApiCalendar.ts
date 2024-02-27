@@ -1,6 +1,6 @@
 
 import { useCalendarContext } from '../components/calendar/CalendarContext';
-import { CalendarEvent } from '../components/state/stores/CalendarStore';
+import { CalendarEvent } from '../components/state/stores/CalendarEvent';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 

@@ -1,17 +1,25 @@
+// ApiConfigComponent.tsx
 import { User } from "@/app/components/users/User";
+import { backendConfig } from "@/app/configs/BackendConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
+import { frontendConfig } from "@/app/configs/FrontendConfig";
 import MainConfig from "@/app/configs/MainConfig";
 import UserPreferences from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import getAppPath from "../../../../appPath";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { ComponentActions } from '../libraries/ui/components/ComponentActions';
 import CreateComponentForm from "../libraries/ui/components/CreateComponentForm";
+import DeleteComponent from '../libraries/ui/components/DeleteComponent';
+import UpdateComponent from "../libraries/ui/components/UpdateComponent";
 import TaskTrackingComponent from "../models/tracker/TaskTrackingComponent";
 import { Phase } from "../phases/Phase";
 import ProfileSetupPhase from "../phases/onboarding/ProfileSetupPhase";
@@ -19,13 +27,19 @@ import axiosInstance from "../security/csrfToken";
 import { selectApiConfigs } from "../state/redux/slices/ApiSlice";
 import { UserData } from "../users/User";
 
+
 const ApiConfigComponent: React.FC = () => {
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Specify correct type
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const userPreferences = useSelector((state: any) => state.userPreferences);
   // Access API configurations from Redux state
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
+  const projectPath = getAppPath()
 
+  // 
+  const frontendStructure = new FrontendStructure(projectPath);
+  const backendStructure = new BackendStructure(projectPath);
+  
   // Update local state with API configurations from Redux state
   useEffect(() => {
     setApiConfigs(apiConfigsFromRedux);
@@ -99,10 +113,9 @@ const ApiConfigComponent: React.FC = () => {
   const renderActionContent = () => {
     switch (userPreferences.actions) {
       case "create":
-        return <CreateComponentForm
-          dispatch={{}  as typeof ComponentActions}
-          ComponentActions={{} as typeof ComponentActions} />;;
-      case "update":
+        return <CreateComponentForm ComponentActions={ComponentActions} />;
+
+        case "update":
         return <UpdateComponent />;
       case "delete":
         return <DeleteComponent />;
@@ -127,7 +140,8 @@ const ApiConfigComponent: React.FC = () => {
     ));
   };
 
-  return (
+
+ return (
     <div>
       <h2>API Configuration</h2>
       <Form
@@ -160,9 +174,15 @@ const ApiConfigComponent: React.FC = () => {
       {renderApiContent()}
       <ConfigurationServiceComponent apiConfigs={apiConfigs} />
       <DataVersionsConfig dataPath="" />
-      <MainConfig />
-      <UserPreferences />
-      <UserSettings />
+      <MainConfig
+          frontendStructure={frontendStructure} // Corrected variable name
+          backendStructure={backendStructure} // Corrected variable name
+        frontendConfig={frontendConfig}
+        backendConfig={backendConfig}
+     />
+     
+     {userPreferences}
+      {UserSettings}
       {/* Additional configurations can be added here */}
 
       {showProfileSetup && (

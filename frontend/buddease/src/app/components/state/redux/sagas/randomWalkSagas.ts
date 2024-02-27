@@ -31,7 +31,7 @@ function* handleRandomWalkRequest(action: ReturnType<typeof RandomWalkActions.fe
     yield put(RandomWalkActions.fetchRandomWalkSuccess({ randomWalk }));
 
     // Notify success
-    addNotification({} as Notification);
+    addNotification(notification);
   } catch (error: any) {
     // Dispatch failure action
     yield put(RandomWalkActions.fetchRandomWalkFailure({ error: error.message }));

@@ -1,10 +1,10 @@
 // videoSaga.ts
 import { videoService } from "@/app/api/ApiVideo";
-import { useNotification } from "@/app/components/hooks/commHooks/useNotification";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { VideoActions } from "@/app/components/users/VideoActions";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { Video } from "../../stores/VideoStore";
+import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 
 const { notify } = useNotification();
 
@@ -134,7 +134,7 @@ function* fetchVideoSuccessSaga(
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_SUCCESS,
       "Fetch Video Success",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
     yield put(VideoActions.fetchVideoSuccess({ video }));
 
@@ -145,7 +145,7 @@ function* fetchVideoSuccessSaga(
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
-      "OperationError"
+      NotificationTypeEnum.OperationError
     )
   }
 }
@@ -158,7 +158,7 @@ function* updateVideoSuccessSaga( action: ReturnType<typeof VideoActions.updateV
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
       "Update Video Success",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
     yield put(VideoActions.updateVideoSuccess({ id, updatedVideo }));
   } catch (error) {
@@ -168,7 +168,7 @@ function* updateVideoSuccessSaga( action: ReturnType<typeof VideoActions.updateV
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
       "Error trying to update video",
       new Date(),
-      "OperationError"
+      NotificationTypeEnum.OperationError
     )
   }
 }
@@ -196,7 +196,7 @@ function* fetchVideoFailureSaga(response: any) {
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
-      "OperationError"
+      NotificationTypeEnum.OperationError
     );
     yield put(VideoActions.fetchVideoFailure({ error }));
   } catch (error) {
@@ -206,7 +206,7 @@ function* fetchVideoFailureSaga(response: any) {
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
-      "OperationError"
+      NotificationTypeEnum.OperationError
     )
   }
 }
@@ -240,6 +240,7 @@ function* addVideoSaga(action: any) {
   try {
     const video: Video = action.payload;
     // Implement adding video functionality here
+    yield put(VideoActions.addVideo({id: "", video}))
     yield put(VideoActions.addVideoSuccess({ id: "newVideoId", video }));
   } catch (error) {
     yield put(

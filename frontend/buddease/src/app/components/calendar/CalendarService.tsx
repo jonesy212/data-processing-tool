@@ -61,7 +61,7 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS, "Complete All Batch Event Succss",new Date, "OperationSuccess" as NotificationType);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS, "Complete All Batch Event Succss",new Date, NotificationTypeEnum.OperationSuccess as NotificationType);
 
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to complete all calendar events');
@@ -77,7 +77,7 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS, "Reassign Event Success",new Date, "OperationSuccess" as NotificationType);
+      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS, "Reassign Event Success",new Date, NotificationTypeEnum.OperationSuccess as NotificationType);
 
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to reassign calendar event with ID ${eventId}`);

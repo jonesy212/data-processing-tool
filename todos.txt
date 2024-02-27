@@ -49,6 +49,7 @@
       - Set Discounts
       - Promotional Sales
       - Flash Sales
+      
     - Inventory Management
       - Track Stock Levels
       - Manage Restocks
@@ -80,10 +81,6 @@
     - Social Media Integration
     - Email Marketing
 
-  - Customer Support
-
-    - Live Chat Support
-    - Ticketing System
   - Reporting and Analytics
 
     - Sales Reports

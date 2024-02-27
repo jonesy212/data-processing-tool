@@ -16,7 +16,7 @@ export default class AppStructure {
     const projectPath =
       type === "backend"
         ? getAppPath()
-        : path.join(getAppPath(), "dataanalysis/frontend");
+        : path.join(getAppPath(), "datanalysis/frontend");
     this.traverseDirectory(projectPath, type);
 
     // Use chokidar to watch for file changes

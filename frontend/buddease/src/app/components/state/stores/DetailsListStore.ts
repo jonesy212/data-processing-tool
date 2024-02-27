@@ -4,9 +4,12 @@ import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Data } from "../../models/data/Data";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import { Phase } from "../../phases/Phase";
+import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
+
+const {notify} = useNotification()
 // Define a generic interface for details
 interface DetailsItem<T> {
   id: string;
@@ -28,6 +31,7 @@ export interface DetailsListStore {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
+  subscribe(callback: (snapshot: Snapshot<Data>) => void): void;
 
   toggleDetails: (detailsId: string) => void;
 
@@ -53,16 +57,31 @@ class DetailsListStoreClass implements DetailsListStore {
   detailsTitle = "";
   detailsDescription = "";
   detailsStatus: "pending" | "inProgress" | "completed" | undefined = undefined;
-  snapshotStore: SnapshotStore<Snapshot<Data>> =
-    new SnapshotStore<Snapshot<Data>>(
-      {} as SnapshotStoreConfig<Snapshot<Data>>
-    );
-  
+  snapshotStore!: SnapshotStore<Snapshot<Data>>; // Definite assignment assertion
+
+  subscribe = (callback: (snapshot: Snapshot<Data>) => void) =>{}
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
   constructor() {
     makeAutoObservable(this);
+    this.initSnapshotStore();
+  }
+
+  private async initSnapshotStore() {
+    await notify(
+      "Setting up snapshot details",
+      NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.InvalidCredentials
+    );
+
+    this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
+      {} as SnapshotStoreConfig<Snapshot<Data>>,
+      (message: string, content: any, date: Date, type: NotificationType) => {
+        notify(message, content, date, type);
+      }
+    );
   }
  
   updateDetailsTitle(id: string, newTitle: string): void {

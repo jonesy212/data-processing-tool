@@ -40,6 +40,13 @@ import { User, UserData } from "../components/users/User";
             // Add more message properties as needed
           };
           break;
+        case 'conversation':
+          interfaces[entity] = {
+            id: 'string',
+            participants: ['User'], // Assuming conversation involves multiple users
+            // Add more conversation properties as needed
+          };
+          break;
         // Add more cases for other entities
       }
     });

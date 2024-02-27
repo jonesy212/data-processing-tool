@@ -5,9 +5,10 @@ import { ProjectActions } from "../components/actions/ProjectActions";
 import { Task } from "../components/models/tasks/Task";
 import { Phase } from "../components/phases/Phase";
 import Project from "../components/projects/Project";
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { User } from "../components/users/User";
 import { sendNotification } from "../components/users/UserSlice";
-import ProjectMetadata from "../configs/StructureMetadata";
+import ProjectMetadata from "../configs/StructuredMetadata";
 
 const API_BASE_URL = endpoints.projects;
 
@@ -30,20 +31,21 @@ class ProjectService {
     }
   }
 
-  fetchProject = async (projectId: number) => {
-    try {
-      const response = await axiosInstance.get(API_BASE_URL.single(projectId));
-      ProjectActions.fetchProjectSuccess({ project: response.data });
-      sendNotification(`Project with ID ${projectId} fetched successfully`);
-      return response.data;
-    } catch (error) {
-      ProjectActions.fetchProjectFailure({ error: String(error) });
-      sendNotification(`Error fetching project with ID ${projectId}: ${error}`);
-      console.error('Error fetching project:', error);
-      throw error;
+    fetchProject = async (projectId: number) => {
+      try {
+        ProjectActions.fetchProjectsRequest({request: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_DETAILS_SUCCESS})
+        const response = await axiosInstance.get(API_BASE_URL.single(projectId));
+        ProjectActions.fetchProjectSuccess({ project: response.data });
+        sendNotification(`Project with ID ${projectId} fetched successfully`);
+        return response.data;
+      } catch (error) {
+        ProjectActions.fetchProjectFailure({ error: String(error) });
+        sendNotification(`Error fetching project with ID ${projectId}: ${error}`);
+        console.error('Error fetching project:', error);
+        throw error;
+      }
     }
-  }
-    
+      
     
   updateProjectData = async (
     id: string,
@@ -436,5 +438,6 @@ class ProjectService {
 
 }
 
+
 const projectService = new ProjectService();
-export default projectService;
+export default ProjectService; projectService;

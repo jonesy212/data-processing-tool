@@ -1,5 +1,5 @@
 import { handleApiError } from '@/app/api/ApiLogs';
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
@@ -21,7 +21,7 @@ export const cryptoService = observable({
         NOTIFICATION_MESSAGES.Crypto.FETCH_CRYPTO_SUCCESS,
         'Fetch Crypto Data Success',
         new Date(),
-        'OperationSuccess'
+        NotificationTypeEnum.OperationSuccess
       );
       return response.data;
     } catch (error) {
@@ -33,7 +33,7 @@ export const cryptoService = observable({
         NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_FAILURE,
         'Fetch Crypto Data Error',
         new Date(),
-        'OperationError'
+        NotificationTypeEnum.OperationSuccess
       );
       throw error;
     }

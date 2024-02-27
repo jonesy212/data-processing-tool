@@ -65,7 +65,7 @@ const useVideoStore = (): VideoStore => {
       "Video added successfully",
       "Video added successfully",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
   };
 
@@ -78,7 +78,7 @@ const useVideoStore = (): VideoStore => {
       "Video updated successfully",
       "Video updated successfully",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     ); // Notify success
   };
 
@@ -92,7 +92,7 @@ const useVideoStore = (): VideoStore => {
       "Video deleted successfully",
       "Video deleted successfully",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     ); // Notify success
   };
 

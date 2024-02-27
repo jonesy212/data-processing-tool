@@ -4,7 +4,7 @@ import { Data } from '../components/models/data/Data';
 import { CacheStructure } from '../utils/CacheManager';
 import determineFileType from './DetermineFileType';
 
-interface StructureMetadata {
+interface StructuredMetadata {
   [fileOrFolderId: string]: {
     originalPath: string;
     alternatePaths: string[];
@@ -53,7 +53,7 @@ interface ProjectMetadata {
 
 const structureMetadataPath = 'structure-metadata.json';
 
-const readMetadata = (): StructureMetadata => {
+const readMetadata = (): StructuredMetadata => {
   try {
     const data = fs.readFileSync(structureMetadataPath, 'utf-8');
     return JSON.parse(data);
@@ -62,7 +62,7 @@ const readMetadata = (): StructureMetadata => {
   }
 };
 
-const writeMetadata = (metadata: StructureMetadata) => {
+const writeMetadata = (metadata: StructuredMetadata) => {
   const data = JSON.stringify(metadata, null, 2);
   fs.writeFileSync(structureMetadataPath, data, 'utf-8');
 };
@@ -115,6 +115,6 @@ const basePath = path.resolve(__dirname, 'src'); // Set your base path
 trackStructureChanges(basePath, cacheStructure);
 
 
-export type { StructureMetadata, VideoMetadata };
+export type { StructuredMetadata, VideoMetadata };
 
 export default ProjectMetadata;

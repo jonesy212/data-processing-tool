@@ -41,7 +41,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       "Admin login successful",
       NOTIFICATION_MESSAGES.Login.LOGIN_SUCCESS,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
 
     // Use FocusManager to manage focusable elements
@@ -88,7 +88,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       "Success importing features",
       NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_SUCCESS,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
   }
 

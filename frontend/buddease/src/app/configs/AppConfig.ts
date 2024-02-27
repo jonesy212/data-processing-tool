@@ -37,7 +37,7 @@ interface AppConfig {
     updateUserRole: (userId: string, newRole: UserRole) => void;
   
     // Properties related to notifications
-    notifications: Notification[]; // Define the Notification interface if not already defined
+    notifications: NotificationData[];; // Define the Notification interface if not already defined
     dismissNotification: (notificationId: string) => void;
   
     // Properties related to configurations

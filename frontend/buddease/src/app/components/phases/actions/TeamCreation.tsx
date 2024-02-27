@@ -46,7 +46,7 @@ const TeamCreationPhaseManager: React.FC = () => {
         "Your team has been successfully created",
         "TeamCreationSuccess",
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {
       // Handle any network or unexpected errors
@@ -55,7 +55,7 @@ const TeamCreationPhaseManager: React.FC = () => {
         "There was an error creating your team, please try again",
         "TeamCreationError",
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
     }
   };

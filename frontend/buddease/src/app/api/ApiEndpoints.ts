@@ -74,6 +74,32 @@ export const endpoints = {
     logout: `${BASE_URL}/auth/logout`,
   },
 
+
+  blogs: {
+    list: `${BASE_URL}/blogs`,
+    single: (blogId: string) => `${BASE_URL}/blogs/${blogId}`,
+    add: `${BASE_URL}/blogs`,
+    remove: (blogId: string) => `${BASE_URL}/blogs/${blogId}`,
+    update: (blogId: string) => `${BASE_URL}/blogs/${blogId}`,
+    // Add more blog-related endpoints as needed
+  },
+
+  calendar: {
+    events: `${BASE_URL}/api/calendar/events`,
+    singleEvent: (eventId: string) =>
+      `${BASE_URL}/api/calendar/events/${eventId}`,
+    completeAllEvents: `${BASE_URL}/api/calendar/events/complete-all`,
+    reassignEvent: (eventId: string) =>
+      `${BASE_URL}/api/calendar/events/${eventId}/reassign`,
+    updateEvent: (eventId: string) =>
+      `${BASE_URL}/api/calendar/events/${eventId}`,
+    removeEvent: (eventId: string) =>
+      `${BASE_URL}/api/calendar/events/${eventId}`,
+    search: `${BASE_URL}/api/calendar/events/search`,
+    eventDetails: (eventId: string) => 
+      `${BASE_URL}/api/calendar/events/${eventId}/details`,
+  },
+
   collaborationTools: {
     createTask: `${BASE_URL}/api/collaboration/tasks/create`,
     updateTask: (taskId: number) =>
@@ -108,21 +134,7 @@ export const endpoints = {
     // Add more collaboration endpoints as needed
   },
 
-  calendar: {
-    events: `${BASE_URL}/api/calendar/events`,
-    singleEvent: (eventId: string) =>
-      `${BASE_URL}/api/calendar/events/${eventId}`,
-    completeAllEvents: `${BASE_URL}/api/calendar/events/complete-all`,
-    reassignEvent: (eventId: string) =>
-      `${BASE_URL}/api/calendar/events/${eventId}/reassign`,
-    updateEvent: (eventId: string) =>
-      `${BASE_URL}/api/calendar/events/${eventId}`,
-    removeEvent: (eventId: string) =>
-      `${BASE_URL}/api/calendar/events/${eventId}`,
-    search: `${BASE_URL}/api/calendar/events/search`,
-  },
-
-  //todo create actions.sagas.ist.ice.backkend_routes:
+  
   communication: {
     audioCall: `${BASE_URL}/api/communication/audio-call`,
     videoCall: `${BASE_URL}/api/communication/video-call`,
@@ -132,6 +144,25 @@ export const endpoints = {
     endSession: `${BASE_URL}/api/communication/end-session`,
     getSessionDetails: (sessionId: string) =>
       `${BASE_URL}/api/communication/session-details/${sessionId}`,
+    // Additional endpoints
+    uploadFile: `${BASE_URL}/api/communication/upload`,
+    downloadFile: `${BASE_URL}/api/communication/download/:fileId`,
+    getUserPresence: `${BASE_URL}/api/communication/user-presence/:userId`,
+    setUserPresence: `${BASE_URL}/api/communication/set-presence`,
+    sendNotification: `${BASE_URL}/api/communication/send-notification`,
+    getNotifications: `${BASE_URL}/api/communication/notifications`,
+    markNotificationAsRead: `${BASE_URL}/api/communication/notifications/mark-read/:notificationId`,
+    deleteNotification: `${BASE_URL}/api/communication/notifications/delete/:notificationId`,
+
+    shareFile: `${BASE_URL}/api/communication/share-file`,
+    whiteboard: `${BASE_URL}/api/communication/whiteboard`,
+    realTimeEditing: `${BASE_URL}/api/communication/real-time-editing`,
+    screenSharing: `${BASE_URL}/api/communication/screen-sharing`,
+    userPresenceStatus: `${BASE_URL}/api/communication/user-presence-status`,
+    pushNotifications: `${BASE_URL}/api/communication/push-notifications`,
+    communityForums: `${BASE_URL}/api/communication/community-forums`,
+    analytics: `${BASE_URL}/api/communication/analytics`,
+  
   },
 
   communityInteraction: {
@@ -243,7 +274,6 @@ export const endpoints = {
     // Add data-processing endpoint
   },
 
-
   details: {
     list: `${BASE_URL}/api/details`,
     single: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
@@ -318,6 +348,10 @@ export const endpoints = {
     removeMarker: (markerId: number) => `/api/markers/${markerId}/remove`,
   },
 
+  participants: {
+    single: (userId: string | number) => `/api/participants/${userId}`,
+
+  },
   phases: {
     list: `${BASE_URL}/api/phases`,
     single: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
@@ -340,7 +374,6 @@ export const endpoints = {
     search: `${BASE_URL}/api/phases/search`,
     // Add more phase-related endpoints as needed
   },
-
 
   logging: {
     logInfo: `${BASE_URL}/logging/info`,
@@ -369,9 +402,22 @@ export const endpoints = {
     updateInvoiceStatus: `${BASE_URL}/api/payment/invoice/update-status`, // Endpoint for updating invoice status
     getInvoiceHistory: `${BASE_URL}/api/payment/invoice/history`, // Endpoint for retrieving invoice payment history
   },
+
   projectOwner: {
-    base: `${BASE_URL}/api/project/owner`, // Endpoint for
+    base: `${BASE_URL}/api/project/owner`, // Endpoint for project owner operations
+    list: `${BASE_URL}/api/project/owner/list`, // Endpoint for listing projects owned by the user
+    addTeamMember: `${BASE_URL}/api/project/owner/team/members`, // Endpoint for adding a team member to a project
+    removeTeamMember: (projectId: number, memberId: number) =>
+      `${BASE_URL}/api/project/owner/team/members/${projectId}/${memberId}`, // Endpoint for removing a team member from a project
+    assignTask: (taskId: number) =>
+      `${BASE_URL}/api/project/owner/tasks/${taskId}/assign`, // Endpoint for assigning a task to a team member
+    createMeeting: `${BASE_URL}/api/project/owner/meetings`, // Endpoint for creating a meeting
+    updateMeeting: (meetingId: number) =>
+      `${BASE_URL}/api/project/owner/meetings/${meetingId}`, // Endpoint for updating a meeting
+    deleteMeeting: (meetingId: number) =>
+      `${BASE_URL}/api/project/owner/meetings/${meetingId}`, // Endpoint for deleting a meeting
   },
+
   projects: {
     list: `${BASE_URL}/api/projects`,
     single: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
@@ -379,49 +425,89 @@ export const endpoints = {
     remove: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
     update: (projectId: number) => `${BASE_URL}/api/projects/${projectId}`,
     tasks: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/tasks`,
-    members: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/members`,
-    phases: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/phases`,
-    milestones: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/milestones`,
+    members: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/members`,
+    phases: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/phases`,
+    milestones: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/milestones`,
 
     // Additional endpoints based on Redux actions
     teams: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/teams`,
-    identifyTeamNeeds: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/identifyTeamNeeds`,
-    defineJobRoles: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/defineJobRoles`,
-    createJobDescriptions: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/createJobDescriptions`,
-    advertisePositions: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/advertisePositions`,
-    reviewApplications: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/reviewApplications`,
-    conductInterviews: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/conductInterviews`,
-    assessCulturalFit: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/assessCulturalFit`,
-    checkReferences: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/checkReferences`,
-    coordinateSelectionProcess: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/coordinateSelectionProcess`,
-    onboardNewTeamMembers: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/onboardNewTeamMembers`,
-    brainstormProduct: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/brainstormProduct`,
-    launchProduct: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/launchProduct`,
-    analyzeData: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/analyzeData`,
-    rewardContributors: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/rewardContributors`,
-    reinvestEarnings: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/reinvestEarnings`,
-    buildCustomApp: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/buildCustomApp`,
-    meetProjectMetrics: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/meetProjectMetrics`,
-    generateRevenue: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/generateRevenue`,
-    joinCommunityProject: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/joinCommunityProject`,
-    promoteUnity: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/promoteUnity`,
-    shareProjectProgress: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/shareProjectProgress`,
-    celebrateMilestones: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/celebrateMilestones`,
-    provideFeedback: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/provideFeedback`,
-    inviteMembers: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/inviteMembers`,
-    assignTasks: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/assignTasks`,
-    scheduleMeetings: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/scheduleMeetings`,
-    shareResources: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/shareResources`,
-    trackProgress: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/trackProgress`,
-    resolveConflicts: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/resolveConflicts`,
-    resolveBugs: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/resolveBugs`,
-    conductSurveys: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/conductSurveys`,
-    facilitateTraining: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/facilitateTraining`,
-    provideMentorship: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/provideMentorship`,
-    ensureAccessibility: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/ensureAccessibility`,
-    implementSecurityMeasures: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/implementSecurityMeasures`,
-    ensurePrivacy: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/ensurePrivacy`,
-    implementDataProtection: (projectId: number) =>`${BASE_URL}/api/projects/${projectId}/implementDataProtection`,
+    identifyTeamNeeds: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/identifyTeamNeeds`,
+    defineJobRoles: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/defineJobRoles`,
+    createJobDescriptions: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/createJobDescriptions`,
+    advertisePositions: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/advertisePositions`,
+    reviewApplications: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/reviewApplications`,
+    conductInterviews: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/conductInterviews`,
+    assessCulturalFit: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/assessCulturalFit`,
+    checkReferences: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/checkReferences`,
+    coordinateSelectionProcess: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/coordinateSelectionProcess`,
+    onboardNewTeamMembers: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/onboardNewTeamMembers`,
+    brainstormProduct: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/brainstormProduct`,
+    launchProduct: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/launchProduct`,
+    analyzeData: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/analyzeData`,
+    rewardContributors: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/rewardContributors`,
+    reinvestEarnings: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/reinvestEarnings`,
+    buildCustomApp: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/buildCustomApp`,
+    meetProjectMetrics: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/meetProjectMetrics`,
+    generateRevenue: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/generateRevenue`,
+    joinCommunityProject: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/joinCommunityProject`,
+    promoteUnity: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/promoteUnity`,
+    shareProjectProgress: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/shareProjectProgress`,
+    celebrateMilestones: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/celebrateMilestones`,
+    provideFeedback: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/provideFeedback`,
+    inviteMembers: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/inviteMembers`,
+    assignTasks: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/assignTasks`,
+    scheduleMeetings: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/scheduleMeetings`,
+    shareResources: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/shareResources`,
+    trackProgress: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/trackProgress`,
+    resolveConflicts: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/resolveConflicts`,
+    resolveBugs: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/resolveBugs`,
+    conductSurveys: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/conductSurveys`,
+    facilitateTraining: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/facilitateTraining`,
+    provideMentorship: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/provideMentorship`,
+    ensureAccessibility: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/ensureAccessibility`,
+    implementSecurityMeasures: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/implementSecurityMeasures`,
+    ensurePrivacy: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/ensurePrivacy`,
+    implementDataProtection: (projectId: number) =>
+      `${BASE_URL}/api/projects/${projectId}/implementDataProtection`,
     // Add more project-related endpoints as needed
   },
 
@@ -650,7 +736,7 @@ export const endpoints = {
     logChannelEvent: `${BASE_URL}/api/log/channel-event`,
     logDocumentEvent: `${BASE_URL}/api/log/document-event`,
     logCollaborationEvent: `${BASE_URL}/api/log/collaboration-event`,
-    logCalendarEvent: `${BASE_URL}/api/log/calendar-event`
+    logCalendarEvent: `${BASE_URL}/api/log/calendar-event`,
   },
 
   moderators: {
@@ -685,8 +771,10 @@ export const endpoints = {
     list: `${BASE_URL}/api/project-owners`,
     single: (ownerId: number) => `${BASE_URL}/api/project-owners/${ownerId}`,
     createProject: `${BASE_URL}/api/project-owners/create-project`,
-    manageProject: (projectId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
-    inviteMember: (projectId: number, memberId: number) => `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
+    manageProject: (projectId: number) =>
+      `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
+    inviteMember: (projectId: number, memberId: number) =>
+      `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
     // Add more project owner-related endpoints as needed
   },
 

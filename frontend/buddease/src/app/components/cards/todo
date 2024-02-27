@@ -21,8 +21,7 @@ OnboardingCard.tsx: Card for onboarding new users.
 QuestionnaireCard.tsx: Card for displaying user questionnaires.
 Prompt Cards
 PromptCard.tsx: Card for displaying prompts or notifications.
-Support Cards
-UserSupportCard.tsx: Card for providing user support.
+
 Lists
 Authorization Lists
 OAuthList.tsx: List for handling OAuth authorization.

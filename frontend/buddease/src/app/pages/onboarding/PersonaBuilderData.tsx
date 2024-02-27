@@ -1,13 +1,13 @@
 // PersonaBuilderData.ts
-import { endpoints } from "@/app/api/ApiEndpoints";
-import axiosInstance from "@/app/api/axiosInstance";
+import ChatSettings from "@/app/components/communications/chat/ChatSettingsPanel";
+import CommonDetails, { DetailsProps } from "@/app/components/models/CommonData";
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import Project from "@/app/components/projects/Project";
 import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { User } from "@/app/components/users/User";
-import axios from "axios";
+import { DocumentTree, User, UserData, VisualizationData } from "@/app/components/users/User";
+import { FC } from "react";
 import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import { Question } from "./Question";
 
@@ -29,73 +29,28 @@ export const onboardingQuestionnaireData: {
   ],
 };
 
-export async function initializeUserData(id: string | number, user: User) {
+const timeBasedCode = generateTimeBasedCode()
+export async function initializeUserData(id: string | number, user: User): Promise<UserData | (() => UserData | null) | null> {
   try {
-    const response = await axiosInstance.get(endpoints.tasks.initializeUserData, {
-      params: {
-        id: id ? String(id) : '',
-        userData: user,
-      },
-    });
-
-    // Move the logic inside the try block to handle the case when user.data is present
-    const timeBaseCode = generateTimeBasedCode()
-
-
-    if (response.status === 200) {
-      const userData = response.data; // Assuming the response data contains the user data
-
-      if (user.data) {
-        return {
-          datasets: '',
-          tasks: user.data.tasks,
-          questionnaireResponses: {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "6": "",
-            "7": "",
-          },
-          id: id ? String(id) : '',
-          traits: {},
-          timeBasedCode: timeBaseCode
-        };
-      }
-    }
-
-    return {
-      datasets: '',
-      tasks: '',
+    const userData: UserData = {
       id: id ? String(id) : '',
-      questionnaireResponses: {},
-      projects: {} as Project[],
-      traits: {},
-      teams: {} as Team[],
-      teamMembers: {} as TeamMember[],
+      datasets: '', // Add initialization logic for datasets
+      tasks: '', // Add initialization logic for tasks
+      questionnaireResponses: {}, // Add initialization logic for questionnaireResponses
+      chatSettings: {} as ChatSettings, // Add initialization logic for chatSettings
+      projects: {} as  Project[], // Add initialization logic for projects
+      teams: {} as Team[], // Add initialization logic for teams
+      teamMembers: {} as TeamMember[], // Add initialization logic for teamMembers
+      yourDocuments: {} as DocumentTree, // Add initialization logic for yourDocuments
+      visualizations: [] as VisualizationData[], // Add initialization logic for visualizations
+      traits: CommonDetails as FC<DetailsProps<never>> | undefined, // Use FC<DetailsProps<never>> as the type
+      timeBasedCode: timeBasedCode,
     };
+
+    return userData;
   } catch (error) {
     console.error("Error initializing user data:", error);
     notify("Persona Buider Error", NOTIFICATION_MESSAGES.Persona.DEFAULT, new Date(), {} as NotificationType);
-
     return null;
-  }
-}
-
-export async function handleQuestionnaireSubmit(userResponses: any, userData: any, setCurrentPhase: any) {
-  try {
-    const axiosResponse = { status: 200, data: {} };
-    (axios.post as any).mockResolvedValue(axiosResponse);
-
-    const response = await axiosInstance.post(endpoints.tasks.handleQuestionnaireSubmit, {
-      userResponses,
-    });
-
-    if (response.status === 200) {
-      setCurrentPhase("OFFER");
-    }
-  } catch (error) {
-    console.error("Error submitting questionnaire:", error);
   }
 }

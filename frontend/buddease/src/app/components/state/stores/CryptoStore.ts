@@ -50,7 +50,7 @@ const useCryptoStore = (): CryptoStore => {
       "Crypto updated successfully",
       "Crypto updated successfully",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     ); // Notify success
   };
 
@@ -64,7 +64,7 @@ const useCryptoStore = (): CryptoStore => {
       "Crypto deleted successfully",
       "Crypto deleted successfully",
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     ); // Notify success
   };
 

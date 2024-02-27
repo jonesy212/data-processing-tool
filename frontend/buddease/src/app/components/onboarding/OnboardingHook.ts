@@ -35,7 +35,7 @@ export const useDynamicOnboarding = (): void => {
 
       onboardingPhases.forEach((phase: OnboardingPhase) => {
         // Use initializeUserData to ensure you have the required information
-        const userData = initializeUserData(user);
+        const userData = initializeUserData(user, id);
 
         const tracker: Tracker = {
           id: phase.id,

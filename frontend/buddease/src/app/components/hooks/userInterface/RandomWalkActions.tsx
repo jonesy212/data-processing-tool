@@ -1,10 +1,10 @@
 import { createAction } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import { addNotification } from "../../support/NofiticationsSlice";
-import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+
 
 export const RandomWalkActions = {
   // Fetch random walk actions
+  createRandomWalk: createAction<{ walkAction: string }>("randomWalk/createRandomWalk"),
+  fetchRandomWalk: createAction<{ walkAction: string, id: string }>("randomWalk/fetchRandomWalk"),
   fetchRandomWalkRequest: createAction<number>("randomWalk/fetchRequest"),
   fetchRandomWalkSuccess: createAction<number[]>("randomWalk/fetchSuccess"),
   fetchRandomWalkFailure: createAction<string>("randomWalk/fetchFailure"),
@@ -32,35 +32,3 @@ export const RandomWalkActions = {
   updateRandomWalkDetails: createAction<{ id: number; details: any }>("randomWalk/updateDetails"),
 };
 
-// Usage example in a component
-const ExampleComponent = () => {
-  const dispatch = useDispatch();
-
-  const fetchRandomWalks = () => {
-    dispatch(RandomWalkActions.fetchRandomWalkRequest(1));
-
-    try {
-      // Simulate API call
-      const response = { randomWalk: [1, 2, 3] };
-      dispatch(RandomWalkActions.fetchRandomWalkSuccess(response.randomWalk));
-    } catch (error) {
-      dispatch(
-        RandomWalkActions.fetchRandomWalkFailure(
-         "Failed to fetch random walks",
-        )
-      );
-      addNotification({
-        id: "",
-        date: new Date(),
-        type: "Error",
-        content: "error",
-        message: NOTIFICATION_MESSAGES.RandomWalk.FETCH_WALK_ERROR,
-        createdAt: new Date(), // Add the createdAt property here
-      });
-    }
-  };
-
-  return <button onClick={fetchRandomWalks}>Fetch Random Walks</button>;
-};
-
-export default ExampleComponent;

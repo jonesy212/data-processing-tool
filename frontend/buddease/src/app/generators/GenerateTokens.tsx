@@ -10,7 +10,7 @@ export const generateTransferToken = async () => {
     try {
         const response = await axiosInstance.post(API_BASE_URL);
         const { transferToken } = response.data;
-        notify('success',NOTIFICATION_MESSAGES.TokenUtils.SUCCESS_GENERATING_TRANSFER_TOKEN, new Date, "OperationSuccess");
+        notify('success',NOTIFICATION_MESSAGES.TokenUtils.SUCCESS_GENERATING_TRANSFER_TOKEN, new Date, NotificationTypeEnum.OperationSuccess);
         return transferToken;
     } catch (error) {
         notify('error',NOTIFICATION_MESSAGES.TokenUtils.ERROR_GENERATING_TRANSFER_TOKEN, new Date, "Error");

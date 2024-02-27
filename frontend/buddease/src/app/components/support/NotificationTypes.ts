@@ -4,8 +4,10 @@ export const NOTIFICATION_TYPES = {
   WELCOME: "Welcome",
   ACCOUNT_CREATED: "AccountCreated",
 
+  SUCCESS: "Success" as const,
   // Error and Authentication
   ERROR: "Error" as const,
+
   INVALID_CREDENTIALS: "InvalidCredentials",
 
   // Team-related
@@ -18,7 +20,7 @@ export const NOTIFICATION_TYPES = {
   PAGE_LOADING: "PageLoading",
 
   // Success and Operation
-  OPERATION_SUCCESS: "OperationSuccess",
+  OPERATION_SUCCESS: NotificationTypeEnum.OperationSuccess,
   PAYMENT_RECEIVED: "PaymentReceived",
 
   // Warning and Informational
@@ -26,6 +28,10 @@ export const NOTIFICATION_TYPES = {
   DATA_LIMIT_APPROACHING: "DataLimitApproaching",
   NEW_FEATURE_AVAILABLE: "NewFeatureAvailable",
   SYSTEM_UPDATE_IN_PROGRESS: "SystemUpdateInProgress",
+
+
+  // BLOG CONTENT
+  BLOG_UPDATE: "BlogUpdated",
 
   // Chat and User
   NEW_CHAT_MESSAGE: "NewChatMessage",

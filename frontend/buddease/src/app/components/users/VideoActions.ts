@@ -3,10 +3,13 @@ import { Video } from "../state/stores/VideoStore";
 
 export const VideoActions = {
   // General Video Actions
+  createVideo: createAction<{ id: string, updatedVideo: Video }>("createVideo"),
   updateVideo: createAction<{ id: string; title: string, description: string, newData: VideoData }>("updateVideo"),
   deleteVideo: createAction<{id: string}>("deleteVideo"),
+  
   // Video Metadata Actions
-  createVideo: createAction<{ title: string; description: string }>("createVideo"),
+  createVideoSuccess: createAction<{id: string, video: Video }>("createVideoSuccess"),
+  createVideoFailure: createAction<{ id: string, error: string, video: Video }>("createVideoFailure"),
   
   updateMetadata: createAction<{ id: string; newMetadata: any }>(
     "updateMetadata"
@@ -70,8 +73,9 @@ export const VideoActions = {
   updateVideoSuccess: createAction<{ id: string; updatedVideo: Video }>(
     "updateVideoSuccess"
   ),
-  createVideoSuccess: createAction<{id: string, video: Video }>("createVideoSuccess"),
-  createVideoFailure: createAction<{ id: string, error: string, video: Video }>("createVideoFailure"),
+
+  
+  addVideo: createAction<{ id: string, video : Video }>("addVideoSuccess"),
   addVideoSuccess: createAction<{ id: string, video: Video }>("addVideoSuccess"),
 
   sendVideoNotificationSuccess: createAction<{ id: string }>("sendVideoNotificationSuccess"),

@@ -1,8 +1,5 @@
     import { useThemeConfig } from "@/app/components/hooks/userInterface/ThemeConfigContext";
 
-
-    
-
     // Define color properties for the design system
     interface ColorProperties {
         primary: string;

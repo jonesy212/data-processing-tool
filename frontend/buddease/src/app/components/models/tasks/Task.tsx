@@ -1,6 +1,7 @@
 // Task.ts
 import { User } from "@/app/components/users/User";
 import { Phase } from "../../phases/Phase";
+import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import CommonDetails from "../CommonData";
 import { Data } from "../data/Data";
 
@@ -19,7 +20,7 @@ interface Task extends Data {
   id: string | number;
   title: string;
   description: string;
-  assignedTo: User[];
+  assignedTo: WritableDraft<User> | null; 
   assigneeId: User["id"];
   dueDate: Date;
   payload: any;
@@ -64,7 +65,7 @@ export const tasksDataSource: Record<string, Task> = {
     id: "1",
     title: "Task 1",
     description: "Description for Task 1",
-    assignedTo: [], // Example value for assignedTo, an array of User objects
+    assignedTo: {} as WritableDraft<User>, // Example value for assignedTo, an array of User objects
     assigneeId: "123", // Example value for assigneeId, assuming it's a string
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object
@@ -115,7 +116,7 @@ export const tasksDataSource: Record<string, Task> = {
     id: "2",
     title: "Task 2",
     description: "Description for Task 2",
-    assignedTo: [], // Example value for assignedTo, an array of User objects
+    assignedTo: {} as WritableDraft<User>, // Example value for assignedTo, an array of User objects
     assigneeId: "456", // Example value for assigneeId, assuming it's a string
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object

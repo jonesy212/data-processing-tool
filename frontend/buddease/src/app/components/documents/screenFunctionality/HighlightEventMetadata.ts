@@ -1,10 +1,10 @@
 // HighlightEventMetadata.ts
 
-import { StructureMetadata } from "@/app/configs/StructureMetadata";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
 interface HighlightEventMetadata {
-    structureMetadata: StructureMetadata
+    structureMetadata: StructuredMetadata
     ;
   // Add more properties as needed
 }

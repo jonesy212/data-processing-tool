@@ -13,7 +13,7 @@ const API_BASE_URL = endpoints.users;
 
 
 
-const fetchUserRequest = (userId: string) => ({
+export const fetchUserRequest = (userId: string) => ({
   type: 'FETCH_USER_REQUEST',
   payload: userId,
 });

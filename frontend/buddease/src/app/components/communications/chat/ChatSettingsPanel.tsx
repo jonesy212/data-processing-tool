@@ -1,8 +1,8 @@
 import userSettings from '@/app/configs/UserSettings';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
-import { subscribeToRealtimeUpdates } from '../../hooks/dataHooks/RealtimeUpdatesComponent';
 import { UserData } from '../../users/User';
+import { subscribeToRealtimeUpdates } from '../../web3/dAppAdapter/functionality/RealtimeUpdates';
 
 // Define a type for chat settings
 interface ChatSettings {
@@ -228,4 +228,4 @@ useEffect(() => {
   );
 };
 
-export default ChatSettingsPanel;
+export default ChatSettings; ChatSettingsPanel;

@@ -1,7 +1,7 @@
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 
-interface Member extends User {
+export interface Member extends User {
   teamId: string;
   roleInTeam: string;
   // Add other member-specific properties here
@@ -54,5 +54,8 @@ interface TeamMember {
     user_type: "individual",
     // Add other TeamMember-related field values
   };
-  
+
+export default MemberData; 
   export type { TeamMember };
+
+  export { memberData, teamMember };

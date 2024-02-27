@@ -2,9 +2,9 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { Data } from '../../models/data/Data';
-import { CalendarEvent } from '../../state/stores/CalendarStore';
 import SnapshotStore, { Snapshot } from '../../state/stores/SnapshotStore';
 import { fetchData } from '../../utils/dataAnalysisUtils';
+import { CalendarEvent } from '../../state/stores/CalendarEvent';
 
 export const ENDPOINT = 'http://your-backend-endpoint'; // Update with your actual backend endpoint
 

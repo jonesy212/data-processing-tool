@@ -1,8 +1,13 @@
 // src/app/generators/GenerateFakeData.ts
 import { faker } from '@faker-js/faker';
 
-interface FakeData {
-  // Define the structure of your fake data
+
+interface FakeDataPartial {
+  id?: string;
+}
+
+interface FakeData  {
+  id?: string; // Add id property
   firstName: string;
   lastName: string;
   email: string;
@@ -14,6 +19,8 @@ const generateFakeData = (count: number): FakeData[] => {
 
   for (let i = 0; i < count; i++) {
     fakeData.push({
+      
+
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
       email: faker.internet.email(),
@@ -23,5 +30,5 @@ const generateFakeData = (count: number): FakeData[] => {
 
   return fakeData;
 };
-
+export type { FakeData, FakeDataPartial };
 export default generateFakeData;

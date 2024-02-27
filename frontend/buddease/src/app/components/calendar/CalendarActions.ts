@@ -1,6 +1,15 @@
 // CalendarActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import { Theme } from "../libraries/ui/theme/Theme";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
+
+
+// Define the action using createAction
+export const setEventColor = createAction<{ eventId: string; color: Theme }>(
+  "setEventColor"
+);
+
+
 
 export const CalendarActions = {
   // Standard actions
@@ -60,7 +69,6 @@ export const CalendarActions = {
 
 
 
-
   shareCalendar: createAction<string[]>("shareCalendar"),
   syncCalendar: createAction("syncCalendar"),
   exportCalendar: createAction<string>("exportCalendar"),
@@ -115,6 +123,8 @@ export const CalendarActions = {
     // Additional parameters as needed
   }>("shareEvent"),
 
+  syncEvent: createAction<string>("syncEvent"),
+  syncEventSuccess: createAction<{ eventId: string }>("syncEventSuccess"),
   attachFileToEvent: createAction<{
     eventId: string;
     attachment: File | string; // File object or URL

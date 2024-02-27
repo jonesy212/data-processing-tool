@@ -34,6 +34,6 @@ export function* rootSaga() {
     ]);
   } catch (error) {
     console.error('Error in rootSaga:', error);
-    notify("Error in rootSaga", NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR, new Date, "OperationError");
+    notify("Error in rootSaga", NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR, new Date, NotificationTypeEnum.OperationError);
   }
 }

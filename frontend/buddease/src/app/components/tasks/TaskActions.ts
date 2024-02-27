@@ -8,7 +8,7 @@ export const TaskActions = {
   remove: createAction<number>("removeTask"),
   toggle: createAction<number>("toggleTask"),
   updateTask: createAction<{ id: number, newTitle: string, }>("updateTaskTitle"),
-    validateTask: createAction<Task>("validateTask"),
+  validateTask: createAction<Task>("validateTask"),
   fetchTasksRequest: createAction("fetchTasksRequest"),
   fetchTasksSuccess: createAction<{ tasks: Task[] }>("fetchTasksSuccess"),
   fetchTasksFailure: createAction<{ error: string }>("fetchTasksFailure"),

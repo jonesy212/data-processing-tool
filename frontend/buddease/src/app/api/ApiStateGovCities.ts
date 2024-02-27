@@ -1,7 +1,7 @@
 import { Data } from "../components/models/data/Data";
 import { useDetailsContext } from "../components/models/data/DetailsContext";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import { useNotification } from "../components/support/NotificationContext"; // Import the notification context
+import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext"; // Import the notification context
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
@@ -26,7 +26,7 @@ export const createStateGovCity = async (newCity: DetailsItem<Data>) => {
       "New city created",
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_FETCHING_CITIES,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
     return response.data;
   } catch (error) {
@@ -43,7 +43,7 @@ export const removeStateGovCity = async (cityId: number): Promise<void> => {
       "City removed",
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_REMOVING_CITY,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
   } catch (error) {
     console.error("Error removing state government city:", error);
@@ -65,7 +65,7 @@ export const updateStateGovCity = async (
       "City updated",
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_UPDATING_CITY,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
     return response.data;
   } catch (error) {
@@ -74,7 +74,7 @@ export const updateStateGovCity = async (
       "City updated",
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_UPDATING_CITY,
       new Date(),
-      "OperationSuccess"
+      NotificationTypeEnum.OperationSuccess
     );
     throw error;
   }
@@ -100,10 +100,10 @@ export const addStateGovCity = async (newCity: Omit<DetailsItem<Data>, 'id'>) =>
             'New city added',
             NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_UPDATING_CITY,
             new Date(),
-            "OperationSuccess"
+            NotificationTypeEnum.OperationSuccess
           );
       
-        useNotification().notify('New city added',NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_ADDING_NEW_CITY, new Date, 'OperationSuccess');
+        useNotification().notify('New city added',NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_ADDING_NEW_CITY, new Date, NotificationTypeEnum.OperationSuccess);
       } else {
         console.error('Failed to add state government city:', response.statusText);
       }

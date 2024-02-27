@@ -2,16 +2,20 @@
 import axiosInstance from "@/app/api/axiosInstance";
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
-import { useNotification } from "@/app/components/hooks/commHooks/useNotification";
 import CommonDetails, {
   DetailsProps,
   SupportedData,
 } from "@/app/components/models/CommonData";
 import PaymentProcess from "@/app/components/payment/PaymentProcess";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { UserData } from "@/app/components/users/User";
 import React, { ReactNode, useState } from "react";
+import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import UserQuestionnaire from "../personas/UserQuestionnaire";
 import OfferPage from "./OfferPage";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
@@ -38,6 +42,7 @@ const UserJourneyManager: React.FC = () => {
     questionnaireResponses: { [key: string]: string };
   }
 
+  const timeBasedCode = generateTimeBasedCode();
   let userData: TempUserData = {
     id: state.user?.data?.id ?? "", // Use optional chaining and nullish coalescing operator to handle undefined id
     ...(state.user?.data || {}),
@@ -45,6 +50,7 @@ const UserJourneyManager: React.FC = () => {
     traits: (props: DetailsProps<SupportedData>, context?: any): ReactNode => {
       return <CommonDetails {...props} />;
     },
+    timeBasedCode: timeBasedCode,
   };
 
   onboardingQuestionnaireData.forEach((question: any) => {
@@ -54,6 +60,7 @@ const UserJourneyManager: React.FC = () => {
   const handleQuestionnaireSubmit = async (userResponses: any) => {
     try {
       // handle questionnaire submission
+      
 
       // Update user data locally
       userData = {
@@ -81,7 +88,7 @@ const UserJourneyManager: React.FC = () => {
         "Your information has been successfully submitted",
         NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED,
         new Date(),
-        "OperationSuccess"
+        NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {
       // Handle any network or unexpected errors
@@ -90,7 +97,7 @@ const UserJourneyManager: React.FC = () => {
         "There was an error saving your submission, try again",
         NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR,
         new Date(),
-        "OperationError"
+        NotificationTypeEnum.OperationError
       );
     }
   };
@@ -115,13 +122,12 @@ const UserJourneyManager: React.FC = () => {
         console.error("Error sending profile setup data:", error);
       });
   };
-    
-    
-    const handlePaymentProcess = (profileData: any) => { 
-        // Logic for handling profile setup data
-        console.log("Profile setup data:", profileData);
-        // todo update to use
-    }
+
+  const handlePaymentProcess = (profileData: any) => {
+    // Logic for handling profile setup data
+    console.log("Profile setup data:", profileData);
+    // todo update to use
+  };
 
   const handleQuestionnaireSubmitWrapper = async (userResponses: any) => {
     await handleQuestionnaireSubmit(userResponses);
@@ -141,9 +147,9 @@ const UserJourneyManager: React.FC = () => {
       )}
       {currentPhase === OnboardingPhase.OFFER && <OfferPage />}
       {/* Add more phases as needed */}
-          {currentPhase === OnboardingPhase.PAYMENT_PROCESS && (
-              <PaymentProcess onSubmit={handlePaymentProcess} />
-          )}
+      {currentPhase === OnboardingPhase.PAYMENT_PROCESS && (
+        <PaymentProcess onSubmit={handlePaymentProcess} />
+      )}
     </div>
   );
 };

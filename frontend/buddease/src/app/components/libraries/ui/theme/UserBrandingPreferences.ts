@@ -109,4 +109,4 @@ const userBrandingPreferencesSlice = createSlice({
 export const { setUserBrandColors, setUserLogo } =
   userBrandingPreferencesSlice.actions;
 
-export default userBrandingPreferencesSlice.reducer;
+export default UserBrandingPreferencesState; userBrandingPreferencesSlice.reducer;

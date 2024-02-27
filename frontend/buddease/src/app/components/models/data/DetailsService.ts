@@ -1,6 +1,7 @@
 // ApiDetails.ts
+import { handleApiError } from '@/app/api/ApiLogs';
 import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
 import axiosInstance from '../../security/csrfToken';
 import { DetailsListActions } from '../../state/redux/actions/DetailsListActions';
@@ -11,27 +12,6 @@ import { Data } from './Data';
 const API_BASE_URL = "/api/details";
 
 const { notify } = useNotification();  // Destructure notify from useNotification
-
-const handleApiError = (error: AxiosError<unknown>, errorMessage: string): void => {
-  console.error(`API Error: ${errorMessage}`);
-  if (axios.isAxiosError(error)) {
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-      console.error('Response headers:', error.response.headers);
-      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-    } else if (error.request) {
-      console.error('No response received. Request details:', error.request);
-      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-    } else {
-      console.error('Error details:', error.message);
-      notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-    }
-  } else {
-    console.error('Non-Axios error:', error);
-    notify(NOTIFICATION_MESSAGES.Generic.ERROR, errorMessage, new Date(), 'Error' as NotificationType);
-  }
-};
 
 export const detailsApiService = observable({
   fetchDetailsItem: async (detailsItemId: string): Promise<{ detailsItem: DetailsItem<Data> }> => {

@@ -1,17 +1,20 @@
 // CalendarEvent.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from '@/app/ts/ScheduleEventModal';
 import { makeAutoObservable } from "mobx";
-import { useNotification } from "../../hooks/commHooks/useNotification";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { Data } from "../../models/data/Data";
+import { Team } from "../../models/teams/Team";
+import { Member } from "../../models/teams/TeamMembers";
 import axiosInstance from "../../security/csrfToken";
+import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
+import CommonEvent from "./CommonEvent";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
-
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -21,30 +24,29 @@ const { notify } = useNotification();
 
 
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  description?: string;
-  startDate?: Date
-  endDate?: Date
-  date: Date;
-  startTime?: string;
-  endTime?: string;
-  recurring?: boolean;
-  recurrenceRule?: string;
-  category?: string;
-  timezone?: string;
-  participants?: string[]
-  language?: string
-  agenda?: string
-  collaborationTool?: string
+interface CalendarEvent extends CommonEvent, Data {
+  
   status?:
     | "tentative"
     | "inProgress"
     | "confirmed"
     | "cancelled"
     | "scheduled"
-    | "completed";
+  | "completed";
+  rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
+  host: Member;
+  hosts?: Member[];
+  guestSpeakers?: Member[]
+  attendees?: Member[],
+  color?: string;
+  isImportant?: boolean;
+  teamMemberId: Team["id"];
+  reminder?: string;
+  pinned?: boolean;
+  archived?: boolean;
+  priority?: string;
+  location?: string;
+
 }
 
 export interface CalendarManagerStore {
@@ -125,7 +127,9 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   assignedEventStore: AssignEventStore;
   snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
     Snapshot<Data>
-  >({} as SnapshotStoreConfig<Snapshot<Data>>);
+    >({} as SnapshotStoreConfig<Snapshot<Data>>,
+      notify
+    );
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
@@ -220,6 +224,14 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       status: this.eventStatus,
       date: new Date(),
       startDate: new Date(),
+      metadata: {} as StructuredMetadata,
+      rsvpStatus: "yes",
+      host: {} as Member,
+      hosts: {} as Member[],
+      attendees: [] as Member[],
+      color: "",
+      isImportant: false,
+      teamMemberId: 0
     };
 
     this.events = {
@@ -454,7 +466,7 @@ function openScheduleEventModal(eventId: string): void {
     "Opening Schedule Event Modal",
     NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
     new Date(),
-    "OperationSuccess"
+    NotificationTypeEnum.OperationSuccess
   );
 }
 
@@ -478,7 +490,8 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
     videoUrl: "",
     videoThumbnail: "",
     videoDuration: 0,
-    videoData: {} as VideoData
+    videoData: {} as VideoData,
+    ideas: []
   };
 
   // Iterate over each key-value pair in the events object
@@ -505,6 +518,12 @@ const events: Record<string, CalendarEvent[]> = {
       date: new Date('2024-02-08T09:00:00'),
       startDate: new Date('2024-02-08T09:00:00'),
       endDate: new Date('2024-02-08T10:00:00'),
+      metadata: {} as StructuredMetadata,
+      rsvpStatus: "notResponded",
+      host: {} as Member,
+      color: "",
+      isImportant: false,
+      teamMemberId: 0
     },
     // Add more events for other dates as needed
   ],

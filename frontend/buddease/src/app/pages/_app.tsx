@@ -16,6 +16,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
+import BlogComponent from "../components/blogs/BlogComponent";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
 import Toolbar from "../components/documents/Toolbar";
@@ -29,7 +30,6 @@ import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
 import undoLastAction from "../components/projects/projectManagement/ProjectManager";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
-import { Notification } from "../components/support/NofiticationsSlice";
 import {
   NotificationProvider,
   NotificationType,
@@ -70,7 +70,7 @@ async function MyApp({
 }: AppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<NotificationData[];>([]);
   const [activeDashboard, setActiveDashboard] = useState<
     "communication" | "documents" | "tasks" | "settings"
   >("communication");
@@ -292,6 +292,9 @@ async function MyApp({
                               />
                             </StoreProvider>
                           </Layout>
+                        </Route>
+                        <Route path="/blog">
+                          <BlogComponent title="" content="" />
                         </Route>
                       </Routes>
                       <OnboardingComponent />

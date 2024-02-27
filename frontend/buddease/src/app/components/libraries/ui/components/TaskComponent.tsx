@@ -1,22 +1,22 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import DataFilterForm from './DataFilterForm';
-import TaskList from './TaskList';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 
 import {
-    updateTaskTitle, 
-    selectTasks,
-    addTask,
-    removeTask,
-    completeTask,
-    updateTaskDescription,
-    updateTaskStatus,
-    filterTasks,
-    sortTasks,
+  addTask,
+  completeTask,
+  filterTasks,
+  removeTask,
+  selectTasks,
+  sortTasks,
+  updateTaskDescription,
+  updateTaskStatus,
+  updateTaskTitle,
 } from '@/app/components/state/redux/slices/TaskSlice';
     
+import TaskList from '@/app/components/lists/TaskList';
+import DataFilterForm from '@/app/components/models/data/DataFilterForm';
+import { Task } from '@/app/components/models/tasks/Task';
 import TaskForm from '@/app/components/models/tasks/TaskForm';
 
 const TaskComponent = () => {
@@ -35,7 +35,7 @@ const TaskComponent = () => {
     dispatch(completeTask(taskId));
   };
 
-  const handleUpdateTaskTitle = (taskId, updatedTitle) => {
+  const handleUpdateTaskTitle = (taskId: string, updatedTitle: Task) => {
     dispatch(updateTaskTitle({ taskId, updatedTitle }));
   };
 
@@ -59,7 +59,7 @@ const TaskComponent = () => {
     <div>
       <h1>Task Management</h1>
       <TaskForm onSubmit={handleAddTask} />
-      <DataFilterForm onSubmit={handleFilterTasks} />
+      <DataFilterForm options={options} onSubmit={handleFilterTasks} />
       <TaskList
         tasks={tasks}
         onRemoveTask={handleRemoveTask}

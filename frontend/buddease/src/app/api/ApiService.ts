@@ -1,5 +1,7 @@
 import { observable, runInAction } from 'mobx';
 import { useAuth } from "../components/auth/AuthContext";
+import { CalendarActions } from '../components/calendar/CalendarActions';
+import { fetchEventsRequest } from '../components/state/stores/CalendarEvent';
 import { User } from "../components/users/User";
 import { UserActions } from "../components/users/UserActions";
 import { endpoints } from './ApiEndpoints';
@@ -60,6 +62,20 @@ export const userApiService = observable({
         return { user: response.data as User };
       } catch (error) {
         console.error("Error updating user:", error);
+        throw error;
+      }
+    }
+  ),
+
+
+
+  fetchEvents: handleSuccess((payload: any) => {CalendarActions.fetchCalendarEventsRequest();})(
+    async (): Promise<any> => {
+      try {
+        const events =  fetchEventsRequest(); // Use the fetchEventsRequest function
+        return events;
+      } catch (error) {
+        console.error('Error fetching events:', error);
         throw error;
       }
     }

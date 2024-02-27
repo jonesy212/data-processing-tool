@@ -63,6 +63,7 @@ const YourParentComponent: React.FC = () => {
   return (
     <div>
       <PromptComponent
+        id
         currentPage={promptPages[currentPage]}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}

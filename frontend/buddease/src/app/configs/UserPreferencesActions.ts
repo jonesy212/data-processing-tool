@@ -3,52 +3,50 @@ import { createAction } from "@reduxjs/toolkit";
 
 // Communication Preferences
 export const UserCommunicationPreferencesActions = {
-  setTheme: createAction<string>("setTheme"),
-  setThemeFailure: createAction<{ error: string }>("setThemeFailure"),
-  // Actions for project phases
+   // Actions for project phases
   setIdeationPhase: createAction<{
     ideaId: string;
     idea: { title: string; description: string };
   }>("setIdeationPhase"),
-  setBrainstormingPhase: createAction("setBrainstormingPhase"),
-  setLaunchPhase: createAction("setLaunchPhase"),
-  setDataAnalysisPhase: createAction("setDataAnalysisPhase"),
+  setBrainstormingPhase: createAction<undefined>("setBrainstormingPhase"), // Assuming no payload needed
+  setLaunchPhase: createAction<undefined>("setLaunchPhase"), // Assuming no payload needed
+  setDataAnalysisPhase: createAction<undefined>("setDataAnalysisPhase"), // Assuming no payload needed
 
   // Actions for communication features
-  enableAudioCommunication: createAction("enableAudioCommunication"),
-  enableVideoCommunication: createAction("enableVideoCommunication"),
-  enableTextCommunication: createAction("enableTextCommunication"),
-  enableRealTimeCollaboration: createAction("enableRealTimeCollaboration"),
+  enableAudioCommunication: createAction<undefined>("enableAudioCommunication"), // Assuming no payload needed
+  enableAudioCommunicationSuccess: createAction<{payload: string}>("enableAudioCommunicationSuccess"), // Assuming no
+  enableVideoCommunicationRequest: createAction<{ userId: string; audio: Audio, audioId: string }>("enableVideoCommunicationRequest"), // Adjusted payload types
+  enableAudioCommunicationFailure: createAction <{error: string}>("enableAudioCommunicationFailure"),
+  
+
+  enableVideoCommunication: createAction<undefined>("enableVideoCommunication"), // Assuming no payload needed
+  enableTextCommunication: createAction<undefined>("enableTextCommunication"), // Assuming no payload needed
+  enableRealTimeCollaboration: createAction<undefined>("enableRealTimeCollaboration"), // Assuming no payload needed
 
   // Actions for community involvement
-  joinCommunity: createAction("joinCommunity"),
-  participateInGlobalProject: createAction("participateInGlobalProject"),
-  contributeToUnity: createAction("contributeToUnity"),
+  joinCommunity: createAction<undefined>("joinCommunity"), // Assuming no payload needed
+  participateInGlobalProject: createAction<undefined>("participateInGlobalProject"), // Assuming no payload needed
+  contributeToUnity: createAction<undefined>("contributeToUnity"), // Assuming no payload needed
 
   // Actions for monetization opportunities
-  offerDevelopmentServices: createAction("offerDevelopmentServices"),
-  leveragePlatformForClientProjects: createAction(
-    "leveragePlatformForClientProjects"
-  ),
-  generateRevenueForSustainability: createAction(
-    "generateRevenueForSustainability"
-  ),
+  offerDevelopmentServices: createAction<undefined>("offerDevelopmentServices"), // Assuming no payload needed
+  leveragePlatformForClientProjects: createAction<undefined>("leveragePlatformForClientProjects"), // Assuming no payload needed
+  generateRevenueForSustainability: createAction<undefined>("generateRevenueForSustainability"), // Assuming no payload needed
 
-  setIdeationPhaseFailure: createAction<{ error: string }>(
-    "setIdeationPhaseFailure"
-  ),
+  setIdeationPhaseFailure: createAction<{ error: string }>("setIdeationPhaseFailure"),
   setLanguage: createAction<string>("setLanguage"),
-  setNotificationPreferences: createAction<any>("setNotificationPreferences"),
+  setNotificationPreferences: createAction<any>("setNotificationPreferences"), // Adjusted payload type to 'any'
   setEmailNotifications: createAction<boolean>("setEmailNotifications"),
   setPushNotifications: createAction<boolean>("setPushNotifications"),
   setSMSNotifications: createAction<boolean>("setSMSNotifications"),
   setDesktopNotifications: createAction<boolean>("setDesktopNotifications"),
-  setCustomNotifications: createAction<any>("setCustomNotifications"),
+  setCustomNotifications: createAction<any>("setCustomNotifications"), // Adjusted payload type to 'any'
 };
 
 export const UserBrandingPreferencesActions = {
   setTheme: createAction<string>("setTheme"),
-  setUserBrandColors: createAction<string[]>(
+  setThemeFailure: createAction<{ error: string }>("setThemeFailure"),
+   setUserBrandColors: createAction<string[]>(
     "userPreferences/setUserBrandColors"
   ),
   setUserLogo: createAction<string>("userPreferences/setUserLogo"),

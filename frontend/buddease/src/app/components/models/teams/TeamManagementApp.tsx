@@ -6,9 +6,7 @@ import TeamData from './TeamData';
 const TeamManagementApp: React.FC = () => {
   const [teamData, setTeamData] = useState<TeamData>({
     // Initialize teamData object with default values
-    _id: "uniqueId",
     id: 1,
-
     teamName: "Development Team",
     description: "A team focused on software development",
     members: [],

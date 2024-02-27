@@ -1,5 +1,7 @@
+import { Data } from "./data/Data";
+
 // LogData.ts
-interface LogData {
+interface LogData extends Partial<Data> {
     timestamp: Date;
     level: string; // Log level (e.g., INFO, WARNING, ERROR)
     message: string;

@@ -1,17 +1,44 @@
-import { Notification } from "../components/support/NofiticationsSlice";
+import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import LogData from "../components/models/LogData";
+import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
-  NotificationType,
-  useNotification,
+    NotificationType,
+    useNotification,
 } from "../components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 
 const { notify } = useNotification();
 // UniqueIDGenerator.ts
+
+
+const notification: NotificationData = {
+  id: 'unique-id',
+  content: 'Notification content',
+  updatedAt: new Date(),
+  message: "",
+  createdAt: new Date(),
+  type: NotificationTypeEnum.AccountCreated,
+  completionMessageLog: {} as LogData
+};
+
+
+    // Additional logic specific to logging task completion
+    const completionMessage = `UniqueIDGenerator ${id} has been completed.`;
+
+const completionMessageLog: LogData = {
+  timestamp: new Date(), // Set the current timestamp
+  level: "INFO", // Specify the log level, e.g., INFO, WARNING, ERROR
+  message: completionMessage, // Use the completionMessage provided as the log message
+  user: null, // Optional: Include user information if available, set to null for now
+  // Add additional fields as needed based on the LogData interface
+};
 class UniqueIDGenerator {
+  
   static generateNotificationID(
-    notification: Notification,
+    notification: NotificationData,
     date: Date,
     type: NotificationType,
+    completionMessageLog: NotificationData,
     notify: (message: string) => void // Pass notify function as a parameter
   ): string {
     const notificationID = `${type}_${notification.message}_${date.getTime()}`;
@@ -34,15 +61,23 @@ class UniqueIDGenerator {
     return roomId;
   }
 
-  static generateTaskID(taskId: string, taskName: string): string {
-    const message = `Generated task ID for task ${taskId}: ${taskName}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.TASK_ID_GENERATED,
-      new Date(),
-      "GeneratedID"
-    );
-    return this.generateID(taskId, taskName);
+  static generateTaskID(
+    taskId: string,
+    taskName: string,
+    notify: (message: string, type: string, date: Date, id: string) => void
+  ): string {
+    // Check if taskId exists, if not, generate one
+    if (!taskId) {
+      taskId = UniqueIDGenerator.generateRoomId(); // Assuming you want to generate a room ID
+      const message = `Generated task ID for task ${taskId}: ${taskName}`;
+      notify(
+        message,
+        NOTIFICATION_MESSAGES.Generators.TASK_ID_GENERATED,
+        new Date(),
+        NotificationTypeEnum.GeneratedID
+      );
+    }
+    return taskId;
   }
 
   static generateTodoID(todoId: string, todoName: string): string {
@@ -51,7 +86,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.TODO_ID_GENERATED,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return this.generateID(todoId, todoName);
   }
@@ -65,7 +100,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_UNIQUE_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return uniqueID;
   }
@@ -79,7 +114,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_PROJECT_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return projectID;
   }
@@ -93,7 +128,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_USER_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return userID;
   }
@@ -107,7 +142,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_TEAM_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return teamID;
   }
@@ -121,7 +156,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_ELEMENT_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return elementID;
   }
@@ -135,7 +170,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_COMPONENT_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return componentID;
   }
@@ -148,7 +183,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_FUNCTIONALITY_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return functionalityID;
   }
@@ -162,7 +197,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_CARD_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return cardID;
   }
@@ -176,7 +211,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_TABLE_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return tableID;
   }
@@ -190,7 +225,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_AUDIO_CHANNEL_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return audioChannelID;
   }
@@ -204,7 +239,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_VIDEO_CHANNEL_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return videoChannelID;
   }
@@ -218,7 +253,7 @@ class UniqueIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_TEXT_CHANNEL_ID,
       new Date(),
-      "GeneratedID"
+      NotificationTypeEnum.GeneratedID
     );
     return textChannelID;
   }
@@ -234,7 +269,7 @@ class PhaseIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_PHASE_ID,
       new Date(),
-      "PhaseID"
+      NotificationTypeEnum.PhaseID
     );
     return phaseID;
   }
@@ -250,7 +285,7 @@ class CollaborationIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_DOCUMENT_ID,
       new Date(),
-      "DocumentEditID"
+      NotificationTypeEnum.DocumentEditID
     );
     return documentEditID;
   }
@@ -264,7 +299,7 @@ class CollaborationIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_TASKBOARD_ID,
       new Date(),
-      "TaskBoardID"
+      NotificationTypeEnum.TaskBoardID
     );
     return taskBoardID;
   }
@@ -278,7 +313,7 @@ class CollaborationIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_BRAINSTORMING_SESSION_ID,
       new Date(),
-      "BrainstormingSessionID"
+      NotificationTypeEnum.BrainstormingSessionID
     );
     return brainstormingSessionID;
   }
@@ -294,7 +329,7 @@ class UserRewardIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_CONTRIBUTION_ID,
       new Date(),
-      "ContributionID"
+      NotificationTypeEnum.ContributionID
     );
     return contributionID;
   }
@@ -310,7 +345,7 @@ class MonetizationIDGenerator {
       message,
       NOTIFICATION_MESSAGES.Generators.GENERATE_PROJECT_REVENUE_ID,
       new Date(),
-      "ProjectRevenueID"
+      NotificationTypeEnum.ProjectRevenueID
     );
     return projectRevenueID;
   }

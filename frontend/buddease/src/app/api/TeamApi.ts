@@ -12,6 +12,18 @@ export const fetchTeams = async (): Promise<Team[]> => {
   }
 };
 
+
+export const getTeamMembersFromAPI = async (): Promise<Team[]> => {
+  try {
+    // Call the fetchTeams function from teamApi to get team members
+    const teamMembers = await fetchTeams();
+    return teamMembers;
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    throw error;
+  }
+};
+
 export const addTeam = async (newTeam: Team): Promise<void> => {
   try {
     await axiosInstance.post(endpoints.teams.add, newTeam); // Use the add endpoint

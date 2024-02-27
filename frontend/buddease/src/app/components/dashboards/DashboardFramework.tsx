@@ -1,7 +1,7 @@
 // DashboardFramework.tsx
 import {
-  AppTree,
-  generateInitialAppTree,
+    AppTree,
+    generateInitialAppTree,
 } from "@/app/generators/generateAppTree";
 import ChatDashboard from "@/app/pages/dashboards/ChatDashboard";
 import DataDashboard from "@/app/pages/dashboards/DataDashboard";
@@ -9,6 +9,7 @@ import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { processAutoGPTOutputWithSpaCy } from "../Inteigents/AutoGPTSpaCyIntegration";
 import { AdminDashboard, AdminDashboardProps } from "../admin/AdminDashboard";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
@@ -19,9 +20,9 @@ import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import { AquaConfig } from "../web3/web_configs/AquaConfig";
 import MeetingScheduler from "./../communications/scheduler/MeetingScheduler";
 import {
-  default as MeetingSchedulerToolbar,
-  default as TeamOverview,
-  default as TeamOverviewToolbar,
+    default as MeetingSchedulerToolbar,
+    default as TeamOverview,
+    default as TeamOverviewToolbar,
 } from "./../communications/scheduler/TeamOverview";
 import PhaseDashboard from "./PhaseDashboard";
 interface DashboardFrameworkProps {
@@ -120,6 +121,11 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
       </aside>
       {/* Render common layout content and resizable panels */}
 
+
+      
+
+
+      <Link to="/host-screen">Access Host Screen</Link>
 
       <main>
         {/* Resizable panels with dynamic content */}
