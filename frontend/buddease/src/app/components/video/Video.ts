@@ -1,3 +1,5 @@
+import { DataDetails } from "../models/data/Data";
+
 interface VideoProperties {
   // Define essential video properties
   id: string;
@@ -35,9 +37,10 @@ interface Video extends VideoProperties {
   isEmbeddable: boolean;
   isDownloadable: boolean;
   videoData: VideoData,
+  playlists: []
 }
 
-interface VideoData {
+interface VideoData extends DataDetails {
   // Define properties specific to video data
   // For example:
   resolution: string;
@@ -93,3 +96,7 @@ class BasicVideoGenerator {
       return video;
   }
 }
+
+export default BasicVideoGenerator;
+export type { VideoData };
+

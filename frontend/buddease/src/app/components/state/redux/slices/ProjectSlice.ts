@@ -121,7 +121,10 @@ export const useProjectManagerSlice = createSlice({
 
     addTaskToProject(
       state,
-      action: PayloadAction<{ projectId: string; task: WritableDraft<Task> }>
+      action: PayloadAction<{
+        projectId: string;
+        task: WritableDraft<Task>
+      }>
     ) {
       // Implement logic to add a task to a project
       const { projectId, task } = action.payload;
@@ -214,6 +217,7 @@ export const useProjectManagerSlice = createSlice({
         title: '',
         status: 'pending',
         tags: [],
+        analysisType: '',
         then: (callback: (newData: Snapshot<Data>) => void) => void
 
       //   then: (callback: (newData: Snapshot<Data>) => void) => void {

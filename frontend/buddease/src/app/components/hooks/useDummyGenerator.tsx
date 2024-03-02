@@ -11,7 +11,7 @@ export interface DummyHookActions {
   stopScalingAnimation: () => void;
 }
 
-export const generateDummyHook = (hookName: DummyHookActions | string) => {
+export const generateAnimationDummyHook = (hookName: DummyHookActions | string) => {
   return {
     hook: () => {
       const [isActive, setIsActive] = useState(false);

@@ -1,57 +1,68 @@
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
-import LogData from "../components/models/LogData";
+import { DataDetails } from "../components/models/data/Data";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
-    NotificationType,
-    useNotification,
+  NotificationType,
+  useNotification,
 } from "../components/support/NotificationContext";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 
+// Extract notify function from useNotification hook
 const { notify } = useNotification();
-// UniqueIDGenerator.ts
+
+const USER_ID_PREFIX = "user_id";
+export function generateUserID(userName: string) {
+  const generatedID = UniqueIDGenerator.generateID(USER_ID_PREFIX, userName, NotificationTypeEnum.GeneratedID);
+  return {
+    [Symbol.iterator]: function* () {
+      yield generatedID;
+    }
+  };
+}
 
 
-const notification: NotificationData = {
-  id: 'unique-id',
-  content: 'Notification content',
-  updatedAt: new Date(),
-  message: "",
-  createdAt: new Date(),
-  type: NotificationTypeEnum.AccountCreated,
-  completionMessageLog: {} as LogData
-};
 
-
-    // Additional logic specific to logging task completion
-    const completionMessage = `UniqueIDGenerator ${id} has been completed.`;
-
-const completionMessageLog: LogData = {
-  timestamp: new Date(), // Set the current timestamp
-  level: "INFO", // Specify the log level, e.g., INFO, WARNING, ERROR
-  message: completionMessage, // Use the completionMessage provided as the log message
-  user: null, // Optional: Include user information if available, set to null for now
-  // Add additional fields as needed based on the LogData interface
-};
 class UniqueIDGenerator {
-  
+  static notifyFormatted(id: string, message: string, content: any, timestamp: Date, type: NotificationType) {
+    notify(
+      id,
+      message,
+      content,
+      timestamp,
+      type
+    );
+  }
+
+
   static generateNotificationID(
     notification: NotificationData,
     date: Date,
     type: NotificationType,
     completionMessageLog: NotificationData,
-    notify: (message: string) => void // Pass notify function as a parameter
+    callback?: () => void
   ): string {
     const notificationID = `${type}_${notification.message}_${date.getTime()}`;
-    notify(`Generated notification ID: ${notificationID}`);
+    const message = `Generated notification ID: ${notificationID}`;
+    const content = {
+      notificationID: notificationID,
+      notificationMessage: notification.message,
+      date: date,
+      type: type,
+      completionMessageLog: completionMessageLog
+      // Add more properties as needed
+    };
+    notify(
+      notificationID,
+      message,
+      content,
+      new Date(),
+      type
+    );
     return notificationID;
   }
 
   static generateRoomId(): string {
-    // Implement your room ID generation logic here
-    // Example: Generate a random alphanumeric ID
     const roomIdLength = 8;
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let roomId = "";
     for (let i = 0; i < roomIdLength; i++) {
       roomId += characters.charAt(
@@ -62,17 +73,16 @@ class UniqueIDGenerator {
   }
 
   static generateTaskID(
-    taskId: string,
-    taskName: string,
-    notify: (message: string, type: string, date: Date, id: string) => void
+    taskId: string | undefined,
+    taskName: string
   ): string {
-    // Check if taskId exists, if not, generate one
     if (!taskId) {
-      taskId = UniqueIDGenerator.generateRoomId(); // Assuming you want to generate a room ID
+      taskId = UniqueIDGenerator.generateRoomId();
       const message = `Generated task ID for task ${taskId}: ${taskName}`;
       notify(
+        taskId,
         message,
-        NOTIFICATION_MESSAGES.Generators.TASK_ID_GENERATED,
+        {},
         new Date(),
         NotificationTypeEnum.GeneratedID
       );
@@ -80,278 +90,165 @@ class UniqueIDGenerator {
     return taskId;
   }
 
-  static generateTodoID(todoId: string, todoName: string): string {
+  static generateTodoID(
+    todoId: string,
+    todoName: string,
+    type: NotificationType
+  ): string {
     const message = `Generated todo ID for todo ${todoId}: ${todoName}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.TODO_ID_GENERATED,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return this.generateID(todoId, todoName);
+    const content = {
+      todoId: todoId,
+      todoName: todoName,
+      type: type
+    };
+
+    UniqueIDGenerator.notifyFormatted(todoId || '', message, content, new Date(), NotificationTypeEnum.GeneratedID);
+    const todoDetails: DataDetails = {
+      id: todoId,
+      title: todoName,
+      description: type,
+      startDate: new Date(),
+      endDate: new Date(),
+      status: "pending",
+      isActive: true,
+      tags: [],
+      // Add more properties as needed
+    }
+    const todoDetailsString = JSON.stringify(todoDetails);
+    return this.generateID(todoDetailsString, todoId || '', "todoName" as NotificationType);
   }
 
-  static generateID(folderName: string, fileName: string): string {
-    const uniqueID = `${folderName}_${fileName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated unique ID: ${uniqueID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_UNIQUE_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return uniqueID;
+  static generateDocumentId(documentName: string, type: NotificationType): string {
+    const generatedID = `${documentName}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+    const message = `Generated document ID for ${documentName}: ${generatedID}`;
+    const content = {
+      documentName: documentName,
+      generatedID: generatedID,
+      timestamp: Date.now(),
+      type: type
+    };
+    this.notifyFormatted(generatedID, message, content, new Date(), NotificationTypeEnum.GeneratedID);
+    return generatedID;
+  }
+  
+  static generateID(prefix: string, name: string, type: NotificationType, dataDetails?: DataDetails): string {
+    const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+    return generatedID;
+  }
+
+ 
+
+  static generateCustomID(name: string, type: NotificationType): string {
+    return UniqueIDGenerator.generateID(name, type, "custom" as NotificationType);
   }
 
   static generateProjectID(projectName: string): string {
-    const projectID = `proj_${projectName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated project ID: ${projectID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_PROJECT_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return projectID;
+    return UniqueIDGenerator.generateID(projectName, NotificationTypeEnum.ProjectRevenueID, "proj" as NotificationType);
   }
 
   static generateUserID(userName: string): string {
-    const userID = `user_${userName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated user ID: ${userID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_USER_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return userID;
+    return UniqueIDGenerator.generateID(userName, NotificationTypeEnum.AccountCreated, "user" as NotificationType);
   }
 
   static generateTeamID(teamName: string): string {
-    const teamID = `team_${teamName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated team ID: ${teamID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_TEAM_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return teamID;
+    return UniqueIDGenerator.generateID(teamName, NotificationTypeEnum.TeamJoinRequest, "team" as NotificationType);
   }
 
   static generateElementID(elementName: string): string {
-    const elementID = `${elementName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated element ID: ${elementID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_ELEMENT_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return elementID;
+    return UniqueIDGenerator.generateID(elementName, NotificationTypeEnum.GeneratedID, "element" as NotificationType);
   }
 
-  static generateComponentID(componentName: string): string {
-    const componentID = `${componentName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated component ID: ${componentID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_COMPONENT_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return componentID;
-  }
-  static generateFunctionalityID(functionalityName: string): string {
-    const functionalityID = `${functionalityName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated functionality ID: ${functionalityID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_FUNCTIONALITY_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return functionalityID;
-  }
+  // Add more specific ID generation methods as needed
 
-  static generateCardID(cardName: string): string {
-    const cardID = `${cardName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated card ID: ${cardID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_CARD_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return cardID;
-  }
-
-  static generateTableID(tableName: string): string {
-    const tableID = `${tableName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated table ID: ${tableID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_TABLE_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return tableID;
-  }
-
-  static generateAudioChannelID(): string {
-    const audioChannelID = `audio_channel_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated audio channel ID: ${audioChannelID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_AUDIO_CHANNEL_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return audioChannelID;
-  }
-
-  static generateVideoChannelID(): string {
-    const videoChannelID = `video_channel_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated video channel ID: ${videoChannelID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_VIDEO_CHANNEL_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return videoChannelID;
-  }
-
-  static generateTextChannelID(): string {
-    const textChannelID = `text_channel_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated text channel ID: ${textChannelID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_TEXT_CHANNEL_ID,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return textChannelID;
-  }
-}
-
-class PhaseIDGenerator {
   static generatePhaseID(phaseName: string): string {
-    const phaseID = `${phaseName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated phase ID: ${phaseID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_PHASE_ID,
-      new Date(),
-      NotificationTypeEnum.PhaseID
-    );
-    return phaseID;
+    return UniqueIDGenerator.generateID(phaseName, NotificationTypeEnum.PhaseID, "phase" as NotificationType);
   }
-}
 
-class CollaborationIDGenerator {
   static generateDocumentEditID(documentName: string): string {
-    const documentEditID = `document_edit_${documentName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated document edit ID: ${documentEditID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_DOCUMENT_ID,
-      new Date(),
-      NotificationTypeEnum.DocumentEditID
-    );
-    return documentEditID;
+    return UniqueIDGenerator.generateID(documentName, NotificationTypeEnum.DocumentEditID, "document_edit" as NotificationType);
   }
 
   static generateTaskBoardID(): string {
-    const taskBoardID = `task_board_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated task board ID: ${taskBoardID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_TASKBOARD_ID,
-      new Date(),
-      NotificationTypeEnum.TaskBoardID
-    );
-    return taskBoardID;
+    return UniqueIDGenerator.generateID("task_board", NotificationTypeEnum.TaskBoardID, "task_board" as NotificationType);
   }
 
   static generateBrainstormingSessionID(): string {
-    const brainstormingSessionID = `brainstorming_session_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated brainstorming session ID: ${brainstormingSessionID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_BRAINSTORMING_SESSION_ID,
-      new Date(),
-      NotificationTypeEnum.BrainstormingSessionID
-    );
-    return brainstormingSessionID;
+    return UniqueIDGenerator.generateID("brainstorming_session", NotificationTypeEnum.BrainstormingSessionID, "brainstorming_session" as NotificationType);
   }
+
+
+
+
+
+
+  static generateUserId(username: string): string {
+    return this.generateID('UserID', `User_${username}`, NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateSessionId(): string {
+    return this.generateID('SessionID', 'Session', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateOrderId(): string {
+    return this.generateID('OrderID', 'Order', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateProductId(): string {
+    return this.generateID('ProductID', 'Product', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateEventId(): string {
+    return this.generateID('EventID', 'Event', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateMessageId(): string {
+    return this.generateID('MessageID', 'Message', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateFileId(): string {
+    return this.generateID('FileID', 'File', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateTaskBoardId(): string {
+    return this.generateID('TaskBoardID', 'TaskBoard', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateLocationId(): string {
+    return this.generateID('LocationID', 'Location', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateCouponCode(): string {
+    return this.generateID('CouponCode', 'Coupon', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateSurveyId(): string {
+    return this.generateID('SurveyID', 'Survey', NotificationTypeEnum.GeneratedID);
+  }
+
+  static generateAnalyticsId(): string {
+    return this.generateID('AnalyticsID', 'Analytics', NotificationTypeEnum.GeneratedID);
+  }
+
 }
 
-class UserRewardIDGenerator {
-  static generateContributionID(userId: string): string {
-    const contributionID = `contribution_${userId}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated contribution ID: ${contributionID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_CONTRIBUTION_ID,
-      new Date(),
-      NotificationTypeEnum.ContributionID
-    );
-    return contributionID;
-  }
-}
 
-class MonetizationIDGenerator {
-  static generateProjectRevenueID(projectId: string): string {
-    const projectRevenueID = `revenue_${projectId}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated project revenue ID: ${projectRevenueID}`;
-    notify(
-      message,
-      NOTIFICATION_MESSAGES.Generators.GENERATE_PROJECT_REVENUE_ID,
-      new Date(),
-      NotificationTypeEnum.ProjectRevenueID
-    );
-    return projectRevenueID;
-  }
-}
-export default UniqueIDGenerator;
-PhaseIDGenerator;
-CollaborationIDGenerator;
-UserRewardIDGenerator;
-MonetizationIDGenerator;
+const videoDataDetails: DataDetails = {
+  id: 'video1',
+  title: 'Video Title',
+  description: 'Video Description',
+  status: "pending",
+  isActive: false,
+  tags: []
+};
+
+export default UniqueIDGenerator
+
+
+
+const videoDetailsString = JSON.stringify(videoDataDetails);
+
+// Generate unique ID using videoDataDetails with the prefix "video"
+const uniqueVideoID = UniqueIDGenerator.generateID("video", videoDetailsString, NotificationTypeEnum.GeneratedID, videoDataDetails);
+
+// Adjusted usage of generateID function
+console.log(uniqueVideoID);

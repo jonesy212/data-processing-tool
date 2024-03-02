@@ -114,7 +114,7 @@ const handleParticipantManagement = async () => {
       dispatch(ToolbarActions.toggleFeature({ feature: 'participantManagement', isEnabled: true, userId: {} as User }))
 
       // Fetch participant data before proceeding with participant management actions
-      const participantData = dispatch(ToolbarActions.fetchParticipantData({ userId: {}as User, participantData: {} as typeof ParticipantData }));
+      const participantData = dispatch(ToolbarActions.fetchParticipantData({ userId: {} as User, participantData: {} as typeof ParticipantData }));
       // Pass userId to fetchParticipantData
   
        // Use the fetched participant data as needed

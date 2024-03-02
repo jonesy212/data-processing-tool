@@ -8,7 +8,7 @@ interface DynamicTextAreaProps {
     name?: any;
     required?: boolean;
 }
-
+// todo verify if i need to add memo here for the input
 const DynamicTextArea: React.FC<DynamicTextAreaProps> = ({
   name,
   value,

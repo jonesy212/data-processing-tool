@@ -1,14 +1,27 @@
 // Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
-import LogData from "@/app/components/models/LogData";
+import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
-import { NotificationData } from '@/app/components/support/NofiticationsSlice';
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+
 const { notify } = useNotification();
 
+function createErrorNotificationContent(error: Error): any {
+  // Extract relevant information from the error object
+  const errorDetails = {
+    errorMessage: error.message,
+    errorStack: error.stack,
+    // Add more fields as needed based on your requirements
+  };
 
+  return errorDetails;
+}
 
 const errorLogger = {
   error: (errorMessage: string, extraInfo: any) => {
@@ -16,6 +29,7 @@ const errorLogger = {
     notify(
       "Error occurred",
       NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+      {},
       new Date(),
       NotificationTypeEnum.Error
     );
@@ -30,7 +44,7 @@ class Logger {
 
   static logSessionEvent(sessionID: string, event: string) {
     // Assuming 'logs' is imported from apiEndpoints.ts
-    fetch(endpoints.logs.logSession, {
+    fetch(endpoints.logs.logSession as "Request", {
       method: "POST",
       body: JSON.stringify({ sessionID, event }),
       headers: {
@@ -42,10 +56,11 @@ class Logger {
           throw new Error("Failed to log session event");
         }
       })
-      .catch((error:any) => {
+      .catch((error: any) => {
         notify(
           "'Error logging session event ",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+          createErrorNotificationContent,
           new Date(),
           NotificationTypeEnum.LoggingError
         );
@@ -57,6 +72,34 @@ class Logger {
     // Log the error message with user information if available
     const extraInfo = user ? { user } : {};
     errorLogger.error(errorMessage, extraInfo);
+  }
+
+  static logUserActivity(action: string, userId: string) {
+    this.log("User Activity", `${action} (User ID: ${userId})`, userId);
+  }
+
+  static logCommunication(type: string, message: string, userId: string) {
+    this.log(
+      "Communication",
+      `${type}: ${message} (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logProjectPhase(phase: string, projectId: string) {
+    this.log("Project Phase", `${phase} (Project ID: ${projectId})`, projectId);
+  }
+
+  static logCommunityInteraction(action: string, userId: string) {
+    this.log("Community Interaction", `${action} (User ID: ${userId})`, userId);
+  }
+
+  static logMonetizationEvent(event: string, projectId: string) {
+    this.log(
+      "Monetization Event",
+      `${event} (Project ID: ${projectId})`,
+      projectId
+    );
   }
 }
 
@@ -72,13 +115,24 @@ class AudioLogger extends Logger {
     super.log("Audio", message, uniqueID);
     this.logAudioEvent(uniqueID, audioID, duration);
   }
-
   private static logAudioEvent(
     uniqueID: string,
     audioID: string,
     duration: number
   ) {
-    fetch(endpoints.logs.logAudioEvent, {
+    let logAudioEventUrl: string = ""; // Initialize with an empty string
+
+    if (typeof endpoints.logs.logAudioEvent === "string") {
+      logAudioEventUrl = endpoints.logs.logAudioEvent;
+    } else if (typeof endpoints.logs.logAudioEvent === "function") {
+      logAudioEventUrl = endpoints.logs.logAudioEvent();
+    } else {
+      // Handle the case when logAudioEvent is a nested object
+      // For example: logAudioEventUrl = endpoints.logs.logAudioEvent.someNestedEndpoint;
+      // or logAudioEventUrl = endpoints.logs.logAudioEvent.someNestedFunction();
+    }
+
+    fetch(logAudioEventUrl, {
       method: "POST",
       body: JSON.stringify({ uniqueID, audioID, duration }),
       headers: {
@@ -94,12 +148,14 @@ class AudioLogger extends Logger {
         notify(
           "Error logging audio event",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+          createErrorNotificationContent,
           new Date(),
           error
         );
       });
   }
 }
+
 
 // Extend Logger for video logs
 class VideoLogger extends Logger {
@@ -112,14 +168,19 @@ class VideoLogger extends Logger {
     super.log("Video", message, uniqueID);
     this.logVideoEvent(uniqueID, videoID, duration);
   }
-
+  
   private static logVideoEvent(
     uniqueID: string,
     videoID: string,
     duration: number
   ) {
-    // Additional video logging logic specific to the project management app
-    fetch(endpoints.logs.logVideoEvent, {
+ 
+    const logVideoEventUrl: string =
+      typeof endpoints.logs.logVideoEvent === "function"
+        ? endpoints.logs.logVideoEvent()
+        : endpoints.logs.logVideoEvent;
+
+    fetch(logVideoEventUrl, {
       method: "POST",
       body: JSON.stringify({ uniqueID, videoID, duration }),
       headers: {
@@ -142,7 +203,6 @@ class VideoLogger extends Logger {
   }
 }
 
-// Extend Logger for communication channels logs
 class ChannelLogger extends Logger {
   static logChannel(message: string, uniqueID: string, channelID: string) {
     super.log("Channel", message, uniqueID);
@@ -150,7 +210,12 @@ class ChannelLogger extends Logger {
   }
 
   private static logChannelEvent(uniqueID: string, channelID: string) {
-    fetch(endpoints.logs.logChannelEvent, {
+    const logChannelEventUrl: string =
+      typeof endpoints.logs.logChannelEvent === "function"
+        ? endpoints.logs.logChannelEvent()
+        : endpoints.logs.logChannelEvent;
+
+    fetch(logChannelEventUrl, {
       method: "POST",
       body: JSON.stringify({ uniqueID, channelID }),
       headers: {
@@ -187,7 +252,12 @@ class CollaborationLogger extends Logger {
     uniqueID: string,
     collaborationID: string
   ) {
-    fetch(endpoints.logs.logCollaborationEvent, {
+    const logCollaborationEventUrl: string =
+      typeof endpoints.logs.logCollaborationEvent === "function"
+        ? endpoints.logs.logCollaborationEvent()
+        : endpoints.logs.logCollaborationEvent;
+
+    fetch(logCollaborationEventUrl, {
       method: "POST",
       body: JSON.stringify({ uniqueID, collaborationID }),
       headers: {
@@ -217,7 +287,12 @@ class DocumentLogger extends Logger {
   }
 
   private static logDocumentEvent(uniqueID: string, documentID: string) {
-    fetch(endpoints.logs.logDocumentEvent, {
+    const logDocumentEventUrl: string =
+      typeof endpoints.logs.logDocumentEvent === "function"
+        ? endpoints.logs.logDocumentEvent()
+        : endpoints.logs.logDocumentEvent;
+
+    fetch(logDocumentEventUrl, {
       method: "POST",
       body: JSON.stringify({ uniqueID, documentID }),
       headers: {
@@ -230,10 +305,16 @@ class DocumentLogger extends Logger {
         }
       })
       .catch((error) => {
-        console.error("Error logging document event:", error);
+        notify(
+          "Error logging document event.",
+          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+          new Date(),
+          error
+        );
       });
   }
 }
+
 
 class TaskLogger extends Logger {
   static logTaskEvent(
@@ -257,8 +338,20 @@ class TaskLogger extends Logger {
 
     if (completionMessageLog.createdAt) {
       // Define a function to call notify with the appropriate arguments
+      // const notifyCallback = () => {
+      //   notify("Success",
+      //     NOTIFICATION_MESSAGES.Logger.LOG_INFO,
+      //     new Date(),
+      //     String(taskID));
+      // };
+
       const notifyCallback = () => {
-        notify("Success", NOTIFICATION_MESSAGES.Logger.LOG_INFO, new Date(), String(taskID));
+        notify(
+          "Success",
+          NOTIFICATION_MESSAGES.Logger.LOG_INFO,
+          new Date(),
+          String(taskID)
+        );
       };
 
       UniqueIDGenerator.generateNotificationID(
@@ -277,15 +370,11 @@ class TaskLogger extends Logger {
     notify: (message: string, type: string, date: Date, id: string) => void
   ) {
     // Generate or retrieve the task ID
-    const taskID = UniqueIDGenerator.generateTaskID(
-      existingTaskId,
-      taskName,
-      notify
-    );
+    const taskID = UniqueIDGenerator.generateTaskID(existingTaskId, taskName);
 
     // Additional logic specific to logging task completion
     const completionMessage = `Task ${taskID} has been completed.`;
-    const event = {} as  Task
+    const event = {} as Task;
     // Log the completion event
     TaskLogger.logTaskEvent(
       taskID,
@@ -329,7 +418,12 @@ class CalendarLogger extends Logger {
   }
 
   private static logCalendarEventEvent(uniqueID: string, eventID: string) {
-    fetch(endpoints.logs.logCalendarEvent, {
+    const logCalendarEventUrl =
+      typeof endpoints.logs.logCalendarEvent === "function"
+        ? endpoints.logs.logCalendarEvent()
+        : endpoints.logs.logCalendarEvent;
+
+    fetch(logCalendarEventUrl, {
       method: "POST",
       body: JSON.stringify({ uniqueID, eventID }),
       headers: {
@@ -352,15 +446,178 @@ class CalendarLogger extends Logger {
   }
 }
 
+class TenantLogger extends Logger {
+  static logUserRegistration(userId: string) {
+    super.log("Tenant", `User registration (User ID: ${userId})`, userId);
+  }
+
+  static logUserLogin(userId: string) {
+    super.log("Tenant", `User login (User ID: ${userId})`, userId);
+  }
+
+  static logUserLogout(userId: string) {
+    super.log("Tenant", `User logout (User ID: ${userId})`, userId);
+  }
+
+  // Add more methods for other tenant-related events as needed
+}
+
+class AnalyticsLogger extends Logger {
+  static logPageView(pageName: string, userId: string) {
+    super.log(
+      "Analytics",
+      `Page view: ${pageName} (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logInteraction(featureName: string, userId: string) {
+    super.log(
+      "Analytics",
+      `User interaction: ${featureName} (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  // Add more methods for other analytics-related events as needed
+}
+
+class PaymentLogger extends Logger {
+  static logTransaction(transactionId: string, amount: number, userId: string) {
+    super.log(
+      "Payment",
+      `Transaction ${transactionId}: $${amount} (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logSubscriptionRenewal(subscriptionId: string, userId: string) {
+    super.log(
+      "Payment",
+      `Subscription ${subscriptionId} renewed (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  // Add more methods for other payment-related events as needed
+}
+
+class SecurityLogger extends Logger {
+  static logLoginAttempt(userId: string, success: boolean) {
+    super.log(
+      "Security",
+      `Login attempt ${success ? "succeeded" : "failed"} (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logSuspiciousActivity(userId: string, activity: string) {
+    super.log(
+      "Security",
+      `Suspicious activity detected: ${activity} (User ID: ${userId})`,
+      userId
+    );
+  }
+
+  // Add more methods for other security-related events as needed
+}
+
+class ContentLogger extends Logger {
+  static logContentCreation(contentId: string, userId: string) {
+    super.log(
+      "Content",
+      `Content created (Content ID: ${contentId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logContentDeletion(contentId: string, userId: string) {
+    super.log(
+      "Content",
+      `Content deleted (Content ID: ${contentId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  // Add more methods for other content-related events as needed
+}
+
+class IntegrationLogger extends Logger {
+  static logAPIRequest(requestId: string, endpoint: string) {
+    super.log(
+      "Integration",
+      `API request sent (Request ID: ${requestId}, Endpoint: ${endpoint})`,
+      requestId
+    );
+  }
+
+  static logAPIResponse(requestId: string, statusCode: number) {
+    super.log(
+      "Integration",
+      `API response received (Request ID: ${requestId}, Status Code: ${statusCode})`,
+      requestId
+    );
+  }
+
+  // Add more methods for other integration-related events as needed
+}
+
+class ErrorLogger extends Logger {
+  static logError(errorMessage: string, errorDetails: any) {
+    super.log(
+      "Error",
+      `${errorMessage} (Details: ${JSON.stringify(errorDetails)})`,
+      "N/A"
+    );
+  }
+
+  // Add more methods for other error-related events as needed
+}
+
+class CommunityLogger extends Logger {
+  static logPost(userId: string, postId: string) {
+    super.log(
+      "Community",
+      `User ${userId} posted (Post ID: ${postId})`,
+      userId
+    );
+  }
+
+  static logComment(userId: string, commentId: string) {
+    super.log(
+      "Community",
+      `User ${userId} commented (Comment ID: ${commentId})`,
+      userId
+    );
+  }
+
+  static logLike(userId: string, likedItemId: string) {
+    super.log(
+      "Community",
+      `User ${userId} liked (Item ID: ${likedItemId})`,
+      userId
+    );
+  }
+
+  // Add more methods for other community-related events as needed
+}
+
 export default Logger;
 
 export {
+  AnalyticsLogger,
   AudioLogger,
   CalendarLogger,
   ChannelLogger,
   CollaborationLogger,
+  CommunityLogger,
+  ContentLogger,
   DocumentLogger,
+  ErrorLogger,
+  IntegrationLogger,
+  PaymentLogger,
+  SecurityLogger,
   TaskLogger,
-  VideoLogger
+  TenantLogger,
+  VideoLogger,
 };
-

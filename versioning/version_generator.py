@@ -4,6 +4,7 @@ import logging
 from logging_system.warning_events import log_error, log_exception, log_warning
 
 
+# version.py
 class BaseVersionGenerator:
     def __init__(self, name):
         self.name = name
@@ -23,39 +24,67 @@ class BaseVersionGenerator:
         try:
             self.version = new_version
             self._changes.append({"version": new_version, "changes": changes})
-            log_warning(f"Version updated successfully: {self.version}")
+            log_warning(f"Version updated successfully: {self.version}")  # Updated logging
         except Exception as e:
-            log_error(f"Failed to update version. Error {e}")
+            log_error(f"Failed to update version. Error {e}")  # Updated logging
 
     async def async_update_version(self, new_version, changes):
         try:
             await asyncio.sleep(1)  # Simulating an async operation
             self.version = new_version
             self._changes.append({"version" : new_version, "changes": changes})
-            log_warning({"version": new_version, "changes": changes})
+            log_warning({"version": new_version, "changes": changes})  # Updated logging
         except Exception as e:
-            log_error(f"Failed to update version. Error {e}")
+            log_error(f"Failed to update version. Error {e}")  # Updated logging
             
     def get_version_info(self):
         try: 
-            # your logic to retrievew version informtion here
             return {"name": self.name, "version": self.version, "changes": self.changes}
         except Exception as e:
-            log_error(f"Failed to get version. Error {e}")
+            log_error(f"Failed to get version. Error {e}")  # Updated logging
+
+
+# Additional version generators can be added here if needed
 class AquaVersionGenerator(BaseVersionGenerator):
+    """
+    Aqua version generator class.
+    Inherits from BaseVersionGenerator.
+    """
+
     def __init__(self):
+        """
+        Initializes AquaVersionGenerator instance.
+        """
         super().__init__("Aqua")
 
 
 class Web3VersionGenerator(BaseVersionGenerator):
+    """
+    Web3 version generator class.
+    Inherits from BaseVersionGenerator.
+    """
+
     def __init__(self):
+        """
+        Initializes Web3VersionGenerator instance.
+        """
         super().__init__("Web3")
 
 
 class FluenceVersionGenerator(BaseVersionGenerator):
+    """
+    Fluence version generator class.
+    Inherits from BaseVersionGenerator.
+    """
+
     def __init__(self):
+        """
+        Initializes FluenceVersionGenerator instance.
+        """
         super().__init__("Fluence")
 
+
+# Additional documentation, error handling, or features can be added as needed
 
 # Example usage:
 

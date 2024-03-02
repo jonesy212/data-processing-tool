@@ -2,6 +2,7 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import {
     NotificationType,
+    NotificationTypeEnum,
     useNotification,
 } from "@/app/components/support/NotificationContext";
 import { useEffect } from "react";
@@ -124,6 +125,7 @@ const useSnapshotManager = () => {
           "Snapshot updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
           undefined,
+          new Date,
           NotificationTypeEnum.OperationSuccess
         );
       } else {

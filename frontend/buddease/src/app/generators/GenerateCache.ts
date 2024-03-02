@@ -22,7 +22,7 @@ import {
   notificationBarPhaseHook,
 } from "../components/hooks/userInterface/UIPhaseHooks";
 import { Data } from "../components/models/data/Data";
-import { CalendarEvent, updateCallback } from "../components/state/stores/CalendarStore";
+import { updateCallback,CalendarEvent } from "../components/state/stores/CalendarEvent";
 import { backendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
 import userSettings from "../configs/UserSettings";
@@ -67,6 +67,7 @@ export interface CacheData extends Data {
 
   // Add more top-level cache properties as needed
   fileType: string;
+  calendarEvent: CalendarEvent; 
 }
 
 // Rest of the code remains unchanged...

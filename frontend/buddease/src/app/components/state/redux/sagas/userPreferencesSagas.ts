@@ -1,34 +1,38 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
-import * as ApiUserPreferences from '@/app/api/ApiUserPreferences';
+import { endpointPreferences } from "@/app/api/ApiPreferencesEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
+import useApiUserPreferences from "@/app/api/preferences/ApiUserPreferences";
+import { showToast } from "@/app/components/models/display/ShowToast";
 import NOTIFICATION_MESSAGES from '@/app/components/support/NotificationMessages';
-import { UserCommunicationPreferences } from "@/app/configs/UserPreferencesActions";
+import { UserBrandingPreferencesActions, UserCommunicationPreferencesActions, UserPreferencesActions } from "@/app/configs/UserPreferencesActions";
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 
+const API_PREFERENCES_URL = endpointPreferences.userPreferences;
 // Sample Sagas for handling user preferences actions
 function* handleSetTheme(action: PayloadAction<string>) {
   // Logic to handle setting theme
   const { payload: theme } = action;
   try {
-    yield call(ApiUserPreferences.setTheme, theme);
+    yield call(useApiUserPreferences().setTheme, theme);
   } catch (error) {
     yield put(
-      UserCommunicationPreferences.setThemeFailure({
-        error: NOTIFICATION_MESSAGES.UserPreferences.SET_THEME_ERROR,
+      UserBrandingPreferencesActions.setThemeFailure({
+        error: NOTIFICATION_MESSAGES.Theme.DEFAULT
       })
     );
   }
 }
 
-function* handleSetIdeationPhase(action: PayloadAction) {
+function* handleSetIdeationPhase(action: PayloadAction<any>) {
   // Logic to handle setting ideation phase
   const { payload: ideationPhase } = action;
   try {
-    yield call(ApiUserPreferences.setIdeationPhase, ideationPhase);
+    yield call(useApiUserPreferences().setIdeationPhase, ideationPhase);
   } catch (error) {
     yield put(
-      UserCommunicationPreferences.setIdeationPhaseFailure({
+      UserCommunicationPreferencesActions.setIdeationPhaseFailure({
         error: NOTIFICATION_MESSAGES.UserPreferences.SET_IDEATION_PHASE_ERROR,
       })
     );
@@ -36,31 +40,35 @@ function* handleSetIdeationPhase(action: PayloadAction) {
 }
 
 // Worker Saga: Fetch User Preferences
-function* fetchUserPreferencesSaga() {
+function* fetchUserPreferencesSaga(): Generator<any, void, any> {
   try {
     // Dispatch an action to indicate the start of fetching user preferences
-    // yield put(UserPreferencesActions.fetchUserPreferencesRequest());
+    yield put(UserPreferencesActions.fetchUserPreferencesRequest());
     
     // Call the API to fetch user preferences
-    const userPreferences = yield call(ApiUserPreferences.fetchUserPreferences);
+    const userPreferences: any = yield call(useApiUserPreferences().fetchUserPreferences);
 
     // Dispatch an action to update the store with fetched user preferences
-    // yield put(UserPreferencesActions.fetchUserPreferencesSuccess(userPreferences));
+    yield put(UserPreferencesActions.fetchUserPreferencesSuccess({ userPreferences }));
   } catch (error) {
     // Dispatch an action to handle fetch failure
-    // yield put(UserPreferencesActions.fetchUserPreferencesFailure(error));
+    yield put(UserPreferencesActions.fetchUserPreferencesFailure({
+      error: NOTIFICATION_MESSAGES.UserPreferences.FETCH_THEME_FAILURE
+    }));
   }
 }
 
+
 // Sagas for Communication Preferences
-function* enableAudioCommunicationSaga(action) {
+function* enableAudioCommunicationSaga(action: PayloadAction<any>) {
   try {
     // API call to enable audio communication
-    yield call(axiosInstance.post, endpoints.ENABLE_AUDIO_COMMUNICATION, action.payload);
-    yield put({ type: UserPreferencesActions.ENABLE_AUDIO_COMMUNICATION_SUCCESS, payload: action.payload });
+    yield call(axiosInstance.post, endpoints.communication.audioCall, action.payload);
+    yield put(UserCommunicationPreferencesActions.enableAudioCommunicationSuccess({ payload: action.payload }));
   } catch (error) {
-    showToast("Error enabling audio communication");
-    yield put({ type: UserPreferencesActions.ENABLE_AUDIO_COMMUNICATION_FAILURE, payload: error });
+    const content= {} as  Message
+    showToast(content);
+    yield put(UserPreferencesActions.enableAudioCommunicationFailure({error:NOTIFICATION_MESSAGES.Audio.AudioCommunicationFailure}));
   }
 }
 
@@ -95,22 +103,28 @@ function* setSyncPreferencesSaga(action) {
 // Watcher Saga: Watches for user preferences actions
 function* watchUserPreferencesActions() {
   yield all([
-    // Sample Sagas
-    takeLatest(UserCommunicationPreferences.setTheme.type, handleSetTheme),
-    takeLatest(UserCommunicationPreferences.setIdeationPhase.type, handleSetIdeationPhase),
-    // Worker Saga
-    takeLatest(UserPreferencesActions.FETCH_USER_PREFERENCES_REQUEST, fetchUserPreferencesSaga),
-    // Communication Preferences sagas
-    takeLatest(UserPreferencesActions.ENABLE_AUDIO_COMMUNICATION_REQUEST, enableAudioCommunicationSaga),
-    takeLatest(UserPreferencesActions.ENABLE_VIDEO_COMMUNICATION_REQUEST, enableVideoCommunicationSaga),
-    // Visual Preferences sagas
-    takeLatest(UserPreferencesActions.SET_FONT_SIZE_REQUEST, setFontSizeSaga),
-    takeLatest(UserPreferencesActions.SET_COLOR_SCHEME_REQUEST, setColorSchemeSaga),
-    // Data Management Preferences sagas
-    takeLatest(UserPreferencesActions.SET_BACKUP_PREFERENCES_REQUEST, setBackupPreferencesSaga),
-    takeLatest(UserPreferencesActions.SET_SYNC_PREFERENCES_REQUEST, setSyncPreferencesSaga),
-    // Add more watchers for other user preferences actions...
-  ]);
+      // Sample Sagas
+      takeLatest(UserCommunicationPreferencesActions.setTheme.type, handleSetTheme),
+      takeLatest(UserCommunicationPreferencesActions.setIdeationPhase.type, handleSetIdeationPhase),
+      
+      // Worker Saga fetchuserpreferencesrequest
+      takeLatest(UserPreferencesActions.fetchUserPreferencesRequest, fetchUserPreferencesSaga),
+      
+      // Communication Preferences sagas
+      takeLatest(UserCommunicationPreferencesActions.enableAudioCommunication.type, enableAudioCommunicationSaga), // Updated action type
+      takeLatest(UserCommunicationPreferencesActions.enableVideoCommunicationRequest.type, enableVideoCommunicationSaga), // Updated action type
+      
+      // Visual Preferences sagas
+      takeLatest(UserPreferencesActions.setFontSizeRequest.type, setFontSizeSaga),
+      takeLatest(UserPreferencesActions.setColorSchemeRequest.type, setColorSchemeSaga),
+      
+      // Data Management Preferences sagas
+      takeLatest(UserPreferencesActions.SET_BACKUP_PREFERENCES_REQUEST.type, setBackupPreferencesSaga),
+      takeLatest(UserPreferencesActions.SET_SYNC_PREFERENCES_REQUEST.type, setSyncPreferencesSaga),
+    
+      takeLatest("FETCH_USER_PREFERENCES", fetchUserPreferencesSaga), // Action type should be provided here
+  
+   ]);
 }
 
 // Root Saga

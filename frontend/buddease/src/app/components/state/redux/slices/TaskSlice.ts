@@ -259,8 +259,8 @@ export const taskManagerSlice = createSlice({
       const taskId = action.payload;
       const taskToDuplicate = state.tasks.find((task) => task.id === taskId);
       if (taskToDuplicate) {
-        const uniqueID = new UniqueIDGenerator();
-        const generatedID = uniqueID.generateTaskID(
+        const generateTaskId = new UniqueIDGenerator();
+        const generatedTaskID = generateTaskId.generateTaskID(
           taskToDuplicate.title,
           taskToDuplicate.description
         );

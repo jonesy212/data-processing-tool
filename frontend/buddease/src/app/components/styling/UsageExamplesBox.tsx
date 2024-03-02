@@ -5,14 +5,17 @@ import RefactoringRebrandingPhase from "../projects/RefactoringRebrandingPhase";
 import ColorPalette from "./ColorPalette";
 import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
 
+import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/app/pages/layouts/CommonLayout";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
-import useLayoutGenerator from "../hooks/GenerateUserLayout";
+import useLayoutGenerator, { DocumentGenerationResult } from "../hooks/GenerateUserLayout";
 import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
 import { darkModeTogglePhaseHook } from "../hooks/userInterface/UIPhaseHooks";
 import AnimationControls from "../libraries/animations/AnimationControls";
 import DynamicSelectionControls from "../libraries/animations/DynamicSelectionControls";
+import responsiveDesignStore from "./ResponsiveDesign";
+import { AsyncHook } from "../hooks/useAsyncHookLinker";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox
@@ -42,11 +45,19 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
   ];
 
   // Usage example for Notification Bar Phase Hook
-  const notificationBarExample = notificationBarPhaseHook();
+  const notificationBarExample: AsyncHook = {
+    condition: () => true, // Example condition
+    asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
+    isActive: false, // Example isActive property
+    toggleActivation: () => {}, // Example toggleActivation method
+  };
+
 
   // Usage example for Dark Mode Toggle Phase Hook
-  const darkModeToggleExample = darkModeTogglePhaseHook();
-
+  const darkModeToggleExample: AsyncHook = {
+    condition: () => true, // Example condition
+    asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
+  };
   // Usage example for RefactoringRebrandingPhase
   const refactoringRebrandingExample = <RefactoringRebrandingPhase />;
 
@@ -76,12 +87,30 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
 
   // Usage example for useLayoutGenerator
   const layoutGeneratorExample = useLayoutGenerator({
-    condition: () => true,
-    layoutEffect: () => {
-      console.log("Layout effect activated");
+    condition: () => true, // Adjust the condition as needed
+    cleanup: () => {}, // Adjust the cleanup logic as needed
+    layoutEffect: () => {}, // Adjust the layout effect logic as needed
+    generateDocument: (
+      options: DocxGeneratorOptions
+    ): Promise<DocumentGenerationResult> => {
+      return Promise.resolve({
+        success: true,
+        message: "Document generation successful",
+        // Add other properties as needed to match DocumentGenerationResult type
+      });
     },
-    cleanup: () => {
-      console.log("Cleanup logic");
+    documentGeneratorOptions: {} as DocxGeneratorOptions,
+
+    layoutConfigGetter: (): Promise<{
+      documentGeneration: string;
+      designDashboard: JSX.Element;
+      responsiveDesignStore: typeof responsiveDesignStore;
+    }> => {
+      return Promise.resolve({
+        documentGeneration: "",
+        designDashboard: <div></div>, // Provide JSX element here
+        responsiveDesignStore: responsiveDesignStore,
+      });
     },
   });
 

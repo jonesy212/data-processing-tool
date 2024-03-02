@@ -5,6 +5,7 @@ import { AppStructureItem } from './AppStructure';
 
 
 export default class FrontendStructure {
+  [key: string]: any; 
   private structure: Record<string, AppStructureItem> = {};
 
   constructor(projectPath: string) {

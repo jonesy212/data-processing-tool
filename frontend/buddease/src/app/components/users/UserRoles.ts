@@ -16,6 +16,7 @@ const UserRoles: { [key: string]: UserRole } = {
       'Access sales analytics data',
       'Configure platform settings',
     ],
+    positions: []
   },
   Moderator: {
     role: 'Moderator',

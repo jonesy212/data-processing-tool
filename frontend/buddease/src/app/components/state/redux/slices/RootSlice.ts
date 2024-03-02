@@ -48,6 +48,8 @@ export interface RootState {
   realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>
 }
 
+
+
 const initialState: RootState = {
   toolbarManager: useToolbarManagerSlice.reducer(undefined, { type: "init" }),
   useProjectManager: useProjectManagerSlice.reducer(undefined, { type: "init"}),
@@ -289,11 +291,7 @@ builder.addCase(
     state.trackerManager.trackers.push(draftPayload);
   }
 );
-
-
-
-
-    // Add video-related actions
+// Add video-related actions
     builder.addCase(
       useVideoManagerSlice.actions.setVideos,
       (state, action: PayloadAction<Video[]>) => {
@@ -366,4 +364,6 @@ export const selectDataAnalysisManager = (state: RootState) =>
   state.dataAnalysisManager;
 // Add other selectors as needed
 
-export default rootReducer; 
+export default  rootReducer;
+export { initialState };
+

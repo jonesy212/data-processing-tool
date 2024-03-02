@@ -1,3 +1,5 @@
+import { VideoData } from "./Video";
+
 interface VideoSystemFeature {
   name: string;
   description: string;
@@ -16,6 +18,9 @@ interface Video {
   id: string; // Unique identifier for the video
   title: string; // Title of the video
   description: string; // Description of the video
+  videoDislikes: number; // Number of dislikes for the video
+  videoAuthor: string; // Author of the video
+  videoDurationInSeconds: number
   playlists: string[]; // List of playlists that the video belongs to
   url: string;
   thumbnailUrl: string;

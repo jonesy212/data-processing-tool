@@ -1,5 +1,6 @@
-import { all, takeLatest } from "redux-saga/effects";
+import * as teamAPI from '@/app/api/TeamApi';
 import { TeamCreationPhaseActions } from "@/app/components/phases/actions/TeamCreationPhaseActions";
+import { all, call, takeLatest } from "redux-saga/effects";
 
 // Worker saga for handling actions related to Team Creation Phase
 function* handleTeamCreationPhaseActions(action: any): Generator<any, void, any> {
@@ -9,7 +10,7 @@ function* handleTeamCreationPhaseActions(action: any): Generator<any, void, any>
     switch (action.type) {
       case TeamCreationPhaseActions.updateTeamCreationPhase.type:
         // Call API to update team creation phase data
-        yield call(teamCreationPhaseAPI.updateTeamCreationPhase, payload.id, payload.newData);
+        yield call(teamAPI.updateTeamCreationPhase, payload.id, payload.newData);
         // Dispatch success action if needed
         // yield put({ type: TeamCreationPhaseActions.updateTeamCreationPhaseSuccess.type });
         break;

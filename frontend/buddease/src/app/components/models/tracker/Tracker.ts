@@ -70,7 +70,7 @@ class TrackerClass implements Tracker {
       // Dispatch action to update user profile
       dispatch({ type: 'LOGIN_WITH_ROLES', payload: { user: userData } });
       console.log("Updating user profile:", userData);
-     // Dispatch update actions using userManagerSlice.actions
+    //  Dispatch update actions using userManagerSlice.actions
       // For example:
       // dispatch(updateFullName(userData.fullName));
       // dispatch(updateBio(userData.bio));

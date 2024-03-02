@@ -88,13 +88,17 @@
     "socket.io-client": "^4.7.2",
     "styled-components": "^6.1.8",
     "uuid": "^9.0.1",
+    "web3": "^4.5.0",
+    "web3-eth-contract": "^4.2.0",
     "winston": "^3.11.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",
+    "@babel/plugin-transform-runtime": "^7.23.9",
     "@babel/preset-env": "^7.23.6",
     "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
     "@faker-js/faker": "^8.3.1",
     "@fluencelabs/cli": "^0.12.7",
     "@storybook/addon-controls": "^7.6.10",
@@ -116,7 +120,9 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
     "eslint-plugin-react": "^7.33.2",
+    "metro-config": "^0.80.6",
     "nock": "^13.5.0",
+    "react-native-typescript-transformer": "^1.2.13",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

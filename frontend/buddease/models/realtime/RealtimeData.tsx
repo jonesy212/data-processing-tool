@@ -1,5 +1,7 @@
 import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
+import { Data } from "@/app/components/models/data/Data";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import SnapshotStore, { Snapshot } from "@/app/components/state/stores/SnapshotStore";
 import React, { useEffect } from "react";
 
 
@@ -21,24 +23,61 @@ interface RealtimeDataProps {
   dispatch: (action: any) => void; 
 }
 
+
+const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
+  Object.keys(snapshotStore).forEach((snapshotId) => {
+    // Perform actions based on each snapshotId
+    // For example, you can access the snapshot data using snapshotStore[snapshotId]
+    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<Data>>;
+    const snapshotData = snapshotStore[typedSnapshotId];
+    console.log(`Processing snapshot with ID ${typedSnapshotId}:`, snapshotData);
+    
+    // Add your custom logic here
+  });
+};
+
+
 const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
   // Initial data can be an empty array or any initial state you want
-  const initialData: any[] = [];
+  const initialData: RealtimeDataItem[] = [];
 
   // Custom update callback function
   // Adjust the type of updateCallback to match the expected signature
-  const updateCallback: (events: Record<string, CalendarEvent[]>) => void = (events: Record<string, CalendarEvent[]>) => {
+  const updateCallback: (
+    data: SnapshotStore<Snapshot<Data>>,
+    events: Record<string, CalendarEvent[]>,
+    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    dataItems: RealtimeDataItem[]
+  ) => void = (
+    data: SnapshotStore<Snapshot<Data>>,
+    events: Record<string, CalendarEvent[]>,
+    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    dataItems: RealtimeDataItem[]
+  ) => {
     // Your update logic here
-    // For example, you can directly use the updated events data
-    Object.keys(events).forEach((eventId: string) => {
-      const calendarEvents = events[eventId];
-      // Perform actions based on each calendar event
-      calendarEvents.forEach((event: CalendarEvent) => {
-        // Example: Update UI or trigger notifications based on the event
-        console.log(`Updated event with ID ${eventId}:`, event);
-      });
+    
+  // Log the contents of the 'data' parameter for debugging purposes
+  console.log('Snapshot store data:', data);
+
+  // Iterate over RealtimeDataItems and CalendarEvents
+  dataItems.forEach((dataItem: RealtimeDataItem) => {
+    console.log(`Updated data item with ID ${dataItem.id}:`, dataItem);
+  });
+
+    
+  processSnapshotStore(snapshotStore)
+
+  // For example, you can directly use the updated events data
+  Object.keys(events).forEach((eventId: string) => {
+    const calendarEvents = events[eventId];
+    // Perform actions based on each calendar event
+    calendarEvents.forEach((event: CalendarEvent) => {
+      // Example: Update UI or trigger notifications based on the event
+      console.log(`Updated event with ID ${eventId}:`, event);
     });
-  };
+  });
+};
+
 
 
   // Get realtime data and fetchData function from the hook
@@ -68,4 +107,4 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
   );
 };
 
-export default RealtimeData;
+export default RealtimeDataItem; RealtimeData;

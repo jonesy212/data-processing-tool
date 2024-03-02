@@ -2,6 +2,7 @@
 import { Data } from "@/app/components/models/data/Data";
 import { detailsApiService } from "@/app/components/models/data/DetailsService";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import detailsConfig from "@/app/configs/detailsConfig";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { DetailsListActions } from "../actions/DetailsListActions";
@@ -89,3 +90,7 @@ function* watchDetailsSagas() {
 export function* detailsSagas() {
   yield watchDetailsSagas();
 }
+
+
+//todo update to use errorMessage
+const errorMessage = detailsConfig.notificationMessages.updateDetailsItemError;

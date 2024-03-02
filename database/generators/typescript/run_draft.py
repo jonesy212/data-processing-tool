@@ -10,9 +10,26 @@ from state.stores.code_generation import create_store_file
 async def get_category_directory(category):
     return os.path.join('path/to/categories', category)
 
+
+
+
+def get_frontend_folder():
+    project_directory = os.getcwd()  # Get the current working directory
+    frontend_folders = [folder for folder in os.listdir(project_directory) if os.path.isdir(os.path.join(project_directory, folder)) and folder == "frontend"]
+    
+    if len(frontend_folders) == 1:
+        return os.path.join(project_directory, frontend_folders[0])
+    elif len(frontend_folders) > 1:
+        raise RuntimeError("Multiple 'frontend' folders found in the project directory.")
+    else:
+        raise FileNotFoundError("No 'frontend' folder found in the project directory.")
+
 def get_file_path(category, model_name):
-    # Assuming you have a frontend folder where you want to store the TypeScript files
-    frontend_folder = 'frontend'
+    try:
+        frontend_folder = get_frontend_folder()
+    except (RuntimeError, FileNotFoundError) as e:
+        print(f"Error determining frontend folder: {e}")
+        return None
     
     # Assuming a simple structure like frontend/<category>/<model_name>Store.ts
     file_path = os.path.join(frontend_folder, category, f'{model_name}Store.ts')

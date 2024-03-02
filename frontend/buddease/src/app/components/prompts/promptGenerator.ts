@@ -7,7 +7,34 @@ export const generatePrompt = (userIdea: any): string | null => {
     console.error("Invalid user idea. Cannot generate prompt.");
     return null;
   }
-  const prompt = `You are a professional at ${userIdea}. You have the expertise and experiences to answer any questions.`;
+
+  let prompt: string | null = null;
+
+  switch (userIdea.toLowerCase()) {
+    case "web development":
+      prompt = "Prompt for web development";
+      break;
+    case "app development":
+      prompt = "Prompt for app development";
+      break;
+    case "community":
+      prompt = "Prompt for community idea";
+      break;
+    case "team":
+      prompt = "Prompt for team idea";
+      break;
+    case "video":
+      prompt = "Prompt for video idea";
+      break;
+    case "blog":
+      prompt = "Prompt for blog idea";
+      break;
+    // Add more cases for additional idea types as needed
+    default:
+      prompt = `You are considering the idea of ${userIdea}.`; // Generic prompt for unrecognized ideas
+      break;
+  }
+
   return prompt;
 };
 

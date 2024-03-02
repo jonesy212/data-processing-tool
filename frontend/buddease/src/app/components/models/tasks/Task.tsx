@@ -2,6 +2,7 @@
 import { User } from "@/app/components/users/User";
 import { Phase } from "../../phases/Phase";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
+import { VideoData } from "../../video/Video";
 import CommonDetails from "../CommonData";
 import { Data } from "../data/Data";
 
@@ -166,6 +167,6 @@ export const tasksDataSource: Record<string, Task> = {
   // Add more tasks as needed
 };
 
-export { TaskDetails };
+export default TaskDetails 
 export type { Task };
 

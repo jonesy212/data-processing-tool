@@ -2,6 +2,7 @@ import { Phase } from "../../phases/Phase";
 import { Snapshot } from "../../state/stores/SnapshotStore";
 import { Attachment, Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
+import { VideoData } from "../../video/Video";
 import CommonDetails from "../CommonData";
 import { Idea } from "../tasks/Task";
 
@@ -60,13 +61,13 @@ interface Data {
   isBeingReassigned?: boolean;
   analysisType: string;
   analysisResults: string[];
-  videoUrl: string;
-  videoThumbnail: string;
-  videoDuration: number;
+  videoUrl?: string;
+  videoThumbnail?: string;
+  videoDuration?: number;
   collaborationOptions?: CollaborationOption[]; // Or whatever type is appropriate
   videoData: VideoData
   [key: string]: any;
-  ideas: Idea[];
+  ideas?: Idea[];
 }
 
 // Define the UserDetails component

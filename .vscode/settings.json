@@ -1,4 +1,5 @@
 {
     "python.terminal.activateEnvironment": true,
-    "workbench.settings.openDefaultSettings": true
+    "workbench.settings.openDefaultSettings": true,
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

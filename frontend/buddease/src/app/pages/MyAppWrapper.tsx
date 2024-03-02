@@ -7,6 +7,7 @@ import {
 } from "../components/hooks/phaseHooks/PhaseHooks";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import MyApp from "./_app";
+import BrandingSettings from "../libraries/theme/BrandingService";
 
 
 
@@ -22,7 +23,17 @@ import MyApp from "./_app";
     _wrapApp: any;
   };
 
-function MyAppWrapper({ Component, pageProps }: AppProps) {
+
+
+
+  // Extend AppProps to include hooks
+
+  type ExtendedAppProps = AppProps & {
+    hooks: Record<string, any>;
+    utilities: any;
+  };
+
+function MyAppWrapper({ Component, pageProps }: ExtendedAppProps) {
   // Extend AppProps to include hooks
 
   // Define a generic type for hooks
@@ -39,8 +50,58 @@ function MyAppWrapper({ Component, pageProps }: AppProps) {
     logoUrl: "https://example.com/logo.png",
     themeColor: "#3366cc",
     secondaryThemeColor: "#ff9900",
-    borderRadiusLarge: "10px",
-    // Add other branding settings as needed
+   
+    // Accessing textColor through the colors object
+    colors: {
+      // General Colors
+      primary: "#...",
+      accent: "#...",
+      success: "#28a745",
+      error: "#dc3545",  
+      warning: "#ffc107",
+      info: "#17a2b8",   
+      textColor: "#000000",
+      linkColor: "#007bff",
+      // Other color properties
+    },
+    textColor: "#000000",
+  
+    // Typography
+    fontFamily: "Arial, sans-serif",
+    headingFontFamily: "Helvetica, sans-serif",
+    fontSize: "16px",
+    headingFontSize: "24px",
+    
+    // Line height
+    lineHeight: { 
+      normal: "1.5",
+      medium: "1.7",
+      large: "2",
+    },
+  
+    // Border radius
+    borderRadiusLarge: "10px", // Large border radius
+    borderRadiusMedium: "5px", // Medium border radius
+    borderRadiusSmall: "3px", // Small border radius
+  
+    // Box shadows
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Default box shadow
+    boxShadowHover: "0 4px 8px rgba(0, 0, 0, 0.2)", // Box shadow on hover
+  
+    // Spacing
+    spacingSmall: "8px", // Small spacing
+    spacingMedium: "16px", // Medium spacing
+    spacingLarge: "24px", // Large spacing
+  
+    // Breakpoints
+    breakpoints: {
+      mobile: "576px", // Mobile breakpoint
+      tablet: "768px", // Tablet breakpoint
+      laptop: "992px", // Laptop breakpoint
+      desktop: "1200px", // Desktop breakpoint
+    },
+      // Add other branding settings as needed
+
   };
 
   // Generate hooks dynamically based on your phases
@@ -95,13 +156,6 @@ function MyAppWrapper({ Component, pageProps }: AppProps) {
         return () => {};
       },
     } as PhaseHookConfig),
-  };
-
-  // Extend AppProps to include hooks
-
-  type ExtendedAppProps = AppProps & {
-    hooks: Record<string, any>;
-    utilities: any;
   };
 
   return (

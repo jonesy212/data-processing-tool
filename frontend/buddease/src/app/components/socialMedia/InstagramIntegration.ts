@@ -1,5 +1,4 @@
 // InstagramIntegration.ts
-
 interface InstagramUserDetails {
     userId: string;
     username: string;

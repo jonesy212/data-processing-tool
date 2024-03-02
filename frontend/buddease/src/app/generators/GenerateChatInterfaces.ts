@@ -7,6 +7,7 @@ import { User, UserData } from "../components/users/User";
     channelId: string;
     content: string;
     timestamp: Date;
+    text: string;
   }
   
   // Function to generate dynamic interfaces

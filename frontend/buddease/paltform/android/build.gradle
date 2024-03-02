@@ -1,0 +1,25 @@
+// build.gradle (App level)
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion <your_compile_sdk_version>
+    defaultConfig {
+        applicationId "<your_application_id>"
+        minSdkVersion <your_min_sdk_version>
+        targetSdkVersion <your_target_sdk_version>
+        versionCode <your_version_code>
+        versionName "<your_version_name>"
+    }
+    buildTypes {
+        release {
+            // Release build settings
+        }
+        debug {
+            // Debug build settings
+        }
+    }
+}
+
+dependencies {
+    // Add your dependencies here
+}

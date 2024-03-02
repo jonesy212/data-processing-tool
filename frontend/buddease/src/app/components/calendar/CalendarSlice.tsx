@@ -12,6 +12,7 @@ import { Attachment } from '../todos/Todo';
 import CalendarEventViewingDetailsProps from './CalendarEventViewingDetails';
 import DefaultCalendarEventViewingDetails from './DefaultCalendarEventViewingDetails';
 import EventDetailsComponent from './EventDetailsComponent';
+import { fetchData } from '@/app/api/ApiData';
 
 
 interface Milestone {
@@ -79,7 +80,7 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     // For "events" action:
-    events: (state, action: PayloadAction<Record<string, CalendarEvent>>) => {
+    events: (state, action: PayloadAction<WritableDraft<Record<string, CalendarEvent>>>) => {
       state.entities = action.payload;
       dispatchNotification(
         "events",
@@ -115,20 +116,24 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     
+    
     // For "removeCalendarEvent" action:
-    removeCalendarEvent: (state, action: PayloadAction<CalendarEvent>) => {
-      const event = state.entities[action.payload.id];
-      if (await event) {
-        delete state.entities[action.payload.id];
+    
+    removeCalendarEvent: async (state, action: PayloadAction<WritableDraft<CalendarEvent>>) => { 
+      const eventId = action.payload.id; // Assuming eventId is a string or number
+      const event = await state.entities[eventId];
+      if (event) {
+        delete state.entities[eventId];
         dispatchNotification(
           "removeCalendarEvent",
           "Calendar event removed successfully",
           "Error removing calendar event",
           dispatch,
-          action.payload
+          eventId
         );
       }
     },
+    
 
     // For "updateCalendarEvent" action:
     updateCalendarEvent: (state, action: PayloadAction<CalendarEvent>) => {
@@ -205,26 +210,15 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     // Action to send calendar event reminder
-    sendCalendarEventReminder: (
-      state,
-      action: PayloadAction<{ eventId: string }>
-    ) => {
-      const event = state.entities[action.payload.eventId];
-      if (await event) {
-        // Logic to send reminder...
-        const { notify } = useNotification();
-        notify(
-          "Calendar event reminder sent successfully",
-          NOTIFICATION_MESSAGES.CalendarEvents.EVENT_REMINDER_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.CalendarEvent
-        );
+    sendCalendarEventReminder: (state, action: PayloadAction<CalendarEvent>) => { 
+      const event = state.entities[action.payload.id];
+      if (event) {
         dispatchNotification(
           "sendCalendarEventReminder",
           "Calendar event reminder sent successfully",
           "Error sending calendar event reminder",
           dispatch,
-          action.payload.eventId
+          action.payload
         );
       }
     },

@@ -1,12 +1,12 @@
 import RandomWalkSuggestions from '@/app/components/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/components/models/data/Data';
-import SnapshotStoreConfig ,  { Snapshot , SnapshotStoreConfig as SnapshotStoreConfigType,} from '@/app/components/state/stores/SnapshotStore';
+import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '@/app/components/state/stores/SnapshotStore';
 import configurationService from '@/app/configs/ConfigurationService';
 import ReactDOM from 'react-dom';
 
 // Automated system setup process
 const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data>>) => {
-  typeof SnapshotStoreConfig === 'function' && new SnapshotStoreConfig(config); // Pass the config directly
+  typeof SnapshotStoreConfig === 'function' && new SnapshotStoreConfig(config,notify); // Pass the config directly
 
   // Create and render RandomWalkSuggestions component
   const rootElement = document.getElementById('root');

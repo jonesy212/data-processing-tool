@@ -1,11 +1,13 @@
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { Phase } from "../../phases/Phase";
-import Project from "../../projects/Project";
+import Project, { ProjectType } from "../../projects/Project";
+import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { Snapshot } from "../../state/stores/SnapshotStore";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
+import { VideoData } from "../../video/Video";
 import CommonDetails from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
 import { Idea, Task } from "../tasks/Task";
@@ -97,6 +99,7 @@ const team: Team = {
       leader: null,
       budget: 0,
       ideas: {} as Idea[],
+      type: ProjectType.Default
     },
     {
       _id: "project-2",
@@ -118,6 +121,7 @@ const team: Team = {
       videoDuration: 0,
       videoData: {} as VideoData,
       ideas: {} as Idea[],
+      type: ProjectType.Internal,
       tasks: [
         {
           _id: "project",
@@ -125,9 +129,8 @@ const team: Team = {
           title: "Task 1",
           description: "Description of Task 1",
           phase: {} as Phase,
-          assignedTo: [
-            /* ... */
-          ],
+          assignedTo: {} as WritableDraft<User>,
+          
           then(arg0: (newTask: any) => void): unknown {
             const newTask = {
               _id: "task-2",

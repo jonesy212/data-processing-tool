@@ -11,7 +11,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
-
+from versioning.version import Version
 from api.app_context_helper import AppContextHelper
 from authentication.auth import auth_bp
 from blueprint_routes.blueprint_register import register_blueprints
@@ -35,6 +35,8 @@ from preprocessing.clean_transformed_data import (clean_and_transform_data,
 auditor = AuditingLogger(log_file='auditing.log')
 migrate = Migrate()
 
+
+current_version = Version("1.0")  # Initialize with default version
 
 def create_app(config_file=None):
 
@@ -66,6 +68,11 @@ def create_app(config_file=None):
 
     # Set up rate limiting rules
     limiter.limit("5 per minute")(register)  # Limit the register route to 5 requests per minute
+
+
+    @app.route('/api/version', methods=['GET'])
+    def get_version():
+        return jsonify({"version": current_version.getVersionNumber()})
 
    
     @cache.cached(timeout=50, key_prefix='index_data')

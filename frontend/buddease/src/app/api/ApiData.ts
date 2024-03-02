@@ -7,7 +7,7 @@ const API_BASE_URL = endpoints.data.list; // Update API base URL
 
 export const fetchData = async (): Promise<any[]> => {
   try {
-    const response = await axiosInstance.get(API_BASE_URL);
+    const response = await axiosInstance.get(API_BASE_URL.data.);
     return response.data; // Update based on your response structure
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -17,7 +17,7 @@ export const fetchData = async (): Promise<any[]> => {
 
 export const addData = async (newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent, 'id'>): Promise<void> => {
   try {
-    const response = await axiosInstance.post(endpoints.data.addData, newData);
+    const response = await axiosInstance.post(endpoints, newData);
 
     if (response.status === 200 || response.status === 201) {
       const createdData = response.data;

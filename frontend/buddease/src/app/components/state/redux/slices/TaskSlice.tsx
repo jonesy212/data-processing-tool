@@ -1,16 +1,10 @@
 // TaskSlice.ts
-import { useWebNotifications } from '@/app/components/hooks/commHooks/useWebNotifications';
-import { sanitizeInput } from '@/app/components/security/SanitizationFunctions';
-import { generateNewTask } from '@/app/generators/GenerateNewTask';
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
-import { TaskLogger } from '@/app/pages/logging/Logger';
-import { NamingConventionsError } from '@/app/shared/shared-error-handling';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import FileSaver from "file-saver";
 import * as Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { Data } from "../../../models/data/Data";
-import { Idea, Task, TaskDetails, tasksDataSource } from "../../../models/tasks/Task";
+import { Idea, TaskDetails, tasksDataSource } from "../../../models/tasks/Task";
 import Project from '../../../projects/Project';
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
 import { WritableDraft } from "../ReducerGenerator";
@@ -808,7 +802,7 @@ reducers: {
           }
 
     const newTask = createNewTask(); 
-    const currentUser = userMÍanagerStore()
+    const currentUser = userManagerStore()
     const project = useProjectManagerStore().currentProject;
     const assignedTask = useProjectManagerSlice.assignTaskToCurrentUser(newTask as Task, currentUser); // Assign the task to the current user
     const projectAssignedTask = useProjectManagerSlice.assignTaskToProject(project, assignedTask); // Assign the task to a specific project
@@ -963,6 +957,16 @@ undoAction,
 redoAction,
 exportTasks,
 importTasks,
+import { Task } from '@/app/components/models/tasks/Task';
+import { TaskLogger } from '@/app/pages/logging/Logger';
+import { generateNewTask } from '@/app/generators/GenerateNewTask';
+import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
+import { useProjectManagerSlice } from './ProjectSlice';
+import { userManagerStore } from "../../stores/UserStore";
+import { VideoData } from "../../../video/Video";
+import { sanitizeInput } from "../../../security/SanitizationFunctions";
+import { NamingConventionsError } from '@/app/shared/shared-error-handling';
 
 updateTaskDetails,
 updateTaskTags,

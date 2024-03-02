@@ -1,4 +1,4 @@
-import { Blog } from '@/app/types/Blog'; // Assuming the type Blog is defined in 'types/Blog.ts'
+import { Blog } from "./Blog";
 
 /**
  * Utility function to filter blogs by a specific category.

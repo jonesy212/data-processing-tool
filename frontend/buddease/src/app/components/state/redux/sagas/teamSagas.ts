@@ -285,6 +285,35 @@ function* fetchTeamsFailureSaga(action: any) {
 }
 
 
+
+// Saga logic for managing team roles
+export function* manageTeamRolesSaga(action: ReturnType<typeof TeamActions.manageTeamRoles>) {
+  try {
+    const { teamId, roles } = action.payload;
+    yield call(teamApi.manageTeamRoles, teamId, roles);
+    yield put(TeamActions.manageTeamRolesSuccess({ teamId, roles }));
+  } catch (error) {
+    yield put(TeamActions.manageTeamRolesFailure({
+      error: NOTIFICATION_MESSAGES.Team.MANAGE_TEAM_ROLES_ERROR
+    }));
+  }
+}
+
+// Saga logic for collaborating on projects within a team
+export function* collaborateOnProjectsSaga(action: ReturnType<typeof TeamActions.collaborateOnProjects>) {
+  try {
+    const { teamId, projectId } = action.payload;
+    yield call(teamApi.collaborateOnProjects, teamId, projectId);
+    yield put(TeamActions.collaborateOnProjectsSuccess({ teamId, projectId }));
+  } catch (error) {
+    yield put(TeamActions.collaborateOnProjectsFailure({
+      error: NOTIFICATION_MESSAGES.Team.COLLABORATE_ON_PROJECTS_ERROR
+    }));
+  }
+}
+
+
+
 // Watcher Saga: Watches for the fetch and update team actions
 function* watchTeamSagas() {
   yield takeLatest(TeamActions.fetchTeamRequest.type, fetchTeamSaga);
@@ -322,6 +351,11 @@ function* watchTeamSagas() {
   // Listen for update teams success and failure actions
   yield takeLatest(TeamActions.updateTeamsSuccess.type, updateTeamsSuccessSaga);
   yield takeLatest(TeamActions.updateTeamsFailure.type, updateTeamsFailureSaga);
+
+
+  yield takeLatest(TeamActions.updateTeamsRequest.type, updateTeamsSaga);
+  yield takeLatest(TeamActions.manageTeamRoles.type, manageTeamRolesSaga);
+  yield takeLatest(TeamActions.collaborateOnProjects.type, collaborateOnProjectsSaga);
 
   
   // Add more sagas for other team-related actions if needed

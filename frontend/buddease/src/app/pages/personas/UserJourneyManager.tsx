@@ -3,6 +3,8 @@ import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import { User, UserData } from '@/app/components/users/User';
+import IdeaCreationPhase from "@/app/components/users/userJourney/IdeaCreationPhase";
+import IdeationPhase from "@/app/components/users/userJourney/IdeationPhase";
 import axios from "axios";
 import React, { useState } from 'react';
 import OfferPage from '../onboarding/OfferPage';
@@ -100,6 +102,13 @@ const UserJourneyManager: React.FC = () => {
       {currentPhase === OnboardingPhase.OFFER && <OfferPage />}
       {currentPhase === OnboardingPhase.PROFILE_SETUP && (
         <ProfileSetupPhase onSubmit={handleProfileSetup} />
+      )}
+       <div>
+      {currentPhase === 0 && (
+        <IdeationPhase onTransition={handlePhaseTransition} />
+      )}
+      {currentPhase === 1 && (
+        <IdeaCreationPhase onTransition={handlePhaseTransition} />
       )}
       {/* Add more phases as needed */}
     </div>

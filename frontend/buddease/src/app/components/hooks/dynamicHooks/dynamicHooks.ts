@@ -2,11 +2,30 @@
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import { useEffect, useState } from "react";
 import { loadDashboardState } from "../../dashboards/LoadDashboard";
+import { generatePrompt } from "../../prompts/promptGenerator";
 import useAqua from "../../web3/aquaIntegration/hooks/useAqua";
 import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuence";
-import useIdleTimeout from "../commHooks/useIdleTimeout";
-import useAuthentication from "../useAuthentication";
+import useAsyncHookLinker, { LibraryAsyncHook } from "../useAsyncHookLinker";
 import createDynamicHook from "./dynamicHookGenerator";
+import { myPhaseHook } from "../phaseHooks/EnhancePhase";
+
+interface AsyncHook {
+  condition: () => boolean;
+  asyncEffect: ({
+    idleTimeoutId,
+    startIdleTimeout,
+  }: {
+    idleTimeoutId: any;
+    startIdleTimeout: any;
+  }) => Promise<() => void>;
+}
+
+const adaptAsyncHook = (asyncHook: AsyncHook): LibraryAsyncHook => ({
+  enable: () => {}, // Placeholder function
+  disable: () => {}, // Placeholder function
+  condition: asyncHook.condition,
+  asyncEffect: asyncHook.asyncEffect,
+});
 
 const [username, setUsername] = useState("");
 const [password, setPassword] = useState("");
@@ -16,221 +35,236 @@ export const handleLogin = (username: string, password: string) => {
     username,
     password,
     () => {
-      // On successful login
       console.log("Login successful!");
-      // Redirect or perform other actions
       loadDashboardState();
     },
     (error) => {
-      // On login error
       console.error("Login failed:", error);
-      // Display error message to the user or perform other error-handling actions
     }
   );
 };
 
-// Authentication
-const authenticationHook = createDynamicHook({
-  condition: async () => {
-    const accessToken = localStorage.getItem("token");
-    return !!accessToken;
-  },
-
-  // Your async effect function
-  asyncEffect: async (idleTimeoutId, startIdleTimeout): Promise<() => void> => {
-    useEffect(() => {
-      console.log("useEffect triggered for Authentication");
-      const user = useAuthentication();
-      if (user.isLoggedIn) {
-        // Use setUsername and setPassword to update the state
-        handleLogin(username, password);
-      } else {
-        console.log("User not logged in, show login prompt");
-      }
-
-      return () => {
-        console.log("useEffect cleanup for Authentication");
-      };
-    }, [username, password]); // Add dependencies if needed
-    return async () => {};
-  },
-
-  resetIdleTimeout: () => {
-    const { idleTimeoutId, startIdleTimeout } = useIdleTimeout(); // Get idleTimeoutId from the useIdleTimeout hook
-    clearTimeout(idleTimeoutId); // Clear the existing idle timeout
-    startIdleTimeout(); // Restart the idle timeout
-  },
-  isActive: true, // set hook to be active
-});
-
-
-// Job Search
-const jobSearchHook = createDynamicHook({
-  condition: async () => true,
-  asyncEffect: async (): Promise<() => void> => {
-    useEffect(() => {
-      console.log("useEffect triggered for JobSearch");
-      return () => {
-        console.log("useEffect cleanup for JobSearch");
-      };
-    }, []);
-    return async () => {};
-  },
-  resetIdleTimeout: () => {
-    // add logic to reset idle timeout
-  },
-  isActive: true, // set hook to be active
-});
-
-// Recruiter Dashboard
-const recruiterDashboardHook = createDynamicHook({
-  condition: async () => true,
-  asyncEffect: async (): Promise<() => void> => {
-    useEffect(() => {
-      console.log("useEffect triggered for RecruiterDashboard");
-      return () => {
-        console.log("useEffect cleanup for RecruiterDashboard");
-      };
-    }, []);
-    // Return a cleanup function
-    return async () => {};
-  },
-  resetIdleTimeout: () => {
-    // add logic to reset idle timeout
-  },
-  isActive: true, // set hook to be active
-});
-
-// Chat Dashboard
-const chatDashboardHook = createDynamicHook({
-  condition: async () => true,
-  asyncEffect: async (): Promise<() => void> => {
-    useEffect(() => {
-      console.log("useEffect triggered for ChatDashboard"), useFluence();
-      useAqua();
-
-      return () => {
-        console.log("useEffect cleanup for ChatDashboard");
-      };
-    }, []);
-
-    // Return a cleanup function
-    return async () => {};
-  },
-
-  resetIdleTimeout: () => {
-    // add logic to reset idle timeout
-  },
+const createPlaceholderHook = () => ({
+  resetIdleTimeout: () => {},
+  idleTimeoutId: null,
+  startIdleTimeout: () => {},
   isActive: true,
 });
-// User Profile
-const userProfileHook = createDynamicHook({
-  condition: async () => true,
-  asyncEffect: async (): Promise<() => void> => {
-    // Create a promise that resolves when the cleanup function is called
-    let cleanupPromise: Promise<void> | null = null;
 
-    useEffect(() => {
-      console.log("useEffect triggered for UserProfile");
-
-      cleanupPromise = new Promise<void>((resolve) => {
-        // Return the cleanup function
-        const cleanupFunction = () => {
-          console.log("useEffect cleanup for UserProfile");
-          // Resolve the promise when the cleanup function is called
-          resolve();
-        };
-
-        return cleanupFunction;
-      });
-    }, []);
-
-    // Return a function that resolves the cleanup promise
-    return () => cleanupPromise || Promise.resolve();
-  },
-  resetIdleTimeout: () => {
-    // add logic to reset idle timeout
-  },
-  isActive: true, // set hook to be active
-});
-
-// Function to generate prompts based on user ideas
-const generatePrompt = (userIdea: string, roles: string[]): string | null => {
-  // Replace this logic with your actual prompt generation based on user ideas and roles
-  if (userIdea === "web development") {
-    const rolePrompt =
-      roles.length > 0
-        ? `You are a professional in web development with expertise in roles such as ${roles.join(
-            ", "
-          )}.`
-        : "You are a professional in web development.";
-    return `${rolePrompt} You have the skills and experiences to contribute effectively to a project, from conception to product launch. Your expertise can cover a wide range of areas, including ideation, team creation, product brainstorming, and more.`;
-  } else {
-    return null; // Handle other cases or return a default prompt
-  }
+const createUseEffectHook = (effectLogic: () => void) => {
+  useEffect(() => {
+    effectLogic();
+  }, []);
 };
 
-// Hook to dynamically generate prompts based on user ideas
-const useDynamicPrompt = (userIdea: any) => {
-  const [prompt, setPrompt] = useState<string | null>(null);
-
+const createCleanupPromiseHook = (cleanupLogic: () => void) => {
+  let cleanupPromise: Promise<void> | null = null;
   useEffect(() => {
-    const generatedPrompt = generatePrompt(userIdea, []);
+    cleanupPromise = new Promise<void>((resolve) => {
+      const cleanupFunction = () => {
+        cleanupLogic();
+        resolve();
+      };
+      return cleanupFunction;
+    });
+  }, []);
+  return () => cleanupPromise || Promise.resolve();
+};
+
+const authenticationHook = createDynamicHook({
+  condition: async () => !!localStorage.getItem("token"),
+  asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: { idleTimeoutId: any; startIdleTimeout: any; }
+  ): Promise<() => void> => {
+    try {
+      await performLogin(username, password, () => {
+        console.log("Login successful!");
+        loadDashboardState();
+      }, (error) => {
+        console.error("Login failed:", error);
+      });
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+    return () => {}
+  },
+  ...createPlaceholderHook(),
+});
+
+const jobSearchHook = createDynamicHook({
+  condition: async () => true,
+  asyncEffect: async () => {
+    const effectLogic = () => console.log("useEffect triggered for JobSearch");
+    createUseEffectHook(effectLogic);
+    return effectLogic;
+  },
+  ...createPlaceholderHook(),
+});
+
+const recruiterDashboardHook = createDynamicHook({
+  condition: async () => true,
+  asyncEffect: async () => {
+    const effectLogic = () =>
+      console.log("useEffect triggered for RecruiterDashboard");
+    createUseEffectHook(effectLogic);
+    return effectLogic;
+  },
+  ...createPlaceholderHook(),
+});
+
+const chatDashboardHook = createDynamicHook({
+  condition: async () => true,
+  asyncEffect: async () => {
+    const effectLogic = () =>
+      console.log("useEffect triggered for ChatDashboard");
+    createUseEffectHook(effectLogic);
+    return effectLogic;
+  },
+  ...createPlaceholderHook(),
+});
+
+// Ensure useDynamicPrompt is utilized
+const userProfileHook = createDynamicHook({
+  condition: async () => true,
+  asyncEffect: async () =>
+    createCleanupPromiseHook(() =>
+      console.log("useEffect cleanup for UserProfile")
+    ),
+  ...createPlaceholderHook(),
+});
+
+
+
+
+
+
+
+
+
+const useDynamicHookByName = (hookName: string) => {
+  const hook = dynamicHooks[hookName]?.hook;
+  return hook || null;
+};
+
+export const useDynamicPrompt = (userIdea: any) => {
+  const [prompt, setPrompt] = useState<string | null>(null);
+  useEffect(() => {
+    const generatedPrompt = generatePrompt(userIdea);
     if (typeof generatedPrompt === "string") {
       setPrompt(generatedPrompt);
     } else {
       setPrompt(null);
     }
   }, [userIdea]);
-
   return prompt;
 };
 
-// Example usage:
-const userIdea = "web development"; // Replace with the actual user's idea
-const generatedPrompt = useDynamicPrompt(userIdea);
-
-if (generatedPrompt) {
-  console.log(generatedPrompt);
-} else {
-  console.log("Prompt generation failed. Please provide a valid user idea.");
-}
-
-// Fluence
 const fluenceHook = useFluence;
-
-// Aqua
 const aquaHook = useAqua;
 
-const dynamicHooks = {
-  authentication: { hook: authenticationHook },
-  jobSearch: { hook: jobSearchHook },
-  recruiterDashboard: { hook: recruiterDashboardHook },
-  chatDashboard: { hook: chatDashboardHook },
-  userProfile: { hook: userProfileHook },
-  fluence: { hook: fluenceHook },
-  aqua: { hook: aquaHook },
+const dynamicHooks: Record<string, { hook: AsyncHook }> = {
+  authentication: { hook:  authenticationHook as AsyncHook },
+    
+  jobSearch: { hook: jobSearchHook as AsyncHook }, // Ensure jobSearchHook is of type AsyncHook
+  recruiterDashboard: { hook: recruiterDashboardHook as AsyncHook }, // Ensure recruiterDashboardHook is of type AsyncHook
+  chatDashboard: { hook: chatDashboardHook as AsyncHook }, // Ensure chatDashboardHook is of type AsyncHook
+  userProfile: { hook: userProfileHook as AsyncHook }, // Ensure userProfileHook is of type AsyncHook
+  fluence: { hook: fluenceHook as AsyncHook}, // Ensure fluenceHook is of type AsyncHook
+  aqua: { hook: aquaHook as AsyncHook }, // Ensure aquaHook is of type AsyncHook
+  phase: {hook: myPhaseHook as AsyncHook}
 };
 
-// Subscription service using dynamic hooks
+
+
+// Define a caching mechanism, for example, using local storage
+const cacheKey = 'hookNamesCache';
+
+// Function to retrieve hook names from cache
+const getHookNamesFromCache = (): string[] | null => {
+  const cachedHookNames = localStorage.getItem(cacheKey);
+  return cachedHookNames ? JSON.parse(cachedHookNames) : null;
+};
+
+// Function to store hook names in cache
+const storeHookNamesInCache = (hookNames: string[]): void => {
+  localStorage.setItem(cacheKey, JSON.stringify(hookNames));
+};
+
+// Get hook names from cache or dynamically determine them if not found
+const hookNames = getHookNamesFromCache() || Object.keys(dynamicHooks);
+
+// Store hook names in cache for future use
+storeHookNamesInCache(hookNames);
+
+// Assuming you're using a specific hook somewhere in your code, for example:
+const specificHook = jobSearchHook;
+
+// Find the corresponding hook name dynamically
+const foundHookName = hookNames.find(name => specificHook === dynamicHooks[name].hook);
+const hookName = foundHookName || 'authentication'; // Default to 'authentication' if no matching hook name is found
+const dynamicHookAdapter = adaptAsyncHook(useDynamicHookByName(hookName));
+
+useAsyncHookLinker({
+  hooks: [
+    {
+      enable: dynamicHookAdapter.enable,
+      disable: dynamicHookAdapter.disable,
+      condition: dynamicHookAdapter.condition,
+      asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: { idleTimeoutId: any; startIdleTimeout: any; }): Promise<() => void> => {
+        await dynamicHookAdapter.asyncEffect({
+          idleTimeoutId: 'idleTimeoutId',
+          startIdleTimeout: 'startIdleTimeout'
+        });
+        return () => {
+          // Perform any cleanup or additional actions if needed
+          console.log('Async effect completed');
+        };
+      },
+    },
+  ],
+});
+
 const subscriptionService = {
-  subscriptions: new Map<string, (message: any) => void>(), // Modify the Map to accept a callback with a message parameter
+  subscriptions: new Map<string, (message: any) => void>(),
 
   subscribe: (hookName: string, callback: (message: any) => void) => {
-    // Update the callback signature
     const dynamicHook = dynamicHooks[hookName as keyof typeof dynamicHooks];
     if (dynamicHook) {
-      dynamicHook.hook();
-      subscriptionService.subscriptions.set(hookName, callback);
-    } else {
-      console.error(`Dynamic hook "${hookName}" not found.`);
+      if (
+        dynamicHook.hook &&
+        typeof dynamicHook.hook.asyncEffect === "function"
+      ) {
+        // Use hookName here as needed
+        const dynamicHookAdapter = adaptAsyncHook(
+          dynamicHooks[hookName as keyof typeof dynamicHooks].hook
+        );
+        useAsyncHookLinker({
+          hooks: [
+            {
+              enable: dynamicHookAdapter.enable,
+              disable: dynamicHookAdapter.disable,
+              condition: dynamicHookAdapter.condition,
+              asyncEffect: async ({ idleTimeoutId, startIdleTimeout, }: {
+                idleTimeoutId: any;
+                startIdleTimeout: any;
+              } 
+              ): Promise<() => void> => {
+                await dynamicHookAdapter.asyncEffect({
+                  idleTimeoutId:'',
+                  startIdleTimeout:''
+                });
+                return () => void {}
+              },
+
+            },
+          ],
+        });
+      }
     }
   },
 
   unsubscribe: (hookName: string) => {
     if (subscriptionService.subscriptions.has(hookName)) {
       subscriptionService.subscriptions.delete(hookName);
-      // Additional cleanup logic if needed
     }
   },
 

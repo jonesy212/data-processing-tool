@@ -7,6 +7,7 @@ import { Idea, Task } from "../models/tasks/Task";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { Attachment, Todo } from "../todos/Todo";
 import { User } from "../users/User";
+import { VideoData } from "../video/Video";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
 
 
@@ -232,7 +233,6 @@ const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = async ({ projectDet
       />
     </>
   ) : null;
-
-export { ProjectDetails };
-export default Project; 
+  
+export default Project; ProjectDetails
  

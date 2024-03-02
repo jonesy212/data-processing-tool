@@ -3,6 +3,7 @@ import { Idea } from '../models/tasks/Task';
 import { Phase } from "../phases/Phase";
 import { Snapshot } from "../state/stores/SnapshotStore";
 import { User } from "../users/User";
+import { VideoData } from '../video/Video';
 
 export interface Todo extends Data {
   done: boolean;
@@ -19,24 +20,24 @@ export interface Todo extends Data {
   comments: Comment[];
   attachments: Attachment[];
   subtasks: Todo[];
-  entities: Todo[];
+  entities?: Todo[];
 
-  isDeleted: boolean;
-  isArchived: boolean;
-  isCompleted: boolean;
-  isRecurring: boolean;
+  isDeleted?: boolean;
+  isArchived?: boolean;
+  isCompleted?: boolean;
+  isRecurring?: boolean;
 
-  isBeingEdited: boolean;
-  isBeingCompleted: boolean;
-  isBeingReassigned: boolean;
+  isBeingEdited?: boolean;
+  isBeingCompleted?: boolean;
+  isBeingReassigned?: boolean;
 
-  recurringRule: string;
-  recurringEndDate: Date;
-  recurringFrequency: string;
-  recurringCount: number;
-  recurringDaysOfWeek: number[];
-  recurringDaysOfMonth: number[];
-  recurringMonthsOfYear: number[];
+  recurringRule?: string;
+  recurringEndDate?: Date;
+  recurringFrequency?: string;
+  recurringCount?: number;
+  recurringDaysOfWeek?: number[];
+  recurringDaysOfMonth?: number[];
+  recurringMonthsOfYear?: number[];
 
   save: () => Promise<void>;
   snapshot: Snapshot<Data>;
@@ -118,8 +119,7 @@ class TodoImpl implements Todo {
   videoUrl: string = "";
   videoThumbnail: string = "";
   videoDuration: number = 0;
-  videoData: VideoData = {} as VideoData;
-
+  videoData: VideoData = {} as VideoData
   save: () => Promise<void> = async () => {
     return new Promise<void>((resolve) => {
       setTimeout(() => {

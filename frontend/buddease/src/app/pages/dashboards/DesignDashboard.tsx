@@ -98,7 +98,8 @@ import DataProcessingComponent from "@/app/components/models/data/DataProcessing
 import ProjectPhaseComponent from "@/app/components/projects/projectManagement/ProjectPhaseComponent";
 import { selectApiConfigs } from "@/app/components/state/redux/slices/ApiSlice";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
-import { NotificationType } from "@/app/components/support/NotificationContext";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import { NotificationType, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import PermissionsEditor from "@/app/components/users/PermissionsEditor";
 import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
 import { saveProfile } from "@/app/components/users/userSnapshotData";
@@ -117,6 +118,7 @@ import DesignComponent from "@/app/css/DesignComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import AppCacheManagerBase from "@/app/utils/AppCacheManager";
 import MyPromise from "@/app/utils/MyPromise";
+import { notification } from "antd";
 import { useSelector } from "react-redux";
 import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
@@ -210,13 +212,10 @@ const DesignDashboard: React.FC<{
   const backendStructureWrapper = new BackendStructureWrapper(getAppPath());
   const apiConfigs = useSelector(selectApiConfigs);
 
-  const [notifications, setNotifications] = useState<NotificationData[];>([]);
-  const initialNotification: Notification = {
-    id: UniqueIDGenerator.generateNotificationID(
-      {} as Notification & NotificationType,
-      Date.now() as Date & number,
-      "customNotifications1" as NotificationType
-    ),
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [completionMessageLog, setCompletionMessageLog] = useState<string[]>([]);
+  const initialNotification: NotificationData = {
+    id: UniqueIDGenerator.generateNotificationID(notification,new Date, NotificationTypeEnum.Test, completionMessageLog, "" ),
     createdAt: new Date(),
     date: new Date(),
     type: "customNotifications1" as NotificationType,
@@ -235,7 +234,15 @@ const DesignDashboard: React.FC<{
       id: UniqueIDGenerator.generateNotificationID(
         initialNotification, // Pass the actual notification object
         date,
-        type
+        notify:  async function (message: string,
+          content: any,
+          date: Date,
+          type: NotificationType) {
+          notify(message, type, content, date);
+          return Promise.resolve()
+            .then((res) => { });
+        },
+        completionMessageLog,
       ),
       date,
       type,

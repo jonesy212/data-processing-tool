@@ -27,8 +27,14 @@ def synchronize_cache_from_frontend():
 
         # Synchronize the cache with the received data
         default_cache_manager.synchronize_cache_from_frontend(updated_data)
-
+        # Assuming updated_data contains preferences
+        preferences = updated_data.get('preferences', {})
+        # Synchronize the cache with updated preferences
+        default_cache_manager.synchronize_cache_from_frontend(preferences)
+    
         return jsonify({'message': 'Cache synchronized successfully'})
     except Exception as e:
         log_exception(f"Failed to synchronize cache from frontend. Error: {e}")
         return jsonify({'error': 'Internal server error'}), 500
+    
+    

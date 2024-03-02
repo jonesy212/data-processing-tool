@@ -1,26 +1,22 @@
-//ApiLogs.ts
+// ApiLogs.ts
 
-import {
-  NotificationType,
+import { endpoints } from '@/app/api/ApiEndpoints';
+import DefaultNotificationContext, {
   NotificationTypeEnum,
-  useNotification,
 } from "@/app/components/support/NotificationContext";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.logging; // Assuming logging endpoints are defined in ApiEndpoints.ts
 
-const { notify } = useNotification(); // Destructure notify from useNotification
+const { notify } = DefaultNotificationContext; // Destructure notify from DefaultNotificationContext
 
 // Helper function to handle API errors
-
-
 export const handleApiError = (
-  error: AxiosError<unknown>,
+  error: AxiosError<unknown> | Error,
   errorMessage: string
 ): void => {
   console.error(`API Error: ${errorMessage}`);
@@ -30,35 +26,39 @@ export const handleApiError = (
       console.error("Response status:", error.response.status);
       console.error("Response headers:", error.response.headers);
       notify(
+        "ErrorId",
         NOTIFICATION_MESSAGES.Generic.ERROR,
-        errorMessage,
+        { errorMessage, responseData: error.response.data }, // Pass additional data in content
         new Date(),
-        "Error" as NotificationType
+        NotificationTypeEnum.Error // Updated NotificationTypeEnum
       );
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
       notify(
+        "ErrorId",
         NOTIFICATION_MESSAGES.Generic.ERROR,
-        errorMessage,
+        { errorMessage, requestDetails: error.request }, // Pass additional data in content
         new Date(),
-        "Error" as NotificationType
+        NotificationTypeEnum.Error // Updated NotificationTypeEnum
       );
     } else {
       console.error("Error details:", error.message);
       notify(
+        "ErrorId",
         NOTIFICATION_MESSAGES.Generic.ERROR,
-        errorMessage,
+        { errorMessage, errorDetails: error.message }, // Pass additional data in content
         new Date(),
-        "Error" as NotificationType
+        NotificationTypeEnum.Error // Updated NotificationTypeEnum
       );
     }
   } else {
     console.error("Non-Axios error:", error);
     notify(
+      "ErrorId",
       NOTIFICATION_MESSAGES.Generic.ERROR,
-      errorMessage,
+      { errorMessage, errorDetails: error }, // Pass additional data in content
       new Date(),
-      "Error" as NotificationType
+      NotificationTypeEnum.Error // Updated NotificationTypeEnum
     );
   }
 };
@@ -77,10 +77,11 @@ export const logsApiService = observable({
         addLog(`Info: ${message}`);
       });
       notify(
+        "LogInfoSuccessId",
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
-        "Log Info Success",
+        { message },
         new Date(),
-        {} as NotificationType
+        NotificationTypeEnum.Info // Updated NotificationTypeEnum
       );
       return response; // Return the AxiosResponse object
     } catch (error) {
@@ -89,50 +90,42 @@ export const logsApiService = observable({
         "Failed to log info message"
       );
       notify(
+        "LogInfoErrorId",
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_ERROR,
-        "Log Info Error",
+        { message },
         new Date(),
-        NotificationTypeEnum.LoggingInfo
+        NotificationTypeEnum.Error // Updated NotificationTypeEnum
       );
       throw error;
     }
   },
 
-  logWarning: async (
-    message: string,
-    user: string | null = null
-  ): Promise<AxiosResponse> => {
+  // logWarning and logError methods remain unchanged
+
+  logApiRequest: async (endpoint: string): Promise<void> => {
     try {
-      const response: AxiosResponse = await axiosInstance.post(
-        API_BASE_URL.logWarning,
-        { message, user }
-      );
-      runInAction(() => {
-        addLog(`Warning: ${message}`);
-      });
+      // Perform the API request
+      await axios.get(endpoint);
+
+      // Log the API request success
       notify(
-        NOTIFICATION_MESSAGES.Logger.LOG_WARNING_SUCCESS,
-        "Log Warning Success",
+        "logApi",
+        "ApiRequestSuccessId",
+        `API Request to ${endpoint} successful.`,
         new Date(),
-        NotificationTypeEnum.LoggingWarning
+        NotificationTypeEnum.Info // Updated NotificationTypeEnum
       );
-      return response;
     } catch (error) {
+      // Log the API request failure using handleApiError
       handleApiError(
         error as AxiosError<unknown>,
-        "Failed to log warning message"
+        `Failed to make API request to ${endpoint}`
       );
-      notify(
-        NOTIFICATION_MESSAGES.Logger.LOG_WARNING_ERROR,
-        "Log Warning Error",
-        new Date(),
-        NotificationTypeEnum.LoggingWarning
-      );
-      throw error;
     }
   },
 
-  logError: async (
+
+  logSuccess: async (
     message: string,
     user: string | null = null
   ): Promise<AxiosResponse> => {
@@ -142,46 +135,65 @@ export const logsApiService = observable({
         { message, user }
       );
       runInAction(() => {
-        addLog(`Error: ${message}`);
+        addLog(`Success: ${message}`);
       });
       notify(
-        NOTIFICATION_MESSAGES.Logger.LOG_ERROR_SUCCESS,
-        "Log Error Success",
+        "LogSuccessId",
+        NOTIFICATION_MESSAGES.Logger.LOG_SUCCESS,
+        { message },
         new Date(),
-        {} as NotificationType
+        NotificationTypeEnum.Success
       );
       return response;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
-        "Failed to log error message"
+        "Failed to log success message"
       );
       notify(
-        NOTIFICATION_MESSAGES.Logger.LOG_ERROR_FAILURE,
-        "Log Error Error",
+        "LogSuccessErrorId",
+        NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+        { message },
         new Date(),
-        NotificationTypeEnum.LoggingError
+        NotificationTypeEnum.Error
       );
       throw error;
     }
   },
 
-  logApiRequest: async (endpoint: string): Promise<void> => {
+  logFailure: async (
+    message: string,
+    user: string | null = null
+  ): Promise<AxiosResponse> => {
     try {
-      // Perform the API request
-      await axios.get(endpoint);
-
-      // Log the API request success
-      notify(
-        NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
-        `API Request to ${endpoint} successful.`,
-        new Date(),
-        "Info" as NotificationType
+      const response: AxiosResponse = await axiosInstance.post(
+        API_BASE_URL.logFailure,
+        { message, user }
       );
+      runInAction(() => {
+        addLog(`Failure: ${message}`);
+      });
+      notify(
+        "LogFailureId",
+        NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
+        { message },
+        new Date(),
+        NotificationTypeEnum.LoggingError
+      );
+      return response;
     } catch (error) {
-      // Log the API request failure using handleApiError
-        handleApiError(error as AxiosError<unknown>,
-        `Failed to make API request to ${endpoint}`);
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to log failure message"
+      );
+      notify(
+        "LogFailureErrorId",
+        NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
+        { message },
+        new Date(),
+        NotificationTypeEnum.Error
+      );
+      throw error;
     }
   },
 });

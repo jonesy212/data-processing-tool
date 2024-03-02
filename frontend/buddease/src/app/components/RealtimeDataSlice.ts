@@ -16,6 +16,9 @@ export const useRealtimeDataSlice = createSlice({
   name: 'realtimeData',
   initialState,
   reducers: {
+    fetchltimeData: (state, action: PayloadAction<RealtimeData>) => {
+      state.
+    },
     addRealtimeData: (state, action: PayloadAction<RealtimeData>) => {
       state.realtimeDataList.push(action.payload);
     },

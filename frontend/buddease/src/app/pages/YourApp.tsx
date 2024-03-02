@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import createDynamicHook from "../components/hooks/phaseHooks/DynamicPromptPhaseHook";
 import YourFormComponent from './forms/YourFormComponent';
+import { useAuth } from '../components/auth/AuthContext';
+import authService from '../components/auth/AuthService';
 
 const YourApp: React.FC = () => {
   // Create dynamic hook with desired parameters
@@ -14,9 +16,11 @@ const dynamicHook = useDynamicPromptPhaseHook
     // Your additional logic using isActive, toggleActivation, etc.
   }, [dynamicHook.isActive]);
 
-  const handleUserIdeaSubmit = () => {
+  const handleUserIdeaSubmit = async () => {
     // Additional logic for handling user idea submission
-    dynamicHook.toggleActivation();
+    const { accessToken } = await authService.login(username, password);
+
+    dynamicHook.toggleActivation(accessToken);
   };
 
   return (

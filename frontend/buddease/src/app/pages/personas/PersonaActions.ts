@@ -8,6 +8,7 @@ export const CommonPersonaActions = {
   createItemSuccess: createAction<any>("createItemSuccess"),
   createItemFailure: createAction<{ error: string }>("createItemFailure"),
 
+  changePersona: createAction<any>("changePersona"),
   // Search Actions
   searchSuccess: createAction<{ results: any[] }>("searchSuccess"),
   searchRequest: createAction<{ searchTerm: string }>("searchRequest"),

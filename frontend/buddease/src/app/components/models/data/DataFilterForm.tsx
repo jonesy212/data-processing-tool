@@ -2,6 +2,7 @@
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
+import { snapshotStore } from "../../state/stores/SnapshotStore";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from './DataFrameComponent';
 
@@ -31,7 +32,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
   const [column, setColumn] = useState("");
   const [operation, setOperation] = useState("==");
   const [value, setValue] = useState("");
-  const [realtimeData, setRealtimeData] = useRealtimeData(snapshotStore,updateCallback);
+  const [realtimeData, setRealtimeData] = useRealtimeData(snapshotStore, updateCallback);
 
   const addFilter = () => {
     if (column.trim() === '' || operation.trim() === '' || value.trim() === '') {

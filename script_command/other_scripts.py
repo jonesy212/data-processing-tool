@@ -1,7 +1,7 @@
 # other_script.py
 
 from configs.config import app
-from script_commands.manage import init_app, init_cli, init_database
+from script_command.manage import init_app, init_cli, init_database
 
 # other_script.py
 

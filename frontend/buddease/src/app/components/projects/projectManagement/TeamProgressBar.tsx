@@ -1,8 +1,12 @@
+import { AnimatedComponent } from '../../libraries/animations/AnimationComponent';
 import { Team } from '../../models/teams/Team';
-import AnimatedComponent from './AnimatedComponent';
+
 
 const TeamProgressBar = ({ team }: {team: Team}) => {
-  const { startAnimation, stopAnimation, isActive } = AnimatedComponent();
+  const { startAnimation, stopAnimation, isActive } = AnimatedComponent({
+    animationType: 'slideIn', // Example prop
+    duration: 1000, // Example prop
+  });
 
   return (
     <div>

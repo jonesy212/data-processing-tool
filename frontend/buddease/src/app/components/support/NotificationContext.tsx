@@ -1,9 +1,7 @@
 // NotificationContext.tsx
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { createContext, useContext } from "react";
 import { NotificationData } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
-import { notificationStore } from "./NotificationProvider";
 
 type CustomNotificationType = "RandomDismiss";
 
@@ -39,8 +37,8 @@ export enum NotificationTypeEnum {
   Milestone = "Milestone",
   NewChatMessage = "NewChatMessage",
   NewFeatureAvailable = "NewFeatureAvailable",
-  OperationError = NotificationTypeEnum.OperationError,
-  OperationSuccess = NotificationTypeEnum.OperationSuccess,
+  OperationError = "OperationError",
+  OperationSuccess = "OperationSuccess",
   PageLoading = "PageLoading",
   PasswordChanged = "PasswordChanged",
   PaymentReceived = "PaymentReceived",
@@ -54,6 +52,7 @@ export enum NotificationTypeEnum {
   TeamJoinApproved = "TeamJoinApproved",
   TeamJoinRequest = "TeamJoinRequest",
   TeamLoading = "TeamLoading",
+  Test = "Test",
   Unsubscribed = "Unsubscribed",
   Warning = "Warning",
   Welcome = "Welcome",
@@ -66,10 +65,11 @@ export interface NotificationContextProps {
   ) => void;
   addNotification: (notification: NotificationData) => void;
   notify: (
+    id: string,
     message: string,
     content: any,
-    date: Date | undefined,
-    type: NotificationType
+    date?: Date | undefined,
+    type?: NotificationType
   ) => Promise<void>;
 
   notifications: NotificationData[];
@@ -77,28 +77,21 @@ export interface NotificationContextProps {
   showMessage: (message: string) => void;
 }
 
+
+
+
+
+
+
 const DefaultNotificationContext: NotificationContextProps = {
   sendNotification: () => {},
   addNotification: () => {},
-  notify: (message, content, date, type) => {
-    const notificationMessage =
-      NOTIFICATION_MESSAGES.Data.DEFAULT[0] || message;
-    content = { ...content, date };
-    return new Promise((resolve) => {
-      const id = UniqueIDGenerator.generateNotificationID;
-      notificationStore.addNotification({
-        id,
-        content: notificationMessage,
-        ...content,
-      });
-      resolve();
-    });
-  },
-  notifications: [],
-  showMessage(message) {
-    message = message || "Loading...";
-  },
+  notify: async () => {}, // Correct TypeScript type mismatches
+  notifications: [], // Initialize notifications as an empty array
+  showMessage: () => { }, // Placeholder function
+  
 };
+
 
 // Modify NotificationContextProps interface
 export interface NotificationContextProps {
@@ -108,10 +101,11 @@ export interface NotificationContextProps {
   ) => void;
   addNotification: (notification: NotificationData) => void;
   notify: (
+    id: string,
     message: string,
     content: any,
-    date: Date | undefined,
-    type: NotificationType
+    date?: Date | undefined,
+    type?: NotificationType
   ) => Promise<void>;
   notifications: NotificationData[];
   // Add more notification functions as needed
@@ -207,3 +201,4 @@ export const useNotification = (): NotificationContextProps => {
   };
 };
 export type NotificationType = NotificationTypeEnum | CustomNotificationType;
+export default DefaultNotificationContext

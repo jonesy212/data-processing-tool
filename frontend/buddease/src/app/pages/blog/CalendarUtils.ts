@@ -3,6 +3,10 @@
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { useState } from "react";
 
+
+
+
+
 // Define a custom hook to manage calendar events
 export const useCalendarEvents = () => {
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);

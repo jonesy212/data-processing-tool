@@ -1,5 +1,7 @@
 import { Data } from "../components/models/data/Data";
-import { FrontendStructure } from "../configs/appStructure/FrontendStructureComponent";
+import { Snapshot } from "../components/state/stores/SnapshotStore";
+import { VideoData } from "../components/video/Video";
+import  FrontendStructure  from "../configs/appStructure/FrontendStructureComponent";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";
 import FrontendCacheManager from "./FrontendCacheManager";
@@ -12,6 +14,8 @@ interface ExtendedData extends Data {
 abstract class AppCacheManagerBase<T extends Data> {
   private backendCacheManager: BackendCacheManager;
   private frontendCacheManager: FrontendCacheManager;
+
+  abstract updateCache(key: string, data: T): Promise<void>;
 
   constructor(baseUrl: string) {
     this.backendCacheManager = new BackendCacheManager(baseUrl);
@@ -54,7 +58,7 @@ abstract class AppCacheManagerBase<T extends Data> {
   getFrontendCache(key: string): FrontendStructure | null {
     const frontendCacheData = this.frontendCacheManager.getCacheData();
     const cacheEntry = frontendCacheData[key];
-    return cacheEntry ? { [key]: cacheEntry } : null;
+    return cacheEntry ? new FrontendStructure(cacheEntry) : null; // Create a new FrontendStructure object if cacheEntry exists
   }
 
   // Handling the type error in updateBackendCache method
@@ -81,7 +85,7 @@ const backendData: {
     status: "inProgress",
     isActive: false,
     tags: [],
-    then: async function (callback: (newData: Data) => void): Promise<void> {
+    then: async function (callback: (newData: Snapshot<Data>) => void): Promise<void> {
       // Fetch existing data from backend cache
       const cachedData = await appCacheManager.getBackendCache('backendCache');
       // Call callback with cached data if available
@@ -90,7 +94,13 @@ const backendData: {
       }
     },
     analysisType: "",
-    analysisResults: []
+    analysisResults: [],
+    phase: null,
+    videoUrl: "",
+    videoThumbnail: "",
+    videoDuration: 0,
+    videoData: {} as VideoData,
+    ideas: []
   }
 }
 

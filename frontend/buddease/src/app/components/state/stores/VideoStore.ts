@@ -2,6 +2,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { useNotification } from "@/app/components/support/NotificationContext"; // Import useNotification
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
+import { DataDetails } from "../../models/data/Data";
 export interface Video {
   id: string;
   title: string;
@@ -17,7 +18,7 @@ export interface VideoStore {
   // Add more methods as needed
 }
 
-export interface Video {
+export interface Video extends DataDetails {
   id: string;
   title: string;
   description: string;

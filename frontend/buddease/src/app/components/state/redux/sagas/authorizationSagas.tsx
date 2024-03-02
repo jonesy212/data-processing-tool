@@ -1,10 +1,10 @@
 // authorizationSagas.ts
 import authService from '@/app/components/auth/AuthService';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { Effect, call, put, takeLatest } from 'redux-saga/effects';
 import { loginSuccess, logout } from '../slices/AuthorizationSlice';
 
-function* handleLogin(action: PayloadAction<{ username: string; password: string }>) {
+function* handleLogin(action: PayloadAction<{ username: string; password: string }>): Generator<Effect, void, any> {
   try {
     const { username, password } = action.payload;
     const response = yield call(authService.login, username, password);

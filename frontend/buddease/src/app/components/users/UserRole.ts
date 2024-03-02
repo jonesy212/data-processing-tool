@@ -2,6 +2,7 @@
 export interface UserRole {
     role: string;
     responsibilities: string[];
-    permissions: string[];
+  permissions: string[];
+  positions: string[];
   }
   

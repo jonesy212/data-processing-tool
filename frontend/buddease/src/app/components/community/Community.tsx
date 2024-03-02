@@ -9,8 +9,8 @@ import ProjectManagementApp from '../projects/projectManagement/ProjectManagemen
 import ProjectManagementSimulation from '../projects/projectManagement/ProjectManagementSimulation';
 import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '../web3/dAppAdapter/IPFS';
 import CommunityDetails from './CommunityDetails';
-import WeThePeoplePage from './WeThePeoplePage';
 import CommunityProjectsPage from './CommunityProjectsPage';
+import WeThePeoplePage from './WeThePeoplePage';
 
 
 const CommunityPulse: React.FC = () => {
@@ -51,10 +51,7 @@ const CommunityPulse: React.FC = () => {
           
 
       {/* Display Community Details */}
-      <CommunityDetails community={
-        communityData
-
-      } />
+      <CommunityDetails community={{}} />
 
      
 

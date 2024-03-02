@@ -3,9 +3,12 @@ import axios from 'axios';
 import useSnapshotManager from '../components/hooks/useSnapshotManager';
 import { Data } from '../components/models/data/Data';
 import { Snapshot } from '../components/state/stores/SnapshotStore';
+import { useNotification } from '../components/support/NotificationContext';
 import { Todo } from '../components/todos/Todo';
+import { VideoData } from '../components/video/Video';
 
 const API_BASE_URL = '/api/snapshots';  // Replace with your actual API endpoint
+const { notify } = useNotification()
 
 export const fetchSnapshots = async (): Promise<Snapshot<Data>[]> => {
   try {
@@ -55,18 +58,44 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, 'id'>) => {
         isBeingDeleted: false,
         isBeingCompleted: false,
         isBeingReassigned: false,
-        save: function (): Promise<void> {
-          throw new Error('Function not implemented.');
+        save: async function (): Promise<void> {
+          try {
+            // Simulate saving data to a database or an external service
+            // For example, you can make an API call to save the data
+            const response = await axios.post('/api/saveData', {/* data to save */});
+        
+            // Check if the save operation was successful
+            if (response.status === 200) {
+              notify('success', 'Data saved successfully!', new Date);
+            } else {
+              notify('error', 'Failed to save data', new Date, );
+              console.error('Failed to save data:', response.statusText);
+            }
+          } catch (error) {
+            notify('error', 'Error saving data', new Date, );
+            console.error('Error saving data:', error);
+            throw error; // Re-throw the error if necessary
+          }
         },
-        snapshot: undefined,
+        
+        snapshot: {} as Snapshot<Data>,
         _id: '',
         id: '',
         title: '',
         isActive: false,
         tags: [],
         phase: null,
-        then: function (callback: (newData: Snapshot<Data>) => void): void {
-          throw new Error('Function not implemented.');
+        then: async function (callback: (newData: Snapshot<Data>) => void): Promise<void> {
+          try {
+            // Simulate fetching updated data after saving
+            const updatedData: Snapshot<Data> = await fetchUpdatedData(createdSnapshot.id); // You need to implement this function to fetch the updated data
+
+            // Execute the callback with the updated data
+            callback(updatedData);
+          } catch (error) {
+            console.error('Error fetching updated data:', error);
+            throw error; // Re-throw the error if necessary
+          }
         },
         analysisType: '',
         analysisResults: [],

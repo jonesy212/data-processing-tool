@@ -14,6 +14,7 @@ enum DocumentType {
   CalendarEvents = 'calendarEvents',
   Drawing = 'drawing',
   Presentation = 'presentation',
+  Draft = 'draft',
 
 }
 class DocumentGenerator {

@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 
-interface AsyncHook {
+export interface AsyncHook {
   condition: () => boolean;
-  asyncEffect: () => Promise<(() => void) | void>;
+  asyncEffect: ({ idleTimeoutId, startIdleTimeout }: {
+    idleTimeoutId: any,
+    startIdleTimeout: any
+  }) => Promise<void | (() => void)>;
+  isActive: 
 }
 
 // Library's AsyncHook type
@@ -10,7 +14,7 @@ export interface LibraryAsyncHook {
   enable: () => void;
   disable: () => void;
   condition: () => boolean;
-  asyncEffect: () => Promise<void>;
+  asyncEffect: ({ idleTimeoutId, startIdleTimeout, }: { idleTimeoutId: any; startIdleTimeout: any; }) => Promise<() => void>
 }
 
 // Update your AsyncHook interface to match the library's expectations
@@ -31,7 +35,10 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
           // Execute the async effect of the current hook
           let cleanup: (() => void) | undefined;
           try {
-            const result = await currentHook.asyncEffect();
+            const result = await currentHook.asyncEffect({
+              idleTimeoutId: 'idleTimeoutId',
+              startIdleTimeout: 'startIdleTimeout',
+            });
             if (typeof result === "function") {
               cleanup = result;
             }
@@ -59,7 +66,11 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
         previousHookIndex >= 0 &&
         typeof hooks[previousHookIndex].asyncEffect === "function"
       ) {
-        hooks[previousHookIndex].asyncEffect(); // Cleanup the previous hook
+        hooks[previousHookIndex].asyncEffect(
+          {
+            idleTimeoutId: 'idleTimeoutId',
+            startIdleTimeout: 'startIdleTimeout',
+          }); // Cleanup the previous hook
       }
     };
   }, [currentHookIndex, hooks]);

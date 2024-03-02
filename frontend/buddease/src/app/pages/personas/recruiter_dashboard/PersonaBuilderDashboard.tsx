@@ -12,41 +12,53 @@ import { Data } from "@/app/components/models/data/Data";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import DataPreview from "../../../components/users/DataPreview";
+import { PersonaTypeEnum } from "../PersonaBuilder";
 import { PersonaData } from "./PersonaData";
 import PersonaPanel from "./PersonaPanel";
 
-const userPersonas = [
+
+// Define initial personas
+const initialUserPersonas = [
   "Music Persona",
   "Film Persona",
   "Art Persona",
   "Casual User",
 ];
-const businessPersonas = [
+
+const initialBusinessPersonas = [
   "Developer",
   "UI Designer",
   "Job Seeker",
   "Creator",
   "Project Manager",
   "Strategist",
+  "Data Analyst", 
+  "Content Creator", 
 ];
-const socialPersonas = ["Influencer", "Social Media Manager"];
 
-// Additional user roles to be added
+const initialSocialPersonas = [
+  "Influencer",
+  "Social Media Manager",
+  "Blogger", 
+];
+
+// Define additional personas
 const additionalUserPersonas = [
   "Fashion Enthusiast",
   "Gamer Persona",
   "Fitness Enthusiast",
 ];
+
 const additionalBusinessPersonas = ["Data Analyst", "Content Creator"];
+
 const additionalSocialPersonas = ["Blogger", "Content Creator"];
 
-// Concatenate the additional roles with the existing ones
-const extendedUserPersonas = [...userPersonas, ...additionalUserPersonas];
-const extendedBusinessPersonas = [
-  ...businessPersonas,
-  ...additionalBusinessPersonas,
-];
-const extendedSocialPersonas = [...socialPersonas, ...additionalSocialPersonas];
+// Merge initial and additional personas
+const userPersonas = [...initialUserPersonas, ...additionalUserPersonas];
+const businessPersonas = [...initialBusinessPersonas, ...additionalBusinessPersonas];
+const socialPersonas = [...initialSocialPersonas, ...additionalSocialPersonas];
+
+// Now userPersonas, businessPersonas, and socialPersonas are properly integrated with the additional personas included.
 
 // Define personality traits based on MBTI dichotomies
 const personalityTraits = {
@@ -56,58 +68,94 @@ const personalityTraits = {
   judging: ["Perceiving", "Judging"],
 };
 
+
+// Define personaData using PersonaTypeEnum enum keys
 const personaData: PersonaData = {
-  "Music Persona": getPersonaData(
+  [PersonaTypeEnum.Music]: getPersonaData(
     "Passionate about music and knowledgeable in various genres.",
     "Active involvement in music creation or appreciation communities.",
     "May contribute to collaborative music projects within the app."
   ),
-  "Film Persona": getPersonaData(
+  [PersonaTypeEnum.Film]: getPersonaData(
     "Enthusiastic about films, from classics to contemporary releases.",
     "Possesses insights into cinematography, storytelling, and film analysis.",
     "May participate in discussions or collaborative projects related to film."
   ),
-  "Art Persona": getPersonaData(
+  [PersonaTypeEnum.Art]: getPersonaData(
     "Creative and skilled in various forms of visual arts.",
     "Engages in art communities and appreciates diverse artistic styles.",
     "Potential interest in collaborative art projects within the app."
   ),
-  "Casual User": getPersonaData(
+  [PersonaTypeEnum.CasualUser]: getPersonaData(
     "Frequent user for various purposes without specific professional focus.",
     "Enjoys the app for entertainment, relaxation, or casual interactions.",
     "May explore different features without a specific project-related goal."
   ),
-  "Project Manager Persona": getPersonaData(
+  [PersonaTypeEnum.ProjectManager]: getPersonaData(
     "Experienced in coordinating project tasks and timelines.",
     "Skilled in team management and collaboration.",
     "Strategic thinker with a focus on project goals."
   ),
-  "Developer Persona": getPersonaData(
+  [PersonaTypeEnum.Developer]: getPersonaData(
     "Proficient in coding and development languages.",
     "Comfortable with version control systems and collaborative coding.",
     "Problem solver and detail-oriented in coding tasks."
   ),
-  "UI Designer Persona": getPersonaData(
+  [PersonaTypeEnum.UIDesigner]: getPersonaData(
     "Creative and innovative in designing user interfaces.",
     "Familiar with design tools and industry trends.",
     "Attention to detail in creating visually appealing designs."
   ),
-  "Influencer Persona": getPersonaData(
+  [PersonaTypeEnum.Influencer]: getPersonaData(
     "Active on social media platforms with a significant following.",
     "Engages effectively with the audience through content creation.",
     "Collaborative mindset for partnerships and promotions."
   ),
-  "Strategist Persona": getPersonaData(
+  [PersonaTypeEnum.Strategist]: getPersonaData(
     "Strategic thinker with a focus on long-term goals.",
     "Proficient in planning and executing strategic initiatives.",
     "Excellent decision-making skills based on thorough analysis."
   ),
-  "Researcher Persona": getPersonaData(
+  [PersonaTypeEnum.Researcher]: getPersonaData(
     "Detail-oriented with strong analytical and research skills.",
     "Inquisitive mind, always seeking new information and insights.",
     "Comfortable with data collection, analysis, and interpretation."
   ),
+  // Include the missing personas here using PersonaTypeEnum enum keys
+  [PersonaTypeEnum.FashionEnthusiast]: getPersonaData(
+    "Passionate about fashion and stays updated on latest trends.",
+    "Active participation in fashion-related events or communities.",
+    "Potential interest in collaborating on fashion-related projects within the app."
+  ),
+  [PersonaTypeEnum.Gamer]: getPersonaData(
+    "Enthusiastic about gaming, both casual and competitive.",
+    "Knowledgeable about various gaming platforms and genres.",
+    "May engage in discussions or collaborative projects related to gaming."
+  ),
+  [PersonaTypeEnum.FitnessEnthusiast]: getPersonaData(
+    "Dedicated to fitness and maintaining a healthy lifestyle.",
+    "Active participation in fitness activities or communities.",
+    "Potential interest in collaborating on fitness-related projects within the app."
+  ),
+  [PersonaTypeEnum.DataAnalyst]: getPersonaData(
+    "Skilled in analyzing and interpreting data.",
+    "Proficient in using data analysis tools and techniques.",
+    "May contribute to data-driven projects within the app."
+  ),
+  [PersonaTypeEnum.ContentCreator]: getPersonaData(
+    "Creates engaging content across various platforms.",
+    "Innovative in content creation and storytelling.",
+    "Collaborative mindset for content creation projects within the app."
+  ),
+  [PersonaTypeEnum.Blogger]: getPersonaData(
+    "Active in blogging with a dedicated audience.",
+    "Writes compelling content on specific topics or niches.",
+    "May collaborate on blogging or content creation projects within the app."
+  ),
 };
+
+// Export personaData
+export { personaData };
 
 // Function to generate persona data
 function getPersonaData(...characteristics: string[]): string[] {
@@ -115,8 +163,9 @@ function getPersonaData(...characteristics: string[]): string[] {
 }
 
 const PersonaBuilderDashboard = () => {
-  const [selectedPersona, setSelectedPersona] = useState(
-    extendedUserPersonas[0]
+
+  const [selectedPersona, setSelectedPersona] = useState<PersonaTypeEnum>(
+    PersonaTypeEnum.ProjectManager // default persona type
   );
   const [personaData, setPersonaData] = useState(null);
 
@@ -145,6 +194,7 @@ const PersonaBuilderDashboard = () => {
     // Example: Extract personality traits based on predefined keywords for each trait
     Object.entries(personalityTraits).forEach(([traitKey, traitKeywords]) => {
       extractedTraits[traitKey] = determineTrait(textResponses, traitKeywords);
+
     });
 
     return extractedTraits;
@@ -174,7 +224,7 @@ const PersonaBuilderDashboard = () => {
         businessPersonas={businessPersonas}
         socialPersonas={socialPersonas}
         selectedPersona={selectedPersona}
-        onSelectPersona={(persona: string) => setSelectedPersona(persona)}
+        onSelectPersona={(persona: PersonaTypeEnum) => setSelectedPersona(persona)}
         persona={""}
         contentProps={
           {} as (
@@ -199,7 +249,8 @@ const PersonaBuilderDashboard = () => {
       {/* Integrate DataPreview component */}
       <DataPreview
         data={{
-          id: "data id",
+          id: "data_id",
+          timeBasedCode: "timeBasedCode",
           traits: (
             props: DetailsProps<SupportedData>,
             context?: any

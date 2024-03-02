@@ -1,6 +1,7 @@
 // TeamActions.tsx
 import { createAction } from "@reduxjs/toolkit";
 import { Team } from "../models/teams/Team";
+import { UserRole } from "../users/UserRole";
 
 export const TeamActions = {
   addTeam: createAction<Team>("addTeam"),
@@ -12,7 +13,7 @@ export const TeamActions = {
   removeTeamFailure: createAction<{ error: string }>("removeTeamFailure"),
   removeTeam: createAction<number>("removeTeam"),
   updateTeam: createAction<{ id: number; updatedTeam: Partial<Team> }>("updateTeam"),
-
+  
   fetchTeamRequest: createAction<{ id: number }>("fetchTeamRequest"),
   fetchTeamSuccess: createAction<{ team: Team }>("fetchTeamSuccess"),
   fetchTeamFailure: createAction<{ error: string }>("fetchTeamFailure"),
@@ -21,11 +22,16 @@ export const TeamActions = {
   updateTeamRequest: createAction<{ id: number; updatedTeam: Partial<Team> }>("updateTeamRequest"),
   updateTeamSuccess: createAction<{ teamId: number; updatedTeam: Team }>("updateTeamSuccess"),
   updateTeamFailure: createAction<{ error: string }>("updateTeamFailure"),
-
+  
+  updateTeamRole: createAction<{teamId: number; roleId: string; roleName: UserRole["role"]; roleDescription: string;}>("updateTeamRole"),
+  updateTeamRoles: createAction<{teamId: number[]; roleId: string; roleNames: UserRole[]; roleDescriptiond: string;}>("updateTeamRole"),
+  manageTeamRoles: createAction<{ teamId: number, role: UserRole }>("manageTeamRoles"),
+  updateCallback: createAction<{ error: string }>("updateCallback"),
   //  batch actions
   fetchTeamsRequest: createAction("fetchTeamsRequest"),
   fetchTeamsSuccess: createAction<{ teams: Team[] }>("fetchTeamsSuccess"),
   fetchTeamsFailure: createAction<{ error: string }>("fetchTeamsFailure"),
+  fetchApiDataSuccess: createAction<{ data: Team[] }>("fetchApiDataSuccess"),
   
   updateTeamsRequest: createAction<{ updatedTeams: Partial<Team>[] }>("updateTeamsRequest"),
   updateTeamsSuccess: createAction<{ updatedTeams: Team[] }>("updateTeamsSuccess"),

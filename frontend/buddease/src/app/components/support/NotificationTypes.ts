@@ -1,3 +1,5 @@
+import { NotificationTypeEnum } from "./NotificationContext";
+
 // NotificationTypes.ts
 export const NOTIFICATION_TYPES = {
   // Welcome and Account

@@ -15,6 +15,7 @@ import NotificationManager from "../support/NotificationManager";
 import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
+import { initialState } from "../state/redux/slices/RootSlice";
 
 
 interface HooksObject {
@@ -164,7 +165,8 @@ const YourComponent: React.FC<YourComponentProps> = ({
   
   
   const handleAppendData = async (): Promise<void> => {
-
+    
+    
     // const userId = await userService.fetchUser(calendarData[0].userId);
     const newData = [{ column1: 'value1', column2: 'value2' }];
     // Append data to the backend and trigger a manual update

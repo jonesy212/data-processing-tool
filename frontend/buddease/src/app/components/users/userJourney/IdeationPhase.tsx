@@ -28,7 +28,7 @@ const useIdeaCreationPhase = () => {
   }, []);
 };
 
-const IdeationPhase = ({ phaseName }: { phaseName: string }) => {
+const IdeationPhase = ({ phaseName, onTransition }: { phaseName: string; onTransition: any }) => {
   // Use the corresponding phase hook based on the phaseName
   switch (phaseName) {
     case 'Idea':
@@ -84,3 +84,20 @@ const IdeationPhase = ({ phaseName }: { phaseName: string }) => {
 };
 
 export default IdeationPhase;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

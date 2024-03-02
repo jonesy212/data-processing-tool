@@ -31,16 +31,19 @@ export enum OnboardingPhase {
   PAYMENT_PROCESS,
 }
 
+interface TempUserData extends Partial<UserData> {
+  questionnaireResponses: { [key: string]: string };
+  timeBasedCode?: string; // Add timeBasedCode property to TempUserData
+
+}
+
+
 const UserJourneyManager: React.FC = () => {
   const { state } = useAuth();
   const { notify } = useNotification();
   const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>(
     OnboardingPhase.REGISTER
   );
-
-  interface TempUserData extends UserData {
-    questionnaireResponses: { [key: string]: string };
-  }
 
   const timeBasedCode = generateTimeBasedCode();
   let userData: TempUserData = {
@@ -85,6 +88,7 @@ const UserJourneyManager: React.FC = () => {
 
       // Notify user of successful questionnaire submission
       notify(
+        "questionnaireId",
         "Your information has been successfully submitted",
         NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED,
         new Date(),
@@ -94,6 +98,7 @@ const UserJourneyManager: React.FC = () => {
       // Handle any network or unexpected errors
       console.error("Error sending questionnaire responses:", error);
       notify(
+        "",
         "There was an error saving your submission, try again",
         NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR,
         new Date(),
@@ -154,4 +159,4 @@ const UserJourneyManager: React.FC = () => {
   );
 };
 
-export default UserJourneyManager;
+export default TempUserData; UserJourneyManager;

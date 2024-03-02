@@ -111,8 +111,19 @@ function* shareCalendarSaga(event: ReturnType<typeof CalendarActions.shareEvent>
 }
 
 
-
-
+function* syncCalendarSaga(event: ReturnType<typeof CalendarActions.syncEvent>): Generator<Effect, void, any> { 
+  const { payload: eventId } = event;
+  try {
+    yield call(() => axiosInstance.post(`/api/calendar-events/${eventId}/sync`));
+    yield put(CalendarActions.syncEventSuccess({ eventId: "view" }));
+  } catch (error) {
+    yield put(
+      CalendarActions.syncEventFailure({
+        error: NOTIFICATION_MESSAGES.CalendarEvents.SYNC_EVENT_ERROR,
+      })
+    );
+  }
+}
 
 
 

@@ -48,9 +48,12 @@ const useApiManagerStore = (): ApiManagerStore => {
   const [apiConfigTimeout, setApiConfigTimeout] = useState<number>(0);
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
   const snapshotStore = new SnapshotStore<ApiConfig[]>(
+    timestamp,
+    data,
     {
       initialState: apiConfigs
-    } as SnapshotStoreConfig<ApiConfig[]>
+    } as SnapshotStoreConfig<ApiConfig[]>,
+    "apiConfigs"
   );
 
 
@@ -139,7 +142,7 @@ const useApiManagerStore = (): ApiManagerStore => {
   // Method to handle the initiation of API configurations fetch
   const fetchApiConfigsRequest = () => {
     console.log("Fetching API Configurations...");
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.DataLoading.PAGE_LOADING);
+    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
   };
 
   // Method to handle successful update of an API configuration

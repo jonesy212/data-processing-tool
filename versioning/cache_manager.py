@@ -2,6 +2,8 @@ import logging
 
 from logging_system.logger_rules import LoggerRules
 from logging_system.warning_events import log_error, log_exception, log_warning
+from versioning.synchronize_cache_from_frontend import \
+    synchronize_cache_from_frontend
 
 
 class CacheManager:
@@ -13,6 +15,7 @@ class CacheManager:
         self.cache_data = {}
         self.unique_constraints = {}
 
+    
     def update_cache(self, data):
         """
         Update the cache with new data.
@@ -31,6 +34,10 @@ class CacheManager:
             # Your cache update logic
             self.cache_data.update(data)
             log_warning(f"{self.cache_name} cache updated successfully.")
+            
+            # Call synchronize_cache_from_frontend function
+            synchronize_cache_from_frontend(data)  # Pass the updated data
+            
         except Exception as e:
             log_exception(f"Failed to update {self.cache_name} cache. Error: {e}")
 
@@ -66,12 +73,7 @@ class CacheManager:
         """
         return self.cache_data
 
-    def clear_cache(self):
-        """Clear the cache."""
-        self.cache_data = {}
-        self.unique_constraints = {}
-        log_warning(f"{self.cache_name} cache cleared.")
-
+    
     # Additional features for the productivity app
     def get_task_by_id(self, task_id):
         """

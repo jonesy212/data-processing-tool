@@ -1,6 +1,6 @@
 // Profile.tsx
 import React from 'react';
-import { User, UserDetails } from '../../components/users/User'; // Import the User interface
+import UserDetails, { User } from '../../components/users/User'; // Import the User interface
 
 interface ProfileProps {
   user: User; // Pass the user data as props

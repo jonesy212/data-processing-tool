@@ -125,6 +125,9 @@ export const CalendarActions = {
 
   syncEvent: createAction<string>("syncEvent"),
   syncEventSuccess: createAction<{ eventId: string }>("syncEventSuccess"),
+  syncEventFailure: createAction<{ error: string }>("syncEventFailure"),
+
+  
   attachFileToEvent: createAction<{
     eventId: string;
     attachment: File | string; // File object or URL

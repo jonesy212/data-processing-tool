@@ -1,19 +1,23 @@
-import Milestone from '@/app/components/calendar/CalendarSlice';
-import { Task } from '@/app/components/models/tasks/Task';
-import Project from '@/app/components/projects/Project';
-import { useNotification } from '@/app/components/support/NotificationContext';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import ProjectState from './ProjectSlice';
-  
+import Milestone from "@/app/components/calendar/CalendarSlice";
+import { Task } from "@/app/components/models/tasks/Task";
+import Project from "@/app/components/projects/Project";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import { useNotification } from "@/app/components/support/NotificationContext";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import ProjectState from "./ProjectSlice";
+
+// Define and export the Notification type
+
 interface ProjectManagerState extends ProjectState {
-    tasks: Record<string, Task>;
-    milestones: Record<string, Milestone>;
-    notifications: Record<string, Notification>;
-  }
+  tasks: Record<string, Task>;
+  milestones: Record<string, Milestone>;
+  notifications: Record<string, NotificationData>;
+  loading: boolean;
+}
 
 const initialState: Partial<ProjectManagerState> = {
   projects: {} as Project[],
-    tasks: {} as Record<string, Task>,
+  tasks: {} as Record<string, Task>,
   milestones: {},
   notifications: {},
   loading: false,
@@ -22,7 +26,7 @@ const initialState: Partial<ProjectManagerState> = {
 const { notify } = useNotification();
 
 export const projectManagerSlice = createSlice({
-  name: 'projectManager',
+  name: "projectManager",
   initialState,
   reducers: {
     // Placeholder actions for project management
@@ -69,12 +73,19 @@ export const {
   updateMilestone,
 } = projectManagerSlice.actions;
 
-export const selectProjects = (state: { projectManager: ProjectManagerState }) => state.projectManager.projects;
+export const selectProjects = (state: {
+  projectManager: ProjectManagerState;
+}) => state.projectManager.projects;
 
-export const selectTasks = (state: { projectManager: ProjectManagerState }) => state.projectManager.tasks;
+export const selectTasks = (state: { projectManager: ProjectManagerState }) =>
+  state.projectManager.tasks;
 
-export const selectMilestones = (state: { projectManager: ProjectManagerState }) => state.projectManager.milestones;
+export const selectMilestones = (state: {
+  projectManager: ProjectManagerState;
+}) => state.projectManager.milestones;
 
-export const selectNotifications = (state: { projectManager: ProjectManagerState }) => state.projectManager.notifications;
+export const selectNotifications = (state: {
+  projectManager: ProjectManagerState;
+}) => state.projectManager.notifications;
 
 export default projectManagerSlice.reducer;

@@ -18,6 +18,7 @@ import { User } from "../users/User";
 import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
 import { NotificationData } from "../support/NofiticationsSlice";
+import { useFeatureContext } from "@/app/context/FeatureContext";
 
 
 interface AdminDashboardProps extends YourComponentProps {
@@ -67,6 +68,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const { isActive, resetIdleTimeout } = useIdleTimeout();
   const { sendPushNotification } = useNotificationManagerService();
   const theme = useThemeConfig();
+
+
+    // Access the featureStore
+    const featureStore = useFeatureContext();
 
   // Function to update state when config changes
   const updateApiConfig = (config: ApiConfig) => {

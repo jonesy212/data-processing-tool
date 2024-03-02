@@ -9,5 +9,5 @@ interface LogData extends Partial<Data> {
     // Add additional fields as needed based on the application's requirements
   }
   
-  export default LogData;
+  export type { LogData };
   

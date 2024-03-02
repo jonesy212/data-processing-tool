@@ -1,4 +1,6 @@
 // NotificationMessages.ts
+
+
 const NOTIFICATION_MESSAGES = {
   Audio: {
     AudioCommunicationFailure: "Failed to enable{ audio communication",
@@ -55,6 +57,26 @@ const NOTIFICATION_MESSAGES = {
     FETCH_COMPONENTS_SUCCESS: "Components fetched successfully",
     FETCH_COMPONENTS_FAILURE: "Error fetching components. Please try again",
     ADD_COMPONENT_SUCCESS: "Component added successfully",
+  },
+
+  Client: {
+    FETCH_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
+    FETCH_CLIENT_DETAILS_ERROR: "Client failed to update client",
+    
+    CONNECT_WITH_TENANT_ERROR: "Client failed to connect",
+
+    CREATE_TASK_ERROR: "Task creation error",
+    LIST_TASKS_ERROR: "Task list error",
+    SUBMIT_PROJECT_PROPOSAL_ERROR: "Project requested to submit project proposal failed",
+
+    UPDATE_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
+    UPDATE_CLIENT_DETAILS_ERROR: "Update client details failed",
+    SEND_MESSAGE_TO_TENANT_ERROR: "Send message to tenant",
+    LIST_CONNECTED_TENANTS_ERROR: "List available tenant",
+    LIST_MESSAGES_ERROR: "List messages to tenant",
+
+    LIST_REWARDS_ERROR: "List rewards not sent to tenant, review issue",
+    PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR: "List components that are currently associated with a cluster",
   },
 
   Crypto: {
@@ -278,7 +300,8 @@ const NOTIFICATION_MESSAGES = {
     GENERATE_TASKBOARD_ID: "Generated Taskboard ID",
     GENERATE_BRAINSTORMING_SESSION_ID: "Generated Bundle ID",
     GENERATE_CONTRIBUTION_ID: "Generated Component ID",
-    GENERATE_PROJECT_REVENUE_ID: "Generated Project"
+    GENERATE_PROJECT_REVENUE_ID: "Generated Project",
+    GENERATE_VERSION_ID: "Generated Version ID",
   },
   // Generic Messages
   Generic: {
@@ -305,19 +328,23 @@ const NOTIFICATION_MESSAGES = {
     DEFAULT: "Log message",
     LOG_INFO: "Info log message",
     LOG_DEBUG: "Debug log message",
+    LOG_ERROR: "Error log message",
     LOG_WARNING: "Warning log message",
+    LOG_SUCCESS: "Success log message",
+    LOG_FAILURE: "Failure log message",
     LOG_INFO_SUCCESS: "Info items generated successfully",
     LOG_INFO_ERROR: "Error generating info",
-    LOG_ERROR_FAILURE: "Error log message",
-    LOG_ERROR_SUCCESS: "Info items generated successfully",
+    
     LOG_WARNING_SUCCESS: "Warning items generated successfully",
     LOG_WARNING_ERROR: "Error generating info items",
-    LOG_ERROR: "Error generating info",
     
+    LOG_SUCCESS_ERROR: "Warning log message",
+    LOG_FAILURE_ERROR: "Error log message",
   },
 
   Login: {
     LOGIN_SUCCESS: "Admin login successful",
+    LOGIN_FAILURE: "Admin login failed",
   },
   // Warning and Informational
   LowDiskSpace: {
@@ -407,6 +434,7 @@ const NOTIFICATION_MESSAGES = {
       `Error in Personas (${errorType}): ${details}`,
     WELCOME: "Welcome to the Persona Builder!",
     QUESTIONNAIRE_COMPLETE: "Thank you for completing the questionnaire!",
+    BUILDER_CREATION_ERROR: "Error creating persona builder. Please try again",
     // Add more personalized messages for the PersonMessages type
   },
   Phase: {
@@ -575,12 +603,16 @@ const NOTIFICATION_MESSAGES = {
     DEFAULT: (errorType: string, details: string) =>
       `Error in Teams (${errorType}): ${details}`,
     //success
-    ASSIGN_TEAM_MEMBER_FAILURE:
-      "Failed to assign team member. Please try again",
+    ASSIGN_TEAM_MEMBER_FAILURE: "Failed to assign team member. Please try again",
+    CREATE_TEAM_SUCCESS: "Team created successfully",
+    DELETE_TEAM_SUCCESS: "Team deleted successfully",
+    DELETE_TEAM_FAILURE: "Failed to delete team. Please try again",
 
     //failure
     ADD_TEAM_ERROR: "Error adding team. Please try again",
     FETCH_TEAM_ERROR: "Error fetching team. Please try again",
+    CREATE_TEAM_FAILURE: "Failed to create team. Please try again",
+    
     // Add more messages for the TeamLoading type
     UPDATE_TEAM_ERROR: "Error updating team. Please try again",
     REMOVE_TEAM_ERROR: "Error removing team. Please try again",
@@ -589,6 +621,19 @@ const NOTIFICATION_MESSAGES = {
     //Batch
     FETCH_TEAMS_ERROR: "Error fetching teams. Please try again",
     UPDATE_TEAMS_ERROR: "Error updating teams. Please try again",
+  },
+
+  TeamManagement: {
+    DEFAULT: (errorType: string, details: string) =>
+      `Error in Teams (${errorType}): ${details}`,
+    //success
+    ASSIGN_TEAM_MEMBER_FAILURE: "Failed to assign team member. Please try again",
+    CREATE_TEAM_SUCCESS: "Team created successfully",
+    DELETE_TEAM_SUCCESS: "Team deleted successfully",
+    DELETE_TEAM_FAILURE: "Failed to delete team. Please try again",
+
+    FETCH_TEAMMEMBER_SUCCESS: "Fetched team member successfully",
+    FETCH_TEAMMEMBER_FAILURE: "Failed to fetch team member. Please try again",
   },
 
   Todos: {

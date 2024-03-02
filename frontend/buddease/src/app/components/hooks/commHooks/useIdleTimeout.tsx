@@ -67,6 +67,7 @@ const useIdleTimeout = (): DynamicHookResult => {
     return isIdle;
   };
 
+  
   const idleTimeoutEffect = async () => {
     // Log out the user or perform any other action
     showModalOrNotification(
@@ -137,6 +138,10 @@ const useIdleTimeout = (): DynamicHookResult => {
     );
   };
 
+
+
+  
+
   const idleTimeoutConditionSync = () => {
     return idleTimeoutCondition();
   };
@@ -149,13 +154,13 @@ const useIdleTimeout = (): DynamicHookResult => {
     asyncEffect: idleTimeoutEffect,
     cleanup: idleTimeoutCleanup,
     resetIdleTimeout: resetIdleTimeout,
-    idleTimeoutId: timeoutId.toString(), // Convert timeoutId to string before assigning
+    idleTimeoutId: timeoutId, // Convert timeoutId to string before assigning
     startIdleTimeout: startIdleTimeout,
   };
   
 
 
-  const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams);
+  const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams, );
 
   // Add any additional methods or modifications specific to the useIdleTimeoutHook here
 

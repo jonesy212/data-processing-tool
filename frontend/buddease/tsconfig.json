@@ -21,22 +21,26 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      // app
       "@/api/*": ["./src/app/api/*"],
+      "@/backendStructure/*": ["./src/app/configs/appStructure/*"],
+      "@/frontendStructure/*": ["./src/app/configs/appStructure/*"],
+      // components
       "@/calendar/*": ["./src/app/components/calendar/*"],
       "@/documents/*": ["./src/app/components/documents/*"],
       "@/projects/*": ["./src/app/components/projects/*"],
       "@/support/*": ["./src/app/components/support/*"],
       "@/animations/*": ["./src/app/components/animations*"],
       "@/stores/*": ["./src/app/components/state/stores/*"],
+      "@/videos/*": ["./src/app/components/video/*"],
+      "@/hooks/*": ["./src/app/components/hooks/*"],
+      "@/users/*": ["./src/app/components/users/*"],
+      // pages
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/dashboards/*": ["./src/app/pages/dashboards/*"],
       "@/forms/*": ["./src/app/pages/forms/*"],
       "@/layouts/*": ["./src/app/pages/layouts/*"],
       "@/searches/*": ["./src/app/pages/searches/*"],
-      "@/backendStructure/*": ["./src/app/configs/appStructure/*"],
-      "@/frontendStructure/*": ["./src/app/configs/appStructure/*"],
-      "@/hooks/*": ["./src/app/components/hooks/*"],
-      "@/users/*": ["./src/app/components/users/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/screenFunctionality/shortcut_keys.js", "../../subscriptions/Subscription.tsx", "src/app/components/calendar/CalendarEvents.jsx", "src/app/components/calendar/CalendarComponent.jsx", "src/app/components/calendar/YourCalendarLibrary.js", "src/app/components/projects/Project.jsx", "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx", "src/app/components/phases/collaborationPhase/CollaborationContext.js", "src/app/utils/EmojiPickerUtils.jsx", "src/app/components/libraries/ui/UILibrary.tsx", "src/app/pages/dashboards/DashboardOverview.jsx", "src/app/components/phases/PhasesNavigation.jsx", "src/app/utils/MyPromise.tjsx", "src/app/components/communications/chat/features/clearChatImageCache.js"],

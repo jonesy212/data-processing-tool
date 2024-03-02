@@ -20,6 +20,8 @@ interface DetailsItem<T> {
   data?: T; 
   teamMembers?: TeamMember[];
   communication?: CommunicationActionTypes
+  label?: string
+  value?: string
 }
 
 export interface DetailsListStore {
@@ -70,6 +72,7 @@ class DetailsListStoreClass implements DetailsListStore {
 
   private async initSnapshotStore() {
     await notify(
+      "interna snapshot notifications",
       "Setting up snapshot details",
       NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
       new Date(),
@@ -79,7 +82,7 @@ class DetailsListStoreClass implements DetailsListStore {
     this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
       {} as SnapshotStoreConfig<Snapshot<Data>>,
       (message: string, content: any, date: Date, type: NotificationType) => {
-        notify(message, content, date, type);
+        notify("", message, content, date, type);
       }
     );
   }

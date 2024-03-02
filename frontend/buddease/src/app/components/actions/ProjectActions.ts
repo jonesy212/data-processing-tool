@@ -15,9 +15,11 @@ export const ProjectActions = {
   
   deleteProjectSuccess: createAction<{projectId: string, project: Project}>("deleteProjectSuccess"),
   deleteProjectFailure: createAction<{ error: string }>("deleteProjectFailure"),
+  
   // Create actions
   createProjectSuccess: createAction<{ project: Project }>("createProjectSuccess"),
   createProjectFailure: createAction<{ error: string }>("createProjectFailure"),  
+  
   // Fetch actions
   fetchProject: createAction<{ project: Project }>("fetchProject"),
   fetchProjectSuccess: createAction<{ project: Project }>("fetchProjectSuccess"),
@@ -27,6 +29,7 @@ export const ProjectActions = {
     ),
   fetchProjectFailure: createAction<{ error: string }>("fetchProjectFailure"),
   fetchProjectsFailure: createAction<{ error: string }>("fetchProjectsFailure"),
+  
   // Batch actions for fetching
   batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),
   batchFetchProjectsSuccess: createAction<{ projects: Project[] }>(
@@ -36,7 +39,6 @@ export const ProjectActions = {
     "batchFetchProjectsFailure"
   ),
 
-  
   // Batch actions for updating
   batchUpdateProjectsRequest: createAction<{
     ids: number[];

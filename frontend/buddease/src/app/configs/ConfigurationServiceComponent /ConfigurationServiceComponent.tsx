@@ -1,6 +1,7 @@
 import configurationService, { ApiConfig } from '@/app/configs/ConfigurationService';
 import React from 'react';
 
+
 interface ConfigurationServiceComponentProps {
   apiConfigs: ApiConfig[]
 }

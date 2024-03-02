@@ -6,7 +6,7 @@ interface DynamicData {
 export interface Question {
   id: string;
   text: string;
-  type: "multipleChoice" | "text" | "multiAnswer";
+  type: "multipleChoice" | "text" | "multiAnswer" | 'boolean' ;
   options?: {
     value: string;
     label: string;

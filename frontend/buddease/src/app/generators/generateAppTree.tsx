@@ -4,7 +4,7 @@ import { isUserLoggedIn } from "../pages/forms/utils/CommonLoginLogic";
 
 // Define a type for your tree structure
 type AppTree = {
-  [key: string]: AppTree | DocumentNode; // Recursive definition
+  [key: string]: AppTree | DocumentNode | string; // Allow string values
 };
 
 // Define the main generateInitialAppTree function
@@ -50,3 +50,4 @@ const generateAppTree = (treeData: DocumentTree): AppTree => {
 export default generateAppTree;
 export { generateInitialAppTree };
 export type { AppTree };
+

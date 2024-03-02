@@ -1,5 +1,6 @@
 import DynamicContentProps from '@/app/components/cards/DummyCardLoader';
 import React from "react";
+import { PersonaTypeEnum } from '../PersonaBuilder';
 import { PersonaData } from "./PersonaData";
 
 interface PersonaPanelProps {
@@ -10,7 +11,7 @@ interface PersonaPanelProps {
   businessPersonas: string[];
   socialPersonas: string[];
   selectedPersona: string;
-  onSelectPersona: (persona: string) => void;
+  onSelectPersona: (persona: PersonaTypeEnum) => void;
 }
 
 const PersonaPanel: React.FC<PersonaPanelProps> = ({

@@ -65,5 +65,6 @@ const RenderContent: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-export default FrontendStructureComponent;
-export type { FrontendStructure, FrontendStructureProps };
+export default FrontendStructure; FrontendStructureComponent;
+export type { FrontendStructureProps };
+

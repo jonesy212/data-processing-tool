@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-function generateComponent(componentName, targetDirectory = process.cwd(), promptingContent) {
+function generateComponent(componentName, targetDirectory = process.cwd(), promptingContent="") {
   // Check if the component name already exists in the target directory or its subdirectories
   const existingComponentPath = findExistingComponent(componentName, targetDirectory);
   if (existingComponentPath) {
@@ -12,6 +12,7 @@ function generateComponent(componentName, targetDirectory = process.cwd(), promp
     return;
   }
 
+  
 
     // If prompting content is not provided, generate default prompting content
     if (!promptingContent) {

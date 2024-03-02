@@ -25,9 +25,10 @@ export const projectOwnerApiService = observable({
         // Update state or perform other MobX-related actions
         ProjectOwnerActions.createProjectSuccess(response.data); // Dispatch success action with response data
       });
-      notify(
-        NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_SUCCESS,
+      useNotification().notify(
         "Create Project Success",
+        NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_SUCCESS,
+        {},
         new Date(),
         NotificationTypeEnum.OperationSuccess
       );
@@ -140,8 +141,10 @@ export const projectOwnerApiService = observable({
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete project");
       notify(
+        id,
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_ERROR,
         "Delete Project Error",
+        {},
         new Date(),
         NotificationTypeEnum.OperationError
       );

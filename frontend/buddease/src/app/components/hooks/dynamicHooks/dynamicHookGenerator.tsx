@@ -1,66 +1,58 @@
 // DynamicHookGenerator.tsx
-import { useEffect, useState } from "react";
+import useAsyncHookLinker, { AsyncHook } from "../useAsyncHookLinker";
 
 export type DynamicHookParams = {
   condition: () => Promise<boolean>;
-  asyncEffect: () => Promise<() => void>;
+  asyncEffect: ({
+    idleTimeoutId,
+    startIdleTimeout,
+  }: {
+    idleTimeoutId: any;
+    startIdleTimeout: any;
+  }) => Promise<void | (() => void)>;
   cleanup?: () => void;
   resetIdleTimeout: () => void;
-  idleTimeoutId: string
-  startIdleTimeout: () => void;
+  idleTimeoutId: NodeJS.Timeout | null;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   isActive: boolean;
 };
+
 
 export type DynamicHookResult = {
   isActive: boolean;
   animateIn: (selector: string) => void;
-  toggleActivation: (accessToken: string) => void;
+  accessToken?: (string | undefined);
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout?: () => void;
+  idleTimeoutId: NodeJS.Timeout | null;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   intervalId?: number;
 };
+
 
 const createDynamicHook = ({
   condition,
   asyncEffect,
   resetIdleTimeout,
   cleanup,
-  isActive: initialIsActive
-}: DynamicHookParams) => {
+  isActive: initialIsActive,
+}: DynamicHookParams): AsyncHook => {
+  return {
+    condition: () => false,
+    asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: {
+      idleTimeoutId: any,
+      startIdleTimeout: any
+    }): Promise<void | (() => void)> => {
+  await asyncEffect({ idleTimeoutId, startIdleTimeout });
+  // Optionally return a function if needed
   return () => {
-    const [isActive, setIsActive] = useState(initialIsActive);
-
-    useEffect(() => {
-      const runAsyncEffect = async () => {
-        if (isActive && (await condition())) {
-          await asyncEffect();
-        }
+    // Function body
       };
+    }
+  }
+}
 
-      runAsyncEffect();
-
-      return () => {
-        if (cleanup) {
-          cleanup();
-        }
-      };
-    }, [condition, asyncEffect, cleanup, isActive]);
-
-    return {
-      isActive,
-      toggleActivation: (accessToken: string) => {
-        
-        setIsActive((prev) => !prev);
-      },
-      startAnimation: () => {},
-      stopAnimation: () => {},
-      animateIn: () => {},
-      asyncEffect,
-      cleanup,
-      resetIdleTimeout,
-    };
-  };
-};
 
 export default createDynamicHook;
+

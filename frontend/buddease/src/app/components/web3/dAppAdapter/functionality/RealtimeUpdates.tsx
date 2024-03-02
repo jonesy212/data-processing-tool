@@ -106,6 +106,11 @@ const RealtimeUpdates: React.FC = async () => {
   );
 };
 
+
+
+
+
+
 // Replace this function with your actual implementation for subscribing to real-time updates
 export const subscribeToRealtimeUpdates = (user: User, callback: (newData: UserData) => void) => {
   // Implement your subscription logic here

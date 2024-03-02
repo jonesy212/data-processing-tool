@@ -1,15 +1,17 @@
-// MeetingSchedulerViewerToolbar.tsx
 import React from 'react';
 
-const MeetingSchedulerViewerToolbar: React.FC = () => {
-  // Add logic specific to the meeting scheduler viewer toolbar here
-  
+interface MeetingSchedulerViewerToolbarProps {
+  title: string;
+  onRefresh: () => void;
+}
+
+const MeetingSchedulerViewerToolbar: React.FC<MeetingSchedulerViewerToolbarProps> = ({ title, onRefresh }) => {
   return (
-    <div>
-      <h3>Meeting Scheduler Viewer Toolbar</h3>
-      {/* Add toolbar buttons and controls for the meeting scheduler viewer here */}
+    <div className="meeting-scheduler-viewer-toolbar">
+      <h2>{title}</h2>
+      <button onClick={onRefresh}>Refresh</button>
     </div>
   );
-};
+}
 
 export default MeetingSchedulerViewerToolbar;

@@ -1,66 +1,24 @@
-import React, { useState } from 'react';
-import PromptPage, { Prompt, PromptPageProps } from './PromptPage';
+// PromptComponent.tsx
+import React from 'react';
 
-interface PromptComponentProps extends Omit<PromptPageProps, "prompts"> {
-  currentPage: {
-    title: string;
-    description: string;
-    prompts: {
-      id: string;
-      text: string;
-      type: string;
-    }[];
-  };
-  onNextPage: () => void;
-  onPreviousPage:() => void;
+interface PromptComponentProps {
+  prompts: string[]; // Array of prompts based on the phase and user input
+  currentPage: number;
 }
 
-const PromptComponent: React.FC<PromptComponentProps> = ({
-  title,
-  description,
-  // userIdea,
-  currentPage,
-  onNextPage,
-  onPreviousPage
-}) => {
-
-  const [generatedPrompts, setGeneratedPrompts] = useState<Prompt[]>([]);
-
-  const handleGeneratePrompts = async () => {
-    // Generate prompts
-
-    setGeneratedPrompts(generatedPrompts);
-    onNextPage();
-  };
-
-  const handlePageSubmit = () => {
-    // Submit page
-    onNextPage();
-  };
-
+const PromptComponent: React.FC<PromptComponentProps> = ({ prompts, currentPage }) => {
   return (
     <div>
-      <PromptPage
-        id={0}
-        title={currentPage.title}
-        description={currentPage.description}
-        prompts={currentPage.prompts as Prompt[]}
-        onGeneratePrompts={handleGeneratePrompts}
-        // userIdea={userIdea}
-      />
-      <button onClick={onPreviousPage}>Previous</button>
-      <button onClick={handlePageSubmit}>Next</button>
+      <h2>Prompts</h2>
+      <ul>
+        {prompts.map((prompt, index) => (
+          <li key={index}>{prompt}</li>
+        ))}
+      </ul>
+      {/* Add additional styling or functionality as needed */}
     </div>
   );
 };
 
 export default PromptComponent;
-
-
-
-
-
-
-
-
 

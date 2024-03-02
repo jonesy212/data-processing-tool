@@ -43,6 +43,12 @@ export interface UserData {
   traits?: typeof CommonDetails;
   timeBasedCode:typeof timeBasedCode, // Generate the time-based code for the user
 
+    // New properties for the persona
+    age?: number;
+    gender?: string;
+    location?: string;
+    occupation?: string;
+    incomeLevel?: string;
 }
 
 // Add a new type for visualization data
@@ -77,6 +83,12 @@ const userData: UserData = {
     return <CommonDetails {...props} />;
   },
   timeBasedCode: timeBasedCode, // Generate the time-based code for the user
+    // New properties for the persona
+    age: 0,
+    gender: 'male',
+    location: 'Texas',
+    occupation: 'Software Engineer',
+    incomeLevel: 'string',
 };
 
 
@@ -85,4 +97,4 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => (
   user ? <CommonDetails data={{ title: 'User Details', description: 'User data', data: undefined }} /> : <div>User not available</div>
 );
 
-export { UserDetails };
+export default UserDetails 

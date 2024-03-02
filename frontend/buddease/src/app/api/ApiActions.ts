@@ -19,7 +19,7 @@ export const ApiActions = {
   // Missing actions
   fetchApiDataRequest: createAction("fetchApiDataRequest"),
   fetchApiDataSuccess: createAction<{ data: any }>("fetchApiDataSuccess"), // Adjust 'any' to the actual data type
-  fetchApiDataFailure: createAction<{ error: string }>("fetchApiDataFailure"),
+  fetchApiDataFailure: createAction<{ error: unknown }>("fetchApiDataFailure"),
 
   // Batch actions for fetching
   batchFetchApiDataRequest: createAction("batchFetchApiDataRequest"),

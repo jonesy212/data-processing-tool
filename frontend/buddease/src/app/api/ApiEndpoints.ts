@@ -1,7 +1,22 @@
+import HighlightEvent from "../components/documents/screenFunctionality/HighlightEvent";
+
 // apiEndpoints.ts
 const BASE_URL = "https://your-api-base-url";
 
-export const endpoints = {
+
+
+interface NestedEndpoints {
+  [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
+}
+interface Endpoints {
+  [category: string]: NestedEndpoints;
+}
+
+
+
+export const endpoints: Endpoints = {
+
+
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
@@ -9,18 +24,16 @@ export const endpoints = {
   },
 
   users: {
-    list: `${BASE_URL}/users`, // GET request for fetching all users
-    single: (userId: number) => `${BASE_URL}/users/${userId}`, // GET request for fetching a specific user by ID
-    add: `${BASE_URL}/users`, // POST request for adding a new user
-    remove: (userId: number) => `${BASE_URL}/users/${userId}`, // DELETE request for deleting a user by ID
-    update: (userId: number) => `${BASE_URL}/users/${userId}`, // PUT request for updating a user by ID
-    updateList: `${BASE_URL}/users/update-list`, // PUT request for updating multiple users
-    search: `${BASE_URL}/users/search`, // GET request for searching users
-    updateRole: (userId: number) => `${BASE_URL}/users/${userId}/update-role`, // PUT request for updating a user's role by ID
-    updateRoles: (userIds: number[]) =>
-      `${BASE_URL}/users/${userIds}/update-roles`, // PUT request for updating a user's roles by ID
+    list: `${BASE_URL}/users`,
+    single: (userId: number) => `${BASE_URL}/users/${userId}`,
+    add: `${BASE_URL}/users`,
+    remove: (userId: number) => `${BASE_URL}/users/${userId}`,
+    update: (userId: number) => `${BASE_URL}/users/${userId}`,
+    updateList: `${BASE_URL}/users/update-list`,
+    search: `${BASE_URL}/users/search`,
+    updateRole: (userId: number) => `${BASE_URL}/users/${userId}/update-role`,
+    updateRoles: (userIds: number[]) => `${BASE_URL}/users/${userIds.join(',')}/update-roles`,
   },
-
   userRoles: {
     list: `${BASE_URL}/api/user-roles`,
     single: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
@@ -39,6 +52,7 @@ export const endpoints = {
     listUsers: `${BASE_URL}/api/users`,
   },
 
+  
   userRolesNFT: {
     list: `${BASE_URL}/api/user-roles-nft`,
     single: (roleId: number) => `${BASE_URL}/api/user-roles-nft/${roleId}`,
@@ -74,7 +88,6 @@ export const endpoints = {
     logout: `${BASE_URL}/auth/logout`,
   },
 
-
   blogs: {
     list: `${BASE_URL}/blogs`,
     single: (blogId: string) => `${BASE_URL}/blogs/${blogId}`,
@@ -96,10 +109,27 @@ export const endpoints = {
     removeEvent: (eventId: string) =>
       `${BASE_URL}/api/calendar/events/${eventId}`,
     search: `${BASE_URL}/api/calendar/events/search`,
-    eventDetails: (eventId: string) => 
+    eventDetails: (eventId: string) =>
       `${BASE_URL}/api/calendar/events/${eventId}/details`,
   },
 
+  client: {
+    fetchClientDetails: (clientId: number) => `/api/client/${clientId}`, // Endpoint to fetch client details
+    updateClientDetails: (clientId: number) => `/api/client/${clientId}/update`, // Endpoint to update client details
+    connectWithTenant: (tenantId: number) => `/api/client/connect/${tenantId}`, // Endpoint to connect with a specific tenant
+    sendMessageToTenant: (tenantId: number) =>
+      `/api/client/message/${tenantId}`, // Endpoint to send a message to a specific tenant
+    listConnectedTenants: "/api/client/connected-tenants", // Endpoint to list all connected tenants
+    listMessages: "/api/client/messages", // Endpoint to list messages between client and tenants
+    createTask: "/api/client/tasks/create", // Endpoint to create a task for project management
+    listTasks: "/api/client/tasks", // Endpoint to list all tasks related to the client
+    submitProjectProposal: "/api/client/projects/submit-proposal", // Endpoint to submit a project proposal
+    participateInCommunityChallenges:
+      "/api/client/community/challenges/participate", // Endpoint to participate in community challenges
+    listRewards: "/api/client/rewards", // Endpoint to list rewards earned by the client
+    // Add more client-specific endpoints related to tenant interaction or communication with businesses
+  },
+  
   collaborationTools: {
     createTask: `${BASE_URL}/api/collaboration/tasks/create`,
     updateTask: (taskId: number) =>
@@ -134,7 +164,6 @@ export const endpoints = {
     // Add more collaboration endpoints as needed
   },
 
-  
   communication: {
     audioCall: `${BASE_URL}/api/communication/audio-call`,
     videoCall: `${BASE_URL}/api/communication/video-call`,
@@ -162,7 +191,6 @@ export const endpoints = {
     pushNotifications: `${BASE_URL}/api/communication/push-notifications`,
     communityForums: `${BASE_URL}/api/communication/community-forums`,
     analytics: `${BASE_URL}/api/communication/analytics`,
-  
   },
 
   communityInteraction: {
@@ -263,15 +291,20 @@ export const endpoints = {
     updateDataTitle: `${BASE_URL}/data/update_title`,
     streamData: `${BASE_URL}/stream_data`,
     dataProcessing: `${BASE_URL}/data/data-processing`,
+
     highlightList: `${BASE_URL}/api/highlights`, // Highlight list endpoint
-    addHighlight: `${BASE_URL}/api/highlights/add`, // Add highlight endpoint
+    addHighlight: (newHighlight: Omit<HighlightEvent, "id">) =>
+      `${BASE_URL}/api/highlights/${newHighlight}`,
     getSpecificHighlight: (highlightId: number) =>
       `${BASE_URL}/api/highlights/${highlightId}`, // Get specific highlight endpoint
+
     updateHighlight: (highlightId: number) =>
       `${BASE_URL}/api/highlights/${highlightId}`, // Update highlight endpoint
+
     deleteHighlight: (highlightId: number) =>
       `${BASE_URL}/api/highlights/${highlightId}`, // Delete highlight endpoint
-    // Add data-processing endpoint
+
+    uploadData: `${BASE_URL}/api/data/upload`, // Upload data endpoint
   },
 
   details: {
@@ -350,7 +383,6 @@ export const endpoints = {
 
   participants: {
     single: (userId: string | number) => `/api/participants/${userId}`,
-
   },
   phases: {
     list: `${BASE_URL}/api/phases`,
@@ -379,6 +411,8 @@ export const endpoints = {
     logInfo: `${BASE_URL}/logging/info`,
     logWarning: `${BASE_URL}/logging/warning`,
     logError: `${BASE_URL}/logging/error`,
+    logSuccess: `${BASE_URL}/logging/success`,
+    logFailure: `${BASE_URL}/logging/failure`,
   },
 
   payment: {
@@ -401,6 +435,10 @@ export const endpoints = {
     markInvoicePaid: `${BASE_URL}/api/payment/invoice/mark-paid`, // Endpoint for marking an invoice as paid
     updateInvoiceStatus: `${BASE_URL}/api/payment/invoice/update-status`, // Endpoint for updating invoice status
     getInvoiceHistory: `${BASE_URL}/api/payment/invoice/history`, // Endpoint for retrieving invoice payment history
+  },
+
+  personas: {
+    selectedPersona: `${BASE_URL}/api/persona`,
   },
 
   projectOwner: {
@@ -637,6 +675,19 @@ export const endpoints = {
     // Add other team-related endpoints as needed
   },
 
+  // Team Management endpoints
+
+  teamManagement: {
+    list: `${BASE_URL}/api/team-management`,
+    single: (teamId: number) => `${BASE_URL}/api/team-management/${teamId}`,
+    add: `${BASE_URL}/api/team-management`,
+    remove: (teamId: number) => `${BASE_URL}/api/team-management/${teamId}`,
+    update: (teamId: number) => `${BASE_URL}/api/team-management/${teamId}`,
+    createTeam: `${BASE_URL}/api/team-management/create-team`,
+    deleteTeam: (teamId: number) => `${BASE_URL}/api/team-management/${teamId}`,
+    fetchTeamMemberData: `${BASE_URL}/api/team-management/teammember-data`,
+    // Add other team-management endpoints as needed
+  },
   // Video content endpoints
   videos: {
     list: `${BASE_URL}/api/videos`, // Endpoint to list all videos
@@ -782,6 +833,7 @@ export const endpoints = {
     fetchToolbarSize: `${BASE_URL}/api/toolbar/size`,
     updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
   },
-
   // Add more sections as needed
-};
+} 
+
+

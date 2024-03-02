@@ -3,6 +3,10 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const ProjectManagementActions = {
 
+  // Tenant-related actions
+  addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),
+  removeTenantFromProject: createAction<{ projectId: number, tenantId: number }>("removeTenantFromProject"),
+  assignTenantManager: createAction<{ projectId: number, tenantId: number, managerId: number }>("assignTenantManager"),
 
     //nft actions
   // Development Services Actions

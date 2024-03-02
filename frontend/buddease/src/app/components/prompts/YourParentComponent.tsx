@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PromptComponent from "./PromptComponent";
+import useSearchPagination from "../hooks/commHooks/useSearchPagination";
 
 const YourParentComponent: React.FC = () => {
   // Define interface for PromptPageProps
@@ -32,6 +33,11 @@ const YourParentComponent: React.FC = () => {
   // State to manage the current page index
   const [currentPage, setCurrentPage] = useState<number>(0); // Initialize with the first page
 
+
+
+  // Use the useSearchPagination hook to handle pagination
+  const { nextPage, previousPage } = useSearchPagination(promptPages.length);
+
   const handleNextPage = () => {
     // Increment the page number
     const nextPage = currentPage + 1;
@@ -63,7 +69,6 @@ const YourParentComponent: React.FC = () => {
   return (
     <div>
       <PromptComponent
-        id
         currentPage={promptPages[currentPage]}
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}

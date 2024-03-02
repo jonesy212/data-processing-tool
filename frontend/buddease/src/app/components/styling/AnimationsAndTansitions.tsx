@@ -4,6 +4,10 @@ import React, { ReactNode } from 'react';
 export interface AnimatedComponentProps {
   animationClass: string;
   children?: ReactNode; 
+  loopDuration?: number; // Duration of each loop animation (in milliseconds)
+  loopLength?: number; // Number of times the animation should loop
+  repeat?: boolean; // Whether the animation should repeat indefinitely
+
 }
 
 interface StaticComponentProps {

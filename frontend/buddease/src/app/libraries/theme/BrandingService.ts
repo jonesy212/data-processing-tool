@@ -5,9 +5,15 @@ interface BrandingSettings {
   logoUrl: string;
   themeColor: string;
   secondaryThemeColor?: string;
+  textColor: string;
   backgroundColor?: string;
 
-  // Fonts
+  // Border radius
+  borderRadiusLarge?: string;
+  borderRadiusMedium?: string;
+  borderRadiusSmall?: string;
+
+  // Fonts Styles
   fontStyles?: {
     primary: string;
     secondary: string;
@@ -53,28 +59,28 @@ interface BrandingSettings {
     info: string;
 
     // Text Colors
-    textColor: string;
-    shadowColor: string;
+    textColor?: string;
+    shadowColor?: string;
 
     // Hover Colors
-    hoverColor: string;
+    hoverColor?: string;
 
     // Dark Mode Colors
-    darkModeBackground: string;
-    darkModeText: string;
+    darkModeBackground?: string;
+    darkModeText?: string;
 
     // Link Colors
-    linkColor: string;
+    linkColor?: string;
 
     // Border Colors
-    borderColor: string;
-    borderColorHover: string;
-    borderColorActive: string;
-    borderColorDisabled: string;
-    borderColorFocus: string;
+    borderColor?: string;
+    borderColorHover?: string;
+    borderColorActive?: string;
+    borderColorDisabled?: string;
+    borderColorFocus?: string;
 
     // Button Colors
-    button: {
+    button?: {
       color: string;
       colorHover: string;
       colorActive: string;
@@ -84,6 +90,29 @@ interface BrandingSettings {
       textColorHover: string;
       textColorActive: string;
     };
+  };
+
+  // Typography
+  fontFamily: string;
+  headingFontFamily: string;
+  fontSize: string;
+  headingFontSize: string;
+
+  // Box shadows
+  boxShadow: string; // Default box shadow
+  boxShadowHover: string; // Box shadow on hover
+
+  // Spacing
+  spacingSmall: string; // Small spacing
+  spacingMedium: string; // Medium spacing
+  spacingLarge: string; // Large spacing
+
+  // Breakpoints
+  breakpoints: {
+    mobile: string; // Mobile breakpoint
+    tablet: string; // Tablet breakpoint
+    laptop: string; // Laptop breakpoint
+    desktop: string; // Desktop breakpoint
   };
 
   // Additional Theme-related Animations

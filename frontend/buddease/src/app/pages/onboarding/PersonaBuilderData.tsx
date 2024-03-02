@@ -4,18 +4,15 @@ import CommonDetails, { DetailsProps } from "@/app/components/models/CommonData"
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import Project from "@/app/components/projects/Project";
-import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { DocumentTree, User, UserData, VisualizationData } from "@/app/components/users/User";
 import { FC } from "react";
 import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
+import Details from '../../components/models/data/Details';
 import { Question } from "./Question";
 
-const { notify } = useNotification();  // Destructure notify from useNotification
-
-export interface PersonaData {
-  [key: string]: string[];
-}
+const { notify } = useNotification(); 
 
 export const onboardingQuestionnaireData: {
   title: string;
@@ -43,14 +40,20 @@ export async function initializeUserData(id: string | number, user: User): Promi
       teamMembers: {} as TeamMember[], // Add initialization logic for teamMembers
       yourDocuments: {} as DocumentTree, // Add initialization logic for yourDocuments
       visualizations: [] as VisualizationData[], // Add initialization logic for visualizations
-      traits: CommonDetails as FC<DetailsProps<never>> | undefined, // Use FC<DetailsProps<never>> as the type
+      traits: CommonDetails as FC<DetailsProps<typeof Details>> | undefined, // Use FC<DetailsProps<never>> as the type
       timeBasedCode: timeBasedCode,
+      
     };
 
     return userData;
   } catch (error) {
     console.error("Error initializing user data:", error);
-    notify("Persona Buider Error", NOTIFICATION_MESSAGES.Persona.DEFAULT, new Date(), {} as NotificationType);
+    notify(
+      "Persona Builder Error",
+      NOTIFICATION_MESSAGES.Persona.BUILDER_CREATION_ERROR,
+      {},
+      new Date(),
+      NotificationTypeEnum.Error);
     return null;
   }
 }
