@@ -111,14 +111,13 @@ class AuthService {
       .then((data) => data.access_token);
   }
 
-
-  // New method using useAuth for login with roles
-  loginWithRoles = async (
+  async loginWithRoles(
     username: string,
     password: string,
     roles: string[],
-    nfts: string[]
-  ): Promise<{ accessToken: string }> => {
+    nfts: string[],
+    loginWithRolesFn: (user: any, roles: string[], nfts: string[]) => void // Accept loginWithRoles function as a parameter
+  ): Promise<{ accessToken: string }> {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -130,18 +129,16 @@ class AuthService {
 
       if (response.ok) {
         const data = await response.json();
-        // Use the useAuth hook to update the auth state with roles
-        const { loginWithRoles } = useAuth();
         const user = await userService.fetchUser(username);
-        loginWithRoles(user, roles, nfts); // You may need to adjust this based on your User object structure
+        loginWithRolesFn(user, roles, nfts); // Call the loginWithRoles function passed as a parameter
         return { accessToken: data.accessToken };
       } else {
         throw new Error("Login failed");
-            }
+      }
     } catch (error) {
       throw new Error("Login failed");
     }
-  };
+  }
 
 
 }

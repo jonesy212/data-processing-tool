@@ -9,7 +9,6 @@ interface CardFrameProps {
   content: React.ReactNode;
   onDragStart: () => void;
   onDragEnd: () => void;
-
   group: string; // Group identifier
   size: string; // Size of the card (e.g., small, medium, large)
   overflow: "hidden" | "ellipsis" | "modal"; // Overflow behavior

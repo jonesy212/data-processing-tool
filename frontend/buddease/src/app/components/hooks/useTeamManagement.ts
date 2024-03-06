@@ -1,51 +1,56 @@
-// useTeamManagement.ts
 import { useEffect } from 'react';
-import { Team } from '../models/teams/Team'; // Assuming you have a Team model
-import { useTeamManagerStore } from '../state/stores/TeamStore'; // Update with your actual store
+import Team from '../models/teams/Team';
+import { useTeamManagerStore } from '../state/stores/TeamStore';
+import { useDispatch } from 'react-redux';
+import { AxiosError } from 'axios'; // Assuming Axios is used for API calls
+import { handleApiError } from '@/app/api/ApiLogs';
+import { TeamActions } from '../teams/TeamActions';
 
 const useTeamManagement = () => {
-  const teamManagerStore = useTeamManagerStore(); // Update with your actual store
+  const dispatch = useDispatch();
+  const teamManagerStore = useTeamManagerStore();
 
   useEffect(() => {
-    teamManagerStore.fetchTeamsRequest();
+    dispatch(TeamActions.fetchTeamsRequest());
 
     const fetchTeams = async () => {
       try {
-        const response = await fetch('/api/teams'); // Adjust the API endpoint
+        const response = await fetch('/api/teams');
         const teamsData = await response.json();
-        teamManagerStore.fetchTeamsSuccess({ teams: teamsData.teams });
+        dispatch(TeamActions.fetchTeamsSuccess({ teams: teamsData.teams }));
       } catch (error) {
-        console.error('Error fetching teams:', error);
+        const errorMessage = "Failed to fetch teams";
+        handleApiError(error as AxiosError<unknown>, errorMessage);
       }
     };
 
     fetchTeams();
-  }, []);
+  }, [dispatch]);
 
-  const addTeam = async (newTeam: Omit<Team, 'id'>) => {
+  const addNewTeam = async (newTeamData: Omit<Team, 'id'>) => {
     try {
-      const response = await fetch('/api/teams', { // Adjust the API endpoint
+      const response = await fetch('/api/teams', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newTeam),
+        body: JSON.stringify(newTeamData),
       });
 
       if (response.ok) {
         const createdTeam: Team = await response.json();
-        teamManagerStore.addTeamSuccess({ team: createdTeam });
+        dispatch(TeamActions.addTeamSuccess({ team: createdTeam }));
       } else {
-        console.error('Failed to add team:', response.statusText);
+        const errorMessage = "Failed to add team";
+        handleApiError(new Error(await response.text()), errorMessage);
       }
     } catch (error) {
-      console.error('Error adding team:', error);
+      const errorMessage = "Error adding team";
+      handleApiError(error as AxiosError<unknown>, errorMessage);
     }
   };
 
-  // Add more methods as needed
-
-  return { teamManagerStore, addTeam };
+  return { teamManagerStore, addNewTeam };
 };
 
 export default useTeamManagement;

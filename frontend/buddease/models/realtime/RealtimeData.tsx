@@ -8,7 +8,7 @@ import React, { useEffect } from "react";
 interface RealtimeDataItem {
   id: string;
   name: string;
-  forEach: (callback: (item: RealtimeDataItem) => void) => void;
+  forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   // Add other properties of RealtimeDataItem here
 }
 
@@ -107,4 +107,6 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
   );
 };
 
-export default RealtimeDataItem; RealtimeData;
+export default RealtimeData;
+export type { RealtimeDataItem };
+

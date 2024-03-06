@@ -1,5 +1,5 @@
 // RootLayout.tsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDynamicComponents } from "./components/DynamicComponentsContext";
 import useLayoutGenerator, {
   DocumentGenerationResult,
@@ -21,8 +21,9 @@ type RootLayoutProps = {
   children: React.ReactNode;
 };
 
-
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
+  const [isComponentLoaded, setComponentLoaded] = useState<boolean>(false);
+
   const { setLayout } = useLayout();
   const {
     isDarkMode,
@@ -31,43 +32,64 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     setFontSize,
     setFontFamily,
   } = useThemeConfig();
+
   const condition = () => {
     // Your condition logic goes here
-    return true;
+    // Check if the component is loaded or not
+    if (isComponentLoaded && animatedComponentRef.current) {
+      return true;
+    } else {
+      return false;
+    }
   };
-
   // Change this line in RootLayout
-const layoutEffect = async () => {
-  // Your layout effect logic goes here
-  // For example, toggle the animated component
-  
-  if (animatedComponentRef.current) {
-    // Use the values in your logic or UI
-    animatedComponentRef.current.toggleActivation();
-  
-    // Assume these functions update the state
-    setPrimaryColor("#3498db");
-    setSecondaryColor("#e74c3c");
-    setFontSize("16px");
-    setFontFamily("Arial, sans-serif");
-    // Set background color through the context
-    setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
-    const configResult = await layoutConfig();
-    console.log(configResult);
-    // You can use other theme properties here
-    console.log("Is Dark Mode:", isDarkMode);
-    console.log("Primary Color:", setPrimaryColor);
-    console.log("Secondary Color:", setSecondaryColor);
-    console.log("Font Size:", setFontSize);
-    console.log("Font Family:", setFontFamily);
-  }
-}
+  const layoutEffect = async () => {
+    // Your layout effect logic goes here
+    // For example, toggle the animated component
+
+    if (animatedComponentRef.current) {
+      // Use the values in your logic or UI
+      animatedComponentRef.current.toggleActivation();
+
+      // Assume these functions update the state
+      setPrimaryColor("#3498db");
+      setSecondaryColor("#e74c3c");
+      setFontSize("16px");
+      setFontFamily("Arial, sans-serif");
+      // Set background color through the context
+      setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
+      const configResult = await layoutConfig();
+      console.log(configResult);
+      // You can use other theme properties here
+      console.log("Is Dark Mode:", isDarkMode);
+      console.log("Primary Color:", setPrimaryColor);
+      console.log("Secondary Color:", setSecondaryColor);
+      console.log("Font Size:", setFontSize);
+      console.log("Font Family:", setFontFamily);
+    }
+  };
 
   const cleanup = () => {
-    // Your cleanup logic goes here
+    // Reset state properties
+    setPrimaryColor(""); // Reset primary color
+    setSecondaryColor(""); // Reset secondary color
+    setFontSize(""); // Reset font size
+    setFontFamily(""); // Reset font family
+    setLayout({ backgroundColor: "" }); // Reset background color
+    setComponentLoaded(false);
+
+    // Clear resources or perform other cleanup actions if needed
+    // For example:
+    // - Clear timeouts or intervals
+    // - Remove event listeners
+    // - Dispose of subscriptions or resources
+    // - Reset any other state properties or context values
   };
+
   const documentGenerator = {
-    generateDocument: async (documentGeneratorOptions: DocxGeneratorOptions) => {
+    generateDocument: async (
+      documentGeneratorOptions: DocxGeneratorOptions
+    ) => {
       // Your document generation logic goes here
       const { templatePath, outputPath, data, user } = documentGeneratorOptions;
       // Generate document
@@ -75,13 +97,10 @@ const layoutEffect = async () => {
         templatePath: templatePath,
         outputPath: outputPath,
         data: data,
-        user: user
+        user: user,
       };
     },
   };
- 
-  
-
 
   const animatedComponentRef = React.useRef<AnimatedComponentRef>(null);
   const { toggleActivation } = useLayoutGenerator({
@@ -112,13 +131,12 @@ const layoutEffect = async () => {
             colors={responsiveDesignStore.colors}
             frontendStructure={responsiveDesignStore.frontendStructure}
             backendStructure={responsiveDesignStore.backendStructure}
-            onCloseFileUploadModal={async function(){}}
+            onCloseFileUploadModal={async function () {}}
             onHandleFileUpload={async (file: FileList | null) => {
               if (file) {
                 // Handle file upload logic here
                 const fileReader = new FileReader();
                 fileReader.onload = async () => {
-           
                   // Pass file content to document generator
                   await documentGenerator.generateDocument({
                     templatePath: "",
@@ -126,7 +144,7 @@ const layoutEffect = async () => {
                     data: {} as Data,
                     user: {} as User,
                   });
-                }
+                };
                 fileReader.readAsText(file[0]);
               }
             }}
@@ -156,6 +174,10 @@ const layoutEffect = async () => {
     <html lang="en">
       <body onClick={toggleActivation}>
         {animatedComponent}
+        <AnimatedComponent
+          ref={animatedComponentRef}
+          animationClass={""}
+        />
         <DynamicRootLayout>{children}</DynamicRootLayout>
       </body>
     </html>
@@ -163,7 +185,7 @@ const layoutEffect = async () => {
 };
 
 // DefaultRootLayout.tsx
-const DefaultRootLayout: React.FC = ({ children }: any) => {
+const DefaultRootLayout: React.FC<any> = ({ children }: any) => {
   // Your default layout logic goes here
   return <div>{children}</div>;
 };

@@ -226,8 +226,8 @@ type CustomDocumentOptionProps = DocumentOptions & DappProps;
     switch (componentName) {
       case "ChartComponent":
         return import("../../components/charts/*");
-      case "YourFormComponent":
-        return import("../../../pages/forms/YourFormComponent");
+      case "UserFormComponent":
+        return import("../../../pages/forms/UserFormComponent");
       // Add more cases as needed
       default:
         return null;

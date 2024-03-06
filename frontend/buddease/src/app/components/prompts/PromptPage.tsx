@@ -1,5 +1,6 @@
-import DynamicTextArea from '@/app/ts/DynamicTextArea';
-import React, { useState } from 'react';
+import DynamicTextArea from "@/app/ts/DynamicTextArea";
+import React, { useState } from "react";
+import { Data } from "../models/data/Data";
 
 interface PromptOption {
   value: string;
@@ -9,26 +10,33 @@ interface PromptOption {
 interface Prompt {
   id: string;
   text: string;
-  type: 'text' | 'multipleChoice';
+  type: "text" | "multipleChoice";
   options?: PromptOption[];
 }
-
-interface PromptPageProps {
-  id: any;
+interface PromptPageProps extends Partial<Data> {
+  id?: any;
   title: string;
   description: string;
-  prompts?: Prompt[]; // Optional prompts for static rendering
-  onGeneratePrompts?: () => void; // Optional callback for dynamic prompts
-  userIdea?: string; // User input that influences dynamic content
+  prompts: {
+    id: string;
+    text: string;
+    type: "text" | "multipleChoice";
+  }[];
+  onGeneratePrompts?: () => void;
+  userIdea?: string;
+  currentPage?: {
+    title: string;
+    description: string;
+    prompts: string[];
+    number: number;
+    id: any;
+  };
 }
-
-
 
 
 const PromptPage: React.FC<PromptPageProps> = ({
-  title,
-  description,
   prompts,
+  currentPage,
   onGeneratePrompts,
 }) => {
   const [state, setState] = useState<{ [key: string]: string }>({});
@@ -44,28 +52,34 @@ const PromptPage: React.FC<PromptPageProps> = ({
       ...state,
       [promptId]: value,
     });
-    console.log('Updating state with value:', value);
+    console.log("Updating state with value:", value);
   };
 
   return (
     <div>
-      <h2>{title}</h2>
-      <p>{description}</p>
-      {onGeneratePrompts && <button onClick={onGeneratePrompts}>Generate Prompts</button>}
+      <h2>Prompts</h2>
+
+      <p>Title: {currentPage?.title}</p>
+      <p>{currentPage?.description}</p>
+      {onGeneratePrompts && (
+        <button onClick={onGeneratePrompts}>Generate Prompts</button>
+      )}
       <form onSubmit={handleSubmit}>
         {/* Map through prompts and render input fields */}
         {generatedPrompts.map((prompt) => (
           <div key={prompt.id}>
             <label>
               {prompt.text}
-              {prompt.type === 'text' ? (
+              {prompt.type === "text" ? (
                 <DynamicTextArea
                   name={prompt.id}
                   required
-                  value={state[prompt.id] || ''}
-                  onChange={(value) => handleDynamicTextAreaChange(value, prompt.id)}
+                  value={state[prompt.id] || ""}
+                  onChange={(value) =>
+                    handleDynamicTextAreaChange(value, prompt.id)
+                  }
                 />
-              ) : prompt.type === 'multipleChoice' ? (
+              ) : prompt.type === "multipleChoice" ? (
                 <select name={prompt.id} required>
                   {prompt.options?.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -85,6 +99,3 @@ const PromptPage: React.FC<PromptPageProps> = ({
 
 export default PromptPage;
 export type { Prompt, PromptOption, PromptPageProps };
-
-
-

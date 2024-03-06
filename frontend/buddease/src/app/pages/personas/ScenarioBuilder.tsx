@@ -1,4 +1,10 @@
+import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
+import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
+import PhaseManager from "@/app/components/phases/PhaseManager";
+import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
 import fs from "fs";
+import { useState } from "react";
+import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
 
 // Define categories and their associated properties
 interface CategoryProperties {
@@ -14,10 +20,39 @@ const categoryProperties: CategoryProperties = {
   Forms: ["formFields", "validationRules"],
 };
 
+// Define function to create user scenarios and map out user journey
+function createUserScenarios() {
+  const [options, setOptions] = useState(getDefaultDocumentOptions());
+
+  // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
+  const userPersonaBuilder = new PersonaBuilder();
+  const phaseManager =  PhaseManager({phases: []});
+
+  // Use the modules to create detailed user scenarios and map out user journey
+  // Example:
+  const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
+  const phases = phaseManager.createPhases(/* parameters */);
+  // Instead, include the DocumentBuilder component in your JSX markup with the required props:
+  const documents = (
+    <DocumentBuilder
+      isDynamic={true}
+      options={getDefaultDocumentOptions()}
+      onOptionsChange={newOptions => {
+        // Update the DocumentOptions state
+        setOptions(newOptions);
+      }}
+      setOptions={setOptions} // Define setOptions prop
+    />
+  );
+  // Output or utilize the created user scenarios and mapped user journey
+  console.log("User scenarios and user journey mapped successfully.");
+}
+
 function generateComponent(
-  componentName: any,
+  componentName: string,
   category: keyof CategoryProperties,
-  properties: any
+  properties: any,
+  validationRules: any // Include validationRules parameter
 ) {
   // Generate React component code based on the selected category and properties
   let reactCode = "";
@@ -30,17 +65,19 @@ function generateComponent(
       );
       break;
     case "DataVisualization":
+      // Pass validationRules as the last parameter
       reactCode = generateDataVisualizationComponent(
         componentName,
         properties.dataProperties,
-        properties.chartType
+        properties.chartType,
+        validationRules
       );
       break;
     case "Forms":
       reactCode = generateFormsComponent(
         componentName,
         properties.formFields,
-        properties.validationRules
+        validationRules // Pass validationRules
       );
       break;
     // Add cases for other categories
@@ -66,8 +103,8 @@ function generateComponent(
 
 // Function to generate user interface component code
 function generateUserInterfaceComponent(
-  componentName: any,
-  componentDescription: any
+  componentName: string,
+  componentDescription: string // Change to string type
 ) {
   return `
     import React from 'react';
@@ -84,11 +121,13 @@ function generateUserInterfaceComponent(
     export default ${componentName};
     `;
 }
+
 // Function to generate data visualization component code
 function generateDataVisualizationComponent(
   componentName: string,
   dataProperties: string[],
-  chartType: string
+  chartType: string,
+  validationRules: any // Include validationRules parameter
 ): string {
   // Generate React component code for data visualization
 
@@ -100,11 +139,13 @@ function generateDataVisualizationComponent(
   // Generate component code
   const componentCode = `
       import React from 'react';
-  
+      import { ChartOptions } from 'chart.js';
+      import ChartComponent from "../forms/ChartComponent"; // Import the ChartComponent
+
       interface ${componentName}Props {
   ${dataPropsCode}
       }
-  
+
       const ${componentName}: React.FC<${componentName}Props> = ({ ${dataProperties.join(
     ", "
   )} }) => {
@@ -113,11 +154,11 @@ function generateDataVisualizationComponent(
               <div>
                   <h2>${componentName} Component</h2>
                   <p>Chart Type: ${chartType}</p>
-                  {/* Implement data visualization rendering here */}
+                  <ChartComponent type="${chartType}" data={{ /* Pass your data here */ }} />
               </div>
           );
       };
-  
+
       export default ${componentName};
     `;
 
@@ -136,29 +177,29 @@ function generateFormsComponent(
   const formFieldsCode = formFields
     .map((field) => `    ${field}: any;`)
     .join("\n");
-  const validationRulesCode = validationRules
-    .map((rule) => `    ${rule}: string;`)
-    .join("\n");
 
-  // Generate component code
+  // Generate validation rules code
+  const validationRulesCode = generateValidationRulesCode(validationRules); // Generate component code
   const componentCode = `
       import React from 'react';
-  
+
       interface ${componentName}Props {
-  ${formFieldsCode}
+        ${formFieldsCode}
+        ${validationRulesCode} // Include validation rules code here
       }
-  
+      
+
       const ${componentName}: React.FC<${componentName}Props> = ({ ${formFields.join(
     ", "
   )} }) => {
           // Implement forms component logic here
-  
+
           // Function to handle form submission
           const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
               event.preventDefault();
               // Add form submission logic here
           };
-  
+
           return (
               <div>
                   <h2>${componentName} Form</h2>
@@ -172,7 +213,7 @@ function generateFormsComponent(
               </div>
           );
       };
-  
+
       export default ${componentName};
     `;
 
@@ -196,5 +237,10 @@ if (!properties) {
   process.exit(1);
 }
 
+// Simulating validation rules for DataVisualization category
+const validationRules = {}; // Include your validation rules here
+
 // Generate the component
-generateComponent(componentName, category, properties);
+generateComponent(componentName, category, properties, validationRules);
+
+export type { CategoryProperties };

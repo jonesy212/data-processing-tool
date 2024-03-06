@@ -2,15 +2,16 @@
 
 import axiosInstance from "@/app/api/axiosInstance";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-const API_BASE_URL = endpoints.client; // Updated to use client endpoints
+import HeadersConfig from "./headers/HeadersConfig";
+const API_BASE_URL = endpoints.client;
 
 interface ClientNotificationMessages {
   [key: string]: string; // Index signature allowing string keys
@@ -24,6 +25,20 @@ interface ClientNotificationMessages {
 
 const clientNotificationMessages: ClientNotificationMessages =
   NOTIFICATION_MESSAGES.Client;
+
+// Define a function to create headers using the provided configuration
+const createHeaders = (): HeadersConfig => {
+  // Access and return the header configurations from HeadersConfig.tsx
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: "Bearer " + localStorage.getItem("accessToken"),
+    // Add more headers as needed
+  };
+};
+
+// Use the createHeaders function to get the headers configuration
+const headersConfig: HeadersConfig = createHeaders();
 
 class ClientApiService {
   notify: (
@@ -56,6 +71,12 @@ class ClientApiService {
     try {
       const response: AxiosResponse = await request();
 
+      // Manage headers in response
+      if (response.headers) {
+        // Access and manage response headers here using headersConfig
+        headersConfig['Authorization'] = response.headers['authorization'];
+      }
+
       if (successMessageId) {
         const successMessage = clientNotificationMessages[successMessageId];
         this.notify(
@@ -87,8 +108,16 @@ class ClientApiService {
 
   async fetchClientDetails(clientId: number): Promise<any> {
     try {
+      const clientDetailsUrl = (API_BASE_URL as any).client.fetchClientDetails(
+        clientId
+      );
+
+      // Use axiosInstance with the headers configuration
       const response: AxiosResponse = await axiosInstance.get(
-        API_BASE_URL.fetchClientDetails(clientId)
+        clientDetailsUrl,
+        {
+          headers: headersConfig, // Pass headers configuration in the request
+        }
       );
       const clientDetails = response.data;
 
@@ -118,17 +147,25 @@ class ClientApiService {
     }
   }
 
+
+
   async updateClientDetails(
     clientId: number,
     updatedDetails: any
   ): Promise<any> {
     try {
+      const clientDetailsUrl = `${API_BASE_URL}/clients/${clientId}`;
+  
+      // Integrate header management
+      const headers = headersConfig; // Assuming headersConfig is defined and contains the necessary headers
       const response: AxiosResponse = await axiosInstance.put(
-        API_BASE_URL.updateClientDetails(clientId),
-        updatedDetails
+        clientDetailsUrl,
+        updatedDetails,
+        { headers } 
       );
+  
       const updatedClientDetails = response.data;
-
+  
       // Notify success message
       this.notify(
         "UpdateClientDetailsSuccessId",
@@ -137,7 +174,7 @@ class ClientApiService {
         new Date(),
         NotificationTypeEnum.Success
       );
-
+  
       return updatedClientDetails;
     } catch (error) {
       // Handle error and notify failure message
@@ -150,10 +187,11 @@ class ClientApiService {
         new Date(),
         NotificationTypeEnum.Error
       );
-
+  
       throw error;
     }
   }
+  
 
   async connectWithTenant(tenantId: number): Promise<AxiosResponse> {
     return await this.requestHandler(

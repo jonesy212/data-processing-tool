@@ -20,23 +20,28 @@ import UserQuestionnaire from "../personas/UserQuestionnaire";
 import OfferPage from "./OfferPage";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
 import WelcomePage from "./WelcomePage";
+import RegistrationPhase from "./RegistrationPhase";
 
-export enum OnboardingPhase {
-  REGISTER,
-  EMAIL_CONFIRMATION,
-  WELCOME,
-  QUESTIONNAIRE,
-  PROFILE_SETUP,
-  OFFER,
-  PAYMENT_PROCESS,
+
+
+
+
+const handleRegistrationSuccess = (userData: UserData) => { 
+  // Handle registration success
+  const { notify } = useNotification();
+  notify(
+    "handleRegistrationSuccess",
+    "Registration Success",
+    NOTIFICATION_MESSAGES.Registration.REGISTRATION_SUCCESS,
+    new Date,
+    NotificationTypeEnum.Success
+    );
 }
 
 interface TempUserData extends Partial<UserData> {
   questionnaireResponses: { [key: string]: string };
   timeBasedCode?: string; // Add timeBasedCode property to TempUserData
-
 }
-
 
 const UserJourneyManager: React.FC = () => {
   const { state } = useAuth();
@@ -44,6 +49,44 @@ const UserJourneyManager: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>(
     OnboardingPhase.REGISTER
   );
+
+  const handleTwoFactorSetup = async () => {
+    try {
+      // Make an API call to set up two-factor authentication
+      const response = await axiosInstance.post("/auth/setup-2fa");
+      // Handle response and transition to the next phase if successful
+      setCurrentPhase(OnboardingPhase.NEXT_PHASE); // Replace with the actual next phase
+    } catch (error) {
+      // Handle error
+    }
+  };
+
+  const renderPhase = () => {
+    switch (currentPhase) {
+      case OnboardingPhase.REGISTER:
+        // Render the registration phase
+        return <RegistrationPhase onSuccess={handleRegistrationSuccess} />;
+      case OnboardingPhase.EMAIL_CONFIRMATION:
+        // Render the email confirmation phase
+        return <EmailConfirmationPhase />;
+      case OnboardingPhase.WELCOME:
+        // Render the welcome phase
+        return <WelcomePhase />;
+      case OnboardingPhase.QUESTIONNAIRE:
+        // Render the questionnaire phase
+        return <UserQuestionnaire
+          onComplete={() => setCurrentPhase(OnboardingPhase.PROFILE_SETUP)} />;
+      case OnboardingPhase.PROFILE_SETUP:
+        // Render the profile setup phase
+        return <ProfileSetupPhase />;
+      case OnboardingPhase.TWO_FACTOR_SETUP:
+        // Render the two-factor authentication setup phase
+        return <TwoFactorSetupPhase onSetupComplete={handleTwoFactorSetup} />;
+      // Add cases for other phases
+      default:
+        return null;
+    }
+  };
 
   const timeBasedCode = generateTimeBasedCode();
   let userData: TempUserData = {
@@ -63,7 +106,6 @@ const UserJourneyManager: React.FC = () => {
   const handleQuestionnaireSubmit = async (userResponses: any) => {
     try {
       // handle questionnaire submission
-      
 
       // Update user data locally
       userData = {
@@ -138,25 +180,47 @@ const UserJourneyManager: React.FC = () => {
     await handleQuestionnaireSubmit(userResponses);
   };
 
-  return (
-    <div>
-      {currentPhase === OnboardingPhase.EMAIL_CONFIRMATION && (
-        <EmailConfirmationPage />
-      )}
-      {currentPhase === OnboardingPhase.WELCOME && <WelcomePage />}
-      {currentPhase === OnboardingPhase.QUESTIONNAIRE && (
-        <UserQuestionnaire onSubmit={handleQuestionnaireSubmitWrapper} />
-      )}
-      {currentPhase === OnboardingPhase.PROFILE_SETUP && (
-        <ProfileSetupPhase onSubmit={handleProfileSetup} />
-      )}
-      {currentPhase === OnboardingPhase.OFFER && <OfferPage />}
-      {/* Add more phases as needed */}
-      {currentPhase === OnboardingPhase.PAYMENT_PROCESS && (
-        <PaymentProcess onSubmit={handlePaymentProcess} />
-      )}
-    </div>
-  );
+  return <div>{renderPhase()}</div>;
 };
 
-export default TempUserData; UserJourneyManager;
+export default TempUserData;
+UserJourneyManager;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// TwoFactorSetupPhase component
+const TwoFactorSetupPhase: React.FC<{ onSetupComplete: () => void }> = ({ onSetupComplete }) => {
+  // State for the token input
+  const [token, setToken] = useState('');
+
+  // Handler for submitting the two-factor authentication token
+  const handleSubmit = async () => {
+    try {
+      // Make an API call to verify the two-factor authentication token
+      const response = await axios.post('/auth/verify-2fa', { token });
+      // Handle response and call the onSetupComplete callback if successful
+      onSetupComplete();
+    } catch (error) {
+      // Handle error
+    }
+  };

@@ -3,7 +3,7 @@ import { Snapshot } from "../../state/stores/SnapshotStore";
 import { Attachment, Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import { VideoData } from "../../video/Video";
-import CommonDetails from "../CommonData";
+import CommonDetails, { CommonData } from "../CommonData";
 import { Idea } from "../tasks/Task";
 
 // Define the interface for DataDetails
@@ -64,7 +64,7 @@ interface Data {
   videoUrl?: string;
   videoThumbnail?: string;
   videoDuration?: number;
-  collaborationOptions?: CollaborationOption[]; // Or whatever type is appropriate
+  collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
   videoData: VideoData
   [key: string]: any;
   ideas?: Idea[];
@@ -72,7 +72,12 @@ interface Data {
 
 // Define the UserDetails component
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
-  <CommonDetails data={{ title: 'Data Details', description: 'Data details', data: undefined }} />
+  <CommonDetails data={
+    { title: 'Data Details', 
+    description: 'Data descriptions', 
+      data: undefined,
+      details: data as CommonData<never>
+  }} />
 );
 
 export type { Data, DataDetailsComponent, DataDetailsProps };

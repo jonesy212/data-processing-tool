@@ -7,6 +7,8 @@ const NOTIFICATION_MESSAGES = {
 
 
   },
+
+  
   Auth: {
     DEFAULT: "Authentication required",
     INVALID_CREDENTIALS: "Invalid username or password",
@@ -504,6 +506,10 @@ const NOTIFICATION_MESSAGES = {
     FETCH_WALK_SUCCESS: "Random walk completed successfully",
     FETCH_WALK_ERROR: "Error fetching random walk. Please try again",
   },
+  Registration: {
+    REGISTRATION_SUCCESS: "Registration successful",
+    
+  },
 
   Sagas: {
     DEFAULT: (errorType: string, details: string) =>
@@ -578,6 +584,20 @@ const NOTIFICATION_MESSAGES = {
     // New Error Messages for Tasks
   },
 
+  TeamBuildingPhase: {
+    DEFAULT: (errorType: string, details: string) =>
+      `Error in Team Building Phase (${errorType}): ${details}`,
+    FETCHING_TEAM_BUILDING_PHASE: "Fetching team building phase..",
+    FETCHING_TEAM_BUILDING_PHASE_ERROR:
+      "Error fetching team building phase. Please try again",
+    CREATING_TEAM_BUILDING_PHASE: "Creating team building phase..",
+    CREATING_TEAM_BUILDING_PHASE_ERROR: "Error creating team building phase. Please try again",
+    SUCCESS_CREATING_TEAM_BUILDING_PHASE: "Team building phase created successfully",
+    SUCCESS_FETCHING_TEAM_BUILDING_PHASE: "Team building phase fetched successfully",
+    SUCCESS_UPDATING_TEAM_BUILDING_PHASE: "Team building phase updated successfully",
+    SUCCESS_DELETING_TEAM_BUILDING_PHASE: "Team building phase deleted successfully",
+  },
+
   Theme: {
     DEFAULT: "Theme updated successfully",
     DEFAULT_SETTINGS_ERROR: "Error updating default settings. Please try again",
@@ -632,6 +652,7 @@ const NOTIFICATION_MESSAGES = {
     DELETE_TEAM_SUCCESS: "Team deleted successfully",
     DELETE_TEAM_FAILURE: "Failed to delete team. Please try again",
 
+    FETCH_TEAM_ERROR: "Error fetching team. Please try again",
     FETCH_TEAMMEMBER_SUCCESS: "Fetched team member successfully",
     FETCH_TEAMMEMBER_FAILURE: "Failed to fetch team member. Please try again",
   },
@@ -666,6 +687,9 @@ const NOTIFICATION_MESSAGES = {
   UserProfile: {
     PROFILE_SAVING: "Saving user profile..",
     PROFILE_SAVED: "User profile saved successfully!",
+    PROFILE_SAVING_SUCCESS: "User profile saved successfully!",
+    PROFILE_SAVING_ERROR: "Failed to save user profile. Please try again later.",
+    PROFILE_FETCH_ERROR: "Error fetching user profile data. Please try again later.",
     // Add more messages for the UserProfile type
   },
 
@@ -690,9 +714,12 @@ const NOTIFICATION_MESSAGES = {
   Video: {
     DEFAULT: (errorType: string, details: string) =>
       `Error in Videos (${errorType}): ${details}`,
+    ADD_VIDEO_SUCCESS: "Video added successfully",
+    
     UPLOAD_STARTED: "Video upload started",
     UPLOAD_COMPLETED: "Video upload completed",
     UPLOAD_FAILED: "Video upload failed. Please try again",
+
 
     PROCESSING_VIDEO: "Processing video..",
     PROCESSING_COMPLETE: "Video processed successfully",

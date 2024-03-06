@@ -1,3 +1,4 @@
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
@@ -6,7 +7,7 @@ import { User } from "../../users/User";
 import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgresBar";
 
-interface TeamData{
+interface TeamData extends Partial<Data> {
   id: number;
   teamName: Data["title"];
   description?: string;
@@ -42,7 +43,7 @@ const collaborationPreferences: CollaborationPreferences = {
   branding: {} as BrandingSettings
 };
 
-const teamData: TeamData = {
+const teamData: TeamData & Partial<TeamData> = {
   // Other team data properties
   collaborationPreferences: collaborationPreferences,
   id: 0,
@@ -67,4 +68,4 @@ const teamData: TeamData = {
 };
 
 
-export default TeamData;
+export default TeamData; teamData

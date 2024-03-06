@@ -1,16 +1,22 @@
 //AppConfig
 import { Theme } from "../components/libraries/ui/theme/Theme";
 import { Data } from "../components/models/data/Data";
+import { NotificationData } from "../components/support/NofiticationsSlice";
 import { User } from "../components/users/User";
 import { UserRole } from "../components/users/UserRole";
+import { AppVersion } from "../components/versions/AppVersion";
 import { ApiConfig } from "./ConfigurationService";
+
+
+
+
 
 // Define the AppConfig interface
 interface AppConfig {
 
    // General application settings
    appName: string; // Name of the application
-   appVersion: string; // Version of the application
+   appVersion: AppVersion; // Updated to use AppVersion class
    apiBaseUrl: string; // Base URL for API requests
    // Add other general application settings as needed
  
@@ -38,7 +44,7 @@ interface AppConfig {
     updateUserRole: (userId: string, newRole: UserRole) => void;
   
     // Properties related to notifications
-    notifications: NotificationData[];; // Define the Notification interface if not already defined
+    notifications: NotificationData[]; // Define the Notification interface if not already defined
     dismissNotification: (notificationId: string) => void;
   
     // Properties related to configurations

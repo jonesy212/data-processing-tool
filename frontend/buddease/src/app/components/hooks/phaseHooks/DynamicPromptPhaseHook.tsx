@@ -3,16 +3,10 @@
 import { useEffect, useState } from 'react';
 import createDynamicHook, { DynamicHookParams } from '../dynamicHooks/dynamicHookGenerator';
 
-interface DynamicPromptPhaseHookConfig {
-  condition: () => boolean;
+export type DynamicPromptPhaseHookConfig = {
+  condition: () => boolean | Promise<boolean>;
   asyncEffect: () => Promise<() => void>;
-}
-
-
-interface DynamicPromptPhaseHookConfig {
-  condition: () => boolean;
-  asyncEffect: () => Promise<() => void>;
-}
+};
 
 export const createDynamicPromptPhaseHook = (
   config: DynamicPromptPhaseHookConfig & DynamicHookParams
@@ -33,7 +27,7 @@ export const createDynamicPromptPhaseHook = (
 // useDynamicPrompt Phase Hook
 
 const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
-  condition: () => {
+  condition: async () => {
     // Add condition logic based on your requirements
     const isDynamicPromptPhase = true; // Replace with your condition
     return isDynamicPromptPhase;
@@ -65,13 +59,9 @@ const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
       return () => {};
     }
   },
-} as DynamicPromptPhaseHookConfig
-  & DynamicHookParams
-);
+} as DynamicPromptPhaseHookConfig & DynamicHookParams);
 
 
-
-// Add more phase hooks as needed
 
 // Function to generate prompts based on user input
 export const generatePrompt = (userInput: string): string | null => {

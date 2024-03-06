@@ -9,6 +9,8 @@ export interface Phase extends CommonData<Data> {
   subPhases: string[];
   component: React.FC;
   hooks: CustomPhaseHooks;
+  duration: number; // Duration of the phase in seconds
+
 }
 
 export class PhaseImpl implements Phase {
@@ -21,6 +23,8 @@ export class PhaseImpl implements Phase {
   title: string;
   description: string;
   data: any;
+  duration: number = 0; // Duration of the phase in seconds
+
   constructor(
     name: string,
     startDate: Date,

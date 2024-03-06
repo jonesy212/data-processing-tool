@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import PromptComponent from "./PromptComponent";
 import useSearchPagination from "../hooks/commHooks/useSearchPagination";
+import { Data } from "../models/data/Data";
+import { PromptPageProps } from "./PromptPage";
 
 const YourParentComponent: React.FC = () => {
   // Define interface for PromptPageProps
-  interface PromptPageProps {
-    title: string;
-    description: string;
-    prompts: {
-      id: string;
-      text: string;
-      type: string;
-    }[];
-  }
+  
 
   // Array of prompt pages
   const promptPages: PromptPageProps[] = [
@@ -32,8 +26,6 @@ const YourParentComponent: React.FC = () => {
 
   // State to manage the current page index
   const [currentPage, setCurrentPage] = useState<number>(0); // Initialize with the first page
-
-
 
   // Use the useSearchPagination hook to handle pagination
   const { nextPage, previousPage } = useSearchPagination(promptPages.length);
@@ -69,11 +61,11 @@ const YourParentComponent: React.FC = () => {
   return (
     <div>
       <PromptComponent
-        currentPage={promptPages[currentPage]}
+        currentPage={promptPages[currentPage]} // Pass the current page object
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}
-        title={""}
-        description={""}
+        title={promptPages[currentPage].title} // Set title to current page title
+        description={promptPages[currentPage].description} // Set description to current page description
       />
     </div>
   );

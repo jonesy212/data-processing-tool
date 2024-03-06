@@ -1,7 +1,7 @@
 // NotificationSlice.tsx
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { Data } from '../models/data/Data';
-import LogData from '../models/LogData';
+import {LogData} from '../models/LogData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { NotificationType, NotificationTypeEnum } from './NotificationContext';
 

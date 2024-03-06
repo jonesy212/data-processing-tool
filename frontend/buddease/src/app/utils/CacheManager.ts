@@ -11,6 +11,7 @@ import FrontendStructure from "../configs/appStructure/FrontendStructure";
 import { generateInterfaces } from "../generators/GenerateInterfaces";
 import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
 import { readCache, writeCache } from "./ReadAndWriteCache";
+import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 
 const backendModelPaths = ["path/to/backend/models"]; // Update this with the actual path
 
@@ -191,18 +192,18 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
     fetchData: function (userId: string, dispatch: DataAnalysisDispatch): Promise<void> {
       throw new Error("Function not implemented.");
     },
-    notificationBarPhaseHook: undefined,
-    darkModeTogglePhaseHook: undefined,
-    teamBuildingPhaseHook: undefined,
-    brainstormingPhaseHook: undefined,
-    projectManagementPhaseHook: undefined,
-    meetingsPhaseHook: undefined,
-    ideationPhaseHook: undefined,
-    teamCreationPhaseHook: undefined,
-    productBrainstormingPhaseHook: undefined,
-    productLaunchPhaseHook: undefined,
-    dataAnalysisPhaseHook: undefined,
-    generalCommunicationFeaturesPhaseHook: undefined,
+    notificationBarPhaseHook: {} as AsyncHook,
+    darkModeTogglePhaseHook: {} as AsyncHook,
+    teamBuildingPhaseHook: {} as AsyncHook,
+    brainstormingPhaseHook: {} as AsyncHook,
+    projectManagementPhaseHook: {} as AsyncHook,
+    meetingsPhaseHook: {} as AsyncHook,
+    ideationPhaseHook: {} as CustomPhaseHooks,
+    teamCreationPhaseHook: {} as CustomPhaseHooks,
+    productBrainstormingPhaseHook: {} as CustomPhaseHooks,
+    productLaunchPhaseHook: {} as CustomPhaseHooks,
+    dataAnalysisPhaseHook: {} as CustomPhaseHooks,
+    generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks,
     _id: "",
     id: "",
     title: "",

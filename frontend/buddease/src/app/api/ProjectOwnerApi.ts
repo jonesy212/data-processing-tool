@@ -26,7 +26,7 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.createProjectSuccess(response.data); // Dispatch success action with response data
       });
       useNotification().notify(
-        "Create Project Success",
+        "useNotificationSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_SUCCESS,
         {},
         new Date(),
@@ -36,6 +36,7 @@ export const projectOwnerApiService = observable({
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to create project");
       notify(
+        "handleApiError",
         NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_ERROR,
         "Create Project Error",
         new Date(),
@@ -63,7 +64,8 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.inviteMemberSuccess(response.data); // Dispatch success action with response data
       });
 
-      notify(
+      useNotification().notify(
+       "useNotificationSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_SUCCESS,
         "Invite Member Success",
         new Date(),
@@ -76,7 +78,8 @@ export const projectOwnerApiService = observable({
         error: NOTIFICATION_MESSAGES.Member.INVITE_MEMBER_ERROR,
       });
 
-      notify(
+      useNotification().notify(
+        "useNotificationError",
         NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_ERROR,
         "Invite Member Error",
         new Date(),
@@ -98,7 +101,8 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.fetchUpdatedProjectDetails(response.data);
         ProjectOwnerActions.fetchUpdatedProjectSuccess(response.data);
       });
-      notify(
+      useNotification().notify(
+        "fetchProjectDetailsSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_SUCCESS,
         "Fetch Project Details Success",
         new Date(),
@@ -113,7 +117,7 @@ export const projectOwnerApiService = observable({
       ProjectOwnerActions.fetchUpdatedProjectFailure({
         error: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_DETAILS,
       });
-      notify(
+      useNotification().notify("fetchProjectDetailsError",
         NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_ERROR,
         "Fetch Project Details Error",
         new Date(),
@@ -132,7 +136,8 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.deleteProjectSuccess(true);
         // Update state or perform other MobX-related actions
       });
-      notify(
+      useNotification().notify(
+        "deleteProjectSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_SUCCESS,
         "Delete Project Success",
         new Date(),
@@ -141,10 +146,9 @@ export const projectOwnerApiService = observable({
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete project");
       notify(
-        id,
+        "ideleteProjectError",
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_ERROR,
         "Delete Project Error",
-        {},
         new Date(),
         NotificationTypeEnum.OperationError
       );
@@ -167,6 +171,7 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.updateProjectSuccess(response.data); // Dispatch success action with updated project data
       });
       notify(
+        "updateProjectSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
         "Update Project Success",
         new Date(),
@@ -174,8 +179,10 @@ export const projectOwnerApiService = observable({
       );
       return response;
     } catch (error) {
+
       handleApiError(error as AxiosError<unknown>, "Failed to update project");
       notify(
+        "updateProjectError",
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
         "Update Project Error",
         new Date(),
@@ -201,6 +208,7 @@ export const projectOwnerApiService = observable({
         });
       });
       notify(
+        "addTeamMemberSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
         "Add Team Member Success",
         new Date(),
@@ -209,6 +217,7 @@ export const projectOwnerApiService = observable({
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to add team member");
       notify(
+        "addTeamMemberError",
         NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
         "Add Team Member Error",
         new Date(),
@@ -233,6 +242,7 @@ export const projectOwnerApiService = observable({
       });
 
       notify(
+        "removeTeamMemberSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
         "Remove Team Member Success",
         new Date(),
@@ -244,6 +254,7 @@ export const projectOwnerApiService = observable({
         "Failed to remove team member"
       );
       notify(
+        "removeTeamMemberError",
         NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
         "Remove Team Member Error",
         new Date(),
@@ -259,14 +270,17 @@ export const projectOwnerApiService = observable({
         teamMemberId,
       });
       notify(
+        "assignTaskSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
         "Assign Task Success",
         new Date(),
         NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {
+
       handleApiError(error as AxiosError<unknown>, "Failed to assign task");
       notify(
+        "assignTaskError",
         NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
         "Assign Task Error",
         new Date(),
@@ -293,6 +307,7 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.updateMeetingSuccess({success: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS}); // Dispatch success action
       });
       notify(
+        "updateMeetingSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS,
         "Update Meeting Success",
         new Date(),
@@ -303,6 +318,7 @@ export const projectOwnerApiService = observable({
       handleApiError(error as AxiosError<unknown>, "Failed to update meeting");
       ProjectOwnerActions.updateMeetingFailure({error: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR});
       notify(
+        "updateMeetingError",
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
         "Update Meeting Error",
         new Date(),
@@ -319,6 +335,7 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.deleteMeetingSuccess(true); // Dispatch success action
       });
       notify(
+        "deleteMeetingSuccess",
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_SUCCESS,
         "Delete Meeting Success",
         new Date(),
@@ -327,6 +344,7 @@ export const projectOwnerApiService = observable({
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete meeting");
       notify(
+        "deleteMeetingError",
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
         "Delete Meeting Error",
         new Date(),

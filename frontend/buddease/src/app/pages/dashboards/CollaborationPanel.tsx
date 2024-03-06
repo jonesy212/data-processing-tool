@@ -8,6 +8,7 @@ interface CollaborationPanelProps {
 const CollaborationPanel: React.FC<CollaborationPanelProps> = ({ onClose }) => {
   // State and functions for user inputs
   const [panelTitle, setPanelTitle] = useState('');
+  const [panelDescription, setPanelDescription] = useState('');
   // Add more state variables as needed
 
   // Function to handle form submission and create collaboration panel

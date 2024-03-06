@@ -16,6 +16,8 @@ import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import { initialState } from "../state/redux/slices/RootSlice";
+import { NotificationTypeEnum, useNotification } from "../support/NotificationContext";
+import Logger from "@/app/pages/logging/Logger";
 
 
 interface HooksObject {
@@ -101,7 +103,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [promptPages, setPromptPages] = useState<PromptPageProps[]>([]);
   const notificationManagerProps: NotificationManagerServiceProps = useNotificationManagerService();
-
+  
 
   const hooks: HooksObject = Object.keys(categoryHooks).reduce(
     (acc, category) => {
@@ -173,7 +175,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     await dataFrameAPI.appendDataToBackend(newData);
     fetchData("", {} as (action: DataAnalysisAction) => {
       // trigger update after append
-      updateCalendarData(newData)
+       updateCalendarData(newData)
     });
   }
   // Render UI components to display appended data

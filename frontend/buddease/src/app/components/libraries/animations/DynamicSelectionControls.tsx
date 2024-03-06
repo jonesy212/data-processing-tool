@@ -34,7 +34,7 @@ const DynamicSelectionControls: React.FC<DynamicSelectionControlsProps> = ({
         return value as boolean;
       } else {
         // Update radio, select selection
-        return value;
+        return value as string;
       }
     });
   };
@@ -99,3 +99,4 @@ const DynamicSelectionControls: React.FC<DynamicSelectionControlsProps> = ({
 };
 
 export default DynamicSelectionControls;
+export type {Option}

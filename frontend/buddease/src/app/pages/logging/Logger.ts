@@ -1,7 +1,11 @@
 // Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
+import teamManagementService from "@/app/api/TeamManagementApi";
+import useTeamManagement from "@/app/components/hooks/useTeamManagement";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
+import { Team } from "@/app/components/models/teams/Team";
+import { useTeamManagerSlice } from "@/app/components/state/redux/slices/TeamSlice";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
   NotificationTypeEnum,
@@ -9,7 +13,6 @@ import {
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-
 const { notify } = useNotification();
 
 function createErrorNotificationContent(error: Error): any {
@@ -19,7 +22,8 @@ function createErrorNotificationContent(error: Error): any {
     errorStack: error.stack,
     // Add more fields as needed based on your requirements
   };
-
+  
+   
   return errorDetails;
 }
 
@@ -44,7 +48,8 @@ class Logger {
 
   static logSessionEvent(sessionID: string, event: string) {
     // Assuming 'logs' is imported from apiEndpoints.ts
-    fetch(endpoints.logs.logSession as "Request", {
+    fetch(endpoints.logs.limport useTeamManagement from '../../components/hooks/useTeamManagement';
+ogSession as "Request", {
       method: "POST",
       body: JSON.stringify({ sessionID, event }),
       headers: {
@@ -157,6 +162,112 @@ class AudioLogger extends Logger {
 }
 
 
+class TeamLogger {
+  static async logTeamCreation(teamId: string, team:Team,): Promise<void> {
+    try {
+      await this.logEvent("createTeam", "Creating team", team.id, team);
+      await this.logTeamEvent(teamId, "Team created", team);
+    } catch (error) {
+      console.error('Error logging team creation:', error);
+      throw error;
+    }
+  }
+
+  static async logTeamUpdate(teamId: string | number, updatedTeam: Team): Promise<void> {
+    try {
+      await this.logEvent("updateTeam", "Updating team", teamId as number, updatedTeam);
+      await this.logTeamEvent(teamId as string, "Team updated", updatedTeam);
+    } catch (error) {
+      console.error('Error logging team update:', error);
+      throw error;
+    }
+  }
+
+  static async logTeamDeletion(teamId: number| string): Promise<void> {
+    try {
+      await this.logEvent("deleteTeam", "Deleting team", teamId as number);
+      await this.logTeamEvent(teamId as string, "Team deleted");
+    } catch (error) {
+      console.error('Error logging team deletion:', error);
+      throw error;
+    }
+  }
+
+  private static async logEvent(action: string, message: string, teamId: number, data?: any): Promise<void> {
+    try {
+      const logUrl = this.getLogUrl(action);
+      await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ action, message, teamId, data }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error(`Error logging ${action} event:`, error);
+      throw error;
+    }
+  }
+
+
+
+  private static async logTeamEvent(teamId: string, message: string, data?: any): Promise<void> {
+    try {
+      const teamData = await useTeamManagerSlice.getTeamData(teamId);
+      if (!teamData) {
+        throw new Error(`Error logging team event for team ${teamId}: Team data not found`);
+      }
+    
+      const teamDataString = JSON.stringify(teamData);
+      const teamDataStringLength = teamDataString.length;
+      if (teamDataStringLength > 10000) {
+        // Truncate the team data string to 10000 characters
+        const truncatedTeamDataString = teamDataString.substring(0, 10000);
+        teamData.data = truncatedTeamDataString;
+      }
+  
+      const logUrl = this.getLogUrl("teamEvent");
+      await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ teamId, message, teamData, data }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return teamData; // Return the team data
+    } catch (error) {
+      console.error(`Error logging team event for team ${teamId}:`, error);
+      throw error;
+    }
+  }
+  
+  
+  
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+  
+    if (typeof endpoints.logs.logEvent === "string") {
+      logUrl = endpoints.logs.logEvent;
+    } else if (typeof endpoints.logs.logEvent === "function") {
+      logUrl = endpoints.logs.logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
+      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
+    }
+  
+    return logUrl;
+  }
+}  
+
+
+
+
+
+
+
+
+
 // Extend Logger for video logs
 class VideoLogger extends Logger {
   static logVideo(
@@ -174,11 +285,18 @@ class VideoLogger extends Logger {
     videoID: string,
     duration: number
   ) {
- 
-    const logVideoEventUrl: string =
-      typeof endpoints.logs.logVideoEvent === "function"
-        ? endpoints.logs.logVideoEvent()
-        : endpoints.logs.logVideoEvent;
+    let logVideoEventUrl: string;
+
+    if (typeof endpoints.logs.logVideoEvent === "string") {
+      // If it's a string, directly use the endpoint URL
+      logVideoEventUrl = endpoints.logs.logVideoEvent;
+    } else if (typeof endpoints.logs.logVideoEvent === "function") {
+      // If it's a function, call it to get the endpoint URL
+      logVideoEventUrl = endpoints.logs.logVideoEvent();
+    } else {
+      // Handle the case where it's neither a string nor a function
+      throw new Error("Invalid log video event endpoint");
+    }
 
     fetch(logVideoEventUrl, {
       method: "POST",
@@ -202,7 +320,6 @@ class VideoLogger extends Logger {
       });
   }
 }
-
 class ChannelLogger extends Logger {
   static logChannel(message: string, uniqueID: string, channelID: string) {
     super.log("Channel", message, uniqueID);
@@ -210,10 +327,18 @@ class ChannelLogger extends Logger {
   }
 
   private static logChannelEvent(uniqueID: string, channelID: string) {
-    const logChannelEventUrl: string =
-      typeof endpoints.logs.logChannelEvent === "function"
-        ? endpoints.logs.logChannelEvent()
-        : endpoints.logs.logChannelEvent;
+    let logChannelEventUrl: string;
+
+    if (typeof endpoints.logs.logChannelEvent === "string") {
+      // If it's a string, directly use the endpoint URL
+      logChannelEventUrl = endpoints.logs.logChannelEvent;
+    } else if (typeof endpoints.logs.logChannelEvent === "function") {
+      // If it's a function, call it to get the endpoint URL
+      logChannelEventUrl = endpoints.logs.logChannelEvent();
+    } else {
+      // Handle the case where it's neither a string nor a function
+      throw new Error("Invalid log channel event endpoint");
+    }
 
     fetch(logChannelEventUrl, {
       method: "POST",
@@ -252,10 +377,18 @@ class CollaborationLogger extends Logger {
     uniqueID: string,
     collaborationID: string
   ) {
-    const logCollaborationEventUrl: string =
-      typeof endpoints.logs.logCollaborationEvent === "function"
-        ? endpoints.logs.logCollaborationEvent()
-        : endpoints.logs.logCollaborationEvent;
+    let logCollaborationEventUrl: string;
+
+    if (typeof endpoints.logs.logCollaborationEvent === "string") {
+      // If it's a string, directly use the endpoint URL
+      logCollaborationEventUrl = endpoints.logs.logCollaborationEvent;
+    } else if (typeof endpoints.logs.logCollaborationEvent === "function") {
+      // If it's a function, call it to get the endpoint URL
+      logCollaborationEventUrl = endpoints.logs.logCollaborationEvent();
+    } else {
+      // Handle the case where it's neither a string nor a function
+      throw new Error("Invalid log collaboration event endpoint");
+    }
 
     fetch(logCollaborationEventUrl, {
       method: "POST",
@@ -287,10 +420,18 @@ class DocumentLogger extends Logger {
   }
 
   private static logDocumentEvent(uniqueID: string, documentID: string) {
-    const logDocumentEventUrl: string =
-      typeof endpoints.logs.logDocumentEvent === "function"
-        ? endpoints.logs.logDocumentEvent()
-        : endpoints.logs.logDocumentEvent;
+    let logDocumentEventUrl: string;
+
+    if (typeof endpoints.logs.logDocumentEvent === "string") {
+      // If it's a string, directly use the endpoint URL
+      logDocumentEventUrl = endpoints.logs.logDocumentEvent;
+    } else if (typeof endpoints.logs.logDocumentEvent === "function") {
+      // If it's a function, call it to get the endpoint URL
+      logDocumentEventUrl = endpoints.logs.logDocumentEvent();
+    } else {
+      // Handle the case where it's neither a string nor a function
+      throw new Error("Invalid log document event endpoint");
+    }
 
     fetch(logDocumentEventUrl, {
       method: "POST",
@@ -314,6 +455,7 @@ class DocumentLogger extends Logger {
       });
   }
 }
+
 
 
 class TaskLogger extends Logger {
@@ -383,6 +525,14 @@ class TaskLogger extends Logger {
       NOTIFICATION_MESSAGES.Tasks.COMPLETED,
       notify
     );
+  }
+
+  static logTaskCreated(taskID: string) { 
+    super.log("Task Created", `Task ${taskID} created`, taskID);
+    // Additional logic specific to logging task creation
+
+    
+
   }
 
   static logTaskAssigned(taskID: string, assignedTo: string) {
@@ -620,4 +770,5 @@ export {
   TaskLogger,
   TenantLogger,
   VideoLogger,
+  TeamLogger,
 };

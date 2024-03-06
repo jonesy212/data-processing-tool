@@ -17,7 +17,7 @@ interface DetailsItem<T> {
   status: "pending" | "inProgress" | "completed";
   description: string;
   phase: Phase
-  data?: T; 
+  data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
   communication?: CommunicationActionTypes
   label?: string

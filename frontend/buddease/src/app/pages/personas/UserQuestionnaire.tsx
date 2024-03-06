@@ -1,4 +1,5 @@
 // UserQuestionnaire.tsx
+import { setCurrentPhase } from '@/app/components/hooks/phaseHooks/EnhancePhase';
 import axios from 'axios';
 import React from 'react';
 import { Question } from '../onboarding/Question';
@@ -6,6 +7,7 @@ import QuestionnairePage from '../onboarding/QuestionnairePage';
 
 interface UserQuestionnaireProps {
   onSubmit: (userResponses: any) => void;
+  onComplete: () => void; // Change the return type to void
 }
 
 const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({ onSubmit }) => {

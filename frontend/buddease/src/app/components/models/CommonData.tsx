@@ -10,8 +10,9 @@ import { ProjectData } from "../projects/Project";
 import { Todo } from "../todos/Todo";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
-import {LogData} from "./LogData";
+import { LogData } from "./LogData";
 import { Data } from "./data/Data";
+import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 
@@ -19,7 +20,7 @@ import TeamData from "./teams/TeamData";
 interface CommonData<T> {
   title?: React.ReactNode;
   description?: React.ReactNode;
-  data?: T;
+  data?: T 
 }
 
 interface Customizations<T> {
@@ -41,16 +42,13 @@ type SupportedData = UserData &
   FakeData & { [key: string]: any };
 
 // Define the DetailsProps interface with the generic CommonData type
-interface DetailsProps<T> {
-  data: CommonData<T>;
-  customizations?: Customizations<T>;
-}
-const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({
+
+const CommonDetails = <T extends SupportedData>({
   data,
   customizations,
-}) => {
+}: DetailsProps<T>) => {
   const [showDetails, setShowDetails] = useState(false);
-  const userId = localStorage.getItem("id");
+  const userId = localStorage.getItem("id") || "";
   const dispatch = useDispatch();
 
   const toggleDetails = () => {
@@ -60,11 +58,11 @@ const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({
   return (
     <div>
       <button onClick={toggleDetails}>Toggle Details</button>
-      {showDetails && data.data && (
+      {showDetails && data && (
         <div>
           <h3>Details</h3>
           {/* Handle different data types here */}
-          {Object.entries(data.data).map(([key, value]) => {
+          {Object.entries(data).map(([key, value]) => {
             if (React.isValidElement(value)) {
               return (
                 <p key={key}>
@@ -80,11 +78,11 @@ const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({
             }
           })}
 
-          {showDetails && data.data && (
+          {showDetails && data && (
             <div>
               <h3>Details</h3>
               {/* Handle different data types here */}
-              {Object.entries(data.data).map(([key, value]) => {
+              {Object.entries(data).map(([key, value]) => {
                 // Check if a customization function exists for this key
                 const renderFunction = customizations && customizations[key];
                 if (renderFunction) {
@@ -110,4 +108,4 @@ const CommonDetails: React.FC<DetailsProps<SupportedData>> = ({
 };
 
 export default CommonDetails;
-export type { CommonData, DetailsProps, SupportedData };
+export type { CommonData, Customizations, SupportedData };

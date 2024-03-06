@@ -1,21 +1,36 @@
 import { useEffect, useState } from 'react';
 
 export interface AsyncHook {
-  condition: () => boolean;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: ({ idleTimeoutId, startIdleTimeout }: {
-    idleTimeoutId: any,
-    startIdleTimeout: any
+    idleTimeoutId: NodeJS.Timeout | null;
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Correct type definition
   }) => Promise<void | (() => void)>;
-  isActive: 
-}
+  isActive: boolean;
+  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  resetIdleTimeout: () => void;
+  idleTimeoutId: NodeJS.Timeout | null;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Correct type definition
+  cleanup: (() => void) | undefined
+ }
+
 
 // Library's AsyncHook type
 export interface LibraryAsyncHook {
   enable: () => void;
   disable: () => void;
   condition: () => boolean;
-  asyncEffect: ({ idleTimeoutId, startIdleTimeout, }: { idleTimeoutId: any; startIdleTimeout: any; }) => Promise<() => void>
+  idleTimeoutId: NodeJS.Timeout | null; // Add idleTimeoutId property
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Add startIdleTimeout property
+  asyncEffect: ({
+    idleTimeoutId,
+    startIdleTimeout,
+  }: {
+    idleTimeoutId: any;
+    startIdleTimeout: any;
+  }) => Promise<() => void>;
 }
+
 
 // Update your AsyncHook interface to match the library's expectations
 type AdaptedAsyncHook = LibraryAsyncHook;
@@ -36,8 +51,8 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
           let cleanup: (() => void) | undefined;
           try {
             const result = await currentHook.asyncEffect({
-              idleTimeoutId: 'idleTimeoutId',
-              startIdleTimeout: 'startIdleTimeout',
+              idleTimeoutId: currentHook.idleTimeoutId,
+              startIdleTimeout: currentHook.startIdleTimeout,
             });
             if (typeof result === "function") {
               cleanup = result;
@@ -51,10 +66,11 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
           }
         }
       }
-
+    
       // Move to the next hook after executing the current one
       moveToNextHook();
     };
+    
 
     // Execute the async effect when the component mounts or the current hook index changes
     executeAsyncEffect();
@@ -82,8 +98,14 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
     );
   };
 
+
+  const moveToPreviousHook = () => {
+    setCurrentHookIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
+
   return {
     moveToNextHook,
+    moveToPreviousHook
   };
 };
 

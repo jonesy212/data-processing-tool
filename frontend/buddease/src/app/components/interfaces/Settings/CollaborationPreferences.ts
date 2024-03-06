@@ -1,3 +1,4 @@
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "../BrainstormingSettings";
 import { TeamBuildingSettings } from "./TeamBuildingSettings";
 
@@ -59,8 +60,35 @@ const collaborationPreferences: CollaborationPreferences = {
     secondaryThemeColor: "",
     backgroundColor: "",
     textColor: "",
-    linkColor: "",
-    buttonColor: "",
+    colors: {
+      linkColor: "",
+      primary: "",
+      accent: "",
+      success: "",
+      error: "",
+      warning: "",
+      info: "",
+      // Button Colors
+    button: {
+      color: "",
+      colorHover: "",
+      colorActive: "",
+      colorDisabled: "",
+      colorFocus: "",
+      textColor: "",
+      textColorHover: "",
+      textColorActive: "",
+      // Border Colors
+      borderColorHover: "",
+      borderColorActive: "",
+      borderColorDisabled: "",
+      borderColorFocus: "",
+      },
+    
+    
+
+    
+    },
     borderColor: "",
     shadowColor: "",
     hoverColor: "",

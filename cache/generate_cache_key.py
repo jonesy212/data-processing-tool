@@ -43,7 +43,3 @@ def get_resource():
     cache.set(cache_key, data, timeout=calculate_timeout())
 
     return jsonify(data)
-
-# Rest of the code remains the same
-# ...
-

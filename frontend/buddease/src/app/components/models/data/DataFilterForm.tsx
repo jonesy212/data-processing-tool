@@ -33,7 +33,10 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
   const [operation, setOperation] = useState("==");
   const [value, setValue] = useState("");
   const [realtimeData, setRealtimeData] = useRealtimeData(snapshotStore, updateCallback);
+  // Use processed snapshot data in your component logic
+  const [snapshotList, setSnapshotList] = useState<SnapshotList>(new SnapshotList());
 
+  
   const addFilter = () => {
     if (column.trim() === '' || operation.trim() === '' || value.trim() === '') {
       alert('Column, Operation, and Value cannot be empty');
@@ -88,6 +91,18 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
   
   // Usage in useEffect
   useEffect(() => {
+
+    // Process raw data and generate snapshot list
+    const generator = new SnapshotListGenerator();
+    const rawData = fetchRawData(); // Fetch raw data from API or local storage
+    const processedSnapshotList = generator.generateSnapshotList(rawData);
+
+    // Perform data transformation actions
+    processSnapshotList(processedSnapshotList);
+
+    // Update component state with processed snapshot data
+    setSnapshotList(processedSnapshotList);
+  
     // Start streaming when the component mounts
     const stream = streamDataToBackend();
   

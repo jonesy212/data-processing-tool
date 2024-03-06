@@ -1,10 +1,10 @@
-import { NestedEndpoint } from "./ApiEndpoints";
+import { NestedEndpoints }  from "./ApiEndpoints";
 
 //endpointPreferences.ts
 const BASE_URL = "https://your-api-base-url";
 
 export const endpoints: {
-  [key: string]: string | NestedEndpoint;
+  [key: string]: string | NestedEndpoints;
 } = {
   userMiscellaneousPreferences: {
     setMiscellaneousPreferences: `${BASE_URL}/api/user/preferences/miscellaneous/set`, // Define the setMiscellaneousPreferences endpoint

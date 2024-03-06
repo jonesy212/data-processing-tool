@@ -4,7 +4,7 @@ import { NotificationType } from "../support/NotificationContext";
 import useNotificationManagerService from "./NotificationService";
 
 interface NotificationComponentProps {
-  notifications: NotificationData[];;
+  notifications: NotificationData[];
 }
 
 const NotificationComponent: React.FC<NotificationComponentProps> = ({ notifications }) => {

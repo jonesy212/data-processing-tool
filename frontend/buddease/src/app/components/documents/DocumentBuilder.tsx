@@ -38,12 +38,16 @@ interface DocumentBuilderProps {
   options: DocumentOptions;
   onOptionsChange: (newOptions: DocumentOptions) => void;
   isDynamic: boolean;
+  setOptions: (newOptions: any) => void; // Define setOptions prop
+
 }
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   isDynamic,
   options,
   onOptionsChange,
+  setOptions, 
+
 }) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
@@ -64,6 +68,13 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     animationOptions: DocumentAnimationOptions
   ) => {
     onOptionsChange({ ...options, animations: animationOptions });
+  };
+
+
+
+  const handleOptionsChange = (newOptions: any) => {
+    // Call setOptions prop to update options state
+    setOptions(newOptions);
   };
 
   const handleCopy = () => {
@@ -238,6 +249,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
         <h1>Document Builder</h1>
         <Clipboard onCopy={handleCopy} onPaste={handlePaste} />
 
+        
         {/* Other DocumentBuilder components go here */}
         <label>
           Document Visibility:

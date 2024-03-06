@@ -1,9 +1,15 @@
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationContextProps, NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useAuth } from "../../auth/AuthContext";
 import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { showToast } from "../../models/display/ShowToast";
+import { notificationStore } from "../../support/NotificationProvider";
+
+
+const { notify } = useNotification()
+
 
 interface SnapshotStoreConfig<T> {
   clearSnapshots: any;
@@ -52,13 +58,24 @@ interface SnapshotStoreConfig<T> {
 }
 
 interface Snapshot<T> {
-  timestamp: number;
+  timestamp:  Date;
   data: T;
 }
 
 //todo update Implementation
 const setNotificationMessage = (message: string) => {
   // Implementation of setNotificationMessage
+  // Check if the notification context is available
+  if (notificationStore && notificationStore.notify) {
+    // Notify with the provided message
+    notificationStore.notify(
+      "privateSetNotificationMessageId",
+      message,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+  }
+
 };
 
 
@@ -79,13 +96,19 @@ class SnapshotStore<T extends Snapshot<Data>> {
   private snapshots: Snapshot<Snapshot<Data>>[] = [];
   private subscribers: ((data: Data) => void)[] = [];
   private readonly notify: (message: string, content: any, date: Date, type: NotificationType) => void;
-
+  public configureSnapshotStore: (snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>) => void;
 
   private setNotificationMessage(message: string, notificationStore: NotificationContextProps) {
     // Check if the notification context is available
     if (notificationStore && notificationStore.notify) {
       // Notify with the provided message
-      notificationStore.notify(message, NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SENT, new Date, NotificationTypeEnum.OperationSuccess);
+      notificationStore.notify(
+        "privateSetNotificationMessageId",
+        message,
+        NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SENT,
+        new Date,
+        NotificationTypeEnum.OperationSuccess
+      )
     } else {
       // If the notification context is not available, log an error
       console.error("Notification context is not available.");
@@ -115,17 +138,19 @@ class SnapshotStore<T extends Snapshot<Data>> {
     return false;
   }
 
-  constructor(config: SnapshotStoreConfig<T>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) {
+  constructor(config: SnapshotStoreConfig<T>,
+    notify: (message: string, content: any, date: Date, type: NotificationType) => void) {
     this.key = config.key;
     this.state = config.initialState;
     this.onSnapshot = config.onSnapshot;
     this.notify = notify;
+    this.configureSnapshotStore = configureSnapshotStore
     // Bind 'this' explicitly
     makeAutoObservable(this);
   }
 
   takeSnapshot(data: T) {
-    const timestamp = Date.now();
+    const timestamp = new Date;
     const snapshot: Snapshot<T> = {
       timestamp,
       data,
@@ -206,7 +231,7 @@ class SnapshotStore<T extends Snapshot<Data>> {
   
 
 // Subscribe to snapshot events
-subscribe(callback: (snapshot: Snapshot<Data>) => void) {
+subscribe(callback: (data: Data) => void) {
   this.subscribers.push(callback);
 }
 
@@ -239,7 +264,7 @@ const handleSnapshot = (snapshot: Snapshot<Data>) => {
 
 const getDefaultState = (): Snapshot<Data> => {
   return {
-    timestamp: Date.now(),
+    timestamp: new Date,
     data: {} as Data,
   };
 };
@@ -507,6 +532,12 @@ const { state: authState } = useAuth();
 
 
 
+
+const updateSnapshot = (snapshot: Snapshot<Data>) => {
+  snapshotStoreInstance.setSnapshot(snapshot);
+};
+
+
 const takeSnapshot = (snapshot: any) => {};
 
 const getSnapshot = async (snapshotId: string): Promise<Snapshot<Data>> => {
@@ -523,17 +554,34 @@ const clearSnapshot = (): void => {
   snapshotStoreInstance.clearSnapshot();
 };
 
-const configureSnapshotStore = (snapshot: Snapshot<Data>): void => {
+// Adjust the method signature to accept a SnapshotStoreConfig parameter
+const configureSnapshotStore = (config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>): void => {
   // Implementation logic here
-  snapshotStoreInstance.configureSnapshotStore(snapshot);
+  snapshotStoreInstance.configureSnapshotStore(config);
 };
+
 
 const takeSnapshotSuccess = (snapshot: Snapshot<Data>): void => {
-  // Implementation logic here
+  // Assuming you have access to the snapshot store instance
+  // You can perform actions based on the successful snapshot here
+  console.log("Snapshot taken successfully:", snapshot);
+
+  // Display a toast message
+  showToast({ content: "Snapshot taken successfully" });
+
+  // Notify with a message
+  notify("Snapshot taken successfully");
 };
 
+
+
 const updateSnapshotFailure = (payload: { error: string }): void => {
-  // Implementation logic here
+  // Log the error message or handle it in any way necessary
+  console.error("Update snapshot failed:", payload.error);
+
+  // You can also display a notification to the user or perform any other actions
+  // For example:
+  showErrorMessage(payload.error);
 };
 
 const takeSnapshotsSuccess = (snapshots: Snapshot<Data>[]): void => {
@@ -639,6 +687,8 @@ const snapshotStoreConfig: SnapshotStoreConfig<Snapshot<Data>> = {
       subscribers(snapshot.data.data);
     });
   },
+
+
 
   initSnapshot,
   updateSnapshot,

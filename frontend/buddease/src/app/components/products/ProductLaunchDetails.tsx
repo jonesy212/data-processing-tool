@@ -26,7 +26,11 @@ const productLaunchData: ProductLaunchData = {
 };
 
 const ProductLaunchDetails: React.FC<{ productData: ProductLaunchData }> = ({ productData }) => (
-  productData ? <CommonDetails data={{ title: 'Product Launch Details', description: 'Product launch data', data: productData }} /> : <div>Product data not available</div>
+  productData ? <CommonDetails data={{
+    title: 'Product Launch Details',
+    description: 'Product launch data',
+    data: productData
+  }} /> : <div>Product data not available</div>
 );
 
 export { ProductLaunchDetails };

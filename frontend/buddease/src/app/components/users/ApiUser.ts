@@ -45,7 +45,7 @@ class UserService {
     }
   }
 
-  fetchUser = async (userId: User) => {
+  fetchUser = async (userId: User['id']) => {
     try {
       const response = await axiosInstance.get(API_BASE_URL.single(Number(userId)));
       UserActions.fetchUserSuccess({ user: response.data });

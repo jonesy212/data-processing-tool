@@ -1,16 +1,20 @@
-import React, { useEffect } from 'react';
-import createDynamicHook from "../components/hooks/phaseHooks/DynamicPromptPhaseHook";
-import YourFormComponent from './forms/YourFormComponent';
-import { useAuth } from '../components/auth/AuthContext';
+import React, { useState, useEffect } from 'react';
 import authService from '../components/auth/AuthService';
+import createDynamicHook from "../components/hooks/phaseHooks/DynamicPromptPhaseHook";
+import UserFormComponent from './forms/UserFormComponent';
+import BasicStopwatchComponent from '../components/stopwatches/BasicStopwatchComponent';
+// Import other timer components as needed
 
 const YourApp: React.FC = () => {
-  // Create dynamic hook with desired parameters
-    const useDynamicPromptPhaseHook = createDynamicHook();
+  const [timerType, setTimerType] = useState<string>('basicStopwatch');
+  const [stopwatchState, setStopwatchState] = useState({
+    time: 0,
+    isRunning: false,
+  });
 
-  // Use the dynamic hook within the component body
-// Use the dynamic hook within the component body
-const dynamicHook = useDynamicPromptPhaseHook
+  // Create dynamic hook with desired parameters
+  const useDynamicPromptPhaseHook = createDynamicHook();
+  const dynamicHook = useDynamicPromptPhaseHook;
 
   useEffect(() => {
     // Your additional logic using isActive, toggleActivation, etc.
@@ -19,15 +23,35 @@ const dynamicHook = useDynamicPromptPhaseHook
   const handleUserIdeaSubmit = async () => {
     // Additional logic for handling user idea submission
     const { accessToken } = await authService.login(username, password);
-
     dynamicHook.toggleActivation(accessToken);
+  };
+
+  // Function to render the selected timer component
+  const renderTimerComponent = () => {
+    switch (timerType) {
+      case 'basicStopwatch':
+        return <BasicStopwatchComponent stopwatchState={stopwatchState} setStopwatchState={setStopwatchState} />;
+      case 'countdownTimer':
+        return <CountdownTimerComponent />;
+      // Add cases for other timer components as needed
+      default:
+        return null;
+    }
   };
 
   return (
     <div>
       <h1>Your Project Management App</h1>
-      <YourFormComponent onSubmit={handleUserIdeaSubmit} />
+      <UserFormComponent onSubmit={handleUserIdeaSubmit} />
       {/* Other components and UI elements */}
+
+      {/* Render the selected timer component */}
+      {renderTimerComponent()}
+
+      {/* Render buttons to select different timer types */}
+      <button onClick={() => setTimerType('basicStopwatch')}>Basic Stopwatch</button>
+      <button onClick={() => setTimerType('countdownTimer')}>Countdown Timer</button>
+      {/* Add buttons for other timer types as needed */}
     </div>
   );
 };

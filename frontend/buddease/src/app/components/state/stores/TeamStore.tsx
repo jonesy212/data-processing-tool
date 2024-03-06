@@ -6,26 +6,49 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
+import TeamData from "../../models/teams/TeamData";
+import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
+import { Phase } from "../../phases/Phase";
+
+
+interface CustomData extends Data {
+  _id: string;
+  id: number;
+  title: string;
+  status: "pending" | "inProgress" | "completed";
+  isActive: boolean;
+  tags: string[];
+  phase: Phase | null;
+  // Add other properties as needed to match the structure of Data
+}
 
 export interface TeamManagerStore {
   teams: Record<string, Team[]>;
   teamName: string;
   teamDescription: string;
   teamStatus: "active" | "inactive" | "archived";
+
   assignedTeamMemberStore: AssignTeamMemberStore;
+  
+  updateTeamData: (teamId: number, data: Data) => void;
   updateTeamName: (name: string) => void;
   updateTeamDescription: (description: string) => void;
   updateTeamStatus: (status: "active" | "inactive" | "archived") => void;
+  
   addTeamSuccess: (payload: { team: Team }) => void;
   addTeam: (team: Team) => void;
   addTeams: (teams: Team[]) => void;
+  
   removeTeam: (teamId: string) => void;
   removeTeams: (teamIds: string[]) => void;
+  
+  getTeamData: (teamId: string, Team: Team) => Team | null;
+  getTeamsData: (teamId: string, Team: Team) => Team | null;
   fetchTeamsSuccess: (payload: { teams: Team[] }) => void;
   fetchTeamsFailure: (payload: { error: string }) => void;
   fetchTeamsRequest: () => void;
@@ -37,11 +60,13 @@ export interface TeamManagerStore {
   setDynamicNotificationMessage: (message: string) => void;
   snapshotStore: SnapshotStore<Snapshot<Data>>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
-  getTeamId: (team: Team) => number;
+  getTeamId: (team: Team, teamId: Team['id']) => number;
   // Add more methods or properties as needed
 }
 
 const useTeamManagerStore = (): TeamManagerStore => {
+  const { notify } = useNotification();
+  
   const [teams, setTeams] = useState<Record<string, Team[]>>({
     active: [],
     inactive: [],
@@ -58,7 +83,16 @@ const useTeamManagerStore = (): TeamManagerStore => {
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
   const initialSnapshot = {} as SnapshotStoreConfig<Snapshot<Data>>;
-  const snapshotStore = new SnapshotStore(initialSnapshot);
+  const snapshotStore = new SnapshotStore(initialSnapshot, () => {
+    notify(
+      "initialSnapshot",
+      "Initial Snapshot has been taken.",
+      NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
+      new Date(),
+     NotificationTypeEnum.Info
+    );
+  });
+  
 
   const updateTeamName = (name: string) => {
     setTeamName(name);
@@ -83,28 +117,49 @@ const useTeamManagerStore = (): TeamManagerStore => {
   const getTeamId = (team: Team) => { 
     return team.id;
   }
-  const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
-    // Ensure the teamId exists in the teams
-    if (!teams[teamId]) {
-      console.error(`Team with ID ${teamId} does not exist.`);
-      return;
+
+  const getTeamData = (team: Team, data: TeamData) => { 
+    const teamData = {
+      ...team,
+      ...data,
+      id: team.id,
     }
+    return teamData;
+  }
 
-    // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot = { [teamId]: [...teams[teamId]] } 
 
-    // Store the snapshot in the SnapshotStore
-    snapshotStore.takeSnapshot(teamSnapshot);
 
-    if (userIds) {
-      const teamAssignmentsSnapshot = {
+const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
+  // Ensure the teamId exists in the teams
+  if (!teams[teamId]) {
+    console.error(`Team with ID ${teamId} does not exist.`);
+    return;
+  }
+
+  // Create a snapshot of the current teams for the specified teamId
+  const teamSnapshot: Snapshot<CustomData> = {
+    timestamp: new Date(), // Add a timestamp to the snapshot
+    data: {
+      [teamId]: [...teams[teamId]],
+      
+    }
+  };
+
+  // Store the snapshot in the SnapshotStore
+  snapshotStore.takeSnapshot(teamSnapshot);
+
+  if (userIds) {
+    const teamAssignmentsSnapshot: Snapshot<Data> = {
+      timestamp: new Date(), // Add a timestamp to the snapshot
+      data: {
         [teamId]: [
           ...assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds),
         ],
-      };
-      snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
-    }
-  };
+      },
+    };
+    snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
+  }
+};
 
   const addTeam = () => {
     // Ensure the name is not empty before adding a team
@@ -118,10 +173,10 @@ const useTeamManagerStore = (): TeamManagerStore => {
       return;
     }
 
-    generateNewTeam().then((newTeam: Team) => {
+    generateNewTeam().then((newTeam: Snapshot<Team>) => {
       setTeams((prevTeams) => ({
         ...prevTeams,
-        [newTeam.id]: [...(prevTeams[newTeam.id] || []), newTeam],
+        [newTeam.data.id]: [...(prevTeams[newTeam.data.id] || []), newTeam.data.id],
       }));
 
       // Reset input fields after adding a team
@@ -175,6 +230,26 @@ const useTeamManagerStore = (): TeamManagerStore => {
     setTeamStatus("active");
   };
 
+
+  const updateTeamData = (teamId: number, data: Data) => { 
+    const updatedTeams = { ...teams };
+    
+    // Check if the teamId exists in updatedTeams
+    if (updatedTeams[teamId]) {
+      // Assuming data contains some of the properties of Team
+      if (data.id === undefined) {
+        console.error(`Team with ID ${teamId} not found.`);
+        return; // Handle the case where id is undefined
+      }
+      
+      updatedTeams[teamId] = [...teams[teamId], { ...data }];
+      setTeams(updatedTeams);
+    } else {
+      console.error(`Team with ID ${teamId} not found.`);
+    }
+  }
+  
+  
   const fetchTeamsSuccess = (payload: { teams: Team[] }) => {
     const { teams: newTeams } = payload;
     setTeams((prevTeams) => {
@@ -290,6 +365,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
     NOTIFICATION_MESSAGES,
     addTeamSuccess,
     updateTeamName,
+    updateTeamData,
     updateTeamDescription,
     updateTeamStatus,
     addTeam,
@@ -304,9 +380,12 @@ const useTeamManagerStore = (): TeamManagerStore => {
     completeAllTeams,
     completeAllTeamsFailure,
     setDynamicNotificationMessage,
-    getTeamId
+    getTeamId,
+    getTeamData
     // Add more methods or properties as needed
   };
 };
 
 export { useTeamManagerStore };
+
+export default CustomData

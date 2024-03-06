@@ -1,6 +1,7 @@
 import { AppConfig } from "@/app/configs/AppConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
+import { useFeatureContext } from "@/app/context/FeatureContext";
 import { useEffect, useState } from "react";
 import { useDynamicComponents } from "../DynamicComponentsContext";
 import DynamicNamingConventions from "../DynamicNamingConventions";
@@ -13,13 +14,11 @@ import { Data } from "../models/data/Data";
 import {
   default as useNotificationManagerService,
 } from "../notifications/NotificationService";
+import { NotificationData } from "../support/NofiticationsSlice";
 import NotificationManager from '../support/NotificationManager';
 import { User } from "../users/User";
 import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
-import { NotificationData } from "../support/NofiticationsSlice";
-import { useFeatureContext } from "@/app/context/FeatureContext";
-
 
 interface AdminDashboardProps extends YourComponentProps {
   // Props related to user authentication and authorization
@@ -81,6 +80,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Use the subscription to call any config change callbacks
   useEffect(() => {
     if (isActive) {
+      const dynamicContent = dynamicConfig;
+      sendPushNotification("yourmessage", "sendersname");
       resetIdleTimeout?.(); // Use optional chaining here
     }
     subscriptionService.subscriptions.forEach((callback) =>
@@ -119,17 +120,19 @@ const AdminDashboardWithDynamicNaming: React.FC<
   const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout();
   const useNotificationManager = useNotificationManagerService();
   const { notifications, notify, sendPushNotification, sendAnnouncement } =
-    useNotificationManagerService();
+    useNotificationManager;
 
   // Check if dynamicConfig exists
   if (dynamicConfig) {
     // Pass dynamicContent prop based on dynamicConfig
-    const dynamicContent = dynamicConfig.someCondition; // Adjust the condition based on your dynamicConfig structure
-    const notifications = useNotificationManager.notifications;
-    const sendPushNotification = useNotificationManager.sendPushNotification;
+    const dynamicContent =
+    dynamicConfig &&
+    (dynamicConfig.chart?.title === "Updated Dynamic Chart Title" ||
+      (dynamicConfig.nestedObject && dynamicConfig.nestedObject.nestedProperty));
+  
     useEffect(() => {
       // Reset idle timeout when the component mounts or user becomes active
-      useNotificationManager.sendPushNotification("yourmessage", "sendersname");
+      sendPushNotification("yourmessage", "sendersname");
       resetIdleTimeout?.(); // Use optional chaining here
     }, [resetIdleTimeout]);
 
@@ -139,18 +142,13 @@ const AdminDashboardWithDynamicNaming: React.FC<
         <DynamicNamingConventions dynamicContent={dynamicContent} />
         {/* Include NotificationManager */}
         <NotificationManager
-          notifications={[]}
+          notifications={notifications}
           setNotifications={() => { }}
-          notify={() => {
-            // Implement logic to handle notification
-            console.log("Notification triggered");
-            return Promise.resolve();
-          }}
+          notify={(message: string, randomBytes: any) => {}}
           onConfirm={(message) => console.log(message)}
           onCancel={() => { }}
         />
         <ConfigurationServiceComponent apiConfigs={[]} />
-
       </div>
     );
   }

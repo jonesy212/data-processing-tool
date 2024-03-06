@@ -16,6 +16,8 @@ import AnimationControls from "../libraries/animations/AnimationControls";
 import DynamicSelectionControls from "../libraries/animations/DynamicSelectionControls";
 import responsiveDesignStore from "./ResponsiveDesign";
 import { AsyncHook } from "../hooks/useAsyncHookLinker";
+import { Data } from "../models/data/Data";
+import { AnimatedComponentRef } from "../libraries/animations/AnimationComponent";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox
@@ -45,11 +47,12 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
   ];
 
   // Usage example for Notification Bar Phase Hook
-  const notificationBarExample: AsyncHook = {
+  const notificationBarExample: AsyncHook & Partial<AnimatedComponentRef> = {
     condition: () => true, // Example condition
     asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
     isActive: false, // Example isActive property
-    toggleActivation: () => {}, // Example toggleActivation method
+    //todo review if I need to add 
+    // toggleActivation: () => {}, // Example toggleActivation method
   };
 
 
@@ -57,6 +60,7 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
   const darkModeToggleExample: AsyncHook = {
     condition: () => true, // Example condition
     asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
+    isActive: {} as boolean, // Example isActive
   };
   // Usage example for RefactoringRebrandingPhase
   const refactoringRebrandingExample = <RefactoringRebrandingPhase />;
@@ -183,7 +187,7 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
         notificationBarExample.toggleActivation && (
           <button
             key="toggleButton"
-            onClick={() => notificationBarExample.toggleActivation()}
+            onClick={() => notificationBarExample?.toggleActivation?.()}
           >
             Toggle Activation
           </button>
@@ -216,7 +220,7 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
       <h2>Dark Mode Toggle Phase Hook Example</h2>
       {darkModeToggleExample.isActive && (
         <>
-          {darkModeToggleExample.toggleActivation && (
+          {darkModeToggleExample.isActive && (
             <button onClick={() => darkModeToggleExample.toggleActivation()}>
               Toggle Dark Mode
             </button>

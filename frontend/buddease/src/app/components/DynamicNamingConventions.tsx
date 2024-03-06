@@ -3,13 +3,12 @@ import React from 'react';
 import configurationService from '../configs/ConfigurationService';
 import { NamingConventionsError } from '../shared/shared-error-handling';
 import { useDynamicComponents } from './DynamicComponentsContext';
-import { NotificationType, useNotification } from './support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from './support/NotificationContext';
 import NOTIFICATION_MESSAGES from './support/NotificationMessages';
 import { NOTIFICATION_TYPES } from './support/NotificationTypes';
 interface DynamicNamingConventionsProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
 }
-
 
 
 const { notify } = useNotification();  // Destructure notify from useNotification
@@ -26,14 +25,15 @@ const handleNamingConventionsErrors = (
     error.message,  
     errorDetails
   );
-  notify(NOTIFICATION_TYPES.ERROR, "Error", new Date, {} as NotificationType);
+  //todo fix error message
+  notify("", errorMessage, "Error", new Date, NotificationTypeEnum.Error);
 };
 
 const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
   dynamicContent,
 }) => {
 
-  const { dynamicConfig, setDynamicConfig } = useDynamicComponents();
+  const { dynamicConfig,  updateDynamicConfig, setDynamicConfig } = useDynamicComponents();
 
   try {
     if (!dynamicConfig) {
@@ -80,10 +80,12 @@ const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
       handleNamingConventionsErrors(error);
     } else {
       notify(
+        //todo fix notification
+        error.message,
         NOTIFICATION_TYPES.ERROR,
         "Error",
         new Date,
-        {} as NotificationType
+        NotificationTypeEnum.CustomNotification2
       );
     }
     handleNamingConventionsErrors(error);}
@@ -105,14 +107,19 @@ const renderStaticContent = () => {
     </ul>
   );
 };
-  
-const renderDynamicContent = (conventions?: string[]) => {
 
+
+const renderDynamicContent = (conventions?: string[]) => {
   try {
-    
     if (!conventions || conventions.length === 0) {
       // Provide default dynamic naming conventions if not provided
-      conventions = ['Dynamic Convention 1', 'Dynamic Convention 2', 'Dynamic Convention 3'];
+      conventions = [
+        'Trending Topics', 'Popular Posts', 'Recommended Users', // For a social media app
+        'Featured Products', 'Best Sellers', 'New Arrivals', // For an e-commerce platform
+        'Priority Tasks', 'Upcoming Deadlines', 'Assigned Tasks', // For a task management tool
+        'Current Conditions', 'Hourly Forecast', 'Weekly Outlook', // For a weather application
+        'Daily Goals', 'Workout Plans', 'Progress Tracking' // For a fitness tracker app
+      ];
     }
   
     return (
@@ -123,11 +130,11 @@ const renderDynamicContent = (conventions?: string[]) => {
       </ul>
     );
   } catch (error: any) {
-    console.error(error instanceof NamingConventionsError ? error : 'Unknown error'); {
-      handleNamingConventionsErrors(error)
-    }
+    console.error(error instanceof NamingConventionsError ? error : 'Unknown error');
+    handleNamingConventionsErrors(error);
     return null;
   }
 };
+
 
 export default DynamicNamingConventions;

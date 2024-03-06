@@ -1,31 +1,35 @@
+import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import CommonDetails from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { Phase } from "../phases/Phase";
 import axiosInstance from "../security/csrfToken";
-import {
-  DetailsItem,
-  useDetailsListStore,
-} from "../state/stores/DetailsListStore";
-import { Snapshot } from "../state/stores/SnapshotStore";
+import { useDetailsListStore } from "../state/stores/DetailsListStore";
 
-
-interface DetailsListInterface{
+interface DetailsListInterface {
   items: string[];
   renderItem: (item: DetailsItem<Data>) => JSX.Element;
 }
 
 const DetailsList: React.FC<DetailsListInterface> = observer(() => {
-  const detailsListStore = useDetailsListStore(); 
+  const detailsListStore = useDetailsListStore();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/api/details");
-        const details = response.data; // Adjust based on your API response structure
-
-        // Assuming details is an array of objects with id, title, and other properties
+        const details: Record<string, DetailsItem<Data>[]> =
+          response.data.reduce(
+            (acc: Record<string, DetailsItem<Data>>, detail: any) => {
+              acc[detail.id] = {
+                ...detail,
+                id: String(detail.id),
+              };
+              return acc;
+            },
+            {}
+          );
         detailsListStore.setDetails(details);
       } catch (error) {
         console.error("Error fetching details:", error);
@@ -46,23 +50,18 @@ const DetailsList: React.FC<DetailsListInterface> = observer(() => {
 
   const handleAdd = () => {
     const newDetailId = "detail_" + Math.random().toString(36).substr(2, 9);
-    const newDetail: Data = {
-      _id: "",
+    const newDetail: DetailsItem<Data> = {
       id: newDetailId,
       title: "A new detail",
       status: "pending",
-      isActive: true,
-      tags: [],
+      description: "A new detail description",
       phase: {} as Phase,
-      then: function (callback: (newData: Snapshot<Snapshot<Data>>) => void): void {
-        detailsListStore.snapshotStore.subscribe(callback);
-      },
-      analysisType: "Analysis Type",
-      analysisResults: [],
-      videoData: {} as VideoData,
     };
 
-    detailsListStore.addDetail(newDetail);
+    // Extract the Data object from newDetail
+    const newData: Data = newDetail.data as Data;
+
+    detailsListStore.addDetail(newData); // Pass the Data object to addDetail
     handleUpdateTitle(newDetailId, "A new detail");
   };
 
@@ -70,12 +69,15 @@ const DetailsList: React.FC<DetailsListInterface> = observer(() => {
     <div>
       <ul>
         {Object.values(detailsListStore.details).map(
-          (detailsArray: DetailsItem<Data>[]) =>
-            detailsArray.map((detail: DetailsItem<Data>) => (
+          (detailArray: DetailsItem<Data>[]) =>
+            detailArray.map((detail: DetailsItem<Data>) => (
               <li key={detail.id}>
                 {detail.title} - {detail.status ? "Done" : "Not Done"}
                 <button onClick={() => handleToggle(detail.id)}>Toggle</button>
-                <CommonDetails data={{ title: "Title", description: "Description", data: detail }} />
+                <CommonDetails
+                  details={{ ...detail } as DetailsItem<never>} // Pass the detail object as is
+                  data={detail.data}
+                />
               </li>
             ))
         )}

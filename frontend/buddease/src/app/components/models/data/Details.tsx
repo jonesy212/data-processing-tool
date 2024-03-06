@@ -2,11 +2,18 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { CommonData, Customizations } from "../CommonData";
 import { Data } from "./Data";
 
+
 interface DetailsProps<T> {
+  data?: CommonData<T>; // Make data prop optional
   details: DetailsItem<T>;
+  customizations?: Customizations<T>;
 }
+
+
+
 
 const Details: React.FC<DetailsProps<Data>> = observer(({ details }) => {
   return (
@@ -68,5 +75,5 @@ const Details: React.FC<DetailsProps<Data>> = observer(({ details }) => {
     </div>
   );
 });
-
-export default Details;
+  
+export default DetailsProps; Details;

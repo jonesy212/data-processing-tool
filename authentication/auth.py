@@ -36,6 +36,20 @@ def init_login_manager(app):
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+
+
+
+def get_authenticated_user_id():
+    """
+    Get the ID of the authenticated user.
+
+    Returns:
+        int: ID of the authenticated user.
+    """
+    return get_jwt_identity()
+
+
+
 limiter = Limiter(key_func=get_remote_address, default_limits=["15 per day", "5 per minute"])
     
 app = Flask(__name__)

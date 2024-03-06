@@ -4,7 +4,7 @@ import FileSaver from "file-saver";
 import * as Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { Data } from "../../../models/data/Data";
-import { Idea, TaskDetails, tasksDataSource } from "../../../models/tasks/Task";
+import { Idea, Task, TaskDetails, tasksDataSource } from "../../../models/tasks/Task";
 import Project from '../../../projects/Project';
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
 import { WritableDraft } from "../ReducerGenerator";

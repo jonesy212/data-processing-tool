@@ -5,12 +5,14 @@ import { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
-import { useNotification } from "../../support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { TaskActions } from "../../tasks/TaskActions";
 import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 import { Snapshot } from "./SnapshotStore";
+import { taskManagerSlice } from "../redux/slices/TaskSlice";
+import { User } from "../../users/User";
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -35,6 +37,9 @@ export interface TaskManagerStore {
   sortByDueDate: () => void;
   exportTasksToCSV: () => void;
 
+
+  // Define dispatch function
+  dispatch: (action: any) => void;
   addTaskSuccess: (payload: { task: Task }) => void;
   addTask: (task: Task) => void;
   addTasks: (tasks: Task[]) => void;
@@ -44,8 +49,8 @@ export interface TaskManagerStore {
   fetchTasksSuccess: (payload: { tasks: Task[] }) => void;
   fetchTasksFailure: (payload: { error: string }) => void;
   fetchTasksRequest: () => void;
-  completeAllTasksSuccess: () => void;
-  completeAllTasks: () => void;
+  completeAllTasksSuccess: (success: string) => void;
+  completeAllTasks: (payload: { task: Task[] }) => void;
   completeAllTasksFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
@@ -62,7 +67,8 @@ export interface TaskManagerStore {
 const useTaskManagerStore = (): TaskManagerStore => {
   const { notify } = useNotification();
   const { markTaskAsCompleteSuccess, markTaskAsCompleteFailure } = TaskActions; // Update import
-  const [tasks, setTasks] = useState<Record<string, Task[]>>({
+  const [tasks, setTasks] = useState<Record<string, Task[]>>(
+    {
     pending: [],
     inProgress: [],
     completed: [],
@@ -81,30 +87,64 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const initialSnapshot = {} as Snapshot<Data>;
 
 
-  // Method to reassign a task to a new user
-  const reassignTask = (
-    taskId: string,
-    oldUserId: string,
-    newUserId: string
-  ) => {
-    assignedTaskStore.reassignUser(taskId, oldUserId, newUserId);
-    // You can add additional logic or trigger notifications as needed
-    setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
-    );
-  };
+  const dispatch = (action: any) => {
+    const { type, payload } = action;
+    switch (type) {
+      case TaskActions.addTaskSuccess.type:
+        addTaskSuccess(payload);
+        break;
+      case TaskActions.addTaskFailure.type:
+        addTaskFailure(payload);
+        break;
+      case TaskActions.fetchTasksSuccess.type:
+        fetchTasksSuccess(payload);
+        break;
+      case TaskActions.fetchTasksFailure.type:
+        fetchTasksFailure(payload);
+        break;
+      case TaskActions.fetchTasksRequest.type:
+        fetchTasksRequest();
+        break;
+      case TaskActions.completeAllTasksSuccess.type:
+        completeAllTasksSuccess();
+        break;
+      case TaskActions.completeAllTasksFailure.type:
+        completeAllTasksFailure(payload);
+        break;
+      case TaskActions.completeAllTasks.type:
+        completeAllTasks();
+        break;
+      case TaskActions.markTaskAsComplete.type:
+        markTaskAsComplete(payload);
+        break;
+      case TaskActions.markTaskAsCompleteSuccess.type:
+        markTaskAsCompleteSuccess(payload);
+    }
+    // Method to reassign a task to a new user
+    const reassignTask = (
+      taskId: string,
+      oldUserId: string,
+      newUserId: string
+    ) => {
+      assignedTaskStore.reassignUser(taskId, oldUserId, newUserId);
+      // You can add additional logic or trigger notifications as needed
+      setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      );
+    };
 
-  const updateTaskTitle = (title: string) => {
-    setTaskTitle(title);
-  };
+    const updateTaskTitle = (title: string) => {
+      setTaskTitle(title);
+    };
 
-  const updateTaskDescription = (description: string) => {
-    setTaskDescription(description);
-  };
+    const updateTaskDescription = (description: string) => {
+      setTaskDescription(description);
+    };
 
-  const updateTaskStatus = (status: "pending" | "inProgress" | "completed") => {
-    setTaskStatus(status);
-  };
+    const updateTaskStatus = (status: "pending" | "inProgress" | "completed") => {
+      setTaskStatus(status);
+    };
+  }
 
  
   const addTaskSuccess = (payload: { task: Task }) => {
@@ -177,6 +217,29 @@ const useTaskManagerStore = (): TaskManagerStore => {
       return updatedTasks;
     });
   };
+
+
+  const reassignTask = (taskId: string, oldUserId: string, newUserId: string) => { 
+    // Ensure the taskId exists in the tasks
+    if (!tasks[taskId]) {
+      console.error(`Task with ID ${taskId} does not exist.`);
+      return;
+    }
+    // Create a snapshot of the current tasks for the specified taskId
+    const taskSnapshot = { [taskId]: [...tasks[taskId]] };
+    // Store the snapshot in the SnapshotStore
+    useSnapshotManager().addSnapshot(taskSnapshot as unknown as Snapshot<Data>);
+    // Update the task
+    const updatedTask = { ...tasks[taskId][0], assignedUserId: newUserId };
+    setTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks };
+      updatedTasks[taskId] = [updatedTask];
+      return updatedTasks;
+    });
+  }
+
+
+
 
   const addTasks = (tasksToAdd: Task[]) => {
     // Ensure at least one task is passed
@@ -311,7 +374,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       // Dispatch the synchronous action immediately
       dispatch(markTaskAsCompleteSuccess(taskId));
 
-      const { markTaskComplete } = useApiManagerSlice.actions;
+      const { markTaskComplete } = taskManagerSlice.actions;
 
       // Dispatch the asynchronous action (no need to await)
       markTaskComplete(taskId as unknown as number);
@@ -319,6 +382,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       // Simulating asynchronous operation
       setTimeout((error: Error) => {
         notify(
+          'markTaskAsCompleteFailure',
           `Error marking task ${taskId} as complete`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
@@ -330,6 +394,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
       dispatch(markTaskAsCompleteFailure({ taskId: "taskId", error: "error" })),
         notify(
+          "markTaskAsCompleteFailure",
           `Error marking task ${taskId} as complete`,
           NOTIFICATION_MESSAGES.Error.DEFAULT("Error marking task as complete"),
           new Date(new Date().getTime()),
@@ -354,11 +419,12 @@ const useTaskManagerStore = (): TaskManagerStore => {
       console.error(`Error marking task ${taskId} as in progress`, err);
     }
     dispatch(markTaskAsInProgressSuccess(taskId));
-    const { markTaskAsInProgress } = useApiManagerSlice.actions;
+    const { markTaskAsInProgress } = taskManagerSlice.actions;
     markTaskAsInProgress(taskId as unknown as number);
     // Simulating asynchronous operation
     setTimeout((error: Error) => {
       notify(
+        "markTaskAsInProgressFailure",
         `Error marking task ${taskId} as in progress`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
@@ -389,7 +455,7 @@ const getTaskById = async (taskId: string): Promise<Task | null> => {
 };
 
   
-  const updateTaskAssignee = (taskId: string, assignee: string) => async (dispatch: any) => { 
+  const updateTaskAssignee = (taskId: string, assignee: User) => async (dispatch: any) => { 
     try {
       // Update task assignee
       // Assuming setTasks is a local state updater
@@ -404,6 +470,9 @@ const getTaskById = async (taskId: string): Promise<Task | null> => {
     } catch (err) {
       console.error(`Error updating task ${taskId} assignee`, err);
     }
+
+
+    // Dispatch the synchronous action immediately
     dispatch(updateTaskAssigneeSuccess(taskId, assignee));
     const { updateTaskAssignee } = useApiManagerSlice.actions;
     updateTaskAssignee(taskId as unknown as number, assignee);
@@ -419,7 +488,7 @@ const getTaskById = async (taskId: string): Promise<Task | null> => {
   }
 
 
-  const updateTaskAssigneeSuccess = (taskId: string, assignee: string) => { 
+  const updateTaskAssigneeSuccess = (taskId: string, assignee: User) => { 
     console.log(`Task ${taskId} assignee updated to ${assignee}`);
     // You can add additional logic or trigger notifications as needed
     setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
@@ -606,6 +675,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
     updateTaskStatus,
     addTask,
     addTasks,
+    dispatch,
     removeTask,
     removeTasks,
     reassignTask,

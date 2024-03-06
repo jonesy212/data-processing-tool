@@ -11,6 +11,7 @@ import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } fro
 import createDynamicHook, {
   DynamicHookResult,
 } from "../dynamicHooks/dynamicHookGenerator";
+import configData from "@/app/configs/configData";
 
 export interface PhaseHookConfig {
   name: string;
@@ -18,7 +19,7 @@ export interface PhaseHookConfig {
   asyncEffect: () => Promise<() => void>;
   canTransitionTo?: (nextPhase: string) => boolean;
   handleTransitionTo?: (nextPhase: string) => Promise<void>;
-  
+  duration: number;
 }
 
 const { resetAuthState } = useAuth(); 
@@ -34,6 +35,18 @@ export const createPhaseHook = (config: PhaseHookConfig) => {
         cleanup();
       }
       return config.asyncEffect();
+    },
+    idleTimeoutId: {
+      get: () => userSettings.idleTimeout,
+      set: (idleTimeout: number) => {
+        userSettings.idleTimeout = idleTimeout;
+      },
+    },
+    startIdleTimeout: {
+      get: () => userSettings.startIdleTimeout,
+      set: (startIdleTimeout: number) => {
+        userSettings.startIdleTimeout = startIdleTimeout;
+      },
     },
 
     resetIdleTimeout: async () => {
@@ -86,6 +99,30 @@ phaseNames.forEach((phaseName) => {
         resetAuthState();
       };
     },
+    duration: function (phaseName: string) { 
+      switch (phaseName) {
+        case "Calendar Phase":
+          return 10000;
+        case "Authentication Phase":
+          return 10000;
+        case "Job Search Phase":
+          return 10000;
+        case "Recruiter Dashboard Phase":
+          return 10000;
+        case "Job Applications Phase":
+          return 10000;
+        case "Messaging System Phase":
+          return 10000;
+        case "Data Analysis Tools Phase":
+          return 10000;
+        case "Web3 Communication Phase":
+          return 10000;
+        case "Decentralized Storage Phase":
+          return 10000;
+        default:
+          return 10000;
+      }
+    }
   }) as unknown as CustomPhaseHooks;
 });
 
@@ -170,7 +207,7 @@ async function initializeDecentralizedStorage(): Promise<{ dappAdapter: Extended
   // Example configuration for ExtendedDAppAdapter
   const baseConfig = {
     appName: "Extended Project Management App",
-    appVersion: "2.0",
+    appVersion: configData.currentAppVersion,
     ethereumRpcUrl: "https://your-ethereum-rpc-url",
     dappProps: {} as ExtendedDappProps,
   };

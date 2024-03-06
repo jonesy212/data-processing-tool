@@ -10,6 +10,7 @@ const userSettings = {
   enableTeamManagement: true,
 
   idleTimeout: useIdleTimeout(),
+  startIdleTimeout: useIdleTimeout(),
   idleTimeoutDuration: 0,
   activePhase: "current phase",
   realTimeChatEnabled: false,

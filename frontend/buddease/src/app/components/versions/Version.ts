@@ -1,13 +1,19 @@
-// Version.ts
+import crypto from 'crypto';
+
 class Version {
   versionNumber: string;
-
-  constructor(versionInfo: { versionNumber: string }) {
+  appVersion: string;
+  constructor(versionInfo: { versionNumber: string , appVersion: string}) {
     this.versionNumber = versionInfo.versionNumber;
+    this.appVersion = versionInfo.appVersion;
   }
 
   getVersionNumber(): string {
     return this.versionNumber;
+  }
+
+  updateVersionNumber(newVersionNumber: string): void { 
+    this.versionNumber = newVersionNumber;
   }
 
   // Method to compare two versions
@@ -33,6 +39,20 @@ class Version {
     const versionParts = this.versionNumber.split('.');
     return versionParts.every(part => /^\d+$/.test(part));
   }
+
+  // Method to generate a hash based on the version number
+
+  // Updated generateHash method to include appVersion as a parameter
+  generateHash(appVersion: string): string {
+    const hash = crypto.createHash('sha256');
+    hash.update(this.versionNumber);
+    // Include appVersion in hash generation
+    hash.update(appVersion);
+    return hash.digest('hex');
+  }
+
+  
+
 }
 
 export default Version;

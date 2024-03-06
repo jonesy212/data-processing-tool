@@ -12,6 +12,8 @@ import onboardingQuestionnaireData from '../onboarding/OnboardingQuestionnaireDa
 import WelcomePage from '../onboarding/WelcomePage';
 import UserQuestionnaire from './UserQuestionnaire';
 
+
+
 export enum OnboardingPhase {
   REGISTER,
   EMAIL_CONFIRMATION,
@@ -19,6 +21,9 @@ export enum OnboardingPhase {
   QUESTIONNAIRE,
   PROFILE_SETUP,
   OFFER,
+  TWO_FACTOR_SETUP,
+  PAYMENT_PROCESS,
+  NEXT_PHASE
 }
 
 const UserJourneyManager: React.FC = () => {
@@ -97,13 +102,12 @@ const UserJourneyManager: React.FC = () => {
       )}
       {currentPhase === OnboardingPhase.WELCOME && <WelcomePage />}
       {currentPhase === OnboardingPhase.QUESTIONNAIRE && (
-        <UserQuestionnaire onSubmit={handleQuestionnaireSubmitWrapper} />
+        <UserQuestionnaire onComplete={handleQuestionnaireSubmit} onSubmit={handleQuestionnaireSubmitWrapper} />
       )}
       {currentPhase === OnboardingPhase.OFFER && <OfferPage />}
       {currentPhase === OnboardingPhase.PROFILE_SETUP && (
         <ProfileSetupPhase onSubmit={handleProfileSetup} />
       )}
-       <div>
       {currentPhase === 0 && (
         <IdeationPhase onTransition={handlePhaseTransition} />
       )}

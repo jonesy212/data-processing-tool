@@ -1,5 +1,5 @@
 // TaskSlice.ts
-import { tasksDataSource } from "../../../models/tasks/Task";
+import { Idea, tasksDataSource } from "../../../models/tasks/Task";
 
 import useWebNotifications from "@/app/components/hooks/commHooks/useWebNotifications";
 import { Data } from "@/app/components/models/data/Data";
@@ -22,6 +22,7 @@ import { Task, TaskDetails } from "../../../models/tasks/Task";
 import { userManagerStore } from "../../stores/UserStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { useProjectManagerSlice } from "./ProjectSlice";
+import { VideoData } from "@/app/components/video/Video";
 
 const { notify } = useNotification();
 const { showNotification } = useWebNotifications();
@@ -260,11 +261,11 @@ export const taskManagerSlice = createSlice({
       const taskToDuplicate = state.tasks.find((task) => task.id === taskId);
       if (taskToDuplicate) {
         const generateTaskId = new UniqueIDGenerator();
-        const generatedTaskID = generateTaskId.generateTaskID(
+        const generatedTaskID = UniqueIDGenerator.generateTaskID(
           taskToDuplicate.title,
           taskToDuplicate.description
         );
-        const duplicatedTask = { ...taskToDuplicate, id: generatedID }; // Generate a new unique ID for the duplicated task
+        const duplicatedTask = { ...taskToDuplicate, id: generatedTaskID }; // Generate a new unique ID for the duplicated task
         state.tasks.push(duplicatedTask);
       }
     },
@@ -768,6 +769,7 @@ export const taskManagerSlice = createSlice({
       }
     },
 
+    
     updateTaskAssignee: (
       state,
       action: PayloadAction<{ taskId: string; assignee: User }>

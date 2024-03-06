@@ -1,13 +1,15 @@
-import MainConfig from '@/app/configs/MainConfig';
-import { SystemConfigs } from '../api/systemConfigs';
+import MainConfig from "@/app/configs/MainConfig";
+import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
-import { AquaConfig } from '../components/web3/web_configs/AquaConfig';
-import ShoppingCenterConfig from '../shopping_center/ShoppingCenterConfig';
-import { BackendConfig, backendConfig } from './BackendConfig';
+import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
+import ShoppingCenterConfig from "../shopping_center/ShoppingCenterConfig";
+import { BackendConfig, backendConfig } from "./BackendConfig";
 import { ApiConfig } from "./ConfigurationService";
-import { DataVersions } from './DataVersionsConfig';
-import { DocumentBuilderConfig } from './DocumentBuilderConfig';
-import { FrontendConfig, frontendConfig } from './FrontendConfig';
+import { DataVersions } from "./DataVersionsConfig";
+import { DocumentBuilderConfig } from "./DocumentBuilderConfig";
+import { FrontendConfig, frontendConfig } from "./FrontendConfig";
+import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
+import { AppStructureItem } from "./appStructure/AppStructure";
 
 // LazyLoadScriptConfig.ts
 interface LazyLoadScriptConfig {
@@ -31,6 +33,7 @@ interface LazyLoadScriptConfig {
   // Additional properties
   apiConfig?: ApiConfig; // API configuration
   namingConventions?: string[]; // Naming conventions
+
   // Add more properties as needed
 }
 
@@ -48,12 +51,12 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
   onCachedLoad?: () => void;
   onCachedTimeout?: () => void;
   onCachedError?: (error: Error) => void;
-  frontend?: typeof frontendConfig
-  backend?: typeof backendConfig
+  frontend?: typeof frontendConfig;
+  backend?: typeof backendConfig;
   thirdPartyLibrary?: string;
   thirdPartyAPIKey?: string;
   namingConventions?: string[];
-  
+
   // Additional associated properties
   apiConfig?: ApiConfig;
   dataVersions?: (versions: DataVersions) => void;
@@ -61,45 +64,51 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
   userConfigs?: typeof UserConfigs;
   aquaConfig?: AquaConfig;
   storeConfig?: ShoppingCenterConfig;
-  documentConfig?: DocumentBuilderConfig
-  frontendConfig?: FrontendConfig
-  backendCnfig?: BackendConfig
-  mainConfig?: typeof MainConfig
-  constructor({
-    timeout,
-    onLoad,
-    retryCount,
-    retryDelay,
-    onBeforeLoad,
-    onScriptError,
-    onTimeout,
-    dataVersions,
-    systemConfigs,
-    asyncLoad,
-    deferLoad,
-    thirdPartyLibrary,
-    thirdPartyAPIKey,
-    nonce,
-    apiConfig,
-    namingConventions
-  }: {
-    timeout?: number;
-    onLoad?: () => void;
-    retryCount?: number;
-    retryDelay?: number;
-    onBeforeLoad?: () => void;
-    onScriptError?: (error: ErrorEvent) => void;
-    onTimeout?: () => void;
-    dataVersions?: (versions: DataVersions) => void;
-    systemConfigs?: typeof SystemConfigs;
-    asyncLoad?: boolean;
-    deferLoad?: boolean;
-    thirdPartyLibrary?: string;
-    thirdPartyAPIKey?: string;
-    nonce?: string;
-    apiConfig?: ApiConfig;
-    namingConventions?: string[];
-  }) {
+  documentConfig?: DocumentBuilderConfig;
+  frontendConfig?: FrontendConfig;
+  backendCnfig?: BackendConfig;
+  mainConfig?: typeof MainConfig;
+  projectPath?: string;
+  constructor(
+    projectPath: string,
+    {
+      timeout,
+      onLoad,
+      retryCount,
+      retryDelay,
+      onBeforeLoad,
+      onScriptError,
+      onTimeout,
+      dataVersions,
+      systemConfigs,
+      asyncLoad,
+      deferLoad,
+      thirdPartyLibrary,
+      thirdPartyAPIKey,
+      nonce,
+      apiConfig,
+      namingConventions,
+    }: {
+      timeout?: number;
+      onLoad?: () => void;
+      retryCount?: number;
+      retryDelay?: number;
+      onBeforeLoad?: () => void;
+      onScriptError?: (error: ErrorEvent) => void;
+      onTimeout?: () => void;
+      dataVersions?: (versions: DataVersions) => void;
+      systemConfigs?: typeof SystemConfigs;
+      asyncLoad?: boolean;
+      deferLoad?: boolean;
+      thirdPartyLibrary?: string;
+      thirdPartyAPIKey?: string;
+      nonce?: string;
+      apiConfig?: ApiConfig;
+      namingConventions?: string[];
+      projectPath?: string;
+      // Correct type for traverseDirectory
+    }
+  ) {
     this.timeout = timeout;
     this.onLoad = onLoad;
     this.retryCount = retryCount;
@@ -116,7 +125,25 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
     this.nonce = nonce;
     this.apiConfig = apiConfig;
     this.namingConventions = namingConventions;
+    this.projectPath = projectPath;
   }
 }
+
+export const lazyLoadScriptConfig: LazyLoadScriptConfig =
+  new LazyLoadScriptConfigImpl("projectPath", {
+    timeout: 5000, // Example value for timeout in milliseconds
+    onLoad: () => {
+      console.log("Script loaded successfully.");
+    },
+    retryCount: 3, // Example value for retry count
+    retryDelay: 1000, // Example value for retry delay in milliseconds
+    onBeforeLoad: () => {
+      console.log("Before loading script...");
+    },
+    onScriptError: (error: ErrorEvent) => {
+      console.error("Script loading error:", error);
+    },
+    // Add more properties as needed
+  });
 
 export default LazyLoadScriptConfigImpl;

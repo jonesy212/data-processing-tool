@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ComponentActions } from "./ComponentActions";
+import { LogData } from '@/app/components/models/LogData';
 
 const { notify } = useNotification();
 
@@ -60,6 +61,7 @@ const Component = async () => {
       );
       // Notify user using the notification context
       await notify(
+        "handleAddSuccess",
         "Component added successfully",
         NOTIFICATION_MESSAGES.Component.ADD_COMPONENT_SUCCESS,
         new Date(),
@@ -69,6 +71,7 @@ const Component = async () => {
       console.error("Error adding component:", error);
       // Notify user of the error using the notification context
       await notify(
+        "handleAddFailure",
         "Failed to add component",
         NOTIFICATION_MESSAGES.Component.CREATE_COMPONENT_FAILURE,
         new Date(),
@@ -89,6 +92,7 @@ const Component = async () => {
         type: NotificationTypeEnum.CreationSuccess,
         updatedAt: new Date(),
         content: "",
+        completionMessageLog: {} as NotificationData & LogData
       };
       addNotification(notification); // Updated argument to pass notification object
     } catch (error: any) {
@@ -98,7 +102,7 @@ const Component = async () => {
         createdAt: new Date(),
         type: NotificationTypeEnum.Error,
         content: "",
-        completionMessageLog: ""
+        completionMessageLog: {} as NotificationData & LogData
       };
       console.error("Error removing component:", error);
       // Handle error and provide feedback to users
@@ -123,6 +127,7 @@ const Component = async () => {
         type: NotificationTypeEnum.CreationSuccess,
         updatedAt: new Date(),
         content: "",
+        completionMessageLog: {} as NotificationData & LogData
       };
       addNotification(notification);
     } catch (error: any) {
@@ -134,6 +139,7 @@ const Component = async () => {
         createdAt: new Date(),
         type: NotificationTypeEnum.Error,
         content: "",
+        completionMessageLog: {} as NotificationData & LogData
       };
       addNotification(errorNotification);
     }
@@ -147,7 +153,7 @@ const Component = async () => {
       <button onClick={handleUpdateComponent}>Update Component</button>
 
       {/* Render UpdatedProjectDetails only when currentProject is available */}
-      {currentProject && <UpdatedProjectDetails project={currentProject} />}
+      {currentProject && <UpdatedProjectDetails projectDetails={currentProject} />}
     </div>
   );
 };

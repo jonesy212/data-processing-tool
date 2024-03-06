@@ -1,8 +1,8 @@
 // DynamicHookGenerator.tsx
-import useAsyncHookLinker, { AsyncHook } from "../useAsyncHookLinker";
+import { AsyncHook } from "../useAsyncHookLinker";
 
 export type DynamicHookParams = {
-  condition: () => Promise<boolean>;
+  condition:(idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: ({
     idleTimeoutId,
     startIdleTimeout,
@@ -15,6 +15,8 @@ export type DynamicHookParams = {
   idleTimeoutId: NodeJS.Timeout | null;
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   isActive: boolean;
+  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  intervalId: number | undefined;
 };
 
 
@@ -25,9 +27,11 @@ export type DynamicHookResult = {
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout?: () => void;
+  
   idleTimeoutId: NodeJS.Timeout | null;
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   intervalId?: number;
+  toggleActivation?: () => Promise<boolean>;
 };
 
 
@@ -37,22 +41,33 @@ const createDynamicHook = ({
   resetIdleTimeout,
   cleanup,
   isActive: initialIsActive,
+  startIdleTimeout,
+  initialStartIdleTimeout,
 }: DynamicHookParams): AsyncHook => {
   return {
-    condition: () => false,
-    asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: {
-      idleTimeoutId: any,
-      startIdleTimeout: any
+    condition: condition,
+    asyncEffect: async ({
+      idleTimeoutId,
+      startIdleTimeout,
+    }: {
+      idleTimeoutId: NodeJS.Timeout | null; // Update type here
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
     }): Promise<void | (() => void)> => {
-  await asyncEffect({ idleTimeoutId, startIdleTimeout });
-  // Optionally return a function if needed
-  return () => {
-    // Function body
+      await asyncEffect({ idleTimeoutId, startIdleTimeout });
+      return () => {
+        // Cleanup function if needed
       };
-    }
-  }
-}
-
+    },
+    resetIdleTimeout: resetIdleTimeout, // Add resetIdleTimeout property
+    idleTimeoutId: null, // Initialize with null
+    startIdleTimeout: startIdleTimeout, // Add startIdleTimeout property
+    cleanup: cleanup, // Add cleanup property
+    isActive: initialIsActive,
+    initialStartIdleTimeout: initialStartIdleTimeout
+  };
+};
 
 export default createDynamicHook;
+
+
 

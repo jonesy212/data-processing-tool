@@ -1,9 +1,12 @@
+// StructuredMetadata.ts
 import * as fs from 'fs';
 import * as path from 'path';
+import { useState } from 'react';
+import useErrorHandling from '../components/hooks/useErrorHandling';
 import { Data } from '../components/models/data/Data';
-import { CacheStructure } from '../utils/CacheManager';
 import determineFileType from './DetermineFileType';
 
+// Define interfaces for metadata structures
 interface StructuredMetadata {
   [fileOrFolderId: string]: {
     originalPath: string;
@@ -12,38 +15,99 @@ interface StructuredMetadata {
   };
 }
 
-interface VideoMetadata  {
-  duration: number; // Duration of the video in seconds
-  resolution: string; // Resolution of the video (e.g., "1920x1080")
-  sizeInBytes: number; // Size of the video file in bytes
-  format: string; // Format of the video (e.g., "mp4", "avi", etc.)
-  uploadDate: Date; // Date when the video was uploaded
-  uploader: string; // Name or ID of the user who uploaded the video
-  tags: string[]; // Array of tags associated with the video
-  categories: string[]; // Array of categories the video belongs to
-  language: string; // Language of the video content
-  location: string; // Location where the video was recorded
-  // Add more properties as needed
-  data: Data
+interface VideoMetadata {
+  duration: number;
+  resolution: string;
+  sizeInBytes: number;
+  format: string;
+  uploadDate: Date;
+  uploader: string;
+  tags: string[];
+  categories: string[];
+  language: string;
+  location: string;
+  data: Data; // Assuming Data is a custom data type
 }
 
-
-
-
-  
 interface ProjectMetadata {
-  startDate: Date; // Start date of the project
-  endDate: Date; // End date of the project
-  budget: number; // Budget allocated for the project
-  status: string; // Status of the project (e.g., "In Progress", "Completed", etc.)
-  description: string; // Description of the project
-  teamMembers: string[]; // Array of team members involved in the project
-  tasks: string[]; // Array of tasks associated with the project
-  milestones: string[]; // Array of milestones for the project
-  videos: VideoMetadata[]; // Array of video metadata associated with the project
-  // Add more properties as needed
+  startDate: Date;
+  endDate: Date;
+  budget: number;
+  status: string;
+  description: string;
+  teamMembers: string[];
+  tasks: string[];
+  milestones: string[];
+  videos: VideoMetadata[];
 }
 
+// Define function to get structure metadata path
+const getStructureMetadataPath = (filename: string): string => {
+  // Assuming __dirname is defined in your environment
+  return path.join(__dirname, filename);
+};
+
+
+// Define the initial state for undo and redo operations
+const initialUndoRedoState = {
+  past: [] as any[],
+  present: null as any,
+  future: [] as any[],
+};
+
+// Define the function to handle undo and redo actions
+const useUndoRedo = <T>(initialState: T) => {
+  const [state, setState] = useState(initialState);
+  const [history, setHistory] = useState(initialUndoRedoState);
+
+  const undo = () => {
+    // Move the present state to the future
+    const { past, present, future } = history;
+    if (past.length === 0) return;
+
+    const previous = past[past.length - 1];
+    const newPast = past.slice(0, past.length - 1);
+
+    setHistory({
+      past: newPast,
+      present: previous,
+      future: [present, ...future],
+    });
+
+    setState(previous);
+  };
+
+  const redo = () => {
+    // Move the present state to the past
+    const { past, present, future } = history;
+    if (future.length === 0) return;
+
+    const next = future[0];
+    const newFuture = future.slice(1);
+
+    setHistory({
+      past: [...past, present],
+      present: next,
+      future: newFuture,
+    });
+
+    setState(next);
+  };
+
+  return { state, setState, undo, redo };
+};
+
+
+// Example usage
+const initialState: StructuredMetadata = {}; // Initial state for metadata structure
+const { state, setState, undo, redo } = useUndoRedo(initialState);
+
+// Define your metadata structure using 'state' and update it using 'setState'
+
+// Add undo and redo handlers to the metadata structure
+// Add undo and redo handlers to the metadata structure
+(state as any).undo = undo;
+(state as any).redo = redo;
 
 
 
@@ -51,27 +115,45 @@ interface ProjectMetadata {
 
 
 
-const structureMetadataPath = 'structure-metadata.json';
 
-const readMetadata = (): StructuredMetadata => {
+
+
+
+
+
+
+// Define function to read metadata from file
+const readMetadata = (filename: string): StructuredMetadata => {
   try {
+    const structureMetadataPath = getStructureMetadataPath(filename);
     const data = fs.readFileSync(structureMetadataPath, 'utf-8');
     return JSON.parse(data);
-  } catch (error) {
+  } catch (error: any) {
+    const { handleError } = useErrorHandling(); // Use useErrorHandling hook
+    handleError(`Error reading metadata file: ${error.message}`); // Handle error
     return {};
   }
 };
 
-const writeMetadata = (metadata: StructuredMetadata) => {
-  const data = JSON.stringify(metadata, null, 2);
-  fs.writeFileSync(structureMetadataPath, data, 'utf-8');
+// Define function to write metadata to file
+const writeMetadata = (filename: string, metadata: StructuredMetadata): void => {
+  try {
+    const structureMetadataPath = getStructureMetadataPath(filename);
+    const data = JSON.stringify(metadata, null, 2);
+    fs.writeFileSync(structureMetadataPath, data, 'utf-8');
+  } catch (error: any) {
+    const { handleError } = useErrorHandling(); // Use useErrorHandling hook
+    handleError(`Error writing metadata file: ${error.message}`); // Handle error
+  }
 };
 
+// Define function to track structure changes
 const trackStructureChanges = (
   basePath: string,
-  cacheStructure: CacheStructure
-) => {
-  const metadata = readMetadata();
+  filename: string,
+  cacheStructure: any // Define type for cacheStructure if possible
+): void => {
+  let metadata = readMetadata(filename);
 
   const traverseDirectory = (dir: string) => {
     const files = fs.readdirSync(dir);
@@ -79,15 +161,13 @@ const trackStructureChanges = (
     for (const file of files) {
       const filePath = path.join(dir, file);
       const isDirectory = fs.statSync(filePath).isDirectory();
-
-      const fileOrFolderId = Buffer.from(filePath).toString("base64"); // Unique identifier
+      const fileOrFolderId = Buffer.from(filePath).toString("base64");
 
       if (!metadata[fileOrFolderId]) {
-        // New file or folder, update metadata
         metadata[fileOrFolderId] = {
           originalPath: filePath,
           alternatePaths: [],
-          fileType: determineFileType(filePath),
+          fileType: determineFileType(filePath), // Assuming determineFileType is defined
         };
       }
 
@@ -95,9 +175,6 @@ const trackStructureChanges = (
         traverseDirectory(filePath);
       }
 
-      // Logic to check for changes and update alternate paths
-
-      // Example:
       if (metadata[fileOrFolderId].originalPath !== filePath) {
         metadata[fileOrFolderId].alternatePaths.push(filePath);
       }
@@ -105,16 +182,14 @@ const trackStructureChanges = (
   };
 
   traverseDirectory(basePath);
-  writeMetadata(metadata);
+  writeMetadata(filename, metadata);
 };
 
 // Example usage
-const cacheStructure: CacheStructure = {}; // Initialize with your actual cache structure
-// Example usage
+const metadataFilePath = 'structure-metadata.json';
 const basePath = path.resolve(__dirname, 'src'); // Set your base path
-trackStructureChanges(basePath, cacheStructure);
+trackStructureChanges(basePath, metadataFilePath, {}); // Pass an empty object as cacheStructure
 
+export type { ProjectMetadata, StructuredMetadata, VideoMetadata };
 
-export type { StructuredMetadata, VideoMetadata };
-
-export default ProjectMetadata;
+export default ProjectMetadata;state;

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import PromptComponent from "@/app/components/prompts/PromptComponent";
 import DynamicComponent from "@/app/components/styling/DynamicComponents";
-import YourFormComponent from "./YourFormComponent";
+import UserFormComponent from "./UserFormComponent";
 
 const DynamicForm = () => {
+  const [error, setError] = React.useState<string | null>(null); 
   const [formState, setFormState] = useState({
     currentPage: "YourForm", // Initial page
     userIdea: "", // User input that influences dynamic content
@@ -36,7 +37,7 @@ const DynamicForm = () => {
       console.error("Error occurred while submitting prompt:", error);
   
       // Optionally, display an error message to the user or perform other error-handling actions
-      // setError("An error occurred while submitting the prompt. Please try again.");
+      setError("An error occurred while submitting the prompt. Please try again.");
     }
   };
   
@@ -44,7 +45,7 @@ const DynamicForm = () => {
   const renderCurrentPage = () => {
     switch (formState.currentPage) {
       case "YourForm":
-        return <YourFormComponent onSubmit={handleUserIdeaSubmit} />;
+        return <UserFormComponent onSubmit={handleUserIdeaSubmit} />;
       case "Prompt":
         return (
           <PromptComponent
@@ -54,6 +55,7 @@ const DynamicForm = () => {
               title: "",
               description: "",
               prompts: [],
+              number: []
             }}
             onPreviousPage={function (): void {
               // Handle previous page transition

@@ -49,6 +49,14 @@ export const useApiManagerSlice = createSlice({
       );
     },
 
+    markTaskComplete:  (state, action: PayloadAction<string>) => { 
+      const {id} = await dispatch(addTask(action.payload));
+      const taskIndex = state.tasks.findIndex((task) => task.id === action.payload);
+      if (taskIndex >= 0) {
+        state.tasks[taskIndex].isComplete = true;
+      }
+    }
+
   },
 });
 

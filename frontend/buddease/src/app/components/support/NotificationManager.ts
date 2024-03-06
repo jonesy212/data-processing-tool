@@ -1,14 +1,15 @@
-import { NotificationData } from '@/app/components/support/NofiticationsSlice';
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React from "react";
 import { NotificationType } from "./NotificationContext";
+import { LogData } from "../models/LogData";
 
 interface NotificationManagerProps {
   notifications: NotificationData[];
   notify: (message: string, randomBytes: any) => void; // Corrected spelling of notify
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>
-  onConfirm: (message: string, randomBytes: any) => void // Corrected spelling of onConfirm
-  onCancel: (message: string, randomBytes: any) => void // Corrected spelling of onCancel
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
+  onConfirm: (message: string, randomBytes: any) => void; // Corrected spelling of onConfirm
+  onCancel: (message: string, randomBytes: any) => void; // Corrected spelling of onCancel
 }
 
 class NotificationManager extends React.Component<NotificationManagerProps> {
@@ -21,17 +22,24 @@ class NotificationManager extends React.Component<NotificationManagerProps> {
 
   // Method to add a notification
   addNotification(
-    message: Notification,
+    message: NotificationData,
     date: Date,
-    type: NotificationType
+    type: NotificationType,
+    completionMessageLog: NotificationData
   ): void {
-    const newNotification: Notification = {
-      id: UniqueIDGenerator.generateNotificationID(message, date, type), // Corrected parameter type
+    const newNotification: NotificationData = {
+      id: UniqueIDGenerator.generateNotificationID(
+        message,
+        date,
+        type,
+        completionMessageLog
+      ), // Corrected parameter type
       type,
       createdAt: new Date(),
       date: new Date(),
       content: "",
       message: "",
+      completionMessageLog: {} as LogData,
     };
     this.notifications.push(newNotification);
   }

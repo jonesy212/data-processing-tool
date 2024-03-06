@@ -1,6 +1,5 @@
-// TextCard.tsx
-import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
+import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import { ToolbarOptions } from '../documents/ToolbarOptions';
 import { DocumentType } from '../documents/DocumentGenerator';
 
@@ -14,7 +13,6 @@ const TextCard: React.FC<TextCardProps> = ({ onSave }) => {
   const handleSave = async () => {
     try {
       await onSave(text);
-      // Optionally, you can reset the text field after successful save
       setText('');
     } catch (error) {
       console.error('Error saving text:', error);
@@ -31,15 +29,15 @@ const TextCard: React.FC<TextCardProps> = ({ onSave }) => {
       />
       <button onClick={handleSave}>Save</button>
       <ToolbarOptions
-        isTextCard onEditorStateChange={function (newEditorState: any): void {
+        isTextCard 
+        onEditorStateChange={(newEditorState: any) => {
           setText(newEditorState.getCurrentContent().getPlainText());
-                }}
-        handleEditorStateChange={function (newEditorState: Draft.EditorState): void {
+        }}
+        handleEditorStateChange={(newEditorState: Draft.EditorState) => {
           setText(newEditorState.getCurrentContent().getPlainText());
         }}
         type={DocumentType.Text}
       />
-
     </div>
   );
 };

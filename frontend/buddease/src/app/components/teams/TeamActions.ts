@@ -29,13 +29,25 @@ export const TeamActions = {
   updateCallback: createAction<{ error: string }>("updateCallback"),
   //  batch actions
   fetchTeamsRequest: createAction("fetchTeamsRequest"),
-  fetchTeamsSuccess: createAction<{ teams: Team[] }>("fetchTeamsSuccess"),
+  fetchTeamsSuccess: createAction<{teams: Team[] }>("fetchTeamsSuccess"),
   fetchTeamsFailure: createAction<{ error: string }>("fetchTeamsFailure"),
   fetchApiDataSuccess: createAction<{ data: Team[] }>("fetchApiDataSuccess"),
   
   updateTeamsRequest: createAction<{ updatedTeams: Partial<Team>[] }>("updateTeamsRequest"),
   updateTeamsSuccess: createAction<{ updatedTeams: Team[] }>("updateTeamsSuccess"),
   updateTeamsFailure: createAction<{ error: string }>("updateTeamsFailure"),
+
+
+   // Additional Actions Matching Provided Pattern
+   clearTeams: createAction<void>('teamManager/clearTeams'),
+   selectTeam: createAction<string>('teamManager/selectTeam'),
+   reorderTeams: createAction<string[]>('teamManager/reorderTeams'),
+   toggleTeamActivation: createAction<string>('teamManager/toggleTeamActivation'),
+ 
+   // Additional actions
+  setTeamLeader: createAction<{ teamId: number; memberId: number }>("setTeamLeader"),
+  assignMember: createAction<{ teamId: number; memberId: number }>("assignMember"),
+  removeMember: createAction<{ teamId: number; memberId: number }>("removeMember"),
 
   // Add more actions as needed
 };

@@ -8,9 +8,11 @@ const BASE_URL = "https://your-api-base-url";
 interface NestedEndpoints {
   [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
 }
+
+
 interface Endpoints {
   [category: string]: NestedEndpoints;
-}
+ }
 
 
 
@@ -114,6 +116,7 @@ export const endpoints: Endpoints = {
   },
 
   client: {
+    
     fetchClientDetails: (clientId: number) => `/api/client/${clientId}`, // Endpoint to fetch client details
     updateClientDetails: (clientId: number) => `/api/client/${clientId}/update`, // Endpoint to update client details
     connectWithTenant: (tenantId: number) => `/api/client/connect/${tenantId}`, // Endpoint to connect with a specific tenant
@@ -415,7 +418,33 @@ export const endpoints: Endpoints = {
     logFailure: `${BASE_URL}/logging/failure`,
   },
 
-  payment: {
+  messages: {
+    textMessages: {
+      send: `${BASE_URL}/api/messages/text/send`,
+      get: `${BASE_URL}/api/messages/text/get`,
+      update: `${BASE_URL}/api/messages/text/update`,
+      delete: `${BASE_URL}/api/messages/text/delete`,
+    },
+    audioMessages: {
+      send: `${BASE_URL}/api/messages/audio/send`,
+      get: `${BASE_URL}/api/messages/audio/get`,
+      update: `${BASE_URL}/api/messages/audio/update`,
+      delete: `${BASE_URL}/api/messages/audio/delete`,
+    },
+    videoMessages: {
+      send: `${BASE_URL}/api/messages/video/send`,
+      get: `${BASE_URL}/api/messages/video/get`,
+      update: `${BASE_URL}/api/messages/video/update`,
+      delete: `${BASE_URL}/api/messages/video/delete`,
+    },
+    notifications: {
+      send: `${BASE_URL}/api/messages/notifications/send`,
+      get: `${BASE_URL}/api/messages/notifications/get`,
+      update: `${BASE_URL}/api/messages/notifications/update`,
+      delete: `${BASE_URL}/api/messages/notifications/delete`,
+    },
+  },
+    payment: {
     initiatePayment: `${BASE_URL}/api/payment/initiate`, // Endpoint for initiating a payment transaction
     verifyPayment: `${BASE_URL}/api/payment/verify`, // Endpoint for verifying a payment transaction
     cancelPayment: `${BASE_URL}/api/payment/cancel`, // Endpoint for cancelling a payment transaction
@@ -586,6 +615,7 @@ export const endpoints: Endpoints = {
     remove: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}`,
     update: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}`,
 
+    fetchUpdatedData: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}/fetch-updated-data`,
     // New endpoints for bulk actions
     bulkAdd: `${BASE_URL}/api/snapshots/bulk-add`,
     bulkRemove: `${BASE_URL}/api/snapshots/bulk-remove`,
@@ -837,3 +867,4 @@ export const endpoints: Endpoints = {
 } 
 
 
+export type { NestedEndpoints };

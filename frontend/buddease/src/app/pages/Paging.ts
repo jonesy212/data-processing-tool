@@ -1,5 +1,7 @@
+import { PromptPageProps } from "../components/prompts/PromptPage";
+
 export interface PagingState {
-    currentPage: number;
+    currentPage: PromptPageProps;
     pageSize: number;
     totalItems: number;
   }

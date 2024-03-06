@@ -19,16 +19,39 @@ export const handleCryptoPaymentSelect = (cryptoOption: string) => {
 };
 
 
-const DynamicEventHandlerExample = () => {
-  // State to track messages
-  const [messages, setMessages] = useState<string[]>([]);
 
 
-  // Helper function to add messages
-  const addMessage = (message: string) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
-  };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const DynamicEventHandlerExample = ({ handleSorting }: { handleSorting: (snapshotList: SnapshotList) => void }) => {
+
+    // State to track messages
+    const [messages, setMessages] = useState<string[]>([]);
+
+    // Helper function to add messages
+    const addMessage = (message: string) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
+  
+  
   // Separate event handlers for keyboard and mouse events
   const handleKeyboardEvent = (
     event: React.KeyboardEvent<HTMLInputElement>
@@ -38,7 +61,7 @@ const DynamicEventHandlerExample = () => {
     const sanitizedInput = sanitizeInput(event.currentTarget.value);
     console.log("Sanitized input:", sanitizedInput);
     handleKeyboardShortcuts(event);
-    handleKeyboardShortcuts(syntheticEvent);  
+    handleKeyboardShortcuts(syntheticEvent);
   };
 
   const handleMouseEvent = (event: MouseEvent & SyntheticEvent) => {
@@ -54,18 +77,18 @@ const DynamicEventHandlerExample = () => {
 
 
 
- // Simulating the functions you want to call
- const handleKeyboardShortcuts = (event: React.SyntheticEvent) => {
-  // Logic for handling keyboard shortcuts
-  console.log("Handling keyboard shortcuts:", event);
-  addMessage("Handling keyboard shortcuts");
-};
+  // Simulating the functions you want to call
+  const handleKeyboardShortcuts = (event: React.SyntheticEvent) => {
+    // Logic for handling keyboard shortcuts
+    console.log("Handling keyboard shortcuts:", event);
+    addMessage("Handling keyboard shortcuts");
+  };
 
-const handleMouseClick = (event: React.SyntheticEvent) => {
-  // Logic for handling mouse click
-  console.log("Handling mouse click:", event);
-  addMessage("Handling mouse click");
-};
+  const handleMouseClick = (event: React.SyntheticEvent) => {
+    // Logic for handling mouse click
+    console.log("Handling mouse click:", event);
+    addMessage("Handling mouse click");
+  };
 
 
   const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
@@ -183,15 +206,6 @@ const handleMouseClick = (event: React.SyntheticEvent) => {
 
 
 
-
-  const DynamicEventHandlerExample = () => {
-    // State to track messages
-    const [messages, setMessages] = useState<string[]>([]);
-
-    // Helper function to add messages
-    const addMessage = (message: string) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    };
     const handleContextMenus = (event: React.MouseEvent<HTMLDivElement>) => {
       // Logic for handling context menus
       console.log("Handling context menus:", event);
@@ -280,10 +294,6 @@ const handleMouseClick = (event: React.SyntheticEvent) => {
       }
     };
 
-
-
-
-
     // Dynamic event handler generator
     const createEventHandler =
       (
@@ -314,30 +324,6 @@ const handleMouseClick = (event: React.SyntheticEvent) => {
       createEventHandler("handleMouseMove")(event);
     };
 
-    // Simulating the functions you want to call
-    const handleSorting = createEventHandler(
-      "handleSorting",
-      (event: React.SyntheticEvent) => {
-        // Logic for handling sorting
-        console.log("Handling sorting:", event);
-
-        // Additional logic for sorting...
-        // For example, trigger a sorting algorithm or update UI based on sorting action.
-        const sortableList = document.getElementById("sortableList");
-
-        if (sortableList) {
-          // Simulate sorting algorithm (e.g., sorting list items alphabetically)
-          const listItems = Array.from(sortableList.children);
-          const sortedItems = listItems.sort(
-            (a, b) => a.textContent?.localeCompare(b.textContent || "") || 0
-          );
-
-          // Update UI with sorted items
-          sortableList.innerHTML = "";
-          sortedItems.forEach((item) => sortableList.appendChild(item));
-        }
-      }
-    );
 
 
     useEffect(() => {
@@ -525,9 +511,13 @@ const handleMouseClick = (event: React.SyntheticEvent) => {
             <li key={index}>{message}</li>
           ))}
         </ul>
+        <DynamicEventHandlerExample handleSorting={handleSorting} />
       </div>
     );
-  };
-};
+}
+
+
+
+
 
 export default DynamicEventHandlerExample;

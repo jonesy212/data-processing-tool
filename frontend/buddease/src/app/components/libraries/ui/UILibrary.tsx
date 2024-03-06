@@ -3,7 +3,7 @@ import { Button } from "antd";
 import { FC, useEffect, useState } from "react";
 
 
-interface ButonProps  {
+interface ButonProps {
   variant?: string
 }
 type LibraryType = {

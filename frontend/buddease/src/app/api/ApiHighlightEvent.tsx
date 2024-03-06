@@ -59,8 +59,17 @@ export const HighlightEventApi = {
     try {
       await removeData(endpoints.highlights.delete(highlightId));
     } catch (error) {
-      handleApiError(error);
-      throw error;
+      handleApiError(error as AxiosError<unknown, any>, errorMessage);
+
+      if (errorMessageId) {
+        const errorMessage = clientNotificationMessages[errorMessageId];
+        this.notify(
+          errorMessageId,
+          errorMessage,
+          notificationData,
+          new Date(),
+          "ClientError" as NotificationType
+        );
     }
   },
 };

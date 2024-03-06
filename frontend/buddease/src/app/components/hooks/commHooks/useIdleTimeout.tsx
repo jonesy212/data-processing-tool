@@ -9,7 +9,6 @@ import createDynamicHook, { DynamicHookParams, DynamicHookResult } from "../dyna
 const IDLE_TIMEOUT_DURATION = 60000; // 1 minute in milliseconds
 
 
-
 interface IdleTimeoutProps {
   accessToken: string;
   router: typeof Router;
@@ -38,19 +37,21 @@ const showModalOrNotification = (message: string): void => {
     
 
 // Function to fetch the last user interaction time from the backend
-const fetchLastUserInteractionTime = async (): Promise<number> => {
-    try {
-        const response = await axios.get('/api/getLastUserInteractionTime');
-        return response.data.lastInteractionTime;
-    } catch (error) {
-        console.error('Error fetching last user interaction time:', error);
-        // Handle error appropriately
-        return 0; // Default value if the API call fails
-    }
+ // Function to fetch the last user interaction time from the backend
+ const fetchLastUserInteractionTime = async (): Promise<number> => {
+  try {
+    const response = await axios.get('/api/getLastUserInteractionTime');
+    return response.data.lastInteractionTime;
+  } catch (error) {
+    console.error('Error fetching last user interaction time:', error);
+    // Handle error appropriately
+    return 0; // Default value if the API call fails
+  }
 };
 
 
-const useIdleTimeout = (): DynamicHookResult => {
+
+const useIdleTimeout = (props: IdleTimeoutProps): DynamicHookResult => {
   // Create a dynamic hook with the condition and effect functions
   
   const idleTimeoutCondition = async () => {
@@ -107,6 +108,9 @@ const useIdleTimeout = (): DynamicHookResult => {
     return () => {};
   };
 
+
+
+
   const resetIdleTimeout = () => {
     // Clear the existing timeout to avoid multiple timers
     if (timeoutId) {
@@ -141,31 +145,53 @@ const useIdleTimeout = (): DynamicHookResult => {
 
 
   
-
-  const idleTimeoutConditionSync = () => {
-    return idleTimeoutCondition();
+  const idleTimeoutConditionSync = async (idleTimeoutDuration: number): Promise<boolean> => {
+    const lastActivityTimestamp = fetchLastUserInteractionTime();
+    const currentTime = new Date().getTime();
+    const elapsedTime =  currentTime - await lastActivityTimestamp;
+  
+    // Check if the elapsed time since the last activity exceeds the idle timeout duration
+    const isIdle = elapsedTime >= idleTimeoutDuration;
+  
+    return isIdle;
   };
+  
+  
 
   let timeoutId: NodeJS.Timeout = setTimeout(() => { }, 0);
   
   const idleTimeoutParams: DynamicHookParams = {
+    intervalId: undefined, // Placeholder value
     isActive: false,
     condition: idleTimeoutConditionSync,
     asyncEffect: idleTimeoutEffect,
     cleanup: idleTimeoutCleanup,
     resetIdleTimeout: resetIdleTimeout,
     idleTimeoutId: timeoutId, // Convert timeoutId to string before assigning
-    startIdleTimeout: startIdleTimeout,
-  };
+    startIdleTimeout: () => { }, // Placeholder function
+    initialStartIdleTimeout: () => { },
+};
+
   
 
 
-  const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams, );
+  const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams);
 
   // Add any additional methods or modifications specific to the useIdleTimeoutHook here
 
-  return useIdleTimeoutHook();
-}
+  // Return the necessary properties/methods from the dynamic hook
+  return {
+    intervalId: undefined, // Placeholder value
+    isActive: useIdleTimeoutHook.isActive,
+    animateIn: () => {}, // Placeholder function
+    startAnimation: () => {}, // Placeholder function
+    stopAnimation: () => {}, // Placeholder function
+    resetIdleTimeout: useIdleTimeoutHook.resetIdleTimeout, // Provide resetIdleTimeout method from the dynamic hook
+    idleTimeoutId: useIdleTimeoutHook.idleTimeoutId,
+    startIdleTimeout: useIdleTimeoutHook.startIdleTimeout,
+    toggleActivation: () => Promise.resolve(true), // Placeholder function
+  };
+};
 
 export default useIdleTimeout;
 

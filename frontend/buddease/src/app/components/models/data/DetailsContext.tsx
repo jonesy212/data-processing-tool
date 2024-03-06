@@ -1,10 +1,11 @@
 import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 import { DetailsItem } from '../../state/stores/DetailsListStore';
+import { Data } from './Data';
 
 // Define the shape of your context data
 interface DetailsContextData {
-  detailsData: DetailsItem[];
-  updateDetailsData: Dispatch<SetStateAction<DetailsItem[]>>;
+  detailsData: DetailsItem<Data>[];
+  updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data>[]>>;
 }
 
 // Create the context
@@ -17,10 +18,10 @@ interface DetailsProviderProps {
 
 export const DetailsProvider: React.FC<DetailsProviderProps> = ({ children }: DetailsProviderProps) => {
   // State to manage detailsData
-  const [detailsData, setDetailsData] = useState<DetailsItem[]>([]);
+  const [detailsData, setDetailsData] = useState<DetailsItem<Data>[]>([]);
 
   // Function to update detailsData
-  const updateDetailsData: Dispatch<SetStateAction<DetailsItem[]>> = (callback) => {
+  const updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data>[]>> = (callback) => {
     setDetailsData((prevData) => {
       if (typeof callback === 'function') {
         return callback([...prevData]);

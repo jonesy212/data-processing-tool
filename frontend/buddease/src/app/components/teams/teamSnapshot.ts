@@ -1,37 +1,55 @@
-import { Snapshot } from '../../state/stores/SnapshotStore';
+import useSnapshotManager from '../hooks/useSnapshotManager';
+import { Data } from '../models/data/Data';
 import { Team } from '../models/teams/Team';
-
-// Define the type for teamSnapshot
-interface TeamSnapshot extends Snapshot<Data> {
-  [teamId: string]: Team[];
+import { useAssignTeamMemberStore } from '../state/stores/AssignTeamMemberStore';
+import { Snapshot } from '../state/stores/SnapshotStore'; // Removed snapshotStore import as it's not used
+import { VideoData } from '../video/Video';
+interface TeamSnapshot extends Snapshot<Team[]> {
+  // Remove the 'data' property as it conflicts with the index signature
+  [teamId: string]: Team[]; // Index signature mapping string keys to arrays of Team objects
 }
 
-const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
-  // Ensure the teamId exists in the teams
-  if (!teams[teamId]) {
+
+
+const takeTeamSnapshot = (teamId: string, userIds?: string[], teams?: Team[]) => {
+  // Ensure teams is defined and teamId exists in teams
+  if (!teams || !teams[teamId]) {
     console.error(`Team with ID ${teamId} does not exist.`);
     return;
   }
 
   // Create a snapshot of the current teams for the specified teamId
   const teamSnapshot: TeamSnapshot = {
-    timestamp: new Date(), // Add the timestamp property
-    data: teams[teamId], // Add the data property with teams[teamId] as value
-    [teamId]: [...teams[teamId]], // Include the team data for the specific teamId
+    timestamp: new Date, // Add a timestamp to the snapshot
+    data: {
+      [teamId]: [...(teams[teamId] || [])], // Ensure teams[teamId] is not undefined
+      // Add properties from the Data interface here
+      _id: "",
+      id: 0,
+      title: "",
+      status: "pending",
+      // Add other properties from Data interface as needed
+    },
   };
 
   // Store the snapshot in the SnapshotStore
-  snapshotStore.takeSnapshot(teamSnapshot);
+  useSnapshotManager().takeSnapshot(teamSnapshot);
 
   if (userIds) {
-    // Create a snapshot of the current team assignments for the specified teamId and userIds
-    const teamAssignmentsSnapshot: TeamSnapshot = {
-      timestamp: new Date(), // Add the timestamp property
-      data: assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds), // Add the data property with assigned team members
-      [teamId]: [...assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds)], // Include the team assignments for the specific teamId
+    const teamAssignmentsSnapshot: Snapshot<Data> = {
+      timestamp: new Date(), // Add a timestamp to the snapshot
+      data: {
+        [teamId]: [
+          ...useAssignTeamMemberStore().getAssignedTeamMembers(teamId, userIds),
+        ],
+        // Add properties from the Data interface here
+        _id: "",
+        id: 0,
+        title: "",
+        status: "pending",
+        // Add other properties from Data interface as needed
+      },
     };
-
-    // Store the teamAssignmentsSnapshot in the SnapshotStore
-    snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
+    useSnapshotManager().takeSnapshot(teamAssignmentsSnapshot);
   }
 };

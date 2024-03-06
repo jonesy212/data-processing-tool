@@ -14,6 +14,10 @@ import { Idea, Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgresBar";
 import TeamData from "./TeamData";
 
+
+
+
+
 interface Team {
   id: number;
   teamName: string;
@@ -28,6 +32,9 @@ interface Team {
   then: (callback: (newData: Snapshot<Team>) => void) => void;
   // Add other team-related fields as needed
 }
+
+
+
 
 const timeBasedCode = generateTimeBasedCode()
 // Example usage:
@@ -261,7 +268,7 @@ const team: Team = {
       isActive: true,
       leader: null,
       budget: 0,
-      timestamp: 0,
+      timestamp: new Date,
       data: {} as TeamData & Team,
     };
     callback(newData);
@@ -279,6 +286,4 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
 );
 
 export { DataDetailsComponent, TeamDetails };
-
-  export type { Team };
-
+export default Team;

@@ -42,7 +42,7 @@ export class RootStores {
     this.browserCheckStore.dispatch(action);
     this.trackerStore.dispatch(action);
     this.todoStore.dispatch(action);
-    // this.taskManagerStore.dispatch(action);
+    this.taskManagerStore.dispatch(action);
     // this.calendarStore.dispatch(action);
     // this.iconStore.dispatch(action);
   }

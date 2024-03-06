@@ -1,6 +1,6 @@
 // chatUtils.ts
 import RichTextEditor from '@/documents/RichTextEditor';
-import { NotificationContextProps } from '../../support/NotificationContext';
+import { NotificationContextProps, NotificationType } from '../../support/NotificationContext';
 
 // Function to send a chat message
 export const sendChatMessage = async (message: string) => {
@@ -41,7 +41,7 @@ export const sendChatNotification = (message: string, sendNotification: Notifica
   // Replace this with the actual logic to send a notification (e.g., using a notification library)
   console.log(`Notification sent: ${message}`);
   // Example: Use a notification library to send a notification
-  return sendNotification("Notification sent: " + message);
+  return sendNotification("Notification sent: " as NotificationType);
 };
 
 // Function to get the unread message count

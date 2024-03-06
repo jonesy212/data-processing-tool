@@ -1,13 +1,22 @@
+
 // CollaborationPhaseHooks.ts
+import { NotificationTypeEnum, useNotification } from '../../support/NotificationContext';
+import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import { DynamicHookParams } from '../dynamicHooks/dynamicHookGenerator';
+import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from './DynamicPromptPhaseHook';
 
-import { createDynamicPromptPhaseHook } from './DynamicPromptPhaseHook';
 
-// Team Building Phase Hook
+type DynamicPromptPhaseHookConfig = {
+  condition: () => boolean | Promise<boolean>;
+  asyncEffect: () => Promise<() => void>;
+};
+
+
 export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
   condition: async () => {
     // Add condition logic based on your requirements for the Team Building Phase
     const isTeamBuildingPhase = true; // Replace with your condition
-    return isTeamBuildingPhase;
+    return Promise.resolve(isTeamBuildingPhase);
   },
   asyncEffect: async () => {
     try {
@@ -22,14 +31,25 @@ export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
       };
     } catch (error) {
       console.error("Error during Team Building Phase:", error);
-      // Handle errors or log them as needed
-      return () => {
-        // Cleanup logic in case of error
-        console.log("Cleanup for Team Building Phase (Error)");
-      };
+      // Handle errors using notification service
+      const { notify} = useNotification();
+      notify(
+        "teamBuildingPhaseError",
+        NOTIFICATION_MESSAGES.TeamBuildingPhase.CREATING_TEAM_BUILDING_PHASE_ERROR,
+        "Team Building Phase Error",
+        new Date(),
+        NotificationTypeEnum.OperationError
+      );
+      throw error;
     }
-  },
-});
+  } ,
+} as DynamicPromptPhaseHookConfig & DynamicHookParams);
+
+
+
+
+
+
 
 
 
@@ -61,7 +81,17 @@ export const useBrainstormingPhase = createDynamicPromptPhaseHook({
       };
     }
   },
-});
+}as DynamicPromptPhaseHookConfig & DynamicHookParams);
+
+
+
+
+
+
+
+
+
+
 
 // Project Management Phase Hook
 export const useProjectManagementPhase = createDynamicPromptPhaseHook({
@@ -90,7 +120,18 @@ export const useProjectManagementPhase = createDynamicPromptPhaseHook({
       };
     }
   },
-});
+}as DynamicPromptPhaseHookConfig & DynamicHookParams);
+
+
+
+
+
+
+
+
+
+
+
 
 // Meetings Phase Hook
 export const useMeetingsPhase = createDynamicPromptPhaseHook({
@@ -119,4 +160,42 @@ export const useMeetingsPhase = createDynamicPromptPhaseHook({
       };
     }
   },
-});
+}as DynamicPromptPhaseHookConfig & DynamicHookParams);
+
+
+
+
+
+
+
+
+
+
+// Collaboration Phase Hook
+export const useCollaborationPhase = createDynamicPromptPhaseHook({
+  condition: () => {
+    // Add condition logic based on your requirements for the Collaboration Phase
+    const isCollaborationPhase = true; // Replace with your condition
+    return isCollaborationPhase;
+  },
+  asyncEffect: async () => {
+    try {
+      // Add dynamic logic for the Collaboration Phase
+      console.log('useEffect triggered for Collaboration Phase');
+      
+      // Your logic specific to the Collaboration Phase
+
+      return () => {
+        // Cleanup logic for Collaboration Phase
+        console.log('Cleanup for Collaboration Phase');
+      };
+    } catch (error) {
+      console.error('Error during Collaboration Phase:', error);
+      // Handle errors or log them as needed
+      return () => {
+        // Cleanup logic in case of error
+        console.log('Cleanup for Collaboration Phase (Error)');
+      };
+    }
+  },
+} as DynamicPromptPhaseHookConfig & DynamicHookParams);
