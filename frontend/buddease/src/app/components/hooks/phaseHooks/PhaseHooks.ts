@@ -1,4 +1,4 @@
-// PhaseHooks.ts
+p// PhaseHooks.ts
 
 import userSettings from "@/app/configs/UserSettings";
 import { useEffect } from "react";
@@ -12,6 +12,7 @@ import createDynamicHook, {
   DynamicHookResult,
 } from "../dynamicHooks/dynamicHookGenerator";
 import configData from "@/app/configs/configData";
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
 
 export interface PhaseHookConfig {
   name: string;
@@ -99,7 +100,7 @@ phaseNames.forEach((phaseName) => {
         resetAuthState();
       };
     },
-    duration: function (phaseName: string) { 
+    duration: function (phaseName: string ) { 
       switch (phaseName) {
         case "Calendar Phase":
           return 10000;
@@ -142,9 +143,10 @@ const additionalPhaseNames = [
 
 const additionalPhaseHooks: { [key: string]: CustomPhaseHooks } = {};
 
-additionalPhaseNames.forEach((phaseName) => {
+additionalPhaseNames.forEach((phaseName, duration) => {
   additionalPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] = createPhaseHook({
     name: phaseName,
+    duration: duration,
     condition: () => true, // Adjust the condition based on your requirements
     asyncEffect: async () => {
       console.log(`Transitioning to ${phaseName}`);
@@ -206,7 +208,8 @@ async function initializeDecentralizedStorage(): Promise<{ dappAdapter: Extended
 
   // Example configuration for ExtendedDAppAdapter
   const baseConfig = {
-    appName: "Extended Project Management App",
+    appName: "Progections",
+    descriptions: "Extended Project Management App",
     appVersion: configData.currentAppVersion,
     ethereumRpcUrl: "https://your-ethereum-rpc-url",
     dappProps: {} as ExtendedDappProps,

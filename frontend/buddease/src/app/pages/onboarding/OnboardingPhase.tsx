@@ -21,6 +21,7 @@ import OfferPage from "./OfferPage";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
 import WelcomePage from "./WelcomePage";
 import RegistrationPhase from "./RegistrationPhase";
+import { OnboardingPhase } from "../personas/UserJourneyManager";
 
 
 

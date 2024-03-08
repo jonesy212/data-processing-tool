@@ -19,11 +19,13 @@ import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { CommonData } from "../models/CommonData";
+import { Data } from "../models/data/Data";
 
 
 
 // DocumentData.tsx
-export interface DocumentData extends Document {
+export interface DocumentData extends CommonData<Data> {
   id: number;
   title: string;
   content: string;

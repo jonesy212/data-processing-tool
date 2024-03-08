@@ -1,5 +1,3 @@
-// cacheHeaders.js
-
 /**
  * Function to create cache headers.
  * @returns {Object} - The cache headers.

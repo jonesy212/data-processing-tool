@@ -1,6 +1,5 @@
 import React from "react";
 
-import { notificationBarPhaseHook } from "../hooks/userInterface/UIPhaseHooks";
 import RefactoringRebrandingPhase from "../projects/RefactoringRebrandingPhase";
 import ColorPalette from "./ColorPalette";
 import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
@@ -10,14 +9,12 @@ import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/app/pages/layouts/CommonLayout";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
 import useLayoutGenerator, { DocumentGenerationResult } from "../hooks/GenerateUserLayout";
+import { AsyncHook } from "../hooks/useAsyncHookLinker";
 import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
-import { darkModeTogglePhaseHook } from "../hooks/userInterface/UIPhaseHooks";
+import { AnimatedComponentRef } from "../libraries/animations/AnimationComponent";
 import AnimationControls from "../libraries/animations/AnimationControls";
 import DynamicSelectionControls from "../libraries/animations/DynamicSelectionControls";
 import responsiveDesignStore from "./ResponsiveDesign";
-import { AsyncHook } from "../hooks/useAsyncHookLinker";
-import { Data } from "../models/data/Data";
-import { AnimatedComponentRef } from "../libraries/animations/AnimationComponent";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox
@@ -44,24 +41,40 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
       color: "#33ff57",
       style: { backgroundColor: "#33ff57", width: "50px", height: "50px" },
     },
-  ];
-
-  // Usage example for Notification Bar Phase Hook
+  ];// Usage example for Notification Bar Phase Hook
   const notificationBarExample: AsyncHook & Partial<AnimatedComponentRef> = {
-    condition: () => true, // Example condition
-    asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
-    isActive: false, // Example isActive property
-    //todo review if I need to add 
-    // toggleActivation: () => {}, // Example toggleActivation method
-  };
+    condition: async (idleTimeoutDuration: number) => {
+      // Your condition logic here
+      return true; // Placeholder condition
+    },
+    asyncEffect: async () => {
+      // Your async effect logic here
+    },
+    isActive: false, // Initial value for isActive
+    initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Placeholder implementation
+    resetIdleTimeout: () => {}, // Placeholder implementation
+    idleTimeoutId: null, // Placeholder value
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Placeholder implementation
+    cleanup: undefined, // Placeholder value
+    toggleActivation: () => {}, // Set as undefined
 
+  };
+  
 
   // Usage example for Dark Mode Toggle Phase Hook
-  const darkModeToggleExample: AsyncHook = {
-    condition: () => true, // Example condition
-    asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
-    isActive: {} as boolean, // Example isActive
-  };
+  // Usage example for Dark Mode Toggle Phase Hook
+const darkModeToggleExample: AsyncHook = {
+  condition: async () => true, // Example condition
+  asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
+  isActive: false, // Example isActive
+  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Set as undefined
+  resetIdleTimeout: () => {}, // Provide a default function or adjust as needed
+  idleTimeoutId: null, // Provide a default value or adjust as needed
+  startIdleTimeout: () => {}, // Provide a default function or adjust as needed
+  cleanup: undefined, // Set as undefined
+  toggleActivation: () => {}, // Set as undefined
+};
+
   // Usage example for RefactoringRebrandingPhase
   const refactoringRebrandingExample = <RefactoringRebrandingPhase />;
 

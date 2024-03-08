@@ -6,7 +6,7 @@ const API_BASE_URL = endpoints.phases.list;
 
 export const fetchPhases = async (): Promise<Phase[]> => {
   try {
-    const response = await axiosInstance.get(API_BASE_URL);
+    const response = await axiosInstance.get(`${API_BASE_URL}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching phases:', error);

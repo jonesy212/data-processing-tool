@@ -59,7 +59,7 @@ function* clearError() {
 
 // Watcher Saga: Watches for error actions
 export function* watchErrorActions() {
-  yield takeEvery(VideoActions.fetchVideoFailure.type, handleVideoError);
+  // yield takeEvery(VideoActions.fetchVideoFailure.type, handleVideoError);
   yield takeEvery(ErrorHandlingActions.handleNotificationError.type, handleNotificationError); // Using the action creator from ErrorHandlingActions
   yield takeEvery(ErrorHandlingActions.handleOtherError.type, handleOtherError); // Using the action creator from ErrorHandlingActions
   yield takeEvery(ErrorHandlingActions.clearError.type, clearError); // Watch for clearError action

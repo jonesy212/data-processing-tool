@@ -4,7 +4,7 @@ import FeatureImplementationSubPhase from "../../pages/onboarding/FeatureImpleme
 import InitialSetupSubPhase from "../../pages/onboarding/InitialSetupSubPhase";
 import TempUserData from "../../pages/onboarding/OnboardingPhase";
 import { useAuth } from "../auth/AuthContext";
-import { useNotification } from "../support/NotificationContext";
+ import { useNotification } from '@/app/components/support/NotificationContext';
 // Import other sub-phase components as needed
 
 export enum AppDevelopmentPhase {
@@ -27,9 +27,14 @@ const AppDevelopmentPhaseManager: React.FC = () => {
     id: state.user?.data?.id ?? "", // Use optional chaining and nullish coalescing operator to handle undefined id
     timeBasedCode: timeBasedCode ?? "", // Assign timeBasedCode to TempUserData
     ...(state.user?.data || {}),
-    questionnaireResponses: '',
+    questionnaireResponses: {
+      // Add questionnaireResponses to TempUserData
+      ...(state.user?.data?.questionnaireResponses || {}),
+    },
     // Define any additional properties needed for the phase
   };
+
+  useNotification().notify(  "string",  "string",   "",)
 
   // Additional logic specific to the App Development Phase
 

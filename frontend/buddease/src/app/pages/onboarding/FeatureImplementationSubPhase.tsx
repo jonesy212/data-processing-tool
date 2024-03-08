@@ -1,9 +1,10 @@
 // FeatureImplementationSubPhase.tsx
-import { UserData } from '@/app/components/users/User';
 import React from 'react';
+import TempUserData from './OnboardingPhase';
 
 interface FeatureImplementationSubPhaseProps {
   onSubmit: (data: any) => void; // Define the onSubmit function type
+  userData: TempUserData
 }
 
 const FeatureImplementationSubPhase: React.FC<FeatureImplementationSubPhaseProps> = ({ onSubmit }) => {

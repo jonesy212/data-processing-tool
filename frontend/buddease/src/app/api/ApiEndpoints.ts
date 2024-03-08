@@ -132,6 +132,15 @@ export const endpoints: Endpoints = {
     listRewards: "/api/client/rewards", // Endpoint to list rewards earned by the client
     // Add more client-specific endpoints related to tenant interaction or communication with businesses
   },
+
+  documents: {
+    list: `${BASE_URL}/api/documents`,
+    single: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    add: `${BASE_URL}/api/documents`,
+    remove: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    update: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    // Add more document-related endpoints as needed
+  },
   
   collaborationTools: {
     createTask: `${BASE_URL}/api/collaboration/tasks/create`,

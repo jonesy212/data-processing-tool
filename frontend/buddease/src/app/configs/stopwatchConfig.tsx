@@ -2,8 +2,14 @@
 
 import BasicStopwatchComponent from "../components/stopwatches/BasicStopwatchComponent";
 import CountdownTimerComponent from "../components/stopwatches/CountdownTimerComponent";
+import CustomizableTimersComponent from '../components/stopwatches/CustomizableTimersComponent';
 import IntervalTimerComponent from "../components/stopwatches/IntervalTimerComponent";
+import MultiPhaseTimerComponent from '../components/stopwatches/MultiPhaseTimerComponent';
 import PomodoroTechniqueComponent from "../components/stopwatches/PomodoroTechniqueComponent";
+import TeamCollaborationTimerComponent from '../components/stopwatches/TeamCollaborationTimerComponent';
+import ProgressiveTimerComponent from "./ProgressiveTimerComponent";
+import ScheduledTimersComponent from "./ScheduledTimersComponent";
+
 
 export interface StopwatchConfiguration {
     mode: StopwatchMode;

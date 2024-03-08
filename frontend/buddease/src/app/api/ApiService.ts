@@ -84,7 +84,7 @@ export const userApiService = observable({
   updateUserFailure: handleFailure(UserActions.updateUserFailure)(
     async (): Promise<void> => {
       try {
-        await axiosInstance.get(API_BASE_URL.endpoints.updateList);
+        await axiosInstance.get(`${API_BASE_URL.endpoints.updateList}`);
       } catch (error) {
         console.error("Error updating user:", error);
         throw error;

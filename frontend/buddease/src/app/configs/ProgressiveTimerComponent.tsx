@@ -1,12 +1,12 @@
-// CustomizableTimersComponent.tsx
+// ProgressiveTimerComponent.tsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-interface CustomizableTimersProps {
+interface ProgressiveTimerProps {
   initialTime: number;
 }
 
-const CustomizableTimersComponent: React.FC<CustomizableTimersProps> = ({ initialTime }) => {
+const ProgressiveTimerComponent: React.FC<ProgressiveTimerProps> = ({ initialTime }) => {
   const [timeLeft, setTimeLeft] = useState<number>(initialTime);
   const [isActive, setIsActive] = useState<boolean>(false);
 
@@ -50,7 +50,7 @@ const CustomizableTimersComponent: React.FC<CustomizableTimersProps> = ({ initia
 
   return (
     <div>
-      <h1>Customizable Timer</h1>
+      <h1>Progressive Timer</h1>
       <div>Time Left: {timeLeft}</div>
       <button onClick={handleStart}>Start</button>
       <button onClick={handleStop}>Stop</button>
@@ -59,4 +59,4 @@ const CustomizableTimersComponent: React.FC<CustomizableTimersProps> = ({ initia
   );
 };
 
-export default CustomizableTimersComponent;
+export default ProgressiveTimerComponent;

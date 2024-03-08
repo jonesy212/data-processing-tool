@@ -2,21 +2,21 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { Data } from '../models/data/Data';
-import Snapshot from '../state/stores/SnapshotStore';
+import { SnapshotStoreConfig } from '../state/stores/SnapshotStore';
 
 export const SnapshotActions = {
-    add: createAction<Snapshot<Data>>('addSnapshot'),
+    add: createAction<SnapshotStoreConfig<Data>>('addSnapshot'),
     removeSnapshot: createAction<string>("removeSnapshot"),
     updateSnapshot: createAction<{ id: string, newData: any }>("updateSnapshot"),
   
     // Batch actions for fetching snapshots
     batchFetchSnapshotsRequest: createAction("batchFetchSnapshotsRequest"),
-    batchFetchSnapshotsSuccess: createAction<{ snapshots: Snapshot<Data>[] }>("batchFetchSnapshotsSuccess"),
+    batchFetchSnapshotsSuccess: createAction<{ snapshots: SnapshotStoreConfig<Data>[] }>("batchFetchSnapshotsSuccess"),
     batchFetchSnapshotsFailure: createAction<{ error: string }>("batchFetchSnapshotsFailure"),
   
     // Batch actions for updating snapshots
     batchUpdateSnapshotsRequest: createAction<{ ids: string[], newData: any[] }>("batchUpdateSnapshotsRequest"),
-    batchUpdateSnapshotsSuccess: createAction<{ snapshots: Snapshot<Data>[] }>("batchUpdateSnapshotsSuccess"),
+    batchUpdateSnapshotsSuccess: createAction<{ snapshots: SnapshotStoreConfig<Data>[] }>("batchUpdateSnapshotsSuccess"),
     batchUpdateSnapshotsFailure: createAction<{ error: string }>("batchUpdateSnapshotsFailure"),
   
     // Batch actions for removing snapshots

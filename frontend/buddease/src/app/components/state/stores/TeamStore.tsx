@@ -47,8 +47,8 @@ export interface TeamManagerStore {
   removeTeam: (teamId: string) => void;
   removeTeams: (teamIds: string[]) => void;
   
-  getTeamData: (teamId: string, Team: Team) => Team | null;
-  getTeamsData: (teamId: string, Team: Team) => Team | null;
+  getTeamData: (teamId: string, team: Team) => Team | null;
+  getTeamsData: (teamId: string, team: Team[]) => Team | null;
   fetchTeamsSuccess: (payload: { teams: Team[] }) => void;
   fetchTeamsFailure: (payload: { error: string }) => void;
   fetchTeamsRequest: () => void;

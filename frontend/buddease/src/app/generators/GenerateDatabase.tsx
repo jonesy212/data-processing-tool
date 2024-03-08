@@ -1,20 +1,28 @@
 // GenerateDatabase.tsx
-import axios from 'axios';
-import React, { useState } from 'react';
-import { useNotification } from '../components/support/NotificationContext';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
-import { NOTIFICATION_TYPES } from '../components/support/NotificationTypes';
-import { NotificationType } from '@/app/components/support/NotificationContext';
+import { NotificationType } from "@/app/components/support/NotificationContext";
+import axios from "axios";
+import React, { useState } from "react";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "../components/support/NotificationContext";
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 
 const DatabaseGenerator: React.FC = () => {
-  const [databaseType, setDatabaseType] = useState<string>('');
-  const [databaseName, setDatabaseName] = useState<string>('');
+  const [databaseType, setDatabaseType] = useState<string>("");
+  const [databaseName, setDatabaseName] = useState<string>("");
   const { notify } = useNotification(); // Destructure notify from useNotification
 
   const handleGenerate = async () => {
     // Validate inputs
     if (!databaseType || !databaseName) {
-        notify('Database type and name are required.', NOTIFICATION_MESSAGES.Database.ERROR_CONNECTING, new Date(), "Success" as NotificationType);
+      notify(
+        "databaseGenerationError",
+        "Database type and name are required.",
+        NOTIFICATION_MESSAGES.Database.ERROR_CONNECTING,
+        new Date(),
+        "ERROR" as NotificationType
+      );
       return;
     }
 
@@ -27,12 +35,24 @@ const DatabaseGenerator: React.FC = () => {
 
     try {
       // Send database configuration to backend for setup
-      const response = await axios.post('/api/setup-database', databaseConfig);
-      console.log('Database setup successful:', response.data);
-      notify(NOTIFICATION_TYPES.SUCCESS, 'Success', new Date(), 'Database setup successful.');
+      const response = await axios.post("/api/setup-database", databaseConfig);
+      console.log("Database setup successful:", response.data);
+      notify(
+        "Success",
+        "Database setup successful.",
+        NOTIFICATION_MESSAGES.Database.CONNECTING_SUCCESS,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      );
     } catch (error) {
-      console.error('Error setting up database:', error);
-      notify(NOTIFICATION_TYPES.ERROR, 'Error', new Date(), 'Error setting up database. Please try again.');
+      console.error("Error setting up database:", error);
+      notify(
+        "databaseGenerationError",
+        "Error setting up database. Please try again.",
+        NOTIFICATION_MESSAGES.Database.ERROR_CONNECTING,
+        new Date(),
+        NotificationTypeEnum.OperationError
+      );
     }
   };
 
@@ -56,4 +76,3 @@ const DatabaseGenerator: React.FC = () => {
 };
 
 export default DatabaseGenerator;
-

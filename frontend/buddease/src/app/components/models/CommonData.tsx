@@ -17,10 +17,24 @@ import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 
 // Define a generic type for data
-interface CommonData<T> {
+interface CommonData<T>  {
   title?: React.ReactNode;
   description?: React.ReactNode;
   data?: T 
+  tags?: string[];
+  categories?: string[];
+  documentType?: string;
+  documentStatus?: string;
+  documentOwner?: string;
+  documentAccess?: string;
+  documentSharing?: string;
+  documentSecurity?: string;
+  documentRetention?: string;
+  documentLifecycle?: string;
+  documentWorkflow?: string;
+  documentIntegration?: string;
+  documentReporting?: string;
+  documentBackup?: string
 }
 
 interface Customizations<T> {

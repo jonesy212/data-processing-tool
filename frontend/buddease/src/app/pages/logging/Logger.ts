@@ -4,7 +4,6 @@ import teamManagementService from "@/app/api/TeamManagementApi";
 import useTeamManagement from "@/app/components/hooks/useTeamManagement";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Team } from "@/app/components/models/teams/Team";
 import { useTeamManagerSlice } from "@/app/components/state/redux/slices/TeamSlice";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
@@ -13,6 +12,14 @@ import {
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+
+import Team from "@/app/components/models/teams/Team";
+import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
+
+
+const API_BASE_URL = endpoints.logging
+
+
 const { notify } = useNotification();
 
 function createErrorNotificationContent(error: Error): any {
@@ -41,15 +48,15 @@ const errorLogger = {
 };
 
 class Logger {
-  static log(type: string, message: string, uniqueID: string) {
+  static logWithOptions(type: string, message: string, uniqueID: string) {
     // You can implement different logging mechanisms based on the type
     console.log(`[${type}] ${message} (ID: ${uniqueID})`);
   }
 
+  
   static logSessionEvent(sessionID: string, event: string) {
-    // Assuming 'logs' is imported from apiEndpoints.ts
-    fetch(endpoints.logs.limport useTeamManagement from '../../components/hooks/useTeamManagement';
-ogSession as "Request", {
+    // Assuming 'endpoints' is imported from apiEndpoints.ts
+    fetch(endpoints.logs.logSession as unknown as Request, { // Cast to unknown first, then to Request
       method: "POST",
       body: JSON.stringify({ sessionID, event }),
       headers: {
@@ -63,7 +70,7 @@ ogSession as "Request", {
       })
       .catch((error: any) => {
         notify(
-          "'Error logging session event ",
+          "Error logging session event",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
           createErrorNotificationContent,
           new Date(),
@@ -73,6 +80,7 @@ ogSession as "Request", {
       });
   }
 
+
   static logError(errorMessage: string, user: string | null = null) {
     // Log the error message with user information if available
     const extraInfo = user ? { user } : {};
@@ -80,27 +88,23 @@ ogSession as "Request", {
   }
 
   static logUserActivity(action: string, userId: string) {
-    this.log("User Activity", `${action} (User ID: ${userId})`, userId);
+    this.logWithOptions("User Activity", `${action} (User ID: ${userId})`, userId);
   }
 
   static logCommunication(type: string, message: string, userId: string) {
-    this.log(
-      "Communication",
-      `${type}: ${message} (User ID: ${userId})`,
-      userId
-    );
+    this.logWithOptions("Communication", `${type}: ${message} (User ID: ${userId})`, userId);
   }
 
   static logProjectPhase(phase: string, projectId: string) {
-    this.log("Project Phase", `${phase} (Project ID: ${projectId})`, projectId);
+    this.logWithOptions("Project Phase", `${phase} (Project ID: ${projectId})`, projectId);
   }
 
   static logCommunityInteraction(action: string, userId: string) {
-    this.log("Community Interaction", `${action} (User ID: ${userId})`, userId);
+    this.logWithOptions("Community Interaction", `${action} (User ID: ${userId})`, userId);
   }
 
   static logMonetizationEvent(event: string, projectId: string) {
-    this.log(
+    this.logWithOptions(
       "Monetization Event",
       `${event} (Project ID: ${projectId})`,
       projectId
@@ -117,7 +121,7 @@ class AudioLogger extends Logger {
     audioID: string,
     duration: number
   ) {
-    super.log("Audio", message, uniqueID);
+    super.logWithOptions("Audio", message, uniqueID);
     this.logAudioEvent(uniqueID, audioID, duration);
   }
   private static logAudioEvent(
@@ -163,7 +167,7 @@ class AudioLogger extends Logger {
 
 
 class TeamLogger {
-  static async logTeamCreation(teamId: string, team:Team,): Promise<void> {
+  static async logTeamCreation(teamId: string, team:Team): Promise<void> {
     try {
       await this.logEvent("createTeam", "Creating team", team.id, team);
       await this.logTeamEvent(teamId, "Team created", team);
@@ -211,9 +215,9 @@ class TeamLogger {
 
 
 
-  private static async logTeamEvent(teamId: string, message: string, data?: any): Promise<void> {
+  private static async logTeamEvent(teamId: string, team: Team, message: string, data?: any): Promise<void> {
     try {
-      const teamData = await useTeamManagerSlice.getTeamData(teamId);
+      const teamData = await useTeamManagerStore().getTeamData(teamId, team);
       if (!teamData) {
         throw new Error(`Error logging team event for team ${teamId}: Team data not found`);
       }
@@ -276,7 +280,7 @@ class VideoLogger extends Logger {
     videoID: string,
     duration: number
   ) {
-    super.log("Video", message, uniqueID);
+    super.logWithOptions("Video", message, uniqueID);
     this.logVideoEvent(uniqueID, videoID, duration);
   }
   
@@ -322,7 +326,7 @@ class VideoLogger extends Logger {
 }
 class ChannelLogger extends Logger {
   static logChannel(message: string, uniqueID: string, channelID: string) {
-    super.log("Channel", message, uniqueID);
+    super.logWithOptions("Channel", message, uniqueID);
     this.logChannelEvent(uniqueID, channelID);
   }
 
@@ -369,7 +373,7 @@ class CollaborationLogger extends Logger {
     uniqueID: string,
     collaborationID: string
   ) {
-    super.log("Collaboration", message, uniqueID);
+    super.logWithOptions("Collaboration", message, uniqueID);
     this.logCollaborationEvent(uniqueID, collaborationID);
   }
 
@@ -415,7 +419,7 @@ class CollaborationLogger extends Logger {
 
 class DocumentLogger extends Logger {
   static logDocument(message: string, uniqueID: string, documentID: string) {
-    super.log("Document", message, uniqueID);
+    super.logWithOptions("Document", message, uniqueID);
     this.logDocumentEvent(uniqueID, documentID);
   }
 
@@ -528,7 +532,7 @@ class TaskLogger extends Logger {
   }
 
   static logTaskCreated(taskID: string) { 
-    super.log("Task Created", `Task ${taskID} created`, taskID);
+    super.logWithOptions("Task Created", `Task ${taskID} created`, taskID);
     // Additional logic specific to logging task creation
 
     
@@ -536,7 +540,7 @@ class TaskLogger extends Logger {
   }
 
   static logTaskAssigned(taskID: string, assignedTo: string) {
-    super.log(
+    super.logWithOptions(
       "Task Assigned",
       `Task ${taskID} assigned to ${assignedTo}`,
       taskID
@@ -545,12 +549,12 @@ class TaskLogger extends Logger {
   }
 
   static logTaskUnassigned(taskID: string) {
-    super.log("Task Unassigned", `Task ${taskID} unassigned`, taskID);
+    super.logWithOptions("Task Unassigned", `Task ${taskID} unassigned`, taskID);
     // Additional logic specific to logging task unassignment
   }
 
   static logTaskReassigned(taskID: string, reassignedTo: string) {
-    super.log(
+    super.logWithOptions(
       "Task Reassigned",
       `Task ${taskID} reassigned to ${reassignedTo}`,
       taskID
@@ -563,7 +567,7 @@ class TaskLogger extends Logger {
 
 class CalendarLogger extends Logger {
   static logCalendarEvent(message: string, uniqueID: string, eventID: string) {
-    super.log("Calendar", message, uniqueID);
+    super.logWithOptions("Calendar", message, uniqueID);
     this.logCalendarEventEvent(uniqueID, eventID);
   }
 
@@ -598,15 +602,15 @@ class CalendarLogger extends Logger {
 
 class TenantLogger extends Logger {
   static logUserRegistration(userId: string) {
-    super.log("Tenant", `User registration (User ID: ${userId})`, userId);
+    super.logWithOptions("Tenant", `User registration (User ID: ${userId})`, userId);
   }
 
   static logUserLogin(userId: string) {
-    super.log("Tenant", `User login (User ID: ${userId})`, userId);
+    super.logWithOptions("Tenant", `User login (User ID: ${userId})`, userId);
   }
 
   static logUserLogout(userId: string) {
-    super.log("Tenant", `User logout (User ID: ${userId})`, userId);
+    super.logWithOptions("Tenant", `User logout (User ID: ${userId})`, userId);
   }
 
   // Add more methods for other tenant-related events as needed
@@ -614,7 +618,7 @@ class TenantLogger extends Logger {
 
 class AnalyticsLogger extends Logger {
   static logPageView(pageName: string, userId: string) {
-    super.log(
+    super.logWithOptions(
       "Analytics",
       `Page view: ${pageName} (User ID: ${userId})`,
       userId
@@ -622,7 +626,7 @@ class AnalyticsLogger extends Logger {
   }
 
   static logInteraction(featureName: string, userId: string) {
-    super.log(
+    super.logWithOptions(
       "Analytics",
       `User interaction: ${featureName} (User ID: ${userId})`,
       userId
@@ -634,7 +638,7 @@ class AnalyticsLogger extends Logger {
 
 class PaymentLogger extends Logger {
   static logTransaction(transactionId: string, amount: number, userId: string) {
-    super.log(
+    super.logWithOptions(
       "Payment",
       `Transaction ${transactionId}: $${amount} (User ID: ${userId})`,
       userId
@@ -642,7 +646,7 @@ class PaymentLogger extends Logger {
   }
 
   static logSubscriptionRenewal(subscriptionId: string, userId: string) {
-    super.log(
+    super.logWithOptions(
       "Payment",
       `Subscription ${subscriptionId} renewed (User ID: ${userId})`,
       userId
@@ -654,7 +658,7 @@ class PaymentLogger extends Logger {
 
 class SecurityLogger extends Logger {
   static logLoginAttempt(userId: string, success: boolean) {
-    super.log(
+    super.logWithOptions(
       "Security",
       `Login attempt ${success ? "succeeded" : "failed"} (User ID: ${userId})`,
       userId
@@ -662,7 +666,7 @@ class SecurityLogger extends Logger {
   }
 
   static logSuspiciousActivity(userId: string, activity: string) {
-    super.log(
+    super.logWithOptions(
       "Security",
       `Suspicious activity detected: ${activity} (User ID: ${userId})`,
       userId
@@ -674,7 +678,7 @@ class SecurityLogger extends Logger {
 
 class ContentLogger extends Logger {
   static logContentCreation(contentId: string, userId: string) {
-    super.log(
+    super.logWithOptions(
       "Content",
       `Content created (Content ID: ${contentId}, User ID: ${userId})`,
       userId
@@ -682,7 +686,7 @@ class ContentLogger extends Logger {
   }
 
   static logContentDeletion(contentId: string, userId: string) {
-    super.log(
+    super.logWithOptions(
       "Content",
       `Content deleted (Content ID: ${contentId}, User ID: ${userId})`,
       userId
@@ -694,7 +698,7 @@ class ContentLogger extends Logger {
 
 class IntegrationLogger extends Logger {
   static logAPIRequest(requestId: string, endpoint: string) {
-    super.log(
+    super.logWithOptions(
       "Integration",
       `API request sent (Request ID: ${requestId}, Endpoint: ${endpoint})`,
       requestId
@@ -702,7 +706,7 @@ class IntegrationLogger extends Logger {
   }
 
   static logAPIResponse(requestId: string, statusCode: number) {
-    super.log(
+    super.logWithOptions(
       "Integration",
       `API response received (Request ID: ${requestId}, Status Code: ${statusCode})`,
       requestId
@@ -714,7 +718,7 @@ class IntegrationLogger extends Logger {
 
 class ErrorLogger extends Logger {
   static logError(errorMessage: string, errorDetails: any) {
-    super.log(
+    super.logWithOptions(
       "Error",
       `${errorMessage} (Details: ${JSON.stringify(errorDetails)})`,
       "N/A"
@@ -726,7 +730,7 @@ class ErrorLogger extends Logger {
 
 class CommunityLogger extends Logger {
   static logPost(userId: string, postId: string) {
-    super.log(
+    super.logWithOptions(
       "Community",
       `User ${userId} posted (Post ID: ${postId})`,
       userId
@@ -734,7 +738,7 @@ class CommunityLogger extends Logger {
   }
 
   static logComment(userId: string, commentId: string) {
-    super.log(
+    super.logWithOptions(
       "Community",
       `User ${userId} commented (Comment ID: ${commentId})`,
       userId
@@ -742,7 +746,7 @@ class CommunityLogger extends Logger {
   }
 
   static logLike(userId: string, likedItemId: string) {
-    super.log(
+    super.logWithOptions(
       "Community",
       `User ${userId} liked (Item ID: ${likedItemId})`,
       userId

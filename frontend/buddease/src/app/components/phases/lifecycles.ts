@@ -18,6 +18,7 @@ const generatePhase = (name: string, subPhases: string[]): PhaseOptions => {
     endDate: new Date(),
     subPhases,
     component: IdeaLifecyclePhase,
+    duration: 0,
     hooks: {
       canTransitionTo: (nextPhase: Phase) => {
         return !!enhancedPhaseHook.canTransitionTo(
@@ -47,6 +48,7 @@ const generateGenericPhase = (name: string, subPhases: string[]): PhaseOptions =
     endDate: new Date(),
     subPhases,
     component: IdeaLifecyclePhase,
+    duration: 0,
     hooks: {
       canTransitionTo: (nextPhase: Phase) => {
         return !!enhancedPhaseHook.canTransitionTo(
@@ -80,6 +82,7 @@ const ideaLifecyclePhases: PhaseOptions[] = [
     endDate: new Date(),
     subPhases: ["Idea", "Team Building", "Ideation"],
     component: IdeaLifecyclePhase,
+    duration: 0,
     hooks: {
       canTransitionTo: (nextPhase: Phase) => {
         return !!enhancedPhaseHook.canTransitionTo(

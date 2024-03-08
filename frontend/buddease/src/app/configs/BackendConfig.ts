@@ -35,21 +35,22 @@ const defaultApiConfig: ApiConfig = {
 };
 
 const backendConfig: BackendConfig = {
-  appName: "YourBackendAppName",
+  appName: process.env.BACKEND_APP_NAME || "YourBackendAppName", // Use process.env or default value
   appVersion: "1.0.0",
   apiConfig: defaultApiConfig,
   retryConfig: {
     enabled: true,
-    maxRetries: 3,
-    retryDelay: 1000,
+    maxRetries: parseInt(process.env.BACKEND_RETRY_MAX_RETRIES ?? "3"), // Use process.env or default value, convert to number
+    retryDelay: parseInt(process.env.BACKEND_RETRY_DELAY ?? "1000"), // Use process.env or default value, convert to number
   },
   cacheConfig: {
     enabled: true,
     maxAge: 300000,
-    staleWhileRevalidate: 60000,
+    staleWhileRevalidate: parseInt(process.env.BACKEND_CACHE_STALE_WHILE_REVALIDATE ?? "60000"), // Use process.env or default value, convert to number
     cacheKey: "backend_api_cache_key",
   },
   backendSpecificProperty: "YourBackendSpecificValue",
 };
+
 
 export { backendConfig };

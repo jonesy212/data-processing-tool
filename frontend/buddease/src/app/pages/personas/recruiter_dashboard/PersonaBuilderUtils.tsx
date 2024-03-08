@@ -1,6 +1,6 @@
 import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
 import { Data } from "@/app/components/models/data/Data";
-import { CalendarEvent } from "@/app/components/state/stores/CalendarStore";
+import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import SnapshotStore, {
   Snapshot,
 } from "@/app/components/state/stores/SnapshotStore";
@@ -102,7 +102,7 @@ const updateCallback = (
 
   // Perform any additional logic based on the updated snapshotStore
   // For example, you can update the snapshotStore or trigger other actions
-  const snapshot = snapshotStore.getSnapshot();
+  const snapshot = snapshotStore.getSnapshot(snapshot);
   handleSnapshotUpdate(snapshot); // Call the handleSnapshotUpdate function
 };
 

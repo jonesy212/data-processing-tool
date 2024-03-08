@@ -11,7 +11,23 @@ import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import HeadersConfig from "./headers/HeadersConfig";
+
+
 const API_BASE_URL = endpoints.client;
+// Define a function to create headers using the provided configuration
+const createHeaders = (): typeof HeadersConfig => {
+  // Access and return the header configurations from HeadersConfig.tsx
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: "Bearer " + localStorage.getItem("accessToken"),
+    // Add more headers as needed
+  };
+};
+
+// Use the createHeaders function to get the headers configuration
+const headersConfig: typeof HeadersConfig = createHeaders();
+
 
 interface ClientNotificationMessages {
   [key: string]: string; // Index signature allowing string keys
@@ -25,20 +41,6 @@ interface ClientNotificationMessages {
 
 const clientNotificationMessages: ClientNotificationMessages =
   NOTIFICATION_MESSAGES.Client;
-
-// Define a function to create headers using the provided configuration
-const createHeaders = (): HeadersConfig => {
-  // Access and return the header configurations from HeadersConfig.tsx
-  return {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    Authorization: "Bearer " + localStorage.getItem("accessToken"),
-    // Add more headers as needed
-  };
-};
-
-// Use the createHeaders function to get the headers configuration
-const headersConfig: HeadersConfig = createHeaders();
 
 class ClientApiService {
   notify: (
@@ -146,8 +148,6 @@ class ClientApiService {
       throw error;
     }
   }
-
-
 
   async updateClientDetails(
     clientId: number,

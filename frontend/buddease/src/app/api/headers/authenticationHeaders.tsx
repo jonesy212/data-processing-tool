@@ -7,34 +7,34 @@ type Token = string | null;
 type AuthenticationHeaders = {
   Authorization?: string;
   'Content-Type': string;
-  'X-User-ID'?: User['id'] | null; // Updated type for userId
+  'X-User-ID'?: User['id'] | null;
   'X-App-Version': string;
 };
 
-const createAuthenticationHeaders = (token: Token, userId: User['id'] | null, appVersion: string): AuthenticationHeaders => {
+const currentAppVersion =  configData.currentAppVersion
+export const createAuthenticationHeaders = (token: Token, userId: User['id'] | null, appVersion: typeof currentAppVersion): AuthenticationHeaders => {
+  const headers: AuthenticationHeaders = {
+    'Content-Type': 'application/json',
+    'X-App-Version': appVersion.toString(), // Convert appVersion to string
+  };
+
   if (token) {
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'X-User-ID': userId, // Updated value for userId
-      'X-App-Version': appVersion, // Dynamic application version
-      // Add more authentication headers if needed
-    };
-  } else {
-    return {
-      'Content-Type': 'application/json',
-      'X-App-Version': appVersion, // Dynamic application version
-      // Add default headers if no token is provided
-    };
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  if (userId) {
+    headers['X-User-ID'] = userId.toString(); // Convert userId to string
+  }
+
+  return headers;
 };
+
+
+
 
 // Get tokens from localStorage
 const accessToken: Token = localStorage.getItem('accessToken');
 const userId: User['id'] | null = localStorage.getItem('userId');
-
-// Specify the current application version
-const currentAppVersion = configData.currentAppVersion
 
 // Check if userId is not null before creating authentication headers
 const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
@@ -44,3 +44,4 @@ const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders
 );
 
 export default authenticationHeaders;
+export type { AuthenticationHeaders };

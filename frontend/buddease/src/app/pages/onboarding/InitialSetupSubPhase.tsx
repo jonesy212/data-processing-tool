@@ -1,17 +1,30 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
 import { sanitizeData, validateUserData } from '@/app/components/security/SanitizationFunctions';
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import React, { useEffect } from 'react';
 import { AppDevelopmentPhase } from '../../components/phases/AppDevelopmentPhase';
 import TempUserData from './OnboardingPhase';
+import { AxiosError } from 'axios';
+import { User } from '@/app/components/users/User';
+
+
+// Conversion function to convert string to TempUserData
+const stringToTempUserData = (str: string): TempUserData => {
+  // Implement your conversion logic here
+  // Example:
+  const userData: TempUserData = JSON.parse(str); // Assuming the string is in JSON format
+  return userData;
+};
 
 interface InitialSetupSubPhaseProps {
   onSubmit: (data: any) => void;
-  userData: TempUserData; // Add userData prop to the props interface
+  userData: TempUserData; // Assuming TempUserData is similar to User type
   setCurrentSubPhase: React.Dispatch<React.SetStateAction<AppDevelopmentPhase>>;
+  notify: React.FC<(props: AppDevelopmentPhase, state: AppDevelopmentPhase, userData: TempUserData) => void>;
+  appName: string;
 }
 
-const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, userData, setCurrentSubPhase }) => {
+const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, userData, setCurrentSubPhase, appName }) => {
   const { state: authState } = useAuth();
   const { notify } = useNotification();
 
@@ -25,21 +38,32 @@ const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, u
 
   const handleSubmit = (data: any) => {
     // Sanitize user input before submission
-    const sanitizedData = sanitizeData(data);
+    let sanitizedData: TempUserData | string = sanitizeData(data); // Assuming sanitizeData returns TempUserData or string
+
+    // Convert string to TempUserData if needed
+    if (typeof sanitizedData === 'string') {
+      sanitizedData = stringToTempUserData(sanitizedData);
+    }
 
     // Validate user data
-    const validationErrors = validateUserData(sanitizedData);
+    const validationErrors = validateUserData(sanitizedData as TempUserData & User);
 
     if (validationErrors.length === 0) {
       // Data is valid, proceed with submission
-      onSubmit(sanitizedData);
+      onSubmit(sanitizedData as TempUserData);
     } else {
       // Notify user about validation errors
-      validationErrors.forEach((error) => {
-        notify('Validation Error', error.message, new Date(), NotificationType.Error);
+      validationErrors.forEach((error: any) => {
+        notify(
+          "ValidationSubmitError",
+          `Somethiing happend causing an error when trying to submit your information.  Please try again and advise the ${appName} team if the problem persists.`,
+          error.errorMessage,
+          new Date(),
+          NotificationTypeEnum.OperationError);
       });
     }
   };
+
 
   return (
     <div>
@@ -52,7 +76,3 @@ const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, u
 };
 
 export default InitialSetupSubPhase;
-
-
-
-

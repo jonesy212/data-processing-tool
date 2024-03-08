@@ -14,6 +14,7 @@ function getPhaseComponent(selectedPhaseName: string): React.FC | undefined {
 const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
   const [currentPhase, setCurrentPhase] = useState<Phase | null>(null);
 
+  
   const linker = useAsyncHookLinker({
     hooks: phases.map((phase) => ({
       ...phase.hooks,
@@ -28,27 +29,28 @@ const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
       asyncEffect: async () => {
         console.log("Phase condition met");
         setCurrentPhase(phase);
-         
+  
         // Define cleanup logic
         const cleanup = () => {
           // Reset state
           setCurrentPhase(null);
-
+  
           // Clear any timers or intervals if needed
           clearInterval(timer);
         };
-
+  
         // Set up a timer as an example
         const timer = setInterval(() => {
           // Timer logic
         }, 1000);
-
+  
         return cleanup; // Return the cleanup function
       },
+      idleTimeoutId: null, // Add idleTimeoutId property
+      startIdleTimeout: () => {} // Add startIdleTimeout property
     })),
   });
-  ;
-
+  
   // Define a function to handle moving to the next hook
   const moveToNextHook = () => {
     linker.moveToNextHook();
@@ -65,7 +67,10 @@ const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
       <button onClick={moveToNextHook}>Move to Next Hook</button>
       <button onClick={moveToPreviousHook}>Move to Previous Hook</button> {/* Add this button */}
 
-      <Stopwatch /> {/* Include the Stopwatch component */}
+      <Stopwatch
+        startDate={currentPhase?.startDate}
+        endDate={currentPhase?.endDate}
+      /> {/* Include the Stopwatch component */}
 
     </div>
   );
@@ -94,6 +99,7 @@ const genericLifecyclePhases: Phase[] = [
       },
       isActive: false,
     },
+    duration: 1000,
   },
   // Add more generic phases as needed
 ];

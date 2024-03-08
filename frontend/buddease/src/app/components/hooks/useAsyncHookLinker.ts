@@ -12,6 +12,7 @@ export interface AsyncHook {
   idleTimeoutId: NodeJS.Timeout | null;
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Correct type definition
   cleanup: (() => void) | undefined
+  toggleActivation: () => void
  }
 
 
@@ -82,8 +83,7 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
         previousHookIndex >= 0 &&
         typeof hooks[previousHookIndex].asyncEffect === "function"
       ) {
-        hooks[previousHookIndex].asyncEffect(
-          {
+        hooks[previousHookIndex].asyncEffect({
             idleTimeoutId: 'idleTimeoutId',
             startIdleTimeout: 'startIdleTimeout',
           }); // Cleanup the previous hook

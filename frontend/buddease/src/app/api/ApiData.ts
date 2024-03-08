@@ -3,11 +3,11 @@ import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProce
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
-const API_BASE_URL = endpoints.data.list; // Update API base URL
+const API_BASE_URL = endpoints.data; // Update API base URL
 
 export const fetchData = async (): Promise<any[]> => {
   try {
-    const response = await axiosInstance.get(API_BASE_URL.data.);
+    const response = await axiosInstance.get(API_BASE_URL,);
     return response.data; // Update based on your response structure
   } catch (error) {
     console.error('Error fetching data:', error);

@@ -164,6 +164,7 @@ const NOTIFICATION_MESSAGES = {
   Database: {
     DEFAULT: "Database loading...",
     CONNECTED: "Connected to database",
+    CONNECTING_SUCCESS: "Connected to database",
     DISCONNECTED: "Disconnected from database",
     ERROR_CONNECTING: "Error connecting to database",
     ERROR_DISCONNECTING: "Error disconnecting from database",
@@ -208,6 +209,35 @@ const NOTIFICATION_MESSAGES = {
     TOO_LONG: "Name is too long",
     TAKEN: "Name is already taken",
     // other details messages
+  },
+  Document: {
+    UPDATE_DOCUMENT_ERROR: "Error updating document",
+    
+    SORT_DOCUMENT_SUCCESS: "Documents have been sorted",
+    SHARE_DOCUMENT_SUCCESS: "Documents have been sorted", 
+    SORT_DOCUMENT_ERROR: "Documents have not been sorted, please try again",
+    DELETE_DOCUMENT_SUCCESS: "Document deleted successfully",
+    DELETE_DOCUMENT_ERROR: "Document could not be deleted",
+    DOCUMENT_NOT_FOUND: "Document not found",
+    SHARE_DOCUMENT_ERROR: "Share document could not be found",
+
+    FILTER_DOCUMENTS_SUCCESS: "Documents have been filtered",
+    FILTER_DOCUMENTS_ERROR: "Documents have not been filtered, please try again",
+
+    
+    RESTORE_DOCUMENT_SUCCESS: "Documents have been restored",
+    RESTORE_DOCUMENT_ERROR: "Restore document could not be found",
+    ARCHIVE_DOCUMENT_ERROR: "Archive document could not be found",
+    
+    DOWNLOAD_DOCUMENT_SUCCESS: "Download document success",
+    DOWNLOAD_DOCUMENT_ERROR: "Download document error",
+    EXPORT_DOCUMENTS_SUCCESS: `Exported documents have been successfully downloaded`,
+    EXPORT_DOCUMENTS_ERROR: "Error exporting documents. Please try again",
+
+    IMPORT_DOCUMENTS_SUCCESS: "Imported documents have been successfully imported",
+    IMPORT_DOCUMENTS_ERROR: "Error importing documents. Please try again",
+    ARCHIVE_DOCUMENT_SUCCESS: "Archive document has been successfully downloaded",
+    
   },
 
   Entities: {

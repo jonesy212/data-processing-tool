@@ -1,14 +1,15 @@
-// ApiSlice.ts
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { addTask } from "./TaskSlice";
+import { useDispatch } from "react-redux";
+
 interface ApiManagerState {
   apiConfigs: ApiConfig[];
   apiConfigName: string;
   apiConfigUrl: string;
   apiConfigTimeout: number;
-  todos: string[],
-  tasks: string[]
-  
+  todos: string[];
+  tasks: { id: string; title: string; isComplete: boolean }[];
 }
 
 const initialState: ApiManagerState = {
@@ -20,6 +21,7 @@ const initialState: ApiManagerState = {
   tasks: [],
 };
 
+const dispatch = useDispatch();
 export const useApiManagerSlice = createSlice({
   name: "apiManager",
   initialState,
@@ -49,14 +51,16 @@ export const useApiManagerSlice = createSlice({
       );
     },
 
-    markTaskComplete:  (state, action: PayloadAction<string>) => { 
-      const {id} = await dispatch(addTask(action.payload));
-      const taskIndex = state.tasks.findIndex((task) => task.id === action.payload);
+    markTaskComplete: (
+      state,
+      action: PayloadAction<{ id: string; title: string }>
+    ) => {
+      const { id } = action.payload;
+      const taskIndex = state.tasks.findIndex((task) => task.id === id);
       if (taskIndex >= 0) {
         state.tasks[taskIndex].isComplete = true;
       }
-    }
-
+    },
   },
 });
 
@@ -67,20 +71,69 @@ export const {
   updateApiConfigTimeout,
   addApiConfig,
   removeApiConfig,
+
+  // Real-Time Collaboration Features
+  enableRealTimeCollaboration,
+  disableRealTimeCollaboration,
+  updateAccessPermissions,
+  controlCollaborationTools,
+
+  // Project Management Enhancements
+  markPhaseAsCompleted,
+  updatePhaseDetails,
+  trackProgress,
+
+  // Data Analysis Tools
+  integrateDataAnalysisTools,
+  visualizeDataResults,
+  makeDataDrivenDecisions,
+
+  // Community Engagement
+  createCommunityEvent,
+  manageCommunityDiscussions,
+  incentivizeParticipation,
+
+  // Monetization Features
+  manageSubscriptionPlans,
+  processPayments,
+  trackRevenue,
+
+  // Global Collaboration Enhancements
+  supportMultipleLanguages,
+  accommodateTimeZones,
+  facilitateCrossCulturalCommunication,
+
+  // User Rewards System
+  distributeRewards,
+  trackRewardHistory,
+  adjustRewardParameters,
+
+  // Security and Privacy Settings
+  managePermissions,
+  implementDataEncryption,
+  ensurePrivacyCompliance,
+
+  // Feedback and Support Features
+  collectUserFeedback,
+  provideCustomerSupport,
+  addressUserInquiries,
+
+  // Integration with Third-Party Services
+  integrateAuthenticationProviders,
+  connectWithCloudStorage,
+  utilizeAnalyticsTools,
+  leverageCommunicationAPIs,
 } = useApiManagerSlice.actions;
 
-
-
 // Extend the method to mark tasks as complete
-export const markTaskAsComplete = (taskId: string, task: string) => async (dispatch: any) => {
-  markTaskAsComplete(taskId, "task");
+export const markTaskAsComplete = (taskId: string) => async (dispatch: any) => {
+  dispatch(addTask({ id: taskId, title: "task" }));
 };
 
 // Extend the method to mark todos as complete
-export const markTodoAsComplete = (todoId: string, todo: string) => async (dispatch: any) => {
-  markTaskAsComplete(todoId, "todo");
+export const markTodoAsComplete = (todoId: string) => async (dispatch: any) => {
+  dispatch(addTask({ id: todoId, title: "todo" }));
 };
-
 
 // Export selector for accessing the API configurations from the state
 export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
@@ -90,17 +143,3 @@ export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
 export default useApiManagerSlice.reducer;
 
 export type { ApiManagerState };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
