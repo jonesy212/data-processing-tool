@@ -1,8 +1,9 @@
 // SearchResultItem.tsx
 import React from 'react';
-import ListGenerator from './ListGenerator';
-import DetailsListItem from '../components/models/data/DetailsListItem';
-import { DetailsItem } from '../components/state/stores/DetailsListStore';
+import { Data } from './Data';
+import { DetailsItem } from '../../state/stores/DetailsListStore';
+import ListGenerator from '@/app/generators/ListGenerator';
+
 
 interface SearchResultItemProps {
   items: DetailsItem<Data>[];

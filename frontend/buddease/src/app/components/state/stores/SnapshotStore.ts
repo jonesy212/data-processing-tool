@@ -1,66 +1,86 @@
-import { NotificationContextProps, NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import {
+  NotificationContextProps,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { makeAutoObservable } from "mobx";
 import { useAuth } from "../../auth/AuthContext";
 import { Data } from "../../models/data/Data";
+import { showToast } from "../../models/display/ShowToast";
 import { Task } from "../../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import { showToast } from "../../models/display/ShowToast";
 import { notificationStore } from "../../support/NotificationProvider";
 
-
-const { notify } = useNotification()
-
+const { notify } = useNotification();
 
 interface SnapshotStoreConfig<T> {
   clearSnapshots: any;
   key: string;
   initialState: T;
-  snapshots: (
-    subscribers: (data: Data) => void,
-    snapshot: Snapshot<Snapshot<Data>>[]
-  ) => void;
-  onSnapshot?: (snapshot: T) => void;
+  // Adjust the signature of snapshots to match the SnapshotStore class
+  snapshots: { snapshot: Snapshot<Snapshot<Data>>[]; }[]
+
+  
+  onSnapshot?: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
   snapshot?: () => void;
   initSnapshot: () => void;
   updateSnapshot: (snapshot: Snapshot<Data>) => void;
-  takeSnapshot: (snapshot: T) => void;
-  getSnapshot: (snapshot: string) => Promise<Snapshot<Data>>;
-  getSnapshots: () => Snapshot<Snapshot<Data>>[];
+  takeSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => void
+  getSnapshot: (snapshot: Snapshot<Data>) => Promise<Snapshot<Snapshot<Data>>[]> 
+  getSnapshots: (
+    subscribers: (data: Data) => void,
+    snapshots: Snapshot<Snapshot<Data>>[]
+  ) => Promise<Snapshot<Snapshot<Data>>[]>;
+   
+
+
   getAllSnapshots: (
-    data: (data: Data) => void,
-    snapshot: Snapshot<Snapshot<Data>>[]
+    data: (
+      subscribers: Snapshot<Snapshot<Data>>[],
+      snapshots: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[],    
   ) => Snapshot<Snapshot<Data>>[] | Snapshot<Snapshot<Data>>[];
 
   clearSnapshot: () => void;
-  configureSnapshotStore: (snapshot: Snapshot<Data>) => void;
+  configureSnapshotStore: (snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>)=> void
   // Updated method signatures
   takeSnapshotSuccess: (snapshot: Snapshot<Data>) => void;
   updateSnapshotFailure: (payload: { error: string }) => void;
   takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => void;
 
   fetchSnapshot: (snapshotId: Snapshot<Data>) => void;
-  // getLatestSnapshot: () => Snapshot<Data>;
+  updateSnapshotSuccess: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
+  updateSnapshotsSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
+  fetchSnapshotSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
 
-  updateSnapshotSuccess: (snapshot: Snapshot<Data>[]) => void;
-  updateSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => void;
-  fetchSnapshotSuccess: (snapshot: Snapshot<Data>[]) => void;
-
-  createSnapshotSuccess: (snapshot: Snapshot<Data>[]) => void;
-  createSnapshotFailure: (error: string) => void;
+  createSnapshotSuccess:  (subscribers: Snapshot<Snapshot<Data>>[]) => void
+  createSnapshotFailure: (error: Error) => void
   //BATCH METHODS
-  batchUpdateSnapshotsSuccess: (snapshotData: Snapshot<Data>[]) => void; // Updated type
-  batchFetchSnapshotsRequest: (snapshotData: Snapshot<Data>[]) => void; // Updated type
-  batchFetchSnapshotsSuccess: (snapshotData: Snapshot<Data>[]) => void; // Updated type
-  batchFetchSnapshotsFailure: (payload: { error: string }) => void;
-  batchUpdateSnapshotsFailure: (payload: { error: string }) => void;
-  notifySubscribers: (subscribers: (data: Data) => void) => void;
+  batchTakeSnapshots: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
+  
+  batchUpdateSnapshots: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
+  batchUpdateSnapshotsSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void
+  
+
+  batchFetchSnapshotsRequest: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void
+  batchFetchSnapshotsSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[]) => void
+  batchFetchSnapshotsFailure: (payload: { error: Error }) => void;
+  batchUpdateSnapshotsFailure: (payload: { error: Error; }) => void
+  notifySubscribers: (subscribers: Snapshot<Snapshot<Data>>[]) => { snapshot: { snapshot: Snapshot<Snapshot<Data>>[]; }[]; }
   [Symbol.iterator]: () => IterableIterator<Snapshot<T>>;
+  notify: (message: string, content: any, date: Date, type: NotificationType) => void;
 }
+
 
 interface Snapshot<T> {
-  timestamp:  Date;
+  id?: string
+  timestamp: Date;
   data: T;
 }
+
+
+type SubscriberFunction = (data: Snapshot<Data> | Data) => void;
 
 //todo update Implementation
 const setNotificationMessage = (message: string) => {
@@ -69,36 +89,47 @@ const setNotificationMessage = (message: string) => {
   if (notificationStore && notificationStore.notify) {
     // Notify with the provided message
     notificationStore.notify(
-      "privateSetNotificationMessageId",
+      "privateSetNotificationMessageSuccess",
       message,
       new Date(),
       NotificationTypeEnum.OperationSuccess
     );
   }
-
 };
-
-
-
-
-
-
-
-
-
-
 
 class SnapshotStore<T extends Snapshot<Data>> {
   key: string;
   state: T;
-  onSnapshot?: (snapshot: T) => void;
+  onSnapshot?: (snapshot: SnapshotStore<Snapshot<Data>>) => void; // Adjust the parameter type
   snapshot?: () => void;
-  private snapshots: Snapshot<Snapshot<Data>>[] = [];
-  private subscribers: ((data: Data) => void)[] = [];
-  private readonly notify: (message: string, content: any, date: Date, type: NotificationType) => void;
-  public configureSnapshotStore: (snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>) => void;
+  timestamp?: Date;
 
-  private setNotificationMessage(message: string, notificationStore: NotificationContextProps) {
+  private snapshots: { snapshot: Snapshot<Snapshot<Data>>[] }[] = [];
+
+  // Change the type of 'snapshots' property to an array of Snapshot<Snapshot<Data>>
+  //  private snapshots: Snapshot<Snapshot<Data>>[] = [];
+
+  private subscribers: Snapshot<Snapshot<Data>>[] = [];
+
+  private readonly notify: (
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType
+  ) => void;
+
+ 
+  public takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => void;
+  public updateSnapshotFailure: (payload: { error: string }) => void;
+  public takeSnapshotSuccess: (snapshot: Snapshot<Data>) => void;
+  public configureSnapshotStore: (
+    snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+  ) => void;
+
+  private setNotificationMessage(
+    message: string,
+    notificationStore: NotificationContextProps
+  ) {
     // Check if the notification context is available
     if (notificationStore && notificationStore.notify) {
       // Notify with the provided message
@@ -106,29 +137,38 @@ class SnapshotStore<T extends Snapshot<Data>> {
         "privateSetNotificationMessageId",
         message,
         NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SENT,
-        new Date,
+        new Date(),
         NotificationTypeEnum.OperationSuccess
-      )
+      );
     } else {
       // If the notification context is not available, log an error
       console.error("Notification context is not available.");
     }
   }
-  
-  
+
   public setSnapshot(newSnapshot: T) {
     this.state = newSnapshot;
   }
-  
 
-  public setSnapshots(newSnapshots: Snapshot<Snapshot<Data>>[]) {
-    this.snapshots = newSnapshots as Snapshot<T>[];
+    public setSnapshots(
+    newSnapshots: {
+      snapshot: Snapshot<Snapshot<Data>>[];
+    }[]
+  ) {
+    this.snapshots = newSnapshots;
   }
 
-  public notifySubscribers(data?: Data) {
-    if (data !== undefined) {
-      this.subscribers.forEach((callback) => callback(data));
-    }
+  
+  
+
+  public notifySubscribers(subscribers: Snapshot<Snapshot<Data>>[]) {
+    // Utilize the 'subscribers' parameter
+    // For example, you can log it to indicate it's being used
+    console.log("Subscribers:", subscribers);
+    // Return the snapshot array within an object
+    return {
+      snapshot: this.snapshots,
+    };
   }
 
   validateSnapshot(data: Data) {
@@ -138,34 +178,77 @@ class SnapshotStore<T extends Snapshot<Data>> {
     return false;
   }
 
-  constructor(config: SnapshotStoreConfig<T>,
-    notify: (message: string, content: any, date: Date, type: NotificationType) => void) {
+  // config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+  constructor(
+    config: SnapshotStoreConfig<Snapshot<Data>>,
+    notify: (
+      message: string,
+      content: any,
+      date: Date,
+      type: NotificationType
+    ) => void
+  ) {
     this.key = config.key;
-    this.state = config.initialState;
+    this.state = config.initialState as T; // Explicitly cast initialState to type T
     this.onSnapshot = config.onSnapshot;
     this.notify = notify;
-    this.configureSnapshotStore = configureSnapshotStore
+    this.takeSnapshotsSuccess = config.takeSnapshotsSuccess;
+    this.updateSnapshotFailure = config.updateSnapshotFailure;
+    this.takeSnapshotSuccess = config.takeSnapshotSuccess;
+    this.configureSnapshotStore = (snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>) => {
+      snapshotConfig.clearSnapshot(); // Call clearSnapshot method instead of checking its existence
+      snapshotConfig.initSnapshot(); // Call initSnapshot method instead of checking its existence
+      this.key = snapshotConfig.key;
+      this.state = config.initialState as T; // Explicitly cast initialState to type T
+      this.onSnapshot = snapshotConfig.onSnapshot;
+      this.snapshots = snapshotConfig.snapshots;
+      this.configureSnapshotStore = snapshotConfig.configureSnapshotStore;
+      this.takeSnapshot = snapshotConfig.takeSnapshot;
+      this.getSnapshot = snapshotConfig.getSnapshot;
+      this.getSnapshots = snapshotConfig.getSnapshots;
+      this.getAllSnapshots = snapshotConfig.getAllSnapshots;
+      this.clearSnapshot = snapshotConfig.clearSnapshot;
+      this.configureSnapshotStore = snapshotConfig.configureSnapshotStore;
+      this.takeSnapshotSuccess = snapshotConfig.takeSnapshotSuccess;
+      this.updateSnapshotFailure = snapshotConfig.updateSnapshotFailure;
+      this.takeSnapshotsSuccess = snapshotConfig.takeSnapshotsSuccess;
+      this.fetchSnapshot = snapshotConfig.fetchSnapshot;
+      this.updateSnapshotSuccess = snapshotConfig.updateSnapshotSuccess;
+      this.updateSnapshotsSuccess = snapshotConfig.updateSnapshotsSuccess;
+      this.fetchSnapshotSuccess = snapshotConfig.fetchSnapshotSuccess;
+      this.createSnapshotSuccess = snapshotConfig.createSnapshotSuccess;
+      this.createSnapshotFailure = snapshotConfig.createSnapshotFailure;
+      this.batchUpdateSnapshots = snapshotConfig.batchUpdateSnapshots;
+      this.batchUpdateSnapshotsSuccess = snapshotConfig.batchUpdateSnapshotsSuccess;
+      this.batchFetchSnapshotsRequest = snapshotConfig.batchFetchSnapshotsRequest;
+      this.batchFetchSnapshotsSuccess = snapshotConfig.batchFetchSnapshotsSuccess;
+      this.batchFetchSnapshotsFailure = snapshotConfig.batchFetchSnapshotsFailure;
+      this.batchUpdateSnapshotsFailure = snapshotConfig.batchUpdateSnapshotsFailure;
+      this.notifySubscribers = snapshotConfig.notifySubscribers;
+    };
+
     // Bind 'this' explicitly
     makeAutoObservable(this);
   }
 
-  takeSnapshot(data: T) {
-    const timestamp = new Date;
-    const snapshot: Snapshot<T> = {
+  takeSnapshot(data: SnapshotStore<Snapshot<Data>>) {
+    const timestamp = new Date();
+    const snapshot: Snapshot<Snapshot<Data>>[] = {
       timestamp,
       data,
     };
-    this.snapshots.push(snapshot);
+    const snapshotObj = { snapshot: [snapshot] }; // Wrap the snapshot in an object with a 'snapshot' property
+    this.snapshots.push(snapshotObj); // Push the snapshot object to the snapshots array
     // Use this.notify instead of this.notify.notify
     this.notify(
       `Snapshot taken at ${new Date(timestamp)}.`,
       NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
       new Date(),
-     NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OperationSuccess
     );
-    
-    this.notifySubscribers(data.data);
-
+  
+    this.notifySubscribers(snapshot)
+  
     if (this.onSnapshot) {
       this.onSnapshot(data);
     }
@@ -191,34 +274,80 @@ class SnapshotStore<T extends Snapshot<Data>> {
     this.setSnapshot(snapshot);
   }
 
-  async getSnapshot(
-    snapshot: Snapshot<Data>
-  ): Promise<Snapshot<Snapshot<Data>>[]> {
-    const foundSnapshot = this.snapshots.find(
-      async (s) => s.data === (await snapshot.data)
-    );
+
+
+
+  // Iterate over each snapshot to find a match
+  async getSnapshot(snapshot: Snapshot<Data>): Promise<Snapshot<Snapshot<Data>>[]> {
+    let foundSnapshot: Snapshot<Snapshot<Data>> | undefined;
+  
+    // Access the snapshot data directly
+    this.snapshots([], this.snapshots).forEach((snapshot: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => {
+      if (snapshotStore.state.data.timestamp === snapshotStore.state.timestamp) {
+        foundSnapshot = snapshot;
+      }
+    });
+
     return foundSnapshot ? [foundSnapshot] : [];
   }
 
-  getSnapshots(): Snapshot<Snapshot<Data>>[] {
-    // Adjusted return type
-    return this.snapshots; // Assuming this.snapshots is of type Snapshot<Snapshot<Data>>[]
+
+  async getSnapshots(
+    subscribers: (data: Data) => Promise<Snapshot<Snapshot<Data>>[]>,
+    snapshots: Snapshot<Snapshot<Data>>[]) {
+    // Iterate over each snapshot in the provided array
+    for (const snapshot of snapshots) {
+      // Extract the 'data' property from the nested snapshot
+      const data: Data = snapshot.data.data;
+      
+      // Process each snapshot data and pass it to the subscribers
+      (await subscribers(data)).forEach(() => {
+        subscribers(data);
+      });
+    }
+  
+    // Return the original array of snapshots
+    return snapshots;
   }
 
-  updateSnapshotSuccess(snapshot: Snapshot<T>) {
-    const { state } = useAuth();
-    this.state = snapshot.data;
-    return this.state;
+  updateSnapshotSuccess(snapshot: SnapshotStore<Snapshot<Data>>) {
+    this.notify(
+      `Snapshot updated successfully.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+    this.notifySubscribers(snapshot)
+    if (this.onSnapshot) {
+      this.onSnapshot(snapshot);
+    }
   }
 
   clearSnapshot() {
-    this.snapshots = [];
+    return
   }
 
-  getAllSnapshots(): Snapshot<Snapshot<Data>>[] {
-    // Return the snapshots directly
-    return this.snapshots;
-  }
+
+  
+  getAllSnapshots: (
+    data: (subscribers: Snapshot<Snapshot<Data>>[], snapshots: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[],
+    snapshots: Snapshot<Snapshot<Data>>[]
+  ) => Snapshot<Snapshot<Data>>[]
+    = (subscribers: Snapshot<Snapshot<Data>>[], snapshots: Snapshot<Snapshot<Data>>[]) => {
+      // Iterate over each snapshot in the provided array
+      for (const snapshot of snapshots) {
+        // Extract the 'data' property from the nested snapshot
+        const data: Data = snapshot.data.data;
+
+        // Process each snapshot data and pass it to the subscribers
+        subscribers(data);
+      }
+      // Return the original array of snapshots
+      return snapshots;
+    }
+
+
+
 
   getLatestSnapshot(): Snapshot<T> {
     // Return the latest snapshot's data property
@@ -228,51 +357,149 @@ class SnapshotStore<T extends Snapshot<Data>> {
       data: latestSnapshot.data as T, // Cast data to type T
     };
   }
-  
 
-// Subscribe to snapshot events
-subscribe(callback: (data: Data) => void) {
-  this.subscribers.push(callback);
-}
+  // Subscribe to snapshot events
+  subscribe(callback: Snapshot<Snapshot<Data>>[]) {
+    this.subscribers.push(callback);
+  }
 
   // Unsubscribe from snapshot events
-  unsubscribe(callback: (data: Data) => void) {
+  unsubscribe(callback: Snapshot<Snapshot<Data>>[]) {
     const index = this.subscribers.indexOf(callback);
     if (index !== -1) {
       this.subscribers.splice(index, 1);
     }
   }
-
-  batchUpdateSnapshotsSuccess(snapshotData: Snapshot<T>[]) {
+  
+  batchUpdateSnapshots(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) { 
     // Update the snapshots
-    this.snapshots = snapshotData;
-    this.notifySubscribers();
+    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
+    this.snapshots = newSnapshots;
+    this.notifySubscribers(this.subscribers);
+  }
+  
+batchUpdateSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) {
+    // Update the snapshots
+    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
+    this.snapshots = newSnapshots;
+    this.notifySubscribers(this.subscribers);
+}
+  
+batchFetchSnapshotsRequest(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) {
+    // Update the snapshots
+    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
+    this.snapshots = newSnapshots;
+    this.notifySubscribers(this.subscribers);
+}
+  
+batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[]) {
+    // Update the snapshots
+    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
+    this.snapshots = newSnapshots;
+    this.notifySubscribers(this.subscribers);
+}
+  
+  batchFetchSnapshotsFailure(payload: { error: Error; }) {
+    this.notify(
+      `Snapshot fetch failed.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
   }
 
-  updateSnapshotsSuccess(snapshot: Snapshot<T>[]) {
+  batchUpdateSnapshotsFailure(payload: { error: Error; }) { 
+    this.notify(
+      `Snapshot update failed.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
+  }
+  
+
+  
+  createSnapshotSuccess(
+    subscribers: Snapshot<Snapshot<Data>>[]): void { 
+    this.notify(
+      `Snapshot created successfully.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+    this.notifySubscribers(subscribers);
+  }
+
+  createSnapshotFailure(error: Error) { 
+    this.notify(
+      `Snapshot creation failed.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
+  }
+
+  
+
+  updateSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[],
+    snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[] }) {
     // Update the snapshots
-    this.snapshots = snapshot;
-    this.notifySubscribers();
+    this.snapshots = snapshotData;
+    this.notifySubscribers(this.subscribers);
+  }
+  
+
+  fetchSnapshotSuccess(
+    snapshotData: (subscribers: Snapshot<Snapshot<Data>>[],
+      snapshot: Snapshot<Snapshot<Data>>[]) => {
+        snapshot: Snapshot<Snapshot<Data>>[];
+      }): void {
+    // Update the snapshots
+    this.snapshots = snapshotData;
+    
+    // Notify subscribers about the successful fetch of snapshots
+    snapshotData.forEach(snapshot => {
+      const subscribers = snapshot.subscribers;
+      this.notifySubscribers(subscribers);
+    });
+  }
+  
+  fetchSnapshotFailure(error: Error) { 
+    this.notify(
+      `Failed to fetch snapshot.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
   }
 }
 
-// Define the handleSnapshot function
-const handleSnapshot = (snapshot: Snapshot<Data>) => {
-  // Handle the snapshot event
-  console.log("Snapshot event handled:", snapshot);
-};
 
-const getDefaultState = (): Snapshot<Data> => {
-  return {
-    timestamp: new Date,
-    data: {} as Data,
+
+
+
+
+
+  // Define the handleSnapshot function
+  const handleSnapshot = (snapshot: Snapshot<Data>) => {
+    // Handle the snapshot event
+    console.log("Snapshot event handled:", snapshot);
   };
-};
 
-// Function to set a dynamic notification message
-const setDynamicNotificationMessage = (message: string) => {
-  setNotificationMessage(message);
-};
+  const getDefaultState = (): Snapshot<Data> => {
+    return {
+      timestamp: new Date(),
+      data: {} as Data,
+    };
+  };
+
+  // Function to set a dynamic notification message
+  const setDynamicNotificationMessage = (message: string) => {
+    setNotificationMessage(message);
+  };
+  
+
+
 const { state: authState } = useAuth();
 
 // const snapshotStoreInstance = new SnapshotStore<Snapshot<Data>>({
@@ -345,8 +572,6 @@ const { state: authState } = useAuth();
 //   fetchSnapshot: (snapshotId: Snapshot<Data>) => {
 //     snapshotStoreInstance.setSnapshot(snapshotId);
 //   },
-
-  
 
 //   getSnapshot(): Promise<Snapshot<Data>> {
 //     // Return the latest snapshot's data property
@@ -530,13 +755,9 @@ const { state: authState } = useAuth();
 //   },
 // });
 
-
-
-
 const updateSnapshot = (snapshot: Snapshot<Data>) => {
   snapshotStoreInstance.setSnapshot(snapshot);
 };
-
 
 const takeSnapshot = (snapshot: any) => {};
 
@@ -555,11 +776,14 @@ const clearSnapshot = (): void => {
 };
 
 // Adjust the method signature to accept a SnapshotStoreConfig parameter
-const configureSnapshotStore = (config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>): void => {
+const configureSnapshotStore = (
+  config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
+  snapshot: Snapshot<Data>
+): void => {
   // Implementation logic here
+
   snapshotStoreInstance.configureSnapshotStore(config);
 };
-
 
 const takeSnapshotSuccess = (snapshot: Snapshot<Data>): void => {
   // Assuming you have access to the snapshot store instance
@@ -567,13 +791,17 @@ const takeSnapshotSuccess = (snapshot: Snapshot<Data>): void => {
   console.log("Snapshot taken successfully:", snapshot);
 
   // Display a toast message
-  showToast({ content: "Snapshot taken successfully" });
+  const message: Message = {
+    id: "snapshot-taken" as string,
+    content: "Snapshot taken successfully:",
+    timestamp: new Date(),
+  } as Message;
+
+  showToast(message);
 
   // Notify with a message
-  notify("Snapshot taken successfully");
+  notify("takeSnapshotSucces", "Snapshot taken successfully", NOTIFICATION_MESSAGES.Snapshot.SNAPSHOT_TAKEN,new Date, NotificationTypeEnum.CreationSuccess);
 };
-
-
 
 const updateSnapshotFailure = (payload: { error: string }): void => {
   // Log the error message or handle it in any way necessary
@@ -597,21 +825,21 @@ const updateSnapshotSuccess = (snapshot: Snapshot<Data>[]): void => {
 };
 
 const updateSnapshotsSuccess = (snapshots: Snapshot<Data>[]) => {
-      snapshots.forEach(async (snapshot) => {
-        // Assuming snapshot.data is of type Snapshot<Snapshot<Data>>
-        const snapshotData = await snapshot.data; // Wait for snapshot.data to resolve
-        // Check if snapshotData is of type Snapshot<Snapshot<Data>>
-        if (snapshotData.data.timestamp) {
-          // Assuming snapshotData.data is of type Snapshot<Data>
-          snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-        } else {
-          // Assuming snapshotData.data is of type Data
-          snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-        }
-        // Check if snapshotData.data is of type Snapshot<Data>
-        snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-      });
+  snapshots.forEach(async (snapshot) => {
+    // Assuming snapshot.data is of type Snapshot<Snapshot<Data>>
+    const snapshotData = await snapshot.data; // Wait for snapshot.data to resolve
+    // Check if snapshotData is of type Snapshot<Snapshot<Data>>
+    if (snapshotData.data.timestamp) {
+      // Assuming snapshotData.data is of type Snapshot<Data>
+      snapshotStoreInstance.updateSnapshot(await snapshotData.data);
+    } else {
+      // Assuming snapshotData.data is of type Data
+      snapshotStoreInstance.updateSnapshot(await snapshotData.data);
     }
+    // Check if snapshotData.data is of type Snapshot<Data>
+    snapshotStoreInstance.updateSnapshot(await snapshotData.data);
+  });
+};
 
 const fetchSnapshotSuccess = (snapshot: Snapshot<Data>[]): void => {
   // Implementation logic here
@@ -628,7 +856,7 @@ const createSnapshotFailure = (error: string): void => {
 const setTasks = (updateFunction: (prevTasks: Task) => any) => {
   // Update tasks using the provided update function
   const updatedTasks = updateFunction(prevTasks);
-  
+
   // Further logic to handle the updated tasks
 };
 
@@ -668,11 +896,14 @@ const notifySubscribers = (subscribers: (data: Data) => void): void => {
   // Implementation logic here
 };
 
-
-const notifyFunction = (message: string, content: any, date: Date, type: NotificationType) => {
+const notifyFunction = (
+  message: string,
+  content: any,
+  date: Date,
+  type: NotificationType
+) => {
   // Implementation logic for sending notifications
 };
-
 
 const snapshotStoreConfig: SnapshotStoreConfig<Snapshot<Data>> = {
   key: "your_key",
@@ -687,8 +918,6 @@ const snapshotStoreConfig: SnapshotStoreConfig<Snapshot<Data>> = {
       subscribers(snapshot.data.data);
     });
   },
-
-
 
   initSnapshot,
   updateSnapshot,
@@ -724,7 +953,10 @@ const config = {
   // other properties as needed...
 };
 
-const snapshotStoreInstance = new SnapshotStore<Snapshot<Data>>(config, notifyFunction);
+const snapshotStoreInstance = new SnapshotStore<Snapshot<Data>>(
+  config,
+  notifyFunction
+);
 export const snapshotStore = {
   ...snapshotStoreInstance,
   async getSnapshot(): Promise<Snapshot<Data>> {
@@ -736,9 +968,7 @@ export const snapshotStore = {
       data: snapshotData.data,
     });
   },
-}
-
-
+};
 
 export default SnapshotStore;
 export type { Snapshot, SnapshotStoreConfig };

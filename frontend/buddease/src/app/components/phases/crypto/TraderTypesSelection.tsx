@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-interface Props {
+interface TraderTypesSelectionProps {
   onSelect: (type: string) => void;
 }
 
-const TraderTypesSelection: React.FC<Props> = ({ onSelect }) => {
+const TraderTypesSelection: React.FC<TraderTypesSelectionProps> = ({ onSelect }) => {
   // State to track the selected trader type
   const [selectedType, setSelectedType] = useState<string>('');
 

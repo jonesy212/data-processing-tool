@@ -128,6 +128,18 @@ const useTeamManagerStore = (): TeamManagerStore => {
   }
 
 
+  const getTeamsData = (team: Team['id'], data: TeamData[]) => { 
+    const teamsData = {
+      ...team,
+      ...data,
+      id: team.id,
+    }
+    return teamsData;
+  }
+
+  
+
+
 
 const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
   // Ensure the teamId exists in the teams
@@ -137,12 +149,11 @@ const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
   }
 
   // Create a snapshot of the current teams for the specified teamId
-  const teamSnapshot: Snapshot<CustomData> = {
+  const teamSnapshot: SnapshotStore<Snapshot<Data>> = {
     timestamp: new Date(), // Add a timestamp to the snapshot
     data: {
       [teamId]: [...teams[teamId]],
-      
-    }
+    },
   };
 
   // Store the snapshot in the SnapshotStore
@@ -373,6 +384,7 @@ const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
     removeTeam,
     removeTeams,
     takeTeamSnapshot,
+    getTeamsData,
     fetchTeamsSuccess,
     fetchTeamsFailure,
     fetchTeamsRequest,

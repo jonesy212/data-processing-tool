@@ -7,18 +7,32 @@ import { DocumentOptions } from './DocumentOptions';
 var xl = require('excel4node');
 
 
-enum DocumentType {
+enum DocumentTypeEnum {
   Text = 'text',
   Spreadsheet = 'spreadsheet',
   Diagram = 'diagram',
   CalendarEvents = 'calendarEvents',
   Drawing = 'drawing',
   Presentation = 'presentation',
+  CryptoWatch = 'cryptowatch',
   Draft = 'draft',
-
+  Document = 'document',
+  Other = 'other',
 }
+
+
+
+enum DocumentStatusEnum {
+  Draft = 'draft',
+  Finalized = 'finalized',
+  Archived = 'archived',
+  Deleted = 'deleted'
+}
+
+
+
 class DocumentGenerator {
-  createTextDocument(type: DocumentType, options: DocumentOptions): string {
+  createTextDocument(type: DocumentTypeEnum, options: DocumentOptions): string {
     
     const templatePath = path.join(__dirname, 'templates', 'textTemplate.docx');
     const content = options.content || 'Default Text Document Content';
@@ -149,14 +163,23 @@ wb.write('spreadsheet.xlsx');
 
   createDocument(type: string, options: DocumentOptions): string {
     switch (type) {
-      case DocumentType.Text:
+      case DocumentTypeEnum.Text:
         return this.createTextDocument(type, options);
-      case DocumentType.Spreadsheet:
+      case DocumentTypeEnum.Spreadsheet:
         return this.createSpreadsheet(options);
       // Add cases for other document types
-      case DocumentType.Diagram:
+      case DocumentTypeEnum.Diagram:
         return this.createSpreadsheet(options);
-      case DocumentType.CalendarEvents:
+      case DocumentTypeEnum.CalendarEvents:
+        return this.createSpreadsheet(options);
+      // Add cases for other document types
+      case DocumentTypeEnum.Drawing:
+        return this.createDrawing(options);
+      case DocumentTypeEnum.Presentation:
+        return this.createPresentation(options);
+      case DocumentTypeEnum.CryptoWatch:
+        return this.createSpreadsheet(options);
+      case DocumentTypeEnum.Other: 
         return this.createSpreadsheet(options);
       // Add cases for other document types
       default:
@@ -167,4 +190,5 @@ wb.write('spreadsheet.xlsx');
 }
 
 export default DocumentGenerator;
-export { DocumentType };
+export { DocumentStatusEnum, DocumentTypeEnum };
+

@@ -165,6 +165,13 @@ const getAppConfig = (): AppConfig => {
         hash.update(appVersion);
         return hash.digest("hex"); // Return hexadecimal representation of the hash
       },
+      appName: "",
+      getAppName: function (): string {
+        throw new Error("Function not implemented.");
+      },
+      updateAppName: function (newAppName: string): void {
+        throw new Error("Function not implemented.");
+      }
     },
     apiBaseUrl: "https://your-api-base-url.com",
     ios: {
@@ -189,11 +196,11 @@ const getAppConfig = (): AppConfig => {
       headers: {},
       retry: {} as RetryConfig,
       cache: {} as CacheConfig,
-      responseType: "",
-      withCredentials: false,
-      onLoad: function (response: any): void {
-        throw new Error("Function not implemented.");
+      responseType: {
+        contentType: "contentType",
+        encoding: "encode"
       },
+      withCredentials: false,
     },
     updateConfig: () => {},
     fetchData: () => {},

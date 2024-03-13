@@ -1,17 +1,19 @@
 import { action, observable } from 'mobx';
 import React, { ReactNode, createContext } from 'react';
+import { NotificationContextProps, NotificationTypeEnum } from './NotificationContext';
+import { NotificationData } from './NofiticationsSlice';
 
-export interface NotificationContextProps {
-  sendNotification: (type: string, userName?: string | number) => void;
-}
+
+
 
 class NotificationStore {
-  @observable notifications: { id: string; content: string; date: Date }[] = [];
+  @observable notifications: { id: string; content: string; date: Date, notificationType: NotificationTypeEnum }[] = [];
 
   @action
-  addNotification = (notification: { id: string; content: string; date: Date }) => {
+  addNotification = (notification: { id: string; content: string; date: Date,  notificationType: NotificationTypeEnum  }) => {
     this.notifications.push(notification);
   };
+  
 
   @action
   removeNotification = (notificationId: string) => {
@@ -22,9 +24,15 @@ class NotificationStore {
   clearNotifications = () => {
     this.notifications = [];
   };
+
+  @action
+  notify = (id: string, content: string, date: Date, notificationType: NotificationTypeEnum) => {
+    this.addNotification({ id, content, date, notificationType });
+  };
 }
 
 export const notificationStore = new NotificationStore();
+export const notificationData: NotificationData[] = [];
 
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
 
@@ -51,11 +59,29 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       id: Date.now().toString(),
       content: message,
       date: new Date(),
+      notificationType: NotificationTypeEnum.OperationSuccess
     });
   };
 
+
+    const addNotification = (notification: NotificationData)  => { 
+      notificationStore.addNotification(notification);
+    }
+    
+
   return (
-    <NotificationContext.Provider value={{ sendNotification }}>
+    <NotificationContext.Provider value={{
+      sendNotification,
+      addNotification,
+      notify: (id, message, content, date, type) => { 
+        notificationStore.addNotification({ id, content, date });
+        console.log(`Notification: ${message}`);
+      },
+      notifications: notificationData,
+      showMessage: (message) => { 
+        console.log(`Notification: ${message}`);
+      }
+    }}>
       {children}
     </NotificationContext.Provider>
   );

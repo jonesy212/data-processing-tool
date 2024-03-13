@@ -1,31 +1,49 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/axiosInstance";
-import { headersConfig } from "@/app/api/headers/HeadersConfig";
-import { DocumentData } from "@/app/components/documents/DocumentBuilder";
-import { DocumentId } from "@/app/components/documents/types";
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import { useAuth } from "@/app/components/auth/AuthContext";
+import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { AxiosError, AxiosResponse } from "axios";
 
-type DocumentStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'published';
-const { notify } = useNotification()
+const { notify } = useNotification();
 
 const API_BASE_URL = endpoints.documents;
-/**
- * Updates the status of a document in the database.
- * @param {DocumentData} documentId - The ID of the document to update.
- * @param {DocumentStatus} status - The new status of the document.
- * @returns {Promise<void>} - A Promise that resolves when the update is complete.
- */
+
+export const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
+  try {
+    const documentUrl = `${API_BASE_URL}/documents/${documentId}`;
+    const headers = headersConfig;
+    const response = await axiosInstance.get(documentUrl, { headers });
+    const document = response.data;
+    document.status = 'draft';
+  } catch (error: any) {
+    handleApiError(error, 'fetchDocumentFromArchive');
+    notify(
+      'fetchDocumentFromArchiveError',
+      'Error fetching document from archive',
+      NOTIFICATION_MESSAGES.Document.FETCH_FROM_ARCHIVE_ERROR,
+      new Date(),
+      'ERROR' as NotificationType
+    );
+  }
+}
+
 async function updateDocumentInDatabase(documentId: DocumentId, status: DocumentStatus): Promise<void> {
   try {
-    const documentUpdateUrl = `${API_BASE_URL}/documents/${documentId}`; // Assuming the endpoint structure follows this pattern
+    const documentUpdateUrl = `${API_BASE_URL}/documents/${documentId}`;
+    const headers = headersConfig;
+    
+    // Use the useAuth hook to access authentication state and functions
+    const { token } = useAuth();
+    
+    // Check if the user is authenticated before making the update request
+    if (!token) {
+      throw new Error('User not authenticated');
+    }
 
-    // Integrate header management if needed
-    const headers = headersConfig; // Assuming headersConfig is defined and contains the necessary headers
-
-    // Perform the update request using axiosInstance.put
     const response: AxiosResponse = await axiosInstance.put(documentUpdateUrl, { status }, { headers });
 
     if (response.status === 200) {
@@ -34,7 +52,6 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
       throw new Error(`Failed to update document ${documentId} in the database.`);
     }
   } catch (error: any) {
-    // Handle error and notify failure message
     const errorMessage = "Failed to update document";
     handleApiError(error as AxiosError<unknown>, errorMessage);
     notify(

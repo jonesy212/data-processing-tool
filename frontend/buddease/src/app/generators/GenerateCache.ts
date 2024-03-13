@@ -1,4 +1,5 @@
 // generateCache.ts
+import RealtimeData from "../../../models/realtime/RealtimeData";
 import useRealtimeData from "../components/hooks/commHooks/useRealtimeData";
 import {
   useBrainstormingPhase,
@@ -42,7 +43,7 @@ export interface CacheData extends Data {
   frontendStructure: FrontendStructure;
   backendStructure: BackendStructure;
   backendConfig: typeof backendConfig;
-  realtimeData: typeof realtimeData;
+  realtimeData:  RealtimeData;
   fetchData: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
   // Add new top-level cache properties for UI phases
   notificationBarPhaseHook: typeof notificationBarPhaseHook;

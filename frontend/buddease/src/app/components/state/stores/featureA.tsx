@@ -1,4 +1,3 @@
-// featureA.ts
 // FeatureA.ts
 import useAsyncHookLinker from "../../hooks/useAsyncHookLinker";
 

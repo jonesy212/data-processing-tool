@@ -1,6 +1,5 @@
 import { AnimatedComponent } from '../../libraries/animations/AnimationComponent';
-import { Team } from '../../models/teams/Team';
-
+import Team from '../../models/teams/Team';
 
 const TeamProgressBar = ({ team }: {team: Team}) => {
   const { startAnimation, stopAnimation, isActive } = AnimatedComponent({

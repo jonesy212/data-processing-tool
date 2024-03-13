@@ -13,3 +13,5 @@ const updateCallback: UpdateCallback = (data, action) => {
     // Delete data accordingly
   }
 };
+
+export { updateCallback };

@@ -1,4 +1,5 @@
 // CommonDetails.tsx
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CacheData } from "@/app/generators/GenerateCache";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -7,20 +8,28 @@ import { FakeData } from "../Inteigents/FakeDataGenerator";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { ProjectData } from "../projects/Project";
+import { DetailsItem } from "../state/stores/DetailsListStore";
 import { Todo } from "../todos/Todo";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
-import { Data } from "./data/Data";
+import { Data, DataDetails } from "./data/Data";
 import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
+import { Member } from "./teams/TeamMembers";
 
 // Define a generic type for data
-interface CommonData<T>  {
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  data?: T 
+interface CommonData<T> {
+  title?: string;
+  description?: string | null | undefined;
+  startDate?:  Date;
+  endDate?:  Date;
+  collaborationOptions?: CollaborationOptions;
+  participants?: Member[];
+  metadata?: StructuredMetadata;
+  details?: DetailsItem<T>;
+  data?: T;
   tags?: string[];
   categories?: string[];
   documentType?: string;
@@ -34,7 +43,7 @@ interface CommonData<T>  {
   documentWorkflow?: string;
   documentIntegration?: string;
   documentReporting?: string;
-  documentBackup?: string
+  documentBackup?: string;
 }
 
 interface Customizations<T> {
@@ -53,12 +62,14 @@ type SupportedData = UserData &
   CacheData &
   ScheduledData &
   LogData &
+  DataDetails &
   FakeData & { [key: string]: any };
 
 // Define the DetailsProps interface with the generic CommonData type
 
 const CommonDetails = <T extends SupportedData>({
   data,
+  details,
   customizations,
 }: DetailsProps<T>) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -72,46 +83,73 @@ const CommonDetails = <T extends SupportedData>({
   return (
     <div>
       <button onClick={toggleDetails}>Toggle Details</button>
+      {showDetails && (
+        <div>
+          <h3>Details</h3>
+          {data && (
+            <div>
+              <h4>Data Details</h4>
+              {Object.entries(data).map(([key, value]) => (
+                <p key={key}>
+                  {key}: {value as React.ReactNode}
+                </p>
+              ))}
+            </div>
+          )}
+          {details && (
+            <div>
+              <h4>Additional Details</h4>
+              {Object.entries(details).map(([key, value]) => (
+                <p key={key}>
+                  {key}: {value as React.ReactNode}
+                </p>
+              ))}
+            </div>
+          )}
+          {/* Render specific properties in a structured manner */}
+          {data && (
+            <div>
+              <h4>Structured Rendering</h4>
+              {data.tags && (
+                <div>
+                  <p>Tags:</p>
+                  <ul>
+                    {data.tags.map((tag, index) => (
+                      <li key={index}>{tag}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {data.title && <p>Title: {data.title}</p>}
+              {data.description && <p>Description: {data.description}</p>}
+              {data.startDate && data.endDate && (
+              <p>
+                Date: {data.startDate.toLocaleDateString()} to {data.endDate.toLocaleDateString()}
+              </p>
+            )}
+            </div>
+          )}
+        </div>
+      )}
+
       {showDetails && data && (
         <div>
           <h3>Details</h3>
           {/* Handle different data types here */}
           {Object.entries(data).map(([key, value]) => {
-            if (React.isValidElement(value)) {
-              return (
-                <p key={key}>
-                  {key}: {value}
-                </p>
-              );
+            // Check if a customization function exists for this key
+            const renderFunction = customizations && customizations[key];
+            if (renderFunction) {
+              return renderFunction(value);
             } else {
+              // Default rendering if no customization function is provided
               return (
                 <p key={key}>
-                  {key}: {String(value)}
+                  {key}: {value as React.ReactNode}
                 </p>
               );
             }
           })}
-
-          {showDetails && data && (
-            <div>
-              <h3>Details</h3>
-              {/* Handle different data types here */}
-              {Object.entries(data).map(([key, value]) => {
-                // Check if a customization function exists for this key
-                const renderFunction = customizations && customizations[key];
-                if (renderFunction) {
-                  return renderFunction(value);
-                } else {
-                  // Default rendering if no customization function is provided
-                  return (
-                    <p key={key}>
-                      {key}: {value as React.ReactNode}
-                    </p>
-                  );
-                }
-              })}
-            </div>
-          )}
         </div>
       )}
 

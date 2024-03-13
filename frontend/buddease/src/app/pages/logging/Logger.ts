@@ -13,7 +13,7 @@ import {
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
-import Team from "@/app/components/models/teams/Team";
+import Team, { team } from "@/app/components/models/teams/Team";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
 
 
@@ -167,7 +167,7 @@ class AudioLogger extends Logger {
 
 
 class TeamLogger {
-  static async logTeamCreation(teamId: string, team:Team): Promise<void> {
+  static async logTeamCreation(teamId: string,  team:Team): Promise<void> {
     try {
       await this.logEvent("createTeam", "Creating team", team.id, team);
       await this.logTeamEvent(teamId, "Team created", team);
@@ -187,15 +187,18 @@ class TeamLogger {
     }
   }
 
-  static async logTeamDeletion(teamId: number| string): Promise<void> {
+  static async logTeamDeletion(teamId: number | string): Promise<void> {
     try {
       await this.logEvent("deleteTeam", "Deleting team", teamId as number);
-      await this.logTeamEvent(teamId as string, "Team deleted");
+      // Instantiate a Team object and pass it to logTeamEvent
+      team
+      await this.logTeamEvent(teamId as string, "Team deleted", team, new Date());
     } catch (error) {
       console.error('Error logging team deletion:', error);
       throw error;
     }
   }
+  
 
   private static async logEvent(action: string, message: string, teamId: number, data?: any): Promise<void> {
     try {
@@ -215,7 +218,7 @@ class TeamLogger {
 
 
 
-  private static async logTeamEvent(teamId: string, team: Team, message: string, data?: any): Promise<void> {
+  private static async logTeamEvent(teamId: string, message: string, team: Team,  data?: any): Promise<void> {
     try {
       const teamData = await useTeamManagerStore().getTeamData(teamId, team);
       if (!teamData) {

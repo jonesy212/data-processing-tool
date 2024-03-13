@@ -54,7 +54,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onSuccess, onSearch }) =>
       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
   
       // Toggle authentication hooks and perform other actions
-      dynamicHooks.authentication.hook().toggleActivation(accessToken);
+      dynamicHooks.hook().toggleActivation(accessToken);
   
       // Update searchQuery state using setSearchQuery if needed
       if (searchQuery) {

@@ -11,6 +11,9 @@ function createSecurityHeaders() {
       'X-XSS-Protection': '1; mode=block',
       'Content-Security-Policy': "default-src 'self'",
       'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+      'X-Content-Management': 'true',
+      
+
       // Add other security-related headers here if needed
     };
   

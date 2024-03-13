@@ -6,6 +6,7 @@ import { User } from "../users/User";
 import { VideoData } from '../video/Video';
 
 export interface Todo extends Data {
+  id: string | number;
   done: boolean;
   status: "pending" | "inProgress" | "completed";
   todos: Todo[];
@@ -17,8 +18,8 @@ export interface Todo extends Data {
   assignedUsers: string[];
   collaborators: string[];
   labels: string[];
-  comments: Comment[];
-  attachments: Attachment[];
+  comments: Comment[],
+  attachments?: Attachment[];
   subtasks: Todo[];
   entities?: Todo[];
 
@@ -44,13 +45,16 @@ export interface Todo extends Data {
   data?: Data;
 }
 
-export interface Comment extends Data, CharacterData {
+export interface Comment extends CharacterData {
+  id: string;
   text: string;
   editedAt?: Date;
   editedBy?: string;
   attachments?: Attachment[];
   replies?: Comment[];
   likes?: User[];
+  watchLater: boolean; // Add the watchLater property
+
 }
 
 export interface Attachment extends Data {
@@ -129,7 +133,7 @@ class TodoImpl implements Todo {
     });
   };
   snapshot: Snapshot<Data> = {
-    timestamp:  Date.now(),
+    timestamp: new Date,
     data: {} as Data,
   }; 
 

@@ -9,7 +9,12 @@ import {
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import { Phase } from "../components/phases/Phase";
-import { nextPhase, previousPhase } from "../components/phases/PhaseTransitions";
+import {
+  nextPhase,
+  previousPhase,
+} from "../components/phases/PhaseTransitions";
+import userService from "../components/users/ApiUser";
+import { useDispatch } from "react-redux";
 
 startVoiceRecognition;
 /**
@@ -22,9 +27,10 @@ startVoiceRecognition;
  * @example
  * // Import ButtonGenerator and its props
  * import { ButtonGenerator, ButtonGeneratorProps } from "./path/to/ButtonGenerator";
- *import NotificationManager from '../components/support/NotificationManager';
-import NotificationManager from '../components/notifications/NotificationManager';
-import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
+ *
+ * import NotificationManager from '../components/support/NotificationManager';
+ * import NotificationManager from '../components/notifications/NotificationManager';
+ * import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
 
  * // Define buttonGeneratorProps
  * const buttonGeneratorProps: ButtonGeneratorProps = {
@@ -58,12 +64,6 @@ import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
  * @param {(dashboard: string) => void} [props.onOpenDashboard] - Handler for the "open-dashboard" button click event.
  * @returns {JSX.Element} - The rendered ButtonGenerator component.
  */
-
-
-
-
-
-
 
 interface ButtonGeneratorProps {
   variant?: Record<string, string>;
@@ -149,7 +149,7 @@ const defaultVariants: Record<string, string> = {
   // ... (other cases)
 };
 
-const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
+const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
   label = defaultLabels, // Use the provided label or default to the defaultLabels
   variant = defaultVariants,
   onSubmit,
@@ -169,7 +169,9 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
 }) => {
   const buttonTypes = Object.keys(label);
   const { dynamicContent } = useDynamicComponents(); // Access the dynamicContent flag from the naming convention context
-
+  const initUserId = ""
+  const userId = await userService.fetchUserById(initUserId)
+ const dispatch = useDispatch()
   // generateButtonDispatch({
   //   onSubmit,
   //   onReset,
@@ -193,7 +195,11 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
     }
   };
 
-  const renderButton = (type: string, setCurrentPhase: any, currentPhase: any) => {
+  const renderButton = (
+    type: string,
+    setCurrentPhase: any,
+    currentPhase: any
+  ) => {
     return (
       <ReusableButton
         key={type}
@@ -227,12 +233,14 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
             case "open-dashboard":
               onOpenDashboard && onOpenDashboard(type);
               break;
-              case "transition-to-previous-phase":
-                onTransitionToPreviousPhase && onTransitionToPreviousPhase(setCurrentPhase, currentPhase);
-                break;
-              case "transition-to-next-phase":
-                onTransitionToNextPhase && onTransitionToNextPhase(setCurrentPhase, currentPhase);
-                break;// ... (other cases)
+            case "transition-to-previous-phase":
+              onTransitionToPreviousPhase &&
+                onTransitionToPreviousPhase(setCurrentPhase, currentPhase);
+              break;
+            case "transition-to-next-phase":
+              onTransitionToNextPhase &&
+                onTransitionToNextPhase(setCurrentPhase, currentPhase);
+              break; // ... (other cases)
             default:
               break;
           }
@@ -246,7 +254,9 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
   return (
     <div>
       <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
-      {buttonTypes.map((type, setCurrentPhase, currentPhase) => renderButton(type, setCurrentPhase, currentPhase))}
+      {buttonTypes.map((type, setCurrentPhase, currentPhase) =>
+        renderButton(type, setCurrentPhase, currentPhase)
+      )}
       {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
       <button
         type={buttonGeneratorProps.type} // Add the type attribute
@@ -256,8 +266,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = ({
       <button id="voiceControlButton" onClick={handleVoiceControl}>
         Activate Voice Control
       </button>
-
-            {/* Include RealtimeData component */}
+      {/* Include RealtimeData component */}
       <RealtimeData
         userId={userId}
         dispatch={dispatch}
@@ -313,4 +322,3 @@ const buttonGeneratorProps: ButtonGeneratorProps = {
 
 export { ButtonGenerator, buttonGeneratorProps };
 export type { ButtonGeneratorProps };
-

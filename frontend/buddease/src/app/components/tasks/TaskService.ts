@@ -2,6 +2,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import axios from "axios";
 import { action, observable, runInAction } from 'mobx';
 import { Task } from "../models/tasks/Task";
+import { Progress } from "../models/tracker/ProgresBar";
 
 class TaskService {
   @observable tasks: Task[] = [];
@@ -136,7 +137,24 @@ class TaskService {
     } catch (error) {
       throw new Error("Failed to toggle tasks");
     }
-  };
+  }
+
+  @action
+  getTaskById(id: string): Task | null { 
+    const task = this.tasks.find(task => task.id === id);
+    if (task) {
+      return task;
+    }
+    return null;
+  }
+
+  @action
+  updateTaskProgress(id: string, progress: Progress): void {
+    const task = this.getTaskById(id);
+    if (task) {
+      task.updateProgress(progress);
+    }
+  }
 }
 
 export const taskService = new TaskService();

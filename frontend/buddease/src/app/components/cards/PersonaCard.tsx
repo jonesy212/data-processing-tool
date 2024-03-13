@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
-import { DetailsProps, SupportedData } from '../models/CommonData';
+import { SupportedData } from '../models/CommonData';
+import DetailsProps from "../models/data/Details";
 import DynamicTypography from "./DummyCardLoader";
 
 
@@ -25,7 +26,7 @@ const PersonaCard: React.FC<PersonaCardProps> = ({
       <h1>{persona} Card</h1>
       {/* Render specific persona data here */}
       
-      <DynamicTypography fontSize="18px" fontFamily="Arial, sans-serif"  {...title}>
+      <DynamicTypography fontSize={fontSize} fontFamily={fontFamily}  {...title}>
         {data && (
           <>
             <p>{`Extraversion: ${data.extraversion}`}</p>
@@ -58,8 +59,12 @@ const CardGenerator: React.FC<{
           fontFamily={fontFamily}
           children={null}
           title={(props: DetailsProps<SupportedData>, context?: any): ReactNode => {
+            if (!props.data) {
+              return null; // or handle the case where data is undefined
+            }  
             return (
               <>
+                
                 <h2>{props.data.title}</h2>
                 <p>{props.data.description}</p>
               </>

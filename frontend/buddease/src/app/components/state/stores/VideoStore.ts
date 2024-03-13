@@ -2,14 +2,19 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext"; // Import useNotification
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { Data, DataDetails } from "../../models/data/Data";
-import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { Data } from "../../models/data/Data";
+import { Progress } from "../../models/tracker/ProgresBar";
 import axiosInstance from "../../security/csrfToken";
+import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
-export interface Video extends Data, DataDetails {
+export interface Video extends Data {
   id: string;
   title: string;
   description: string;
+  content: string;
+  watchLater: boolean;
+  tags: string[];
+  isActive: boolean;
   // Add more properties from Data and DataDetails as needed
 }
 
@@ -78,49 +83,111 @@ const useVideoStore = (): VideoStore => {
 
 
   const { exec } = require('child_process');
-
-  const clipVideo = (id: string, startTime: , endTime) => {
+  const clipVideo = (id: string, startTime: number, endTime: number) => {
     const inputPath = `videos/${id}.mp4`; // Assuming videos are stored in a 'videos' directory
     const outputPath = `clipped_videos/${id}_clipped.mp4`; // Output path for the clipped video
   
     const command = `ffmpeg -i ${inputPath} -ss ${startTime} -to ${endTime} -c:v copy -c:a copy ${outputPath}`;
   
-    exec(command, (error, stdout, stderr) => {
+    exec(command, (error: any, stdout: any, stderr: any) => {
       if (error) {
         console.error('Error clipping video:', error);
         return;
       }
+      console.log('Clip video stdout:', stdout); // Output from the clipping process
+      console.error('Clip video stderr:', stderr); // Error messages from the clipping process
       console.log(`Video ${id} clipped from ${startTime} to ${endTime}`);
     });
   };
   
-  const loopVideo = (id, startTime, endTime) => {
+
+  const loopVideo = (id: string, startTime: number, endTime: number) => {
     const inputPath = `videos/${id}.mp4`; // Assuming videos are stored in a 'videos' directory
     const outputPath = `looped_videos/${id}_looped.mp4`; // Output path for the looped video
   
     const command = `ffmpeg -i ${inputPath} -ss ${startTime} -to ${endTime} -c copy -map 0:v -map 0:a -shortest ${outputPath}`;
   
-    exec(command, (error, stdout, stderr) => {
+    exec(command, (error: any, stdout: any, stderr: any) => {
       if (error) {
         console.error('Error looping video:', error);
         return;
       }
+      console.log('Loop video stdout:', stdout); // Output from the looping process
+      console.error('Loop video stderr:', stderr); // Error messages from the looping process
       console.log(`Video ${id} looped from ${startTime} to ${endTime}`);
     });
   };
-  
-  const editVideo = (id, edits) => {
-    // Perform video editing based on the provided edits using ffmpeg or other video editing libraries
-    console.log(`Video ${id} edited with the following instructions:`, edits);
-  };
-  
-  module.exports = {
-    clipVideo,
-    loopVideo,
-    editVideo,
-  };
-  
 
+
+
+  
+  const editVideo = (id: string, edits: any) => {
+    // Assuming 'videos' is a state variable holding the videos
+    const inputPath = `videos/${id}.mp4`; // Input path for the video
+    const outputPath = `edited_videos/${id}_edited.mp4`; // Output path for the edited video
+  
+    // Construct the ffmpeg command based on the provided edits
+    // Example: Apply filters, add text overlay, adjust brightness/contrast, etc.
+    let command = `ffmpeg -i ${inputPath}`;
+  
+    // Apply edits (customize this part based on the provided edits)
+    // Example: Adding a text overlay
+    if (edits.textOverlay) {
+      const { text, x, y } = edits.textOverlay;
+      command += ` -vf "drawtext=text='${text}':x=${x}:y=${y}:fontsize=24:fontcolor=white"`;
+    }
+  
+    // Add more edit options as needed
+  
+    command += ` ${outputPath}`;
+  
+    exec(command, (error: any, stdout: any, stderr: any) => {
+      if (error) {
+        console.error('Error editing video:', error);
+        return;
+      }
+      console.log('Edit video stdout:', stdout); // Output from the editing process
+      console.error('Edit video stderr:', stderr); // Error messages from the editing process
+      console.log(`Video ${id} edited with the following instructions:`, edits);
+    });
+  };
+  
+  
+  const moveClip = async (id: string, startTime: number, endTime: number) => { 
+    const videoId = await axiosInstance.patch(endpoints.videos.moveClip + id, {
+      startTime,
+      endTime,
+    });
+    notify(
+      "moveClipSuccess",
+      `You have successfully moved the clip ${videoId}`,
+      NOTIFICATION_MESSAGES.Video.MOVE_CLIP_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    ); // Notify success
+  }
+
+  const snapClipsTogether = async (id: string) => { 
+    const videoId = await axiosInstance.patch(endpoints.videos.snapClipsTogether + id);
+    notify(
+      "snapClipsTogetherSuccess",
+      `You have successfully snapped the clips together ${videoId}`,
+      NOTIFICATION_MESSAGES.Video.SNAP_CLIPS_TOGETHER_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    ); // Notify success
+  }
+
+  const renderVideoClips = async (id: string) => { 
+    const videoId = await axiosInstance.patch(endpoints.videos.renderVideoClips + id);
+    notify(
+      "renderVideoClipsSuccess",
+      `You have successfully rendered the video clips ${videoId}`,
+      NOTIFICATION_MESSAGES.Video.RENDER_VIDEO_CLIPS_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    ); // Notify success
+  }
 
   const deleteVideo = async (id: string) => {
     setVideos((prevVideos) => {
@@ -187,8 +254,24 @@ const useVideoStore = (): VideoStore => {
     clipVideo,
     loopVideo,
     editVideo,
+    moveClip,
+    snapClipsTogether,
+    renderVideoClips,
+
+
+
   });
   return store;
 };
 
 export default useVideoStore;
+
+
+
+
+
+// The inputPath variable represents the input path for the video to be edited.
+// The outputPath variable represents the output path for the edited video.
+// The edits parameter contains instructions for the video editing process, such as adding text overlay, applying filters, adjusting brightness/contrast, etc.
+// The ffmpeg command is constructed based on the provided edits and executed using the exec function.
+// The stdout and stderr streams produced by the exec function are captured and logged to the console.

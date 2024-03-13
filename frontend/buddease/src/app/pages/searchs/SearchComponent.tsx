@@ -25,16 +25,19 @@ const globalSearchData = [
   // Add more data as needed
 ];
 
-const globalDocumentData: DocumentDataPartial[] = [
+const globalDocumentData: DocumentData[] = [
   {
     ...getDefaultDocumentOptions(),
     id: 1,
     title: "Document 1",
     content: "Content for Document 1",
     highlights: ["highlighted phrase 1", "tagged item 2"],
+    topics: ["topic 1", "topic 2"],
+    files: [],
   },
   // Add more document data as needed
 ];
+
 
 export interface SearchComponentProps {
   documentData: DocumentData[];
@@ -49,8 +52,42 @@ export interface SearchComponentProps {
   }[];
 }
 
+// Add this function at an appropriate location in your codebase
+export const performSearch = (content: string, query: string): boolean => {
+  // Normalize the query and content for case-insensitive search
+  const normalizedQuery = query.toLowerCase();
+  const normalizedContent = content.toLowerCase();
+
+  // Split the query into individual keywords for more flexible matching
+  const keywords = normalizedQuery.split(/\s+/);
+
+  // Define a function to check if the content contains all keywords
+  const containsAllKeywords = (text: string): boolean => {
+    return keywords.every(keyword => text.includes(keyword));
+  };
+
+  // Define a function to calculate relevance score based on keyword matches
+  const calculateRelevanceScore = (text: string): number => {
+    let score = 0;
+    for (const keyword of keywords) {
+      // Increase score based on the number of keyword matches
+      score += (text.match(new RegExp(keyword, 'g')) || []).length;
+    }
+    return score;
+  };
+
+  // Perform search based on enhanced logic
+  return containsAllKeywords(normalizedContent) || calculateRelevanceScore(normalizedContent) > keywords.length / 2;
+};
+
+
+
+
+
+
 const SearchComponent: React.FC<SearchComponentProps> = ({
   componentSpecificData,
+  documentData
 }) => {
   const [searchInput, setSearchInput] = useState("");
   const { searchQuery, updateSearchQuery } = useSearch();
@@ -69,8 +106,9 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
       description: string;
       source: string;
       highlights: string[];
-    }[]
-  >([]);
+    }[]>([]);
+    const [documentSearchResults, setDocumentSearchResults] = useState<DocumentData[]>([]); // Add state for document search results
+
 
   useEffect(() => {
     // Perform component-specific search when searchQuery changes
@@ -84,21 +122,34 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 
     // Perform global search
     const globalResults = globalSearchData.filter(
-      (item) =>
+      item =>
         item.title.toLowerCase().includes(query) ||
         item.description.toLowerCase().includes(query)
     );
     setGlobalSearchResults(globalResults);
-  }, [searchQuery, componentSpecificData]);
+
+    const documentResults = globalDocumentData.filter(doc =>
+      performSearch(doc.content ?? "", query)
+      );
+    setDocumentSearchResults(documentResults);
+  }, [searchQuery, componentSpecificData, documentData]);
+
+
+
+
 
   const clearSearchResults = () => {
     setComponentSearchResults([]);
     setGlobalSearchResults([]);
+    setDocumentSearchResults([]); // Clear document search results
   };
 
   const handleSearchClick = () => {
     updateSearchQuery(searchInput);
   };
+
+
+
 
   return (
     <div>
@@ -132,6 +183,19 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
             >
               <h3>{result.title}</h3>
               <p>{result.description}</p>
+            </div>
+          ))
+        )}
+
+        {/* Document Search Results */}
+        <h2>Document Results</h2>
+        {documentSearchResults.length === 0 ? (
+          <p>No document results found.</p>
+        ) : (
+          documentSearchResults.map((result) => (
+            <div key={result.id.toString()} className="search-result">
+              <h3>{result.title}</h3>
+              <p>{result.content}</p>
             </div>
           ))
         )}

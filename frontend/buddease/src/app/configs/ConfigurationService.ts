@@ -39,9 +39,12 @@ export interface ApiConfig {
   };
   retry: RetryConfig;
   cache: CacheConfig;
-  responseType: string;
-  withCredentials: boolean;
-  onLoad: (response: any) => void;
+  responseType: {
+    contentType: string; // New property for content type
+    encoding: string; // New property for encoding
+    // Add more properties as needed
+  };  withCredentials: boolean;
+  onLoad?: (response: any) => void;
 }
 
 interface ConfigurationOptions {
@@ -94,7 +97,11 @@ class ConfigurationService {
       headers: {},
       retry: {} as RetryConfig,
       cache: {} as CacheConfig,
-      responseType: "",
+      responseType: {
+        contentType: "contentType", // New property for content type
+        encoding: "encoding", // New property for encoding
+        // Add more properties as needed
+      },
       withCredentials: false,
       onLoad: () => {},
     };
@@ -107,7 +114,10 @@ private getDefaultApiConfig(): ApiConfig {
     headers: {},
     retry: {} as RetryConfig,
     cache: {} as CacheConfig,
-    responseType: "json",
+    responseType: {
+      contentType: "application/json", // Default content type
+      encoding: "utf-8", // Default encoding
+    },
     withCredentials: false,
     baseURL: process.env.REACT_APP_API_BASE_URL || "",
     backendConfig: backendConfig,
@@ -244,7 +254,10 @@ private getDefaultApiConfig(): ApiConfig {
           retryDelay: 0,
         },
         cache: {} as CacheConfig,
-        responseType: "",
+        responseType: {
+          contentType: "application/json", // Default content type
+          encoding: "utf-8", // Default encoding
+        },
         withCredentials: false,
         onLoad: function (response: any): void {
           throw new Error("Function not implemented.");
@@ -322,7 +335,10 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
         staleWhileRevalidate: 60000,
         cacheKey: "api_cache_key",
       },
-      responseType: "json",
+      responseType: {
+        contentType: "application/json",
+        encoding: "utf-8",
+      },
       withCredentials: true,
       onLoad: (response) => console.log("Script loaded successfully", response),
     };

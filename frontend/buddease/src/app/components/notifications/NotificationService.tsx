@@ -1,5 +1,5 @@
+import { LogData } from '@/app/components/models/LogData';
 import { useNotification } from "@/app/components/support/NotificationContext";
-import { BytesLike } from "ethers";
 import { useDispatch, useSelector } from "react-redux";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import AnnouncementManager from "../support/AnnouncementManager";
@@ -12,13 +12,12 @@ import PushNotificationManager from "../support/PushNotificationManager";
 
 interface NotificationManagerServiceProps {
   notifications: NotificationData[];
-  notify: (
+  notify: (id: string,
     message: string,
     content: any,
-    date: Date | undefined,
-    type: NotificationType,
-    randomBytes: BytesLike
-  ) => Promise<void>;
+    date?: Date | undefined,
+    type?: NotificationType | undefined
+  ) => Promise<void>
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
   handleButtonClick: () => Promise<void>;
@@ -38,6 +37,16 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
   const notifications = useSelector(selectNotifications);
   const dispatch = useDispatch();
 
+  const logData: LogData = {
+    id: "",
+    message: "",
+    createdAt: new Date(),
+    type: "PushNotification" as NotificationType,
+    content: "",
+    completionMessageLog: "",
+    timestamp: new Date,
+    level: ""
+  }
 
   const sendPushNotification = (message: string, sender: string): void => {
     // Dispatch action to send push notification
@@ -47,26 +56,32 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       message: message,
       createdAt: new Date(),
       type: "PushNotification" as NotificationType,
-      content: sender
+      content: sender,
+      completionMessageLog: logData,
+      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
+      status: "confirmed",
+
     }));
     // Use the PushNotificationManager to send push notifications
     PushNotificationManager.sendPushNotification(message, sender);
   };
-
-  const sendAnnouncement = (message: string, sender: string): void => {
+  const sendAnnouncement = async (message: string, sender: string): Promise<void> => {
     // Dispatch action to send announcement
     dispatch(NotificationActions.addNotification({
       id: "", // Generate unique ID for notification
       date: new Date(),
       message: message,
       createdAt: new Date(),
-      type: "Announcement",
-      content: sender
+      type: "Announcement" as NotificationType,
+      content: sender,
+      completionMessageLog: logData,
+      status: "confirmed",
+      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error"
     }));
     // Use the AnnouncementManager to send announcements
-    AnnouncementManager.sendAnnouncement(message, sender);
+    await Promise.resolve(AnnouncementManager.sendAnnouncement(message, sender));
   };
-
+  
   const handleButtonClick = async (): Promise<void> => {
     // Dispatch action to handle button click
     dispatch(NotificationActions.addNotification({
@@ -74,16 +89,20 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       date: new Date(),
       message: "New message!",
       createdAt: new Date(),
-      type: "ButtonClick",
-      content: "App"
+      type: "ButtonClick" as NotificationType,
+      content: "App",
+      completionMessageLog: logData,
+      status: "confirmed",
+      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error"
     }));
     // Send push notification on button click
-    sendPushNotification("New message!", "App");
+    await Promise.resolve(sendPushNotification("New message!", "App"));
   };
+  
 
   const dismissNotification = (notification: NotificationData): void => {
     // Dispatch action to dismiss notification
-    dispatch(NotificationActions.removeNotification(notification.id));
+    dispatch(NotificationActions.removeNotification(notification.id as string));
     // Implement dismissal logic here
     console.log("Notification dismissed:", notification);
   };

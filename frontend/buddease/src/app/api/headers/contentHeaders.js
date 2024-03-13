@@ -7,6 +7,7 @@
 function createContentHeaders() {
     const headers = {
       'Content-Type': 'application/json',
+      'X-Content-Management': 'true',
       // Add other default headers here if needed
     };
   

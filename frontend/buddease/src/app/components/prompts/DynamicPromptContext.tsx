@@ -1,8 +1,7 @@
 // DynamicPromptContext.tsx
 import React, { ReactNode, createContext, useContext } from "react";
-import createDynamicPromptHook, {
-} from "./DynamicPromptHookGenerator";
 import { DynamicPromptHookParams, DynamicPromptHookResult } from "../hooks/dynamicHooks/createDynamicPromptHook";
+import createDynamicPromptHook from "./DynamicPromptHookGenerator";
 
 type DynamicPromptContextType = {
   dynamicPromptHook: (
@@ -21,7 +20,7 @@ type DynamicPromptProviderProps = {
 export const DynamicPromptProvider: React.FC<DynamicPromptProviderProps> = ({
   children,
 }) => {
-  const dynamicPromptHook = createDynamicPromptHook();
+  const dynamicPromptHook = createDynamicPromptHook
 
   return (
     <DynamicPromptContext.Provider

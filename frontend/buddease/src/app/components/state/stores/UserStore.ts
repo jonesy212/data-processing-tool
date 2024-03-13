@@ -8,7 +8,7 @@ import { AssignBaseStore } from "../AssignBaseStore";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 
 // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
-interface CustomUserStore extends Pick<AssignEventStore, 'assignedUsers' | 'updateEventStatus' | 'assignedEvents' | 'assignedTodos' | 'assignEvent' | 'assignUser' | 'unassignUser' | 'reassignUser' | 'assignUsersToEvents' | 'unassignUsersFromEvents' | 'setDynamicNotificationMessage' | 'reassignUsersToEvents' | 'assignUserToTodo' | 'unassignUserFromTodo' | 'reassignUserInTodo' | 'assignUsersToTodos' | 'unassignUsersFromTodos' | 'reassignUsersInTodos' | 'assignUserSuccess' | 'assignUserFailure'>, AssignBaseStore {
+export interface UserStore extends Pick<AssignEventStore, 'assignedUsers' | 'updateEventStatus' | 'assignedEvents' | 'assignedTodos' | 'assignEvent' | 'assignUser' | 'unassignUser' | 'reassignUser' | 'assignUsersToEvents' | 'unassignUsersFromEvents' | 'setDynamicNotificationMessage' | 'reassignUsersToEvents' | 'assignUserToTodo' | 'unassignUserFromTodo' | 'reassignUserInTodo' | 'assignUsersToTodos' | 'unassignUsersFromTodos' | 'reassignUsersInTodos' | 'assignUserSuccess' | 'assignUserFailure'>, AssignBaseStore {
   // Add additional properties specific to UserStore if needed
   users: Record<string, User[]>;
   currentUser: User | null;
@@ -16,7 +16,7 @@ interface CustomUserStore extends Pick<AssignEventStore, 'assignedUsers' | 'upda
   assignTask: (task: Task, user: User) => void;
 }
 
-const userManagerStore = (): CustomUserStore => {
+const userManagerStore = (): UserStore => {
   const [users, setUsers] = useState<Record<string, User[]>>({
     // Initialize with the required structure
   });

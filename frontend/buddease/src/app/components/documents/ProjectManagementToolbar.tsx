@@ -1,6 +1,5 @@
 import ProjectEventEmitter from "@/app/ts/EventEmitter";
 import React from "react";
-import { showModalOrNotification } from "../hooks/commHooks/useIdleTimeout";
 import { Task } from "../models/tasks/Task";
 import {
   CalendarEvent,
@@ -13,6 +12,7 @@ import useTodoManagerStore from "../state/stores/TodoStore";
 import useTrackerStore from "../state/stores/TrackerStore";
 import TodoImpl, { Todo } from "../todos/Todo";
 import ToolbarItem from "./ToolbarItem";
+import { showModalOrNotification } from "../hooks/idleTimeoutHooks";
 
 const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
   const toolbarOptions = {

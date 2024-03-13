@@ -1,7 +1,7 @@
 // useDataExport.ts
 import { useState } from 'react';
 import axiosInstance from '../../security/csrfToken';
-import { useNotification } from '../../support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '../../support/NotificationContext';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 
@@ -17,7 +17,12 @@ export const useDataExport = () => {
   const notificationContext = useNotification();
 
   const handleExportError = (errorMessage: string): never => {
-    notificationContext.notify('Error trying to export data, try again', NOTIFICATION_MESSAGES.Data.ERROR_EXPORTING_DATA, new Date, 'Error');
+    notificationContext.notify(
+      "handleExportError",
+      'Error trying to export data, try again',
+      NOTIFICATION_MESSAGES.Data.ERROR_EXPORTING_DATA,
+      new Date,
+      NotificationTypeEnum.Error);
     throw new Error(ERROR);
   };
 

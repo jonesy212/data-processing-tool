@@ -25,7 +25,7 @@ class ActionManager {
                 throw new Error(`Unsupported source: ${task.source}`);
             }
         } catch (error) {
-            this.notify('Error handling action', NOTIFICATION_MESSAGES.Error.DEFAULT('user action'), new Date(), 'ActionManager');
+            this.notify('Error handling action', NOTIFICATION_MESSAGES.User.DEFAULT('user action'), new Date(), 'ActionManager');
         }
     }
 

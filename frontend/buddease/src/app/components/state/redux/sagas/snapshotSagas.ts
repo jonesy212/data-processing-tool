@@ -20,7 +20,6 @@ function* handleFetchSnapshots() {
 }
 
 // Worker saga for handling updating snapshots
-// Worker saga for handling updating snapshots
 function* handleUpdateSnapshots(action: ReturnType<typeof SnapshotActions.batchUpdateSnapshotsSuccess>) {
   try {
     // Replace 'updateSnapshots' with your actual API call to update snapshots

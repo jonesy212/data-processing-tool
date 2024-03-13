@@ -1,20 +1,20 @@
-// ApiLogs.ts
-
-import { endpoints } from '@/app/api/ApiEndpoints';
+//Apilogs.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
 import DefaultNotificationContext, {
   NotificationTypeEnum,
 } from "@/app/components/support/NotificationContext";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import dotProp from "dot-prop";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import axiosInstance from "./axiosInstance";
+// Other imports remain unchanged
 
-const API_BASE_URL = endpoints.logging; // Assuming logging endpoints are defined in ApiEndpoints.ts
+const API_BASE_URL = dotProp.getProperty(endpoints, "logging");
 
-const { notify } = DefaultNotificationContext; // Destructure notify from DefaultNotificationContext
+const { notify } = DefaultNotificationContext;
 
-// Helper function to handle API errors
 export const handleApiError = (
   error: AxiosError<unknown> | Error,
   errorMessage: string
@@ -28,27 +28,27 @@ export const handleApiError = (
       notify(
         "ErrorId",
         NOTIFICATION_MESSAGES.Generic.ERROR,
-        { errorMessage, responseData: error.response.data }, // Pass additional data in content
+        { errorMessage, responseData: error.response.data },
         new Date(),
-        NotificationTypeEnum.Error // Updated NotificationTypeEnum
+        NotificationTypeEnum.Error
       );
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
       notify(
         "ErrorId",
         NOTIFICATION_MESSAGES.Generic.ERROR,
-        { errorMessage, requestDetails: error.request }, // Pass additional data in content
+        { errorMessage, requestDetails: error.request },
         new Date(),
-        NotificationTypeEnum.Error // Updated NotificationTypeEnum
+        NotificationTypeEnum.Error
       );
     } else {
       console.error("Error details:", error.message);
       notify(
         "ErrorId",
         NOTIFICATION_MESSAGES.Generic.ERROR,
-        { errorMessage, errorDetails: error.message }, // Pass additional data in content
+        { errorMessage, errorDetails: error.message },
         new Date(),
-        NotificationTypeEnum.Error // Updated NotificationTypeEnum
+        NotificationTypeEnum.Error
       );
     }
   } else {
@@ -56,9 +56,9 @@ export const handleApiError = (
     notify(
       "ErrorId",
       NOTIFICATION_MESSAGES.Generic.ERROR,
-      { errorMessage, errorDetails: error }, // Pass additional data in content
+      { errorMessage, errorDetails: error },
       new Date(),
-      NotificationTypeEnum.Error // Updated NotificationTypeEnum
+      NotificationTypeEnum.Error
     );
   }
 };
@@ -69,8 +69,15 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
+      const logInfoEndpoint = dotProp.getProperty(
+        API_BASE_URL,
+        "logInfo"
+      ) as string; // Cast logInfoEndpoint as string
+      if (!logInfoEndpoint) {
+        throw new Error("Log info endpoint not found");
+      }
       const response: AxiosResponse = await axiosInstance.post(
-        API_BASE_URL.logInfo,
+        logInfoEndpoint,
         { message, user }
       );
       runInAction(() => {
@@ -81,9 +88,9 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
         { message },
         new Date(),
-        NotificationTypeEnum.Info // Updated NotificationTypeEnum
+        NotificationTypeEnum.Info
       );
-      return response; // Return the AxiosResponse object
+      return response;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
@@ -94,29 +101,24 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_ERROR,
         { message },
         new Date(),
-        NotificationTypeEnum.Error // Updated NotificationTypeEnum
+        NotificationTypeEnum.Error
       );
       throw error;
     }
   },
-
-  // logWarning and logError methods remain unchanged
+  
 
   logApiRequest: async (endpoint: string): Promise<void> => {
     try {
-      // Perform the API request
       await axios.get(endpoint);
-
-      // Log the API request success
       notify(
         "logApi",
         "ApiRequestSuccessId",
         `API Request to ${endpoint} successful.`,
         new Date(),
-        NotificationTypeEnum.Info // Updated NotificationTypeEnum
+        NotificationTypeEnum.Info
       );
     } catch (error) {
-      // Log the API request failure using handleApiError
       handleApiError(
         error as AxiosError<unknown>,
         `Failed to make API request to ${endpoint}`
@@ -124,14 +126,20 @@ export const logsApiService = observable({
     }
   },
 
-
   logSuccess: async (
     message: string,
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
+      const logSuccessEndpoint = dotProp.getProperty(
+        API_BASE_URL,
+        "logSuccess"
+      ) as string; // Cast logSuccessEndpoint as string
+      if (!logSuccessEndpoint) {
+        throw new Error("Log success endpoint not found");
+      }
       const response: AxiosResponse = await axiosInstance.post(
-        API_BASE_URL.logError,
+        logSuccessEndpoint,
         { message, user }
       );
       runInAction(() => {
@@ -166,8 +174,15 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
+      const logFailureEndpoint = dotProp.getProperty(
+        API_BASE_URL,
+        "logFailure"
+      ) as string; // Cast logFailureEndpoint as string
+      if (!logFailureEndpoint) {
+        throw new Error("Log failure endpoint not found");
+      }
       const response: AxiosResponse = await axiosInstance.post(
-        API_BASE_URL.logFailure,
+        logFailureEndpoint,
         { message, user }
       );
       runInAction(() => {

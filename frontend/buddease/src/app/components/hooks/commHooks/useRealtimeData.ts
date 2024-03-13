@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
+import RealtimeDataItem from "../../../../../models/realtime/RealtimeData";
 import { Data } from "../../models/data/Data";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
 import SnapshotStore, { Snapshot } from "../../state/stores/SnapshotStore";
 import { fetchData } from "../../utils/dataAnalysisUtils";
-import RealtimeDataItem from "../../../../../models/realtime/RealtimeData";
 
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 
@@ -20,6 +21,7 @@ const useRealtimeData = (
   ) => void
 ) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
+  const dispatch = useDispatch(); // Initialize useDispatch hook
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
@@ -74,6 +76,10 @@ const useRealtimeData = (
           preferences: response.data,
         });
 
+
+        // Dispatch an action to update Redux store state
+        dispatch({ type: "UPDATE_REALTIME_DATA", payload: response.data });
+  
         // Emit the updated data to the frontend via WebSocket
         socket.emit("updateData", response.data);
       } catch (error) {

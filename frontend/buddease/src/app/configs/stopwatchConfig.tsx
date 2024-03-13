@@ -7,8 +7,8 @@ import IntervalTimerComponent from "../components/stopwatches/IntervalTimerCompo
 import MultiPhaseTimerComponent from '../components/stopwatches/MultiPhaseTimerComponent';
 import PomodoroTechniqueComponent from "../components/stopwatches/PomodoroTechniqueComponent";
 import TeamCollaborationTimerComponent from '../components/stopwatches/TeamCollaborationTimerComponent';
-import ProgressiveTimerComponent from "./ProgressiveTimerComponent";
-import ScheduledTimersComponent from "./ScheduledTimersComponent";
+import ProgressiveTimerComponent from "../components/stopwatches/ProgressiveTimerComponent";
+import ScheduledTimersComponent from "../components/stopwatches/ScheduledTimersComponent";
 
 
 export interface StopwatchConfiguration {

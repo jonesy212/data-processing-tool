@@ -15,7 +15,7 @@ import HeadersConfig from "./headers/HeadersConfig";
 
 const API_BASE_URL = endpoints.client;
 // Define a function to create headers using the provided configuration
-const createHeaders = (): typeof HeadersConfig => {
+export const createHeaders = (): typeof HeadersConfig => {
   // Access and return the header configurations from HeadersConfig.tsx
   return {
     "Content-Type": "application/json",
@@ -27,11 +27,7 @@ const createHeaders = (): typeof HeadersConfig => {
 
 // Use the createHeaders function to get the headers configuration
 const headersConfig: typeof HeadersConfig = createHeaders();
-
-
 interface ClientNotificationMessages {
-  [key: string]: string; // Index signature allowing string keys
-
   FETCH_CLIENT_DETAILS_SUCCESS: string;
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;
@@ -39,8 +35,13 @@ interface ClientNotificationMessages {
   // Add more keys as needed
 }
 
-const clientNotificationMessages: ClientNotificationMessages =
-  NOTIFICATION_MESSAGES.Client;
+const clientNotificationMessages: ClientNotificationMessages = {
+  FETCH_CLIENT_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_SUCCESS,
+  FETCH_CLIENT_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
+  UPDATE_CLIENT_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
+  UPDATE_CLIENT_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
+  // Add more properties as needed
+};
 
 class ClientApiService {
   notify: (
@@ -66,7 +67,7 @@ class ClientApiService {
   private async requestHandler(
     request: () => Promise<AxiosResponse>,
     errorMessage: string,
-    successMessageId: string,
+    successMessageId: keyof ClientNotificationMessages, // Specify the type as keyof ClientNotificationMessages
     errorMessageId: string,
     notificationData: any = null
   ): Promise<AxiosResponse> {
@@ -95,7 +96,7 @@ class ClientApiService {
       handleApiError(error as AxiosError<unknown, any>, errorMessage);
 
       if (errorMessageId) {
-        const errorMessage = clientNotificationMessages[errorMessageId];
+        const errorMessage = {} as ClientNotificationMessages[keyof ClientNotificationMessages];
         this.notify(
           errorMessageId,
           errorMessage,
@@ -107,7 +108,7 @@ class ClientApiService {
       throw error;
     }
   }
-
+  
   async fetchClientDetails(clientId: number): Promise<any> {
     try {
       const clientDetailsUrl = (API_BASE_URL as any).client.fetchClientDetails(
@@ -197,7 +198,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post(`${API_BASE_URL}/connect/${tenantId}`), // Using client endpoint
       "Failed to connect with tenant",
-      "ConnectWithTenantError",
+      "ConnectWithTenantError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.CONNECT_WITH_TENANT_ERROR,
       { tenantId }
     );
@@ -211,7 +212,7 @@ class ClientApiService {
       () =>
         axiosInstance.post(`${API_BASE_URL}/message/${tenantId}`, { message }), // Using client endpoint
       "Failed to send message to tenant",
-      "SendMessageToTenantError",
+      "SendMessageToTenantError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.SEND_MESSAGE_TO_TENANT_ERROR,
       { tenantId, message }
     );
@@ -221,7 +222,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get(`${API_BASE_URL}/connected-tenants`), // Using client endpoint
       "Failed to list connected tenants",
-      "ListConnectedTenantsError",
+      "ListConnectedTenantsError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_CONNECTED_TENANTS_ERROR
     );
   }
@@ -230,7 +231,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/messages"),
       "Failed to list messages",
-      "ListMessagesError",
+      "ListMessagesError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_MESSAGES_ERROR
     );
   }
@@ -239,7 +240,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post("/api/client/tasks/create", taskData),
       "Failed to create task",
-      "CreateTaskError",
+      "CreateTaskError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.CREATE_TASK_ERROR
     );
   }
@@ -248,7 +249,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/tasks"),
       "Failed to list tasks",
-      "ListTasksError",
+      "ListTasksError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_TASKS_ERROR
     );
   }
@@ -261,7 +262,7 @@ class ClientApiService {
           proposalData
         ),
       "Failed to submit project proposal",
-      "SubmitProjectProposalError",
+      "SubmitProjectProposalError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.SUBMIT_PROJECT_PROPOSAL_ERROR
     );
   }
@@ -276,7 +277,7 @@ class ClientApiService {
           challengeData
         ),
       "Failed to participate in community challenges",
-      "ParticipateInCommunityChallengesError",
+      "ParticipateInCommunityChallengesError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR
     );
   }
@@ -285,7 +286,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/rewards"),
       "Failed to list rewards",
-      "ListRewardsError",
+      "ListRewardsError"  as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_REWARDS_ERROR
     );
   }
@@ -296,3 +297,4 @@ class ClientApiService {
 const clientApiService = new ClientApiService(useNotification);
 
 export default clientApiService;
+export type { ClientNotificationMessages };

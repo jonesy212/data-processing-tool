@@ -1,54 +1,56 @@
 import { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
 
-export interface BackendConfig {
+interface FrontendConfig {
   appName: string;
-  appVersion: string;
+  appVersion: string; 
   apiConfig: ApiConfig;
   retryConfig: RetryConfig;
   cacheConfig: CacheConfig;
-  backendSpecificProperty: string;
+  frontendSpecificProperty: string;
 }
 
-const defaultApiConfig: ApiConfig = {
-  baseURL: process.env.BACKEND_API_BASE_URL || "https://api.example.com", // Use process.env or default value
-  timeout: parseInt(process.env.BACKEND_API_TIMEOUT ?? "10000"), // Use process.env or default value, convert to number
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.BACKEND_API_ACCESS_TOKEN || "your-access-token"}`, // Use process.env or default value
+// Example usage:
+export const frontendConfig: FrontendConfig = {
+  appName: process.env.FRONTEND_APP_NAME || "YourFrontendAppName", // Use process.env or default value
+  appVersion: process.env.FRONTEND_APP_VERSION || "1.0.0", // Use process.env or default value
+  apiConfig: {
+    baseURL: process.env.FRONTEND_API_BASE_URL || "https://api.example.com", // Use process.env or default value
+    timeout: parseInt(process.env.FRONTEND_API_TIMEOUT || "10000"), // Use process.env or default value, convert to number
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.FRONTEND_API_ACCESS_TOKEN || "your-access-token"}`, // Use process.env or default value
+    },
+    retry: {
+      enabled: true,
+      maxRetries: parseInt(process.env.FRONTEND_API_MAX_RETRIES || "3"), // Use process.env or default value, convert to number
+      retryDelay: parseInt(process.env.FRONTEND_API_RETRY_DELAY || "1000"), // Use process.env or default value, convert to number
+    },
+    cache: {
+      enabled: process.env.FRONTEND_API_CACHE_ENABLED === "true", // Use process.env
+      maxAge: parseInt(process.env.FRONTEND_API_CACHE_MAX_AGE || "300000"), // Use process.env or default value, convert to number
+      staleWhileRevalidate: parseInt(process.env.FRONTEND_API_CACHE_STALE_WHILE_REVALIDATE || "60000"), // Use process.env or default value, convert to number
+      cacheKey: process.env.FRONTEND_API_CACHE_KEY || "frontend_api_cache_key", // Use process.env or default value
+    },
+    responseType: process.env.FRONTEND_API_RESPONSE_TYPE || "", // Use process.env or default value
+    withCredentials: process.env.FRONTEND_API_WITH_CREDENTIALS === "true", // Use process.env
+    onLoad: function (response: any): void {
+      throw new Error("Function not implemented.");
+    },
+    name: undefined,
   },
-  retry: {
-    enabled: true,
-    maxRetries: parseInt(process.env.BACKEND_RETRY_MAX_RETRIES ?? "3"), // Use process.env or default value, convert to number
-    retryDelay: parseInt(process.env.BACKEND_RETRY_DELAY ?? "1000"), // Use process.env or default value, convert to number
-  },
-  cache: {
-    enabled: true,
-    maxAge: 300000,
-    staleWhileRevalidate: parseInt(process.env.BACKEND_CACHE_STALE_WHILE_REVALIDATE ?? "60000"), // Use process.env or default value, convert to number
-    cacheKey: process.env.BACKEND_API_CACHE_KEY || "api_cache_key", // Use process.env or default value
-  },
-  responseType: "json",
-  withCredentials: true,
-  onLoad: (response) => console.log("Script loaded successfully", response),
-  name: undefined
-};
-
-const backendConfig: BackendConfig = {
-  appName: process.env.BACKEND_APP_NAME || "YourBackendAppName", // Use process.env or default value
-  appVersion: "1.0.0",
-  apiConfig: defaultApiConfig,
   retryConfig: {
-    enabled: true,
-    maxRetries: parseInt(process.env.BACKEND_RETRY_MAX_RETRIES ?? "3"), // Use process.env or default value, convert to number
-    retryDelay: parseInt(process.env.BACKEND_RETRY_DELAY ?? "1000"), // Use process.env or default value, convert to number
+    enabled: process.env.FRONTEND_RETRY_ENABLED === "true", // Use process.env
+    maxRetries: parseInt(process.env.FRONTEND_RETRY_MAX_RETRIES || "3"), // Use process.env or default value, convert to number
+    retryDelay: parseInt(process.env.FRONTEND_RETRY_DELAY || "1000"), // Use process.env or default value, convert to number
   },
   cacheConfig: {
-    enabled: true,
-    maxAge: 300000,
-    staleWhileRevalidate: parseInt(process.env.BACKEND_CACHE_STALE_WHILE_REVALIDATE ?? "60000"), // Use process.env or default value, convert to number
-    cacheKey: "backend_api_cache_key",
+    enabled: process.env.FRONTEND_CACHE_ENABLED === "true", // Use process.env
+    maxAge: parseInt(process.env.FRONTEND_CACHE_MAX_AGE || "300000"), // Use process.env or default value, convert to number
+    staleWhileRevalidate: parseInt(process.env.FRONTEND_CACHE_STALE_WHILE_REVALIDATE || "60000"), // Use process.env or default value, convert to number
+    cacheKey: process.env.FRONTEND_CACHE_KEY || "frontend_cache_key", // Use process.env or default value
   },
-  backendSpecificProperty: process.env.BACKEND_SPECIFIC_PROPERTY || "YourBackendSpecificValue", // Use process.env or default value
+  frontendSpecificProperty: process.env.FRONTEND_SPECIFIC_PROPERTY || "YourFrontendSpecificValue", // Use process.env or default value
 };
 
-export { backendConfig };
+// Use frontendDocumentConfig as needed in your frontend application
+export type { FrontendConfig };

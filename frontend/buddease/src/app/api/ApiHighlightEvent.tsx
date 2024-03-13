@@ -5,14 +5,15 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import { useNotification, NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { clientNotificationMessages } from './ApiClient';
 
 export const HighlightEventApi = {
   fetchHighlights: async (): Promise<HighlightEvent[]> => {
     try {
       const response = await fetchData(endpoints.highlights.list);
       return response.data.highlights;
-    } catch (error) {
-      handleApiError(error);
+    } catch (error ) {
+      handleApiError(error, errorMessage);
       throw error;
     }
   },
@@ -70,9 +71,10 @@ export const HighlightEventApi = {
           new Date(),
           "ClientError" as NotificationType
         );
+      }
     }
-  },
-};
+  }
+}
 
 export const highlightActions = {
   fetchHighlights: () => async (dispatch: any) => {
@@ -110,4 +112,4 @@ export const highlightActions = {
       dispatch({ type: 'DELETE_HIGHLIGHT_FAILURE', payload: error.message });
     }
   },
-};
+}

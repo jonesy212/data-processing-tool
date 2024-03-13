@@ -4,7 +4,7 @@ import { backendConfig } from "@/app/configs/BackendConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
-import { frontendConfig } from "@/app/configs/FrontendConfig";
+import  frontendConfig  from "@/app/configs/FrontendConfig";
 import MainConfig from "@/app/configs/MainConfig";
 import UserPreferences from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";

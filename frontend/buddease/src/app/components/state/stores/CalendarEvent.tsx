@@ -1,20 +1,26 @@
 // CalendarEvent.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from '@/app/ts/ScheduleEventModal';
+import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { Data } from "../../models/data/Data";
-import { Team } from "../../models/teams/Team";
+import Team from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
 import axiosInstance from "../../security/csrfToken";
-import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { VideoData } from "../../video/Video";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
-import CommonEvent from "./CommonEvent";
+import CommonEvent, { implementThen } from "./CommonEvent";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
+import { useDispatch } from "react-redux";
+
+
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -22,11 +28,32 @@ const API_BASE_URL = endpoints.calendar.events;
 
 const { notify } = useNotification();
 
+const notifyPromise = Promise.resolve(
+  useNotification().notify("snapshotStore",
+    "error",
+    NOTIFICATION_MESSAGES.CalendarEvents.DEFAULT,
+  new Date,
+  "Error" as NotificationType));
 
+
+
+// Define a synchronous callback function that wraps the asynchronous operation
+const notifyCallback = (): void => {
+  notifyPromise.then(() => {
+    // This code block will execute when the promise resolves
+    // It's important to handle any errors or other logic here
+  }).catch(error => {
+    // Handle any errors from the promise
+    console.error("Error in notifyPromise:", error);
+  });
+};
+
+export type Priority = "low" | "medium" | "high" | "urgent" | undefined;
 
 interface CalendarEvent extends CommonEvent, Data {
   
-  status?:
+  status:
+  "pending" 
     | "tentative"
     | "inProgress"
     | "confirmed"
@@ -34,6 +61,8 @@ interface CalendarEvent extends CommonEvent, Data {
     | "scheduled"
   | "completed";
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
+  priority:  Priority | boolean
+  location?: string;
   host: Member;
   hosts?: Member[];
   guestSpeakers?: Member[]
@@ -44,19 +73,22 @@ interface CalendarEvent extends CommonEvent, Data {
   reminder?: string;
   pinned?: boolean;
   archived?: boolean;
-  priority?: string;
-  location?: string;
+  documentReleased?: boolean;
 
 }
 
 export interface CalendarManagerStore {
+  dispatch: (action: PayloadAction<any, string, any, any>) => void;
   openScheduleEventModal: (content: JSX.Element) => void;
   openCalendarSettingsPage: () => void;
+  updateDocumentReleaseStatus: (eventId: string, released: boolean) => void;
 
   events: Record<string, CalendarEvent[]>;
   eventTitle: string;
   eventDescription: string;
   eventStatus:
+  
+    | "pending" 
     | "scheduled"
     | "inProgress"
     | "tentative"
@@ -109,6 +141,9 @@ export interface CalendarManagerStore {
 }
 
 class CalendarManagerStoreClass implements CalendarManagerStore {
+
+
+    dispatch: (action: PayloadAction<any, string, any, any>) => void;
     events: Record<string, CalendarEvent[]> = {
     scheduled: [],
     inProgress: [],
@@ -125,11 +160,10 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     | "completed"
     | undefined = undefined;
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
-    Snapshot<Data>
-    >({} as SnapshotStoreConfig<Snapshot<Data>>,
-      notify
-    );
+  snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<Snapshot<Data>>(
+    {} as SnapshotStoreConfig<Snapshot<Data>>,
+    notifyCallback // Use the synchronous callback function here
+  );;
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
@@ -141,7 +175,10 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   openCalendarSettingsPage: () => void;
   openScheduleEventModal: (content: JSX.Element) => void;
   constructor() {
+    this.dispatch = useDispatch()
     this.assignedEventStore = useAssignEventStore();
+    this.setDocumentReleaseStatus = this.setDocumentReleaseStatus.bind(this);
+    this.updateDocumentReleaseStatus = this.updateDocumentReleaseStatus.bind(this);
     this.handleRealtimeUpdate = (
       events: Record<string, CalendarEvent[]>,
       snapshotStore: SnapshotStore<Snapshot<Data>>
@@ -157,6 +194,37 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     this.useRealtimeDataInstance = useRealtimeData(this.events, updateCallback);
     makeAutoObservable(this);
   }
+
+
+
+
+
+  setDocumentReleaseStatus: (
+    eventId: string,
+    released: boolean
+  ) => PayloadAction<{ eventId: string; released: boolean }> = (
+    eventId: string,
+    released: boolean
+  ) => {
+    // Assuming you have access to a Redux store or similar mechanism to dispatch actions
+    // Dispatch an action to set the document release status
+    return {
+      type: "SET_DOCUMENT_RELEASE_STATUS",
+      payload: { eventId, released },
+    };
+  };
+
+
+  updateDocumentReleaseStatus(eventId: string, released: boolean): void {
+    // Instead of updating the entire 'events' object, let's update the specific event's 'documentReleased' property
+    const eventsArray = this.events[eventId];
+    if (eventsArray && eventsArray.length > 0) {
+      const event = eventsArray[0]; // Accessing the first event in the array
+      event.documentReleased = released;
+    }
+  }
+  
+
 
   updateEventTitle(title: string): void {
     this.eventTitle = title;
@@ -191,6 +259,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
 
     // Assuming 'event' has a valid 'status' property
     const status:
+      | "pending"
       | "scheduled"
       | "inProgress"
       | "tentative"
@@ -217,11 +286,13 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       return;
     }
 
+    const defaultStatus: "pending" = "pending"; // Provide a default value for status if it's undefined
+
     const newEvent: CalendarEvent = {
       id: Date.now().toString(),
       title: this.eventTitle,
       description: this.eventDescription,
-      status: this.eventStatus,
+      status: this.eventStatus || defaultStatus, // Use defaultStatus if this.eventStatus is undefined
       date: new Date(),
       startDate: new Date(),
       metadata: {} as StructuredMetadata,
@@ -231,7 +302,17 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       attendees: [] as Member[],
       color: "",
       isImportant: false,
-      teamMemberId: 0
+      teamMemberId: '0',
+      priority: undefined,
+      _id: "",
+      isActive: false,
+      tags: [],
+      phase: null,
+      then: implementThen,
+      analysisType: "",
+      analysisResults: [],
+      videoData: {} as VideoData,
+      participants: []
     };
 
     this.events = {
@@ -412,16 +493,8 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
 
 const useCalendarManagerStore = (): CalendarManagerStore => {
   return new CalendarManagerStoreClass();
-};async function updateCallback(
-  events: Record<string, CalendarEvent[]>,
-): Promise<void> {
-  // Convert events to the appropriate data format if needed
-  const eventData: Data = convertEventsToData(events);
+};
 
-  // Use the eventData variable here or anywhere else in the function as needed
-  // For example:
-  console.log('Event data:', eventData);
-}
 
 
 
@@ -463,6 +536,7 @@ function openScheduleEventModal(eventId: string): void {
   useModalFunctions().setModalContent(modalElement);
 
   notify(
+    "Modal content set",
     "Opening Schedule Event Modal",
     NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
     new Date(),
@@ -482,9 +556,7 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
     isActive: false,
     tags: [],
     phase: null,
-    then: function (callback: (newData: Snapshot<Data>) => void): void {
-      throw new Error("Function not implemented.");
-    },
+    then: implementThen,
     analysisType: "",
     analysisResults: [],
     videoUrl: "",
@@ -513,24 +585,43 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
 const events: Record<string, CalendarEvent[]> = {
   '2024-02-08': [
     {
+      _id: "",
       id: '1',
       title: 'Meeting',
       date: new Date('2024-02-08T09:00:00'),
-      startDate: new Date('2024-02-08T09:00:00'),
-      endDate: new Date('2024-02-08T10:00:00'),
+      startDate: new Date(),
+      endDate: new Date(),
       metadata: {} as StructuredMetadata,
       rsvpStatus: "notResponded",
       host: {} as Member,
       color: "",
       isImportant: false,
-      teamMemberId: 0
+      teamMemberId: '0',
+      status: "pending",
+      isCompleted: false,
+      isActive: false,
+      tags: [],
+      priority: "low",
+      phase: null,
+      participants: [],
+      then: (callback: (newData: Snapshot<Data>) => void) => {
+        // Implement logic to handle the snapshot of data
+        const newData: Snapshot<Data> = {
+          timestamp: new Date(),
+          data: convertedData,
+        };
+        callback(newData);
+      },
+      analysisType: "",
+      analysisResults: [],
+      videoData: {} as VideoData,
     },
     // Add more events for other dates as needed
   ],
   // Add more dates with corresponding events as needed
 };
 
-const convertedData = convertEventsToData(events);
+export const convertedData = convertEventsToData(events);
 console.log(convertedData);
 
 export { fetchEventsRequest, updateCallback, useCalendarManagerStore };

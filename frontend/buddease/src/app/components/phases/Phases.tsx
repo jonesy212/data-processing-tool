@@ -11,36 +11,38 @@ export const additionalPhase1: Phase = {
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
+  duration: 0,
   component: () => <div>Additional Phase 1 Component</div>,
   hooks: createPhaseHook({
-      canTransitionTo: () => true,
-      handleTransitionTo: async () => {
-          console.log('Transitioning to Additional Phase 1');
-      },
-      name: "",
-      condition: function (): boolean {
-          // Adjust the condition based on your requirements
-          // Example: Allow transition only if the calendar phase is completed
-          return calendarPhase.endDate < new Date();
-      },
-      asyncEffect: async function (): Promise<() => void> {
-          // Adjust the asynchronous effect based on your requirements
-          console.log("Executing async effect for Additional Phase 1");
+    duration: 0,
+    canTransitionTo: () => true,
+    handleTransitionTo: async () => {
+      console.log('Transitioning to Additional Phase 1');
+    },
+    name: "",
+    condition: function (): boolean {
+      // Adjust the condition based on your requirements
+      // Example: Allow transition only if the calendar phase is completed
+      return calendarPhase.endDate < new Date();
+    },
+    asyncEffect: async function (): Promise<() => void> {
+      // Adjust the asynchronous effect based on your requirements
+      console.log("Executing async effect for Additional Phase 1");
 
-          // Simulate an asynchronous task
-          const asyncTask = new Promise<() => void>((resolve) => {
-              setTimeout(() => {
-                  console.log("Async task completed for Additional Phase 1");
-                  resolve(() => {
-                      console.log("Cleanup logic for Additional Phase 1");
-                      // Add cleanup logic here if needed
-                  });
-              }, 2000); // Simulate a 2-second delay
+      // Simulate an asynchronous task
+      const asyncTask = new Promise<() => void>((resolve) => {
+        setTimeout(() => {
+          console.log("Async task completed for Additional Phase 1");
+          resolve(() => {
+            console.log("Cleanup logic for Additional Phase 1");
+            // Add cleanup logic here if needed
           });
+        }, 2000); // Simulate a 2-second delay
+      });
 
-          // Return the promise for the cleanup function
-          return asyncTask;
-      },
+      // Return the promise for the cleanup function
+      return asyncTask;
+    },
   }) as unknown as CustomPhaseHooks,
 };
 
@@ -49,8 +51,10 @@ export const additionalPhase2: Phase = {
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
+  duration: 0,
   component: () => <div>Additional Phase 2 Component</div>,
   hooks: createPhaseHook({
+      duration: 0,
       canTransitionTo: () => true,
       handleTransitionTo: async () => {
           console.log('Transitioning to Additional Phase 2');

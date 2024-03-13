@@ -6,7 +6,8 @@ import { IconStore } from './IconStore';
 import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
 import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
-
+import { UndoRedoStore } from './UndoRedoStore';
+import { UserStore, userManagerStore } from './UserStore';
 
 
 
@@ -21,6 +22,8 @@ export class RootStores {
   taskManagerStore: TaskManagerStore
   iconStore: typeof IconStore;
   calendarStore: CalendarManagerStore;
+  undoRedoStore: UndoRedoStore;
+  userStore: UserStore;
   prototype: any  
   browsers: any
 
@@ -30,6 +33,8 @@ export class RootStores {
     this.trackerStore = useTrackerStore(rootStores)
     this.taskManagerStore = useTaskManagerStore()
     this.calendarStore = useCalendarManagerStore()
+    this.undoRedoStore = new UndoRedoStore();
+    this.userStore =  userManagerStore();
     this.iconStore = IconStore
     makeAutoObservable(this);
   }
@@ -43,8 +48,8 @@ export class RootStores {
     this.trackerStore.dispatch(action);
     this.todoStore.dispatch(action);
     this.taskManagerStore.dispatch(action);
-    // this.calendarStore.dispatch(action);
-    // this.iconStore.dispatch(action);
+    this.calendarStore.dispatch(action);
+    this.iconStore.dispatch(action);
   }
 }
 

@@ -3,22 +3,17 @@ import HighlightEvent from "../components/documents/screenFunctionality/Highligh
 // apiEndpoints.ts
 const BASE_URL = "https://your-api-base-url";
 
-
-
-interface NestedEndpoints {
+type NestedEndpoints = {
   [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
+};
+
+// Interface representing endpoints with categories
+interface Endpoints {
+  [category: string]: NestedEndpoints;
 }
 
 
-interface Endpoints {
-  [category: string]: NestedEndpoints;
- }
-
-
-
 export const endpoints: Endpoints = {
-
-
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
@@ -34,8 +29,10 @@ export const endpoints: Endpoints = {
     updateList: `${BASE_URL}/users/update-list`,
     search: `${BASE_URL}/users/search`,
     updateRole: (userId: number) => `${BASE_URL}/users/${userId}/update-role`,
-    updateRoles: (userIds: number[]) => `${BASE_URL}/users/${userIds.join(',')}/update-roles`,
+    updateRoles: (userIds: number[]) =>
+      `${BASE_URL}/users/${userIds.join(",")}/update-roles`,
   },
+
   userRoles: {
     list: `${BASE_URL}/api/user-roles`,
     single: (roleId: number) => `${BASE_URL}/api/user-roles/${roleId}`,
@@ -54,7 +51,6 @@ export const endpoints: Endpoints = {
     listUsers: `${BASE_URL}/api/users`,
   },
 
-  
   userRolesNFT: {
     list: `${BASE_URL}/api/user-roles-nft`,
     single: (roleId: number) => `${BASE_URL}/api/user-roles-nft/${roleId}`,
@@ -116,7 +112,6 @@ export const endpoints: Endpoints = {
   },
 
   client: {
-    
     fetchClientDetails: (clientId: number) => `/api/client/${clientId}`, // Endpoint to fetch client details
     updateClientDetails: (clientId: number) => `/api/client/${clientId}/update`, // Endpoint to update client details
     connectWithTenant: (tenantId: number) => `/api/client/connect/${tenantId}`, // Endpoint to connect with a specific tenant
@@ -139,9 +134,10 @@ export const endpoints: Endpoints = {
     add: `${BASE_URL}/api/documents`,
     remove: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
     update: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    download: (documentId: string) => `${BASE_URL}/api/documents/downloadDocument/${documentId}`,
     // Add more document-related endpoints as needed
   },
-  
+
   collaborationTools: {
     createTask: `${BASE_URL}/api/collaboration/tasks/create`,
     updateTask: (taskId: number) =>
@@ -298,12 +294,12 @@ export const endpoints: Endpoints = {
     getData: `${BASE_URL}/data`,
     addData: `${BASE_URL}/data`,
     getSpecificData: (dataId: number) => `${BASE_URL}/data/${dataId}`,
-    updateData: (dataId: number) => `${BASE_URL}/data/${dataId}`,
+    // updateData: (dataId: number) => `${BASE_URL}/data/${dataId}`,
     deleteData: (dataId: number) => `${BASE_URL}/data/${dataId}`,
     updateDataTitle: `${BASE_URL}/data/update_title`,
     streamData: `${BASE_URL}/stream_data`,
     dataProcessing: `${BASE_URL}/data/data-processing`,
-
+    updateData: `${BASE_URL}/data/update`,
     highlightList: `${BASE_URL}/api/highlights`, // Highlight list endpoint
     addHighlight: (newHighlight: Omit<HighlightEvent, "id">) =>
       `${BASE_URL}/api/highlights/${newHighlight}`,
@@ -319,6 +315,15 @@ export const endpoints: Endpoints = {
     uploadData: `${BASE_URL}/api/data/upload`, // Upload data endpoint
   },
 
+
+  document: {
+    list: `${BASE_URL}/api/documents`,
+    single: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    add: `${BASE_URL}/api/documents`,
+    remove: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    update: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
+    // Add more document-related endpoints as needed
+  },
   details: {
     list: `${BASE_URL}/api/details`,
     single: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
@@ -396,6 +401,7 @@ export const endpoints: Endpoints = {
   participants: {
     single: (userId: string | number) => `/api/participants/${userId}`,
   },
+
   phases: {
     list: `${BASE_URL}/api/phases`,
     single: (phaseId: number) => `${BASE_URL}/api/phases/${phaseId}`,
@@ -440,12 +446,22 @@ export const endpoints: Endpoints = {
       update: `${BASE_URL}/api/messages/audio/update`,
       delete: `${BASE_URL}/api/messages/audio/delete`,
     },
+
+    videos: {
+      send: `${BASE_URL}/api/messages/video/send`,
+      get: `${BASE_URL}/api/messages/video/get`,
+      edit: `${BASE_URL}/api/videos/edit`, 
+    },
+
+    
+
     videoMessages: {
       send: `${BASE_URL}/api/messages/video/send`,
       get: `${BASE_URL}/api/messages/video/get`,
       update: `${BASE_URL}/api/messages/video/update`,
       delete: `${BASE_URL}/api/messages/video/delete`,
     },
+
     notifications: {
       send: `${BASE_URL}/api/messages/notifications/send`,
       get: `${BASE_URL}/api/messages/notifications/get`,
@@ -453,7 +469,7 @@ export const endpoints: Endpoints = {
       delete: `${BASE_URL}/api/messages/notifications/delete`,
     },
   },
-    payment: {
+  payment: {
     initiatePayment: `${BASE_URL}/api/payment/initiate`, // Endpoint for initiating a payment transaction
     verifyPayment: `${BASE_URL}/api/payment/verify`, // Endpoint for verifying a payment transaction
     cancelPayment: `${BASE_URL}/api/payment/cancel`, // Endpoint for cancelling a payment transaction
@@ -624,7 +640,8 @@ export const endpoints: Endpoints = {
     remove: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}`,
     update: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}`,
 
-    fetchUpdatedData: (snapshotId: string) => `${BASE_URL}/api/snapshots/${snapshotId}/fetch-updated-data`,
+    fetchUpdatedData: (snapshotId: string) =>
+      `${BASE_URL}/api/snapshots/${snapshotId}/fetch-updated-data`,
     // New endpoints for bulk actions
     bulkAdd: `${BASE_URL}/api/snapshots/bulk-add`,
     bulkRemove: `${BASE_URL}/api/snapshots/bulk-remove`,
@@ -873,7 +890,6 @@ export const endpoints: Endpoints = {
     updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
   },
   // Add more sections as needed
-} 
-
+};
 
 export type { NestedEndpoints };

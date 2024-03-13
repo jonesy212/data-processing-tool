@@ -1,39 +1,43 @@
-// GenerateInterfaces.ts
 import * as fs from 'fs';
 import { readCache, writeCache } from '../utils/ReadAndWriteCache';
-import { generateUniqueId } from './generateNewApiConfig';
+import { generateUniqueApiId } from './generateNewApiConfig';
+import { CacheData } from '../generators/GenerateCache'; // Import CacheData type
 
-export function generateInterfaces(backendModelPaths: string[]): void {
+export async function generateInterfaces(backendModelPaths: string[]): Promise<void> {
   backendModelPaths.forEach(async (backendModelPath) => {
     const modelName = extractModelName(backendModelPath);
 
-    // Check if the interface is already in the cache
-    const cache: { [key: string]: string } = await readCache();
-    if (cache && !cache[modelName]) {
-      // If not, generate the interface code
-      const interfaceCode = generateInterfaceCode(modelName);
+    try {
+      // Check if the interface is already in the cache
+      let cache: CacheData = await readCache();
 
-      // Save the interface code to the file
-      const interfacePath = `./src/app/interfaces/${modelName}.ts`;
-      fs.writeFileSync(interfacePath, interfaceCode);
+      if (!cache[modelName]) {
+        // If not, generate the interface code
+        const interfaceCode = generateInterfaceCode(modelName);
 
-      // Update the cache with the interface id
-      cache[modelName] = generateUniqueId();
-      await writeCache(cache);
+        // Save the interface code to the file
+        const interfacePath = `./src/app/interfaces/${modelName}.ts`;
+        fs.writeFileSync(interfacePath, interfaceCode);
+
+        // Update the cache with the interface id
+        cache[modelName] = generateUniqueApiId(); // Use generateUniqueApiId function here
+        await writeCache(cache);
+      }
+    } catch (error) {
+      console.error('Error generating interface:', error);
     }
   });
 }
 
-
-
+// Function to extract the model name from the backend model path
 function extractModelName(backendModelPath: string): string {
   // Extract the model name from the path
   // Adjust this based on your actual backend model structure
   return backendModelPath.split('/').pop()!.replace('.py', '');
 }
 
+// Function to generate the interface code based on the model name
 function generateInterfaceCode(modelName: string): string {
-  // Generate the interface code based on the model name
   return `export interface ${modelName} {\n` +
          `  id: number;\n` +
          `  name: string;\n` +

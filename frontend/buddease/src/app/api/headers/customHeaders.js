@@ -11,6 +11,7 @@ function generateCustomHeaders(options) {
     // Common headers
     const headers = {
       'Content-Type': 'application/json',
+      'X-Content-Management': 'true',
       Accept: 'application/json',
       // Add any other common headers here
     };

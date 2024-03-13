@@ -8,6 +8,7 @@
 function createRequestHeaders(authToken) {
     const headers = {
       'Content-Type': 'application/json',
+      'X-Content-Management': 'true',
       // Add other common request headers here
     };
   

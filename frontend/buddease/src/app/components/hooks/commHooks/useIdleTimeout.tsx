@@ -1,198 +1,65 @@
 // useIdleTimeout.tsx
 
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
-import axios from "axios";
+import { useEffect } from "react";
 import { Router } from "react-router-dom";
-import EXTENDED_NOTIFICATION_MESSAGES from "../../support/ExtendedNotificationMessages";
-import createDynamicHook, { DynamicHookParams, DynamicHookResult } from "../dynamicHooks/dynamicHookGenerator";
+// Define the type for the idleTimeoutEffect function
+type IdleTimeoutEffectFunction = () => Promise<void>;
+
+// Define the type for the idleTimeoutCondition function
+type IdleTimeoutConditionFunction = (
+  lastUserInteractionTime: number | null
+) => boolean;
+
+// Define the type for the fetchLastUserInteractionTime function
+type FetchLastUserInteractionTimeFunction = () => Promise<number | null>;
+
+// Define the type for the showModalOrNotification function
+type ShowModalOrNotificationFunction = (message: string) => void;
+
+// Define the type for the clearUserData function
+type ClearUserDataFunction = () => void;
+
+// Define the type for the resetIdleTimeout function
+type ResetIdleTimeoutFunction = () => void;
 
 const IDLE_TIMEOUT_DURATION = 60000; // 1 minute in milliseconds
 
-
+// Interface defining props for the useIdleTimeout hook
 interface IdleTimeoutProps {
+  IDLE_TIMEOUT_DURATION: number;
   accessToken: string;
   router: typeof Router;
   extendedRouter: ExtendedRouter;
   setLastUserInteractionTime: (lastUserInteractionTime: number) => void;
-  clearUserData: () => void;
-  showModalOrNotification: (message: string) => void;
+  ideleTimeoutEffect: IdleTimeoutEffectFunction;
+  idleTimeoutConditionFunction: IdleTimeoutConditionFunction;
+  fetchLastUserInteractionTime: FetchLastUserInteractionTimeFunction;
+  showModalOrNotification: ShowModalOrNotificationFunction;
+  clearUserData: ClearUserDataFunction;
+  resetIdleTimeout: ResetIdleTimeoutFunction;
 }
 
+// useIdleTimeout hook implementation
+const useIdleTimeout = (props: IdleTimeoutProps): (() => void) => {
+  const {
+    fetchLastUserInteractionTime,
+    showModalOrNotification,
+    clearUserData,
+    resetIdleTimeout,
+  } = props;
 
-// Placeholder function for displaying a modal or notification
-const showModalOrNotification = (message: string): void => {
-    // Replace this with your actual logic for showing a modal or notification
-    console.log(`Show Modal or Notification: ${message}`);
-  };
-  
-  // Placeholder function for clearing user data
-  const clearUserData = (): void => {
-    // Replace this with your actual logic for clearing user data
-    console.log('Clearing User Data');
-  };
-  
+  useEffect(() => {
+    // Your useEffect logic here
+  }, [
+    fetchLastUserInteractionTime,
+    showModalOrNotification,
+    clearUserData,
+    resetIdleTimeout,
+  ]);
 
-    
-    
-    
-
-// Function to fetch the last user interaction time from the backend
- // Function to fetch the last user interaction time from the backend
- const fetchLastUserInteractionTime = async (): Promise<number> => {
-  try {
-    const response = await axios.get('/api/getLastUserInteractionTime');
-    return response.data.lastInteractionTime;
-  } catch (error) {
-    console.error('Error fetching last user interaction time:', error);
-    // Handle error appropriately
-    return 0; // Default value if the API call fails
-  }
+  // Return a function that takes no arguments and returns void
+  return () => {};
 };
 
-
-
-const useIdleTimeout = (props: IdleTimeoutProps): DynamicHookResult => {
-  // Create a dynamic hook with the condition and effect functions
-  
-  const idleTimeoutCondition = async () => {
-    // Your idle timeout condition logic goes here
-    // For example, check if the user has been inactive for a certain duration
-
-    const lastActivityTimestamp = await fetchLastUserInteractionTime();
-    const currentTime = new Date().getTime();
-    const elapsedTime = currentTime - lastActivityTimestamp;
-
-    // Check if the elapsed time since the last activity exceeds the idle timeout duration
-    const isIdle = elapsedTime >= IDLE_TIMEOUT_DURATION;
-
-    return isIdle;
-  };
-
-  
-  const idleTimeoutEffect = async () => {
-    // Log out the user or perform any other action
-    showModalOrNotification(
-      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.SESSION_EXPIRING
-    );
-    try {
-      await axios.post("/api/logout");
-      showModalOrNotification(
-        EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.LOGOUT_SUCCESS
-      );
-    } catch (error) {
-      showModalOrNotification(
-        EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.LOGOUT_ERROR
-      );
-    }
-
-    // Clear sensitive user data or perform cleanup
-    showModalOrNotification(
-      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.CLEAR_DATA
-    );
-    clearUserData();
-
-    // Redirect the user to a landing page
-    showModalOrNotification(
-      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.REDIRECT
-    );
-
-    window.location.href = "/landing";
-
-    // Reset the idle timeout after the action
-    showModalOrNotification(
-      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.RESET_TIMEOUT
-    );
-
-    resetIdleTimeout();
-      // Return a function that takes no arguments and returns void
-    return () => {};
-  };
-
-
-
-
-  const resetIdleTimeout = () => {
-    // Clear the existing timeout to avoid multiple timers
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    // Set a new timeout for the specified duration
-    timeoutId = setTimeout(idleTimeoutEffect, IDLE_TIMEOUT_DURATION);
-    showModalOrNotification(
-      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.RESET_TIMEOUT
-    );
-  };
-
-
-  const startIdleTimeout = () => {
-    // Start the idle timeout
-    resetIdleTimeout();
-  };
-
- 
-    // Call the startIdleTimeout function to ensure its usage
-    startIdleTimeout();
-
-
-  const idleTimeoutCleanup = () => {
-    // Clear the timeout when the component unmounts or the hook is no longer used
-    clearTimeout(timeoutId);
-    showModalOrNotification(
-      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.TIMEOUT_CLEANUP
-    );
-  };
-
-
-
-  
-  const idleTimeoutConditionSync = async (idleTimeoutDuration: number): Promise<boolean> => {
-    const lastActivityTimestamp = fetchLastUserInteractionTime();
-    const currentTime = new Date().getTime();
-    const elapsedTime =  currentTime - await lastActivityTimestamp;
-  
-    // Check if the elapsed time since the last activity exceeds the idle timeout duration
-    const isIdle = elapsedTime >= idleTimeoutDuration;
-  
-    return isIdle;
-  };
-  
-  
-
-  let timeoutId: NodeJS.Timeout = setTimeout(() => { }, 0);
-  
-  const idleTimeoutParams: DynamicHookParams = {
-    intervalId: undefined, // Placeholder value
-    isActive: false,
-    condition: idleTimeoutConditionSync,
-    asyncEffect: idleTimeoutEffect,
-    cleanup: idleTimeoutCleanup,
-    resetIdleTimeout: resetIdleTimeout,
-    idleTimeoutId: timeoutId, // Convert timeoutId to string before assigning
-    startIdleTimeout: () => { }, // Placeholder function
-    initialStartIdleTimeout: () => { },
-};
-
-  
-
-
-  const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams);
-
-  // Add any additional methods or modifications specific to the useIdleTimeoutHook here
-
-  // Return the necessary properties/methods from the dynamic hook
-  return {
-    intervalId: undefined, // Placeholder value
-    isActive: useIdleTimeoutHook.isActive,
-    animateIn: () => {}, // Placeholder function
-    startAnimation: () => {}, // Placeholder function
-    stopAnimation: () => {}, // Placeholder function
-    resetIdleTimeout: useIdleTimeoutHook.resetIdleTimeout, // Provide resetIdleTimeout method from the dynamic hook
-    idleTimeoutId: useIdleTimeoutHook.idleTimeoutId,
-    startIdleTimeout: useIdleTimeoutHook.startIdleTimeout,
-    toggleActivation: () => Promise.resolve(true), // Placeholder function
-  };
-};
-
-export default useIdleTimeout;
-
-export { clearUserData, showModalOrNotification };
+export default IdleTimeoutProps; useIdleTimeout;

@@ -1,9 +1,9 @@
 // AssignTaskStore.tsx
 import { makeAutoObservable } from "mobx";
+import { Data } from "../../models/data/Data";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import { Todo } from "../../todos/Todo";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { Snapshot } from "./SnapshotStore";
 
 export interface AssignTaskStore extends AssignBaseStore {
   assignTask: (taskId: string, userId: string) => void;
@@ -13,7 +13,7 @@ export interface AssignTaskStore extends AssignBaseStore {
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Record<string, Todo[]>>;
+  snapshotStore: SnapshotStore<Snapshot<Data>>;
 
   reassignUsersToTasks: (
     taskIds: string[],

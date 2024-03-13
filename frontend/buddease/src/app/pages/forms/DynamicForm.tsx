@@ -3,8 +3,19 @@ import React, { useState } from "react";
 import PromptComponent from "@/app/components/prompts/PromptComponent";
 import DynamicComponent from "@/app/components/styling/DynamicComponents";
 import UserFormComponent from "./UserFormComponent";
+import TempUserData from "../onboarding/OnboardingPhase";
+import { AppDevelopmentPhase } from "@/app/components/phases/AppDevelopmentPhase";
 
-const DynamicForm = () => {
+
+
+interface DynamicFormProps {
+  onSubmit: (data: any) => void;
+  setCurrentSubPhase: React.Dispatch<React.SetStateAction<AppDevelopmentPhase>>;
+  userData: TempUserData;
+}
+
+
+const DynamicForm: React.FC<DynamicFormProps> = ({ onSubmit, setCurrentSubPhase, userData }) => {
   const [error, setError] = React.useState<string | null>(null); 
   const [formState, setFormState] = useState({
     currentPage: "YourForm", // Initial page
@@ -68,6 +79,7 @@ const DynamicForm = () => {
             }}
             title={""}
             description={""}
+            prompts={[]}
           />
         );
       case "DynamicComponent":

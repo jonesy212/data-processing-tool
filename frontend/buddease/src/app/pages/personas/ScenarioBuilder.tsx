@@ -26,15 +26,34 @@ function createUserScenarios() {
 
   // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
   const userPersonaBuilder = new PersonaBuilder();
-  const phaseManager =  PhaseManager({phases: []});
+  const phaseManager = PhaseManager({ phases: [] }) as typeof PhaseManager | null;
+
+
+
 
   // Use the modules to create detailed user scenarios and map out user journey
   // Example:
   const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
+  // Check if phaseManager is not null or undefined before accessing its properties
+if (phaseManager) {
+  // Call the createPhases method if it exists
   const phases = phaseManager.createPhases(/* parameters */);
+}
   // Instead, include the DocumentBuilder component in your JSX markup with the required props:
   const documents = (
     <DocumentBuilder
+      documents={[
+        {
+          ...getDefaultDocumentOptions(),
+          id: 1,
+          title: "Document 1",
+          content: "Content for Document 1",
+          highlights: ["highlighted phrase 1", "tagged item 2"],
+          topics: ["topic 1", "topic 2"],
+          files: ["file 1", "file 2"],
+        },
+        // Add more document data as needed
+      ]}
       isDynamic={true}
       options={getDefaultDocumentOptions()}
       onOptionsChange={newOptions => {

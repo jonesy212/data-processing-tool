@@ -43,4 +43,80 @@ export const ProjectManagementActions = {
   mintNFT: createAction<{ tokenId: number, metadata: any }>("mintNFT"),
   transferNFT: createAction<{ tokenId: number, recipient: string }>("transferNFT"),
   burnNFT: createAction<{ tokenId: number }>("burnNFT"),
+
+
+
+
+
+
+
+
+
+
+  // Resource Allocation and Tracking
+  assignResourceToTask: createAction<{ taskId: number, resourceId: number }>("assignResourceToTask"),
+  trackResourceUtilization: createAction("trackResourceUtilization"),
+  requestAdditionalResources: createAction<{ projectId: number, resourceType: string, quantity: number }>("requestAdditionalResources"),
+
+  // Budget Management
+  createProjectBudget: createAction<{ projectId: number, budgetAmount: number }>("createProjectBudget"),
+  trackExpenses: createAction<{ projectId: number, expenseDetails: any }>("trackExpenses"),
+  approveExpense: createAction<{ expenseId: number, approverId: number }>("approveExpense"),
+
+  // Risk Management
+  identifyProjectRisks: createAction<{ projectId: number, riskDetails: any }>("identifyProjectRisks"),
+  mitigateProjectRisks: createAction<{ riskId: number, mitigationPlan: string }>("mitigateProjectRisks"),
+  updateRiskRegister: createAction<{ projectId: number, updatedRiskRegister: any[] }>("updateRiskRegister"),
+
+  // Quality Assurance
+  defineQualityStandards: createAction<{ projectId: number, standards: any[] }>("defineQualityStandards"),
+  conductQualityReview: createAction<{ projectId: number, reviewDetails: any }>("conductQualityReview"),
+  implementActionPlan: createAction<{ actionId: number, actionDetails: any }>("implementActionPlan"),
+
+  // Stakeholder Communication
+  sendProjectUpdates: createAction<{ projectId: number, updateContent: string }>("sendProjectUpdates"),
+  scheduleProjectMeeting: createAction<{ projectId: number, meetingDetails: any }>("scheduleProjectMeeting"),
+  facilitateDiscussion: createAction<{ discussionId: number, discussionContent: string }>("facilitateDiscussion"),
+
+  // Task Automation
+  automateTask: createAction<{ taskId: number, automationDetails: any }>("automateTask"),
+  implementWorkflowAutomation: createAction("implementWorkflowAutomation"),
+  integrateEnterpriseSystems: createAction("integrateEnterpriseSystems"),
+
+  // Reporting and Analytics
+  generateProjectReports: createAction<{ projectId: number, reportType: string }>("generateProjectReports"),
+  analyzeProjectData: createAction<{ projectId: number, analysisType: string }>("analyzeProjectData"),
+  provideRealTimeAnalytics: createAction("provideRealTimeAnalytics"),
+
+  // Document Management
+  manageProjectDocumentation: createAction<{ projectId: number, documentDetails: any }>("manageProjectDocumentation"),
+  versionControlDocuments: createAction<{ documentId: number, versionDetails: any }>("versionControlDocuments"),
+  collaborateOnDocuments: createAction<{ documentId: number, collaborationDetails: any }>("collaborateOnDocuments"),
+
+  // Integration with Enterprise Systems
+  connectWithERP: createAction<{ projectId: number, erpDetails: any }>("connectWithERP"),
+  syncWithCRM: createAction<{ projectId: number, crmDetails: any }>("syncWithCRM"),
+  integrateWithHRSystem: createAction<{ projectId: number, hrDetails: any }>("integrateWithHRSystem"),
+
+  // Security and Compliance
+  implementRBAC: createAction("implementRBAC"),
+  ensureCompliance: createAction("ensureCompliance"),
+  conductSecurityAudit: createAction("conductSecurityAudit"),
+
+  // Continuous Improvement
+  captureLessonsLearned: createAction<{ projectId: number, lessonsLearned: any[] }>("captureLessonsLearned"),
+  implementFeedbackMechanism: createAction("implementFeedbackMechanism"),
+  conductPostProjectReview: createAction<{ projectId: number, reviewDetails: any }>("conductPostProjectReview"),
+
+  // Vendor and Contract Management
+  manageVendorContracts: createAction<{ projectId: number, contractDetails: any }>("manageVendorContracts"),
+  monitorVendorPerformance: createAction<{ projectId: number, performanceDetails: any }>("monitorVendorPerformance"),
+  negotiateContractRenewal: createAction<{ contractId: number, renewalDetails: any }>("negotiateContractRenewal"),
+
+  // Change Management
+  manageScopeChanges: createAction<{ projectId: number, changeDetails: any }>("manageScopeChanges"),
+  assessChangeImpact: createAction<{ projectId: number, changeDetails: any }>("assessChangeImpact"),
+  communicateChangePlan: createAction<{ projectId: number, changeDetails: any }>("communicateChangePlan"),
+
+  
 };

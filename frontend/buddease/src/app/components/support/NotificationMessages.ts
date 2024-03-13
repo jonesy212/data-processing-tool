@@ -1,14 +1,90 @@
 // NotificationMessages.ts
 
+interface NotificationCategory {
+  [key: string]: string;
+}
 
-const NOTIFICATION_MESSAGES = {
+// Define the structure of all notification messages
+interface NotificationMessages {
+  Audio: NotificationCategory;
+  Auth: NotificationCategory;
+  BackendStructure: NotificationCategory;
+  Brainstorming: NotificationCategory;
+
+  Blog: NotificationCategory;
+  Component: NotificationCategory;
+  CalendarEvents: NotificationCategory;
+  Communication: NotificationCategory;
+  CustomNotification1: NotificationCategory;
+  CustomNotification2: NotificationCategory;
+  Client: NotificationCategory;
+  ChatMessage: NotificationCategory;
+  Crypto: NotificationCategory;
+  Data: NotificationCategory;
+  Database: NotificationCategory;
+  DataAnalysis: NotificationCategory;
+  Details: NotificationCategory;
+  Document: NotificationCategory;
+  Entities: NotificationCategory;
+  Error: NotificationCategory;
+  Dashboard: NotificationCategory;
+  DashboardLayout: NotificationCategory;
+  DashboardLayoutItem: NotificationCategory;
+  EventReminder: NotificationCategory;
+  FeatureToggle: NotificationCategory;
+  Freelancer: NotificationCategory;
+  FrontendStructure: NotificationCategory;
+  Generators: NotificationCategory;
+  Generic: NotificationCategory;
+  Info: NotificationCategory;
+
+  Launch: NotificationCategory;
+  Logger: NotificationCategory;
+  Login: NotificationCategory;
+  LowDiskSpace: NotificationCategory;
+  Markers: NotificationCategory;
+  Meeting: NotificationCategory;
+  Member: NotificationCategory;
+  MessagingSystem: NotificationCategory;
+  Milestones: NotificationCategory;
+  NamingConventionsError: NotificationCategory;
+  NO_NOTIFICATIONS: NotificationCategory;
+  Notifications: NotificationCategory;
+  OperationSuccess: NotificationCategory;
+  Onboarding: NotificationCategory;
+  Persona: NotificationCategory;
+  Phase: NotificationCategory;
+  Preferences: NotificationCategory;
+  Projects: NotificationCategory;
+  ProjectOwner: NotificationCategory;
+  Prompts: NotificationCategory;
+  RandomWalk: NotificationCategory;
+  Registration: NotificationCategory;
+  Sagas: NotificationCategory;
+  Snapshot: NotificationCategory;
+  StateGovCities: NotificationCategory;
+  Tasks: NotificationCategory;
+  success: NotificationCategory;
+
+  TeamBuildingPhase: NotificationCategory;
+  Theme: NotificationCategory;
+  Toolbar: NotificationCategory;
+  Team: NotificationCategory;
+  TeamManagement: NotificationCategory;
+  Todos: NotificationCategory;
+  User: NotificationCategory;
+  UserProfile: NotificationCategory;
+  UserPreferences: NotificationCategory;
+  Validation: NotificationCategory;
+  Video: NotificationCategory;
+  // Add more categories as needed
+}
+
+const NOTIFICATION_MESSAGES: NotificationMessages = {
   Audio: {
     AudioCommunicationFailure: "Failed to enable{ audio communication",
-
-
   },
 
-  
   Auth: {
     DEFAULT: "Authentication required",
     INVALID_CREDENTIALS: "Invalid username or password",
@@ -42,12 +118,11 @@ const NOTIFICATION_MESSAGES = {
 
   Blog: {
     BLOG_CONTENT_UPDATED: "Updated your blog content",
-
   },
 
   Component: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Components (${errorType}): ${details}`,
+    DEFAULT: "Component operation completed",
+    DEFAULT_ERROR: "Error occurred while performing component operation",
     CREATE_COMPONENT_SUCCESS: "Component created successfully",
     CREATE_COMPONENT_FAILURE: "Error creating component. Please try again",
     UPDATE_COMPONENT_SUCCESS: "Component updated successfully",
@@ -64,12 +139,13 @@ const NOTIFICATION_MESSAGES = {
   Client: {
     FETCH_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
     FETCH_CLIENT_DETAILS_ERROR: "Client failed to update client",
-    
+
     CONNECT_WITH_TENANT_ERROR: "Client failed to connect",
 
     CREATE_TASK_ERROR: "Task creation error",
     LIST_TASKS_ERROR: "Task list error",
-    SUBMIT_PROJECT_PROPOSAL_ERROR: "Project requested to submit project proposal failed",
+    SUBMIT_PROJECT_PROPOSAL_ERROR:
+      "Project requested to submit project proposal failed",
 
     UPDATE_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
     UPDATE_CLIENT_DETAILS_ERROR: "Update client details failed",
@@ -78,12 +154,12 @@ const NOTIFICATION_MESSAGES = {
     LIST_MESSAGES_ERROR: "List messages to tenant",
 
     LIST_REWARDS_ERROR: "List rewards not sent to tenant, review issue",
-    PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR: "List components that are currently associated with a cluster",
+    PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR:
+      "List components that are currently associated with a cluster",
   },
 
   Crypto: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Crypto (${errorType}): ${details}`,
+    DEFAULT: "Error reading crypto configuration file",
     FETCH_CRYPTO_SUCCESS: "Crypto fetched successfully",
     FETCH_CRYPTO_FAILURE: "Error fetching crypto. Please try again",
     FETCH_CRYPTO_REQUEST: "Fetching crypto..",
@@ -114,6 +190,8 @@ const NOTIFICATION_MESSAGES = {
 
   // Calendar Events
   CalendarEvents: {
+    DEFAULT: "Error in Calendar Events (${errorType}): ${details}",
+
     EVENTS_UPDATE_SUCCESS: "Updated Calendar Events",
     MILESTONES_UPDATE_SUCCESS: "Successfully updated milestone",
     ADD_EVENT_SUCCESS: "Calendar event added successfully",
@@ -145,12 +223,12 @@ const NOTIFICATION_MESSAGES = {
 
   // Custom Notifications
   CustomNotification1: {
-    DEFAULT: (customText: string) => typeof customText,
+    DEFAULT: "Notification message: CustomNotification1",
     // Add more messages for the CustomNotification1 type
   },
 
   CustomNotification2: {
-    DEFAULT: (customText: string) => typeof customText,
+    DEFAULT: "Notification message: CustomNotification2",
     // Add more messages for the CustomNotification2 type
   },
 
@@ -161,6 +239,7 @@ const NOTIFICATION_MESSAGES = {
     ERROR_EXPORTING_DATA: "Error exporting data. Please try again",
     // Add more messages for the DataLoading type
   },
+
   Database: {
     DEFAULT: "Database loading...",
     CONNECTED: "Connected to database",
@@ -169,12 +248,11 @@ const NOTIFICATION_MESSAGES = {
     ERROR_CONNECTING: "Error connecting to database",
     ERROR_DISCONNECTING: "Error disconnecting from database",
     QUERY_SUCCESS: "Database query succeeded",
-    QUERY_ERROR: "Error executing database query"
+    QUERY_ERROR: "Error executing database query",
   },
 
   DataAnalysis: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Data Analysis (${errorType}): ${details}`,
+    DEFAULT: `Error in Data Analysis (${errorType}): ${details}`,
     FETCH_ERROR: "Error fetching data analysis. Please try again",
     UPLOAD_ERROR: "Error uploading data analysis. Please try again",
     UPDATE_ERROR: "Error updating data analysis. Please try again",
@@ -189,8 +267,7 @@ const NOTIFICATION_MESSAGES = {
   },
 
   Details: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Details Service (${errorType}): ${details}`,
+    DEFAULT: `Error in Details Service (${errorType}): ${details}`,
     ERROR: "Error fetching details. Please try again",
     UPDATE_DETAILS_ITEM_ERROR: "Error updating details item. Please try again",
     UPDATE_DETAILS_ITEM_SUCCESS: "Details item updated successfully",
@@ -210,11 +287,12 @@ const NOTIFICATION_MESSAGES = {
     TAKEN: "Name is already taken",
     // other details messages
   },
+
   Document: {
     UPDATE_DOCUMENT_ERROR: "Error updating document",
-    
+
     SORT_DOCUMENT_SUCCESS: "Documents have been sorted",
-    SHARE_DOCUMENT_SUCCESS: "Documents have been sorted", 
+    SHARE_DOCUMENT_SUCCESS: "Documents have been sorted",
     SORT_DOCUMENT_ERROR: "Documents have not been sorted, please try again",
     DELETE_DOCUMENT_SUCCESS: "Document deleted successfully",
     DELETE_DOCUMENT_ERROR: "Document could not be deleted",
@@ -222,32 +300,33 @@ const NOTIFICATION_MESSAGES = {
     SHARE_DOCUMENT_ERROR: "Share document could not be found",
 
     FILTER_DOCUMENTS_SUCCESS: "Documents have been filtered",
-    FILTER_DOCUMENTS_ERROR: "Documents have not been filtered, please try again",
+    FILTER_DOCUMENTS_ERROR:
+      "Documents have not been filtered, please try again",
 
-    
     RESTORE_DOCUMENT_SUCCESS: "Documents have been restored",
     RESTORE_DOCUMENT_ERROR: "Restore document could not be found",
     ARCHIVE_DOCUMENT_ERROR: "Archive document could not be found",
-    
+
     DOWNLOAD_DOCUMENT_SUCCESS: "Download document success",
     DOWNLOAD_DOCUMENT_ERROR: "Download document error",
     EXPORT_DOCUMENTS_SUCCESS: `Exported documents have been successfully downloaded`,
     EXPORT_DOCUMENTS_ERROR: "Error exporting documents. Please try again",
 
-    IMPORT_DOCUMENTS_SUCCESS: "Imported documents have been successfully imported",
+    IMPORT_DOCUMENTS_SUCCESS:
+      "Imported documents have been successfully imported",
     IMPORT_DOCUMENTS_ERROR: "Error importing documents. Please try again",
-    ARCHIVE_DOCUMENT_SUCCESS: "Archive document has been successfully downloaded",
-    
+    ARCHIVE_DOCUMENT_SUCCESS:
+      "Archive document has been successfully downloaded",
   },
 
   Entities: {
     SET_SUCCESS: "Set entity success",
-
   },
 
   // Error and Authentication
+
   Error: {
-    DEFAULT: (errorType: string) => `An ${errorType} occurred.`,
+    DEFAULT: `An ${errorType} occurred.`,
     INVALID_CREDENTIALS: "Invalid credentials. Please try again",
     ERROR_UPDATING_DATA: "Error updating data. Please try again later",
     ERROR_REMOVING_DATA: "Error removing data. Please try again",
@@ -312,7 +391,7 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the BackendStructure type
   },
 
-  Generators:{
+  Generators: {
     TASK_ID_GENERATED: "Generated Task ID",
     TODO_ID_GENERATED: "Generated Todo ID",
     GENERATE_UNIQUE_ID: "Generated Unique ID",
@@ -340,13 +419,12 @@ const NOTIFICATION_MESSAGES = {
     DEFAULT: "Notification message..",
     ERROR: "An error occurred. Please try again later",
     NO_RESPONSE: "No response from API",
-   
+
     // Add more generic messages
   },
 
   Info: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Action Manager (${errorType}): ${details}`,
+    DEFAULT: `Error in Action Manager (${errorType}): ${details}`,
     GENERAATED_INFO_ITEMS_SUCCESS: "Info items generated successfully",
     GENERAATED_INFO_ITEMS_ERROR:
       "Error generating info items. Please try again",
@@ -366,10 +444,10 @@ const NOTIFICATION_MESSAGES = {
     LOG_FAILURE: "Failure log message",
     LOG_INFO_SUCCESS: "Info items generated successfully",
     LOG_INFO_ERROR: "Error generating info",
-    
+
     LOG_WARNING_SUCCESS: "Warning items generated successfully",
     LOG_WARNING_ERROR: "Error generating info items",
-    
+
     LOG_SUCCESS_ERROR: "Warning log message",
     LOG_FAILURE_ERROR: "Error log message",
   },
@@ -397,12 +475,13 @@ const NOTIFICATION_MESSAGES = {
 
   Meeting: {
     MEETING_UPDATE_SUCCESS: "Meeting updated successfully",
-    MEETING_UPDATE_FAILED: "Meeting updated failed, try again, if the issue persist, do message use ",
+    MEETING_UPDATE_FAILED:
+      "Meeting updated failed, try again, if the issue persist, do message use ",
   },
   Member: {
-    INVITE_MEMBER_ERROR: "Failed to invite member"
+    INVITE_MEMBER_ERROR: "Failed to invite member",
   },
-  
+
   MessagingSystem: {
     DEFAULT: "New message received", // Default message for the messaging system
     MESSAGE_SENT: "Your message has been sent successfully",
@@ -417,8 +496,7 @@ const NOTIFICATION_MESSAGES = {
   },
 
   NamingConventionsError: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
+    DEFAULT: `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
 
     // New Error Messages for Naming Conventions
     INVALID_NAME_FORMAT:
@@ -433,16 +511,15 @@ const NOTIFICATION_MESSAGES = {
   },
 
   Notifications: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Notifications (${errorType}): ${details}`,
+    DEFAULT: `Error in Notifications (${errorType}): ${details}`,
     NOTIFICATION_SENT: "Notification sent successfully",
+    NOTIFICATION_SENT_SUCCCESS: "Notification sent successfully",
     NOTIFICATION_SEND_FAILED:
       "Failed to send notification. Please try again later",
     REMOVE_SUCCESS: "Sent notification successfully",
     ADD_SUCCESS: "Sent notification successfully",
     CLEAR_ALL_SUCCESS: "Sent notification successfully",
     UPDATE_MESSAGE_SUCCESS: "Sent notification successfully",
-
   },
 
   // Success and Operation
@@ -462,8 +539,7 @@ const NOTIFICATION_MESSAGES = {
   },
 
   Persona: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Personas (${errorType}): ${details}`,
+    DEFAULT: `Error in Personas (${errorType}): ${details}`,
     WELCOME: "Welcome to the Persona Builder!",
     QUESTIONNAIRE_COMPLETE: "Thank you for completing the questionnaire!",
     BUILDER_CREATION_ERROR: "Error creating persona builder. Please try again",
@@ -489,9 +565,10 @@ const NOTIFICATION_MESSAGES = {
   Projects: {
     PROJECT_FETCH_ERROR: "Error fetching projects",
     FETCH_PROJECT_DETAILS: "Error fetching projects details",
-    FETCH_PROJECT_DETAILS_SUCCESS: "Project details have been fetched successfully"
+    FETCH_PROJECT_DETAILS_SUCCESS:
+      "Project details have been fetched successfully",
   },
-  
+
   ProjectOwner: {
     CREATE_PROJECT_ERROR: "Error creating project",
     CREATE_PROJECT_SUCCESS: "Project created successfully",
@@ -510,15 +587,17 @@ const NOTIFICATION_MESSAGES = {
     CREATE_MEETING_SUCCESS: "Created meeting successfully",
     CREATE_MEETING_ERROR: "Error Creating meeting, please try again",
     UPDATE_MEETING_SUCCESS: "Success updating meeting information",
-    UPDATE_MEETING_ERROR: "Error trying to update meeting content, please try again",
-    DELETE_MEETING_SUCCESS:"Meeting has been deleted successfully",
+    UPDATE_MEETING_ERROR:
+      "Error trying to update meeting content, please try again",
+    DELETE_MEETING_SUCCESS: "Meeting has been deleted successfully",
     DELETE_MEETING_ERROR: "Was not able to delete meeting, please try again",
-    GENERATE_REPORT_SUCCESS:"Generated report successfully",
+    GENERATE_REPORT_SUCCESS: "Generated report successfully",
     GENERATE_REPORT_ERROR: "Error generating report, please try again",
     EXPORT_DATA_SUCCESS: "Report successfully exported data successfully",
     EXPORT_DATA_ERROR: "Error exporting data, try again",
     GET_TEAM_MEMBERS_SUCCESS: "Getting teammembers...",
-    GET_TEAM_MEMBERS_ERROR: "Error trying to retrieve teammembers, please try again",
+    GET_TEAM_MEMBERS_ERROR:
+      "Error trying to retrieve teammembers, please try again",
     UPDATE_TASK_SUCCESS: "Update task successfully",
     UPDATE_TASK_ERROR: "Error updating task, please try again",
     DELETE_TASK_SUCCESS: "Deleting task successfully",
@@ -526,7 +605,7 @@ const NOTIFICATION_MESSAGES = {
     FETCH_PROJECT_DETAILS_ERROR: "Error trying to retrieve project details",
     FETCH_PROJECT_DETAILS_SUCCESS: "Fetch project details successfully",
   },
-  
+
   Prompts: {
     FETCH_PROMPTS_REQUEST: "Fetching prompts..",
     FETCH_PROMPTS_SUCCESS: "Prompts fetched successfully",
@@ -538,12 +617,10 @@ const NOTIFICATION_MESSAGES = {
   },
   Registration: {
     REGISTRATION_SUCCESS: "Registration successful",
-    
   },
 
   Sagas: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Saga (${errorType}): ${details}`,
+    DEFAULT: `Error in Saga (${errorType}): ${details}`,
     FETCHING_SAGA: "Fetching saga..",
     FETCHING_SAGA_ERROR: "Error fetching saga. Please try again",
     CREATING_SAGA: "Creating saga..",
@@ -563,18 +640,17 @@ const NOTIFICATION_MESSAGES = {
   },
 
   Snapshot: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Snapshots (${errorType}): ${details}`,
+    DEFAULT: `Error in Snapshots (${errorType}): ${details}`,
     FETCHING_SNAPSHOTS: "Fetching snapshots..",
     UPDATING_SNAPSHOT: "Updating snapshot..",
     FETCHING_SNAPSHOTS_ERROR: "Error fetching snapshots. Please try again",
     UPDATING_SNAPSHOTS: "Updating snapshots..",
     CREATED: "Snapshot created successfully",
+    SNAPSHOT_TAKEN: "Snapshot taken successfully",
     Error: "Error creating snapshot. Please try again",
   },
   StateGovCities: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in "State/Government Cities (${errorType}): ${details}`,
+    DEFAULT: `Error in "State/Government Cities (${errorType}): ${details}`,
     ERROR_FETCHING_CITIES:
       "Error fetching state/government cities. Please try again",
     SUCCESS_FETCHING_CITIES: "State/government cities fetched successfully",
@@ -585,8 +661,7 @@ const NOTIFICATION_MESSAGES = {
     // Add more messages for the StateGovCities type
   },
   Tasks: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Tasks (${errorType}): ${details}`,
+    DEFAULT: `Error in Tasks (${errorType}): ${details}`,
     TASK_ADDED: "Task added successfully",
     TASK_DELETED: "Task deleted successfully",
     TASK_UPDATED: "Task updated successfully",
@@ -621,11 +696,16 @@ const NOTIFICATION_MESSAGES = {
     FETCHING_TEAM_BUILDING_PHASE_ERROR:
       "Error fetching team building phase. Please try again",
     CREATING_TEAM_BUILDING_PHASE: "Creating team building phase..",
-    CREATING_TEAM_BUILDING_PHASE_ERROR: "Error creating team building phase. Please try again",
-    SUCCESS_CREATING_TEAM_BUILDING_PHASE: "Team building phase created successfully",
-    SUCCESS_FETCHING_TEAM_BUILDING_PHASE: "Team building phase fetched successfully",
-    SUCCESS_UPDATING_TEAM_BUILDING_PHASE: "Team building phase updated successfully",
-    SUCCESS_DELETING_TEAM_BUILDING_PHASE: "Team building phase deleted successfully",
+    CREATING_TEAM_BUILDING_PHASE_ERROR:
+      "Error creating team building phase. Please try again",
+    SUCCESS_CREATING_TEAM_BUILDING_PHASE:
+      "Team building phase created successfully",
+    SUCCESS_FETCHING_TEAM_BUILDING_PHASE:
+      "Team building phase fetched successfully",
+    SUCCESS_UPDATING_TEAM_BUILDING_PHASE:
+      "Team building phase updated successfully",
+    SUCCESS_DELETING_TEAM_BUILDING_PHASE:
+      "Team building phase deleted successfully",
   },
 
   Theme: {
@@ -650,10 +730,10 @@ const NOTIFICATION_MESSAGES = {
 
   // Team-related
   Team: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Teams (${errorType}): ${details}`,
+    DEFAULT:  `Error in Teams (${errorType}): ${details}`,
     //success
-    ASSIGN_TEAM_MEMBER_FAILURE: "Failed to assign team member. Please try again",
+    ASSIGN_TEAM_MEMBER_FAILURE:
+      "Failed to assign team member. Please try again",
     CREATE_TEAM_SUCCESS: "Team created successfully",
     DELETE_TEAM_SUCCESS: "Team deleted successfully",
     DELETE_TEAM_FAILURE: "Failed to delete team. Please try again",
@@ -662,7 +742,7 @@ const NOTIFICATION_MESSAGES = {
     ADD_TEAM_ERROR: "Error adding team. Please try again",
     FETCH_TEAM_ERROR: "Error fetching team. Please try again",
     CREATE_TEAM_FAILURE: "Failed to create team. Please try again",
-    
+
     // Add more messages for the TeamLoading type
     UPDATE_TEAM_ERROR: "Error updating team. Please try again",
     REMOVE_TEAM_ERROR: "Error removing team. Please try again",
@@ -674,10 +754,10 @@ const NOTIFICATION_MESSAGES = {
   },
 
   TeamManagement: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Teams (${errorType}): ${details}`,
+    DEFAULT:  `Error in Teams (${errorType}): ${details}`,
     //success
-    ASSIGN_TEAM_MEMBER_FAILURE: "Failed to assign team member. Please try again",
+    ASSIGN_TEAM_MEMBER_FAILURE:
+      "Failed to assign team member. Please try again",
     CREATE_TEAM_SUCCESS: "Team created successfully",
     DELETE_TEAM_SUCCESS: "Team deleted successfully",
     DELETE_TEAM_FAILURE: "Failed to delete team. Please try again",
@@ -688,8 +768,7 @@ const NOTIFICATION_MESSAGES = {
   },
 
   Todos: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Tasks (${typeof errorType}): ${typeof details}`,
+    DEFAULT:  `Error in Tasks (${typeof errorType}): ${typeof details}`,
     TODO_ADDED: "Todo added successfully",
     TODO_DELETED: "Todo deleted successfully",
     TODO_UPDATED: "Todo updated successfully",
@@ -718,8 +797,10 @@ const NOTIFICATION_MESSAGES = {
     PROFILE_SAVING: "Saving user profile..",
     PROFILE_SAVED: "User profile saved successfully!",
     PROFILE_SAVING_SUCCESS: "User profile saved successfully!",
-    PROFILE_SAVING_ERROR: "Failed to save user profile. Please try again later.",
-    PROFILE_FETCH_ERROR: "Error fetching user profile data. Please try again later.",
+    PROFILE_SAVING_ERROR:
+      "Failed to save user profile. Please try again later.",
+    PROFILE_FETCH_ERROR:
+      "Error fetching user profile data. Please try again later.",
     // Add more messages for the UserProfile type
   },
 
@@ -734,22 +815,21 @@ const NOTIFICATION_MESSAGES = {
 
   Validation: {
     PERMISSION_ERROR: "You do not have permission to perform this action",
-    INVALID_INPUT: 'Invalid input. Please check your input and try again.',
-    MISSING_FIELD: 'Required field is missing. Please provide all required information.',
-    FORMAT_ERROR: 'Format error. Please enter data in the correct format.',
-  
+    INVALID_INPUT: "Invalid input. Please check your input and try again.",
+    MISSING_FIELD:
+      "Required field is missing. Please provide all required information.",
+    FORMAT_ERROR: "Format error. Please enter data in the correct format.",
+
     // Add more validation error messages as needed
   },
 
   Video: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Videos (${errorType}): ${details}`,
+    DEFAULT: `Error in Videos (${errorType}): ${details}`,
     ADD_VIDEO_SUCCESS: "Video added successfully",
-    
+
     UPLOAD_STARTED: "Video upload started",
     UPLOAD_COMPLETED: "Video upload completed",
     UPLOAD_FAILED: "Video upload failed. Please try again",
-
 
     PROCESSING_VIDEO: "Processing video..",
     PROCESSING_COMPLETE: "Video processed successfully",
@@ -778,7 +858,7 @@ const NOTIFICATION_MESSAGES = {
 
     DISABLE_VIDEO_SUCCESS: "Video is disabled successfully",
     ENABLE_VIDEO_SUCCESS: "Video is enabled",
-    PARTICIPANT_MANAGEMENT_ERROR: "Video management"
+    PARTICIPANT_MANAGEMENT_ERROR: "Video management",
   },
   // Welcome and Account
   Welcome: {

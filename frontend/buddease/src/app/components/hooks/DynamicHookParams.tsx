@@ -1,7 +1,7 @@
 // DynamicHookParams.tsx
 
 export type DynamicHookParams = {
-    condition: () => boolean;
+    condition: (idleTimeoutDuration: number) => Promise<boolean>;
     asyncEffect: ({
       idleTimeoutId,
       startIdleTimeout,

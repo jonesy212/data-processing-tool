@@ -1,4 +1,5 @@
 import { PersonaData } from "./Persona";
+import ProjectManagerPersona from "./ProjectManagerPersona";
 
 
 // Define PersonaTypeEnum enum with persona types
@@ -19,6 +20,10 @@ export enum PersonaTypeEnum {
   DataAnalyst = "Data Analyst",
   ContentCreator = "Content Creator",
   Blogger = "Blogger",
+  CryptoTrader = "Crypto Trader",
+  StockTrader = "Stock Trader",
+  ForexTrader = "Forex Trader",
+
 }
 
 export class PersonaBuilder {

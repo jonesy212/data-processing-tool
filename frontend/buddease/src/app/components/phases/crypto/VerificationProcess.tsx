@@ -1,7 +1,12 @@
 // VerificationProcess.tsx
 import { useState } from 'react';
 
-const VerificationProcess = ({ onComplete }) => {
+
+interface VerificationProcessProps{
+  onComplete: () => void; // Define the onComplete function type
+}
+
+const VerificationProcess: React.FC<VerificationProcessProps> = ({ onComplete }) => {
   // State variables for verification process
   const [verificationStatus, setVerificationStatus] = useState('');
   const [verificationDetails, setVerificationDetails] = useState('');

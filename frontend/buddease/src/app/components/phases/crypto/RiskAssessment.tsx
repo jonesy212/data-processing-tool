@@ -1,7 +1,11 @@
 // RiskAssessment.tsx
 import React, { useState } from 'react';
 
-const RiskAssessment = ({ onComplete }) => {
+interface RiskAssessmentProps {
+  onComplete: () => void; // Define the onComplete function type
+}
+
+const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onComplete }) => {
   // State variables for risk assessment
   const [riskLevel, setRiskLevel] = useState('');
   const [riskDetails, setRiskDetails] = useState('');

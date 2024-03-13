@@ -1,39 +1,53 @@
 // ApiUser.ts
+import { createHeaders } from "@/app/api/ApiClient";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
-import { makeAutoObservable } from 'mobx';
+import dotProp from 'dot-prop';
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { User } from './User';
 import { UserActions } from "./UserActions";
 import { sendNotification } from "./UserSlice";
+// Other imports remain unchanged
 
-const API_BASE_URL = endpoints.users;
-
-
+const API_BASE_URL = dotProp.getProperty(endpoints, 'users');
 
 export const fetchUserRequest = (userId: string) => ({
   type: 'FETCH_USER_REQUEST',
   payload: userId,
 });
-const dispatch = useDispatch()
+
+const dispatch = useDispatch();
+
 // Dispatching the action
 const { userId } = useParams(); // Extract userId from URL params
 
+// Convert userId to a number
+const parsedUserId = Number(userId);
 // Calling API_BASE_URL.single to get the URL string
-const url: string = API_BASE_URL.single(Number(userId));
+const url: string | undefined = dotProp.getProperty(API_BASE_URL, 'single', [parsedUserId]) as string | undefined;
 
 // Dispatching the action with the correct userId
-dispatch(UserActions.fetchUserRequest({userId: url}));
+dispatch(UserActions.fetchUserRequest({ userId: parsedUserId }));
+
+
 
 class UserService {
-  constructor() {
-    makeAutoObservable(this);
-  }
+  // Constructor remains unchanged
 
-  createUser = async (newUser: User) => { 
+  createUser = async (newUser: User) => {
     try {
-      const response = await axiosInstance.post(API_BASE_URL.add, newUser);
+      const API_ADD_ENDPOINT = dotProp.getProperty(API_BASE_URL, 'add') as string;
+      if (!API_ADD_ENDPOINT) {
+        throw new Error('Add endpoint not found');
+      }
+
+      // Call createHeaders function to get the headers configuration
+      const headers = createHeaders();
+
+      const response = await axiosInstance.post(API_ADD_ENDPOINT, newUser, {
+        headers: headers, // Pass headers configuration in the request
+      });
       UserActions.createUserSuccess({ user: response.data });
       sendNotification(`User ${newUser.username} created successfully`);
       return response.data;
@@ -45,9 +59,14 @@ class UserService {
     }
   }
 
+
   fetchUser = async (userId: User['id']) => {
     try {
-      const response = await axiosInstance.get(API_BASE_URL.single(Number(userId)));
+      const API_SINGLE_ENDPOINT = dotProp.getProperty(API_BASE_URL, 'single', [Number(userId)]) as string;
+      if (!API_SINGLE_ENDPOINT) {
+        throw new Error('Single endpoint not found');
+      }
+      const response = await axiosInstance.get(API_SINGLE_ENDPOINT);
       UserActions.fetchUserSuccess({ user: response.data });
       sendNotification(`User with ID ${userId} fetched successfully`);
       return response.data;
@@ -59,9 +78,9 @@ class UserService {
     }
   };
 
-  fetchUserById = async (userId: string) => { 
+  fetchUserById = async (userId: string) => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL.single(userId  as unknown as number)}`)
+      const response = await axiosInstance.get(`${dotProp.getProperty(API_BASE_URL, 'single', [Number(userId)])}`);
       const user = response.data;
       // Dispatch the success action
       UserActions.fetchUserByIdSuccess({ user });
@@ -76,9 +95,14 @@ class UserService {
     }
   }
 
-  fetchUserByIdSuccess = async () => { 
+  fetchUserByIdSuccess = async () => {
     try {
-      const response = await axiosInstance.get(API_BASE_URL.list);
+      const API_LIST_ENDPOINT = dotProp.getProperty(API_BASE_URL, 'list') as string;
+      if (!API_LIST_ENDPOINT) {
+        throw new Error('List endpoint not found');
+      }
+  
+      const response = await axiosInstance.get(API_LIST_ENDPOINT);
       const user = response.data;
       // Dispatch the success action
       UserActions.fetchUserByIdSuccess({ user: user.id });
@@ -92,10 +116,11 @@ class UserService {
       throw error;
     }
   }
+  
 
   updateUser = async (userId: User['id'], updatedUserData: User) => {
     try {
-      const response = await axiosInstance.put(`${API_BASE_URL.update(userId as number)}`, updatedUserData);
+      const response = await axiosInstance.put(`${dotProp.getProperty(API_BASE_URL, 'update', [userId as number])}`, updatedUserData);
       const updatedUser = response.data;
       UserActions.updateUserSuccess({ user: updatedUser });
       sendNotification(`User with ID ${userId} updated successfully`);
@@ -108,10 +133,14 @@ class UserService {
     }
   };
 
-
   updateUserFailure = async () => {
     try {
-      const response = await axiosInstance.get(API_BASE_URL.list);
+      const API_LIST_ENDPOINT = dotProp.getProperty(API_BASE_URL, 'list') as string;
+      if (!API_LIST_ENDPOINT) {
+        throw new Error('List endpoint not found');
+      }
+  
+      const response = await axiosInstance.get(API_LIST_ENDPOINT);
       const user = response.data;
       // Dispatch the failure action
       UserActions.updateUserFailure({ error: 'Update user failed' });
@@ -124,11 +153,14 @@ class UserService {
       throw error;
     }
   };
-  
   // Bulk requests
   fetchUsers = async () => {
     try {
-      const response = await axiosInstance.get(API_BASE_URL.list);
+      const listEndpoint = dotProp.getProperty(API_BASE_URL, 'list') as string;
+      if (!listEndpoint) {
+        throw new Error('List endpoint not found');
+      }
+      const response = await axiosInstance.get(listEndpoint);
       const users = response.data;
       // Dispatch the success action
       UserActions.fetchUsersSuccess({ users });
@@ -142,10 +174,14 @@ class UserService {
       throw error;
     }
   };
-  
+
   updateUsers = async (updatedUsersData: User) => {
     try {
-      const response = await axiosInstance.put(API_BASE_URL.updateList, updatedUsersData);
+      const updateListEndpoint = dotProp.getProperty(API_BASE_URL, 'updateList') as string;
+      if (!updateListEndpoint) {
+        throw new Error('Update list endpoint not found');
+      }
+      const response = await axiosInstance.put(updateListEndpoint, updatedUsersData);
       const updatedUsers = response.data;
       // Dispatch the success action
       UserActions.updateUsersSuccess({ users: updatedUsers });
@@ -159,10 +195,14 @@ class UserService {
       throw error;
     }
   };
-  
-  deleteUser = async (user: User) => { 
+
+  deleteUser = async (user: User) => {
     try {
-      const response = await axiosInstance.delete(`${API_BASE_URL.remove(user.id as number)}`);
+      const removeEndpoint = dotProp.getProperty(API_BASE_URL, 'remove', [user.id as number]) as string;
+      if (!removeEndpoint) {
+        throw new Error('Remove endpoint not found');
+      }
+      const response = await axiosInstance.delete(removeEndpoint);
       // Dispatch success action
       UserActions.deleteUserSuccess(user as unknown as number);
       sendNotification('User deleted successfully');
@@ -174,11 +214,15 @@ class UserService {
       console.error('Error deleting user:', error);
       throw error;
     }
-  }
-  
+  };
+
   deleteUsers = async (userIds: User['id'][]) => {
     try {
-      await axiosInstance.delete(`${API_BASE_URL.list}`, { data: { userIds } });
+      const listEndpoint = dotProp.getProperty(API_BASE_URL, 'list') as string;
+      if (!listEndpoint) {
+        throw new Error('List endpoint not found');
+      }
+      await axiosInstance.delete(listEndpoint, { data: { userIds } });
       // Dispatch the success action
       UserActions.deleteUsersSuccess(userIds as User['id'][] as number[]);
       sendNotification('Users deleted successfully');
@@ -190,10 +234,14 @@ class UserService {
       throw error;
     }
   };
-  
-  searchUsers = async (searchQuery: string) => { 
+
+  searchUsers = async (searchQuery: string) => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL.search}?query=${searchQuery}`);
+      const searchEndpoint = dotProp.getProperty(API_BASE_URL, 'search') as string;
+      if (!searchEndpoint) {
+        throw new Error('Search endpoint not found');
+      }
+      const response = await axiosInstance.get(`${searchEndpoint}?query=${searchQuery}`);
       const users = response.data;
       UserActions.searchUsersSuccess({ users });
       sendNotification('Users searched successfully');
@@ -204,12 +252,15 @@ class UserService {
       console.error('Error searching users:', error);
       throw error;
     }
-  }
-  
+  };
 
-  updateUserRole = async (userId: User['id'], role: User['role']) => { 
+  updateUserRole = async (userId: User['id'], role: User['role']) => {
     try {
-      const response = await axiosInstance.put(`${API_BASE_URL.updateRole(userId as number)}`, { role });
+      const updateRoleEndpoint = dotProp.getProperty(API_BASE_URL, 'updateRole', [userId as number]) as string;
+      if (!updateRoleEndpoint) {
+        throw new Error('Update role endpoint not found');
+      }
+      const response = await axiosInstance.put(updateRoleEndpoint, { role });
       const updatedUser = response.data;
       UserActions.updateUserRoleSuccess({ user: updatedUser });
       sendNotification(`User with ID ${userId} updated successfully`);
@@ -220,9 +271,7 @@ class UserService {
       console.error('Error updating user:', error);
       throw error;
     }
-  }
-  // Other methods follow the same pattern as above
-
+  };
 }
 
 const userService = new UserService();

@@ -26,6 +26,8 @@ interface CalendarDisplaySettings {
   showEventsAttendees: boolean;
   showEventsDuration: boolean;
   showEventsReminder: boolean;
+  highlightColor: string;
+  highlightColors: string[]
 
   showEventsByCategory: boolean;
   showEventsByPriority: boolean;
@@ -84,6 +86,7 @@ interface CalendarDisplaySettings {
   showTimezone: boolean;
   showDateRange: boolean;
   showWeekNumbers: boolean;
+  showEventCategories: boolean;
   showSidebar: boolean;
   showToolbar: boolean;
   showContextMenu: boolean;
@@ -142,6 +145,9 @@ const defaultSettings: CalendarDisplaySettings = {
   showSidebar: false,
   showToolbar: false,
   showContextMenu: false,
+  highlightColor: "",
+  highlightColors: [],
+  showEventCategories: false
 };
 
 // Define initial settings by spreading defaultSettings
@@ -155,14 +161,12 @@ const validateDisplaySettings = (
 ): CalendarDisplaySettings => {
   // Ensure boolean values for showAllDayEvents and showWeekends
   const validatedSettings: CalendarDisplaySettings = {
-    showAllDayEvents:
-      typeof settings.showAllDayEvents === "boolean"
-        ? settings.showAllDayEvents
-        : defaultSettings.showAllDayEvents,
-    showWeekends:
-      typeof settings.showWeekends === "boolean"
-        ? settings.showWeekends
-        : defaultSettings.showWeekends,
+    showAllDayEvents: typeof settings.showAllDayEvents === "boolean"
+      ? settings.showAllDayEvents
+      : defaultSettings.showAllDayEvents,
+    showWeekends: typeof settings.showWeekends === "boolean"
+      ? settings.showWeekends
+      : defaultSettings.showWeekends,
     customSettings: {
       // Validate custom settings here if needed
     },
@@ -211,6 +215,9 @@ const validateDisplaySettings = (
     showSidebar: false,
     showToolbar: false,
     showContextMenu: false,
+    highlightColor: "",
+    highlightColors: [],
+    showEventCategories: false
   };
 
   // Additional validation logic can be added as needed

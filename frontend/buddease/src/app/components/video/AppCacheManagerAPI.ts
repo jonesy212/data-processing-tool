@@ -1,9 +1,9 @@
 import axios from 'axios';
+import RealtimeData from '../../../../models/realtime/RealtimeData';
 
 interface CacheData {
   key: string;
-  data: any;
-  // Add more properties as needed
+  data: RealtimeData;   // Add more properties as needed
 }
 
 class AppCacheManagerAPI {

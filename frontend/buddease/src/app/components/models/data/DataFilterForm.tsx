@@ -2,9 +2,24 @@
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
-import { snapshotStore } from "../../state/stores/SnapshotStore";
+import { Snapshot, snapshotStore } from "../../state/stores/SnapshotStore";
+import { updateCallback } from "../../state/stores/CalendarEvent";
+import processSnapshotList from "@/app/generators/processSnapshotList";
+import { useDispatch } from "react-redux";
+import {
+  DataAnalysisAction,
+  DataAnalysisDispatch,
+} from "@/app/typings/dataAnalysisTypes";
+import userService from "../../users/ApiUser";
+import { Dispatch } from "@reduxjs/toolkit";
+import { Data } from "./Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from './DataFrameComponent';
+import SnapshotList from "../../snapshots/SnapshotList";
+import { DetailsItem } from "../../state/stores/DetailsListStore";
+import ListGenerator from "@/app/generators/ListGenerator";
+import { Phase } from '@/app/components/phases/Phase';
+import { shuffleArray } from "@/app/utils/shuffleArray";
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -21,8 +36,7 @@ interface FilterOptions {
   topN?: number; // Fetch top N results
 }
 
-const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
-  
+const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   const [filters, setFilters] = useState<
     Record<string, { operation: string; value: string | number }>
   >({});
@@ -32,14 +46,52 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
   const [column, setColumn] = useState("");
   const [operation, setOperation] = useState("==");
   const [value, setValue] = useState("");
-  const [realtimeData, setRealtimeData] = useRealtimeData(snapshotStore, updateCallback);
+  const { realtimeData, fetchData } = useRealtimeData(
+    snapshotStore,
+    updateCallback
+  );
   // Use processed snapshot data in your component logic
-  const [snapshotList, setSnapshotList] = useState<SnapshotList>(new SnapshotList());
+  const [snapshotList, setSnapshotList] = useState<SnapshotList>(
+    new SnapshotList()
 
+
+
+  );
   
+  
+  const snapshotDetails: DetailsItem<Data> = {
+    label: "",
+    value: "",
+    id: "",
+    title: "",
+    status: "pending",
+    description: "",
+    phase: {} as Phase
+    // Add other properties as needed
+  }
+
+  const snapshotListArray: DetailsItem<Data>[] = Array.from(snapshotList).map(
+    (snapshot: Snapshot<Data>) => ({
+      ...snapshotDetails,
+      label: snapshot.data.label,
+      value: snapshot.data.value,
+      // Add other properties as needed
+    })
+  );
+  
+
+  const dispatch: DataAnalysisDispatch =
+    useDispatch<Dispatch<DataAnalysisAction>>();
+
+  const userId = ""; // Your user ID here
+  const user = await userService.fetchUser(userId);
   const addFilter = () => {
-    if (column.trim() === '' || operation.trim() === '' || value.trim() === '') {
-      alert('Column, Operation, and Value cannot be empty');
+    if (
+      column.trim() === "" ||
+      operation.trim() === "" ||
+      value.trim() === ""
+    ) {
+      alert("Column, Operation, and Value cannot be empty");
       return;
     }
 
@@ -58,43 +110,39 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
     setOperation("==");
     setValue("");
 
-
     const clearAllFilters = () => {
       setFilters({});
       setTransform("none");
     };
-  
-      onSubmit(filters, transform);
-  
-      // Clear all filters
-      clearAllFilters();
+
+    onSubmit(filters, transform);
+
+    // Clear all filters
+    clearAllFilters();
   };
 
-
-
   const streamDataToBackend = () => {
-    const stream = new EventSource('/stream_data');
-  
+    const stream = new EventSource("/stream_data");
+
     stream.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
       // Process the received data as needed
-      console.log('Received data:', receivedData);
+      console.log("Received data:", receivedData);
     };
-  
+
     stream.onerror = (error) => {
-      console.error('Error with SSE:', error);
+      console.error("Error with SSE:", error);
       stream.close();
     };
-  
+
     return stream; // Return the stream object for cleanup
   };
-  
+
   // Usage in useEffect
   useEffect(() => {
-
     // Process raw data and generate snapshot list
     const generator = new SnapshotListGenerator();
-    const rawData = fetchRawData(); // Fetch raw data from API or local storage
+    const rawData = fetchData(userId, dispatch); // Fetch raw data from API or local storage
     const processedSnapshotList = generator.generateSnapshotList(rawData);
 
     // Perform data transformation actions
@@ -102,17 +150,15 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
 
     // Update component state with processed snapshot data
     setSnapshotList(processedSnapshotList);
-  
+
     // Start streaming when the component mounts
     const stream = streamDataToBackend();
-  
+
     // Clean up the EventSource when the component unmounts
     return () => {
       stream.close();
     };
   }, []);
-  
-  
 
   const clearAllFilters = () => {
     setFilters({});
@@ -136,47 +182,52 @@ const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => {
     clearOptions();
   };
 
+  //  Convert filters to data-forge query object
+  const query = Object.keys(filters).reduce((queryObj: any, columnName) => {
+    queryObj[columnName] = {
+      [filters[columnName].operation]: filters[columnName].value,
+    };
+    return queryObj;
+  }, {});
+// Fetch data using data-forge DataFrame
+const dataFrame = new DataFrame([]); // Replace this with your actual data frame
 
-    //  Convert filters to data-forge query object
-    const query = Object.keys(filters).reduce((queryObj: any, columnName) => {
-      queryObj[columnName] = {
-        [filters[columnName].operation]: filters[columnName].value,
-      };
-      return queryObj;
-    }, {});
-
-    // Fetch data using data-forge DataFrame
-    const dataFrame = new DataFrame([]); // Replace this with your actual data frame
-
-  // Apply filters
-  const filteredDataFrame = dataFrame
+// Apply filters
+let filteredDataFrame = dataFrame
   .where(query)
-  .transform((df: DataFrame) => {
+  .map((row: any) => {
     // Apply transformations if needed
-    return df;
-  })
-  .orderBy(options.sort || '');
+    return row;
+  });
 
 // Apply options
+if (options.sort) {
+  filteredDataFrame = filteredDataFrame.orderBy((row: any) => row[options.sort as keyof any]);
+}
+
 if (options.limit) {
   filteredDataFrame.head(options.limit);
 }
+// Continue with other options...
+
 
 if (options.random) {
-  filteredDataFrame.shuffle();
+  const dataArray = filteredDataFrame.toArray(); // Convert DataFrame to an array
+  shuffleArray(dataArray); // Shuffle the array
+  filteredDataFrame = new DataFrame(dataArray); // Convert the shuffled array back to a DataFrame
 }
 
-if (options.topN) {
-  filteredDataFrame.tail(options.topN);
-}
+  if (options.topN) {
+    filteredDataFrame.tail(options.topN);
+  }
 
-// Convert data-forge DataFrame to an array of objects
-const filteredData = filteredDataFrame.toArray(filters);
+  // Convert data-forge DataFrame to an array of objects
+  const filteredData: Record<string, { operation: string; value: string | number; }> = filteredDataFrame.toArray()[0];
 
-onSubmit(filteredData, transform);
+  onSubmit(filteredData, transform);
 
-// Clear all filters
-clearAllFilters();
+  // Clear all filters
+  clearAllFilters();
 
   setFilters((prevFilters) => {
     const updatedFilters = { ...prevFilters };
@@ -187,13 +238,11 @@ clearAllFilters();
     return updatedFilters;
   });
 
-    // Clear form fields
-    setColumn("");
-    setOperation("==");
-    setValue("");
-  
+  // Clear form fields
+  setColumn("");
+  setOperation("==");
+  setValue("");
 
-  
   const removeFilter = (columnName: string) => {
     setFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -210,9 +259,7 @@ clearAllFilters();
           <span>
             {columnName} {filters[columnName].operation}{" "}
             {filters[columnName].value}{" "}
-            <button
-              type="button"
-              onClick={() => removeFilter(columnName)}>
+            <button type="button" onClick={() => removeFilter(columnName)}>
               Remove
             </button>
           </span>
@@ -308,12 +355,16 @@ clearAllFilters();
         />
       </label>
       <br />
-       {/* Use 'realtimeData' in your component logic */}
-       <div>
+      {/* Use 'realtimeData' in your component logic */}
+      <div>
         <h3>Real-time Data:</h3>
         {realtimeData.map((dataPoint: any, index: any) => (
           <div key={index}>{JSON.stringify(dataPoint)}</div>
         ))}
+      </div>
+      <br />
+      <div>
+        <ListGenerator items={snapshotListArray} />
       </div>
       <br />
       <button onClick={clearAllFilters}>Clear All Filters</button>

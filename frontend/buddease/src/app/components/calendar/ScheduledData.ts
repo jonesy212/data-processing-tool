@@ -1,5 +1,7 @@
+import { Data } from "../models/data/Data";
+
 // ScheduledData.ts
-export interface ScheduledData {
+export interface ScheduledData extends Data{
     id: string | number;
     title: string;
     description: string;

@@ -1,10 +1,37 @@
 import React, { createContext, useContext, useState } from 'react';
+import { DataDetails } from '../models/data/Data';
+import { Member } from '../models/teams/TeamMembers';
+import { DetailsItem } from '../state/stores/DetailsListStore';
 
 // Define the type for calendar data
 type CalendarEvent = {
   id: string;
   title: string;
   date: Date;
+  isVisible?: boolean;
+  isActive: boolean;
+  reminder: React.ReactNode;
+  documentReleased?: boolean;
+  reminderOptions?: {
+    recurring: boolean; // Indicates if the reminder is recurring
+    frequency?: string; // Frequency of recurrence (e.g., "daily", "weekly", "monthly")
+    interval?: number; // Interval for recurrence (e.g., every 2 weeks)
+    // Add more options as needed
+  };
+  category: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  priority?: "low" | "medium" | "high";
+  location?: string; 
+  attendees?: Member[]; 
+  shared: React.ReactNode;
+  details: DetailsItem<DataDetails>;
+  bulkEdit: boolean;
+  recurring: boolean;
+  customEventNotifications: string ; // Update type to string
+  comment: string; // Update type to string
+  attachment: string; // Update type to string
   // Add more properties as needed
 };
 
@@ -56,3 +83,5 @@ export const CalendarProvider: React.FC<CalendarContextProps> = ({ children }) =
     </CalendarContext.Provider>
   );
 };
+
+export type { CalendarEvent };

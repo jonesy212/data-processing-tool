@@ -18,18 +18,23 @@ import {
 import { AuthProvider } from "../components/auth/AuthContext";
 import BlogComponent from "../components/blogs/BlogComponent";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
+import { Lesson } from "../components/documents/CourseBuilder";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
 import Toolbar from "../components/documents/Toolbar";
 import ChildComponent from "../components/hooks/ChildComponent";
 import { handleLogin } from "../components/hooks/dynamicHooks/dynamicHooks";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
+import { LogData } from "../components/models/LogData";
+import ContentItem from "../components/models/data/ContentItem";
 import { Data } from "../components/models/data/Data";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
 import undoLastAction from "../components/projects/projectManagement/ProjectManager";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
+import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
+import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
   NotificationProvider,
   NotificationType,
@@ -47,6 +52,7 @@ import ForgotPasswordForm from "./forms/ForgotPasswordForm";
 import LoginForm from "./forms/LoginForm";
 import RegisterForm from "./forms/RegisterForm";
 import Layout from "./layouts/Layouts";
+import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
 
 const phases: Phase[] = [
@@ -56,11 +62,22 @@ const phases: Phase[] = [
     endDate: new Date(),
     subPhases: ["Research", "Planning", "Design"],
     component: {} as (props: {}, context?: any) => React.ReactElement,
+    duration: 100,
     hooks: {} as CustomPhaseHooks,
     data: {} as Data,
+    lessons: {} as Lesson[],
   },
   // Add more phases
 ];
+
+
+const contentItem: DetailsItem<Data> = {
+  id: '1',
+  title: 'Sample Content',
+  description: 'This is a sample content item.',
+  /* Add other relevant details here */
+};
+
 
 async function MyApp({
   Component,
@@ -70,7 +87,7 @@ async function MyApp({
 }: AppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
-  const [notifications, setNotifications] = useState<NotificationData[];>([]);
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [activeDashboard, setActiveDashboard] = useState<
     "communication" | "documents" | "tasks" | "settings"
   >("communication");
@@ -83,13 +100,16 @@ async function MyApp({
     const id = uuidV4(randomBytes);
 
     // Create a new notification object
-    const newNotification: Notification = {
+    const newNotification: NotificationData = {
       message,
       id,
       date: new Date(),
       createdAt: new Date(),
       type: {} as NotificationType,
       content: "",
+      completionMessageLog: {} as LogData,
+      status: undefined,
+      sendStatus: "Sent"
     };
 
     // Update notifications state by appending the new notification
@@ -174,6 +194,8 @@ async function MyApp({
     console.log("Rolling back to the previous project phase...");
     // Replace with your actual logic to rollback to the previous phase
   };
+
+  const personaType = PersonaTypeEnum.ProjectManager; // For example, assuming the persona type is ProjectManager
 
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
@@ -289,6 +311,8 @@ async function MyApp({
                                 setActiveDashboard={setActiveDashboard}
                                 addNotifications={addNotifications}
                                 componentSpecificData={componentSpecificData}
+                                personaType={personaType}
+
                               />
                             </StoreProvider>
                           </Layout>
@@ -362,6 +386,8 @@ async function MyApp({
                   {...pageProps}
                   router={router}
                   brandingSettings={brandingSettings}
+                  personaType={personaType} /* Pass personaType down to Component */
+
                 />
                 {/* You can also pass them down to child components */}
                 <ChildComponent
@@ -376,6 +402,8 @@ async function MyApp({
 
         <Layout>{Component && <Component {...pageProps} />}</Layout>
       </SearchComponent>
+      <ContentItem item={contentItem} />
+
     </Refine>
   );
 }

@@ -1,25 +1,38 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { rootStores } from './RootStores'; // Update the import here
+import { useDispatch } from 'react-redux'; // Import useDispatch hook
+import { rootStores } from './RootStores';
 import generateStoreKey from './StoreKeyGenerator';
 
-export const IconStore = observer(() => {
-  const [rootStore] = useState<typeof rootStores>();  // Update the type here
+interface IconStoreProps {
+  // Remove the unnecessary dispatch prop from props
+}
+
+export const IconStore: React.FC<IconStoreProps> = observer(() => {
+  const [rootStore] = useState<typeof rootStores>();
+  const dispatch = useDispatch(); // Initialize useDispatch hook
 
   useEffect(() => {
-    // Implement your logic to load icons here
     const iconLoader = async () => {
-      // Your icon loading logic 
+      try {
+        // Simulate icon loading with a delay (replace with actual logic)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Dispatch an action to update the store once icons are loaded
+        dispatch({ type: 'ICONS_LOADED', payload: { /* Add payload if needed */ } });
+        
+        // Trigger any necessary updates after loading
+      } catch (error) {
+        console.error('Error loading icons:', error);
+        // Handle error loading icons
+      }
     };
 
-    iconLoader().then(() => {
-      // Trigger any necessary updates after loading
-
-    });
-  }, [rootStore]);
+    iconLoader();
+  }, [rootStore]); // Add rootStore to the dependencies array
 
   return null; // Adjust the return value based on your component structure
 });
 
 // Example usage in cache management
-const storeKey = generateStoreKey("iconStore");
+const storeKey = generateStoreKey('iconStore');

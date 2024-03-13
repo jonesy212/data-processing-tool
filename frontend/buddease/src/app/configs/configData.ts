@@ -14,6 +14,7 @@ import detailsConfig from './detailsConfig';
 
 // Instantiate AppVersion with initial version number, release date, and release notes
 const appVersion = new AppVersion({
+  appName: "Buddease",
   versionNumber: '1.0.0',
   appVersion: "1.0.0",
   releaseDate: "2024-03-01",

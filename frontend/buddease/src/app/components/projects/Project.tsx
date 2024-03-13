@@ -1,11 +1,12 @@
 //projects/Project.ts
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { Idea, Task } from "../models/tasks/Task";
+import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
-import { Attachment, Todo } from "../todos/Todo";
+import { Attachment, Comment, Todo } from "../todos/Todo";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
@@ -27,17 +28,17 @@ interface Project extends Data {
   description: string | null; // Updated this line
   members: User[];
   tasks: Task[];
-  startDate: Date;
-  endDate: Date | null;
+  startDate: Date
+  endDate: Date
   isActive: boolean;
   leader: User | null;
   budget: number | null;
   phase: Phase | null;
   phases: Phase[];
-  currentPhase: Phase | null; // Provide a default value or mark as optional
   type: ProjectType
-  // Add other project-related fields as needed
-
+  currentPhase: Phase | null; // Provide a default value or mark as optional
+  comments?: Comment[];  // Add other project-related fields as needed
+  commnetBy?: User | Member
 }
 
 // Function to determine if the project is in a special phase
@@ -87,15 +88,15 @@ class ProjectImpl implements Project {
   isBeingDeleted?: boolean | undefined;
   isBeingCompleted?: boolean | undefined;
   isBeingReassigned?: boolean | undefined;
-  collaborationOptions?: CollaborationOption[] | undefined;
+  collaborationOptions?: CollaborationOptions[] | undefined;
   videoData: VideoData = {} as VideoData;
   _id: string = "0";
   id: string = "0"; // Initialize id property to avoid error
   name: string = "projectName";
   members: User[] = []; // Provide a default value or mark as optional
   tasks: Task[] = []; // Provide a default value or mark as optional
-  startDate: Date = new Date(); // Provide a default value or mark as optional
-  endDate: Date | null = null; // Provide a default value or mark as optional
+  startDate: Date= new Date(); // Provide a default value or mark as optional
+  endDate: Date= new Date(); // Provide a default value or mark as optional // Provide a default value or mark as optional
   isActive: boolean = false; // Provide a default value or mark as optional
   leader: User | null = null; // Provide a default value or mark as optional
   budget: number | null = null; // Provide a default value or mark as optional
@@ -166,6 +167,8 @@ const currentPhase: Phase = {
       </div>
     );
   },
+  lessons: [],
+  duration: 0
 };
 
 export interface ProjectData extends Project {
@@ -178,8 +181,8 @@ export interface ProjectData extends Project {
 currentProject.phases = [
   {
     name: currentPhase.name,
-    startDate: new Date(currentPhase.startDate),
-    endDate: new Date(currentPhase.endDate),
+    startDate: (currentPhase.startDate),
+    endDate: (currentPhase.endDate),
     subPhases: [],
     data: {} as Data,
     component: () => {
@@ -191,6 +194,8 @@ currentProject.phases = [
         // Provide your implementation
       },
     } as CustomPhaseHooks,
+    lessons: [],
+    duration: 0,
   },
 ];
 
@@ -227,7 +232,10 @@ const transitionToPreviousPhase = (setCurrentPhase: React.Dispatch<React.SetStat
 const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = async ({ projectDetails }) =>
   (await projectDetails) ? (
     <>
-      <CommonDetails data={{} as CommonData<SupportedData>} />
+      <CommonDetails
+        data={{} as CommonData<SupportedData>}
+        details={projectDetails}
+      />
       <ButtonGenerator
         onTransitionToPreviousPhase={transitionToPreviousPhase} // Pass the function as a prop
       />

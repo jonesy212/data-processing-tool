@@ -1,3 +1,5 @@
+import team from '@/app/components/models/teams/Team';
+import React from 'react';
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { Phase } from "../../phases/Phase";
 import Project, { ProjectType } from "../../projects/Project";
@@ -8,18 +10,20 @@ import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
-import CommonDetails from "../CommonData";
+import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
 import { Idea, Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgresBar";
 import TeamData from "./TeamData";
+import { TeamMember } from './TeamMembers';
 
 
 
 
 
-interface Team {
-  id: number;
+interface Team extends Data {
+  _id: string;
+  id: string;
   teamName: string;
   description?: string | undefined;
   members: User[];
@@ -28,10 +32,25 @@ interface Team {
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
-  data: TeamData;
-  then: (callback: (newData: Snapshot<Team>) => void) => void;
+  data?: TeamData;
+  then: (callback: (newData: Snapshot<Data>) => void) => void;
+  pointOfContact?: TeamMember[] | null;
+  currentProject?: Project | null;
+  currentTeam?: Team | null;
+
+
+
+  assignedProjects: Project[];
+  reassignedProjects: { project: Project; previousTeam: Team; reassignmentDate: Date }[];
+  assignProject(team: Team, project: Project): void
+  reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
+  unassignProject(team: Team, project: Project): void;
+  updateProgress(team: Team, project: Project): void
+
   // Add other team-related fields as needed
 }
+
+
 
 
 
@@ -39,7 +58,7 @@ interface Team {
 const timeBasedCode = generateTimeBasedCode()
 // Example usage:
 const team: Team = {
-  id: 1,
+  id: '1',
   teamName: "Development Team",
   description: "A team focused on software development",
   members: [
@@ -86,7 +105,7 @@ const team: Team = {
       title: "Team Projects",
       status: "pending",
       phase: {} as Phase,
-      then: () => {},
+      then: () => { },
       analysisType: "image",
       analysisResults: ["analysisResults"],
       tags: [],
@@ -114,7 +133,7 @@ const team: Team = {
       title: "Team Projects",
       status: "pending",
       phase: {} as Phase,
-      then: () => {},
+      then: () => { },
       analysisType: "image",
       analysisResults: ["analysisResults"],
       tags: [],
@@ -137,7 +156,7 @@ const team: Team = {
           description: "Description of Task 1",
           phase: {} as Phase,
           assignedTo: {} as WritableDraft<User>,
-          
+
           then(arg0: (newTask: any) => void): unknown {
             const newTask = {
               _id: "task-2",
@@ -274,16 +293,118 @@ const team: Team = {
     callback(newData);
   },
   data: {} as TeamData & Team,
+  assignedProjects: [],
+  reassignedProjects: [],
+  assignProject(team: Team, project: Project): void {
+    // Implement the logic to assign a project to the team
+    team.assignedProjects.push(project);
+  },
+  unassignProject: function (team: Team, project: Project) {
+    // Implement the logic to unassign a project from the team
+    const index = team.assignedProjects.findIndex(p => p.id === project.id);
+    if (index !== -1) {
+      team.assignedProjects.splice(index, 1); // Remove from current team's assigned projects
+    }
+  },
+
+
+  reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => {
+    // Update the project's team reference
+    project.team = team;
+
+    // Remove the project from the previous team's projects
+    previousTeam.projects = previousTeam.projects.filter(proj => proj.id !== project.id);
+
+    // Add the project to the new team's projects
+    team.projects.push(project);
+  },
+
+
+
+  updateProgress: function (team: Team, project: Project) {
+    // Implement the logic to update the team's progress
+    // Example: Calculate progress based on assigned projects
+    const totalAssignedProjects = team.assignedProjects.length;
+    const completedProjects = team.assignedProjects.filter(project => project.status === 'completed').length;
+
+    const progressValue = totalAssignedProjects > 0 ? (completedProjects / totalAssignedProjects) * 100 : 0;
+
+    // Update the progress object
+    team.progress = {
+      value: progressValue,
+      label: `${progressValue}% completed` // Example label
+    };
+  },
+  currentProject: null,
+  _id: '',
+  title: '',
+  status: 'scheduled',
+  tags: [],
+  phase: null,
+  analysisType: '',
+  analysisResults: [],
+  videoData: {} as VideoData,
 };
 
-// Refactored CommonDetails component to handle specific data types
-const TeamDetails: React.FC<{ team: Team }> = ({ team }) => (
-  <CommonDetails data={team} />
-);
+
+const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
+  // Check if team is not undefined before passing it to CommonDetails
+  const data: CommonData<Team> | undefined = team ? { data: team } : undefined;
+
+  const setCurrentProject = (project: Project) => {
+    // Set the current project for the team
+    team.currentProject = project;
+  };
+
+  const clearCurrentProject = () => {
+    // Clear the current project for the team
+    team.currentProject = null;
+  };
+
+  const setCurrentTeam = (team: Team) => { 
+    // Set the current team for the team
+    team.currentTeam = team;
+  
+  }
+
+
+  return (
+    <CommonDetails
+      data={{team: team} as  CommonData<never>}
+      details={{
+        id: team.id,
+        name: team.teamName,
+        description: team.description,
+        assignedProjects: team.assignedProjects,
+        reassignedProjects: team.reassignedProjects,
+        progress: team.progress,
+        setCurrentProject: setCurrentProject,
+        clearCurrentProject: clearCurrentProject,
+        setCurrentTeam: setCurrentTeam,
+        // Include other team-specific properties here
+      }}
+    />
+  );
+};
+
+
+
 
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
-  <CommonDetails data={{ data: team }} />
+  <CommonDetails
+    data={{ ...data }}
+    details={{
+      id: data.id as string,
+      title: data.title,
+      phase: data.phase,
+      description: data.description,
+      isActive: data.isActive,
+      // Include other generic data properties here
+    }}
+  />
 );
 
-export { DataDetailsComponent, TeamDetails };
+
+
+export { DataDetailsComponent, TeamDetails, team };
 export default Team;

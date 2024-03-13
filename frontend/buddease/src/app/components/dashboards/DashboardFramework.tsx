@@ -14,7 +14,7 @@ import { processAutoGPTOutputWithSpaCy } from "../Inteigents/AutoGPTSpaCyIntegra
 import { AdminDashboard, AdminDashboardProps } from "../admin/AdminDashboard";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
-import { selectUserIdea } from "../state/redux/slices/DocumentSlice";
+import  selectUserIdea  from "../state/redux/slices/DocumentSlice";
 import { RootState } from "../state/redux/slices/RootSlice";
 import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import { AquaConfig } from "../web3/web_configs/AquaConfig";
@@ -25,6 +25,7 @@ import {
     default as TeamOverviewToolbar,
 } from "./../communications/scheduler/TeamOverview";
 import PhaseDashboard from "./PhaseDashboard";
+import { useDispatch } from "react-redux";
 interface DashboardFrameworkProps {
   children: React.ReactNode;
   activeDashboard: string;
@@ -34,6 +35,7 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
   children,
   activeDashboard,
 }) => {
+  const dispatch = useDispatch();
   // Use the useResizablePanels hook to manage resizable panels
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, hide, isSliding, isDragging } = useMovementAnimations();
@@ -41,18 +43,17 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
   const rightPaneRef = useRef<HTMLElement>(null);
   // Update appTree with the result from generateInitialAppTree
   const [appTree, setAppTree] = useState<AppTree | null>(null);
+  const handleUserIdeaSubmission = async () => {
+    const action = DocumentAction.selectUserIdea(undefined, { type: 'SOME_ACTION_TYPE' });
+  dispatch(action);
 
-  const handleUserIdeaSubmission = async (
-    userIdea: typeof selectUserIdea,
-  ) => {
-    const enhancedPrompt = await processAutoGPTOutputWithSpaCy(
-      userIdea,
-    );
+  const enhancedPrompt = await processAutoGPTOutputWithSpaCy(action);
 
+  
     if (enhancedPrompt) {
       // Perform actions with the enhanced prompt
       console.log("Enhanced Prompt:", enhancedPrompt);
-
+  
       // Rest of the code...
     } else {
       console.log(
@@ -60,6 +61,7 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
       );
     }
   };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -220,7 +222,7 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
           </>
         )}
         {/* Button for Idea Submission */}
-        <button onClick={() => handleUserIdeaSubmission((state: RootState) => "userIdeaManager")}>Submit Idea</button>      
+        <button onClick={() => handleUserIdeaSubmission()}>Submit Idea</button>      
       </footer>
 
 

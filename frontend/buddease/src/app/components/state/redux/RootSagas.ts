@@ -1,17 +1,24 @@
 // RootSaga.ts
+import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { all, fork } from 'redux-saga/effects';
-import { useNotification } from '../../hooks/commHooks/useNotification';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { apiSagas } from './sagas/apiSagas';
 import { calendarSagas } from './sagas/calendarSagas';
+import { clientSagas } from './sagas/clientSaga';
 import { dataAnalysisSagas } from './sagas/dataAnalysisSagas';
 import { dataSagas } from './sagas/dataSaga';
 import { detailsSagas } from './sagas/detailsSaga';
+import { markerSagas } from './sagas/markerSagas';
 import { phaseSagas } from './sagas/personaSagas/phaseSaga';
+import promptSagas from './sagas/promptSagas';
 import { snapshotSagas } from './sagas/snapshotSagas';
 import { taskSagas } from './sagas/taskSagas';
 import { todoSagas } from './sagas/todoSagas';
 import { userSagas } from './sagas/userSagas';
+import { videoSagas } from './sagas/videoSagas';
+import { teamSagas } from './sagas/teamSagas';
+import { tenantSagas } from './sagas/tenantSags';
+import { documentSagas } from './sagas/documentSagas';
 
 // Add more sagas as needed...
 
@@ -30,10 +37,24 @@ export function* rootSaga() {
       fork(snapshotSagas),
       fork(detailsSagas),
       fork(phaseSagas),
+      fork(userSagas),
+      fork(videoSagas),
+      fork(clientSagas),
+      fork(promptSagas),
+      fork(markerSagas),
+      fork(teamSagas),
+      fork(tenantSagas),
+      fork(snapshotSagas),
+      fork(documentSagas),
       // Add more sagas here...
     ]);
   } catch (error) {
     console.error('Error in rootSaga:', error);
-    notify("Error in rootSaga", NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR, new Date, NotificationTypeEnum.OperationError);
+    notify(
+      "rootSagaError",
+      "Error in rootSaga",
+      NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR,
+      new Date,
+      NotificationTypeEnum.OperationError);
   }
 }

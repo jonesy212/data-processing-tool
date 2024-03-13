@@ -7,6 +7,8 @@ import React, { useState } from "react";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
+import { CommonData } from "../models/CommonData";
+import { Data } from "../models/data/Data";
 import PromptViewer from "../prompts/PromptViewer";
 import axiosInstance from "../security/csrfToken";
 import SharingOptions from "../shared/SharingOptions";
@@ -14,25 +16,27 @@ import {
   createPdfDocument,
   getFormattedOptions,
 } from "./DocumentCreationUtils";
-import { DocumentType } from "./DocumentGenerator";
+import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { CommonData } from "../models/CommonData";
-import { Data } from "../models/data/Data";
+import { DocumentStatus } from "./types";
 
-
-
+const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
 export interface DocumentData extends CommonData<Data> {
   id: number;
   title: string;
   content: string;
-  topics: string[]
+  topics: string[];
   highlights: string[];
-  load: () => void;
-  files: any[]; 
+  load?: () => void;
+  files: any[];
+  status?: DocumentStatus;
+  type?: DocumentTypeEnum;
+  locked?: boolean;
+  changes?: string[];
   // Add more properties if needed
 }
 
@@ -41,6 +45,7 @@ interface DocumentBuilderProps {
   onOptionsChange: (newOptions: DocumentOptions) => void;
   isDynamic: boolean;
   setOptions: (newOptions: any) => void; // Define setOptions prop
+  documents: DocumentData[]; // Add documents prop to receive document data
 
 }
 
@@ -48,9 +53,10 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   isDynamic,
   options,
   onOptionsChange,
-  setOptions, 
-
+  setOptions,
+  documents,
 }) => {
+
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -71,8 +77,6 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   ) => {
     onOptionsChange({ ...options, animations: animationOptions });
   };
-
-
 
   const handleOptionsChange = (newOptions: any) => {
     // Call setOptions prop to update options state
@@ -116,8 +120,6 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     setEditorState(newEditorState);
   };
 
-  
-
   const handleKeyCommand = (command: any, state: any) => {
     const newState = RichUtils.handleKeyCommand(state, command);
 
@@ -129,15 +131,15 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   };
 
   const handleCreateDocument = (userOptions: any) => {
-    const documentContent = editorState.getCurrentContent().getPlainText(); 
-    const formattedOptions = getFormattedOptions(userOptions); 
+    const documentContent = editorState.getCurrentContent().getPlainText();
+    const formattedOptions = getFormattedOptions(userOptions);
 
     // Call a utility function to create a document (PDF or other formats)
     createPdfDocument(documentContent, formattedOptions);
   };
-
-  
-  const handleEditorStateChange = async (newEditorState: EditorState): Promise<void> => {
+  const handleEditorStateChange = async (
+    newEditorState: EditorState
+  ): Promise<void> => {
     // Update the editor state in DocumentBuilder
     setEditorState(newEditorState);
 
@@ -147,12 +149,12 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
     try {
       // Example: Perform a POST request to add data
-      await axiosInstance.post(endpoints.data.addData, {
+      await axiosInstance.post(`${API_BASE_URL}/addData`, {
         data: content.getPlainText(),
       });
 
       // Example: Perform a GET request to fetch data
-      const response = await axiosInstance.get(endpoints.data.list);
+      const response = await axiosInstance.get(`${API_BASE_URL}/list`);
       console.log("Fetched data:", response.data);
 
       // You can perform other HTTP requests using Axios as needed
@@ -160,7 +162,6 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       console.error("Error:", error);
     }
   };
-
 
   const handleCreateButtonClick = async () => {
     // Call handleCreateDocument with userOptions
@@ -180,17 +181,17 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       onEditorStateChange: handleEditorStateChange,
     };
 
+    // Call handleCreateDocument with userOptions
+    handleCreateDocument(userOptions);
+  };
 
-
-      // Call handleCreateDocument with userOptions
-      handleCreateDocument(userOptions);
-    };
-  
   const handleDrag = () => {
     // Use the drag function here
     drag();
   };
 
+
+  
   const renderDocument = () => {
     if (isDynamic) {
       return (
@@ -207,11 +208,21 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
         <div>
           <p>This is a static document.</p>
           <p>Content goes here.</p>
+  
+          {documents.map((document) => (
+            <div key={document.id}>
+              <h2>{document.title}</h2>
+              <p>Status: {document.status}</p>
+              <p>Type: {document.type}</p>
+              <p>Locked: {document.locked ? 'Yes' : 'No'}</p>
+              {/* Additional document properties */}
+            </div>
+          ))}
         </div>
       );
     }
   };
-
+  
   return (
     <div>
       <div>
@@ -233,9 +244,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           code={true}
           link={true}
           image={true}
-          type={{} as ToolbarOptionsProps &
-            DocumentType
-          } 
+          type={{} as ToolbarOptionsProps & DocumentType}
           audio={true}
           onEditorStateChange={(newEditorState: any) => {
             setEditorState(newEditorState);
@@ -251,7 +260,6 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
         <h1>Document Builder</h1>
         <Clipboard onCopy={handleCopy} onPaste={handlePaste} />
 
-        
         {/* Other DocumentBuilder components go here */}
         <label>
           Document Visibility:
@@ -334,11 +342,8 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           </div>
         )}
       </div>
-            {/* Separate Prompt Viewer component */}
-      <PromptViewer
-        prompts={[]} 
-        children={null}
-        />
+      {/* Separate Prompt Viewer component */}
+      <PromptViewer prompts={[]} children={null} />
       {isDynamic && (
         <div>
           <h3>Resizable Panels</h3>

@@ -4,6 +4,7 @@ import { UserRole } from "../../users/UserRole";
 export interface Member extends User {
   teamId: string;
   roleInTeam: string;
+  memberName: string;
   // Add other member-specific properties here
 }
 
@@ -42,7 +43,8 @@ interface TeamMember {
     profilePicture: null,
     processingTasks: [],
     role: {} as UserRole,
-    timeBasedCode: ""
+    timeBasedCode: "",
+    memberName: ""
   };
   const teamMember: TeamMember = {
     id: 1,

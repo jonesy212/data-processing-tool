@@ -1,7 +1,7 @@
 // calendar/CalendarActions.ts
 
 import { createAction } from '@reduxjs/toolkit';
-import { CalendarEvent } from '../state/stores/CalendarStore';
+import { CalendarEvent } from '../state/stores/CalendarEvent';
 
 // Calendar actions
 export const CalendarActions = {

@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import CalendarEventViewingDetailsProps from './CalendarEventViewingDetails';
+import { handleAddComponent, handleRemoveComponent, handleUpdateComponent } from '../libraries/ui/components/Component';
 
 // Import handleApiError and other dependencies here...
 
@@ -55,7 +56,7 @@ const DefaultCalendarEventViewingDetails: React.FC<CalendarEventViewingDetailsPr
         // Pass other props as needed
       />
       {/* Render UpdatedProjectDetails only when currentProject is available */}
-      {currentProject && <UpdatedProjectDetails project={currentProject} />}
+      {currentProject && <UpdatedProjectDetails projectDetails={currentProject} />}
     </div>
   );
 };

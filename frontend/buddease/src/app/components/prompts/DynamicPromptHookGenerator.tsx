@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { processAutoGPTOutputWithSpaCy } from '../Inteigents/AutoGPTSpaCyIntegration';
 import createDynamicHook, { DynamicHookParams } from '../hooks/dynamicHooks/dynamicHookGenerator';
+import useIdleTimeout from '../hooks/idleTimeoutHooks';
 
 interface DynamicPromptConfig {
   condition: () => boolean;
@@ -56,7 +57,10 @@ const useDynamicPromptHook = createDynamicPromptHook({
 const useDynamicPromptHookWithEffect = () => {
   useEffect(() => {
     // Invoke the dynamic prompt hook when the component mounts
-    const cleanup = useDynamicPromptHook.asyncEffect();
+    const cleanup = useDynamicPromptHook.asyncEffect({
+      idleTimeoutId: 0 as useIdleTimeout,
+      startIdleTimeout: 0 as useIdleTimeout,
+    });
 
     // Optionally, you can perform additional logic or set up other hooks
 

@@ -2,6 +2,7 @@
 import { createContext, useContext } from "react";
 import { NotificationData } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
+import { BytesLike } from "ethers";
 
 type CustomNotificationType = "RandomDismiss";
 
@@ -104,6 +105,7 @@ export interface NotificationContextProps {
     id: string,
     message: string,
     content: any,
+    // randomBytes?: BytesLike,
     date?: Date | undefined,
     type?: NotificationType
   ) => Promise<void>;

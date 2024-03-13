@@ -23,6 +23,43 @@ export interface PhaseHookConfig {
   duration: number;
 }
 
+
+interface TestPhaseHooks {
+  // Add methods specific to test phase hooks
+  createTestPhaseHook: (config: TestPhaseHookConfig) => CustomPhaseHooks;
+  // Add other test phase hooks methods as needed
+}
+
+
+// TestPhaseHookConfig.ts
+
+export interface TestPhaseHookConfig {
+  name: string;
+  condition: () => boolean;
+  asyncEffect: () => Promise<() => void>;
+  canTransitionTo?: (nextPhase: string) => boolean;
+  handleTransitionTo?: (nextPhase: string) => Promise<void>;
+  duration: number;
+}
+
+
+
+
+// Define additional methods for managing test phases
+
+// Define additional methods for managing test phases
+const useTestPhaseHooks = (): TestPhaseHooks => {
+  // Implement methods for managing test phases
+  const createTestPhaseHook = (config: TestPhaseHookConfig) => {
+    // Implement logic to create test phase hooks
+    // Return custom phase hooks for the test environment
+  };
+
+  return { createTestPhaseHook };
+}
+
+
+
 const { resetAuthState } = useAuth(); 
 
 export const createPhaseHook = (config: PhaseHookConfig) => {

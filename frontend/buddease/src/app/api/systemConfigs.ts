@@ -5,7 +5,7 @@ import { FrontendConfig } from "../configs/FrontendConfig";
 import LazyLoadScriptConfig from "../configs/LazyLoadScriptConfig";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 
-import { FrontendStructure } from "../configs/appStructure/FrontendStructureComponent";
+import  FrontendStructure  from "../configs/appStructure/FrontendStructureComponent";
 import ShoppingCenterConfig from "../shopping_center/ShoppingCenterConfig";
 
 // systemConfigs.ts
