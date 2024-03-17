@@ -1,11 +1,14 @@
 // Task.ts
 import { User } from "@/app/components/users/User";
+import { FC } from "react";
 import { Phase } from "../../phases/Phase";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
+import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { VideoData } from "../../video/Video";
-import CommonDetails from "../CommonData";
+import CommonDetails, { CommonData } from "../CommonData";
 import { Data } from "../data/Data";
-
+import { StatusType, TaskStatus, TeamStatus } from "../data/StatusType";
+import Team, { TeamDetails } from "../teams/Team";
 export type Idea = {
   id: string; // Unique identifier for the idea
   title: string; // Title or headline of the idea
@@ -18,7 +21,7 @@ export type Idea = {
 };
 
 interface Task extends Data {
-  id: string | number;
+  id: string
   title: string;
   description: string;
   assignedTo: WritableDraft<User> | null; 
@@ -26,8 +29,11 @@ interface Task extends Data {
   dueDate: Date;
   payload: any;
   type: "addTask" | "removeTask" | "bug" | "feature";
-  status: "pending" | "inProgress" | "completed";
-  priority: "low" | "medium" | "high";
+  status:
+  | StatusType
+  | TaskStatus
+  | TeamStatus; // Use enums for status property
+ priority: "low" | "medium" | "high";
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;
@@ -42,7 +48,7 @@ interface Task extends Data {
     thisArg?: any
   ) => boolean;
   then(arg0: (newTask: any) => void): unknown;
-  details?: string;
+  details?: DetailsItem<typeof TeamDetails> | undefined;
 
   startDate: Date | undefined;
   endDate: Date;
@@ -57,7 +63,31 @@ interface Task extends Data {
 
 // using commong detais we genrate detais for components by mapping through the objects.
 const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
-  <CommonDetails data={task} />
+  <CommonDetails
+    data={{ task: task } as CommonData<never>}
+  details={
+    {
+      id: task.id as string,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      participants: task.participants,
+
+      createdAt: task.createdAt,
+      // author: task.assignedTo?.name || "",
+      startDate: task.createdAt,
+      uploadedAt: task.uploadedAt,
+      type: task.type,
+      tags: task.tags,
+      isActive: task.isActive,
+      phase: task.phase,
+      fakeData: task.fakeData,
+      comments: task.comments,
+      // Add more properties as needed
+    }
+
+} 
+  />
 );
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
@@ -71,7 +101,7 @@ export const tasksDataSource: Record<string, Task> = {
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object
     type: "addTask", // Example value for type
-    status: "pending", // Example value for status
+    status: TaskStatus.Pending, // Example value for status
     priority: "low", // Example value for priority
     estimatedHours: null, // Example value for estimatedHours
     actualHours: null, // Example value for actualHours
@@ -82,7 +112,7 @@ export const tasksDataSource: Record<string, Task> = {
     data: {} as Data, // Example value for data, an empty object
     source: "user", // Example value for source
     some: (callbackfn) => false, // Example value for some
-    then: (newTask) => {}, // Example value for then
+    then: (newTask) => { }, // Example value for then
     startDate: new Date(), // Example value for startDate, a Date object
     endDate: new Date(), // Example value for endDate, a Date object
     isActive: true, // Example value for isActive
@@ -92,7 +122,7 @@ export const tasksDataSource: Record<string, Task> = {
     videoThumbnail: "thumbnail.jpg", // Example value for videoThumbnail
     videoDuration: 60, // Example value for videoDuration
     videoUrl: "https://example.com/video", // Example value for videoUrl
-    details: "Details", // Example value for details
+    details: {} as DetailsItem<FC<{ team: Team }>>, // Example value for details
     [Symbol.iterator]: () => {
       // Add more tasks as needed
       return {
@@ -122,7 +152,7 @@ export const tasksDataSource: Record<string, Task> = {
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object
     type: "bug", // Example value for type
-    status: "inProgress", // Example value for status
+    status: TaskStatus.InProgress, // Example value for status
     priority: "medium", // Example value for priority
     estimatedHours: 5, // Example value for estimatedHours
     actualHours: 3, // Example value for actualHours
@@ -133,7 +163,7 @@ export const tasksDataSource: Record<string, Task> = {
     data: {} as Data, // Example value for data, an empty object
     source: "system", // Example value for source
     some: (callbackfn) => false, // Example value for some
-    then: (newTask) => {}, // Example value for then
+    then: (newTask) => { }, // Example value for then
     startDate: new Date(), // Example value for startDate, a Date object
     endDate: new Date(), // Example value for endDate, a Date object
     isActive: true, // Example value for isActive
@@ -143,30 +173,33 @@ export const tasksDataSource: Record<string, Task> = {
     videoThumbnail: "thumbnail2.jpg", // Example value for videoThumbnail
     videoDuration: 120, // Example value for videoDuration
     videoUrl: "https://example.com/video2", // Example value for videoUrl
-    details: "Details for Task 2", // Example value for details
-    [Symbol.iterator]: () => {
-      // Add iterator implementation if needed
-      return {
-        next: () => {
-          return {
-            done: true,
-            value: {
-              _id: "taskData2", // Example value
-              phase: {} as Phase,
-              videoData: {} as VideoData,
-            },
-          };
-        },
-      };
+    
+       // Example value for details
+      [Symbol.iterator]: () => {
+        // Add iterator implementation if needed
+        return {
+          next: () => {
+            return {
+              done: true,
+              value: {
+                _id: "taskData2", // Example value
+                phase: {} as Phase,
+                videoData: {} as VideoData,
+              },
+            };
+          },
+        };
+      },
+      _id: "taskData2", // Example value
+      phase: {} as Phase,
+      videoData: {} as VideoData,
+      ideas: {} as Idea[],
     },
-    _id: "taskData2", // Example value
-    phase: {} as Phase,
-    videoData: {} as VideoData,
-    ideas: {} as Idea[],
-  },
-  // Add more tasks as needed
-};
+    // Add more tasks as needed
+  }
 
+  
+  
 export default TaskDetails 
 export type { Task };
 

@@ -4,7 +4,7 @@ import { Member } from '../models/teams/TeamMembers';
 import { DetailsItem } from '../state/stores/DetailsListStore';
 
 // Define the type for calendar data
-type CalendarEvent = {
+type SimpleCalendarEvent = {
   id: string;
   title: string;
   date: Date;
@@ -37,15 +37,15 @@ type CalendarEvent = {
 
 // Define the type for the context props
 type CalendarContextProps = {
-  calendarData: CalendarEvent[]; // Use the defined type for calendar data
-  updateCalendarData: (newData: CalendarEvent[] | ((prevState: CalendarEvent[]) => CalendarEvent[])) => void;
+  calendarData: SimpleCalendarEvent[]; // Use the defined type for calendar data
+  updateCalendarData: (newData: SimpleCalendarEvent[] | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])) => void;
   children: React.ReactNode;
 };
 
 // Define the context type
 type CalendarContextType = {
-  calendarData: CalendarEvent[];
-  updateCalendarData: (newData: CalendarEvent[] | ((prevState: CalendarEvent[]) => CalendarEvent[])) => void;
+  calendarData: SimpleCalendarEvent[];
+  updateCalendarData: (newData: SimpleCalendarEvent[] | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])) => void;
 };
 
 // Create the context
@@ -63,10 +63,10 @@ export const useCalendarContext = () => {
 // Provider component for managing calendar data
 export const CalendarProvider: React.FC<CalendarContextProps> = ({ children }) => {
   // State to store calendar data
-  const [calendarData, setCalendarData] = useState<CalendarEvent[]>([]);
+  const [calendarData, setCalendarData] = useState<SimpleCalendarEvent[]>([]);
 
   // Function to update calendar data
-  const updateCalendarData = (newData: CalendarEvent[] | ((prevState: CalendarEvent[]) => CalendarEvent[])) => {
+  const updateCalendarData = (newData: SimpleCalendarEvent[] | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])) => {
     setCalendarData(newData);
   };
 
@@ -84,4 +84,4 @@ export const CalendarProvider: React.FC<CalendarContextProps> = ({ children }) =
   );
 };
 
-export type { CalendarEvent };
+export type { SimpleCalendarEvent };

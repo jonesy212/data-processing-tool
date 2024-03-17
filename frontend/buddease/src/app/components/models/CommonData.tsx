@@ -25,7 +25,7 @@ interface CommonData<T> {
   description?: string | null | undefined;
   startDate?:  Date;
   endDate?:  Date;
-  collaborationOptions?: CollaborationOptions;
+  collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   metadata?: StructuredMetadata;
   details?: DetailsItem<T>;

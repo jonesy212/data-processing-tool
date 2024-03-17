@@ -1,13 +1,15 @@
 // CalendarApp.tsx
+import AnalyzeData from '@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData';
+import { VideoData } from '@/app/components/video/Video';
 import CommonDetails, { CommonData } from "../models/CommonData";
 import CalendarDetails from "../models/data/CalendarDetails";
 import { DataDetails } from "../models/data/Data";
+import { CalendarStatus } from "../models/data/StatusType";
 import Team, { DataDetailsComponent, TeamDetails } from "../models/teams/Team";
 import { Progress } from "../models/tracker/ProgresBar";
-import Project from "../projects/Project";
+import { Project } from "../projects/Project";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { CalendarEvent } from "./CalendarContext";
-
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -36,6 +38,20 @@ const unassignProject = (team: Team, project: Project) => {
   // Implement the logic to unassign a project from the team
   team.projects = team.projects.filter(proj => proj.id !== project.id);
 
+}
+
+
+const analysisType = (project: Project) => { 
+  if (project.type === "data") {
+    return <AnalyzeData
+      projectId={project.id}
+    />
+  } else {
+    return <div>
+      <h1>Project Type</h1>
+      <p>Project Type: {project.type}</p>
+    </div>
+  }
 }
 
 
@@ -84,7 +100,8 @@ const CalendarApp = () => {
           description: "Discuss project plans",
           startDate: new Date(),
           endDate: new Date(),
-        }}
+          status: CalendarStatus.Pending,
+                }}
       />
       <CommonDetails
         data={{
@@ -92,28 +109,31 @@ const CalendarApp = () => {
             calendarEvent
         } as CommonData<never>}
         details={{
-          // id: "1",
+          id: "1",
+          title: "Meeting",
           description: "Discuss project plans",
           reminders: ["15 minutes before", "30 minutues before", "1 day before", "1 week before"],
           location: "Online",
           attendees: [],
+    // You can include additional details based on the interface
+    isRecurring: false, // Example of additional detail
+    status: CalendarStatus.Pending // Example of status using enum
         }}
       />
       <DataDetailsComponent
         data={{
           id: "1",
+          title: "Meeting",
           type: "calendarEvent",
           isActive: false,
-          title: "Meeting",
           tags: ["work", "meeting"],
           details: {} as DataDetails,
         }}
-      
-
       />
 
       <TeamDetails
         team={{
+          _id: "team-1",
           id: "1",
           teamName: "Team A",
           description: "Description of Team A",
@@ -126,11 +146,14 @@ const CalendarApp = () => {
           creationDate: new Date(),
           assignedProjects: [],
           reassignedProjects: [],
-
+          status: "active",
           assignProject: assignProject,
           reassignProject: reassignProject,
           updateProgress: updateProgress,
-          unassignProject: unassignProject
+          unassignProject: unassignProject,
+          analysisType: "analysisType",
+          analysisResults: ["analysisResults"],
+          videoData: {} as VideoData,
         }}
       />
     </div>

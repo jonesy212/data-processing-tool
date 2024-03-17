@@ -20,9 +20,10 @@ export class RootStores {
   trackerStore: TrackerStore;
   todoStore: TodoManagerStore;
   taskManagerStore: TaskManagerStore
-  iconStore: typeof IconStore;
+  iconStore:  IconStore;
   calendarStore: CalendarManagerStore;
   undoRedoStore: UndoRedoStore;
+  
   userStore: UserStore;
   prototype: any  
   browsers: any

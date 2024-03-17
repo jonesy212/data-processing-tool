@@ -47,11 +47,11 @@ const myPhaseHook = createPhaseHook({
     };
   },
   name: "",
+  duration: 0,
 });
 
 // Ensure myPhaseHook is used somewhere to avoid the warning
 console.log(myPhaseHook); // This line will prevent the warning
-
 
 const enhancedPhaseHook = enhancePhaseHook({
   condition: () => true,
@@ -60,6 +60,7 @@ const enhancedPhaseHook = enhancePhaseHook({
     return () => {};
   },
   name: "",
+  duration: 0,
 });
 
 const nextPhaseConfig = {
@@ -73,6 +74,7 @@ enhancedPhaseHook.handleTransitionTo({
   asyncEffect: async () => {
     return () => {};
   },
+  duration: 0,
 });
 
 const canTransitionTo = async (nextPhaseConfig: PhaseHookConfig) => {
@@ -110,7 +112,7 @@ export const PhaseManager = {
   },
   setPreviousPhase: (previousPhaseConfig: PhaseHookConfig) => {
     PhaseManager.previousPhase = previousPhaseConfig;
-  }
+  },
 };
 function setCurrentPhase(nextPhaseConfig: PhaseHookConfig) {
   PhaseManager.currentPhase = nextPhaseConfig;
@@ -118,8 +120,14 @@ function setCurrentPhase(nextPhaseConfig: PhaseHookConfig) {
 
 function setPreviousPhase(nextPhaseConfig: PhaseHookConfig) {
   PhaseManager.previousPhase = nextPhaseConfig;
- }
+}
 
-export default enhancePhaseHook
-export { canTransitionTo, enhancedPhaseHook, handleTransitionTo, myPhaseHook, setCurrentPhase, setPreviousPhase };
-
+export default enhancePhaseHook;
+export {
+  canTransitionTo,
+  enhancedPhaseHook,
+  handleTransitionTo,
+  myPhaseHook,
+  setCurrentPhase,
+  setPreviousPhase,
+};

@@ -12,7 +12,8 @@ import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-
+import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
+import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -24,6 +25,7 @@ interface DocumentSliceState {
   loading: boolean, // Add this line to include the initial state for loading
   error: Error | null, // Add this line to include the initial state for error
   changes: boolean;
+  documentBuilder?:  typeof DocumentBuilder
 }
 
 const initialState: DocumentSliceState = {
@@ -33,7 +35,8 @@ const initialState: DocumentSliceState = {
   loading: false, // Add this line if it's not already present
   error: null,
   changes: false,
-  searchResults: []
+  searchResults: [],
+  documentBuilder: undefined,
 }
 
 // Create an async thunk for deleting a document
@@ -258,7 +261,7 @@ export const exportDocumentsAsync = createAsyncThunk(
 
 // Define the transformations object and applyTransformation function
 const applyTransformation = (
-  document: DocumentData | undefined,
+  document: WritableDraft<DocumentData> | undefined,
   transformation: (doc: DocumentData, value: string) => void,
   value: string
 ) => {
@@ -472,11 +475,15 @@ const createNewDocument: (documentId: number) => WritableDraft<DocumentData> = (
   documentLastModifiedDate: new Date(),
   documentVersion: 0,
   documentContent: "",
+  keywords: [],
+  options: {} as WritableDraft<DocumentOptions>,
+  // documentTags: [],
+  // documentAccess: [],
 });
 
 
 // Create a slice for managing document-related data
-export const documentSlice = createSlice({
+export const useDocumentManagerSlice = createSlice({
   name: "document",
   initialState,
   reducers: {
@@ -495,6 +502,9 @@ export const documentSlice = createSlice({
           highlights: [], // Add default highlights if needed
           files: [] // Add default files if needed
           // Add other properties as needed
+          ,
+          keywords: [],
+          options: {} as WritableDraft<DocumentOptions>
         };
         return { payload: newDocument };
       },
@@ -893,7 +903,9 @@ export const documentSlice = createSlice({
           content: "",
           topics: [],
           highlights: [],
-          files: []
+          files: [],
+          keywords: [],
+          options: {} as WritableDraft<DocumentOptions>
         });
         // Assuming implementation here...
         useNotification().notify(
@@ -1048,7 +1060,9 @@ export const documentSlice = createSlice({
           content: secondHalf,
           topics: [],
           highlights: [],
-           files: [],
+          files: [],
+          keywords: [],
+          options: {} as WritableDraft<DocumentOptions>
         });
       }
     },
@@ -1700,7 +1714,7 @@ export const {
   // Document Management Actions:
   documentTemplates,
 
-} = documentSlice.actions;
+} = useDocumentManagerSlice.actions;
 // Define selectors for accessing document-related state
 export const selectDocuments = (state: RootState) =>
   state.documentManager.documents;
@@ -1708,4 +1722,5 @@ export const selectSelectedDocument = (state: RootState) =>
   state.documentManager.selectedDocument;
 
 // Export the reducer
-export default documentSlice.reducer;
+export default useDocumentManagerSlice.reducer;
+

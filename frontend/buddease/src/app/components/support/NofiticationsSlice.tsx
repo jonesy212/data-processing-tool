@@ -9,6 +9,13 @@ import { NotificationType, NotificationTypeEnum } from './NotificationContext';
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
 
+export type TeamStatus = "active" | "inactive" | "onHold"; // Define TeamStatus enum
+
+export type DataStatus = "processing" | "completed" | "failed"; // Define DataStatus enum
+
+
+
+
 interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   id: string;
   message: string;
@@ -16,7 +23,7 @@ interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   content: string;
   type: NotificationType;
   updatedAt?: Date;
-  status: "scheduled" | "tentative" | "inProgress" | "confirmed" | "cancelled" | "completed" | "pending" | undefined;
+  status?: "scheduled" | "tentative" | "inProgress" | "confirmed" | "cancelled" | "completed" | "pending" | undefined;
   completionMessageLog: LogData;
   notificationType?: NotificationTypeEnum;
   sendStatus: SendStatus; // Add sendStatus property

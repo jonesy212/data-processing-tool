@@ -1,7 +1,9 @@
 // DataSlice.ts
 import { Data } from "@/app/components/models/data/Data";
+import { DataStatus } from "@/app/components/models/data/StatusType";
+import { VideoData } from "@/app/components/video/Video";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Snapshot } from "../../stores/SnapshotStore";
+import { implementThen } from "../../stores/CommonEvent";
 import { WritableDraft } from "../ReducerGenerator";
 
 interface DataSliceState {
@@ -95,17 +97,15 @@ export const useDataManagerSlice = createSlice({
       // Your logic to add data
       const { id, title } = action.payload;
       const newData: Data = {
+        _id: "",
         id,
         title,
-        status: "pending",
+        status: DataStatus.Pending,
         isActive: false,
         tags: [],
-        then: async function (callback: (newData: Snapshot<Data>) => void): Promise<void> {
-          callback(await newData);
-        },
+        then: implementThen,
         analysisType: "",
         analysisResults: [],
-        _id: "",
         phase: null,
         videoData: {} as VideoData
       };

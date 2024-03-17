@@ -1,5 +1,6 @@
 // CommonEvent.ts
 
+import { StatusType } from '@/app/components/models/data/StatusType';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
@@ -27,7 +28,7 @@ interface CommonEvent extends Data {
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata: StructuredMetadata;
+  metadata?: StructuredMetadata;
 }
 
 // Define the function to implement the `then` functionality
@@ -39,7 +40,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
         id: "",
         title: "",
         isActive: true,
-        status: "scheduled",
+        status: StatusType.Scheduled,
         isCompleted: false,
         tags: [],
         phase: null,
@@ -65,7 +66,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
     language?: string;
     agenda?: string;
     collaborationTool?: string;
-    metadata: StructuredMetadata;
+    metadata?: StructuredMetadata;
     // Implement the `then` function using the reusable function
     then: (callback: (newData: Snapshot<Data>) => void) => void;
   }
@@ -94,7 +95,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
       },
     },
   
-    status: "scheduled",
+    status: StatusType.Scheduled,
     isActive: false,
     tags: [],
     phase: null,

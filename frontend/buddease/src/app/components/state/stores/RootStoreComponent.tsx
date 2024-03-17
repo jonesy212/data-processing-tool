@@ -30,6 +30,7 @@ export const RootStoreComponent = observer(() => {
 
     newRootStore.todoStore = useTodoManagerStore();
 
+    // newRootStore.undoRedoStore = useUnd
     setRootStore(newRootStore);
 
     // Additional setup logic here

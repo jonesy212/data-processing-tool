@@ -1,5 +1,5 @@
 import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
-import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions, getDefaultDocumentOptions, getDocumentPhase } from "@/app/components/documents/DocumentOptions";
 import PhaseManager from "@/app/components/phases/PhaseManager";
 import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
 import fs from "fs";
@@ -44,13 +44,17 @@ if (phaseManager) {
     <DocumentBuilder
       documents={[
         {
-          ...getDefaultDocumentOptions(),
           id: 1,
           title: "Document 1",
           content: "Content for Document 1",
           highlights: ["highlighted phrase 1", "tagged item 2"],
           topics: ["topic 1", "topic 2"],
           files: ["file 1", "file 2"],
+          documentType: "document type 1",
+          options: getDefaultDocumentOptions(),
+          documentPhase: getDocumentPhase(documents),
+          keywords: ["keyword 1", "keyword 2"],
+
         },
         // Add more document data as needed
       ]}
@@ -61,6 +65,8 @@ if (phaseManager) {
         setOptions(newOptions);
       }}
       setOptions={setOptions} // Define setOptions prop
+      documentPhase={getDocumentPhase(documents)}
+      version={getDocumentVersion()}
     />
   );
   // Output or utilize the created user scenarios and mapped user journey

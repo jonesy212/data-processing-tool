@@ -2,6 +2,10 @@ import { Team } from '../components/models/teams/Team';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
+
+
+
+
 export const fetchTeams = async (): Promise<Team[]> => {
   try {
     const response = await axiosInstance.get(endpoints.teams.list); // Use the list endpoint

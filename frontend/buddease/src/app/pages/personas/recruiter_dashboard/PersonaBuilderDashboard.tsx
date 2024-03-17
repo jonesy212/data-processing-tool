@@ -5,16 +5,15 @@ import { OrganizedCardLoaderProps } from "@/app/components/cards/DummyCardLoader
 import { PersonaCard } from "@/app/components/cards/PersonaCard";
 import DetailsList from "@/app/components/lists/DetailsList";
 import {
-  DetailsProps,
   SupportedData,
 } from "@/app/components/models/CommonData";
 import { Data } from "@/app/components/models/data/Data";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import DataPreview from "../../../components/users/DataPreview";
-import { PersonaTypeEnum } from "../PersonaBuilder";
-import { PersonaData } from "./PersonaData";
+import { PersonaData, PersonaTypeEnum } from "../PersonaBuilder";
 import PersonaPanel from "./PersonaPanel";
+import DetailsProps from "@/app/components/models/data/Details";
 
 
 // Define initial personas
@@ -170,18 +169,35 @@ const PersonaBuilderDashboard = () => {
   const [personaData, setPersonaData] = useState(null);
 
   useEffect(() => {
-    // Fetch data when the selected persona changes
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/personas/${selectedPersona}`); // Adjust the endpoint based on your backend API
+        const response = await axios.get(`/api/personas/${selectedPersona}`);
         setPersonaData(response.data);
       } catch (error) {
         console.error("Error fetching persona data:", error);
       }
     };
-
+  
+    if (Array.isArray(personaData) && personaData.length > 0) {
+      processTextData(personaData).then((traits: { [key: string]: string }) => {
+        
+        setPersonaData((prevData: PersonaData | null) => ({
+          ...(prevData || null), // Ensure prevData is nullable
+          traits: {
+            ...(prevData?.traits || {}), // Ensure prevData.traits is nullable
+            ...traits,
+          },
+        }));
+      });
+    }
+  
     fetchData();
-  }, [selectedPersona]);
+  }, [selectedPersona, personaData]);
+  
+  
+  
+  
+  
 
   // Function to process text data and extract personality traits
   const processTextData = (textResponses: string[]) => {
@@ -215,6 +231,9 @@ const PersonaBuilderDashboard = () => {
       ? traitKeywords[1]
       : traitKeywords[0];
   };
+
+ 
+
 
   return (
     <div>

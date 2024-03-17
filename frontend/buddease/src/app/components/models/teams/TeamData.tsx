@@ -2,36 +2,37 @@ import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
-import Project from "../../projects/Project";
+import { Project } from "../../projects/Project";
 import { User } from "../../users/User";
 import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgresBar";
+import { Member } from "./TeamMembers";
 
 interface TeamData extends Partial<Data> {
-  id: number;
+  id: number | string;
   teamName: Data["title"];
   description?: string;
-  members: User[];
+  members?: Member[];
   projects: Project[];
   creationDate: Date;
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
 
-  collaborationTools: {
+  collaborationTools?: {
     audio: boolean;
     video: boolean;
     text: boolean;
     realTime: boolean;
     // Add more collaboration tools as needed
   };
-  globalCollaboration: {
+  globalCollaboration?: {
     isEnabled: boolean;
     communicationChannels: string[]; // e.g., Slack, Discord, etc.
     collaborationPlatforms: string[]; // e.g., Trello, Asana, etc.
     // Add more global collaboration details as needed
   };
-  collaborationPreferences: CollaborationPreferences;
+  collaborationPreferences?: CollaborationPreferences;
 
   // Add other team-related fields as needed
 }

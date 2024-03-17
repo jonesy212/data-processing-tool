@@ -2,6 +2,7 @@
 import { useState } from "react";
 import TestPhaseManager from "./TestPhaseManager";
 import { TestScenario, TestScenarioBuilder } from "./TestScenarioBuilder";
+import TestBuilder from "./TestBuilder"; // Import the TestBuilder JavaScript module
 
 // Define function to create test scenarios and map out testing process
 function createTestScenarios() {
@@ -16,6 +17,11 @@ function createTestScenarios() {
 
   // Output or utilize the created test scenarios and mapped testing process
   console.log("Test scenarios and testing process mapped successfully.");
+
+  // Example usage of TestBuilder
+  const testCase = TestBuilder.createTestCase("Test Description", () => {
+    // Test logic goes here
+  });
 }
 
 export default createTestScenarios;

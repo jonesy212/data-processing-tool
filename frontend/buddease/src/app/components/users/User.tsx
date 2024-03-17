@@ -1,16 +1,16 @@
 // User.tsx
-import { ReactNode } from "react";
+import React from "react";
 import CommonDetails, { SupportedData } from "../models/CommonData";
 // import { Data } from "../models/data/Data";
 import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { TeamMember } from "../models/teams/TeamMembers";
-import Project from "../projects/Project";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { UserRole } from "./UserRole";
 import Team from "../models/teams/Team";
-import DetailsProps from "../models/data/Details";
 import { DataDetails } from "../models/data/Data";
+import { Project } from "../projects/Project";
+
 export interface User extends UserData {
   _id: string; // Add this line
   id: string | number;
@@ -81,9 +81,8 @@ const userData: UserData = {
     group: {} as DocumentNode,
     visualizations: {} as DocumentNode,
   },
-  traits: (props: DetailsProps<SupportedData>, context?: any): ReactNode => {
-    return <CommonDetails {...props} />;
-  },
+  traits: CommonDetails,
+  
   timeBasedCode: timeBasedCode, // Generate the time-based code for the user
     // New properties for the persona
     age: 0,
@@ -97,7 +96,9 @@ const userData: UserData = {
 // using common details we generate details for components by mapping through the objects.
 const UserDetails: React.FC<{ user: User }> = ({ user }) => (
   user ? <CommonDetails<DataDetails>
-    data={{ title: 'User Details', description: 'User data', data: undefined }} /> : <div>User not available</div>
+    data={{
+      title: 'User Details', description: 'User data', data: undefined
+    }} /> : <div>User not available</div>
 );
 
 export default UserDetails 

@@ -1,0 +1,107 @@
+// BugTrackingDashboard.tsx
+
+import React, { useState, useEffect } from 'react';
+
+import { fetchBugData } from '../api'; // Function to fetch bug data from API
+import usePagination from './usePagination'; // Import usePagination hook
+import useSearchPagination from './useSearchPagination'; // Import useSearchPagination hook
+import useErrorHandling from './useErrorHandling'; // Import useErrorHandling hook
+import { useSelector, useDispatch } from 'react-redux';
+import { addFilteredEvent, removeFilteredEvent, clearFilteredEvents } from './filteredEventsSlice'; // Import filteredEventsSlice
+import BugFilter from './BugFilter';
+import BugSort from './BugSort';
+import BugTable from './BugTable';
+
+const BugTrackingDashboard = () => {
+  const { data, currentPage, totalPages, totalItems, goToPage, setItemsPerPage, applyFilter } = usePagination(fetchBugData);
+  const { currentPage: searchCurrentPage, pageSize, goToPage: searchGoToPage, changePageSize } = useSearchPagination();
+  const { error, handleError, clearError } = useErrorHandling();
+
+  const dispatch = useDispatch();
+  const filteredEvents = useSelector((state) => state.filteredEvents.filteredEvents); // Get filtered events from Redux store
+
+  // Fetch bug data when component mounts
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage]);
+
+  // Function to fetch bug data
+  const fetchData = async (page) => {
+    try {
+      const bugData = await fetchBugData(page);
+      // Update bug data
+      setBugs(bugData);
+    } catch (error) {
+      handleError('Error fetching bug data: ' + error.message);
+    }
+  };
+
+  // Function to handle filter changes
+  const handleFilterChange = (newFilters) => {
+    applyFilter(newFilters);
+    // Optionally, you can fetch filtered bug data here
+  };
+
+
+
+
+// Function to handle sort changes
+const handleSortChange = (newSortOptions) => {
+  // Implement robust sort logic here
+
+  const { sortBy, sortOrder } = newSortOptions;
+
+  // Copy the bugs array to avoid mutating the original data
+  const sortedBugs = [...bugs];
+
+  // Define a custom sorting function based on the data type of the sortBy property
+  const customSortFunction = (a, b) => {
+    let comparison = 0;
+
+    // Handle sorting for different data types
+    if (typeof a[sortBy] === 'string') {
+      comparison = a[sortBy].localeCompare(b[sortBy]);
+    } else if (typeof a[sortBy] === 'number') {
+      comparison = a[sortBy] - b[sortBy];
+    } else if (typeof a[sortBy] === 'boolean') {
+      comparison = a[sortBy] === b[sortBy] ? 0 : a[sortBy] ? 1 : -1;
+    } else if (Array.isArray(a[sortBy])) {
+      // Handle sorting for arrays (e.g., sorting by array length)
+      comparison = a[sortBy].length - b[sortBy].length;
+    } else if (a[sortBy] instanceof Date) {
+      // Handle sorting for dates
+      comparison = a[sortBy] - b[sortBy];
+    }
+    
+    // Adjust comparison based on sort order
+    return sortOrder === 'asc' ? comparison : -comparison;
+  };
+
+  // Perform sorting using the custom sorting function
+  sortedBugs.sort(customSortFunction);
+
+  // Update the bugs state with the sorted array
+  setBugs(sortedBugs);
+};
+
+
+  // Render error message if error exists
+  const renderError = () => {
+    if (error) {
+      return <div>Error: {error}</div>;
+    }
+    return null;
+  };
+
+  return (
+    <div>
+      <h1>Bug Tracking Dashboard</h1>
+      {renderError()}
+      <BugFilter filters={filters} onChange={handleFilterChange} />
+      <BugSort sortOptions={sortOptions} onChange={handleSortChange} />
+      <BugTable bugs={bugs} />
+    </div>
+  );
+};
+
+export default BugTrackingDashboard;

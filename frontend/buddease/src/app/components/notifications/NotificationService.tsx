@@ -8,8 +8,6 @@ import { NotificationActions } from "../support/NotificationActions";
 import { NotificationType } from "../support/NotificationContext";
 import PushNotificationManager from "../support/PushNotificationManager";
 
-
-
 interface NotificationManagerServiceProps {
   notifications: NotificationData[];
   notify: (id: string,
@@ -75,7 +73,6 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       type: "Announcement" as NotificationType,
       content: sender,
       completionMessageLog: logData,
-      status: "confirmed",
       sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error"
     }));
     // Use the AnnouncementManager to send announcements
@@ -92,7 +89,6 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       type: "ButtonClick" as NotificationType,
       content: "App",
       completionMessageLog: logData,
-      status: "confirmed",
       sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error"
     }));
     // Send push notification on button click

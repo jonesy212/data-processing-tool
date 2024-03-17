@@ -1,63 +1,57 @@
 // Import necessary libraries or modules
 import { ethers } from 'ethers';
 import IPFS from 'ipfs';
+import { getConfigsData } from '../../../api/getConfigsApi';
+import { ipfsConfig } from '../../../configs/ipfsConfig';
+import { useAuth } from '../../auth/AuthContext';
 import { CustomDAppAdapter } from './DApp';
 import { DAppAdapterConfig, DappProps } from './DAppAdapterConfig';
+  // Get configs data and handle the case where it returns undefined
+  const extendedProps: ExtendedDappProps | undefined = await getConfigsData();
 
 // Extend the existing DAppAdapterConfig interface
 interface ExtendedDappProps extends DappProps {
-  ipfsConfig: {
-    // Define IPFS-related configurations
-    // ...
-  };
+  ipfsConfig: typeof ipfsConfig;
+  ethereumRpcUrl: string; // Add ethereumRpcUrl property
+  dappProps?: any; // Add dappProps property
 }
 
 interface ExtendedDAppAdapterConfig extends DAppAdapterConfig<ExtendedDappProps> {
   // Additional properties related to IPFS
-  ipfsConfig: {
-    // Define IPFS-related configurations
-    repo: { autoMigrate: boolean; fs: string; }; // Local directory to store IPFS data
-    init: boolean; // Initialize a new IPFS repository if not present
-    start: boolean; // Start the IPFS daemon on application launch
-    config: {
-      Addresses: {
-        Swarm: string[]; // IPFS Swarm TCP addresses
-        API: string; // IPFS API address
-        Gateway: string; // IPFS Gateway address
-      };
-    };
-    EXPERIMENTAL: {
-      pubsub: boolean; // Enable pubsub for real-time communication
-      sharding: boolean; // Enable file sharding for large files
-    };
-    configPath: string; // Custom path for IPFS configuration file
-    startTimeout: number; // Timeout for starting IPFS daemon (in milliseconds)
-    preload: {
-      enabled: boolean; // Enable IPFS preload mechanism
-      addresses: string[]; // List of addresses for preload nodes
-    };
-    libp2p: {
-      config: {
-        dht: {
-          enabled: boolean; // Enable Distributed Hash Table (DHT)
-          clientMode: boolean; // Use DHT client mode
-        };
-      };
-    };
-    relay: {
-      enabled: boolean; // Enable Circuit Relay (used for NAT traversal)
-      hop: {
-        enabled: boolean; // Disable hop relay
-      };
-    };
-    ipnsPubsub: boolean; // Enable IPNS pubsub for real-time IPNS updates
-    keychain: {
-      pass: string; // Set a passphrase for IPFS keychain
-    };
-    
-  };
-  ethereumRpcUrl: string;
+  ipfsConfig: typeof ipfsConfig;
+  ethereumRpcUrl: string; // Add ethereumRpcUrl property
+
 }
+
+
+const currentUser = useAuth().state.user; // Get the current user using the useAuth hook
+
+
+let dappAdapterConfig: DAppAdapterConfig<ExtendedDappProps>;
+
+if (currentUser) {
+  // Ensure that currentUser is properly structured according to DappProps['currentUser']
+  const currentUserForDapp: DappProps['currentUser'] = {
+    id: currentUser.id, // Assign the user's ID
+    name: currentUser.username, // Assign the user's name
+    role: String(currentUser.role), // Convert UserRole to string and assign it as the user's role
+    teams: currentUser.teams, // Assign the user's teams
+    projects: currentUser.projects, // Assign the user's projects
+    teamMembers: currentUser.teamMembers, // Assign the user's team members
+  },
+
+   // Now you can use `currentUser` in your DAppAdapterConfig
+   dappAdapterConfig = {
+    // Other properties...
+    dappProps: {
+      // Include other DappProps configurations...
+      currentUser: currentUserForDapp,
+
+      // Include other DappProps configurations...
+    },
+  };
+}
+
 
 export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
   private ipfs: IPFS;
@@ -86,6 +80,98 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
     return ipfsHash;
   }
 
+  
+
+
+  private async getConfigsData(): Promise<ExtendedDappProps> {
+    // Get configuration data from your application
+    // Get the current user using the useAuth hook
+    const currentUser = useAuth().state.user;
+
+    let dappAdapterConfig: DAppAdapterConfig<ExtendedDappProps>;
+
+    if (currentUser) {
+      // Ensure that currentUser is properly structured according to DappProps['currentUser']
+      const currentUserForDapp: DappProps['currentUser'] = {
+        id: currentUser.id, // Assign the user's ID
+        name: currentUser.username, // Assign the user's name
+        role: String(currentUser.role), // Assign the user's role
+        teams: currentUser.teams, // Assign the user's teams
+        projects: currentUser.projects, // Assign the user's projects
+        teamMembers: currentUser.teamMembers, // Assign the user's team members
+      };
+
+      // Now you can use `currentUser` in your DAppAdapterConfig
+      dappAdapterConfig = {
+        // Other properties...
+        dappProps: {
+          // Include other DappProps configurations...
+          currentUser: currentUserForDapp,
+          ipfsConfig: ipfsConfig,
+          ethereumRpcUrl: '',
+          appName: '',
+          appVersion: '',
+          currentProject: {
+            id: '',
+            name: '',
+            description: '',
+            tasks: [],
+            teamMembers: []
+          },
+          documentSize: 'letter',
+          documentOptions: documentOptions,
+          enableRealTimeUpdates: false,
+          fluenceConfig: {
+            ethereumPrivateKey: 'FLUENCE_API_KEY',
+            networkId: 1,
+            gasPrice: 1000000000,
+            contractAddress: '0x...'
+          },
+          aquaConfig: {
+            maxConnections: 10,
+            timeout: 5000,
+            secureConnection: true,
+            reconnectAttempts: 3,
+            autoReconnect: true
+          },
+          realtimeCommunicationConfig: {
+            audio: true,
+            video: true,
+            text: true,
+            collaboration: true
+          },
+          phasesConfig: {
+            ideation: true,
+            teamCreation: true,
+            productBrainstorming: true,
+            productLaunch: true,
+            dataAnalysis: true
+          },
+          communicationPreferences: {
+            defaultCommunicationMode: 'text',
+            enableRealTimeUpdates: true
+          },
+          dataAnalysisConfig: {
+            meaningfulResultsThreshold: 80
+          },
+          collaborationOptionsConfig: {
+            collaborativeEditing: true,
+            documentVersioning: true
+          },
+          projectTeamConfig: {
+            maxTeamMembers: 10,
+            teamRoles: []
+          },
+          securityConfig: {
+            encryptionEnabled: true,
+            twoFactorAuthentication: true
+          }
+        },
+      };
+    }
+    return 
+  }
+
   private async storeIPFSHashOnEthereum(ipfsHash: string): Promise<void> {
     // Connect to Ethereum wallet (you may need to handle user authentication)
     const config = this.getConfig();
@@ -98,17 +184,38 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
     const privateKey = config.dappProps.fluenceConfig.ethereumPrivateKey;
     const wallet = new ethers.Wallet(privateKey, this.ethereumProvider);
   
-    // Your Ethereum contract address and ABI
-    const contractAddress = '0x...'; // Replace with your contract address
-    // todo: ABI
-    const contractABI = [...]; // Replace with your contract ABI
+    // Retrieve contract address and ABI from environment variables
+    const contractAddress = process.env.CONTRACT_ADDRESS; // Replace with your contract address from .env
+    const contractABI: any[] = JSON.parse(process.env.CONTRACT_ABI || '[]'); // Replace with your contract ABI from .env
   
+    // Check if contract address is provided
+    if (!contractAddress) {
+      throw new Error('Contract address is missing in the configuration');
+    }
+
     // Connect to the contract
     const contract = new ethers.Contract(contractAddress, contractABI, wallet);
   
     // Call the Ethereum contract function to store IPFS hash
     await contract.storeIPFSHash(ipfsHash);
+
+    // The function should return void, so we don't return anything here
+    return;
   }
+
+
+
+
+// Check if extendedProps is defined before using it
+if (extendedProps) {
+  // Use extendedProps here
+  // For example:
+  console.log(extendedProps.systemApiData);
+  console.log(extendedProps.userApiData);
+} else {
+  console.error('Failed to fetch configs data');
+}
+
   
 }
 
@@ -120,59 +227,32 @@ const baseConfig = {
   dappProps: {} as ExtendedDappProps,
 };
 
-const newLocal = '/path/to/ipfs/repo';
 const extendedConfig: ExtendedDAppAdapterConfig = {
   ...baseConfig,
+  ethereumRpcUrl: "https://your-ethereum-rpc-url", 
   ipfsConfig: {
-    repo: newLocal,
-    init: true,
-    start: true,
-    config: {
-      Addresses: {
-        Swarm: [
-          '/ip4/0.0.0.0/tcp/4001',
-          '/ip6/::/tcp/4001',
-        ],
-        API: '/ip4/127.0.0.1/tcp/5001',
-        Gateway: '/ip4/127.0.0.1/tcp/8080',
-      },
-    },
-    EXPERIMENTAL: {
-      pubsub: true,
-      sharding: true,
-    },
-    configPath: '/path/to/ipfs/config',
-    startTimeout: 20 * 60 * 1000,
-    preload: {
-      enabled: true,
-      addresses: [
-        '/dnsaddr/node1.example.com',
-        '/dnsaddr/node2.example.com',
-      ],
-    },
-    libp2p: {
-      config: {
-        dht: {
-          enabled: true,
-          clientMode: true,
-        },
-      },
-    },
-    relay: {
-      enabled: true,
-      hop: {
-        enabled: false,
-      },
-    },
-    ipnsPubsub: true,
-    keychain: {
-      pass: 'your-secret-passphrase',
-    },
-    repo: {
-      autoMigrate: true,
-      fs: '/path/to/custom/fs',
-    },
-  },
+    ...ipfsConfig,
+    ipfsPath: '/path/to/ipfs/repo',
+    ipfsPort: 5001,
+    ipfsProtocol: 'http',
+    ipfsHost: 'localhost',
+    ipfsGatewayProtocol: 'http',
+    ipfsGatewayHost: 'localhost',
+    ipfsGatewayPort: 8080,
+    ipfsGatewayPath: '/ipfs',
+    ipfsGatewayUrl: 'http://localhost:8080/ipfs',
+    ipfsApiPort: 5002,
+    ipfsApiProtocol: 'http',
+    ipfsApiHost: 'localhost',
+    ipfsApiUrl: 'http://localhost:5002',
+    ipfsApiPath: '/api/v0',
+    ipfsSwarmPort: 4001,
+    ipfsSwarmProtocol: 'http',
+    ipfsSwarmHost: 'localhost',
+    ipfsSwarmUrl: 'http://localhost:4001',
+    ipfsSwarmPath: '/swarm/peers',
+    ipfsWsPort: 5003
+  }
 };
 
 const extendedDApp = new ExtendedDAppAdapter(extendedConfig);
@@ -187,5 +267,6 @@ extendedDApp.storeFileOnIPFS(fileContent).then((ipfsHash) => {
 });
 
 
+export { dappAdapterConfig };
 export type { ExtendedDAppAdapterConfig, ExtendedDappProps };
 

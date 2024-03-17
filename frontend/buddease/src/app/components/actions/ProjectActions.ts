@@ -1,8 +1,9 @@
 // projects/ProjectActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import { ProjectDetails } from "../models/data";
 import { Task } from "../models/tasks/Task";
 import { Phase } from "../phases/Phase";
-import Project from "../projects/Project";
+import {Project} from "../projects/Project";
 import { User } from "../users/User";
 
 export const ProjectActions = {
@@ -23,12 +24,24 @@ export const ProjectActions = {
   // Fetch actions
   fetchProject: createAction<{ project: Project }>("fetchProject"),
   fetchProjectSuccess: createAction<{ project: Project }>("fetchProjectSuccess"),
-  fetchProjectsRequest: createAction<{request: string}>("fetchProjectsRequest"),
+  fetchProjectFailure: createAction<{ error: string }>("fetchProjectFailure"),
+  
+  fetchProjectList: createAction<{ projects: Project[] }>("fetchProjectList"),
+  fetchProjectListSuccess: createAction<{ projects: Project[] }>("fetchProjectListSuccess"),
+  
+  fetchProjectsRequest: createAction<{ request: string }>("fetchProjectsRequest"),
   fetchProjectsSuccess: createAction<{ projects: Project[] }>(
     "fetchProjectsSuccess"
     ),
-  fetchProjectFailure: createAction<{ error: string }>("fetchProjectFailure"),
+
+
+
   fetchProjectsFailure: createAction<{ error: string }>("fetchProjectsFailure"),
+  
+
+  fetchProjectDetails: createAction<{projectId: string, project: Project, details: ProjectDetails }>("fetchProjectDetails"),
+  fetchProjectDetailsSuccess: createAction<{ project: Project }>("fetchProjectDetailsSuccess"),
+  fetchProjectDetailsFailure: createAction<{ error: string }>("fetchProjectDetailsFailure"),
   
   // Batch actions for fetching
   batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),

@@ -1,11 +1,18 @@
 // AssignBaseStore.tsx
 import { makeAutoObservable } from "mobx";
 import { Data } from "../models/data/Data";
+import { useNotification } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./stores/SnapshotStore";
+import SnapshotStore, { Snapshot, snapshotStore } from "./stores/SnapshotStore";
 
+
+
+
+
+
+const {notify} = useNotification()
 export interface AssignBaseStore {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
   assignedItems: Record<string, string[]>; // Use ID as key and array of item IDs as value
@@ -84,9 +91,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignedTasks: Record<string, string[]> = {};
   const events: Record<string, Data[]> = {};
   // Create an instance of SnapshotStore
-  const snapshotStore = new SnapshotStore<Snapshot<Data>>(
-    {} as SnapshotStoreConfig<Snapshot<Data>>
-  );
+
+    
 
   const assignItem = (itemId: string, assignedTo: string) => {
     // Perform the item assignment logic here
@@ -503,7 +509,6 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const store: AssignBaseStore = makeAutoObservable({
       assignItem,
       assignedUsers,
-      snapshotStore,
       events: {},
       assignedItems: {},
       assignedTasks: {},
@@ -535,7 +540,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
       setDynamicNotificationMessage,
       reassignTeamToTodos,
       unassignTeamFromTodos,
-      assignTodosToUsersOrTeams
+      assignTodosToUsersOrTeams,
+      snapshotStore: snapshotStore,
       // Add more properties or methods as needed
     
   })

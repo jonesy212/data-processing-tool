@@ -148,10 +148,12 @@ export const endpoints: Endpoints = {
       `${BASE_URL}/api/collaboration/tasks/${taskId}`,
     listTasks: `${BASE_URL}/api/collaboration/tasks`,
 
+    fetchCollaborationData: `${BASE_URL}/api/collaboration/fetch-collaboration-data`,
     //todo impeement
     startBrainstorming: `${BASE_URL}/api/collaboration/start-brainstorming`,
     endBrainstorming: `${BASE_URL}/api/collaboration/end-brainstorming`,
     createWhiteboard: `${BASE_URL}/api/collaboration/create-whiteboard`,
+    updateWhiteboard
     updateWhiteboard: (whiteboardId: number) =>
       `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/update`,
     deleteWhiteboard: (whiteboardId: number) =>
@@ -844,6 +846,7 @@ export const endpoints: Endpoints = {
     logDocumentEvent: `${BASE_URL}/api/log/document-event`,
     logCollaborationEvent: `${BASE_URL}/api/log/collaboration-event`,
     logCalendarEvent: `${BASE_URL}/api/log/calendar-event`,
+    logCalendarEventUrl: `${BASE_URL}/api/log/calendar-event-url`,
   },
 
   moderators: {

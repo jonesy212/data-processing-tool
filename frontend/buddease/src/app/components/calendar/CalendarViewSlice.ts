@@ -10,6 +10,7 @@ import { SendStatus } from "../support/NofiticationsSlice";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { CalendarEvent } from "./CalendarContext";
 import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
+import { CalendarStatus } from "../models/data/StatusType";
 // Define the slice state interface
 interface CalendarViewManagerState {
   currentView: "day" | "week" | "month" | "quarter" | "year";
@@ -24,6 +25,8 @@ interface CalendarViewManagerState {
   highlightColor: string;
   highlightOpacity: number;
   details: DetailsItem<SupportedData>;
+  calendarStatus: CalendarStatus; // Use CalendarStatus enum
+
 }
 
 // Define the action payload interface
@@ -67,6 +70,7 @@ const initialState: CalendarViewManagerState = {
   events: [],
   details: {} as DetailsItem<SupportedData>,
   bulkEdit: false,
+  calendarStatus: CalendarStatus.LOADING
 };
 
 const generateCalendarId = UniqueIDGenerator.generateID(

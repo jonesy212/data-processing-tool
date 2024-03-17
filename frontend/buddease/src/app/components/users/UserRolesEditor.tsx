@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { PermissionsEditor } from './PermissionsEditor';
+import PermissionsEditor from './PermissionsEditor';
 
 
 
-interface UserRoleEditorProps extends PermissionsEditor{
+interface UserRoleEditorProps extends  PermissionsEditor{
   roleName: string;
   permissions: string[];
 }

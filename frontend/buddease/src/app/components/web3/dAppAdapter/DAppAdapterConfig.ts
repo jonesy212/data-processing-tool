@@ -1,9 +1,15 @@
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { DocumentOptions, DocumentSize } from "../../documents/DocumentOptions";
 import { Task } from "../../models/tasks/Task";
+import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
-import Project from "../../projects/Project";
-import Team from "../../models/teams/Team";
+import { Project } from "../../projects/Project";
+
+
+
+// FLUENCE_API_KEY EXPORT
+export const fluenceApiKey = process.env.FLUENCE_API_KEY;
+
 export interface DappProps {
   // General props
   appName: string;
@@ -11,12 +17,14 @@ export interface DappProps {
 
   // User-related props
   currentUser: {
-    id: string;
+    id: string | number;
     name: string;
     role?: string;
     teams?: Team[];
+    
     projects?: Project[];
     teamMembers?: TeamMember[]; 
+    
   };
 
   // Project-related props
@@ -35,7 +43,7 @@ export interface DappProps {
   enableRealTimeUpdates: boolean;
 
   fluenceConfig: {
-    ethereumPrivateKey: "FLUENCE_API_KEY",
+    ethereumPrivateKey: typeof fluenceApiKey,
     networkId: 1, // Mainnet, 3 for Ropsten, etc.
     gasPrice: 1000000000, // Gas price in wei
     contractAddress: "0x...", // Replace with your contract address

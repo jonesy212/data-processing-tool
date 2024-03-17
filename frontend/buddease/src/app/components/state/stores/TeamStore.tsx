@@ -14,6 +14,8 @@ import {
 } from "./AssignTeamMemberStore";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 import { Phase } from "../../phases/Phase";
+import useVideoStore, { Video } from "./VideoStore";
+import { VideoData } from "../../video/Video";
 
 
 interface CustomData extends Data {
@@ -128,49 +130,85 @@ const useTeamManagerStore = (): TeamManagerStore => {
   }
 
 
-  const getTeamsData = (team: Team['id'], data: TeamData[]) => { 
-    const teamsData = {
-      ...team,
-      ...data,
-      id: team.id,
+  const getTeamsData = (teamId: string, data: TeamData[]): (Team & TeamData)[] | null => { 
+    // Retrieve the team corresponding to the provided teamId
+    const team = teams[teamId];
+    if (!team) {
+      // Return null if the team is not found
+      return null;
     }
-    return teamsData;
+  
+    // Combine team data with additional data
+    const teamsData = team.map((teamItem) => {
+      // Find the matching data for the team
+      // (i.e. the data that was passed in)
+      // convert item.id and teamItem.id to as string
+      const matchingData = data.find((item) => item.id.toString() === teamItem.id);
+      if (!matchingData) {
+        // Handle case where data for a team is missing
+        console.error(`Data not found for team with id ${teamItem.id}`);
+        return null;
+      }
+      // Return combined team data
+      return {
+        ...teamItem,
+        ...matchingData,
+      } as Team & TeamData; // Ensure proper type
+    });
+    
+    // Filter out any null values and cast the result to the correct type
+    return teamsData.filter(Boolean) as (Team & TeamData)[];
   }
+  
+  
+  
+  
 
   
 
-
-
-const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
-  // Ensure the teamId exists in the teams
-  if (!teams[teamId]) {
-    console.error(`Team with ID ${teamId} does not exist.`);
-    return;
-  }
-
-  // Create a snapshot of the current teams for the specified teamId
-  const teamSnapshot: SnapshotStore<Snapshot<Data>> = {
-    timestamp: new Date(), // Add a timestamp to the snapshot
-    data: {
-      [teamId]: [...teams[teamId]],
-    },
-  };
-
-  // Store the snapshot in the SnapshotStore
-  snapshotStore.takeSnapshot(teamSnapshot);
-
-  if (userIds) {
-    const teamAssignmentsSnapshot: Snapshot<Data> = {
+  const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
+    // Ensure the teamId exists in the teams
+    if (!teams[teamId]) {
+      console.error(`Team with ID ${teamId} does not exist.`);
+      return;
+    }
+  
+    // Create a snapshot of the current teams for the specified teamId
+    const teamSnapshot: SnapshotStore<Snapshot<Data>> = {
       timestamp: new Date(), // Add a timestamp to the snapshot
-      data: {
-        [teamId]: [
-          ...assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds),
-        ],
+      setSnapshots(newSnapshots) {
+          
       },
     };
-    snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
-  }
-};
+  
+    // Store the snapshot in the SnapshotStore
+    snapshotStore.takeSnapshot(teamSnapshot);
+  
+    if (userIds) {
+      const videos: Video[] = [];
+      userIds.forEach((userId) => {
+        const video = useVideoStore().getVideoData(userId, video);
+        if (video) {
+          videos.push(video);
+        }
+      });
+  
+      const teamAssignmentsSnapshot: Snapshot<Data> = {
+        timestamp: new Date(), // Add a timestamp to the snapshot
+        data: {
+          [teamId]: [
+            ...assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds),
+            ...videos,
+          ],
+          analysisResults: dataAnalysisResults,
+          videoData: {} as VideoData,
+          analysisType: [] = []
+        },
+      };
+      snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
+    }
+  };
+  
 
   const addTeam = () => {
     // Ensure the name is not empty before adding a team

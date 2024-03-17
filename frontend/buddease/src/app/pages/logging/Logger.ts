@@ -13,12 +13,13 @@ import {
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
-import Team, { team } from "@/app/components/models/teams/Team";
+import { team, Team } from "@/app/components/models/teams/Team";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
+import TeamData from "@/app/components/models/teams/TeamData";
+import dotProp from "dot-prop";
 
 
-const API_BASE_URL = endpoints.logging
-
+const API_BASE_URL = endpoints.logging;
 
 const { notify } = useNotification();
 
@@ -29,10 +30,12 @@ function createErrorNotificationContent(error: Error): any {
     errorStack: error.stack,
     // Add more fields as needed based on your requirements
   };
-  
-   
+
   return errorDetails;
 }
+
+
+
 
 const errorLogger = {
   error: (errorMessage: string, extraInfo: any) => {
@@ -53,10 +56,11 @@ class Logger {
     console.log(`[${type}] ${message} (ID: ${uniqueID})`);
   }
 
-  
   static logSessionEvent(sessionID: string, event: string) {
     // Assuming 'endpoints' is imported from apiEndpoints.ts
-    fetch(endpoints.logs.logSession as unknown as Request, { // Cast to unknown first, then to Request
+    fetch(endpoints.logs.logSession as unknown as Request, {
+
+      // Cast to unknown first, then to Request
       method: "POST",
       body: JSON.stringify({ sessionID, event }),
       headers: {
@@ -80,7 +84,6 @@ class Logger {
       });
   }
 
-
   static logError(errorMessage: string, user: string | null = null) {
     // Log the error message with user information if available
     const extraInfo = user ? { user } : {};
@@ -88,19 +91,35 @@ class Logger {
   }
 
   static logUserActivity(action: string, userId: string) {
-    this.logWithOptions("User Activity", `${action} (User ID: ${userId})`, userId);
+    this.logWithOptions(
+      "User Activity",
+      `${action} (User ID: ${userId})`,
+      userId
+    );
   }
 
   static logCommunication(type: string, message: string, userId: string) {
-    this.logWithOptions("Communication", `${type}: ${message} (User ID: ${userId})`, userId);
+    this.logWithOptions(
+      "Communication",
+      `${type}: ${message} (User ID: ${userId})`,
+      userId
+    );
   }
 
   static logProjectPhase(phase: string, projectId: string) {
-    this.logWithOptions("Project Phase", `${phase} (Project ID: ${projectId})`, projectId);
+    this.logWithOptions(
+      "Project Phase",
+      `${phase} (Project ID: ${projectId})`,
+      projectId
+    );
   }
 
   static logCommunityInteraction(action: string, userId: string) {
-    this.logWithOptions("Community Interaction", `${action} (User ID: ${userId})`, userId);
+    this.logWithOptions(
+      "Community Interaction",
+      `${action} (User ID: ${userId})`,
+      userId
+    );
   }
 
   static logMonetizationEvent(event: string, projectId: string) {
@@ -165,24 +184,34 @@ class AudioLogger extends Logger {
   }
 }
 
-
 class TeamLogger {
-  static async logTeamCreation(teamId: string,  team:Team): Promise<void> {
+  static async logTeamCreation(teamId: string, team: Team): Promise<void> {
     try {
-      await this.logEvent("createTeam", "Creating team", team.id, team);
+      // Convert teamId to a number if necessary
+      const numericTeamId = parseInt(teamId, 10);
+
+      await this.logEvent("createTeam", "Creating team", numericTeamId, team);
       await this.logTeamEvent(teamId, "Team created", team);
     } catch (error) {
-      console.error('Error logging team creation:', error);
+      console.error("Error logging team creation:", error);
       throw error;
     }
   }
 
-  static async logTeamUpdate(teamId: string | number, updatedTeam: Team): Promise<void> {
+  static async logTeamUpdate(
+    teamId: string | number,
+    updatedTeam: Team
+  ): Promise<void> {
     try {
-      await this.logEvent("updateTeam", "Updating team", teamId as number, updatedTeam);
+      await this.logEvent(
+        "updateTeam",
+        "Updating team",
+        teamId as number,
+        updatedTeam
+      );
       await this.logTeamEvent(teamId as string, "Team updated", updatedTeam);
     } catch (error) {
-      console.error('Error logging team update:', error);
+      console.error("Error logging team update:", error);
       throw error;
     }
   }
@@ -191,16 +220,25 @@ class TeamLogger {
     try {
       await this.logEvent("deleteTeam", "Deleting team", teamId as number);
       // Instantiate a Team object and pass it to logTeamEvent
-      team
-      await this.logTeamEvent(teamId as string, "Team deleted", team, new Date());
+      team;
+      await this.logTeamEvent(
+        teamId as string,
+        "Team deleted",
+        team,
+        new Date()
+      );
     } catch (error) {
-      console.error('Error logging team deletion:', error);
+      console.error("Error logging team deletion:", error);
       throw error;
     }
   }
-  
 
-  private static async logEvent(action: string, message: string, teamId: number, data?: any): Promise<void> {
+  private static async logEvent(
+    action: string,
+    message: string,
+    teamId: number,
+    data?: any
+  ): Promise<void> {
     try {
       const logUrl = this.getLogUrl(action);
       await fetch(logUrl, {
@@ -217,22 +255,64 @@ class TeamLogger {
   }
 
 
+  private static convertTeamId(teamId: string | number): number {
+    // Check if teamId is already a number, if so, return it
+    if (typeof teamId === "number") {
+      return teamId;
+    }
+  
+    // Attempt to parse teamId as a number
+    const parsedTeamId = parseInt(teamId, 10);
+  
+    // Check if parsing was successful, if not, throw an error
+    if (isNaN(parsedTeamId)) {
+      throw new Error("Invalid teamId provided: " + teamId);
+    }
+  
+    // Return the parsed teamId
+    return parsedTeamId;
+  }
+  
 
-  private static async logTeamEvent(teamId: string, message: string, team: Team,  data?: any): Promise<void> {
+
+
+
+  private static async logTeamEvent(
+    teamId: string,
+    message: string,
+    team: Team,
+    data?: any
+  ): Promise<void> {
     try {
-      const teamData = await useTeamManagerStore().getTeamData(teamId, team);
+
+       // Convert teamId to a number using the utility method
+  
+      const teamData: TeamData | null = useTeamManagerStore().getTeamData(
+        teamId,
+        team
+      );
+
       if (!teamData) {
-        throw new Error(`Error logging team event for team ${teamId}: Team data not found`);
+        throw new Error("Team data is null");
       }
-    
+
+      // Ensure teamData is of type TeamData
+      if (typeof teamData !== "object" || teamData === null) {
+        throw new Error("Team data is not of type TeamData");
+      }
+
+      // Now that we've confirmed teamData is not null, we can assert its type as TeamData
+      const teamDataTyped: TeamData = teamData!;
       const teamDataString = JSON.stringify(teamData);
       const teamDataStringLength = teamDataString.length;
       if (teamDataStringLength > 10000) {
         // Truncate the team data string to 10000 characters
         const truncatedTeamDataString = teamDataString.substring(0, 10000);
-        teamData.data = truncatedTeamDataString;
+        // Assign truncated data to teamData
+        // Note: You may need to assign to teamDataTyped instead of teamData
+        teamDataTyped.data = truncatedTeamDataString;
       }
-  
+
       const logUrl = this.getLogUrl("teamEvent");
       await fetch(logUrl, {
         method: "POST",
@@ -241,18 +321,15 @@ class TeamLogger {
           "Content-Type": "application/json",
         },
       });
-      return teamData; // Return the team data
     } catch (error) {
       console.error(`Error logging team event for team ${teamId}:`, error);
       throw error;
     }
   }
-  
-  
-  
+
   private static getLogUrl(action: string): string {
     let logUrl = ""; // Initialize with an empty string
-  
+
     if (typeof endpoints.logs.logEvent === "string") {
       logUrl = endpoints.logs.logEvent;
     } else if (typeof endpoints.logs.logEvent === "function") {
@@ -262,18 +339,10 @@ class TeamLogger {
       // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
       // or logUrl = endpoints.logs.logEvent.someNestedFunction();
     }
-  
+
     return logUrl;
   }
-}  
-
-
-
-
-
-
-
-
+}
 
 // Extend Logger for video logs
 class VideoLogger extends Logger {
@@ -286,7 +355,7 @@ class VideoLogger extends Logger {
     super.logWithOptions("Video", message, uniqueID);
     this.logVideoEvent(uniqueID, videoID, duration);
   }
-  
+
   private static logVideoEvent(
     uniqueID: string,
     videoID: string,
@@ -463,8 +532,6 @@ class DocumentLogger extends Logger {
   }
 }
 
-
-
 class TaskLogger extends Logger {
   static logTaskEvent(
     taskID: Task["id"],
@@ -534,12 +601,9 @@ class TaskLogger extends Logger {
     );
   }
 
-  static logTaskCreated(taskID: string) { 
+  static logTaskCreated(taskID: string) {
     super.logWithOptions("Task Created", `Task ${taskID} created`, taskID);
     // Additional logic specific to logging task creation
-
-    
-
   }
 
   static logTaskAssigned(taskID: string, assignedTo: string) {
@@ -552,7 +616,11 @@ class TaskLogger extends Logger {
   }
 
   static logTaskUnassigned(taskID: string) {
-    super.logWithOptions("Task Unassigned", `Task ${taskID} unassigned`, taskID);
+    super.logWithOptions(
+      "Task Unassigned",
+      `Task ${taskID} unassigned`,
+      taskID
+    );
     // Additional logic specific to logging task unassignment
   }
 
@@ -568,6 +636,7 @@ class TaskLogger extends Logger {
   // Add more methods as needed for other task-related events
 }
 
+
 class CalendarLogger extends Logger {
   static logCalendarEvent(message: string, uniqueID: string, eventID: string) {
     super.logWithOptions("Calendar", message, uniqueID);
@@ -576,36 +645,44 @@ class CalendarLogger extends Logger {
 
   private static logCalendarEventEvent(uniqueID: string, eventID: string) {
     const logCalendarEventUrl =
-      typeof endpoints.logs.logCalendarEvent === "function"
-        ? endpoints.logs.logCalendarEvent()
-        : endpoints.logs.logCalendarEvent;
+      typeof endpoints.calendar.logCalendarEvent === "function"
+        ? endpoints.calendar.logCalendarEvent(eventID) // Call the function with eventID to get the dynamic URL
+        : endpoints.calendar.logCalendarEvent;
 
-    fetch(logCalendarEventUrl, {
-      method: "POST",
-      body: JSON.stringify({ uniqueID, eventID }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log calendar event");
-        }
+    if (logCalendarEventUrl) { // Check if the URL is defined
+      fetch(logCalendarEventUrl, {
+        method: "POST",
+        body: JSON.stringify({ uniqueID, eventID }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch((error) => {
-        notify(
-          "Error logging calendar event.",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          new Date(),
-          error
-        );
-      });
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to log calendar event");
+          }
+        })
+        .catch((error) => {
+          notify(
+            "Error logging calendar event.",
+            NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+            new Date(),
+            error
+          );
+        });
+    } else {
+      console.error("logCalendarEventUrl is not defined");
+    }
   }
 }
 
 class TenantLogger extends Logger {
   static logUserRegistration(userId: string) {
-    super.logWithOptions("Tenant", `User registration (User ID: ${userId})`, userId);
+    super.logWithOptions(
+      "Tenant",
+      `User registration (User ID: ${userId})`,
+      userId
+    );
   }
 
   static logUserLogin(userId: string) {
@@ -757,6 +834,62 @@ class CommunityLogger extends Logger {
   }
 
   // Add more methods for other community-related events as needed
+}
+
+class BugLogger extends Logger {
+  static logBugCreation(bugId: string, bugDescription: string, userId: string) {
+    super.logWithOptions(
+      "Bug",
+      `Bug created (Bug ID: ${bugId}, Description: ${bugDescription}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logBugUpdate(
+    bugId: string,
+    updatedDescription: string,
+    userId: string
+  ) {
+    super.logWithOptions(
+      "Bug",
+      `Bug updated (Bug ID: ${bugId}, Updated Description: ${updatedDescription}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logBugResolution(bugId: string, resolution: string, userId: string) {
+    super.logWithOptions(
+      "Bug",
+      `Bug resolved (Bug ID: ${bugId}, Resolution: ${resolution}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logBugAssignment(bugId: string, assignedTo: string, userId: string) {
+    super.logWithOptions(
+      "Bug",
+      `Bug assigned (Bug ID: ${bugId}, Assigned To: ${assignedTo}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logBugClosure(bugId: string, userId: string) {
+    super.logWithOptions(
+      "Bug",
+      `Bug closed (Bug ID: ${bugId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logBugReopening(bugId: string, userId: string) {
+    super.logWithOptions(
+      "Bug",
+      `Bug reopened (Bug ID: ${bugId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  // Add more methods for other bug-related events as needed
 }
 
 export default Logger;

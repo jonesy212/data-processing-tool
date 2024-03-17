@@ -5,7 +5,7 @@ import NotificationMessagesFactory from '../../support/NotificationMessagesFacto
 import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 import useNotificationBar from '../commHooks/useNotificationBar';
 import { createPhaseHook } from '../phaseHooks/PhaseHooks';
-import useDarkModeToggle from './useNotificationMessagesFactoryDarkModeToggle';
+import useDarkModeToggle from './useDarkModeToggle';
 
 
 
@@ -15,6 +15,7 @@ export const darkModeTogglePhaseHook = createPhaseHook({
     // Add your condition logic for when dark mode toggle should be active
     return true;
   },
+  duration: 10000,
   asyncEffect: async () => {
     const { toggleDarkMode, isDarkMode } = useDarkModeToggle();
 
@@ -60,12 +61,12 @@ export const notificationBarPhaseHook = createPhaseHook({
     // For example, check if the user is logged in
     return isLoggedIn();
   },
+  duration: 10000,
   asyncEffect: async () => {
     const { addNotification, clearNotifications } = useNotificationBar();
 
     // Add any async logic for the notification bar phase
     console.log("Notification Bar Phase Hook triggered");
-
     try {
       // Simulate fetching notifications from an API
       const response = await axios.get("/api/notifications"); // Adjust the API endpoint

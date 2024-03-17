@@ -1,16 +1,15 @@
-import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux'; // Import useDispatch hook
-import { rootStores } from './RootStores';
+import { makeAutoObservable } from 'mobx';
+import { RootStores } from './RootStores';
+import { useAppDispatch } from './useAppDispatch';
 import generateStoreKey from './StoreKeyGenerator';
+import { useEffect } from 'react';
 
-interface IconStoreProps {
-  // Remove the unnecessary dispatch prop from props
+export interface IconStore {
+  dispatch: (action: any) => void;
 }
 
-export const IconStore: React.FC<IconStoreProps> = observer(() => {
-  const [rootStore] = useState<typeof rootStores>();
-  const dispatch = useDispatch(); // Initialize useDispatch hook
+const useIconStore = (rootStore: RootStores): IconStore => {
+  const dispatch = useAppDispatch(); // Use the custom hook to get dispatch function
 
   useEffect(() => {
     const iconLoader = async () => {
@@ -29,10 +28,18 @@ export const IconStore: React.FC<IconStoreProps> = observer(() => {
     };
 
     iconLoader();
-  }, [rootStore]); // Add rootStore to the dependencies array
+  }, [dispatch]); // Only dispatch is needed in the dependencies array
 
-  return null; // Adjust the return value based on your component structure
-});
+  // Generate store key
+  const storeKey = generateStoreKey('iconStore');
 
-// Example usage in cache management
-const storeKey = generateStoreKey('iconStore');
+  makeAutoObservable({
+    dispatch,
+  });
+
+  return {
+    dispatch,
+  };
+};
+
+export default useIconStore;

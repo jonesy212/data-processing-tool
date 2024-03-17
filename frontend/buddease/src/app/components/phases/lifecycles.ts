@@ -1,3 +1,4 @@
+import { Lesson } from "../documents/CourseBuilder";
 import { enhancedPhaseHook } from "../hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
 import { CustomPhaseHooks, Phase } from "./Phase";
@@ -19,6 +20,7 @@ const generatePhase = (name: string, subPhases: string[]): PhaseOptions => {
     subPhases,
     component: IdeaLifecyclePhase,
     duration: 0,
+    lessons: {} as Lesson[],
     hooks: {
       canTransitionTo: (nextPhase: Phase) => {
         return !!enhancedPhaseHook.canTransitionTo(
@@ -49,6 +51,7 @@ const generateGenericPhase = (name: string, subPhases: string[]): PhaseOptions =
     subPhases,
     component: IdeaLifecyclePhase,
     duration: 0,
+    lessons: {} as Lesson[],
     hooks: {
       canTransitionTo: (nextPhase: Phase) => {
         return !!enhancedPhaseHook.canTransitionTo(
@@ -83,6 +86,7 @@ const ideaLifecyclePhases: PhaseOptions[] = [
     subPhases: ["Idea", "Team Building", "Ideation"],
     component: IdeaLifecyclePhase,
     duration: 0,
+    lessons: {} as Lesson[],
     hooks: {
       canTransitionTo: (nextPhase: Phase) => {
         return !!enhancedPhaseHook.canTransitionTo(

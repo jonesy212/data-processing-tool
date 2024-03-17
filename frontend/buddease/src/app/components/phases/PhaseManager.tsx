@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Stopwatch from "../calendar/Stopwatch";
+import { enhancedPhaseHook, setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
+import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker from "../hooks/useAsyncHookLinker";
 import { Phase } from "./Phase";
 // Function to get a phase component based on the selected phase name
@@ -159,3 +161,4 @@ const genericLifecyclePhases: Phase[] = [
 // Add more specific phase components as needed
 
 export default PhaseManager;
+

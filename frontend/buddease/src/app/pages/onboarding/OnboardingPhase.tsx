@@ -1,7 +1,6 @@
 // OnboardingPhase.tsx
 import axiosInstance from "@/app/api/axiosInstance";
 import { useAuth } from "@/app/components/auth/AuthContext";
-import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import CommonDetails, {
   DetailsProps,
   SupportedData,
@@ -22,6 +21,7 @@ import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
 import WelcomePage from "./WelcomePage";
 import RegistrationPhase from "./RegistrationPhase";
 import { OnboardingPhase } from "../personas/UserJourneyManager";
+import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
 
 
 
@@ -76,10 +76,13 @@ const UserJourneyManager: React.FC = () => {
       case OnboardingPhase.QUESTIONNAIRE:
         // Render the questionnaire phase
         return <UserQuestionnaire
+          onSubmit={handleQuestionnaireSubmitWrapper}
           onComplete={() => setCurrentPhase(OnboardingPhase.PROFILE_SETUP)} />;
       case OnboardingPhase.PROFILE_SETUP:
         // Render the profile setup phase
-        return <ProfileSetupPhase />;
+        return <ProfileSetupPhase
+          onSubmit={handleProfileSetupSubmit}
+        />;
       case OnboardingPhase.TWO_FACTOR_SETUP:
         // Render the two-factor authentication setup phase
         return <TwoFactorSetupPhase onSetupComplete={handleTwoFactorSetup} />;
@@ -181,14 +184,16 @@ const UserJourneyManager: React.FC = () => {
     await handleQuestionnaireSubmit(userResponses);
   };
 
+  const handleProfileSetupSubmit = async (profileData: any) => { 
+    await handleProfileSetup(profileData);
+  
+  }
+
   return <div>{renderPhase()}</div>;
 };
 
 export default TempUserData;
 UserJourneyManager;
-
-
-
 
 
 

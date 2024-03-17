@@ -1,41 +1,59 @@
 // DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
-import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Data } from "../../models/data/Data";
-import Team from "../../models/teams/Team";
-import { Member, TeamMember } from "../../models/teams/TeamMembers";
-import { Progress } from "../../models/tracker/ProgresBar";
+import {Team} from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
-import Project from "../../projects/Project";
 import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import { Attachment } from "../../todos/Todo";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
+import { CommunicationActionTypes } from "../../community/CommunicationActions";
+import { DocumentStatus } from "../../documents/types";
+import { DataDetails } from "../../models/data/Data";
+import { CalendarStatus, DataStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
+import { Member, TeamMember } from "../../models/teams/TeamMembers";
+import { Progress } from "../../models/tracker/ProgresBar";
+import { Project } from "../../projects/Project";
+import { Attachment } from "../../todos/Todo";
 const { notify } = useNotification();
+
+
+
+
+// Union type of all status enums
+export type AllStatus = StatusType
+  | TaskStatus
+  | TodoStatus
+  | DataStatus
+  | TeamStatus
+  | DocumentStatus
+  | CalendarStatus;
+
+  ;
+
 // Define a generic interface for details
-interface DetailsItem<T>  {
-  id?: string;
+interface DetailsItem<T> extends DataDetails {
+  id: string;
   title?: string;
   name?: string;
   isRecurring?: boolean;
-  status?: "scheduled" | "pending" | "inProgress" | "completed" | "tentative" | "confirmed" | "cancelled"
+  status?: AllStatus // Use enums for status property
   participants?: Member[];
-  description?: string | null | undefined
+  description?: string | null | undefined;
   assignedProjects?: Project[];
   isVisible?: boolean;
   reassignedProjects?: {
     project: Project;
     previousTeam: Team;
-    reassignmentDate: Date
+    reassignmentDate: Date;
   }[];
   progress?: Progress | null;
-  startDate?:  Date;
-  endDate?:  Date;
+  startDate?: Date;
+  endDate?: Date;
   phase?: Phase | null;
   isActive?: boolean;
   tags?: string[];
@@ -59,7 +77,11 @@ export interface DetailsListStore {
   details: Record<string, DetailsItem<Data>[]>;
   detailsTitle: string;
   detailsDescription: string;
-  detailsStatus: "pending" | "inProgress" | "completed" | undefined;
+  detailsStatus:
+    | TaskStatus.Pending
+    | TaskStatus.InProgress
+    | TaskStatus.Completed
+    | undefined;
   snapshotStore: SnapshotStore<Snapshot<Data>>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
@@ -69,7 +91,15 @@ export interface DetailsListStore {
   toggleDetails: (detailsId: string) => void;
 
   updateDetailsDescription: (id: string, description: string) => void;
-  updateDetailsStatus: (status: "inProgress" | "completed" | "tentative" | "confirmed" | "cancelled" | "scheduled") => void;
+  updateDetailsStatus: (
+    status:
+      | StatusType.InProgress
+      | StatusType.Completed
+      | StatusType.Tentative
+      | StatusType.Confirmed
+      | StatusType.Cancelled
+      | StatusType.Scheduled
+  ) => void;
   addDetails: (id: string, description: string) => void;
   addDetail: (newDetail: Data) => void;
   addDetailsItem: (detailsItem: DetailsItem<Data>) => void;
@@ -87,10 +117,14 @@ class DetailsListStoreClass implements DetailsListStore {
   };
   detailsTitle = "";
   detailsDescription = "";
-  detailsStatus: "pending" | "inProgress" | "completed" | undefined = undefined;
+  detailsStatus:
+    | TaskStatus.Pending
+    | TaskStatus.InProgress
+    | TaskStatus.Completed
+    | undefined = undefined;
   snapshotStore!: SnapshotStore<Snapshot<Data>>; // Definite assignment assertion
 
-  subscribe = (callback: (snapshot: Snapshot<Data>) => void) => {};
+  subscribe = (callback: (snapshot: Snapshot<Data>) => void) => { };
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
@@ -160,9 +194,14 @@ class DetailsListStoreClass implements DetailsListStore {
         id: detailsId,
         description: this.detailsDescription,
         title: this.detailsTitle,
-        status: this.detailsStatus as "pending" | "inProgress" | "completed",
+        status: this.detailsStatus as
+          | TaskStatus.Pending
+          | TaskStatus.InProgress
+          | TaskStatus.Completed,
         phase: {} as DetailsItem<Data>["phase"],
         data: {} as DetailsItem<Data>["data"],
+        isActive: false,
+        type: "details",
       });
     }
 
@@ -194,27 +233,55 @@ class DetailsListStoreClass implements DetailsListStore {
     this.setDetails(details);
   }
 
-  
-  updateDetailsStatus(status: "inProgress" | "completed" | "tentative" | "confirmed" | "cancelled" | "scheduled"): void {
-    this.detailsStatus = status as "inProgress" | "completed" | "pending";
+  updateDetailsStatus(
+    status:
+      | StatusType.Pending
+      | StatusType.InProgress
+      | StatusType.Completed
+      | StatusType.Tentative
+      | StatusType.Confirmed
+      | StatusType.Cancelled
+      | StatusType.Scheduled
+  ): void {
+    // Map StatusType values to TaskStatus values
+    switch (status) {
+      case StatusType.Pending:
+        this.detailsStatus = TaskStatus.Pending;
+        break;
+      case StatusType.InProgress:
+        this.detailsStatus = TaskStatus.InProgress;
+        break;
+      case StatusType.Completed:
+        this.detailsStatus = TaskStatus.Completed;
+        break;
+      case StatusType.Tentative:
+        // Handle Tentative status if needed
+        break;
+      case StatusType.Confirmed:
+        // Handle Confirmed status if needed
+        break;
+      case StatusType.Cancelled:
+        // Handle Cancelled status if needed
+        break;
+      case StatusType.Scheduled:
+        // Handle Scheduled status if needed
+        break;
+      default:
+        this.detailsStatus = undefined;
+        break;
+    }
+    
   }
   
 
-  
   addDetailsItem(detailsItem: DetailsItem<Data>): void {
-    const status: "pending" | "tentative"
-      | "inProgress"
-      | "confirmed"
-      | "cancelled"
-      | "scheduled"
-      | "completed"   =
-      detailsItem.status || "pending";
-
+    let status: AllStatus = detailsItem.status || TaskStatus.Pending;
+  
     this.details = {
       ...this.details,
       [status]: [...(this.details[status] || []), detailsItem],
     };
-
+  
     // Optionally, you can trigger notifications or perform other actions on success
     this.setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
@@ -231,10 +298,12 @@ class DetailsListStoreClass implements DetailsListStore {
     const newDetailsItem: DetailsItem<Data> = {
       id: Date.now().toString(),
       title: this.detailsTitle,
-      status: "pending",
+      status: TaskStatus.Pending,
       description: this.detailsDescription,
       data: {} as Data,
       phase: {} as DetailsItem<Data>["phase"],
+      isActive: false,
+      type: "details",
     };
 
     this.addDetailsItem(newDetailsItem);
@@ -242,7 +311,7 @@ class DetailsListStoreClass implements DetailsListStore {
     // Reset input fields after adding an item
     this.detailsTitle = "";
     this.detailsDescription = "";
-    this.detailsStatus = "pending";
+    this.detailsStatus = TaskStatus.Pending;
   }
 
   setDetails(details: Record<string, DetailsItem<Data>[]>): void {
@@ -270,39 +339,41 @@ class DetailsListStoreClass implements DetailsListStore {
 
   addDetail(detail: Data): void {
     // Assuming 'detail' is a valid Data object to be added
-    const status: "scheduled"| "cancelled" | "confirmed" | "tentative" | "pending" | "inProgress" | "completed" | undefined =
-      detail.status || "pending";
-
+    let status: AllStatus = detail.status || TaskStatus.Pending;
+  
     // Ensure detail.id is not null or undefined before assigning
     const id: string = String(detail.id) ?? "";
-
+  
     // Ensure detail.description is always a string or undefined
     const description: string = detail.description || ""; // Provide a default empty string if description is null or undefined
     const phase: Phase = detail.phase || ({} as Phase); // Provide a default empty object if phase is null or undefined
-
+  
     // Create a copy of the current state of details
     const updatedDetails = { ...this.details };
-
+  
     // Get the array associated with the current status or create a new empty array
     const statusArray = updatedDetails[status] || [];
-
-    // Add the new detail to the status array
-    statusArray.push({
-      id: id,
-      title: detail.title,
-      status: detail.status,
-      description: description,
-      phase: phase,
-      data: detail,
-    });
-
+  
+    if (detail.title !== undefined) {
+      // Add the new detail to the status array
+      statusArray.push({
+        id: id,
+        title: detail.title,
+        status: detail.status,
+        description: description,
+        phase: phase,
+        data: detail,
+        type: "detail",
+        isActive: false,
+      });
+    }
     // Update the details object with the new status array
     updatedDetails[status] = statusArray;
-
+  
     // Set the updated details object to the class property
     this.details = updatedDetails;
   }
-}
+}  
 
 const useDetailsListStore = (): DetailsListStore => {
   return new DetailsListStoreClass();

@@ -4,6 +4,18 @@ import { enhancePromptWithEntities } from "../Inteigents/EventEmitterIntegration
 import CalendarEventViewingDetailsProps, {
     EventDetails,
 } from "./CalendarEventViewingDetails";
+// Assuming you have a function named fetchEventDetails that fetches event details
+// and eventId is available in the scope where you use EventDetailsComponent
+const eventDetailsFunction = async () => {
+  try {
+    const response = await fetchEventDetails(eventId);
+    return response.data; // Assuming response.data contains the event details
+  } catch (error) {
+    console.error("Error fetching event details:", error);
+    return {}; // Return empty object in case of an error
+  }
+};
+
 
 const EventDetailsComponent: React.FC<CalendarEventViewingDetailsProps>  = ({
   eventId,
@@ -60,8 +72,15 @@ const EventDetailsComponent: React.FC<CalendarEventViewingDetailsProps>  = ({
       <p>Start Time: {details.startTime}</p>
       <p>End Time: {details.endTime}</p>
       {/* Render additional event details as needed */}
+      
     </div>
   );
 };
 
 export default EventDetailsComponent;
+
+// exampe usage:
+
+// Render EventDetailsComponent and pass the eventDetailsFunction as a prop
+{/* <EventDetailsComponent eventId={eventId} eventDetails={eventDetailsFunction} /> */}
+

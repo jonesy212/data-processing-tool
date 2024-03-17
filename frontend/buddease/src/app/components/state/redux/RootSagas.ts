@@ -8,17 +8,17 @@ import { clientSagas } from './sagas/clientSaga';
 import { dataAnalysisSagas } from './sagas/dataAnalysisSagas';
 import { dataSagas } from './sagas/dataSaga';
 import { detailsSagas } from './sagas/detailsSaga';
+import { documentSagas } from './sagas/documentSagas';
 import { markerSagas } from './sagas/markerSagas';
 import { phaseSagas } from './sagas/personaSagas/phaseSaga';
 import promptSagas from './sagas/promptSagas';
 import { snapshotSagas } from './sagas/snapshotSagas';
 import { taskSagas } from './sagas/taskSagas';
+import { teamSagas } from './sagas/teamSagas';
+import { tenantSagas } from './sagas/tenantSags';
 import { todoSagas } from './sagas/todoSagas';
 import { userSagas } from './sagas/userSagas';
 import { videoSagas } from './sagas/videoSagas';
-import { teamSagas } from './sagas/teamSagas';
-import { tenantSagas } from './sagas/tenantSags';
-import { documentSagas } from './sagas/documentSagas';
 
 // Add more sagas as needed...
 
@@ -46,6 +46,7 @@ export function* rootSaga() {
       fork(tenantSagas),
       fork(snapshotSagas),
       fork(documentSagas),
+      fork(undoSagas)
       // Add more sagas here...
     ]);
   } catch (error) {

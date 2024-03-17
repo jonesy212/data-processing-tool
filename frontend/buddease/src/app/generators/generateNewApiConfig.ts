@@ -30,7 +30,7 @@ const generateNewApiConfig = (
       headers: {},
       retry: {} as RetryConfig,
       cache: {} as CacheConfig,
-      responseType: "",
+      responseType: {} as ApiConfig["responseType"],
       withCredentials: false,
       onLoad: function (response: any): void {
         // Use the onLoad function from dataLoader

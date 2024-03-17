@@ -1,9 +1,7 @@
 // PersonaBuilderData.ts
 import ChatSettings from "@/app/components/communications/chat/ChatSettingsPanel";
-import CommonDetails, { DetailsProps } from "@/app/components/models/CommonData";
-import { Team } from "@/app/components/models/teams/Team";
+import CommonDetails from "@/app/components/models/CommonData";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
-import Project from "@/app/components/projects/Project";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { DocumentTree, User, UserData, VisualizationData } from "@/app/components/users/User";
@@ -11,6 +9,10 @@ import { FC } from "react";
 import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import Details from '../../components/models/data/Details';
 import { Question } from "./Question";
+import Team from "@/app/components/models/teams/Team";
+import { Project } from "@/app/components/projects/Project";
+import DetailsProps from "../../components/models/data/Details";
+import { Data } from "@/app/components/models/data/Data";
 
 const { notify } = useNotification(); 
 
@@ -40,7 +42,7 @@ export async function initializeUserData(id: string | number, user: User): Promi
       teamMembers: {} as TeamMember[], // Add initialization logic for teamMembers
       yourDocuments: {} as DocumentTree, // Add initialization logic for yourDocuments
       visualizations: [] as VisualizationData[], // Add initialization logic for visualizations
-      traits: CommonDetails as FC<DetailsProps<typeof Details>> | undefined, // Use FC<DetailsProps<never>> as the type
+      traits: CommonDetails as FC<DetailsProps<Details<UserData>>> | undefined, // Use FC<DetailsProps<never>> as the type
       timeBasedCode: timeBasedCode,
       
     };

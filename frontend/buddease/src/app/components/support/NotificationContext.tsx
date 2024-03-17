@@ -2,16 +2,17 @@
 import { createContext, useContext } from "react";
 import { NotificationData } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
-import { BytesLike } from "ethers";
 
 type CustomNotificationType = "RandomDismiss";
 
 export enum NotificationTypeEnum {
   AccountCreated = "AccountCreated",
   Announcement = "Announcement",
+  AssignmentOperation = "AssignmentOperation",
   BrainstormingSessionID = "BrainstormingSessionID",
   ButtonClick = "ButtonClick",
   CalendarEvent = "CalendarEvent",
+  CalendarID = "CalendarID",
   CalendarNotification = "CalendarNotification",
   ChatMention = "ChatMention",
   ContributionID = "ContributionID",
@@ -40,6 +41,7 @@ export enum NotificationTypeEnum {
   NewFeatureAvailable = "NewFeatureAvailable",
   OperationError = "OperationError",
   OperationSuccess = "OperationSuccess",
+
   PageLoading = "PageLoading",
   PasswordChanged = "PasswordChanged",
   PaymentReceived = "PaymentReceived",
@@ -57,6 +59,7 @@ export enum NotificationTypeEnum {
   Unsubscribed = "Unsubscribed",
   Warning = "Warning",
   Welcome = "Welcome",
+  Configuration = "Configuration",
 }
 
 export interface NotificationContextProps {

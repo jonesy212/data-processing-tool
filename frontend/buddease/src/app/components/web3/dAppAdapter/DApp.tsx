@@ -9,7 +9,7 @@ import { DocumentOptions } from "../../documents/DocumentOptions";
 import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
 import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
-import Project from "../../projects/Project";
+import { Project } from "../../projects/Project";
 import { DAppAdapterProps } from "../crossPlatformLayer/src/src/platform/DAppAdapter";
 import FluenceConnection from "../fluenceProtocoIntegration/FluenceConnection";
 import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
@@ -17,7 +17,7 @@ import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
 
-type CustomDocumentOptionProps = DocumentOptions & DappProps;
+export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
   class CustomDAppAdapter<T extends DappProps> extends YourClass {
     private adapter: FC<DAppAdapterProps>;
@@ -59,6 +59,8 @@ type CustomDocumentOptionProps = DocumentOptions & DappProps;
       this.customizeTheme(
         {
           /* themeConfig */
+          primaryColor: "#000000",
+          infoColor: "#000000",
         },
         dappProps
       );
@@ -225,7 +227,7 @@ type CustomDocumentOptionProps = DocumentOptions & DappProps;
     // Simulate loading a component dynamically
     switch (componentName) {
       case "ChartComponent":
-        return import("../../components/charts/*");
+        return import("../../../components/charts/*");
       case "UserFormComponent":
         return import("../../../pages/forms/UserFormComponent");
       // Add more cases as needed
@@ -240,8 +242,8 @@ type CustomDocumentOptionProps = DocumentOptions & DappProps;
       case "ChartComponent":
         component = await import("../../components/charts/ChartComponent");
         break;
-      case "FormComponent":
-        component = await import("../../components/forms/FormComponent");
+      case "UserFormComponent":
+        component = await import("../../../pages/forms/UserFormComponent");
         break;
 
       default:

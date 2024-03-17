@@ -1,9 +1,9 @@
-import team from '@/app/components/models/teams/Team';
 import React from 'react';
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { Phase } from "../../phases/Phase";
-import Project, { ProjectType } from "../../projects/Project";
+import { Project, ProjectType } from "../../projects/Project";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
+import { implementThen } from '../../state/stores/CommonEvent';
 import { Snapshot } from "../../state/stores/SnapshotStore";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
@@ -12,10 +12,11 @@ import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
+import { TeamStatus } from '../data/StatusType';
 import { Idea, Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgresBar";
 import TeamData from "./TeamData";
-import { TeamMember } from './TeamMembers';
+import { Member, TeamMember } from './TeamMembers';
 
 
 
@@ -26,18 +27,20 @@ interface Team extends Data {
   id: string;
   teamName: string;
   description?: string | undefined;
-  members: User[];
   projects: Project[];
   creationDate: Date;
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
   data?: TeamData;
-  then: (callback: (newData: Snapshot<Data>) => void) => void;
+  members?: Member[]
+  then?: (callback: (newData: Snapshot<Data>) => void) => void;
   pointOfContact?: TeamMember[] | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;
-
+  collaborationTools?: TeamData["collaborationTools"];
+  globalCollaboration?: TeamData["globalCollaboration"];
+  collaborationPreferences?: TeamData["collaborationPreferences"];
 
 
   assignedProjects: Project[];
@@ -46,8 +49,7 @@ interface Team extends Data {
   reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
   unassignProject(team: Team, project: Project): void;
   updateProgress(team: Team, project: Project): void
-
-  // Add other team-related fields as needed
+   // Add other team-related fields as needed
 }
 
 
@@ -78,6 +80,12 @@ const team: Team = {
       traits: "traits" as unknown as typeof CommonDetails,
       role: {} as UserRole,
       timeBasedCode: timeBasedCode,
+      teamId: "1",
+      roleInTeam: "admin",
+      memberName: "Sam Smith",
+      teams: [] as Team[]
+      // isActive: true,
+      // isAdmin: false,
     },
     {
       _id: "member-2",
@@ -96,6 +104,9 @@ const team: Team = {
       role: {} as UserRole,
       traits: "traits" as unknown as typeof CommonDetails,
       timeBasedCode: timeBasedCode,
+      teamId: "1",
+      roleInTeam: "moderator",
+      memberName: "Jane English",
     },
   ],
   projects: [
@@ -105,7 +116,7 @@ const team: Team = {
       title: "Team Projects",
       status: "pending",
       phase: {} as Phase,
-      then: () => { },
+      then: implementThen,
       analysisType: "image",
       analysisResults: ["analysisResults"],
       tags: [],
@@ -133,7 +144,7 @@ const team: Team = {
       title: "Team Projects",
       status: "pending",
       phase: {} as Phase,
-      then: () => { },
+      then: implementThen,
       analysisType: "image",
       analysisResults: ["analysisResults"],
       tags: [],
@@ -184,7 +195,7 @@ const team: Team = {
           previouslyAssignedTo: [],
           done: false,
           dueDate: new Date(),
-          status: "pending",
+          status: TeamStatus.Pending,
           priority: "low",
           estimatedHours: null,
           actualHours: null,
@@ -373,7 +384,10 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
       data={{team: team} as  CommonData<never>}
       details={{
         id: team.id,
+        type: "team",
+        title: team.title || "",
         name: team.teamName,
+        isActive: team.isActive,
         description: team.description,
         assignedProjects: team.assignedProjects,
         reassignedProjects: team.reassignedProjects,
@@ -399,6 +413,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       phase: data.phase,
       description: data.description,
       isActive: data.isActive,
+      type: data.type,
       // Include other generic data properties here
     }}
   />
@@ -407,4 +422,5 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
 
 
 export { DataDetailsComponent, TeamDetails, team };
-export default Team;
+export type { Team };
+

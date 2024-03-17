@@ -32,7 +32,7 @@ const apiNotificationMessages: DataNotificationMessages = {
 };
 
 // Function to handle API errors and notify
-const handleApiErrorAndNotify = (
+export const handleApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   errorMessageId: string

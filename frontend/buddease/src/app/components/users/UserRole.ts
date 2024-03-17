@@ -4,5 +4,7 @@ export interface UserRole {
     responsibilities: string[];
   permissions: string[];
   positions: string[];
+  salary?: number // Example salary for Moderator
+
   }
   

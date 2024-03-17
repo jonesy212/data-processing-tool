@@ -1,5 +1,6 @@
 // ProfessionalTraderCalendar.tsx
 import React, { useState } from "react";
+import CryptoEnthusiastCalendar from "./CryptoEnthusiastCalendar";
 
 interface ProfessionalTraderCalendarProps {
   // Define props here, if any
@@ -51,6 +52,9 @@ const ProfessionalTraderCalendar: React.FC<ProfessionalTraderCalendarProps> = (
 
   return (
     <div>
+        {/* Include CryptoEnthusiastCalendar component */}
+        <CryptoEnthusiastCalendar />
+    
       <h1>Professional Trader Calendar</h1>
       {/* Add calendar management UI here */}
       {/* Display settings section */}

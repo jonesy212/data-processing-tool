@@ -3,7 +3,6 @@ import ProjectService from "@/app/api/ProjectService";
 import { addNotification } from "@/app/components/calendar/CalendarSlice";
 import { LogData } from '@/app/components/models/LogData';
 import useNotificationManagerService from "@/app/components/notifications/NotificationService";
-import Project from "@/app/components/projects/Project"; // Import ProjectDetails component
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
@@ -15,6 +14,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ComponentActions } from "./ComponentActions";
+import { ComponentStatus } from '@/app/components/models/data/StatusType';
+import { Project } from '@/app/components/projects/Project';
 
 const dispatch = useDispatch();
 const { notify } = useNotification();
@@ -68,8 +69,9 @@ export const handleRemoveComponent = () => {
       type: NotificationTypeEnum.CreationSuccess,
       updatedAt: new Date(),
       content: "",
-      status: "tentative",
-      completionMessageLog: {} as NotificationData & LogData
+      status: ComponentStatus.Tentative,
+      completionMessageLog: {} as NotificationData & LogData,
+      sendStatus: 'Sent'
     };
     addNotification(notification); // Updated argument to pass notification object
   } catch (error: any) {
@@ -81,7 +83,8 @@ export const handleRemoveComponent = () => {
       content: "",
       status: "tentative",
       updatedAt: new Date(),
-      completionMessageLog: {} as NotificationData & LogData
+      completionMessageLog: {} as NotificationData & LogData,
+      sendStatus: 'Sent'
     };
     console.error("Error removing component:", error);
     // Handle error and provide feedback to users
@@ -108,7 +111,8 @@ export const handleUpdateComponent = () => {
       updatedAt: new Date(),
       content: "",
       status: "tentative",
-      completionMessageLog: {} as NotificationData & LogData
+      completionMessageLog: {} as NotificationData & LogData,
+      sendStatus: 'Sent'
     };
     addNotification(notification);
   } catch (error: any) {
@@ -121,7 +125,8 @@ export const handleUpdateComponent = () => {
       type: NotificationTypeEnum.Error,
       content: "",
       status: "tentative",
-      completionMessageLog: {} as NotificationData & LogData
+      completionMessageLog: {} as NotificationData & LogData,
+      sendStatus: 'Sent'
     };
     addNotification(errorNotification);
   }

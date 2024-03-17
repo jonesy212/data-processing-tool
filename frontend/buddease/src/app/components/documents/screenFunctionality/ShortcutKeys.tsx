@@ -1,6 +1,8 @@
 import React, { MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import { initiateBitcoinPayment, initiateEthereumPayment } from "../../payment/initCryptoPayments";
 import { sanitizeData, sanitizeInput } from '../../security/SanitizationFunctions';
+import SnapshotList from "../../snapshots/SnapshotList";
+import { snapshotStore } from '../../state/stores/SnapshotStore';
 
 
 export const handleCryptoPaymentSelect = (cryptoOption: string) => {
@@ -17,12 +19,6 @@ export const handleCryptoPaymentSelect = (cryptoOption: string) => {
       console.error("Invalid crypto payment option");
   }
 };
-
-
-
-
-
-
 
 
 
@@ -395,7 +391,7 @@ const DynamicEventHandlerExample = ({ handleSorting }: { handleSorting: (snapsho
         }
       );
 
-      const handleDynamicEvent = createEventHandler(
+       const handleDynamicEvent = createEventHandler(
         "handleDynamicEvent",
         (event: React.SyntheticEvent) => {
           handleFullscreenMode(event);
@@ -471,7 +467,8 @@ const DynamicEventHandlerExample = ({ handleSorting }: { handleSorting: (snapsho
           handleSearchFunctionality(event);
           break;
         case "sorting":
-          handleSorting(event);
+          snapshotStore.set(event.type, event);
+          handleSorting(snapshotStore);
           break;
         case "progressIndicators":
           handleProgressIndicators(event);
@@ -517,6 +514,12 @@ const DynamicEventHandlerExample = ({ handleSorting }: { handleSorting: (snapsho
 }
 
 
+
+
+
+const dynamicEvent = new DynamicEventHandlerExample(
+  
+)
 
 
 

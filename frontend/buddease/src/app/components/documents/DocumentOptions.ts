@@ -1,3 +1,4 @@
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
@@ -5,7 +6,8 @@ import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
 // documentOptions.ts
 export interface DocumentOptions {
-  documentType: string; // Add documentType property
+  uniqueIdentifier: string;
+  documentType: DocumentData; // Add documentType property
   userIdea: string; 
   additionalOptions: string | number | readonly string[] | undefined;
   isDynamic: boolean;
@@ -47,6 +49,11 @@ export interface DocumentOptions {
   colorCoding: boolean;
   customSettings: Record<string, any>; 
   documents: DocumentData[]; 
+  includeType: "all" | "selected" | "none";
+  includeTitle: boolean; // New property to include title in the report
+  includeContent: boolean; // New property to include content in the report
+  includeStatus: boolean; // New property to include status in the report
+  includeAdditionalInfo: boolean; // Example: include additional information
 
   // Properties specific to DocumentGenerator
   title?: string;
@@ -56,7 +63,8 @@ export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can exte
 
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
-    documentType: "", // Add documentType property
+    uniqueIdentifier: "",
+    documentType: {} as DocumentData, // Add documentType property,
     userIdea: "", // Add userIdea property
     fontSize: 14,
     textColor: "#000000",
@@ -97,8 +105,14 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     customSettings: {},
     documents: [] as DocumentData[],
     animations: {} as DocumentAnimationOptions, 
-    
-
+  
+    // Default values for properties specific to DocumentGenerator
+    includeType: "all",
+    includeTitle: true, // New property to include title in the report
+    includeContent: true, // New property to include content in the report
+    includeStatus: true, // New property to include status in the report
+    includeAdditionalInfo: true, // Example: include additional information
+  
       // Default values for properties specific to DocumentGenerator
       title: "",
   };
@@ -110,4 +124,12 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
 export interface ExtendedDocumentOptions extends DocumentOptions {
   // Add any additional properties needed for robustness
   additionalOption2: string;
+}
+
+
+
+export const getDocumentPhase = (document: DocumentData) => { 
+  // Get the document phase from the document data
+  return document.documentPhase;
+
 }

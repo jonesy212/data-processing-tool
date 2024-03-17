@@ -6,6 +6,7 @@ import io, { Socket } from "socket.io-client";
 import generateTimeBasedCode from "../../../models/realtime/TimeBasedCodeGenerator";
 import { useAuth } from "../components/auth/AuthContext";
 import useMessagingSystem from "../components/communications/chat/useMessagingSystem";
+import generateDynamicContent from '../components/documents/DynamicContentGenerator';
 import PaymentForm from "../components/payment/PaymentForm";
 import { rootStores } from "../components/state/stores/RootStores";
 import { User } from "../components/users/User";
@@ -107,13 +108,25 @@ const Index: React.FC = () => {
     }
   }, [authState.isAuthenticated, router, authDispatch, socket]);
 
+
+
+
+    // Generate dynamic content using the function
+    const appName = "MyApp"; // Replace with actual logic to fetch app name
+    const currentDate = new Date().toLocaleDateString(); // Get current date
+    const dynamicContent = generateDynamicContent(appName, currentDate);
+
+  
   return (
     <Layout>
       <div>
       <YourApp />
         <h1>Redirecting to the Dashboard...</h1>
         <PaymentForm /> {/* Include the PaymentForm component */}
-     
+        {/* Render the dynamic content */}
+
+        <div>{dynamicContent}</div>
+
       </div>
     </Layout>
   );

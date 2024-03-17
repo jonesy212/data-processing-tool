@@ -4,10 +4,10 @@ import { makeAutoObservable } from 'mobx';
 import { ProjectActions } from "../components/actions/ProjectActions";
 import { Task } from "../components/models/tasks/Task";
 import { Phase } from "../components/phases/Phase";
-import Project from "../components/projects/Project";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
+import {Project} from "../components/projects/Project";
 import { User } from "../components/users/User";
 import { sendNotification } from "../components/users/UserSlice";
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import ProjectMetadata from "../configs/StructuredMetadata";
 
 const API_BASE_URL = endpoints.projects;
@@ -19,7 +19,7 @@ class ProjectService {
 
   createProject = async (newProject: Project) => { 
     try {
-      const response = await axiosInstance.post(API_BASE_URL.add, newProject);
+      const response = await axiosInstance.post(`${API_BASE_URL}`.add, newProject);
       ProjectActions.createProjectSuccess({ project: response.data });
       sendNotification(`Project ${newProject.name} created successfully`);
       return response.data;
@@ -45,6 +45,22 @@ class ProjectService {
         throw error;
       }
     }
+  
+
+  fetchProjectList = async () => {
+    try {
+      ProjectActions.fetchProjectsRequest({ request: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_LIST_SUCCESS })
+      const response = await axiosInstance.get(API_BASE_URL.all);
+      ProjectActions.fetchProjectsSuccess({ projects: response.data });
+      sendNotification(`Project list fetched successfully`);
+      return response.data;
+    } catch (error) {
+      ProjectActions.fetchProjectsFailure({ error: String(error) });
+      sendNotification(`Error fetching project list: ${error}`);
+      console.error('Error fetching project list:', error);
+      throw error;
+    }
+  };
       
     
   updateProjectData = async (
@@ -439,5 +455,5 @@ class ProjectService {
 }
 
 
-const projectService = new ProjectService();
-export default ProjectService; projectService;
+export const projectService = new ProjectService();
+export default ProjectService;

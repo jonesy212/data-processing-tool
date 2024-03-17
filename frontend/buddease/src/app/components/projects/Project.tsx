@@ -1,11 +1,13 @@
 //projects/Project.ts
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
+import { StatusType } from "../models/data/StatusType";
 import { Idea, Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import { implementThen } from '../state/stores/CommonEvent';
 import { Attachment, Comment, Todo } from "../todos/Todo";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
@@ -17,7 +19,8 @@ export enum ProjectType {
   External = "External",
   Hackathon = "Hackathon",
   CommunityDriven = "CommunityDriven", // Projects initiated and managed within the app by users from a larger community or network, aiming to benefit the community or society as a whole.
-  Default = "Default" // Default project type for new projects that don't fit other categories
+  Default = "Default", // Default project type for new projects that don't fit other categories
+  Data = 'data'
   // Add more project types as needed
 } 
 
@@ -26,7 +29,7 @@ interface Project extends Data {
   id: string;
   name: string;
   description: string | null; // Updated this line
-  members: User[];
+  members: Member[];
   tasks: Task[];
   startDate: Date
   endDate: Date
@@ -39,6 +42,7 @@ interface Project extends Data {
   currentPhase: Phase | null; // Provide a default value or mark as optional
   comments?: Comment[];  // Add other project-related fields as needed
   commnetBy?: User | Member
+  then?: typeof implementThen
 }
 
 // Function to determine if the project is in a special phase
@@ -93,7 +97,7 @@ class ProjectImpl implements Project {
   _id: string = "0";
   id: string = "0"; // Initialize id property to avoid error
   name: string = "projectName";
-  members: User[] = []; // Provide a default value or mark as optional
+  members: Member[] = []; // Provide a default value or mark as optional
   tasks: Task[] = []; // Provide a default value or mark as optional
   startDate: Date= new Date(); // Provide a default value or mark as optional
   endDate: Date= new Date(); // Provide a default value or mark as optional // Provide a default value or mark as optional
@@ -105,9 +109,9 @@ class ProjectImpl implements Project {
   currentPhase: Phase | null = null; // Provide a default value or mark as optional
   description: string | null = null;
   title: string = "project_title";
-  status: "pending" | "inProgress" | "completed" = "pending";
+  status: StatusType.Pending | StatusType.InProgress | StatusType.Completed = StatusType.Pending;
   tags: string[] = [];
-  then: () => void = () => {};
+  then: typeof implementThen = implementThen;
   analysisType: string = "default";
   analysisResults: string[] = [];
 
@@ -168,7 +172,8 @@ const currentPhase: Phase = {
     );
   },
   lessons: [],
-  duration: 0
+  duration: 0,
+  tasks: []
 };
 
 export interface ProjectData extends Project {
@@ -196,6 +201,7 @@ currentProject.phases = [
     } as CustomPhaseHooks,
     lessons: [],
     duration: 0,
+    tasks: [],
   },
 ];
 
@@ -229,18 +235,38 @@ const transitionToPreviousPhase = (setCurrentPhase: React.Dispatch<React.SetStat
   setCurrentPhase(previousPhase);
 };
 
-const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = async ({ projectDetails }) =>
-  (await projectDetails) ? (
+const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = ({ projectDetails }) => {
+  const [details, setDetails] = useState<ProjectData | null>(null);
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      const details = await projectDetails;
+      setDetails(details);
+    };
+
+    fetchProjectDetails();
+  }, [projectDetails]);
+
+  return details ? (
     <>
       <CommonDetails
         data={{} as CommonData<SupportedData>}
-        details={projectDetails}
+        details={
+          {
+            id: details.project.id || '',
+            title: details.project.title || '',
+            description: details.project.description || '',
+            status: details.project.status || StatusType.Pending,
+          }
+        }
       />
       <ButtonGenerator
         onTransitionToPreviousPhase={transitionToPreviousPhase} // Pass the function as a prop
       />
     </>
   ) : null;
+};
   
-export default Project; ProjectDetails
- 
+
+export type { Project, ProjectDetails };
+

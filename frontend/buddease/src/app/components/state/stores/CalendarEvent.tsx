@@ -8,7 +8,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { Data } from "../../models/data/Data";
-import Team from "../../models/teams/Team";
+import {Team} from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
@@ -19,6 +19,13 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 import { useDispatch } from "react-redux";
+import { AllStatus } from "./DetailsListStore";
+import { CommonData } from "../../models/CommonData";
+import { DocumentTypeEnum } from "../../documents/DocumentGenerator";
+import { DocumentOptions, getDefaultDocumentOptions } from "../../documents/DocumentOptions";
+import { Phase } from "../../phases/Phase";
+import { getDefaultOptions } from "intro.js/src/option";
+import { CalendarStatus } from "../../models/data/StatusType";
 
 
 
@@ -50,16 +57,22 @@ const notifyCallback = (): void => {
 
 export type Priority = "low" | "medium" | "high" | "urgent" | undefined;
 
-interface CalendarEvent extends CommonEvent, Data {
-  
-  status:
-  "pending" 
-    | "tentative"
-    | "inProgress"
-    | "confirmed"
-    | "cancelled"
-    | "scheduled"
-  | "completed";
+interface CalendarEvent extends
+  CommonEvent,
+  CommonData<Data> {id: string;
+  title: string;
+  content: string;
+  topics: string[];
+  highlights: string[];
+  load?: () => void;
+  files: any[];
+  type?: DocumentTypeEnum;
+  locked?: boolean;
+  changes?: string[];
+  options: DocumentOptions;
+  documentPhase?: Phase;
+  // Add more properties if needed
+  status: AllStatus
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
   priority:  Priority | boolean
   location?: string;
@@ -74,6 +87,8 @@ interface CalendarEvent extends CommonEvent, Data {
   pinned?: boolean;
   archived?: boolean;
   documentReleased?: boolean;
+  metadata?: StructuredMetadata;
+  participants: Member[];
 
 }
 
@@ -258,21 +273,15 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     const { event } = payload;
 
     // Assuming 'event' has a valid 'status' property
-    const status:
-      | "pending"
-      | "scheduled"
-      | "inProgress"
-      | "tentative"
-      | "confirmed"
-      | "cancelled"
-      | "completed"
-      | undefined = event.status || "scheduled";
+    const status: AllStatus
+      | undefined = event.status || CalendarStatus.Scheduled;
 
     this.events = {
       ...this.events,
       [status]: [...(this.events[status] || []), event],
     };
 
+    
     // Optionally, you can trigger notifications or perform other actions on success
     this.setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
@@ -312,7 +321,12 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       analysisType: "",
       analysisResults: [],
       videoData: {} as VideoData,
-      participants: []
+      participants: [],
+      content: "",
+      topics: [],
+      highlights: [],
+      files: [],
+      options: getDefaultDocumentOptions(),
     };
 
     this.events = {
@@ -615,6 +629,11 @@ const events: Record<string, CalendarEvent[]> = {
       analysisType: "",
       analysisResults: [],
       videoData: {} as VideoData,
+      content:'content',
+       topics: [],
+       highlights: [],
+       files: [],
+       options: getDefaultDocumentOptions(),
     },
     // Add more events for other dates as needed
   ],

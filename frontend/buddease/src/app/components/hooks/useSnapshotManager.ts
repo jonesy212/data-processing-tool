@@ -15,6 +15,7 @@ import { userManagerStore } from "../state/stores/UserStore";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
+import { UndoRedoStore } from "../state/stores/UndoRedoStore";
 
 const { notify } = useNotification();
 
@@ -22,12 +23,13 @@ const useSnapshotManager = () => {
   const todoManagerStore = useTodoManagerStore();
   const taskManagerStore = useTaskManagerStore();
   const userManagedStore = userManagerStore();
-
+  const undoRedoStore = UndoRedoStore
   useEffect(() => {
     // Fetch snapshots or perform any initialization logic
     todoManagerStore.batchFetchSnapshotsRequest({} as Record<string, Todo[]>);
     taskManagerStore.batchFetchSnapshotsRequest({} as Record<string, Task[]>);
     userManagedStore.batchFetchSnapshotsRequest({} as Record<string, User[]>);
+    use
 
     fetchSnapshots();
     createSnapshot();
@@ -279,7 +281,7 @@ const useSnapshotManager = () => {
 
       if (response.ok) {
         const updated = await response.json();
-        todoManagerStore.updateSnapshotSuccess({ snapshot: updated });
+        SnapshotManagerStore.updateSnapshotSuccess({ snapshot: updated });
         // Notify success
         notify(
           "Snapshot updated successfully",
@@ -291,6 +293,7 @@ const useSnapshotManager = () => {
         console.error("Failed to update snapshot:", response.statusText);
         // Notify failure
         notify(
+          "updateSnapshotFailure",
           "Failed to update snapshot",
           NOTIFICATION_MESSAGES.Generic.ERROR,
           new Date(),
@@ -308,6 +311,7 @@ const useSnapshotManager = () => {
       }
       // Notify failure
       notify(
+        "updateSnapshotFailure",
         "Error updating snapshot",
         NOTIFICATION_MESSAGES.Generic.ERROR,
         new Date(),
@@ -332,6 +336,7 @@ const useSnapshotManager = () => {
         todoManagerStore.batchUpdateSnapshotsSuccess({ snapshots: updated });
         // Notify success
         notify(
+          "updateSnapshotsSuccess",
           "Snapshots updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
           undefined,
@@ -341,6 +346,7 @@ const useSnapshotManager = () => {
         console.error("Failed to update snapshots:", response.statusText);
         // Notify failure
         notify(
+          "updateSnapshoFailure",
           "Failed to update snapshots",
           NOTIFICATION_MESSAGES.Generic.ERROR,
           new Date(),
@@ -368,6 +374,7 @@ const useSnapshotManager = () => {
       todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
       // Notify success
       notify(
+        "fetchSnapshotsSuccess",
         "Snapshots fetched successfully",
         NOTIFICATION_MESSAGES.Generic.DEFAULT,
         undefined,
@@ -385,6 +392,7 @@ const useSnapshotManager = () => {
       }
       // Notify failure
       notify(
+        "fetchSnapshotsFailure",
         "Failed to fetch snapshots",
         NOTIFICATION_MESSAGES.Generic.ERROR,
         new Date(),

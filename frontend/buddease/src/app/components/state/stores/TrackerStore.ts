@@ -36,6 +36,8 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
     rootStore.trackerStore.dispatch(action);
   }
 
+
+  const 
   makeAutoObservable({
     dispatch,
     trackers,

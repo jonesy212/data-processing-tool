@@ -1,6 +1,9 @@
 import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
+import { Member } from "@/app/components/models/teams/TeamMembers";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { produce } from "immer"; // Import immer for immutable updates
+import { WritableDraft } from "../ReducerGenerator";
 
 interface FilteredEventsState {
   filteredEvents: (CalendarEvent | HighlightEvent)[];
@@ -15,7 +18,7 @@ const useFilteredEventsSlice = createSlice({
   initialState,
   reducers: {
     addFilteredEvent: (state, action: PayloadAction<CalendarEvent>) => {
-      state.filteredEvents.push(action.payload);
+      state.filteredEvents.push(action.payload as WritableDraft<CalendarEvent>);
     },
     removeFilteredEvent: (state, action: PayloadAction<string>) => {
       state.filteredEvents = state.filteredEvents.filter(
@@ -37,158 +40,171 @@ const useFilteredEventsSlice = createSlice({
         (event) => event.id === eventId
       );
       if (eventIndex !== -1) {
-        // Check if the event is an instance of CalendarEvent
-        if ('id' in state.filteredEvents[eventIndex]) {
-          // If it's a CalendarEvent, ensure the id type is a string
-          state.filteredEvents[eventIndex] = {
-            ...state.filteredEvents[eventIndex],
-            ...updatedEvent,
-            id: eventId, // Assuming eventId is always a string
-          };
-        } else {
-          // Handle the case where it's a HighlightEvent with a number id
-          // Depending on your logic, you might need additional handling here
-          // For example, converting the id to a string or handling differently
-        }
+        // Use immer for immutable updates
+        produce(state, draftState => {
+          const draftEvent = draftState.filteredEvents[eventIndex] as WritableDraft<CalendarEvent>;
+          Object.assign(draftEvent, updatedEvent);
+          draftEvent.id = eventId;
+        });
       }
     },
-    
     replaceFilteredEvents: (state, action: PayloadAction<CalendarEvent[]>) => {
-      state.filteredEvents = action.payload;
+      state.filteredEvents = action.payload.map((event) => event as WritableDraft<CalendarEvent>);
     },
-
-    // In your reducer:
     toggleFilteredEventStatus: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
       const eventIndex = state.filteredEvents.findIndex(
         (event) => event.id === eventId
       );
       if (eventIndex !== -1) {
-        const currentStatus = state.filteredEvents[eventIndex].status;
-        // Toggle between 'completed' and 'scheduled' status
-        state.filteredEvents[eventIndex].status =
-          currentStatus === "completed" ? "scheduled" : "completed";
+        // Use immer for immutable updates
+        produce(state, draftState => {
+          const draftEvent = draftState.filteredEvents[eventIndex] as WritableDraft<CalendarEvent>;
+          draftEvent.status = draftEvent.status === "completed" ? "scheduled" : "completed";
+        });
       }
     },
-
     toggleFilteredEventCompletion: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
       const eventIndex = state.filteredEvents.findIndex(
         (event) => event.id === eventId
       );
       if (eventIndex !== -1) {
-        // Toggle completion status of the event
-        state.filteredEvents[eventIndex].status =
-          state.filteredEvents[eventIndex].status === "completed"
-            ? "scheduled"
-            : "completed";
+        // Use immer for immutable updates
+        produce(state, draftState => {
+          const draftEvent = draftState.filteredEvents[eventIndex] as WritableDraft<CalendarEvent>;
+          draftEvent.status = draftEvent.status === "completed" ? "scheduled" : "completed";
+        });
       }
     },
-
     sortFilteredEvents: (state, action: PayloadAction<"title" | "date">) => {
       const sortCriteria = action.payload;
-      state.filteredEvents.sort((a, b) => {
-        if (sortCriteria === "title") {
-          return a.title.localeCompare(b.title);
-        } else if (sortCriteria === "date") {
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
-        }
-        return 0;
+      // Use immer for immutable updates
+      produce(state, draftState => {
+        draftState.filteredEvents.sort((a, b) => {
+          if (sortCriteria === "title") {
+            return a.title.localeCompare(b.title);
+          } else if (sortCriteria === "date") {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+          }
+          return 0;
+        });
       });
     },
     filterByLocation: (state, action: PayloadAction<string>) => {
       const location = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.location === location);
+      // Use immer for immutable updates
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => event.location === location);
+      });
     },
 
     filterByOrganizer: (state, action: PayloadAction<string>) => {
       const organizer = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.organizer === organizer);
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => event.organizer === organizer);
+      });
     },
   
     filterByAttendees: (state, action: PayloadAction<string[]>) => {
       const attendees = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.attendees.some(attendee => attendees.includes(attendee)));
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => event.attendees.some((attendee: Member['memberName']) => attendees.includes(attendee)));
+      });
     },
 
     filterByTags: (state, action: PayloadAction<string[]>) => {
       const tags = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.tags.some(tag => tags.includes(tag)));
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => event.tags?.some(tag => tags.includes(tag)));
+      });
     },
     filterByRecurrence: (state, action: PayloadAction<string>) => {
       const recurrencePattern = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.recurrenceRule === recurrencePattern);
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => event.recurrenceRule === recurrencePattern);
+      });
     },
 
     filterByCustomFields: (state, action: PayloadAction<Partial<CalendarEvent>>) => {
       const customFields = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => {
-        for (const key in customFields) {
-          if (customFields.hasOwnProperty(key) && event[key] !== customFields[key]) {
-            return false;
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => {
+          for (const key in customFields) {
+            if (customFields.hasOwnProperty(key) && event[key] !== customFields[key]) {
+              return false;
+            }
           }
-        }
-        return true;
+          return true;
+        });
       });
     },
 
     filterByDuration: (state, action: PayloadAction<number>) => {
       const duration = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => {
-        const eventDuration = event.endDate.getTime() - event.startDate.getTime();
-        return eventDuration <= duration;
+      produce(state, draftState => {
+        draftState.filteredEvents = draftState.filteredEvents.filter(event => {
+          // Check if event.endDate is defined before accessing its properties
+          if (event.endDate && event.startDate) {
+            const eventDuration = event.endDate.getTime() - event.startDate.getTime();
+            return eventDuration <= duration;
+          }
+          // Return false if endDate is undefined
+          return false;
+        });
       });
     },
-
-    filterByGlobalParticipation: (state, action: PayloadAction<boolean>) => {
+    filterByGlobalParticipation: produce((state, action: PayloadAction<boolean>) => {
       const globalParticipation = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.globalParticipation === globalParticipation);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.globalParticipation === globalParticipation);
+    }),
 
-    filterByMonetizationOpportunities: (state, action: PayloadAction<boolean>) => {
+    filterByMonetizationOpportunities: produce((state, action: PayloadAction<boolean>) => {
       const monetizationOpportunities = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.monetizationOpportunities === monetizationOpportunities);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.monetizationOpportunities === monetizationOpportunities);
+    }),
 
-    filterByCommunityRewards: (state, action: PayloadAction<boolean>) => {
+    filterByCommunityRewards: produce((state, action: PayloadAction<boolean>) => {
       const communityRewards = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.communityRewards === communityRewards);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.communityRewards === communityRewards);
+    }),
 
-    filterByImportance: (state, action: PayloadAction<string>) => {
+    filterByImportance: produce((state, action: PayloadAction<string>) => {
       const importance = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.importance === importance);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.importance === importance);
+    }),
 
-    filterByAvailability: (state, action: PayloadAction<boolean>) => {
+    filterByAvailability: produce((state, action: PayloadAction<boolean>) => {
       const available = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.availability === available);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.availability === available);
+    }),
 
-    filterByEventType: (state, action: PayloadAction<string>) => {
+    filterByEventType: produce((state, action: PayloadAction<string>) => {
       const eventType = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.type === eventType);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.type === eventType);
+    }),
 
-    filterByProjectPhase: (state, action: PayloadAction<string>) => {
+    filterByProjectPhase: produce((state, action: PayloadAction<string>) => {
       const phase = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.projectPhase === phase);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.projectPhase === phase);
+    }),
 
-    filterByCollaborationTools: (state, action: PayloadAction<string>) => {
+    filterByCollaborationTools: produce((state, action: PayloadAction<string>) => {
       const tool = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.collaborationTool === tool);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.collaborationTool === tool);
+    }),
 
-    filterByImpactSolutions: (state, action: PayloadAction<string>) => {
+    filterByImpactSolutions: produce((state, action: PayloadAction<string>) => {
       const solution = action.payload;
-      state.filteredEvents = state.filteredEvents.filter(event => event.impactSolution === solution);
-    },
+      state.filteredEvents = state.filteredEvents.filter((event: any) => event.impactSolution === solution);
+    }),
+  
     // Add more reducers as needed
   },
 });
 
 export const {
+
   // Basic Filters
   addFilteredEvent,
   removeFilteredEvent,

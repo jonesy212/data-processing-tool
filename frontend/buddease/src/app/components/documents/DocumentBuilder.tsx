@@ -18,10 +18,11 @@ import {
 } from "./DocumentCreationUtils";
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentOptions, DocumentSize } from "./DocumentOptions";
-import { DocumentAnimationOptions } from "./SharedDocumentProps";
+import { DocumentAnimationOptions, DocumentBuilderProps } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { DocumentStatus } from "./types";
+import { AllStatus } from "../state/stores/DetailsListStore";
+import { Phase } from "../phases/Phase";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
@@ -31,23 +32,18 @@ export interface DocumentData extends CommonData<Data> {
   content: string;
   topics: string[];
   highlights: string[];
+  keywords: string[];
   load?: () => void;
   files: any[];
-  status?: DocumentStatus;
+  status?: AllStatus;
   type?: DocumentTypeEnum;
   locked?: boolean;
   changes?: string[];
+  options: DocumentOptions;
+  documentPhase?: Phase;
   // Add more properties if needed
 }
 
-interface DocumentBuilderProps {
-  options: DocumentOptions;
-  onOptionsChange: (newOptions: DocumentOptions) => void;
-  isDynamic: boolean;
-  setOptions: (newOptions: any) => void; // Define setOptions prop
-  documents: DocumentData[]; // Add documents prop to receive document data
-
-}
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   isDynamic,

@@ -109,7 +109,7 @@ function* handleUpdateDataTitle(
     yield put(
       DataActions.updateDataTitleSuccess({
         id: response.data.id as number,
-        title: response.data.title,
+        title: response.data.title as string,
       })
     );
   } catch (error) {

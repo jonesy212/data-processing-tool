@@ -5,7 +5,7 @@ import { calendarPhase } from "../calendar/CalendarPhase";
 import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker, { AsyncHookLinkerConfig, LibraryAsyncHook } from "../hooks/useAsyncHookLinker";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
-
+import { Lesson } from "../documents/CourseBuilder";
 export const additionalPhase1: Phase = {
   name: 'Additional Phase 1',
   startDate: new Date(),
@@ -13,6 +13,7 @@ export const additionalPhase1: Phase = {
   subPhases: [],
   duration: 0,
   component: () => <div>Additional Phase 1 Component</div>,
+  lessons: {} as Lesson[],
   hooks: createPhaseHook({
     duration: 0,
     canTransitionTo: () => true,
@@ -53,6 +54,7 @@ export const additionalPhase2: Phase = {
   subPhases: [],
   duration: 0,
   component: () => <div>Additional Phase 2 Component</div>,
+  lessons: {} as Lesson[],
   hooks: createPhaseHook({
       duration: 0,
       canTransitionTo: () => true,

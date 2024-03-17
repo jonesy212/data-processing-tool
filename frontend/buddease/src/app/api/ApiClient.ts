@@ -245,6 +245,15 @@ class ClientApiService {
     );
   }
 
+  async removeCalendarEvent(eventId: number): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.delete(`/api/client/calendar/${eventId}`),
+      "Failed to remove calendar event",
+      "RemoveCalendarEventError"  as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.REMOVE_CALENDAR_EVENT_ERROR
+    );
+  }
+
   async listClientTasks(): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/tasks"),

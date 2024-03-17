@@ -3,8 +3,10 @@
 import Docxtemplater from 'docxtemplater';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DocumentOptions } from './DocumentOptions';
-var xl = require('excel4node');
+import { DocumentOptions, getDefaultDocumentOptions } from './DocumentOptions';
+import generateFinancialReportContent from './documentation/report/generateFinancialReportContent';
+import { Document } from '../state/stores/DocumentStore';
+ var xl = require('excel4node');
 
 
 enum DocumentTypeEnum {
@@ -18,6 +20,9 @@ enum DocumentTypeEnum {
   Draft = 'draft',
   Document = 'document',
   Other = 'other',
+  FinancialReport = 'financialReport',
+  MarketAnalysis = 'marketAnalysis',
+  ClientPortfolio = 'clientPortfolio',
 }
 
 
@@ -28,6 +33,43 @@ enum DocumentStatusEnum {
   Archived = 'archived',
   Deleted = 'deleted'
 }
+
+
+
+const documents: Document[] = [
+  {
+    id: 1,
+    title: 'Financial Report',
+    type: DocumentTypeEnum.FinancialReport,
+    status: DocumentStatusEnum.Draft,
+    description: 'Financial Report Description',
+    content: 'Financial Report Content',
+    createdAt: '2021-07-01T00:00:00.000Z',
+    updatedAt: '2021-07-01T00:00:00.000Z',
+    createdBy: 'John Doe',
+    updatedBy: 'John Doe',
+    documentData: {
+      financialReport: {
+        financialReportContent: 'Financial Report Content',
+        financialReportFileName: 'financial_report.docx',
+      }
+    },
+    tags: ['financial', 'report', '2021'],
+    topics: [
+      'goals',
+      'executive summary',
+      'financial report',
+    ],
+    highlights: [
+      'goals',
+      'objectives',
+    ],
+    keywords: [],
+    files: [],
+    options: getDefaultDocumentOptions()
+  },
+  // Add more documents as needed
+];
 
 
 
@@ -151,6 +193,34 @@ wb.write('spreadsheet.xlsx');
     }
   }
 
+
+
+  createFinancialReport(options: DocumentOptions): string {
+    // Real-world logic to create a financial report
+    // Use the provided FinancialReportWrapper or implement logic to handle financial reports
+
+    // Example: Generating a financial report document
+    const financialReportContent = 'Financial Report Content';
+    const financialReportFileName = 'financial_report.docx'; // Example filename
+  
+
+
+
+    try {
+      // Perform logic to generate the financial report document
+        generateFinancialReportContent(options,  documents);
+      // For demonstration purposes, let's assume the document generation is successful
+      // and write the content to a file
+      fs.writeFileSync(financialReportFileName, financialReportContent);
+      
+      return 'Financial Report created successfully.';
+    } catch (error) {
+      console.error('Error creating financial report:', error);
+      return 'Error creating financial report.';
+    }
+  }
+  
+
   // Add methods for other document types (e.g., createPresentation, createDrawing, etc.)
 
   createDiagram(): string {
@@ -158,7 +228,6 @@ wb.write('spreadsheet.xlsx');
 
     return 'Diagram created successfully.';
   }
-
 
 
   createDocument(type: string, options: DocumentOptions): string {

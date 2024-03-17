@@ -114,7 +114,7 @@ import {
         status: "pending",
         isActive: true,
         tags: [],
-        // Add more properties as needed
+        type: ""
       }
       const todoDetailsString = JSON.stringify(todoDetails);
       return this.generateID(todoDetailsString, todoId || '', "todoName" as NotificationType);
@@ -132,7 +132,31 @@ import {
       this.notifyFormatted(generatedID, message, content, new Date(), NotificationTypeEnum.GeneratedID);
       return generatedID;
     }
-    
+
+    static generateVersionNumber(): string {
+      const versionNumberLength = 3;
+      const characters = "0123456789";
+      let versionNumber = "";
+      for (let i = 0; i < versionNumberLength; i++) {
+        versionNumber += characters.charAt(
+          Math.floor(Math.random() * characters.length)
+        );
+      }
+      return versionNumber;
+    }
+  
+    static generateAppVersion(): string {
+      const appVersionLength = 5;
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let appVersion = "";
+      for (let i = 0; i < appVersionLength; i++) {
+        appVersion += characters.charAt(
+          Math.floor(Math.random() * characters.length)
+        );
+      }
+      return appVersion;
+    }
+
     static generateID(prefix: string, name: string, type: NotificationType, dataDetails?: DataDetails): string {
       const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
       return generatedID;
@@ -142,6 +166,10 @@ import {
 
     static generateCustomID(name: string, type: NotificationType): string {
       return UniqueIDGenerator.generateID(name, type, "custom" as NotificationType);
+    }
+
+    static generateCaelndarID(calendardId: string,): string { 
+      return UniqueIDGenerator.generateID(calendardId, NotificationTypeEnum.CalendarID, "cal" as NotificationType);
     }
 
     static generateProjectID(projectName: string): string {
@@ -240,7 +268,10 @@ import {
     description: 'Video Description',
     status: "pending",
     isActive: false,
-    tags: []
+    tags: [],
+    type: NotificationTypeEnum.GeneratedID,
+    createdAt: new Date(),
+    uploadedAt: new Date(),
   };
 
   export default UniqueIDGenerator

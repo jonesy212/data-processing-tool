@@ -21,6 +21,22 @@ interface Milestone {
   date: Date;
 }
 
+
+
+
+interface ProductMilestone extends Milestone {
+  productId: string;
+  // Add any additional properties specific to ProductMilestone
+}
+
+// Example usage:
+const productMilestone: ProductMilestone = {
+  id: "1",
+  title: "Product Launch",
+  date: new Date(),
+  productId: "ABC123",
+};
+
 interface CalendarManagerState {
   entities: Record<string, CalendarEvent>;
   events: Record<string, CalendarEvent[]>;
@@ -346,7 +362,7 @@ export const useCalendarManagerSlice = createSlice({
       const eventId = action.payload;
       const event = state.entities[eventId];
       if (event) {
-        event.teamMemberId = 123456789;
+        event.teamMemberId = '123456789';
         dispatchNotification(
           "assignCalendarEventToTeamMember",
           "Calendar event assigned to team member successfully",
@@ -375,21 +391,65 @@ export const useCalendarManagerSlice = createSlice({
 
     },
     
-    setEventColor: (state, action: PayloadAction<{ eventId: string; color: string }>) => {
-      const { eventId, color } = action.payload;
-      const event = state.entities[eventId];
-      if (event) {
-        event.color = color;
-        dispatchNotification(
-          "setEventColor",
-          "Calendar event color set successfully",
-          "Error setting calendar event color",
-          dispatch,
-          eventId
-        );
+    // Define the reducer function to handle setEventColor action
+setEventColor: (
+  state,
+  action: PayloadAction<{ eventId: string; color: Theme | string }>
+) => {
+  const { eventId, color } = action.payload;
+  const event = state.entities[eventId];
+  if (event) {
+    let selectedColor: string;
+    if (typeof color === 'string') {
+      // If color is a string, use it directly
+      selectedColor = color;
+    } else {
+      // If color is a Theme object, select the appropriate color
+      selectedColor = selectColor(color);
+    }
+
+    // Define getColor function
+    const getColor = (options: Theme): string => {
+      // Implementation of getColor function goes here
+      return ""; // Placeholder return value, replace with actual implementation
+    };
+
+    // Define selectColor function
+    const selectColor = (color: Theme): string => {
+      if (color.primaryColor) {
+        return color.primaryColor;
       }
-      // Perform additional actions if needed
-    },
+      if (color.borderColorFocus) {
+        return color.borderColorFocus;
+      }
+      if (color.themeColor) {
+        return color.themeColor;
+      }
+      if (color.defaultColor) {
+        return color.defaultColor;
+      }
+      return ""; // Placeholder return value, replace with appropriate handling
+    };
+
+    // Define defaultColor
+    const defaultColor: string = getColor(color as Theme);
+
+    // Assign selected color or default color to event.color
+    event.color = selectedColor || defaultColor;
+
+    // Dispatch notification
+    dispatchNotification(
+      "setEventColor",
+      "Calendar event color set successfully",
+      "Error setting calendar event color",
+      dispatch,
+      eventId
+    );
+  }
+  // Return the updated state
+  return state;
+},
+
 
 
 
@@ -462,59 +522,6 @@ export const useCalendarManagerSlice = createSlice({
         );
       }
     },
-
-    // Define the reducer function to handle setEventColor action
-    setEventColor: (
-      state,
-      action: PayloadAction<{ eventId: string; color: Theme }>
-    ) => {
-      const { eventId, color } = action.payload;
-      const event = state.entities[eventId];
-      if (event) {
-        // Define getColor and selectColor functions
-        const getColor = (options: Theme): string => {
-          // Implementation of getColor function goes here
-          return ""; // Placeholder return value, replace with actual implementation
-        };
-
-        const selectColor = (color: Theme): string => {
-          if (color.primaryColor) {
-            return color.primaryColor;
-          }
-          if (color.borderColorFocus) {
-            return color.borderColorFocus;
-          }
-          if (color.themeColor) {
-            return color.themeColor;
-          }
-          if (color.defaultColor) {
-            return color.defaultColor;
-          }
-          return ""; // Placeholder return value, replace with appropriate handling
-        };
-
-        // Define colorOptions based on provided color properties
-        const colorOptions: string = color.borderColorFocus || color.defaultColor || color.primaryColor || color.themeColor || "";
-
-        // Define defaultColor
-        const defaultColor: string = getColor(color);
-
-        // Assign selected color or default color to event.color
-        event.color = selectColor(color) || defaultColor;
-
-        // Dispatch notification
-        dispatchNotification(
-          "setEventColor",
-          "Calendar event color set successfully",
-          "Error setting calendar event color",
-          dispatch,
-          eventId
-        );
-      }
-      // Return the updated state
-      return state;
-    },
-
 
     setEventReminder: (state, action: PayloadAction<{ eventId: string; reminder: string }>) => {
       const { eventId, reminder } = action.payload;

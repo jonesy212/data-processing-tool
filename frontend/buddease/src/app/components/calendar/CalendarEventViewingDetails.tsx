@@ -36,7 +36,7 @@ const CalendarEventViewingDetails: React.FC<CalendarEventViewingDetailsProps> = 
     const fetchEventDetails = async () => {
       // Declare the function as async
       try {
-        const response = await axiosInstance.get(BASE_API_URL);
+        const response = await axiosInstance.get(`${BASE_API_URL}`);
         setEventDetails(response.data);
         setIsLoading(false);
       } catch (error) {

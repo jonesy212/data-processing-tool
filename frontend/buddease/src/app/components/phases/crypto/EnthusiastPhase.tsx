@@ -4,6 +4,10 @@ import RiskAssessment from './RiskAssessment';
 import TraderTypesSelection from './TraderTypesSelection';
 import VerificationProcess from './VerificationProcess';
 import EnthusiastProfile from './EnthusiastProfile';
+import FollowTraders from './FollowTraders'; // Import FollowTraders component
+import DoYourOwnResearch from './DoYourOwnResearch'; // Import DoYourOwnResearch component
+import CallsConferences from './CallsConferences'; // Import CallsConferences component
+import AddContent from './AddContent'; // Import AddContent component
 
 // Define an enum for trading phases
 enum TradingPhase {
@@ -11,6 +15,10 @@ enum TradingPhase {
   RISK_ASSESSMENT = 'Risk Assessment',
   TRADER_TYPE_SELECTION = 'Trader Type Selection',
   ENTHUSIAST_PROFILE = 'Enthusiast Profile',
+  FOLLOW_TRADERS = 'Follow Traders', // Add Follow Traders phase
+  DO_YOUR_OWN_RESEARCH = 'Do Your Own Research', // Add Do Your Own Research phase
+  PARTICIPATE_CALLS_CONFERENCES = 'Participate in Calls/Conferences', // Add Participate in Calls/Conferences phase
+  ADD_CONTENT = 'Add Content', // Add Add Content phase
   // Add additional phases as needed
 }
 
@@ -36,6 +44,14 @@ const EnthusiastPhase = () => {
         return TradingPhase.TRADER_TYPE_SELECTION;
       case TradingPhase.TRADER_TYPE_SELECTION:
         return TradingPhase.ENTHUSIAST_PROFILE;
+      case TradingPhase.ENTHUSIAST_PROFILE:
+        return TradingPhase.FOLLOW_TRADERS; // Transition to Follow Traders phase
+      case TradingPhase.FOLLOW_TRADERS:
+        return TradingPhase.DO_YOUR_OWN_RESEARCH; // Transition to Do Your Own Research phase
+      case TradingPhase.DO_YOUR_OWN_RESEARCH:
+        return TradingPhase.PARTICIPATE_CALLS_CONFERENCES; // Transition to Participate in Calls/Conferences phase
+      case TradingPhase.PARTICIPATE_CALLS_CONFERENCES:
+        return TradingPhase.ADD_CONTENT; // Transition to Add Content phase
       // Add cases for transitioning to other phases
       default:
         return currentPhase;
@@ -53,6 +69,14 @@ const EnthusiastPhase = () => {
         return <TraderTypesSelection onSelect={handlePhaseCompletion} />;
       case TradingPhase.ENTHUSIAST_PROFILE:
         return <EnthusiastProfile onComplete={handlePhaseCompletion} />;
+      case TradingPhase.FOLLOW_TRADERS:
+        return <FollowTraders onComplete={handlePhaseCompletion} />; // Render Follow Traders component
+      case TradingPhase.DO_YOUR_OWN_RESEARCH:
+        return <DoYourOwnResearch onComplete={handlePhaseCompletion} />; // Render Do Your Own Research component
+      case TradingPhase.PARTICIPATE_CALLS_CONFERENCES:
+        return <CallsConferences onComplete={handlePhaseCompletion} />; // Render Participate in Calls/Conferences component
+      case TradingPhase.ADD_CONTENT:
+        return <AddContent onComplete={handlePhaseCompletion} />; // Render Add Content component
       // Add cases for rendering other sub-phases or components
       default:
         return null;

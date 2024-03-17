@@ -26,8 +26,8 @@ class CourseBuilder {
       title: phaseTitle,
       lessons: [],
       name: "",
-      startDate: undefined,
-      endDate: undefined,
+      startDate: new Date(),
+      endDate: new Date(),
       subPhases: [],
       component: {} as React.FC, // Use React.FC as the type
       hooks: {} as CustomPhaseHooks,

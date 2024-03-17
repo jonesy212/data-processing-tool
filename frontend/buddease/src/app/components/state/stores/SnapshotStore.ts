@@ -8,10 +8,13 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { makeAutoObservable } from "mobx";
 import { useAuth } from "../../auth/AuthContext";
 import { Data } from "../../models/data/Data";
-import { showToast } from "../../models/display/ShowToast";
+import { showErrorMessage, showToast } from "../../models/display/ShowToast";
 import { Task } from "../../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { notificationStore } from "../../support/NotificationProvider";
+import { implementThen } from "./CommonEvent";
+import { Phase } from "../../phases/Phase";
+import { VideoData } from "../../video/Video";
 
 const { notify } = useNotification();
 
@@ -231,28 +234,48 @@ class SnapshotStore<T extends Snapshot<Data>> {
     makeAutoObservable(this);
   }
 
+
   takeSnapshot(data: SnapshotStore<Snapshot<Data>>) {
-    const timestamp = new Date();
-    const snapshot: Snapshot<Snapshot<Data>>[] = {
-      timestamp,
-      data,
-    };
-    const snapshotObj = { snapshot: [snapshot] }; // Wrap the snapshot in an object with a 'snapshot' property
-    this.snapshots.push(snapshotObj); // Push the snapshot object to the snapshots array
-    // Use this.notify instead of this.notify.notify
-    this.notify(
-      `Snapshot taken at ${new Date(timestamp)}.`,
-      NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OperationSuccess
-    );
-  
-    this.notifySubscribers(snapshot)
-  
-    if (this.onSnapshot) {
-      this.onSnapshot(data);
+  const timestamp = new Date();
+  // Initialize snapshot with an empty value or appropriate data
+  const snapshot: Snapshot<Snapshot<Data>> = {
+    timestamp: new Date(), // Provide appropriate timestamp value here
+    data: {
+      timestamp: new Date(),
+      data: {
+        _id: "snapshot",
+        id:"1234567890",
+        title: "takenSnapshot",
+        status: "completed",
+        isActive: true,
+        description: "This is a description",
+        tags: [],
+        phase: {} as Phase,
+        then: implementThen,
+        analysisType: {} as AnalysisType,
+        analysisResults: [] as AnalysisResult[],
+        videoData: {} as VideoData
+      }
     }
+  };
+
+  const snapshotObj: { snapshot: Snapshot<Snapshot<Data>>[] } = { snapshot: [snapshot] };
+  this.snapshots.push(snapshotObj); // Push the snapshot object to the snapshots array
+  
+  this.notify(
+    `Snapshot taken at ${new Date(timestamp)}.`,
+    NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+    new Date(),
+    NotificationTypeEnum.OperationSuccess
+  );
+
+  this.notifySubscribers(snapshot);
+
+  if (this.onSnapshot) {
+    this.onSnapshot(data);
   }
+}
+
 
   initSnapshot(snapshot: T) {
     this.takeSnapshot(snapshot);

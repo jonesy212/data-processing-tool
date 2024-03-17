@@ -1,5 +1,5 @@
-import { brandingSettings } from "../components/projects/branding/BrandingSettings";
-
+import { BrandingSettings, brandingSettings } from "../components/projects/branding/BrandingSettings";
+// import { brandingSettings } from "../libraries/theme/BrandingService";
 interface ProjectEventData {
   projectId: string;
   eventName: string;

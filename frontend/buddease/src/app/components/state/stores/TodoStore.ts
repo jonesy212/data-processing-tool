@@ -34,7 +34,7 @@ export interface TodoManagerStore {
     snapshotId: string,
     callback: (snapshot: Todo) => void
   ) => void;
-  batchFetchSnapshotsRequest: (payload: { snapshotIds: string[] }) => void;
+  batchFetchSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
 }
 
 const useTodoManagerStore = (): TodoManagerStore => {
@@ -54,6 +54,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
   ) => void)[] = [];
 
 
+  
 
   const dispatch = (action: any) => {
     switch (action.type) {
@@ -213,9 +214,12 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const completeAllTodosSuccess = () => {
     console.log("All Todos completed successfully!");
     // You can add additional logic or trigger notifications as needed
+    
+    if (typeof NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT === 'string') {
     setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
-    );
+      );
+    }
   };
 
   const completeAllTodos = () => {

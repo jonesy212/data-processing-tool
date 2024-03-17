@@ -1,17 +1,17 @@
 // EmailSetupForm.tsx
 import React, { useState } from 'react';
 
-const EmailSetupForm: React.FC = () => {
+
+interface EmailSetupFormProps {
+  handleRegisterEmail: () => void; // Define prop for handleRegisterEmail function
+}
+const EmailSetupForm: React.FC<EmailSetupFormProps> = ({handleRegisterEmail}) => {
   const [email, setEmail] = useState('');
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
-  const handleRegisterEmail = () => {
-    // Your logic to register the email goes here
-    console.log(`Email registered: ${email}`);
-  };
 
   return (
     <div>

@@ -3,7 +3,6 @@ import { NotificationTypeEnum, useNotification } from "@/app/components/support/
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Data } from "../../models/data/Data";
-import { Progress } from "../../models/tracker/ProgresBar";
 import axiosInstance from "../../security/csrfToken";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
@@ -28,6 +27,7 @@ export interface VideoStore {
   clipVideo: (id: string, startTime: number, endTime: number) => void;
   loopVideo: (id: string, startTime: number, endTime: number) => void;
   editVideo: (id: string, edits: any) => void; // 'edits' can be an object containing editing instructions
+  getVideoData: (id: string, video: Video) => Video;
   // Add more methods as needed
 }
 const useVideoStore = (): VideoStore => {
@@ -51,6 +51,13 @@ const useVideoStore = (): VideoStore => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getVideoData = (id: string, video: Video) => {
+    if (video) {
+      return video;
+    }
+    return videos[id];
   };
 
   const addVideo = (video: Video) => {
@@ -247,6 +254,7 @@ const useVideoStore = (): VideoStore => {
     isLoading,
     error,
     fetchVideos,
+    getVideoData,
     addVideo,
     updateVideo,
     deleteVideo,
@@ -257,7 +265,6 @@ const useVideoStore = (): VideoStore => {
     moveClip,
     snapClipsTogether,
     renderVideoClips,
-
 
 
   });

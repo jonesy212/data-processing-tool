@@ -1,13 +1,16 @@
 // TrackerSlice.ts
+import Milestone from '@/app/components/calendar/CalendarSlice';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Tracker } from '../../../models/tracker/Tracker';
 
 export interface TrackerManagerState {
   trackers: Tracker[];
+  milestones: Milestone[];
 }
 
 export const initialState: TrackerManagerState = {
   trackers: [],
+  milestones: []
 };
 
 export const trackerManagerSlice = createSlice({
@@ -35,14 +38,27 @@ export const trackerManagerSlice = createSlice({
         (tracker) => tracker.id.toString() !== action.payload.toString()
       );
     },
+
+        // Implement logic to create a milestone for tracking project progress
+        createMilestone: (state, action: PayloadAction<Milestone>) => {
+          state.milestones.push(action.payload);
+        },
+    
   },
 });
 
 // Export actions
-export const { addTracker, updateTracker, removeTracker } = trackerManagerSlice.actions;
+export const { addTracker, updateTracker, removeTracker, createMilestone } = trackerManagerSlice.actions;
  
 // Export selector for accessing the trackers from the state
 export const selectTrackers = (state: { trackers: TrackerManagerState }) => state.trackers.trackers;
 
+
+// Export selector for accessing the milestones from the state
+export const selectMilestones = (state: { trackers: TrackerManagerState }) => state.trackers.milestones;
+
+
 // Export reducer for the tracker entity slice
 export default trackerManagerSlice.reducer;
+
+

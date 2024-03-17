@@ -1,10 +1,12 @@
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
+import Team from "./Team";
 
 export interface Member extends User {
   teamId: string;
   roleInTeam: string;
   memberName: string;
+  teams?: Team[];
   // Add other member-specific properties here
 }
 

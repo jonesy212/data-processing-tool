@@ -1,6 +1,6 @@
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 
-export function showToast( message: Message) {
+async function showToast(message: Message): Promise<void> {
     // Create a new div element to hold the toast message
     const toast = document.createElement('div');
     toast.classList.add('toast');
@@ -19,7 +19,7 @@ export function showToast( message: Message) {
 
 
 
-export function showErrorMessage(error: string): void {
+async function showErrorMessage(error: string): Promise<void> {
   // Create a new div element to hold the error message
   const errorMessage = document.createElement('div');
   errorMessage.classList.add('error-message');
@@ -35,3 +35,7 @@ export function showErrorMessage(error: string): void {
     errorMessage.remove();
   }, 5000); // 5000 milliseconds = 5 seconds
 }
+
+
+export { showErrorMessage, showToast };
+

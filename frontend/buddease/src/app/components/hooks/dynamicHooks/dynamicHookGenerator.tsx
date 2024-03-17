@@ -13,10 +13,11 @@ export type DynamicHookParams = {
   cleanup?: () => void;
   resetIdleTimeout: () => void;
   idleTimeoutId: NodeJS.Timeout | null;
-  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   isActive: boolean;
-  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   intervalId: number | undefined;
+  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  startIdleTimeout: (
+    timeoutDuration: number, onTimeout: () => void) => void;
 };
 
 
@@ -45,6 +46,7 @@ const createDynamicHook = ({
   initialStartIdleTimeout,
 }: DynamicHookParams): AsyncHook => {
   return {
+    toggleActivation: async () => { },
     condition: condition,
     asyncEffect: async ({
       idleTimeoutId,
