@@ -2,7 +2,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import axios from "axios";
 import { action, observable, runInAction } from 'mobx';
 import { Task } from "../models/tasks/Task";
-import { Progress } from "../models/tracker/ProgresBar";
+import { Progress } from "../models/tracker/ProgressBar";
 
 class TaskService {
   @observable tasks: Task[] = [];

@@ -6,7 +6,7 @@ import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import "quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import Quill from "react-quill";
-import { DocumentType } from "./DocumentGenerator";
+import { DocumentTypeEnum } from "./DocumentGenerator";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 
 export interface TextEditorProps extends ToolbarOptionsProps {
@@ -65,7 +65,7 @@ const TextEditor = ({
               handleEditorStateChange: function (newEditorState: any): void {
                 setText(newEditorState.getText());
               },
-              type: DocumentType.Text,
+              type: DocumentTypeEnum.Text,
             }),
           },
         });
@@ -119,7 +119,7 @@ const TextEditor = ({
           handleEditorStateChange={function (newEditorState: any): void {
             setText(newEditorState.getText());
           }}
-          type={DocumentType.Text}
+          type={DocumentTypeEnum.Text}
         />
       </div>
       <div id={id} style={{ height: "400px" }} />

@@ -41,7 +41,8 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
       color: "#33ff57",
       style: { backgroundColor: "#33ff57", width: "50px", height: "50px" },
     },
-  ];// Usage example for Notification Bar Phase Hook
+  ];
+  // Usage example for Notification Bar Phase Hook
   const notificationBarExample: AsyncHook & Partial<AnimatedComponentRef> = {
     condition: async (idleTimeoutDuration: number) => {
       // Your condition logic here
@@ -57,11 +58,13 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Placeholder implementation
     cleanup: undefined, // Placeholder value
     toggleActivation: () => {}, // Set as undefined
-
+    startAnimation: () => {}, // Placeholder implementation
+    stopAnimation: () => {}, // Placeholder implementation
+    animateIn: () => {}, // Placeholder implementation
+  
   };
   
 
-  // Usage example for Dark Mode Toggle Phase Hook
   // Usage example for Dark Mode Toggle Phase Hook
 const darkModeToggleExample: AsyncHook = {
   condition: async () => true, // Example condition
@@ -72,7 +75,11 @@ const darkModeToggleExample: AsyncHook = {
   idleTimeoutId: null, // Provide a default value or adjust as needed
   startIdleTimeout: () => {}, // Provide a default function or adjust as needed
   cleanup: undefined, // Set as undefined
-  toggleActivation: () => {}, // Set as undefined
+  toggleActivation: () => { }, // Set as undefined
+  startAnimation: () => {}, // Placeholder implementation
+  stopAnimation: () => {}, // Placeholder implementation
+  animateIn: () => {}, // Placeholder implementation
+
 };
 
   // Usage example for RefactoringRebrandingPhase

@@ -3,7 +3,7 @@ import NOTIFICATION_MESSAGES from './NotificationMessages';
 import { Data } from '../models/data/Data';
 import { NotificationData } from './NofiticationsSlice';
 
-export interface NotificationType {
+export interface NotificationTypeDefinition {
   type: string;
   subtype?: string; // Add subtype for more modular messages
 }

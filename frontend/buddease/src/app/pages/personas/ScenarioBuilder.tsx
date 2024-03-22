@@ -21,24 +21,29 @@ const categoryProperties: CategoryProperties = {
 };
 
 // Define function to create user scenarios and map out user journey
-function createUserScenarios() {
+async function createUserScenarios() {
   const [options, setOptions] = useState(getDefaultDocumentOptions());
 
   // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
   const userPersonaBuilder = new PersonaBuilder();
-  const phaseManager = PhaseManager({ phases: [] }) as typeof PhaseManager | null;
-
-
-
+  const phaseManager = PhaseManager({ phases: [] }) as
+    | typeof PhaseManager
+    | null;
 
   // Use the modules to create detailed user scenarios and map out user journey
   // Example:
   const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
   // Check if phaseManager is not null or undefined before accessing its properties
-if (phaseManager) {
-  // Call the createPhases method if it exists
-  const phases = phaseManager.createPhases(/* parameters */);
-}
+  if (phaseManager) {
+    // Call the createPhases method if it exists
+    const phases = phaseManager.createPhases(/* parameters */);
+  }
+
+  const document = await DocumentBuilder.buildDocument(
+    userPersona,
+    phaseManager,
+    options
+  );
   // Instead, include the DocumentBuilder component in your JSX markup with the required props:
   const documents = (
     <DocumentBuilder
@@ -52,15 +57,18 @@ if (phaseManager) {
           files: ["file 1", "file 2"],
           documentType: "document type 1",
           options: getDefaultDocumentOptions(),
-          documentPhase: getDocumentPhase(documents),
+          documentPhase: getDocumentPhase(document),
           keywords: ["keyword 1", "keyword 2"],
-
+          folderPath: "",
+          previousMetadata: {},
+          currentMetadata: {},
+          accessHistory: [],
         },
         // Add more document data as needed
       ]}
       isDynamic={true}
       options={getDefaultDocumentOptions()}
-      onOptionsChange={newOptions => {
+      onOptionsChange={(newOptions) => {
         // Update the DocumentOptions state
         setOptions(newOptions);
       }}
@@ -69,6 +77,7 @@ if (phaseManager) {
       version={getDocumentVersion()}
     />
   );
+
   // Output or utilize the created user scenarios and mapped user journey
   console.log("User scenarios and user journey mapped successfully.");
 }

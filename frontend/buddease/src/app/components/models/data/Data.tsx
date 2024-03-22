@@ -1,7 +1,8 @@
 import { ColorPalettes } from "antd/es/theme/interface";
 import { FakeData } from "../../Inteigents/FakeDataGenerator";
 import { Phase } from "../../phases/Phase";
-import { Priority } from "../../state/stores/CalendarEvent";
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { Snapshot } from "../../state/stores/SnapshotStore";
 import { Attachment, Todo } from "../../todos/Todo";
@@ -10,10 +11,9 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Idea } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
-import { DataStatus, StatusType, TaskStatus, TeamStatus } from "./StatusType";
 
 // Define the interface for DataDetails
-export interface DataDetails {
+interface DataDetails {
   id: string;
   title?: string;
   description?: string | null | undefined;
@@ -30,7 +30,7 @@ export interface DataDetails {
   ; // Use enums for status property
   phase?: Phase | null;
   fakeData?: FakeData;
-  comments?: Comment[] | undefined;
+  comments?: (Comment | CustomComment)[];
   // Add other properties as needed
 }
 
@@ -39,17 +39,25 @@ interface DataDetailsProps {
   data: DataDetails;
 }
 
-interface Comment {
+export interface Comment {
   id: string;
   text: string;
   editedAt?: Date;
+  editedBy?: string;
+  attachments?: Attachment[];
+  replies?: Comment[];
+  likes?: User[];
+  watchLater?: boolean;
   highlightColor?: ColorPalettes;
   tags?: string[];
   highlights?: string[];
   commentBy?: User | Member;
   content?: string | undefined;
   pinned?: boolean;
-  watchLater: boolean;
+  postId?: string | number; // Added postId field to match the other Comment interface
+  author?: string; // Added author field to match the other Comment interface
+  upvotes?: number; // Added upvotes field to match the other Comment interface
+  data: string
   // Add other properties as needed
 }
 
@@ -69,34 +77,39 @@ interface Data {
   then?: (callback: (newData: Snapshot<Data>) => void) => void;
   // Properties specific to Todo
   dueDate?: Date | null;
-  priority?: Priority | boolean;
+  priority?: AllStatus
   assignee?: User | null;
   collaborators?: string[];
-  comments?: Comment[] | undefined;
+  comments?: (Comment | CustomComment)[];
   attachments?: Attachment[];
   subtasks?: Todo[];
+
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: string;
   updatedBy?: string;
+
   isArchived?: boolean;
   isCompleted?: boolean;
   isBeingEdited?: boolean;
   isBeingDeleted?: boolean;
   isBeingCompleted?: boolean;
   isBeingReassigned?: boolean;
-  analysisType: string;
-  analysisResults: string[];
+  analysisType: AnalysisTypeEnum;
+  analysisResults: DataAnalysisResult[];
+  
   videoUrl?: string;
   videoThumbnail?: string;
   videoDuration?: number;
   collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
   videoData: VideoData;
+  additionalData?: any;
   [key: string]: any;
   ideas?: Idea[];
   members?: Member[];
   // tasks?: Todo[];
   leader?: User | null;
+  snapshots?: Snapshot<Data>[];
 }
 
 // Define the UserDetails component
@@ -122,4 +135,5 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
   />
 );
 
-export type { Data, DataDetailsComponent, DataDetailsProps };
+export type { Data, DataDetails, DataDetailsComponent, DataDetailsProps };
+

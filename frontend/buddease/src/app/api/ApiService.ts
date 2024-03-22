@@ -1,138 +1,61 @@
-import { observable, runInAction } from 'mobx';
-import { useAuth } from "../components/auth/AuthContext";
-import { CalendarActions } from '../components/calendar/CalendarActions';
-import { fetchEventsRequest } from '../components/state/stores/CalendarEvent';
-import { User } from "../components/users/User";
-import { UserActions } from "../components/users/UserActions";
- import axiosInstance from "./axiosInstance";
-import { endpoints } from '@/app/api/ApiEndpoints';
+import dotProp from 'dot-prop';
+import { AxiosError, AxiosResponse } from 'axios';
+import axiosInstance from './axiosInstance';
+import { handleApiError } from '@/app/api/ApiLogs';
+import { CacheData } from '../generators/GenerateCache';
+import { SupportedData } from '../components/models/CommonData';
 
-const API_BASE_URL = endpoints.users;
+// Define the structure of the response data
+interface CacheResponse {
+  // Define the structure of CacheResponse
+}
 
-const handleSuccess = <T>(action: (payload: T) => void) => async (
-  request: (...args: any[]) => Promise<T>,
-  ...args: any[]
-): Promise<T> => {
+export const readCache = async (): Promise<SupportedData> => {
   try {
-    const data = await request(...args);
-    runInAction(() => {
-      action({ ...data });
-    });
-    return data;
+    // Fetch cache data
+    const cacheResponse: CacheResponse = await fetchCacheData();
+
+    // Populate data from cacheResponse
+    const supportedData: SupportedData = {
+      // Populate supportedData based on cacheResponse
+    };
+
+    return supportedData;
   } catch (error) {
-    const errorMessage = String(error);
-    console.error(`Error: ${errorMessage}`);
+    console.error('Error reading cache:', error);
     throw error;
   }
 };
 
-const handleFailure = (action: (payload: { error: string }) => void) => async (
-  request: (...args: any[]) => Promise<void>,
-  ...args: any[]
-): Promise<void> => {
-  try {
-    await request(...args);
-  } catch (error) {
-    const errorMessage = String(error);
-    console.error(`Error: ${errorMessage}`);
-    runInAction(() => {
-      action({ error: errorMessage });
-    });
-    throw error;
-  }
+// Function to fetch cache data (mock implementation)
+const fetchCacheData = async (): Promise<CacheResponse> => {
+  // Simulate fetching data from a server
+  // Replace with actual implementation
+  return {} as CacheResponse;
 };
 
-export const userApiService = observable({
-  fetchUser: handleSuccess((payload: { user: User }) => UserActions.fetchUserSuccess(payload))(
-    async (userId: number): Promise<{ user: User }> => {
-      try {
-        const response = await axiosInstance.get(`${API_BASE_URL}/${userId}`);
-        return { user: response.data as User };
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        throw error;
+// Class to manage API calls and cache data
+class ApiService {
+  private API_BASE_URL: string;
+
+  constructor(API_BASE_URL: string) {
+    this.API_BASE_URL = API_BASE_URL;
+  }
+
+  // Function to call API
+  public async callApi(endpointPath: string, requestData: any): Promise<any> {
+    try {
+      const endpoint = dotProp.getProperty(this.API_BASE_URL, endpointPath) as string | undefined;
+      if (!endpoint) {
+        throw new Error(`${endpointPath} endpoint not found`);
       }
+      const response: AxiosResponse = await axiosInstance.post(endpoint, requestData);
+      return response.data;
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, `Failed to call ${endpointPath}`);
+      throw error;
     }
-  ),
+  }
+}
 
-  updateUser: handleSuccess((payload: { user: User }) => UserActions.updateUserSuccess(payload))(
-    async (userId: number, updatedUserData: any): Promise<{ user: User }> => {
-      try {
-        const response = await axiosInstance.put(`${API_BASE_URL}/${userId}`, updatedUserData);
-        return { user: response.data as User };
-      } catch (error) {
-        console.error("Error updating user:", error);
-        throw error;
-      }
-    }
-  ),
-
-
-
-  fetchEvents: handleSuccess((payload: any) => {CalendarActions.fetchCalendarEventsRequest();})(
-    async (): Promise<any> => {
-      try {
-        const events =  fetchEventsRequest(); // Use the fetchEventsRequest function
-        return events;
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        throw error;
-      }
-    }
-  ),
-
-  updateUserFailure: handleFailure(UserActions.updateUserFailure)(
-    async (): Promise<void> => {
-      try {
-        await axiosInstance.get(`${API_BASE_URL.endpoints.updateList}`);
-      } catch (error) {
-        console.error("Error updating user:", error);
-        throw error;
-      }
-    }
-  ),
-
-  fetchUsers: handleSuccess(UserActions.fetchUsersSuccess)(
-    async (): Promise<{ users: User[] }> => {
-      try {
-        const response = await axiosInstance.get(API_BASE_URL.list);
-        return { users: response.data as User[] };
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        throw error;
-      }
-    }
-  ),
-
-  updateUsers: handleSuccess(UserActions.updateUsersSuccess)(
-    async (updatedUsersData: any): Promise<{ users: User[] }> => {
-      try {
-        const response = await axiosInstance.put(API_BASE_URL.updateList, updatedUsersData);
-        return { users: response.data as User[] };
-      } catch (error) {
-        console.error("Error updating users:", error);
-        throw error;
-      }
-    }
-  ),
-
-  deleteUsers: handleFailure(UserActions.deleteUsersFailure)(
-    async (userIds: number[]): Promise<void> => {
-      try {
-        if (useAuth() && useAuth().state.isAuthenticated) {
-          const response = await axiosInstance.delete(`${API_BASE_URL}`, {
-            data: { userIds },
-          });
-          runInAction(() => {
-            UserActions.deleteUsersSuccess(userIds);
-          });
-        }
-      } catch (error) {
-        console.error("Error deleting users:", error);
-        throw error;
-      }
-    }
-  ),
-});
-
-// todo connect the root sagas as where api Servicer first looks to connect the natural language processor
+export default ApiService;

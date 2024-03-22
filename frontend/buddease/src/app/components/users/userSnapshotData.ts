@@ -1,10 +1,12 @@
 // userSnapshotData.ts
 import MyPromise from '../../utils/MyPromise';
 import useUserProfile from '../hooks/useUserProfile';
-import { DetailsProps, SupportedData } from '../models/CommonData';
+import  DetailsProps, { SupportedData } from '../models/CommonData';
+import CommonDetails from '../models/CommonDetails';
 import { User, UserData } from './User';
+import UserRoles from './UserRoles';
 
-type UserProfile = UserData & User;
+export type UserProfile = UserData & User;
 
 const saveProfile = (profileData: UserProfile) => {
   // Assuming an asynchronous operation to save profile data
@@ -77,7 +79,8 @@ const myProfileData: UserProfile = {
   hasQuota: false,
   profilePicture: null,
   processingTasks: [],
-  traits: {} as (props: DetailsProps<SupportedData>, context?: any)=> React.ReactNode,
+  role: UserRoles.Member,
+  traits: {} as typeof CommonDetails,
 };
 
 const myGenericData = {

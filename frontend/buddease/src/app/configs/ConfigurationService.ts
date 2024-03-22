@@ -1,7 +1,7 @@
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
-import Project, { isProjectInSpecialPhase } from "../components/projects/Project";
+import { Project, isProjectInSpecialPhase } from "../components/projects/Project";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
 import StoreConfig from "../shopping_center/ShoppingCenterConfig";
 import {
@@ -43,7 +43,8 @@ export interface ApiConfig {
     contentType: string; // New property for content type
     encoding: string; // New property for encoding
     // Add more properties as needed
-  };  withCredentials: boolean;
+  } | string;
+  withCredentials: boolean;
   onLoad?: (response: any) => void;
 }
 

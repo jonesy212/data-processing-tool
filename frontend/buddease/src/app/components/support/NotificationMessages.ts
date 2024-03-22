@@ -1,13 +1,14 @@
 // NotificationMessages.ts
-// Define a generic interface for message categories
+/// Define a generic interface for message categories
 interface MessageCategory<T> {
-  [key: string]: T | ((errorType: string, details: string) => string);
+  [key: string]: T 
 }
- 
 
 // Helper function to handle dynamic notification message
-const handleDynamicNotificationMessage = (message: string | ((errorType: string, details: string) => string)) => {
-  if (typeof message === 'string') {
+const handleDynamicNotificationMessage = (
+  message: string | ((errorType: string, details: string) => string)
+) => {
+  if (typeof message === "string") {
     return message;
   } else {
     return message("errorType", "details");
@@ -15,88 +16,27 @@ const handleDynamicNotificationMessage = (message: string | ((errorType: string,
 };
 
 // Wrapper function to set dynamic notification message
-const setDynamicNotificationMessageWrapper = (message: DynamicNotificationMessage, errorType: string, details: string): void => {
-  const dynamicMessage = handleDynamicNotificationMessage(message, errorType, details);
+const setDynamicNotificationMessageWrapper = (
+  message: DynamicNotificationMessage,
+  errorType: string,
+  details: string
+): void => {
+  let dynamicMessage: string;
+
+  if (typeof message === "string") {
+    dynamicMessage = message;
+  } else {
+    dynamicMessage = message(errorType, details);
+  }
+
   // Your implementation of setDynamicNotificationMessage
   console.log(dynamicMessage); // For demonstration purposes, replace with your implementation
 };
 
-
 // Define the structure of all notification messages
 interface NotificationMessages {
-  Audio: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Auth: MessageCategory<string>;
-  BackendStructure: MessageCategory<string>;
-  BaseAssignment: MessageCategory<string>;
-  Brainstorming: MessageCategory<string>;
-  Blog: MessageCategory<string>;
-  Component: MessageCategory<string>;
-  CalendarEvents: MessageCategory<string>;
-  Communication: MessageCategory<string>;
-  CustomNotification1: MessageCategory<string>;
-  CustomNotification2: MessageCategory<string>;
-  Client: MessageCategory<string>;
-  ChatMessage: MessageCategory<string>;
-  Crypto: MessageCategory<string>;
-  Data: MessageCategory<string>;
-  Database: MessageCategory<string>;
-  DataAnalysis: MessageCategory<string>;
-  Details:  MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Document: MessageCategory<string>;
-  Entities: MessageCategory<string>;
-  Error: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Dashboard: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  DashboardLayout: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  DashboardLayoutItem: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  EventReminder: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  FeatureToggle: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Freelancer: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  FrontendStructure: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Generators: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Generic: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Info: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Launch: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Logger: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Login: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  LowDiskSpace: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Markers: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Meeting: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Member: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  MessagingSystem: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Milestones: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  NamingConventionsError: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  NO_NOTIFICATIONS: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Notifications: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  OperationSuccess: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Onboarding: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Persona: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Phase: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Preferences: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Projects: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  ProjectOwner: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Prompts: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  RandomWalk: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Registration: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Sagas: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Snapshot: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  StateGovCities: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Tasks: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  success: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  TeamBuildingPhase: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Theme: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Toolbar: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Team: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  TeamManagement: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Todos: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  User: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  UserProfile: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  UserPreferences: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Validation: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Video: MessageCategory<string | ((errorType: string, details: string) => string)>;
-  Welcome: MessageCategory<string | ((userName: string) => string)>;
-  // Add more categories as needed
+  [category: string]: MessageCategory<string>;
 }
-
 
 
 const NOTIFICATION_MESSAGES: NotificationMessages = {
@@ -213,7 +153,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 
   // Calendar Events
   CalendarEvents: {
-    DEFAULT: "Error in Calendar Events (${errorType}): ${details}",
+    DEFAULT: "Error in Calendar Events",
 
     EVENTS_UPDATE_SUCCESS: "Updated Calendar Events",
     MILESTONES_UPDATE_SUCCESS: "Successfully updated milestone",
@@ -275,7 +215,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   DataAnalysis: {
-    DEFAULT: (errorType: string, details: string) => `Error in Data Analysis (${errorType}): ${details}`,
+    DEFAULT: `Error in Data Analysis `,
     FETCH_ERROR: "Error fetching data analysis. Please try again",
     UPLOAD_ERROR: "Error uploading data analysis. Please try again",
     UPDATE_ERROR: "Error updating data analysis. Please try again",
@@ -290,7 +230,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Details: {
-    DEFAULT: (errorType: string, details: string) => `Error in Details Service (${errorType}): ${details}`,
+    DEFAULT: `Error in Details Service`,
     ERROR: "Error fetching details. Please try again",
     UPDATE_DETAILS_ITEM_ERROR: "Error updating details item. Please try again",
     UPDATE_DETAILS_ITEM_SUCCESS: "Details item updated successfully",
@@ -349,7 +289,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   // Error and Authentication
 
   Error: {
-    DEFAULT: (errorType: string) => `An ${errorType} occurred.`,
+    DEFAULT: `An ${errorType} occurred.`,
     INVALID_CREDENTIALS: "Invalid credentials. Please try again",
     ERROR_UPDATING_DATA: "Error updating data. Please try again later",
     ERROR_REMOVING_DATA: "Error removing data. Please try again",
@@ -447,7 +387,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Info: {
-    DEFAULT: (errorType: string, details: string) => `Error in Action Manager (${errorType}): ${details}`,
+    DEFAULT: `Error in Action Manager`,
     GENERAATED_INFO_ITEMS_SUCCESS: "Info items generated successfully",
     GENERAATED_INFO_ITEMS_ERROR:
       "Error generating info items. Please try again",
@@ -519,7 +459,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   NamingConventionsError: {
-    DEFAULT: (errorType: string, details: string) => `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
+    DEFAULT: `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
 
     // New Error Messages for Naming Conventions
     INVALID_NAME_FORMAT:
@@ -534,7 +474,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Notifications: {
-    DEFAULT: (errorType: string, details: string) => `Error in Notifications (${errorType}): ${details}`,
+    DEFAULT: `Error in Notifications`,
     NOTIFICATION_SENT: "Notification sent successfully",
     NOTIFICATION_SENT_SUCCCESS: "Notification sent successfully",
     NOTIFICATION_SEND_FAILED:
@@ -562,7 +502,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Persona: {
-    DEFAULT: (errorType: string, details: string) => `Error in Personas (${errorType}): ${details}`,
+    DEFAULT: `Error in Personas`,
     WELCOME: "Welcome to the Persona Builder!",
     QUESTIONNAIRE_COMPLETE: "Thank you for completing the questionnaire!",
     BUILDER_CREATION_ERROR: "Error creating persona builder. Please try again",
@@ -643,7 +583,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Sagas: {
-    DEFAULT: (errorType: string, details: string) => `Error in Saga (${errorType}): ${details}`,
+    DEFAULT: `Error in Saga`,
     FETCHING_SAGA: "Fetching saga..",
     FETCHING_SAGA_ERROR: "Error fetching saga. Please try again",
     CREATING_SAGA: "Creating saga..",
@@ -663,7 +603,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Snapshot: {
-    DEFAULT: (errorType: string, details: string) => `Error in Snapshots (${errorType}): ${details}`,
+    DEFAULT: `Error in Snapshots`,
     FETCHING_SNAPSHOTS: "Fetching snapshots..",
     UPDATING_SNAPSHOT: "Updating snapshot..",
     FETCHING_SNAPSHOTS_ERROR: "Error fetching snapshots. Please try again",
@@ -673,7 +613,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     Error: "Error creating snapshot. Please try again",
   },
   StateGovCities: {
-    DEFAULT: (errorType: string, details: string) => `Error in "State/Government Cities (${errorType}): ${details}`,
+    DEFAULT: `Error in "State/Government Cities`,
     ERROR_FETCHING_CITIES:
       "Error fetching state/government cities. Please try again",
     SUCCESS_FETCHING_CITIES: "State/government cities fetched successfully",
@@ -683,8 +623,11 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 
     // Add more messages for the StateGovCities type
   },
+
+
+
   Tasks: {
-    DEFAULT: (errorType: string, details: string) => `Error in Tasks (${errorType}): ${details}`,
+    DEFAULT: `Error in Tasks`,
     TASK_ADDED: "Task added successfully",
     TASK_DELETED: "Task deleted successfully",
     TASK_UPDATED: "Task updated successfully",
@@ -701,20 +644,16 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     COMPLETE_ALL_TASKS_ERROR: "Error completing all tasks. Please try again",
     TASK_TOGGLE_ERROR: "Error toggling task status. Please try again",
 
-    success: {
-      userGenerated: "User-generated task was successful",
-      systemGenerated: "System-generated task was successful",
-    },
-    failure: {
-      userGenerated: "Error in user-generated task",
-      systemGenerated: "Error in system-generated task",
-    },
+    USER_GENERATED_SUCCESS: "User-generated task was successful",
+    SYSTEM_GENERATED_SUCCESS: "System-generated task was successful",
+
+    USER_GENERATED_ERROR: "Error in user-generated task",
+    SYSTEM_GENERATED_ERROR: "Error in system-generated task",
     // New Error Messages for Tasks
   },
 
   TeamBuildingPhase: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Team Building Phase (${errorType}): ${details}`,
+    DEFAULT: `Error in Team Building Phase`,
     FETCHING_TEAM_BUILDING_PHASE: "Fetching team building phase..",
     FETCHING_TEAM_BUILDING_PHASE_ERROR:
       "Error fetching team building phase. Please try again",
@@ -753,7 +692,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 
   // Team-related
   Team: {
-    DEFAULT:  (errorType: string, details: string) => `Error in Teams (${errorType}): ${details}`,
+    DEFAULT: `Error in Teams`,
     //success
     ASSIGN_TEAM_MEMBER_FAILURE:
       "Failed to assign team member. Please try again",
@@ -777,7 +716,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   TeamManagement: {
-    DEFAULT:  (errorType: string, details: string) => `Error in Teams (${errorType}): ${details}`,
+    DEFAULT: `Error in Teams`,
     //success
     ASSIGN_TEAM_MEMBER_FAILURE:
       "Failed to assign team member. Please try again",
@@ -791,7 +730,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Todos: {
-    DEFAULT: (errorType: string, details: string) =>  `Error in Tasks (${typeof errorType}): ${typeof details}`,
+    DEFAULT: `Error in Tasks (${typeof errorType}): ${typeof details}`,
     TODO_ADDED: "Todo added successfully",
     TODO_DELETED: "Todo deleted successfully",
     TODO_UPDATED: "Todo updated successfully",
@@ -847,7 +786,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Video: {
-    DEFAULT: (errorType: string, details: string) => `Error in Videos (${errorType}): ${details}`,
+    DEFAULT: `Error in Videos`,
     ADD_VIDEO_SUCCESS: "Video added successfully",
 
     UPLOAD_STARTED: "Video upload started",
@@ -885,23 +824,21 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
   // Welcome and Account
   Welcome: {
-    DEFAULT: (userName: string) => `Welcome, ${userName}!`,
+    DEFAULT: `Error in Welcome`,
     ACCOUNT_CREATED: "Your account has been successfully created",
     // Add more messages for the Welcome type
   },
   Token: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Tokens (${errorType}): ${details}`,
+    DEFAULT: `Error in Tokens`,
     TOKEN_STAKED: "Tokens successfully staked",
     TOKEN_TRANSFERRED: "Tokens transferred successfully",
     TOKEN_SUPPLY_CAPPED: "Token supply has reached its cap",
     INSUFFICIENT_FUNDS: "Insufficient funds for the operation",
   },
   // Token-related
-  
+
   TokenUtils: {
-    DEFAULT: (errorType: string, details: string) =>
-      `Error in Tokens (${errorType}): ${details}`,
+    DEFAULT: `Error in Tokens`,
     TOKEN_STAKED: "Tokens successfully staked",
     TOKEN_TRANSFERRED: "Tokens transferred successfully",
     TOKEN_SUPPLY_CAPPED: "Token supply has reached its cap",

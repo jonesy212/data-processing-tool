@@ -1,96 +1,180 @@
-import { Team } from '../components/models/teams/Team';
-import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
+import axiosInstance from "@/app/api/axiosInstance";
+import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
+import { AxiosError, AxiosResponse } from "axios";
+import dotProp from 'dot-prop';
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
+import { endpoints } from "./ApiEndpoints";
+import { handleApiError } from "./ApiLogs";
+import headersConfig from "./headers/HeadersConfig";
 
+// Define the API base URL
+const API_BASE_URL = dotProp.getProperty(endpoints, 'teams');
 
-
-
-
-export const fetchTeams = async (): Promise<Team[]> => {
-  try {
-    const response = await axiosInstance.get(endpoints.teams.list); // Use the list endpoint
-    return response.data.teams;
-  } catch (error) {
-    console.error('Error fetching teams:', error);
-    throw error;
-  }
-};
-
-
-export const getTeamMembersFromAPI = async (): Promise<Team[]> => {
-  try {
-    // Call the fetchTeams function from teamApi to get team members
-    const teamMembers = await fetchTeams();
-    return teamMembers;
-  } catch (error) {
-    console.error('Error fetching team members:', error);
-    throw error;
-  }
-};
-
-export const addTeam = async (newTeam: Team): Promise<void> => {
-  try {
-    await axiosInstance.post(endpoints.teams.add, newTeam); // Use the add endpoint
-  } catch (error) {
-    console.error('Error adding team:', error);
-    throw error;
-  }
-};
-
-export const removeTeam = async (teamId: number): Promise<void> => {
-  try {
-    await axiosInstance.delete(endpoints.teams.remove(teamId)); // Use the remove endpoint with teamId
-  } catch (error) {
-    console.error('Error removing team:', error);
-    throw error;
-  }
-};
-
-export const updateTeam = async (teamId: number, newTeam: Team): Promise<void> => {
-  try {
-    await axiosInstance.put(endpoints.teams.update(teamId), newTeam); // Use the update endpoint with teamId
-  } catch (error) {
-    console.error('Error updating team:', error);
-    throw error;
-  }
-};
-
-export const fetchTeam = async (teamId: number): Promise<void> => {
-  try {
-    const response = await axiosInstance.get(endpoints.teams.single(teamId)); // Use the single endpoint with teamId
-    return response.data.team;
-  } catch (error) {
-    console.error('Error fetching team:', error);
-    throw error;
-  }
-};
-
-export const createTeam = async (newTeam: Team): Promise<void> => {
-  try {
-    await axiosInstance.post(endpoints.teams.add, newTeam); // Use the add endpoint
-  } catch (error) {
-    console.error('Error creating team:', error);
-    throw error;
-  }
-};
-
-export const updateTeams = async (updatedTeams: Team[]): Promise<void> => { 
-  try {
-    const teamIds = updatedTeams.map(team => team.id);
-    await axiosInstance.put(endpoints.teams.updateTeams(teamIds), updatedTeams);
-  } catch (error) {
-    console.error('Error updating teams:', error);
-    throw error;
-  }
+// Define API notification messages
+interface TeamNotificationMessages {
+  FETCH_TEAMS_SUCCESS: string;
+  FETCH_TEAMS_ERROR: string;
+  ADD_TEAM_SUCCESS: string;
+  ADD_TEAM_ERROR: string;
+  REMOVE_TEAM_SUCCESS: string;
+  REMOVE_TEAM_ERROR: string;
+  UPDATE_TEAM_SUCCESS: string;
+  UPDATE_TEAM_ERROR: string;
+  FETCH_TEAM_MEMBERS_SUCCESS: string;
+  FETCH_TEAM_MEMBERS_ERROR: string;
+  FETCH_TEAM_DATA_SUCCESS: string;
+  FETCH_TEAM_DATA_ERROR: string;
+  // Add more keys as needed
 }
 
-export const deleteTeam = async (teamId: number): Promise<void> => {
-  try {
-    await axiosInstance.delete(endpoints.teams.remove(teamId)); // Use the remove endpoint with teamId
-  } catch (error) {
-    console.error('Error deleting team:', error);
-    throw error;
-  }
+const teamNotificationMessages: TeamNotificationMessages = {
+  FETCH_TEAMS_SUCCESS: NOTIFICATION_MESSAGES.Team.FETCH_TEAMS_SUCCESS,
+  FETCH_TEAMS_ERROR: NOTIFICATION_MESSAGES.Team.FETCH_TEAMS_ERROR,
+  ADD_TEAM_SUCCESS: NOTIFICATION_MESSAGES.Team.ADD_TEAM_SUCCESS,
+  ADD_TEAM_ERROR: NOTIFICATION_MESSAGES.Team.ADD_TEAM_ERROR,
+  REMOVE_TEAM_SUCCESS: NOTIFICATION_MESSAGES.Team.REMOVE_TEAM_SUCCESS,
+  REMOVE_TEAM_ERROR: NOTIFICATION_MESSAGES.Team.REMOVE_TEAM_ERROR,
+  UPDATE_TEAM_SUCCESS: NOTIFICATION_MESSAGES.Team.UPDATE_TEAM_SUCCESS,
+  UPDATE_TEAM_ERROR: NOTIFICATION_MESSAGES.Team.UPDATE_TEAM_ERROR,
+  FETCH_TEAM_MEMBERS_SUCCESS: NOTIFICATION_MESSAGES.Team.FETCH_TEAM_MEMBERS_SUCCESS,
+  FETCH_TEAM_MEMBERS_ERROR: NOTIFICATION_MESSAGES.Team.FETCH_TEAM_MEMBERS_ERROR,
+  FETCH_TEAM_DATA_SUCCESS: NOTIFICATION_MESSAGES.Team.FETCH_TEAM_DATA_SUCCESS,
+  FETCH_TEAM_DATA_ERROR: NOTIFICATION_MESSAGES.Team.FETCH_TEAM_DATA_ERROR,
+  // Add more properties as needed
 };
 
+class TeamApiService {
+  notify: (
+    id: string,
+    message: string,
+    data: any,
+    date: Date,
+    type: NotificationType
+  ) => void;
 
+  constructor(
+    notify: (
+      id: string,
+      message: string,
+      data: any,
+      date: Date,
+      type: NotificationType
+    ) => void
+  ) {
+    this.notify = notify;
+  }
+
+  private async requestHandler(
+    request: () => Promise<AxiosResponse>,
+    errorMessage: string,
+    successMessageId: keyof TeamNotificationMessages,
+    errorMessageId: keyof TeamNotificationMessages,
+    notificationData: any = null
+  ): Promise<AxiosResponse> {
+    try {
+      const response: AxiosResponse = await request();
+
+      // Manage headers in response
+      if (response.headers) {
+        headersConfig["Authorization"] = response.headers["authorization"];
+      }
+
+      if (successMessageId) {
+        const successMessage = teamNotificationMessages[successMessageId];
+        this.notify(
+          successMessageId,
+          successMessage,
+          notificationData,
+          new Date(),
+          "TeamSuccess" as NotificationType
+        );
+      }
+
+      return response;
+    } catch (error: any) {
+      handleApiError(error as AxiosError<unknown, any>, errorMessage);
+
+      if (errorMessageId) {
+        const errorMessage = teamNotificationMessages[errorMessageId];
+        this.notify(
+          errorMessageId,
+          errorMessage,
+          notificationData,
+          new Date(),
+          "TeamError" as NotificationType
+        );
+      }
+      throw error;
+    }
+  }
+
+  async fetchTeams(): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.get(`${API_BASE_URL}/teams`), // Adjust the endpoint URL
+      "Failed to fetch teams",
+      "FETCH_TEAMS_SUCCESS",
+      "FETCH_TEAMS_ERROR"
+    );
+  }
+
+  async addTeam(newTeam: any): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.post(`${API_BASE_URL}/teams`, newTeam), // Adjust the endpoint URL
+      "Failed to add team",
+      "ADD_TEAM_SUCCESS",
+      "ADD_TEAM_ERROR"
+    );
+  }
+
+  async removeTeam(teamId: number): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.delete(`${API_BASE_URL}/teams/${teamId}`), // Adjust the endpoint URL
+      "Failed to remove team",
+      "REMOVE_TEAM_SUCCESS",
+      "REMOVE_TEAM_ERROR"
+    );
+  }
+
+  async updateTeam(teamId: number, updatedTeam: any): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.put(`${API_BASE_URL}/teams/${teamId}`, updatedTeam), // Adjust the endpoint URL
+      "Failed to update team",
+      "UPDATE_TEAM_SUCCESS",
+      "UPDATE_TEAM_ERROR"
+    );
+  }
+
+  async fetchTeamMembers(teamId: number): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.get(`${API_BASE_URL}/teams/${teamId}/members`),
+      "Failed to fetch team members",
+      "FETCH_TEAM_MEMBERS_SUCCESS",
+      "FETCH_TEAM_MEMBERS_ERROR"
+    );
+  }
+  
+ // Update the fetchTeamData method in the TeamApiService class
+  async fetchTeamData(teamId: number): Promise<AxiosResponse> {
+    const fetchTeamDataPath = `${API_BASE_URL}.teams.fetchTeamData.${teamId}`;
+    if (dotProp.hasProperty(endpoints, fetchTeamDataPath)) {
+      const fetchTeamDataEndpoint = dotProp.getProperty(
+        endpoints,
+        fetchTeamDataPath
+      );
+      return await this.requestHandler(
+        () => axiosInstance.get(String(fetchTeamDataEndpoint)),
+        "Failed to fetch team data",
+        "FETCH_TEAM_DATA_SUCCESS",
+        "FETCH_TEAM_DATA_ERROR"
+      );
+    } else {
+      throw new Error(`The fetchTeamData endpoint is not defined.`);
+    }
+  }
+
+  // Additional team API methods can be added here...
+}
+
+// Export the TeamApiService instance
+const teamApiService = new TeamApiService(useNotification);
+export default teamApiService;

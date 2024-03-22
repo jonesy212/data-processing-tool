@@ -1,5 +1,5 @@
 import { CommunityData } from '@/app/components/models/CommunityData';
-import Team from '@/app/components/models/teams/Team';
+import {Team} from '@/app/components/models/teams/Team';
 import React from 'react';
 import ListGenerator from '@/app/generators/ListGenerator';
 import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';

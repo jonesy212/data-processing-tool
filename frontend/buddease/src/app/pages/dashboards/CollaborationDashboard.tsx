@@ -6,11 +6,12 @@ import { ChatRoom } from "@/app/components/communications";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import { useThemeConfig } from "@/app/components/hooks/userInterface/ThemeConfigContext";
 import { CollaborationProvider } from "@/app/components/phases/collaborationPhase/CollaborationContext";
+import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
 import ProjectTimelineDashboard from "@/app/components/projects/projectManagement/ProjectTimelineDashboard";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
 import { useState } from "react";
@@ -31,11 +32,22 @@ const CollaborationDashboard = () => {
       // Check if the user is authenticated before starting brainstorming
       if (auth.state.isAuthenticated) {
         // Example: Notify users about the start of brainstorming activity
-        notify("Brainstorming session started!", NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED ,new Date(),  "Ideation:Brainstorming");
+        notify(
+          "startBrainstorming",
+          "Brainstorming session started!",
+          NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED,
+          new Date(),
+          "BrainStormingSession" as NotificationType
+        );
         // You can also start the Stopwatch or perform other actions related to brainstorming
       } else {
         // Notify users about the need to log in before starting the activity
-        notify("Please log in to start the brainstorming session.", NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED ,new Date(),"Error");
+        notify(
+          "startBrainstormingErrorpa",
+          "Please log in to start the brainstorming session.",
+          NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED,
+          new Date(),
+          "AuthenticationError" as NotificationType);
       }
       // You can also start the Stopwatch or perform other actions related to brainstorming
     };
@@ -71,7 +83,13 @@ const CollaborationDashboard = () => {
           
           <h1 style={{ color: primaryColor }}>Collaboration Dashboard</h1>
           {/* Project Timeline Dashboard */}
-          <ProjectTimelineDashboard />
+            <ProjectTimelineDashboard />
+            
+
+
+          {/* Project Management Simulation */}
+          <ProjectManagementSimulation /> {/* Integrate the component here */}
+          
           {/* Button to open the Collaboration Panel */}
           <button onClick={openCollaborationPanel}>
             Create Collaboration Panel
@@ -133,7 +151,10 @@ const CollaborationDashboard = () => {
           <h1>Collaboration Dashboard</h1>
           {/* ChatRoom component to display chat */}
           <ChatRoom roomId="" limit={10} /> {/*Stopwatch */}
-          <Stopwatch />
+            <Stopwatch
+              startTime={new Date()}
+              endTime={new Date()}
+            />
           {/* Start Brainstorming Button */}
           <button onClick={startBrainstorming}>Start Brainstorming</button>
         </div>

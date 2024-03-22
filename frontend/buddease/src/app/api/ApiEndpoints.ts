@@ -136,6 +136,72 @@ export const endpoints: Endpoints = {
     update: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
     download: (documentId: string) => `${BASE_URL}/api/documents/downloadDocument/${documentId}`,
     // Add more document-related endpoints as needed
+
+    search: `${BASE_URL}/api/documents/search`, // Search Documents
+    filter: `${BASE_URL}/api/documents/filter`, // Filter Documents
+    upload: `${BASE_URL}/api/documents/upload`, // Upload Document
+    share: `${BASE_URL}/api/documents/share`, // Share Document
+    lock: `${BASE_URL}/api/documents/lock`, // Lock Document
+    unlock: `${BASE_URL}/api/documents/unlock`, // Unlock Document
+    archive: `${BASE_URL}/api/documents/archive`, // Archive Document
+    restore: `${BASE_URL}/api/documents/restore`, // Restore Document
+    move: `${BASE_URL}/api/documents/move`, // Move Document
+    copy: `${BASE_URL}/api/documents/copy`, // Copy Document
+    rename: `${BASE_URL}/api/documents/rename`, // Rename Document
+    changePermissions: `${BASE_URL}/api/documents/changePermissions`, // Change Document Permissions
+    // Add more document-related endpoints as needed
+
+
+    merge: `${BASE_URL}/api/documents/merge`, // Merge Documents
+    split: `${BASE_URL}/api/documents/split`, // Split Document
+    validate: `${BASE_URL}/api/documents/validate`, // Validate Document
+    encrypt: `${BASE_URL}/api/documents/encrypt`, // Encrypt Document
+    decrypt: `${BASE_URL}/api/documents/decrypt`, // Decrypt Document
+    trackChanges: `${BASE_URL}/api/documents/trackChanges`, // Track Document Changes
+    compare: `${BASE_URL}/api/documents/compare`, // Compare Documents
+    tag: `${BASE_URL}/api/documents/tag`, // Tag Documents
+    categorize: `${BASE_URL}/api/documents/categorize`, // Categorize Documents
+    customizeView: `${BASE_URL}/api/documents/customizeView`, // Customize Document View
+    comment: `${BASE_URL}/api/documents/comment`, // Comment on Document
+    mentionUser: `${BASE_URL}/api/documents/mentionUser`, // Mention User in Document
+    assignTask: `${BASE_URL}/api/documents/assignTask`, // Assign Task in Document
+    requestReview: `${BASE_URL}/api/documents/requestReview`, // Request Review of Document
+    approve: `${BASE_URL}/api/documents/approve`, // Approve Document
+    reject: `${BASE_URL}/api/documents/reject`, // Reject Document
+    requestFeedback: `${BASE_URL}/api/documents/requestFeedback`, // Request Feedback on Document
+    provideFeedback: `${BASE_URL}/api/documents/provideFeedback`, // Provide Feedback on Document
+    resolveFeedback: `${BASE_URL}/api/documents/resolveFeedback`, // Resolve Feedback on Document
+    collaborativeEditing: `${BASE_URL}/api/documents/collaborativeEditing`, // Collaborative Editing
+    smartTagging: `${BASE_URL}/api/documents/smartTagging`, // Smart Document Tagging
+    annotation: `${BASE_URL}/api/documents/annotation`, // Document Annotation
+    activityLogging: `${BASE_URL}/api/documents/activityLogging`, // Document Activity Logging
+    intelligentSearch: `${BASE_URL}/api/documents/intelligentSearch`, // Intelligent Document Search
+    createVersion: `${BASE_URL}/api/documents/createVersion`, // Create Document Version
+    revertVersion: `${BASE_URL}/api/documents/revertVersion`, // Revert to Document Version
+    viewHistory: `${BASE_URL}/api/documents/viewHistory`, // View Document History
+    compareVersions: `${BASE_URL}/api/documents/compareVersions`, // Document Version Comparison
+    grantAccess: `${BASE_URL}/api/documents/grantAccess`, // Grant Document Access
+    revokeAccess: `${BASE_URL}/api/documents/revokeAccess`, // Revoke Document Access
+    managePermissions: `${BASE_URL}/api/documents/managePermissions`, // Manage Document Permissions
+    initiateWorkflow: `${BASE_URL}/api/documents/initiateWorkflow`, // Initiate Document Workflow
+    automateTasks: `${BASE_URL}/api/documents/automateTasks`, // Automate Document Tasks
+    triggerEvents: `${BASE_URL}/api/documents/triggerEvents`, // Trigger Document Events
+    approvalWorkflow: `${BASE_URL}/api/documents/approvalWorkflow`, // Document Approval Workflow
+    lifecycleManagement: `${BASE_URL}/api/documents/lifecycleManagement`, // Document Lifecycle Management
+    connectExternalSystem: `${BASE_URL}/api/documents/connectExternalSystem`, // Connect with External System
+    synchronizeStorage: `${BASE_URL}/api/documents/synchronizeStorage`, // Synchronize with Cloud Storage
+    importFromExternal: `${BASE_URL}/api/documents/importFromExternal`, // Import from External Source
+    exportToExternal: `${BASE_URL}/api/documents/exportToExternal`, // Export to External System
+    generateReport: `${BASE_URL}/api/documents/generateReport`, // Generate Document Report
+    exportReport: `${BASE_URL}/api/documents/exportReport`, // Export Document Report
+    scheduleReport: `${BASE_URL}/api/documents/scheduleReport`, // Schedule Report Generation
+    customizeReport: `${BASE_URL}/api/documents/customizeReport`, // Customize Report Settings
+    backup: `${BASE_URL}/api/documents/backup`, // Backup Documents
+    retrieveBackup: `${BASE_URL}/api/documents/retrieveBackup`, // Retrieve Backup
+    redact: `${BASE_URL}/api/documents/redact`, // Document Redaction
+    accessControls: `${BASE_URL}/api/documents/accessControls`, // Document Access Controls
+    templates: `${BASE_URL}/api/documents/templates`, // Document Templates
+  
   },
 
   collaborationTools: {
@@ -153,7 +219,6 @@ export const endpoints: Endpoints = {
     startBrainstorming: `${BASE_URL}/api/collaboration/start-brainstorming`,
     endBrainstorming: `${BASE_URL}/api/collaboration/end-brainstorming`,
     createWhiteboard: `${BASE_URL}/api/collaboration/create-whiteboard`,
-    updateWhiteboard
     updateWhiteboard: (whiteboardId: number) =>
       `${BASE_URL}/api/collaboration/whiteboards/${whiteboardId}/update`,
     deleteWhiteboard: (whiteboardId: number) =>
@@ -497,6 +562,10 @@ export const endpoints: Endpoints = {
     selectedPersona: `${BASE_URL}/api/persona`,
   },
 
+  feedback: {
+    customizeFeedbackForm: `${BASE_URL}/api/customize_feedback_form`,
+  },
+
   projectOwner: {
     base: `${BASE_URL}/api/project/owner`, // Endpoint for project owner operations
     list: `${BASE_URL}/api/project/owner/list`, // Endpoint for listing projects owned by the user
@@ -726,6 +795,7 @@ export const endpoints: Endpoints = {
     list: `${BASE_URL}/api/teams`,
     single: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
     add: `${BASE_URL}/api/teams`,
+    fetchTeamData: (teamId: number) => `${BASE_URL}/api/teams/${teamId}/data`,
     remove: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
     update: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
     updateTeams: (teamIds: number[]) =>

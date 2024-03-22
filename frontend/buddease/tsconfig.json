@@ -35,6 +35,21 @@
       "@/videos/*": ["./src/app/components/video/*"],
       "@/hooks/*": ["./src/app/components/hooks/*"],
       "@/users/*": ["./src/app/components/users/*"],
+      "@/versions/*": ["./src/app/components/versions/*"],
+
+      // configs
+      "@/configs/*": ["./src/app/configs/*"],
+      "@/configs/appStructure/*": ["./src/app/configs/appStructure/*"],
+      "@/configs/appStructure/components/*": ["./src/app/configs/appStructure/components/*"],
+      "@/configs/appStructure/pages/*": ["./src/app/configs/appStructure/pages/*"],
+      "@/configs/appStructure/pages/onboarding/*": ["./src/app/configs/appStructure/pages/onboarding/*"],
+      "@/configs/appStructure/pages/dashboards/*": ["./src/app/configs/appStructure/pages/dashboards/*"],
+      "@/configs/appStructure/pages/forms/*": ["./src/app/configs/appStructure/pages/forms/*"],
+      "@/configs/appStructure/pages/layouts/*": ["./src/app/configs/appStructure/pages/layouts/*"],
+
+      // contexts
+      "@/contexts/*": ["./src/app/contexts/*"],
+ 
       // pages
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/dashboards/*": ["./src/app/pages/dashboards/*"],

@@ -1,4 +1,4 @@
-// FileType.ts
+// FileTypeEnum.ts
 import fs from "fs";
 // Define enums for file categories and types
 enum FileCategory {
@@ -20,14 +20,15 @@ enum FileCategory {
   EthereumPackage = "EthereumPackage", // Ethereum package files
   JWT = "JWT", // JSON Web Token files
   BlockchainData = "BlockchainData", // Blockchain data files
-  CryptoKey = "key", // Crypto key files
-  Wallet = "wallet", // Wallet files
-  Hash = "hash", // Cryptographic hash files
-  MerkleProof = "proof", // Merkle tree proof files
-  ENS = "ens", // Ethereum Name Service files
+  CryptoKey = "CryptoKey", // Crypto key files
+  Wallet = "Wallet", // Wallet files
+  Hash = "Hash", // Cryptographic hash files
+  MerkleProof = "MerkleProof", // Merkle tree proof files
+  ENS = "ENS", // Ethereum Name Service files
 }
+
 // Define enums for file types
-enum FileType {
+export enum FileTypeEnum {
   UI = "UI",
   Actions = "Actions",
   Saga = "Saga",
@@ -35,9 +36,13 @@ enum FileType {
   API = "API",
   Service = "Service",
   Dashboard = "Dashboard",
+  Document = "Document",
   Page = "Page",
   Data = "Data",
   Configs = "Configs",
+  DataVersionsConfig = "DataVersionsConfig",
+  FrontendStructure = "FrontendStructure",
+  UnknownType = "UnknownType",
 }
 
 // Define the list of features and their associated file categories
@@ -117,37 +122,37 @@ console.log(`Files for feature "${feature}" are complete: ${filesComplete}`);
 
 // Define a mapping of file names to their corresponding categories and types
 const fileMapping: {
-  [key: string]: { category: FileCategory; type: FileType };
+  [key: string]: { category: FileCategory; type: FileTypeEnum };
 } = {
-  UserComponent: { category: FileCategory.Component, type: FileType.UI },
-  UserUI: { category: FileCategory.Component, type: FileType.UI },
-  UserList: { category: FileCategory.Component, type: FileType.UI },
-  UserActions: { category: FileCategory.Redux, type: FileType.Actions },
-  UserSaga: { category: FileCategory.Redux, type: FileType.Saga },
-  UserSlice: { category: FileCategory.Redux, type: FileType.Slice },
-  UserAPI: { category: FileCategory.Redux, type: FileType.API },
-  UserService: { category: FileCategory.MobX, type: FileType.Service },
-  UserForm: { category: FileCategory.Component, type: FileType.UI },
-    UserProfile: { category: FileCategory.Component, type: FileType.UI },
-  ProjectDetails: {category: FileCategory.Component, type: FileType.UI},
-  UserDetails: { category: FileCategory.Component, type: FileType.UI },
-  UserCard: { category: FileCategory.Component, type: FileType.UI },
-  UserListActions: { category: FileCategory.Component, type: FileType.Actions },
-  RootSagas: { category: FileCategory.Redux, type: FileType.Saga },
-  RootStores: { category: FileCategory.Redux, type: FileType.Slice },
-  RootLayout: { category: FileCategory.Component, type: FileType.UI },
-  RootStoreComponent: { category: FileCategory.Component, type: FileType.UI },
-  UserStore: { category: FileCategory.MobX, type: FileType.Service },
+  UserComponent: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserUI: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserList: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserActions: { category: FileCategory.Redux, type: FileTypeEnum.Actions },
+  UserSaga: { category: FileCategory.Redux, type: FileTypeEnum.Saga },
+  UserSlice: { category: FileCategory.Redux, type: FileTypeEnum.Slice },
+  UserAPI: { category: FileCategory.Redux, type: FileTypeEnum.API },
+  UserService: { category: FileCategory.MobX, type: FileTypeEnum.Service },
+  UserForm: { category: FileCategory.Component, type: FileTypeEnum.UI },
+    UserProfile: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  ProjectDetails: {category: FileCategory.Component, type: FileTypeEnum.UI},
+  UserDetails: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserCard: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserListActions: { category: FileCategory.Component, type: FileTypeEnum.Actions },
+  RootSagas: { category: FileCategory.Redux, type: FileTypeEnum.Saga },
+  RootStores: { category: FileCategory.Redux, type: FileTypeEnum.Slice },
+  RootLayout: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  RootStoreComponent: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserStore: { category: FileCategory.MobX, type: FileTypeEnum.Service },
 };
 
 // Define the user structure by specifying the required file types
-const userStructure: FileType[] = [
-  FileType.UI,
-  FileType.Actions,
-  FileType.Saga,
-  FileType.Slice,
-  FileType.API,
-  FileType.Service,
+const userStructure: FileTypeEnum[] = [
+  FileTypeEnum.UI,
+  FileTypeEnum.Actions,
+  FileTypeEnum.Saga,
+  FileTypeEnum.Slice,
+  FileTypeEnum.API,
+  FileTypeEnum.Service,
 ];
 
 const fileExtensions: Record<FileCategory, string[]> = {

@@ -1,7 +1,7 @@
 // CommunityData.tsx
-import Project from "../projects/Project";
+import {Project} from "../projects/Project";
 import { Data } from "./data/Data";
-import Team from "./teams/Team";
+import {Team} from "./teams/Team";
 import { TeamMember } from "./teams/TeamMembers";
 
 

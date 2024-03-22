@@ -108,7 +108,7 @@ const useAssignEventStore = (): AssignEventStore => {
 
   const setDynamicNotificationMessage = (message: string) => {
     // Implement the logic for setting dynamic notification message
-    useNotification().showMessage(message); // Assuming useNotification() returns an object with a showMessage method
+    useNotification().showMessageWithType(message); // Assuming useNotification() returns an object with a showMessage method
   };
 
   const reassignUsersToEvents = (

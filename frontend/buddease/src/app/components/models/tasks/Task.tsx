@@ -2,13 +2,14 @@
 import { User } from "@/app/components/users/User";
 import { FC } from "react";
 import { Phase } from "../../phases/Phase";
+import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
-import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data } from "../data/Data";
-import { StatusType, TaskStatus, TeamStatus } from "../data/StatusType";
-import Team, { TeamDetails } from "../teams/Team";
+import { TaskStatus } from "../data/StatusType";
+import { Team, TeamDetails } from "../teams/Team";
 export type Idea = {
   id: string; // Unique identifier for the idea
   title: string; // Title or headline of the idea
@@ -16,9 +17,11 @@ export type Idea = {
   author: string; // Author or creator of the idea
   createdAt: Date; // Date and time when the idea was created
   tags: string[]; // Tags or categories associated with the idea
-  status: string; // Status of the idea (e.g., "pending", "approved", "rejected")
+  status?: AllStatus
   // Add more properties as needed to represent an idea
 };
+
+
 
 interface Task extends Data {
   id: string
@@ -29,11 +32,8 @@ interface Task extends Data {
   dueDate: Date;
   payload: any;
   type: "addTask" | "removeTask" | "bug" | "feature";
-  status:
-  | StatusType
-  | TaskStatus
-  | TeamStatus; // Use enums for status property
- priority: "low" | "medium" | "high";
+  status?: AllStatus
+  priority: "low" | "medium" | "high";
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;
@@ -54,11 +54,12 @@ interface Task extends Data {
   endDate: Date;
   isActive: boolean;
   tags: string[];
-  analysisType: string;
+  analysisType: AnalysisTypeEnum;
   analysisResults: any[];
   videoThumbnail: string;
   videoDuration: number;
   videoUrl: string;
+
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
@@ -117,8 +118,8 @@ export const tasksDataSource: Record<string, Task> = {
     endDate: new Date(), // Example value for endDate, a Date object
     isActive: true, // Example value for isActive
     tags: ["tag1", "tag2"], // Example value for tags, an array of strings
-    analysisType: "type", // Example value for analysisType
-    analysisResults: [], // Example value for analysisResults, an empty array
+    analysisType: {} as AnalysisTypeEnum, // Example value for analysisType
+    analysisResults: {} as DataAnalysisResult[], // Example value for analysisResults, an empty array
     videoThumbnail: "thumbnail.jpg", // Example value for videoThumbnail
     videoDuration: 60, // Example value for videoDuration
     videoUrl: "https://example.com/video", // Example value for videoUrl
@@ -168,7 +169,7 @@ export const tasksDataSource: Record<string, Task> = {
     endDate: new Date(), // Example value for endDate, a Date object
     isActive: true, // Example value for isActive
     tags: ["tag3", "tag4"], // Example value for tags, an array of strings
-    analysisType: "bug-analysis", // Example value for analysisType
+    analysisType: AnalysisTypeEnum.BUG, // Example value for analysisType
     analysisResults: [1, 2, 3], // Example value for analysisResults, an array of numbers
     videoThumbnail: "thumbnail2.jpg", // Example value for videoThumbnail
     videoDuration: 120, // Example value for videoDuration

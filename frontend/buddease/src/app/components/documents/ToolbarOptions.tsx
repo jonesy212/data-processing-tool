@@ -1,7 +1,7 @@
 import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
 import React, { useState } from "react";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
-import { DocumentType } from "./DocumentGenerator";
+import { DocumentTypeEnum } from "./DocumentGenerator";
 import ToolbarItem from "./ToolbarItem";
 import CustomModifier from "./CustomModifier";
 
@@ -17,7 +17,7 @@ export interface ToolbarOptionsProps {
   link?: boolean;
   image?: boolean;
   audio?: boolean;
-  type: DocumentType
+  type: DocumentTypeEnum
   onEditorStateChange: (newEditorState: any) => void;
   handleEditorStateChange: (newEditorState: EditorState) => void; // Updated prop name
 }

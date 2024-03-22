@@ -1,6 +1,7 @@
 // FuzzyMatch.ts
 import fuzzysort from 'fuzzysort';
 import { processTextWithSpaCy } from '../Inteigents/AutoGPTSpaCyIntegration';
+import { useAuth } from '../auth/AuthContext';
 
 // Define a type for your entities
 interface Entity {
@@ -16,12 +17,29 @@ export const fuzzyMatchEntities = async (
   entities: Entity[]
 ): Promise<Entity[]> => {
   try {
-    // Use spaCy to process the query for advanced NLP features
-    const processedQuery = await processTextWithSpaCy(query);
 
-    // Perform fuzzy search on the processed query
-    const results = fuzzysort.go(processedQuery, entities, { key: 'name' });
+       // Get the authentication state from the context
+       const { user } = useAuth()
 
+       // Check if the user is logged in
+       if (!user || !user.isLoggedIn) {
+         return [];
+       }
+   
+       // Get the app tree
+       const appTree = await getTree(); // Assuming getTree function is defined in AppTreeService
+   
+       // If there is no app tree, return an empty array
+       if (!appTree) {
+         return [];
+       }
+   
+       // Use spaCy to process the query for advanced NLP features
+       const processedQuery = await processTextWithSpaCy(query, appTree);
+   
+       // Perform fuzzy search on the processed query
+       const results = fuzzysort.go(processedQuery, entities, { key: 'name' });
+   
     // Return the matched entities
     return results.map((result) => result.obj);
   } catch (error) {

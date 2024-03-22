@@ -69,7 +69,7 @@ export const DocumentActions = {
   fetchDocumentsFailure: createAction<{ error: string }>("fetchDocumentsFailure"),
   
   // UserIdea Actions
-  selectUserIdea: createAction<number>("selectUserIdea"),
+  selectUserIdea: createAction<{id: string, type: string}>("selectUserIdea"),
   addUserIdea: createAction<UserIdea>("addUserIdea"),
   updateUserIdea: createAction<Partial<UserIdea>>("updateUserIdea"),
   deleteUserIdea: createAction<number>("deleteUserIdea"),

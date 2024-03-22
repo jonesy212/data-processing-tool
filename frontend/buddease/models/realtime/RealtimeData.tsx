@@ -40,7 +40,7 @@ const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
   });
 };
 
-const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch }) => {
+const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
   // Initial data can be an empty array or any initial state you want
   const initialData: RealtimeDataItem[] = [];
   const { error, handleError, clearError } = useErrorHandling(); // Initialize error handling

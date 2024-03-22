@@ -5,6 +5,7 @@ import { Data } from '../models/data/Data';
 import { LogData } from '../models/LogData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { NotificationType, NotificationTypeEnum } from './NotificationContext';
+import { AllStatus } from '../state/stores/DetailsListStore';
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -23,7 +24,7 @@ interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   content: string;
   type: NotificationType;
   updatedAt?: Date;
-  status?: "scheduled" | "tentative" | "inProgress" | "confirmed" | "cancelled" | "completed" | "pending" | undefined;
+  status?: AllStatus
   completionMessageLog: LogData;
   notificationType?: NotificationTypeEnum;
   sendStatus: SendStatus; // Add sendStatus property

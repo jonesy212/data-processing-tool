@@ -1,10 +1,13 @@
 // components/ResponsiveDesign.tsx
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
+
+// Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
   ariaLabel?: string;
   dataTip?: string;
@@ -12,7 +15,9 @@ interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
 let currentIndex: number; // Declare currentIndex before using it
 let indexToUpdate: number | null = null; // Declare the variable
 let newExample: ResponsiveExample | null = null; // Declare the variable
-const projectPath = getAppPath(); 
+
+const { versionNumber, appVersion } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
 
 const getButtonProps = ({ index }: { index: number }): CustomDivProps => {
   return {

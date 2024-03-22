@@ -1,5 +1,8 @@
 import RealtimeData from "../../../models/realtime/RealtimeData";
+import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { Data } from "../components/models/data/Data";
+import { CustomPhaseHooks } from "../components/phases/Phase";
+import { CalendarEvent } from "../components/state/stores/CalendarEvent";
 import { Snapshot } from "../components/state/stores/SnapshotStore";
 import { VideoData } from "../components/video/Video";
 import { BackendConfig } from "../configs/BackendConfig";
@@ -21,7 +24,6 @@ interface CacheResponse {
   realtimeData: RealtimeData;
   // Add other properties as needed
 }
-
 // Function to read cache data
 export const readCache = async (): Promise<CacheData> => {
   try {
@@ -38,26 +40,23 @@ export const readCache = async (): Promise<CacheData> => {
       backendStructure: data.backendStructure,
       backendConfig: data.backendConfig,
       realtimeData: data.realtimeData,
-      fetchData: function (userId: string, dispatch: DataAnalysisDispatch): Promise<void> {
-        throw new Error("Function not implemented.");
-      },
-      notificationBarPhaseHook: undefined,
-      darkModeTogglePhaseHook: undefined,
-      authenticationPhaseHook: undefined,
-      jobSearchPhaseHook: undefined,
-      recruiterDashboardPhaseHook: undefined,
-      teamBuildingPhaseHook: undefined,
-      brainstormingPhaseHook: undefined,
-      projectManagementPhaseHook: undefined,
-      meetingsPhaseHook: undefined,
-      ideationPhaseHook: undefined,
-      teamCreationPhaseHook: undefined,
-      productBrainstormingPhaseHook: undefined,
-      productLaunchPhaseHook: undefined,
-      dataAnalysisPhaseHook: undefined,
-      generalCommunicationFeaturesPhaseHook: undefined,
+      notificationBarPhaseHook: {} as AsyncHook,
+      darkModeTogglePhaseHook: {} as AsyncHook,
+      authenticationPhaseHook: {} as CustomPhaseHooks,
+      jobSearchPhaseHook: {} as CustomPhaseHooks,
+      recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
+      teamBuildingPhaseHook: {} as AsyncHook,
+      brainstormingPhaseHook: {} as AsyncHook,
+      projectManagementPhaseHook: {} as AsyncHook,
+      meetingsPhaseHook: {} as AsyncHook,
+      ideationPhaseHook: {} as CustomPhaseHooks,
+      teamCreationPhaseHook: {} as CustomPhaseHooks,
+      productBrainstormingPhaseHook: {} as CustomPhaseHooks,
+      productLaunchPhaseHook: {} as CustomPhaseHooks,
+      dataAnalysisPhaseHook: {} as CustomPhaseHooks,
+      generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks,
       fileType: "",
-      calendarEvent: undefined,
+      calendarEvent: {} as CalendarEvent,
       _id: "",
       id: "",
       title: "",
@@ -65,17 +64,14 @@ export const readCache = async (): Promise<CacheData> => {
       isActive: false,
       tags: [],
       phase: null,
-      then: function (callback: (newData: Snapshot<Data>) => void): void {
-        throw new Error("Function not implemented.");
-      },
-      analysisType: "",
+      analysisType: {} as AnalysisTypeEnum,
       analysisResults: [],
       videoData: {} as VideoData
     };
-
-    return cacheData;
+    return Promise.resolve(cacheData);
   } catch (error) {
     console.error('Error reading cache:', error);
     throw error;
   }
 };
+

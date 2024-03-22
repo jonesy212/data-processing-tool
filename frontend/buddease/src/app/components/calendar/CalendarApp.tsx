@@ -6,7 +6,7 @@ import CalendarDetails from "../models/data/CalendarDetails";
 import { DataDetails } from "../models/data/Data";
 import { CalendarStatus } from "../models/data/StatusType";
 import Team, { DataDetailsComponent, TeamDetails } from "../models/teams/Team";
-import { Progress } from "../models/tracker/ProgresBar";
+import { Progress } from "../models/tracker/ProgressBar";
 import { Project } from "../projects/Project";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { CalendarEvent } from "./CalendarContext";

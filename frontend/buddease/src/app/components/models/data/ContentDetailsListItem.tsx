@@ -34,8 +34,8 @@ const ContentDetailsListItem: React.FC<ContentDetailsListItemProps> = ({ item })
       <p>Description: {description || 'No description available'}</p>
       <p>Status: {status || 'Unknown'}</p>
       {renderParticipants()}
-      <p>Start Date: {startDate || 'Not specified'}</p>
-      <p>End Date: {endDate || 'Not specified'}</p>
+      <p>Start Date: { 'Not specified' || startDate }</p>
+      <p>End Date: { 'Not specified' || endDate }</p>
       {/* Render other details as needed */}
     </div>
   );

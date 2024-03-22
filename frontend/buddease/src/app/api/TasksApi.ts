@@ -69,6 +69,8 @@ export const completeAllTasks = async (): Promise<void> => {
   }
 };
 
+
+
 export const assignTaskToTeam = async (taskId: number, teamId: number): Promise<void> => {
   try {
     await axiosInstance.post(endpoints.tasks.assign(taskId, teamId));
@@ -77,6 +79,16 @@ export const assignTaskToTeam = async (taskId: number, teamId: number): Promise<
     throw error;
   }
 };
+
+export const assignTask = async (taskId: number, teamId: number): Promise<void> => {
+  try {
+    const response = await axiosInstance.post(endpoints
+      .tasks.assign(taskId, teamId));
+  } catch (error) {
+    console.error('Error assigning task to team:', error);
+    throw error;
+  }
+}
 
 export const unassignTask = async (taskId: number): Promise<void> => {
   try {

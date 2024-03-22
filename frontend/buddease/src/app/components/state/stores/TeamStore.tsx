@@ -7,7 +7,7 @@ import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import TeamData from "../../models/teams/TeamData";
-import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "../../support/NotificationContext";
 import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
@@ -16,6 +16,9 @@ import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 import { Phase } from "../../phases/Phase";
 import useVideoStore, { Video } from "./VideoStore";
 import { VideoData } from "../../video/Video";
+import { useNotification } from '@/app/components/support/NotificationContext';
+import { snapshotConfig } from "./SnapshotConfig";
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 
 
 interface CustomData extends Data {
@@ -173,13 +176,19 @@ const useTeamManagerStore = (): TeamManagerStore => {
       return;
     }
   
+    const  {notify}  = {} as SnapshotStoreConfig<Snapshot<Data>>
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot: SnapshotStore<Snapshot<Data>> = {
-      timestamp: new Date(), // Add a timestamp to the snapshot
-      setSnapshots(newSnapshots) {
-          
-      },
-    };
+
+
+// Create a snapshot of the current teams for the specified teamId
+  const teamSnapshot: SnapshotStore<Snapshot<Data>> = new SnapshotStore<Snapshot<Data>>(
+    snapshotConfig,
+    () => notify(
+      "teamSnapshot",
+      "Team Snapshot has been taken.",
+      new Date(),
+      "TeamSnapshot" as NotificationType
+    ));
   
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);
@@ -200,9 +209,9 @@ const useTeamManagerStore = (): TeamManagerStore => {
             ...assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds),
             ...videos,
           ],
-          analysisResults: dataAnalysisResults,
+          analysisResults: {} as DataAnalysisResult,
           videoData: {} as VideoData,
-          analysisType: [] = []
+          analysisType: ""
         },
       };
       snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
@@ -375,6 +384,8 @@ const useTeamManagerStore = (): TeamManagerStore => {
 
   // Add more methods or properties as needed
 
+
+  const useTeamManagerStore = 
   makeAutoObservable({
     teams,
     ...teams,
@@ -396,46 +407,21 @@ const useTeamManagerStore = (): TeamManagerStore => {
     completeAllTeamsSuccess,
     completeAllTeams,
     completeAllTeamsFailure,
-    NOTIFICATION_MESSAGE,
-    NOTIFICATION_MESSAGES,
-    setDynamicNotificationMessage,
-    getTeamId
-  });
-
-  return {
-    teams,
-    ...teams,
-    teamName,
-    teamDescription,
-    teamStatus,
-    assignedTeamMemberStore,
-    snapshotStore,
-    NOTIFICATION_MESSAGE,
-    NOTIFICATION_MESSAGES,
-    addTeamSuccess,
-    updateTeamName,
-    updateTeamData,
-    updateTeamDescription,
-    updateTeamStatus,
-    addTeam,
-    addTeams,
-    removeTeam,
-    removeTeams,
-    takeTeamSnapshot,
-    getTeamsData,
-    fetchTeamsSuccess,
-    fetchTeamsFailure,
-    fetchTeamsRequest,
-    completeAllTeamsSuccess,
-    completeAllTeams,
-    completeAllTeamsFailure,
     setDynamicNotificationMessage,
     getTeamId,
+    NOTIFICATION_MESSAGE,
+    NOTIFICATION_MESSAGES,
+    updateTeamData,
+    takeTeamSnapshot,
+    snapshotStore: snapshotStore,
+    getTeamsData,
     getTeamData
-    // Add more methods or properties as needed
-  };
+  });
+
+  return  useTeamManagerStore
 };
 
 export { useTeamManagerStore };
+
 
 export default CustomData

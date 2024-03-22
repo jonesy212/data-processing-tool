@@ -1,16 +1,10 @@
+import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosResponse } from 'axios';
-import { useNotification, NotificationType, NotificationTypeEnum } from '@/app/components/support/NotificationContext';
-import { handleApiError } from './ApiLogs';
+import { SimpleCalendarEvent, useCalendarContext } from '../components/calendar/CalendarContext';
 import { CalendarEvent } from '../components/state/stores/CalendarEvent';
-import { useCalendarContext } from '../components/calendar/CalendarContext';
-import clientApiService from './ApiClient';
-import { Data } from '../components/models/data/Data';
-import { Snapshot } from '../components/state/stores/SnapshotStore';
-import { Member } from '../components/models/teams/TeamMembers';
-import { StructuredMetadata } from '../configs/StructuredMetadata';
-import { VideoData } from '../components/video/Video';
 import UniqueIDGenerator from '../generators/GenerateUniqueIds';
-import { getDefaultDocumentOptions } from '../components/documents/DocumentOptions';
+import clientApiService from './ApiClient';
+import { handleApiError } from './ApiLogs';
 
 interface CalendarNotificationMessages {
   FETCH_CALENDAR_EVENTS_SUCCESS: string,
@@ -96,85 +90,65 @@ class CalendarApiService {
   }
 
   
-    async addCalendarEvent(newEvent: Omit<CalendarEvent, 'id'>): Promise<void> {
-    try {
-      await this.requestHandler(
-        () => clientApiService.createClientTask(newEvent),
-        'ADD_CALENDAR_EVENT_SUCCESS',
-        'ADD_CALENDAR_EVENT_ERROR'
-      );
   
-      // Assuming generateId() returns a valid ID
-      const newEventWithId: CalendarEvent = {
-        ...newEvent,
-        id: UniqueIDGenerator.generateID(
-          'generateCalendarId',
-          "{newEvent.name}",
+async  addCalendarEvent(newEvent: Omit<SimpleCalendarEvent, 'id'>): Promise<void> {
+  try {
+    await this.requestHandler(
+      () => clientApiService.createClientTask(newEvent),
+      'ADD_CALENDAR_EVENT_SUCCESS',
+      'ADD_CALENDAR_EVENT_ERROR'
+    );
 
-          NotificationTypeEnum.CreationSuccess
-        ),
-        status: '',
-        rsvpStatus: 'yes',
-        priority: undefined,
-        host: {} as Member,
-        teamMemberId: '',
-        title: '',
-        date: new Date(),
-        participants: [],
-        metadata: {} as StructuredMetadata,
-        then: function (callback: (newData: Snapshot<Data>) => void): void {
-          throw new Error('Function not implemented.');
-        },
-        _id: '',
-        analysisType: '',
-        analysisResults: [],
-        videoData: {} as VideoData,
-        content: '',
-        topics: [],
-        highlights: [],
-        files: [],
-        options: getDefaultDocumentOptions()
-      };
-  
-      // Assuming updateCalendarData is a function provided by useCalendarContext
-      const { updateCalendarData } = useCalendarContext();
-      updateCalendarData(
-        (prevData) => [...prevData, newEventWithId]
-      );
-    } catch (error) {
-      console.error('Error adding calendar event:', error);
-      throw error;
-    }
+    // Assuming generateId() returns a valid ID
+    const newEventWithId: SimpleCalendarEvent = {
+      ...newEvent,
+      id: UniqueIDGenerator.generateID(
+        'newCalendarEventSuccess',
+        "calendar-event",
+        "EventCreation" as NotificationType
+        
+      ),
+    };
+
+    // Assuming updateCalendarData is a function provided by useCalendarContext
+    const { updateCalendarData } = useCalendarContext();
+    updateCalendarData(
+      (prevData) => [...prevData, newEventWithId]
+    );
+  } catch (error) {
+    console.error('Error adding calendar event:', error);
+    throw error;
   }
-  
+}
 
+async  removeCalendarEvent(eventId: string): Promise<void> {
+  try {
+    // Assuming updateCalendarData is a function provided by useCalendarContext
+    const { updateCalendarData } = useCalendarContext();
+    updateCalendarData((prevData) => prevData.filter((event) => event.id !== eventId));
 
-  async removeCalendarEvent(eventId: string): Promise<void> {
-    try {
-      const { updateCalendarData } = useCalendarContext();
-      updateCalendarData((prevData) => prevData.filter((event) => event.id !== eventId));
-      // Assuming updateCalendarData is a function provided by useCalendarContext
-      // Remove the event from the server
-      await this.requestHandler(
-        () => clientApiService.removeCalendarEvent(Number(eventId)),
-        'REMOVE_CALENDAR_EVENT_SUCCESS',
-        'REMOVE_CALENDAR_EVENT_ERROR'
-      );
-    } catch (error) {
-      console.error('Error removing calendar event:', error);
-      throw error;
-    }
+    // Remove the event from the server
+    await this.requestHandler(
+      () => clientApiService.removeCalendarEvent(Number(eventId)),
+      'REMOVE_CALENDAR_EVENT_SUCCESS',
+      'REMOVE_CALENDAR_EVENT_ERROR'
+    );
+  } catch (error) {
+    console.error('Error removing calendar event:', error);
+    throw error;
   }
+}
+
   
   async updateCalendarEvent(eventId: string, newTitle: string): Promise<void> {
     try {
       await this.requestHandler(
-        () => clientApiService.updateCalendarEvent(eventId, newTitle),
-        'UPDATE_CALENDAR_EVENT_SUCCESS',
-        'UPDATE_CALENDAR_EVENT_ERROR'
+        () => clientApiService.updateCalendarEvent(Number(eventId), newTitle),
+        "UPDATE_CALENDAR_EVENT_SUCCESS",
+        "UPDATE_CALENDAR_EVENT_ERROR"
       );
     } catch (error) {
-      console.error('Error updating calendar event:', error);
+      console.error("Error updating calendar event:", error);
       throw error;
     }
   }

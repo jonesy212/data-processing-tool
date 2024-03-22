@@ -23,13 +23,13 @@ const useSnapshotManager = () => {
   const todoManagerStore = useTodoManagerStore();
   const taskManagerStore = useTaskManagerStore();
   const userManagedStore = userManagerStore();
-  const undoRedoStore = UndoRedoStore
+  const undoRedoStore = useUndoRedoStore
   useEffect(() => {
     // Fetch snapshots or perform any initialization logic
     todoManagerStore.batchFetchSnapshotsRequest({} as Record<string, Todo[]>);
     taskManagerStore.batchFetchSnapshotsRequest({} as Record<string, Task[]>);
     userManagedStore.batchFetchSnapshotsRequest({} as Record<string, User[]>);
-    use
+     
 
     fetchSnapshots();
     createSnapshot();
@@ -51,9 +51,10 @@ const useSnapshotManager = () => {
       todoManagerStore.createSnapshotSuccess({ snapshot });
       // Notify success
       notify(
+        "createSnapshotManagerSuccess",
         "Snapshot created successfully!",
         NOTIFICATION_MESSAGES.Generic.DEFAULT,
-        undefined,
+        new Date(),
         NotificationTypeEnum.OperationSuccess
       );
     } catch (error) {

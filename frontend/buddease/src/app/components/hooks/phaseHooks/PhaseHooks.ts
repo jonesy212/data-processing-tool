@@ -1,7 +1,10 @@
 // PhaseHooks.ts
 
 import userSettings from "@/app/configs/UserSettings";
+import configData from "@/app/configs/configData";
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { useEffect } from "react";
+import { ipfsConfig } from '../../../configs/ipfsConfig';
 import { useAuth } from "../../auth/AuthContext";
 import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
@@ -9,14 +12,11 @@ import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSett
 import { CustomPhaseHooks, Phase } from "../../phases/Phase";
 import {
   ExtendedDAppAdapter,
-  ExtendedDAppAdapterConfig,
-  ExtendedDappProps,
+  ExtendedDappProps
 } from "../../web3/dAppAdapter/IPFS";
 import createDynamicHook, {
   DynamicHookResult,
 } from "../dynamicHooks/dynamicHookGenerator";
-import configData from "@/app/configs/configData";
-import BrandingSettings from "@/app/libraries/theme/BrandingService";
 
 export interface PhaseHookConfig {
   name: string;

@@ -3,13 +3,14 @@ import { Idea, tasksDataSource } from "../../../models/tasks/Task";
 
 import useWebNotifications from "@/app/components/hooks/commHooks/useWebNotifications";
 import { Data } from "@/app/components/models/data/Data";
-import { Progress } from "@/app/components/models/tracker/ProgresBar";
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import Project from "@/app/components/projects/Project";
 import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { Comment } from "@/app/components/todos/Todo";
 import { User } from "@/app/components/users/User";
+import { VideoData } from "@/app/components/video/Video";
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { TaskLogger } from "@/app/pages/logging/Logger";
@@ -22,7 +23,6 @@ import { Task, TaskDetails } from "../../../models/tasks/Task";
 import { userManagerStore } from "../../stores/UserStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { useProjectManagerSlice } from "./ProjectSlice";
-import { VideoData } from "@/app/components/video/Video";
 
 const { notify } = useNotification();
 const { showNotification } = useWebNotifications();

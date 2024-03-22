@@ -2,13 +2,29 @@
 import { ExtendedData } from "@/app/utils/AppCacheManager";
 import AppCacheManagerExtended from "@/app/utils/AppCacheManagerExtended";
 import { makeAutoObservable } from "mobx";
+import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 
+
+const notify = useNotification().notify(
+  'Error occurred',
+  'Failed to fetch app tree',
+  {},
+  new Date(),
+  NotificationTypeEnum.Error
+)
 class AppCacheManagerStore {
   private appCacheManager: AppCacheManagerExtended;
 
-  constructor(baseUrl: string) {
-    this.appCacheManager = new AppCacheManagerExtended(baseUrl);
+  constructor(baseUrl: string, notify: (
+    id: string,
+    message: string,
+    data: any,
+    date: Date,
+    type: NotificationType
+  ) => void) {
+    this.appCacheManager = new AppCacheManagerExtended(baseUrl, notify);
     makeAutoObservable(this);
+  
   }
 
   async updateCache(key: string, data: ExtendedData): Promise<void> {

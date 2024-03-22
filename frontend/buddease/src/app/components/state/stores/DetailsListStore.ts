@@ -1,7 +1,7 @@
 // DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
-import {Team} from "../../models/teams/Team";
+import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import {
   NotificationType,
@@ -14,9 +14,9 @@ import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
-import { CalendarStatus, DataStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
+import { CalendarStatus, DataStatus, PriorityStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
-import { Progress } from "../../models/tracker/ProgresBar";
+import { Progress } from "../../models/tracker/ProgressBar";
 import { Project } from "../../projects/Project";
 import { Attachment } from "../../todos/Todo";
 const { notify } = useNotification();
@@ -31,7 +31,9 @@ export type AllStatus = StatusType
   | DataStatus
   | TeamStatus
   | DocumentStatus
+  | PriorityStatus
   | CalendarStatus;
+  
 
   ;
 
@@ -41,6 +43,7 @@ interface DetailsItem<T> extends DataDetails {
   title?: string;
   name?: string;
   isRecurring?: boolean;
+  type?: string; //todo verif we match types
   status?: AllStatus // Use enums for status property
   participants?: Member[];
   description?: string | null | undefined;
@@ -143,7 +146,7 @@ class DetailsListStoreClass implements DetailsListStore {
     );
 
     this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
-      {} as SnapshotStoreConfig<Snapshot<Data>>,
+      {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
       (message: string, content: any, date: Date, type: NotificationType) => {
         notify("", message, content, date, type);
       }

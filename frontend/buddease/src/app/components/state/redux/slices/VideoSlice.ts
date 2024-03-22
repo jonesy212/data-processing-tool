@@ -6,22 +6,40 @@ import { Data } from "@/app/components/models/data/Data";
 import { Snapshot } from "../../stores/SnapshotStore";
 import { VideoData } from "@/app/components/video/Video";
 import { implementThen } from '../../stores/CommonEvent';
-import { Comment } from "@/app/components/todos/Todo";
 import { WritableDraft } from "../ReducerGenerator";
 import { createDraft } from "immer";
 import { Channel } from "@/app/components/interfaces/chat/Channel";
 import { User } from "@/app/components/users/User";
 import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
+import { CustomComment } from "./BlogSlice";
+
+
+
+
+
+
+// Define the generateCaptions function
+const generateCaptions = (video: any): string[] => {
+  // Logic to generate captions for the video
+  // Replace this with your actual implementation
+  const captions: string[] = ["Caption 1", "Caption 2", "Caption 3"];
+  return captions;
+};
+
+
+
 interface VideoState {
   videos: Video[];
   currentVideoId: string | null;
-  comments: Comment[];
+  comments: (Comment | CustomComment)[];
   watchLater: string[];
   currentlyWatching: string[]; 
   watched: string[];
   subscribedChannels: string[];
   blockedUsers: string[];
   skipped: string[];
+  content: VideoData | null;
+  pinned: string[];
 }
 
 const initialState: VideoState = {
@@ -32,7 +50,10 @@ const initialState: VideoState = {
   watched: [],
   subscribedChannels: [],
   currentlyWatching: [],
-  blockedUsers: []
+  blockedUsers: [],
+  skipped: [],
+  content: null,
+  pinned: []
 };
 
 export const useVideoManagerSlice = createSlice({
@@ -213,7 +234,7 @@ export const useVideoManagerSlice = createSlice({
     },
    
    
-    deleteVideoComment: (state, action: PayloadAction<{ videoId: string, commentId: string }>) => {
+    deleteVideoComment: (state, action: PayloadAction<{ videoId: string, commentId: WritableDraft<string> }>) => {
       const { videoId, commentId } = action.payload;
       const video = state.videos.find(video => video.id === videoId);
       if (video) {
@@ -221,6 +242,7 @@ export const useVideoManagerSlice = createSlice({
         video.comments = video.comments?.filter(comment => comment.id !== commentId);
       }
     },
+    
     
     editVideoComment: (state, action: PayloadAction<{ videoId: string, commentId: string, updatedComment: string }>) => {
       const { videoId, commentId, updatedComment } = action.payload;
@@ -355,7 +377,7 @@ export const useVideoManagerSlice = createSlice({
     },
 
 
-// Fixing the types for analyzeVideoContent and extractKeyFrames reducers
+    // Fixing the types for analyzeVideoContent and extractKeyFrames reducers
     analyzeVideoContent: (state, action: PayloadAction<{ videoId: string, analysis: string }>) => {
       const { videoId, analysis } = action.payload;
       const video = state.videos.find(video => video.id === videoId);
@@ -369,66 +391,399 @@ export const useVideoManagerSlice = createSlice({
 
 
     extractKeyFrames: (state, action: PayloadAction<{ videoId: string, keyFrames: string[] }>) => {
-  const { videoId, keyFrames } = action.payload;
-  const video = state.videos.find(video => video.id === videoId);
-  if (video) {
-    video.keyFrames = keyFrames;
+      const { videoId, keyFrames } = action.payload;
+      const video = state.videos.find(video => video.id === videoId);
+      if (video) {
+        video.keyFrames = keyFrames;
+      }
+    },
+
+    generateVideoSummary: (state, action: PayloadAction<{ videoId: string, videos: Video[] }>) => {
+      const { videoId, videos } = action.payload;
+      const video = videos.find(video => video.id === videoId);
+      if (video) {
+        video.summary = `Summary for video "${video.title}" generated.`;
+      }
+    },
+
+
+    autoGenerateVideoCaptions: (state, action: PayloadAction<{ videoId: string }>) => {
+      const { videoId } = action.payload;
+      const video = state.videos.find(video => video.id === videoId);
+      if (video) {
+        // Logic to automatically generate captions for the video with the given videoId
+        const generatedCaptions = generateCaptions(video); // Replace generateCaptions with your actual logic
+        video.captions = generatedCaptions;
+      }
+    },
+
+
+
+
+    detectEmotionsInVideo: (state, action: PayloadAction<{ videoId: string }>) => {
+      const { videoId } = action.payload;
+      const video = state.videos.find(video => video.id === videoId);
+      if (video) {
+        // Logic to detect emotions in the video with the given videoId
+        video.emotions = "Emotions detected.";
+      }
+    },
+
+    createVideoClips: (state, action: PayloadAction<{ videoId: string, startTime: number, endTime: number }>) => {
+      const { videoId, startTime, endTime } = action.payload;
+      const video = state.videos.find(video => video.id === videoId);
+      if (video) {
+        // Logic to create video clips from the video with the given videoId, startTime, and endTime
+        video.clips = `Video clips created from ${startTime} to ${endTime}.`;
+      }
+    },
+
+    compileVideoHighlights: (state, action: PayloadAction<{ videoId: string, highlightTimes: number[] }>) => {
+      const { videoId, highlightTimes } = action.payload;
+      const video = state.videos.find(video => video.id === videoId);
+      if (video) {
+        // Logic to compile video highlights from the video with the given videoId and highlightTimes
+        video.highlights = `Video highlights compiled at ${highlightTimes.join(', ')}.`;
+      }
+    },
+
+    integrateAREffects: {
+      reducer: (state, action: PayloadAction<{ videoId: string, effects: string[] }>) => {
+        const { videoId, effects } = action.payload;
+        // Find the video with the given videoId and integrate AR effects
+        state.videos = state.videos.map(video => {
+          if (video.id === videoId) {
+            // Create a copy of the video object to avoid mutating the original state
+            const updatedVideo = { ...video };
+            // Logic to integrate AR effects into the video
+            updatedVideo.effects = `AREffects integrated into the video with the following effects: ${effects.join(', ')}.`;
+            return updatedVideo;
+          }
+          return video;
+        });
+      },
+      prepare: (videoId: string, effects: string[]) => ({
+        payload: { videoId, effects }
+      })
+    },
+
+    virtualCollaborationSpaces: (state, action: PayloadAction<{ videoId: string, spaces: string[] }>) => {
+      // Extract videoId and spaces from the action payload
+      const { videoId, spaces } = action.payload;
+  
+      // Find the video with the given videoId in the state
+      const video = state.videos.find(video => video.id === videoId);
+  
+      // Check if the video with the given videoId exists
+      if (video) {
+        // Integrate virtual collaboration spaces into the video
+        // Concatenate the spaces array into a string with comma separation
+        const integratedSpaces = spaces.join(', ');
+  
+        // Update the video object with the integrated virtual collaboration spaces
+        video.spaces = `Virtual collaboration spaces integrated into the video with the following spaces: ${integratedSpaces}.`;
+      }
+    },
+
+    // Function to integrate virtual collaboration spaces into a video
+    integrateVirtualCollaborationSpaces: (
+      state,
+      action: PayloadAction<{ videos: Video[], videoId: string, spaces: string[] }>
+    ): WritableDraft<VideoState> => {
+      // Extract necessary data from the action payload
+      const { videos, videoId, spaces } = action.payload;
+
+      // Find the video with the specified videoId in the videos array
+      const videoToUpdate = videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate virtual collaboration spaces into the video
+        videoToUpdate.spaces = `Virtual collaboration spaces integrated into the video with the following spaces: ${spaces.join(', ')}.`;
+      }
+
+      // Return the updated state
+      return state;
+    },
+
+
+
+    // Function to integrate an immersive 360 degree view into a video
+    immersive360DegreeView: (
+      state,
+      action: PayloadAction<{ videoId: string, view: string }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, view } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate the immersive 360 degree view into the video
+        videoToUpdate.view = `Immersive 360 degree view integrated into the video with the following view: ${view}.`;
+      }
+    },
+
+
+    // Function to integrate personalized video recommendations into a video
+    personalizedVideoRecommendations: (
+      state,
+      action: PayloadAction<{ videoId: string, recommendations: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, recommendations } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate personalized video recommendations into the video
+        videoToUpdate.recommendations = `Personalized video recommendations integrated into the video with the following recommendations: ${recommendations.join(', ')}.`;
+      }
+    },
+
+
+    // Function to integrate interactive video polls into a video
+    interactiveVideoPolls: (
+      state,
+      action: PayloadAction<{ videoId: string, polls: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, polls } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate interactive video polls into the video
+        videoToUpdate.polls = `Interactive video polls integrated into the video with the following polls: ${polls.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+
+    // Function to integrate gamified video quizzes into a video
+    gamifiedVideoQuizzes: (
+      state,
+      action: PayloadAction<{ videoId: string, quizzes: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, quizzes } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate gamified video quizzes into the video
+        videoToUpdate.quizzes = `Gamified video quizzes integrated into the video with the following quizzes: ${quizzes.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+
+
+    // Function to integrate live stream video sessions into a video
+    liveStreamVideoSessions: (
+      state,
+      action: PayloadAction<{ videoId: string, sessions: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, sessions } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate live stream video sessions into the video
+        videoToUpdate.sessions = `Live stream video sessions integrated into the video with the following sessions: ${sessions.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+
+
+    // Function to integrate AI-powered video editing into a video
+    AIpoweredVideoEditing: (
+      state,
+      action: PayloadAction<{ videoId: string, editing: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, editing } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate AI-powered video editing into the video
+        videoToUpdate.editing = `AI powered video editing integrated into the video with the following editing: ${editing.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+
+    blockchainVerifiedVideoAuthenticity(state, action: PayloadAction<{ videoId: string, authenticity: string[] }>) {
+      const { videoId, authenticity } = action.payload;
+      const video = state.videos.find(video => video.id === videoId);
+      if (video) {
+        // Logic to integrate blockchain verified video authenticity into the video with the given videoId
+        video.authenticity = `Blockchain verified video authenticity integrated into the video with the following authenticity: ${authenticity.join(', ')}.`;
+      }
+    },
+
+
+    // Function to integrate time-stamped annotations into a video
+    timeStampedAnnotations: (
+      state,
+      action: PayloadAction<{ videoId: string, annotations: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, annotations } = action.payload;
+
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate time-stamped annotations into the video
+        videoToUpdate.annotations = `Time stamped annotations integrated into the video with the following annotations: ${annotations.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+
+    holographicVideoProjection: (
+      state,
+      action: PayloadAction<{ videoId: string, projection: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, projection } = action.payload;
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate holographic video projection into the video
+        videoToUpdate.projection = `Holographic video projection integrated into the video with the following projection: ${projection.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+    sentimentAnalysisInVideos: (
+      state,
+      action: PayloadAction<{ videoId: string, sentiment: string[] }>
+    ): void => {
+      // Extract necessary data from the action payload
+      const { videoId, sentiment } = action.payload;
+      // Find the video with the specified videoId in the state
+      const videoToUpdate = state.videos.find(video => video.id === videoId);
+      // Check if the video with the given videoId exists
+      if (videoToUpdate) {
+        // Integrate sentiment analysis into the video
+        videoToUpdate.sentiment = `Sentiment analysis integrated into the video with the following sentiment: ${sentiment.join(', ')}.`;
+      } else {
+        // Log a message if the video with the given videoId is not found
+        console.log("Video not found");
+      }
+    },
+
+    autoGenerateVideoTrailers: (
+      state,
+      action: PayloadAction<{ videoId: string, trailer: string[] }>
+    ): VideoState => {
+      const { videoId, trailer } = action.payload;
+      // Find the video with the given videoId
+      const updatedVideos = state.videos.map(video => {
+        if (video.id === videoId) {
+          // Create a copy of the video object to avoid mutating the original state
+          const updatedVideo = { ...video };
+          // Logic to integrate auto-generated video trailers into the video
+          updatedVideo.trailer = `Auto-generated video trailers integrated into the video with the following trailer: ${trailer.join(', ')}.`;
+          return updatedVideo;
+        }
+        return video;
+      });
+      return { ...state, videos: updatedVideos };
+    },
+    
+    predictiveAnalyticsForVideoEngagement: (
+      state,
+      action: PayloadAction<{ videoId: string, engagement: string[] }>
+    ): VideoState => {
+      const { videoId, engagement } = action.payload;
+      // Find the video with the given videoId
+      const updatedVideos = state.videos.map(video => {
+        if (video.id === videoId) {
+          // Create a copy of the video object to avoid mutating the original state
+          const updatedVideo = { ...video };
+          // Logic to integrate predictive analytics for video engagement into the video
+          updatedVideo.engagement = `Predictive analytics for video engagement integrated into the video with the following engagement: ${engagement.join(', ')}.`;
+          return updatedVideo;
+        }
+        return video;
+      });
+      return { ...state, videos: updatedVideos };
+    },
+    
+    adaptiveBitrateStreaming: (
+      state,
+      action: PayloadAction<{ videoId: string, streaming: string[] }>
+    ): VideoState => {
+      const { videoId, streaming } = action.payload;
+      // Find the video with the given videoId
+      const updatedVideos = state.videos.map(video => {
+        if (video.id === videoId) {
+          // Create a copy of the video object to avoid mutating the original state
+          const updatedVideo = { ...video };
+          // Logic to integrate adaptive bitrate streaming into the video
+          updatedVideo.streaming = `Adaptive bitrate streaming integrated into the video with the following streaming: ${streaming.join(', ')}.`;
+          return updatedVideo;
+        }
+        return video;
+      });
+      return { ...state, videos: updatedVideos };
+    },
+    
+
+    VRbasedVideoConferencing: (
+      state,
+      action: PayloadAction<{ videoId: string, conferencing: string[] }>
+    ): VideoState => {
+    
+      const { videoId, conferencing } = action.payload;
+      // Find the video with the given videoId
+      const updatedVideos = state.videos.map(video => {
+        if (video.id === videoId) {
+          // Create a copy of the video object to avoid mutating the original state
+          const updatedVideo = { ...video };
+          // Logic to integrate VR-based video conferencing into the video
+          updatedVideo.conferencing = `VR-based video conferencing integrated into the video with the following conferencing: ${conferencing.join(', ')}.`;
+          return updatedVideo;
+        }
+        return video;
+      });
+      
+      // Return the updated state
+      return { ...state, videos: updatedVideos };
+    },    
   }
-},
-
-generateVideoSummary: (state, action: PayloadAction<{ videoId: string, videos: Video[] }>) => {
-  const { videoId, videos } = action.payload;
-  const video = videos.find(video => video.id === videoId);
-  if (video) {
-    video.summary = `Summary for video "${video.title}" generated.`;
-  }
-},
-
-autoGenerateVideoCaptions: (state, action: PayloadAction<{ videoId: string }>) => {
-  const { videoId } = action.payload;
-  const video = state.videos.find(video => video.id === videoId);
-  if (video) {
-    // Logic to automatically generate captions for the video with the given videoId
-    const generatedCaptions = generateCaptions(video); // Replace generateCaptions with your actual logic
-    video.captions = generatedCaptions;
-  }
-},
-
-
-
-
-detectEmotionsInVideo: (state, action: PayloadAction<{ videoId: string }>) => {
-  const { videoId } = action.payload;
-  const video = state.videos.find(video => video.id === videoId);
-  if (video) {
-    // Logic to detect emotions in the video with the given videoId
-    video.emotions = "Emotions detected.";
-  }
-},
-
-createVideoClips: (state, action: PayloadAction<{ videoId: string, startTime: number, endTime: number }>) => {
-  const { videoId, startTime, endTime } = action.payload;
-  const video = state.videos.find(video => video.id === videoId);
-  if (video) {
-    // Logic to create video clips from the video with the given videoId, startTime, and endTime
-    video.clips = `Video clips created from ${startTime} to ${endTime}.`;
-  }
-},
-
-compileVideoHighlights: (state, action: PayloadAction<{ videoId: string, highlightTimes: number[] }>) => {
-  const { videoId, highlightTimes } = action.payload;
-  const video = state.videos.find(video => video.id === videoId);
-  if (video) {
-    // Logic to compile video highlights from the video with the given videoId and highlightTimes
-    video.highlights = `Video highlights compiled at ${highlightTimes.join(', ')}.`;
-  }
-},
-
-
-
-
-    // Add more video-related actions as needed
-  },
 
 });
 
@@ -479,8 +834,7 @@ export const {
   createVideoClips,
   compileVideoHighlights,
 
-
-
+  // Advanced Video Processing and Features
   integrateAREffects,
   virtualCollaborationSpaces,
   immersive360DegreeView,

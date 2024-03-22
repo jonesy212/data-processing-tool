@@ -5,19 +5,16 @@ import React, { useEffect, useState } from "react";
 import { useCalendarContext } from "../calendar/CalendarContext";
 import DynamicContent from "../documents/DynamicContent";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
-import ProgressBar from "../models/tracker/ProgresBar";
+import ProgressBar from "../models/tracker/ProgressBar";
 import { Tracker } from "../models/tracker/Tracker";
 import useNotificationManagerService, { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import { PromptPageProps } from "../prompts/PromptPage";
+import { initialState } from "../state/redux/slices/RootSlice";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
 import NotificationManager from "../support/NotificationManager";
-import useIdleTimeout from "./commHooks/useIdleTimeout";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
-import { initialState } from "../state/redux/slices/RootSlice";
-import { NotificationTypeEnum, useNotification } from "../support/NotificationContext";
-import Logger from "@/app/pages/logging/Logger";
 
 
 interface HooksObject {

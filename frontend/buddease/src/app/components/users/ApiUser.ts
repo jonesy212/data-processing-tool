@@ -25,7 +25,7 @@ const { userId } = useParams(); // Extract userId from URL params
 // Convert userId to a number
 const parsedUserId = Number(userId);
 // Calling API_BASE_URL.single to get the URL string
-const url: string | undefined = dotProp.getProperty(API_BASE_URL, 'single', [parsedUserId]) as string | undefined;
+export const url: string | undefined = dotProp.getProperty(API_BASE_URL, 'single', [parsedUserId]) as string | undefined;
 
 // Dispatching the action with the correct userId
 dispatch(UserActions.fetchUserRequest({ userId: parsedUserId }));

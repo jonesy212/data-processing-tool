@@ -1,7 +1,11 @@
 // NotificationContext.tsx
 import { createContext, useContext } from "react";
+import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import { PriorityTypeEnum } from "../models/data/StatusType";
 import { NotificationData } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
+ 
+
 
 type CustomNotificationType = "RandomDismiss";
 
@@ -15,6 +19,7 @@ export enum NotificationTypeEnum {
   CalendarID = "CalendarID",
   CalendarNotification = "CalendarNotification",
   ChatMention = "ChatMention",
+  CommentID = "CommentID",
   ContributionID = "ContributionID",
   CreationSuccess = "CreationSuccess",
   CustomNotification1 = "CustomNotification1",
@@ -39,6 +44,7 @@ export enum NotificationTypeEnum {
   Milestone = "Milestone",
   NewChatMessage = "NewChatMessage",
   NewFeatureAvailable = "NewFeatureAvailable",
+  OperationStart = "OperationStart",
   OperationError = "OperationError",
   OperationSuccess = "OperationSuccess",
 
@@ -65,7 +71,8 @@ export enum NotificationTypeEnum {
 export interface NotificationContextProps {
   sendNotification: (
     type: NotificationType,
-    userName?: string | number
+    userName?: string | number,
+    sendComment?: string,
   ) => void;
   addNotification: (notification: NotificationData) => void;
   notify: (
@@ -78,7 +85,39 @@ export interface NotificationContextProps {
 
   notifications: NotificationData[];
   // Add more notification functions as needed
-  showMessage: (message: string) => void;
+  showMessageWithType: (message: string) => void;
+  showSuccessNotification: (
+    id: string,
+    message: string,
+    content: any,
+    date?: Date | undefined,
+    type?: NotificationType
+  ) => Promise<void>,
+  showErrorNotification: (
+    id: string,
+    message: string,
+    content: any,
+    date?: Date | undefined,
+    type?: NotificationType
+  ) => Promise<void>
+  actions?: {
+    showSuccessNotification: (
+      id: string,
+      message: string,
+      content: any,
+      date?: Date | undefined,
+      type?: NotificationType
+    ) => Promise<void>;
+    showErrorNotification: (
+      id: string,
+      message: string,
+      content: any,
+      date?: Date | undefined,
+      type?: NotificationType
+    ) => Promise<void>;
+    dismiss?: (id: string) => void;
+    dismissAll?: () => void;
+  }
 }
 
 
@@ -92,8 +131,9 @@ const DefaultNotificationContext: NotificationContextProps = {
   addNotification: () => {},
   notify: async () => {}, // Correct TypeScript type mismatches
   notifications: [], // Initialize notifications as an empty array
-  showMessage: () => { }, // Placeholder function
-  
+  showMessageWithType: () => { }, // Placeholder function
+  showSuccessNotification: async () => { },
+  showErrorNotification: async () => { },
 };
 
 
@@ -101,7 +141,8 @@ const DefaultNotificationContext: NotificationContextProps = {
 export interface NotificationContextProps {
   sendNotification: (
     type: NotificationType,
-    userName?: string | number
+    userName?: string | number,
+    sendComment?: string
   ) => void;
   addNotification: (notification: NotificationData) => void;
   notify: (
@@ -129,13 +170,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     notificationStore?.addNotification(notification);
   };
 
-  const notify = (type: NotificationType, userName?: string | number) => {
-    sendNotification(type, userName);
+  const notify = (type: NotificationType, userName?: string | number, sendComment?: string) => {
+    sendNotification(type, userName, sendComment);
   };
 
   const sendNotification = (
     type: NotificationType,
-    userName?: string | number
+    userName?: string | number,
+    sendComment?: string
   ) => {
     const message = generateNotificationMessage(type, userName);
 
@@ -189,6 +231,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+
 export const useNotification = (): NotificationContextProps => {
   const context = useContext(NotificationContext);
   if (!context) {
@@ -198,12 +241,24 @@ export const useNotification = (): NotificationContextProps => {
   }
   // Complete context with same properties and methods
   return {
+    
     sendNotification: context.sendNotification,
     addNotification: context.addNotification,
     notify: context.notify,
     notifications: context.notifications || [],
-    showMessage: context.showMessage,
+    showMessageWithType: context.showMessageWithType,
+    showSuccessNotification: context.showSuccessNotification,
+    showErrorNotification: context.showErrorNotification,
+    actions: {
+      showSuccessNotification: context.showSuccessNotification,
+      showErrorNotification: context.showErrorNotification,
+      // Add other notification actions as needed
+    },
   };
 };
-export type NotificationType = NotificationTypeEnum | CustomNotificationType;
+export type NotificationType =
+  NotificationTypeEnum
+  | DocumentTypeEnum
+  | PriorityTypeEnum
+  | CustomNotificationType;
 export default DefaultNotificationContext

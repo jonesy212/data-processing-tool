@@ -1,5 +1,6 @@
 // Search.tsx
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
 import React, { useEffect, useState } from "react";
 import { useSearch } from "./SearchContext";
@@ -34,6 +35,9 @@ const globalDocumentData: DocumentData[] = [
     highlights: ["highlighted phrase 1", "tagged item 2"],
     topics: ["topic 1", "topic 2"],
     files: [],
+    keywords: ["keyword 1", "keyword 2"],
+    options: getDefaultDocumentOptions(),
+    documentType: DocumentTypeEnum.Draft,
   },
   // Add more document data as needed
 ];

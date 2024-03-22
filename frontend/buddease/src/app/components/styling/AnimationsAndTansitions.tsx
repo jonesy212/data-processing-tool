@@ -7,6 +7,8 @@ export interface AnimatedComponentProps {
   loopDuration?: number; // Duration of each loop animation (in milliseconds)
   loopLength?: number; // Number of times the animation should loop
   repeat?: boolean; // Whether the animation should repeat indefinitely
+  animationType?: string; // Animation type prop
+  duration?: number; // Animation duration prop
 
 }
 

@@ -3,11 +3,16 @@ import chokidar from "chokidar";
 import * as fs from "fs";
 import * as path from "path";
 import getAppPath from "../../../../appPath";
+import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 
 interface AppStructureItem {
   path: string;
   content: string;
 }
+
+
+
+const { versionNumber, appVersion } = getCurrentAppInfo();
 
 export default class AppStructure {
   private structure: Record<string, AppStructureItem> = {};
@@ -15,8 +20,8 @@ export default class AppStructure {
   constructor(type: "backend" | "frontend") {
     const projectPath =
       type === "backend"
-        ? getAppPath()
-        : path.join(getAppPath(), "datanalysis/frontend");
+        ? getAppPath(versionNumber, appVersion)
+        : path.join(getAppPath(versionNumber, appVersion), "datanalysis/frontend");
     this.traverseDirectory(projectPath, type);
 
     // Use chokidar to watch for file changes

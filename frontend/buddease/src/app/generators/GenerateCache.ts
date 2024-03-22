@@ -44,7 +44,7 @@ export interface CacheData extends Data {
   backendStructure: BackendStructure;
   backendConfig: typeof backendConfig;
   realtimeData:  RealtimeData;
-  fetchData: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
+  // fetchData?: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
   // Add new top-level cache properties for UI phases
   notificationBarPhaseHook: typeof notificationBarPhaseHook;
   darkModeTogglePhaseHook: typeof darkModeTogglePhaseHook;

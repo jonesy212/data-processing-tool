@@ -60,6 +60,7 @@ enum CalendarStatus {
   InProgress = StatusType.InProgress,
   Completed = StatusType.Completed,
   Scheduled = StatusType.Scheduled,
+  Tentative = StatusType.Tentative,
     // Add more status options as needed
 }
 
@@ -78,5 +79,21 @@ enum NotificationStatus {
   COMPLETED = "completed",
 }
   
-export { CalendarStatus, ComponentStatus, DataStatus, NotificationStatus, StatusType, TaskStatus, TeamStatus, TodoStatus };
+
+ 
+enum PriorityStatus {
+  Low= "low",
+  Medium= "medium",
+  High = "high",
+  Normal = "normal"
+} 
+ 
+export enum PriorityTypeEnum {
+  Low= PriorityStatus.Low,
+  Medium= PriorityStatus.Medium,
+  High = PriorityStatus.High,
+  Normal = PriorityStatus.Normal
+}
+
+export { CalendarStatus, ComponentStatus, DataStatus, NotificationStatus, PriorityStatus, StatusType, TaskStatus, TeamStatus, TodoStatus };
 

@@ -1,4 +1,4 @@
-**Documentation File: project_structure.md**
+****Documentation** File: project_structure.md**
 
 # Project Structure Overview
 

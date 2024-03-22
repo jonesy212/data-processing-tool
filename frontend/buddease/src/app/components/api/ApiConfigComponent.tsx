@@ -4,21 +4,22 @@ import { backendConfig } from "@/app/configs/BackendConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
-import  frontendConfig  from "@/app/configs/FrontendConfig";
+import { frontendConfig } from "@/app/configs/FrontendConfig";
 import MainConfig from "@/app/configs/MainConfig";
 import UserPreferences from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
+import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import getAppPath from "../../../../appPath";
 import { DocumentData } from "../documents/DocumentBuilder";
-import { ComponentActions } from '../libraries/ui/components/ComponentActions';
+import { ComponentActions } from "../libraries/ui/components/ComponentActions";
 import CreateComponentForm from "../libraries/ui/components/CreateComponentForm";
-import DeleteComponent from '../libraries/ui/components/DeleteComponent';
+import DeleteComponent from "../libraries/ui/components/DeleteComponent";
 import UpdateComponent from "../libraries/ui/components/UpdateComponent";
 import TaskTrackingComponent from "../models/tracker/TaskTrackingComponent";
 import { Phase } from "../phases/Phase";
@@ -26,7 +27,7 @@ import ProfileSetupPhase from "../phases/onboarding/ProfileSetupPhase";
 import axiosInstance from "../security/csrfToken";
 import { selectApiConfigs } from "../state/redux/slices/ApiSlice";
 import { UserData } from "../users/User";
-
+import ErrorBoundary from "@/app/shared/ErrorBoundary";
 
 const ApiConfigComponent: React.FC = () => {
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Specify correct type
@@ -34,12 +35,12 @@ const ApiConfigComponent: React.FC = () => {
   const userPreferences = useSelector((state: any) => state.userPreferences);
   // Access API configurations from Redux state
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
-  const projectPath = getAppPath()
 
-  // 
+  const { versionNumber, appVersion } = getCurrentAppInfo();
+  const projectPath = getAppPath(versionNumber, appVersion);
   const frontendStructure = new FrontendStructure(projectPath);
   const backendStructure = new BackendStructure(projectPath);
-  
+
   // Update local state with API configurations from Redux state
   useEffect(() => {
     setApiConfigs(apiConfigsFromRedux);
@@ -51,7 +52,7 @@ const ApiConfigComponent: React.FC = () => {
     const csrfTokenInput = document.querySelector<HTMLInputElement>(
       '[name="csrfmiddlewaretoken"]'
     );
-    
+
     axiosInstance.defaults.headers.post["X-CSRFToken"] = csrfTokenInput?.value;
     axiosInstance
       .post("/api/v1/admin/api-config/", { base_url: "https://budde.se" })
@@ -86,10 +87,24 @@ const ApiConfigComponent: React.FC = () => {
               id: "taskId",
               phases: {} as Phase[],
               trackFileChanges: (file: DocumentData) => file,
-              trackFolderChanges(fileLoader) {
-                fileLoader.load();
-                return fileLoader.files;
+              trackFolderChanges(fileLoader?: DocumentData) {
+                // Make fileLoader optional
+                if (fileLoader) {
+                  // Add a null check
+                  if (typeof fileLoader.load === "function") {
+                    // Check if load method exists
+                    fileLoader.load(); // Invoke load method if it exists
+                    return fileLoader.files;
+                  } else {
+                    console.error(
+                      "load() method is not defined on fileLoader."
+                    );
+                    return [];
+                  }
+                }
+                return []; // Return a default value if fileLoader is undefined
               },
+              getUserProfile: (user: User) => user,
               getName: (trackerName: string) => trackerName,
               updateUserProfile(userData: User) {
                 // Implement user profile update logic here
@@ -115,7 +130,7 @@ const ApiConfigComponent: React.FC = () => {
       case "create":
         return <CreateComponentForm ComponentActions={ComponentActions} />;
 
-        case "update":
+      case "update":
         return <UpdateComponent />;
       case "delete":
         return <DeleteComponent />;
@@ -140,8 +155,7 @@ const ApiConfigComponent: React.FC = () => {
     ));
   };
 
-
- return (
+  return (
     <div>
       <h2>API Configuration</h2>
       <Form
@@ -164,8 +178,7 @@ const ApiConfigComponent: React.FC = () => {
           <Input />
         </Form.Item>
         <Form.Item>
-        <ButtonGenerator type="button" htmlType="submit" />
-
+          <ButtonGenerator type="button" htmlType="submit" />
         </Form.Item>
       </Form>
       {/* Configuration and Settings */}
@@ -174,14 +187,16 @@ const ApiConfigComponent: React.FC = () => {
       {renderApiContent()}
       <ConfigurationServiceComponent apiConfigs={apiConfigs} />
       <DataVersionsConfig dataPath="" />
-      <MainConfig
+      <ErrorBoundary>
+        <MainConfig
           frontendStructure={frontendStructure} // Corrected variable name
           backendStructure={backendStructure} // Corrected variable name
-        frontendConfig={frontendConfig}
-        backendConfig={backendConfig}
-     />
-     
-     {userPreferences}
+          frontendConfig={frontendConfig}
+          backendConfig={backendConfig}
+        />
+      </ErrorBoundary>
+
+      {userPreferences}
       {UserSettings}
       {/* Additional configurations can be added here */}
 

@@ -15,6 +15,8 @@ import { notificationStore } from "../../support/NotificationProvider";
 import { implementThen } from "./CommonEvent";
 import { Phase } from "../../phases/Phase";
 import { VideoData } from "../../video/Video";
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { SnapshotItem } from "../../snapshots/SnapshotList";
 
 const { notify } = useNotification();
 
@@ -22,68 +24,136 @@ interface SnapshotStoreConfig<T> {
   clearSnapshots: any;
   key: string;
   initialState: T;
-  // Adjust the signature of snapshots to match the SnapshotStore class
-  snapshots: { snapshot: Snapshot<Snapshot<Data>>[]; }[]
+  snapshots: { snapshot: SnapshotStore<Snapshot<Data>>[] }[];
 
-  
+  createSnapshot: (additionalData: any) => void;
+  configureSnapshotStore: (
+    snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+  ) => void;
+  createSnapshotSuccess: () => void; // No need for snapshot reference
+  createSnapshotFailure: (error: Error) => void; // No need for snapshot reference
+
   onSnapshot?: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
+  snapshotData: (snapshot: SnapshotStore<Snapshot<Data>>) => {
+    snapshot: SnapshotStore<Snapshot<Data>>[];
+  };
+
   snapshot?: () => void;
   initSnapshot: () => void;
-  updateSnapshot: (snapshot: Snapshot<Data>) => void;
-  takeSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => void
-  getSnapshot: (snapshot: Snapshot<Data>) => Promise<Snapshot<Snapshot<Data>>[]> 
-  getSnapshots: (
-    subscribers: (data: Data) => void,
-    snapshots: Snapshot<Snapshot<Data>>[]
-  ) => Promise<Snapshot<Snapshot<Data>>[]>;
-   
+  clearSnapshot: () => void;
 
-
+  updateSnapshot: () => void;
+  getSnapshots: () => { snapshot: SnapshotStore<Snapshot<Data>>[] }[];
+  takeSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => Promise<void>;
+  // Updated signature for getSnapshots method
+  getSnapshot: (
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ) => Promise<SnapshotStore<Snapshot<Data>>[]>;
   getAllSnapshots: (
     data: (
-      subscribers: Snapshot<Snapshot<Data>>[],
-      snapshots: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[],    
-  ) => Snapshot<Snapshot<Data>>[] | Snapshot<Snapshot<Data>>[];
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => SnapshotStore<Snapshot<Data>>[];
 
-  clearSnapshot: () => void;
-  configureSnapshotStore: (snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>)=> void
-  // Updated method signatures
-  takeSnapshotSuccess: (snapshot: Snapshot<Data>) => void;
-  updateSnapshotFailure: (payload: { error: string }) => void;
-  takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => void;
+  // Adjusted method signatures for consistency
+  takeSnapshotSuccess: () => void; // No need for snapshot reference
+  updateSnapshotFailure: (payload: { error: string }) => void; // No need for snapshot reference
+  takeSnapshotsSuccess: (snapshots: SnapshotStore<Snapshot<Data>>[]) => void;
 
-  fetchSnapshot: (snapshotId: Snapshot<Data>) => void;
-  updateSnapshotSuccess: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
-  updateSnapshotsSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
-  fetchSnapshotSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
+  // No need for snapshot reference in the following functions
+  fetchSnapshot: () => void;
+  updateSnapshotSuccess: () => void;
+  updateSnapshotsSuccess: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) => void;
+  fetchSnapshotSuccess: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) => void;
 
-  createSnapshotSuccess:  (subscribers: Snapshot<Snapshot<Data>>[]) => void
-  createSnapshotFailure: (error: Error) => void
   //BATCH METHODS
-  batchTakeSnapshots: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
-  
-  batchUpdateSnapshots: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void;
-  batchUpdateSnapshotsSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void
-  
 
-  batchFetchSnapshotsRequest: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => void
-  batchFetchSnapshotsSuccess: (snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[]) => void
+  batchUpdateSnapshots: (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ) => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }[]>;
+
+  batchUpdateSnapshotsSuccess: (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => {
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  }[];
+
+  batchFetchSnapshotsRequest: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      subscribers: SnapshotStore<Snapshot<Data>>[];
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }
+  ) => (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => {
+    subscribers: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  };
+
+  batchUpdateSnapshotsRequest: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      subscribers: SnapshotStore<Snapshot<Data>>[];
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }
+  ) => {
+    subscribers: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  };
+
+  batchFetchSnapshots: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) => void;
+
+  batchFetchSnapshotsSuccess: (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ) => SnapshotStore<Snapshot<Data>>;
+
   batchFetchSnapshotsFailure: (payload: { error: Error }) => void;
-  batchUpdateSnapshotsFailure: (payload: { error: Error; }) => void
-  notifySubscribers: (subscribers: Snapshot<Snapshot<Data>>[]) => { snapshot: { snapshot: Snapshot<Snapshot<Data>>[]; }[]; }
+  batchUpdateSnapshotsFailure: (payload: { error: Error }) => void;
+  notifySubscribers: (
+    subscribers: SnapshotStore<Snapshot<Data>>[]
+  ) => SnapshotStore<Snapshot<Data>>[];
   [Symbol.iterator]: () => IterableIterator<Snapshot<T>>;
-  notify: (message: string, content: any, date: Date, type: NotificationType) => void;
+  notify: (
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType
+  ) => void;
 }
 
-
 interface Snapshot<T> {
-  id?: string
+  id?: string;
   timestamp: Date;
   data: T;
 }
 
-
-type SubscriberFunction = (data: Snapshot<Data> | Data) => void;
+type SubscriberFunction = SnapshotStore<Snapshot<Data>>;
 
 //todo update Implementation
 const setNotificationMessage = (message: string) => {
@@ -100,19 +170,27 @@ const setNotificationMessage = (message: string) => {
   }
 };
 
+
+
+
+
+
+
+
 class SnapshotStore<T extends Snapshot<Data>> {
   key: string;
-  state: T;
+  state: SnapshotStore<Snapshot<Data>>;
   onSnapshot?: (snapshot: SnapshotStore<Snapshot<Data>>) => void; // Adjust the parameter type
-  snapshot?: () => void;
+  snapshotData: (snapshot: SnapshotStore<Snapshot<Data>>) => {
+    snapshot: SnapshotStore<Snapshot<Data>>[];
+  };
+  creatSnapshot: (additionalData: any) => void = () => {};
+  snapshot?: () => SnapshotStore<Snapshot<Data>>;
   timestamp?: Date;
 
-  private snapshots: { snapshot: Snapshot<Snapshot<Data>>[] }[] = [];
+  private snapshots: { snapshot: SnapshotStore<Snapshot<Data>>[] }[] = [];
 
-  // Change the type of 'snapshots' property to an array of Snapshot<Snapshot<Data>>
-  //  private snapshots: Snapshot<Snapshot<Data>>[] = [];
-
-  private subscribers: Snapshot<Snapshot<Data>>[] = [];
+  private subscribers: SnapshotStore<Snapshot<Data>>[] = [];
 
   private readonly notify: (
     message: string,
@@ -121,13 +199,20 @@ class SnapshotStore<T extends Snapshot<Data>> {
     type: NotificationType
   ) => void;
 
- 
-  public takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => void;
-  public updateSnapshotFailure: (payload: { error: string }) => void;
-  public takeSnapshotSuccess: (snapshot: Snapshot<Data>) => void;
-  public configureSnapshotStore: (
-    snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+  // // Accessor method to retrieve snapshots
+  // public getSnapshots(): { snapshot: SnapshotStore<Snapshot<Data>>[] }[] {
+  //   return this.snapshots;
+  // }
+
+  public takeSnapshotsSuccess: (
+    snapshots: SnapshotStore<Snapshot<Data>>[]
   ) => void;
+  public updateSnapshotFailure: (payload: { error: string }) => void;
+  public takeSnapshotSuccess: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
+  public configureSnapshotStore: (
+    snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+  ) => void;
+  data: any;
 
   private setNotificationMessage(
     message: string,
@@ -149,29 +234,31 @@ class SnapshotStore<T extends Snapshot<Data>> {
     }
   }
 
-  public setSnapshot(newSnapshot: T) {
+  public setSnapshot(newSnapshot: SnapshotStore<Snapshot<Data>>) {
     this.state = newSnapshot;
   }
 
-    public setSnapshots(
+  public setSnapshots(
     newSnapshots: {
-      snapshot: Snapshot<Snapshot<Data>>[];
+      snapshot: SnapshotStore<Snapshot<Data>>[];
     }[]
   ) {
     this.snapshots = newSnapshots;
   }
 
-  
-  
-
-  public notifySubscribers(subscribers: Snapshot<Snapshot<Data>>[]) {
+  public notifySubscribers(
+    subscribers: SnapshotStore<Snapshot<Data>>[]
+  ): SnapshotStore<Snapshot<Data>>[] {
     // Utilize the 'subscribers' parameter
     // For example, you can log it to indicate it's being used
     console.log("Subscribers:", subscribers);
-    // Return the snapshot array within an object
-    return {
-      snapshot: this.snapshots,
-    };
+
+    // Construct an array of snapshots with timestamps and data from this.snapshots
+    const snapshots: SnapshotStore<Snapshot<Data>>[] = this.snapshots.map(
+      (snapshotObj) => snapshotObj.snapshot[0]
+    );
+
+    return snapshots;
   }
 
   validateSnapshot(data: Data) {
@@ -181,9 +268,18 @@ class SnapshotStore<T extends Snapshot<Data>> {
     return false;
   }
 
-  // config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+  // Method to provide indirect access to subscribers
+  getSubscribers(): SnapshotStore<Snapshot<Data>>[] {
+    return this.subscribers;
+  }
+
+  getSnapshots(): { snapshot: SnapshotStore<Snapshot<Data>>[] }[] {
+    return this.snapshots;
+  }
+  
+
   constructor(
-    config: SnapshotStoreConfig<Snapshot<Data>>,
+    config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
     notify: (
       message: string,
       content: any,
@@ -192,19 +288,33 @@ class SnapshotStore<T extends Snapshot<Data>> {
     ) => void
   ) {
     this.key = config.key;
-    this.state = config.initialState as T; // Explicitly cast initialState to type T
+    this.state = config.initialState as SnapshotStore<Snapshot<Data>>; // Adjust the type casting
+    this.notify = notify; // Assign the notify function
+
     this.onSnapshot = config.onSnapshot;
+    this.snapshotData = config.snapshotData;
     this.notify = notify;
+    // Initialize snapshotData function
+
     this.takeSnapshotsSuccess = config.takeSnapshotsSuccess;
+    this.createSnapshotFailure = config.createSnapshotFailure;
+    this.updateSnapshotsSuccess = config.updateSnapshotsSuccess;
     this.updateSnapshotFailure = config.updateSnapshotFailure;
+    this.fetchSnapshotSuccess = config.fetchSnapshotSuccess;
+    this.createSnapshotSuccess = config.createSnapshotSuccess;
     this.takeSnapshotSuccess = config.takeSnapshotSuccess;
-    this.configureSnapshotStore = (snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>) => {
+    this.configureSnapshotStore = (
+      snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+    ) => {
       snapshotConfig.clearSnapshot(); // Call clearSnapshot method instead of checking its existence
       snapshotConfig.initSnapshot(); // Call initSnapshot method instead of checking its existence
       this.key = snapshotConfig.key;
-      this.state = config.initialState as T; // Explicitly cast initialState to type T
+      this.state = config.initialState as unknown as SnapshotStore<
+        Snapshot<Data>
+      >;
       this.onSnapshot = snapshotConfig.onSnapshot;
       this.snapshots = snapshotConfig.snapshots;
+      this.createSnapshot = config.createSnapshot;
       this.configureSnapshotStore = snapshotConfig.configureSnapshotStore;
       this.takeSnapshot = snapshotConfig.takeSnapshot;
       this.getSnapshot = snapshotConfig.getSnapshot;
@@ -221,12 +331,21 @@ class SnapshotStore<T extends Snapshot<Data>> {
       this.fetchSnapshotSuccess = snapshotConfig.fetchSnapshotSuccess;
       this.createSnapshotSuccess = snapshotConfig.createSnapshotSuccess;
       this.createSnapshotFailure = snapshotConfig.createSnapshotFailure;
+
       this.batchUpdateSnapshots = snapshotConfig.batchUpdateSnapshots;
-      this.batchUpdateSnapshotsSuccess = snapshotConfig.batchUpdateSnapshotsSuccess;
-      this.batchFetchSnapshotsRequest = snapshotConfig.batchFetchSnapshotsRequest;
-      this.batchFetchSnapshotsSuccess = snapshotConfig.batchFetchSnapshotsSuccess;
-      this.batchFetchSnapshotsFailure = snapshotConfig.batchFetchSnapshotsFailure;
-      this.batchUpdateSnapshotsFailure = snapshotConfig.batchUpdateSnapshotsFailure;
+      this.batchUpdateSnapshotsSuccess =
+        snapshotConfig.batchUpdateSnapshotsSuccess;
+      this.batchUpdateSnapshotsRequest =
+        snapshotConfig.batchUpdateSnapshotsRequest;
+
+      this.batchFetchSnapshotsRequest =
+        snapshotConfig.batchFetchSnapshotsRequest;
+      this.batchFetchSnapshotsSuccess =
+        snapshotConfig.batchFetchSnapshotsSuccess;
+      this.batchFetchSnapshotsFailure =
+        snapshotConfig.batchFetchSnapshotsFailure;
+      this.batchUpdateSnapshotsFailure =
+        snapshotConfig.batchUpdateSnapshotsFailure;
       this.notifySubscribers = snapshotConfig.notifySubscribers;
     };
 
@@ -235,102 +354,99 @@ class SnapshotStore<T extends Snapshot<Data>> {
   }
 
 
-  takeSnapshot(data: SnapshotStore<Snapshot<Data>>) {
-  const timestamp = new Date();
-  // Initialize snapshot with an empty value or appropriate data
-  const snapshot: Snapshot<Snapshot<Data>> = {
-    timestamp: new Date(), // Provide appropriate timestamp value here
-    data: {
-      timestamp: new Date(),
-      data: {
-        _id: "snapshot",
-        id:"1234567890",
-        title: "takenSnapshot",
-        status: "completed",
-        isActive: true,
-        description: "This is a description",
-        tags: [],
-        phase: {} as Phase,
-        then: implementThen,
-        analysisType: {} as AnalysisType,
-        analysisResults: [] as AnalysisResult[],
-        videoData: {} as VideoData
-      }
-    }
-  };
-
-  const snapshotObj: { snapshot: Snapshot<Snapshot<Data>>[] } = { snapshot: [snapshot] };
-  this.snapshots.push(snapshotObj); // Push the snapshot object to the snapshots array
   
-  this.notify(
-    `Snapshot taken at ${new Date(timestamp)}.`,
-    NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
-    new Date(),
-    NotificationTypeEnum.OperationSuccess
-  );
 
-  this.notifySubscribers(snapshot);
+  async takeSnapshot(data: SnapshotStore<Snapshot<Data>>): Promise<void> {
+    const timestamp = new Date();
 
-  if (this.onSnapshot) {
-    this.onSnapshot(data);
+    // Check if there are existing snapshots with the same timestamp
+    const existingSnapshotIndex = this.snapshots.findIndex((snapshotObj) =>
+      snapshotObj.snapshot.some(
+        async (snapshot) => snapshot.timestamp === (await data).timestamp
+      )
+    );
+
+    if (existingSnapshotIndex !== -1) {
+      // If a snapshot with the same timestamp exists, update it instead of creating a new one
+      this.updateSnapshot(data);
+      return;
+    }
+    
+    // Initialize snapshot
+    const snapshot = {
+      timestamp: timestamp,
+      state: data,
+      key: this.key,
+      getSubscribers: this.getSubscribers, 
+      getSnapshots: this.getSnapshots,
+      fetchSnapshotSuccess: this.fetchSnapshotSuccess,
+      // ...other methods
+    };
+
+    const snapshotObj: { snapshot: SnapshotStore<Snapshot<Data>>[] } = {
+      snapshot: [snapshot],
+    };
+
+
+    
+    this.snapshots.push(snapshotObj); // Push the snapshot object to the snapshots array
+
+    this.notify(
+      `Snapshot taken at ${new Date(timestamp)}.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+
+    // Push the snapshot object into an array
+    this.snapshots.push(snapshotObj);
+
+    this.notifySubscribers([snapshot]);
+
+    if (this.onSnapshot) {
+      this.onSnapshot(data);
+    }
   }
-}
 
-
-  initSnapshot(snapshot: T) {
+  initSnapshot(snapshot: SnapshotStore<Snapshot<Data>>) {
     this.takeSnapshot(snapshot);
   }
 
-  createSnapshot(data: T, snapshot: Snapshot<T>) {
+  createSnapshot(
+    data: SnapshotStore<Snapshot<Data>>,
+    snapshot: { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) {
     this.snapshots.push(snapshot);
     if (this.onSnapshot) {
       this.onSnapshot(data);
     }
   }
 
-  updateSnapshot(newSnapshot: T) {
+  updateSnapshot(newSnapshot: SnapshotStore<Snapshot<Data>>) {
     this.state = newSnapshot;
   }
 
   // Updated to use setSnapshot internally
-  fetchSnapshot(snapshot: T): void {
+  fetchSnapshot(snapshot: SnapshotStore<Snapshot<Data>>): void {
     this.setSnapshot(snapshot);
   }
 
-
-
-
   // Iterate over each snapshot to find a match
-  async getSnapshot(snapshot: Snapshot<Data>): Promise<Snapshot<Snapshot<Data>>[]> {
-    let foundSnapshot: Snapshot<Snapshot<Data>> | undefined;
-  
+  async getSnapshot(
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ): Promise<SnapshotStore<Snapshot<Data>>[]> {
+    let foundSnapshot: SnapshotStore<Snapshot<Data>> | undefined;
+
     // Access the snapshot data directly
-    this.snapshots([], this.snapshots).forEach((snapshot: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) => {
-      if (snapshotStore.state.data.timestamp === snapshotStore.state.timestamp) {
-        foundSnapshot = snapshot;
-      }
+    this.snapshots.forEach((snapshotObj) => {
+      snapshotObj.snapshot.forEach((snapshotData) => {
+        if (snapshotData.timestamp === snapshot.timestamp) {
+          foundSnapshot = snapshotData;
+        }
+      });
     });
 
     return foundSnapshot ? [foundSnapshot] : [];
-  }
-
-
-  async getSnapshots(
-    subscribers: (data: Data) => Promise<Snapshot<Snapshot<Data>>[]>,
-    snapshots: Snapshot<Snapshot<Data>>[]) {
-    // Iterate over each snapshot in the provided array
-    for (const snapshot of snapshots) {
-      // Extract the 'data' property from the nested snapshot
-      const data: Data = snapshot.data.data;
-      
-      // Process each snapshot data and pass it to the subscribers
-      (await subscribers(data)).forEach(() => {
-        subscribers(data);
-      });
-    }
-  
-    // Return the original array of snapshots
-    return snapshots;
   }
 
   updateSnapshotSuccess(snapshot: SnapshotStore<Snapshot<Data>>) {
@@ -340,89 +456,202 @@ class SnapshotStore<T extends Snapshot<Data>> {
       new Date(),
       NotificationTypeEnum.OperationSuccess
     );
-    this.notifySubscribers(snapshot)
+    if (Array.isArray(snapshot) && snapshot.length > 0) {
+      this.notifySubscribers(snapshot[0].snapshot); // Assuming notifySubscribers expects an array of snapshots
+    } else {
+      console.error("Snapshot array is empty or not properly formatted.");
+    }
+
     if (this.onSnapshot) {
+      // Pass the snapshot parameter directly to onSnapshot
       this.onSnapshot(snapshot);
     }
   }
 
   clearSnapshot() {
-    return
+    return;
   }
 
-
-  
   getAllSnapshots: (
-    data: (subscribers: Snapshot<Snapshot<Data>>[], snapshots: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[],
-    snapshots: Snapshot<Snapshot<Data>>[]
-  ) => Snapshot<Snapshot<Data>>[]
-    = (subscribers: Snapshot<Snapshot<Data>>[], snapshots: Snapshot<Snapshot<Data>>[]) => {
-      // Iterate over each snapshot in the provided array
-      for (const snapshot of snapshots) {
-        // Extract the 'data' property from the nested snapshot
-        const data: Data = snapshot.data.data;
+    data: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => SnapshotStore<Snapshot<Data>>[] = (
+    data: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => {
+    // Iterate over each snapshot in the provided array
+    for (const snapshot of snapshots) {
+      // Extract the 'data' property from the nested snapshot
+      const extractedData: Data = snapshot.data.data;
 
-        // Process each snapshot data and pass it to the subscribers
-        subscribers(data);
-      }
-      // Return the original array of snapshots
-      return snapshots;
+      // Process each snapshot data and pass it to the subscribers
+      data(this.subscribers, snapshots);
     }
-
-
-
+    // Return the original array of snapshots
+    return snapshots;
+  };
 
   getLatestSnapshot(): Snapshot<T> {
     // Return the latest snapshot's data property
     const latestSnapshot = this.snapshots[this.snapshots.length - 1];
-    return {
-      timestamp: latestSnapshot.timestamp,
-      data: latestSnapshot.data as T, // Cast data to type T
-    };
+
+    // Check if latestSnapshot is not undefined and contains the data property
+    if (
+      latestSnapshot &&
+      "timestamp" in latestSnapshot &&
+      latestSnapshot &&
+      "data" in latestSnapshot
+    ) {
+      return {
+        timestamp: latestSnapshot.timestamp as Date,
+        data: latestSnapshot.data as T, // Cast data to type T
+      };
+    } else {
+      // Handle the case where latestSnapshot is undefined or doesn't have the data property
+      throw new Error("Latest snapshot is invalid or does not contain data.");
+    }
   }
 
   // Subscribe to snapshot events
-  subscribe(callback: Snapshot<Snapshot<Data>>[]) {
+  subscribe(callback: SubscriberFunction): void {
+    // Push the callback function directly into the subscribers array
     this.subscribers.push(callback);
   }
 
-  // Unsubscribe from snapshot events
-  unsubscribe(callback: Snapshot<Snapshot<Data>>[]) {
+  unsubscribe(callback: SubscriberFunction): void {
+    // Find the index of the callback function in the subscribers array
     const index = this.subscribers.indexOf(callback);
+    // If found, remove the callback function from the subscribers array
     if (index !== -1) {
       this.subscribers.splice(index, 1);
     }
   }
-  
-  batchUpdateSnapshots(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) { 
-    // Update the snapshots
-    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
-    this.snapshots = newSnapshots;
-    this.notifySubscribers(this.subscribers);
+
+  batchUpdateSnapshotsRequest(
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      subscribers: SnapshotStore<Snapshot<Data>>[];
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }
+  ): {
+    subscribers: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  } {
+    this.notify(
+      `Snapshot update started.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_START,
+      new Date(),
+      NotificationTypeEnum.OperationStart
+    );
+
+    return snapshotData;
   }
-  
-batchUpdateSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) {
-    // Update the snapshots
-    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
-    this.snapshots = newSnapshots;
-    this.notifySubscribers(this.subscribers);
-}
-  
-batchFetchSnapshotsRequest(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[]; }) {
-    // Update the snapshots
-    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
-    this.snapshots = newSnapshots;
-    this.notifySubscribers(this.subscribers);
-}
-  
-batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[], snapshot: Snapshot<Snapshot<Data>>[]) => Snapshot<Snapshot<Data>>[]) {
-    // Update the snapshots
-    const newSnapshots = snapshotData(this.subscribers, this.snapshots);
-    this.snapshots = newSnapshots;
-    this.notifySubscribers(this.subscribers);
-}
-  
-  batchFetchSnapshotsFailure(payload: { error: Error; }) {
+
+  async batchUpdateSnapshots(
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }[]> {
+    // Initialize an array to store results
+    const updatedSnapshots: { snapshot: SnapshotStore<Snapshot<Data>>[] }[] =
+      [];
+
+    // Iterate over each subscriber in the provided array
+    for (const subscriber of subscribers) {
+      // Extract the 'data' property from the nested subscriber
+      const innerSnapshot: Data = subscriber.data.data;
+
+      // Wrap the inner data into another Snapshot object
+      const data: SnapshotStore<Snapshot<Data>> = {
+        timestamp: new Date(), // Add timestamp or use existing one
+        data: innerSnapshot, // Assign the inner data
+      };
+
+      // Process each snapshot data and pass it to the subscribers
+      this.notifySubscribers([data]);
+
+      // Store the updated snapshot, if necessary
+      // You might need to modify this part based on your requirements
+      updatedSnapshots.push({ snapshot: [snapshot] });
+    }
+
+    // Return the array of updated snapshots
+    return updatedSnapshots;
+  }
+
+  batchUpdateSnapshotsSuccess(
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ): {
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  }[] {
+    this.notify(
+      `Snapshot update completed.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+    if (Array.isArray(subscribers) && subscribers.length > 0) {
+      this.notifySubscribers(subscribers); // Updated to use 'subscribers' instead of 'snapshot'
+    }
+    if (this.onSnapshot) {
+      this.onSnapshot(snapshots);
+    }
+    // Return the updated snapshots
+    return snapshots;
+  }
+
+  batchFetchSnapshotsRequest(
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      subscribers: SnapshotStore<Snapshot<Data>>[];
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }
+  ): (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => {
+    subscribers: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  } {
+    this.notify(
+      `Snapshot fetch started.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_START,
+      new Date(),
+      NotificationTypeEnum.OperationStart
+    );
+    return snapshotData;
+  }
+
+  batchFetchSnapshotsSuccess(
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ): SnapshotStore<Snapshot<Data>> {
+    this.notify(
+      `Snapshot fetch completed.`,
+      NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+    if (Array.isArray(subscribers) && subscribers.length > 0) {
+      this.notifySubscribers(subscribers);
+    }
+    if (this.onSnapshot) {
+      this.onSnapshot(snapshot);
+    }
+    return snapshot;
+  }
+
+  batchFetchSnapshotsFailure(payload: { error: Error }) {
     this.notify(
       `Snapshot fetch failed.`,
       NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
@@ -431,7 +660,7 @@ batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[
     );
   }
 
-  batchUpdateSnapshotsFailure(payload: { error: Error; }) { 
+  batchUpdateSnapshotsFailure(payload: { error: Error }) {
     this.notify(
       `Snapshot update failed.`,
       NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
@@ -439,11 +668,8 @@ batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[
       NotificationTypeEnum.OperationError
     );
   }
-  
 
-  
-  createSnapshotSuccess(
-    subscribers: Snapshot<Snapshot<Data>>[]): void { 
+  createSnapshotSuccess(subscribers: SnapshotStore<Snapshot<Data>>[]): void {
     this.notify(
       `Snapshot created successfully.`,
       NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
@@ -453,7 +679,7 @@ batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[
     this.notifySubscribers(subscribers);
   }
 
-  createSnapshotFailure(error: Error) { 
+  createSnapshotFailure(error: Error) {
     this.notify(
       `Snapshot creation failed.`,
       NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
@@ -462,32 +688,27 @@ batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[
     );
   }
 
-  
-
-  updateSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[],
-    snapshot: Snapshot<Snapshot<Data>>[]) => { snapshot: Snapshot<Snapshot<Data>>[] }) {
+  updateSnapshotsSuccess(
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) {
     // Update the snapshots
-    this.snapshots = snapshotData;
-    this.notifySubscribers(this.subscribers);
   }
-  
 
   fetchSnapshotSuccess(
-    snapshotData: (subscribers: Snapshot<Snapshot<Data>>[],
-      snapshot: Snapshot<Snapshot<Data>>[]) => {
-        snapshot: Snapshot<Snapshot<Data>>[];
-      }): void {
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      snapshot: SnapshotStore<Snapshot<Data>>[];
+    }
+  ): void {
     // Update the snapshots
-    this.snapshots = snapshotData;
-    
-    // Notify subscribers about the successful fetch of snapshots
-    snapshotData.forEach(snapshot => {
-      const subscribers = snapshot.subscribers;
-      this.notifySubscribers(subscribers);
-    });
   }
-  
-  fetchSnapshotFailure(error: Error) { 
+
+  fetchSnapshotFailure(error: Error) {
     this.notify(
       `Failed to fetch snapshot.`,
       NOTIFICATION_MESSAGES.Logger.LOG_INFO_FAILURE,
@@ -503,282 +724,174 @@ batchFetchSnapshotsSuccess(snapshotData: (subscribers: Snapshot<Snapshot<Data>>[
 
 
 
-  // Define the handleSnapshot function
-  const handleSnapshot = (snapshot: Snapshot<Data>) => {
-    // Handle the snapshot event
-    console.log("Snapshot event handled:", snapshot);
-  };
 
-  const getDefaultState = (): Snapshot<Data> => {
-    return {
-      timestamp: new Date(),
-      data: {} as Data,
-    };
-  };
 
-  // Function to set a dynamic notification message
-  const setDynamicNotificationMessage = (message: string) => {
-    setNotificationMessage(message);
-  };
-  
 
+
+
+
+
+
+
+
+
+const snapshot: SnapshotStore<Snapshot<Data>> = {
+  key: "snapshotKey", // Provide a valid key for the snapshot
+  state: {
+    timestamp: new Date(),
+  } as SnapshotStore<Snapshot<Data>>,
+  snapshotData: () => {
+    return { snapshot: [] }; // Adjust based on your logic
+  },
+  createSnapshot: () => { }, // Provide implementation for the createSnapshot function
+  getSubscribers: () => [], // Provide implementation for the getSubscribers function
+  getSnapshots: () => [], // Provide implementation for the getSnapshots function
+  fetchSnapshotSuccess: () => { },
+  creatSnapshot: function (additionalData: any): void {
+    throw new Error("Function not implemented.");
+  },
+  snapshots: [],
+  subscribers: [],
+  notify: function (message: string, content: any, date: Date, type: NotificationType): void {
+    throw new Error("Function not implemented.");
+  },
+  takeSnapshotsSuccess: function (snapshots: SnapshotStore<Snapshot<Data>>[]): void {
+    throw new Error("Function not implemented.");
+  },
+  updateSnapshotFailure: function (payload: { error: string; }): void {
+    throw new Error("Function not implemented.");
+  },
+  takeSnapshotSuccess: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
+    throw new Error("Function not implemented.");
+  },
+  configureSnapshotStore: function (snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>): void {
+    throw new Error("Function not implemented.");
+  },
+  setNotificationMessage: function (message: string, notificationStore: NotificationContextProps): void {
+    throw new Error("Function not implemented.");
+  },
+  setSnapshot: function (newSnapshot: SnapshotStore<Snapshot<Data>>): void {
+    throw new Error("Function not implemented.");
+  },
+  setSnapshots: function (newSnapshots: { snapshot: SnapshotStore<Snapshot<Data>>[]; }[]): void {
+    throw new Error("Function not implemented.");
+  },
+  notifySubscribers: function (subscribers: SnapshotStore<Snapshot<Data>>[]): SnapshotStore<Snapshot<Data>>[] {
+    throw new Error("Function not implemented.");
+  },
+  validateSnapshot: function (data: Data): boolean {
+    throw new Error("Function not implemented.");
+  },
+  takeSnapshot: function (data: SnapshotStore<Snapshot<Data>>): Promise<void> {
+    throw new Error("Function not implemented.");
+  },
+  initSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
+    throw new Error("Function not implemented.");
+  },
+  updateSnapshot: function (newSnapshot: SnapshotStore<Snapshot<Data>>): void {
+    throw new Error("Function not implemented.");
+  },
+  fetchSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
+    throw new Error("Function not implemented.");
+  },
+  getSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): Promise<SnapshotStore<Snapshot<Data>>[]> {
+    throw new Error("Function not implemented.");
+  },
+  updateSnapshotSuccess: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
+    throw new Error("Function not implemented.");
+  },
+  clearSnapshot: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  getAllSnapshots: function (data: (subscribers: SnapshotStore<Snapshot<Data>>[], snapshots: SnapshotStore<Snapshot<Data>>[]) => SnapshotStore<Snapshot<Data>>[], snapshots: SnapshotStore<Snapshot<Data>>[]): SnapshotStore<Snapshot<Data>>[] {
+    throw new Error("Function not implemented.");
+  },
+  getLatestSnapshot: function (): Snapshot<Snapshot<Data>> {
+    throw new Error("Function not implemented.");
+  },
+  subscribe: function (callback: SubscriberFunction): void {
+    throw new Error("Function not implemented.");
+  },
+  unsubscribe: function (callback: SubscriberFunction): void {
+    throw new Error("Function not implemented.");
+  },
+  batchUpdateSnapshotsRequest: function (snapshotData: (subscribers: SnapshotStore<Snapshot<Data>>[], snapshots: SnapshotStore<Snapshot<Data>>[]) => { subscribers: SnapshotStore<Snapshot<Data>>[]; snapshots: SnapshotStore<Snapshot<Data>>[]; }): { subscribers: SnapshotStore<Snapshot<Data>>[]; snapshots: SnapshotStore<Snapshot<Data>>[]; } {
+    throw new Error("Function not implemented.");
+  },
+  batchUpdateSnapshots: function (subscribers: SnapshotStore<Snapshot<Data>>[], snapshot: SnapshotStore<Snapshot<Data>>): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[]; }[]> {
+    throw new Error("Function not implemented.");
+  },
+  batchUpdateSnapshotsSuccess: function (subscribers: SnapshotStore<Snapshot<Data>>[], snapshots: SnapshotStore<Snapshot<Data>>[]): { snapshots: SnapshotStore<Snapshot<Data>>[]; }[] {
+    throw new Error("Function not implemented.");
+  },
+  batchFetchSnapshotsRequest: function (snapshotData: (subscribers: SnapshotStore<Snapshot<Data>>[], snapshots: SnapshotStore<Snapshot<Data>>[]) => { subscribers: SnapshotStore<Snapshot<Data>>[]; snapshots: SnapshotStore<Snapshot<Data>>[]; }): (subscribers: SnapshotStore<Snapshot<Data>>[], snapshots: SnapshotStore<Snapshot<Data>>[]) => { subscribers: SnapshotStore<Snapshot<Data>>[]; snapshots: SnapshotStore<Snapshot<Data>>[]; } {
+    throw new Error("Function not implemented.");
+  },
+  batchFetchSnapshotsSuccess: function (subscribers: SnapshotStore<Snapshot<Data>>[], snapshot: SnapshotStore<Snapshot<Data>>): SnapshotStore<Snapshot<Data>> {
+    throw new Error("Function not implemented.");
+  },
+  batchFetchSnapshotsFailure: function (payload: { error: Error; }): void {
+    throw new Error("Function not implemented.");
+  },
+  batchUpdateSnapshotsFailure: function (payload: { error: Error; }): void {
+    throw new Error("Function not implemented.");
+  },
+  createSnapshotSuccess: function (subscribers: SnapshotStore<Snapshot<Data>>[]): void {
+    throw new Error("Function not implemented.");
+  },
+  createSnapshotFailure: function (error: Error): void {
+    throw new Error("Function not implemented.");
+  },
+  updateSnapshotsSuccess: function (snapshotData: (subscribers: SnapshotStore<Snapshot<Data>>[], snapshot: SnapshotStore<Snapshot<Data>>[]) => { snapshot: SnapshotStore<Snapshot<Data>>[]; }): void {
+    throw new Error("Function not implemented.");
+  },
+  fetchSnapshotFailure: function (error: Error): void {
+    throw new Error("Function not implemented.");
+  },
+  data: undefined
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Define the handleSnapshot function
+const handleSnapshot = (snapshot: SnapshotStore<Snapshot<Data>>) => {
+  // Handle the snapshot event
+  console.log("Snapshot event handled:", snapshot);
+};
+
+const getDefaultState = (): Snapshot<Data> => {
+  return {
+    timestamp: new Date(),
+    data: {} as Data,
+  };
+};
+
+// Function to set a dynamic notification message
+const setDynamicNotificationMessage = (message: string) => {
+  setNotificationMessage(message);
+};
 
 const { state: authState } = useAuth();
 
-// const snapshotStoreInstance = new SnapshotStore<Snapshot<Data>>({
-//   key: "snapshots",
-//   onSnapshot: handleSnapshot,
-//   initialState: getDefaultState(),
-//   initSnapshot: () => {
-//     snapshotStoreInstance.createSnapshot(getDefaultState(), {
-//       timestamp: Date.now(),
-//       data: getDefaultState(),
-//     });
-//   },
-
-//   takeSnapshot: (data: Snapshot<Data>) => {
-//     snapshotStoreInstance.createSnapshot(data, {
-//       timestamp: Date.now(),
-//       data,
-//     });
-//   },
-
-//   updateSnapshot: (newSnapshot: Snapshot<Data>) => {
-//     snapshotStoreInstance.state = newSnapshot;
-//     snapshotStoreInstance.notifySubscribers(newSnapshot.data);
-//   },
-
-//   updateSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => {
-//     snapshots.forEach(async (snapshot) => {
-//       // Assuming snapshot.data is of type Snapshot<Snapshot<Data>>
-//       const snapshotData = await snapshot.data; // Wait for snapshot.data to resolve
-//       // Check if snapshotData is of type Snapshot<Snapshot<Data>>
-//       if (snapshotData.data.timestamp) {
-//         // Assuming snapshotData.data is of type Snapshot<Data>
-//         snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-//       } else {
-//         // Assuming snapshotData.data is of type Data
-//         snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-//       }
-//       // Check if snapshotData.data is of type Snapshot<Data>
-//       snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-//     });
-//   },
-
-//   clearSnapshot: () => {},
-
-//   configureSnapshotStore: (snapshot: Snapshot<Data>) => {
-//     // Configure the snapshot store
-//     // Example configuration:
-//     // 1. Set up listeners
-//     snapshotStoreInstance.initSnapshot(snapshot);
-//     snapshotStoreInstance.onSnapshot = handleSnapshot;
-//     // 2. Initialize default state
-//     snapshotStoreInstance.updateSnapshot(getDefaultState());
-//     // 3. Configure middleware
-
-//     // 4. Connect to external services
-//     // 5. Any other initialization or configuration steps
-//   },
-
-//   takeSnapshotSuccess: (snapshot: Snapshot<Data>) => {
-//     snapshotStoreInstance.createSnapshot(snapshot, {
-//       timestamp: Date.now(),
-//       data: snapshot,
-//     });
-//   },
-
-//   updateSnapshotFailure: (payload: { error: string }) => {
-//     console.error(payload.error);
-//   },
-
-//   fetchSnapshot: (snapshotId: Snapshot<Data>) => {
-//     snapshotStoreInstance.setSnapshot(snapshotId);
-//   },
-
-//   getSnapshot(): Promise<Snapshot<Data>> {
-//     // Return the latest snapshot's data property
-//     const snapshot = this.getLatestSnapshot();
-//     return Promise.resolve(snapshot);
-//   },
-
-//   getSnapshots(): Snapshot<Snapshot<Data>>[] {
-//     // Call the 'snapshots' function with empty subscribers and an empty snapshot array
-//     const snaps = this.getSnapshots();
-//     return snaps
-//       .map((snapshot) => snapshot)
-//       .filter((snapshot) => snapshot.data.timestamp);
-//   },
-
-//   getAllSnapshots(
-//     data: (data: Data) => void,
-//     snapshot: Snapshot<Snapshot<Data>>[]
-//   ): Snapshot<Snapshot<Data>>[] {
-//     // Return the snapshots directly
-//     const snaps = this.getSnapshots();
-
-//     return snaps;
-//   },
-
-//   takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => {
-//     const transformedSnapshots: Snapshot<Snapshot<Data>>[] = snapshots.map(
-//       (snapshot) => ({
-//         timestamp: snapshot.timestamp,
-//         data: snapshot,
-//       })
-//     );
-//     snapshotStoreInstance.setSnapshots(transformedSnapshots);
-//     snapshotStoreInstance.notifySubscribers();
-//   },
-
-//   updateSnapshotSuccess: (snapshot: Snapshot<Data>[]) => {
-//     const updatedSnapshots: Snapshot<Snapshot<Data>>[] = snapshot.map(
-//       (snap) => ({
-//         timestamp: Date.now(),
-//         data: {
-//           timestamp: snap.timestamp,
-//           data: snap.data,
-//         },
-//       })
-//     );
-
-//     snapshotStoreInstance.setSnapshots(
-//       updatedSnapshots.concat(snapshotStoreInstance.getSnapshots())
-//     );
-//     updatedSnapshots.forEach((snap: any) =>
-//       snapshotStoreInstance.notifySubscribers(snap.data)
-//     );
-//   },
-
-//   fetchSnapshotSuccess: async (snapshot: Snapshot<Data>[]) => {
-//     const snapshotData: Snapshot<Data> | undefined = snapshot
-//       .map((snap) => ({
-//         timestamp: snap.timestamp,
-//         data: snap.data,
-//       }))
-//       .find((snap) => snap.data.id === snapshot[0].data.id);
-//     snapshotStoreInstance.setSnapshot(snapshotData ?? getDefaultState());
-//   },
-
-//   createSnapshotSuccess: async (snapshot: Snapshot<Data>[]) => {
-//     // Access the data property of each snapshot object
-//     const updatedSnapshots: Snapshot<Snapshot<Data>>[] = snapshot.map(
-//       (singleSnapshot) => {
-//         const data: Data = singleSnapshot.data;
-
-//         // Create a new Snapshot<Snapshot<Data>> object using the timestamp and data
-//         return {
-//           timestamp: singleSnapshot.timestamp,
-//           data: { timestamp: data.timestamp, data },
-//         };
-//       }
-//     );
-
-//     // Get the current snapshots using the getSnapshot method
-//     const currentSnapshots = await snapshotStoreInstance.getSnapshot(snapshot[0]);
-
-//     // Update the snapshots property using the updatedSnapshots and currentSnapshots
-//     const mergedSnapshots = [...updatedSnapshots, ...currentSnapshots];
-
-//     // Notify subscribers about the updated snapshots
-//     snapshotStoreInstance.batchUpdateSnapshotsSuccess(mergedSnapshots);
-//   },
-
-//   createSnapshotFailure: (error: string) => {
-//     console.error(error);
-//   },
-
-//   batchUpdateSnapshotsSuccess: (snapshotData: Snapshot<Data>[]) => {
-//     const currentSnapshots = snapshotStoreInstance.getSnapshots(); // Retrieve current snapshots
-//     const updatedSnapshots: Snapshot<Snapshot<Data>>[] = [
-//       ...snapshotData.map((snapshot) => ({
-//         timestamp: snapshot.timestamp,
-//         data: snapshot,
-//       })),
-//       ...currentSnapshots,
-//     ]; // Merge new snapshots with current ones
-//     snapshotStoreInstance.setSnapshots(updatedSnapshots); // Update snapshots in the store
-
-//     // Extract data from one of the snapshots in updatedSnapshots array
-//     const updatedData: Data = updatedSnapshots[0].data.data;
-
-//     // Notify subscribers with the updated data
-//     snapshotStoreInstance.notifySubscribers(updatedData);
-//   },
-
-//   batchFetchSnapshotsRequest: async (snapshotData: Snapshot<Data>[]) => {
-//     // Retrieve updated snapshots asynchronously from the store
-//     const updatedSnapshots = await Promise.all(
-//       snapshotData.map((snapshot) => snapshotStoreInstance.getSnapshot(snapshot))
-//     );
-//     // Flatten the array of arrays into a single array of snapshots
-//     const flattenedSnapshots = updatedSnapshots.flat();
-//     // Call batchUpdateSnapshotsSuccess with the updated snapshots
-//     snapshotStoreInstance.batchUpdateSnapshotsSuccess(flattenedSnapshots);
-//   },
-
-//   batchFetchSnapshotsSuccess: (snapshotData: Snapshot<Data>[]) => {
-//     // Call updateSnapshotsSuccess with the fetched snapshots
-//     snapshotStoreInstance.updateSnapshotsSuccess(
-//       snapshotData.map((snapshot) => ({
-//         timestamp: snapshot.timestamp,
-//         data: { timestamp: snapshot.data.timestamp, data: snapshot.data },
-//       }))
-//     );
-//   },
-
-//   batchFetchSnapshotsFailure: (payload: { error: string }) => {
-//     console.error(payload.error);
-//   },
-
-//   batchUpdateSnapshotsFailure: ({ error }: { error: any }) => {
-//     console.error("Batch update snapshots failure:", error);
-//     setDynamicNotificationMessage(
-//       NOTIFICATION_MESSAGES.Snapshot.UPDATING_SNAPSHOTS
-//     );
-//   },
-//   *[Symbol.iterator]() {
-//     for (const snapshot of this.snapshots) {
-//       yield snapshot;
-//     }
-//   },
-
-//   snapshots(
-//     subscribers: (data: Data) => void,
-//     snapshot: Snapshot<Snapshot<Data>>[]
-//   ) {
-//     // Clear existing snapshots
-//     this.clearSnapshots;
-
-//     // Iterate through the provided snapshots
-//     snapshot.forEach((snapshotItem) => {
-//       // Validate each snapshot
-//       if (snapshotItem && snapshotItem.timestamp && snapshotItem.data) {
-//         // Add the validated snapshot to the internal snapshots array
-//         snapshotStoreInstance.validateSnapshot;
-//       } else {
-//         console.error("Invalid snapshot:", snapshotItem);
-//       }
-//     });
-
-//     // Notify subscribers about the updated snapshots
-//     this.notifySubscribers(subscribers);
-//   },
-
-//   notifySubscribers(subscribers: (data: Data) => void) {
-//     // Iterate through the subscribers array
-//     subscribers.forEach((subscriber: Subscriber) => {
-//       // Call the subscriber function with the latest snapshot
-//       subscriber(snapshotStoreInstance.getSnapshot());
-//     });
-//   },
-//   clearSnapshots(): void {
-//     // Clear the snapshots array
-//     this.snapshots = [];
-//   },
-// });
-
-const updateSnapshot = (snapshot: Snapshot<Data>) => {
+const updateSnapshot = (snapshot: SnapshotStore<Snapshot<Data>>) => {
   snapshotStoreInstance.setSnapshot(snapshot);
 };
 
@@ -808,7 +921,7 @@ const configureSnapshotStore = (
   snapshotStoreInstance.configureSnapshotStore(config);
 };
 
-const takeSnapshotSuccess = (snapshot: Snapshot<Data>): void => {
+const takeSnapshotSuccess = (snapshot: SnapshotStore<Snapshot<Data>>): void => {
   // Assuming you have access to the snapshot store instance
   // You can perform actions based on the successful snapshot here
   console.log("Snapshot taken successfully:", snapshot);
@@ -823,7 +936,13 @@ const takeSnapshotSuccess = (snapshot: Snapshot<Data>): void => {
   showToast(message);
 
   // Notify with a message
-  notify("takeSnapshotSucces", "Snapshot taken successfully", NOTIFICATION_MESSAGES.Snapshot.SNAPSHOT_TAKEN,new Date, NotificationTypeEnum.CreationSuccess);
+  notify(
+    "takeSnapshotSucces",
+    "Snapshot taken successfully",
+    NOTIFICATION_MESSAGES.Snapshot.SNAPSHOT_TAKEN,
+    new Date(),
+    NotificationTypeEnum.CreationSuccess
+  );
 };
 
 const updateSnapshotFailure = (payload: { error: string }): void => {
@@ -835,23 +954,27 @@ const updateSnapshotFailure = (payload: { error: string }): void => {
   showErrorMessage(payload.error);
 };
 
-const takeSnapshotsSuccess = (snapshots: Snapshot<Data>[]): void => {
+const takeSnapshotsSuccess = (
+  snapshots: SnapshotStore<Snapshot<Data>>[]
+): void => {
   // Implementation logic here
 };
 
-const fetchSnapshot = (snapshotId: Snapshot<Data>): void => {
+const fetchSnapshot = (snapshotId: SnapshotStore<Snapshot<Data>>): void => {
   // Implementation logic here
 };
 
-const updateSnapshotSuccess = (snapshot: Snapshot<Data>[]): void => {
+const updateSnapshotSuccess = (
+  snapshot: SnapshotStore<Snapshot<Data>>[]
+): void => {
   // Implementation logic here
 };
 
-const updateSnapshotsSuccess = (snapshots: Snapshot<Data>[]) => {
+const updateSnapshotsSuccess = (snapshots: SnapshotStore<Snapshot<Data>>[]) => {
   snapshots.forEach(async (snapshot) => {
-    // Assuming snapshot.data is of type Snapshot<Snapshot<Data>>
+    // Assuming snapshot.data is of type SnapshotStore<Snapshot<Data>>
     const snapshotData = await snapshot.data; // Wait for snapshot.data to resolve
-    // Check if snapshotData is of type Snapshot<Snapshot<Data>>
+    // Check if snapshotData is of type SnapshotStore<Snapshot<Data>>
     if (snapshotData.data.timestamp) {
       // Assuming snapshotData.data is of type Snapshot<Data>
       snapshotStoreInstance.updateSnapshot(await snapshotData.data);
@@ -883,7 +1006,9 @@ const setTasks = (updateFunction: (prevTasks: Task) => any) => {
   // Further logic to handle the updated tasks
 };
 
-const batchFetchSnapshotsRequest = (snapshotData: Snapshot<Data>[]): void => {
+const batchFetchSnapshotsRequest = (
+  snapshotData: SnapshotStore<Snapshot<Data>>[]
+): void => {
   const snapshots = Object.values(snapshotData);
 
   snapshots.forEach(async (snapshot) => {
@@ -899,11 +1024,33 @@ const batchFetchSnapshotsRequest = (snapshotData: Snapshot<Data>[]): void => {
   });
 };
 
-const batchUpdateSnapshotsSuccess = (snapshotData: Snapshot<Data>[]): void => {
-  // Implementation logic here
+const batchUpdateSnapshotsSuccess = (
+  snapshotData: SnapshotStore<Snapshot<Data>>[]
+): void => {
+  // Check if snapshotData array is not empty
+  if (snapshotData.length === 0) {
+    console.error("Snapshot data array is empty.");
+    return;
+  }
+
+  // Iterate over each snapshot data in the array
+  snapshotData.forEach((snapshot) => {
+    // Extract necessary information from the snapshot data
+    const { timestamp, data } = snapshot;
+
+    // Perform any necessary processing with the snapshot data
+    console.log(`Processing snapshot taken at ${timestamp}:`, data);
+  });
+
+  // Notify subscribers or perform any other action as needed
+  console.log(
+    "Batch update snapshots success: Notifying subscribers or performing other actions."
+  );
 };
 
-const batchFetchSnapshotsSuccess = (snapshotData: Snapshot<Data>[]): void => {
+const batchFetchSnapshotsSuccess = (
+  snapshotData: SnapshotStore<Snapshot<Data>>[]
+): void => {
   // Implementation logic here
 };
 
@@ -915,7 +1062,9 @@ const batchUpdateSnapshotsFailure = (payload: { error: string }): void => {
   // Implementation logic here
 };
 
-const notifySubscribers = (subscribers: (data: Data) => void): void => {
+const notifySubscribers = (
+  subscribers: SnapshotStore<Snapshot<Data>>[]
+): void => {
   // Implementation logic here
 };
 
@@ -934,8 +1083,8 @@ const snapshotStoreConfig: SnapshotStoreConfig<Snapshot<Data>> = {
   initialState: getDefaultState(),
 
   snapshots: function (
-    subscribers: (data: Data) => void,
-    snapshot: Snapshot<Snapshot<Data>>[]
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>[]
   ): void {
     snapshot.forEach((snapshot) => {
       subscribers(snapshot.data.data);
@@ -980,6 +1129,7 @@ const snapshotStoreInstance = new SnapshotStore<Snapshot<Data>>(
   config,
   notifyFunction
 );
+
 export const snapshotStore = {
   ...snapshotStoreInstance,
   async getSnapshot(): Promise<Snapshot<Data>> {

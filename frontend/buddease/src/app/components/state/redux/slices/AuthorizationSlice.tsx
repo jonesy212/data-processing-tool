@@ -1,4 +1,5 @@
 // authorizationSlice.ts
+import { AuthActions } from '@/app/components/actions/AuthActions';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthorizationState {
@@ -17,11 +18,12 @@ const authorizationSlice = createSlice({
   name: 'authorization',
   initialState,
   reducers: {
-    loginSuccess: (state, action: PayloadAction<{ accessToken: string }>) => {
+    // Use AuthActions for consistency
+    [AuthActions.loginSuccess.type]: (state, action: PayloadAction<{ accessToken: string }>) => {
       state.isAuthenticated = true;
       state.accessToken = action.payload.accessToken;
     },
-    logout: (state) => {
+    [AuthActions.logout.type]: (state) => { // First definition of logout
       state.isAuthenticated = false;
       state.accessToken = null;
     },

@@ -1,9 +1,16 @@
 // BlogSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+
+
+interface CustomComment {
+  // Define properties specific to your custom comment type
+  // content: string;
+}
+
 interface BlogState {
   posts: BlogPost[];
-  comments: BlogComment[];
+  comments: (BlogComment | CustomComment)[];
   // Add more state properties as needed
 }
 
@@ -41,3 +48,5 @@ const blogSlice = createSlice({
 
 export const { addPost, addComment } = blogSlice.actions;
 export default blogSlice.reducer;
+export type { CustomComment };
+

@@ -1,23 +1,21 @@
 // Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
-import teamManagementService from "@/app/api/TeamManagementApi";
-import useTeamManagement from "@/app/components/hooks/useTeamManagement";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
-import { useTeamManagerSlice } from "@/app/components/state/redux/slices/TeamSlice";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
+  NotificationType,
   NotificationTypeEnum,
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
+import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { team, Team } from "@/app/components/models/teams/Team";
-import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
 import TeamData from "@/app/components/models/teams/TeamData";
-import dotProp from "dot-prop";
-
+import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
+import { DataDetails } from "@/app/components/models/data/Data";
 
 const API_BASE_URL = endpoints.logging;
 
@@ -34,9 +32,6 @@ function createErrorNotificationContent(error: Error): any {
   return errorDetails;
 }
 
-
-
-
 const errorLogger = {
   error: (errorMessage: string, extraInfo: any) => {
     console.error(errorMessage, extraInfo);
@@ -50,6 +45,13 @@ const errorLogger = {
   },
 };
 
+class SearchLogger {
+  static logError(errorMessage: string, query: string) {
+    // Log the error message with the search query
+    Logger.logError(errorMessage, query);
+  }
+}
+
 class Logger {
   static logWithOptions(type: string, message: string, uniqueID: string) {
     // You can implement different logging mechanisms based on the type
@@ -59,7 +61,6 @@ class Logger {
   static logSessionEvent(sessionID: string, event: string) {
     // Assuming 'endpoints' is imported from apiEndpoints.ts
     fetch(endpoints.logs.logSession as unknown as Request, {
-
       // Cast to unknown first, then to Request
       method: "POST",
       body: JSON.stringify({ sessionID, event }),
@@ -254,28 +255,23 @@ class TeamLogger {
     }
   }
 
-
   private static convertTeamId(teamId: string | number): number {
     // Check if teamId is already a number, if so, return it
     if (typeof teamId === "number") {
       return teamId;
     }
-  
+
     // Attempt to parse teamId as a number
     const parsedTeamId = parseInt(teamId, 10);
-  
+
     // Check if parsing was successful, if not, throw an error
     if (isNaN(parsedTeamId)) {
       throw new Error("Invalid teamId provided: " + teamId);
     }
-  
+
     // Return the parsed teamId
     return parsedTeamId;
   }
-  
-
-
-
 
   private static async logTeamEvent(
     teamId: string,
@@ -284,9 +280,8 @@ class TeamLogger {
     data?: any
   ): Promise<void> {
     try {
+      // Convert teamId to a number using the utility method
 
-       // Convert teamId to a number using the utility method
-  
       const teamData: TeamData | null = useTeamManagerStore().getTeamData(
         teamId,
         team
@@ -344,6 +339,90 @@ class TeamLogger {
   }
 }
 
+
+
+
+
+
+class AnimationLogger {
+  static async logAnimation(
+    message: string,
+    uniqueID: string,
+    animationID: string,
+    duration: number
+  ) {
+    const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
+
+    try {
+      const logUrl = this.getLogUrl("animationEvent");
+      
+      const response = await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ uniqueID, animationID, duration }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log animation event");
+      }
+    } catch (error: any) {
+      console.error("Error logging animation event:", error);
+      handleError("Error logging animation event: " + error.message); // Handle the error using the provided error handling function
+
+      // Log the error to the file using the FileLogger
+      FileLogger.logFileError("Error logging animation event: " + error.message);
+      
+      throw error; // Re-throw the error to propagate it further if needed
+    }
+  }
+
+  static generateID(prefix: string, name: string, type: NotificationType, dataDetails?: DataDetails): string {
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 10);
+    let id = `${prefix}_${name}_${timestamp}_${randomString}`;
+
+    // Include additional details to make the ID more unique
+    if (dataDetails) {
+      // Concatenate data details to the ID
+      id += `_${dataDetails.title}_${dataDetails.type}`;
+    }
+
+    return id;
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    if (typeof endpoints.logs.logEvent === "string") {
+      logUrl = endpoints.logs.logEvent;
+    } else if (typeof endpoints.logs.logEvent === "function") {
+      logUrl = endpoints.logs.logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
+      // logUrl = endpoints.logs.logEvent.someNestedFunction();
+    }
+
+    return logUrl;
+  }
+
+  static logAnimationStopped(uniqueID: string, animationID: string, startTime: number) {
+    const endTime = Date.now();
+    const duration = endTime - startTime; // Calculate the duration of the animation
+  
+    AnimationLogger.logAnimation(
+      "Animation stopped",
+      uniqueID,
+      animationID,
+      duration
+    );
+  }
+}
+
+
+
 // Extend Logger for video logs
 class VideoLogger extends Logger {
   static logVideo(
@@ -396,6 +475,10 @@ class VideoLogger extends Logger {
       });
   }
 }
+
+
+
+
 class ChannelLogger extends Logger {
   static logChannel(message: string, uniqueID: string, channelID: string) {
     super.logWithOptions("Channel", message, uniqueID);
@@ -438,6 +521,59 @@ class ChannelLogger extends Logger {
       });
   }
 }
+
+
+
+
+
+class FormLogger {
+  static async logFormEvent(eventType: string, formID: string, eventData: any) {
+    const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
+
+    try {
+      const logUrl = this.getLogUrl("formEvent");
+
+      const response = await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ eventType, formID, eventData }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log form event");
+      }
+    } catch (error: any) {
+      console.error("Error logging form event:", error);
+      handleError("Error logging form event: " + error.message); // Handle the error using the provided error handling function
+
+      // Log the error to the file using the FileLogger
+      FileLogger.logFileError("Error logging form event: " + error.message);
+
+      throw error; // Re-throw the error to propagate it further if needed
+    }
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    if (typeof endpoints.logs.logEvent === "string") {
+      logUrl = endpoints.logs.logEvent;
+    } else if (typeof endpoints.logs.logEvent === "function") {
+      logUrl = endpoints.logs.logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
+      // logUrl = endpoints.logs.logEvent.someNestedFunction();
+    }
+
+    return logUrl;
+  }
+}
+
+
+
 
 class CollaborationLogger extends Logger {
   static logCollaboration(
@@ -529,6 +665,47 @@ class DocumentLogger extends Logger {
           error
         );
       });
+    // Log to file
+    FileLogger.logToFile(
+      `Document event logged: ${uniqueID}, ${documentID}`,
+      "document_log.txt"
+    );
+  }
+}
+
+class FileLogger extends Logger {
+  static logToFile(message: string, fileName: string) {
+    console.log(`Logging to file ${fileName}: ${message}`);
+    // Here you can implement the logic to write the message to the specified file
+    // For demonstration purposes, we'll log to the console
+  }
+
+  static logDocumentToFile(message: string, fileName: string) {
+    this.logToFile(message, fileName);
+  }
+
+  static logTaskToFile(message: string, fileName: string) {
+    this.logToFile(message, fileName);
+  }
+
+  static logFileError(errorMessage: string) {
+    this.logToFile(errorMessage, "error_log.txt");
+  }
+  // You can add more specific logging methods for different log types as needed
+
+  static logEventToFile(logType: string, message: string, fileName: string) {
+    switch (logType) {
+      case "Document":
+        this.logDocumentToFile(message, fileName);
+        break;
+      case "Task":
+        this.logTaskToFile(message, fileName);
+        break;
+      // Add more cases for other log types if necessary
+      default:
+        this.logToFile(`[${logType}] ${message}`, fileName);
+        break;
+    }
   }
 }
 
@@ -553,14 +730,6 @@ class TaskLogger extends Logger {
     };
 
     if (completionMessageLog.createdAt) {
-      // Define a function to call notify with the appropriate arguments
-      // const notifyCallback = () => {
-      //   notify("Success",
-      //     NOTIFICATION_MESSAGES.Logger.LOG_INFO,
-      //     new Date(),
-      //     String(taskID));
-      // };
-
       const notifyCallback = () => {
         notify(
           "Success",
@@ -577,7 +746,9 @@ class TaskLogger extends Logger {
         completionMessageLog as NotificationData,
         notifyCallback // Pass the function to notify as an argument
       );
+      
     }
+    FileLogger.logToFile(`Task event logged: ${taskID}, ${completionMessage}`, 'task_log.txt');
   }
 
   static logTaskCompleted(
@@ -632,10 +803,10 @@ class TaskLogger extends Logger {
     );
     // Additional logic specific to logging task reassignment
   }
-
+  // Log to file
+   
   // Add more methods as needed for other task-related events
 }
-
 
 class CalendarLogger extends Logger {
   static logCalendarEvent(message: string, uniqueID: string, eventID: string) {
@@ -649,8 +820,9 @@ class CalendarLogger extends Logger {
         ? endpoints.calendar.logCalendarEvent(eventID) // Call the function with eventID to get the dynamic URL
         : endpoints.calendar.logCalendarEvent;
 
-    if (logCalendarEventUrl) { // Check if the URL is defined
-      fetch(logCalendarEventUrl, {
+    if (logCalendarEventUrl) {
+      // Check if the URL is defined
+      fetch(String(logCalendarEventUrl), {
         method: "POST",
         body: JSON.stringify({ uniqueID, eventID }),
         headers: {
@@ -895,8 +1067,7 @@ class BugLogger extends Logger {
 export default Logger;
 
 export {
-  AnalyticsLogger,
-  AudioLogger,
+  AnalyticsLogger, AnimationLogger, AudioLogger,
   CalendarLogger,
   ChannelLogger,
   CollaborationLogger,
@@ -904,11 +1075,16 @@ export {
   ContentLogger,
   DocumentLogger,
   ErrorLogger,
+  FileLogger,
   IntegrationLogger,
   PaymentLogger,
+  SearchLogger,
   SecurityLogger,
   TaskLogger,
+  TeamLogger,
   TenantLogger,
   VideoLogger,
-  TeamLogger,
+  FormLogger,
+  BugLogger
 };
+

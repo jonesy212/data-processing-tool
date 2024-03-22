@@ -1,18 +1,24 @@
 import { Data } from '@/app/components/models/data/Data';
 import { Idea } from '../models/tasks/Task';
 import { Phase } from "../phases/Phase";
+import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
+import { AllStatus } from '../state/stores/DetailsListStore';
 import { Snapshot } from "../state/stores/SnapshotStore";
 import { User } from "../users/User";
 import { VideoData } from '../video/Video';
+import { PriorityStatus, PriorityTypeEnum } from '../models/data/StatusType';
+
+
+
 
 export interface Todo extends Data {
   id: string | number;
   done: boolean;
-  status: "pending" | "inProgress" | "completed";
+  status?: AllStatus
   todos: Todo[];
   description: string;
   dueDate: Date | null;
-  priority: "low" | "medium" | "high";
+  priority: AllStatus
   assignedTo: User | null;
   assignee: User | null;
   assignedUsers: string[];
@@ -45,18 +51,6 @@ export interface Todo extends Data {
   data?: Data;
 }
 
-export interface Comment extends CharacterData {
-  id: string;
-  text: string;
-  editedAt?: Date;
-  editedBy?: string;
-  attachments?: Attachment[];
-  replies?: Comment[];
-  likes?: User[];
-  watchLater: boolean; // Add the watchLater property
-
-}
-
 export interface Attachment extends Data {
   url: string;
   name: string;
@@ -86,7 +80,7 @@ class TodoImpl implements Todo {
   todos: Todo[] = [];
   description: string = "";
   dueDate: Date | null = null;
-  priority: "low" | "medium" | "high" = "medium";
+  priority: AllStatus = PriorityStatus.Medium
   assignedTo: User | null = null;
   assignee: User | null = null;
   assignedUsers: string[] = [];
@@ -118,8 +112,8 @@ class TodoImpl implements Todo {
   tags: string[] = [];
   phase: Phase | null = null;
   then: (callback: (newData: Snapshot<Data>) => void) => void = () => {};
-  analysisType: string = "";
-  analysisResults: string[] = [];
+  analysisType: AnalysisTypeEnum = AnalysisTypeEnum.TODO as AnalysisTypeEnum;
+  analysisResults: DataAnalysisResult[] = [];
   videoUrl: string = "";
   videoThumbnail: string = "";
   videoDuration: number = 0;

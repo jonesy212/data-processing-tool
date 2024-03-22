@@ -9,6 +9,7 @@ import { BackendConfig } from "./BackendConfig";
 import { FrontendConfig } from "./FrontendConfig";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
+import { getCurrentAppInfo } from "../generators/VersionGenerator";
 const { TabPane } = Tabs;
 
 interface MainConfigProps {
@@ -26,9 +27,10 @@ const MainConfig: React.FC<MainConfigProps> = ({
   const [activeTab, setActiveTab] = useState("frontend"); // Default to frontend
 
   // Determine the type of structure (frontend or backend)
-  const isBackend = true; // Example: Set to true for backend, false for frontend
-  const projectPath = getAppPath();
-  const structureType = isBackend ? "backend" : "frontend";
+  const isBackend = true;
+  const { versionNumber, appVersion } = getCurrentAppInfo();
+  const projectPath = getAppPath(versionNumber, appVersion);
+   const structureType = isBackend ? "backend" : "frontend";
 
   // Instantiate the appropriate structure based on the type
   const structure = isBackend ? backendStructure : frontendStructure;

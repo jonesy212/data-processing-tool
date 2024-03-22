@@ -37,7 +37,11 @@ export const handleCryptoPaymentSelect = (cryptoOption: string) => {
 
 
 
-const DynamicEventHandlerExample = ({ handleSorting }: { handleSorting: (snapshotList: SnapshotList) => void }) => {
+const DynamicEventHandlerExample = ({ handleSorting }: {
+  handleSorting: (
+    snapshotList: SnapshotList
+  ) => void
+}) => {
 
     // State to track messages
     const [messages, setMessages] = useState<string[]>([]);
@@ -512,15 +516,6 @@ const DynamicEventHandlerExample = ({ handleSorting }: { handleSorting: (snapsho
       </div>
     );
 }
-
-
-
-
-
-const dynamicEvent = new DynamicEventHandlerExample(
-  
-)
-
 
 
 export default DynamicEventHandlerExample;

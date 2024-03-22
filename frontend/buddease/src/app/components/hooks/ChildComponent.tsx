@@ -20,3 +20,4 @@ const ChildComponent: React.FC<ChildComponentProps> = ({ router, brandingSetting
 };
 
 export default ChildComponent;
+export type { ChildComponentProps };

@@ -12,7 +12,10 @@ export interface AsyncHook {
   idleTimeoutId: NodeJS.Timeout | null;
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Correct type definition
   cleanup: (() => void) | undefined
-  toggleActivation: () => void
+  startAnimation: () => void;
+  stopAnimation: () => void;
+  animateIn: () => void;
+  toggleActivation: (accessToken?: string | null | undefined) => void; // Make accessToken optional and nullable
  }
 
 

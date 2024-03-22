@@ -1,17 +1,14 @@
-import React, { useState } from "react";
-import TeamProgressBar from "@/app/components/projects/projectManagement/TeamProgressBar";
-import { Persona } from "./Persona";
-import PersonaTypeEnum from "./PersonaBuilder";
+import { Data } from "@/app/components/models/data/Data";
+import SearchResultItem from "@/app/components/models/data/SearchResultItem";
 import Team from "@/app/components/models/teams/Team";
-import { useSearch } from "../searchs/SearchContext";
 import ProgressBar, {
   Progress,
-} from "@/app/components/models/tracker/ProgresBar";
-import SearchResultItem from "@/app/components/models/data/SearchResultItem";
-import CommunityProjectsPage from "../community/CommunityProjectsPage";
+} from "@/app/components/models/tracker/ProgressBar";
+import TeamProgressBar from "@/app/components/projects/projectManagement/TeamProgressBar";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
-import { Data } from "@/app/components/models/data/Data";
-import TeamData from "@/app/components/models/teams/TeamData";
+import React, { useState } from "react";
+import CommunityProjectsPage from "../community/CommunityProjectsPage";
+import { useSearch } from "../searchs/SearchContext";
 
 interface ProjectManagerPersonaProps {
   teams: Team[];

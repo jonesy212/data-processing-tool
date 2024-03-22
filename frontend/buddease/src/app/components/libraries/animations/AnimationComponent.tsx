@@ -1,10 +1,10 @@
 // AnimatedComponent.tsx
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import createDynamicHook, { DynamicHookParams, DynamicHookResult } from '../../hooks/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook, { DynamicHookResult } from '../../hooks/dynamicHooks/dynamicHookGenerator';
 import { AnimatedComponentProps } from '../../styling/AnimationsAndTansitions';
 
 import authService from '../../auth/AuthService';
-import useIdleTimeout from '../../hooks/commHooks/useIdleTimeout';
+import useIdleTimeout from '../../hooks/idleTimeoutHooks';
 import DraggableAnimation from './DraggableAnimation'; // Import DraggableAnimation
 
 export interface AnimatedComponentRef extends DynamicHookResult {
@@ -19,7 +19,8 @@ export interface AnimatedComponentRef extends DynamicHookResult {
 const AnimatedComponent = forwardRef<
   AnimatedComponentRef,
   AnimatedComponentProps
->((_props, ref) => {
+  >((_props, ref) => {
+    const { animationType = 'slideIn', duration = 1000 } = _props; // Destructure props with default values
   const [isVisible, setIsVisible] = useState(false);
   const [animationTime, setAnimationTime] = useState(1000);
   const [opacity, setOpacity] = useState(1);
@@ -30,17 +31,21 @@ const AnimatedComponent = forwardRef<
   // Destructure new props
   const { loopDuration = 0, loopLength = 1, repeat = false } = _props;
 
+  // Destructure the required properties or methods from the result of createDynamicHook
   const { toggleActivation, startAnimation, stopAnimation, animateIn } =
-    createDynamicHook({
-      condition: () => isVisible,
-      asyncEffect: async () => {
-        setIsVisible(true);
-      },
-      resetIdleTimeout: () => {
-        // Reset idle timeout
-      },
-      isActive: false,
-    } as unknown as DynamicHookParams)();
+   createDynamicHook({
+     condition: async () => isVisible,
+     asyncEffect: async () => {
+      setIsVisible(true);
+    },
+    resetIdleTimeout: () => {
+      // Reset idle timeout
+    },
+     isActive: false,
+
+  });
+
+// Now you can use toggleActivation, startAnimation, stopAnimation, and animateIn directly
 
   useImperativeHandle(
     ref,
@@ -58,7 +63,7 @@ const AnimatedComponent = forwardRef<
       animateIn: () => {
         startAnimation();
       },
-      idleTimeoutId: useIdleTimeout().idleTimeoutId,
+      idleTimeoutId:  useIdleTimeout().idleTimeoutId,
       startIdleTimeout: useIdleTimeout().startIdleTimeout,
       accessToken: accessToken,
       isActive: isVisible,

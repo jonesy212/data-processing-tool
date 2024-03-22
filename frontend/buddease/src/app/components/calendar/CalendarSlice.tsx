@@ -1,5 +1,5 @@
 import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { useDispatch } from 'react-redux';
 import { Theme } from '../libraries/ui/theme/Theme';
@@ -79,6 +79,34 @@ const dispatch = useDispatch();
 const handleViewEventDetails = (eventDetails: CalendarEventViewingDetailsProps, eventId: string) => {
   dispatch(viewCalendarEventDetails({ eventDetails, eventId }) as any); // Explicitly cast the action type to 'any'
 };           
+
+
+
+
+
+// Define an async thunk for exporting calendar events
+export const exportCalendarEventsToExternalSources = createAsyncThunk(
+  'calendarEvents/exportCalendarEventsToExternalSources',
+  async (eventId: string, { dispatch }: { dispatch: any }) => {
+    // Add logic to export calendar events to external sources here
+    // For example, you can export events to Google Calendar
+    // Simulate async operation
+    const event = await fetchEvent(eventId);
+    if (event) {
+      dispatch(
+        useNotification().actions.showSuccessNotification(
+          'Calendar events exported to external sources successfully'
+        )
+      );
+    } else {
+      dispatch(
+        notificationsSlice.actions.showErrorNotification(
+          'Error exporting calendar events to external sources'
+        )
+      );
+    }
+  }
+);
 
 
 
@@ -476,22 +504,7 @@ setEventColor: (
     },
 
 
-    exportCalendarEventsToExternalSources: (state, action: PayloadAction<string>) => { 
-      const eventId = action.payload;
-      const event = state.entities[eventId];
-      if (await event) {
-        // Add logic to export calendar events to external sources here
-        // For example, you can export events to Google Calendar
-        dispatchNotification(
-          "exportCalendarEventsToExternalSources",
-          "Calendar events exported to external sources successfully",
-          "Error exporting calendar events to external sources",
-          dispatch,
-          eventId
-        );
-      }
-      // Perform additional actions if needed
-    },
+    
 
 
 
@@ -775,14 +788,14 @@ setEventPriority: (
 
 
 // Action to set event privacy
-setEventPrivacy: (
-  eventId: string,
-  privacy: string
-): PayloadAction<{ eventId: string; privacy: string }> => ({
-  type: 'events/setEventPrivacy',
-  payload: { eventId, privacy },
-}),
-
+    setEventPrivacy: (
+      eventId: string,
+      privacy: string
+ ): PayloadAction<{ eventId: string; privacy: string }> => ({
+      type: 'events/setEventPrivacy',
+      payload: { eventId, privacy },
+    }),
+      
 // Action to clear event privacy
 clearEventPrivacy: (eventId: string): PayloadAction<string> => ({
   type: 'events/clearEventPrivacy',
@@ -815,7 +828,23 @@ clearEventAccess = (eventId: string): PayloadAction<string> => ({
       return state;
     },
     
-  }
+  },
+
+
+
+
+
+  extraReducers: (builder) => {
+    builder.addCase(exportCalendarEventsToExternalSources.pending, (state) => {
+      // Handle pending state if needed
+    });
+    builder.addCase(exportCalendarEventsToExternalSources.fulfilled, (state) => {
+      // Handle fulfilled state if needed
+    });
+    builder.addCase(exportCalendarEventsToExternalSources.rejected, (state) => {
+      // Handle rejected state if needed
+    });
+  },
 });
 export const {
   // Calendar Events
@@ -874,7 +903,6 @@ export const {
   syncCalendarWithExternalCalendars, // Sync Calendar with External Calendars
   importCalendarEventsFromExternalSources, // Import Calendar Events from External Sources
   importCalendarEventViewingDetails, // Import Calendar Event Viewing Details
-  exportCalendarEventsToExternalSources, // Export Calendar Events to External Sources
   addExternalCalendarsOverlay, // Add External Calendars Overlay
 
   // Collaboration
@@ -965,4 +993,4 @@ export const selectNotifications = (state: {
 }) => state.calendarEvents.notifications;
 
 export default Milestone; useCalendarManagerSlice.reducer; 
-export type { CalendarManagerState };
+export type { CalendarManagerState, ProductMilestone };

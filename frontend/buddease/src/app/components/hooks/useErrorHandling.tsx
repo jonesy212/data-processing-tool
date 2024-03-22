@@ -1,4 +1,5 @@
-// useErrorHandling.tsx
+import { FileLogger } from '@/app/pages/logging/Logger';
+import ErrorHandler from '@/app/shared/ErrorHandler';
 import { useState } from 'react';
 
 const useErrorHandling = () => {
@@ -6,6 +7,10 @@ const useErrorHandling = () => {
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
+    // Log the error using the FileLogger
+    FileLogger.logFileError(errorMessage);
+    // Log the error using the ErrorHandler class
+    ErrorHandler.logError(new Error(errorMessage), null);
     // Optionally, you can log the error or perform other actions here
   };
 

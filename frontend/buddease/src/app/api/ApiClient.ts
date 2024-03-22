@@ -51,6 +51,10 @@ class ClientApiService {
     date: Date,
     type: NotificationType
   ) => void;
+  updateCalendarEvent: (
+    eventId: number,
+    updatedEvent: any
+  ) => Promise<AxiosResponse>
 
   constructor(
     notify: (
@@ -59,9 +63,14 @@ class ClientApiService {
       data: any,
       date: Date,
       type: NotificationType
-    ) => void
+    ) => void,
+    updateCalendarEvent: (
+      eventId: number,
+      updatedEvent: any
+    ) => Promise<AxiosResponse>
   ) {
     this.notify = notify;
+    this.updateCalendarEvent = updateCalendarEvent;
   }
 
   private async requestHandler(
@@ -303,7 +312,15 @@ class ClientApiService {
   // Additional client API methods can be added here...
 }
 
-const clientApiService = new ClientApiService(useNotification);
+
+export const updateCalendarEvent = async (
+  eventId: number,
+  updatedEvent: any
+): Promise<AxiosResponse> => {
+  return await clientApiService.updateCalendarEvent(eventId, updatedEvent);
+};
+
+const clientApiService = new ClientApiService(useNotification, updateCalendarEvent);
 
 export default clientApiService;
 export type { ClientNotificationMessages };

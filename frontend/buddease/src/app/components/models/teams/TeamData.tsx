@@ -5,7 +5,7 @@ import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSett
 import { Project } from "../../projects/Project";
 import { User } from "../../users/User";
 import { Data } from "../data/Data";
-import { Progress } from "../tracker/ProgresBar";
+import { Progress } from "../tracker/ProgressBar";
 import { Member } from "./TeamMembers";
 
 interface TeamData extends Partial<Data> {

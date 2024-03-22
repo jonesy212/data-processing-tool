@@ -37,6 +37,13 @@ type DynamicComponentsContextType = {
   updateDynamicConfig: (newConfig: DynamicConfigType) => void; // Updated function signature
   setDynamicConfig: React.Dispatch<React.SetStateAction<DynamicConfigType>>; 
   setDynamicConfigAction: React.Dispatch<DynamicConfigActionType>; // Use DynamicConfigActionType interface
+  hooks: {
+    componentSpecificData: any;
+  }
+  utilities: {
+    componentSpecificData: any;
+  }
+  componentSpecificData: any;
 };
 
 const DynamicComponentsContext = createContext<DynamicComponentsContextType | undefined>(undefined);
@@ -65,6 +72,13 @@ export const DynamicComponentsProvider: React.FC<DynamicComponentContextProps> =
     updateDynamicConfig,
     setDynamicConfigAction: (value: DynamicConfigActionType) => { }, // Correct the function signature
     dynamicContent: false,
+    hooks: {
+      componentSpecificData: undefined
+    },
+    utilities: {
+      componentSpecificData: undefined
+    },
+    componentSpecificData: undefined
   };
 
   return (

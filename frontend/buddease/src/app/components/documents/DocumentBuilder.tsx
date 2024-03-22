@@ -3,15 +3,18 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import Clipboard from "@/app/ts/clipboard";
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
+import { PathLike } from "fs";
 import React, { useState } from "react";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
 import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
+import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
 import axiosInstance from "../security/csrfToken";
 import SharingOptions from "../shared/SharingOptions";
+import { AllStatus } from "../state/stores/DetailsListStore";
 import {
   createPdfDocument,
   getFormattedOptions,
@@ -21,8 +24,7 @@ import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions, DocumentBuilderProps } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { AllStatus } from "../state/stores/DetailsListStore";
-import { Phase } from "../phases/Phase";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
@@ -41,6 +43,12 @@ export interface DocumentData extends CommonData<Data> {
   changes?: string[];
   options: DocumentOptions;
   documentPhase?: Phase;
+  folderPath: PathLike;
+  previousContent?: string;
+  currentContent?: string;
+  previousMetadata: StructuredMetadata;
+  currentMetadata: StructuredMetadata;
+  accessHistory: any[];
   // Add more properties if needed
 }
 
@@ -51,6 +59,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   onOptionsChange,
   setOptions,
   documents,
+  
 }) => {
 
   const [editorState, setEditorState] = useState(() =>
@@ -172,7 +181,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       link: true,
       image: true,
       audio: true,
-      type: {} as DocumentType,
+      type: {} as DocumentTypeEnum,
       handleEditorStateChange: handleEditorStateChange, // Corrected assignment here
       onEditorStateChange: handleEditorStateChange,
     };
@@ -240,7 +249,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           code={true}
           link={true}
           image={true}
-          type={{} as ToolbarOptionsProps & DocumentType}
+          type={{} as DocumentTypeEnum}
           audio={true}
           onEditorStateChange={(newEditorState: any) => {
             setEditorState(newEditorState);

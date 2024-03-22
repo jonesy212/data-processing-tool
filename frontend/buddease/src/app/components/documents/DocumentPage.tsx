@@ -29,6 +29,8 @@ const dynamicHooks: DynamicHooks = {
 };
 
 
+
+
 const DocumentPage = () => {
   const [options, setOptions] = useState<DocumentOptions>(
     getDefaultDocumentOptions()
@@ -49,6 +51,11 @@ const DocumentPage = () => {
   };
 
 
+  // Define the setOptions function
+  const setOptionsHandler = (newOptions: DocumentOptions) => {
+    setOptions(newOptions);
+  };
+  
   return (
     <div>
       <h1>Your Document Page</h1>
@@ -56,7 +63,12 @@ const DocumentPage = () => {
       <DocumentBuilder
         options={options}
         onOptionsChange={handleOptionsChange}
+        onConfigChange={handleConfigChange} 
         isDynamic={true}
+        documentPhase={""}
+        version={""}
+        setOptions={setOptionsHandler}
+        documents={[]}
       />
 
       {Object.keys(dynamicHooks).map((key) => (

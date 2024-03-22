@@ -1,5 +1,4 @@
 // ContentManagementPhase.tsx
-// ContentManagementPhase.tsx
 import React from "react";
 import { ContentEditor } from "./ContentEditor";
 import { ContentList } from "./ContentList";

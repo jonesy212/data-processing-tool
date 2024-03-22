@@ -6,26 +6,25 @@ import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from '@/app/ts/ScheduleEventModal';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
+import { useDispatch } from "react-redux";
+import { DocumentOptions, getDefaultDocumentOptions } from "../../documents/DocumentOptions";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
+import { CommonData } from "../../models/CommonData";
 import { Data } from "../../models/data/Data";
-import {Team} from "../../models/teams/Team";
+import { CalendarStatus, StatusType } from "../../models/data/StatusType";
+import { Team } from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
+import { Phase } from "../../phases/Phase";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import  PriorityTypeEnum  from "../../todos/Todo";
 import { VideoData } from "../../video/Video";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
-import { useDispatch } from "react-redux";
 import { AllStatus } from "./DetailsListStore";
-import { CommonData } from "../../models/CommonData";
-import { DocumentTypeEnum } from "../../documents/DocumentGenerator";
-import { DocumentOptions, getDefaultDocumentOptions } from "../../documents/DocumentOptions";
-import { Phase } from "../../phases/Phase";
-import { getDefaultOptions } from "intro.js/src/option";
-import { CalendarStatus } from "../../models/data/StatusType";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
 
 
@@ -55,7 +54,6 @@ const notifyCallback = (): void => {
   });
 };
 
-export type Priority = "low" | "medium" | "high" | "urgent" | undefined;
 
 interface CalendarEvent extends
   CommonEvent,
@@ -66,7 +64,7 @@ interface CalendarEvent extends
   highlights: string[];
   load?: () => void;
   files: any[];
-  type?: DocumentTypeEnum;
+  type?: NotificationType;
   locked?: boolean;
   changes?: string[];
   options: DocumentOptions;
@@ -74,7 +72,7 @@ interface CalendarEvent extends
   // Add more properties if needed
   status: AllStatus
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
-  priority:  Priority | boolean
+  priority:  AllStatus
   location?: string;
   host: Member;
   hosts?: Member[];
@@ -101,16 +99,8 @@ export interface CalendarManagerStore {
   events: Record<string, CalendarEvent[]>;
   eventTitle: string;
   eventDescription: string;
-  eventStatus:
-  
-    | "pending" 
-    | "scheduled"
-    | "inProgress"
-    | "tentative"
-    | "confirmed"
-    | "cancelled"
-    | "completed"
-    | undefined;
+  eventStatus: AllStatus; // Assuming this is the property expecting the mentioned types
+
   assignedEventStore: AssignEventStore;
   snapshotStore: SnapshotStore<Snapshot<Data>>;
   NOTIFICATION_MESSAGE: string;
@@ -119,14 +109,7 @@ export interface CalendarManagerStore {
   updateEventDescription: (description: string) => void;
   updateEventStatus: (
     eventId: string,
-    status:
-      | "scheduled"
-      | "inProgress"
-      | "tentative"
-      | "confirmed"
-      | "cancelled"
-      | "completed"
-      | undefined
+    status: AllStatus
   ) => void;
   updateEventDate: (eventId: string, eventDate: Date) => void;
   addEvent: (event: CalendarEvent) => void;
@@ -166,17 +149,11 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   };
   eventTitle = "";
   eventDescription = "";
-  eventStatus:
-    | "scheduled"
-    | "inProgress"
-    | "tentative"
-    | "confirmed"
-    | "cancelled"
-    | "completed"
-    | undefined = undefined;
+  eventStatus: AllStatus = StatusType.Pending
+
   assignedEventStore: AssignEventStore;
   snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<Snapshot<Data>>(
-    {} as SnapshotStoreConfig<Snapshot<Data>>,
+    {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
     notifyCallback // Use the synchronous callback function here
   );;
   NOTIFICATION_MESSAGE = "";
@@ -252,21 +229,39 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   updateEventStatus(
     eventId: string,
     status:
-      | "scheduled"
-      | "inProgress"
-      | "tentative"
-      | "confirmed"
-      | "cancelled"
-      | "completed"
-      | undefined
+    AllStatus
   ): void {
-    if (status !== undefined) {
-      this.eventStatus = status;
-      this.assignedEventStore.updateEventStatus(eventId, status);
-    } else {
-      this.eventStatus = undefined;
-      console.error("Event status cannot be undefined.");
-     }
+    const eventsArray = this.events[eventId];
+    if (eventsArray && eventsArray.length > 0) {
+      const event = eventsArray[0]; // Accessing the first event in the array
+      event.status = status;
+
+    }
+    if(status === CalendarStatus.Completed){
+      this.completeAllEvents();
+    }
+    else{
+      this.setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      );
+    }
+    if(status === CalendarStatus.Scheduled){
+      this.setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      );
+    }
+    if(status === CalendarStatus.InProgress){
+      this.setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      );
+    }
+    if(status === CalendarStatus.Tentative){
+      this.setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      );
+    }
+
+    this.eventStatus = status
   }
 
   addEventSuccess(payload: { event: CalendarEvent }): void {
@@ -312,13 +307,13 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       color: "",
       isImportant: false,
       teamMemberId: '0',
-      priority: undefined,
+      priority: {} as AllStatus,
       _id: "",
       isActive: false,
       tags: [],
       phase: null,
       then: implementThen,
-      analysisType: "",
+      analysisType: {} as AnalysisTypeEnum,
       analysisResults: [],
       videoData: {} as VideoData,
       participants: [],
@@ -383,7 +378,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     // Reset input fields after adding events
     this.eventTitle = "";
     this.eventDescription = "";
-    this.eventStatus = undefined; // Set to undefined when resetting
+    this.eventStatus = `undefined` // Set to undefined when resetting
   }
 
   reassignEvent(eventId: string, oldUserId: string, newUserId: string): void {
@@ -571,7 +566,7 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
     tags: [],
     phase: null,
     then: implementThen,
-    analysisType: "",
+    analysisType: {} as AnalysisTypeEnum,
     analysisResults: [],
     videoUrl: "",
     videoThumbnail: "",
@@ -615,7 +610,7 @@ const events: Record<string, CalendarEvent[]> = {
       isCompleted: false,
       isActive: false,
       tags: [],
-      priority: "low",
+      priority: {} as AllStatus,
       phase: null,
       participants: [],
       then: (callback: (newData: Snapshot<Data>) => void) => {
@@ -626,7 +621,7 @@ const events: Record<string, CalendarEvent[]> = {
         };
         callback(newData);
       },
-      analysisType: "",
+      analysisType: {} as AnalysisTypeEnum,
       analysisResults: [],
       videoData: {} as VideoData,
       content:'content',

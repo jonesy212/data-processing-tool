@@ -1,4 +1,5 @@
 // SharedDocumentProps.ts
+import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentOptions } from "./DocumentOptions";
 
@@ -11,6 +12,7 @@ export interface DocumentBuilderProps {
   documentPhase: string; // Add document phase property
   version: string; // Add version property
   onOptionsChange: (newOptions: DocumentOptions) => void;
+  onConfigChange: (newConfig: DocumentBuilderConfig) => void;
   setOptions: (newOptions: any) => void; // Define setOptions prop
   documents: DocumentData[]; // Add documents prop to receive document data
   options: DocumentOptions;

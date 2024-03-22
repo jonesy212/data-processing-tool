@@ -7,7 +7,7 @@ import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { TeamMember } from "../models/teams/TeamMembers";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { UserRole } from "./UserRole";
-import Team from "../models/teams/Team";
+import {Team} from "../models/teams/Team";
 import { DataDetails } from "../models/data/Data";
 import { Project } from "../projects/Project";
 

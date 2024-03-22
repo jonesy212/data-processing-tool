@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-const Stopwatch = ({ startDate, endDate }) => {
+const Stopwatch = ({ startTime, endTime }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -38,8 +38,8 @@ const Stopwatch = ({ startDate, endDate }) => {
   return (
     <div>
       <div>Stopwatch: {formatTime(elapsedTime)}</div>
-      <div>Start Time: {formatTime(startDate)}</div>
-      <div>End Time: {formatTime(endDate)}</div>
+      <div>Start Time: {formatTime(startTime)}</div>
+      <div>End Time: {formatTime(endTime)}</div>
       <button onClick={toggleStopwatch}>{isRunning ? 'Pause' : 'Start'}</button>
       <button onClick={resetStopwatch}>Reset</button>
     </div>

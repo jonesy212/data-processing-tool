@@ -8,7 +8,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Snapshot } from "../../stores/SnapshotStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import Team from "@/app/components/models/teams/Team";
+import {Team} from "@/app/components/models/teams/Team";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { VideoData } from "@/app/components/video/Video";
 import { ProjectActions } from '../../../actions/ProjectActions';

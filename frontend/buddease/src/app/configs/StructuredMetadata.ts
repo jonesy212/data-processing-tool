@@ -105,9 +105,7 @@ const { state, setState, undo, redo } = useUndoRedo(initialState);
 // Define your metadata structure using 'state' and update it using 'setState'
 
 // Add undo and redo handlers to the metadata structure
-// Add undo and redo handlers to the metadata structure
 (state as any).undo = undo;
-(state as any).redo = redo;
 
 
 
@@ -155,31 +153,33 @@ const trackStructureChanges = (
 ): void => {
   let metadata = readMetadata(filename);
 
-  const traverseDirectory = (dir: string) => {
-    const files = fs.readdirSync(dir);
+  
+const traverseDirectory = (dir: string) => {
+  const files = fs.readdirSync(dir);
 
-    for (const file of files) {
-      const filePath = path.join(dir, file);
-      const isDirectory = fs.statSync(filePath).isDirectory();
-      const fileOrFolderId = Buffer.from(filePath).toString("base64");
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const isDirectory = fs.statSync(filePath).isDirectory();
+    const fileOrFolderId = Buffer.from(filePath).toString("base64");
 
-      if (!metadata[fileOrFolderId]) {
-        metadata[fileOrFolderId] = {
-          originalPath: filePath,
-          alternatePaths: [],
-          fileType: determineFileType(filePath), // Assuming determineFileType is defined
-        };
-      }
-
-      if (isDirectory) {
-        traverseDirectory(filePath);
-      }
-
-      if (metadata[fileOrFolderId].originalPath !== filePath) {
-        metadata[fileOrFolderId].alternatePaths.push(filePath);
-      }
+    if (!metadata[fileOrFolderId]) {
+      const fileType = determineFileType(filePath);
+      metadata[fileOrFolderId] = {
+        originalPath: filePath,
+        alternatePaths: [],
+        fileType: fileType as string || "Unknown", // Provide a default value if fileType is undefined
+      };
     }
-  };
+
+    if (isDirectory) {
+      traverseDirectory(filePath);
+    }
+
+    if (metadata[fileOrFolderId].originalPath !== filePath) {
+      metadata[fileOrFolderId].alternatePaths.push(filePath);
+    }
+  }
+};
 
   traverseDirectory(basePath);
   writeMetadata(filename, metadata);

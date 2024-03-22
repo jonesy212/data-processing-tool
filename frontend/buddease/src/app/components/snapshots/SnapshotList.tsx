@@ -55,3 +55,5 @@ class SnapshotList {
 }
 
 export default SnapshotList;
+export type { SnapshotItem };
+

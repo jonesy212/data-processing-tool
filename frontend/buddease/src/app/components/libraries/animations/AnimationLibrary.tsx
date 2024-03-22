@@ -1,5 +1,25 @@
 import { useEffect, useState } from "react";
 
+
+// Define an enum for AnimationType
+enum AnimationTypeEnum {
+  Notification = "notification",
+  String = "string",
+  DocumentType = "documentType",
+  Fade = "fade",
+  Slide = "slide",
+  Zoom = "zoom", // Additional animation type
+  Rotate = "rotate", // Additional animation type
+  Bounce = "bounce", // Additional animation type
+  Flip = "flip", // Additional animation type
+  FadeScale = "fadeScale", // Additional animation type
+}
+
+// Define the AnimationType as a union type of string literals and the AnimationType enum
+
+// Define the AnimationType as a union type of string literals and the AnimationType enum values
+type AnimationType = "notification" | "string" | "documentType" | "fade" | "slide" | "zoom" | "rotate" | "bounce" | "flip" | "fadeScale";
+
 // Define the available animation libraries
 type AnimationLibrary =
   | "gsap"
@@ -11,7 +31,7 @@ type AnimationLibrary =
 
 interface AnimationOptions {
   library: AnimationLibrary;
-  animationType: string;
+  animationType: AnimationType;
 }
 
 export const useAnimationHook = async (options: AnimationOptions): Promise<any> => {
@@ -68,3 +88,11 @@ export const useAnimationHook = async (options: AnimationOptions): Promise<any> 
 
   return animationState;
 };
+
+export default AnimationTypeEnum
+
+
+
+
+// Example usage:
+export const animationType: AnimationType = AnimationTypeEnum.Fade;

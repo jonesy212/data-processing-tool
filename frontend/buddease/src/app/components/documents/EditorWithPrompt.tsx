@@ -3,7 +3,7 @@ import React, { ReactNode, useState } from "react";
 import { Prompt } from "../prompts/PromptPage";
 import PromptSystem from "../prompts/PromptSystem";
 import { generatePrompt } from "../prompts/promptGenerator";
-import { DocumentType } from "./DocumentGenerator";
+import { DocumentTypeEnum } from "./DocumentGenerator";
 import TextEditor from "./TextEditor"; // Assuming the correct path
 import { ToolbarOptionsProps } from "./ToolbarOptions";
 
@@ -53,6 +53,13 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
   const handleAccessInformationChange = (info: string) => {
     setAccessInformation(info);
   };
+
+
+  const handleDocumentTypeChange = (documentType: DocumentTypeEnum) => { 
+    // Add your logic to handle the document type change
+    console.log("Document type changed to:", documentType);
+
+  }
 
   const renderOptions = () => {
     switch (contentVariation) {
@@ -135,7 +142,7 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
       <TextEditor
         id="text-editor"
         onChange={handleTextChange}
-        type= {DocumentType.Text}
+        type= {DocumentTypeEnum.Text}
         onEditorStateChange={(editorState) => {
           const content = editorState.getCurrentContent().getPlainText('\u0001');
           setText(content);
@@ -170,7 +177,7 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
       {/* Prompt System */}
       <PromptSystem
         onUserResponse={handlePromptResponse}
-        documentType="document" // Provide necessary information
+        documentType={handleDocumentTypeChange} // Provide necessary information
         userIdea="idea"
       />
 

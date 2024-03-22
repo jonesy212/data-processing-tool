@@ -44,7 +44,6 @@ import IdeationPhase from "@/app/components/users/userJourney/IdeationPhase";
 import ProofOfConcept from "@/app/components/users/userJourney/ProofOfConcept";
 import RequirementsGathering from "@/app/components/users/userJourney/RequirementsGathering";
 import TeamBuildingPhaseManagement from "@/app/components/users/userJourney/TeamBuildingPhaseManagement";
-import Versioning from "@/app/components/versions/Versioning";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import MainConfig from "@/app/configs/MainConfig";
 import UserPreferences from "@/app/configs/UserPreferences";
@@ -90,7 +89,7 @@ import ProjectList from "@/app/components/lists/ProjectList";
 import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
 import NotificationManager from "@/app/components/support/NotificationManager";
-import { User, UserData, UserDetails } from "@/app/components/users/User";
+import UserDetails , { User, UserData } from "@/app/components/users/User";
 
 import ApiConfigComponent from "@/app/components/api/ApiConfigComponent";
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
@@ -103,7 +102,7 @@ import { NotificationType, NotificationTypeEnum } from "@/app/components/support
 import PermissionsEditor from "@/app/components/users/PermissionsEditor";
 import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
 import { saveProfile } from "@/app/components/users/userSnapshotData";
-import { BackendConfig } from "@/app/configs/BackendConfig";
+import { BackendConfig, backendConfig } from "@/app/configs/BackendConfig";
 import BackendConfigComponent from "@/app/configs/BackendConfigComponent";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
 import { FrontendConfig } from "@/app/configs/FrontendConfig";
@@ -112,13 +111,12 @@ import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
 import ExtendedBackendStructure from "@/app/configs/appStructure/ExtendedBackendStructure";
-import { FrontendStructure } from "@/app/configs/appStructure/FrontendStructureComponent";
+import FrontendStructure  from "@/app/configs/appStructure/FrontendStructureComponent";
 import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
 import DesignComponent from "@/app/css/DesignComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import AppCacheManagerBase from "@/app/utils/AppCacheManager";
 import MyPromise from "@/app/utils/MyPromise";
-import { notification } from "antd";
 import { useSelector } from "react-redux";
 import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
@@ -128,6 +126,13 @@ import DataPreview, {
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
+import { notificationData } from "@/app/components/support/NotificationProvider";
+import { LogData } from "@/app/components/models/LogData";
+import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
+import DetermineFileType from "@/app/configs/DetermineFileType";
+import { DocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
+import DocumentBuilderConfigComponent from "@/app/components/documents/DocumentBuilderConfigComponent";
+import { lazyLoadScriptConfig } from '../../configs/LazyLoadScriptConfig';
 
 
 interface DynamicComponentWrapperProps<T> {
@@ -144,8 +149,8 @@ interface DynamicComponentWrapperProps<T> {
 
 // Define the shape of the Notification context value
 export interface NotificationContextValue {
-  notifications: NotificationData[];;
-  addNotification: (notification: Notification) => void;
+  notifications: NotificationData[];
+  addNotification: (notification: NotificationData) => void;
   removeNotification: (id: string) => void;
   notify: (
     message: string,
@@ -190,13 +195,18 @@ const backendStructure: ExtendedBackendStructure = {
   traverseDirectory: {} as (dir: string) => Promise<AppStructureItem[]>,
   getStructure: async () => {
     const structure = {} as Record<string, AppStructureItem>;
-    const files = traverseDirectory(getAppPath());
+    // Inside the function where you're using getStructure
+    const versionNumber = backendConfig.versionNumber;
+    const appVersion = backendConfig.appVersion;
+
+    const files = traverseDirectory(getAppPath(versionNumber, appVersion));
     files.forEach((file: AppStructureItem) => {
       structure[file.path] = file;
     });
     return structure;
-  },
-};
+
+      },
+    };
 
 const DesignDashboard: React.FC<{
   colors: string[];
@@ -204,23 +214,50 @@ const DesignDashboard: React.FC<{
   backendStructure: BackendStructure;
   onCloseFileUploadModal: () => void;
   onHandleFileUpload: (file: FileList | null) => void;
+  onColorChange: (newColors: string[]) => void; // Add the onColorChange prop
+
 }> = ({ colors, frontendStructure, backendStructure, onHandleFileUpload }) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const { isModalOpen, handleCloseModal, handleFileUpload } =
     useModalFunctions();
   const [isFileUploadModalOpen, setFileUploadModalOpen] = useState(false);
-  const backendStructureWrapper = new BackendStructureWrapper(getAppPath());
+  const versionNumber = backendConfig.versionNumber
+  const appVersion = backendConfig.appVersion;
+
+ 
+  const backendStructureWrapper = new BackendStructureWrapper(getAppPath(versionNumber, appVersion));
   const apiConfigs = useSelector(selectApiConfigs);
 
+  const designNotification = notificationData as NotificationData & NotificationData[]; // Assuming notificationData is a type
+  const designcompletionMessageLog = {} as LogData & NotificationData;
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
-  const [completionMessageLog, setCompletionMessageLog] = useState<string[]>([]);
+  const [completionMessageLog, setCompletionMessageLog] = useState<LogData>({
+    message: "Design Completed",
+    content: "Design Completed",
+    date: new Date(),
+    timestamp: new Date(),
+    level: 'info',
+    type: "DesignCompleted" as NotificationType,
+  });
+
   const initialNotification: NotificationData = {
-    id: UniqueIDGenerator.generateNotificationID(notification,new Date, NotificationTypeEnum.Test, completionMessageLog, "" ),
+    id: UniqueIDGenerator.generateNotificationID(
+      designNotification,
+      new Date(), 
+      NotificationTypeEnum.Test,
+      designcompletionMessageLog,
+      () => {
+        "DesignNotifications" as NotificationType,
+          designcompletionMessageLog
+      }
+    ),
     createdAt: new Date(),
     date: new Date(),
     type: "customNotifications1" as NotificationType,
     message: "New notification added",
     content: "This is a test notification",
+    completionMessageLog: completionMessageLog,
+    sendStatus: "Error"
   };
 
   // Function to add a notification
@@ -230,103 +267,107 @@ const DesignDashboard: React.FC<{
     content: any,
     date: Date
   ) => {
-    let newNotification: Notification = {
-      id: UniqueIDGenerator.generateNotificationID(
-        initialNotification, // Pass the actual notification object
-        date,
-        notify:  async function (message: string,
-          content: any,
-          date: Date,
-          type: NotificationType) {
-          notify(message, type, content, date);
-          return Promise.resolve()
-            .then((res) => { });
-        },
-        completionMessageLog,
-      ),
+    // Assuming LogData has a different structure than NotificationData
+    const completionMessageLog: LogData = {
+      message: "Design Completed",
+      content: "Design Completed",
+      date: new Date(),
+      timestamp: new Date(),
+      level: 'info',
+      type: "DesignCompleted" as NotificationType,
+    };
+
+    // Ensure the correct parameter is passed to generateNotificationID
+    let newNotification: NotificationData = {
+      id: UniqueIDGenerator.generateDashboardId(),
       date,
       type,
       message,
       content,
       createdAt: new Date(),
+      completionMessageLog,
+      sendStatus: "Error"
     };
 
-    setNotifications((prevNotifications) => [
+
+    setNotifications((prevNotifications: NotificationData[]) => [
       ...prevNotifications,
       newNotification,
     ]);
-  };
 
-  // Sample usage of the notify function
-  notify(
-    "New message",
-    "customNotifications1" as NotificationType,
-    "Notification content",
-    new Date()
-  );
 
-  // Notification context value
-  const notificationContextValue: NotificationContextValue = {
-    notifications,
+    // Sample usage of the notify function
     notify(
-      message: string,
-      content: any,
-      date: Date = new Date(),
-      type: NotificationType
-    ) {
-      notify(message, type, content, date);
-      return Promise.resolve();
-    },
-    addNotification: function (notification: Notification): void {
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        notification,
-      ]);
-    },
-    removeNotification: function (id: string): void {
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notification) => notification.id !== id)
-      );
-    },
-  };
+      "New message",
+      "customNotifications1" as NotificationType,
+      "Notification content",
+      new Date()
+    );
 
-  useEffect(() => {
-    // Replace 'roomId' with the actual room ID you want to connect to
-    const roomId = "your_room_id";
+    // Notification context value
+    const notificationContextValue: NotificationContextValue = {
+      notifications,
+      notify(
+        message: string,
+        content: any,
+        date: Date = new Date(),
+        type: NotificationType
+      ) {
+        notify(message, type, content, date);
+        return Promise.resolve();
+      },
 
-    // Your retry configuration
-    const retryConfig = {
-      enabled: true,
-      maxRetries: 3,
-      retryDelay: 1000,
+
+      addNotification: function (notification: NotificationData): void {
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          notification,
+        ]);
+      },
+      removeNotification: function (id: string): void {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter((notification) => notification.id !== id)
+        );
+      },
     };
 
-    // Establish WebSocket connection
-    const newSocket = connectToChatWebSocket(roomId, retryConfig) as WebSocket;
+    useEffect(() => {
+      // Replace 'roomId' with the actual room ID you want to connect to
+      const roomId = "your_room_id";
 
-    // Check if the newSocket is not null before attempting to set it
-    if (newSocket) {
-      setSocket(newSocket);
-    }
+      // Your retry configuration
+      const retryConfig = {
+        enabled: true,
+        maxRetries: 3,
+        retryDelay: 1000,
+      };
 
-    // Cleanup on component unmount
-    return () => {
-      // Check if socket is not null and in the OPEN or CONNECTING state
-      if (socket && [socket.OPEN, socket.CONNECTING].includes(0 || 1)) {
-        socket.close();
+      // Establish WebSocket connection
+      const newSocket = connectToChatWebSocket(roomId, retryConfig) as WebSocket;
+
+      // Check if the newSocket is not null before attempting to set it
+      if (newSocket) {
+        setSocket(newSocket);
       }
+
+      // Cleanup on component unmount
+      return () => {
+        // Check if socket is not null and in the OPEN or CONNECTING state
+        if (socket && [socket.OPEN, socket.CONNECTING].includes(0 || 1)) {
+          socket.close();
+        }
+      };
+    }, [socket]);
+
+    const handleColorChange = (
+      colorIndex: number,
+      newColor: string
+    ): string[] => {
+      const updatedColors = [...colors];
+      updatedColors.splice(colorIndex, 1, newColor);
+      return updatedColors;
     };
-  }, [socket]);
-
-  const handleColorChange = (
-    colorIndex: number,
-    newColor: string
-  ): string[] => {
-    const updatedColors = [...colors];
-    updatedColors.splice(colorIndex, 1, newColor);
-    return updatedColors;
-  };
-
+  }
   // return notificationContextValue;
 
   return (
@@ -335,7 +376,7 @@ const DesignDashboard: React.FC<{
 
       {/* New Components */}
       <DynamicComponentWrapper
-        component={<IdeaLifecycleManager />}
+        component={<ProjectManagementSimulation />}
         dynamicProps={{
           condition: () => true,
           asyncEffect: () => Promise.resolve(),
@@ -448,8 +489,7 @@ const DesignDashboard: React.FC<{
       <ColorPicker
         color={""}
         onChange={(newColor: string): void => {
-          const updatedColors = handleColorChange(0, newColor);
-          console.log(updatedColors);
+          console.log(newColor); 
         }}
         colorCodingEnabled={false}
       />
@@ -482,7 +522,10 @@ const DesignDashboard: React.FC<{
       <ConceptValidation />
       <IdeaLifecycle />
       <IdeaValidation />
-      <IdeationPhase phaseName={""} />
+      <IdeationPhase
+        phaseName={""}
+        onTransition={""}
+      />
       <ProofOfConcept />
       <RequirementsGathering />
       <TeamBuildingPhaseManagement />
@@ -494,12 +537,20 @@ const DesignDashboard: React.FC<{
       <ConfigurationServiceComponent apiConfigs={apiConfigs} />
       <DataVersionsConfig dataPath="" />
       <DetermineFileType />
-      <DocumentBuilderConfig />
+      <DocumentBuilderConfigComponent
+        config={{} as DocumentBuilderConfig}
+      />
       <FrontendDocumentConfig />
       <FrontendStructure />
       <GenerateUserPreferences />
-      <LazyLoadScriptConfig />
-      <MainConfig />
+      <lazyLoadScriptConfig />
+      <MainConfig
+        frontendStructure={ }
+        backendStructure={ }
+        frontendConfig={ }
+        backendConfig={ }
+        
+      />
       <StructuredMetadata />
       <UpdatePreferences />
       <UserPreferences />
@@ -534,8 +585,12 @@ const DesignDashboard: React.FC<{
       {/*User Managment Components */}
       <UserList />
       <UserDetails user={{} as User} />
-      <UserRolesEditor />
-      <PermissionsEditor permissions={{}} />
+      <UserRolesEditor
+        roleName={""}
+        permissions={[]}
+
+      />
+      <PermissionsEditor/>
 
       {/*User Managment Functionalities */}
 

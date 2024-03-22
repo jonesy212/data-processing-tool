@@ -1522,6 +1522,13 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
     
 
 
+
+
+
+
+
+
+  
   extraReducers: (builder) => {
     builder.addCase(deleteDocumentAsync.pending, (state) => {
       // Handle pending state if needed

@@ -74,9 +74,15 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       unorderedTodoList: false,
       customSettings: {},
       animations: {} as DocumentAnimationOptions,
-      documentType: "",
+      documentType: {} as DocumentData,
       userIdea: "",
-      colorCoding: false
+      colorCoding: false,
+      uniqueIdentifier: "",
+      includeType: "all",
+      includeTitle: false,
+      includeContent: false,
+      includeStatus: false,
+      includeAdditionalInfo: false
     },
     fontFamily: "Arial",
     fontSize: 12,

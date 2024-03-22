@@ -225,7 +225,6 @@ wb.write('spreadsheet.xlsx');
 
   createDiagram(): string {
     // Logic to generate a diagram
-
     return 'Diagram created successfully.';
   }
 

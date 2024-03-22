@@ -1,6 +1,7 @@
 import React from 'react';
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { Phase } from "../../phases/Phase";
+import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project, ProjectType } from "../../projects/Project";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { implementThen } from '../../state/stores/CommonEvent';
@@ -14,7 +15,7 @@ import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
 import { TeamStatus } from '../data/StatusType';
 import { Idea, Task } from "../tasks/Task";
-import { Progress } from "../tracker/ProgresBar";
+import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from './TeamMembers';
 
@@ -117,8 +118,8 @@ const team: Team = {
       status: "pending",
       phase: {} as Phase,
       then: implementThen,
-      analysisType: "image",
-      analysisResults: ["analysisResults"],
+      analysisType: AnalysisTypeEnum.IMAGE,
+      analysisResults: {} as DataAnalysisResult[],
       tags: [],
       name: "Project A",
       description: "Description of Project A",
@@ -145,8 +146,8 @@ const team: Team = {
       status: "pending",
       phase: {} as Phase,
       then: implementThen,
-      analysisType: "image",
-      analysisResults: ["analysisResults"],
+      analysisType: AnalysisTypeEnum.IMAGE,
+      analysisResults: {} as DataAnalysisResult[],
       tags: [],
       name: "Project B",
       description: "Description of Project B",
@@ -205,7 +206,7 @@ const team: Team = {
           isActive: true,
           tags: [], // Assuming tasks can have tags
           dependencies: [],
-          analysisType: "Text Analysis",
+          analysisType: AnalysisTypeEnum.TEXT,
           analysisResults: [],
           assigneeId: "1",
           payload: {},
@@ -352,7 +353,7 @@ const team: Team = {
   status: 'scheduled',
   tags: [],
   phase: null,
-  analysisType: '',
+  analysisType: AnalysisTypeEnum.PROJECT,
   analysisResults: [],
   videoData: {} as VideoData,
 };

@@ -3,13 +3,14 @@
 import createDynamicHook from './dynamicHookGenerator';
 
 interface DynamicOnboardingPhaseHookConfig {
-  condition: () => boolean;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: () => Promise<() => void>;
 }
 
 export const createDynamicOnboardingPhaseHook = (config: DynamicOnboardingPhaseHookConfig) => {
   return createDynamicHook({
     condition: config.condition,
+    resetIdleTimeout: () => {},
     asyncEffect: async () => {
       const cleanup = await config.asyncEffect();
       if (typeof cleanup === "function") {
@@ -21,9 +22,9 @@ export const createDynamicOnboardingPhaseHook = (config: DynamicOnboardingPhaseH
 
 // useDynamicOnboardingPhaseHook
 const useDynamicOnboardingPhaseHook = createDynamicOnboardingPhaseHook({
-  condition: () => {
-    // Add condition logic based on your requirements
+  condition: async (idleTimeoutDuration: number) => {
     const isDynamicOnboardingPhase = true; // Replace with your condition
+    console.log('useEffect condition triggered for Dynamic Onboarding Phase');
     return isDynamicOnboardingPhase;
   },
   asyncEffect: async () => {
@@ -31,6 +32,7 @@ const useDynamicOnboardingPhaseHook = createDynamicOnboardingPhaseHook({
       // Add dynamic onboarding phase logic here
       console.log('useEffect triggered for Dynamic Onboarding Phase');
 
+      //todo
       // Example: Fetch user information from an API or use predefined data
       const userInformation = {/* Replace with your logic to fetch or determine user information */};
 

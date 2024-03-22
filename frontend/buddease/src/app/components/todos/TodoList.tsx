@@ -7,6 +7,7 @@ import { Phase } from "../phases/Phase";
 import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { Todo } from "./Todo";
+import { VideoData } from "../video/Video";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;
@@ -61,7 +62,8 @@ const TodoList: React.FC = observer(() => {
     language: "",
     subtitles: false,
     duration: 0,
-    campaignId: 0
+    campaignId: 0,
+    id: ""
   }
 
   const handleAdd = () => {

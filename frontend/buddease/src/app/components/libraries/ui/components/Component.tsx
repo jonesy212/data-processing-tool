@@ -1,7 +1,7 @@
-import { handleApiError } from '@/app/api/ApiLogs';
+import { handleApiError } from "@/app/api/ApiLogs";
 import ProjectService from "@/app/api/ProjectService";
 import { addNotification } from "@/app/components/calendar/CalendarSlice";
-import { LogData } from '@/app/components/models/LogData';
+import { LogData } from "@/app/components/models/LogData";
 import useNotificationManagerService from "@/app/components/notifications/NotificationService";
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
@@ -14,12 +14,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ComponentActions } from "./ComponentActions";
-import { ComponentStatus } from '@/app/components/models/data/StatusType';
-import { Project } from '@/app/components/projects/Project';
+import { ComponentStatus } from "@/app/components/models/data/StatusType";
+import { Project } from "@/app/components/projects/Project";
+ import io from "socket.io-client";
+import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 
 const dispatch = useDispatch();
 const { notify } = useNotification();
-
 
 export const handleAddComponent = async () => {
   try {
@@ -54,9 +55,6 @@ export const handleAddComponent = async () => {
   }
 };
 
-
-
-  
 export const handleRemoveComponent = () => {
   try {
     // Dispatch an action to remove a component
@@ -71,7 +69,7 @@ export const handleRemoveComponent = () => {
       content: "",
       status: ComponentStatus.Tentative,
       completionMessageLog: {} as NotificationData & LogData,
-      sendStatus: 'Sent'
+      sendStatus: "Sent",
     };
     addNotification(notification); // Updated argument to pass notification object
   } catch (error: any) {
@@ -84,14 +82,13 @@ export const handleRemoveComponent = () => {
       status: "tentative",
       updatedAt: new Date(),
       completionMessageLog: {} as NotificationData & LogData,
-      sendStatus: 'Sent'
+      sendStatus: "Sent",
     };
     console.error("Error removing component:", error);
     // Handle error and provide feedback to users
     addNotification(errorNotification);
   }
 };
-
 
 export const handleUpdateComponent = () => {
   try {
@@ -112,7 +109,7 @@ export const handleUpdateComponent = () => {
       content: "",
       status: "tentative",
       completionMessageLog: {} as NotificationData & LogData,
-      sendStatus: 'Sent'
+      sendStatus: "Sent",
     };
     addNotification(notification);
   } catch (error: any) {
@@ -126,53 +123,95 @@ export const handleUpdateComponent = () => {
       content: "",
       status: "tentative",
       completionMessageLog: {} as NotificationData & LogData,
-      sendStatus: 'Sent'
+      sendStatus: "Sent",
     };
     addNotification(errorNotification);
   }
 };
-
-
 const Component = async () => {
   const router = useRouter();
+  const { error, handleError, clearError } = useErrorHandling();
 
-  const [currentProject, setCurrentProject] = useState<Project | null>(null); // Define currentProject state
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+
+  const socketUrl = "http://your-backend-endpoint";
+  const socket = io(socketUrl);
+
+  socket.on("connect", () => {
+    console.log("Connected to WebSocket");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected from WebSocket");
+  });
+
+  socket.on("error", (err: Error) => {
+    handleError("WebSocket error: " + err.message);
+  });
+
+  socket.on("reconnect_attempt", () => {
+    console.log("Attempting to reconnect to WebSocket...");
+  });
+
+  socket.on("reconnect", () => {
+    console.log("WebSocket reconnected successfully!");
+  });
+
+  socket.on("close", (event: CloseEvent) => {
+    handleError("WebSocket connection closed: " + event.reason);
+  });
+
+  socket.on("message", (message: string) => {
+    console.log("Received message:", message);
+  });
 
   useEffect(() => {
     const projectService = new ProjectService();
 
-    
     const fetchCurrentProject = async () => {
       try {
+        clearError();
+
         const { projectId } = router.query;
         if (typeof projectId === "string") {
           const parsedProjectId = parseInt(projectId, 10);
           const project = await projectService.fetchProject(parsedProjectId);
           setCurrentProject(project);
         } else {
-          console.error("Project ID is not a string:", projectId);
-          
+          handleError("Project ID is not a string: " + projectId);
         }
       } catch (error: any) {
-        handleApiError(error, NOTIFICATION_MESSAGES.Generic.ERROR);
+        handleError(error.message);
       }
     };
 
-    fetchCurrentProject(); // Call fetchCurrentProject when the component mounts
-  }, []); // Empty dependency array ensures fetchCurrentProject is called only once
-
+    fetchCurrentProject();
+  
+    if (socket) {
+      socket.emit("join", {
+        projectId: currentProject?.id,
+      });
+    }
+  
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div>
       <h1>Component Management</h1>
+      {error && <div>Error: {error}</div>}{" "}
+      {/* Display error message if error exists */}
       <button onClick={handleAddComponent}>Add Component</button>
       <button onClick={handleRemoveComponent}>Remove Component</button>
       <button onClick={handleUpdateComponent}>Update Component</button>
-
       {/* Render UpdatedProjectDetails only when currentProject is available */}
-      {currentProject && <UpdatedProjectDetails projectDetails={currentProject} />}
+      {currentProject && (
+        <UpdatedProjectDetails projectDetails={currentProject} />
+      )}
     </div>
-  );
+);
 };
 
 export default Component;

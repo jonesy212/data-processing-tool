@@ -16,7 +16,7 @@ export enum MessageType {
   PromotionalMessage = "promotional_message",
 }
 
-export function showMessage(message: Message, type: MessageType) {
+export function showMessageWithType(message: Message, type: MessageType) {
   // Create a new div element to hold the message
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('message');

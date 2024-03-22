@@ -4,6 +4,7 @@ import { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
 export interface BackendConfig {
   appName: string;
   appVersion: string;
+  versionNumber: string; 
   apiConfig: ApiConfig;
   retryConfig: RetryConfig;
   cacheConfig: CacheConfig;
@@ -28,7 +29,7 @@ const defaultApiConfig: ApiConfig = {
     staleWhileRevalidate: 60000,
     cacheKey: "api_cache_key",
   },
-  responseType: "json",
+  responseType: { contentType: "json", encoding: "string", },
   withCredentials: true,
   onLoad: (response) => console.log("Script loaded successfully", response),
   name: undefined
@@ -38,6 +39,7 @@ const backendConfig: BackendConfig = {
   appName: process.env.BACKEND_APP_NAME || "YourBackendAppName", // Use process.env or default value
   appVersion: "1.0.0",
   apiConfig: defaultApiConfig,
+  versionNumber: "1",
   retryConfig: {
     enabled: true,
     maxRetries: parseInt(process.env.BACKEND_RETRY_MAX_RETRIES ?? "3"), // Use process.env or default value, convert to number

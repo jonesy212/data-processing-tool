@@ -1,7 +1,7 @@
 import axiosInstance from "@/app/api/axiosInstance";
 
 // Assume you have a variable containing the CSRF token (you might get it from a cookie or another source)
-const csrfToken = 'your_csrf_token_here';
+export const csrfToken = 'your_csrf_token_here';
 
 
 axiosInstance.interceptors.request.use((config) => {

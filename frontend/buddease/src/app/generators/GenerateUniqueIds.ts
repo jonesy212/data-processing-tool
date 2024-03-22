@@ -198,6 +198,8 @@ import {
       return UniqueIDGenerator.generateID(documentName, NotificationTypeEnum.DocumentEditID, "document_edit" as NotificationType);
     }
 
+
+
     static generateTaskBoardID(): string {
       return UniqueIDGenerator.generateID("task_board", NotificationTypeEnum.TaskBoardID, "task_board" as NotificationType);
     }
@@ -206,15 +208,34 @@ import {
       return UniqueIDGenerator.generateID("brainstorming_session", NotificationTypeEnum.BrainstormingSessionID, "brainstorming_session" as NotificationType);
     }
 
+    static generateCommentID() {
+      return UniqueIDGenerator.generateID("comment", NotificationTypeEnum.CommentID, "comment" as NotificationType);
+    }
+
+
+    static animationID(prefix: string, name: string, type: NotificationType): string {
+      const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+      return generatedID;
+    }
 
 
 
 
+
+    static generateDashboardId(): string {
+      return UniqueIDGenerator.generateID(
+        "dashboard", NotificationTypeEnum.GeneratedID,
+        "dashboard" as NotificationType
+      );
+    }
 
     static generateUserId(username: string): string {
       return this.generateID('UserID', `User_${username}`, NotificationTypeEnum.GeneratedID);
     }
 
+    static generateSnapshotId(): string {
+      return this.generateID('SnapshotID', 'Snapshot', NotificationTypeEnum.GeneratedID);
+    }
     static generateSessionId(): string {
       return this.generateID('SessionID', 'Session', NotificationTypeEnum.GeneratedID);
     }

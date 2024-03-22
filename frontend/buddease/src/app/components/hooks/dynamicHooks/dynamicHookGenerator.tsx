@@ -1,39 +1,40 @@
 // DynamicHookGenerator.tsx
 import { AsyncHook } from "../useAsyncHookLinker";
 
+
 export type DynamicHookParams = {
-  condition:(idleTimeoutDuration: number) => Promise<boolean>;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: ({
     idleTimeoutId,
     startIdleTimeout,
   }: {
-    idleTimeoutId: any;
-    startIdleTimeout: any;
+    idleTimeoutId: NodeJS.Timeout | null;
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }) => Promise<void | (() => void)>;
   cleanup?: () => void;
   resetIdleTimeout: () => void;
-  idleTimeoutId: NodeJS.Timeout | null;
-  isActive: boolean;
-  intervalId: number | undefined;
-  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-  startIdleTimeout: (
-    timeoutDuration: number, onTimeout: () => void) => void;
+  idleTimeoutId?: NodeJS.Timeout | null;
+  isActive?: boolean;
+  intervalId?: number | undefined;
+  initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
+  startIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
 };
+
 
 
 export type DynamicHookResult = {
   isActive: boolean;
   animateIn: (selector: string) => void;
-  accessToken?: (string | undefined);
+  accessToken?: string | undefined;
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout?: () => void;
-  
   idleTimeoutId: NodeJS.Timeout | null;
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   intervalId?: number;
-  toggleActivation?: () => Promise<boolean>;
+  toggleActivation: (accessToken?: string | null | undefined) => void;
 };
+
 
 
 const createDynamicHook = ({
@@ -45,28 +46,44 @@ const createDynamicHook = ({
   startIdleTimeout,
   initialStartIdleTimeout,
 }: DynamicHookParams): AsyncHook => {
+  let isActive = initialIsActive !== undefined ? initialIsActive : false;
+
   return {
     toggleActivation: async () => { },
+    startAnimation: () => {}, 
+    stopAnimation: () => {}, 
+    animateIn: () => {}, 
     condition: condition,
     asyncEffect: async ({
       idleTimeoutId,
       startIdleTimeout,
-    }: {
-      idleTimeoutId: NodeJS.Timeout | null; // Update type here
-      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-    }): Promise<void | (() => void)> => {
-      await asyncEffect({ idleTimeoutId, startIdleTimeout });
-      return () => {
+    }) => {
+      await asyncEffect({ idleTimeoutId, startIdleTimeout });    return () => {
         // Cleanup function if needed
+        // Example 1: Resetting some state variables
+        // resetSomeState();
+
+        // Example 2: Clearing intervals or timeouts
+        // clearInterval(intervalId);
+        // clearTimeout(timeoutId);
+
+        // Example 3: Cleaning up event listeners
+        // window.removeEventListener('resize', handleResize);
+
+        // Example 4: Disposing resources or subscriptions
+        // disposeResource();
+
       };
     },
-    resetIdleTimeout: resetIdleTimeout, // Add resetIdleTimeout property
-    idleTimeoutId: null, // Initialize with null
-    startIdleTimeout: startIdleTimeout, // Add startIdleTimeout property
-    cleanup: cleanup, // Add cleanup property
-    isActive: initialIsActive,
-    initialStartIdleTimeout: initialStartIdleTimeout
+    resetIdleTimeout: resetIdleTimeout, 
+    idleTimeoutId: null, 
+    cleanup: cleanup, 
+   
+    startIdleTimeout: startIdleTimeout ?? (() => {}), // Provide a default function if startIdleTimeout is undefined
+    isActive: isActive,
+    initialStartIdleTimeout: initialStartIdleTimeout ?? (() => { }), // Provide a default function if initialStartIdleTimeout is undefined
   };
+
 };
 
 export default createDynamicHook;

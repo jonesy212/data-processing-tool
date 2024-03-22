@@ -4,6 +4,7 @@ import Logger from '@/app/pages/logging/Logger';
 import * as fs from 'fs/promises'; // Use promise-based fs module
 import * as path from 'path';
 import { AppStructureItem } from './AppStructure';
+import { NotificationType } from '@/app/components/support/NotificationContext';
 
 export default class BackendStructure {
   structure: Record<string, AppStructureItem> = {};
@@ -28,12 +29,12 @@ export default class BackendStructure {
         } else if (stat.isFile()) {
           // Logic to parse file and update structure accordingly
           if (file.endsWith('.py')) {
-            const uniqueID = UniqueIDGenerator.generateID(file, filePath);
+            const uniqueID = UniqueIDGenerator.generateID(file, filePath,  "generateBackendStructureID" as NotificationType);
             this.structure[uniqueID] = {
               path: filePath,
               content: await fs.readFile(filePath, 'utf-8'),
             };
-            Logger.log('File Change', `File ${file} changed.`, uniqueID);
+            Logger.logWithOptions('File Change', `File ${file} changed.`, uniqueID);
             result.push(this.structure[uniqueID]);
           }
         }

@@ -26,6 +26,7 @@ import {
 } from "./../communications/scheduler/TeamOverview";
 import PhaseDashboard from "./PhaseDashboard";
 import { useDispatch } from "react-redux";
+import { DocumentActions } from "@/app/tokens/DocumentActions";
 interface DashboardFrameworkProps {
   children: React.ReactNode;
   activeDashboard: string;
@@ -44,7 +45,11 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
   // Update appTree with the result from generateInitialAppTree
   const [appTree, setAppTree] = useState<AppTree | null>(null);
   const handleUserIdeaSubmission = async () => {
-    const action = DocumentAction.selectUserIdea(undefined, { type: 'SOME_ACTION_TYPE' });
+    const action = DocumentActions.selectUserIdea({
+      //todo fix id 
+      id: "1234567890",
+      type: 'SOME_ACTION_TYPE'
+    });
   dispatch(action);
 
   const enhancedPrompt = await processAutoGPTOutputWithSpaCy(action);

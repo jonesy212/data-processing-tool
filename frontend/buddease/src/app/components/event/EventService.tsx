@@ -1,10 +1,10 @@
 // EventService.ts
 
 import {
-    BaseSyntheticEvent,
-    ModifierKey,
-    MouseEvent,
-    SyntheticEvent,
+  BaseSyntheticEvent,
+  ModifierKey,
+  MouseEvent,
+  SyntheticEvent,
 } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { Member } from "../models/teams/TeamMembers";
@@ -12,6 +12,10 @@ import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEvent, CustomEventExtension } from "./CustomEvent";
+import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+
+
+
 
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
@@ -66,20 +70,50 @@ interface CustomMouseEvent<T = Element>
   preventDefaultEvent(event: Event): void;
   stopImmediatePropagationEvent(event: Event): void;
   stopImmediatePropagation(): void;
-  addEventListener(): void;
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
+    options?: boolean | AddEventListenerOptions,
+    useCapture?: boolean
   ): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+    useCapture?: boolean
+  ): void
   dispatchEvent(event: Event): boolean;
-
   // Event phase constants
-  NONE: number;
-  CAPTURING_PHASE: number;
-  AT_TARGET: number;
-  BUBBLING_PHASE: number;
+  NONE: 0;
+  CAPTURING_PHASE: 1;
+  AT_TARGET: 2;
+  BUBBLING_PHASE: 3;
 }
+
+
+
+interface CustomEventWithProperties extends CustomEventExtension {
+  id: string;
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  addEventListener: (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => void
+  removeEventListener: (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => void
+  dispatchEvent: (event: CustomEvent) => boolean
+  preventDefaultEvent: (event: CustomEvent) => void
+  stopImmediatePropagationEvent: (event: CustomEvent) => void
+  getModifierState: (key: string) => boolean
+}
+
 
 export const createCustomEvent = (
   id: string,
@@ -88,7 +122,7 @@ export const createCustomEvent = (
   startDate: Date,
   endDate: Date
 ): CustomEventExtension => {
-  const customEvent = {
+  const customEvent: CustomEventWithProperties = {
     id,
     title,
     description,
@@ -97,6 +131,8 @@ export const createCustomEvent = (
     bubbles: false,
     cancelBubble: false,
     cancelable: false,
+
+    // Methods and properties related to event handling
     addEventListener: (
       type: string,
       listener: EventListenerOrEventListenerObject,
@@ -107,7 +143,7 @@ export const createCustomEvent = (
       // Here you can put your logic for handling addEventListener
     },
 
-    dispatchEvent: (event: Event): boolean => {
+    dispatchEvent: (event: CustomEvent): boolean => {
       // Implementation for dispatchEvent
       console.log("dispatchEvent has been called.");
       // Here you can put your logic for handling dispatchEvent
@@ -125,8 +161,7 @@ export const createCustomEvent = (
     },
 
     preventDefaultEvent: (event: CustomEvent): void => {
-      // Implementation for preventDefaultEvent
-      console.log("preventDefaultEvent has been called.");
+       console.log("preventDefaultEvent has been called.");
       // Here you can put your logic for handling preventDefaultEvent
     },
 
@@ -136,7 +171,6 @@ export const createCustomEvent = (
       // Here you can put your logic for handling stopImmediatePropagationEvent
     },
 
-    // Add other necessary properties and methods...
     preventDefault(): void {
       // Implementation for preventDefault
       console.log("preventDefault has been called.");
@@ -147,6 +181,33 @@ export const createCustomEvent = (
       // Implementation for stopImmediatePropagation
       console.log("stopImmediatePropagation has been called.");
     },
+
+    // Add other necessary properties and methods...
+    // These properties and methods should be included as per the CustomEventExtension interface
+    composed: false,
+    currentTarget: null,
+    defaultPrevented: false,
+    eventPhase: 0,
+    isTrusted: false,
+    returnValue: false,
+    srcElement: null,
+    target: null,
+    timeStamp: 0,
+    type: "",
+    composedPath(): EventTarget[] {
+      return [];
+    },
+    initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void { },
+    getModifierState(key: string): boolean {
+      return false;
+    },
+    NONE: 0,
+    CAPTURING_PHASE: 1,
+    AT_TARGET: 2,
+    BUBBLING_PHASE: 3,
+    stopPropagation: function (): void {
+      throw new Error("Function not implemented.");
+    }
   };
 
   // Add dispatchEvent method
@@ -161,6 +222,7 @@ export const createCustomEvent = (
       return false;
     }
   };
+
   return customEvent;
 };
 
@@ -202,11 +264,33 @@ class EventService {
     this.events.push(event);
   }
     
-  addEventListener(): void {
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+    useCapture?: boolean
+  ): void {
     // Implementation for addEventListener
     console.log("addEventListener has been called.");
     // Here you can put your logic for handling addEventListener
+    eventService.addEventListener(type, listener, options, useCapture);
+
   }
+
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+    useCapture?: boolean
+  ): void {
+    // Implementation for removeEventListener
+    console.log("removeEventListener has been called.");
+    // Here you can put your logic for handling removeEventListener
+
+    // Assuming eventService is an instance of the EventService class
+    eventService.removeEventListener(type, listener, options, useCapture);
+  }
+
 
   // Function to create a new event
   static createCustomEvent(
@@ -218,6 +302,7 @@ class EventService {
   ): CalendarEvent {
     // Create a new CalendarEvent object with the provided parameters
     const customEvent: CalendarEvent = {
+      _id: "",
       id,
       title,
       description,
@@ -239,9 +324,8 @@ class EventService {
       teamMemberId: "",
       date: new Date(),
       then: implementThen,
-      _id: "",
-      analysisType: "",
-      analysisResults: [],
+      analysisType: {} as AnalysisTypeEnum, 
+      analysisResults: {} as DataAnalysisResult[], 
       videoData: {} as VideoData,
     };
 
@@ -412,27 +496,34 @@ const event1: CustomMouseEvent = {
     eventService.dispatchEvent(customEvent);
   },
 
+
+
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
-  ) {
+    options?: boolean | AddEventListenerOptions,
+    useCapture?: boolean
+  ): void {
     // Add event listener
-    eventService.addEventListener(type, listener, options);
+    eventService.addEventListener(type, listener, useCapture ? options : undefined, useCapture);
   },
-
-
-  dispatchEvent: function (): boolean {
-    return false;
-  },
-
+  
   removeEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
-    options?: boolean | EventListenerOptions
+    options?: boolean | AddEventListenerOptions,
+    useCapture?: boolean
   ): void {
     // Remove event listener
+    eventService.removeEventListener(type, listener, options, useCapture);
   },
+
+  
+  
+  dispatchEvent: function (): boolean {
+    return false;
+  },  
+
 
   initEvent: function (
     type: string,

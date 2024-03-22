@@ -21,9 +21,6 @@ interface Document extends DocumentData {
   createdBy: string;
   updatedBy: string;
   documentData: any;
-  
-
-  
     // Other properties
 }
   
