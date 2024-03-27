@@ -1,4 +1,4 @@
-import { Snapshot } from '@/app/components/state/stores/SnapshotStore';
+import { Snapshot } from '@/app/components/snapshots/SnapshotStore';
 import { Data } from "../models/data/Data";
 
 interface SnapshotItem {

@@ -3,11 +3,11 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import generateFakeData, { FakeDataPartial } from "../../Inteigents/FakeDataGenerator";
 import { Data } from "../../models/data/Data";
 import { Member } from '../../models/teams/TeamMembers';
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
 import CalendarManagerStoreClass, {
   CalendarEvent,
   useCalendarManagerStore,
 } from "./CalendarEvent";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
 const eventIds: string[] = [];
 const events: Record<string, CalendarEvent[]> = {};

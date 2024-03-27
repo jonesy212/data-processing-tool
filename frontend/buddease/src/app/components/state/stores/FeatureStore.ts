@@ -30,7 +30,14 @@ class FeatureStore {
 
   // Method to set the current feature (if needed)
   setCurrentFeature(featureId: string): void {
-    // Implementation based on requirements
+    const selectedFeature = this.features.find(feature => feature.id === featureId);
+    if (selectedFeature) {
+      // Perform any actions related to setting the current feature
+      // For example, you might update some state or trigger some events
+      console.log(`Current feature set to: ${selectedFeature.name}`);
+    } else {
+      console.error(`Feature with ID ${featureId} not found.`);
+    }
   }
 }
 

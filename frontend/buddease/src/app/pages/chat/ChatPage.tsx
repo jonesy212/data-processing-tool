@@ -1,4 +1,5 @@
 // ChatPage.tsx
+import RootLayout from "@/app/RootLayout";
 import {
   Channel,
   ChannelMember,
@@ -82,87 +83,89 @@ const ChatPage: React.FC<ChatPageProps> = (props) => {
   }, []); // Empty dependency array to run the effect only once on mount
 
   return (
-    <div>
-      <h1>Chat Page</h1>
-      {/* Render the list of channels */}
+    <RootLayout>
       <div>
-        <h2>Channels</h2>
-        <ul>
-          {dummyChannels.map((channel) => (
-            <li key={channel.id} onClick={() => switchChannel(channel.id)}>
-              {channel.name}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Render the current channel */}
-      {currentChannel && (
+        <h1>Chat Page</h1>
+        {/* Render the list of channels */}
         <div>
-          <h2>{currentChannel.name}</h2>
-          {/* Render the list of channel members */}
-          <div>
-            <h3>Members</h3>
-            <ul>
-              {currentChannel.members.map((member: ChannelMember) => (
-                <li key={member.userId}>{member.username}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Render the list of channel messages */}
-          <div>
-            <h3>Messages</h3>
-            <ul>
-              {currentChannel.messages.map((message: ChannelMessage) => (
-                <li key={message.messageId}>
-                  <strong>{message.username}:</strong> {message.content} -{" "}
-                  {message.timestamp.toLocaleString()}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <h2>Channels</h2>
+          <ul>
+            {dummyChannels.map((channel) => (
+              <li key={channel.id} onClick={() => switchChannel(channel.id)}>
+                {channel.name}
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
 
-      {/* Display user status */}
-      <div>
-        <h2>User Status</h2>
-        {/* Render user status information */}
-      </div>
+        {/* Render the current channel */}
+        {currentChannel && (
+          <div>
+            <h2>{currentChannel.name}</h2>
+            {/* Render the list of channel members */}
+            <div>
+              <h3>Members</h3>
+              <ul>
+                {currentChannel.members.map((member: ChannelMember) => (
+                  <li key={member.userId}>{member.username}</li>
+                ))}
+              </ul>
+            </div>
 
-      {/* Display message timestamps */}
-      <div>
-        <h2>Message Timestamps</h2>
-        <ul>
-          {props.messages.map((message) => (
-            <li key={message.id}>
-              <strong>{message.username}:</strong> {message.content} -{" "}
-              {message.timestamp.toLocaleString()}
-            </li>
-          ))}
-        </ul>
-      </div>
+            {/* Render the list of channel messages */}
+            <div>
+              <h3>Messages</h3>
+              <ul>
+                {currentChannel.messages.map((message: ChannelMessage) => (
+                  <li key={message.messageId}>
+                    <strong>{message.username}:</strong> {message.content} -{" "}
+                    {message.timestamp.toLocaleString()}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
 
-      {/* Display user status */}
-      <div>
-        <h2>User Status</h2>
-        {/* Render user status information */}
-      </div>
+        {/* Display user status */}
+        <div>
+          <h2>User Status</h2>
+          {/* Render user status information */}
+        </div>
 
-      {/* Display message timestamps */}
-      <div>
-        <h2>Message Timestamps</h2>
-        <ul>
-          {props.messages.map((message) => (
-            <li key={message.id}>
-              <strong>{message.username}:</strong> {message.content} -{" "}
-              {message.timestamp.toLocaleString()}
-            </li>
-          ))}
-        </ul>
+        {/* Display message timestamps */}
+        <div>
+          <h2>Message Timestamps</h2>
+          <ul>
+            {props.messages.map((message) => (
+              <li key={message.id}>
+                <strong>{message.username}:</strong> {message.content} -{" "}
+                {message.timestamp.toLocaleString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Display user status */}
+        <div>
+          <h2>User Status</h2>
+          {/* Render user status information */}
+        </div>
+
+        {/* Display message timestamps */}
+        <div>
+          <h2>Message Timestamps</h2>
+          <ul>
+            {props.messages.map((message) => (
+              <li key={message.id}>
+                <strong>{message.username}:</strong> {message.content} -{" "}
+                {message.timestamp.toLocaleString()}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
+    </RootLayout>
   );
 };
 

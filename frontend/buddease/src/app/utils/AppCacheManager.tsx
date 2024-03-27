@@ -1,7 +1,7 @@
 import { Data } from "../components/models/data/Data";
-import { Snapshot } from "../components/state/stores/SnapshotStore";
+import { Snapshot } from "../components/snapshots/SnapshotStore";
 import { VideoData } from "../components/video/Video";
-import  FrontendStructure  from "../configs/appStructure/FrontendStructureComponent";
+import FrontendStructure from "../configs/appStructure/FrontendStructureComponent";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";
 import FrontendCacheManager from "./FrontendCacheManager";

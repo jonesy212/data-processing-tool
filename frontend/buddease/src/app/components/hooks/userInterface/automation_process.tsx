@@ -1,8 +1,8 @@
 // AutomatioProcess.ts
 import ReactDOM, { useEffect } from 'react';
 import { Data } from '../../models/data/Data';
+import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '../../snapshots/SnapshotStore';
 import errorHandlingStore from '../../state/stores/ErrorHandlingStore';
-import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '../../state/stores/SnapshotStore';
 import { NotificationType, useNotification } from '../../support/NotificationContext';
 import RandomWalkSuggestions from './RandomWalkSuggestions';
 

@@ -38,23 +38,23 @@ const NavigationGenerator: React.FC<NavigationGeneratorProps> = (props) => {
 
     
   // Generate a dynamic hook for onNavigationChange
-  const dynamicOnNavigationChange: DynamicHookResult = createDynamicHook({
+  const dynamicOnNavigationChange = createDynamicHook({
     condition: async () => !!onNavigationChange,
-    asyncEffect:  async ()  => {
+    asyncEffect: async () => {
       // Fetch additional information or perform actions as needed
-      console.log('Dynamic onNavigationChange hook triggered');
+      console.log("Dynamic onNavigationChange hook triggered");
       onNavigationChange && onNavigationChange(defaultNavigationItems);
     },
     cleanup: () => {
       // Cleanup logic if needed
-      console.log('Dynamic onNavigationChange hook cleanup');
+      console.log("Dynamic onNavigationChange hook cleanup");
     },
     resetIdleTimeout: () => {
       // Reset idle timeout if needed
-      console.log('Resetting idle timeout');
+      console.log("Resetting idle timeout");
     },
     isActive: false,
-  })();
+  });
 
   // useEffect to mimic component did mount
   useEffect(() => {

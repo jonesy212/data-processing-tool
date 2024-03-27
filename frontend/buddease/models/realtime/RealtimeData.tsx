@@ -1,10 +1,13 @@
+import { ExchangeActions } from "@/app/components/actions/ExchangeActions";
 import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { Data } from "@/app/components/models/data/Data";
-import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import SnapshotStore, {
   Snapshot,
-} from "@/app/components/state/stores/SnapshotStore";
+} from "@/app/components/snapshots/SnapshotStore";
+import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { fetchDEXData } from "@/app/pages/logging/Logger";
 import React, { useEffect } from "react";
 
 interface RealtimeDataItem {
@@ -60,9 +63,21 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
   ) => {
     // Your update logic here
 
+
+      // Convert exchangeData and dexData to RealtimeData if needed
+  const exchangeData: ExchangeData[] = []; // Your logic to convert or fetch exchange data
+  const dexData: any[] = []; // Your logic to convert or fetch DEX data
+  
+
+
     try {
       // Your update logic here
 
+       // Dispatch actions to store the fetched data in Redux store
+      dispatch(ExchangeActions.fetchExchangeData(exchangeData));
+      // Dispatch actions to store the fetched DEX data in Redux store
+      // Implement fetchDEXData action as needed
+      dispatch(fetchDEXData(dexData, dispatch));
       // Log the contents of the 'data' parameter for debugging purposes
       console.log("Snapshot store data:", data);
 

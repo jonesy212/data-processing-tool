@@ -89,29 +89,35 @@ import ProjectList from "@/app/components/lists/ProjectList";
 import TeamList from "@/app/components/lists/TeamList";
 import UserList from "@/app/components/lists/UserList";
 import NotificationManager from "@/app/components/support/NotificationManager";
-import UserDetails , { User, UserData } from "@/app/components/users/User";
+import UserDetails, { User, UserData } from "@/app/components/users/User";
 
 import ApiConfigComponent from "@/app/components/api/ApiConfigComponent";
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
+import DocumentBuilderConfigComponent from "@/app/components/documents/DocumentBuilderConfigComponent";
+import { LogData } from "@/app/components/models/LogData";
 import DataProcessingComponent from "@/app/components/models/data/DataProcessingComponent";
+import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
 import ProjectPhaseComponent from "@/app/components/projects/projectManagement/ProjectPhaseComponent";
+import { saveProfile } from "@/app/components/snapshots/userSnapshotData";
 import { selectApiConfigs } from "@/app/components/state/redux/slices/ApiSlice";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { notificationData } from "@/app/components/support/NotificationProvider";
 import PermissionsEditor from "@/app/components/users/PermissionsEditor";
 import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
-import { saveProfile } from "@/app/components/users/userSnapshotData";
 import { BackendConfig, backendConfig } from "@/app/configs/BackendConfig";
 import BackendConfigComponent from "@/app/configs/BackendConfigComponent";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
+import DetermineFileType from "@/app/configs/DetermineFileType";
+import { DocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
 import { FrontendConfig } from "@/app/configs/FrontendConfig";
 import FrontendConfigComponent from "@/app/configs/FrontendConfigComponent";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
 import ExtendedBackendStructure from "@/app/configs/appStructure/ExtendedBackendStructure";
-import FrontendStructure  from "@/app/configs/appStructure/FrontendStructureComponent";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructureComponent";
 import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
 import DesignComponent from "@/app/css/DesignComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -126,13 +132,6 @@ import DataPreview, {
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
-import { notificationData } from "@/app/components/support/NotificationProvider";
-import { LogData } from "@/app/components/models/LogData";
-import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
-import DetermineFileType from "@/app/configs/DetermineFileType";
-import { DocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
-import DocumentBuilderConfigComponent from "@/app/components/documents/DocumentBuilderConfigComponent";
-import { lazyLoadScriptConfig } from '../../configs/LazyLoadScriptConfig';
 
 
 interface DynamicComponentWrapperProps<T> {
@@ -214,7 +213,7 @@ const DesignDashboard: React.FC<{
   backendStructure: BackendStructure;
   onCloseFileUploadModal: () => void;
   onHandleFileUpload: (file: FileList | null) => void;
-  onColorChange: (newColors: string[]) => void; // Add the onColorChange prop
+  onColorChange?: (newColors: string[]) => void; // Add the onColorChange prop
 
 }> = ({ colors, frontendStructure, backendStructure, onHandleFileUpload }) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);

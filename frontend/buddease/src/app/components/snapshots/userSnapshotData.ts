@@ -1,10 +1,9 @@
 // userSnapshotData.ts
 import MyPromise from '../../utils/MyPromise';
 import useUserProfile from '../hooks/useUserProfile';
-import  DetailsProps, { SupportedData } from '../models/CommonData';
 import CommonDetails from '../models/CommonDetails';
-import { User, UserData } from './User';
-import UserRoles from './UserRoles';
+import { User, UserData } from '../users/User';
+import UserRoles from '../users/UserRoles';
 
 export type UserProfile = UserData & User;
 

@@ -8,7 +8,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 import { ProjectOwnerActions } from "../components/actions/ProjectOwnerActions";
 import MemberData from "../components/models/teams/TeamMembers";
-import Project, { ProjectData } from "../components/projects/Project";
+import  { ProjectData, Project } from "../components/projects/Project";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
@@ -20,7 +20,7 @@ const { notify } = useNotification();
 export const projectOwnerApiService = observable({
   createProject: async (projectData: ProjectData): Promise<any> => {
     try {
-      const response = await axiosInstance.post(API_BASE_URL, projectData);
+      const response = await axiosInstance.post(`${API_BASE_URL}`, projectData);
       runInAction(() => {
         // Update state or perform other MobX-related actions
         ProjectOwnerActions.createProjectSuccess(response.data); // Dispatch success action with response data

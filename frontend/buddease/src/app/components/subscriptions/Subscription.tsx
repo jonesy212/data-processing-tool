@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import useRealtimeData from "../hooks/commHooks/useRealtimeData";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { Data } from "../models/data/Data";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
-import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
 
 const SubscriptionComponent = (
   initialData: Data,

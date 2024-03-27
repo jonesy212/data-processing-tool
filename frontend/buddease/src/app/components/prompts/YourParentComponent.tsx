@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import PromptComponent from "./PromptComponent";
 import useSearchPagination from "../hooks/commHooks/useSearchPagination";
-import { Data } from "../models/data/Data";
+import useAsyncHookLinker from "../hooks/useAsyncHookLinker";
+import PromptComponent from "./PromptComponent";
 import { PromptPageProps } from "./PromptPage";
 
 const YourParentComponent: React.FC = () => {
   // Define interface for PromptPageProps
-  
 
   // Array of prompt pages
   const promptPages: PromptPageProps[] = [
@@ -29,38 +28,29 @@ const YourParentComponent: React.FC = () => {
 
   // Use the useSearchPagination hook to handle pagination
   const { nextPage, previousPage } = useSearchPagination(promptPages.length);
+  // Pass the async hook to useAsyncHookLinker
+  const { moveToNextHook, moveToPreviousHook } = useAsyncHookLinker({
+    hooks: [],
+  });
 
   const handleNextPage = () => {
-    // Increment the page number
-    const nextPage = currentPage + 1;
+    nextPage();
 
-    // Check if there is a next page
-    if (nextPage < promptPages.length) {
-      // Set the next page
-      setCurrentPage(nextPage);
-    } else {
-      // Optionally, handle the case where there are no more pages
-      console.log("No more pages available");
-    }
+    // Move to the next hook after changing the page
+    moveToNextHook();
   };
 
   const handlePreviousPage = () => {
-    // Decrement the page number
-    const previousPage = currentPage - 1;
-
-    // Check if there is a previous page
-    if (previousPage >= 0) {
-      // Set the previous page
-      setCurrentPage(previousPage);
-    } else {
-      // Optionally, handle the case where there are no previous pages
-      console.log("Already on the first page");
-    }
+    previousPage();
+    // Move to the previous hook after changing the page
+    moveToPreviousHook();
   };
 
   return (
     <div>
       <PromptComponent
+        userIdea="Initial idea"
+        prompts={promptPages[currentPage].prompts}
         currentPage={promptPages[currentPage]} // Pass the current page object
         onNextPage={handleNextPage}
         onPreviousPage={handlePreviousPage}

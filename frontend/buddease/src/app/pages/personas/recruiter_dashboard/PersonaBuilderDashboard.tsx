@@ -5,15 +5,15 @@ import { OrganizedCardLoaderProps } from "@/app/components/cards/DummyCardLoader
 import { PersonaCard } from "@/app/components/cards/PersonaCard";
 import DetailsList from "@/app/components/lists/DetailsList";
 import {
-  SupportedData,
+    SupportedData,
 } from "@/app/components/models/CommonData";
 import { Data } from "@/app/components/models/data/Data";
+import DetailsProps from "@/app/components/models/data/Details";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import DataPreview from "../../../components/users/DataPreview";
 import { PersonaData, PersonaTypeEnum } from "../PersonaBuilder";
 import PersonaPanel from "./PersonaPanel";
-import DetailsProps from "@/app/components/models/data/Details";
 
 
 // Define initial personas

@@ -11,7 +11,7 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_login import login_required
 from flask_migrate import Migrate
-from versioning.version import Version
+
 from api.app_context_helper import AppContextHelper
 from authentication.auth import auth_bp
 from blueprint_routes.blueprint_register import register_blueprints
@@ -30,6 +30,7 @@ from models.user.get_remote_address import get_remote_address
 from models.user.user import User
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
+from versioning.version import Version
 
 # create gobao instance of AuditingLogger
 auditor = AuditingLogger(log_file='auditing.log')
@@ -45,9 +46,14 @@ def create_app(config_file=None):
     # Initialize the app context using AppContextHelper
     AppContextHelper.init_app_context(app)
 
+
+    # Create the database
+    create_database(app)
+
     # Error handler for unexpected errors
     @app.errorhandler(Exception)
     def handle_unexpected_error(e):
+        log_exception(e)  # Log the exception
         log_warning(f"Unexpected error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
     
@@ -138,13 +144,13 @@ def upload_dataset():
 
 
 @data_bp.route('/hypothesis-test', methods=['POST'])
-def run_hypothesis_test():
+def run_hypothesis_test(dataset, test_type):
     test_type = request.form.get('test-type')
     if test_type:
         # Perform hypothesis test on the dataset
         # Use iloc or loc to select specific columns or rows based on user input
         num_rows = int(request.form.get('num_rows', 5))
-        test_results = perform_hypothesis_test(data.iloc[:num_rows, :], test_type)
+        test_results = perform_hypothesis_test(dataset.iloc[:num_rows, :], test_type)
         print(f"Hypothesis Test Results ({test_type}):")
         print(test_results)
 
@@ -154,6 +160,9 @@ def run_hypothesis_test():
         return redirect(url_for('dashboard'))
     else:
         return "Error: No hypothesis test selected."
+
+
+
 
 # Function to visualize hypothesis test results
 def visualize_results(results):

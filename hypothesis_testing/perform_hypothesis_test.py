@@ -2,7 +2,6 @@
 import pandas as pd
 from scipy.stats import chi2_contingency, norm, ttest_ind, zscore
 
-
 def perform_hypothesis_test(data, test_type):
     """
     Perform a hypothesis test based on the specified type.

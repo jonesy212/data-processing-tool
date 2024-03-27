@@ -5,6 +5,7 @@ import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
+import { AllTypes } from "../../typings/PropTypes";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data } from "../data/Data";
@@ -31,9 +32,9 @@ interface Task extends Data {
   assigneeId: User["id"];
   dueDate: Date;
   payload: any;
-  type: "addTask" | "removeTask" | "bug" | "feature";
-  status?: AllStatus
   priority: "low" | "medium" | "high";
+  type?: AllTypes
+  status?: AllStatus
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;

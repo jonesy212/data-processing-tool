@@ -80,6 +80,9 @@ dependencies:
   date-fns:
     specifier: ^2.30.0
     version: 2.30.0
+  docx:
+    specifier: ^8.5.0
+    version: 8.5.0
   docxtemplater:
     specifier: ^3.43.1
     version: 3.43.1
@@ -104,6 +107,9 @@ dependencies:
   file-saver:
     specifier: ^2.0.5
     version: 2.0.5
+  fs:
+    specifier: 0.0.1-security
+    version: 0.0.1-security
   fuzzysort:
     specifier: ^2.0.4
     version: 2.0.4
@@ -11327,6 +11333,17 @@ packages:
     dependencies:
       esutils: 2.0.3
 
+  /docx@8.5.0:
+    resolution: {integrity: sha512-4SbcbedPXTciySXiSnNNLuJXpvxFe5nqivbiEHXyL8P/w0wx2uW7YXNjnYgjW0e2e6vy+L/tMISU/oAiXCl57Q==}
+    engines: {node: '>=10'}
+    dependencies:
+      '@types/node': 20.10.4
+      jszip: 3.10.1
+      nanoid: 5.0.6
+      xml: 1.0.1
+      xml-js: 1.6.11
+    dev: false
+
   /docxtemplater@3.43.1:
     resolution: {integrity: sha512-dzUZwxXZcx+MjxVOX91+4yVugIgWNJbX9ujPF117oi+r0Pw6KCqtPHnKrJ6yWJrbhHCpgM0BGxxZU9wakTjBEA==}
     engines: {node: '>=0.10'}
@@ -13178,6 +13195,10 @@ packages:
 
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
+
+  /fs@0.0.1-security:
+    resolution: {integrity: sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w==}
+    dev: false
 
   /fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -17335,6 +17356,12 @@ packages:
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
     dev: true
+
+  /nanoid@5.0.6:
+    resolution: {integrity: sha512-rRq0eMHoGZxlvaFOUdK1Ev83Bd1IgzzR+WJ3IbDJ7QOSdAxYjlurSPqFs9s4lJg29RT6nPwizFtJhQS6V5xgiA==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    dev: false
 
   /napi-macros@2.2.2:
     resolution: {integrity: sha512-hmEVtAGYzVQpCKdbQea4skABsdXW4RUh5t5mJ2zzqowJS2OyXZTU1KhDVFhx+NlWZ4ap9mqR9TcDO3LTTttd+g==}
@@ -24107,6 +24134,13 @@ packages:
       word: 0.3.0
     dev: false
 
+  /xml-js@1.6.11:
+    resolution: {integrity: sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==}
+    hasBin: true
+    dependencies:
+      sax: 1.2.4
+    dev: false
+
   /xml-name-validator@3.0.0:
     resolution: {integrity: sha512-A5CUptxDsvxKJEU3yO6DuWBSJz/qizqzJKOMIfUJHETbBw/sFaDxgd6fxm1ewUaM0jZ444Fc5vC5ROYurg/4Pw==}
     dev: false
@@ -24118,6 +24152,10 @@ packages:
       sax: 1.2.4
       xmlbuilder: 11.0.1
     dev: true
+
+  /xml@1.0.1:
+    resolution: {integrity: sha512-huCv9IH9Tcf95zuYCsQraZtWnJvBtLVE0QHMOs8bWyZAFZNDcYjsPq1nEx8jKA9y+Beo9v+7OBPRisQTjinQMw==}
+    dev: false
 
   /xmlbuilder@11.0.1:
     resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}

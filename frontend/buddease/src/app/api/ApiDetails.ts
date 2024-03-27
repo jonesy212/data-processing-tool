@@ -13,7 +13,7 @@ import axiosInstance from './axiosInstance';
 const API_BASE_URL = endpoints.details.list;
 
 // Initialize ApiService with the base URL
-const apiService = new ApiService(`${API_BASE_URL}`);
+export const apiService = new ApiService(`${API_BASE_URL}`);
 
 // Define notification messages for details API
 interface DetailsNotificationMessages {

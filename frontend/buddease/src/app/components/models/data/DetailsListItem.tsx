@@ -6,9 +6,8 @@ export type AllProperties = {
   [K in keyof Data]: Data[K];
 };
 
-
-// Define a new type for DetailsItem with all properties of Data
-type DetailsItemAll<T> = DetailsItem<AllProperties>;
+// Define a new type for DetailsItem with all properties of Data, but make them optional
+type DetailsItemAll<T> = DetailsItem<Partial<AllProperties>>;
 
 interface DetailsListItemProps<T extends Data> {
   item: DetailsItemAll<T>; // Use DetailsItemAll type

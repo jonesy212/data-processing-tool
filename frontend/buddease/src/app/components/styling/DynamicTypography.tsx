@@ -12,6 +12,7 @@ interface BodyTextProps {
 export interface HeadingProps {
   fontSize: string;
   fontFamily: string;
+  dynamicFont: string;
 }
 
 interface DynamicTypographyProps {

@@ -382,6 +382,14 @@ export const endpoints: Endpoints = {
     uploadData: `${BASE_URL}/api/data/upload`, // Upload data endpoint
   },
 
+  dex: { 
+    list: `${BASE_URL}/api/dex`,
+    single: (dexId: string) => `${BASE_URL}/api/dex/${dexId}`,
+    add: `${BASE_URL}/api/dex`,
+    remove: (dexId: string) => `${BASE_URL}/api/dex/${dexId}`,
+    update: (dexId: string) => `${BASE_URL}/api/update/${dexId}`
+  },
+
 
   document: {
     list: `${BASE_URL}/api/documents`,
@@ -391,6 +399,7 @@ export const endpoints: Endpoints = {
     update: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
     // Add more document-related endpoints as needed
   },
+
   details: {
     list: `${BASE_URL}/api/details`,
     single: (detailsId: string) => `${BASE_URL}/api/details/${detailsId}`,
@@ -694,6 +703,14 @@ export const endpoints: Endpoints = {
     // Add other random walk endpoints as needed
   },
 
+  reports: {
+    list: `${BASE_URL}/api/reports`,
+    generate: `${BASE_URL}/api/reports/generate`, // Endpoint to generate a new report
+    download: (reportId: string) => `${BASE_URL}/api/reports/${reportId}/download`, // Endpoint to download a report by ID
+    delete: (reportId: string) => `${BASE_URL}/api/reports/${reportId}`, // Endpoint to delete a report by ID
+  },
+
+
   registration: {
     registerUser: `${BASE_URL}/api/users/register`, // POST request for registering a new user
     updateUserProfile: (userId: number) =>
@@ -774,9 +791,16 @@ export const endpoints: Endpoints = {
     // Pagination endpoints
     applyPagination: `${BASE_URL}/api/pagination/apply`,
     updatePaginationOptions: `${BASE_URL}/api/pagination/update-options`,
+    markInProgress: (taskId: number) => `${BASE_URL}/api/tasks/${taskId}/mark-in-progress`,
   },
 
   todos: {
+    create: `${BASE_URL}/api/todos/create`, // Endpoint for creating a new todo
+    update: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/update`, // Endpoint for updating a todo
+    delete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/delete`, // Endpoint for deleting a todo
+    complete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/complete`, // Endpoint for marking a todo as completed
+    uncomplete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/uncomplete`, // Endpoint for marking a todo as uncompleted
+   
     fetch: `${BASE_URL}/api/todos`,
     assign: (todoId: number, teamId: number) =>
       `${BASE_URL}/api/tasks/${todoId}/assign/${teamId}`,

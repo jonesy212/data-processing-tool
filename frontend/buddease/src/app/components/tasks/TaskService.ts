@@ -1,9 +1,16 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axios from "axios";
+import dotProp from 'dot-prop';
 import { action, observable, runInAction } from 'mobx';
 import { Task } from "../models/tasks/Task";
 import { Progress } from "../models/tracker/ProgressBar";
+import { apiService } from "@/app/api/ApiDetails";
+import { NOTIFICATION_MESSAGES } from "@/app/constants/NotificationMessages";
+import { Logger } from "@/app/utils/Logger";
+import { UniqueIDGenerator } from "@/app/utils/UniqueIDGenerator";
 
+
+const API_BASE_URL = endpoints.tasks;
 class TaskService {
   @observable tasks: Task[] = [];
   @observable loading = false;
@@ -14,7 +21,7 @@ class TaskService {
     try {
       this.loading = true;
 
-      const response = await axios.get(endpoints.tasks.list);
+      const response = await axios.get(apiService.callApi(endpoints.tasks.list()));
 
       runInAction(() => {
         this.tasks = response.data;
@@ -34,7 +41,7 @@ class TaskService {
   @action
   fetchTask = async (taskId: number): Promise<Task> => {
     try {
-      const response = await axios.get(endpoints.tasks.single(taskId));
+      const response = await axios.get(apiService.callApi(endpoints.tasks.single(taskId)));
       return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch task with ID ${taskId}`);
@@ -44,7 +51,7 @@ class TaskService {
   @action
   addTask = async (newTask: Task): Promise<Task> => {
     try {
-      const response = await axios.post(endpoints.tasks.add, newTask, {
+      const response = await axios.post(apiService.callApi(endpoints.tasks.add), newTask, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -64,18 +71,29 @@ class TaskService {
   @action
   removeTask = async (taskId: number): Promise<void> => {
     try {
-      await axios.delete(endpoints.tasks.remove(taskId));
+      await axios.delete(apiService.callApi(endpoints.tasks.remove(taskId)));
     } catch (error) {
       throw new Error("Failed to remove task");
     }
   };
 
   @action
-  updateTask = async (taskId: number, newTitle: string): Promise<Task> => {
+  updateTask = async (
+    taskId: number,
+    newTitle?: string,
+    requestData?: any
+  ): Promise<Task> => {
     try {
+      const endpointPath = `tasks.update(${taskId})`;
+      const endpoint = dotProp.getProperty(API_BASE_URL, endpointPath) as string | undefined;
+
+      if (!endpoint) {
+        throw new Error(`${endpointPath} endpoint not found`);
+      }
+
       const response = await axios.put(
-        endpoints.tasks.update(taskId),
-        { title: newTitle },
+        endpoint,
+        requestData,
         {
           headers: {
             "Content-Type": "application/json",
@@ -100,19 +118,23 @@ class TaskService {
     }
   };
 
+
   @action
   completeAllTasks = async (): Promise<void> => {
     try {
-      await axios.post(endpoints.tasks.completeAll);
+      await axios.post(apiService.callApi(endpoints.tasks.completeAll));
     } catch (error) {
       throw new Error("Failed to complete all tasks");
     }
   };
 
   @action
-  toggleTask = async (taskId: number): Promise<void> => {
+  toggleTask = async (taskId: number, requestData?: any): Promise<void> => {
     try {
-      await axios.put(endpoints.tasks.toggle(taskId));
+      await axios.put(
+        await apiService.callApi(endpoints.tasks.toggle(taskId), requestData),
+        requestData
+      );
     } catch (error) {
       throw new Error("Failed to toggle task");
     }
@@ -123,7 +145,7 @@ class TaskService {
   removeTasks = async (taskIds: number[]): Promise<void> => {
     try {
       // Assuming there is an endpoint to remove multiple tasks
-      await axios.post(endpoints.tasks.removeMultiple, { taskIds });
+      await axios.post(apiService.callApi(endpoints.tasks.removeMultiple), { taskIds });
     } catch (error) {
       throw new Error("Failed to remove tasks");
     }
@@ -133,7 +155,7 @@ class TaskService {
   toggleTasks = async (taskIds: number[]): Promise<void> => {
     try {
       // Assuming there is an endpoint to toggle multiple tasks
-      await axios.post(endpoints.tasks.toggleMultiple, { taskIds });
+      await axios.post(apiService.callApi(endpoints.tasks.toggleMultiple), { taskIds });
     } catch (error) {
       throw new Error("Failed to toggle tasks");
     }
@@ -149,12 +171,21 @@ class TaskService {
   }
 
   @action
+  async markTaskInProgress(taskId: number): Promise<void> { 
+    try {
+      await axios.put(apiService.callApi(endpoints.tasks.markInProgress(taskId)));
+    } catch (error) {
+      throw new Error("Failed to mark task as in progress");
+    }
+  }
+
+  @action
   updateTaskProgress(id: string, progress: Progress): void {
     const task = this.getTaskById(id);
     if (task) {
       task.updateProgress(progress);
     }
   }
-}
+  }
 
-export const taskService = new TaskService();
+  export const taskService = new TaskService();

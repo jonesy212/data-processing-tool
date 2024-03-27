@@ -1,6 +1,6 @@
 //Subscriber.tsx
 
-import { Snapshot } from "../state/stores/SnapshotStore";
+import { Snapshot } from "../snapshots/SnapshotStore";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { sendNotification } from "./UserSlice";
 

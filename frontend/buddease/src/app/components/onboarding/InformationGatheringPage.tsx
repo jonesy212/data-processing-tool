@@ -1,6 +1,7 @@
 // InformationGatheringPage.tsx
 import React from 'react';
 import generateDynamicDummyHook from '../hooks/generateDynamicDummyHook';
+import RootLayout from '@/app/RootLayout';
 
 const InformationGatheringPage: React.FC = () => {
   // Generate a dynamic dummy hook for the Information Gathering phase
@@ -10,9 +11,11 @@ const InformationGatheringPage: React.FC = () => {
   informationGatheringHook.hook();
 
   return (
+    <RootLayout>
     <div>
       {/* Your Information Gathering page content */}
     </div>
+      </RootLayout>
   );
 };
 

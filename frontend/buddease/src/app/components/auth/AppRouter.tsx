@@ -1,3 +1,4 @@
+import RootLayout from "@/app/RootLayout";
 import authService from "@/app/components/auth/AuthService"; // Import authService
 import Home from "@/app/page";
 import Dashboard from "@/app/pages/dashboards/UserDashboard";
@@ -38,28 +39,30 @@ const AppRouter: React.FC = () => {
 
   return (
     <Router>
-      <Routes>
-        <Route
-          path="/register"
-          element={
-            <RegisterForm
-            // Add necessary props for SignUpForm component
-            />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <LoginForm
-              onSubmit={handleLoginSubmit} // Pass the onSubmit function
-              setUsername={() => {}}
-              setPassword={() => {}}
-            />
-          }
-        />
-        <ProtectedRoute path="/dashboard" component={Dashboard} />
-        <ProtectedRoute path="/" component={Home} />
-      </Routes>
+      <RootLayout>
+        <Routes>
+          <Route
+            path="/register"
+            element={
+              <RegisterForm
+              // Add necessary props for SignUpForm component
+              />
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <LoginForm
+                onSubmit={handleLoginSubmit} // Pass the onSubmit function
+                setUsername={() => {}}
+                setPassword={() => {}}
+              />
+            }
+          />
+          <ProtectedRoute path="/dashboard" component={Dashboard} />
+          <ProtectedRoute path="/" component={Home} />
+        </Routes>
+      </RootLayout>
     </Router>
   );
 };

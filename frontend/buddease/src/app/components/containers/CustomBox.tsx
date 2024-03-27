@@ -13,6 +13,7 @@ import { Input } from "antd";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
 import router from "../projects/projectManagement/ProjectManagementSimulator";
+import DynamicTypography from "../styling/DynamicTypography";
 
 interface CustomBoxProps {
   children: ReactNode;
@@ -36,17 +37,24 @@ const CustomBox: React.FC<CustomBoxProps> = ({
   return (
     <ResizablePanels sizes={sizes} onResize={onResize}>
       <div>
+        <DynamicTypography variant="h5">
+          File Sharing and Collaboration
+        </DynamicTypography>
         <div>
           <h5>File Sharing and Collaboration</h5>
           <InternalDivider />
+
           <div style={{ marginTop: "16px" }}>
-            <InputLabel htmlFor="file-upload">Select File</InputLabel>
-            <Input
-              id="file-upload"
-              type="file"
-              placeholder="Select File"
-              onChange={handleFileSelect}
-            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="file-upload">Select File</InputLabel>
+              <Input
+                id="file-upload"
+                type="file"
+                placeholder="Select File"
+                onChange={handleFileSelect}
+              />
+            </FormControl>
+
             <div style={{ marginTop: "16px" }}>
               {selectedFile && <p>Selected File: {selectedFile.name}</p>}
               {/* Update the Button component here */}
@@ -57,7 +65,7 @@ const CustomBox: React.FC<CustomBoxProps> = ({
                 onClick={handleFileUpload}
                 disabled={!selectedFile}
                 style={{ marginLeft: "16px" }}
-                router={router} 
+                router={router}
                 brandingSettings={brandingSettings} // Pass brandingSettings prop
               >
                 Upload File

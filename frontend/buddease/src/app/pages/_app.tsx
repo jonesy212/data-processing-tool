@@ -8,12 +8,12 @@ import React, { useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
 
 import {
-  Link,
-  Route,
-  Router,
-  useLocation,
-  useNavigate,
-  useSearchParams,
+    Link,
+    Route,
+    Router,
+    useLocation,
+    useNavigate,
+    useSearchParams,
 } from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
 import BlogComponent from "../components/blogs/BlogComponent";
@@ -36,14 +36,16 @@ import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
-  NotificationProvider,
-  NotificationType,
+    NotificationProvider,
+    NotificationType,
 } from "../components/support/NotificationContext";
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { ButtonGenerator } from "../generators/GenerateButtons";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
+import DynamicErrorBoundary from "../shared/DynamicErrorBoundary";
+import ErrorBoundaryProvider from "../shared/ErrorBoundaryProvider";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
 import ChangePasswordForm from "./forms/ChangePasswordForm";
@@ -54,8 +56,6 @@ import RegisterForm from "./forms/RegisterForm";
 import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
-import ErrorBoundaryProvider from "../shared/ErrorBoundaryProvider";
-import DynamicErrorBoundary from "../shared/DynamicErrorBoundary";
 
 const phases: Phase[] = [
   {
@@ -239,7 +239,10 @@ async function MyApp({
                   <DynamicPromptProvider>
                     <AuthProvider token={token}>
                       <StoreProvider>
-                        <Router location={location} navigator={{} as Navigator}>
+                        <Router
+                          location={useLocation()}
+                          navigator={{} as Navigator}
+                        >
                           <Routes location={location}>
                             {" "}
                             {/* Routes to render only the first matching route */}

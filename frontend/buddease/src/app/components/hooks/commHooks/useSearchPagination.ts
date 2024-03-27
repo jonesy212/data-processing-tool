@@ -13,12 +13,20 @@ const useSearchPagination = (initialPage: number = 1, initialPageSize: number = 
     setPageSize(size);
   };
 
+  const nextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const previousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)); // Ensure the page number does not go below 1
+  };
+
     
 
   
   // Add more pagination logic as needed
 
-  return { currentPage, pageSize, goToPage, changePageSize };
+  return { currentPage, pageSize, goToPage, changePageSize, nextPage, previousPage };
 };
 
 export default useSearchPagination;

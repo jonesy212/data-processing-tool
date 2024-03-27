@@ -1,7 +1,7 @@
 // CommunityData.tsx
-import {Project} from "../projects/Project";
+import { Project } from "../projects/Project";
 import { Data } from "./data/Data";
-import {Team} from "./teams/Team";
+import { Team } from "./teams/Team";
 import { TeamMember } from "./teams/TeamMembers";
 
 
@@ -11,7 +11,8 @@ export interface CommunityData extends Data {
     description: string;
     projects: Project[];
     teams: Team[];
-    teamMembers: TeamMember[];
+  teamMembers: TeamMember[];
+  type?: 
     // Add other properties as needed
   }
   

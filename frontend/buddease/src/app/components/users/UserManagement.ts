@@ -1,6 +1,7 @@
 import userService from '@/app/components/users/ApiUser';
 import { User } from '@/app/components/users/User';
 import CommonDetails from '../models/CommonData';
+import { UserRole } from './UserRole';
 
 class UserManagement {
   constructor() {
@@ -71,22 +72,23 @@ class UserManagement {
     try {
       // Ensure all required properties are provided with default values
       const newUser: User = {
-        _id: '', // Provide default value for _id
-        id: '', // Provide default value for id
-        username: '', // Provide default value for username
-        email: '', // Provide default value for email
-        tier: '', // Provide default value for tier
-        uploadQuota: 0, // Provide default value for uploadQuota
-        fullName: null, // Provide default value for fullName
-        bio: null, // Provide default value for bio
-        userType: '', // Provide default value for userType
-        hasQuota: false, // Provide default value for hasQuota
-        profilePicture: null, // Provide default value for profilePicture
-        processingTasks: [], // Provide default value for processingTasks
-        traits: {} as typeof CommonDetails, // Provide default value for traits
-        ...userData, // Override default values with provided values
+        _id: "",
+        id: "",
+        username: "",
+        email: "",
+        tier: "",
+        uploadQuota: 0,
+        fullName: null,
+        bio: null,
+        userType: "",
+        hasQuota: false,
+        profilePicture: null,
+        processingTasks: [],
+        traits: {} as typeof CommonDetails,
+        ...userData,
+        role: {} as UserRole, // Add default value for role
       };
-  
+
       const createdUser = await userService.createUser(newUser);
       // Handle create user success
       return createdUser;
@@ -105,7 +107,9 @@ class UserManagement {
       throw error;
     }
   };
-  updateUserRole = async (userId: User['id'], newRole: string) => {
+
+
+  updateUserRole = async (userId: User['id'], newRole: UserRole) => {
     try {
       // Call a service or API endpoint to update the user's role
       const response = await userService.updateUserRole(userId, newRole);
@@ -115,6 +119,44 @@ class UserManagement {
       return response; // Return any relevant data from the backend response
     } catch (error) {
       // Handle role update failure
+      throw error;
+    }
+  };
+
+
+  updateUserRoles = async (users: {
+    userId: string | number;
+    role: UserRole;
+  }) => {
+    try {
+      // Call service method to bulk update user roles
+      await userService.bulkUpdateUserRoles(users);
+
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+
+
+
+  // Assign project ownership to a user
+  assignProjectOwner = async (userId: User['id'], projectId: string) => {
+    try {
+      // Implement logic to assign project ownership
+    } catch (error) {
+      // Handle project ownership assignment failure
+      throw error;
+    }
+  };
+
+  // Remove project ownership from a user
+  removeProjectOwner = async (userId: User['id'], projectId: string) => {
+    try {
+      // Implement logic to remove project ownership
+    } catch (error) {
+      // Handle project ownership removal failure
       throw error;
     }
   };

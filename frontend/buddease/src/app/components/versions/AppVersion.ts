@@ -91,13 +91,14 @@ export { AppVersionImpl as AppVersion };
 
 // Example usage
 // Create an instance of AppVersionImpl
-const appVersion = new AppVersionImpl({
+export const appVersion = new AppVersionImpl({
   appName: 'MyApp',
   versionNumber: '1.0.0',
   appVersion: 'v1',
   releaseDate: '2024-03-07',
   releaseNotes: ['Initial release'],
 });
+
 
 // Get the current appName
 const currentAppName = appVersion.getAppName(); // Returns 'MyApp'

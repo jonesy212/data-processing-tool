@@ -4,7 +4,8 @@ import { DetailsItem } from "../components/state/stores/DetailsListStore";
 
 
 // Define a new type for DetailsItem with only common properties
-type DetailsItemCommon<T> = DetailsItem<AllProperties>;
+// Define a new type for DetailsItem with optional properties
+type DetailsItemCommon<T> = DetailsItem<Partial<AllProperties>>;
 
 interface ListGeneratorProps<T extends Data> {
   items: DetailsItemCommon<T>[]; // Use DetailsItemCommon type

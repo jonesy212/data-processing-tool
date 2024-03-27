@@ -1,33 +1,23 @@
 // SnapshotConfig.ts
-import { Snapshot, SnapshotStoreConfig } from '@/app/components/state/stores/SnapshotStore';
-import { Data } from '../../models/data/Data';
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from '@/app/components/state/stores/SnapshotStore';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { Data } from '../models/data/Data';
 
 
 const generateSnapshotId = UniqueIDGenerator.generateSnapshotId()
 // Define the snapshot configuration object
-const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>> = {
+const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {
   clearSnapshots: undefined, // Define the behavior for clearing snapshots if needed
   key: "teamSnapshotKey", // Provide a key for the snapshot store
-  initialState: {
-    id: generateSnapshotId, // Provide an ID for the snapshot
-    timestamp: new Date(), // Provide a timestamp for the snapshot
-      data: {
-          _id: "generateSnapshotId" as string,
-          id: generateSnapshotId,
-          title: "teamSnapshotTaken",
-          date: new Date(),
-          teamName: "teamName",
-      // Provide initial data for the snapshot
-      // This can be an empty object or whatever initial data you need
-    } as Partial<Data>,
-  } ,
+  initialState: {} as SnapshotStore<Snapshot<Data>>,
   snapshots: [], // Initialize snapshots as an empty array
   initSnapshot: () => {}, // Define the behavior for initializing a snapshot if needed
   updateSnapshot: () => {}, // Define the behavior for updating a snapshot if needed
   takeSnapshot: () => {}, // Define the behavior for taking a snapshot if needed
   getSnapshot: async () => [], // Define the behavior for getting a snapshot if needed
-  getSnapshots: async () => [], // Define the behavior for getting snapshots if needed
+  getSnapshots: async () => ({
+    snapshot: snapshotConfig.snapshots
+  }), // Return object with snapshot property to match expected return type
   getAllSnapshots: () => [], // Define the behavior for getting all snapshots if needed
   clearSnapshot: () => {}, // Define the behavior for clearing a snapshot if needed
   configureSnapshotStore: () => {}, // Define the behavior for configuring the snapshot store if needed
@@ -47,12 +37,11 @@ const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>> = {
   batchFetchSnapshotsSuccess: () => {}, // Define the behavior for successful batch snapshot fetch if needed
   batchFetchSnapshotsFailure: () => {}, // Define the behavior for failed batch snapshot fetch if needed
   batchUpdateSnapshotsFailure: () => {}, // Define the behavior for failed batch snapshot updates if needed
-    // Define the behavior for notifying subscribers if needed
-    
+
   // Define the behavior for notifying subscribers if needed
   notifySubscribers: (subscribers: Snapshot<Snapshot<Data>>[]) => {
     // Perform actions to notify subscribers here
-    subscribers.forEach(subscriber => {
+    subscribers.forEach((subscriber) => {
       subscriber.onSnapshot(subscriber.snapshot);
     });
 
@@ -62,6 +51,7 @@ const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>> = {
     };
   },
 };
+
  
 
-export {snapshotConfig}
+export { snapshotConfig };

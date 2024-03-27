@@ -36,3 +36,7 @@ export default class FrontendStructure {
     return { ...this.structure };
   }
 }
+
+
+
+export const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);

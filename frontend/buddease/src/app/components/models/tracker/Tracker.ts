@@ -1,5 +1,4 @@
 //Tracker.ts
-import fs from "fs";
 import path from "path";
 import { useAuth } from "../../auth/AuthContext";
 import { DocumentData } from "../../documents/DocumentBuilder";
@@ -69,33 +68,68 @@ class TrackerClass implements Tracker {
   }
 
   // Function to track changes for a folder
-  trackFolderChanges(fileLoader: DocumentData): void {
+  async trackFolderChanges(fileLoader: DocumentData): Promise<void> {
     try {
-      // Read the contents of the folder
-      const folderContents = fs.readdirSync(fileLoader.folderPath); // Using folderPath property
+      // Make a fetch request to the folder URL to get its contents
+      const folderPathUrl = new URL(fileLoader.folderPath, 'file://');
+      const response = await fetch(folderPathUrl.toString());
+      
+      // Check if the response is successful (status code 200)
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch folder contents: ${response.status} ${response.statusText}`
+        );
+      }
 
-      folderContents.forEach((file) => {
-        const filePath = path.join(String(fileLoader.folderPath), file);
-        const isDirectory = fs.statSync(filePath).isDirectory();
+      // Parse the response body as JSON to get the folder contents
+      const folderContents = await response.json();
+
+      // Iterate through the folder contents
+      for (const file of folderContents) {
+        const filePath = path.join(fileLoader.folderPath, file);
+
+        // Make a fetch request to the file URL to check if it's a directory
+        const fileResponse = await fetch(filePath, { method: "HEAD" });
+
+        // Check if the response is successful (status code 200)
+        if (!fileResponse.ok) {
+          throw new Error(
+            `Failed to fetch file info: ${fileResponse.status} ${fileResponse.statusText}`
+          );
+        }
+
+        // Check if the file is a directory
+        const isDirectory = fileResponse.headers
+          .get("content-type")
+          ?.startsWith("text/html");
 
         if (!isDirectory) {
           // Implement logic to track changes for each file
           console.log(`Tracking changes for file: ${filePath}`);
         }
-      });
+      }
     } catch (error) {
       console.error("Error occurred while tracking folder changes:", error);
+      // Handle errors appropriately, e.g., log or notify
     }
   }
 
   // Function to retrieve folder contents
-  getFolderContents(folderPath: string): string[] {
+  async getFolderContents(folderPath: string): Promise<string[]> {
     try {
-      // Read the contents of the folder
-      const folderContents = fs.readdirSync(folderPath);
-
+      // Make a fetch request to the folder URL to get its contents
+      const response = await fetch(folderPath);
+  
+      // Check if the response is successful (status code 200)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch folder contents: ${response.status} ${response.statusText}`);
+      }
+  
+      // Parse the response body as JSON to get the folder contents
+      const folderContents = await response.json();
+  
       // Return the list of files in the folder
-      return folderContents.map((file) => path.join(folderPath, file));
+      return folderContents.map((file: string) => new URL(file, folderPath).toString());
     } catch (error) {
       console.error("Error occurred while retrieving folder contents:", error);
       return [];

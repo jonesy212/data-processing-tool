@@ -1,7 +1,7 @@
 // BugList.ts
 import React from 'react';
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { Data } from "../components/models/data/Data";
+import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import ListGenerator from './ListGenerator'; // Import the ListGenerator component
 
 interface BugListProps {

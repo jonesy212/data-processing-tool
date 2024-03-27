@@ -62,7 +62,7 @@ interface AppConfig {
 }
 
 // Define the function to retrieve AppConfig
-const getAppConfig = (): AppConfig => {
+export const getAppConfig = (): AppConfig => {
   // Implement the logic to retrieve AppConfig here
   // For example, you can fetch it from local storage or a server
   // For demonstration purposes, let's return a mock AppConfig object

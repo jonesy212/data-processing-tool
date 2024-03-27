@@ -5,14 +5,15 @@ import { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
+import { Snapshot } from "../../snapshots/SnapshotStore";
 import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { TaskActions } from "../../tasks/TaskActions";
-import { useApiManagerSlice } from "../redux/slices/ApiSlice";
-import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-import { Snapshot } from "./SnapshotStore";
-import { taskManagerSlice } from "../redux/slices/TaskSlice";
+import { taskService } from "../../tasks/TaskService";
 import { User } from "../../users/User";
+import { useApiManagerSlice } from "../redux/slices/ApiSlice";
+import { taskManagerSlice } from "../redux/slices/TaskSlice";
+import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -396,7 +397,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         notify(
           "markTaskAsCompleteFailure",
           `Error marking task ${taskId} as complete`,
-          NOTIFICATION_MESSAGES.Error.DEFAULT("Error marking task as complete"),
+          NOTIFICATION_MESSAGES.Error.DEFAULT,
           new Date(new Date().getTime()),
           NotificationTypeEnum.OperationError
         );
@@ -474,11 +475,12 @@ const getTaskById = async (taskId: string): Promise<Task | null> => {
 
     // Dispatch the synchronous action immediately
     dispatch(updateTaskAssigneeSuccess(taskId, assignee));
-    const { updateTaskAssignee } = useApiManagerSlice.actions;
-    updateTaskAssignee(taskId as unknown as number, assignee);
+    updateTaskAssignee(taskId, assignee);
+
     // Simulating asynchronous operation
     setTimeout((error: Error) => {
       notify(
+        "updateTaskAssigneeFailure",
         `Error updating task ${taskId} assignee`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
@@ -543,26 +545,31 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
   }
 
   const batchFetchTaskSnapshotsRequest = (snapshotData: Record<string, Task[]>): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
-      Object.values(snapshotData).forEach((tasks: Task[]) => {
-        tasks.forEach((task: Task) => {
-          // Create a snapshot for each task
-          const snapshot: Snapshot<Task> = { data: task, timestamp: 0};
-    
-          // Add the snapshot to the SnapshotManager
-          useSnapshotManager().addSnapshot(snapshot);
-        });
+  return new Promise<string>((resolve, reject) => {
+    Object.values(snapshotData).forEach((
+      tasks: Task[],
+      index: number) => {
+      tasks.forEach((task: Task) => {
+        // Create a snapshot for each task
+        const snapshot: Snapshot<Task> = { data: task, timestamp: new Date()  };
+
+        // Add the snapshot to the SnapshotManager
+        useSnapshotManager().addSnapshot(snapshot);
       });
-    
-      // Resolve with a message indicating success
-      resolve("Batch fetch task snapshots completed successfully.");
     });
-  };
+
+    // Resolve with a message indicating success
+    resolve("Batch fetch task snapshots completed successfully.");
+  });
+};
+
+
   
 
   const batchFetchTaskSnapshotsSuccess = async (taskId: Promise<string>) => async (dispatch: any) => {
     console.log(`Task ${taskId} fetched`);
     notify(
+      "batchFetchTaskSnapshotsFailure",
       `Task ${taskId} fetched`,
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
       new Date(),
@@ -580,10 +587,12 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
       // Simulating asynchronous operation
       setTimeout((error: Error) => {
         notify(
+          "batchFetchTaskSnapshotsFailure",
           `Error fetching task ${taskId}`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OperationSuccess,
+
         );
       }, 1000);
     } else {
@@ -595,17 +604,19 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
   const markTaskAsInProgressSuccess = (taskId: string) =>(dispatch: any) => { 
     console.log(`Task ${taskId} marked as in progress`);
     notify(
+      "markTaskAsInProgressSuccess",
       `Task ${taskId} marked as in progress`,
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
       new Date(),
       NotificationTypeEnum.OperationSuccess
     );
     dispatch(markTaskAsInProgressSuccess(taskId));
-    const { markTaskAsInProgress } = useApiManagerSlice.actions;
+    const { markTaskAsInProgress } = taskService.markTaskInProgress
     markTaskAsInProgress(taskId as unknown as number);
     // Simulating asynchronous operation
     setTimeout((error: Error) => {
       notify(
+        "markTaskAsInProgressFailure",
         `Error marking task ${taskId} as in progress`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
@@ -697,6 +708,7 @@ const fetchTasksByTaskId = async (taskId: string): Promise<string> => {
     markTaskPending,
     markTaskAsComplete,
     markTaskAsInProgress,
+    
     markTaskAsPendingSuccess,
     fetchTasksByTaskId,
 

@@ -1,3 +1,4 @@
+// ApiData.ts
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import dotProp from 'dot-prop';
@@ -45,7 +46,7 @@ export const handleApiErrorAndNotify = (
       errorMessageText as unknown as string,
       null,
       new Date(),
-      'ClientError' as NotificationType
+      'ApiClientError' as NotificationType
     );
   }
 };
@@ -86,8 +87,10 @@ export const addData = async (newData: Omit<any, 'id'>, highlight: Omit<Highligh
     }
   } catch (error) {
     console.error('Error adding data:', error);
+    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to add data', 'AddDataErrorId');
   }
 };
+
 
 export const removeData = async (dataId: number): Promise<void> => {
   try {
@@ -99,7 +102,7 @@ export const removeData = async (dataId: number): Promise<void> => {
     }
   } catch (error) {
     console.error('Error removing data:', error);
-    throw error;
+    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to remove data', 'RemoveDataErrorId');
   }
 };
 
@@ -156,6 +159,7 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
   }
 };
 
+
 export const fetchDataById = async (dataId: number): Promise<any> => {
   try {
     const fetchDataByIdEndpoint = `${API_BASE_URL}.single.${dataId}`;
@@ -163,6 +167,7 @@ export const fetchDataById = async (dataId: number): Promise<any> => {
     return response.data;
   } catch (error) {
     console.error('Error fetching data by ID:', error);
+    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to fetch data by ID', 'FetchDataByIdErrorId');
     throw error;
   }
 };
@@ -173,8 +178,7 @@ export const createData = async (newData: any): Promise<void> => {
     await axiosInstance.post(createDataEndpoint, newData);
   } catch (error: any) {
     console.error('Error creating data:', error);
-    handleApiError(error, 'Failed to create data');
-
+    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to create data', 'CreateDataErrorId');
     throw error;
   }
 };
@@ -186,8 +190,7 @@ export const deleteData = async (dataId: number): Promise<void> => {
   } catch (error: any) {
     const errorMessage = 'Failed to delete data';
     console.error(errorMessage, error);
-    handleApiError(error, 'Failed to delete data');
-
+    handleApiErrorAndNotify(error as AxiosError<unknown>, errorMessage, 'DeleteDataErrorId');
     throw error;
   }
 };

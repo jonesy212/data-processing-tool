@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import PermissionsEditor from './PermissionsEditor';
+import UserRoles from './UserRoles';
+import { UserRole } from './UserRole';
 
-
-
-interface UserRoleEditorProps extends  PermissionsEditor{
-  roleName: string;
-  permissions: string[];
+interface PermissionsEditorProps {
+  permissions: string[]; // Define props accepted by PermissionsEditor
 }
-// UserRolesEditor component
-const UserRolesEditor: React.FC<UserRoleEditorProps> = ({ roleName, permissions }) => {
-  const [userRoles, setUserRoles] = useState([]);
+
+interface UserRoleEditorProps extends PermissionsEditorProps {
+  roleName: string;
+}
+
+
+
+const UserRolesEditor: React.FC<UserRoleEditorProps> = () => {
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
 
   // Function to handle adding a new user role
   const handleAddUserRole = () => {
     // Logic to add a new user role
     // Example:
-    setUserRoles([...userRoles, { roleName: 'New Role', permissions: [] }]);
+    setUserRoles([...userRoles, { role: 'New Role', responsibilities: [], permissions: [], positions: [], salary: 0 }]);
   };
 
   return (
@@ -24,16 +28,24 @@ const UserRolesEditor: React.FC<UserRoleEditorProps> = ({ roleName, permissions 
       <button onClick={handleAddUserRole}>Add New Role</button>
       {/* Render user roles */}
       <ul>
-        {userRoles.map((role, index) => (
-          <li key={index}>
-            <span>{role.roleName}</span>
-            {/* Render PermissionsEditor for each role */}
-            <PermissionsEditor permissions={role.permissions} />
-          </li>
-        ))}
+        {/* Iterate over keys of UserRoles object */}
+        {Object.keys(UserRoles).map((roleKey, index) => {
+          const role = UserRoles[roleKey as keyof typeof UserRoles]; // Access role object
+          return (
+            <li key={index}>
+              <span>{role.role}</span>
+              {/* Render role details */}
+              <ul>
+                <li>Responsibilities: {role.responsibilities.join(', ')}</li>
+                <li>Permissions: {role.permissions.join(', ')}</li>
+                <li>Salary: {role.salary}</li>
+              </ul>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 };
 
-export { UserRolesEditor };
+export default UserRolesEditor;

@@ -9,6 +9,7 @@ export const NotificationActions = {
   clearNotifications: createAction("clearNotifications"),
 
   // Request, success, and failure actions
+  fetchNotifications: createAction<NotificationData[]>("fetchNotifications"),
   fetchNotificationsRequest: createAction("fetchNotificationsRequest"),
   fetchNotificationsSuccess: createAction<NotificationData[]>("fetchNotificationsSuccess"),
   fetchNotificationsFailure: createAction<string>("fetchNotificationsFailure"),

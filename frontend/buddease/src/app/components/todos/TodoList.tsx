@@ -4,10 +4,11 @@ import React, { useEffect } from "react";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { Phase } from "../phases/Phase";
-import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
+import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
-import { Todo } from "./Todo";
 import { VideoData } from "../video/Video";
+import { Todo } from "./Todo";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;
@@ -100,8 +101,8 @@ const TodoList: React.FC = observer(() => {
         tags: [],
         then: (callback: (newData: Snapshot<Data>) => void) => callback,
 
-        analysisType: "",
-        analysisResults: [],
+        analysisType: {} as AnalysisTypeEnum,
+        analysisResults: {} as DataAnalysisResult[] ,
         phase: {} as Phase,
         videoData: {} as VideoData,
         isDeleted: false,
@@ -127,13 +128,27 @@ const TodoList: React.FC = observer(() => {
   return (
     <div>
       <ul>
-      {Object.values(todoStore.todos).map((todo: MappedAndTodo & CommonData<Data>) => (
-  <li key={todo.id}>
-    {todo.title} - {todo.done ? "Done" : "Not Done"}
-    <button onClick={() => handleToggle(todo.id as string)}>Toggle</button>
-    <CommonDetails data={todo} />
-  </li>
-))}
+        {Object.values(todoStore.todos).map(
+          (todo: MappedAndTodo & CommonData<Data>) => (
+            <li key={todo.id}>
+              {todo.title} - {todo.done ? "Done" : "Not Done"}
+              <button onClick={() => handleToggle(todo.id as string)}>
+                Toggle
+              </button>
+              <CommonDetails
+                data={{}}
+                details={{
+                  id: todo.id as string,
+                  title: todo.title,
+                  status: todo.status,
+                  importance: todo.priority,
+                  startDate: todo.startDate,
+                  dueDate: todo.dueDate || undefined,
+                }}
+              />
+            </li>
+          )
+        )}
       </ul>
 
       <button onClick={handleAdd}>Add Todo</button>

@@ -1,5 +1,8 @@
 // FileTypeEnum.ts
-import fs from "fs";
+
+import { CalendarLogger } from "@/app/pages/logging/Logger";
+import useErrorHandling from "../hooks/useErrorHandling";
+
 // Define enums for file categories and types
 enum FileCategory {
   Component = "Component",
@@ -96,28 +99,58 @@ const featureFiles: FeatureFiles = {
   Project: projectFileCategories,
   Product: productFileCategories,
 };
+  // Utility function to check if all required files are present for a feature
+  async function checkFeatureFiles(feature: string, fileExists: (path: string) => Promise<boolean>): Promise<boolean> {
+    const requiredCategories = featureFiles[feature];
+    if (!requiredCategories) return false;
 
-// Utility function to check if all required files are present for a feature
-function checkFeatureFiles(feature: string): boolean {
-  const requiredCategories = featureFiles[feature];
-  if (!requiredCategories) return false;
+    for (const category of requiredCategories) {
+      const extensions = fileExtensions[category];
+      if (!extensions) return false;
 
-  for (const category of requiredCategories) {
-    const extensions = fileExtensions[category];
-    if (!extensions) return false;
+      const filesFound = await Promise.all(extensions.map(async (ext) =>
+        await fileExists(`path/to/${feature}.${ext}`)
+      ));
+      if (!filesFound.some(found => found)) return false;
+    }
 
-    const filesFound = extensions.some((ext) =>
-      fs.existsSync(`path/to/${feature}.${ext}`)
-    );
-    if (!filesFound) return false;
+    return true;
   }
 
-  return true;
-}
+
+// Define a function to check if a file exists
+
+// Define a function to check if a file exists
+const fileExists = async (path: string): Promise<boolean> => {
+  const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
+  try {
+    // Make a fetch request to the file URL
+    const response = await fetch(path, { method: 'HEAD' });
+
+    // Check if the response status is OK (200)
+    if (response.ok) {
+      // Log the successful event using CalendarLogger
+      CalendarLogger.logCalendarEvent("File exists", "uniqueID", "eventID");
+    } else {
+      // Log the failure event using CalendarLogger
+      CalendarLogger.logCalendarEvent("File does not exist", "uniqueID", "eventID");
+    }
+
+    return response.ok;
+  } catch (error: any) {
+    // Handle any errors that occur during the fetch request
+    // Log the error using the generic error handler
+    handleError(error);
+
+    // Return false to indicate that the file does not exist (since we couldn't verify)
+    return false;
+  }
+};
+
 
 // Example usage:
 const feature = "User";
-const filesComplete = checkFeatureFiles(feature);
+const filesComplete = checkFeatureFiles(feature, fileExists);
 console.log(`Files for feature "${feature}" are complete: ${filesComplete}`);
 
 // Define a mapping of file names to their corresponding categories and types

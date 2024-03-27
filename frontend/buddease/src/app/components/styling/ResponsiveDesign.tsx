@@ -6,6 +6,7 @@ import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
+import { ColorSwatchProps } from "./ColorPalette";
 
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -152,6 +153,10 @@ class ResponsiveDesignStore {
 
   @observable
   backendStructure: BackendStructure = new BackendStructure(projectPath);
+
+  
+  onColorChange: (color: ColorSwatchProps) => void = () => {};
+  
 
   @observable structure: FrontendStructure & BackendStructure = Object.assign(
     this.frontendStructure, this.backendStructure);

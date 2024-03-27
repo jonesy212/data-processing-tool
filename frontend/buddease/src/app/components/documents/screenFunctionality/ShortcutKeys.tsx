@@ -2,7 +2,7 @@ import React, { MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import { initiateBitcoinPayment, initiateEthereumPayment } from "../../payment/initCryptoPayments";
 import { sanitizeData, sanitizeInput } from '../../security/SanitizationFunctions';
 import SnapshotList from "../../snapshots/SnapshotList";
-import { snapshotStore } from '../../state/stores/SnapshotStore';
+import { snapshotStore } from '../../snapshots/SnapshotStore';
 
 
 export const handleCryptoPaymentSelect = (cryptoOption: string) => {

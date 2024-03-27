@@ -3,13 +3,13 @@ import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { DocumentStatus } from "../../documents/types";
@@ -56,11 +56,13 @@ interface DetailsItem<T> extends DataDetails {
   }[];
   progress?: Progress | null;
   startDate?: Date;
+  dueDate?: Date,
+  
   endDate?: Date;
   phase?: Phase | null;
   isActive?: boolean;
   tags?: string[];
-  data?: T; // Make the data property optional
+  // data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
   communication?: CommunicationActionTypes;
   label?: string;
@@ -194,17 +196,19 @@ class DetailsListStoreClass implements DetailsListStore {
       details[status].splice(index, 1);
     } else {
       details[status].push({
+        _id: detailsId,
         id: detailsId,
         description: this.detailsDescription,
         title: this.detailsTitle,
         status: this.detailsStatus as
-          | TaskStatus.Pending
-          | TaskStatus.InProgress
-          | TaskStatus.Completed,
+        | TaskStatus.Pending
+        | TaskStatus.InProgress
+        | TaskStatus.Completed,
         phase: {} as DetailsItem<Data>["phase"],
         data: {} as DetailsItem<Data>["data"],
         isActive: false,
         type: "details",
+        analysisResults: {} as DetailsItem<Data>["analysisResults"],
       });
     }
 
@@ -303,10 +307,12 @@ class DetailsListStoreClass implements DetailsListStore {
       title: this.detailsTitle,
       status: TaskStatus.Pending,
       description: this.detailsDescription,
-      data: {} as Data,
+      // data: {} as Data,
       phase: {} as DetailsItem<Data>["phase"],
       isActive: false,
       type: "details",
+      _id: "",
+      analysisResults: []
     };
 
     this.addDetailsItem(newDetailsItem);
@@ -360,14 +366,15 @@ class DetailsListStoreClass implements DetailsListStore {
     if (detail.title !== undefined) {
       // Add the new detail to the status array
       statusArray.push({
+        _id: detail.title,
         id: id,
         title: detail.title,
         status: detail.status,
         description: description,
         phase: phase,
-        data: detail,
         type: "detail",
         isActive: false,
+        analysisResults: {} as DetailsItem<Data>["analysisResults"]
       });
     }
     // Update the details object with the new status array

@@ -1,4 +1,5 @@
 // OfferPage.tsx
+import RootLayout from '@/app/RootLayout';
 import React from 'react';
 
 const OfferPage: React.FC = () => {
@@ -13,6 +14,8 @@ const OfferPage: React.FC = () => {
   };
 
   return (
+    <RootLayout>
+
     <div>
       <h1>Offer Page</h1>
       {/* Display offer details */}
@@ -20,7 +23,9 @@ const OfferPage: React.FC = () => {
       {/* Offer response buttons */}
       <button onClick={() => handleOfferResponse('accept')}>Accept</button>
       <button onClick={() => handleOfferResponse('reject')}>Reject</button>
-    </div>
+      </div>
+      </RootLayout>
+
   );
 };
 

@@ -1,25 +1,25 @@
 // DataFilterForm.tsx
-import { DataFrame } from "data-forge";
-import React, { useEffect, useState } from "react";
-import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
-import { Snapshot, snapshotStore } from "../../state/stores/SnapshotStore";
-import { updateCallback } from "../../state/stores/CalendarEvent";
 import processSnapshotList from "@/app/generators/processSnapshotList";
-import { useDispatch } from "react-redux";
 import {
   DataAnalysisAction,
   DataAnalysisDispatch,
 } from "@/app/typings/dataAnalysisTypes";
-import userService from "../../users/ApiUser";
 import { Dispatch } from "@reduxjs/toolkit";
+import { DataFrame } from "data-forge";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
+import { Snapshot, snapshotStore } from "../../snapshots/SnapshotStore";
+import { updateCallback } from "../../state/stores/CalendarEvent";
+import userService from "../../users/ApiUser";
 import { Data } from "./Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from './DataFrameComponent';
+import { Phase } from '@/app/components/phases/Phase';
+import ListGenerator from "@/app/generators/ListGenerator";
+import { shuffleArray } from "@/app/utils/shuffleArray";
 import SnapshotList from "../../snapshots/SnapshotList";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
-import ListGenerator from "@/app/generators/ListGenerator";
-import { Phase } from '@/app/components/phases/Phase';
-import { shuffleArray } from "@/app/utils/shuffleArray";
 
 interface DataFilterFormProps {
   onSubmit: (

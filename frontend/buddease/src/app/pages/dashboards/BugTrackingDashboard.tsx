@@ -1,17 +1,15 @@
 // BugTrackingDashboard.tsx
 
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { fetchBugData } from '../api'; // Function to fetch bug data from API
-import usePagination from './usePagination'; // Import usePagination hook
-import useSearchPagination from './useSearchPagination'; // Import useSearchPagination hook
-import useErrorHandling from './useErrorHandling'; // Import useErrorHandling hook
-import { useSelector, useDispatch } from 'react-redux';
-import { addFilteredEvent, removeFilteredEvent, clearFilteredEvents } from './filteredEventsSlice'; // Import filteredEventsSlice
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBugData } from '../../api/api'; // Function to fetch bug data from API
 import BugFilter from './BugFilter';
 import BugSort from './BugSort';
 import BugTable from './BugTable';
-
+import useErrorHandling from './useErrorHandling'; // Import useErrorHandling hook
+import usePagination from './usePagination'; // Import usePagination hook
+import useSearchPagination from './useSearchPagination'; // Import useSearchPagination hook
 const BugTrackingDashboard = () => {
   const { data, currentPage, totalPages, totalItems, goToPage, setItemsPerPage, applyFilter } = usePagination(fetchBugData);
   const { currentPage: searchCurrentPage, pageSize, goToPage: searchGoToPage, changePageSize } = useSearchPagination();

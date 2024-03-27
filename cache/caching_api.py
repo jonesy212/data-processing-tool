@@ -88,7 +88,23 @@ def get_resource():
 
 
 class DataRetrievalError(Exception):
-    pass
+    """
+    Custom exception class for errors occurring during data retrieval.
+
+    This exception is raised when there is an error fetching data from a database or external API.
+    """
+
+    def __init__(self, message):
+        """
+        Initialize the DataRetrievalError.
+
+        Parameters:
+            message (str): The error message describing the reason for the exception.
+        """
+        super().__init__(message)
+
+
+
 
 def fetch_data_from_source(user_id, data_type):
     try:

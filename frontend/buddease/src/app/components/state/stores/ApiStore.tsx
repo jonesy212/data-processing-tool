@@ -5,8 +5,8 @@ import { generateNewApiConfig } from "@/app/generators/generateNewApiConfig";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Data } from "../../models/data/Data";
+import SnapshotStore, { SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import SnapshotStore, { SnapshotStoreConfig } from "./SnapshotStore";
 
 
 type ApiConfigData = ApiConfig[] & Data

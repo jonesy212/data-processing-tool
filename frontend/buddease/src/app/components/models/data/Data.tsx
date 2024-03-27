@@ -2,10 +2,11 @@ import { ColorPalettes } from "antd/es/theme/interface";
 import { FakeData } from "../../Inteigents/FakeDataGenerator";
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import { Snapshot } from "../../state/stores/SnapshotStore";
-import { Attachment, Todo } from "../../todos/Todo";
+import Todo, { Attachment } from "../../todos/Todo";
+import { AllTypes } from "../../typings/PropTypes";
 import { User } from "../../users/User";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
@@ -14,6 +15,7 @@ import { Member } from "../teams/TeamMembers";
 
 // Define the interface for DataDetails
 interface DataDetails {
+  _id: string;
   id: string;
   title?: string;
   description?: string | null | undefined;
@@ -22,15 +24,23 @@ interface DataDetails {
   endDate?: Date;
   createdAt?: Date;
   uploadedAt?: Date;
-  type?: string;
+  type?: AllTypes;
   tags?: string[];
   isActive?: boolean;
-  status?: AllStatus
+  status?: AllStatus;
   
-  ; // Use enums for status property
+  // Use enums for status property
   phase?: Phase | null;
   fakeData?: FakeData;
   comments?: (Comment | CustomComment)[];
+  todos?: Todo[];
+  data?: {
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+    analysisResults?: DataAnalysisResult[]
+  }
+  analysisType?: AnalysisTypeEnum
+  analysisResults: DataAnalysisResult[]
+  todo?: Todo
   // Add other properties as needed
 }
 
@@ -95,14 +105,14 @@ interface Data {
   isBeingDeleted?: boolean;
   isBeingCompleted?: boolean;
   isBeingReassigned?: boolean;
-  analysisType: AnalysisTypeEnum;
+  analysisType?: AnalysisTypeEnum;
   analysisResults: DataAnalysisResult[];
   
   videoUrl?: string;
   videoThumbnail?: string;
   videoDuration?: number;
   collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
-  videoData: VideoData;
+  videoData?: VideoData;
   additionalData?: any;
   [key: string]: any;
   ideas?: Idea[];
@@ -121,6 +131,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       details: data.details,
     }}
     details={{
+      _id: data._id,
       id: data.id as string,
       title: data.title,
       description: data.description,
@@ -129,6 +140,8 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       tags: data.tags,
       status: data.status,
       type: data.type,
+      analysisType: data.analysisType,
+      analysisResults: data.analysisResults,
       // fakeData: data.fakeData,
       // Add other properties as needed
     }}

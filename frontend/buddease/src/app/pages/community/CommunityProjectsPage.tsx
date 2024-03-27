@@ -1,8 +1,9 @@
+import RootLayout from '@/app/RootLayout';
 import { CommunityData } from '@/app/components/models/CommunityData';
-import {Team} from '@/app/components/models/teams/Team';
-import React from 'react';
-import ListGenerator from '@/app/generators/ListGenerator';
+import { Team } from '@/app/components/models/teams/Team';
 import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
+import ListGenerator from '@/app/generators/ListGenerator';
+import React from 'react';
 
 // Utility function to transform teams into DetailsItem<Data> array
 const transformTeamsToDetailsItems = (teams: Team[]): DetailsItem<Team>[] => {
@@ -20,6 +21,8 @@ interface CommunityProjectsPageProps {
 
 const CommunityProjectsPage: React.FC<CommunityProjectsPageProps> = ({ community }) => {
   return (
+    <RootLayout>
+
     <div>
       <h1>Community Projects</h1>
       {/* Render projects specific to the community */}
@@ -29,7 +32,9 @@ const CommunityProjectsPage: React.FC<CommunityProjectsPageProps> = ({ community
       {/* Render teams specific to the community */}
       <h2>Teams</h2>
       <ListGenerator items={transformTeamsToDetailsItems(community.teams)} />
-    </div>
+      </div>
+      </RootLayout>
+
   );
 };
 

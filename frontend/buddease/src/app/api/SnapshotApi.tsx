@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import { Data } from "../components/models/data/Data";
-import { Snapshot } from "../components/state/stores/SnapshotStore";
+import { Snapshot } from "../components/snapshots/SnapshotStore";
+import { AppConfig, getAppConfig } from "../configs/AppConfig";
 import configData from "../configs/configData";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
@@ -12,7 +13,11 @@ import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
-import { AppConfig } from "../configs/AppConfig";
+
+
+
+
+const appConfig: AppConfig = getAppConfig();
 
 // Updated handleSpecificApplicationLogic and handleOtherApplicationLogic functions
 const handleSpecificApplicationLogic = (appConfig: AppConfig, statusCode: number) => {
@@ -46,7 +51,7 @@ const handleOtherApplicationLogic = (appConfig: AppConfig, statusCode: number) =
 };
 
 
-const handleSpecificStatusCode = (statusCode: number) => {
+const handleSpecificStatusCode = (appConfig: AppConfig, statusCode: number) => {
   switch (statusCode) {
     case 200:
       console.log("Handling specific status code: 200");
@@ -63,7 +68,7 @@ const handleSpecificStatusCode = (statusCode: number) => {
   }
 };
 
-const handleOtherStatusCodes = (statusCode: number) => {
+const handleOtherStatusCodes = (appConfig: AppConfig, statusCode: number) => {
   if (statusCode >= 400 && statusCode < 500) {
     console.log(`Handling client error status code: ${statusCode}`);
     // Additional logic for handling client errors (4xx)

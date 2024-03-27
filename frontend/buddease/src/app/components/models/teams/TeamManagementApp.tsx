@@ -19,26 +19,27 @@ const TeamManagementApp: React.FC = () => {
       audio: false,
       video: false,
       text: false,
-      realTime: false
+      realTime: false,
     },
     globalCollaboration: {
       isEnabled: false,
       communicationChannels: [],
-      collaborationPlatforms: []
+      collaborationPlatforms: [],
     },
-    collaborationPreferences: {} as CollaborationPreferences // Initialize with empty collaboration preferences
-  } 
-  ) 
+    collaborationPreferences: {} as CollaborationPreferences, // Initialize with empty collaboration preferences
+  });
 
   // Function to update teamData with the generated random walk
   const updateTeamDataWithRandomWalk = (randomWalk: number[]) => {
-    setTeamData(prevTeamData => ({
-      ...prevTeamData,
-      collaborationPreferences: {
-        ...prevTeamData.collaborationPreferences,
-        randomWalk: randomWalk // Assuming randomWalk is a property in CollaborationPreferences
-      }
-    }));
+    setTeamData((prevTeamData) => {
+      return {
+        ...prevTeamData,
+        collaborationPreferences: {
+          ...prevTeamData.collaborationPreferences,
+          randomWalk,
+        },
+      };
+    });
   };
 
   return (

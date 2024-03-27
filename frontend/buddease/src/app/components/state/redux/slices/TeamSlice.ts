@@ -1,5 +1,6 @@
+import { CollaborationPreferences } from '@/app/components/interfaces/settings/CollaborationPreferences';
 import TeamData from '@/app/components/models/teams/TeamData';
-import Project from '@/app/components/projects/Project';
+import { Project } from '@/app/components/projects/Project';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { WritableDraft } from '../ReducerGenerator';
 
@@ -22,7 +23,7 @@ export const useTeamManagerSlice = createSlice({
     },
     addTeam: (state, action: PayloadAction<TeamData>) => {
       const { teamName } = action.payload;
-      if (!teamName.trim()) {
+      if (!teamName?.trim()) {
         console.error('Team name cannot be empty.');
         return;
       }
@@ -130,7 +131,15 @@ export const useTeamManagerSlice = createSlice({
       },
   
       // Update team collaboration tools
-      updateTeamCollaborationTools: (state, action: PayloadAction<{ teamName: string; tools: CollaborationOptions }>) => {
+    updateTeamCollaborationTools: (state, action: PayloadAction<{
+      teamName: string;
+      tools: WritableDraft<{
+        audio: boolean;
+        video: boolean;
+        text: boolean;
+        realTime: boolean;
+      }>
+    }>) => {
         const { teamName, tools } = action.payload;
         const teamIndex = state.teams.findIndex(team => team.teamName === teamName);
         if (teamIndex !== -1) {
@@ -152,7 +161,7 @@ export const useTeamManagerSlice = createSlice({
       },
   
       // Update team collaboration preferences
-      updateTeamCollaborationPreferences: (state, action: PayloadAction<{ teamName: string; preferences: string[] }>) => {
+      updateTeamCollaborationPreferences: (state, action: PayloadAction<{ teamName: string; preferences: WritableDraft<CollaborationPreferences> }>) => {
         const { teamName, preferences } = action.payload;
         const teamIndex = state.teams.findIndex(team => team.teamName === teamName);
         if (teamIndex !== -1) {
@@ -164,6 +173,8 @@ export const useTeamManagerSlice = createSlice({
     },
   });
 
+
+  
 // Export actions
 export const {
    // Basic team management actions

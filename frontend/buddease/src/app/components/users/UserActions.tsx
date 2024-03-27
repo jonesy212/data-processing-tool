@@ -1,5 +1,6 @@
 // user/UserActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import { UserProfile } from "../snapshots/userSnapshotData";
 import { User } from "./User";
 
 export const UserActions = {
@@ -29,6 +30,10 @@ export const UserActions = {
   fetchUserByIdSuccess: createAction<{ user: User }>("fetchUserByIdSuccess"),
   fetchUserByIdFailure: createAction<{ error: string }>("fetchUserByIdFailure"),
   
+
+  fetchUserProfile: createAction<{ userProfile: UserProfile }>("fetchUserProfile"),
+  fetchUserProfileSuccess: createAction<{ userProfile: UserProfile }>("fetchUserProfileSuccess"),
+  fetchUserProfileFailure: createAction<{ error: string }>("fetchUserProfileFailure"),
   updateUserRequest: createAction<{ updatedUserData: any }>("updateUserRequest"),
   updateUserSuccess: createAction<{ user: User }>("updateUserSuccess"),
   updateUserFailure: createAction<{ error: string }>("updateUserFailure"),
@@ -66,4 +71,9 @@ export const UserActions = {
 
   updateUserRoles: createAction<{ ids: number[], newRole: string }>("updateUserRoles"),
   
+
+
+
+  // Batch
+  bulkUpdateUserRolesFailure: createAction<{ error: string }>("bulkUpdateUserRolesFailure"),
 };

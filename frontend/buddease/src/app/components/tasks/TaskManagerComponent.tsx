@@ -1,34 +1,36 @@
 // TaskManagerComponent.tsx
-import { fetchTasks, updateTask } from '@/app/api/TasksApi';
-import React, { useEffect, useState } from 'react';
-import DynamicRenderer from '../libraries/ui/DynamicRenderer';
-import { Data } from '../models/data/Data';
-import { Task } from '../models/tasks/Task';
-import { Member } from '../models/teams/TeamMembers';
-import { Phase } from '../phases/Phase';
-import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
-import TaskProgress from '../projects/projectManagement/TaskProgress';
-import TeamProgress from '../projects/projectManagement/TeamProgress';
-import TodoProgress from '../projects/projectManagement/TodoProgress';
-import { createMilestone } from '../state/redux/slices/TrackerSlice';
-import { rootStores } from '../state/stores/RootStores';
-import { Snapshot } from '../state/stores/SnapshotStore';
-import { useTaskManagerStore } from '../state/stores/TaskStore ';
-import useTrackerStore from '../state/stores/TrackerStore';
-import { Todo } from '../todos/Todo';
-import { VideoData } from '../video/Video';
-import TaskAssignmentSnapshot from './TaskAssignmentSnapshot';
+import { fetchTasks, updateTask } from "@/app/api/TasksApi";
+import React, { useEffect, useState } from "react";
+import DynamicRenderer from "../libraries/ui/DynamicRenderer";
+import ReusableButton from "../libraries/ui/buttons/ReusableButton";
+import { Data } from "../models/data/Data";
+import { Task } from "../models/tasks/Task";
+import { Member } from "../models/teams/TeamMembers";
+import { Phase } from "../phases/Phase";
+import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+import { brandingSettings } from "../projects/branding/BrandingSettings";
+import router from "../projects/projectManagement/ProjectManagementSimulator";
+import TaskProgress from "../projects/projectManagement/TaskProgress";
+import TeamProgress from "../projects/projectManagement/TeamProgress";
+import TodoProgress from "../projects/projectManagement/TodoProgress";
+import { Snapshot } from "../snapshots/SnapshotStore";
+import { createMilestone } from "../state/redux/slices/TrackerSlice";
+import { rootStores } from "../state/stores/RootStores";
+import { useTaskManagerStore } from "../state/stores/TaskStore ";
+import useTrackerStore from "../state/stores/TrackerStore";
+import { Todo } from "../todos/Todo";
+import { VideoData } from "../video/Video";
+import TaskAssignmentSnapshot from "./TaskAssignmentSnapshot";
 
-
-interface TaskAssignmentSnapshotProps { 
+interface TaskAssignmentProps {
   taskId: () => string;
   newTitle: () => string;
+  task: Task;
 }
 
-
-const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
+const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   taskId,
-  newTitle
+  newTitle,
 }) => {
   const taskManagerStore = useTaskManagerStore();
   const [localState, setLocalState] = useState<string>("");
@@ -82,37 +84,35 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
     },
   ]);
 
-
-
   const [tasks, setTasks] = useState<Task[]>([
-    { 
+    {
       _id: "taskData", // Example value
-      id: "1", 
-      title: 'Task 1', 
-      description: 'Description for Task 1', 
-      assignedTo: null, 
-      assigneeId: "", 
-      dueDate: new Date(), 
-      payload: null, 
-      type: "addTask", 
-      status: 'todo', 
-      priority: "low", 
-      done: false, 
-      data: {} as Data, 
-      source: "user", 
-      some: () => false, 
-      then: () => {}, 
-      startDate: new Date(), 
-      endDate: new Date(), 
-      isActive: true, 
-      tags: [], 
-      analysisType: AnalysisTypeEnum.DEFAULT, 
-      analysisResults: [], 
-      videoThumbnail: "", 
-      videoDuration: 0, 
+      id: "1",
+      title: "Task 1",
+      description: "Description for Task 1",
+      assignedTo: null,
+      assigneeId: "",
+      dueDate: new Date(),
+      payload: null,
+      type: "addTask",
+      status: "todo",
+      priority: "low",
+      done: false,
+      data: {} as Data,
+      source: "user",
+      some: () => false,
+      then: () => {},
+      startDate: new Date(),
+      endDate: new Date(),
+      isActive: true,
+      tags: [],
+      analysisType: AnalysisTypeEnum.DEFAULT,
+      analysisResults: [],
+      videoThumbnail: "",
+      videoDuration: 0,
       videoUrl: "",
       previouslyAssignedTo: [] as Member[],
-      [Symbol.iterator]: () => { 
+      [Symbol.iterator]: () => {
         // Add more tasks as needed
         return {
           next: () => {
@@ -127,36 +127,36 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
           },
         };
       },
-      videoData: {} as VideoData
+      videoData: {} as VideoData,
     },
-    { 
+    {
       _id: "taskData", // Example value
-      id: "2", 
-      title: 'Task 2', 
-      description: 'Description for Task 2', 
-      assignedTo: null, 
-      assigneeId: "", 
-      dueDate: new Date(), 
-      payload: null, 
-      type: "addTask", 
-      status: 'inProgress', 
-      priority: "low", 
-      done: false, 
-      data: {} as Data, 
-      source: "user", 
-      some: () => false, 
-      then: () => {}, 
-      startDate: new Date(), 
-      endDate: new Date(), 
-      isActive: true, 
-      tags: [], 
-      analysisType: AnalysisTypeEnum.DEFAULT, 
-      analysisResults: [], 
-      videoThumbnail: "", 
-      videoDuration: 0, 
+      id: "2",
+      title: "Task 2",
+      description: "Description for Task 2",
+      assignedTo: null,
+      assigneeId: "",
+      dueDate: new Date(),
+      payload: null,
+      type: "addTask",
+      status: "inProgress",
+      priority: "low",
+      done: false,
+      data: {} as Data,
+      source: "user",
+      some: () => false,
+      then: () => {},
+      startDate: new Date(),
+      endDate: new Date(),
+      isActive: true,
+      tags: [],
+      analysisType: AnalysisTypeEnum.DEFAULT,
+      analysisResults: [],
+      videoThumbnail: "",
+      videoDuration: 0,
       videoUrl: "",
       previouslyAssignedTo: [] as Member[],
-      [Symbol.iterator]: () => { 
+      [Symbol.iterator]: () => {
         // Add more tasks as needed
         return {
           next: () => {
@@ -171,36 +171,36 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
           },
         };
       },
-      videoData: {} as VideoData
+      videoData: {} as VideoData,
     },
-    { 
+    {
       _id: "taskData", // Example value
-      id: "3", 
-      title: 'Task 3', 
-      description: 'Description for Task 3', 
-      assignedTo: null, 
-      assigneeId: "", 
-      dueDate: new Date(), 
-      payload: null, 
-      type: "addTask", 
-      status: 'completed', 
-      priority: "low", 
-      done: false, 
-      data: {} as Data, 
-      source: "user", 
-      some: () => false, 
-      then: () => {}, 
-      startDate: new Date(), 
-      endDate: new Date(), 
-      isActive: true, 
-      tags: [], 
+      id: "3",
+      title: "Task 3",
+      description: "Description for Task 3",
+      assignedTo: null,
+      assigneeId: "",
+      dueDate: new Date(),
+      payload: null,
+      type: "addTask",
+      status: "completed",
+      priority: "low",
+      done: false,
+      data: {} as Data,
+      source: "user",
+      some: () => false,
+      then: () => {},
+      startDate: new Date(),
+      endDate: new Date(),
+      isActive: true,
+      tags: [],
       analysisType: AnalysisTypeEnum.TREND,
-      analysisResults: {} as DataAnalysisResult[], 
-      videoThumbnail: "", 
-      videoDuration: 0, 
+      analysisResults: {} as DataAnalysisResult[],
+      videoThumbnail: "",
+      videoDuration: 0,
       videoUrl: "",
       previouslyAssignedTo: [] as Member[],
-      [Symbol.iterator]: () => { 
+      [Symbol.iterator]: () => {
         // Add more tasks as needed
         return {
           next: () => {
@@ -215,14 +215,12 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
           },
         };
       },
-      videoData: {} as VideoData
+      videoData: {} as VideoData,
     },
   ]);
 
-
   // Use Tracker Store
   const { dispatch } = useTrackerStore(rootStores);
-
 
   // Function to update task progress
   const updateTaskProgress = (taskId: string, newProgress: number) => {
@@ -238,11 +236,8 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
       prevTodos.map((todo) =>
         todo._id === todoId ? { ...todo, progress: newProgress } : todo
       )
-      )
-  }
-
-
-
+    );
+  };
 
   const handleUpdateTask = async (taskId: number, newTitle: string) => {
     try {
@@ -251,30 +246,64 @@ const TaskManagerComponent: React.FC<TaskAssignmentSnapshotProps> = ({
       const updatedTasks = await fetchTasks();
       setTasks(updatedTasks);
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
     }
   };
 
 
-
-   
-// Define handleTodoClick with the correct signature
-const handleTodoClick = async (todoId: Todo) => {
-  try {
-    // Assuming you have a function to fetch the todo details based on its ID
-    const todoDetails = await fetchTodoDetails(todoId);
-
-    // Assuming you have a function to update the UI or perform any other action
-    updateUIWithTodoDetails(todoDetails);
-
-    // Log a message to the console
-    console.log(`Todo clicked: ${todoId}`);
-  } catch (error) {
-    console.error('Error handling todo click:', error);
-  }
-};
-
+  const handleUpdateTodo = async (
+    todoId: string,
+    updatedFields: Partial<Todo>
+  ) => {
+    try {
+      // Call API to update todo
+      await updateTodo(todoId, updatedFields);
   
+      // Optimistically update local todo data
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo._id === todoId ? { ...todo, ...updatedFields } : todo
+        )
+      );
+  
+      // Additional use case: Optimistically check todo completion
+      if (updatedFields.done !== undefined) {
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo._id === todoId && updatedFields.done
+              ? { ...todo, done: true }
+              : todo
+          )
+        );
+  
+        // Call function to check todo completion asynchronously
+        await checkTodoCompletion(todoId);
+      }
+  
+      // Additional use case: Call any other functions needed (e.g., update UI)
+      // updateUI();
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
+  };
+  
+
+  // Define handleTodoClick with the correct signature
+  const handleTodoClick = async (todoId: Todo) => {
+    try {
+      // Assuming you have a function to fetch the todo details based on its ID
+      const todoDetails = await fetchTodoDetails(todoId);
+
+      // Assuming you have a function to update the UI or perform any other action
+      updateUIWithTodoDetails(todoDetails);
+
+      // Log a message to the console
+      console.log(`Todo clicked: ${todoId}`);
+    } catch (error) {
+      console.error("Error handling todo click:", error);
+    }
+  };
+
   // Function to fetch todo details from the server
   const fetchTodoDetails = async (todoId: Todo) => {
     // Simulated fetch operation, replace this with your actual API call
@@ -286,7 +315,7 @@ const handleTodoClick = async (todoId: Todo) => {
       // Other properties...
     };
   };
-  
+
   // Function to update the UI with todo details
   const updateUIWithTodoDetails = (todoDetails: any) => {
     // Assuming you have logic to update the UI with todo details
@@ -295,27 +324,18 @@ const handleTodoClick = async (todoId: Todo) => {
     // document.getElementById("todoDescription").innerText = todoDetails.description;
     // Update UI as per your application's requirements
   };
-  
-  
-
-
-
-
-
-
-
 
   const handleTaskClick = async (taskId: Task) => {
     // Assuming you have a function to fetch the taskId details based on its ID
     const taskDetails = fetchTaskDetails(await taskId);
-  
+
     // Assuming you have a function to update the UI or perform any other action
     updateUIWithTaskDetails(taskDetails);
-  
+
     // Log a message to the console
     console.log(`Task clicked: ${taskId}`);
   };
-  
+
   // Function to fetch task details from the server
   const fetchTaskDetails = (taskId: string) => {
     // Simulated fetch operation, replace this with your actual API call
@@ -327,7 +347,7 @@ const handleTodoClick = async (todoId: Todo) => {
       // Other properties...
     };
   };
-  
+
   // Function to update the UI with task details
   const updateUIWithTaskDetails = (taskDetails: any) => {
     // Assuming you have logic to update the UI with task details
@@ -336,7 +356,6 @@ const handleTodoClick = async (todoId: Todo) => {
     // document.getElementById("taskDescription").innerText = taskDetails.description;
     // Update UI as per your application's requirements
   };
-  
 
   // Component-specific logic using localState
   const handleLocalStateChange = (newValue: string) => {
@@ -345,10 +364,10 @@ const handleTodoClick = async (todoId: Todo) => {
   // Simulate creating a milestone
   const createProjectMilestone = () => {
     const milestoneData = {
-      id: 'milestone1',
-      title: 'Project Kickoff',
+      id: "milestone1",
+      title: "Project Kickoff",
       date: new Date(),
-      description: 'Initiating the project',
+      description: "Initiating the project",
     };
     dispatch(createMilestone(milestoneData));
   };
@@ -356,7 +375,6 @@ const handleTodoClick = async (todoId: Todo) => {
   useEffect(() => {
     // Update global state when local state changes
     taskManagerStore.updateTaskTitle(taskManagerStore.taskTitle);
-
   }, [localState, taskManagerStore]);
 
   return (
@@ -390,19 +408,21 @@ const handleTodoClick = async (todoId: Todo) => {
                 updateTaskProgress(task.id, newProgress)
               }
             />
+            <ReusableButton
+              label="Update Task"
+              onEvent={(event: React.MouseEvent<HTMLButtonElement>) => {
+                const taskId = event.currentTarget.dataset.taskid;
+                const newTitle = event.currentTarget.dataset.newtitle;
+                handleUpdateTask(Number(taskId), String(newTitle));
+              }}
+              data-taskid={task.id}
+              data-newtitle={task.title}
+              router={router}
+              brandingSettings={brandingSettings}
+            />
+            Update Task
           </div>
         ))}
-        <button
-          onClick={(event) => {
-            const taskId = event.target.dataset.taskid;
-            const newTitle = event.target.dataset.newtitle;
-            handleUpdateTask(taskId, newTitle);
-          }}
-          data-taskid={taskId}
-          data-newtitle={newTitle}
-        >
-          Update Task
-        </button>
       </div>
       <h2>Todo Manager</h2>
       {/* Render TodoProgress component */}
@@ -420,6 +440,20 @@ const handleTodoClick = async (todoId: Todo) => {
               updateTodoProgress(String(todo.id), Number(newProgress))
             }
           />
+
+<ReusableButton
+              label="Update Task"
+              onEvent={(event: React.MouseEvent<HTMLButtonElement>) => {
+                const todoId = event.currentTarget.dataset.todoid;
+                const newTitle = event.currentTarget.dataset.newtitle;
+                handleUpdateTodo(Number(todoId), String(newTitle));
+              }}
+              data-todoid={todo.id}
+              data-newtitle={todo.title}
+              router={router}
+              brandingSettings={brandingSettings}
+            />
+            Update Todo
         </div>
       ))}
     </div>

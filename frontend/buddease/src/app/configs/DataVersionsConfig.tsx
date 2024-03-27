@@ -14,13 +14,19 @@ interface DataVersions {
 
 
 // config/dataVersions.ts
-const dataVersions: DataVersions = {
+export const dataVersions: DataVersions = {
   users: 0,
   products: 0,
   authentication: 0,
   company: 0,
   tasks: 0,
   todos: 0,
+  calendar: 0,
+  chat: 0,
+  bookmarks: 0,
+  notifications: 0,
+  messages: 0,
+  
 };
 
 

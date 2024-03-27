@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
-import { SnapshotStoreConfig } from "../../state/stores/SnapshotStore";
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
 
 // Define project phases
 enum ProjectPhase {

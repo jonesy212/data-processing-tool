@@ -1,17 +1,14 @@
+import UserSettings from '@/app/configs/UserSettings';
 import RealtimeData from "../../../models/realtime/RealtimeData";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
-import { Data } from "../components/models/data/Data";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { CalendarEvent } from "../components/state/stores/CalendarEvent";
-import { Snapshot } from "../components/state/stores/SnapshotStore";
 import { VideoData } from "../components/video/Video";
 import { BackendConfig } from "../configs/BackendConfig";
- import { DataVersions } from "../configs/DataVersionsConfig";
+import { DataVersions } from "../configs/DataVersionsConfig";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
 import { CacheData } from "../generators/GenerateCache";
-import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
- import  UserSettings  from '@/app/configs/UserSettings';
 
 // Define the structure of the response data
 interface CacheResponse {

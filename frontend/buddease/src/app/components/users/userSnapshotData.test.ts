@@ -1,6 +1,6 @@
 // userSnapshotData.test.ts
 import useUserProfile from "../hooks/useUserProfile";
-import { myInitUserSnapshotData } from "./userSnapshotData";
+import { myInitUserSnapshotData } from "../snapshots/userSnapshotData";
 
 jest.mock("../hooks/useUserProfile");
 

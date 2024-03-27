@@ -1,59 +1,59 @@
-// BackendStructureComponent.ts
-import fs from "fs";
+import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 import getAppPath from "../../../../appPath";
 import BackendStructure from "./BackendStructure";
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  const appPath = getAppPath();
-  const frontendPath = path.join(appPath, "dataanalysis/frontend");
-  const backendPath = appPath; 
-  
-  // Check if the frontend and backend paths are correctly structured
-  if (!fs.existsSync(frontendPath) || !fs.existsSync(backendPath)) {
-    return res
-      .status(500)
-      .json({
-        error:
-          "Invalid app structure. Please check the frontend and backend paths.",
-      });
-  }
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const { versionNumber, appVersion } = getCurrentAppInfo();
+    const appPath = getAppPath(versionNumber, appVersion);
+    const frontendPath = path.join(appPath, "dataanalysis/frontend");
+    const backendPath = appPath; 
 
-  // Check if the frontend and backend paths are correctly structured
-  if (!fs.existsSync(frontendPath) || !fs.existsSync(backendPath)) {
-    const errors = [];
+    // Check if the frontend and backend paths are correctly structured
+    const frontendExists = await checkDirectoryExists(frontendPath);
+    const backendExists = await checkDirectoryExists(backendPath);
 
-    if (!fs.existsSync(frontendPath)) {
-      errors.push(
-        `Frontend path '${frontendPath}' does not exist. Make sure the 'frontend' folder is present.`
-      );
-    }
-
-    if (!fs.existsSync(backendPath)) {
-      errors.push(
-        `Backend path '${backendPath}' does not exist. Make sure the 'data_analysis' folder is present.`
-      );
-    }
-
-    return res
-      .status(500)
-      .json({
+    if (!frontendExists || !backendExists) {
+      const errors = [];
+      
+      if (!frontendExists) {
+        errors.push(`Frontend path '${frontendPath}' does not exist. Make sure the 'frontend' folder is present.`);
+      }
+      
+      if (!backendExists) {
+        errors.push(`Backend path '${backendPath}' does not exist. Make sure the 'data_analysis' folder is present.`);
+      }
+      
+      return res.status(500).json({
         errors,
-        message:
-          "Invalid app structure. Please check the frontend and backend paths.",
+        message: "Invalid app structure. Please check the frontend and backend paths.",
       });
+    }
+
+    // Instantiate and get the frontend structure
+    const frontendStructure = new BackendStructure(frontendPath).getStructure();
+
+    // Add logic to handle backend structure (e.g., create a separate BackendStructure class)
+    // ...
+
+    res.status(200).json({ frontendStructure });
+  } catch (error) {
+    console.error("Error occurred while processing request:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
-
-  // Instantiate and get the frontend structure
-  const frontendStructure = new BackendStructure(frontendPath).getStructure();
-
-  // Add logic to handle backend structure (e.g., create a separate BackendStructure class)
-  // ...
-
-  res.status(200).json({ frontendStructure });
-  // Add logic to handle backend structure (e.g., create a separate BackendStructure class)
-  // ...
-
-  res.status(200).json({ frontendStructure });
 };
+
+async function checkDirectoryExists(directoryPath: string): Promise<boolean> {
+  try {
+    // Attempt to access the directory path
+    await fetch(directoryPath, { method: 'HEAD' });
+    // If successful, return true indicating directory exists
+    return true;
+  } catch (error) {
+    // If an error occurs (directory doesn't exist or other error), return false
+    return false;
+  }
+}
+

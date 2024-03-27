@@ -2,9 +2,9 @@
 
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { Task } from "../models/tasks/Task";
-import Team from "../models/teams/Team";
+import {Team} from "../models/teams/Team";
 import { Phase } from "../phases/Phase";
-import Project from "../projects/Project";
+import {Project} from "../projects/Project";
 import BrowserCheckStore from "../state/stores/BrowserCheckStore";
 import {
   CalendarEvent,
@@ -43,7 +43,7 @@ interface YourResponseType {
     trackerStore: TrackerStore;
     todoStore: TodoManagerStore;
     taskManagerStore: TaskManagerStore;
-    iconStore: typeof IconStore;
+    iconStore:  IconStore;
     calendarStore: CalendarManagerStore;
     prototype: any;
     browsers: any;

@@ -1,10 +1,10 @@
 // BackendStructure.ts
+import { NotificationType } from '@/app/components/support/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import Logger from '@/app/pages/logging/Logger';
 import * as fs from 'fs/promises'; // Use promise-based fs module
 import * as path from 'path';
 import { AppStructureItem } from './AppStructure';
-import { NotificationType } from '@/app/components/support/NotificationContext';
 
 export default class BackendStructure {
   structure: Record<string, AppStructureItem> = {};
@@ -51,3 +51,6 @@ export default class BackendStructure {
     return { ...this.structure };
   }
 }
+
+
+export const backendStructure: BackendStructure = new BackendStructure(projectPath);

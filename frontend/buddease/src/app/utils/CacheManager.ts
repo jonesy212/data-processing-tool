@@ -2,16 +2,16 @@
 import axios from "axios";
 import { create } from "mobx-persist";
 import getAppPath from "../../../appPath";
+import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { Data } from "../components/models/data/Data";
 import { CustomPhaseHooks } from "../components/phases/Phase";
-import { Snapshot } from "../components/state/stores/SnapshotStore";
+import { Snapshot } from "../components/snapshots/SnapshotStore";
 import { backendConfig } from "../configs/BackendConfig";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
 import { generateInterfaces } from "../generators/GenerateInterfaces";
 import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
 import { readCache, writeCache } from "./ReadAndWriteCache";
-import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 
 const backendModelPaths = ["path/to/backend/models"]; // Update this with the actual path
 

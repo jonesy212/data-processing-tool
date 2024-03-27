@@ -1,15 +1,18 @@
 // User.tsx
 import React from "react";
-import CommonDetails, { SupportedData } from "../models/CommonData";
+import CommonDetails from "../models/CommonData";
 // import { Data } from "../models/data/Data";
 import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
+import { RealtimeUpdates } from "../community/ActivityFeedComponent";
+import { Data } from "../models/data/Data";
+import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
+import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+import { Project } from "../projects/Project";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { UserRole } from "./UserRole";
-import {Team} from "../models/teams/Team";
-import { DataDetails } from "../models/data/Data";
-import { Project } from "../projects/Project";
 
 export interface User extends UserData {
   _id: string; // Add this line
@@ -26,6 +29,7 @@ export interface User extends UserData {
   processingTasks: DataProcessingTask[];
   data?: UserData;
   role: UserRole
+  
 }
 
 const timeBasedCode: string = generateTimeBasedCode();
@@ -44,13 +48,16 @@ export interface UserData {
   visualizations?: VisualizationData[];
   traits?: typeof CommonDetails;
   timeBasedCode?:typeof timeBasedCode, // Generate the time-based code for the user
-
+  realtimeUpdates?: RealtimeUpdates[]
     // New properties for the persona
     age?: number;
     gender?: string;
     location?: string;
     occupation?: string;
-    incomeLevel?: string;
+  incomeLevel?: string;
+  unreadNotificationCount?: number;
+  snapshots: SnapshotStore<Snapshot<Data>>[];
+  analysisResults?: DataAnalysisResult[]
 }
 
 // Add a new type for visualization data
@@ -82,23 +89,37 @@ const userData: UserData = {
     visualizations: {} as DocumentNode,
   },
   traits: CommonDetails,
-  
+
   timeBasedCode: timeBasedCode, // Generate the time-based code for the user
-    // New properties for the persona
-    age: 0,
-    gender: 'male',
-    location: 'Texas',
-    occupation: 'Software Engineer',
-    incomeLevel: 'string',
+
+  // New properties for the persona
+  age: 0,
+  gender: 'male',
+  location: 'Texas',
+  occupation: 'Software Engineer',
+  incomeLevel: 'string',
+  snapshots: {} as SnapshotStore<Snapshot<Data>>[]
 };
 
-
 // using common details we generate details for components by mapping through the objects.
-const UserDetails: React.FC<{ user: User }> = ({ user }) => (
-  user ? <CommonDetails<DataDetails>
-    data={{
-      title: 'User Details', description: 'User data', data: undefined
-    }} /> : <div>User not available</div>
-);
+const UserDetails: React.FC<{ user: User }> = ({ user }) => {
+  const { id, analysisResults, snapshots, ...rest } = user;
 
-export default UserDetails 
+  if (user && user.data) {
+    return (
+      <CommonDetails
+        details={{
+          id: id.toString(),
+          isActive: true,
+          analysisResults: [] as DataAnalysisResult[],
+          data: user.data,
+          ...rest,
+        }}
+      />
+    );
+  } else {
+    return <div>User not available</div>;
+  }
+};
+
+export default UserDetails;

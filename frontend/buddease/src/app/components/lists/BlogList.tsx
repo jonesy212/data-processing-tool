@@ -1,6 +1,6 @@
+import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
-import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import { Data } from "../models/data/Data";
 import { Phase } from "../phases/Phase";
 

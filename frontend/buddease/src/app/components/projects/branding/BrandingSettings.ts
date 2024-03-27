@@ -4,6 +4,7 @@ interface BrandingSettings {
   // Logo settings
   logoUrl: string;
   logoAltText?: string;
+  fontSize?: string;
   
   // Custom styles
   customStyles?: Record<string, string>;

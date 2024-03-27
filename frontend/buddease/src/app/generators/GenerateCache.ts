@@ -23,13 +23,13 @@ import {
   notificationBarPhaseHook,
 } from "../components/hooks/userInterface/UIPhaseHooks";
 import { Data } from "../components/models/data/Data";
-import { updateCallback,CalendarEvent } from "../components/state/stores/CalendarEvent";
+import { CalendarEvent, updateCallback } from "../components/state/stores/CalendarEvent";
 import { backendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
+import { frontendConfig } from "../configs/FrontendConfig";
 import userSettings from "../configs/UserSettings";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
-import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
 
 const initialData: any = {}; 
 
@@ -43,6 +43,7 @@ export interface CacheData extends Data {
   frontendStructure: FrontendStructure;
   backendStructure: BackendStructure;
   backendConfig: typeof backendConfig;
+  frontendConfig: typeof frontendConfig
   realtimeData:  RealtimeData;
   // fetchData?: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
   // Add new top-level cache properties for UI phases

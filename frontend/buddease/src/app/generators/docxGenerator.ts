@@ -10,7 +10,8 @@ export interface DocxGeneratorOptions {
   templatePath: string;
   outputPath: string;
     data: Record<string, any>;
-    user: User
+  user: User
+  // sections: IPropertiesOptions
 }
 
 export class DocxGenerator {

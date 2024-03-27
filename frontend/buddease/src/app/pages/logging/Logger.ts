@@ -12,10 +12,12 @@ import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
+import { DataDetails } from "@/app/components/models/data/Data";
 import { team, Team } from "@/app/components/models/teams/Team";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
-import { DataDetails } from "@/app/components/models/data/Data";
+import { processDEXData } from "@/app/components/utils/processDEXDataUtils";
+import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 
 const API_BASE_URL = endpoints.logging;
 
@@ -53,6 +55,22 @@ class SearchLogger {
 }
 
 class Logger {
+
+  static log(message: string) {
+    console.log(message);
+  }
+
+  static error(errorMessage: string, extraInfo?: any) {
+    console.error(errorMessage, extraInfo);
+  }
+
+  static info(message: string, extraInfo?: any) {
+    // Log info message with optional extra information
+    console.log('INFO:', message, extraInfo || '');
+}
+
+
+
   static logWithOptions(type: string, message: string, uniqueID: string) {
     // You can implement different logging mechanisms based on the type
     console.log(`[${type}] ${message} (ID: ${uniqueID})`);
@@ -184,6 +202,37 @@ class AudioLogger extends Logger {
       });
   }
 }
+
+
+class DexLogger extends Logger {
+  static logDEXEvent(event: string, dexId: string) {
+    this.logWithOptions(
+      "DEX Event",
+      `${event} (DEX ID: ${dexId})`,
+      dexId
+    );
+  }
+}
+
+// Usage in fetchDEXData function
+export const fetchDEXData = async (
+  dexData: any[],
+  dispatch: DataAnalysisDispatch
+) => {
+  try {
+    // Process the provided DEX data
+    const processedDEXData = processDEXData(dexData);
+
+    // Dispatch an action to update Redux store state with DEX data
+    dispatch({ type: "UPDATE_DEX_DATA", payload: processedDEXData });
+
+    // Log DEX event
+    DexLogger.logDEXEvent("DEX data fetched", "your_dex_id_here");
+  } catch (error) {
+    console.error("Error processing DEX data:", error);
+  }
+};
+
 
 class TeamLogger {
   static async logTeamCreation(teamId: string, team: Team): Promise<void> {
@@ -1067,7 +1116,10 @@ class BugLogger extends Logger {
 export default Logger;
 
 export {
-  AnalyticsLogger, AnimationLogger, AudioLogger,
+  AnalyticsLogger,
+  AnimationLogger,
+  AudioLogger,
+  BugLogger,
   CalendarLogger,
   ChannelLogger,
   CollaborationLogger,
@@ -1076,6 +1128,7 @@ export {
   DocumentLogger,
   ErrorLogger,
   FileLogger,
+  FormLogger,
   IntegrationLogger,
   PaymentLogger,
   SearchLogger,
@@ -1083,8 +1136,6 @@ export {
   TaskLogger,
   TeamLogger,
   TenantLogger,
-  VideoLogger,
-  FormLogger,
-  BugLogger
+  VideoLogger
 };
 

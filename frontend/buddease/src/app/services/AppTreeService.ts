@@ -1,6 +1,6 @@
 // AppTreeService.ts
 import { getUsersData } from "../api/UsersApi";
-import { generateInitialAppTree } from "../utils/AppTreeUtils";
+import { generateInitialAppTree } from "../generators/generateAppTree";
 
 class AppTreeService {
   static async getTree() {

@@ -1,21 +1,20 @@
 // useSnapshotManager.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/components/support/NotificationContext";
 import { useEffect } from "react";
 import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
-import SnapshotStore, { Snapshot } from "../state/stores/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { userManagerStore } from "../state/stores/UserStore";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
-import { UndoRedoStore } from "../state/stores/UndoRedoStore";
 
 const { notify } = useNotification();
 

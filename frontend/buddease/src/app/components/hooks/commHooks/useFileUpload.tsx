@@ -1,6 +1,7 @@
 // useFileUpload.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
 import headersConfig from "@/app/api/headers/HeadersConfig";
+import { FileLogger } from "@/app/pages/logging/Logger";
 import dotProp from "dot-prop";
 import { ChangeEvent, useState } from "react";
 import axiosInstance from "../../security/csrfToken";
@@ -11,17 +12,27 @@ import {
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import useErrorHandling from "../useErrorHandling";
-import { FileLogger } from "@/app/pages/logging/Logger";
 
 const { notify } = useNotification();
 const { handleError } = useErrorHandling(); // Use useErrorHandling for error handling
-const useFileUpload = () => {
+
+
+interface FileUploadProps {
+  inputValue: string;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+
+
+const useFileUpload = ({ inputValue, handleInputChange }: FileUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChanges = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setSelectedFile(selectedFile);
+      // Call handleInputChange to update inputValue
+      handleInputChange(event);
     }
   };
 
@@ -97,7 +108,7 @@ const useFileUpload = () => {
   };
   return {
     selectedFile,
-    handleFileChange,
+    handleFileChanges,
     uploadFile,
   };
 };

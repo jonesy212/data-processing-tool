@@ -2,7 +2,7 @@
 // details/index.ts
 // Import and re-export individual detail configurations
 export type { default as ProjectDetails } from "../../projects/Project";
-export type { default as SnapshotDetails } from "../../state/stores/SnapshotStore";
+export type { default as SnapshotDetails } from "../../snapshots/SnapshotStore";
 export type { default as TodoDetails } from "../../todos/Todo";
 export type { default as UserDetails } from "../../users/User";
 export type { default as VideoDetails } from "../../video/Video";

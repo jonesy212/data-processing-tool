@@ -1,9 +1,10 @@
 // QuestionnairePage.tsx
-import baseQuestionnaireData from '@/app/components/hooks/baseQuestionnaireData';
-import generateDynamicQuestions from '@/app/components/hooks/dynamicHooks/dynamicQuestionGenerator';
-import { UserData } from '@/app/components/users/User';
-import React from 'react';
-import { Question } from './Question'; // Adjust the import path as needed
+import baseQuestionnaireData from "@/app/components/hooks/baseQuestionnaireData";
+import generateDynamicQuestions from "@/app/components/hooks/dynamicHooks/dynamicQuestionGenerator";
+import { UserData } from "@/app/components/users/User";
+import React from "react";
+import { Question } from "./Question"; // Adjust the import path as needed
+import RootLayout from "@/app/RootLayout";
 
 interface QuestionnairePageProps {
   title: string;
@@ -41,7 +42,9 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
     event.preventDefault(); // Prevent default form submission
 
     // Collect user responses and call the onSubmit function
-    const userResponses: UserData = {};
+    const userResponses: UserData = {
+      id: ""
+    };
 
     questions.forEach((question) => {
       userResponses[question.id as keyof UserData] = handleQuestionResponse(
@@ -54,22 +57,25 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
   };
 
   return (
-    <div>
-      <h2>{title}</h2>
-      <p>{description}</p>
-      <form onSubmit={handleSubmit}>
-        {questions.map((question) => (
-          /* Render each question based on its type */
-          /* Example: You may create a separate Question component for rendering each question */
-          <div key={question.id}>
-            <p>{question.text}</p>
-            {/* Render input fields/options based on question type */}
-          </div>
-        ))}
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <RootLayout>
+      <div>
+        <h2>{title}</h2>
+        <p>{description}</p>
+        <form onSubmit={handleSubmit}>
+          {questions.map((question) => (
+            /* Render each question based on its type */
+            /* Example: You may create a separate Question component for rendering each question */
+            <div key={question.id}>
+              <p>{question.text}</p>
+              {/* Render input fields/options based on question type */}
+            </div>
+          ))}
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </RootLayout>
   );
 };
+
 
 export default QuestionnairePage;

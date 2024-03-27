@@ -1,6 +1,6 @@
 import RandomWalkSuggestions from '@/app/components/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/components/models/data/Data';
-import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '@/app/components/state/stores/SnapshotStore';
+import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '@/app/components/snapshots/SnapshotStore';
 import configurationService from '@/app/configs/ConfigurationService';
 import ReactDOM from 'react-dom';
 

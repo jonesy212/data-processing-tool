@@ -1,14 +1,14 @@
 // ExtendedAppLogic.tsx
-// ExtendedAppLogic.tsx
+import { BytesLike } from "ethers";
 import React from "react";
-import { Router, Routes } from "react-router-dom";
+import { Navigator, Router, Routes, useLocation } from "react-router-dom";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
-import { ThemeCustomization } from "../components/hooks/userInterface/ThemeCustomization";
+import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { NotificationData } from "../components/support/NofiticationsSlice";
-import { NotificationManager } from "../components/support/NotificationManager";
-import { CollaborationDashboard } from "./dashboards/CollaborationDashboard";
-import { SearchComponent } from "./searchs/SearchComponent";
+import NotificationManager from "../components/support/NotificationManager";
+import CollaborationDashboard from "./dashboards/CollaborationDashboard";
+import SearchComponent from "./searchs/SearchComponent";
 
 interface ExtendedAppProps {
   notifications: NotificationData[];
@@ -24,13 +24,16 @@ const ExtendedAppLogic: React.FC<ExtendedAppProps> = ({
       <ThemeCustomization />
       <CollaborationDashboard />
       <NotificationManager
+        onConfirm={(message: string, randomBytes: any) => {}}
+        onCancel={() => {}}
+        notify={(message: string, randomBytes: BytesLike) => {}}
         notifications={notifications}
         setNotifications={setNotifications}
       />
       <DynamicPromptProvider>
-        <Router>
+        <Router location={useLocation()} navigator={{} as Navigator}>
           <Routes>
-            <SearchComponent />
+            <SearchComponent documentData={[]} componentSpecificData={[]} />
             {/* Add more routes as needed */}
           </Routes>
         </Router>

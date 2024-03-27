@@ -1,10 +1,9 @@
 // DiscussionForumComponent.tsx
 
-import React, { useState } from "react";
-import { Comment, Data } from "../models/data/Data";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import ListGenerator from "@/app/generators/ListGenerator";
-import DetailsListItem from "../models/data/DetailsListItem";
+import React, { useState } from "react";
+import { Comment } from "../models/data/Data";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 // Define different types of posts
 interface BlogPost extends Post {

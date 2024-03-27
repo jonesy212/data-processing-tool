@@ -1,12 +1,10 @@
 // PhaseStore.tsx
+import { useNotification } from "@/app/components/support/NotificationContext";
 import { OnboardingPhase } from "@/app/pages/onboarding/OnboardingPhase";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Data } from "../../models/data/Data";
-import { Todo } from "../../todos/Todo";
-import SnapshotStore, { Snapshot, snapshotStore } from "./SnapshotStore";
-import { useNotification } from "@/app/components/support/NotificationContext";
-import { UserData } from "../../users/User";
+import { snapshotStore } from "../../snapshots/SnapshotStore";
 import { VideoData } from "../../video/Video";
 
 export interface PhaseStore {

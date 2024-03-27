@@ -236,4 +236,6 @@ export const {
   filterByMonetizationOpportunities, // Filter events by monetization opportunities
   filterByCommunityRewards, // Filter events by community rewards
 } = useFilteredEventsSlice.actions;
+
+
 export default useFilteredEventsSlice.reducer;

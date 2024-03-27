@@ -1,8 +1,11 @@
 // WeThePeoplePage.tsx
 import React from 'react';
+import  RootLayout  from '@/app/RootLayout';
 
 const WeThePeoplePage: React.FC = () => {
   return (
+    <RootLayout>
+
     <div>
       <h1>WeThePeople</h1>
       <p>
@@ -12,7 +15,9 @@ const WeThePeoplePage: React.FC = () => {
         informed about political activities.
       </p>
       {/* Add more details and features about WeThePeople */}
-    </div>
+      </div>
+      </RootLayout>
+
   );
 };
 

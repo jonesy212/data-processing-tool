@@ -16,15 +16,14 @@ import { Team } from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
 import { Phase } from "../../phases/Phase";
 import axiosInstance from "../../security/csrfToken";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
 import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import  PriorityTypeEnum  from "../../todos/Todo";
 import { VideoData } from "../../video/Video";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 
 
 
@@ -591,7 +590,7 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
 }
 
 // Example usage:
-const events: Record<string, CalendarEvent[]> = {
+export const events: Record<string, CalendarEvent[]> = {
   '2024-02-08': [
     {
       _id: "",
@@ -634,6 +633,31 @@ const events: Record<string, CalendarEvent[]> = {
   ],
   // Add more dates with corresponding events as needed
 };
+
+
+
+export const calendarEvent: CalendarEvent = {} as CalendarEvent;
+export const calendarEvent: CalendarEvent = {
+  _id: "",
+  id: '2',
+  title: 'Meeting',
+  content: "",
+  topics: [],
+  highlights: [],
+  files: [],
+  options: {} as DocumentOptions,
+  status: "",
+  rsvpStatus: "yes",
+  priority: "",
+  host: {} as Member,
+  teamMemberId: "",
+  participants: [],
+  date: new Date(),
+  then: implementThen,
+  analysisResults: []
+}
+
+
 
 export const convertedData = convertEventsToData(events);
 console.log(convertedData);

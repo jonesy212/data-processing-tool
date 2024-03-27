@@ -114,7 +114,9 @@ import {
         status: "pending",
         isActive: true,
         tags: [],
-        type: ""
+        type: "",
+        _id: "",
+        analysisResults: []
       }
       const todoDetailsString = JSON.stringify(todoDetails);
       return this.generateID(todoDetailsString, todoId || '', "todoName" as NotificationType);
@@ -284,6 +286,7 @@ import {
 
 
   const videoDataDetails: DataDetails = {
+    _id: "",
     id: 'video1',
     title: 'Video Title',
     description: 'Video Description',
@@ -293,6 +296,7 @@ import {
     type: NotificationTypeEnum.GeneratedID,
     createdAt: new Date(),
     uploadedAt: new Date(),
+    analysisResults: []
   };
 
   export default UniqueIDGenerator

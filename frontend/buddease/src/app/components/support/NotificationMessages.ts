@@ -40,6 +40,10 @@ interface NotificationMessages {
 
 
 const NOTIFICATION_MESSAGES: NotificationMessages = {
+  Fetch_Notification_Defaults: {
+    success: "Notifications fetched successfully",
+  },
+
   Audio: {
     AudioCommunicationFailure: "Failed to enable{ audio communication",
   },
@@ -289,7 +293,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   // Error and Authentication
 
   Error: {
-    DEFAULT: `An ${errorType} occurred.`,
+    DEFAULT: `"Error marking task as complete"`,
     INVALID_CREDENTIALS: "Invalid credentials. Please try again",
     ERROR_UPDATING_DATA: "Error updating data. Please try again later",
     ERROR_REMOVING_DATA: "Error removing data. Please try again",

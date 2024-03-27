@@ -174,7 +174,7 @@ const userManagerStore = (): UserStore => {
     reassignTeamToTodo,
     assignTeamToTodos,
     unassignTeamFromTodos,
-    reassignTeamToTodos
+    reassignTeamToTodos,
     ...rest, // Spread the remaining properties from useAssignEventStore
   });
 

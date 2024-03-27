@@ -1,6 +1,7 @@
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import React, { useState } from "react";
 import { Data } from "../models/data/Data";
+import RootLayout from "@/app/RootLayout";
 
 interface PromptOption {
   value: string;
@@ -33,7 +34,6 @@ interface PromptPageProps extends Partial<Data> {
   };
 }
 
-
 const PromptPage: React.FC<PromptPageProps> = ({
   prompts,
   currentPage,
@@ -56,44 +56,46 @@ const PromptPage: React.FC<PromptPageProps> = ({
   };
 
   return (
-    <div>
-      <h2>Prompts</h2>
+    <RootLayout>
+      <div>
+        <h2>Prompts</h2>
 
-      <p>Title: {currentPage?.title}</p>
-      <p>{currentPage?.description}</p>
-      {onGeneratePrompts && (
-        <button onClick={onGeneratePrompts}>Generate Prompts</button>
-      )}
-      <form onSubmit={handleSubmit}>
-        {/* Map through prompts and render input fields */}
-        {generatedPrompts.map((prompt) => (
-          <div key={prompt.id}>
-            <label>
-              {prompt.text}
-              {prompt.type === "text" ? (
-                <DynamicTextArea
-                  name={prompt.id}
-                  required
-                  value={state[prompt.id] || ""}
-                  onChange={(value) =>
-                    handleDynamicTextAreaChange(value, prompt.id)
-                  }
-                />
-              ) : prompt.type === "multipleChoice" ? (
-                <select name={prompt.id} required>
-                  {prompt.options?.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : null}
-            </label>
-          </div>
-        ))}
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+        <p>Title: {currentPage?.title}</p>
+        <p>{currentPage?.description}</p>
+        {onGeneratePrompts && (
+          <button onClick={onGeneratePrompts}>Generate Prompts</button>
+        )}
+        <form onSubmit={handleSubmit}>
+          {/* Map through prompts and render input fields */}
+          {generatedPrompts.map((prompt) => (
+            <div key={prompt.id}>
+              <label>
+                {prompt.text}
+                {prompt.type === "text" ? (
+                  <DynamicTextArea
+                    name={prompt.id}
+                    required
+                    value={state[prompt.id] || ""}
+                    onChange={(value) =>
+                      handleDynamicTextAreaChange(value, prompt.id)
+                    }
+                  />
+                ) : prompt.type === "multipleChoice" ? (
+                  <select name={prompt.id} required>
+                    {prompt.options?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
+              </label>
+            </div>
+          ))}
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </RootLayout>
   );
 };
 

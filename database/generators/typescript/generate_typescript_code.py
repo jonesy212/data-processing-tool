@@ -49,13 +49,12 @@ def generate_typescript_code(models, fake_data, dry_run=False):
     return generated_files
 
 
-
 def generate_interface_code(model_class):
     # Generate the interface code here
     interface_code = f"export interface {model_class.__name__} {{\n"
     for column in model_class.__table__.columns:
         interface_code += f"  {column.name}: {get_typescript_type(column.type)};\n"
-    interface_code += "}\n\n"
+    interface_code += "}"
     return interface_code
 
 

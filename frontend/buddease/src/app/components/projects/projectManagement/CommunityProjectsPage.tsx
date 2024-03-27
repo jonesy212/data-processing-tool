@@ -2,7 +2,8 @@
 // CommunityProjectsPage.tsx
 import ListGenerator from '@/app/generators/ListGenerator';
 import React, { useState } from 'react';
-import FeedbackForm from './FeedbackForm';
+import { CommunityData } from '../../models/CommunityData';
+import FeedbackForm from '@/app/pages/forms/FeedbackForm';
 
 interface CommunityProjectsPageProps {
   community: CommunityData;

@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
-import { DataDetails } from '../models/data/Data';
-import { Member } from '../models/teams/TeamMembers';
-import { DetailsItem } from '../state/stores/DetailsListStore';
+import React, { createContext, useContext, useState } from "react";
+import { DataDetails } from "../models/data/Data";
+import { Member } from "../models/teams/TeamMembers";
+import { DetailsItem } from "../state/stores/DetailsListStore";
 
 // Define the type for calendar data
 type SimpleCalendarEvent = {
@@ -23,13 +23,13 @@ type SimpleCalendarEvent = {
   startDate: Date;
   endDate: Date;
   priority?: "low" | "medium" | "high";
-  location?: string; 
-  attendees?: Member[]; 
+  location?: string;
+  attendees?: Member[];
   shared: React.ReactNode;
   details: DetailsItem<DataDetails>;
   bulkEdit: boolean;
   recurring: boolean;
-  customEventNotifications: string ; // Update type to string
+  customEventNotifications: string; // Update type to string
   comment: string; // Update type to string
   attachment: string; // Update type to string
   // Add more properties as needed
@@ -38,35 +38,53 @@ type SimpleCalendarEvent = {
 // Define the type for the context props
 type CalendarContextProps = {
   calendarData: SimpleCalendarEvent[]; // Use the defined type for calendar data
-  updateCalendarData: (newData: SimpleCalendarEvent[] | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])) => void;
+  updateCalendarData: (
+    newData:
+      | SimpleCalendarEvent[]
+      | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])
+  ) => void;
   children: React.ReactNode;
 };
 
 // Define the context type
 type CalendarContextType = {
   calendarData: SimpleCalendarEvent[];
-  updateCalendarData: (newData: SimpleCalendarEvent[] | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])) => void;
+  updateCalendarData: (
+    newData:
+      | SimpleCalendarEvent[]
+      | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])
+  ) => void;
 };
 
 // Create the context
-const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
+const CalendarContext = createContext<CalendarContextType | undefined>(
+  undefined
+);
 
 // Custom hook for consuming the context
 export const useCalendarContext = () => {
   const context = useContext(CalendarContext);
   if (!context) {
-    throw new Error('useCalendarContext must be used within a CalendarProvider');
+    throw new Error(
+      "useCalendarContext must be used within a CalendarProvider"
+    );
   }
   return context;
 };
 
 // Provider component for managing calendar data
-export const CalendarProvider: React.FC<CalendarContextProps> = ({ children }) => {
+export const CalendarProvider: React.FC<CalendarContextProps> = ({
+  children,
+}) => {
   // State to store calendar data
   const [calendarData, setCalendarData] = useState<SimpleCalendarEvent[]>([]);
 
   // Function to update calendar data
-  const updateCalendarData = (newData: SimpleCalendarEvent[] | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])) => {
+  const updateCalendarData = (
+    newData:
+      | SimpleCalendarEvent[]
+      | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])
+  ) => {
     setCalendarData(newData);
   };
 

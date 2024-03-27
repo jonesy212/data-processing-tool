@@ -1,23 +1,32 @@
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import fs from "fs";
 import React from "react";
 import { SupportedData } from "../models/CommonData";
+import { CalendarStatus } from "../models/data/StatusType";
 import { SetCustomEventNotificationsPayload } from "../notifications/SetEventNotification";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { SendStatus } from "../support/NofiticationsSlice";
 import { NotificationTypeEnum } from "../support/NotificationContext";
-import { CalendarEvent } from "./CalendarContext";
 import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
-import { CalendarStatus } from "../models/data/StatusType";
+import { SimpleCalendarEvent } from "./CalendarContext";
+import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
+import { formatCalendarAsXLSX } from "./formatCalendarAsXLSX";
+import { formatCalendarAsDOCX } from "./formatCalendarAsDOCX";
+
+
+// Define a union type for calendar events
+type CalendarEventUnion = SimpleCalendarEvent | CalendarEvent;
+
+
 // Define the slice state interface
 interface CalendarViewManagerState {
   currentView: "day" | "week" | "month" | "quarter" | "year";
   showAllDayEvents: boolean;
   showWeekends: boolean;
   calendarDisplaySettings: CalendarDisplaySettings;
-  events: CalendarEvent[]; // Use CalendarEvent interface here
+  events: CalendarEventUnion[]; // Use CalendarEvent interface here
   bulkEdit: boolean;
   customSettings: {
     // Define any custom settings here
@@ -139,6 +148,7 @@ export const calendarViewManagerSlice = createSlice({
       };
       state.events.push(copiedEvent);
     },
+
     moveEvent: (
       state,
       action: PayloadAction<{ eventId: string; newDate: Date }>
@@ -228,37 +238,90 @@ export const calendarViewManagerSlice = createSlice({
     },
 
 
-    exportCalendar: (state, action: PayloadAction<{ fileName: string; sendStatus: SendStatus }>) => {
-      const { fileName, sendStatus } = action.payload;
+    // Reducer to handle exporting calendar data
+    exportCalendar: (state, action: PayloadAction<{ fileName: string; format: string; sendStatus: SendStatus }>) => {
+      const { fileName, format, sendStatus } = action.payload;
       const { events, calendarDisplaySettings } = state;
-    
-      // Format calendar data as CSV string
-      const csvData = formatCalendarAsCSV(events, calendarDisplaySettings);
-    
-      // Write CSV data to file
-      fs.writeFile(fileName, csvData, (err: any) => {
-        if (err) {
-          console.error("Error exporting calendar:", err);
+      
+      // Check if the requested format is supported
+      const allowedFormats = ['csv', 'xls', 'xlsx', 'json'];
+      if (!allowedFormats.includes(format.toLowerCase())) {
+        console.error(`Unsupported export format: ${format}`);
+        return;
+      }
+      
+      // Format the calendar data based on the selected format
+      let exportData;
+      switch (format.toLowerCase()) {
+        case 'csv':
+          let commonEvents: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[] = events,
+          exportData = formatCalendarAsCSV(commonEvents, calendarDisplaySettings);
+          break;
+        case 'xls':
+          // Format calendar data as XLS
+          
+          exportData = formatCalendarAsXLS(events, calendarDisplaySettings);
+          break;
+        case 'xlsx':
+          // Format calendar data as XLSX
+          exportData = formatCalendarAsXLSX(events, calendarDisplaySettings);
+          break;
+          case 'docx':
+          // Format calendar data as DOCX
+          exportData = formatCalendarAsDOCX(events, calendarDisplaySettings);
+          break;
+          default:
+            console.error(`Unsupported export format: ${format}`);
           return;
-        }
-        console.log("Calendar exported successfully to", fileName);
-      });
+      }
+      
+      // Instead of writing to a file, we can perform other actions such as displaying the data or sending it to the server
+      
+      // For example, we can log the data to the console
+      console.log(`${format.toUpperCase()} Data:`, exportData);
+      
+      // Or we can send the data to the server for further processing
+      // Example: sendExportDataToServer(exportData);
     },
     
-    importCalendar: (state, action: PayloadAction<{ fileName: string; sendStatus: SendStatus }>) => {
-      const { fileName, sendStatus } = action.payload;
-      const { events, calendarDisplaySettings } = state;
-      // Format calendar data as CSV string
-      const csvData = formatCalendarAsCSV(events, calendarDisplaySettings);
-      // Write CSV data to file
-      fs.writeFile(fileName, csvData, (err: any) => {
-        if (err) {
-          console.error("Error exporting calendar:", err);
-          return;
-        }
-        console.log("Calendar exported successfully to", fileName);
-      });
-    },
+          
+      // Reducer to handle importing calendar data
+    // Reducer to handle importing calendar data
+importCalendar: (state, action: PayloadAction<{ fileName: string; sendStatus: SendStatus }>) => {
+  const { fileName, sendStatus } = action.payload;
+  
+  // Here, you can dispatch an action to indicate that importing has started
+  dispatch(importCalendarStart());
+  
+  // Perform asynchronous logic (e.g., sending a request to the server) outside of the reducer
+  // Use Redux Thunk or Redux Saga for handling asynchronous logic
+  
+  // Example using Redux Thunk
+  return async (dispatch) => {
+    try {
+      // Send a POST request to the server endpoint responsible for handling the import operation
+      const response = await axiosInstance.post('/api/import-calendar', { fileName });
+      
+      // Log the response from the server
+      console.log("Import calendar response:", response.data);
+      
+      // Dispatch an action to update the state based on the response if necessary
+      // Example: dispatch(updateCalendarData(response.data));
+      
+      // Here, you can dispatch an action to indicate that importing has succeeded
+      dispatch(importCalendarSuccess());
+    } catch (error) {
+      // Handle errors if the request fails
+      console.error("Error importing calendar data:", error);
+      
+      // Dispatch an action to update the state or show an error message to the user
+      // Example: dispatch(showErrorMessage("Failed to import calendar data. Please try again later."));
+      
+      // Here, you can dispatch an action to indicate that importing has failed
+      dispatch(importCalendarFailure());
+    }
+  };
+},
     
     setEventPriority: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
@@ -480,6 +543,7 @@ export const {
 
   // Import Calendar
   importCalendar,
+import { axiosInstance } from '@/app/api/axiosInstance';
 
   // Set Event Priority
   setEventPriority,

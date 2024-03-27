@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 from database.extensions import db
 from logging_system.error_logger import log_error
 from logging_system.warning_events import log_error, log_info
-from script_commands.celery_module import Celery
+from script_command.celery_module import Celery
 
 celery = Celery(__name__, broker='pyamqp://guest:guest@localhost//', backend='rpc://')
 

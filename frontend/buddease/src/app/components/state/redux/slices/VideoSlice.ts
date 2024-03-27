@@ -1,16 +1,13 @@
 // video/VideoSlice.ts
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ApiManagerState } from "./ApiSlice";
-import { Video } from "../../stores/VideoStore";
-import { Data } from "@/app/components/models/data/Data";
-import { Snapshot } from "../../stores/SnapshotStore";
-import { VideoData } from "@/app/components/video/Video";
-import { implementThen } from '../../stores/CommonEvent';
-import { WritableDraft } from "../ReducerGenerator";
-import { createDraft } from "immer";
 import { Channel } from "@/app/components/interfaces/chat/Channel";
 import { User } from "@/app/components/users/User";
-import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
+import { VideoData } from "@/app/components/video/Video";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createDraft } from "immer";
+import { implementThen } from '../../stores/CommonEvent';
+import { Video } from "../../stores/VideoStore";
+import { WritableDraft } from "../ReducerGenerator";
+import { ApiManagerState } from "./ApiSlice";
 import { CustomComment } from "./BlogSlice";
 
 

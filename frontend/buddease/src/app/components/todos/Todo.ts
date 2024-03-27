@@ -1,34 +1,35 @@
 import { Data } from '@/app/components/models/data/Data';
+import { PriorityStatus } from '../models/data/StatusType';
 import { Idea } from '../models/tasks/Task';
 import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
-import { AllStatus } from '../state/stores/DetailsListStore';
-import { Snapshot } from "../state/stores/SnapshotStore";
+import { Snapshot } from "../snapshots/SnapshotStore";
 import { User } from "../users/User";
 import { VideoData } from '../video/Video';
-import { PriorityStatus, PriorityTypeEnum } from '../models/data/StatusType';
 
 
 
 
-export interface Todo extends Data {
-  id: string | number;
+export interface Todo {
+  id: string;
   done: boolean;
-  status?: AllStatus
+  status?: PriorityStatus;
   todos: Todo[];
+  title: string;
   description: string;
   dueDate: Date | null;
-  priority: AllStatus
+  priority: PriorityStatus | undefined
   assignedTo: User | null;
   assignee: User | null;
   assignedUsers: string[];
   collaborators: string[];
   labels: string[];
-  comments: Comment[],
+  comments: Comment[];
   attachments?: Attachment[];
   subtasks: Todo[];
   entities?: Todo[];
 
+  isActive?: boolean;
   isDeleted?: boolean;
   isArchived?: boolean;
   isCompleted?: boolean;
@@ -50,6 +51,7 @@ export interface Todo extends Data {
   snapshot: Snapshot<Data>;
   data?: Data;
 }
+
 
 export interface Attachment extends Data {
   url: string;
@@ -74,13 +76,14 @@ class TodoImpl implements Todo {
   _id: string = "";
   id: string = "";
   title: string = "";
-  isActive: boolean = false;
+  isActive?: boolean = false;
   done: boolean = false;
-  status: "pending" | "inProgress" | "completed" = "pending";
+  priorityStatus: PriorityStatus | undefined;
+
   todos: Todo[] = [];
   description: string = "";
   dueDate: Date | null = null;
-  priority: AllStatus = PriorityStatus.Medium
+  priority: PriorityStatus | undefined = undefined
   assignedTo: User | null = null;
   assignee: User | null = null;
   assignedUsers: string[] = [];

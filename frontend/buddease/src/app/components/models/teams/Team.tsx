@@ -3,9 +3,9 @@ import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeG
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project, ProjectType } from "../../projects/Project";
+import { Snapshot } from "../../snapshots/SnapshotStore";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { implementThen } from '../../state/stores/CommonEvent';
-import { Snapshot } from "../../state/stores/SnapshotStore";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";

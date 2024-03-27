@@ -1,5 +1,7 @@
 // EmailConfirmationPhase.tsx
 import { useState } from 'react';
+import RequestEmailPhase from '../communications/email/RequestEmailPhase';
+import VerifyEmailPhase from '../communications/email/VerifyEmailPhase';
 
 enum EmailConfirmationPhaseEnum {
   REQUEST_EMAIL = 'Request Email',
@@ -8,7 +10,7 @@ enum EmailConfirmationPhaseEnum {
 }
 
 const EmailConfirmationPhase = () => {
-  const [currentPhase, setCurrentPhase] = useState<EmailConfirmationPhaseEnum>(EmailConfirmationPhase.REQUEST_EMAIL);
+  const [currentPhase, setCurrentPhase] = useState<EmailConfirmationPhaseEnum>(EmailConfirmationPhaseEnum.REQUEST_EMAIL);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (query: string) => {

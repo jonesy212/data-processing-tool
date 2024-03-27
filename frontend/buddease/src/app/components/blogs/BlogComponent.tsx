@@ -1,6 +1,6 @@
 // BlogComponent.tsx
 import React, { useEffect, useState } from 'react';
-import { Snapshot } from '../state/stores/SnapshotStore';
+import { Snapshot } from '../snapshots/SnapshotStore';
 import { NotificationType, useNotification } from '../support/NotificationContext';
 import { Subscriber } from '../users/Subscriber';
 

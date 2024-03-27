@@ -21,7 +21,7 @@ from preprocessing.engineering_features.time_since_event import \
 from preprocessing.remove_duplicates import remove_duplicates
 from preprocessing.remove_outliers_task import remove_outliers_task
 from preprocessing.tokenize_text import tokenize_text
-from script_commands.celery_module import Celery
+from script_command.celery_module import Celery
 
 celery = Celery(__name__, broker='pyamqp://guest:guest@localhost//', backend='rpc://')
 

@@ -1,9 +1,9 @@
 // DocumentBuilder.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import Clipboard from "@/app/ts/clipboard";
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
-import { PathLike } from "fs";
 import React, { useState } from "react";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
@@ -24,7 +24,6 @@ import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import { DocumentAnimationOptions, DocumentBuilderProps } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
@@ -43,12 +42,13 @@ export interface DocumentData extends CommonData<Data> {
   changes?: string[];
   options: DocumentOptions;
   documentPhase?: Phase;
-  folderPath: PathLike;
+  folderPath: string;
   previousContent?: string;
   currentContent?: string;
   previousMetadata: StructuredMetadata;
   currentMetadata: StructuredMetadata;
   accessHistory: any[];
+
   // Add more properties if needed
 }
 

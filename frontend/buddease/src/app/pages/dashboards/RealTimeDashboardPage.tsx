@@ -1,16 +1,13 @@
 // RealTimeDashboardPage.tsx
-import React, { useState } from 'react';
-import VisualFlowDashboard from './VisualFlowDashboard'; // Import your specific dashboard component
-import SearchBar from './SearchBar'; // Import a search bar component
-import FilterOptions from './FilterOptions'; // Import a component for filter options
-import RealTimeChart from './RealTimeChart'; // Import a real-time chart component
-import Notifications from './Notifications'; // Import a notifications component
-import Sidebar from './Sidebar'; // Import a sidebar component
+import RootLayout from '@/app/RootLayout';
 import { User } from '@/app/components/users/User';
-import { UserProfile } from '@/app/components/users/userSnapshotData';
-import DetailsProps from '@/app/components/models/data/Details';
-import { SupportedData } from '@/app/components/models/CommonData';
-import CommonDetails from '@/app/components/models/CommonDetails';
+import React, { useState } from 'react';
+import FilterOptions from './FilterOptions'; // Import a component for filter options
+import Notifications from './Notifications'; // Import a notifications component
+import RealTimeChart from './RealTimeChart'; // Import a real-time chart component
+import SearchBar from './SearchBar'; // Import a search bar component
+import Sidebar from './Sidebar'; // Import a sidebar component
+import VisualFlowDashboard from './VisualFlowDashboard'; // Import your specific dashboard component
 
 interface RealTimeDashboardPageProps {
   user: User; // User object representing the current user
@@ -50,6 +47,8 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
   };
 
   return (
+    <RootLayout>
+
     <div>
       <Sidebar>
         <UserProfile user={user} />
@@ -66,8 +65,11 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
         <VisualFlowDashboard user={user} searchQuery={searchQuery} />
         <Notifications />
       </div>
-    </div>
-  );
+      </div>
+      </RootLayout>
+
+      );
+      
 };
 
 export default RealTimeDashboardPage;

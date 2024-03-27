@@ -2,23 +2,29 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
-import RealtimeDataItem from "../../../../../models/realtime/RealtimeData";
+import { default as RealtimeData, default as RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
 import { Data } from "../../models/data/Data";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
-import SnapshotStore, { Snapshot } from "../../state/stores/SnapshotStore";
 import { fetchData } from "../../utils/dataAnalysisUtils";
 
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 
-const useRealtimeData = (
-  initialData: any,
-  updateCallback: (
-    data: SnapshotStore<Snapshot<Data>>,
-    events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>,
 
-    dataItems: RealtimeDataItem[]
-  ) => void
+export type RealtimeUpdateCallback<T extends RealtimeData> = (
+  data: SnapshotStore<Snapshot<Data>>,
+  events: Record<string, CalendarEvent[]>,
+  snapshotStore: SnapshotStore<Snapshot<Data>>,
+  dataItems: T[]
+) => void;
+
+
+
+
+
+const useRealtimeData = <T>(
+  initialData: any,
+  updateCallback: RealtimeUpdateCallback<RealtimeData>
 ) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
   const dispatch = useDispatch(); // Initialize useDispatch hook

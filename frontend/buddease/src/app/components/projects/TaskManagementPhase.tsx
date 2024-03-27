@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import LaunchPhase from "../phases/onboarding/LaunchPhase";
 import TaskManagerComponent from "../tasks/TaskManagerComponent";
 import DataAnalysisPhase from "./DataAnalysisPhase/DataAnalysisPhase";
+import { Task } from "../models/tasks/Task";
 
 export enum TaskManagementPhase {
   LAUNCH,
@@ -22,7 +23,13 @@ const TaskManagementManager: React.FC = () => {
   return (
     <div>
       <h1>Task Management Phase</h1>
-      <TaskManagerComponent taskId={() => "task1"} />
+      <TaskManagerComponent
+        taskId={() => "task1"}
+        newTitle={(): string => {
+          return "New Task Title";
+        }}
+        task={{} as Task}
+      />
       {currentPhase === TaskManagementPhase.LAUNCH && <LaunchPhase />}
       {currentPhase === TaskManagementPhase.DATA_ANALYSIS && (
         <DataAnalysisPhase onSubmit={() => handlePhaseTransition} />

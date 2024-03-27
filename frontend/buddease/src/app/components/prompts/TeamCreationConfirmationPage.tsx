@@ -2,6 +2,7 @@ import { Button as AntdButton } from "antd";
 import React from "react";
 import { Button as NativeButton } from "react-native";
 import TeamData from "../models/teams/TeamData";
+import RootLayout from "@/app/RootLayout";
 
 
 interface TeamCreationConfirmationPageProps {
@@ -15,6 +16,8 @@ const TeamCreationConfirmationPage: React.FC<
 > = ({ teamData, onConfirm, onCancel }) => {
   // Render the confirmation page using teamData
   return (
+    <RootLayout>
+
     <div>
       {/* Render your confirmation page UI here */}
       <h2>Team Creation Confirmation</h2>
@@ -32,7 +35,9 @@ const TeamCreationConfirmationPage: React.FC<
       <NativeButton title="Confirm Team Creation" onPress={onConfirm} />
       {/* Add a cancel button or option if needed */}
       <AntdButton title="Cancel" />
-     </div>
+      </div>
+      </RootLayout>
+
   );
 };
 

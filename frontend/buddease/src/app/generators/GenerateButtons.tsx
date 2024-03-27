@@ -1,5 +1,6 @@
 // ButtonGenerator.tsx
 import React from "react";
+import { useDispatch } from "react-redux";
 import RealtimeData from "../../../models/realtime/RealtimeData";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import {
@@ -13,8 +14,10 @@ import {
   nextPhase,
   previousPhase,
 } from "../components/phases/PhaseTransitions";
+import router from "../components/projects/projectManagement/ProjectManagementSimulator";
+import { AllTypes } from "../components/typings/PropTypes";
 import userService from "../components/users/ApiUser";
-import { useDispatch } from "react-redux";
+import { brandingSettings } from "../libraries/theme/BrandingService";
 
 startVoiceRecognition;
 /**
@@ -69,7 +72,7 @@ interface ButtonGeneratorProps {
   variant?: Record<string, string>;
   label?: Record<string, string>;
   buttonTypes?: string[];
-  type?: "submit" | "reset" | "button" | undefined;
+  type?: AllTypes;
   htmlType?: string;
   onSubmit?: () => void;
   onReset?: () => void;
@@ -203,6 +206,8 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
     return (
       <ReusableButton
         key={type}
+        router={router}
+        brandingSettings={brandingSettings}
         onClick={() => {
           // Call the corresponding function when the button is clicked
           switch (type) {
@@ -244,6 +249,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
             default:
               break;
           }
+
         }}
         label={label[type]}
         variant={variant[type]}
@@ -251,17 +257,18 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
     );
   };
 
-  return (
+    return (
     <div>
       <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
       {buttonTypes.map((type, setCurrentPhase, currentPhase) =>
-        renderButton(type, setCurrentPhase, currentPhase)
+        renderButton(type, setCurrentPhase, currentPhase)  
       )}
       {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
       <button
-        type={buttonGeneratorProps.type} // Add the type attribute
-        onSubmit={buttonGeneratorProps.onSubmit} // Add the onClick attribute if needed
-      ></button>
+        type={"submit"} // Changed to a valid button type
+        onSubmit={buttonGeneratorProps.onSubmit} 
+      >
+      </button>
       ;{/* New voiceControlButton */}
       <button id="voiceControlButton" onClick={handleVoiceControl}>
         Activate Voice Control
@@ -273,6 +280,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
       />
     </div>
   );
+
 };
 
 // Define buttonGeneratorProps
@@ -322,3 +330,4 @@ const buttonGeneratorProps: ButtonGeneratorProps = {
 
 export { ButtonGenerator, buttonGeneratorProps };
 export type { ButtonGeneratorProps };
+

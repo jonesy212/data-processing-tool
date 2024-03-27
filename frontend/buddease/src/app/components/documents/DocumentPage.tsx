@@ -3,6 +3,7 @@ import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { ReactNode, useState } from "react";
 import DocumentBuilder from "./DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
+import RootLayout from "@/app/RootLayout";
 
 interface DynamicHooks {
   [key: string]: {
@@ -57,6 +58,8 @@ const DocumentPage = () => {
   };
   
   return (
+    <RootLayout>
+
     <div>
       <h1>Your Document Page</h1>
 
@@ -76,7 +79,9 @@ const DocumentPage = () => {
           {dynamicHooks[key].hook()}
         </div>
       ))}
-    </div>
+      </div>
+      </RootLayout>
+
   );
 };
 

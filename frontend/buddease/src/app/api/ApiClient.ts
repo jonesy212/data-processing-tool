@@ -11,6 +11,7 @@ import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import HeadersConfig from "./headers/HeadersConfig";
+import { headersConfig } from '../components/shared/SharedHeaders';
 
 
 const API_BASE_URL = endpoints.client;
@@ -25,8 +26,7 @@ export const createHeaders = (): typeof HeadersConfig => {
   };
 };
 
-// Use the createHeaders function to get the headers configuration
-const headersConfig: typeof HeadersConfig = createHeaders();
+
 interface ClientNotificationMessages {
   FETCH_CLIENT_DETAILS_SUCCESS: string;
   FETCH_CLIENT_DETAILS_ERROR: string;

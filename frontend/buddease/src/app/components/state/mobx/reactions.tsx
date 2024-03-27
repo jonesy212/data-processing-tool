@@ -14,6 +14,7 @@ const setupReactionForStore = (getStore: () => any, propertyToObserve: string, o
   );
 };
 
+
 // Set up reaction for todoManagerStore
 setupReactionForStore(
   useTaskManagerStore,
@@ -33,3 +34,15 @@ setupReactionForStore(
     // Additional logic or function calls can be placed here
   }
 );
+
+
+
+setupRactionFortStor(
+  useThemeManagerStore,
+  'theme',
+  () => brandingSettings.themeColor,
+  (themeColor) => {
+    // Call the onColorChange callback when the theme color changes
+    this.onColorChange(themeColor);
+  }
+)

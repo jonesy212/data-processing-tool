@@ -285,6 +285,7 @@ function* completeAllTasksFailureSaga(action: ReturnType<typeof TaskActions.comp
 
 
 export function* watchTaskSagas() {
+  
   yield takeLatest(TaskActions.add.type, addTaskSaga),
   yield takeLatest(TaskActions.remove.type, removeTaskSaga),
   yield takeLatest(TaskActions.toggle.type, toggleTaskSaga),

@@ -3,22 +3,22 @@ import { useState } from "react";
 import { Team } from "../../models/teams/Team";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
+import { useNotification } from '@/app/components/support/NotificationContext';
 import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import TeamData from "../../models/teams/TeamData";
+import { Phase } from "../../phases/Phase";
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { snapshotConfig } from "../../snapshots/SnapshotConfig";
 import { NotificationType, NotificationTypeEnum } from "../../support/NotificationContext";
+import { VideoData } from "../../video/Video";
 import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
-import { Phase } from "../../phases/Phase";
 import useVideoStore, { Video } from "./VideoStore";
-import { VideoData } from "../../video/Video";
-import { useNotification } from '@/app/components/support/NotificationContext';
-import { snapshotConfig } from "./SnapshotConfig";
-import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 
 
 interface CustomData extends Data {
@@ -87,7 +87,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
-  const initialSnapshot = {} as SnapshotStoreConfig<Snapshot<Data>>;
+  const initialSnapshot = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
   const snapshotStore = new SnapshotStore(initialSnapshot, () => {
     notify(
       "initialSnapshot",
@@ -119,15 +119,14 @@ const useTeamManagerStore = (): TeamManagerStore => {
     });
   };
 
-  const getTeamId = (team: Team) => { 
-    return team.id;
+  const getTeamId = (teamId: string) => { 
+    return teamId
   }
 
-  const getTeamData = (team: Team, data: TeamData) => { 
+  const getTeamData = (teamId: string, data: TeamData) => { 
     const teamData = {
-      ...team,
       ...data,
-      id: team.id,
+      id: teamId,
     }
     return teamData;
   }
@@ -176,12 +175,12 @@ const useTeamManagerStore = (): TeamManagerStore => {
       return;
     }
   
-    const  {notify}  = {} as SnapshotStoreConfig<Snapshot<Data>>
+    const  {notify}  = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
     // Create a snapshot of the current teams for the specified teamId
 
 
 // Create a snapshot of the current teams for the specified teamId
-  const teamSnapshot: SnapshotStore<Snapshot<Data>> = new SnapshotStore<Snapshot<Data>>(
+  const teamSnapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = new SnapshotStore<Snapshot<Data>>(
     snapshotConfig,
     () => notify(
       "teamSnapshot",

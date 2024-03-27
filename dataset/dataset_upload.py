@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from authentication.auth import auth_bp
 from configs.config import app, db
 from models.dataset import DatasetModel
+from preprocessing.tokenize_text import predictive_analytics
 
 
 def allowed_file(file_format):
@@ -56,7 +57,6 @@ def convert_file(file_path, output_format):
         output_file_path = file_path.replace(os.path.splitext(file_path)[1], '.json')
         data.to_json(output_file_path, orient='records')
 
-
 @auth_bp.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_dataset():
@@ -78,40 +78,69 @@ def upload_dataset():
             return render_template('upload.html', message="No file or URL provided")
 
         # Check if the dataset was successfully saved
-        saved_dataset = save_dataset(file, url, name, description)
+        saved_dataset, save_error = save_dataset(file, url, name, description)
 
-        if file.filename == '':
-            return 'No selected file'
+        # Ensure saved_dataset is used
+        if saved_dataset is None:
+            return f"Failed to save the dataset: {save_error}"
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            # Check if a file with the same name already exists
+            if os.path.exists(file_path):
+                return f"A file with the same name already exists. Please choose a different name or consider updating the existing file."
+
             file.save(file_path)
-
-            # Store the file path in the session
-            session['file_path'] = file_path
-
-            # Load the dataset into your_data_frame
-            your_data_frame, error_message = load_dataset(file_path)
-
-            if your_data_frame is not None:
-                # Display or process the loaded data
-                app.logger.info(f"Dataset loaded successfully: {your_data_frame.head()}")
-            else:
-                # Log the error message
-                app.logger.error(f"Error loading dataset: {error_message}")
-
-            # Check if the user selected an output format
-            output_format = request.form.get('output_format')
-            if output_format:
-                converted_file_path = convert_file(file_path, output_format)
-                return f"File converted and saved at: {converted_file_path}"
-
-            # Add code to handle the uploaded dataset
-            return redirect(url_for('user_dashboard'))
+        elif url:
+            # You might want to add validation for the URL
+            file_path = url
         else:
-            # Handle invalid file format
-            return render_template("upload.html", message="File format not supported")
+            if not allowed_format(file.filename):
+                return "Unsupported file format."
+
+        new_dataset = DatasetModel(name=name, description=description, file_path=file_path)
+        db.session.add(new_dataset)
+        db.session.commit()
+
+        # Store the file path in the session
+        session['file_path'] = file_path
+
+        # Load the dataset into loaded_data and handle potential errors
+        loaded_data, error_message = load_dataset(file_path, file_format)
+
+        # Check if the dataset loaded successfully
+        if loaded_data is not None:
+            # Display or process the loaded data
+            app.logger.info(f"Dataset loaded successfully: {loaded_data.head()}")
+            
+            # Perform further processing or analysis as needed
+            
+            # Example: Perform predictive analytics
+            accuracy = predictive_analytics(loaded_data)
+            print("Predictive Analytics Accuracy:", accuracy)
+        else:
+            # Log the error message and handle the error gracefully
+            app.logger.error(f"Error loading dataset: {error_message}")
+
+        # Load the dataset into your_data_frame
+        your_data_frame, error_message = load_dataset(file_path)
+
+        if your_data_frame is not None:
+            # Display or process the loaded data
+            app.logger.info(f"Dataset loaded successfully: {your_data_frame.head()}")
+        else:
+            # Log the error message
+            app.logger.error(f"Error loading dataset: {error_message}")
+
+        # Check if the user selected an output format
+        output_format = request.form.get('output_format')
+        if output_format:
+            converted_file_path = convert_file(file_path, output_format)
+            return f"File converted and saved at: {converted_file_path}"
+
+        # Add code to handle the uploaded dataset
+        return redirect(url_for('user_dashboard'))
     else:
         return 'You have reached your quota limit for the month. You can upgrade or purchase more credits.'
 

@@ -1,12 +1,10 @@
 // CalendarDetails.tsx
-// components/CalendarDetails.tsx
 import ListGenerator from "@/app/generators/ListGenerator";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import CommonEvent from "../../state/stores/CommonEvent";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
-import { Member } from "../teams/TeamMembers";
 import { Data } from "./Data";
 
 type CalendarDataAndEventDetails = Data | CommonEvent;

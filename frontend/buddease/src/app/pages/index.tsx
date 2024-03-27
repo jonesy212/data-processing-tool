@@ -13,6 +13,7 @@ import { User } from "../components/users/User";
 import { UserRole } from "../components/users/UserRole";
 import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
+import RootLayout from "../RootLayout";
 
  // pages/index.tsx
 
@@ -118,6 +119,8 @@ const Index: React.FC = () => {
 
   
   return (
+    <RootLayout>
+
     <Layout>
       <div>
       <YourApp />
@@ -129,6 +132,7 @@ const Index: React.FC = () => {
 
       </div>
     </Layout>
+    </RootLayout>
   );
 };
 

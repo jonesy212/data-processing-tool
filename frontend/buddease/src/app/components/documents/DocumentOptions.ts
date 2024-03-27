@@ -1,7 +1,12 @@
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import docx from "docx";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
+
+export interface CustomDocument extends docx.Document {
+  createSection(): docx.SectionProperties;
+  addParagraph(paragraph: docx.Paragraph): void;
+}
 
 
 // documentOptions.ts
@@ -133,3 +138,6 @@ export const getDocumentPhase = (document: DocumentData) => {
   return document.documentPhase;
 
 }
+
+
+

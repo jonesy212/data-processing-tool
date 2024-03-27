@@ -4,9 +4,9 @@ import { makeAutoObservable } from "mobx";
 import { useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
-import SnapshotStore, { Snapshot } from "./SnapshotStore";
 
 export interface TodoManagerStore {
   dispatch: (action: any) => void;

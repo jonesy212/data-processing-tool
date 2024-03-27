@@ -88,7 +88,8 @@ export const {
   fetchTodosSuccess,
   fetchTodosFailure,
   completeAllTodosRequest,
-  completeAllTodosSuccess } = useTodoManagerSlice.actions;
+  completeAllTodosSuccess
+} = useTodoManagerSlice.actions;
 export const selectTodos = (state: { todos: EntityState<Todo, string> }) =>
   state.todos.entities;
 

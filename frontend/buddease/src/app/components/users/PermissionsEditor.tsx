@@ -1,8 +1,8 @@
-// PermissionsEditor.tsx
+import React from 'react';
 import { generateNFT } from '@/app/generators/NFTGenerator';
 import UserRoles from './UserRoles';
 
-const PermissionsEditor = () => {
+const PermissionsEditor: React.FC = () => {
   const assignNFT = () => {
     // Simulate assigning NFTs to users
     const nft = generateNFT();
@@ -29,4 +29,4 @@ const PermissionsEditor = () => {
   );
 };
 
-export default PermissionsEditor;
+export { PermissionsEditor }; // Export PermissionsEditor as a named export

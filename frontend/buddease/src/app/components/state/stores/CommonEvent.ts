@@ -4,8 +4,8 @@ import { StatusType } from '@/app/components/models/data/StatusType';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
+import { Snapshot } from "../../snapshots/SnapshotStore";
 import { VideoData } from "../../video/Video";
-import { Snapshot } from "./SnapshotStore";
 
 interface CommonEvent extends Data {
   title: string;

@@ -8,10 +8,12 @@ import { FakeData } from "../Inteigents/FakeDataGenerator";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { ProjectData } from "../projects/Project";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Todo } from "../todos/Todo";
+import { AllTypes } from "../typings/PropTypes";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
@@ -20,7 +22,6 @@ import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
-import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 
 // Define a generic type for data
 interface CommonData<T> {
@@ -53,14 +54,15 @@ interface Customizations<T> {
   [key: string]: (value: any) => React.ReactNode;
 }
 
-export type DataType = NotificationType | string | DocumentTypeEnum  | AnimationTypeEnum;
-
+export type DataType = NotificationType | string | DocumentTypeEnum | AnimationTypeEnum;
+export type TaskType = "addTask" | "removeTask" | "bug" | "feature";
 
 // Define a union type for the supported data types
 type SupportedData = UserData &
   Data &
   Todo &
   Task &
+  TaskType & 
   CommunityData &
   DocumentData &
   ProjectData &
@@ -69,10 +71,11 @@ type SupportedData = UserData &
   ScheduledData &
   LogData &
   DataDetails &
-  DataType&
+  DataType &
+  // BugType & 
   FakeData & {
   [key: string]: any
-  type?: DataType; // Include the 'type' property with the DataType union type
+  type?: AllTypes; // Include the 'type' property with the DataType union type
 
   };
 

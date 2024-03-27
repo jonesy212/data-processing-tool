@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchPostsRequest } from './blogActions';
 import { selectPosts } from './blogSelectors'; // Assuming the existence of a selector to retrieve posts
 // import { BlogPost } from './types'; // Assuming the existence of a type for blog posts
-import p from './BlogPost';
+import RootLayout from '@/app/RootLayout';
+import BlogPost from './BlogPost';
 
 const BlogPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -15,18 +16,20 @@ const BlogPage: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div>
-      <h1>Blog</h1>
-      {posts.map((post) => (
-        <BlogPost
-          key={post.id}
-          title={post.title}
-          content={post.content}
-          author={post.author}
-          date={post.date}
-        />
-      ))}
-    </div>
+    <RootLayout>
+      <div>
+        <h1>Blog</h1>
+        {posts.map((post) => (
+          <BlogPost
+            key={post.id}
+            title={post.title}
+            content={post.content}
+            author={post.author}
+            date={post.date}
+          />
+        ))}
+      </div>
+    </RootLayout>
   );
 };
 

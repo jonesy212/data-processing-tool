@@ -1,3 +1,5 @@
+// @ts-nocheck
+// @use-client
 // RootLayout.tsx
 import React, { useEffect, useState } from "react";
 import { useDynamicComponents } from "./components/DynamicComponentsContext";
@@ -16,6 +18,7 @@ import { layoutConfig } from "./configs/LayoutConfig";
 import { DocxGeneratorOptions } from "./generators/docxGenerator";
 import DesignDashboard from "./pages/dashboards/DesignDashboard";
 import { useLayout } from "./pages/layouts/LayoutContext";
+import { ColorSwatchProps } from './components/styling/ColorPalette';
 
 type RootLayoutProps = {
   children: React.ReactNode;
@@ -131,6 +134,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
             colors={responsiveDesignStore.colors}
             frontendStructure={responsiveDesignStore.frontendStructure}
             backendStructure={responsiveDesignStore.backendStructure}
+            onColorChange={(newColors: string[]) =>{}}
             onCloseFileUploadModal={async function () {}}
             onHandleFileUpload={async (file: FileList | null) => {
               if (file) {

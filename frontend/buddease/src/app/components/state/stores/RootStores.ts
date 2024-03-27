@@ -8,7 +8,7 @@ import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
 import { UndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
-
+import {TeamStore}
 
 
 export interface Dispatchable {

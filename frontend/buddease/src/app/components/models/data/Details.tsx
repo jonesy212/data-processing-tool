@@ -7,7 +7,7 @@ import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
 import { Data } from "./Data";
 
-type DataAndEventDetails = Data | CommonEvent;
+export type DataAndEventDetails = Data | CommonEvent;
 
 interface DetailsProps<T> {
   data?: CommonData<T>; // Make data prop optional

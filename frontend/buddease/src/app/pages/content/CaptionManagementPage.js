@@ -1,8 +1,7 @@
 // CaptionManagementPage.js
 
-import React from 'react';
 import { useEffect, useState } from 'react';
-import { getCaptions } from '../api/captionApi'; // Assuming you have an API function to fetch captions
+import { getCaptions } from '../../api/api/captionApi'; // Assuming you have an API function to fetch captions
 
 const CaptionManagementPage = () => {
   const [captions, setCaptions] = useState([]);
@@ -27,6 +26,8 @@ const CaptionManagementPage = () => {
   }, []);
 
   return (
+    <RootLayout>
+
     <div>
       <h1>Caption Management Page</h1>
       <ul>
@@ -34,7 +35,9 @@ const CaptionManagementPage = () => {
           <li key={index}>{caption.text}</li>
         ))}
       </ul>
-    </div>
+      </div>
+      </RootLayout>
+
   );
 };
 

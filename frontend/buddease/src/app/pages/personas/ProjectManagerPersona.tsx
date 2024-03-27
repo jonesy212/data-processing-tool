@@ -2,7 +2,7 @@ import { Data } from "@/app/components/models/data/Data";
 import SearchResultItem from "@/app/components/models/data/SearchResultItem";
 import Team from "@/app/components/models/teams/Team";
 import ProgressBar, {
-  Progress,
+    Progress,
 } from "@/app/components/models/tracker/ProgressBar";
 import TeamProgressBar from "@/app/components/projects/projectManagement/TeamProgressBar";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";

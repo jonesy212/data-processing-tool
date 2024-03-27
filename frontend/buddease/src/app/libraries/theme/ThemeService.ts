@@ -48,7 +48,7 @@ class ThemeService {
   @action
   public async applyThemeFromServer(): Promise<void> {
     try {
-      const response = await fetch(API_BASE_URL); // Fetch theme settings from API endpoint
+      const response = await fetch(`${API_BASE_URL}`); // Fetch theme settings from API endpoint
       const themeSettings = await response.json();
       
       // Apply theme settings asynchronously

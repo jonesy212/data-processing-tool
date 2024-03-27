@@ -2,15 +2,17 @@ import React from "react";
 
 interface InputProps {
   type: string;
+  value: string;
   placeholder?: string;
-  value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  
+  inputValue?: string;
+  handleInputChange? :(e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface InputLabelProps {
     htmlFor: string; 
     children?: React.ReactNode;
-
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -18,6 +20,7 @@ export const Input: React.FC<InputProps> = ({
   placeholder,
   value,
   onChange,
+
 }) => {
   return (
     <input
@@ -29,7 +32,8 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-const InputLabel: React.FC<InputLabelProps> = ({ htmlFor, children }) => {
+const InputLabel: React.FC<InputLabelProps> = ({  
+   htmlFor, children }) => {
   // Accept children prop
   return <label htmlFor={htmlFor}>{children}</label>; // Render children
 };

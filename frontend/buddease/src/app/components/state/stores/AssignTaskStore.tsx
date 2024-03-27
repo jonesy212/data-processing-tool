@@ -1,9 +1,9 @@
 // AssignTaskStore.tsx
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
-import SnapshotStore, { Snapshot } from "./SnapshotStore";
 
 export interface AssignTaskStore extends AssignBaseStore {
   assignTask: (taskId: string, userId: string) => void;
