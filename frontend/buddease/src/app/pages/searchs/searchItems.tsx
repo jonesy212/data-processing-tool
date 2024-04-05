@@ -4,7 +4,7 @@ import useAsyncHookLinker, {
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import SearchResultItem from "@/app/components/models/data/SearchResultItem";
 import { useEffect, useState } from "react";
-import { SearchLogger } from "../logging/Logger";
+import { SearchLogger } from "../../components/logging/Logger";
 import { debounce } from "./Debounce";
 
 const SearchItems = () => {

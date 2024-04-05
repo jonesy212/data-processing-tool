@@ -20,6 +20,7 @@ interface DynamicTypographyProps {
   dynamicFont: "Aria, sans-serif";
   dynamicColor: "#000000";
   children?: React.ReactNode;
+  variant?: "body1" | "body2" | "caption" | "button" | "h5"
   items?: { type: 'file' | 'folder'; name: string; content: ContentItem }[]; // Include items prop for DummyCardLoader
 }
 

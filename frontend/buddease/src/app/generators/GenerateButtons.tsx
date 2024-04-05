@@ -14,10 +14,12 @@ import {
   nextPhase,
   previousPhase,
 } from "../components/phases/PhaseTransitions";
-import router from "../components/projects/projectManagement/ProjectManagementSimulator";
 import { AllTypes } from "../components/typings/PropTypes";
 import userService from "../components/users/ApiUser";
 import { brandingSettings } from "../libraries/theme/BrandingService";
+import { useRouter } from "next/router";
+import { ExtendedRouter } from "../pages/MyAppWrapper";
+import { Router } from "next/router";
 
 startVoiceRecognition;
 /**
@@ -34,6 +36,7 @@ startVoiceRecognition;
  * import NotificationManager from '../components/support/NotificationManager';
  * import NotificationManager from '../components/notifications/NotificationManager';
  * import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
+import { Router } from 'react-router-dom';
 
  * // Define buttonGeneratorProps
  * const buttonGeneratorProps: ButtonGeneratorProps = {
@@ -85,6 +88,7 @@ interface ButtonGeneratorProps {
   onRoutesLayout?: (phase: string) => void;
   onSwitchLayout?: (layout: string) => void;
   onOpenDashboard?: (dashboard: string) => void;
+  
   onTransitionToPreviousPhase?: (
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
     currentPhase: Phase
@@ -173,6 +177,8 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
   const buttonTypes = Object.keys(label);
   const { dynamicContent } = useDynamicComponents(); // Access the dynamicContent flag from the naming convention context
   const initUserId = ""
+  const router = useRouter(); // Get the router object using useRouter hook
+
   const userId = await userService.fetchUserById(initUserId)
  const dispatch = useDispatch()
   // generateButtonDispatch({
@@ -206,7 +212,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
     return (
       <ReusableButton
         key={type}
-        router={router}
+        router={router as ExtendedRouter & Router}
         brandingSettings={brandingSettings}
         onClick={() => {
           // Call the corresponding function when the button is clicked
@@ -249,7 +255,6 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
             default:
               break;
           }
-
         }}
         label={label[type]}
         variant={variant[type]}

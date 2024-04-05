@@ -25,6 +25,8 @@ import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
 import { useTeamManagerSlice } from './TeamSlice';
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
+import { VideoData } from "@/app/components/video/Video";
+import { Video } from "../../stores/VideoStore";
 const randomTaskId = uuidv4().toString();
 
 export interface RootState {
@@ -145,7 +147,7 @@ const rootReducerSlice = createSlice({
         },
         previouslyAssignedTo: [],
         done: false,
-        analysisType: "",
+        analysisType:AnalysisTypeEnum.TASK,
         analysisResults: [],
         data: {} as Data,
         source: "user",
@@ -219,7 +221,7 @@ const rootReducerSlice = createSlice({
         tags: [],
         previouslyAssignedTo: [],
         done: false,
-        analysisType: "",
+        analysisType: AnalysisTypeEnum.TASK,
         analysisResults: [],
         data: {} as VideoData & Data,
         source: "user",

@@ -1,5 +1,6 @@
 // ReusableButton.tsx
 import { ChildComponentProps } from "@/app/components/hooks/ChildComponent";
+import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
 import React from "react";
 
 interface ButtonProps {
@@ -23,8 +24,8 @@ interface ButtonProps {
   animationType?: "fade" | "slide" | "scale"; // Type of animation
   animationEasing?: string; // Easing function for the animation
   children?: React.ReactNode; // Child content inside the button
-  router: ChildComponentProps["router"];
-  brandingSettings: ChildComponentProps["brandingSettings"];
+  router: ChildComponentProps['router']; // Update the type to match ChildComponentProps
+  brandingSettings: BrandingSettings; // Update with the appropriate type for brandingSettings
 }
 
 const ReusableButton: React.FC<ButtonProps> = ({

@@ -1,6 +1,10 @@
 // Assuming you have an interface for the User and Team models as well
+import { Pool, PoolConfig, QueryResult } from 'pg';
 
+import { AxiosResponse } from "axios";
 import { Team } from "../../models/teams/Team";
+import axiosInstance from "../../security/csrfToken";
+import Connection from "../../database/Connection";
 
 interface DatasetModel {
     id: number;
@@ -24,35 +28,94 @@ interface DatasetModel {
 // Example usage:
 const dataset: DatasetModel = {
   id: 1,
-  name: 'Example Dataset', 
-  description: 'An example dataset',
-  filePathOrUrl: '/datasets/example.csv',
+  name: "Example Dataset",
+  description: "An example dataset",
+  filePathOrUrl: "/datasets/example.csv",
   uploadedBy: 1, // Assuming user ID 1
-  uploadedAt: '2023-01-01T12:00:00Z', // Example date string
-  tagsOrCategories: 'tag1, tag2',
-  format: 'csv',
-  visibility: 'private',
+  uploadedAt: "2023-01-01T12:00:00Z", // Example date string
+  tagsOrCategories: "tag1, tag2",
+  format: "csv",
+  visibility: "private",
   uploadedByTeamId: 1, // Assuming team ID 1
-  uploadedByTeam: {
-    id: 1,
-    teamName: 'Development Team',
-    description: 'A team focused on software development', 
-    members: [],
-    projects: [],
-    creationDate: new Date(),
-    isActive: false,
-    leader: null,
-    progress: null,
-    title: "",
-    status: "inProgress",
-    tags: ["tag1", "tag2"],
-    analysisType:"analysisType", analysisResults:["anaylsis results"],
-    then(callback) {
-        callback(dataset as DatasetModel & Team);
-    }, 
-    // Other team fields
-  },
+  uploadedByTeam: null,
   // Other fields
 };
 
-  export type { DatasetModel };
+
+
+
+
+class DatabaseClient {
+  private pool: Pool;
+
+  constructor(private config: PoolConfig) {
+    this.pool = new Pool(config);
+  }
+
+  // Method to connect to the database
+  async connect(): Promise<void> {
+    try {
+      // No need to check if already connected as `pg` handles connection pooling internally
+      // Connect to the database using the configured pool
+      await this.pool.connect();
+
+      console.log('Connected to the database.');
+    } catch (error) {
+      console.error('Error connecting to the database:', error);
+      throw error;
+    }
+  }
+
+  // Method to execute a query
+  async query(sql: string, values?: any[]): Promise<any> {
+    try {
+      const result: QueryResult<any> = await this.pool.query(sql, values);
+
+      console.log('Query executed successfully:', sql);
+      return result.rows;
+    } catch (error) {
+      console.error('Error executing query:', error);
+      throw error;
+    }
+  }
+
+  // Method to close the database connection
+  async close(): Promise<void> {
+    try {
+      // Close the pool to release all resources
+      await this.pool.end();
+
+      console.log('Database connection closed.');
+    } catch (error) {
+      console.error('Error closing database connection:', error);
+      throw error;
+    }
+  }
+
+  // Method to upload a dataset
+  static async uploadDataset(formData: FormData): Promise<DatasetModel | null> {
+    try {
+      const response: AxiosResponse<DatasetModel> = await axiosInstance.post('/api/upload', formData);
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading dataset:', error);
+      return null;
+    }
+  }
+
+  // Method to run a hypothesis test
+  static async runHypothesisTest(datasetId: number, testType: string): Promise<void> {
+    try {
+      const response: AxiosResponse<void> = await axiosInstance.post('/api/hypothesis-test', { datasetId, testType });
+      console.log('Hypothesis test executed successfully:', response.data);
+    } catch (error) {
+      console.error('Error running hypothesis test:', error);
+    }
+  }
+}
+
+export default DatabaseClient;
+
+  export { dataset };
+export type { DatasetModel };
+

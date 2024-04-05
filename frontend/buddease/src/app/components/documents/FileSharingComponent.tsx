@@ -8,35 +8,40 @@ import socketIOClient from "socket.io-client";
 import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
 import CustomBox from "../containers/CustomBox";
 import useFileUpload from "../hooks/commHooks/useFileUpload";
-import DynamicInputFields from '../hooks/userInterface/DynamicInputFieldsProps';
+import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
 import InputLabel, { Input } from "../hooks/userInterface/InputFields";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { DataDetailsComponent } from "../models/teams/Team";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
-import router from "../projects/projectManagement/ProjectManagementSimulator";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import DynamicTypography from "../styling/DynamicTypography";
+import { Router, useRouter } from "next/router";
+import MenuDivider from "antd/es/menu/MenuDivider";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component
 const FileSharingComponent: React.FC = () => {
-  // State for handling file upload
-  const [inputValue, setInputValue] = useState<typeof Input>();
+  // State for managing selected file
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Ensure that inputValue is a string state
+  const [inputValue, setInputValue] = useState<string>("");
   // Define state variables
   const [uploadError, setUploadError] = useState<string | null>(null); // State to store upload error message
   const [realtimeData, setRealtimeData] = useState<SupportedData[]>([]);
-  const { selectedFile, handleFileChanges, uploadFile } = useFileUpload({
+  const { handleFileChanges, uploadFile } = useFileUpload({
     inputValue,
-    handleInputChanges: (event: ChangeEvent<HTMLInputElement>) => {
+    handleInputChange: (event: ChangeEvent<HTMLInputElement>) => {
       setInputValue(event.target.value);
-    }
-  }
-  );
+    },
+  });
 
   const dispatch = useDispatch();
+  const router = useRouter(); // Get the router object using useRouter hook
 
   // Implement the update callback function
   const updateCallback = (
@@ -87,12 +92,6 @@ const FileSharingComponent: React.FC = () => {
     };
   }, [dispatch]);
 
-
-
-
-
-
-
   // Function to handle file upload
   const handleFileUpload = async () => {
     // Upload logic here
@@ -102,9 +101,9 @@ const FileSharingComponent: React.FC = () => {
     }
     // Upload file to server
     try {
+      const formData = new FormData();
       const response = await axiosInstance.post("/api/upload", formData);
       console.log("File uploaded successfully:", response.data);
-      
     } catch (err: any) {
       console.error("Error uploading file:", err);
       setUploadError(err);
@@ -126,25 +125,61 @@ const FileSharingComponent: React.FC = () => {
 
   return (
     <>
-      <CustomBox>
-        <DynamicTypography variant="h5">
+      <CustomBox
+        mt={2}
+        handleFileSelect={handleformId}
+        handleFileUpload={handleFileUpload}
+      >
+        <DynamicTypography
+          variant="h5"
+          dynamicFont={"Aria, sans-serif"}
+          dynamicColor={"#000000"}
+          fontSize=""
+          fontFamily=""
+        >
           File Sharing and Collaboration
         </DynamicTypography>
-        <Divider />
-        <CustomBox mt={2}>
+        <MenuDivider />
+        <CustomBox
+          handleFileSelect={handleformId}
+          handleFileUpload={handleFileUpload}
+          mt={2}
+        >
           <FormControl formID={formID} fullWidth>
             <InputLabel htmlFor="file-upload">Select File</InputLabel>
             <Input
               id="file-upload"
               type="file"
+              value={inputValue}
               accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx"
               onChange={handleFileChanges} // Use handleFileChanges from useFileUpload hook
             />
           </FormControl>
-          <CustomBox mt={2}>
+          <CustomBox
+            handleFileSelect={handleformId}
+            handleFileUpload={handleFileUpload}
+            mt={2}
+          >
             {selectedFile && (
-              <DynamicTypography variant="body1">
+              <DynamicTypography
+                dynamicFont={"Aria, sans-serif"}
+                dynamicColor={"#000000"}
+                variant="body1"
+                fontSize=""
+                fontFamily=""
+              >
                 Selected File: {selectedFile.name}
+              </DynamicTypography>
+            )}
+            {uploadError && ( // Display upload error if it exists
+              <DynamicTypography
+                variant="body1"
+                fontSize="12px"
+                fontFamily="Arial, Helvetica, sans-serif"
+                dynamicFont={"Aria, sans-serif"}
+                dynamicColor={"#000000"}
+              >
+                {uploadError}
               </DynamicTypography>
             )}
             <ReusableButton
@@ -153,12 +188,13 @@ const FileSharingComponent: React.FC = () => {
               color="primary"
               onClick={() => {
                 handleformId(); // Call handleformId here
-                { uploadFile }
-              }
-            }
+                {
+                  uploadFile;
+                }
+              }}
               disabled={!selectedFile}
               style={{ marginLeft: "16px" }}
-              router={router}
+              router={router as ExtendedRouter & Router}
               brandingSettings={brandingSettings} // Pass brandingSettings prop
             >
               Upload File
@@ -178,11 +214,13 @@ const FileSharingComponent: React.FC = () => {
         // label="Enter your name:"
       />
       <Input
+        id="file-upload"
         type="text"
         placeholder="Type here..."
         value={inputValue}
-        onChange={handleInputChange}
+        onChange={handleFileChanges}
       />
+
       <h1>File Sharing Component</h1>
       {realtimeData.map((data: any) => (
         <div key={data.id}>
@@ -205,7 +243,7 @@ const FileSharingComponent: React.FC = () => {
               // Handle button click event
               console.log("Button clicked!");
             }}
-            router={router}
+            router={router as ExtendedRouter & Router}
             brandingSettings={brandingSettings}
           />
         </div>

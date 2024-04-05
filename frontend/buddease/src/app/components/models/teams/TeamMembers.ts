@@ -1,6 +1,7 @@
+import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
-import Team from "./Team";
+import {Team} from "./Team";
 
 export interface Member extends User {
   teamId: string;
@@ -46,7 +47,9 @@ interface TeamMember {
     processingTasks: [],
     role: {} as UserRole,
     timeBasedCode: "",
-    memberName: ""
+    memberName: "",
+    persona: {} as Persona,
+    snapshots: []
   };
   const teamMember: TeamMember = {
     id: 1,

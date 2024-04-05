@@ -1,5 +1,8 @@
 // traverseBackend.ts
-import * as fs from 'fs';
+let fs: any;
+if (typeof window === 'undefined') {
+  fs = require('fs');
+}
 import * as path from 'path';
 import { AppStructureItem } from '../appStructure/AppStructure';
 

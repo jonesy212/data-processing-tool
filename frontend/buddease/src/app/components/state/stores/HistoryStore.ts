@@ -178,24 +178,26 @@ const historyManagerStore = (): HistoryStore => {
   const integrateWithUserProfiles = async function integrateWithUserProfiles() {
     // Implement logic to integrate data with user profiles
     // set user id
-    const userId = ''
+    const userId = "";
+    const userIds: string | never[] = []
     // For example, fetch user profiles and update them with relevant data
-  // For example, fetch user profiles and update them with relevant data
-  const userProfilesPromise = getUsersData(userId); // Example function returning a Promise for user profiles
-  const newData = await userService.fetchUser(userId); // Example function returning a Promise for new data
+    // For example, fetch user profiles and update them with relevant data
+    const userProfilesPromise = getUsersData(userIds); // Changed to pass userId instead of [userId]
+    const newData = await userService.fetchUser(userId); // Example function returning a Promise for new data
 
-  // Wait for user profiles to resolve
-  const userProfiles = await userProfilesPromise;
+    // Wait for user profiles to resolve
+    const userProfiles = await userProfilesPromise;
 
-  // Update user profiles with new data
-  userProfiles.forEach((profile: any) => {
-    profile.data = newData;
-    // Additional logic for updating profiles as needed
-  });
+    if (userProfiles) {
+      // Update user profiles with new data
+      userProfiles.forEach((profile: any) => {
+        profile.data = newData;
+        // Additional logic for updating profiles as needed
+      });
 
-
-    // Save updated user profiles
-    saveUserProfiles(userProfiles); // Example function to save user profiles
+      // Save updated user profiles
+      saveUserProfiles(userProfiles); // Example function to save user profiles
+    }
   };
 
   const historyStore: HistoryStore = makeAutoObservable({

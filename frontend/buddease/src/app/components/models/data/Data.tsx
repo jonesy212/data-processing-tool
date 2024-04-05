@@ -34,12 +34,13 @@ interface DataDetails {
   fakeData?: FakeData;
   comments?: (Comment | CustomComment)[];
   todos?: Todo[];
-  data?: {
-    snapshots: SnapshotStore<Snapshot<Data>>[];
+  analysisData?: {
+    snapshots?: SnapshotStore<Snapshot<Data>>[];
     analysisResults?: DataAnalysisResult[]
   }
+  data?: Data
   analysisType?: AnalysisTypeEnum
-  analysisResults: DataAnalysisResult[]
+  analysisResults?: DataAnalysisResult[]
   todo?: Todo
   // Add other properties as needed
 }
@@ -119,7 +120,7 @@ interface Data {
   members?: Member[];
   // tasks?: Todo[];
   leader?: User | null;
-  snapshots?: Snapshot<Data>[];
+  snapshots?: SnapshotStore<Snapshot<Data>>[];
 }
 
 // Define the UserDetails component

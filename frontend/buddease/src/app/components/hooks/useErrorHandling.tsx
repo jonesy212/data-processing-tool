@@ -1,6 +1,9 @@
-import { FileLogger } from '@/app/pages/logging/Logger';
+import { FileLogger } from '@/app/components/logging/Logger';
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import { ErrorInfo, useState } from 'react';
+import safeParseData from '../crypto/SafeParseData';
+import { ParsedData } from '../crypto/parseData';
+import { YourResponseType } from '../typings/types';
 
 const useErrorHandling = () => {
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +23,21 @@ const useErrorHandling = () => {
     setError(null);
   };
 
-  return { error, handleError, clearError };
+
+  // Function to safely parse data with error handling
+  const parseDataWithErrorHandling = (data: YourResponseType[], threshold: number): ParsedData[] => {
+    try {
+      // Call safeParseData function
+      return safeParseData(data, threshold);
+    } catch (error: any) {
+      // Handle error if safeParseData throws an exception
+      const errorMessage = 'Error parsing data';
+      handleError(errorMessage, { componentStack: error.stack });
+      return [];
+    }
+  };
+
+  return { error, handleError, clearError, parseDataWithErrorHandling };
 };
 
 export default useErrorHandling;

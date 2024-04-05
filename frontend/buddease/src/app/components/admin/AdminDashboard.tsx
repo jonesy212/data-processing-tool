@@ -17,7 +17,6 @@ import { User } from "../users/User";
 import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
 import { BytesLike } from "ethers";
-import IdleTimeoutProps from "../hooks/commHooks/useIdleTimeout";
 import { NotificationData } from "../support/NofiticationsSlice";
 
 interface AdminDashboardProps extends YourComponentProps {
@@ -151,6 +150,7 @@ const AdminDashboardWithDynamicNaming: React.FC<AdminDashboardWithDynamicNamingP
   return null;
 };
 
-export default ConfigCard;
-export { AdminDashboard, AdminDashboardWithDynamicNaming };
+export default AdminDashboardWithDynamicNaming;
+
+export { AdminDashboard, ConfigCard };
 export type { AdminDashboardProps };

@@ -3,7 +3,7 @@ import { NestedEndpoints }  from "./ApiEndpoints";
 //endpointPreferences.ts
 const BASE_URL = "https://your-api-base-url";
 
-export const endpoints: {
+export const endpointPreferences: {
   [key: string]: string | NestedEndpoints;
 } = {
   userMiscellaneousPreferences: {
@@ -84,7 +84,7 @@ export const endpoints: {
     setLinkDisabledVisitedBackgroundColor: `${BASE_URL}/api/user/preferences/branding/link-disabled-visited-background-color/set`, // Define the setLinkDisabledVisitedBackgroundColor endpoint
     setLinkDisabledActiveBackgroundColor: `${BASE_URL}/api/user/preferences/branding/link-disabled-active-background-color/set`, // Define the setLinkDisabledActiveBackgroundColor endpoint
     setLinkDisabledVisitedHoverBackgroundColor: `${BASE_URL}/api/user/preferences/branding/link-disabled-visited-hover-background-color/set`, // Define the setLinkDisabledVisitedHoverBackgroundColor endpoint
-    // Define other branding preferences endpoints as needed...
+    // Define other branding preferences endpointPreferences as needed...
   },
 
   userEventPreferences: {
@@ -116,7 +116,7 @@ export const endpoints: {
     setPhysicalEventPreferences: `${BASE_URL}/api/user/preferences/event/physical-event/set`, // Define the setPhysicalEventPreferences endpoint
     setOnlineEventPreferences: `${BASE_URL}/api/user/preferences/event/online-event/set`, // Define the setOnlineEventPreferences endpoint
     setOfflineEventPreferences: `${BASE_URL}/api/user/preferences/event/offline-event/set`, // Define the setOfflineEventPreferences endpoint
-    // Add more event preferences endpoints as needed...
+    // Add more event preferences endpointPreferences as needed...
   },
 
   userProfilePreferences: {
@@ -125,7 +125,7 @@ export const endpoints: {
     setContactPreferences: `${BASE_URL}/api/user/preferences/contact/set`, // Define the setContactPreferences endpoint
     setAddressPreferences: `${BASE_URL}/api/user/preferences/address/set`, // Define the setAddressPreferences endpoint
     setSocialMediaPreferences: `${BASE_URL}/api/user/preferences/social-media/set`, // Define the setSocialMediaPreferences endpoint
-    // Add more user profile preferences endpoints as needed...
+    // Add more user profile preferences endpointPreferences as needed...
   },
 
   visualPreferences: {
@@ -137,7 +137,7 @@ export const endpoints: {
     setIconPreferences: `${BASE_URL}/api/user/preferences/visual/icon-preferences/set`, // Define the setIconPreferences endpoint
     setBackgroundPreferences: `${BASE_URL}/api/user/preferences/visual/background-preferences/set`, // Define the setBackgroundPreferences endpoint
     setAvatarPreferences: `${BASE_URL}/api/user/preferences/visual/avatar-preferences/set`, // Define the setAvatarPreferences endpoint
-    // Add more visual preferences endpoints as needed...
+    // Add more visual preferences endpointPreferences as needed...
   },
 
   dataManagementPreferences: {
@@ -148,7 +148,7 @@ export const endpoints: {
     setBackupPreferences: `${BASE_URL}/api/user/preferences/data-management/backup-preferences/set`, // Define the setBackupPreferences endpoint
     setSyncPreferences: `${BASE_URL}/api/user/preferences/data-management/sync-preferences/set`, // Define the setSyncPreferences endpoint
     setOfflineMode: `${BASE_URL}/api/user/preferences/data-management/offline-mode/set`, // Define the setOfflineMode endpoint
-    // Add more data management preferences endpoints as needed...
+    // Add more data management preferences endpointPreferences as needed...
   },
 
   collaborationPreferences: {
@@ -157,12 +157,12 @@ export const endpoints: {
     setSecurityPreferences: `${BASE_URL}/api/user/preferences/collaboration/security-preferences/set`, // Define the setSecurityPreferences endpoint
     setCollaborationSettings: `${BASE_URL}/api/user/preferences/collaboration/collaboration-settings/set`, // Define the setCollaborationSettings endpoint
     setIntegrationPreferences: `${BASE_URL}/api/user/preferences/collaboration/integration-preferences/set`, // Define the setIntegrationPreferences endpoint
-    // Add more collaboration preferences endpoints as needed...
+    // Add more collaboration preferences endpointPreferences as needed...
   },
 
   taskManagementPreferences: {
     setTaskManagementSettings: `${BASE_URL}/api/user/preferences/task-management/settings/set`, // Define the setTaskManagementSettings endpoint
-    // Add more task management preferences endpoints as needed...
+    // Add more task management preferences endpointPreferences as needed...
   },
 
   eventManagementPreferences: {
@@ -178,7 +178,7 @@ export const endpoints: {
     setEventAttendeePreferences: `${BASE_URL}/api/user/preferences/event-management/attendee-preferences/set`, // Define the setEventAttendeePreferences endpoint
     setEventOrganizerPreferences: `${BASE_URL}/api/user/preferences/event-management/organizer-preferences/set`, // Define the setEventOrganizerPreferences endpoint
     setEventCoordinatorPreferences: `${BASE_URL}/api/user/preferences/event-management/coordinator-preferences/set`, // Define the setEventCoordinatorPreferences endpoint
-    // Add more event management preferences endpoints as needed...
+    // Add more event management preferences endpointPreferences as needed...
   },
 
   supportFeedbackPreferences: {
@@ -197,7 +197,7 @@ export const endpoints: {
     setEmailSupportPreferences: `${BASE_URL}/api/user/preferences/email-support/set`, // Define the setEmailSupportPreferences endpoint
     setPhoneSupportPreferences: `${BASE_URL}/api/user/preferences/phone-support/set`, // Define the setPhoneSupportPreferences endpoint
     setTicketSupportPreferences: `${BASE_URL}/api/user/preferences/ticket-support/set`, // Define the setTicketSupportPreferences endpoint
-    // Add more support and feedback preferences endpoints as needed...
+    // Add more support and feedback preferences endpointPreferences as needed...
   },
 
   trainingEducationPreferences: {
@@ -208,7 +208,7 @@ export const endpoints: {
     setWorkshopPreferences: `${BASE_URL}/api/user/preferences/workshop/set`, // Define the setWorkshopPreferences endpoint
     setSeminarPreferences: `${BASE_URL}/api/user/preferences/seminar/set`, // Define the setSeminarPreferences endpoint
     setConferencePreferences: `${BASE_URL}/api/user/preferences/conference/set`, // Define the setConferencePreferences endpoint
-    // Add more training and education preferences endpoints as needed...
+    // Add more training and education preferences endpointPreferences as needed...
   },
 
   userTeamRolePreferences: {
@@ -233,6 +233,6 @@ export const endpoints: {
     setEventHealthSafetyCoordinatorPreferences: `${BASE_URL}/api/user/preferences/team/event-health-safety-coordinator/set`, // Define the setEventHealthSafetyCoordinatorPreferences endpoint
     setEventComplianceCoordinatorPreferences: `${BASE_URL}/api/user/preferences/team/event-compliance-coordinator/set`, // Define the setEventComplianceCoordinatorPreferences endpoint
     setEventRiskCoordinatorPreferences: `${BASE_URL}/api/user/preferences/team/event-risk-coordinator/set`, // Define the setEventRiskCoordinatorPreferences endpoint
-    // Add more team role preferences endpoints as needed...
+    // Add more team role preferences endpointPreferences as needed...
   },
 };

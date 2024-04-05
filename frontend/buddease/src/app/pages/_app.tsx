@@ -1,4 +1,5 @@
 // _app.tsx
+import { v4 as uuidVFour } from 'uuid'; // Import the uuid library or use your preferred UUID generator
 import { Refine } from "@refinedev/core";
 import { IDataContextProvider } from "@refinedev/core/dist/interfaces";
 import { BytesLike, uuidV4 } from "ethers";
@@ -8,12 +9,12 @@ import React, { useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
 
 import {
-    Link,
-    Route,
-    Router,
-    useLocation,
-    useNavigate,
-    useSearchParams,
+  Link,
+  Route,
+  Router,
+  useLocation,
+  useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
 import BlogComponent from "../components/blogs/BlogComponent";
@@ -36,8 +37,8 @@ import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
-    NotificationProvider,
-    NotificationType,
+  NotificationProvider,
+  NotificationType,
 } from "../components/support/NotificationContext";
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
@@ -56,6 +57,7 @@ import RegisterForm from "./forms/RegisterForm";
 import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
+import ErrorHandler from "../shared/ErrorHandler";
 
 const phases: Phase[] = [
   {
@@ -73,9 +75,11 @@ const phases: Phase[] = [
 ];
 
 const contentItem: DetailsItem<Data> = {
+  _id: uuidVFour(),
   id: "1",
   title: "Sample Content",
   description: "This is a sample content item.",
+  analysisResults: [],
   /* Add other relevant details here */
 };
 
@@ -196,6 +200,24 @@ async function MyApp({
   };
 
   const personaType = PersonaTypeEnum.ProjectManager; // For example, assuming the persona type is ProjectManager
+
+
+
+  const handleNodeClick = (node: any) => {
+    // Perform actions based on the clicked node
+    console.log("Node clicked:", node);
+  
+    // Example: Update state with the clicked node data
+    // Uncomment the following lines if using state management like useState
+    const [selectedNode, setSelectedNode] = useState(null);
+    setSelectedNode(node);
+  
+    // Example: Navigate to a different page or route based on the clicked node
+    // Uncomment the following lines if using React Router for navigation
+    const history = useNavigate();
+    history(`/node/${node.id}`);
+  };
+
 
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
   return (
@@ -347,19 +369,16 @@ async function MyApp({
                           />
                           {/* Generate appTree and render TreeView */}
                           {appTree && (
-                            <TreeView
-                              data={[appTree]}
-                              onClick={(node) => {
-                                // Handle node click if needed
-                                console.log("Node clicked:", node);
-                              }}
-                              searchQuery={""}
-                            />
-                          )}
+  <TreeView
+    data={[appTree]}
+    onClick={(node) => handleNodeClick(node)}
+    searchQuery=""
+  />
+)}
                           <EditorWithPrompt
                             userId="user1"
                             teamId="team1"
-                            project="project1"
+                                  project="project1"
                           />
                           {/* ButtonGenerator component with handleButtonClick */}
                           <ButtonGenerator

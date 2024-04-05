@@ -3,13 +3,18 @@ import AnalyzeData from '@/app/components/projects/DataAnalysisPhase/AnalyzeData
 import { VideoData } from '@/app/components/video/Video';
 import CommonDetails, { CommonData } from "../models/CommonData";
 import CalendarDetails from "../models/data/CalendarDetails";
-import { DataDetails } from "../models/data/Data";
+import { Data, DataDetails } from "../models/data/Data";
 import { CalendarStatus } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Progress } from "../models/tracker/ProgressBar";
 import { Project } from "../projects/Project";
 import { DetailsItem } from "../state/stores/DetailsListStore";
-import CalendarEvent from "./CalendarContext";
+import { CalendarEvent } from '../state/stores/CalendarEvent';
+import SnapshotStore, { Snapshot } from '../snapshots/SnapshotStore';
+import { DocumentOptions } from '../documents/DocumentOptions';
+import { Member } from '../models/teams/TeamMembers';
+import { DataAnalysis } from '../projects/DataAnalysisPhase/DataAnalysis';
+import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -81,6 +86,23 @@ const CalendarApp = () => {
     customEventNotifications: "customNotifications",
     comment: 'comment',
     attachment: 'attachment',
+    content: '',
+    topics: [],
+    highlights: [],
+    files: [],
+    options: {} as DocumentOptions,
+    status: '',
+    rsvpStatus: 'yes',
+    priority: '',
+    host: {} as Member,
+    teamMemberId: '',
+    participants: [],
+    then: function (callback: (newData: Snapshot<Data>) => void): void {
+      throw new Error('Function not implemented.');
+    },
+    _id: '',
+    analysisResults: [],
+    snapshots: []
   };
 
 
@@ -95,6 +117,7 @@ const CalendarApp = () => {
           
         }}
         details={{
+          _id: calendarEvent.id,
           id: "1",
           title: "Meeting",
           description: "Discuss project plans",
@@ -109,6 +132,7 @@ const CalendarApp = () => {
             calendarEvent
         } as CommonData<never>}
         details={{
+          _id: calendarEvent.id,
           id: "1",
           title: "Meeting",
           description: "Discuss project plans",
@@ -122,6 +146,7 @@ const CalendarApp = () => {
       />
       <DataDetailsComponent
         data={{
+          _id: calendarEvent.id,
           id: "1",
           title: "Meeting",
           type: "calendarEvent",
@@ -151,9 +176,10 @@ const CalendarApp = () => {
           reassignProject: reassignProject,
           updateProgress: updateProgress,
           unassignProject: unassignProject,
-          analysisType: "analysisType",
-          analysisResults: ["analysisResults"],
+          analysisType: {} as AnalysisTypeEnum | undefined,
+          analysisResults: {} as  DataAnalysisResult[],
           videoData: {} as VideoData,
+          snapshots: [] as SnapshotStore<Snapshot<Data>>[],
         }}
       />
     </div>

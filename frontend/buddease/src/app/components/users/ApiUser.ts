@@ -2,7 +2,7 @@
 import { createHeaders } from "@/app/api/ApiClient";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
-import Logger from "@/app/pages/logging/Logger";
+import Logger from "@/app/components/logging/Logger";
 import dotProp from "dot-prop";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -90,7 +90,7 @@ class UserService {
 
 
 
-  
+
   fetchUserProfile = async (userId: string) => {
     try {
       const user = await this.fetchUserById(userId);

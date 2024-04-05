@@ -1,5 +1,5 @@
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { SupportedData } from "../models/CommonData";
 import { CalendarStatus } from "../models/data/StatusType";
@@ -13,12 +13,14 @@ import { SimpleCalendarEvent } from "./CalendarContext";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
 import { formatCalendarAsXLSX } from "./formatCalendarAsXLSX";
-import { formatCalendarAsDOCX } from "./formatCalendarAsDOCX";
-
+import { useDispatch } from "react-redux";
+import axiosInstance from "../security/csrfToken";
+import { CalendarActions } from "../actions/CalendarEventActions";
+ 
 
 // Define a union type for calendar events
 type CalendarEventUnion = SimpleCalendarEvent | CalendarEvent;
-
+const dispatch = useDispatch();
 
 // Define the slice state interface
 interface CalendarViewManagerState {
@@ -64,6 +66,22 @@ interface AttachEventFilePayload {
 }
 
 
+
+
+// Adjust the return type of formatCalendarAsDOCX to string
+const formatCalendarAsDOCX = (
+  events: CalendarEventUnion[],
+  calendarDisplaySettings: CalendarDisplaySettings
+): string => {
+  // Generate the DOCX content synchronously
+  // Example logic to generate DOCX content
+  let docxContent: string = "";
+  // Your logic to generate DOCX content goes here
+  return docxContent;
+};
+
+
+
 // Define your initial state
 const initialState: CalendarViewManagerState = {
   currentView: "day",
@@ -82,11 +100,65 @@ const initialState: CalendarViewManagerState = {
   calendarStatus: CalendarStatus.LOADING
 };
 
+
+
+
+
+
 const generateCalendarId = UniqueIDGenerator.generateID(
   "string",
   "string",
   NotificationTypeEnum.CalendarEvent
 );
+
+export const importCalendarStart = (payload: { start_payload: string }) => ({
+  type: 'calendarViewManager/importCalendarStart',
+  payload
+});
+
+
+export const importCalendarSuccess = () => ({
+  type: 'calendarViewManager/importCalendarSuccess'
+});
+
+
+export const importCalendarFailure = () => ({
+  type: 'calendarViewManager/importCalendarFailure'
+});
+ 
+
+
+
+
+
+
+
+// Define thunk action for importing calendar
+export const importCalendar = createAsyncThunk(
+  'calendarViewManager/importCalendar',
+  async (payload: { fileName: string; sendStatus: SendStatus }, thunkAPI) => {
+    const { fileName } = payload;
+
+    try {
+
+      // Dispatch the actions with payload if needed
+      thunkAPI.dispatch(importCalendarStart({ start_payload: 'start_payload' }));
+      
+      const response = await axiosInstance.post('/api/import-calendar', { fileName });
+
+      thunkAPI.dispatch(importCalendarSuccess());
+
+      return response.data;
+    } catch (error) {
+      thunkAPI.dispatch(importCalendarFailure());
+      throw error;
+    }
+  }
+);
+
+
+
+
 // Create the slice
 export const calendarViewManagerSlice = createSlice({
   name: "calendarViewManager",
@@ -232,14 +304,19 @@ export const calendarViewManagerSlice = createSlice({
     },
 
     
-    searchEvents: (state, action: PayloadAction<string>) => {
+    searchEvents: (
+      state,
+      action: PayloadAction<string>
+    ) => {
       const searchTerm = action.payload;
       state.events = state.events.filter((e) => e.title.includes(searchTerm));
     },
 
 
     // Reducer to handle exporting calendar data
-    exportCalendar: (state, action: PayloadAction<{ fileName: string; format: string; sendStatus: SendStatus }>) => {
+    exportCalendar: (
+      state,
+      action: PayloadAction<{ fileName: string; format: string; sendStatus: SendStatus }>) => {
       const { fileName, format, sendStatus } = action.payload;
       const { events, calendarDisplaySettings } = state;
       
@@ -285,43 +362,8 @@ export const calendarViewManagerSlice = createSlice({
     },
     
           
-      // Reducer to handle importing calendar data
-    // Reducer to handle importing calendar data
-importCalendar: (state, action: PayloadAction<{ fileName: string; sendStatus: SendStatus }>) => {
-  const { fileName, sendStatus } = action.payload;
-  
-  // Here, you can dispatch an action to indicate that importing has started
-  dispatch(importCalendarStart());
-  
-  // Perform asynchronous logic (e.g., sending a request to the server) outside of the reducer
-  // Use Redux Thunk or Redux Saga for handling asynchronous logic
-  
-  // Example using Redux Thunk
-  return async (dispatch) => {
-    try {
-      // Send a POST request to the server endpoint responsible for handling the import operation
-      const response = await axiosInstance.post('/api/import-calendar', { fileName });
-      
-      // Log the response from the server
-      console.log("Import calendar response:", response.data);
-      
-      // Dispatch an action to update the state based on the response if necessary
-      // Example: dispatch(updateCalendarData(response.data));
-      
-      // Here, you can dispatch an action to indicate that importing has succeeded
-      dispatch(importCalendarSuccess());
-    } catch (error) {
-      // Handle errors if the request fails
-      console.error("Error importing calendar data:", error);
-      
-      // Dispatch an action to update the state or show an error message to the user
-      // Example: dispatch(showErrorMessage("Failed to import calendar data. Please try again later."));
-      
-      // Here, you can dispatch an action to indicate that importing has failed
-      dispatch(importCalendarFailure());
-    }
-  };
-},
+    
+    
     
     setEventPriority: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
@@ -363,8 +405,10 @@ importCalendar: (state, action: PayloadAction<{ fileName: string; sendStatus: Se
       const eventId = action.payload;
       const event = state.events.find((e) => e.id === eventId);
       if (event) {
+        if(event.details){
         // Toggle the visibility of event details
         event.details.isVisible = !event.details.isVisible;
+        }
       }
     },
     
@@ -498,6 +542,20 @@ importCalendar: (state, action: PayloadAction<{ fileName: string; sendStatus: Se
       state.calendarDisplaySettings.showEventCategories = !state.calendarDisplaySettings.showEventCategories;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(importCalendar.pending, (state) => {
+        state.calendarStatus = CalendarStatus.IMPORTING;
+      })
+      .addCase(importCalendar.fulfilled, (state, action) => {
+        state.calendarStatus = CalendarStatus.IDLE;
+        // Update state based on the action.payload if necessary
+      })
+      .addCase(importCalendar.rejected, (state) => {
+        state.calendarStatus = CalendarStatus.ERROR;
+        // Handle error state if necessary
+      });
+  },
 });
 
 // Export the reducer
@@ -541,9 +599,6 @@ export const {
   // Export Calendar
   exportCalendar,
 
-  // Import Calendar
-  importCalendar,
-import { axiosInstance } from '@/app/api/axiosInstance';
 
   // Set Event Priority
   setEventPriority,

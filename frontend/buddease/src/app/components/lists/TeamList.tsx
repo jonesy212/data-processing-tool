@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import Team, {  TeamDetails } from '../models/teams/Team';
+import { Team,  TeamDetails } from '../models/teams/Team';
 
 interface TeamListProps{
   teams?: Team[];

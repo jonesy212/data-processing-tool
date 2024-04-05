@@ -1,15 +1,17 @@
 // TaskManagerComponent.tsx
 import { fetchTasks, updateTask } from "@/app/api/TasksApi";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import DynamicRenderer from "../libraries/ui/DynamicRenderer";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { Data } from "../models/data/Data";
+import { PriorityStatus, StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
-import router from "../projects/projectManagement/ProjectManagementSimulator";
 import TaskProgress from "../projects/projectManagement/TaskProgress";
 import TeamProgress from "../projects/projectManagement/TeamProgress";
 import TodoProgress from "../projects/projectManagement/TodoProgress";
@@ -21,6 +23,8 @@ import useTrackerStore from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { VideoData } from "../video/Video";
 import TaskAssignmentSnapshot from "./TaskAssignmentSnapshot";
+import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
+import TaskList from "../lists/TaskList";
 
 interface TaskAssignmentProps {
   taskId: () => string;
@@ -32,6 +36,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   taskId,
   newTitle,
 }) => {
+  const router = useRouter(); // Get the router object using useRouter hook
   const taskManagerStore = useTaskManagerStore();
   const [localState, setLocalState] = useState<string>("");
   const [todos, setTodos] = useState<Todo[]>([
@@ -45,10 +50,10 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       dueDate: new Date() as Date,
       payload: null,
       type: "addTodo",
-      status: "todo",
+      status: StatusType.Pending,
       done: false,
       todos: [],
-      priority: "normal",
+      priority: PriorityStatus.High,
       assignee: null,
       projectId: "",
       milestoneId: "",
@@ -234,8 +239,12 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   const updateTodoProgress = (todoId: string, newProgress: number) => {
     setTodos((prevTodos) =>
       prevTodos.map((todo) =>
-        todo._id === todoId ? { ...todo, progress: newProgress } : todo
-      )
+        todo._id === todoId
+          ? {
+              ...todo,
+              progress: { value: newProgress, label: todo.progress?.label || '' },
+            }
+          : todo)
     );
   };
 
@@ -250,22 +259,21 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     }
   };
 
-
   const handleUpdateTodo = async (
     todoId: string,
     updatedFields: Partial<Todo>
   ) => {
     try {
       // Call API to update todo
-      await updateTodo(todoId, updatedFields);
-  
+      await updateTodo(Number(todoId), updatedFields);
+
       // Optimistically update local todo data
       setTodos((prevTodos) =>
         prevTodos.map((todo) =>
           todo._id === todoId ? { ...todo, ...updatedFields } : todo
         )
       );
-  
+
       // Additional use case: Optimistically check todo completion
       if (updatedFields.done !== undefined) {
         setTodos((prevTodos) =>
@@ -275,18 +283,17 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               : todo
           )
         );
-  
+
         // Call function to check todo completion asynchronously
         await checkTodoCompletion(todoId);
       }
-  
+
       // Additional use case: Call any other functions needed (e.g., update UI)
       // updateUI();
     } catch (error) {
-      console.error('Error updating todo:', error);
+      console.error("Error updating todo:", error);
     }
   };
-  
 
   // Define handleTodoClick with the correct signature
   const handleTodoClick = async (todoId: Todo) => {
@@ -380,6 +387,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   return (
     <div>
       <DynamicRenderer
+        dynamicContent={tasks} // Assuming tasks is an array of tasks
         handleTaskClick={handleTaskClick}
         handleTodoClick={handleTodoClick}
       />
@@ -417,7 +425,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               }}
               data-taskid={task.id}
               data-newtitle={task.title}
-              router={router}
+              router={router as ExtendedRouter & Router}
               brandingSettings={brandingSettings}
             />
             Update Task
@@ -430,30 +438,28 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
         <div key={todo.id}>
           <h3>{todo.title}</h3>
           <p>{todo.description}</p>
-
           <TodoProgress
             selectedTodo={todo.selectedTodo}
-            newProgress={todo.progress}
+            newProgress={typeof todo.progress === "number" ? todo.progress : 0}
             onTodoClick={handleTodoClick}
-            todoProgress={todo.progress}
+            todoProgress={Array.isArray(todo.progress) ? todo.progress : []}
             onUpdateProgress={(newProgress) =>
               updateTodoProgress(String(todo.id), Number(newProgress))
             }
           />
-
-<ReusableButton
-              label="Update Task"
-              onEvent={(event: React.MouseEvent<HTMLButtonElement>) => {
-                const todoId = event.currentTarget.dataset.todoid;
-                const newTitle = event.currentTarget.dataset.newtitle;
-                handleUpdateTodo(Number(todoId), String(newTitle));
-              }}
-              data-todoid={todo.id}
-              data-newtitle={todo.title}
-              router={router}
-              brandingSettings={brandingSettings}
-            />
-            Update Todo
+          <ReusableButton
+            label="Update Task"
+            onEvent={(event: React.MouseEvent<HTMLButtonElement>) => {
+              const todoId = event.currentTarget.dataset.todoid;
+              const newTitle = event.currentTarget.dataset.newtitle;
+              handleUpdateTodo(String(todoId), { title: newTitle });
+            }}
+            data-todoid={todo.id}
+            data-newtitle={todo.title}
+            router={router as ExtendedRouter & Router}
+            brandingSettings={brandingSettings}
+          />
+          Update Todo
         </div>
       ))}
     </div>

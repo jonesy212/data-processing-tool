@@ -2,11 +2,11 @@
 
 import getAppPath from "../../../appPath";
 import ApiConfig from "../components/api/ApiConfigComponent";
+import Logger from "../components/logging/Logger";
 import { NotificationTypeEnum } from "../components/support/NotificationContext";
 import { AppVersion } from "../components/versions/AppVersion";
 import Version from "../components/versions/Version";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
-import Logger from "../pages/logging/Logger";
 import dataVersions from "./DataVersionsConfig";
 import LazyLoadScriptConfig from './LazyLoadScriptConfig';
 import userPreferences from "./UserPreferences";

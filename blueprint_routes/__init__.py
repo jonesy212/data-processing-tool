@@ -26,6 +26,7 @@ upload_bp = Blueprint('upload_bp', __name__)
 user_bp = Blueprint('user_bp', __name__)
 user_history_bp = Blueprint('user_history_bp', __name__)
 verify_email_bp = Blueprint('verify_email_bp', __name__)
+video_bp = Blueprint('video_bp', __name__)
 welcome_bp = Blueprint('welcome_bp', __name__)
 
 

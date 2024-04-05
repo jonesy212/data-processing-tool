@@ -1,6 +1,8 @@
-// StoreGeneratorUtils.ts
 import * as ejs from 'ejs';
-import * as fs from 'fs';
+let fs: any;
+if (typeof window === 'undefined') {
+  fs = require('fs');
+}
 import * as path from 'path';
 
 interface StoreMetadata {

@@ -17,8 +17,9 @@ import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "./SnapshotStore";
 import useVideoStore, { Video } from "./VideoStore";
+import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
+import userService from "../../users/ApiUser";
 
 
 interface CustomData extends Data {
@@ -174,33 +175,44 @@ const useTeamManagerStore = (): TeamManagerStore => {
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-  
-    const  {notify}  = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+
+    const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {
+      clearSnapshots: () => {}, // Implement clearSnapshots method
+      initialState: new SnapshotStore<Snapshot<Data>>(), // Provide initial state
+      batchFetchSnapshots: () => [], // Implement batchFetchSnapshots method
+      [Symbol.iterator]: () => ({}), // Implement iterator method
+    };
+    const { notify } = snapshotConfig;
+
     // Create a snapshot of the current teams for the specified teamId
+    const teamSnapshot = new SnapshotStore<Snapshot<Data>>(snapshotConfig, () =>
+      notify(
+        "teamSnapshot",
+        "Team Snapshot has been taken.",
+        new Date(),
+        "TeamSnapshot" as NotificationType
+      )
+    );
 
-
-// Create a snapshot of the current teams for the specified teamId
-  const teamSnapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = new SnapshotStore<Snapshot<Data>>(
-    snapshotConfig,
-    () => notify(
-      "teamSnapshot",
-      "Team Snapshot has been taken.",
-      new Date(),
-      "TeamSnapshot" as NotificationType
-    ));
-  
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);
-  
+
     if (userIds) {
       const videos: Video[] = [];
-      userIds.forEach((userId) => {
-        const video = useVideoStore().getVideoData(userId, video);
-        if (video) {
-          videos.push(video);
-        }
+      const videoData: Promise<Record<string, VideoData>> = useVideoStore().getVideosData(userIds);
+      userIds.forEach(async (userId) => {
+        const videoPromise = new Promise<Video | undefined>((resolve) => {
+          const videoStore = useVideoStore();
+          const user = userService.fetchUserById(userId);
+          if (videoStore.getVideoData(userId)) {
+            videoStore.getVideoData(userId).then((videoData: VideoData) => {
+              resolve(videoData);
+            });
+          }
+        });
+        videos.push(await videoPromise);
       });
-  
+
       const teamAssignmentsSnapshot: Snapshot<Data> = {
         timestamp: new Date(), // Add a timestamp to the snapshot
         data: {
@@ -209,8 +221,8 @@ const useTeamManagerStore = (): TeamManagerStore => {
             ...videos,
           ],
           analysisResults: {} as DataAnalysisResult,
-          videoData: {} as VideoData,
-          analysisType: ""
+          videoData: videoData,
+          analysisType: "",
         },
       };
       snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
@@ -224,28 +236,22 @@ const useTeamManagerStore = (): TeamManagerStore => {
       console.error("Team name cannot be empty.");
       return;
     }
-    // Ensure the name is not empty before adding a team
-    if (teamName.trim().length === 0) {
-      console.error("Team name cannot be empty.");
-      return;
-    }
 
     generateNewTeam().then((newTeam: Snapshot<Team>) => {
-      setTeams((prevTeams) => ({
-        ...prevTeams,
-        [newTeam.data.id]: [...(prevTeams[newTeam.data.id] || []), newTeam.data.id],
-      }));
+      setTeams((prevTeams) => {
+        const updatedTeams = { ...prevTeams };
+        updatedTeams[newTeam.data.id] = [
+          ...(updatedTeams[newTeam.data.id] || []),
+          newTeam.data,
+        ];
+        return updatedTeams;
+      });
 
       // Reset input fields after adding a team
       setTeamName("");
       setTeamDescription("");
       setTeamStatus("active");
     });
-
-    // Reset input fields after adding a team
-    setTeamName("");
-    setTeamDescription("");
-    setTeamStatus("active");
   };
 
   const removeTeam = (teamId: string) => {

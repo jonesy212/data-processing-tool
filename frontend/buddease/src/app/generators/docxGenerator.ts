@@ -42,8 +42,8 @@ export class DocxGenerator {
     // Assign data to the template
     doc.setData(this.data);
 
-      const userData: UserData = this.user.data || {id: this.user.id};
-      doc.setData({...this.user, data: userData})
+    const userData: UserData = this.user.data || { id: this.user.id, snapshots: [] };
+    doc.setData({...this.user, data: userData})
     try {
       // Render the document
       doc.render();

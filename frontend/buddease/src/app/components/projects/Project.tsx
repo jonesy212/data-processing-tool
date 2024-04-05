@@ -8,10 +8,12 @@ import { Idea, Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { implementThen } from '../state/stores/CommonEvent';
-import { Attachment, Comment, Todo } from "../todos/Todo";
+import Comment, { Attachment, Todo } from "../todos/Todo";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
+import TodoImpl from "../todos/Todo";
+import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 
 
 export enum ProjectType {
@@ -81,7 +83,7 @@ class ProjectImpl implements Project {
   comments?: Comment[] | undefined;
   attachments?: Attachment[] | undefined;
 
-  subtasks?: Todo[] | undefined;
+  subtasks?: TodoImpl[] | undefined;
   createdAt?: Date | undefined;
   updatedAt?: Date | undefined;
   createdBy?: string | undefined;
@@ -112,8 +114,8 @@ class ProjectImpl implements Project {
   status: StatusType.Pending | StatusType.InProgress | StatusType.Completed = StatusType.Pending;
   tags: string[] = [];
   then: typeof implementThen = implementThen;
-  analysisType: string = "default";
-  analysisResults: string[] = [];
+  analysisType?: AnalysisTypeEnum | undefined;
+  analysisResults: DataAnalysisResult[] = [];
 
   videoUrl: string = "videoUrl";
   videoThumbnail: string = "thumbnail";
@@ -253,10 +255,12 @@ const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = ({ projectDetails }
         data={{} as CommonData<SupportedData>}
         details={
           {
+            _id: details.project._id || '',
             id: details.project.id || '',
             title: details.project.title || '',
             description: details.project.description || '',
             status: details.project.status || StatusType.Pending,
+            // analysisResults: details.project.analysisResults || [],
           }
         }
       />

@@ -1,34 +1,56 @@
-import { Data } from '@/app/components/models/data/Data';
-import { PriorityStatus } from '../models/data/StatusType';
-import { Idea } from '../models/tasks/Task';
+import { Data } from "@/app/components/models/data/Data";
+import { FC } from "react";
+import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
+import { PriorityStatus, StatusType } from "../models/data/StatusType";
+import { Idea } from "../models/tasks/Task";
 import { Phase } from "../phases/Phase";
-import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
+import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../snapshots/SnapshotStore";
 import { User } from "../users/User";
-import { VideoData } from '../video/Video';
-
-
-
+import { VideoData } from "../video/Video";
+import { Progress } from "../models/tracker/ProgressBar";
 
 export interface Todo {
+  _id: string;
   id: string;
   done: boolean;
-  status?: PriorityStatus;
+  status?: StatusType;
   todos: Todo[];
   title: string;
+  selectedTodo?: Todo;
+  progress?: Progress
   description: string;
   dueDate: Date | null;
-  priority: PriorityStatus | undefined
+  payload?: any;
+  type?: string;
+  priority: PriorityStatus | undefined;
   assignedTo: User | null;
+  assigneeId: string;
   assignee: User | null;
   assignedUsers: string[];
   collaborators: string[];
   labels: string[];
   comments: Comment[];
   attachments?: Attachment[];
+  checklists?: (typeof ChecklistItem)[];
+  startDate?: Date;
+  elapsedTime?: number;
+  timeEstimate?: number;
+  timeSpent?: number;
+  dependencies?: Todo[];
+  recurring?: null | undefined;
   subtasks: Todo[];
   entities?: Todo[];
-
+  projectId?: string;
+  milestoneId?: string;
+  phaseId?: string;
+  taskId?: string;
+  teamId?: string;
+  creatorId?: string;
+  order?: number;
+  parentId?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
   isActive?: boolean;
   isDeleted?: boolean;
   isArchived?: boolean;
@@ -49,9 +71,11 @@ export interface Todo {
 
   save: () => Promise<void>;
   snapshot: Snapshot<Data>;
+  analysisType?: AnalysisTypeEnum;
+  analysisResults?: DataAnalysisResult[],
+  videoData?: VideoData,
   data?: Data;
 }
-
 
 export interface Attachment extends Data {
   url: string;
@@ -62,7 +86,13 @@ export interface Attachment extends Data {
   metadata?: Record<string, any>;
 }
 
-export type FileType = "image" | "document" | "link" | "audio" | "video" | "other";
+export type FileType =
+  | "image"
+  | "document"
+  | "link"
+  | "audio"
+  | "video"
+  | "other";
 
 export interface TodoManagerState {
   entities: Record<string, Todo>;
@@ -75,6 +105,24 @@ export const todoInitialState: TodoManagerState = {
 class TodoImpl implements Todo {
   _id: string = "";
   id: string = "";
+  status?: StatusType | undefined;
+  payload?: any;
+  type?: string | undefined;
+  checklists?: FC<ChecklistItemProps>[] | undefined;
+  startDate?: Date | undefined;
+  elapsedTime?: number | undefined;
+  timeEstimate?: number | undefined;
+  timeSpent?: number | undefined;
+  dependencies?: Todo[] | undefined;
+  recurring?: null | undefined;
+  projectId?: string | undefined;
+  milestoneId?: string | undefined;
+  phaseId?: string | undefined;
+  taskId?: string | undefined;
+  teamId?: string | undefined;
+  creatorId?: string | undefined;
+  order?: number | undefined;
+  parentId?: string | null | undefined;
   title: string = "";
   isActive?: boolean = false;
   done: boolean = false;
@@ -83,9 +131,12 @@ class TodoImpl implements Todo {
   todos: Todo[] = [];
   description: string = "";
   dueDate: Date | null = null;
-  priority: PriorityStatus | undefined = undefined
+  priority: PriorityStatus | undefined = undefined;
+  createdAt: Date = new Date();
+  updatedAt: Date = new Date();
   assignedTo: User | null = null;
   assignee: User | null = null;
+  assigneeId: string = "";
   assignedUsers: string[] = [];
   collaborators: string[] = [];
   labels: string[] = [];
@@ -116,11 +167,11 @@ class TodoImpl implements Todo {
   phase: Phase | null = null;
   then: (callback: (newData: Snapshot<Data>) => void) => void = () => {};
   analysisType: AnalysisTypeEnum = AnalysisTypeEnum.TODO as AnalysisTypeEnum;
-  analysisResults: DataAnalysisResult[] = [];
+  analysisResults?: DataAnalysisResult[] = [];
   videoUrl: string = "";
   videoThumbnail: string = "";
   videoDuration: number = 0;
-  videoData: VideoData = {} as VideoData
+  videoData: VideoData = {} as VideoData;
   save: () => Promise<void> = async () => {
     return new Promise<void>((resolve) => {
       setTimeout(() => {
@@ -130,9 +181,9 @@ class TodoImpl implements Todo {
     });
   };
   snapshot: Snapshot<Data> = {
-    timestamp: new Date,
+    timestamp: new Date(),
     data: {} as Data,
-  }; 
+  };
 
   data?: Data;
 }

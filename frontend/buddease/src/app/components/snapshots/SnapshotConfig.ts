@@ -1,23 +1,185 @@
 // SnapshotConfig.ts
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from '@/app/components/state/stores/SnapshotStore';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Data } from '../models/data/Data';
+import SnapshotStore, { Snapshot } from './SnapshotStore';
+import { NotificationType } from '../support/NotificationContext';
+
+// SnapshotStoreConfig.tsx
+interface SnapshotStoreConfig<T> {
+  clearSnapshots: any;
+  key: string;
+  initialState: T;
+  snapshot: (snapshot: SnapshotStore<Snapshot<Data>>[]) => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[]; }>
+  subscribers: SnapshotStore<Snapshot<Data>>[];
+  snapshots: { snapshot: SnapshotStore<Snapshot<Data>>[] }[];
+
+  createSnapshot: (additionalData: any) => void;
+  configureSnapshotStore: (
+    snapshot: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+  ) => void;
+  createSnapshotSuccess: () => void; // No need for snapshot reference
+  createSnapshotFailure: (error: Error) => void; // No need for snapshot reference
+
+  onSnapshot?: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
+  snapshotData: (snapshot: SnapshotStore<Snapshot<Data>>) => {
+    snapshot: SnapshotStore<Snapshot<Data>>[];
+  };
+  initSnapshot: () => void;
+  clearSnapshot: () => void;
 
 
+    updateSnapshot: (
+        snapshot: SnapshotStore<Snapshot<Data>>
+    ) => Promise<{
+        snapshot: SnapshotStore<Snapshot<Data>>[];
+    }>;
+  getSnapshots: () => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }[]>;
+  takeSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => Promise<{
+    snapshot: SnapshotStore<Snapshot<Data>>[] }>
+  
+  // Updated signature for getSnapshots method
+  getSnapshot: (
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ) => Promise<SnapshotStore<Snapshot<Data>>>;
+
+
+
+  getAllSnapshots: (
+    data: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => Promise<SnapshotStore<Snapshot<Data>>[]>,
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => Promise<SnapshotStore<Snapshot<Data>>[]>;
+
+  // Adjusted method signatures for consistency
+  takeSnapshotSuccess: () => void; // No need for snapshot reference
+  updateSnapshotFailure: (payload: { error: string }) => void; // No need for snapshot reference
+  takeSnapshotsSuccess: (snapshots: SnapshotStore<Snapshot<Data>>[]) => void;
+
+  // No need for snapshot reference in the following functions
+  fetchSnapshot: () => void;
+  updateSnapshotSuccess: () => void;
+  updateSnapshotsSuccess: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) => void;
+  fetchSnapshotSuccess: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshot: SnapshotStore<Snapshot<Data>>[]
+    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
+  ) => void;
+
+  //BATCH METHODS
+
+  batchUpdateSnapshots: (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ) => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }[]>;
+
+  batchUpdateSnapshotsSuccess: (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => {
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  }[];
+
+  batchFetchSnapshotsRequest: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      subscribers: SnapshotStore<Snapshot<Data>>[];
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }
+  ) => (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ) => {
+    subscribers: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  };
+
+  batchUpdateSnapshotsRequest: (
+    snapshotData: (
+      subscribers: SnapshotStore<Snapshot<Data>>[],
+      snapshots: SnapshotStore<Snapshot<Data>>[]
+    ) => {
+      subscribers: SnapshotStore<Snapshot<Data>>[];
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }
+  ) => {
+    subscribers: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  };
+
+  batchFetchSnapshots(
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshots: SnapshotStore<Snapshot<Data>>[]
+  ): Promise<{}>;
+
+  batchFetchSnapshotsSuccess: (
+    subscribers: SnapshotStore<Snapshot<Data>>[],
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ) => SnapshotStore<Snapshot<Data>>;
+
+  batchFetchSnapshotsFailure: (payload: { error: Error }) => void;
+  batchUpdateSnapshotsFailure: (payload: { error: Error }) => void;
+  notifySubscribers: (
+    subscribers: SnapshotStore<Snapshot<Data>>[]
+  ) => SnapshotStore<Snapshot<Data>>[];
+  [Symbol.iterator]: () => IterableIterator<Snapshot<T>>;
+  notify: (
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType
+  ) => void;
+}
+
+export default SnapshotStoreConfig
 const generateSnapshotId = UniqueIDGenerator.generateSnapshotId()
 // Define the snapshot configuration object
-const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {
+const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
   clearSnapshots: undefined, // Define the behavior for clearing snapshots if needed
   key: "teamSnapshotKey", // Provide a key for the snapshot store
-  initialState: {} as SnapshotStore<Snapshot<Data>>,
+  initialState: {} as SnapshotStore<Snapshot<Data>>[],
   snapshots: [], // Initialize snapshots as an empty array
-  initSnapshot: () => {}, // Define the behavior for initializing a snapshot if needed
-  updateSnapshot: () => {}, // Define the behavior for updating a snapshot if needed
-  takeSnapshot: () => {}, // Define the behavior for taking a snapshot if needed
-  getSnapshot: async () => [], // Define the behavior for getting a snapshot if needed
-  getSnapshots: async () => ({
-    snapshot: snapshotConfig.snapshots
-  }), // Return object with snapshot property to match expected return type
+  initSnapshot: () => { }, // Define the behavior for initializing a snapshot if needed
+  updateSnapshot: async (
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ): Promise<{
+    snapshot: SnapshotStore<Snapshot<Data>>[]
+  }> => {
+    try {
+      // update snapshot logic
+      snapshot.update({
+        id: generateSnapshotId,
+        data: {
+          ...snapshot.
+            data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      })
+          
+    } catch (error) {
+      throw error
+    }
+    return { 
+      snapshot: [snapshot]
+    }
+  },
+  // updateSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>) => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[]; }>,
+  // takeSnapshot: () => {}, // Define the behavior for taking a snapshot if needed
+  // getSnapshot: async () => [], // Define the behavior for getting a snapshot if needed
+  // getSnapshots: async () => ({
+  //   snapshot: snapshotConfig.snapshots
+  // }),
+  // Return object with snapshot property to match expected return type
   getAllSnapshots: () => [], // Define the behavior for getting all snapshots if needed
   clearSnapshot: () => {}, // Define the behavior for clearing a snapshot if needed
   configureSnapshotStore: () => {}, // Define the behavior for configuring the snapshot store if needed
@@ -39,10 +201,12 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {
   batchUpdateSnapshotsFailure: () => {}, // Define the behavior for failed batch snapshot updates if needed
 
   // Define the behavior for notifying subscribers if needed
-  notifySubscribers: (subscribers: Snapshot<Snapshot<Data>>[]) => {
+  notifySubscribers: (
+    subscribers: SnapshotStore<Snapshot<Data>>[]
+  ): SnapshotStore<Snapshot<Data>>[] => {
     // Perform actions to notify subscribers here
     subscribers.forEach((subscriber) => {
-      subscriber.onSnapshot(subscriber.snapshot);
+      subscriber.onSnapshot?(subscriber.snapshot): null;
     });
 
     // Return an object with the correct structure

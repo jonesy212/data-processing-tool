@@ -1,4 +1,4 @@
-import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
+ import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 import getAppPath from "../../../../appPath";

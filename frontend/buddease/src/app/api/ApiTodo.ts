@@ -3,10 +3,10 @@
 
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
+import { Todo } from '../components/todos/Todo';
 import { handleApiErrorAndNotify } from './ApiData';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
-import { Todo } from '../components/todos/Todo';
 
 // Define the API base URL for todos
 const API_BASE_URL = dotProp.getProperty(endpoints, 'todos.list');
@@ -162,6 +162,21 @@ export const updateTodo = async (todoId: number, updatedFields: Partial<Todo>): 
     throw error;
   }
 };
+
+
+export const checkTodoCompletion = async (todoId: string): Promise<void> => { 
+  try {
+    // Include todoId in the endpoint URL
+    const checkTodoCompletionEndpoint = `${API_BASE_URL}/checkCompletion/${todoId}`;
+    await axiosInstance.get(checkTodoCompletionEndpoint);
+  } catch (error) {
+    handleTodoApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      'Failed to check todo completion',
+      'CheckTodoCompletionErrorId',
+    );
+  }
+}
 
 // Complete all todos
 export const completeAllTodos = async (): Promise<void> => {

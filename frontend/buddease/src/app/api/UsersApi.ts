@@ -1,6 +1,6 @@
 import axios from 'axios';
+import Logger from '../components/logging/Logger';
 import userService from '../components/users/ApiUser';
-import Logger from '../pages/logging/Logger';
 
 // Function to log API errors
 const handleApiError = (error: any) => {
@@ -47,14 +47,15 @@ export const saveUserProfiles = async (userId: string) => {
     await saveToDatabase(userProfile);
 
     // Return success message or result if needed
-    return { success: true, message: 'User profile saved successfully.' };
+    return { success: true, message: "User profile saved successfully." };
   } catch (error) {
-    console.error('Error saving user profile:', error);
-    Logger.error('Error saving user profile:', error);
+    console.error("Error saving user profile:", error);
+    Logger.error("Error saving user profile:", error);
     // Return error message or handle error as needed
-    return { success: false, error: 'Failed to save user profile.' };
+    return { success: false, error: "Failed to save user profile." };
   }
 };
+
 
 // Function to fetch user data (example)
 export const fetchUserData = async (req: any, res: any) => {

@@ -51,6 +51,7 @@ const DetailsList: React.FC<DetailsListInterface> = observer(() => {
   const handleAdd = () => {
     const newDetailId = "detail_" + Math.random().toString(36).substr(2, 9);
     const newDetail: DetailsItem<Data> = {
+      _id: newDetailId,
       id: newDetailId,
       title: "A new detail",
       status: "pending",
@@ -75,8 +76,8 @@ const DetailsList: React.FC<DetailsListInterface> = observer(() => {
                 {detail.title} - {detail.status ? "Done" : "Not Done"}
                 <button onClick={() => handleToggle(detail.id)}>Toggle</button>
                 <CommonDetails
-                  details={{ ...detail } as DetailsItem<never>} // Pass the detail object as is
-                  data={detail.data}
+                  details={{ ...detail, data: undefined } as DetailsItem<never>}
+                  data={undefined}
                 />
               </li>
             ))

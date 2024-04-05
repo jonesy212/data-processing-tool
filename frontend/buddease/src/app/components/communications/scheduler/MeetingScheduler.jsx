@@ -3,6 +3,7 @@ import { CalendarComponent } from '@/app/components/calendar/CalendarComponent';
 import { useStore } from "../../hooks/useStore";
 import { useCalendarManagerStore } from '../../state/stores/CalendarStore';
 
+
 const MeetingScheduler = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const store = useStore(); // Access the MobX store

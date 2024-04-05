@@ -1,7 +1,7 @@
 // Search.tsx
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
-import { getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
 import React, { useEffect, useState } from "react";
 import { useSearch } from "./SearchContext";
 
@@ -34,9 +34,25 @@ const globalDocumentData: DocumentData[] = [
     content: "Content for Document 1",
     highlights: ["highlighted phrase 1", "tagged item 2"],
     topics: ["topic 1", "topic 2"],
+    folderPath: "/documents/folder1",
+    previousMetadata: {
+      tags: {
+        originalPath: "/path/to/file.txt",
+        alternatePaths: ["/alternate/path1.txt", "/alternate/path2.txt"],
+        fileType: "txt"
+      },
+    },
+    currentMetadata: {
+      tags: {
+        originalPath: "/path/to/file.txt",
+        alternatePaths: ["/alternate/path1.txt", "/alternate/path2.txt"],
+        fileType: "txt"
+      },
+    },
+    accessHistory: [],
     files: [],
     keywords: ["keyword 1", "keyword 2"],
-    options: getDefaultDocumentOptions(),
+    options: {} as DocumentOptions,
     documentType: DocumentTypeEnum.Draft,
   },
   // Add more document data as needed

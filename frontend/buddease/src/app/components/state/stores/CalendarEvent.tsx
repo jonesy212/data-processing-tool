@@ -637,26 +637,7 @@ export const events: Record<string, CalendarEvent[]> = {
 
 
 export const calendarEvent: CalendarEvent = {} as CalendarEvent;
-export const calendarEvent: CalendarEvent = {
-  _id: "",
-  id: '2',
-  title: 'Meeting',
-  content: "",
-  topics: [],
-  highlights: [],
-  files: [],
-  options: {} as DocumentOptions,
-  status: "",
-  rsvpStatus: "yes",
-  priority: "",
-  host: {} as Member,
-  teamMemberId: "",
-  participants: [],
-  date: new Date(),
-  then: implementThen,
-  analysisResults: []
-}
-
+//  
 
 
 export const convertedData = convertEventsToData(events);

@@ -1,35 +1,31 @@
 // PricingDataScheduler.tsx
-import axios from "axios";
-import { useEffect } from "react";
+import { fetchPricingData } from "@/app/api/ApiCrypto";
+import React, { useEffect } from "react";
 
 const PricingDataScheduler: React.FC = () => {
   useEffect(() => {
-    const fetchPricingData = async () => {
+    const fetchData = async () => {
       try {
-        //todo verify accurate apis to use for
-        // Define the list of API endpoints for fetching pricing data
-        const cryptoApiEndpoints = [
-          "https://api.binance.com/api/v3/ticker/price",
-          "https://api.pro.coinbase.com/products",
-          "https://api.kraken.com/0/public/Ticker",
-        ];
+        // Fetch pricing data using our API wrapper
+        const pricingData = await fetchPricingData();
+        console.log("Pricing data:", pricingData);
+        
+        // Process the fetched pricing data as needed
+        // Example: Real-time price comparison logic
+        // analyzePriceData(pricingData);
 
-        // Iterate over each API endpoint and fetch pricing data
-        for (const endpoint of cryptoApiEndpoints) {
-          const response = await axios.get(endpoint);
-          console.log(`${endpoint} pricing data:`, response.data);
-          // Process the fetched pricing data as needed
-        }
       } catch (error) {
         console.error("Error fetching pricing data:", error);
+        // Handle errors using the error handling mechanism in the API wrapper
+        // handleApiError(error);
       }
     };
 
     // Fetch pricing data initially when component mounts
-    fetchPricingData();
+    fetchData();
 
     // Set up interval to fetch pricing data periodically (e.g., every hour)
-    const intervalId = setInterval(fetchPricingData, 3600000); // Fetch data every hour (3600000 milliseconds)
+    const intervalId = setInterval(fetchData, 3600000); // Fetch data every hour (3600000 milliseconds)
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);

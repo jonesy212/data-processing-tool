@@ -13,6 +13,8 @@ import { Project } from "../projects/Project";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { UserRole } from "./UserRole";
+import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
+import { Persona } from "@/app/pages/personas/Persona";
 
 export interface User extends UserData {
   _id: string; // Add this line
@@ -29,7 +31,7 @@ export interface User extends UserData {
   processingTasks: DataProcessingTask[];
   data?: UserData;
   role: UserRole
-  
+  persona:  Persona
 }
 
 const timeBasedCode: string = generateTimeBasedCode();
@@ -100,6 +102,23 @@ const userData: UserData = {
   incomeLevel: 'string',
   snapshots: {} as SnapshotStore<Snapshot<Data>>[]
 };
+
+
+// Instantiate a CryptoDocumentManager
+const documentManager = new CryptoDocumentManager();
+
+const encryptDocument = async (document: DocumentTree) => { 
+
+}
+
+// Inside a function or component where document management is required, you can use documentManager
+const handleDocumentEncryption = (document: DocumentTree) => {
+  // Encrypt the document using CryptoDocumentManager
+  const encryptedDocument = documentManager.encryptDocument(document);
+  // Now you can use the encrypted document as needed
+  console.log("Encrypted document:", encryptedDocument);
+};
+
 
 // using common details we generate details for components by mapping through the objects.
 const UserDetails: React.FC<{ user: User }> = ({ user }) => {

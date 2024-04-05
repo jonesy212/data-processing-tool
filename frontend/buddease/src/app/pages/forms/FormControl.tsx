@@ -1,11 +1,11 @@
 // FormControl.tsx
-import React from 'react';
-import { FormLogger } from '../logging/Logger';
+import React, { RefObject } from 'react';
+import { FormLogger } from '../../components/logging/Logger';
 
 interface FormControlProps {
   children: React.ReactNode;
   fullWidth?: boolean; // Optional prop to set fullWidth
-  formID: string; // Unique ID for the form
+  formID: RefObject<HTMLFormElement>; // Unique ID for the form
 }
 
 const FormControl: React.FC<FormControlProps> = ({ children, fullWidth = false, formID }) => {

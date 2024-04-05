@@ -1,15 +1,9 @@
-// Meeting.tsx
-import React from 'react';
-
-const Meeting: React.FC = () => {
-  // Add logic specific to the meeting component here
-  
-  return (
-    <div>
-      <h2>Meeting</h2>
-      {/* Add meeting content and controls here */}
-    </div>
-  );
-};
-
-export default Meeting;
+export interface Meeting {
+  id: number;
+  title: string;
+  date: Date;
+  duration: number;
+  description: string;
+  participants: string[]; // This can be an array of user IDs or names
+  // Add any other properties relevant to a meeting
+}

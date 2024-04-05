@@ -1,14 +1,15 @@
 // BlogPage.tsx
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchPostsRequest } from './blogActions';
-import { selectPosts } from './blogSelectors'; // Assuming the existence of a selector to retrieve posts
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+ 
 // import { BlogPost } from './types'; // Assuming the existence of a type for blog posts
-import RootLayout from '@/app/RootLayout';
-import BlogPost from './BlogPost';
+import RootLayout from "@/app/RootLayout";
+import BlogPost from "./BlogPost";
 
 const BlogPage: React.FC = () => {
+  
   const dispatch = useDispatch();
+
   const posts: BlogPost[] = useSelector(selectPosts);
 
   useEffect(() => {

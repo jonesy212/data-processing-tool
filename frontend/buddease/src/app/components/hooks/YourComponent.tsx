@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useCalendarContext } from "../calendar/CalendarContext";
 import DynamicContent from "../documents/DynamicContent";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
-import ProgressBar from "../models/tracker/ProgressBar";
+import ProgressBar, { ProgressPhase } from "../models/tracker/ProgressBar";
 import { Tracker } from "../models/tracker/Tracker";
 import useNotificationManagerService, { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import { PromptPageProps } from "../prompts/PromptPage";
@@ -15,6 +15,8 @@ import useTrackerStore from "../state/stores/TrackerStore";
 import NotificationManager from "../support/NotificationManager";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
+import useIdleTimeout from "./idleTimeoutHooks";
+import { updateCallback } from "../state/stores/CalendarEvent";
 
 
 interface HooksObject {
@@ -179,7 +181,13 @@ const YourComponent: React.FC<YourComponentProps> = ({
   return (
     <div>
       {/* Display the progress bar and loading spinner */}
-      <ProgressBar progress={calendarData[0].projects[0].progress} />
+      <ProgressBar
+        duration={0.5}
+         phase={{} as ProgressPhase}
+         animationID={'animationID'}
+        uniqueID={'uniqueID'}
+        
+        progress={calendarData[0].projects[0].progress} />
       {/* Display the notification manager */}
 
       <NotificationManager

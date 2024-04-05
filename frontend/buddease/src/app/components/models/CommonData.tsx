@@ -22,13 +22,15 @@ import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
+import { StatusType } from "./data/StatusType";
 
 // Define a generic type for data
 interface CommonData<T> {
   title?: string;
   description?: string | null | undefined;
   startDate?:  Date;
-  endDate?:  Date;
+  endDate?: Date;
+  status?: StatusType
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   metadata?: StructuredMetadata;

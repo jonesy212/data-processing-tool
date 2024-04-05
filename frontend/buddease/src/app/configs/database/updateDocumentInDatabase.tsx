@@ -66,4 +66,27 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
   }
 }
 
+
+// Function to save trade data to the database
+export const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
+  try {
+    // Initialize database client
+    const dbClient = new DatabaseClient();
+
+    // Connect to the database
+    await dbClient.connect();
+
+    // Insert the trade data into the trades collection/table
+    await dbClient.insert("trades", tradeData);
+
+    // Close the database connection
+    await dbClient.close();
+
+    console.log("Trade data saved to the database:", tradeData);
+  } catch (error) {
+    console.error("Error saving trade data to the database:", error);
+    throw error; // Propagate the error to the caller
+  }
+};
+
 export default updateDocumentInDatabase;

@@ -1,4 +1,4 @@
-import useIdleTimeout from '../components/hooks/commHooks/useIdleTimeout';
+import useIdleTimeout from '../components/hooks/idleTimeoutHooks';
  
 const userSettings = {
   communicationMode: "text",

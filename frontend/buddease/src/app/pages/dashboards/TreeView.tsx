@@ -34,7 +34,6 @@ const TreeNode = ({
   );
 };
 
-// Define the main TreeView component
 
 // Define the main TreeView component
 const TreeView = ({
@@ -42,12 +41,13 @@ const TreeView = ({
   onClick,
 }: {
   data: any[];
-  onClick: (node: any) => void;
+    onClick: (node: any) => void;
+    searchQuery: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { currentPage, pageSize, goToPage, nextPage, previousPage } =
     useSearchPagination();
-    const { searchQuery, updateSearchQuery } = useSearch(); // Access searchQuery and updateSearchQuery from context
+    const { searchQuery: propSearchQuery, contextSearchQuery, updateSearchQuery } = useSearch(); // Access searchQuery and updateSearchQuery from context
   
   // Pagination logic to slice the data array based on currentPage and pageSize
   const startIndex = (currentPage - 1) * pageSize;
@@ -87,7 +87,7 @@ const TreeView = ({
       {/* Search input field */}
       <input
         type="text"
-        value={searchQuery}
+        value={propSearchQuery || contextSearchQuery} 
         onChange={handleSearchChange}
         placeholder="Search..."
       />

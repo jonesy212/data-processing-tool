@@ -1,12 +1,7 @@
 import React from "react";
 import DummyCard from "./DummyCard";
+import { ContentItem } from "./UserCard";
 
-interface ContentItem {
-  heading: React.ReactNode;
-  subheading?: React.ReactNode;
-  description?: React.ReactNode;
-  footer?: React.ReactNode;
-}
 
 
 interface DummyCardLoaderProps {

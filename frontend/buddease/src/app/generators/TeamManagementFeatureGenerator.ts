@@ -1,19 +1,24 @@
-// TeamManagementFeatureGenerator.ts
-import fs from 'fs';
-import { generateApiCode} from './ApiCodeGenerator'; // Import the correct type definition
+import { generateApiCode } from './ApiCodeGenerator'; // Import the correct type definition
 import ApiCodeOptions from './ApiCodeOptions';
 
 // Function to generate team management feature code
 const generateTeamManagementFeature = (featureName: string, apiBaseUrl: string) => {
+  // Create an instance of ApiCodeOptions
+  const apiCodeOptions: ApiCodeOptions = {
+    baseUrl: apiBaseUrl,
+    endpoints: {}, // Add your endpoints here if needed
+    methods: [] // Add your methods here if needed
+  };
+
   // Generate API code for team management
-  const apiCode = generateApiCode<ApiCodeOptions>(apiBaseUrl); // Pass the correct type <ApiCodeOptions>
+  const apiCode = generateApiCode(apiCodeOptions); // Pass the correct type <ApiCodeOptions>
 
   // Generate feature component code
   const featureComponentCode = `
     // ${featureName}Component.tsx
     import React, { useState } from "react";
     import { teamManagementService } from "./TeamManagementApi";
-import { generateApiCode } from './ApiCodeGenerator';
+    import { generateApiCode } from './ApiCodeGenerator';
 
     const ${featureName}Component: React.FC = () => {
       const [teamName, setTeamName] = useState("");
@@ -48,9 +53,9 @@ import { generateApiCode } from './ApiCodeGenerator';
     export default ${featureName}Component;
   `;
 
-  // Write generated code to files
-  fs.writeFileSync(`${featureName}Component.tsx`, featureComponentCode);
-  fs.writeFileSync(`TeamManagementApi.ts`, apiCode);
+  // Example usage - console.log the generated code instead of writing to files
+  console.log(featureComponentCode);
+  console.log(apiCode);
 };
 
 // Example usage

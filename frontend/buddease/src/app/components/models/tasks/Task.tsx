@@ -69,6 +69,7 @@ const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
     data={{ task: task } as CommonData<never>}
   details={
     {
+      _id: task.id,
       id: task.id as string,
       title: task.title,
       description: task.description,
@@ -85,6 +86,7 @@ const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
       phase: task.phase,
       fakeData: task.fakeData,
       comments: task.comments,
+      analysisResults: task.analysisResults,
       // Add more properties as needed
     }
 

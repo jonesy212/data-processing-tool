@@ -20,8 +20,8 @@ import RealtimeData from "../../../models/realtime/RealtimeData";
 import { dataVersions } from "../configs/DataVersionsConfig";
 import { backendStructure } from "../configs/appStructure/BackendStructure";
 import { frontendConfig } from "../configs/FrontendConfig";
-import { implementThen } from "../components/state/stores/CommonEvent";
-import VersionGenerator from "../components/versions/VersionGenerator";
+ import VersionGenerator from "../components/versions/VersionGenerator";
+import Version from "../components/versions/Version";
 
 const API_BASE_URL = dotProp.getProperty(endpoints, "data");
 
@@ -49,11 +49,8 @@ export const readCache = async (): Promise<SupportedData> => {
 export const writeCache = async (data: CacheResponse): Promise<void> => {
   try {
     // Implement logic to write data to the cache
+    await axiosInstance.post(`${API_BASE_URL}`, data);
     // For example, make a POST request to an endpoint to store the data
-
-
-
-
     // Generate version and versionInfo using VersionGenerator
     const { version, info } = await VersionGenerator.generateVersion({
       getData: () => Promise.resolve(data), // Use mock data as the source for version generation
@@ -74,7 +71,6 @@ export const writeCache = async (data: CacheResponse): Promise<void> => {
     const response = await ApiService.post(writeCacheEndpoint, version, {
       headers: headersConfig, // Include headersConfig in the request
     });
-
 
     // Check if the request was successful
     if (response.status === 200) {
@@ -145,7 +141,7 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
     };
 
     // Return a Promise that resolves to the mock cache data
-    return Promise.resolve(mockCacheData);
+    return Promise.resolve<CacheResponse>(mockCacheData);
   } catch (error: any) {
     // Handle any errors that occur during the mock fetch
     console.error("Error fetching cache data:", error);
@@ -157,17 +153,23 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
   }
 };
 
+
+// Class to manage API calls and cache data
 // Class to manage API calls and cache data
 class ApiService {
   private API_BASE_URL: string;
+  static post: any;
 
   constructor(API_BASE_URL: string) {
     this.API_BASE_URL = API_BASE_URL;
   }
 
+  // Define the post method
   public async post(endpointPath: string, requestData: any, config?: AxiosRequestConfig): Promise<any> {
     try {
       const endpoint = dotProp.getProperty(this.API_BASE_URL, endpointPath) as unknown as string;
+      // Implement the logic to make a POST request to the endpoint
+      
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
@@ -175,8 +177,9 @@ class ApiService {
       );
       throw error;
     }
-    // Function to call API with GET method
   }
+
+  // Define the get method
   public async get(endpointPath: string, config?: AxiosRequestConfig): Promise<any> {
     try {
       const endpoint = dotProp.getProperty(this.API_BASE_URL, endpointPath) as unknown as string;
@@ -185,9 +188,9 @@ class ApiService {
     } catch (err) {
       handleApiError(err as AxiosError<unknown>, `Failed to get ${endpointPath}`);
     }
-
   }
-  // Function to call API
+
+  // Define the callApi method
   public async callApi(endpointPath: string, requestData: any): Promise<any> {
     try {
       const endpoint = dotProp.getProperty(this.API_BASE_URL, endpointPath) as

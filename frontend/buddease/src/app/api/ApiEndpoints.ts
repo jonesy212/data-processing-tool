@@ -12,7 +12,6 @@ interface Endpoints {
   [category: string]: NestedEndpoints;
 }
 
-
 export const endpoints: Endpoints = {
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
@@ -502,6 +501,7 @@ export const endpoints: Endpoints = {
   },
 
   logging: {
+    logs: `${BASE_URL}/logging`,
     logInfo: `${BASE_URL}/logging/info`,
     logWarning: `${BASE_URL}/logging/warning`,
     logError: `${BASE_URL}/logging/error`,
@@ -573,6 +573,12 @@ export const endpoints: Endpoints = {
 
   feedback: {
     customizeFeedbackForm: `${BASE_URL}/api/customize_feedback_form`,
+  },
+
+
+  parameterCustomization: {
+    getParameterForm: `${BASE_URL}/api/parameter-customization/form`,
+    fetchParameterCustomization: `${BASE_URL}/api/parameter-customization`,
   },
 
   projectOwner: {

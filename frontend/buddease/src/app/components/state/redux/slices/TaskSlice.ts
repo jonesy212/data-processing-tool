@@ -2,6 +2,7 @@
 import { Idea, tasksDataSource } from "../../../models/tasks/Task";
 
 import useWebNotifications from "@/app/components/hooks/commHooks/useWebNotifications";
+import { TaskLogger } from "@/app/components/logging/Logger";
 import { Data } from "@/app/components/models/data/Data";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import Project from "@/app/components/projects/Project";
@@ -13,7 +14,6 @@ import { User } from "@/app/components/users/User";
 import { VideoData } from "@/app/components/video/Video";
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { TaskLogger } from "@/app/pages/logging/Logger";
 import { NamingConventionsError } from "@/app/shared/shared-error-handling";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import FileSaver from "file-saver";

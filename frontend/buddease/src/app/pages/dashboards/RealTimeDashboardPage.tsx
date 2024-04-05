@@ -8,6 +8,7 @@ import RealTimeChart from './RealTimeChart'; // Import a real-time chart compone
 import SearchBar from './SearchBar'; // Import a search bar component
 import Sidebar from './Sidebar'; // Import a sidebar component
 import VisualFlowDashboard from './VisualFlowDashboard'; // Import your specific dashboard component
+import { UserProfile } from '@/app/components/users/userSnapshotData';
 
 interface RealTimeDashboardPageProps {
   user: User; // User object representing the current user
@@ -51,7 +52,9 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
 
     <div>
       <Sidebar>
-        <UserProfile user={user} />
+          <UserProfile
+            userProfile={user}
+          />
       </Sidebar>
 
       <div>
@@ -62,7 +65,8 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
           searchQuery={searchQuery}
           selectedFilters={selectedFilters}
         />
-        <VisualFlowDashboard user={user} searchQuery={searchQuery} />
+          <VisualFlowDashboard user={user}
+            searchQuery={searchQuery} />
         <Notifications />
       </div>
       </div>

@@ -1,18 +1,19 @@
-import React, { ReactNode } from "react";
-
-import DynamicNamingConventions from "../DynamicNamingConventions";
-import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
-import DynamicComponent from "../styling/DynamicComponents";
+import ResizablePanels from "@/app/components/hooks/userInterface/ResizablePanels";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
 } from "@/app/generators/GenerateButtons";
-import ResizablePanels from "@/app/components/hooks/userInterface/ResizablePanels";
-import InputLabel from "../hooks/userInterface/InputFields";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import FormControl from '@/app/pages/forms/FormControl';
 import { Input } from "antd";
+import { Router, useRouter } from "next/router";
+import React, { ReactNode, useRef } from "react";
+import DynamicNamingConventions from "../DynamicNamingConventions";
+import InputLabel from "../hooks/userInterface/InputFields";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
-import router from "../projects/projectManagement/ProjectManagementSimulator";
+import DynamicComponent from "../styling/DynamicComponents";
+import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import DynamicTypography from "../styling/DynamicTypography";
 
 interface CustomBoxProps {
@@ -20,6 +21,7 @@ interface CustomBoxProps {
   selectedFile?: File | null;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFileUpload: () => void;
+  mt: number;
 }
 
 const CustomBox: React.FC<CustomBoxProps> = ({
@@ -29,6 +31,8 @@ const CustomBox: React.FC<CustomBoxProps> = ({
   handleFileUpload,
 }) => {
   const sizes = () => [300, 300];
+  const router = useRouter(); // Get the router object using useRouter hook
+  const formID = useRef<HTMLFormElement>(null);
 
   const onResize = (newSizes: number[]) => {
     console.log("New sizes:", newSizes);
@@ -37,7 +41,13 @@ const CustomBox: React.FC<CustomBoxProps> = ({
   return (
     <ResizablePanels sizes={sizes} onResize={onResize}>
       <div>
-        <DynamicTypography variant="h5">
+        <DynamicTypography
+          variant="h5"
+          dynamicFont="Aria, sans-serif"
+          dynamicColor="#000000"
+          fontSize=""
+          fontFamily=""
+        >
           File Sharing and Collaboration
         </DynamicTypography>
         <div>
@@ -45,7 +55,10 @@ const CustomBox: React.FC<CustomBoxProps> = ({
           <InternalDivider />
 
           <div style={{ marginTop: "16px" }}>
-            <FormControl fullWidth>
+            <FormControl
+              formID={formID}
+              fullWidth
+            >
               <InputLabel htmlFor="file-upload">Select File</InputLabel>
               <Input
                 id="file-upload"
@@ -65,7 +78,7 @@ const CustomBox: React.FC<CustomBoxProps> = ({
                 onClick={handleFileUpload}
                 disabled={!selectedFile}
                 style={{ marginLeft: "16px" }}
-                router={router}
+                router={router as ExtendedRouter & Router}
                 brandingSettings={brandingSettings} // Pass brandingSettings prop
               >
                 Upload File

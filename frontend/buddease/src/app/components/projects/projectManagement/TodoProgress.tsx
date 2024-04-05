@@ -8,7 +8,7 @@ import { Todo } from "../../todos/Todo";
 interface TodoProgressProps {
   todoProgress: DetailsItem<Data>[]; // Ensure DetailsItem type is imported and defined correctly
   newProgress: number; // Add newProgress prop
-  selectedTodo: Todo;
+  selectedTodo?: Todo;
   onUpdateProgress: (todo: Todo, newProgress: number) => void; // Update function signature
   onTodoClick: (todoId: Todo) => void;
   
@@ -22,7 +22,9 @@ const TodoProgress: React.FC<TodoProgressProps> = ({
   onTodoClick,
 }) => {
   const handleUpdateProgress = () => {
-    onUpdateProgress(selectedTodo, newProgress); // Pass both todo and newProgress
+    if (selectedTodo) {
+      onUpdateProgress(selectedTodo, newProgress);
+    }
   };
 
   const handleTodoClick = () => {

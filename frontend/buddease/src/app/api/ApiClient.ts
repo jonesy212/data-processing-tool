@@ -159,6 +159,7 @@ class ClientApiService {
     }
   }
 
+  
   async updateClientDetails(
     clientId: number,
     updatedDetails: any

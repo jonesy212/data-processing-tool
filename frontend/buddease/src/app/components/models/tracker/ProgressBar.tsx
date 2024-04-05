@@ -1,4 +1,4 @@
-import { AnimationLogger } from "@/app/pages/logging/Logger";
+import { AnimationLogger } from "@/app/components/logging/Logger";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
@@ -122,5 +122,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 };
 
 export default ProgressBar;
-export type { Progress, ProgressBarProps };
 export { ProgressPhase };
+export type { Progress, ProgressBarProps };
+

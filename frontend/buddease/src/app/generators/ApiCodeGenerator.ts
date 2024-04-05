@@ -1,5 +1,5 @@
-import { endpoints } from "../api/ApiEndpoints";
-import { endpointPreferences } from "../api/ApiPreferencesEndpoints";
+import { NestedEndpoints, endpoints } from "../api/ApiEndpoints";
+import  {endpointPreferences}  from "../api/ApiPreferencesEndpoints";
 
 // ApiCodeGenerator.ts
 interface ApiMethod {
@@ -7,21 +7,14 @@ interface ApiMethod {
   parameters: (string | Function)[]; // Allow functions as parameters
 }
 
-// ApiCodeOptions.ts
-interface ApiCodeOptions {
-  baseUrl: string;
-  endpoints: {
-    [key: string]: string | Function; // Ensure values can be strings or functions
-  };
-  methods: ApiMethod[];
-}
+export default ApiMethod;
 
 
 
 
 
 // Function to generate TypeScript API code
-function generateApiCode(options: ApiCodeOptions): string {
+export function generateApiCode(options: ApiCodeOptions): string {
   // Generate API code using the provided options
   const { baseUrl, endpoints, methods } = options;
 
@@ -125,13 +118,17 @@ const apiCodeOptions: ApiCodeOptions = {
   methods: [
     { name: "createTeam", parameters: ["teamData: any"] },
     { name: "deleteTeam", parameters: ["teamId: string"] },
-    { name: "fetchTeamMemberData", parameters: [] }
-    // Add other methods as needed
+    { name: "fetchTeamMemberData", parameters: [] },
   ],
+  endpoints: {
+    teams: '',
+    users: '',
+    apiConfig: '',
+    projects: '',
+    tasks: '',
+    todos: '',
 
-  
-  endpoints: { ...endpoints, userMiscellaneousPreferences: },
-    // Add more endpoint groups as needed
+  },
 };
 
 const generatedApiCode = generateApiCode(apiCodeOptions);
@@ -146,36 +143,48 @@ console.log((endpoints.apiConfig as { [key: string]: string })?.updateUserApiCon
 console.log((endpoints.apiConfig as { [key: string]: string })?.aquaConfig); // Output: https://your-api-base-url/api/aqua-config
 
 console.log((endpoints.users as { [key: string]: string })?.list); // Output: https://your-api-base-url/users
-console.log(usersEndpoints?.single(123)); // Output: https://your-api-base-url/users/123
 console.log((endpoints.users as { [key: string]: string })?.add); // Output: https://your-api-base-url/users
 console.log((endpoints.users as { [key: string]: (userId: number) => string })?.remove(456)); // Output: https://your-api-base-url/users/456
-console.log(usersEndpoints?.updateRole(123)); // Output: https://your-api-base-url/users/123/update-role
 console.log((endpoints.users as { [key: string]: string })?.updateList); // Output: https://your-api-base-url/users/update-list
 console.log((endpoints.users as { [key: string]: string })?.search); // Output: https://your-api-base-url/users/search
 console.log((endpoints.users as { [key: string]: (userId: number) => string })?.updateRole(123)); // Output: https://your-api-base-url/users/123/update-role
-console.log((endpoints.users as { [key: string]: string })?.updateRoles([456, 789])); // Output: https://your-api-base-url/users/456,789/update-roles
+console.log(
+  (usersEndpoints as { [key: string]: (userId: number) => string })?.single?.(
+    123
+  )
+);
+// Output: https://your-api-base-url/users/123
+console.log(
+  (usersEndpoints as { [key: string]: (userId: number) => string })?.updateRole(
+    123
+  )
+);
+// Output: https://your-api-base-url/users/123/update-role
+console.log(
+  (
+    endpoints.users as { [key: string]: (userIds: number[]) => string }
+  )?.updateRoles([456, 789])
+);
+// Output: https://your-api-base-url/users/456,789/update-roles
 
-console.log(endpointPreferences.userMiscellaneousPreferences.setMiscellaneousPreferences); // Output: https://your-api-base-url/api/user/preferences/miscellaneous/set
 
-console.log(endpointPreferences.userPreferences.fetchUserPreferences); // Output: https://your-api-base-url/api/user/preferences
-console.log(endpointPreferences.userPreferences.updateUserPreferences); // Output: https://your-api-base-url/api/user/preferences
-console.log(endpointPreferences.userPreferences.deleteUserPreferences); // Output: https://your-api-base-url/api/user/preferences
-console.log(endpointPreferences.userPreferences.setTheme); // Output: https://your-api-base-url/api/user/preferences/theme
-console.log(endpointPreferences.userPreferences.setIdeationPhase); // Output: https://your-api-base-url/api/user/preferences/ideation-phase
+// Type assertion to inform TypeScript that endpointPreferences.userMiscellaneousPreferences is of type NestedEndpoints
+const userMiscellaneousPreferences = endpointPreferences.userMiscellaneousPreferences as NestedEndpoints;
 
+// Now you can access the setMiscellaneousPreferences endpoint
+console.log(userMiscellaneousPreferences.setMiscellaneousPreferences); // Output: https://your-api-base-url/api/user/preferences/miscellaneous/set
+console.log(userMiscellaneousPreferences.fetchUserPreferences); // Output: https://your-api-base-url/api/user/preferences
+console.log(userMiscellaneousPreferences.updateUserPreferences); // Output: https://your-api-base-url/api/user/preferences
+console.log(userMiscellaneousPreferences.deleteUserPreferences); // Output: https://your-api-base-url/api/user/preferences
+console.log(userMiscellaneousPreferences.setTheme); // Output: https://your-api-base-url/api/user/preferences/theme
+console.log(userMiscellaneousPreferences.setIdeationPhase); // Output: https://your-api-base-url/api/user/preferences/ideation-phase
 
-// console.log(endpointPreferences.apiConfig.getUserApiConfig);
-// console.log(endpointPreferences.users.list);
-// console.log(endpointPreferences.userPreferences.setTheme);
 
 // Example usage of the generated service method code
 // Assuming you have the `generateServiceMethod` function implemented in the same file or imported from another module
-const createTeamMethod = generateServiceMethod({ name: "createTeam", parameters: ["teamDatimport { endpointPreferences } from '@/app/api/ApiPreferencesEndpoints';
-a: any"] });import { endpointPreferences } from '@/app/api/ApiPreferencesEndpoints';
-import { endpointPreferences } from '@/app/api/ApiPreferencesEndpoints';
-import { endpointPreferences } from '@/app/api/ApiPreferencesEndpoints';
-import { endpointPreferences } from '@/app/api/ApiPreferencesEndpoints';
-
+const createTeamMethod = generateServiceMethod({
+  name: "createTeam", parameters: ["teamData: any"] });
+ 
 const deleteTeamMethod = generateServiceMethod({ name: "deleteTeam", parameters: ["teamId: string"] });
 const fetchTeamMemberDataMethod = generateServiceMethod({ name: "fetchTeamMemberData", parameters: [] });
 

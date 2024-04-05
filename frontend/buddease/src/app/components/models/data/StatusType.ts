@@ -86,12 +86,16 @@ enum CalendarStatus {
   LOADING = "loading",
   READY = "ready",
   ERROR = "error",
+  IMPORTING = "importing",
+  IDLE = "idle",
 
   Pending = StatusType.Pending,
   InProgress = StatusType.InProgress,
   Completed = StatusType.Completed,
   Scheduled = StatusType.Scheduled,
   Tentative = StatusType.Tentative,
+
+
   // Add more status options as needed
 }
 

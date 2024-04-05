@@ -4,10 +4,10 @@ import RiskAssessment from './RiskAssessment';
 import TraderTypesSelection from './TraderTypesSelection';
 import VerificationProcess from './VerificationProcess';
 import EnthusiastProfile from './EnthusiastProfile';
-import FollowTraders from './FollowTraders'; // Import FollowTraders component
-import DoYourOwnResearch from './DoYourOwnResearch'; // Import DoYourOwnResearch component
-import CallsConferences from './CallsConferences'; // Import CallsConferences component
 import AddContent from './AddContent'; // Import AddContent component
+import FollowTraders from './FollowTraders';
+import DoYourOwnResearch from './DoYourOwnResearch';
+import CallsConferences from './CallsConferences';
 
 // Define an enum for trading phases
 enum TradingPhase {

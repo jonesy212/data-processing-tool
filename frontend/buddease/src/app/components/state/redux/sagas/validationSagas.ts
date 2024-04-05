@@ -1,5 +1,5 @@
+import Logger from '@/app/components/logging/Logger';
 import { ValidationActionTypes, validationFailure, validationSuccess } from '@/app/components/security/ValidationActions';
-import Logger from '@/app/pages/logging/Logger';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 

@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+const rollup = require('rollup');
+const rollupConfig = require('./rollup.config.js'); // Import the Rollup configuration
+
 const nextConfig = {
   // Add your Next.js configuration options here
   reactStrictMode: true, // Enable React strict mode for better development practices
@@ -9,6 +12,9 @@ const nextConfig = {
     // Customize webpack configuration as needed
     if (isServer) {
       // Server-side webpack configuration
+      config.node = {
+        fs: 'empty'
+      };
     } else {
       // Client-side webpack configuration
     }
@@ -38,6 +44,11 @@ const nextConfig = {
       },
     ];
   },
-}
+  async afterBuild() {
+    // Execute Rollup build after Next.js build completes
+    const bundle = await rollup.rollup(rollupConfig);
+    await bundle.write(rollupConfig.output);
+  },
+};
 
 module.exports = nextConfig;

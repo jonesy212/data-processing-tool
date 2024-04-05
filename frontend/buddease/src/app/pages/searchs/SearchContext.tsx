@@ -3,6 +3,7 @@ import React, { ReactNode, createContext, useContext, useState } from 'react';
 
 interface SearchContextProps {
   searchQuery: string;
+  contextSearchQuery: string; 
   updateSearchQuery: (query: string) => void;
 }
 
@@ -18,6 +19,7 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const value: SearchContextProps = {
     searchQuery,
     updateSearchQuery,
+    contextSearchQuery: searchQuery
   };
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;

@@ -1,9 +1,11 @@
 import React from "react";
 
 interface InputProps {
+  id: string;
   type: string;
   value: string;
   placeholder?: string;
+  accept?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   
   inputValue?: string;
@@ -16,18 +18,22 @@ interface InputLabelProps {
 }
 
 export const Input: React.FC<InputProps> = ({
+  id,
   type,
   placeholder,
   value,
   onChange,
+  accept,
 
 }) => {
   return (
     <input
+      id={id}
       type={type}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      accept={accept}
     />
   );
 };

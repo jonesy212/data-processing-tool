@@ -1,42 +1,57 @@
-// idleTimeoutHooks.ts
 import EXTENDED_NOTIFICATION_MESSAGES from "../support/ExtendedNotificationMessages";
 import { DynamicHookParams } from "./DynamicHookParams";
-import { resetIdleTimeout, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
+import { clearUserData, resetIdleTimeout, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
+import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 
 
-const startIdleTimeout = () => {
-  // Start the idle timeout
-  resetIdleTimeout();
-};
 
-    // Call the startIdleTimeout function to ensure its usage
-    startIdleTimeout();
+// Define your custom hook function
+const useIdleTimeout = () => {
+  const startIdleTimeout = () => {
+    // Start the idle timeout
+    resetIdleTimeout();
+  };
+
+  // Call the startIdleTimeout function to ensure its usage
+  startIdleTimeout();
 
   const idleTimeoutCleanup = () => {
     // Clear the timeout when the component unmounts or the hook is no longer used
-    clearTimeout(timeoutId);
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+    }
     showModalOrNotification(
       EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.TIMEOUT_CLEANUP
     );
   };
 
-  let timeoutId: NodeJS.Timeout = setTimeout(() => { }, 0);
+  let timeoutId: NodeJS.Timeout | null = null; // Initialize with null instead of undefined
 
-const idleTimeoutParams: DynamicHookParams = {
-  intervalId: undefined, // Placeholder value
-  isActive: false,
-  condition: idleTimeoutConditionSync,
-  asyncEffect: idleTimeoutEffect,
-  cleanup: idleTimeoutCleanup,
-  resetIdleTimeout: resetIdleTimeout,
-  idleTimeoutId: timeoutId, // Convert timeoutId to string before assigning
-  startIdleTimeout: () => { }, // Placeholder function
-  initialStartIdleTimeout: () => { },
-}
+  const idleTimeoutConditionAsync = async () => {
+    // Perform asynchronous operations to determine if the idle timeout condition is met
+    return true;
+  };
+
+  const idleTimeoutEffect = async () => {
+    // Perform effect when idle timeout condition is met
+    showModalOrNotification(
+      EXTENDED_NOTIFICATION_MESSAGES.IdleTimeout.TIMEOUT_TRIGGERED
+    );
+  };
+
+  const idleTimeoutParams: DynamicHookParams = {
+    intervalId: undefined,
+    isActive: false,
+    condition: idleTimeoutConditionAsync,
+    asyncEffect: idleTimeoutEffect,
+    cleanup: idleTimeoutCleanup,
+    resetIdleTimeout: resetIdleTimeout,
+    idleTimeoutId: timeoutId,
+    startIdleTimeout: () => {},
+    initialStartIdleTimeout: () => {},
+  };
 
   const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams);
-
-  // Add any additional methods or modifications specific to the useIdleTimeoutHook here
 
   // Return the necessary properties/methods from the dynamic hook
   return {
@@ -50,7 +65,7 @@ const idleTimeoutParams: DynamicHookParams = {
     startIdleTimeout: useIdleTimeoutHook.startIdleTimeout,
     toggleActivation: () => Promise.resolve(true), // Placeholder function
   };
-}
+};
 
 export default useIdleTimeout;
 

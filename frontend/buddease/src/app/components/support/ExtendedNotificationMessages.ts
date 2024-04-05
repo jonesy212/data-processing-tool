@@ -11,6 +11,7 @@ const EXTENDED_NOTIFICATION_MESSAGES = {
     REDIRECT: 'Redirecting to the landing page.',
     RESET_TIMEOUT: 'Idle timeout reset.',
     TIMEOUT_CLEANUP: 'Idle timeout cleanup.',
+    TIMEOUT_TRIGGERED: 'Idle timeout triggered.'  
   },
 } as const;
 

@@ -1,7 +1,7 @@
 import { Feedback } from "../components/support/Feedback";
 
 // FeedbackReportGenerator.ts
-interface FeedbackReport {
+export interface FeedbackReport {
   projectId: string;
   projectName: string;
   feedbackCount: number;

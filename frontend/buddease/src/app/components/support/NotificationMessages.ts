@@ -5,15 +5,23 @@ interface MessageCategory<T> {
 }
 
 // Helper function to handle dynamic notification message
-const handleDynamicNotificationMessage = (
-  message: string | ((errorType: string, details: string) => string)
+export const handleDynamicNotificationMessage = (
+  message: string | ((errorType: string, details: string) => string),
+  errorType: string,
+  details: string
 ) => {
-  if (typeof message === "string") {
-    return message;
-  } else {
-    return message("errorType", "details");
+  switch (typeof message) {
+    case "string":
+      return message;
+    case "function":
+      return message(errorType, details);
+    case "undefined":
+      return "An error occurred";
+    default: throw new Error("Invalid message type");
   }
+  
 };
+
 
 // Wrapper function to set dynamic notification message
 const setDynamicNotificationMessageWrapper = (
@@ -463,7 +471,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   NamingConventionsError: {
-    DEFAULT: `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
+    DEFAULT: (errorType: any, details: any) => `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
 
     // New Error Messages for Naming Conventions
     INVALID_NAME_FORMAT:

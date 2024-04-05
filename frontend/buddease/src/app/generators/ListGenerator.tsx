@@ -3,7 +3,6 @@ import DetailsListItem, { AllProperties } from "../components/models/data/Detail
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
 
 
-// Define a new type for DetailsItem with only common properties
 // Define a new type for DetailsItem with optional properties
 type DetailsItemCommon<T> = DetailsItem<Partial<AllProperties>>;
 

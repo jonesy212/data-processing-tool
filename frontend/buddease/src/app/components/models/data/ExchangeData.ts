@@ -1,7 +1,13 @@
+import { ExchangeDataType } from "../../crypto/exchangeIntegration";
+
 // ExchangeData.ts
 export interface ExchangeData {
     id: string;
-    name: string;
-    // Add other properties as needed
+  name: string;
+  pair: string;
+  price: number;
+  volume: number;
+  type: ExchangeDataType; // Type of exchange data
+  data: any
   }
   

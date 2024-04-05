@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 // Step 1: Generate ABI contracts
 const abiContracts = {
   contract1: 'ABI1',
@@ -9,16 +7,30 @@ const abiContracts = {
 
 // Step 2: Encrypt the ABI contracts using AES encryption with a secret key
 const secretKey = 'your-secret-key';
-const algorithm = 'aes-256-cbc'; // Choose your preferred algorithm
-const iv = (crypto as any).randomBytes(16); // Generate a random initialization vector
 
-const cipher = (crypto as any).createCipheriv(algorithm, Buffer.from(secretKey), iv);
+// Convert the secret key to an ArrayBuffer
+const secretKeyBuffer = new TextEncoder().encode(secretKey).buffer;
 
-let encryptedAbiContracts = cipher.update(JSON.stringify(abiContracts), 'utf8', 'hex');
-encryptedAbiContracts += cipher.final('hex');
+// Import crypto functions from node or browser
+declare var crypto: Crypto;
 
-// Step 3: Store the encrypted ABI contracts in the .env file
-const envFilePath = '.env';
-fs.writeFileSync(envFilePath, `ENCRYPTED_ABI_CONTRACTS=${encryptedAbiContracts}\nIV=${iv.toString('hex')}`);
+// Import encryption functions
+declare function importKey(format: "raw", keyData: ArrayBuffer, algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: string[]): Promise<CryptoKey>;
 
-console.log('ABI contracts securely stored in the .env file.');
+// Define encryption parameters
+const algorithm = { name: 'AES-CBC', length: 256 };
+
+const iv = crypto.getRandomValues(new Uint8Array(16)); // Generate a random initialization vector
+// Generate CryptoKey from the secret key
+const cryptoKey = await crypto.subtle.importKey('raw', secretKeyBuffer, algorithm, false, ['encrypt']);
+
+
+// Use the cryptoKey for encryption
+const cipher = await crypto.subtle.encrypt(
+  {
+    name: 'AES-CBC',
+    iv: iv,
+  },
+  cryptoKey,
+  Buffer.from(JSON.stringify(abiContracts))
+);

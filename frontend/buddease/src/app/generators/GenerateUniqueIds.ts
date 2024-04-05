@@ -246,6 +246,10 @@ import {
       return this.generateID('OrderID', 'Order', NotificationTypeEnum.GeneratedID);
     }
 
+    static generateMeetingID(meetingName: string): string {
+      return UniqueIDGenerator.generateID(meetingName, NotificationTypeEnum.MeetingID, "meeting" as NotificationType);
+    }
+    
     static generateProductId(): string {
       return this.generateID('ProductID', 'Product', NotificationTypeEnum.GeneratedID);
     }
@@ -283,6 +287,10 @@ import {
     }
 
   }
+
+
+
+  
 
 
   const videoDataDetails: DataDetails = {

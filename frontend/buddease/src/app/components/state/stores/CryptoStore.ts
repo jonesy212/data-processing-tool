@@ -1,15 +1,14 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-
+import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 export interface Crypto {
   id: string;
   name: string;
   symbol: string;
   // Add more properties as needed
 }
-
 export interface CryptoStore {
   cryptos: Record<string, Crypto>;
   fetchCryptos: () => void;
@@ -28,7 +27,8 @@ const useCryptoStore = (): CryptoStore => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(endpoints.crypto.list);
+      const url = endpoints.crypto.list.toString();
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch cryptos");
       }
@@ -47,8 +47,9 @@ const useCryptoStore = (): CryptoStore => {
       [id]: updatedCrypto,
     }));
     notify(
+      "updateCryptSuccess",
       "Crypto updated successfully",
-      "Crypto updated successfully",
+      NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_SUCCESS,
       new Date(),
       NotificationTypeEnum.OperationSuccess
     ); // Notify success
@@ -61,8 +62,9 @@ const useCryptoStore = (): CryptoStore => {
       return updatedCryptos;
     });
     notify(
+      "CryptoDeleteSuccessfully",
       "Crypto deleted successfully",
-      "Crypto deleted successfully",
+      NOTIFICATION_MESSAGES.Crypto.DELETE_CRYPTO_FAILURE,
       new Date(),
       NotificationTypeEnum.OperationSuccess
     ); // Notify success
@@ -71,7 +73,7 @@ const useCryptoStore = (): CryptoStore => {
   const handleError = (error: any, action: string) => {
     console.error(`Error ${action}:`, error);
     setError(`Error ${action}: ${error.message || "Unknown error"}`);
-    notify(`Error ${action}`, "Failed to perform action", new Date(), "Error");
+    notify(`Error ${action}`, "Failed to perform action", new Date());
   };
 
   const store: CryptoStore = makeAutoObservable({

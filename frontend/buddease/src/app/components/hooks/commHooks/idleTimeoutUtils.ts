@@ -32,6 +32,9 @@ const showModalOrNotification: ShowModalOrNotificationFunction = (message) => {
   console.log(`Show Modal or Notification: ${message}`);
 };
 
+
+
+
 // Placeholder function for clearing user data
 const clearUserData: ClearUserDataFunction = () => {
   // Replace this with your actual logic for clearing user data
@@ -61,5 +64,5 @@ export {
   clearUserData,
   fetchLastUserInteractionTime,
   resetIdleTimeout,
-  IDLE_TIMEOUT_DURATION
+  IDLE_TIMEOUT_DURATION,
 };

@@ -1,6 +1,6 @@
 // FileTypeEnum.ts
 
-import { CalendarLogger } from "@/app/pages/logging/Logger";
+import { CalendarLogger } from "@/app/components/logging/Logger";
 import useErrorHandling from "../hooks/useErrorHandling";
 
 // Define enums for file categories and types

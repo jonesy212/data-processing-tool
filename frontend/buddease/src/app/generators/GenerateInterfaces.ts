@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { readCache, writeCache } from '../utils/ReadAndWriteCache';
 import { generateUniqueApiId } from './generateNewApiConfig';
 import { CacheData } from '../generators/GenerateCache'; // Import CacheData type
@@ -15,9 +14,8 @@ export async function generateInterfaces(backendModelPaths: string[]): Promise<v
         // If not, generate the interface code
         const interfaceCode = generateInterfaceCode(modelName);
 
-        // Save the interface code to the file
-        const interfacePath = `./src/app/interfaces/${modelName}.ts`;
-        fs.writeFileSync(interfacePath, interfaceCode);
+        // Example usage - log the interface code instead of writing to a file
+        console.log(interfaceCode);
 
         // Update the cache with the interface id
         cache[modelName] = generateUniqueApiId(); // Use generateUniqueApiId function here

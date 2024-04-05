@@ -41,6 +41,7 @@ class NotificationManager extends React.Component<NotificationManagerProps> {
       content: "",
       message: "",
       completionMessageLog: {} as LogData,
+      sendStatus: "Sent",
     };
     this.notifications.push(newNotification);
   }

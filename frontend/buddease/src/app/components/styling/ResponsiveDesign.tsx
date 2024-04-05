@@ -1,13 +1,13 @@
 // components/ResponsiveDesign.tsx
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
 import { ColorSwatchProps } from "./ColorPalette";
-
+import { getCurrentAppInfo } from "../versions/VersionGenerator";
+ 
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
   ariaLabel?: string;

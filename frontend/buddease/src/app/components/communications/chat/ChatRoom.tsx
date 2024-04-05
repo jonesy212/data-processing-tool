@@ -1,6 +1,6 @@
 // ChatRoom.tsx
 import axiosInstance from '@/app/api/axiosInstance';
-import Logger from '@/app/pages/logging/Logger';
+import Logger from '@/app/components/logging/Logger';
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useEffect, useState } from 'react';
 import { useThemeConfig } from '../../hooks/userInterface/ThemeConfigContext';

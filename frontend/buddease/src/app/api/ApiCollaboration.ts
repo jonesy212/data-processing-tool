@@ -5,7 +5,7 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import dotProp from 'dot-prop';
-import { CollaborationLogger } from '../pages/logging/Logger';
+import { CollaborationLogger } from '../components/logging/Logger';
 import axiosInstance from './axiosInstance';
 
 

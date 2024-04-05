@@ -9,8 +9,8 @@ import useErrorHandling from "../components/hooks/useErrorHandling";
 import DynamicSelectionControls, {
   Option,
 } from "../components/libraries/animations/DynamicSelectionControls";
+import Logger, { ComponentLogger } from "../components/logging/Logger";
 import { DappProps } from "../components/web3/dAppAdapter/DAppAdapterConfig";
-import Logger from "../pages/logging/Logger";
 
 const DynamicComponentWrapper: React.FC = () => {
   const { setDynamicConfig, updateDynamicConfig } = useDynamicComponents(); // Use the context hook
@@ -92,7 +92,7 @@ const DynamicComponentWrapper: React.FC = () => {
         />
       </div>
       {/* Example usage of Logger */}
-      <button onClick={() => Logger.log("User", "Clicked the button", "123")}>
+      <button onClick={() => ComponentLogger.log("User", "Clicked the button", "123")}>
         Click Me
       </button>
       {/* Example usage of handleError */}

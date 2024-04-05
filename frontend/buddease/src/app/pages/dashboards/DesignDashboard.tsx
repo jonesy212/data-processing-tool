@@ -104,14 +104,14 @@ import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import { notificationData } from "@/app/components/support/NotificationProvider";
-import PermissionsEditor from "@/app/components/users/PermissionsEditor";
-import { UserRolesEditor } from "@/app/components/users/UserRolesEditor";
+import {PermissionsEditor} from "@/app/components/users/PermissionsEditor";
+import  UserRolesEditor  from "@/app/components/users/UserRolesEditor";
 import { BackendConfig, backendConfig } from "@/app/configs/BackendConfig";
 import BackendConfigComponent from "@/app/configs/BackendConfigComponent";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
 import DetermineFileType from "@/app/configs/DetermineFileType";
 import { DocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
-import { FrontendConfig } from "@/app/configs/FrontendConfig";
+import { FrontendConfig, frontendConfig } from "@/app/configs/FrontendConfig";
 import FrontendConfigComponent from "@/app/configs/FrontendConfigComponent";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
@@ -132,6 +132,9 @@ import DataPreview, {
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
+import { taskManagerSlice } from "@/app/components/state/redux/slices/TaskSlice";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { Task } from "@/app/components/models/tasks/Task";
 
 
 interface DynamicComponentWrapperProps<T> {
@@ -205,7 +208,7 @@ const backendStructure: ExtendedBackendStructure = {
     return structure;
 
       },
-    };
+  };
 
 const DesignDashboard: React.FC<{
   colors: string[];
@@ -367,13 +370,17 @@ const DesignDashboard: React.FC<{
       return updatedColors;
     };
   }
-  // return notificationContextValue;
+
+
+  const handleNewTitleChange = (newTitle: string) => { 
+    setTitle(newTitle);
+  }
 
   return (
-    <div>
+    <>
       <h1>Dev/Design Dashboard</h1>
 
-      {/* New Components */}
+      
       <DynamicComponentWrapper
         component={<ProjectManagementSimulation />}
         dynamicProps={{
@@ -384,14 +391,12 @@ const DesignDashboard: React.FC<{
         {(component: any) => component}
       </DynamicComponentWrapper>
 
-      {/* User Communication and Collaboration */}
       <ChatRoom roomId={""} />
       <CalendarComponent />
       <FeedbackLoop feedback={""} feedbackType={""} />
       <GoogleAnalyticsScript />
       <ChatCard sender={""} message={""} timestamp={""} />
 
-      {/* User and Team Management */}
       <UserDashboard />
       <PersonaBuilderDashboard />
       <AdminDashboard {...({} as AdminDashboardProps)}>
@@ -438,7 +443,6 @@ const DesignDashboard: React.FC<{
         </div>
       </AdminDashboard>
 
-      {/* Project Lifecycle */}
       <IdeaLifecycleManager />
       <IdeaLifecyclePhase />
       <LaunchPhase />
@@ -452,20 +456,18 @@ const DesignDashboard: React.FC<{
       <PostLaunchActivitiesPhase />
       <AnalyzeData projectId={""} />
 
-      {/* Data Management */}
       <DataPreview data={{} as DataPreviewProps & UserData} />
       <DataProcessingComponent datasetPath={""} onDataProcessed={() => {}} />
 
-      {/* Task Management */}
       <TaskManagementManager />
       <ClearingTimer />
 
-      {/* Main Application Logic */}
+    {/* Main Application Logic */}
       <MainApplicationLogic />
       <ProjectPhaseComponent />
       <RemovingEventListeners documentOptions={{} as DocumentOptions} />
 
-      {/* Dynamic Components */}
+    {/* Dynamic Components */}
       <DynamicDashboard title={""} content={undefined} />
       <DynamicComponents
         dynamicContent
@@ -479,7 +481,7 @@ const DesignDashboard: React.FC<{
         {...({} as DynamicTypographyProps & (BodyTextProps | HeadingProps))}
       />
 
-      {/* Design and Styling */}
+    Design and Styling
       <ColorPalette
         swatches={[]}
         colorCodingEnabled={false}
@@ -495,7 +497,7 @@ const DesignDashboard: React.FC<{
       <AnimationsAndTransitions examples={[]} />
       <DesignComponent />
 
-      {/* User Interaction */}
+    {/* User Interaction */}
       <SearchComponent
         componentSpecificData={[
           {
@@ -508,15 +510,18 @@ const DesignDashboard: React.FC<{
         documentData={[]}
       />
       <TaskAssignmentSnapshot taskId={"taskSnapshotId"} />
-      <TaskManagerComponent taskId={() => "taskId"} />
+      <TaskManagerComponent
+        newTitle={() => "New Title"}
+        task={{} as Task}
+        taskId={() => "taskId"} />
       <TodoList />
       <InviteFriends />
       <ReferralSystem />
       <SendEmail />
-      {/* how to set up a protected rout */}
+    {/* how to set up a protected rout */}
       <ProtectedRoute component={YourParentComponent} />
 
-      {/* Idea and Concept Development */}
+    {/* Idea and Concept Development */}
       <ConceptDevelopment />
       <ConceptValidation />
       <IdeaLifecycle />
@@ -540,18 +545,20 @@ const DesignDashboard: React.FC<{
         config={{} as DocumentBuilderConfig}
       />
       <FrontendDocumentConfig />
-      <FrontendStructure />
+      <FrontendStructure
+        
+      />
       <GenerateUserPreferences />
       <lazyLoadScriptConfig />
       <MainConfig
-        frontendStructure={ }
-        backendStructure={ }
-        frontendConfig={ }
-        backendConfig={ }
+        frontendStructure={frontendStructure}
+        backendStructure={backendStructure}
+        frontendConfig={frontendConfig}
+        backendConfig={backendConfig}
         
       />
       <StructuredMetadata />
-      <UpdatePreferences />
+      <UpdatePreference />
       <UserPreferences />
       <UserSettings />
       <Global />
@@ -593,7 +600,7 @@ const DesignDashboard: React.FC<{
 
       {/*User Managment Functionalities */}
 
-    </div>
+    </>
   );
 };
 

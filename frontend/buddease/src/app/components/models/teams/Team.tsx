@@ -1,9 +1,10 @@
+import { Persona } from '@/app/pages/personas/Persona';
 import React from 'react';
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project, ProjectType } from "../../projects/Project";
-import { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { implementThen } from '../../state/stores/CommonEvent';
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
@@ -13,7 +14,7 @@ import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
-import { TeamStatus } from '../data/StatusType';
+import { StatusType, TeamStatus } from '../data/StatusType';
 import { Idea, Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
@@ -84,7 +85,9 @@ const team: Team = {
       teamId: "1",
       roleInTeam: "admin",
       memberName: "Sam Smith",
-      teams: [] as Team[]
+      teams: [] as Team[],
+      persona: {} as Persona,
+      snapshots: [] as SnapshotStore<Snapshot<Data>>[],
       // isActive: true,
       // isAdmin: false,
     },
@@ -108,6 +111,8 @@ const team: Team = {
       teamId: "1",
       roleInTeam: "moderator",
       memberName: "Jane English",
+      persona: {} as Persona,
+      snapshots: [] as SnapshotStore<Snapshot<Data>>[],
     },
   ],
   projects: [
@@ -284,6 +289,8 @@ const team: Team = {
     traits: "traits" as unknown as typeof CommonDetails,
     role: UserRoles.Guest,
     timeBasedCode: timeBasedCode,
+    persona: {} as Persona,
+    snapshots: [] as SnapshotStore<Snapshot<Data>>[],
   },
 
   then(callback: (newData: Snapshot<Team>) => void) {
@@ -384,6 +391,7 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
     <CommonDetails
       data={{team: team} as  CommonData<never>}
       details={{
+        _id: team._id,
         id: team.id,
         type: "team",
         title: team.title || "",
@@ -396,6 +404,7 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
         setCurrentProject: setCurrentProject,
         clearCurrentProject: clearCurrentProject,
         setCurrentTeam: setCurrentTeam,
+        analysisResults: team.analysisResults,
         // Include other team-specific properties here
       }}
     />
@@ -407,14 +416,19 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
 
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
   <CommonDetails
-    data={{ ...data }}
-    details={{
-      id: data.id as string,
+    data={{
       title: data.title,
+      description: data.description,
+      status: data.status as StatusType | undefined,
+    }}
+    details={{
+      _id: data._id,
+      id: data.id as string,
       phase: data.phase,
       description: data.description,
       isActive: data.isActive,
       type: data.type,
+      // analysisResults: data.analysisResults,
       // Include other generic data properties here
     }}
   />

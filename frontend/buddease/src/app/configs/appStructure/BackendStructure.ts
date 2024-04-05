@@ -1,7 +1,7 @@
 // BackendStructure.ts
+import Logger from '@/app/components/logging/Logger';
 import { NotificationType } from '@/app/components/support/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import Logger from '@/app/pages/logging/Logger';
 import * as fs from 'fs/promises'; // Use promise-based fs module
 import * as path from 'path';
 import { AppStructureItem } from './AppStructure';

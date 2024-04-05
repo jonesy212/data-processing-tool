@@ -6,6 +6,7 @@ import * as path from 'path';
 import { DocumentOptions, getDefaultDocumentOptions } from './DocumentOptions';
 import generateFinancialReportContent from './documentation/report/generateFinancialReportContent';
 import { Document } from '../state/stores/DocumentStore';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
  var xl = require('excel4node');
 
 
@@ -48,6 +49,11 @@ const documents: Document[] = [
     updatedAt: '2021-07-01T00:00:00.000Z',
     createdBy: 'John Doe',
     updatedBy: 'John Doe',
+    
+    folderPath: "documents/financial-reports",
+    previousMetadata: {} as StructuredMetadata,
+    currentMetadata: {} as StructuredMetadata,
+    accessHistory: [],
     documentData: {
       financialReport: {
         financialReportContent: 'Financial Report Content',

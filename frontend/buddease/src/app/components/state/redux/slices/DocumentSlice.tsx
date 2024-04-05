@@ -14,6 +14,7 @@ import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
 import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -477,6 +478,10 @@ const createNewDocument: (documentId: number) => WritableDraft<DocumentData> = (
   documentContent: "",
   keywords: [],
   options: {} as WritableDraft<DocumentOptions>,
+  folderPath: "",
+  previousMetadata: {} as WritableDraft<StructuredMetadata>,
+  currentMetadata: {} as WritableDraft<StructuredMetadata>,
+  accessHistory: [],
   // documentTags: [],
   // documentAccess: [],
 });
@@ -500,11 +505,17 @@ export const useDocumentManagerSlice = createSlice({
           content: "", // Add default content if needed
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
-          files: [] // Add default files if needed
+          files: [], // Add default files if needed
           // Add other properties as needed
-          ,
+          
+
+
           keywords: [],
-          options: {} as WritableDraft<DocumentOptions>
+          options: {} as WritableDraft<DocumentOptions>,
+          folderPath: "",
+          previousMetadata: {} as WritableDraft<StructuredMetadata>,
+          currentMetadata: {} as WritableDraft<StructuredMetadata>,
+          accessHistory: []
         };
         return { payload: newDocument };
       },
@@ -905,7 +916,11 @@ export const useDocumentManagerSlice = createSlice({
           highlights: [],
           files: [],
           keywords: [],
-          options: {} as WritableDraft<DocumentOptions>
+          options: {} as WritableDraft<DocumentOptions>,
+          folderPath: "New Folder", 
+          previousMetadata: {} as WritableDraft<StructuredMetadata>,
+          currentMetadata: {} as WritableDraft<StructuredMetadata>,
+          accessHistory: []
         });
         // Assuming implementation here...
         useNotification().notify(
@@ -1062,7 +1077,11 @@ export const useDocumentManagerSlice = createSlice({
           highlights: [],
           files: [],
           keywords: [],
-          options: {} as WritableDraft<DocumentOptions>
+          options: {} as WritableDraft<DocumentOptions>,
+          folderPath: "New Folder", 
+          previousMetadata: {} as WritableDraft<StructuredMetadata>,
+          currentMetadata: {} as WritableDraft<StructuredMetadata>,
+          accessHistory: []
         });
       }
     },

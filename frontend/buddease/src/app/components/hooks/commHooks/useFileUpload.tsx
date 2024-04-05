@@ -1,7 +1,7 @@
 // useFileUpload.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { FileLogger } from "@/app/pages/logging/Logger";
+import { FileLogger } from "@/app/components/logging/Logger";
 import dotProp from "dot-prop";
 import { ChangeEvent, useState } from "react";
 import axiosInstance from "../../security/csrfToken";
@@ -21,8 +21,6 @@ interface FileUploadProps {
   inputValue: string;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
-
 
 const useFileUpload = ({ inputValue, handleInputChange }: FileUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -69,43 +67,39 @@ const useFileUpload = ({ inputValue, handleInputChange }: FileUploadProps) => {
         // For example, check response status codes or data and handle accordingly
         if (response.status === 200) {
           // Handle success
-          
+          notify(
+            "uploadFileSuccess",
+            "File uploaded successfully",
+            NOTIFICATION_MESSAGES.Data.UPLOAD_DATA_SUCCESS,
+            new Date(),
+            "uploadFileSuccess" as NotificationType
+          );
           // Use response.data to get the uploaded file data
           // Use response.data.data to get the uploaded file data
           // Use response.data.message to get the uploaded file message
           // Use response.data.status to get the uploaded file status
           // Use response.data.timestamp to get the uploaded file timestamp
+
+          // Handle additional logic based on the response if needed
+          // Use Axios or any other method to make the API call to upload the file
+          await axiosInstance.post(uploadEndpoint, formData);
+          console.log("File uploaded successfully");
         } else {
           // Handle error
           handleError("Failed to upload file");
         }
-
-        notify(
-          "uploadFileSuccess",
-          "File uploaded successfully",
-          NOTIFICATION_MESSAGES.Data.UPLOAD_DATA_SUCCESS,
-          new Date(),
-          "uploadFileSuccess" as NotificationType
-        );
-        // Handle additional logic based on the response if needed
-        // Use Axios or any other method to make the API call to upload the file
-        await axiosInstance.post(uploadEndpoint, formData);
-
-        console.log("File uploaded successfully");
       }
-      // Handle additional logic based on the response if needed
-      // Use Axios or any other method to make the API call to upload the file
-      await axiosInstance.post(String(uploadEndpoint), formData);
+      // Log to file
+      FileLogger.logToFile(
+        `File uploaded: ${selectedFile?.name}`,
+        "file_upload_log.txt"
+      );
     } catch (error) {
-      handleError("Failed to upload file"); // Handle error if upload fails
+      handleError("Failed to upload file");
       console.error("Error uploading file:", error);
     }
-     // Log to file
-     FileLogger.logToFile(
-      `File uploaded: ${selectedFile?.name}`,
-      "file_upload_log.txt"
-    );
   };
+
   return {
     selectedFile,
     handleFileChanges,

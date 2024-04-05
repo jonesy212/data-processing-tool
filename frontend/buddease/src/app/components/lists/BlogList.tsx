@@ -3,15 +3,19 @@ import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
 import { Data } from "../models/data/Data";
 import { Phase } from "../phases/Phase";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 
 // Define a type representing the data structure for blog posts
 interface BlogData {
+  _id: string;
   id: string;
   title: string;
   content: string;
   author: string;
   date: string;
-  data: Data;
+  data: {
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  };
 }
 
 // Define a type representing the details item specific to blog posts
@@ -24,8 +28,8 @@ interface BlogListProps {
 const blogData: Data = {} as Data;
 
 const BlogList: React.FC<BlogListProps> = ({ blogPosts }) => {
-  // Assign blogData to the data property of each blog post
-  const detailsItems: DetailsItem<Data>[] = blogPosts.map((post) => ({
+  const detailsItems: BlogDetailsItem[] = blogPosts.map((post) => ({
+    _id: post._id,
     id: post.id,
     title: post.title,
     status: "pending",

@@ -1,15 +1,15 @@
 // VersionGenerator.tsx
+import { handleApiErrorAndNotify } from "@/app/api/ApiData";
+import { TaskLogger } from "@/app/components/logging/Logger";
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/components/support/NotificationContext";
-import { TaskLogger } from "@/app/pages/logging/Logger";
-import { AxiosError } from "axios"; 
-import Version from "./Version";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
+import { AxiosError } from "axios";
 import getAppPath from "../../../../appPath";
-import { handleApiErrorAndNotify } from "@/app/api/ApiData";
+import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
+import Version from "./Version";
  const { notify } = useNotification();
 
 interface VersionGeneratorConfig {

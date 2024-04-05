@@ -16,9 +16,7 @@ import { DataDetails } from "@/app/components/models/data/Data";
 import { team, Team } from "@/app/components/models/teams/Team";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
-import { processDEXData } from "@/app/components/utils/processDEXDataUtils";
-import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
-
+import dotProp from "dot-prop";
 const API_BASE_URL = endpoints.logging;
 
 const { notify } = useNotification();
@@ -55,7 +53,6 @@ class SearchLogger {
 }
 
 class Logger {
-
   static log(message: string) {
     console.log(message);
   }
@@ -66,10 +63,8 @@ class Logger {
 
   static info(message: string, extraInfo?: any) {
     // Log info message with optional extra information
-    console.log('INFO:', message, extraInfo || '');
-}
-
-
+    console.log("INFO:", message, extraInfo || "");
+  }
 
   static logWithOptions(type: string, message: string, uniqueID: string) {
     // You can implement different logging mechanisms based on the type
@@ -203,36 +198,11 @@ class AudioLogger extends Logger {
   }
 }
 
-
 class DexLogger extends Logger {
   static logDEXEvent(event: string, dexId: string) {
-    this.logWithOptions(
-      "DEX Event",
-      `${event} (DEX ID: ${dexId})`,
-      dexId
-    );
+    this.logWithOptions("DEX Event", `${event} (DEX ID: ${dexId})`, dexId);
   }
 }
-
-// Usage in fetchDEXData function
-export const fetchDEXData = async (
-  dexData: any[],
-  dispatch: DataAnalysisDispatch
-) => {
-  try {
-    // Process the provided DEX data
-    const processedDEXData = processDEXData(dexData);
-
-    // Dispatch an action to update Redux store state with DEX data
-    dispatch({ type: "UPDATE_DEX_DATA", payload: processedDEXData });
-
-    // Log DEX event
-    DexLogger.logDEXEvent("DEX data fetched", "your_dex_id_here");
-  } catch (error) {
-    console.error("Error processing DEX data:", error);
-  }
-};
-
 
 class TeamLogger {
   static async logTeamCreation(teamId: string, team: Team): Promise<void> {
@@ -388,11 +358,6 @@ class TeamLogger {
   }
 }
 
-
-
-
-
-
 class AnimationLogger {
   static async logAnimation(
     message: string,
@@ -404,7 +369,7 @@ class AnimationLogger {
 
     try {
       const logUrl = this.getLogUrl("animationEvent");
-      
+
       const response = await fetch(logUrl, {
         method: "POST",
         body: JSON.stringify({ uniqueID, animationID, duration }),
@@ -421,13 +386,20 @@ class AnimationLogger {
       handleError("Error logging animation event: " + error.message); // Handle the error using the provided error handling function
 
       // Log the error to the file using the FileLogger
-      FileLogger.logFileError("Error logging animation event: " + error.message);
-      
+      FileLogger.logFileError(
+        "Error logging animation event: " + error.message
+      );
+
       throw error; // Re-throw the error to propagate it further if needed
     }
   }
 
-  static generateID(prefix: string, name: string, type: NotificationType, dataDetails?: DataDetails): string {
+  static generateID(
+    prefix: string,
+    name: string,
+    type: NotificationType,
+    dataDetails?: DataDetails
+  ): string {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);
     let id = `${prefix}_${name}_${timestamp}_${randomString}`;
@@ -457,10 +429,14 @@ class AnimationLogger {
     return logUrl;
   }
 
-  static logAnimationStopped(uniqueID: string, animationID: string, startTime: number) {
+  static logAnimationStopped(
+    uniqueID: string,
+    animationID: string,
+    startTime: number
+  ) {
     const endTime = Date.now();
     const duration = endTime - startTime; // Calculate the duration of the animation
-  
+
     AnimationLogger.logAnimation(
       "Animation stopped",
       uniqueID,
@@ -470,7 +446,55 @@ class AnimationLogger {
   }
 }
 
+class DataLogger {
+  static async log(message: string): Promise<void> {
+    const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
+    try {
+      const logUrl = this.getLogUrl("dataEvent");
+
+      const response = await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ message }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to log data event");
+      }
+    } catch (error: any) {
+      console.error("Error logging data event:", error);
+      handleError("Error logging data event: " + error.message); // Handle the error using the provided error handling function
+
+      // Log the error to the file using the FileLogger
+      FileLogger.logFileError("Error logging data event: " + error.message);
+
+      throw error; // Re-throw the error to propagate it further if needed
+    }
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    const logEvent = dotProp.getProperty(endpoints, `logging.${action}`); // Access nested property using dot-prop
+
+    if (typeof logEvent === "string") {
+      logUrl = logEvent;
+    } else if (typeof logEvent === "function") {
+      logUrl = logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      if (logEvent) {
+        const logEventToFile = dotProp.getProperty(logEvent, "logEventToFile");
+        if (typeof logEventToFile === "function") {
+          logUrl = logEventToFile();
+        }
+      }
+    }
+    return logUrl;
+  }
+}
 
 // Extend Logger for video logs
 class VideoLogger extends Logger {
@@ -525,9 +549,6 @@ class VideoLogger extends Logger {
   }
 }
 
-
-
-
 class ChannelLogger extends Logger {
   static logChannel(message: string, uniqueID: string, channelID: string) {
     super.logWithOptions("Channel", message, uniqueID);
@@ -570,10 +591,6 @@ class ChannelLogger extends Logger {
       });
   }
 }
-
-
-
-
 
 class FormLogger {
   static async logFormEvent(eventType: string, formID: string, eventData: any) {
@@ -620,9 +637,6 @@ class FormLogger {
     return logUrl;
   }
 }
-
-
-
 
 class CollaborationLogger extends Logger {
   static logCollaboration(
@@ -673,6 +687,13 @@ class CollaborationLogger extends Logger {
       });
   }
 }
+
+class ComponentLogger {
+  static log(action: string, message: string, uniqueID: string) {
+    Logger.logWithOptions("User", `${action} (${message})`, uniqueID);
+  }
+}
+
 
 class DocumentLogger extends Logger {
   static logDocument(message: string, uniqueID: string, documentID: string) {
@@ -795,9 +816,11 @@ class TaskLogger extends Logger {
         completionMessageLog as NotificationData,
         notifyCallback // Pass the function to notify as an argument
       );
-      
     }
-    FileLogger.logToFile(`Task event logged: ${taskID}, ${completionMessage}`, 'task_log.txt');
+    FileLogger.logToFile(
+      `Task event logged: ${taskID}, ${completionMessage}`,
+      "task_log.txt"
+    );
   }
 
   static logTaskCompleted(
@@ -853,7 +876,7 @@ class TaskLogger extends Logger {
     // Additional logic specific to logging task reassignment
   }
   // Log to file
-   
+
   // Add more methods as needed for other task-related events
 }
 
@@ -1029,6 +1052,32 @@ class ErrorLogger extends Logger {
   // Add more methods for other error-related events as needed
 }
 
+class ExchangeLogger extends Logger {
+  static logMessageSent(
+    conversationId: string,
+    messageId: string,
+    userId: string
+  ) {
+    super.logWithOptions(
+      "Exchange",
+      `Message sent (Conversation ID: ${conversationId}, Message ID: ${messageId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logMessageReceived(
+    conversationId: string,
+    messageId: string,
+    userId: string
+  ) {
+    super.logWithOptions(
+      "Exchange",
+      `Message received (Conversation ID: ${conversationId}, Message ID: ${messageId}, User ID: ${userId})`,
+      userId
+    );
+  }
+}
+
 class CommunityLogger extends Logger {
   static logPost(userId: string, postId: string) {
     super.logWithOptions(
@@ -1125,8 +1174,11 @@ export {
   CollaborationLogger,
   CommunityLogger,
   ContentLogger,
+  DataLogger,
+  DexLogger,
   DocumentLogger,
   ErrorLogger,
+  ExchangeLogger,
   FileLogger,
   FormLogger,
   IntegrationLogger,
@@ -1136,6 +1188,6 @@ export {
   TaskLogger,
   TeamLogger,
   TenantLogger,
-  VideoLogger
+  VideoLogger,
+  ComponentLogger
 };
-

@@ -4,7 +4,7 @@ import configurationService from '../configs/ConfigurationService';
 import { NamingConventionsError } from '../shared/shared-error-handling';
 import { useDynamicComponents } from './DynamicComponentsContext';
 import { NotificationTypeEnum, useNotification } from './support/NotificationContext';
-import NOTIFICATION_MESSAGES from './support/NotificationMessages';
+import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from './support/NotificationMessages';
 import { NOTIFICATION_TYPES } from './support/NotificationTypes';
 interface DynamicNamingConventionsProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
@@ -17,16 +17,15 @@ const handleNamingConventionsErrors = (
   error: NamingConventionsError,
   details?: string
 ) => {
-  let errorDetails = details;
-  if (!errorDetails) {
-    errorDetails = "";
-  }
-  const errorMessage = NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT(
-    error.message,  
+  let errorDetails = details || "";
+
+  const errorMessage = handleDynamicNotificationMessage(
+    NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT,
+    error.message,
     errorDetails
   );
-  //todo fix error message
-  notify("", errorMessage, "Error", new Date, NotificationTypeEnum.Error);
+
+  notify(errorMessage, NOTIFICATION_TYPES.ERROR, new Date());
 };
 
 const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({

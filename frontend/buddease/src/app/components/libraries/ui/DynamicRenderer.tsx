@@ -2,15 +2,18 @@ import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import React, { useEffect, useState } from "react";
 import { useDynamicComponents } from "../../DynamicComponentsContext";
 import DynamicEventHandlerExample from "../../documents/screenFunctionality/ShortcutKeys";
+import { Task } from "../../models/tasks/Task";
 import LoadingSpinner from "../../models/tracker/LoadingSpinner";
 import { Todo } from "../../todos/Todo";
-import { Task } from "../../models/tasks/Task";
+import DynamicTable from "../../documents/DynamicTable";
 
 interface DynamicRendererProps {
   handleTodoClick?: (todoId: Todo) => void;
   handleTaskClick?: (taskId: Task) => void;
   handleDynamicAction1?: () => void;
   handleDynamicAction2?: () => void;
+  dynamicContent: any[]; // Assuming dynamicContent is an array of objects
+
 }
 
 
@@ -19,6 +22,8 @@ const DynamicRenderer: React.FC<DynamicRendererProps> = ({
   handleTaskClick,
   handleDynamicAction1,
   handleDynamicAction2,
+  dynamicContent
+  
 }) => {
   const { hooks, utilities, componentSpecificData, ...otherProps } =
     useDynamicComponents();
@@ -26,7 +31,7 @@ const DynamicRenderer: React.FC<DynamicRendererProps> = ({
   // Destructure otherProps
   const {
     dynamicConfig,
-    dynamicContent,
+    // dynamicContent,
     setDynamicConfig,
     updateDynamicConfig,
     setDynamicConfigAction,
@@ -67,12 +72,10 @@ const DynamicRenderer: React.FC<DynamicRendererProps> = ({
         {!loading && !error && (
           <div>
             {/* Render content based on dynamicContent */}
-            {dynamicContent && (
-              <div>
-                <h3>Dynamic Content</h3>
-                {/* Render dynamic content here */}
-              </div>
-            )}
+            <div>
+            {/* Render dynamic content here */}
+            {dynamicContent && <DynamicTable data={dynamicContent} />}
+          </div>
             {/* Additional features can be added here */}
           </div>
         )}

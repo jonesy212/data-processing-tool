@@ -1,9 +1,8 @@
-//RecruitingPhaseStep.tsx
 // RecruitingPhaseStep.tsx
 
 import { DatePicker, Form, Table } from 'antd'; // Import UI components from Ant Design or your preferred library
 import React from 'react';
-import { Candidate } from './types'; // Define Candidate type or interface
+import Candidate from '../../../../../models/realtime/Candidate';
 
 interface RecruitingPhaseStepProps {
   candidates: Candidate[];

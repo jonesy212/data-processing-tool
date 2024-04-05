@@ -3,11 +3,11 @@ import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { Data } from "@/app/components/models/data/Data";
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
+import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore, {
   Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
-import { fetchDEXData } from "@/app/pages/logging/Logger";
 import React, { useEffect } from "react";
 
 interface RealtimeDataItem {
