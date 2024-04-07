@@ -1,8 +1,14 @@
 // ThemeCustomization.tsx
-import React from "react";
+import React, { useState } from "react";
+import { NotificationManagerServiceProps } from "../../notifications/NotificationService";
 import { useThemeConfig } from "./ThemeConfigContext";
+import { ThemeConfig } from '@/app/components/libraries/ui/theme/ThemeConfig';
 
-const ThemeCustomization: React.FC = () => {
+const ThemeCustomization: React.FC<{
+  themeState: ThemeConfig;
+  setThemeState: React.Dispatch<React.SetStateAction<ThemeConfig>>;
+  notificationState: NotificationManagerServiceProps;
+}> = ({ themeState, setThemeState, notificationState }) => {
   const {
     primaryColor,
     setPrimaryColor,
@@ -14,30 +20,61 @@ const ThemeCustomization: React.FC = () => {
     setFontFamily,
   } = useThemeConfig();
 
+
+  const [localThemeState, setLocalThemeState] = useState<ThemeConfig>({
+    ...themeState,
+  });
+
+
+
+
+  const handleSecondaryColorChange = (color: string) => {
+    setLocalThemeState((prevState) => ({
+      ...prevState,
+      secondaryColor: color,
+    }));
+  };
+
+  const handleFontSizeChange = (size: string) => {
+    setLocalThemeState((prevState) => ({
+      ...prevState,
+      fontSize: size,
+    }));
+  };
+
+  const handleFontFamilyChange = (family: string) => {
+    setLocalThemeState((prevState) => ({
+      ...prevState,
+      fontFamily: family,
+    }));
+  };
+
+  const saveThemeSettings = () => {
+    setThemeState(localThemeState);
+    // Additional logic to save theme settings, e.g., to local storage or server
+  };
   const handlePrimaryColorChange = (color: string) => {
     setPrimaryColor(color);
   };
 
-  const handleSecondaryColorChange = (color: string) => {
-    setSecondaryColor(color);
+
+  const handleNotificationSettingsChange = (setting: string) => {
+    notificationState.setNotifications((prevState: any) => ({
+      ...prevState,
+      [setting]: !prevState[setting],
+    }));
+    // Additional logic to update notification settings in the application
   };
 
-  const handleFontSizeChange = (size: string) => {
-    setFontSize(size);
-  };
-
-  const handleFontFamilyChange = (family: string) => {
-    setFontFamily(family);
-  };
 
   return (
     <div>
       <h2>Theme Customization</h2>
       <label>
-        Primary Color:
+      Primary Color:
         <input
           type="color"
-          value={primaryColor}
+          value={localThemeState.primaryColor}
           onChange={(e) => handlePrimaryColorChange(e.target.value)}
         />
       </label>
@@ -45,7 +82,7 @@ const ThemeCustomization: React.FC = () => {
         Secondary Color:
         <input
           type="color"
-          value={secondaryColor}
+          value={localThemeState.secondaryColor}
           onChange={(e) => handleSecondaryColorChange(e.target.value)}
         />
       </label>
@@ -53,7 +90,7 @@ const ThemeCustomization: React.FC = () => {
         Font Size:
         <input
           type="text"
-          value={fontSize}
+          value={localThemeState.fontSize}
           onChange={(e) => handleFontSizeChange(e.target.value)}
         />
       </label>
@@ -61,10 +98,39 @@ const ThemeCustomization: React.FC = () => {
         Font Family:
         <input
           type="text"
-          value={fontFamily}
+          value={localThemeState.fontFamily}
           onChange={(e) => handleFontFamilyChange(e.target.value)}
         />
       </label>
+      <button onClick={saveThemeSettings}>Save Theme Settings</button>
+      {/* Example of integrating notification settings */}
+      <div>
+        <h2>Notification Settings</h2>
+        <label>
+          <input
+            type="checkbox"
+            checked={!!(notificationState.notifications.length > 0 && notificationState.notifications[0].email)}
+            onChange={() => handleNotificationSettingsChange("email")}
+          />
+          Email Notifications
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={!!(notificationState.notifications.length > 0 && notificationState.notifications[0].inApp)}
+            onChange={() => handleNotificationSettingsChange("inApp")}
+          />
+          In-App Notifications
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={notificationState.notifications.length > 0}
+            onChange={() => handleNotificationSettingsChange("push")}
+          />
+          Push Notifications
+        </label>
+      </div>
     </div>
   );
 };

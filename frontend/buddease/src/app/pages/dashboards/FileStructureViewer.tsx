@@ -37,7 +37,9 @@ const FileStructureViewer = () => {
   return (
     <div>
       {/* Render the TreeView component with the dynamically fetched file structure */}
-      <TreeView data={fileStructure} onClick={handleNodeClick} />
+      <TreeView
+        searchQuery=""
+        data={fileStructure} onClick={handleNodeClick} />
     </div>
   );
 };

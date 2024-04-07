@@ -14,7 +14,8 @@ export interface DocumentOptions {
   uniqueIdentifier: string;
   documentType: DocumentData; // Add documentType property
   userIdea: string; 
-  additionalOptions: string | number | readonly string[] | undefined;
+  additionalOptions: readonly string[] | string | number | any[] | undefined;
+
   isDynamic: boolean;
   size: DocumentSize;
   animations: DocumentAnimationOptions; // New property for animations

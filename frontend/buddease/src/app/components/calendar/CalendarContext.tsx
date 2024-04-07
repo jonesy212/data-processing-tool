@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { DataDetails } from "../models/data/Data";
 import { Member } from "../models/teams/TeamMembers";
 import { DetailsItem } from "../state/stores/DetailsListStore";
+import { Project } from "../projects/Project";
 
 // Define the type for calendar data
 type SimpleCalendarEvent = {
@@ -32,6 +33,7 @@ type SimpleCalendarEvent = {
   customEventNotifications: string; // Update type to string
   comment: string; // Update type to string
   attachment: string; // Update type to string
+  projects?: Project[]; // Add projects property
   // Add more properties as needed
 };
 

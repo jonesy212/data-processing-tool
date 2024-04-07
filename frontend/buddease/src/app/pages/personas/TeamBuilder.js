@@ -6,7 +6,7 @@
  */
 
 // Import necessary modules or libraries
-const assert = require('assert'); // Import assertion library for assertions
+import { doesNotThrow } from 'assert'; // Import assertion library for assertions
 
 // Define Test Builder object
 const TestBuilder = {
@@ -19,7 +19,7 @@ const TestBuilder = {
     return {
       description,
       execute() {
-        assert.doesNotThrow(() => {
+        doesNotThrow(() => {
           testFunction(); // Execute the test logic
         }, Error);
         console.log(`Test Case: ${description} - Passed`); // Log test passed
@@ -30,4 +30,4 @@ const TestBuilder = {
   // Add more functions for setup, teardown, etc. as needed
 };
 
-module.exports = TestBuilder; // Export the Test Builder module
+export default TestBuilder; // Export the Test Builder module

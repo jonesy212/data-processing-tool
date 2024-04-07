@@ -7,11 +7,11 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
+import { headersConfig } from '../components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import HeadersConfig from "./headers/HeadersConfig";
-import { headersConfig } from '../components/shared/SharedHeaders';
 
 
 const API_BASE_URL = endpoints.client;
@@ -53,7 +53,7 @@ class ClientApiService {
   ) => void;
   updateCalendarEvent: (
     eventId: number,
-    updatedEvent: any
+    updatedEvent: any,
   ) => Promise<AxiosResponse>
 
   constructor(
@@ -67,7 +67,8 @@ class ClientApiService {
     updateCalendarEvent: (
       eventId: number,
       updatedEvent: any
-    ) => Promise<AxiosResponse>
+    ) => Promise<AxiosResponse>,
+    getFileContent: (fileId: string) => Promise<AxiosResponse>
   ) {
     this.notify = notify;
     this.updateCalendarEvent = updateCalendarEvent;
@@ -117,6 +118,23 @@ class ClientApiService {
       throw error;
     }
   }
+
+  async getRequestHandeler() {
+  return async (
+    request: () => Promise<AxiosResponse>,
+    errorMessage: string,
+  ): Promise<AxiosResponse<any, any> | undefined> => {
+
+    try {
+      const response: AxiosResponse = await request();
+      return response;
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown, any>, errorMessage);
+    }
+    return undefined;
+  }
+}
+
   
   async fetchClientDetails(clientId: number): Promise<any> {
     try {
@@ -158,8 +176,6 @@ class ClientApiService {
       throw error;
     }
   }
-
-  
   async updateClientDetails(
     clientId: number,
     updatedDetails: any
@@ -310,18 +326,56 @@ class ClientApiService {
     );
   }
 
+  async listFiles(dir: string): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.get(`/api/files/${dir}`),
+      "Failed to list files",
+      "ListFilesError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.LIST_FILES_ERROR
+    );
+  }
+
+  async getFileContent(filePath: string): Promise<AxiosResponse> {
+    // Check if this.requestHandler is defined before calling it
+    if (typeof this.requestHandler === 'function') {
+      return await this.requestHandler(
+        () => axiosInstance.get(`/api/files/${filePath}`),
+        "Failed to get file content",
+        "GetFileContentError" as keyof ClientNotificationMessages,
+        NOTIFICATION_MESSAGES.Client.GET_FILE_CONTENT_
+      );
+    } else {
+      // Handle the case where this.requestHandler is undefined
+      throw new Error('requestHandler is not defined');
+    }
+  };
+  
+
   // Additional client API methods can be added here...
-}
+} 
 
 
-export const updateCalendarEvent = async (
+// Ensure that useNotification returns a function that returns a Promise<string>
+const getFileContent: (fileId: string) => Promise<AxiosResponse> = async (fileUrl: string) => {
+  // Check if this.requestHandler is defined before calling it
+  try {
+    const response = await axiosInstance.get(`/api/files/${fileUrl}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+const updateCalendarEvent = async (
   eventId: number,
   updatedEvent: any
 ): Promise<AxiosResponse> => {
   return await clientApiService.updateCalendarEvent(eventId, updatedEvent);
 };
 
-const clientApiService = new ClientApiService(useNotification, updateCalendarEvent);
+const clientApiService = new ClientApiService(useNotification, updateCalendarEvent, getFileContent);
 
 export default clientApiService;
 export type { ClientNotificationMessages };

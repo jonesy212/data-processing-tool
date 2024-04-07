@@ -6,7 +6,13 @@ import { DocumentAnimationOptions } from "../components/documents/SharedDocument
 export interface DocumentBuilderConfig {
   isDynamic: boolean;
   defaultOptions: DocumentOptions;
- // Additional options for customization
+  options: {
+    // other properties...
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+    
+    // other properties...
+  };
+  // Additional options for customization
   fontFamily: string;
   fontSize: number;
   textColor: string;
@@ -38,6 +44,11 @@ export interface DocumentBuilderConfig {
 export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
   return {
     isDynamic: true,
+    options: {
+      // other properties...
+      additionalOptions: undefined,
+      // other properties...
+    },
     defaultOptions: {
       size: "letter",
       additionalOptions: "",

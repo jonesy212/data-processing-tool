@@ -1,4 +1,3 @@
-// snowpack.config.js
 module.exports = {
     mount: {
       public: '/',
@@ -17,5 +16,13 @@ module.exports = {
     buildOptions: {
       /* ... */
     },
+    optimize: {
+      bundle: true,
+      minify: true,
+      target: 'es2018', // or any target version you prefer
+    },
+    routes: [
+      /* Define custom routes if needed */
+    ],
   };
   

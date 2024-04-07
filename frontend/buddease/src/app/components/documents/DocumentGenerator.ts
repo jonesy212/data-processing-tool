@@ -1,15 +1,20 @@
 // DocumentGenerator.ts
 
 import Docxtemplater from 'docxtemplater';
-import * as fs from 'fs';
 import * as path from 'path';
 import { DocumentOptions, getDefaultDocumentOptions } from './DocumentOptions';
 import generateFinancialReportContent from './documentation/report/generateFinancialReportContent';
 import { Document } from '../state/stores/DocumentStore';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { DocumentData } from './DocumentBuilder';
+import { saveDocumentToDatabase, saveTradeToDatabase } from '@/app/configs/database/updateDocumentInDatabase';
  var xl = require('excel4node');
 
 
+
+ interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip> {
+  load(content: any): void;
+}
 enum DocumentTypeEnum {
   Text = 'text',
   Spreadsheet = 'spreadsheet',
@@ -77,30 +82,107 @@ const documents: Document[] = [
   // Add more documents as needed
 ];
 
+// Add the namespace declaration for DXT if it's not already imported
+declare namespace DXT {
+  // Define your types here...
+}
+
+
+function loadTextDocumentContent(document: DocumentData): string {
+  // Logic to load content for a text document
+  // Example: Load content from a database or a cloud storage service
+
+  // Assuming the text content is stored in the document's `content` property
+  const textContent = document.content;
+
+  // You can replace the above line with logic to fetch the content from a database or a cloud storage service
+  // For example, if the content is stored in a database:
+  // const textContent = fetchTextContentFromDatabase(document.id);
+
+  // Or if the content is stored in a cloud storage service like AWS S3:
+  // const textContent = downloadTextContentFromS3(document.url);
+
+  // Return the loaded text content
+  return textContent;
+}
 
 
 class DocumentGenerator {
-  createTextDocument(type: DocumentTypeEnum, options: DocumentOptions): string {
-    
-    const templatePath = path.join(__dirname, 'templates', 'textTemplate.docx');
+  createTextDocument(type: DocumentTypeEnum, options: DocumentOptions, fileContent: Buffer): string {
     const content = options.content || 'Default Text Document Content';
-  
     const contentData = { content }; // Data to fill in the template
-  
-    const docx = new Docxtemplater() as Docxtemplater<any>; // Add explicit type
-    (docx as any).load(fs.readFileSync(templatePath, 'binary'));
+    const docx = new Docxtemplater() as CustomDocxtemplater<any>;
+    docx.load(fileContent); // Load content directly instead of reading from file
     docx.setData(contentData);
-  
+
     try {
       docx.render();
       const result = docx.getZip().generate({ type: 'nodebuffer' });
-      fs.writeFileSync('textDocument.docx', result);
+      // Adjust this part according to your use case. For example, you can return the buffer or save it to a file.
+      // Example of returning the buffer:
+      // return result;
       return 'Text Document created successfully.';
     } catch (error) {
       console.error('Error creating text document:', error);
       return 'Error creating text document.';
     }
   }
+
+  
+  
+
+
+
+
+
+  loadDocumentContent(document: DocumentData, docx: CustomDocxtemplater<any>): string | undefined {
+    switch(document.type) {
+      case DocumentTypeEnum.Text:
+        // Logic to load content for a text document
+        return loadTextDocumentContent(document);
+      case DocumentTypeEnum.Spreadsheet:
+      // Logic to load content for a spreadsheet document
+        // todo add document types
+      //   return loadSpreadsheetDocumentContent(document);
+      // case DocumentTypeEnum.Diagram:
+      //   // Logic to load content for a diagram document
+      //   return loadDiagramDocumentContent(document);
+      // case DocumentTypeEnum.CalendarEvents:
+      //   // Logic to load content for a calendar events document
+      //   return loadCalendarEventsDocumentContent(document);
+      // case DocumentTypeEnum.Drawing:
+      //   // Logic to load content for a drawing document
+      // //   return loadDrawingDocumentContent(document);
+      // // case DocumentTypeEnum.Presentation:
+      // //   // Logic to load content for a presentation document
+      // //   return loadPresentationDocumentContent(document);
+      // // case DocumentTypeEnum.CryptoWatch:
+      // //   // Logic to load content for a CryptoWatch document
+      // //   return loadCryptoWatchDocumentContent(document);
+      // // case DocumentTypeEnum.Draft:
+      // //   // Logic to load content for a draft document
+      // //   return loadDraftDocumentContent(document);
+      // // case DocumentTypeEnum.Document:
+      //   // Logic to load content for a generic document
+      //   return loadGenericDocumentContent(document);
+      // case DocumentTypeEnum.Other:
+      //   // Logic to load content for another type of document
+      //   return loadOtherDocumentContent(document);
+      // case DocumentTypeEnum.FinancialReport:
+      //   // Logic to load content for a financial report document
+      //   return loadFinancialReportDocumentContent(document);
+      // case DocumentTypeEnum.MarketAnalysis:
+      //   // Logic to load content for a market analysis document
+      //   return loadMarketAnalysisDocumentContent(document);
+      // case DocumentTypeEnum.ClientPortfolio:
+      //   // Logic to load content for a client portfolio document
+      //   return loadClientPortfolioDocumentContent(document);
+      default:
+        console.error(`Unsupported document type: ${document.type}`);
+        return undefined; // Return undefined for unsupported document types
+    }
+  }
+  
   
 
 
@@ -112,6 +194,14 @@ class DocumentGenerator {
     return 'Calendar Events Document created successfully.';
   }
 
+
+  saveDocumentContent(document: DocumentData, content: string) { 
+    // Logic to save the loaded/generated content
+
+    // Example:
+    // Save to database
+    saveDocumentToDatabase(document, content);
+  }
 
 
   createSpreadsheet(options: DocumentOptions): string {
@@ -130,13 +220,18 @@ wb.write('spreadsheet.xlsx');
   }
   
 
-  manageDocument(documentPath: string, newContent: string): string {
+  manageDocument(documentPath: DocumentData, newContent: CustomDocxtemplater<any>): string {
     // Real-world logic to manage existing documents
     try {
-      const fileContent = fs.readFileSync(documentPath, 'utf-8');
+      // Load the existing document content
+      const existingContent = this.loadDocumentContent(documentPath, newContent);
+
       // Perform actions on the existing document content (e.g., append, modify, etc.)
-      const updatedContent = `${fileContent}\nUpdated Content: ${newContent}`;
-      fs.writeFileSync(documentPath, updatedContent);
+      const updatedContent = `${existingContent}\nUpdated Content: ${newContent}`;
+
+      // Save the updated content to the document
+      this.saveDocumentContent(documentPath, updatedContent);
+
       return 'Document managed successfully.';
     } catch (error) {
       console.error('Error managing document:', error);
@@ -147,8 +242,12 @@ wb.write('spreadsheet.xlsx');
   exportDocument(documentPath: string, exportPath: string): string {
     // Real-world logic to export documents
     try {
-      const fileContent = fs.readFileSync(documentPath, 'binary');
-      fs.writeFileSync(exportPath, fileContent, 'binary');
+      // Load the content of the document to export
+      const fileContent = this.loadDocumentContent(documentPath);
+
+      // Save the content to the export path
+      this.saveDocumentContent(exportPath, fileContent);
+
       return 'Document exported successfully.';
     } catch (error) {
       console.error('Error exporting document:', error);

@@ -3,21 +3,32 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
-import ScheduleEventModal from '@/app/ts/ScheduleEventModal';
+import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import { useDispatch } from "react-redux";
-import { DocumentOptions, getDefaultDocumentOptions } from "../../documents/DocumentOptions";
+import {
+  getDefaultDocumentOptions
+} from "../../documents/DocumentOptions";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { CommonData } from "../../models/CommonData";
 import { Data } from "../../models/data/Data";
-import { CalendarStatus, StatusType } from "../../models/data/StatusType";
+import {
+  CalendarStatus,
+  PriorityStatus,
+  StatusType,
+} from "../../models/data/StatusType";
 import { Team } from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
 import { Phase } from "../../phases/Phase";
 import axiosInstance from "../../security/csrfToken";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
-import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
+import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
@@ -25,38 +36,36 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 
-
-
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
-
 
 const { notify } = useNotification();
 
 const notifyPromise = Promise.resolve(
-  useNotification().notify("snapshotStore",
+  useNotification().notify(
+    "snapshotStore",
     "error",
     NOTIFICATION_MESSAGES.CalendarEvents.DEFAULT,
-  new Date,
-  "Error" as NotificationType));
-
-
+    new Date(),
+    "Error" as NotificationType
+  )
+);
 
 // Define a synchronous callback function that wraps the asynchronous operation
 const notifyCallback = (): void => {
-  notifyPromise.then(() => {
-    // This code block will execute when the promise resolves
-    // It's important to handle any errors or other logic here
-  }).catch(error => {
-    // Handle any errors from the promise
-    console.error("Error in notifyPromise:", error);
-  });
+  notifyPromise
+    .then(() => {
+      // This code block will execute when the promise resolves
+      // It's important to handle any errors or other logic here
+    })
+    .catch((error) => {
+      // Handle any errors from the promise
+      console.error("Error in notifyPromise:", error);
+    });
 };
 
-
-interface CalendarEvent extends
-  CommonEvent,
-  CommonData<Data> {id: string;
+interface CalendarEvent extends CommonEvent, CommonData<Data> {
+  id: string;
   title: string;
   content: string;
   topics: string[];
@@ -66,17 +75,22 @@ interface CalendarEvent extends
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
-  options: DocumentOptions;
+  options: {
+    // ...
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+    
+    // ...
+  };
   documentPhase?: Phase;
   // Add more properties if needed
-  status: AllStatus
+  status: StatusType | undefined;
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
-  priority:  AllStatus
+  priority: AllStatus;
   location?: string;
   host: Member;
   hosts?: Member[];
-  guestSpeakers?: Member[]
-  attendees?: Member[],
+  guestSpeakers?: Member[];
+  attendees?: Member[];
   color?: string;
   isImportant?: boolean;
   teamMemberId: Team["id"];
@@ -86,7 +100,6 @@ interface CalendarEvent extends
   documentReleased?: boolean;
   metadata?: StructuredMetadata;
   participants: Member[];
-
 }
 
 export interface CalendarManagerStore {
@@ -106,10 +119,7 @@ export interface CalendarManagerStore {
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateEventTitle: (title: string) => void;
   updateEventDescription: (description: string) => void;
-  updateEventStatus: (
-    eventId: string,
-    status: AllStatus
-  ) => void;
+  updateEventStatus: (eventId: string, status: AllStatus) => void;
   updateEventDate: (eventId: string, eventDate: Date) => void;
   addEvent: (event: CalendarEvent) => void;
   addEvents: (eventsToAdd: CalendarEvent[]) => void;
@@ -124,7 +134,10 @@ export interface CalendarManagerStore {
   addEventSuccess: (payload: { event: CalendarEvent }) => void;
   fetchEventsSuccess: (payload: { calendarEvents: CalendarEvent[] }) => void;
   fetchEventsFailure: (payload: { error: string }) => void;
-  fetchEventsRequest: (eventIds: string[], events: Record<string, CalendarEvent[]>) => void;
+  fetchEventsRequest: (
+    eventIds: string[],
+    events: Record<string, CalendarEvent[]>
+  ) => void;
 
   completeAllEventsSuccess: () => void;
   completeAllEvents: () => void;
@@ -134,27 +147,26 @@ export interface CalendarManagerStore {
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<Snapshot<Data>>
   ) => void;
-  
 }
 
 class CalendarManagerStoreClass implements CalendarManagerStore {
-
-
-    dispatch: (action: PayloadAction<any, string, any, any>) => void;
-    events: Record<string, CalendarEvent[]> = {
+  dispatch: (action: PayloadAction<any, string, any, any>) => void;
+  events: Record<string, CalendarEvent[]> = {
     scheduled: [],
     inProgress: [],
     completed: [],
   };
   eventTitle = "";
   eventDescription = "";
-  eventStatus: AllStatus = StatusType.Pending
+  eventStatus: AllStatus = StatusType.Pending;
 
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<Snapshot<Data>>(
+  snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
+    Snapshot<Data>
+  >(
     {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
     notifyCallback // Use the synchronous callback function here
-  );;
+  );
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
@@ -166,10 +178,11 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   openCalendarSettingsPage: () => void;
   openScheduleEventModal: (content: JSX.Element) => void;
   constructor() {
-    this.dispatch = useDispatch()
+    this.dispatch = useDispatch();
     this.assignedEventStore = useAssignEventStore();
     this.setDocumentReleaseStatus = this.setDocumentReleaseStatus.bind(this);
-    this.updateDocumentReleaseStatus = this.updateDocumentReleaseStatus.bind(this);
+    this.updateDocumentReleaseStatus =
+      this.updateDocumentReleaseStatus.bind(this);
     this.handleRealtimeUpdate = (
       events: Record<string, CalendarEvent[]>,
       snapshotStore: SnapshotStore<Snapshot<Data>>
@@ -186,10 +199,6 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     makeAutoObservable(this);
   }
 
-
-
-
-
   setDocumentReleaseStatus: (
     eventId: string,
     released: boolean
@@ -205,7 +214,6 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     };
   };
 
-
   updateDocumentReleaseStatus(eventId: string, released: boolean): void {
     // Instead of updating the entire 'events' object, let's update the specific event's 'documentReleased' property
     const eventsArray = this.events[eventId];
@@ -214,8 +222,6 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       event.documentReleased = released;
     }
   }
-  
-
 
   updateEventTitle(title: string): void {
     this.eventTitle = title;
@@ -225,57 +231,50 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     this.eventDescription = description;
   }
 
-  updateEventStatus(
-    eventId: string,
-    status:
-    AllStatus
-  ): void {
+  updateEventStatus(eventId: string, status: AllStatus): void {
     const eventsArray = this.events[eventId];
     if (eventsArray && eventsArray.length > 0) {
       const event = eventsArray[0]; // Accessing the first event in the array
-      event.status = status;
-
+      event.status = status as StatusType;
     }
-    if(status === CalendarStatus.Completed){
+    if (status === CalendarStatus.Completed) {
       this.completeAllEvents();
-    }
-    else{
+    } else {
       this.setDynamicNotificationMessage(
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
       );
     }
-    if(status === CalendarStatus.Scheduled){
+    if (status === CalendarStatus.Scheduled) {
       this.setDynamicNotificationMessage(
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
       );
     }
-    if(status === CalendarStatus.InProgress){
+    if (status === CalendarStatus.InProgress) {
       this.setDynamicNotificationMessage(
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
       );
     }
-    if(status === CalendarStatus.Tentative){
+    if (status === CalendarStatus.Tentative) {
       this.setDynamicNotificationMessage(
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
       );
     }
 
-    this.eventStatus = status
+    this.eventStatus = status;
   }
 
   addEventSuccess(payload: { event: CalendarEvent }): void {
     const { event } = payload;
 
     // Assuming 'event' has a valid 'status' property
-    const status: AllStatus
-      | undefined = event.status || CalendarStatus.Scheduled;
+    const status: AllStatus | undefined =
+      event.status || CalendarStatus.Scheduled;
 
     this.events = {
       ...this.events,
       [status]: [...(this.events[status] || []), event],
     };
 
-    
     // Optionally, you can trigger notifications or perform other actions on success
     this.setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
@@ -289,13 +288,13 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       return;
     }
 
-    const defaultStatus: "pending" = "pending"; // Provide a default value for status if it's undefined
+    const defaultStatus: StatusType = StatusType.Pending; // Provide a default value for status if it's undefined
 
     const newEvent: CalendarEvent = {
       id: Date.now().toString(),
       title: this.eventTitle,
       description: this.eventDescription,
-      status: this.eventStatus || defaultStatus, // Use defaultStatus if this.eventStatus is undefined
+      status: (this.eventStatus as StatusType) || defaultStatus, // Use defaultStatus if this.eventStatus is undefined
       date: new Date(),
       startDate: new Date(),
       metadata: {} as StructuredMetadata,
@@ -305,8 +304,8 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       attendees: [] as Member[],
       color: "",
       isImportant: false,
-      teamMemberId: '0',
-      priority: {} as AllStatus,
+      teamMemberId: "0",
+      priority: {} as PriorityStatus.Medium,
       _id: "",
       isActive: false,
       tags: [],
@@ -331,7 +330,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     // Reset input fields after adding an event
     this.eventTitle = "";
     this.eventDescription = "";
-    this.eventStatus = "scheduled";
+    this.eventStatus = defaultStatus;
   }
 
   removeEvent(eventId: string): void {
@@ -377,7 +376,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     // Reset input fields after adding events
     this.eventTitle = "";
     this.eventDescription = "";
-    this.eventStatus = `undefined` // Set to undefined when resetting
+    this.eventStatus = `undefined`; // Set to undefined when resetting
   }
 
   reassignEvent(eventId: string, oldUserId: string, newUserId: string): void {
@@ -436,7 +435,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       this.events = Object.keys(this.events).reduce((acc, id) => {
         acc[id] = this.events[id].map((event) => ({
           ...event,
-          status: "completed" as const, // Ensure 'completed' is the only allowed value
+          status: "completed" as StatusType,
         }));
         return acc;
       }, {} as Record<string, CalendarEvent[]>);
@@ -503,23 +502,18 @@ const useCalendarManagerStore = (): CalendarManagerStore => {
   return new CalendarManagerStoreClass();
 };
 
-
-
-
 function* fetchEventsRequest(): Generator<any, void, undefined> {
   yield { type: "CALENDAR_MANAGER/FETCH_EVENTS_REQUEST" };
 }
-
-
 
 function openCalendarSettingsPage(): void {
   // Open the settings page
   // You can add additional logic or trigger notifications as needed
   useModalFunctions().setIsModalOpen(true);
-  
+
   // Render the CalendarSettingsPage component to a JSX element
   const calendarSettingsPageElement = <CalendarSettingsPage />;
-  
+
   // Pass the JSX element directly to setModalContent
   useModalFunctions().setModalContent(calendarSettingsPageElement);
 }
@@ -571,17 +565,17 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
     videoThumbnail: "",
     videoDuration: 0,
     videoData: {} as VideoData,
-    ideas: []
+    ideas: [],
   };
 
   // Iterate over each key-value pair in the events object
   Object.entries(events).forEach(([key, eventArray]) => {
     // Convert each event to the desired format and store it in the convertedData object
-    convertedData[key] = eventArray.map(event => ({
+    convertedData[key] = eventArray.map((event) => ({
       id: event.id,
       title: event.title,
       start: event.startDate,
-      end: event.endDate
+      end: event.endDate,
       // Add other properties as needed
     }));
   });
@@ -591,12 +585,12 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
 
 // Example usage:
 export const events: Record<string, CalendarEvent[]> = {
-  '2024-02-08': [
+  "2024-02-08": [
     {
       _id: "",
-      id: '1',
-      title: 'Meeting',
-      date: new Date('2024-02-08T09:00:00'),
+      id: "1",
+      title: "Meeting",
+      date: new Date("2024-02-08T09:00:00"),
       startDate: new Date(),
       endDate: new Date(),
       metadata: {} as StructuredMetadata,
@@ -604,12 +598,12 @@ export const events: Record<string, CalendarEvent[]> = {
       host: {} as Member,
       color: "",
       isImportant: false,
-      teamMemberId: '0',
-      status: "pending",
+      teamMemberId: "0",
+      status: StatusType.Pending,
       isCompleted: false,
       isActive: false,
       tags: [],
-      priority: {} as AllStatus,
+      priority: {} as PriorityStatus.High,
       phase: null,
       participants: [],
       then: (callback: (newData: Snapshot<Data>) => void) => {
@@ -623,22 +617,19 @@ export const events: Record<string, CalendarEvent[]> = {
       analysisType: {} as AnalysisTypeEnum,
       analysisResults: [],
       videoData: {} as VideoData,
-      content:'content',
-       topics: [],
-       highlights: [],
-       files: [],
-       options: getDefaultDocumentOptions(),
+      content: "content",
+      topics: [],
+      highlights: [],
+      files: [],
+      options: getDefaultDocumentOptions(),
     },
     // Add more events for other dates as needed
   ],
   // Add more dates with corresponding events as needed
 };
 
-
-
 export const calendarEvent: CalendarEvent = {} as CalendarEvent;
-//  
-
+//
 
 export const convertedData = convertEventsToData(events);
 console.log(convertedData);

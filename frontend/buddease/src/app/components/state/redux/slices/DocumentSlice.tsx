@@ -1,20 +1,19 @@
 // DocumentSlice.tsx
 import { fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
-import { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
+import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentStatus } from "@/app/components/documents/types";
 import useDataExport from "@/app/components/hooks/dataHooks/useDataExport";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppThunk } from "@/app/configs/appThunk";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -262,13 +261,11 @@ export const exportDocumentsAsync = createAsyncThunk(
 
 // Define the transformations object and applyTransformation function
 const applyTransformation = (
-  document: WritableDraft<DocumentData> | undefined,
+  document: DocumentData,
   transformation: (doc: DocumentData, value: string) => void,
   value: string
 ) => {
-  if (document) {
-    transformation(document, value);
-  }
+  transformation(document, value);
 };
 
 const transformations = {
@@ -1234,21 +1231,27 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
     tagDocument: (state, action: PayloadAction<{ documentId: number; tag: string }>) => {
       const { documentId, tag } = action.payload;
       const documentToTag = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToTag, transformations.tag, tag);
+      if (documentToTag) {
+        applyTransformation(documentToTag, transformations.tag, tag);
+      }
     },
 
     tagDocuments: (state, action: PayloadAction<{ documentIds: number[]; tag: string }>) => { 
       const { documentIds, tag } = action.payload;
       documentIds.forEach(documentId => {
         const documentToTag = state.documents.find(doc => doc.id === documentId);
-        applyTransformation(documentToTag, transformations.tag, tag);
+        if(documentToTag){
+          applyTransformation(documentToTag, transformations.tag, tag)
+        }
       });
     },
 
     categorizeDocument: (state, action: PayloadAction<{ documentId: number; category: string }>) => {
       const { documentId, category } = action.payload;
       const documentToCategorize = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToCategorize, transformations.categorize, category);
+      if(documentToCategorize){
+        applyTransformation(documentToCategorize, transformations.categorize, category)
+      }
     },
 
 
@@ -1256,287 +1259,337 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentIds, category } = action.payload;
       documentIds.forEach(documentId => {
         const documentToCategorize = state.documents.find(doc => doc.id === documentId);
+        if(documentToCategorize){
         applyTransformation(documentToCategorize, transformations.categorize, category);
-      });
+      }});
     },
 
+    
     customizeDocumentView: (state, action: PayloadAction<{ documentId: number; view: string }>) => {
       const { documentId, view } = action.payload;
       const documentToCustomize = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToCustomize, transformations.customizeView, view);
+      if (documentToCustomize) {
+        applyTransformation(documentToCustomize, transformations.customizeView, view);
+      }
     },
-
+    
     commentOnDocument: (state, action: PayloadAction<{ documentId: number; comment: string }>) => {
       const { documentId, comment } = action.payload;
       const documentToComment = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToComment, transformations.comment, comment);
+      if (documentToComment) {
+        applyTransformation(documentToComment, transformations.comment, comment);
+      }
     },
-
+    
     mentionUserInDocument: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToMention = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToMention, transformations.mention, user);
+      if (documentToMention) {
+        applyTransformation(documentToMention, transformations.mention, user);
+      }
     },
-
+    
     assignTaskInDocument: (state, action: PayloadAction<{ documentId: number; task: string }>) => {
       const { documentId, task } = action.payload;
       const documentToAssign = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToAssign, transformations.assignTask, task);
+      if (documentToAssign) {
+        applyTransformation(documentToAssign, transformations.assignTask, task);
+      }
     },
-
+    
     requestReviewOfDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToReview, transformations.requestReview, reviewer);
+      if (documentToReview) {
+        applyTransformation(documentToReview, transformations.requestReview, reviewer);
+      }
     },
-
+    
     approveDocument: (state, action: PayloadAction<{ documentId: number; approver: string }>) => {
       const { documentId, approver } = action.payload;
       const documentToApprove = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToApprove, transformations.approve, approver);
+      if (documentToApprove) {
+        applyTransformation(documentToApprove, transformations.approve, approver);
+      }
     },
-
+    
     rejectDocument: (state, action: PayloadAction<{ documentId: number; rejector: string }>) => {
       const { documentId, rejector } = action.payload;
       const documentToReject = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToReject, transformations.reject, rejector);
+      if (documentToReject) {
+        applyTransformation(documentToReject, transformations.reject, rejector);
+      }
     },
-
 
     requestFeedbackOnDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToReview, transformations.requestFeedback, reviewer);
+      if (documentToReview) {
+        applyTransformation(documentToReview, transformations.requestFeedback, reviewer);
+      }
     },
-
-
+    
     provideFeedbackOnDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToReview, transformations.provideFeedback, reviewer);
+      if (documentToReview) {
+        applyTransformation(documentToReview, transformations.provideFeedback, reviewer);
+      }
     },
-
-
-
+    
     resolveFeedbackOnDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToReview, transformations.resolveFeedback, reviewer);
+      if (documentToReview) {
+        applyTransformation(documentToReview, transformations.resolveFeedback, reviewer);
+      }
     },
-
-
+    
     collaborativeEditing: (state, action: PayloadAction<{ documentId: number; collaborator: string }>) => {
       const { documentId, collaborator } = action.payload;
       const documentToCollaborate = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToCollaborate, transformations.collaborate, collaborator);
+      if (documentToCollaborate) {
+        applyTransformation(documentToCollaborate, transformations.collaborate, collaborator);
+      }
     },
-
-
-  smartDocumentTagging: (state, action: PayloadAction<{ documentId: number; tag: string }>) => { 
-    const { documentId, tag } = action.payload;
-    const documentToTag = state.documents.find(doc => doc.id === documentId);
-    applyTransformation(documentToTag, transformations.tag, tag);
-  
+    
+    smartDocumentTagging: (state, action: PayloadAction<{ documentId: number; tag: string }>) => {
+      const { documentId, tag } = action.payload;
+      const documentToTag = state.documents.find(doc => doc.id === documentId);
+      if (documentToTag) {
+        applyTransformation(documentToTag, transformations.tag, tag);
+      }
     },
-  
-  
-    documentAnnotation: (state, action: PayloadAction<{ documentId: number; annotation: string }>) => { 
+    
+    documentAnnotation: (state, action: PayloadAction<{ documentId: number; annotation: string }>) => {
       const { documentId, annotation } = action.payload;
       const documentToAnnotate = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToAnnotate, transformations.annotate, annotation);
+      if (documentToAnnotate) {
+        applyTransformation(documentToAnnotate, transformations.annotate, annotation);
+      }
     },
-
-
+    
     documentActivityLogging: (state, action: PayloadAction<{ documentId: number; activity: string }>) => {
       const { documentId, activity } = action.payload;
       const documentToLog = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToLog, transformations.logActivity, activity);
+      if (documentToLog) {
+        applyTransformation(documentToLog, transformations.logActivity, activity);
+      }
     },
-
-
+    
     intelligentDocumentSearch: (state, action: PayloadAction<{ documentId: number; search: string }>) => {
       const { documentId, search } = action.payload;
       const documentToSearch = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToSearch, transformations.search, search);
+      if (documentToSearch) {
+        applyTransformation(documentToSearch, transformations.search, search);
+      }
     },
-
-
+    
     createDocumentVersion: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
       const { documentId, version } = action.payload;
       const documentToVersion = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToVersion, transformations.version, version);
+      if (documentToVersion) {
+        applyTransformation(documentToVersion, transformations.version, version);
+      }
     },
-
+    
     revertToDocumentVersion: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
       const { documentId, version } = action.payload;
       const documentToRevert = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToRevert, transformations.revert, version);
+      if (documentToRevert) {
+        applyTransformation(documentToRevert, transformations.revert, version);
+      }
     },
+    
 
 
-    viewDocumentHistory: (state, action: PayloadAction<{ documentId: number; version: string }>) => { 
+    viewDocumentHistory: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
       const { documentId, version } = action.payload;
       const documentToView = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToView, transformations.viewHistory, version);
+      if (documentToView) {
+        applyTransformation(documentToView, transformations.viewHistory, version);
+      }
     },
-
-
-    documentVersionComparison: (state, action: PayloadAction<{ documentId: number; version: string }>) => { 
+    
+    documentVersionComparison: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
       const { documentId, version } = action.payload;
       const documentToCompare = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToCompare, transformations.compare, version);
+      if (documentToCompare) {
+        applyTransformation(documentToCompare, transformations.compare, version);
+      }
     },
-
-
-
-  // Access control and permissions actions
-    grantDocumentAccess: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    grantDocumentAccess: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToGrant = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToGrant, transformations.grantAccess, user);
+      if (documentToGrant) {
+        applyTransformation(documentToGrant, transformations.grantAccess, user);
+      }
     },
-
-
-
-    revokeDocumentAccess: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    revokeDocumentAccess: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToRevoke = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToRevoke, transformations.revokeAccess, user);
+      if (documentToRevoke) {
+        applyTransformation(documentToRevoke, transformations.revokeAccess, user);
+      }
     },
-
-
-    manageDocumentPermissions: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    manageDocumentPermissions: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToManage = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToManage, transformations.managePermissions, user);
+      if (documentToManage) {
+        applyTransformation(documentToManage, transformations.managePermissions, user);
+      }
     },
-
-
-
-
-    initiateDocumentWorkflow: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    initiateDocumentWorkflow: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToInitiate = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToInitiate, transformations.initiateWorkflow, user);
+      if (documentToInitiate) {
+        applyTransformation(documentToInitiate, transformations.initiateWorkflow, user);
+      }
     },
-
-    automateDocumentTasks: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    automateDocumentTasks: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToAutomate = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToAutomate, transformations.automateTasks, user);
+      if (documentToAutomate) {
+        applyTransformation(documentToAutomate, transformations.automateTasks, user);
+      }
     },
-
+    
     triggerDocumentEvents: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToTrigger = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToTrigger, transformations.triggerEvents, user);
+      if (documentToTrigger) {
+        applyTransformation(documentToTrigger, transformations.triggerEvents, user);
+      }
     },
-
-    documentApprovalWorkflow: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    documentApprovalWorkflow: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToApprove = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToApprove, transformations.approvalWorkflow, user);
+      if (documentToApprove) {
+        applyTransformation(documentToApprove, transformations.approvalWorkflow, user);
+      }
     },
-
     
-  documentLifecycleManagement: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
-    const { documentId, user } = action.payload;
-    const documentToManage = state.documents.find(doc => doc.id === documentId);
-    applyTransformation(documentToManage, transformations.lifecycleManagement, user);
-  },
-
-
-
-
-    connectWithExternalSystem: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    documentLifecycleManagement: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+      const { documentId, user } = action.payload;
+      const documentToManage = state.documents.find(doc => doc.id === documentId);
+      if (documentToManage) {
+        applyTransformation(documentToManage, transformations.lifecycleManagement, user);
+      }
+    },
+    
+    connectWithExternalSystem: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToConnect = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToConnect, transformations.connectWithExternalSystem, user);
+      if (documentToConnect) {
+        applyTransformation(documentToConnect, transformations.connectWithExternalSystem, user);
+      }
     },
-  
-
-
-    synchronizeWithCloudStorage: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    synchronizeWithCloudStorage: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToSynchronize = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToSynchronize, transformations.synchronizeWithCloudStorage, user);
+      if (documentToSynchronize) {
+        applyTransformation(documentToSynchronize, transformations.synchronizeWithCloudStorage, user);
+      }
     },
+    
 
 
 
     importFromExternalSource: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToImport = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToImport, transformations.importFromExternalSource, user);
+      if (documentToImport) {
+        applyTransformation(documentToImport, transformations.importFromExternalSource, user);
+      }
     },
-
-    exportToExternalSystem: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    exportToExternalSystem: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToExport = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToExport, transformations.exportToExternalSystem, user);
+      if (documentToExport) {
+        applyTransformation(documentToExport, transformations.exportToExternalSystem, user);
+      }
     },
-
-
-
-  generateDocumentReport: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+    
+    generateDocumentReport: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToGenerate = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToGenerate, transformations.generateReport, user);
-
-  },
-  exportDocumentReport: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+      if (documentToGenerate) {
+        applyTransformation(documentToGenerate, transformations.generateReport, user);
+      }
+    },
+    
+    exportDocumentReport: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToExport = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToExport, transformations.exportReport, user);
-  },
-  
-
-  scheduleReportGeneration: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+      if (documentToExport) {
+        applyTransformation(documentToExport, transformations.exportReport, user);
+      }
+    },
+    
+    scheduleReportGeneration: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToSchedule = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToSchedule, transformations.scheduleReportGeneration, user);
-  },
-  
-  customizeReportSettings: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+      if (documentToSchedule) {
+        applyTransformation(documentToSchedule, transformations.scheduleReportGeneration, user);
+      }
+    },
+    
+    customizeReportSettings: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToCustomize = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToCustomize, transformations.customizeReportSettings, user);
-  },
-  
-
-  backupDocuments: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
-    const { documentId, user } = action.payload;
-    const documentToBackup = state.documents.find(doc => doc.id === documentId);
-    applyTransformation(documentToBackup, transformations.backupDocuments, user);
-  },
-
-
-  retrieveBackup: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
-    const { documentId, user } = action.payload;
-    const documentToRetrieve = state.documents.find(doc => doc.id === documentId);
-    applyTransformation(documentToRetrieve, transformations.retrieveBackup, user);
+      if (documentToCustomize) {
+        applyTransformation(documentToCustomize, transformations.customizeReportSettings, user);
+      }
     },
-  
-  
-  
-    documentRedaction: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    backupDocuments: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+      const { documentId, user } = action.payload;
+      const documentToBackup = state.documents.find(doc => doc.id === documentId);
+      if (documentToBackup) {
+        applyTransformation(documentToBackup, transformations.backupDocuments, user);
+      }
+    },
+    
+    retrieveBackup: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+      const { documentId, user } = action.payload;
+      const documentToRetrieve = state.documents.find(doc => doc.id === documentId);
+      if (documentToRetrieve) {
+        applyTransformation(documentToRetrieve, transformations.retrieveBackup, user);
+      }
+    },
+    
+    documentRedaction: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToRedact = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToRedact, transformations.redaction, user);
+      if (documentToRedact) {
+        applyTransformation(documentToRedact, transformations.redaction, user);
+      }
     },
-    documentAccessControls: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    documentAccessControls: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToControl = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToControl, transformations.accessControls, user);
+      if (documentToControl) {
+        applyTransformation(documentToControl, transformations.accessControls, user);
+      }
     },
-
-
-    documentTemplates: (state, action: PayloadAction<{ documentId: number; user: string }>) => { 
+    
+    documentTemplates: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToTemplate = state.documents.find(doc => doc.id === documentId);
-      applyTransformation(documentToTemplate, transformations.templates, user);
+      if (documentToTemplate) {
+        applyTransformation(documentToTemplate, transformations.templates, user);
+      }
     },
-
+    
   },
     
 

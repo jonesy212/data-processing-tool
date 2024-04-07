@@ -6,7 +6,7 @@ import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 
 
 // Define your custom hook function
-const useIdleTimeout = () => {
+const useIdleTimeout = (props: any) => {
   const startIdleTimeout = () => {
     // Start the idle timeout
     resetIdleTimeout();

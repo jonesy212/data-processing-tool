@@ -1,10 +1,11 @@
 // Assuming you have an interface for the User and Team models as well
-import { Pool, PoolConfig, QueryResult } from 'pg';
+import { Pool, PoolConfig, QueryArrayResult, QueryConfig, QueryConfigValues, QueryResult, QueryResultRow } from 'pg';
 
 import { AxiosResponse } from "axios";
 import { Team } from "../../models/teams/Team";
 import axiosInstance from "../../security/csrfToken";
 import Connection from "../../database/Connection";
+import { da } from '@faker-js/faker';
 
 interface DatasetModel {
     id: number;
@@ -43,8 +44,6 @@ const dataset: DatasetModel = {
 
 
 
-
-
 class DatabaseClient {
   private pool: Pool;
 
@@ -66,18 +65,45 @@ class DatabaseClient {
     }
   }
 
-  // Method to execute a query
-  async query(sql: string, values?: any[]): Promise<any> {
+  async insert(dataset: DatasetModel): Promise<any> {
     try {
-      const result: QueryResult<any> = await this.pool.query(sql, values);
-
-      console.log('Query executed successfully:', sql);
-      return result.rows;
+      const sql =
+        "INSERT INTO table_name VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *";
+      const values = [
+        dataset.name,
+        dataset.description,
+        dataset.filePathOrUrl,
+        dataset.uploadedBy,
+        dataset.uploadedAt,
+        dataset.tagsOrCategories,
+        dataset.format,
+        dataset.visibility,
+        dataset.uploadedByTeamId,
+      ];
+      const result = await this.pool.query(sql, [values]);
+      return result.rows[0];
     } catch (error) {
-      console.error('Error executing query:', error);
+      console.error("Error inserting dataset:", error);
       throw error;
     }
   }
+  
+
+// Method to execute a query
+async query<R extends QueryResultRow = any, I = any[]>(queryTextOrConfig: string | QueryConfig<I>, values?: QueryConfigValues<I>): Promise<QueryResult<R>> {
+  try {
+    const result: QueryResult<R> = await this.pool.query(queryTextOrConfig, values);
+
+    console.log('Query executed successfully:', queryTextOrConfig);
+    return result;
+  } catch (error) {
+    console.error('Error executing query:', error);
+    throw error;
+  }
+}
+
+
+
 
   // Method to close the database connection
   async close(): Promise<void> {

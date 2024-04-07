@@ -1,7 +1,6 @@
 // TestScenarios.js
-
 // Import necessary modules
-const TestBuilder = require('./TestBuilder'); // Assuming TestBuilder is the module for the test builder
+import TestBuilder from './TestBuilder'; // Assuming TestBuilder is the module for the test builder
 
 // Define test scenarios using the Test Builder
 const testScenarios = () => {
@@ -57,4 +56,4 @@ const testScenarios = () => {
 testScenarios();
 
 // Export the function if needed
-module.exports = testScenarios;
+export default testScenarios;

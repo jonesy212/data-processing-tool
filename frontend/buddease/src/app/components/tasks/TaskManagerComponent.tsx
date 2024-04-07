@@ -28,7 +28,7 @@ import TaskList from "../lists/TaskList";
 
 interface TaskAssignmentProps {
   taskId: () => string;
-  newTitle: () => string;
+  newTitle: (newTitle: string) => string;
   task: Task;
 }
 

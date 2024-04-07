@@ -182,6 +182,7 @@ private getDefaultApiConfig(): ApiConfig {
       backend: backendConfig,
       aquaConfig:{} as AquaConfig,
       storeConfig: {} as StoreConfig,
+      configureScript: () => {}
     }
     return defaultConfig;
   }
@@ -209,6 +210,7 @@ private getDefaultApiConfig(): ApiConfig {
       thirdPartyLibrary: "example-library",
       thirdPartyAPIKey: "your-api-key",
       nonce: "random-nonce-value",
+      configureScript: () => {}
     };
 
     const aquaConfig: AquaConfig = {
@@ -269,6 +271,7 @@ private getDefaultApiConfig(): ApiConfig {
         // Merge default configuration with custom ApiConfig properties
         ...defaultConfig,
         apiConfig: customApiConfig,
+        configureScript: () => { }
         // Add more custom properties for this case
       };
     }
@@ -385,3 +388,4 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
 const configurationService = ConfigurationService.getInstance();
 
 export default configurationService;
+export type {ConfigurationOptions}

@@ -124,6 +124,7 @@ export const endpoints: Endpoints = {
     participateInCommunityChallenges:
       "/api/client/community/challenges/participate", // Endpoint to participate in community challenges
     listRewards: "/api/client/rewards", // Endpoint to list rewards earned by the client
+    listFiles: "/api/client/files", // Endpoint to list files shared with the
     // Add more client-specific endpoints related to tenant interaction or communication with businesses
   },
 

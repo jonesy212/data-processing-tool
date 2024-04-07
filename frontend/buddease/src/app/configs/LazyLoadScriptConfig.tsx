@@ -1,4 +1,5 @@
 import MainConfig from "@/app/configs/MainConfig";
+import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
@@ -8,11 +9,11 @@ import { ApiConfig } from "./ConfigurationService";
 import { DataVersions } from "./DataVersionsConfig";
 import { DocumentBuilderConfig } from "./DocumentBuilderConfig";
 import { FrontendConfig, frontendConfig } from "./FrontendConfig";
-import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
 import { AppStructureItem } from "./appStructure/AppStructure";
 
 // LazyLoadScriptConfig.ts
 interface LazyLoadScriptConfig {
+  configureScript(): unknown;
   // Configuration properties related to lazy loading scripts
   timeout?: number; // Timeout for script loading in milliseconds
   retryCount?: number; // Retry count in case of script loading failure
@@ -38,6 +39,10 @@ interface LazyLoadScriptConfig {
 }
 
 class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
+  configureScript(): unknown {
+    // Implementation logic for configuring the script
+    return {};
+  }
   timeout?: number;
   retryCount?: number;
   retryDelay?: number;
@@ -88,6 +93,8 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
       nonce,
       apiConfig,
       namingConventions,
+      traverseDirectory,
+      appStructureItem,
     }: {
       timeout?: number;
       onLoad?: () => void;
@@ -106,7 +113,9 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
       apiConfig?: ApiConfig;
       namingConventions?: string[];
       projectPath?: string;
-      // Correct type for traverseDirectory
+        traverseDirectory: (path: string) => Promise<AppStructureItem[]>;
+        configureScript: (item: AppStructureItem) => void;
+      appStructureItem: AppStructureItem;
     }
   ) {
     this.timeout = timeout;
@@ -130,7 +139,8 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
 }
 
 export const lazyLoadScriptConfig: LazyLoadScriptConfig =
-  new LazyLoadScriptConfigImpl("projectPath", {
+  new LazyLoadScriptConfigImpl("projectPath",
+    {
     timeout: 5000, // Example value for timeout in milliseconds
     onLoad: () => {
       console.log("Script loaded successfully.");
@@ -144,6 +154,14 @@ export const lazyLoadScriptConfig: LazyLoadScriptConfig =
       console.error("Script loading error:", error);
     },
     // Add more properties as needed
+    appStructureItem: {
+      path: "", // Provide appropriate path value
+      content: "", // Provide appropriate content value
+    },
+    traverseDirectory: async (path: string) => { 
+      return traverseDirectory(path);
+    },
+      configureScript: (item) => { }
   });
 
 export default LazyLoadScriptConfigImpl;

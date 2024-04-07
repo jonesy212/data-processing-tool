@@ -33,7 +33,10 @@ type ComponentsConfig = {
 
 // Update the ThemeConfig interface
 interface ThemeConfig {
-  primaryColor: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  fontSize?: string
+  fontFamily?: string
   infoColor: string;
   fonts?: { [key: string]: string };
   colors?: { [key: string]: string };

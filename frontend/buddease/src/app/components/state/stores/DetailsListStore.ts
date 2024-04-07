@@ -32,11 +32,6 @@ export type AllStatus = StatusType
   | TeamStatus
   | DocumentStatus
   | PriorityStatus
-  | CalendarStatus;
-  
-
-  ;
-
 // Define a generic interface for details
 interface DetailsItem<T> extends DataDetails {
   id: string;

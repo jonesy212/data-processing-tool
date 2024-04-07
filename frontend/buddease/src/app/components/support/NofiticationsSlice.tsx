@@ -4,8 +4,8 @@ import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { Data } from '../models/data/Data';
 import { LogData } from '../models/LogData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
-import { NotificationType, NotificationTypeEnum } from './NotificationContext';
 import { AllStatus } from '../state/stores/DetailsListStore';
+import { NotificationType, NotificationTypeEnum } from './NotificationContext';
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -23,12 +23,13 @@ interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   createdAt: Date;
   content: string;
   type: NotificationType;
-  updatedAt?: Date;
-  status?: AllStatus
-  completionMessageLog: LogData;
-  notificationType?: NotificationTypeEnum;
   sendStatus: SendStatus; // Add sendStatus property
-
+  completionMessageLog: LogData;
+  updatedAt?: Date;
+  email?: string;
+  status?: AllStatus
+  inApp?: boolean; // Add inApp property to differentiate push vs in-app
+  notificationType?: NotificationTypeEnum;
 }
 
 interface NotificationsState {
@@ -59,7 +60,9 @@ export const dispatchNotification = (
         type: NotificationTypeEnum.Info,
         message: successMessage,
         status: "tentative",
-        sendStatus: "Sent"
+        sendStatus: "Sent",
+        email: "test@email.com",
+        inApp: true
       })
     );
   } catch (error) {
@@ -73,7 +76,9 @@ export const dispatchNotification = (
         type: NotificationTypeEnum.Error,
         message: errorMessage + ": " + error,
         status: "tentative",
-        sendStatus: "Error"
+        sendStatus: "Error",
+        email: "test@email.com",
+        inApp: true
       })
     );
   }

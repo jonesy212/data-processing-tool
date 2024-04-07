@@ -196,4 +196,5 @@ trackStructureChanges(basePath, metadataFilePath, {}); // Pass an empty object a
 
 export type { ProjectMetadata, StructuredMetadata, VideoMetadata };
 
-export default ProjectMetadata;state;
+export default ProjectMetadata;
+export {state};

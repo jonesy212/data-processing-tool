@@ -15,7 +15,6 @@ import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
 import { formatCalendarAsXLSX } from "./formatCalendarAsXLSX";
 import { useDispatch } from "react-redux";
 import axiosInstance from "../security/csrfToken";
-import { CalendarActions } from "../actions/CalendarEventActions";
  
 
 // Define a union type for calendar events

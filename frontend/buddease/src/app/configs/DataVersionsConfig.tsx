@@ -1,9 +1,3 @@
-// configs/DataVersionsComponent.ts
-
-let fs: any;
-if (typeof window === 'undefined') {
-  fs = require('fs');
-}
 import * as path from 'path';
 import React from 'react';
 
@@ -13,52 +7,46 @@ interface DataVersionsProps {
 
 interface DataVersions {
   [key: string]: number;
- 
 }
 
-
-// config/dataVersions.ts
-export const dataVersions: DataVersions = {
-  users: 0,
-  products: 0,
-  authentication: 0,
-  company: 0,
-  tasks: 0,
-  todos: 0,
-  calendar: 0,
-  chat: 0,
-  bookmarks: 0,
-  notifications: 0,
-  messages: 0,
-  
-};
-
-
 const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath }) => {
-  const dataVersions: DataVersions = {};
+  const [dataVersions, setDataVersions] = React.useState<DataVersions>({});
 
-  const traverseDirectory = (dir: string) => {
-    const files = fs.readdirSync(dir);
+  React.useEffect(() => {
+    // Check if 'fs' is available (only in server-side)
+    if (typeof window === 'undefined') {
+      import('fs').then((fsModule) => {
+        const fs = fsModule.default;
+        const versions: DataVersions = {};
 
-    for (const file of files) {
-      const filePath = path.join(dir, file);
-      const isDirectory = fs.statSync(filePath).isDirectory();
+        const traverseDirectory = (dir: string) => {
+          const files = fs.readdirSync(dir);
 
-      if (isDirectory) {
-        traverseDirectory(filePath);
-      } else {
-        // Logic to parse file and update dataVersions accordingly
-        // Example: if (file.endsWith('.json')) { /* update dataVersions */ }
-        if (file.endsWith('.json')) {
-          const dataKey = path.basename(file, path.extname(file));
-          dataVersions[dataKey] = 0; // Initialize with 0, you can customize this based on your needs
-        }
-      }
+          for (const file of files) {
+            const filePath = path.join(dir, file);
+            const isDirectory = fs.statSync(filePath).isDirectory();
+
+            if (isDirectory) {
+              traverseDirectory(filePath);
+            } else {
+              // Logic to parse file and update dataVersions accordingly
+              // Example: if (file.endsWith('.json')) { /* update dataVersions */ }
+              if (file.endsWith('.json')) {
+                const dataKey = path.basename(file, path.extname(file));
+                versions[dataKey] = 0; // Initialize with 0, you can customize this based on your needs
+              }
+            }
+          }
+        };
+
+        // Update the file path based on the provided dataPath
+        traverseDirectory(dataPath);
+        setDataVersions(versions);
+      });
+    } else {
+      console.error("'fs' module can only be used in a Node.js environment.");
     }
-  };
-
-  // Update the file path based on the provided dataPath
-  traverseDirectory(dataPath);
+  }, [dataPath]);
 
   return (
     <div>

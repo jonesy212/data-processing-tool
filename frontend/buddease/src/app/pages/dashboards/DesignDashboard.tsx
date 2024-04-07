@@ -93,9 +93,11 @@ import UserDetails, { User, UserData } from "@/app/components/users/User";
 
 import ApiConfigComponent from "@/app/components/api/ApiConfigComponent";
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
+import FrontendStructureViewer from "@/app/components/development/FrontendStructureViewer";
 import DocumentBuilderConfigComponent from "@/app/components/documents/DocumentBuilderConfigComponent";
 import { LogData } from "@/app/components/models/LogData";
 import DataProcessingComponent from "@/app/components/models/data/DataProcessingComponent";
+import { Task } from "@/app/components/models/tasks/Task";
 import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
 import ProjectPhaseComponent from "@/app/components/projects/projectManagement/ProjectPhaseComponent";
 import { saveProfile } from "@/app/components/snapshots/userSnapshotData";
@@ -104,8 +106,8 @@ import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import { NotificationType, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import { notificationData } from "@/app/components/support/NotificationProvider";
-import {PermissionsEditor} from "@/app/components/users/PermissionsEditor";
-import  UserRolesEditor  from "@/app/components/users/UserRolesEditor";
+import { PermissionsEditor } from "@/app/components/users/PermissionsEditor";
+import UserRolesEditor from "@/app/components/users/UserRolesEditor";
 import { BackendConfig, backendConfig } from "@/app/configs/BackendConfig";
 import BackendConfigComponent from "@/app/configs/BackendConfigComponent";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
@@ -113,6 +115,7 @@ import DetermineFileType from "@/app/configs/DetermineFileType";
 import { DocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
 import { FrontendConfig, frontendConfig } from "@/app/configs/FrontendConfig";
 import FrontendConfigComponent from "@/app/configs/FrontendConfigComponent";
+import FrontendDocumentConfig from "@/app/configs/FrontendDocumentConfig";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
@@ -132,9 +135,14 @@ import DataPreview, {
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
-import { taskManagerSlice } from "@/app/components/state/redux/slices/TaskSlice";
+import { GenerateUserPreferences } from "@/app/configs/GenerateUserPreferences";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { Task } from "@/app/components/models/tasks/Task";
+import { lazyLoadScriptConfig } from "@/app/configs/LazyLoadScriptConfig";
+import VersioningComponent from "@/app/components/hooks/VersioningComponent";
+import { Events } from "pg";
+import StructuredMetadataViewer from "@/app/components/development/MetadataViewer";
+import MetadataViewer from "@/app/components/development/MetadataViewer";
+import { metadata } from '../../layout';
 
 
 interface DynamicComponentWrapperProps<T> {
@@ -371,11 +379,20 @@ const DesignDashboard: React.FC<{
     };
   }
 
-
-  const handleNewTitleChange = (newTitle: string) => { 
+  const setTitle = (newTitle: string) => { 
     setTitle(newTitle);
   }
 
+  const handleNewTitleChange = (newTitle: string) => newTitle
+
+
+
+
+  useEffect(() => {
+
+    lazyLoadScriptConfig.configureScript(); // Assuming configure() is the method to configure lazy loading scripts
+
+  }, [])
   return (
     <>
       <h1>Dev/Design Dashboard</h1>
@@ -511,7 +528,7 @@ const DesignDashboard: React.FC<{
       />
       <TaskAssignmentSnapshot taskId={"taskSnapshotId"} />
       <TaskManagerComponent
-        newTitle={() => "New Title"}
+        newTitle={handleNewTitleChange}
         task={{} as Task}
         taskId={() => "taskId"} />
       <TodoList />
@@ -545,11 +562,9 @@ const DesignDashboard: React.FC<{
         config={{} as DocumentBuilderConfig}
       />
       <FrontendDocumentConfig />
-      <FrontendStructure
-        
-      />
+      <FrontendStructureViewer frontendStructure={frontendStructure} />
+
       <GenerateUserPreferences />
-      <lazyLoadScriptConfig />
       <MainConfig
         frontendStructure={frontendStructure}
         backendStructure={backendStructure}
@@ -557,7 +572,9 @@ const DesignDashboard: React.FC<{
         backendConfig={backendConfig}
         
       />
-      <StructuredMetadata />
+      <MetadataViewer
+        metadata={{}}
+      />
       <UpdatePreference />
       <UserPreferences />
       <UserSettings />
@@ -581,7 +598,7 @@ const DesignDashboard: React.FC<{
 
       {/* Miscellaneous */}
       <Documentation />
-      <Versioning version={""} />
+      <VersioningComponent version={""} />
       <generateNewTask />
       <getUserIdeaFromForm />
       <Clipboard />

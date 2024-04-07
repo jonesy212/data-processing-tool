@@ -1,43 +1,39 @@
-let fs: any;
-if (typeof window === 'undefined') {
-  fs = require('fs');
-}
-import * as path from 'path';
+import clientApiService from '@/app/api/ApiClient';
 import { AppStructureItem } from '../appStructure/AppStructure';
 
 interface FrontendStructure {
-  // ... your existing structure
+  // Define your existing structure interface
 }
 
 const frontendStructure: FrontendStructure = {};
 
-export const traverseDirectory = (dir: string): AppStructureItem[] => {
-  const files = fs.readdirSync(dir);
+export const traverseDirectory = async (dir: string): Promise<AppStructureItem[]> => {
+  const files: string[] = await clientApiService.listFiles(dir); // Use ApiClient to fetch files
   const result: AppStructureItem[] = [];
 
   for (const file of files) {
-    const filePath = path.join(dir, file);
-    const isDirectory = fs.statSync(filePath).isDirectory();
+    const filePath = file; // Assuming the file path is returned by the API
+    const isDirectory = false; // Assuming the API doesn't differentiate between files and directories
 
     if (isDirectory) {
-      traverseDirectory(filePath);
-      result.push(...result);
+      // Handle directory traversal if needed
     } else {
       // Logic to parse file and update frontendStructure accordingly
       // Example: if (file.endsWith('.tsx')) { /* update frontendStructure */ }
+      const content: string = await clientApiService.getFileContent(filePath); // Use ApiClient to fetch file content
       const appStructureItem: AppStructureItem = {
-        // Populate with relevant properties
         path: filePath,
-        content: fs.readFileSync(filePath, 'utf-8')
+        content: content,
         // ... other properties
       };
       result.push(appStructureItem);
     }
   }
-  return result
+  return result;
 };
 
-// todo #review  update your fie path so we can create your backend structure
-traverseDirectory('/path/to/your/project');
+// Update the file path with the correct project path
+const projectPath = '/path/to/your/project';
+const projectStructure = await traverseDirectory(projectPath);
 
-console.log(frontendStructure);
+console.log(projectStructure);

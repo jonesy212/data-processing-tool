@@ -67,7 +67,7 @@ export const CalendarActions = {
   shareEventSuccess: createAction<{ eventId: "view" | "edit" | "comment" }>("shareEventSuccess"),
   shareEventFailure: createAction<{ error: string }>("shareEventFailure"),
 
-
+  syncCalendarWithExternalCalendars: createAction<void>("syncCalendarWithExternalCalendars"),
 
 
   shareCalendar: createAction<string[]>("shareCalendar"),

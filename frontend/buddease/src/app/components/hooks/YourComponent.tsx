@@ -1,23 +1,28 @@
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
-import { DataAnalysisAction } from "@/app/typings/dataAnalysisTypes";
 import React, { useEffect, useState } from "react";
-import { useCalendarContext } from "../calendar/CalendarContext";
+import {
+  SimpleCalendarEvent,
+  useCalendarContext,
+} from "../calendar/CalendarContext";
 import DynamicContent from "../documents/DynamicContent";
+import { DataDetails } from "../models/data/Data";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar, { ProgressPhase } from "../models/tracker/ProgressBar";
 import { Tracker } from "../models/tracker/Tracker";
-import useNotificationManagerService, { NotificationManagerServiceProps } from "../notifications/NotificationService";
+import useNotificationManagerService, {
+  NotificationManagerServiceProps,
+} from "../notifications/NotificationService";
 import { PromptPageProps } from "../prompts/PromptPage";
 import { initialState } from "../state/redux/slices/RootSlice";
+import { updateCallback } from "../state/stores/CalendarEvent";
+import { DetailsItem } from "../state/stores/DetailsListStore";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
 import NotificationManager from "../support/NotificationManager";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
-import { updateCallback } from "../state/stores/CalendarEvent";
-
 
 interface HooksObject {
   [key: string]: React.FC<{}>;
@@ -93,16 +98,19 @@ export interface YourComponentProps {
 const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
   children,
-  
 }) => {
-  const { realtimeData, fetchData } = useRealtimeData(initialState, updateCallback);
-  const { isActive, toggleActivation, resetIdleTimeout } = useIdleTimeout(); // Destructure the idle timeout properties
+  const { realtimeData, fetchData } = useRealtimeData(
+    initialState,
+    updateCallback
+  );
+  const { isActive, toggleActivation, resetIdleTimeout } =
+    useIdleTimeout(undefined); // Destructure the idle timeout properties
   const dataFrameAPI = DataFrameAPI; // Initialize the dataframe API class
   const { calendarData, updateCalendarData } = useCalendarContext();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [promptPages, setPromptPages] = useState<PromptPageProps[]>([]);
-  const notificationManagerProps: NotificationManagerServiceProps = useNotificationManagerService();
-  
+  const notificationManagerProps: NotificationManagerServiceProps =
+    useNotificationManagerService();
 
   const hooks: HooksObject = Object.keys(categoryHooks).reduce(
     (acc, category) => {
@@ -140,7 +148,6 @@ const YourComponent: React.FC<YourComponentProps> = ({
     fetchData();
   }, [dataFrameAPI, addTracker, getTrackers]);
 
-
   const handleNextPage = async () => {
     // Increment the page number
     const nextPage = currentPage + 1;
@@ -153,9 +160,9 @@ const YourComponent: React.FC<YourComponentProps> = ({
       // Fetch data for the next page
       const nextPageData = promptPages[nextPage];
       // Example: Assuming the data for the next page has an 'id' property
-      const newData = (await dataFrameAPI.fetchDataFrame()).filter((row) =>
-        row.id === nextPageData.id
-      )
+      const newData = (await dataFrameAPI.fetchDataFrame()).filter(
+        (row) => row.id === nextPageData.id
+      );
       dataFrameAPI.setDataFrame(newData);
     } else {
       // Optionally, handle the case where there are no more pages
@@ -163,44 +170,63 @@ const YourComponent: React.FC<YourComponentProps> = ({
     }
   };
 
-  
-  
   const handleAppendData = async (): Promise<void> => {
-    
-    
-    // const userId = await userService.fetchUser(calendarData[0].userId);
-    const newData = [{ column1: 'value1', column2: 'value2' }];
+    const newData: SimpleCalendarEvent[] = [
+      {
+        id: "uniqueId", // Assign a unique ID
+        title: "New Event", // Set the title
+        date: new Date(), // Set the date
+        isActive: true, // Set isActive flag
+        reminder: <div>Reminder</div>, // Define the reminder
+        category: "Category", // Set the category
+        description: "Description", // Set the description
+        startDate: new Date(), // Set the start date
+        endDate: new Date(), // Set the end date
+        shared: <div>Shared</div>, // Define the shared content
+        details: {} as DetailsItem<DataDetails>, // Define the details item
+        bulkEdit: false, // Set bulkEdit flag
+        recurring: false, // Set recurring flag
+        customEventNotifications: "Custom notifications", // Define custom notifications
+        comment: "Comment", // Define the comment
+        attachment: "Attachment", // Define the attachment
+        // Add more properties as needed
+      },
+    ];
+
     // Append data to the backend and trigger a manual update
     await dataFrameAPI.appendDataToBackend(newData);
-    fetchData("", {} as (action: DataAnalysisAction) => {
-      // trigger update after append
-       updateCalendarData(newData)
+    fetchData("", (action: any) => {
+      updateCalendarData((prevState: SimpleCalendarEvent[]) => [
+        ...prevState,
+        ...newData,
+      ]);
     });
-  }
+  };
+
   // Render UI components to display appended data
   return (
     <div>
       {/* Display the progress bar and loading spinner */}
       <ProgressBar
         duration={0.5}
-         phase={{} as ProgressPhase}
-         animationID={'animationID'}
-        uniqueID={'uniqueID'}
-        
-        progress={calendarData[0].projects[0].progress} />
+        phase={{} as ProgressPhase}
+        animationID={"animationID"}
+        uniqueID={"uniqueID"}
+        progress={calendarData[0]?.projects?.[0]?.progress}
+      />
       {/* Display the notification manager */}
 
       <NotificationManager
-          notifications={[]}
-          setNotifications={() => { }}
-          notify={() => {
-            // Implement logic to handle notification
-            console.log("Notification triggered");
-            return Promise.resolve();
-          }}
-          onConfirm={(message) => console.log(message)}
-          onCancel={() => { }}
-        />
+        notifications={[]}
+        setNotifications={() => {}}
+        notify={() => {
+          // Implement logic to handle notification
+          console.log("Notification triggered");
+          return Promise.resolve();
+        }}
+        onConfirm={(message) => console.log(message)}
+        onCancel={() => {}}
+      />
 
       <LoadingSpinner loading={tracker.loading} />
 
@@ -237,16 +263,19 @@ const YourComponent: React.FC<YourComponentProps> = ({
       <button onClick={resetIdleTimeout}>Reset Idle Timeout</button>
 
       {/* Example usage of removeTracker */}
-      <button onClick={() => removeTracker(tracker.id as unknown as Tracker)}>Remove Tracker</button>
+      <button onClick={() => removeTracker(tracker.id as unknown as Tracker)}>
+        Remove Tracker
+      </button>
 
-      <DynamicContent fontSize="16px" fontFamily="Arial, sans-serif" content={<p>Hello, Dynamic Content!</p>} />
+      <DynamicContent
+        fontSize="16px"
+        fontFamily="Arial, sans-serif"
+        content={<p>Hello, Dynamic Content!</p>}
+      />
 
       {children}
       <button onClick={handleAppendData}>Append Data</button>
       <button onSubmit={handleNextPage}>Next</button>
-
-
-  
     </div>
   );
 };

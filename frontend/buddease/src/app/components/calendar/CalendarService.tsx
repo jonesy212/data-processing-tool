@@ -1,5 +1,5 @@
 import { handleApiError } from '@/app/api/ApiLogs';
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
 import axiosInstance from '../security/csrfToken';
@@ -27,15 +27,31 @@ export const calendarService = observable({
 
   fetchEvents: async (): Promise<FetchEventsResponse> => {
     try {
-      const response: AxiosResponse<FetchEventsResponse> = await axiosInstance.get(`${BASE_URL}/api/calendar/events`);
+      const response: AxiosResponse<FetchEventsResponse> =
+        await axiosInstance.get(`${BASE_URL}/api/calendar/events`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_SUCCESS, "Fetch Event Success",new Date, {} as NotificationType);
+      notify(
+        "fetchEventSuccess",
+        "Fetch Event Success",
+        NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_SUCCESS,
+        new Date(),
+        "Success" as NotificationType
+      );
       return response.data;
     } catch (error) {
-      handleApiError(error as AxiosError<unknown>, 'Failed to fetch calendar events');
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR, "Remove Event Error",new Date, {} as NotificationType);
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to fetch calendar events"
+      );
+      notify(
+        "",
+        "Remove Event Error",
+        NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR,
+        new Date(),
+         NotificationTypeEnum.Error
+      );
 
       throw error;
     }
@@ -50,7 +66,13 @@ export const calendarService = observable({
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to fetch calendar event with ID ${eventId}`);
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR, "Error", new Date, {} as NotificationType);
+      notify(
+        "",
+        NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR,
+        "Error",
+        new Date,
+        {} as NotificationType
+      );
       throw error;
     }
   },
@@ -61,11 +83,23 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS, "Complete All Batch Event Succss",new Date, NotificationTypeEnum.OperationSuccess as NotificationType);
+      notify(
+        "",
+        "Complete All Batch Event Succss",
+        NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS,
+        new Date,
+        NotificationTypeEnum.OperationSuccess as NotificationType
+      );
 
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to complete all calendar events');
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_ERROR, "Error", new Date, {} as NotificationType);
+      notify(
+        "",
+        NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_ERROR,
+        "Error",
+        new Date,
+        {} as NotificationType
+      );
 
       throw error;
     }
@@ -77,11 +111,22 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS, "Reassign Event Success",new Date, NotificationTypeEnum.OperationSuccess as NotificationType);
+      notify(
+        "",
+        "Reassign Event Success",
+        NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS,
+        new Date,
+        NotificationTypeEnum.OperationSuccess as NotificationType
+      );
 
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to reassign calendar event with ID ${eventId}`);
-      notify(NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR, "Reassign Event Error",new Date, "Error" as NotificationType);
+      notify(
+        "Error",
+        NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR, "Reassign Event Error",
+        new Date,
+        NotificationTypeEnum.Error
+      );
       throw error;
     }
   },

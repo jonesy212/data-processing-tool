@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // Helper function to handle dynamic notification message
-var handleDynamicNotificationMessage = function (message) {
+
+const handleDynamicNotificationMessage = function (message) {
     if (typeof message === "string") {
         return message;
     }
@@ -21,7 +22,7 @@ var setDynamicNotificationMessageWrapper = function (message, errorType, details
     // Your implementation of setDynamicNotificationMessage
     console.log(dynamicMessage); // For demonstration purposes, replace with your implementation
 };
-var NOTIFICATION_MESSAGES = {
+const NOTIFICATION_MESSAGES = {
     Fetch_Notification_Defaults: {
         success: "Notifications fetched successfully",
     },
@@ -707,4 +708,5 @@ var NOTIFICATION_MESSAGES = {
         // Add more messages for the TokenUtils type
     },
 };
-exports.default = NOTIFICATION_MESSAGES;
+const _default = NOTIFICATION_MESSAGES;
+export { _default as default };

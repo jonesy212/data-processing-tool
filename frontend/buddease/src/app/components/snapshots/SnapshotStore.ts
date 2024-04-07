@@ -14,7 +14,7 @@ import { showErrorMessage, showToast } from "../models/display/ShowToast";
 import { Task } from "../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { notificationStore } from "../support/NotificationProvider";
-import SnapshotStoreConfig, { snapshotConfig } from "./SnapshotConfig";
+import { SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
   
 const { notify } = useNotification();
@@ -54,7 +54,17 @@ const createTypedSnapshot = (
       getSnapshots: () => Promise.resolve([{ snapshot: [] }]),
       takeSnapshot: async (snapshot) => ({ snapshot: [snapshot] }),
       getSnapshot: async (snapshot) => snapshot,
-      getAllSnapshots: (data, snapshots) => Promise.resolve(snapshots),
+      getAllSnapshots: async (
+        data: (
+          subscribers: SnapshotStore<Snapshot<Data>>[],
+          snapshots: SnapshotStore<Snapshot<Data>>[]
+        ) => Promise<SnapshotStore<Snapshot<Data>>[]>
+      ) => {
+        return new Promise<SnapshotStore<Snapshot<Data>>[]>((resolve, reject) => {
+          Promise.resolve(snapshotConfig.snapshots);
+        });
+      },
+      
       takeSnapshotSuccess: () => {},
       updateSnapshotFailure: (payload) => {},
       takeSnapshotsSuccess: (snapshots) => {},
@@ -148,11 +158,6 @@ class SnapshotStore<T extends Snapshot<Data>> {
     this.data = { ...this.data, ...snapshotData };
   }
 
-
-
-  
-
-
   creatSnapshot: (additionalData: any) => void = () => { };
   snapshot?: () => {
     timestamp: Date;
@@ -237,18 +242,23 @@ class SnapshotStore<T extends Snapshot<Data>> {
     subscribers: SnapshotStore<Snapshot<Data>>[]
   ): Promise<SnapshotStore<Snapshot<Data>>[]> {
     console.log("Subscribers:", subscribers);
-
+  
     try {
       // Get all snapshots using the getAllSnapshots method
-      const allSnapshots = await this.getAllSnapshots((subscribers, snapshots) => {
-        // Process each snapshot data and pass it to the subscribers
-        return new Promise<SnapshotStore<Snapshot<Data>>[]>((resolve, reject) => {
-          // Logic to process snapshots goes here
-          const processedSnapshots = snapshots.map(({ snapshot }) => snapshot);
-          resolve(processedSnapshots);
-        });
-      }, this.snapshots);
-
+      const allSnapshots = await this.getAllSnapshots(
+        (subscribers, snapshots) => {
+          // Process each snapshot data and pass it to the subscribers
+          return new Promise<SnapshotStore<Snapshot<Data>>[]>((resolve, reject) => {
+            // Logic to process snapshots goes here
+            const processedSnapshots = snapshots.map(({ snapshot }) => snapshot);
+            // Convert processedSnapshots to SnapshotStore<Snapshot<Data>>[]
+            const convertedSnapshots: SnapshotStore<Snapshot<Data>>[] = processedSnapshots.filter((snapshot): snapshot is SnapshotStore<Snapshot<Data>> => !!snapshot);
+            Promise.resolve(convertedSnapshots);
+          });
+        },
+        this.snapshots
+      );
+  
       return allSnapshots;
     } catch (error) {
       // Handle error if getAllSnapshots fails
@@ -256,6 +266,7 @@ class SnapshotStore<T extends Snapshot<Data>> {
       throw error; // Rethrow the error
     }
   }
+  
 
 
   validateSnapshot(data: Data) {

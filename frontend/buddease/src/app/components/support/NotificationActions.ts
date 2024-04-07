@@ -14,6 +14,10 @@ export const NotificationActions = {
   fetchNotificationsSuccess: createAction<NotificationData[]>("fetchNotificationsSuccess"),
   fetchNotificationsFailure: createAction<string>("fetchNotificationsFailure"),
 
+
+  showSuccessNotification: createAction<{ message: string; type?: string }>("showSuccessNotification"),
+  showErrorNotification: createAction<{ message: string; type?: string; }>("showErrorNotification"),
+  setNotifications: createAction<React.SetStateAction<NotificationData[]>>("setNotifications"),
   // Batch actions
   batchAddNotifications: createAction<NotificationData[]>("batchAddNotifications"),
   batchRemoveNotifications: createAction<string[]>("batchRemoveNotifications"),

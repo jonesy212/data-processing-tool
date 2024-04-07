@@ -18,7 +18,6 @@ import { layoutConfig } from "./configs/LayoutConfig";
 import { DocxGeneratorOptions } from "./generators/docxGenerator";
 import DesignDashboard from "./pages/dashboards/DesignDashboard";
 import { useLayout } from "./pages/layouts/LayoutContext";
-import { ColorSwatchProps } from './components/styling/ColorPalette';
 
 type RootLayoutProps = {
   children: React.ReactNode;

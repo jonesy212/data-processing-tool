@@ -1,3 +1,6 @@
+// Exporting an empty object to make this file a module
+export {};
+
 // Step 1: Generate ABI contracts
 const abiContracts = {
   contract1: 'ABI1',

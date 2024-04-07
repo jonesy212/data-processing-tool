@@ -1,22 +1,24 @@
 // FrontendStructureComponent.tsx
 
 let fs: any;
-if (typeof window === 'undefined') {
-  fs = require('fs');
+if (typeof window === "undefined") {
+  fs = require("fs");
 }
-import * as path from 'path';
-import React from 'react';
-import FrontendStructure from './FrontendStructure';
+import * as path from "path";
+import React from "react";
+import FrontendStructure from "./FrontendStructure";
 
 interface FrontendStructureProps {
-    projectPath: string; // Added a prop to pass the project path
-    
+  projectPath: string; // Added a prop to pass the project path
+  frontendStructure: { [key: string]: { path: string; content: string; } };
 }
 
-const FrontendStructureComponent: React.FC<FrontendStructureProps> = ({ projectPath }) => {
-  const frontendStructure = new FrontendStructure(projectPath).getStructure(); // Instantiate and get the structure
-
+const FrontendStructureComponent: React.FC<FrontendStructureProps> = ({
+  projectPath,
+  frontendStructure,
+}) => {
   const traverseDirectory = (dir: string) => {
+    const fs = require("fs");
     const files = fs.readdirSync(dir);
 
     for (const file of files) {
@@ -28,10 +30,10 @@ const FrontendStructureComponent: React.FC<FrontendStructureProps> = ({ projectP
       } else {
         // Logic to parse file and update frontendStructure accordingly
         // Example: if (file.endsWith('.tsx')) { /* update frontendStructure */ }
-        if (file.endsWith('.tsx')) {
+        if (file.endsWith(".tsx")) {
           frontendStructure[file] = {
             path: filePath,
-            content: fs.readFileSync(filePath, 'utf-8'),
+            content: fs.readFileSync(filePath, "utf-8"),
           };
         }
       }
@@ -40,9 +42,6 @@ const FrontendStructureComponent: React.FC<FrontendStructureProps> = ({ projectP
 
   // Update the file path based on the provided projectPath
   traverseDirectory(projectPath);
-
-    
-    
 
   return (
     <div>
@@ -70,6 +69,6 @@ const RenderContent: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-export default FrontendStructure; FrontendStructureComponent;
+export default FrontendStructure;
+FrontendStructureComponent;
 export type { FrontendStructureProps };
-

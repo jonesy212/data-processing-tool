@@ -6,6 +6,7 @@ import { useAuth } from "@/app/components/auth/AuthContext";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import DatabaseClient from "@/app/components/todos/tasks/DataSetModel";
 import { AxiosError, AxiosResponse } from "axios";
 
 const { notify } = useNotification();
@@ -63,6 +64,24 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
     );
 
     throw error;
+  }
+}
+
+
+
+export const saveDocumentToDatabase = async (document: Document, content: string): Promise<void> => { 
+  try {
+
+    // Initialize database client
+    const dbClient = new DatabaseClient(config);
+    // Connect to the database
+    await dbClient.connect();
+    // Save the document
+    await dbClient.insert("documents", document);
+    // Close the database connection
+    await dbClient.close();
+  } catch (error) {
+    handleApiError(error as AxiosError<unknown>, "Failed to save document to database");
   }
 }
 

@@ -8,12 +8,11 @@ import { Idea, Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { implementThen } from '../state/stores/CommonEvent';
-import Comment, { Attachment, Todo } from "../todos/Todo";
+import { Attachment, default as Comment, default as TodoImpl } from "../todos/Todo";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
-import TodoImpl from "../todos/Todo";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
+import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
 
 
 export enum ProjectType {
@@ -43,8 +42,9 @@ interface Project extends Data {
   type: ProjectType
   currentPhase: Phase | null; // Provide a default value or mark as optional
   comments?: Comment[];  // Add other project-related fields as needed
-  commnetBy?: User | Member
-  then?: typeof implementThen
+  commnetBy?: User | Member;
+  then?: typeof implementThen;
+  
 }
 
 // Function to determine if the project is in a special phase

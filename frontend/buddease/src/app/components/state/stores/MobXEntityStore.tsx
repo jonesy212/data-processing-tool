@@ -2,10 +2,11 @@ import { makeAutoObservable } from 'mobx';
 import { DocumentOptions } from '../../documents/DocumentOptions';
 import { DocumentAnimationOptions } from '../../documents/SharedDocumentProps';
 import { DesignSystemConfig } from '../../libraries/ui/theme/MapProperties';
+import { DocumentData } from '../../documents/DocumentBuilder';
 
 class MobXEntityStore {
   globalState: DocumentOptions & DesignSystemConfig = {
-    documentType: '',
+    documentType: {} as DocumentData,
     userIdea: '',
     isDynamic: false,
     documents: [],
@@ -40,8 +41,14 @@ class MobXEntityStore {
     orderedTodoList: false,
     unorderedTodoList: false,
     colorCoding: false,
-    animations: {} as DocumentAnimationOptions,
     additionalOptions: [],
+    includeStatus: true,
+    includeAdditionalInfo: true,
+    uniqueIdentifier: uuid(),
+    includeType: "all",
+    includeTitle: true,
+    includeContent: true,
+    animations: {} as DocumentAnimationOptions,
     customSettings: {} as Record<string, any>,
     design: {
       primary: '',

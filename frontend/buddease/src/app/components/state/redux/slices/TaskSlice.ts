@@ -14,7 +14,7 @@ import { User } from "@/app/components/users/User";
 import { VideoData } from "@/app/components/video/Video";
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { NamingConventionsError } from "@/app/shared/shared-error-handling";
+import { NamingConventionsError } from "@/app/shared/shared_error_handling";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import FileSaver from "file-saver";
 import * as Papa from "papaparse";

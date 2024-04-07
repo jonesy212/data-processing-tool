@@ -12,21 +12,24 @@ import { useCalendarManagerSlice } from "@/app/components/calendar/CalendarSlice
 import { Data } from "@/app/components/models/data/Data";
 import { useRealtimeDataSlice } from "@/app/components/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
+
+import { StatusType } from "@/app/components/models/data/StatusType";
 import { User } from "@/app/components/users/User";
+import { VideoData } from "@/app/components/video/Video";
 import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
+import { Video } from "../../stores/VideoStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { useApiManagerSlice } from "./ApiSlice";
 import { useDataManagerSlice } from "./DataSlice";
 import { useDocumentManagerSlice } from "./DocumentSlice";
+import { useEventManagerSlice } from "./EventSlice";
 import { usePagingManagerSlice } from './pagingSlice';
 import { useProjectManagerSlice } from "./ProjectSlice";
 import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
 import { useTeamManagerSlice } from './TeamSlice';
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
-import { VideoData } from "@/app/components/video/Video";
-import { Video } from "../../stores/VideoStore";
 const randomTaskId = uuidv4().toString();
 
 export interface RootState {
@@ -48,6 +51,7 @@ export interface RootState {
   teamManager: ReturnType<typeof useTeamManagerSlice.reducer>
   projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>
   realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>
+  eventManager: ReturnType<typeof useEventManagerSlice.reducer>
 }
 
 
@@ -71,6 +75,7 @@ const initialState: RootState = {
   teamManager: useTeamManagerSlice.reducer(undefined, { type: "init" }),
   projectOwner: useProjectOwnerSlice.reducer(undefined, { type: "init" }),
   realtimeManager: useRealtimeDataSlice.reducer(undefined, { type: "init" }),
+  eventManager: useEventManagerSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -128,7 +133,7 @@ const rootReducerSlice = createSlice({
         description: "",
         assignedTo: {} as WritableDraft<User>,
         dueDate: new Date(), // Changed to Date object
-        status: "pending",
+        status: StatusType.Pending,
         priority: "medium",
         estimatedHours: 0,
         actualHours: 0,

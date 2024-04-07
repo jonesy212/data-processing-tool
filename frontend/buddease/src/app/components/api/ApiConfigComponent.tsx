@@ -11,8 +11,7 @@ import UserSettings from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
-import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
-import { Form, Input } from "antd";
+import { Form, Input } from "antd"
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import getAppPath from "../../../../appPath";
@@ -28,6 +27,7 @@ import axiosInstance from "../security/csrfToken";
 import { selectApiConfigs } from "../state/redux/slices/ApiSlice";
 import { UserData } from "../users/User";
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
+import { getCurrentAppInfo } from "../versions/VersionGenerator";
 
 const ApiConfigComponent: React.FC = () => {
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Specify correct type

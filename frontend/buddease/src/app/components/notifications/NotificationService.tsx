@@ -10,6 +10,7 @@ import PushNotificationManager from "../support/PushNotificationManager";
 
 interface NotificationManagerServiceProps {
   notifications: NotificationData[];
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
   notify: (id: string,
     message: string,
     content: any,
@@ -45,6 +46,12 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
     timestamp: new Date,
     level: ""
   }
+
+
+  const setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>> = (value) => { 
+    // Dispatch action to set notifications in the store or update local state
+    dispatch(NotificationActions.setNotifications(value));
+  };
 
   const sendPushNotification = (message: string, sender: string): void => {
     // Dispatch action to send push notification
@@ -121,6 +128,7 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
 
   return {
     notifications,
+    setNotifications,
     notify,
     sendAnnouncement,
     handleButtonClick,

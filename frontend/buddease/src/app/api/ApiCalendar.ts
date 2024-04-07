@@ -1,31 +1,39 @@
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
-import { AxiosResponse } from 'axios';
-import { SimpleCalendarEvent, useCalendarContext } from '../components/calendar/CalendarContext';
-import { CalendarEvent } from '../components/state/stores/CalendarEvent';
-import UniqueIDGenerator from '../generators/GenerateUniqueIds';
-import clientApiService from './ApiClient';
-import { handleApiError } from './ApiLogs';
+// ApiCalendar.ts
+import {
+  NotificationType,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
+import { AxiosResponse } from "axios";
+import {
+  SimpleCalendarEvent,
+  useCalendarContext,
+} from "../components/calendar/CalendarContext";
+import { CalendarEvent } from "../components/state/stores/CalendarEvent";
+import UniqueIDGenerator from "../generators/GenerateUniqueIds";
+import clientApiService from "./ApiClient";
+import { handleApiError } from "./ApiLogs";
+import axiosInstance from "./axiosInstance";
 
 interface CalendarNotificationMessages {
-  FETCH_CALENDAR_EVENTS_SUCCESS: string,
-  FETCH_CALENDAR_EVENTS_ERROR: string,
-  ADD_CALENDAR_EVENT_SUCCESS: string,
-  ADD_CALENDAR_EVENT_ERROR: string,
-  REMOVE_CALENDAR_EVENT_SUCCESS: string,
-  REMOVE_CALENDAR_EVENT_ERROR: string,
-  UPDATE_CALENDAR_EVENT_SUCCESS: string,
-  UPDATE_CALENDAR_EVENT_ERROR: string,
+  FETCH_CALENDAR_EVENTS_SUCCESS: string;
+  FETCH_CALENDAR_EVENTS_ERROR: string;
+  ADD_CALENDAR_EVENT_SUCCESS: string;
+  ADD_CALENDAR_EVENT_ERROR: string;
+  REMOVE_CALENDAR_EVENT_SUCCESS: string;
+  REMOVE_CALENDAR_EVENT_ERROR: string;
+  UPDATE_CALENDAR_EVENT_SUCCESS: string;
+  UPDATE_CALENDAR_EVENT_ERROR: string;
   // Add more messages as needed
-};
+}
 const calendarNotificationMessages: CalendarNotificationMessages = {
-  FETCH_CALENDAR_EVENTS_SUCCESS: 'Successfully fetched calendar events.',
-  FETCH_CALENDAR_EVENTS_ERROR: 'Failed to fetch calendar events.',
-  ADD_CALENDAR_EVENT_SUCCESS: 'Successfully added calendar event.',
-  ADD_CALENDAR_EVENT_ERROR: 'Failed to add calendar event.',
-  REMOVE_CALENDAR_EVENT_SUCCESS: 'Successfully removed calendar event.',
-  REMOVE_CALENDAR_EVENT_ERROR: 'Failed to remove calendar event.',
-  UPDATE_CALENDAR_EVENT_SUCCESS: 'Successfully updated calendar event.',
-  UPDATE_CALENDAR_EVENT_ERROR: 'Failed to update calendar event.',
+  FETCH_CALENDAR_EVENTS_SUCCESS: "Successfully fetched calendar events.",
+  FETCH_CALENDAR_EVENTS_ERROR: "Failed to fetch calendar events.",
+  ADD_CALENDAR_EVENT_SUCCESS: "Successfully added calendar event.",
+  ADD_CALENDAR_EVENT_ERROR: "Failed to add calendar event.",
+  REMOVE_CALENDAR_EVENT_SUCCESS: "Successfully removed calendar event.",
+  REMOVE_CALENDAR_EVENT_ERROR: "Failed to remove calendar event.",
+  UPDATE_CALENDAR_EVENT_SUCCESS: "Successfully updated calendar event.",
+  UPDATE_CALENDAR_EVENT_ERROR: "Failed to update calendar event.",
   // Add more messages as needed
 };
 
@@ -62,7 +70,7 @@ class CalendarApiService {
         calendarNotificationMessages[successMessageId],
         null,
         new Date(),
-        'Success'
+        "Success"
       );
       return response;
     } catch (error: any) {
@@ -71,75 +79,90 @@ class CalendarApiService {
     }
   }
 
-  async fetchCalendarEvents(): Promise<CalendarEvent[]> {
+  async fetchCalendarEvent(): Promise<CalendarEvent[]> {
     try {
       const response = await this.requestHandler(
         () => clientApiService.listClientCMessages(),
-        'FETCH_CALENDAR_EVENTS_SUCCESS',
-        'FETCH_CALENDAR_EVENTS_ERROR'
+        "FETCH_CALENDAR_EVENTS_SUCCESS",
+        "FETCH_CALENDAR_EVENTS_ERROR"
       );
-  
+
       // Extract data from the AxiosResponse object
       const calendarEvents: CalendarEvent[] = response.data;
-  
       return calendarEvents;
     } catch (error) {
-      console.error('Error fetching calendar events:', error);
+      console.error("Error fetching calendar events:", error);
       throw error;
     }
   }
 
-  
-  
-async  addCalendarEvent(newEvent: Omit<SimpleCalendarEvent, 'id'>): Promise<void> {
-  try {
-    await this.requestHandler(
-      () => clientApiService.createClientTask(newEvent),
-      'ADD_CALENDAR_EVENT_SUCCESS',
-      'ADD_CALENDAR_EVENT_ERROR'
-    );
+  async fetchCalendarEvents(): Promise<CalendarEvent[]> {
+    try {
+      const response = await this.requestHandler(
+        () => clientApiService.listClientCMessages(),
+        "FETCH_CALENDAR_EVENTS_SUCCESS",
+        "FETCH_CALENDAR_EVENTS_ERROR"
+      );
 
-    // Assuming generateId() returns a valid ID
-    const newEventWithId: SimpleCalendarEvent = {
-      ...newEvent,
-      id: UniqueIDGenerator.generateID(
-        'newCalendarEventSuccess',
-        "calendar-event",
-        "EventCreation" as NotificationType
-        
-      ),
-    };
+      // Extract data from the AxiosResponse object
+      const calendarEvents: CalendarEvent[] = response.data;
 
-    // Assuming updateCalendarData is a function provided by useCalendarContext
-    const { updateCalendarData } = useCalendarContext();
-    updateCalendarData(
-      (prevData) => [...prevData, newEventWithId]
-    );
-  } catch (error) {
-    console.error('Error adding calendar event:', error);
-    throw error;
+      return calendarEvents;
+    } catch (error) {
+      console.error("Error fetching calendar events:", error);
+      throw error;
+    }
   }
-}
 
-async  removeCalendarEvent(eventId: string): Promise<void> {
-  try {
-    // Assuming updateCalendarData is a function provided by useCalendarContext
-    const { updateCalendarData } = useCalendarContext();
-    updateCalendarData((prevData) => prevData.filter((event) => event.id !== eventId));
+  async addCalendarEvent(
+    newEvent: Omit<SimpleCalendarEvent, "id">
+  ): Promise<void> {
+    try {
+      await this.requestHandler(
+        () => clientApiService.createClientTask(newEvent),
+        "ADD_CALENDAR_EVENT_SUCCESS",
+        "ADD_CALENDAR_EVENT_ERROR"
+      );
 
-    // Remove the event from the server
-    await this.requestHandler(
-      () => clientApiService.removeCalendarEvent(Number(eventId)),
-      'REMOVE_CALENDAR_EVENT_SUCCESS',
-      'REMOVE_CALENDAR_EVENT_ERROR'
-    );
-  } catch (error) {
-    console.error('Error removing calendar event:', error);
-    throw error;
+      // Assuming generateId() returns a valid ID
+      const newEventWithId: SimpleCalendarEvent = {
+        ...newEvent,
+        id: UniqueIDGenerator.generateID(
+          "newCalendarEventSuccess",
+          "calendar-event",
+          "EventCreation" as NotificationType
+        ),
+      };
+
+      // Assuming updateCalendarData is a function provided by useCalendarContext
+      const { updateCalendarData } = useCalendarContext();
+      updateCalendarData((prevData) => [...prevData, newEventWithId]);
+    } catch (error) {
+      console.error("Error adding calendar event:", error);
+      throw error;
+    }
   }
-}
 
-  
+  async removeCalendarEvent(eventId: string): Promise<void> {
+    try {
+      // Assuming updateCalendarData is a function provided by useCalendarContext
+      const { updateCalendarData } = useCalendarContext();
+      updateCalendarData((prevData) =>
+        prevData.filter((event) => event.id !== eventId)
+      );
+
+      // Remove the event from the server
+      await this.requestHandler(
+        () => clientApiService.removeCalendarEvent(Number(eventId)),
+        "REMOVE_CALENDAR_EVENT_SUCCESS",
+        "REMOVE_CALENDAR_EVENT_ERROR"
+      );
+    } catch (error) {
+      console.error("Error removing calendar event:", error);
+      throw error;
+    }
+  }
+
   async updateCalendarEvent(eventId: string, newTitle: string): Promise<void> {
     try {
       await this.requestHandler(
@@ -149,6 +172,46 @@ async  removeCalendarEvent(eventId: string): Promise<void> {
       );
     } catch (error) {
       console.error("Error updating calendar event:", error);
+      throw error;
+    }
+  }
+
+  async fetchGoogleCalendarEvents(): Promise<any> {
+    try {
+      // Define Google Calendar API endpoint and authentication credentials
+      const googleCalendarApiEndpoint =
+        "https://www.googleapis.com/calendar/v3/events";
+        const accessToken = process.env.FRONTEND_API_ACCESS_TOKEN;
+
+      // Make API request to fetch events from Google Calendar
+      const response: AxiosResponse = await axiosInstance.get(
+        googleCalendarApiEndpoint,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // Return the response data containing Google Calendar events
+      return response.data;
+    } catch (error) {
+      // Handle any errors that occur during fetching events
+      console.error("Error fetching events from Google Calendar:", error);
+      throw error;
+    }
+  }
+
+  updateCalendarWithGoogleEvents(googleEvents: any) { 
+    try {
+      // Update calendar data by merging Google and local events
+      const { updateCalendarData } = useCalendarContext();
+      updateCalendarData((prevData) => {
+        const mergedEvents = [...prevData, ...googleEvents];
+        return mergedEvents;
+      });
+    } catch (error: any) {
+      console.error("Error merging Google Calendar events:", error);
       throw error;
     }
   }

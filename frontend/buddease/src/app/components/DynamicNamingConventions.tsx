@@ -1,9 +1,9 @@
 // components/DynamicNamingConventions.tsx
 import React from 'react';
-import configurationService from '../configs/ConfigurationService';
-import { NamingConventionsError } from '../shared/shared-error-handling';
+import configurationService from '@/configs/ConfigurationService';
+import { NamingConventionsError } from '../shared/shared_error_handling';
 import { useDynamicComponents } from './DynamicComponentsContext';
-import { NotificationTypeEnum, useNotification } from './support/NotificationContext';
+import { useNotification } from './support/NotificationContext';
 import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from './support/NotificationMessages';
 import { NOTIFICATION_TYPES } from './support/NotificationTypes';
 interface DynamicNamingConventionsProps {
@@ -68,27 +68,14 @@ const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
           {dynamicContent ? "Dynamic" : "Static"}
           Naming Conventions
         </h2>
-        {dynamicContent
-          ? renderDynamicContent(conventions)
-          : renderStaticContent()}
+        {dynamicContent ? renderDynamicContent(conventions) : renderStaticContent()}
       </div>
     );
   } catch (error: any) {
     console.error(error);
-    if(error instanceof NamingConventionsError){
-      handleNamingConventionsErrors(error);
-    } else {
-      notify(
-        //todo fix notification
-        error.message,
-        NOTIFICATION_TYPES.ERROR,
-        "Error",
-        new Date,
-        NotificationTypeEnum.CustomNotification2
-      );
-    }
-    handleNamingConventionsErrors(error);}
+    handleNamingConventionsErrors(error, "Error rendering dynamic content");
     return null;
+  }
 };
 
 

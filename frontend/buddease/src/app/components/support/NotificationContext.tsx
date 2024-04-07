@@ -88,20 +88,23 @@ export interface NotificationContextProps {
   notifications: NotificationData[];
   // Add more notification functions as needed
   showMessageWithType: (message: string) => void;
-  showSuccessNotification: (
-    id: string,
-    message: string,
-    content: any,
-    date?: Date | undefined,
-    type?: NotificationType
-  ) => Promise<void>,
+  // Overloaded function signatures
+    // Overloaded function signature for showSuccessNotification
+    showSuccessNotification: (
+      id: string,
+      message: string,
+      content: any,
+      date?: Date | undefined,
+      type?: NotificationType
+    ) => void | Promise<void>;
+  
   showErrorNotification: (
     id: string,
     message: string,
     content: any,
     date?: Date | undefined,
     type?: NotificationType
-  ) => Promise<void>
+  ) => void | Promise<void>;
   actions?: {
     showSuccessNotification: (
       id: string,
@@ -109,14 +112,14 @@ export interface NotificationContextProps {
       content: any,
       date?: Date | undefined,
       type?: NotificationType
-    ) => Promise<void>;
+    ) => void | Promise<void>;
     showErrorNotification: (
       id: string,
       message: string,
       content: any,
       date?: Date | undefined,
       type?: NotificationType
-    ) => Promise<void>;
+    ) => void | Promise<void>;
     dismiss?: (id: string) => void;
     dismissAll?: () => void;
   }

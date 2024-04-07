@@ -1,10 +1,12 @@
 import RandomWalkSuggestions from '@/app/components/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/components/models/data/Data';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
-import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '@/app/components/snapshots/SnapshotStore';
+import { Snapshot } from '@/app/components/snapshots/SnapshotStore';
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import configurationService from '@/app/configs/ConfigurationService';
 import ReactDOM from 'react-dom';
+
+
 
 // Automated system setup process
 const setupAutomationSystem = (

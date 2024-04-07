@@ -45,7 +45,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
         tags: [],
         phase: null,
         then: implementThen, // Reuse the `then` function
-        analysisType: "",
+        analysisType: {} as AnalysisTypeEnum.CUSTOM,
         analysisResults: [],
         videoData: {} as VideoData,
       },
@@ -104,7 +104,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
       const newData = implementThen.bind(this)(callback);
       callback(newData);
     },
-    analysisType: "",
+    analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
     analysisResults: [],
     videoData: {} as VideoData,
   };
