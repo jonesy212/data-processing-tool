@@ -109,6 +109,10 @@ export const endpoints: Endpoints = {
     eventDetails: (eventId: string) =>
       `${BASE_URL}/api/calendar/events/${eventId}/details`,
   },
+  chat: {
+    
+  },
+  
 
   client: {
     fetchClientDetails: (clientId: number) => `/api/client/${clientId}`, // Endpoint to fetch client details
@@ -381,6 +385,24 @@ export const endpoints: Endpoints = {
 
     uploadData: `${BASE_URL}/api/data/upload`, // Upload data endpoint
   },
+
+  datasetPath: {
+    list: `${BASE_URL}/api/dataset-paths`,
+  },
+
+  dataProviders: {
+    list: `${BASE_URL}/api/data-providers`,
+    single: (providerId: string) => `${BASE_URL}/api/data-providers/${providerId}`,
+    create: `${BASE_URL}/api/data-providers/create`, // Endpoint for creating a data provider
+    update: (providerId: string) => `${BASE_URL}/api/data-providers/update/${providerId}`, // Endpoint for updating a data provider
+    delete: (providerId: string) => `${BASE_URL}/api/data-providers/delete/${providerId}`, // Endpoint for deleting a data provider
+    getMany: `${BASE_URL}/api/data-providers/getBatchDataProviders`, // Endpoint for getting multiple data providers
+    createMany: `${BASE_URL}/api/data-providers/createBatchDataProviders`, // Endpoint for creating multiple data providers
+    updateMany: `${BASE_URL}/api/data-providers/updateBatchDataProviders`, // Endpoint for updating multiple data providers
+    deleteMany: `${BASE_URL}/api/data-providers/deleteBatchDataProviders`, // Endpoint for deleting multiple data providers
+
+},
+
 
   dex: { 
     list: `${BASE_URL}/api/dex`,
@@ -700,6 +722,8 @@ export const endpoints: Endpoints = {
       `${BASE_URL}/api/project-management/${projectId}`,
     listProjects: `${BASE_URL}/api/project-management/projects`,
   },
+
+
 
   randomWalk: {
     list: `${BASE_URL}/api/random-walks`,

@@ -1,28 +1,30 @@
 // ChatRoom.tsx
-import axiosInstance from '@/app/api/axiosInstance';
-import Logger from '@/app/components/logging/Logger';
-import DynamicTextArea from '@/app/ts/DynamicTextArea';
-import React, { useEffect, useState } from 'react';
-import { useThemeConfig } from '../../hooks/userInterface/ThemeConfigContext';
-import { setMessages } from '../../state/redux/slices/ChatSlice';
-import connectToChatWebSocket, { retryConfig } from '../WebSocket';
-import ChatMessageData from './ChatRoomDashboard';
+import axiosInstance from "@/app/api/axiosInstance";
+import Logger, { ChatLogger } from "@/app/components/logging/Logger";
+import DynamicTextArea from "@/app/ts/DynamicTextArea";
+import React, { useEffect, useState } from "react";
+import { useThemeConfig } from "../../hooks/userInterface/ThemeConfigContext";
+import { setMessages } from "../../state/redux/slices/ChatSlice";
+import connectToChatWebSocket, { retryConfig } from "../WebSocket";
+import ChatMessageData from "./ChatRoomDashboard";
 
 interface ChatRoomProps {
   roomId: string;
+  topics: string[];
+  chatEvent: { title: string }; // Define the structure of chatEvent
+
+  
 }
 
-const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
+const ChatRoomComponent: React.FC<ChatRoomProps> = ({ roomId ,topics, chatEvent }) => {
   const [chatMessages, setChatMessages] = useState<ChatMessageData[]>([]);
   const { primaryColor, fontSize } = useThemeConfig();
 
   useEffect(() => {
-
-
     const socket = connectToChatWebSocket(roomId, retryConfig);
 
     if (socket) {
-      socket.addEventListener('message', (event) => {
+      socket.addEventListener("message", (event) => {
         const newMessage = JSON.parse(event.data);
         setMessages([...chatMessages, newMessage]);
       });
@@ -42,7 +44,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
     return () => {};
   }, [roomId]);
 
- 
   const sendMessage = async (message: string) => {
     try {
       // Ensure the message is not empty
@@ -52,30 +53,37 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
       }
 
       // Send the message to the server
-      const response = await axiosInstance.post('/api/chat/send', {
+      const response = await axiosInstance.post("/api/chat/send", {
         roomId,
         message,
       });
 
       // Check if the message was sent successfully
       if (response.status === 200) {
-
-        console.log('Message sent successfully:', response.data);
+        console.log("Message sent successfully:", response.data);
 
         // Log chat message
-        Logger.log("Chat", `Sending message to room ${roomId}: ${message}`, "uniqueID");
+        ChatLogger.logChat(
+          "Chat",
+          `Sending message to room ${roomId}: ${message}`,
+          "uniqueID"
+        );
       } else {
-        console.error('Failed to send message. Server response:', response);
+        console.error("Failed to send message. Server response:", response);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     }
   };
-
 
   const fetchMessagesFromAPI = async (): Promise<ChatMessageData[]> => {
     return [];
   };
+
+
+  // Now you can access the topics property in ChatRoomProps
+  topics.push(`${roomId}: ${chatEvent.title}`);
+
 
   return (
     <div style={{ borderColor: primaryColor, fontSize }}>
@@ -93,12 +101,19 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId }) => {
           value=""
           placeholder="Type your message..."
           onChange={(newText) => sendMessage(newText)}
-
         />
         <button onClick={() => sendMessage("Send")}>Send</button>
+      </div>
+      <div className="topics">
+        <h3>Topics</h3>
+        <ul>
+          {topics.map((topic, index) => (
+            <li key={index}>{topic}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 };
 
-export default ChatRoom;
+export default ChatRoomComponent;

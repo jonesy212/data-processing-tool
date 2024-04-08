@@ -1,6 +1,7 @@
+import { Settings } from "../../state/stores/SettingsStore";
 import { BrainstormingSettings } from "../BrainstormingSettings";
 
-interface TeamBuildingSettings {
+interface TeamBuildingSettings extends Settings {
   enableTeamBuilding: boolean;
   teamBuildingMethod: "iceBreakers" | "workshops" | "teamRetreat" | "custom"; // Preferred team-building method
   projectTimeline: "mediumTerm";
@@ -16,10 +17,11 @@ interface TeamBuildingSettings {
 
 // Example usage
 const teamBuildingSettings: TeamBuildingSettings = {
+  id: 'teamBuildingSettings',
   enableTeamBuilding: true,
   teamBuildingMethod: "iceBreakers", // Fixed type error
   projectTimeline: "mediumTerm",
-
+  
   teamBuildingActivities: [
     "Ice Breaker Games",
     "Outdoor Adventure",
@@ -30,6 +32,7 @@ const teamBuildingSettings: TeamBuildingSettings = {
   teamBuildingLocations: ["Office", "Outdoor Spaces", "Event Venues"],
   teamBuildingFacilitator: "John Doe",
   teamBuildingFeedbackEnabled: true,
+  filter: (activity: string) => activity !== 'Outdoor Adventure', // Filter activities
   // Add other specific settings based on your project needs
 };
 

@@ -48,13 +48,19 @@ export interface ChatMessage {
   senderId: string; // Unique identifier for the message sender
   senderName: string; // Display name of the message sender
   content: string; // The text content of the message
-  timestamp: string; // Timestamp when the message was sent
+  timestamp: Date; // Timestamp when the message was sent
   isRead: boolean; // Flag indicating whether the message has been read
+  messageType: string; // Optional type for the message e.g. "text", "image" etc
+  user: {
+    id: string;
+    name: string;
+  };
   // Add more properties based on your requirements
 }
 
 interface CancellablePromise<T> extends Promise<T> {
   cancel?: () => void;
+  close?: () => void;
 }
 
 export interface ChatMessageProps extends ChatMessage {
@@ -140,9 +146,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
       senderId: "sender-id",
       senderName: "Sender Name",
       content: "Some content",
-      timestamp: "2024-01-01T12:00:00Z",
+      timestamp: new Date(Date.now()),
       isRead: false,
       roomId: "room-id",
+      messageType: "text",
+      user: {
+        id: "user-id",
+        name: "User Name"
+      }
     };
 
     // Handle unread message count reset
@@ -150,7 +161,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
     //todo verify which editor and notification to use
 
     const socket = connectToChatWebSocket(roomId, retryConfig);
-    let modal: ChatSettingsModal | void = openChatSettingsModal();
+    let modal: ChatSettingsModal | undefined = openChatSettingsModal();
     const request: CancellablePromise<void> = sendChatMessage(
       sampleMessage.message
     );
@@ -177,7 +188,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
       resetUnreadMessageCount(roomId);
 
       // Check if modal has a close method before calling it
-      if (modal && typeof modal.close === "function") {
+      
+      if (modal !== undefined && typeof modal.close === "function") {
         modal.close();
       }
 
@@ -336,7 +348,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
             key={message.id}
             sender={message.senderId}
             message={message.message}
-            timestamp={message.timestamp}
+            timestamp={String(message.timestamp)}
           />
         ))}
       </div>

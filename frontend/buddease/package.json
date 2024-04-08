@@ -29,7 +29,7 @@
     "@openzeppelin/contracts": "^5.0.1",
     "@react-icons/all-files": "^4.1.0",
     "@reduxjs/toolkit": "^2.2.3",
-    "@refinedev/core": "^4.46.2",
+    "@refinedev/core": "^4.49.0",
     "@refinedev/nextjs-router": "^5.5.5",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",

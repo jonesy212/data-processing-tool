@@ -69,6 +69,28 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
 
 
 
+// Function to save to-do data to the database
+export const saveTodoToDatabase = async (todoData: any): Promise<void> => {
+  try {
+    // Initialize database client
+    const dbClient = new DatabaseClient();
+
+    // Connect to the database
+    await dbClient.connect();
+
+    // Insert the to-do data into the appropriate collection/table
+    await dbClient.insert("todos", todoData);
+
+    // Close the database connection
+    await dbClient.close();
+
+    console.log("To-do data saved to the database:", todoData);
+  } catch (error) {
+    console.error("Error saving to-do data to the database:", error);
+    throw error; // Propagate the error to the caller
+  }
+};
+
 export const saveDocumentToDatabase = async (document: Document, content: string): Promise<void> => { 
   try {
 

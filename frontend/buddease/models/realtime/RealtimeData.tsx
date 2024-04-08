@@ -13,6 +13,8 @@ import React, { useEffect } from "react";
 interface RealtimeDataItem {
   id: string;
   name: string;
+  title?: string;
+  date: Date;
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   // Add other properties of RealtimeDataItem here
 }

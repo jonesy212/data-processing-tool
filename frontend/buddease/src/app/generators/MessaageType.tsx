@@ -14,6 +14,7 @@ export enum MessageType {
   FeedbackSuggestions = "feedback_suggestions",
   CommunitySupport = "community_support",
   PromotionalMessage = "promotional_message",
+  Text: MessageType = "text",
 }
 
 export function showMessageWithType(message: Message, type: MessageType) {

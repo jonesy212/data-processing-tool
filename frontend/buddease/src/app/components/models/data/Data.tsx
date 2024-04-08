@@ -15,7 +15,7 @@ import { Member } from "../teams/TeamMembers";
 
 // Define the interface for DataDetails
 interface DataDetails {
-  _id: string;
+  _id?: string;
   id: string;
   title?: string;
   description?: string | null | undefined;
@@ -73,7 +73,7 @@ export interface Comment {
 }
 
 interface Data {
-  _id: string;
+  _id?: string;
   id: string | number;
   title?: string;
   description?: string | null;
@@ -107,7 +107,7 @@ interface Data {
   isBeingCompleted?: boolean;
   isBeingReassigned?: boolean;
   analysisType?: AnalysisTypeEnum;
-  analysisResults: DataAnalysisResult[];
+  analysisResults?: DataAnalysisResult[];
   
   videoUrl?: string;
   videoThumbnail?: string;

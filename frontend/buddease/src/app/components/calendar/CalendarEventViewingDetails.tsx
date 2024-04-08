@@ -1,5 +1,5 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../security/csrfToken";
 
 const BASE_API_URL = endpoints.calendar.events;
@@ -16,14 +16,18 @@ interface EventDetails extends CalendarEventViewingDetailsProps {
   date: string;
   startTime: string;
   endTime: string;
+
   // Add more properties as needed
 }
 
 interface CalendarEventViewingDetailsProps {
   // Define props here if needed
   eventId: string;
+  title?: string;
   None?: () => JSX.Element;
-  eventDetails:(props: CalendarEventViewingDetailsProps, context?: any)=> ReactNode
+  date?: string;
+  productId?: string;
+  eventDetails: React.FunctionComponent<CalendarEventViewingDetailsProps>;
 }
 
 const CalendarEventViewingDetails: React.FC<CalendarEventViewingDetailsProps> = ({ None , eventId}) => {

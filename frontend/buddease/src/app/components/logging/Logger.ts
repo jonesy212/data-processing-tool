@@ -592,6 +592,53 @@ class ChannelLogger extends Logger {
   }
 }
 
+
+
+class ChatLogger extends Logger {
+  static logChat(message: string, uniqueID: string, roomID: string) {
+    super.logWithOptions("Chat", message, uniqueID);
+    this.logChatEvent(uniqueID, roomID);
+  }
+
+  private static logChatEvent(uniqueID: string, roomID: string) {
+    let logChatEventUrl: string;
+
+    if (typeof endpoints.logs.logChatEvent === "string") {
+      // If it's a string, directly use the endpoint URL
+      logChatEventUrl = endpoints.logs.logChatEvent;
+    } else if (typeof endpoints.logs.logChatEvent === "function") {
+      // If it's a function, call it to get the endpoint URL
+      logChatEventUrl = endpoints.logs.logChatEvent();
+    } else {
+      // Handle the case where it's neither a string nor a function
+      throw new Error("Invalid log chat event endpoint");
+    }
+
+    fetch(logChatEventUrl, {
+      method: "POST",
+      body: JSON.stringify({ uniqueID, roomID }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to log chat event");
+        }
+      })
+      .catch((error) => {
+        notify(
+          "Error logging chat event.",
+          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+          new Date(),
+          error
+        );
+      });
+  }
+}
+
+
+
 class FormLogger {
   static async logFormEvent(eventType: string, formID: string, eventData: any) {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
@@ -1170,10 +1217,8 @@ export {
   AudioLogger,
   BugLogger,
   CalendarLogger,
-  ChannelLogger,
-  CollaborationLogger,
-  CommunityLogger,
-  ContentLogger,
+  ChannelLogger, ChatLogger, CollaborationLogger,
+  CommunityLogger, ComponentLogger, ContentLogger,
   DataLogger,
   DexLogger,
   DocumentLogger,
@@ -1188,6 +1233,6 @@ export {
   TaskLogger,
   TeamLogger,
   TenantLogger,
-  VideoLogger,
-  ComponentLogger
+  VideoLogger
 };
+

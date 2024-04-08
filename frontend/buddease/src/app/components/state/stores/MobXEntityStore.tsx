@@ -1,8 +1,16 @@
-import { makeAutoObservable } from 'mobx';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { action, makeAutoObservable } from 'mobx';
+import { useDispatch } from 'react-redux';
+import { GlobalStateActions } from '../../actions/GlobalStateActions';
+import { DocumentData } from '../../documents/DocumentBuilder';
 import { DocumentOptions } from '../../documents/DocumentOptions';
 import { DocumentAnimationOptions } from '../../documents/SharedDocumentProps';
 import { DesignSystemConfig } from '../../libraries/ui/theme/MapProperties';
-import { DocumentData } from '../../documents/DocumentBuilder';
+import { NotificationTypeEnum } from '../../support/NotificationContext';
+
+
+
+
 
 class MobXEntityStore {
   globalState: DocumentOptions & DesignSystemConfig = {
@@ -44,7 +52,7 @@ class MobXEntityStore {
     additionalOptions: [],
     includeStatus: true,
     includeAdditionalInfo: true,
-    uniqueIdentifier: uuid(),
+    uniqueIdentifier: UniqueIDGenerator.generateDocumentID('uniqueIdentifier', NotificationTypeEnum.GeneratedID),
     includeType: "all",
     includeTitle: true,
     includeContent: true,
@@ -63,19 +71,23 @@ class MobXEntityStore {
       // Add more design properties as needed
     },
   };
+  generateUniqueIdentifier(generatorType: string): string {
+    const uniqueIdentifier = UniqueIDGenerator.generateID('UUID', 'UniqueIdentifier', NotificationTypeEnum.GeneratedID, undefined, generatorType);
+    return uniqueIdentifier;
+  }
 
   constructor() {
     makeAutoObservable(this);
+    this.globalState.uniqueIdentifier = this.generateUniqueIdentifier('default');
+
   }
 
+   // MobX action to update global state using Redux
+  @action
   // Define methods to update global state
   updateGlobalState(key: keyof typeof this.globalState, value: any) {
-    this.globalState = {
-      ...this.globalState,
-      [key]: value,
-    };
+    useDispatch()(GlobalStateActions.updateGlobalState({ key, value }));
   }
-
   // Add more methods as needed
 }
 
@@ -84,7 +96,7 @@ export default new MobXEntityStore();
 
 //Exampe usage:
 // Example of updating a document-related property
-updateGlobalState('documentType', 'newDocumentType');
+GlobalStateActions.updateGlobalState({key: 'documentType', value: 'newDocumentType'});
 
 // Example of updating a design-related property
-updateGlobalState('design.primary', '#newPrimaryColor');
+GlobalStateActions.updateGlobalState({key: 'design.primary', value: '#newPrimaryColor'});

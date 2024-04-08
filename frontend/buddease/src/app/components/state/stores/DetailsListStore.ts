@@ -3,7 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
   NotificationTypeEnum,
@@ -14,11 +14,13 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
-import { CalendarStatus, DataStatus, PriorityStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
+import { DataStatus, PriorityStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { Progress } from "../../models/tracker/ProgressBar";
 import { Project } from "../../projects/Project";
+import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
 import { Attachment } from "../../todos/Todo";
+import { AllTypes } from "../../typings/PropTypes";
 const { notify } = useNotification();
 
 
@@ -34,11 +36,12 @@ export type AllStatus = StatusType
   | PriorityStatus
 // Define a generic interface for details
 interface DetailsItem<T> extends DataDetails {
+  _id?: string;
   id: string;
   title?: string;
   name?: string;
   isRecurring?: boolean;
-  type?: string; //todo verif we match types
+  type?: AllTypes; //todo verif we match types
   status?: AllStatus // Use enums for status property
   participants?: Member[];
   description?: string | null | undefined;

@@ -1,31 +1,39 @@
 // Assuming you have an interface for the User and Team models as well
-import { Pool, PoolConfig, QueryArrayResult, QueryConfig, QueryConfigValues, QueryResult, QueryResultRow } from 'pg';
+import {
+  Pool,
+  PoolConfig,
+  QueryArrayResult,
+  QueryConfig,
+  QueryConfigValues,
+  QueryResult,
+  QueryResultRow,
+} from "pg";
 
 import { AxiosResponse } from "axios";
 import { Team } from "../../models/teams/Team";
 import axiosInstance from "../../security/csrfToken";
 import Connection from "../../database/Connection";
-import { da } from '@faker-js/faker';
+import { da } from "@faker-js/faker";
 
 interface DatasetModel {
-    id: number;
-    name: string;
-    description: string | null;
-    filePathOrUrl: string;
-    uploadedBy: number; // Assuming this is the user ID
-    uploadedAt: string; // Assuming the date is sent as a string
-    tagsOrCategories: string; // Comma-separated list or JSON array
-    format: string;
-    visibility: 'public' | 'private' | 'shared'; // Assuming visibility can only be one of these values
-    // Add other fields as needed
-  
-    // Relationships
-    uploadedByTeamId: number | null; // Assuming this is the team ID
-    uploadedByTeam: Team | null; // Assuming you have a Team interface
-  
-    // Optional: Add other relationships as needed
-  }
-  
+  id: number;
+  name: string;
+  description: string | null;
+  filePathOrUrl: string;
+  uploadedBy: number; // Assuming this is the user ID
+  uploadedAt: string; // Assuming the date is sent as a string
+  tagsOrCategories: string; // Comma-separated list or JSON array
+  format: string;
+  visibility: "public" | "private" | "shared"; // Assuming visibility can only be one of these values
+  // Add other fields as needed
+
+  // Relationships
+  uploadedByTeamId: number | null; // Assuming this is the team ID
+  uploadedByTeam: Team | null; // Assuming you have a Team interface
+
+  // Optional: Add other relationships as needed
+}
+
 // Example usage:
 const dataset: DatasetModel = {
   id: 1,
@@ -42,10 +50,9 @@ const dataset: DatasetModel = {
   // Other fields
 };
 
-
-
 class DatabaseClient {
   private pool: Pool;
+  // private config: PoolConfig;
 
   constructor(private config: PoolConfig) {
     this.pool = new Pool(config);
@@ -58,28 +65,36 @@ class DatabaseClient {
       // Connect to the database using the configured pool
       await this.pool.connect();
 
-      console.log('Connected to the database.');
+      console.log("Connected to the database.");
     } catch (error) {
-      console.error('Error connecting to the database:', error);
+      console.error("Error connecting to the database:", error);
       throw error;
     }
-  }
-
-  async insert(dataset: DatasetModel): Promise<any> {
+  }async insert(
+    tableName: string,
+    data: DatasetModel,
+    additionalString?: string
+  ): Promise<any> {
     try {
-      const sql =
-        "INSERT INTO table_name VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *";
+      
+      let sql = `INSERT INTO ${tableName} (name, description, filePathOrUrl, uploadedBy, uploadedAt, tagsOrCategories, format, visibility, uploadedByTeamId${
+        additionalString ? ", additionalString" : ""
+      }) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9${
+        additionalString ? ", $10" : ""
+      }) RETURNING *`;
       const values = [
-        dataset.name,
-        dataset.description,
-        dataset.filePathOrUrl,
-        dataset.uploadedBy,
-        dataset.uploadedAt,
-        dataset.tagsOrCategories,
-        dataset.format,
-        dataset.visibility,
-        dataset.uploadedByTeamId,
+        data.name,
+        data.description,
+        data.filePathOrUrl,
+        data.uploadedBy,
+        data.uploadedAt,
+        data.tagsOrCategories,
+        data.format,
+        data.visibility,
+        data.uploadedByTeamId,
+        ...(additionalString ? [additionalString] : []),
       ];
+  
       const result = await this.pool.query(sql, [values]);
       return result.rows[0];
     } catch (error) {
@@ -88,32 +103,41 @@ class DatabaseClient {
     }
   }
   
+  
+  
 
-// Method to execute a query
-async query<R extends QueryResultRow = any, I = any[]>(queryTextOrConfig: string | QueryConfig<I>, values?: QueryConfigValues<I>): Promise<QueryResult<R>> {
-  try {
-    const result: QueryResult<R> = await this.pool.query(queryTextOrConfig, values);
-
-    console.log('Query executed successfully:', queryTextOrConfig);
-    return result;
-  } catch (error) {
-    console.error('Error executing query:', error);
-    throw error;
+  // Method to execute a query
+  async query<R extends QueryResultRow = any, I = any[]>(
+    queryTextOrConfig: string | QueryConfig<I>,
+    values?: QueryConfigValues<I>
+  ): Promise<QueryResult<R>> {
+    try {
+      let result: QueryResult<R>;
+      if (values) {
+        // If values are provided, execute the query with values
+        result = await this.pool.query(queryTextOrConfig, values);
+      } else {
+        // If values are not provided, execute the query without values
+        result = await this.pool.query(queryTextOrConfig);
+      }
+  
+      console.log("Query executed successfully:", queryTextOrConfig);
+      return result;
+    } catch (error) {
+      console.error("Error executing query:", error);
+      throw error;
+    }
   }
-}
-
-
-
-
+  
   // Method to close the database connection
   async close(): Promise<void> {
     try {
       // Close the pool to release all resources
       await this.pool.end();
 
-      console.log('Database connection closed.');
+      console.log("Database connection closed.");
     } catch (error) {
-      console.error('Error closing database connection:', error);
+      console.error("Error closing database connection:", error);
       throw error;
     }
   }
@@ -121,27 +145,35 @@ async query<R extends QueryResultRow = any, I = any[]>(queryTextOrConfig: string
   // Method to upload a dataset
   static async uploadDataset(formData: FormData): Promise<DatasetModel | null> {
     try {
-      const response: AxiosResponse<DatasetModel> = await axiosInstance.post('/api/upload', formData);
+      const response: AxiosResponse<DatasetModel> = await axiosInstance.post(
+        "/api/upload",
+        formData
+      );
       return response.data;
     } catch (error) {
-      console.error('Error uploading dataset:', error);
+      console.error("Error uploading dataset:", error);
       return null;
     }
   }
 
   // Method to run a hypothesis test
-  static async runHypothesisTest(datasetId: number, testType: string): Promise<void> {
+  static async runHypothesisTest(
+    datasetId: number,
+    testType: string
+  ): Promise<void> {
     try {
-      const response: AxiosResponse<void> = await axiosInstance.post('/api/hypothesis-test', { datasetId, testType });
-      console.log('Hypothesis test executed successfully:', response.data);
+      const response: AxiosResponse<void> = await axiosInstance.post(
+        "/api/hypothesis-test",
+        { datasetId, testType }
+      );
+      console.log("Hypothesis test executed successfully:", response.data);
     } catch (error) {
-      console.error('Error running hypothesis test:', error);
+      console.error("Error running hypothesis test:", error);
     }
   }
 }
 
 export default DatabaseClient;
 
-  export { dataset };
+export { dataset };
 export type { DatasetModel };
-

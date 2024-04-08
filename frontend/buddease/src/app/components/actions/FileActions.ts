@@ -2,26 +2,27 @@
 
 import { createAction } from "@reduxjs/toolkit";
 import { FileTypeEnum } from "../documents/FileType";
-import File from "../documents/File";
+import CustomFile from "../documents/File";
 
 export const FileActions = {
   // Standard file actions
-  addFile: createAction<File>("addFile"),
+  addFile: createAction<CustomFile>("addFile"),
   removeFile: createAction<number>("removeFile"),
   updateFile: createAction<{ id: number, newTitle: string }>("updateFileTitle"),
-  validateFile: createAction<File>("validateFile"),
+  validateFile: createAction<CustomFile>("validateFile"),
   
   fetchFileData: createAction<number>("fetchFileData"),
-  fetchFileRequest: createAction<File>("fetchFileRequest"),
+  fetchFileRequest: createAction<CustomFile>("fetchFileRequest"),
 
-  fetchFiles: createAction<{ fileType: FileTypeEnum, files: File[] }>("fetchFiles"),
+  fetchFiles: createAction<{ fileType: FileTypeEnum, files: CustomFile[] }>("fetchFiles"),
   fetchFilesRequest: createAction("fetchFilesRequest"),
-  fetchFilesSuccess: createAction<{ files: File[] }>("fetchFilesSuccess"),
+  fetchFilesSuccess: createAction<{ files: CustomFile[] }>("fetchFilesSuccess"),
   fetchFilesFailure: createAction<{ error: string }>("fetchFilesFailure"),
   
   // Additional actions for file handling
-  uploadFileRequest: createAction<File>("uploadFileRequest"),
-  uploadFileSuccess: createAction<File>("uploadFileSuccess"),
+  uploadFile: createAction<CustomFile>("uploadFile"),
+  uploadFileRequest: createAction<CustomFile>("uploadFileRequest"),
+  uploadFileSuccess: createAction<CustomFile>("uploadFileSuccess"),
   uploadFileFailure: createAction<{ error: string }>("uploadFileFailure"),
 
   // Batch actions for file operations
@@ -55,7 +56,7 @@ export const FileActions = {
     
     exportFile: createAction<{ fileId: string, format: string }>("exportFile"),
     importFile: createAction<{ fileId: string, source: string }>("importFile"),
-  exportFileAsPDF: createAction<{ fileId: string }>("exportFileAsPDF"),
+    exportFileAsPDF: createAction<{ fileId: string }>("exportFileAsPDF"),
     exportFileAsImage: createAction<{ fileId: string, resolution: string }>("exportFileAsImage"),
     
     archiveFile: createAction<{ fileId: string }>("archiveFile"),
@@ -66,7 +67,7 @@ export const FileActions = {
   
 
     autosaveFileRequest: createAction<{ editorContent: string }>("autosaveFileRequest"),
-    autosaveFileSuccess: createAction<File>("autosaveFileSuccess"),
+    autosaveFileSuccess: createAction<CustomFile>("autosaveFileSuccess"),
     autosaveFileFailure: createAction<{ error: string }>("autosaveFileFailure"),
   
 };

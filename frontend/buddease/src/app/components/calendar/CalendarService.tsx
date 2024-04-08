@@ -21,10 +21,6 @@ const { notify } = useNotification();  // Destructure notify from useNotificatio
 
 export const calendarService = observable({
 
-
-
-
-
   fetchEvents: async (): Promise<FetchEventsResponse> => {
     try {
       const response: AxiosResponse<FetchEventsResponse> =

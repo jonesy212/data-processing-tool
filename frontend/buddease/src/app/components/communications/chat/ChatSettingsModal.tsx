@@ -7,6 +7,8 @@ type ChatSettingsModal = {
   setNotificationPreferences: (preferences: NotificationPreferences) => void;
   setAudioOptions: (options: AudioOptions) => void;
   setVideoOptions: (options: VideoOptions) => void;
+  setPrivacySettings: (settings: PrivacySettings) => void;
+  setSecuritySettings: (settings: SecuritySettings) => void;
   setDocumentEditingPermissions: (
     permissions: DocumentEditingPermissions
   ) => void;

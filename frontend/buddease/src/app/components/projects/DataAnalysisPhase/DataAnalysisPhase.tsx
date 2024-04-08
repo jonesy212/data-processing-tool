@@ -1,11 +1,13 @@
 import { useAuth } from "@/app/components/auth/AuthContext";
 import { sendDataToBackend } from "@/app/services/dataAnalysisService";
-import { DataAnalysisAction, DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
+import {
+  DataAnalysisAction,
+  DataAnalysisState,
+} from "@/app/typings/dataAnalysisTypes";
 import axios from "axios";
 import React, { useEffect, useReducer, useState } from "react";
 import Visualization from "../../hooks/userInterface/Visualization";
 import { fetchData } from "../../utils/dataAnalysisUtils";
-
 
 enum DataAnalysisSubPhase {
   DEFINE_OBJECTIVE,
@@ -20,9 +22,10 @@ interface DataAnalysisPhaseProps {
   onSubmit: () => void;
 }
 
-
-
-const dataAnalysisReducer = (state: DataAnalysisState, action: DataAnalysisAction): DataAnalysisState => {
+const dataAnalysisReducer = (
+  state: DataAnalysisState,
+  action: DataAnalysisAction
+): DataAnalysisState => {
   switch (action.type) {
     case "SET_USER_DATA":
       return { ...state, userSpecificData: action.payload };
@@ -33,7 +36,7 @@ const dataAnalysisReducer = (state: DataAnalysisState, action: DataAnalysisActio
 };
 
 const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
-  const { state } = useAuth();
+  const { state: authState } = useAuth(); // Renamed to authState
 
   const [allWalks, setAllWalks] = useState<number[][]>([]);
 
@@ -41,19 +44,19 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
     DataAnalysisSubPhase.DEFINE_OBJECTIVE
   );
 
-  const [state, dispatch] = useReducer(dataAnalysisReducer, {
+  const [dataState, dispatch] = useReducer(dataAnalysisReducer, {
     userSpecificData: null,
-  });
+  }); // Renamed to dataState
 
   useEffect(() => {
-    const userId = state.user?.id;
+    const userId = authState.user?.id;
     fetchData(userId as unknown as string, dispatch);
-  }, [state]);
+  }, [authState]);
 
   useEffect(() => {
     // Access state.user or other properties from the auth context if needed
-    const userEmail = state.user?.email;
-    const userId = state.user?.id;
+    const userEmail = authState.user?.email;
+    const userId = authState.user?.id;
 
     // Fetch additional data using Axios or perform other asynchronous operations
     const fetchData = async () => {
@@ -62,6 +65,9 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
         const userSpecificData = await axios.get(`/api/user/${userId}`);
         console.log("User-specific data:", userSpecificData.data);
 
+        // Dispatch an action to update the data state with the fetched data
+        dispatch({ type: "SET_USER_DATA", payload: userSpecificData.data });
+        // Call additional functions as needed
         // Additional Axios requests or asynchronous operations as needed
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -73,13 +79,13 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
       for (let i = 0; i < 20; i++) {
         const randomWalk = [0];
         for (let x = 0; x < 100; x++) {
-          // ... (existing random walk logic)
-
+          let step;
           if (Math.random() <= 0.005) {
             step = 0;
           }
-
-          randomWalk.push(step);
+          if (randomWalk[randomWalk.length - 1] === 0 && step !== undefined) {
+            randomWalk.push(step);
+          }
         }
         walks.push(randomWalk);
       }
@@ -89,7 +95,7 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
     simulateRandomWalks();
     // Call the fetchData function when the component mounts
     fetchData();
-  }, [state, currentSubPhase]); // Include currentSubPhase if needed in the dependency array
+  }, [authState, currentSubPhase]); // Include currentSubPhase if needed in the dependency array
 
   const handleSubPhaseCompletion = async () => {
     switch (currentSubPhase) {
@@ -119,7 +125,7 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
     setCurrentSubPhase(nextSubPhase);
 
     if (nextSubPhase > DataAnalysisSubPhase.TRANSFORM_INSIGHTS) {
-      sendDataToBackend(state.userSpecificData);
+      sendDataToBackend(dataState.userSpecificData);
       onSubmit();
     }
   };
@@ -142,14 +148,13 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
         </div>
       )}
 
-
       {currentSubPhase === DataAnalysisSubPhase.TRANSFORM_INSIGHTS && (
         <div>
           <p>
             Translate the insights gained from the analysis into actionable
             strategies, business opportunities, or decision-making processes.
           </p>
-          
+
           {/* Add the Visualization component */}
           <Visualization
             data={allWalks}
@@ -161,7 +166,7 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
           {/* Add form elements or UI components as needed */}
         </div>
       )}
-      
+
       {currentSubPhase === DataAnalysisSubPhase.CLEAN_DATA && (
         <div>
           <p>

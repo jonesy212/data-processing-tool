@@ -1,5 +1,6 @@
+import socketIOClient, { io } from "socket.io-client";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Draft , produce} from "immer";
+import { produce } from "immer";
 import calendarApiService from "@/app/api/ApiCalendar";
 import { fetchEventData } from "@/app/api/ApiEvent";
 import { useDispatch } from "react-redux";
@@ -9,6 +10,7 @@ import { CalendarEvent } from "../state/stores/CalendarEvent";
 import {
   dispatchNotification,
   NotificationData,
+  SendStatus,
 } from "../support/NofiticationsSlice";
 import { NotificationActions } from "../support/NotificationActions";
 import {
@@ -16,14 +18,36 @@ import {
   useNotification,
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
-import { Attachment } from "../todos/Todo";
 import CalendarEventViewingDetailsProps from "./CalendarEventViewingDetails";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
 import { CalendarActions } from "../actions/CalendarEventActions";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
-import { CalendarStatus, PriorityStatus, StatusType } from "../models/data/StatusType";
+import {
+  CalendarStatus,
+  PriorityStatus,
+  ProjectPhaseTypeEnum,
+  StatusType,
+} from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
+import ErrorHandler from "@/app/shared/ErrorHandler";
+import { showErrorMessage, showToast } from "../models/display/ShowToast";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import ChatRoom from "../communications/chat/ChatRoom";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { ChatMessage } from "../communications";
+import { LogData } from "../models/LogData";
+import { User } from "../users/User";
+import { initiateDataAnalysis } from "@/app/services/dataAnalysisService";
+import { Member } from "../models/teams/TeamMembers";
+import { ChatActions } from "../projects/DataAnalysisPhase/ChatActions";
+import File from "../documents/File";
+import { Attachment } from "../documents/Attachment/attachment";
+import useFileUpload from "../hooks/commHooks/useFileUpload";
+import { ChangeEvent, useState } from "react";
+import CustomFile from "../documents/File";
 
 interface Milestone {
   id: string;
@@ -44,6 +68,25 @@ const productMilestone: ProductMilestone = {
   productId: "ABC123",
 };
 
+export interface ChatRoom {
+  id: string;
+  creatorId: string;
+  // Define properties of ChatRoom here, including 'topics'
+  topics: any[]; // Adjust 'any[]' to the actual type of 'topics'
+  messages: ChatMessage[]; // Add 'messages' property
+  users: User[]; // Add 'users' property
+
+  addMessage: (message: ChatMessage) => {
+    // Add logic to add message to room
+  };
+}
+
+interface ShareFilesPayload {
+  eventId?: string;
+  calendarEventId: string;
+  files: CustomFile[];
+}
+
 interface CalendarManagerState {
   entities: Record<string, CalendarEvent>;
   events: Record<string, CalendarEvent[]>;
@@ -59,8 +102,13 @@ interface CalendarManagerState {
   pendingAction: string | null;
   isLoading: boolean;
   error: string | undefined;
+  calendarEvent: CalendarEvent | undefined;
+  calendarEventEditing: CalendarEvent | null;
   exportedEvents: Record<string, CalendarEvent[]>;
   externalCalendarsOverlays: ExternalCalendarOverlay[];
+  chatRooms: Record<string, ChatRoom>; // Updated to remove the array
+  chatRoom: ChatRoom | undefined;
+  user: User | null;
 }
 
 export const exportCalendarEvents = async (
@@ -89,6 +137,78 @@ export const simulateSendReminder = async (event: CalendarEvent) => {
       resolve(event); // Change 'value' to 'event'
     }, 2000);
   });
+};
+
+export const sendMessageToChatRoom = async (
+  state: any,
+  action: PayloadAction<{
+    calendarEvent: CalendarEvent;
+    calendarEventId: string;
+    chatRoomId: string;
+  }>
+): Promise<CalendarManagerState> => {
+  try {
+    // Get calendar event
+    const calendarEvent = state.entities[action.payload.calendarEventId];
+
+    // Get chat room
+    const chatRoom = state.chatRooms[action.payload.chatRoomId];
+
+    // Assuming chatRoom is an array of ChatRoom objects, ensure it's not empty before accessing its first element
+    if (Array.isArray(chatRoom) && chatRoom.length > 0) {
+      // Generate message
+      const message: Partial<Message & ChatMessage> = {
+        id: UniqueIDGenerator.generateMessageID(),
+        channelId: chatRoom[0].id,
+        content: `Discussion about calendar event "${calendarEvent.title}" (${action.payload.calendarEventId})`,
+        isRead: false,
+        timestamp: new Date(),
+        text: `Discussion about calendar event "${calendarEvent.title}" (${action.payload.calendarEventId})`,
+        senderId: String(state.user?.id),
+        senderName: state.user?.username,
+        // Add any additional properties needed for the message
+      };
+
+      // Add message to chat room
+      chatRoom[0].addMessage(message as ChatMessage);
+
+      // Dispatch notification
+      dispatch(
+        CalendarActions.dispatchNotification({
+          id: UniqueIDGenerator.generateChatID(),
+          createdAt: new Date(),
+          content: `Discussion about calendar event "${calendarEvent.title}" (${action.payload.calendarEventId}) sent successfully to chat room`,
+          message: "Message sent to chat room successfully",
+          sendStatus: "Success" as SendStatus,
+          completionMessageLog: {} as LogData,
+          type: NotificationTypeEnum.ChatID,
+        })
+      );
+    } else {
+      // Handle the case where chatRoom is not an array or it's empty
+      // This could involve logging an error, throwing an exception, or any other appropriate action
+      console.error("Invalid chat room:", chatRoom);
+      // Additional error handling logic goes here
+    }
+  } catch (error: any) {
+    // Handle errors
+    console.error("Error sending message to chat room:", error);
+    dispatchNotification(
+      "addMessage",
+      `Error sending message to chat room: ${error.message}`,
+      "Invalid payload for milestones action",
+      dispatch,
+      action.payload
+    );
+    return {
+      ...state,
+      error: error.message || undefined,
+    };
+  }
+  return {
+    ...state,
+    error: undefined,
+  };
 };
 
 export const sendReminderToExternalService = async (event: CalendarEvent) => {
@@ -253,6 +373,66 @@ const simulateExportToGoogleCalendar = async (events: any[]) => {
   });
 };
 
+// Action to invite team members to a calendar event
+export const inviteTeamMembersToCalendarEvent = createAsyncThunk(
+  "calendar/inviteTeamMembersToEvent",
+  async ({
+    eventId,
+    teamMembers,
+  }: {
+    eventId: string;
+    teamMembers: string[];
+  }) => {
+    // Add logic to invite team members to the calendar event asynchronously
+    // For example, you can make an API call to invite team members
+    const response = await fetch(`/api/calendar/${eventId}/invite`, {
+      method: "POST",
+      body: JSON.stringify({ teamMembers }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data; // Return any relevant data from the API response
+  }
+);
+
+// Action to comment on a calendar event
+export const commentOnCalendarEvent = createAsyncThunk(
+  "calendar/commentOnEvent",
+  async ({ eventId, comment }: { eventId: string; comment: string }) => {
+    // Add logic to comment on the calendar event asynchronously
+    // For example, you can make an API call to add a comment
+    const response = await fetch(`/api/calendar/${eventId}/comment`, {
+      method: "POST",
+      body: JSON.stringify({ comment }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data; // Return any relevant data from the API response
+  }
+);
+
+// Action to assign tasks within a calendar event
+export const assignTasksWithinCalendarEvent = createAsyncThunk(
+  "calendar/assignTasksWithinEvent",
+  async ({ eventId, tasks }: { eventId: string; tasks: Task[] }) => {
+    // Add logic to assign tasks within the calendar event asynchronously
+    // For example, you can make an API call to assign tasks
+    const response = await fetch(`/api/calendar/${eventId}/assign-tasks`, {
+      method: "POST",
+      body: JSON.stringify({ tasks }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data; // Return any relevant data from the API response
+  }
+);
+
 // Define a function to return the default value
 const getDefaultViewingEventDetails =
   (): React.FC<CalendarEventViewingDetailsProps> | null => {
@@ -276,11 +456,17 @@ const initialState: CalendarManagerState = {
   error: undefined,
   exportedEvents: {} as Record<string, CalendarEvent[]>,
   externalCalendarsOverlays: {} as ExternalCalendarOverlay[],
-
+  calendarEvent: {} as CalendarEvent,
+  calendarEventEditing: null as CalendarEvent | null,
+  chatRooms: {} as Record<string, ChatRoom>,
+  chatRoom: {} as ChatRoom,
+  user: null,
 };
 
 const { notify } = useNotification();
 const dispatch = useDispatch();
+const CALENDAR_API_URL = endpoints.calendar;
+const CHAT_SERVER_URL = endpoints.chat;
 
 // Define the handleViewEventDetails function to dispatch the action with the correct payload
 const handleViewEventDetails = (
@@ -290,7 +476,6 @@ const handleViewEventDetails = (
   dispatch(viewCalendarEventDetails({ eventDetails, eventId }) as any); // Explicitly cast the action type to 'any'
 };
 
-// Define an async thunk for exporting calendar events
 // Define an async thunk for exporting calendar events
 export const exportCalendarEventsToExternalSources = createAsyncThunk(
   "calendarEvents/exportCalendarEventsToExternalSources",
@@ -377,6 +562,37 @@ export const useCalendarManagerSlice = createSlice({
         dispatch,
         action.payload
       );
+    },
+
+    calendarEvent: (
+      state,
+      action: PayloadAction<WritableDraft<CalendarEvent>>
+    ) => {
+      const updatedEvent = action.payload;
+
+      // Update the calendar event in the state
+      state.calendarEvent = updatedEvent;
+
+      // Dispatch a notification indicating that the calendar event was updated successfully
+      dispatchNotification(
+        "calendarEvent",
+        "Calendar event updated successfully",
+        "Invalid payload for calendarEvent action",
+        dispatch,
+        updatedEvent // Pass the updated event as payload for the notification
+      );
+
+      // Perform additional actions if needed, such as updating related data or triggering side effects
+      if (
+        updatedEvent.phase && // Ensure phase is defined
+        updatedEvent.phase.name === ProjectPhaseTypeEnum.DataAnalysis &&
+        updatedEvent.status === StatusType.Completed
+      ) {
+        // Trigger the data analysis process
+        initiateDataAnalysis(updatedEvent);
+      }
+      // Return the updated state
+      return state;
     },
 
     // For "addCalendarEvent" action:
@@ -760,8 +976,7 @@ export const useCalendarManagerSlice = createSlice({
       state: CalendarManagerState,
       action: PayloadAction<ExternalCalendarOverlay[]>
     ): CalendarManagerState {
-      return produce(state,
-        (draftState: CalendarManagerState) => {
+      return produce(state, (draftState: CalendarManagerState) => {
         const overlay = action.payload;
         const existingOverlayIndex =
           draftState.externalCalendarsOverlays.findIndex(
@@ -792,71 +1007,71 @@ export const useCalendarManagerSlice = createSlice({
       });
     },
 
+    collaborativeEditingOfCalendarEventDetails: (
+      state,
+      action: PayloadAction<CalendarEventViewingDetailsProps>
+    ) => {
+      // Collaborative editing logic
+      const { eventDetails } = action.payload;
+      // Collaborative editing logic
+      // For example, update event details in realtime database
+      // And notify other users about the change
+      const UpdatedEventDetailsComponent: React.FC<
+        CalendarEventViewingDetailsProps
+      > = (props) => {
+        // Return JSX representing the updated event details component
+        return (
+          // Example JSX representing the updated event details component
+          <div>{/* Your updated event details component */}</div>
+        );
+      };
 
-    // Action to invite team members to a calendar event
-inviteTeamMembersToCalendarEvent: (
-  state,
-  action: PayloadAction<{ eventId: string; teamMembers: string[] }>
-) => {
-  const { eventId, teamMembers } = action.payload;
-  const event = state.entities[eventId];
-  if (event) {
-    // Add logic to invite team members to the calendar event
-    // For example, you can update the event object to include the invited team members
-    // and dispatch notifications accordingly
-    dispatchNotification(
-      "inviteTeamMembersToCalendarEvent",
-      "Team members invited to calendar event successfully",
-      "Error inviting team members to calendar event",
-      dispatch,
-      eventId
-    );
-  }
-},
+      // Update event details in state
+      state.viewingEventDetails = UpdatedEventDetailsComponent;
+      // Notify other users about the change
+      dispatch(
+        CalendarActions.collaborativeEditingOfCalendarEventDetails({
+          eventId: "12345", // Example eventId
+          updatedProperties: {
+            /* Updated properties */
+          },
+        })
+      );
+    },
 
-// Action to comment on a calendar event
-commentOnCalendarEvent: (
-  state,
-  action: PayloadAction<{ eventId: string; comment: string }>
-) => {
-  const { eventId, comment } = action.payload;
-  const event = state.entities[eventId];
-  if (event) {
-    // Add logic to add a comment to the calendar event
-    // For example, you can update the event object to include the comment
-    // and dispatch notifications accordingly
-    dispatchNotification(
-      "commentOnCalendarEvent",
-      "Comment added to calendar event successfully",
-      "Error adding comment to calendar event",
-      dispatch,
-      eventId
-    );
-  }
-},
+    // Action to notify users in real-time about calendar event updates
+    realTimeNotificationsForCalendarEventUpdates: (
+      state,
+      action: PayloadAction<CalendarEvent>
+    ) => {
+      const updatedEvent = action.payload;
+      try {
+        // Get updated event from action payload
+        // Update event in state
+        state.entities[updatedEvent.id] = {
+          ...updatedEvent,
+          options: {
+            ...updatedEvent.options,
+            additionalOptions: updatedEvent.options?.additionalOptions
+              ? [...(updatedEvent.options.additionalOptions as any[])]
+              : [],
+          },
+        };
+        // Notify users about the update in real-time
+        const socket = socketIOClient(CALENDAR_API_URL);
+        socket.emit("calendarEventUpdated", updatedEvent);
+      } catch (error) {
+        // Dispatch notification
+        dispatchNotification(
+          "realTimeNotificationsForCalendarEventUpdates",
+          "Calendar event updated successfully",
+          "Error updating calendar event",
+          dispatch,
+          updatedEvent.id
+        );
+      }
+    },
 
-// Action to assign tasks within a calendar event
-assignTasksWithinCalendarEvent: (
-  state,
-  action: PayloadAction<{ eventId: string; tasks: Task[] }>
-) => {
-  const { eventId, tasks } = action.payload;
-  const event = state.entities[eventId];
-  if (event) {
-    // Add logic to assign tasks within the calendar event
-    // For example, you can update the event object to include the assigned tasks
-    // and dispatch notifications accordingly
-    dispatchNotification(
-      "assignTasksWithinCalendarEvent",
-      "Tasks assigned within calendar event successfully",
-      "Error assigning tasks within calendar event",
-      dispatch,
-      eventId
-    );
-  }
-},
-
-    // Action to update milestone title
     updateMilestoneTitle: (
       state,
       action: PayloadAction<{ id: string; newTitle: string }>
@@ -875,6 +1090,177 @@ assignTasksWithinCalendarEvent: (
       }
     },
 
+    // Inside discussCalendarEventInChatRoom function
+    discussCalendarEventInChatRoom: (
+      state,
+      action: PayloadAction<{
+        eventId: string;
+        chatRoomId: string;
+        chatRoom: ChatRoom;
+        calendarEventId: string;
+      }>
+    ) => {
+      const {
+        chatRoom: chatRoomPayload,
+        eventId,
+        chatRoomId: room_id,
+      } = action.payload;
+      let error: any;
+
+      try {
+        const chatRoom = state.chatRooms[room_id];
+        if (!chatRoom) {
+          console.error("Chat room not found:", room_id);
+          return state;
+        }
+
+        const event = state.entities[eventId];
+        if (!event) {
+          console.error("Calendar event not found:", eventId);
+          return state;
+        }
+
+        const socket = socketIOClient(CALENDAR_API_URL);
+        socket.emit("discussCalendarEvent", { eventId, chatRoomId: room_id });
+        socket.emit("discussCalendarEventInChatRoom", {
+          eventId,
+          chatRoomId: room_id,
+          message: `Discussing event: ${event.title}`,
+        });
+
+        const joinChatRoom = (roomId: string) => {
+          const socket = io(CHAT_SERVER_URL);
+          socket.emit("join", { room: roomId, user: { id: socket.id } });
+        };
+        joinChatRoom(room_id);
+
+        ChatActions.sendMessageToChatRoom({
+          room_id,
+          payload: {
+            type: "calendarEventDiscussionStarted",
+            calendarEventId: eventId,
+          },
+        });
+
+        discussCalendarEvent(eventId, room_id);
+
+        function discussCalendarEvent(
+          calendarEventId: string,
+          chatRoomId: string
+        ) {
+          ChatActions.sendMessageToChatRoom({
+            chatRoomId,
+            payload: {
+              type: "calendarEventDetails",
+              calendarEvent: state.entities[calendarEventId],
+            },
+          });
+
+          ChatActions.sendMessageToChatRoom({
+            chatRoomId,
+            payload: {
+              type: "addComment",
+              text: "New comment",
+              calendarEventId,
+            },
+          });
+        }
+
+        return state;
+      } catch (err) {
+        error = err;
+        dispatchNotification(
+          "discussCalendarEventInChatRoom",
+          "Error discussing calendar event in chat room",
+          "Calendar event discussed successfully in chat room",
+          dispatch,
+          error
+        );
+
+        const userChatGeneratedId = UniqueIDGenerator.generateChatID();
+        const user: Partial<Member> = {
+          _id: userChatGeneratedId,
+          id: chatRoomPayload.creatorId || "",
+          username: "Bot",
+        };
+
+        if (user.id !== undefined) {
+          chatRoomPayload.users.push(user as Member);
+        }
+        const calendarEvent = state.entities[action.payload.calendarEventId];
+
+        chatRoomPayload.messages.push({
+          message: `Discussing event: ${calendarEvent.title}`,
+          user: { id: chatRoomPayload.creatorId, name: "Bot" },
+          id: "",
+          sender: "",
+          senderId: "",
+          senderName: "",
+          content: "",
+          timestamp: new Date(),
+          isRead: false,
+          messageType: "",
+        });
+
+        return {
+          ...state,
+          chatRooms: { ...state.chatRooms, [room_id]: chatRoomPayload },
+          error: error.message,
+        };
+      }
+    },
+
+    shareFilesWithinCalendarEvent: (
+      state,
+      action: PayloadAction<ShareFilesPayload>
+    ): CalendarManagerState => {
+      try {
+        const { eventId, calendarEventId, files } = action.payload;
+    
+        // Define a function to handle file uploads
+        const handleFileUpload = async (files: CustomFile[]) => {
+          const uploadedFiles: CustomFile[] = [];
+    
+          for (const file of files) {
+            // Perform the file upload and handle the result
+            const result = await useFileUpload({
+              inputValue: "file",
+              handleInputChange
+
+            }).uploadFile();
+    
+            if (!result.error && result.uploadedFile) {
+              // Add the uploaded file to the list
+              uploadedFiles.push(result.uploadedFile);
+            } else {
+              // Handle error
+              console.error('Error uploading file:', result.error);
+            }
+          }
+    
+          return uploadedFiles;
+        };
+    
+        // Call the function to handle file uploads
+        handleFileUpload(files).then((uploadedFiles) => {
+          if (eventId !== undefined) {
+            dispatch(
+              CalendarActions.shareFilesWithinCalendarEvent({
+                eventId,
+                calendarEventId,
+                files: uploadedFiles,
+                recipients: [],
+              })
+            );
+          }
+        });
+    
+        return state;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
     setEventReminder: (
       state,
       action: PayloadAction<{ eventId: string; reminder: string }>
@@ -894,7 +1280,6 @@ assignTasksWithinCalendarEvent: (
       // Perform additional actions if needed
       return state;
     },
-
     pinEvent: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
       const event = state.entities[eventId];
@@ -1236,53 +1621,25 @@ assignTasksWithinCalendarEvent: (
     builder.addCase(
       exportCalendarEventsToExternalSources.pending,
       (state, action) => {
-        // Set loading state to indicate that the export process is pending
-        // This helps to visually indicate to the user that something is happening in the background
         state.isLoading = true;
-
-        // You can also update other state properties if needed
-        // For example, you might want to store information about the pending action
-        // This can be useful for tracking the progress of specific requests
         state.pendingAction = action.meta.arg;
-
-        // Additionally, you might want to clear any previous error messages when a new request starts
-        // This ensures that the user isn't confused by stale error messages
         state.error = undefined;
-
-        // You can also log the pending action for debugging or tracking purposes
-        // This can be useful for diagnosing issues or monitoring the behavior of your application
         console.log("Exporting calendar events to external sources...");
-
-        // If necessary, you can trigger side effects here, such as sending analytics events or performing additional actions
-        // For example, you might want to track how often calendar events are exported or send usage data to analytics services
-        // These side effects can help you gain insights into user behavior and improve your application over time
       }
     );
     builder.addCase(
       exportCalendarEventsToExternalSources.fulfilled,
       (state, action) => {
-        // Set loading state to indicate that the export process is no longer pending
         state.isLoading = false;
-
-        // Check if action.payload is not void
         if (typeof action.payload !== "undefined") {
-          // Update state with the payload data
           state.exportedEvents = action.payload;
-
-          // display a success message or trigger additional side effects
           console.log(
             "Calendar events successfully exported to external sources:",
             action.payload
           );
         } else {
-          // Handle the case where action.payload is void
           console.error("Payload is void. Unable to update exportedEvents.");
-
-          // Optionally, dispatch an error or display a notification to the user
-          // dispatch(exportCalendarEventsError(errorMessage));
         }
-
-        // Reset any pending action information
         state.pendingAction = null;
       }
     );
@@ -1290,34 +1647,128 @@ assignTasksWithinCalendarEvent: (
     builder.addCase(
       exportCalendarEventsToExternalSources.rejected,
       (state, action) => {
-        // Set loading state to indicate that the export process is no longer pending
         state.isLoading = false;
-
-        // Optionally, you can extract and handle the error message from the action payload
         const errorMessage = action.error.message;
-
-        // Update state to reflect the rejected state, such as displaying an error message
-        // For example, you might want to set an error flag or store the error message for display in the UI
         state.error = errorMessage;
-
-        // You can also reset any pending action information, as the action has been rejected
         state.pendingAction = null;
-
-        // Optionally, you can log the error for debugging purposes or to track failed export attempts
         console.error(
           "Error exporting calendar events to external sources:",
           errorMessage
         );
-
-        // If necessary, trigger additional side effects here, such as logging the error or notifying the user
-        // These side effects can help you diagnose issues, track failures, or provide feedback to the user about the failed export
       }
     );
+
+    builder
+      .addCase(inviteTeamMembersToCalendarEvent.fulfilled, (state, action) => {
+        try {
+          if (
+            action.payload &&
+            action.payload.success &&
+            action.payload.invitedMembers
+          ) {
+            if (state.calendarEvent) {
+              // If the calendar event exists in the state, add the invited members to its participants list
+              state.calendarEvent.participants = [
+                ...state.calendarEvent.participants,
+                ...action.payload.invitedMembers,
+              ];
+            } else {
+              // Handle the case where the calendar event does not exist in the state
+              // For a real scenario, you might fetch the calendar event again from the server
+              console.error(
+                "Calendar event does not exist in the state. Refetching the event..."
+              );
+              dispatch(
+                CalendarActions.fetchCalendarEvent({
+                  calendarEventId: action.payload.calendarEventId,
+                })
+              );
+            }
+          } else {
+            // Handle the case where the invitation was not successful or no invited members
+            // For a real scenario, you might display an error message to the user or implement retry logic
+            console.error(
+              "Invitation was not successful or no invited members."
+            );
+            showErrorMessage("Invitation failed. Please try again later.");
+          }
+        } catch (error: any) {
+          // Log the error using the error handler
+          ErrorHandler.logError(error, { componentStack: null });
+
+          // Handle the error gracefully
+          // For a real scenario, you might display a generic error message to the user
+          console.error(
+            "An error occurred while handling the invitation:",
+            error
+          );
+          showErrorMessage("An error occurred. Please try again later.");
+        }
+      })
+
+      .addCase(commentOnCalendarEvent.fulfilled, (state, action) => {
+        try {
+          if (action.payload && action.payload.success) {
+            if (state.calendarEvent && state.calendarEvent.comments) {
+              state.calendarEvent.comments.push(action.payload.comment);
+            }
+          } else {
+            // Handle the case where the comment was not successful
+            console.error("Comment was not successful.");
+
+            // For a real scenario, you might display an error message to the user or implement retry logic
+            showErrorMessage("Comment failed. Please try again later.");
+          }
+        } catch (error: any) {
+          ErrorHandler.logErrorWithRetry(error, { componentStack: null });
+        }
+      })
+      .addCase(assignTasksWithinCalendarEvent.fulfilled, (state, action) => {
+        try {
+          // Check if the action payload contains valid data
+          if (action.payload && action.payload.success) {
+            // Update the state based on the successful task assignment
+            if (state.calendarEvent) {
+              state.calendarEvent.tasks = [
+                ...state.calendarEvent.tasks,
+                ...action.payload.assignedTasks,
+              ];
+              // For example, you might update the tasks list within the calendar event
+
+              // with the newly assigned tasks from the payload
+              if (state.calendarEvent && action.payload.assignedTasks) {
+                state.calendarEvent.tasks = action.payload.assignedTasks;
+              }
+              // show message that tasks were assigned successfully
+
+              // Display a toast message
+              const message: Message = {
+                id: "task assigned" as string,
+                content: "Tasks assigned successfully:",
+                timestamp: new Date(),
+              } as Message;
+
+              showToast(message);
+            } else {
+              // Handle the case where the task assignment was not successful
+              // For example, you might display an error message or handle retry logic
+              console.error("Task assignment was not successful.");
+              showErrorMessage(
+                "Task assignment failed. Please try again later."
+              );
+            }
+          }
+        } catch (error: any) {
+          // Log any errors that occur during the process
+          ErrorHandler.logErrorWithRetry(error, { componentStack: null });
+        }
+      });
   },
 });
 
 export const {
   // Calendar Events
+  calendarEvent,
   addCalendarEvent, // Create Calendar Event
   removeCalendarEvent, // Delete Calendar Event
   updateCalendarEventTitle, // Edit Calendar Event
@@ -1374,9 +1825,6 @@ export const {
   addExternalCalendarsOverlay, // Add External Calendars Overlay
 
   // Collaboration
-  inviteTeamMembersToCalendarEvent, // Invite Team Members to Calendar Event
-  commentOnCalendarEvent, // Comment on Calendar Event
-  assignTasksWithinCalendarEvent, // Assign Tasks within Calendar Event
   collaborativeEditingOfCalendarEventDetails, // Collaborative Editing of Calendar Event Details
   realTimeNotificationsForCalendarEventUpdates, // Real-time Notifications for Calendar Event Updates
   discussCalendarEventInChatRoom, // Discuss Calendar Event in Chat Room

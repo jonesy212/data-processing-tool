@@ -1,7 +1,8 @@
+import CustomFile from '@/app/components/documents/File';
 import React, { useState, ChangeEvent } from 'react';
 
 const ProfessionalTraderDocuments = () => {
-  const [documents, setDocuments] = useState<File[]>([]);
+  const [documents, setDocuments] = useState<CustomFile[]>([]);
 
   // Function to handle document upload
   const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {

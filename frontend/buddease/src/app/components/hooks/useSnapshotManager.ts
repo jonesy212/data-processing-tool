@@ -22,7 +22,7 @@ const useSnapshotManager = () => {
   const todoManagerStore = useTodoManagerStore();
   const taskManagerStore = useTaskManagerStore();
   const userManagedStore = userManagerStore();
-  const undoRedoStore = useUndoRedoStore
+  const undoRedoStore = useUndoRedoStore()
   useEffect(() => {
     // Fetch snapshots or perform any initialization logic
     todoManagerStore.batchFetchSnapshotsRequest({} as Record<string, Todo[]>);
@@ -281,7 +281,7 @@ const useSnapshotManager = () => {
 
       if (response.ok) {
         const updated = await response.json();
-        SnapshotManagerStore.updateSnapshotSuccess({ snapshot: updated });
+        snapshoShotStore.updateSnapshotSuccess({ snapshot: updated });
         // Notify success
         notify(
           "Snapshot updated successfully",

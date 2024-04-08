@@ -1,6 +1,92 @@
 import useIdleTimeout from '../components/hooks/idleTimeoutHooks';
+import { Settings } from '../components/state/stores/SettingsStore';
  
-const userSettings = {
+
+export interface UserSettings extends Settings {
+  communicationMode: string;
+  enableRealTimeUpdates: boolean;
+  defaultFileType: string;
+  allowedFileTypes: string[];
+  enableGroupManagement: boolean;
+  enableTeamManagement: boolean;
+  idleTimeout: ReturnType<typeof useIdleTimeout>;
+  startIdleTimeout: () => void;
+  idleTimeoutDuration: number;
+  activePhase: string;
+  realTimeChatEnabled: boolean;
+  todoManagementEnabled: boolean;
+  notificationEmailEnabled: boolean;
+  analyticsEnabled: boolean;
+  twoFactorAuthenticationEnabled: boolean;
+  projectManagementEnabled: boolean;
+  documentationSystemEnabled: boolean;
+  versionControlEnabled: boolean;
+  userProfilesEnabled: boolean;
+  accessControlEnabled: boolean;
+  taskManagementEnabled: boolean;
+  loggingAndNotificationsEnabled: boolean;
+  securityFeaturesEnabled: boolean;
+  collaborationPreference1?: any;
+  collaborationPreference2?: any;
+  theme: string;
+  language: string;
+  fontSize: number;
+  darkMode: boolean;
+  enableEmojis: boolean;
+  enableGIFs: boolean;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  notificationSound: string;
+  timeZone: string;
+  dateFormat: string;
+  timeFormat: string;
+  defaultProjectView: string;
+  taskSortOrder: string;
+  showCompletedTasks: boolean;
+  projectColorScheme: string;
+  showTeamCalendar: boolean;
+  teamViewSettings: any[];
+  defaultTeamDashboard: string;
+  passwordExpirationDays: number;
+  privacySettings: any[]; // Update with PrivacySettings type
+  thirdPartyApiKeys: Record<string, string>;
+  externalCalendarSync: boolean;
+  dataExportPreferences: any[];
+  dashboardWidgets: any[];
+  customTaskLabels: any[];
+  customProjectCategories: any[];
+  customTags: any[];
+  additionalPreference1?: any;
+  additionalPreference2?: any;
+  formHandlingEnabled: boolean;
+  paginationEnabled: boolean;
+  modalManagementEnabled: boolean;
+  sortingEnabled: boolean;
+  notificationSoundEnabled: boolean;
+  localStorageEnabled: boolean;
+  clipboardInteractionEnabled: boolean;
+  deviceDetectionEnabled: boolean;
+  loadingSpinnerEnabled: boolean;
+  errorHandlingEnabled: boolean;
+  toastNotificationsEnabled: boolean;
+  datePickerEnabled: boolean;
+  themeSwitchingEnabled: boolean;
+  imageUploadingEnabled: boolean;
+  passwordStrengthEnabled: boolean;
+  browserHistoryEnabled: boolean;
+  geolocationEnabled: boolean;
+  webSocketsEnabled: boolean;
+  dragAndDropEnabled: boolean;
+  idleTimeoutEnabled: boolean;
+  enableAudioChat: boolean;
+  enableVideoChat: boolean;
+  enableFileSharing: boolean;
+  enableBlockchainCommunication: boolean;
+  enableDecentralizedStorage: boolean;
+}
+
+
+const userSettings: UserSettings = {
   communicationMode: "text",
   enableRealTimeUpdates: true,
 
@@ -9,8 +95,8 @@ const userSettings = {
   enableGroupManagement: true,
   enableTeamManagement: true,
 
-  idleTimeout: useIdleTimeout(),
-  startIdleTimeout: useIdleTimeout(),
+  idleTimeout: useIdleTimeout('idleTimeout'),
+  startIdleTimeout: useIdleTimeout('idleTimeout').startIdleTimeout(timeoutDuration, onTimeout),
   idleTimeoutDuration: 0,
   activePhase: "current phase",
   realTimeChatEnabled: false,

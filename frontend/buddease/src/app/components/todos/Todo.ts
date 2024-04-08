@@ -9,7 +9,8 @@ import { Snapshot } from "../snapshots/SnapshotStore";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 import { Progress } from "../models/tracker/ProgressBar";
-
+import File from "../documents/File";
+import { Attachment } from "../documents/Attachment/attachment";
 export interface Todo {
   _id: string;
   id: string;
@@ -77,22 +78,7 @@ export interface Todo {
   data?: Data;
 }
 
-export interface Attachment extends Data {
-  url: string;
-  name: string;
-  fileType: FileType;
-  size: number;
-  isImage?: boolean;
-  metadata?: Record<string, any>;
-}
 
-export type FileType =
-  | "image"
-  | "document"
-  | "link"
-  | "audio"
-  | "video"
-  | "other";
 
 export interface TodoManagerState {
   entities: Record<string, Todo>;

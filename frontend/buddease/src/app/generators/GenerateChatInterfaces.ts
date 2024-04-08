@@ -1,10 +1,11 @@
 // GenerateChatInterfaces.ts
 
+import { ChatRoom } from "../components/calendar/CalendarSlice";
 import { User, UserData } from "../components/users/User";
 
   interface Message extends User, UserData {
     id: string;
-    channelId: string;
+    channelId: ChatRoom[];
     content: string;
     timestamp: Date;
     text: string;

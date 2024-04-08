@@ -1,4 +1,4 @@
-export default function (webpackEnv) {
+module.exports = function (webpackEnv) {
   // Environment checks
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
@@ -10,5 +10,29 @@ export default function (webpackEnv) {
   // Image inline size limit
   const imageInlineSizeLimit = parseInt(process.env.IMAGE_INLINE_SIZE_LIMIT || '10000');
 
-  // Rest of the webpack configuration...
+  // Define your Webpack configuration
+  const webpackConfig = {
+    // Other Webpack configuration options...
+    module: {
+      rules: [
+        // Other rules...
+        {
+          test: /\.(js|jsx|ts|tsx)$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                ['@babel/preset-env', { targets: 'defaults' }],
+                '@babel/preset-react',
+                '@babel/preset-typescript', // Add TypeScript preset
+              ],
+            },
+          },
+        },
+      ],
+    },
+  };
+
+  return webpackConfig;
 };

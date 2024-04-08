@@ -1,10 +1,9 @@
 // data/DataActions.ts
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
 import { Data } from "../../models/data/Data";
-import { DataProcessingResult } from "./DataProcessing/DataProcessingService";
+import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProcessingService";
 
 export const DataActions = {
-
    // Actions for data processing
    loadDataAndProcessRequest: createAction<Data>("loadDataAndProcessRequest"),
    loadDataAndProcessSuccess: createAction<DataProcessingResult>("loadDataAndProcessSuccess"),
@@ -25,6 +24,9 @@ export const DataActions = {
    updateDataFrame: createAction<{ id: number; newDataFrame: Data }>("updateDataFrame"),
    deleteDataFrame: createAction<number>("deleteDataFrame"),
  
+   processDataForAnalysis: createAction<DataProcessing>("processDataForAnaysis"),
+   processDataForAnalysisSuccess: createAction<DataProcessingResult>("processDataForAnalysisSuccess"),
+   processDataForAnalysisFailure: createAction<{ error: string }>("processDataForAnalysisFailure"),
    // Batch actions for fetching, updating, and removing
    batchFetchDataRequest: createAction("batchFetchDataRequest"),
    batchFetchDataSuccess: createAction<{ data: Data[] }>("batchFetchDataSuccess"),

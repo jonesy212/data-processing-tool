@@ -19,7 +19,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
 
     "plugins": [
@@ -30,6 +30,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/shared/*": ["./src/app/shared/*"],
+      "@sharing/*": ["./src/app/shared/*"],
 
       // app
       "@/api/*": ["./src/app/api/*"],

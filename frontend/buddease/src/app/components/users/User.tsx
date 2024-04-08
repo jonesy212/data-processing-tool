@@ -17,7 +17,7 @@ import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
 import { Persona } from "@/app/pages/personas/Persona";
 
 export interface User extends UserData {
-  _id: string; // Add this line
+  _id?: string; // Add this line
   id: string | number;
   username: string;
   email: string;
@@ -30,15 +30,18 @@ export interface User extends UserData {
   profilePicture: string | null;
   processingTasks: DataProcessingTask[];
   data?: UserData;
-  role: UserRole
-  persona:  Persona
+  role: UserRole;
+  persona: Persona;
+  analysisResults?: DataAnalysisResult[]
+
 }
 
 const timeBasedCode: string = generateTimeBasedCode();
 
 // Placeholder for user data
 export interface UserData {
-  id: User["id"];
+  _id?: string;
+  id: User["id"] | number;
   datasets?: string;
   tasks?: string;
   questionnaireResponses?: any;

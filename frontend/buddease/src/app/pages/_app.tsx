@@ -1,6 +1,6 @@
 // _app.tsx
-import { v4 as uuidVFour } from 'uuid'; // Import the uuid library or use your preferred UUID generator
-import { Refine } from "@refinedev/core";
+import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
+import { DataProvider, Refine } from "@refinedev/core";
 import { IDataContextProvider } from "@refinedev/core/dist/interfaces";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
@@ -58,6 +58,8 @@ import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
 import ErrorHandler from "../shared/ErrorHandler";
+import UserSettingsForm from "./forms/UserSettingsForm";
+import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
 
 const phases: Phase[] = [
   {
@@ -98,6 +100,9 @@ async function MyApp({
   const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
   const [username, setUsername] = useState<string>("defaultUsername");
   const [password, setPassword] = useState<string>("<PASSWORD>");
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(true); // Example state for user login status
+  const idleTimeout = useIdleTimeout({ /* pass any required props here */ });
+
   // Define the 'addNotifications' function to add new notifications
   const addNotifications = (message: string, randomBytes: BytesLike) => {
     // Generate a unique ID for the new notification
@@ -201,17 +206,15 @@ async function MyApp({
 
   const personaType = PersonaTypeEnum.ProjectManager; // For example, assuming the persona type is ProjectManager
 
-
-
   const handleNodeClick = (node: any) => {
     // Perform actions based on the clicked node
     console.log("Node clicked:", node);
-  
+
     // Example: Update state with the clicked node data
     // Uncomment the following lines if using state management like useState
     const [selectedNode, setSelectedNode] = useState(null);
     setSelectedNode(node);
-  
+
     // Example: Navigate to a different page or route based on the clicked node
     // Uncomment the following lines if using React Router for navigation
     const history = useNavigate();
@@ -220,17 +223,36 @@ async function MyApp({
 
 
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
+
+
+  const handleIdleTimeout = (duration: any) => {
+    // Start the idle timeout with the provided duration
+    idleTimeout.startIdleTimeout(duration, () => {
+      // Callback function when timeout occurs (e.g., logout the user)
+      setIsUserLoggedIn(false);
+    });
+  };
+
   return (
     <ErrorBoundaryProvider ErrorHandler={ErrorHandler}>
+      {isUserLoggedIn ? (
+        <div>
+          <h1>Welcome User!</h1>
+          {/* Render the UserSettingsForm component to allow administrators to configure idle timeout */}
+          <UserSettingsForm onSubmit={handleIdleTimeout} />
+        </div>
+      ) : (
+        <h1>User Logged Out (due to inactivity)</h1>
+      )}
       <DynamicErrorBoundary>
         <Refine
           dataProvider={{
+            default: {} as DataProvider,
             AuthProvider: AuthProvider,
-            default: {} as IDataContextProvider,
           }}
           routerProvider={{
             basename: "",
-            Link: Link,
+            Link: React.Component<{ to: string; children?: React.ReactNode; }>,
             Router: Router,
             Route: Route,
             Routes: Routes,
@@ -255,7 +277,12 @@ async function MyApp({
           <SearchComponent {...pageProps}>
             {({ children, componentSpecificData }: Props) => (
               <ThemeConfigProvider>
-                <ThemeCustomization />
+                <ThemeCustomization
+                  themeState={themeState}
+                  setThemeState={setThemeState}
+                  notificationState={notificationState}
+
+                />
                 <CollaborationDashboard />
                 <NotificationProvider>
                   <DynamicPromptProvider>
@@ -369,16 +396,16 @@ async function MyApp({
                           />
                           {/* Generate appTree and render TreeView */}
                           {appTree && (
-  <TreeView
-    data={[appTree]}
-    onClick={(node) => handleNodeClick(node)}
-    searchQuery=""
-  />
-)}
+                            <TreeView
+                              data={[appTree]}
+                              onClick={(node) => handleNodeClick(node)}
+                              searchQuery=""
+                            />
+                          )}
                           <EditorWithPrompt
                             userId="user1"
                             teamId="team1"
-                                  project="project1"
+                            project="project1"
                           />
                           {/* ButtonGenerator component with handleButtonClick */}
                           <ButtonGenerator

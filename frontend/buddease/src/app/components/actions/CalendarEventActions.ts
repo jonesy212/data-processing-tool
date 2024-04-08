@@ -2,7 +2,9 @@
 import { createAction } from "@reduxjs/toolkit";
 import { Theme } from "../libraries/ui/theme/Theme";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
-
+import { NotificationData } from "../support/NofiticationsSlice";
+import File from "../documents/File";
+import CustomFile from "../documents/File";
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
@@ -35,6 +37,7 @@ export const CalendarActions = {
   }>("updateEventParticipants"),
 
   // Async actions
+  fetchCalendarEvent: createAction<{calendarEventId: string}>("fetchCalendarEvent"),
   fetchCalendarEventsRequest: createAction("fetchCalendarEventsRequest"),
   fetchCalendarEventsSuccess: createAction<{ events: CalendarEvent[] }>(
     "fetchCalendarEventsSuccess"
@@ -97,6 +100,7 @@ export const CalendarActions = {
     attachments: string[];
   }>("eventAttachments"),
 
+  
   createRecurringEvent:createAction<{
     frequency: "daily" | "weekly" | "monthly" | "custom";
     interval?: number; // For custom frequency
@@ -117,13 +121,19 @@ export const CalendarActions = {
     // Additional parameters as needed
   }>("categorizeEvent"),
 
+  
   shareEvent: createAction<{
     eventId: string;
     recipients: string[]; // User IDs or emails
     permission: "view" | "edit" | "comment";
     // Additional parameters as needed
   }>("shareEvent"),
-
+  shareFilesWithinCalendarEvent: createAction<{
+    eventId: string;
+    files: CustomFile[];
+    calendarEventId: string;
+    recipients: string[];
+  }>("shareFilesWithinCalendarEvent"),
   syncEvent: createAction<string>("syncEvent"),
   syncEventSuccess: createAction<{ eventId: string }>("syncEventSuccess"),
   syncEventFailure: createAction<{ error: string }>("syncEventFailure"),
@@ -220,6 +230,12 @@ export const CalendarActions = {
     // Additional parameters as needed
   }>("editRecurringEventInstance"),
 
+
+  collaborativeEditingOfCalendarEventDetails: createAction<{   eventId: string;
+    updatedProperties: Partial<CalendarEvent>; // Assuming CalendarEvent is the type of your event object
+  }>("collaborativeEditingOfCalendarEventDetails"),
+
+
   sendEventCollaborationInvitation: createAction<{
     eventId: string;
     invitees: string[]; // User IDs or emails
@@ -297,7 +313,17 @@ export const CalendarActions = {
 
 
 
+  dispatchNotification: createAction<NotificationData>('communication/dispatchNotification'),
+  updateChatRoomTopics: createAction<{
+    chatRoomId: string;
+    topics: string[];
+  }>('communication/updateChatRoomTopics'),
 
+  discussCalendarEventInChatRoom: createAction<{
+    eventId: string;
+    chatRoomId: string;
+    
+  }>('communication/discussCalendarEventInChatRoom'),
 
 
 

@@ -1,6 +1,6 @@
 // File.ts
 // File interface representing a file
-interface File {
+interface CustomFile extends File{
   readonly name: string;                               // The name of the file
   readonly size: number;                               // The size of the file in bytes
   readonly type: string;                               // The MIME type of the file
@@ -28,7 +28,7 @@ interface File {
 }
 
 
-export default File;
+export default CustomFile;
 
 
 
