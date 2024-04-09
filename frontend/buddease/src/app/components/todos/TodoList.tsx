@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
-import { Phase } from "../phases/Phase";
+import { PriorityStatus, StatusType } from "../models/data/StatusType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
@@ -56,7 +56,6 @@ const TodoList: React.FC = observer(() => {
     }, 1000);
   };
 
-
   const videoData: VideoData = {
     resolution: "",
     aspectRatio: "",
@@ -64,8 +63,8 @@ const TodoList: React.FC = observer(() => {
     subtitles: false,
     duration: 0,
     campaignId: 0,
-    id: ""
-  }
+    id: "",
+  };
 
   const handleAdd = () => {
     const newTodoId = "todo_" + Math.random().toString(36).substr(2, 9);
@@ -74,13 +73,14 @@ const TodoList: React.FC = observer(() => {
         id: newTodoId,
         title: "A new todo",
         done: false,
-        status: "pending",
+        status: StatusType.Pending,
         todos: [],
         description: "",
         dueDate: null,
-        priority: "low",
+        priority: PriorityStatus.Low,
         assignedTo: null,
         assignee: null,
+        assigneeId: "",
         assignedUsers: [],
         collaborators: [],
         labels: [],
@@ -94,16 +94,15 @@ const TodoList: React.FC = observer(() => {
         isBeingCompleted: false,
         isBeingReassigned: false,
         save: function (): Promise<void> {
-          throw new Error("Function not implemented.");
+          return Promise.resolve();
         },
         _id: "",
         isActive: false,
         tags: [],
-        then: (callback: (newData: Snapshot<Data>) => void) => callback,
-
+        // then: (callback: (newData: Snapshot<Data>) => void) => callback,
         analysisType: {} as AnalysisTypeEnum,
-        analysisResults: {} as DataAnalysisResult[] ,
-        phase: {} as Phase,
+        analysisResults: {} as DataAnalysisResult[],
+        // phase: {} as Phase,
         videoData: {} as VideoData,
         isDeleted: false,
         isRecurring: false,
@@ -116,10 +115,8 @@ const TodoList: React.FC = observer(() => {
         recurringMonthsOfYear: [],
         snapshot: {} as Snapshot<Data>,
         entities: [],
-        videoUrl: "",
-        videoThumbnail: "",
-        videoDuration: 0
-      }; // Remove the unnecessary cast
+      };
+      // Remove the unnecessary cast
       todoStore.addTodo(newTodo);
     };
     handleUpdateTitle(newTodoId, "A new todo");

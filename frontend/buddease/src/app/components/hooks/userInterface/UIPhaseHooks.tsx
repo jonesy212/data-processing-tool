@@ -77,7 +77,7 @@ export const notificationBarPhaseHook = createPhaseHook({
       if (notifications.length > 0) {
         // Display each notification
         notifications.forEach((notification: NotificationData) => {
-          addNotification(notification.data.message);
+          addNotification(notification.data?.message);
         });
       } else {
         // Display a generic message if no notifications are available

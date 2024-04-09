@@ -1,10 +1,11 @@
 // CollaborationActions.ts
-// collaboration/CollaborationActions.ts
 
 import { createAction } from '@reduxjs/toolkit';
 
 // Collaboration actions
 export const CollaborationActions = {
+  
+  fetchCollaboration: createAction('collaboration/fetchCollaboration'),
   fetchCollaborationRequest: createAction('collaboration/fetchCollaborationRequest'),
   fetchCollaborationSuccess: createAction<{ collaborationData: any }>('collaboration/fetchCollaborationSuccess'),
   fetchCollaborationFailure: createAction<{ error: string }>('collaboration/fetchCollaborationFailure'),
@@ -21,5 +22,16 @@ export const CollaborationActions = {
   closeCollaborationTool: createAction<string>('collaboration/closeCollaborationTool'),
   updateCollaborationSettings: createAction<{ settings: any }>('collaboration/updateCollaborationSettings'),
 
+
+  inviteCollaborator: createAction<{ collaboratorId: string }>('collaboration/inviteCollaborator'),
+  inviteCollaboratorSuccess: createAction<string>('collaboration/inviteCollaboratorSuccess'),
+  inviteCollaboratorFailure: createAction<string>('collaboration/inviteCollaboratorFailure'),
+  removeInvitedCollaborator: createAction<{collaboratorId: string}>('collaboration/removeInivitedCollaborator'),
   // Other collaboration actions as needed
+  addCollaboratorToProject: createAction<{ projectId: string, collaboratorId: string }>('collaboration/addCollaboratorToProject'),
+  removeCollaboratorFromProject: createAction<{ projectId: string, collaboratorId: string }>('collaboration/removeCollaboratorFromProject'),
+  assignRoleToCollaboratorInProject: createAction<{ projectId: string, collaboratorId: string, role: string }>('collaboration/assignRoleToCollaboratorInProject'),
+  updateCollaborationNotes: createAction<{ projectId: string, notes: string }>('collaboration/updateCollaborationNotes'),
+  shareDocument: createAction<{ documentId: string, collaborators: string[] }>('collaboration/shareDocument'),
+  unshareDocument: createAction<{ documentId: string }>('collaboration/unshareDocument')
 };

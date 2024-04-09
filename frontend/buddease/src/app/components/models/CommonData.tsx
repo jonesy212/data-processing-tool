@@ -10,7 +10,7 @@ import { DocumentData } from "../documents/DocumentBuilder";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { ProjectData } from "../projects/Project";
-import { DetailsItem } from "../state/stores/DetailsListStore";
+import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Todo } from "../todos/Todo";
 import { AllTypes } from "../typings/PropTypes";
@@ -30,7 +30,7 @@ interface CommonData<T> {
   description?: string | null | undefined;
   startDate?:  Date;
   endDate?: Date;
-  status?: StatusType
+  status?: AllStatus
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   metadata?: StructuredMetadata;

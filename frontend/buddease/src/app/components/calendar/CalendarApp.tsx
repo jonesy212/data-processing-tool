@@ -4,7 +4,7 @@ import { VideoData } from '@/app/components/video/Video';
 import CommonDetails, { CommonData } from "../models/CommonData";
 import CalendarDetails from "../models/data/CalendarDetails";
 import { Data, DataDetails } from "../models/data/Data";
-import { CalendarStatus } from "../models/data/StatusType";
+import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Progress } from "../models/tracker/ProgressBar";
 import { Project } from "../projects/Project";
@@ -91,7 +91,7 @@ const CalendarApp = () => {
     highlights: [],
     files: [],
     options: {} as DocumentOptions,
-    status: '',
+    status: StatusType.Upcoming,
     rsvpStatus: 'yes',
     priority: '',
     host: {} as Member,

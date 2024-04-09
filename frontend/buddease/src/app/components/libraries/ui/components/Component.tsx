@@ -70,7 +70,10 @@ export const handleRemoveComponent = () => {
       status: ComponentStatus.Tentative,
       completionMessageLog: {} as NotificationData & LogData,
       sendStatus: "Sent",
-    };
+      options: {
+        additionalOptions: readonly string[] | string | number | any[] | undefined
+      }
+    }
     addNotification(notification); // Updated argument to pass notification object
   } catch (error: any) {
     const errorNotification: NotificationData = {

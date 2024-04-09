@@ -1,5 +1,5 @@
 // rootSlice.ts
-import { combineReducers, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { combineReducers, createSlice, EntityId, EntityState, PayloadAction } from "@reduxjs/toolkit";
 import { Task } from "../../../models/tasks/Task";
 import { Tracker } from "../../../models/tracker/Tracker";
 import { userManagerSlice } from "../../../users/UserSlice";
@@ -32,6 +32,11 @@ import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
 const randomTaskId = uuidv4().toString();
 
+
+
+interface CustomEntityState<T, Id extends EntityId> extends EntityState<T, Id> {
+  selectedEntityId: Id | null;
+}
 export interface RootState {
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
   useProjectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
@@ -44,38 +49,46 @@ export interface RootState {
   dataManager: ReturnType<typeof useDataManagerSlice.reducer>;
   calendarManager: ReturnType<typeof useCalendarManagerSlice.reducer>;
   documentManager: ReturnType<typeof useDocumentManagerSlice.reducer>;
-  apiManager: ReturnType<typeof useApiManagerSlice.reducer>
-  videoManager: ReturnType<typeof useVideoManagerSlice.reducer>
-  randomWalkManager: ReturnType<typeof useRandomWalkManagerSlice.reducer>
-  pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>
-  teamManager: ReturnType<typeof useTeamManagerSlice.reducer>
-  projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>
-  realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>
-  eventManager: ReturnType<typeof useEventManagerSlice.reducer>
+  apiManager: ReturnType<typeof useApiManagerSlice.reducer>;
+  videoManager: ReturnType<typeof useVideoManagerSlice.reducer>;
+  randomWalkManager: ReturnType<typeof useRandomWalkManagerSlice.reducer>;
+  pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>;
+  teamManager: ReturnType<typeof useTeamManagerSlice.reducer>;
+  projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>;
+  realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>;
+  eventManager: ReturnType<typeof useEventManagerSlice.reducer>;
+  entityManager: CustomEntityState<string, string>; // Use EntityState<string, unknown> for entityManager
 }
 
 
 
 const initialState: RootState = {
   toolbarManager: useToolbarManagerSlice.reducer(undefined, { type: "init" }),
-  useProjectManager: useProjectManagerSlice.reducer(undefined, { type: "init"}),
+  useProjectManager: useProjectManagerSlice.reducer(undefined, {
+    type: "init",
+  }),
   dataManager: useDataManagerSlice.reducer(undefined, { type: "init" }),
   taskManager: taskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
   userManager: userManagerSlice.reducer(undefined, { type: "init" }),
-  dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, {type: "init",}),
+  dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, {
+    type: "init",
+  }),
   calendarManager: useCalendarManagerSlice.reducer(undefined, { type: "init" }),
   todoManager: useTodoManagerSlice.reducer(undefined, { type: "init" }),
   documentManager: useDocumentManagerSlice.reducer(undefined, { type: "init" }),
   userTodoManager: userManagerSlice.reducer(undefined, { type: "init" }),
   apiManager: useApiManagerSlice.reducer(undefined, { type: "init" }),
-  randomWalkManager: useRandomWalkManagerSlice.reducer(undefined, { type: "init" }),
+  randomWalkManager: useRandomWalkManagerSlice.reducer(undefined, {
+    type: "init",
+  }),
   pagingManager: usePagingManagerSlice.reducer(undefined, { type: "init" }),
   videoManager: useVideoManagerSlice.reducer(undefined, { type: "init" }),
   teamManager: useTeamManagerSlice.reducer(undefined, { type: "init" }),
   projectOwner: useProjectOwnerSlice.reducer(undefined, { type: "init" }),
   realtimeManager: useRealtimeDataSlice.reducer(undefined, { type: "init" }),
   eventManager: useEventManagerSlice.reducer(undefined, { type: "init" }),
+  entityManager: { entities: {}, selectedEntityId: null } as CustomEntityState<string, string>
 };
 
 const rootReducerSlice = createSlice({

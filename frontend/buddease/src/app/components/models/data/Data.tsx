@@ -5,13 +5,14 @@ import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysi
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import Todo, { Attachment } from "../../todos/Todo";
+import Todo from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
 import { User } from "../../users/User";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Idea } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
+import { Attachment } from "../../documents/Attachment/attachment";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -80,7 +81,7 @@ interface Data {
   startDate?: Date;
   endDate?: Date;
   scheduled?: boolean;
-  status?:AllStatus
+  status?: AllStatus
 
   isActive?: boolean;
   tags?: string[];

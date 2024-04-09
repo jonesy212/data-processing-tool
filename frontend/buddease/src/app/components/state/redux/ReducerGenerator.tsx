@@ -24,38 +24,39 @@ interface EntityReducerOptions<EntityData> {
   updateFunction: (entity: EntityData, payload: any) => void;
 }
 
-const createEntityReducer =
-  <EntityData extends Draft<any>>(options: EntityReducerOptions<EntityData>) =>
-  (
-    state: WritableDraft<EntityState<EntityData>>,
-    action: EntityAction<EntityData> | PayloadAction<string>
-  ) => {
-    if (isDraft(state)) {
-      const draft = state as WritableDraft<EntityState<EntityData>>;
 
-      if (isEntityAction(action)) {
-        const entity = draft.entities[action.id];
-        if (entity) {
-          options.updateFunction(entity as EntityData, action.payload);
-        }
+export const createEntityReducer = <EntityData extends Draft<any>>(
+  options: EntityReducerOptions<EntityData>
+) => (
+  state: WritableDraft<EntityState<EntityData>>,
+  action: EntityAction<EntityData> | PayloadAction<string>
+) => {
+  if (isDraft(state)) {
+    const draft = state as WritableDraft<EntityState<EntityData>>;
+
+    if (isEntityAction(action)) {
+      const entity = draft.entities[action.id];
+      if (entity) {
+        options.updateFunction(entity as EntityData, action.payload);
       }
     }
-  };
+  }
+};
 
 // Example usage:
 
-const setCollaboratorsReducer = createEntityReducer({
+
+export const setCollaboratorsReducer = createEntityReducer({
   type: "setCollaborators",
   updateFunction: (entity: { collaborators: string[] }, payload) => {
     entity.collaborators = payload.collaborators;
   },
 });
 
-const setDueDateReducer = createEntityReducer({
+export const setDueDateReducer = createEntityReducer({
   type: "setDueDate",
   updateFunction: (entity: { dueDate: string }, payload) => {
     entity.dueDate = payload.dueDate;
   },
 });
-
 // Add more generic reducers as needed

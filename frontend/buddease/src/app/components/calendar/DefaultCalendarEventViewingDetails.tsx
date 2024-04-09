@@ -1,7 +1,7 @@
 // DefaultCalendarEventViewingDetails.tsx
 import { handleApiError } from '@/app/api/ApiLogs';
 import ProjectService from "@/app/api/ProjectService";
-import Project from "@/app/components/projects/Project"; // Import ProjectDetails component
+import {Project} from "@/app/components/projects/Project"; // Import ProjectDetails component
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
 import {
     useNotification

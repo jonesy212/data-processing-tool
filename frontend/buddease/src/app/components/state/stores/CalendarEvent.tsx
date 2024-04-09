@@ -64,6 +64,15 @@ const notifyCallback = (): void => {
     });
 };
 
+
+interface CalendarEntities {
+  events: CalendarEvent[];
+  participants: Member[];
+  hosts: Member[];
+  guestSpeakers: Member[]; // Add guestSpeakers array
+  // Add more entities as needed
+}
+
 interface CalendarEvent extends CommonEvent, CommonData<Data> {
   id: string;
   title: string;
@@ -75,7 +84,7 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
-  options: {
+  options?: {
     // ...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
     
@@ -83,13 +92,14 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   };
   documentPhase?: Phase;
   // Add more properties if needed
-  status: StatusType | undefined;
+  status?: AllStatus
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
   priority: AllStatus;
   location?: string;
   host: Member;
-  hosts?: Member[];
   guestSpeakers?: Member[];
+  participants: Member[];
+  hosts?: Member[];
   attendees?: Member[];
   color?: string;
   isImportant?: boolean;
@@ -99,7 +109,7 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   archived?: boolean;
   documentReleased?: boolean;
   metadata?: StructuredMetadata;
-  participants: Member[];
+  
 }
 
 export interface CalendarManagerStore {
@@ -177,7 +187,17 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
 
   openCalendarSettingsPage: () => void;
   openScheduleEventModal: (content: JSX.Element) => void;
+  entities: CalendarEntities; 
+
   constructor() {
+     // Initialize entities in the constructor
+     this.entities = {
+      events: [],
+      participants: [],
+      hosts: [],
+      guestSpeakers: [],
+      // Add more entities as needed
+    };
     this.dispatch = useDispatch();
     this.assignedEventStore = useAssignEventStore();
     this.setDocumentReleaseStatus = this.setDocumentReleaseStatus.bind(this);
@@ -235,7 +255,8 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     const eventsArray = this.events[eventId];
     if (eventsArray && eventsArray.length > 0) {
       const event = eventsArray[0]; // Accessing the first event in the array
-      event.status = status as StatusType;
+      event.status = status as AllStatus
+      ;
     }
     if (status === CalendarStatus.Completed) {
       this.completeAllEvents();
@@ -300,7 +321,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       metadata: {} as StructuredMetadata,
       rsvpStatus: "yes",
       host: {} as Member,
-      hosts: {} as Member[],
+      hosts: [] as Member[],
       attendees: [] as Member[],
       color: "",
       isImportant: false,
@@ -326,6 +347,15 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       ...this.events,
       [newEvent.id]: [...(this.events[newEvent.id] || []), newEvent],
     };
+
+    // Add event to events array
+    this.entities.events.push(newEvent);
+
+    // Add participants to participants array
+    this.entities.participants.push(...(newEvent.participants || []));
+
+    // Add hosts to hosts array
+    this.entities.hosts.push(...(newEvent.hosts || []));
 
     // Reset input fields after adding an event
     this.eventTitle = "";
@@ -554,7 +584,7 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
     _id: "",
     id: "",
     title: "",
-    status: "pending",
+    status: StatusType.Pending,
     isActive: false,
     tags: [],
     phase: null,
@@ -636,4 +666,5 @@ console.log(convertedData);
 
 export { fetchEventsRequest, updateCallback, useCalendarManagerStore };
 export default CalendarManagerStoreClass;
-export type { CalendarEvent };
+export type { CalendarEntities, CalendarEvent };
+

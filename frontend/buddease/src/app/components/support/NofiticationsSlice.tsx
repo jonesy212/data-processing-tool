@@ -6,6 +6,7 @@ import { LogData } from '../models/LogData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { AllStatus } from '../state/stores/DetailsListStore';
 import { NotificationType, NotificationTypeEnum } from './NotificationContext';
+import { StatusType } from '../models/data/StatusType';
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -30,6 +31,9 @@ interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   status?: AllStatus
   inApp?: boolean; // Add inApp property to differentiate push vs in-app
   notificationType?: NotificationTypeEnum;
+  options?: {
+    additionalOptions: readonly string[] | string | number | any[] | undefined
+  }
 }
 
 interface NotificationsState {
@@ -62,7 +66,10 @@ export const dispatchNotification = (
         status: "tentative",
         sendStatus: "Sent",
         email: "test@email.com",
-        inApp: true
+        inApp: true,
+        options: {
+          additionalOptions: undefined
+        }
       })
     );
   } catch (error) {
@@ -78,7 +85,10 @@ export const dispatchNotification = (
         status: "tentative",
         sendStatus: "Error",
         email: "test@email.com",
-        inApp: true
+        inApp: true,
+        options: {
+          additionalOptions: undefined
+        }
       })
     );
   }

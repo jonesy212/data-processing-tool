@@ -9,10 +9,20 @@ interface CollaborationPreferences {
     brainstorming: BrainstormingSettings;
     branding: BrandingSettings; // Add branding settings
     // Add other collaboration preferences as needed
-  }
+}
+  
 // Example usage
 const collaborationPreferences: CollaborationPreferences = {
   teamBuilding: {
+    id: "1",
+    filter: (key) => {
+      if (key === "id") {
+        // Handle id filtering logic
+      } else if (key === "filter") {
+        // Handle filter filtering logic
+      }
+      // Handle other keys if needed
+    },
     enableTeamBuilding: true,
     teamBuildingMethod: "workshops",
     teamBuildingFrequency: "monthly",
@@ -69,25 +79,22 @@ const collaborationPreferences: CollaborationPreferences = {
       warning: "",
       info: "",
       // Button Colors
-    button: {
-      color: "",
-      colorHover: "",
-      colorActive: "",
-      colorDisabled: "",
-      colorFocus: "",
-      textColor: "",
-      textColorHover: "",
-      textColorActive: "",
-      // Border Colors
-      borderColorHover: "",
-      borderColorActive: "",
-      borderColorDisabled: "",
-      borderColorFocus: "",
-      },
-    
-    
-
-    
+      button: {
+        color: "",
+        colorHover: "",
+        colorActive: "",
+        colorDisabled: "",
+        colorFocus: "",
+        textColor: "",
+        textColorHover: "",
+        textColorActive: "",
+        // Border Colors
+        borderColorHover: "",
+        borderColorActive: "",
+        borderColorDisabled: "",
+        borderColorFocus: "",
+        borderColor: "",
+      }
     },
     borderColor: "",
     shadowColor: "",
@@ -113,7 +120,19 @@ const collaborationPreferences: CollaborationPreferences = {
     borderRadiusLarge: "",
     spacingSmall: "",
     spacingMedium: "",
-    spacingLarge: ""
+    spacingLarge: "",
+    fontFamily: "",
+    headingFontFamily: "",
+    fontSize: "",
+    headingFontSize: "",
+    boxShadow: "",
+    boxShadowHover: "",
+    breakpoints: {
+      mobile: "",
+      tablet: "",
+      laptop: "",
+      desktop: ""
+    }
   },
   // Add other collaboration preferences as needed
 };

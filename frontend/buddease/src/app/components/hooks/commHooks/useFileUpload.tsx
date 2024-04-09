@@ -12,10 +12,15 @@ import {
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import useErrorHandling from "../useErrorHandling";
-import File from "../../documents/File";
 import CustomFile from "../../documents/File";
 const { notify } = useNotification();
 const { handleError } = useErrorHandling(); // Use useErrorHandling for error handling
+
+
+
+
+type UploadResult = { error: Error } | { uploadedFile: CustomFile };
+
 
 
 interface FileUploadProps {
@@ -25,21 +30,21 @@ interface FileUploadProps {
 }
 
 const useFileUpload = ({ inputValue, handleInputChange }: FileUploadProps) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<CustomFile | null>(null);
 
   const handleFileChanges = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      setSelectedFile(selectedFile);
+      setSelectedFile(selectedFile as CustomFile);
       // Call handleInputChange to update inputValue
       handleInputChange(event);
     }
   };
 
-  const uploadFile = async () => {
+  const uploadFile = async (): Promise<UploadResult> => {
     if (!selectedFile) {
       handleError("No file selected for upload"); // Handle error if no file selected
-      return;
+      return { error: new Error("No file selected") };
     }
 
     try {
@@ -100,6 +105,7 @@ const useFileUpload = ({ inputValue, handleInputChange }: FileUploadProps) => {
       handleError("Failed to upload file");
       console.error("Error uploading file:", error);
     }
+    return { uploadedFile: selectedFile };
   };
 
 
@@ -108,51 +114,59 @@ const useFileUpload = ({ inputValue, handleInputChange }: FileUploadProps) => {
 
 
     // Function to upload multiple files to storage
-    const uploadFilesToStorage = async (files: CustomFile[]): Promise<void> => {
-      try {
-        for (const file of files) {
-          const formData = new FormData();
-          formData.append("file", file);
-  
-          const uploadEndpoint = dotProp.getProperty(endpoints, "data.uploadData");
-          if (typeof uploadEndpoint === "string") {
-            if (!headersConfig["X-CSRF-Token"]) {
-              const csrfToken = generateCSRFToken();
-              headersConfig["X-CSRF-Token"] = csrfToken;
-            }
-  
-            const response = await axiosInstance.post(uploadEndpoint, formData, {
-              headers: headersConfig, 
-            });
-  
-            console.log("Response:", response.data);
-  
-            if (response.status === 200) {
-              notify(
-                "uploadFileSuccess",
-                "File uploaded successfully",
-                NOTIFICATION_MESSAGES.Data.UPLOAD_DATA_SUCCESS,
-                new Date(),
-                "uploadFileSuccess" as NotificationType
-              );
-  
-              await axiosInstance.post(uploadEndpoint, formData);
-              console.log("File uploaded successfully");
-            } else {
-              handleError("Failed to upload file");
-            }
-          }
-  
-          FileLogger.logToFile(
-            `File uploaded: ${file.name}`,
-            "file_upload_log.txt"
-          );
+    // Function to upload multiple files to storage
+const uploadFilesToStorage = async (files: CustomFile[]): Promise<{ uploadedFiles: CustomFile[]; error?: Error }> => {
+  try {
+    const uploadedFiles: CustomFile[] = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const uploadEndpoint = dotProp.getProperty(endpoints, "data.uploadData");
+      if (typeof uploadEndpoint === "string") {
+        if (!headersConfig["X-CSRF-Token"]) {
+          const csrfToken = generateCSRFToken();
+          headersConfig["X-CSRF-Token"] = csrfToken;
         }
-      } catch (error) {
-        handleError("Failed to upload files");
-        console.error("Error uploading files:", error);
+
+        const response = await axiosInstance.post(uploadEndpoint, formData, {
+          headers: headersConfig,
+        });
+
+        console.log("Response:", response.data);
+
+        if (response.status === 200) {
+          notify(
+            "uploadFileSuccess",
+            "File uploaded successfully",
+            NOTIFICATION_MESSAGES.Data.UPLOAD_DATA_SUCCESS,
+            new Date(),
+            "uploadFileSuccess" as NotificationType
+          );
+
+          uploadedFiles.push(file); // Add the uploaded file to the list
+          console.log("File uploaded successfully");
+        } else {
+          // Handle error
+          console.error("Failed to upload file:", response.data.error);
+          return { uploadedFiles: [], error: new Error(response.data.error) };
+        }
       }
-    };
+
+      FileLogger.logToFile(
+        `File uploaded: ${file.name}`,
+        "file_upload_log.txt"
+      );
+    }
+
+    return { uploadedFiles }; // Return the uploaded files
+  } catch (error: any) {
+    console.error("Error uploading files:", error);
+    return { uploadedFiles: [], error }; // Return the error
+  }
+};
+
   
 
   return {

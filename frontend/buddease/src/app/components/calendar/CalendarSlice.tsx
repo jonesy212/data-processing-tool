@@ -1,10 +1,22 @@
-import socketIOClient, { io } from "socket.io-client";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { produce } from "immer";
 import calendarApiService from "@/app/api/ApiCalendar";
 import { fetchEventData } from "@/app/api/ApiEvent";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import ErrorHandler from "@/app/shared/ErrorHandler";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { produce } from "immer";
 import { useDispatch } from "react-redux";
+import socketIOClient, { io } from "socket.io-client";
+import { CalendarActions } from "../actions/CalendarEventActions";
 import { Theme } from "../libraries/ui/theme/Theme";
+import {
+  CalendarStatus,
+  PriorityStatus,
+  ProjectPhaseTypeEnum,
+  StatusType,
+} from "../models/data/StatusType";
+import { showErrorMessage, showToast } from "../models/display/ShowToast";
+import { Task } from "../models/tasks/Task";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import {
@@ -19,35 +31,24 @@ import {
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import CalendarEventViewingDetailsProps from "./CalendarEventViewingDetails";
+import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
-import { CalendarActions } from "../actions/CalendarEventActions";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
-import {
-  CalendarStatus,
-  PriorityStatus,
-  ProjectPhaseTypeEnum,
-  StatusType,
-} from "../models/data/StatusType";
-import { Task } from "../models/tasks/Task";
-import ErrorHandler from "@/app/shared/ErrorHandler";
-import { showErrorMessage, showToast } from "../models/display/ShowToast";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import ChatRoom from "../communications/chat/ChatRoom";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { ChatMessage } from "../communications";
-import { LogData } from "../models/LogData";
-import { User } from "../users/User";
 import { initiateDataAnalysis } from "@/app/services/dataAnalysisService";
+import { ChangeEvent } from "react";
+import { ChatMessage } from "../communications";
+import { Attachment } from "../documents/Attachment/attachment";
+import CustomFile from "../documents/File";
+import useFileUpload from "../hooks/commHooks/useFileUpload";
+import { LogData } from "../models/LogData";
 import { Member } from "../models/teams/TeamMembers";
 import { ChatActions } from "../projects/DataAnalysisPhase/ChatActions";
-import File from "../documents/File";
-import { Attachment } from "../documents/Attachment/attachment";
-import useFileUpload from "../hooks/commHooks/useFileUpload";
-import { ChangeEvent, useState } from "react";
-import CustomFile from "../documents/File";
+import CalendarEventAlternative from "../state/stores/CalendarEventAlternative";
+import { User } from "../users/User";
+import CalendarEventImprovement from "./CalendarEventImprovement";
 
 interface Milestone {
   id: string;
@@ -85,7 +86,16 @@ interface ShareFilesPayload {
   eventId?: string;
   calendarEventId: string;
   files: CustomFile[];
+  handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
+
+type CalendarViewType =
+  | "day"
+  | "week"
+  | "month"
+  | "quarter"
+  | "year"
+  | React.FC<CalendarViewProps>;
 
 interface CalendarManagerState {
   entities: Record<string, CalendarEvent>;
@@ -104,11 +114,24 @@ interface CalendarManagerState {
   error: string | undefined;
   calendarEvent: CalendarEvent | undefined;
   calendarEventEditing: CalendarEvent | null;
+  currentView: CalendarViewType;
   exportedEvents: Record<string, CalendarEvent[]>;
   externalCalendarsOverlays: ExternalCalendarOverlay[];
   chatRooms: Record<string, ChatRoom>; // Updated to remove the array
   chatRoom: ChatRoom | undefined;
   user: User | null;
+  suggestedLocation: string | null;
+  suggestedDuration: number | null;
+  suggestedTheme: Theme | null;
+  suggestedAlternatives: CalendarEventAlternative[];
+  eventImprovements: CalendarEventImprovement[];
+  suggestedImprovements: CalendarEventImprovement[];
+  suggestedCollaborators: Contact[];
+  suggestedEngagementStrategies: CalendarEventEngagementStrategy[];
+  suggestedMarketingChannels: MarketingChannel[];
+  suggestEventPartnerships: CalendarEventPartnership[];
+  suggestedPartnerships: CalendarEventPartnership[];
+  suggestedTags: Tag[];
 }
 
 export const exportCalendarEvents = async (
@@ -461,6 +484,19 @@ const initialState: CalendarManagerState = {
   chatRooms: {} as Record<string, ChatRoom>,
   chatRoom: {} as ChatRoom,
   user: null,
+  currentView: "day",
+  suggestedLocation: null,
+  suggestedDuration: null,
+  suggestedTheme: null,
+  suggestedAlternatives: [] as CalendarEventAlternative[],
+  eventImprovements: [] as CalendarEventImprovement[],
+  suggestedImprovements: [] as CalendarEventImprovement[],
+  suggestedCollaborators: [] as Contact[],
+  suggestedEngagementStrategies: [] as CalendarEventEngagementStrategy[],
+  suggestedMarketingChannels: [] as MarketingChannel[],
+  suggestEventPartnerships: [] as CalendarEventPartnership[],
+  suggestedPartnerships: [] as CalendarEventPartnership[],
+  suggestedTags: [] as Tag[],
 };
 
 const { notify } = useNotification();
@@ -532,7 +568,9 @@ export const useCalendarManagerSlice = createSlice({
     // Define reducers here if needed
     updateState: (
       state,
-      action: PayloadAction<Partial<CalendarManagerState>>
+      action: PayloadAction<
+        Partial<WritableDraft<Record<string, CalendarEvent>>>
+      >
     ) => {
       return { ...state, ...action.payload };
     },
@@ -685,6 +723,20 @@ export const useCalendarManagerSlice = createSlice({
       }
     },
 
+    addNotification: (
+      state,
+      action: PayloadAction<WritableDraft<NotificationData>>
+    ) => {
+      state.notifications[action.payload.id] = action.payload;
+      dispatchNotification(
+        "addNotification",
+        "Notification added successfully",
+        "Error adding notification",
+        dispatch,
+        action.payload
+      );
+    },
+
     // For "removeNotification" action:
     removeNotification: (state, action: PayloadAction<string>) => {
       delete state.notifications[action.payload];
@@ -695,6 +747,129 @@ export const useCalendarManagerSlice = createSlice({
         dispatch,
         action.payload
       );
+    },
+
+    updateNotificationMessage: (
+      state,
+      action: PayloadAction<{ notificationId: string; newMessage: string }>
+    ) => {
+      const notification = state.notifications[action.payload.notificationId];
+      if (notification) {
+        notification.message = action.payload.newMessage;
+        dispatchNotification(
+          "updateNotificationMessage",
+          "Notification message updated successfully",
+          "Error updating notification message",
+          dispatch,
+          action.payload
+        );
+      }
+      // Update the notification message
+      notification.message = action.payload.newMessage;
+      // Return updated state
+      return state;
+    },
+
+    toggleLoadingState: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+
+    setEntities: (
+      state,
+      action: PayloadAction<Record<string, WritableDraft<CalendarEvent>>>
+    ) => {
+      state.entities = action.payload;
+    },
+
+    clearAllMilestones: (state) => {
+      state.milestones = {};
+    },
+
+    suggestEventLocation: (state, action: PayloadAction<string>) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedLocation = action.payload;
+    },
+
+    recommendEventDuration: (state, action: PayloadAction<number>) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedDuration = action.payload;
+      return state;
+    },
+
+    suggestEventTheme: (state, action: PayloadAction<WritableDraft<Theme>>) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedTheme = action.payload;
+    },
+
+    proposeEventAlternatives: (
+      state,
+      action: PayloadAction<CalendarEventAlternative[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedAlternatives = action.payload;
+    },
+
+    suggestEventImprovements: (
+      state,
+      action: PayloadAction<CalendarEventImprovement[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedImprovements = action.payload;
+      return {
+        ...state,
+        suggestedImprovements: action.payload,
+      };
+    },
+
+    recommendEventCollaborators: (
+      state,
+      action: PayloadAction<WritableDraft<Contact>[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedCollaborators = action.payload;
+    },
+
+    recommendEventEngagementStrategies: (
+      state,
+      action: PayloadAction<CalendarEventEngagementStrategy[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedEngagementStrategies = action.payload;
+      return state;
+    },
+
+    recommendEventMarketingChannels: (
+      state,
+      action: PayloadAction<WritableDraft<MarketingChannel>[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedMarketingChannels = action.payload;
+      return state;
+    },
+
+    suggestEventPartnerships: (
+      state,
+      action: PayloadAction<WritableDraft<CalendarEventPartnership>[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedPartnerships = action.payload;
+      return state;
+    },
+
+    recommendEventTags: (
+      state,
+      action: PayloadAction<WritableDraft<Tag>[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedTags = action.payload;
+      return state;
+    },
+
+    setCalendarView: (
+      state,
+      action: PayloadAction<"day" | "week" | "month" | "quarter" | "year">
+    ) => {
+      state.currentView = action.payload;
     },
 
     // Update the viewCalendarEventDetails reducer to use EventDetailsComponent
@@ -721,7 +896,7 @@ export const useCalendarManagerSlice = createSlice({
 
     // Action to share calendar event
     shareCalendarEvent: (
-      state: WritableDraft<CalendarManagerState>, // Specify the correct type for state
+      state, // Specify the correct type for state
       action: PayloadAction<WritableDraft<CalendarEvent>>
     ) => {
       const event = action.payload;
@@ -973,9 +1148,9 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     addExternalCalendarsOverlay(
-      state: CalendarManagerState,
+      state,
       action: PayloadAction<ExternalCalendarOverlay[]>
-    ): CalendarManagerState {
+    ): WritableDraft<CalendarManagerState> {
       return produce(state, (draftState: CalendarManagerState) => {
         const overlay = action.payload;
         const existingOverlayIndex =
@@ -1213,36 +1388,42 @@ export const useCalendarManagerSlice = createSlice({
     shareFilesWithinCalendarEvent: (
       state,
       action: PayloadAction<ShareFilesPayload>
-    ): CalendarManagerState => {
+    ): WritableDraft<CalendarManagerState> => {
       try {
-        const { eventId, calendarEventId, files } = action.payload;
-    
+        const { eventId, calendarEventId, files, handleInputChange } =
+          action.payload;
+
         // Define a function to handle file uploads
-        const handleFileUpload = async (files: CustomFile[]) => {
+        const handleFileUpload = async (
+          files: CustomFile[],
+          handleInputChange: (
+            event: React.ChangeEvent<HTMLInputElement>
+          ) => void
+        ) => {
           const uploadedFiles: CustomFile[] = [];
-    
+
           for (const file of files) {
             // Perform the file upload and handle the result
             const result = await useFileUpload({
               inputValue: "file",
-              handleInputChange
-
+              handleInputChange: handleInputChange,
             }).uploadFile();
-    
-            if (!result.error && result.uploadedFile) {
+
+            // Check if the result is an error or a successful upload
+            if ("error" in result) {
+              // Handle error
+              console.error("Error uploading file:", result.error);
+            } else {
               // Add the uploaded file to the list
               uploadedFiles.push(result.uploadedFile);
-            } else {
-              // Handle error
-              console.error('Error uploading file:', result.error);
             }
           }
-    
+
           return uploadedFiles;
         };
-    
-        // Call the function to handle file uploads
-        handleFileUpload(files).then((uploadedFiles) => {
+
+        // Call handleFileUpload with handleInputChange
+        handleFileUpload(files, handleInputChange).then((uploadedFiles) => {
           if (eventId !== undefined) {
             dispatch(
               CalendarActions.shareFilesWithinCalendarEvent({
@@ -1254,13 +1435,14 @@ export const useCalendarManagerSlice = createSlice({
             );
           }
         });
-    
+
         return state;
       } catch (error) {
         console.error(error);
         throw error;
       }
     },
+
     setEventReminder: (
       state,
       action: PayloadAction<{ eventId: string; reminder: string }>

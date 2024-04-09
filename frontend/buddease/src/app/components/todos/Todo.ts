@@ -1,16 +1,17 @@
 import { Data } from "@/app/components/models/data/Data";
 import { FC } from "react";
-import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
+import { Attachment } from "../documents/Attachment/attachment";
+import ChecklistItem, {
+  ChecklistItemProps,
+} from "../models/data/ChecklistItem";
 import { PriorityStatus, StatusType } from "../models/data/StatusType";
 import { Idea } from "../models/tasks/Task";
+import { Progress } from "../models/tracker/ProgressBar";
 import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../snapshots/SnapshotStore";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import { Progress } from "../models/tracker/ProgressBar";
-import File from "../documents/File";
-import { Attachment } from "../documents/Attachment/attachment";
 export interface Todo {
   _id: string;
   id: string;
@@ -19,7 +20,7 @@ export interface Todo {
   todos: Todo[];
   title: string;
   selectedTodo?: Todo;
-  progress?: Progress
+  progress?: Progress;
   description: string;
   dueDate: Date | null;
   payload?: any;
@@ -53,12 +54,15 @@ export interface Todo {
   createdAt?: Date;
   updatedAt?: Date;
   isActive?: boolean;
+  tags?: string[];
   isDeleted?: boolean;
   isArchived?: boolean;
   isCompleted?: boolean;
   isRecurring?: boolean;
 
+  isBeingDeleted?: false;
   isBeingEdited?: boolean;
+
   isBeingCompleted?: boolean;
   isBeingReassigned?: boolean;
 
@@ -73,12 +77,11 @@ export interface Todo {
   save: () => Promise<void>;
   snapshot: Snapshot<Data>;
   analysisType?: AnalysisTypeEnum;
-  analysisResults?: DataAnalysisResult[],
-  videoData?: VideoData,
+  analysisResults?: DataAnalysisResult[];
+  videoData?: VideoData;
+  
   data?: Data;
 }
-
-
 
 export interface TodoManagerState {
   entities: Record<string, Todo>;

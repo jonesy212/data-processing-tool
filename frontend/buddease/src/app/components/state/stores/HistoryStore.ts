@@ -179,10 +179,10 @@ const historyManagerStore = (): HistoryStore => {
     // Implement logic to integrate data with user profiles
     // set user id
     const userId = "";
-    const userIds: string | never[] = []
+    const userIds: string[] = [userId];
     // For example, fetch user profiles and update them with relevant data
     // For example, fetch user profiles and update them with relevant data
-    const userProfilesPromise = getUsersData(userIds); // Changed to pass userId instead of [userId]
+    const userProfilesPromise = getUsersData(userIds);
     const newData = await userService.fetchUser(userId); // Example function returning a Promise for new data
 
     // Wait for user profiles to resolve

@@ -1,9 +1,9 @@
 // DayView.jsx
+import { TodoList } from '@app/components/lists/TodoList';
 import { TaskList } from '@/app/components/lists/TaskList';
-import React from 'react';
 import CalendarDay from './CalendarDay';
 
-const DayView = ({ date, events, tasks, projects }) => {
+const DayView = ({ date, events, tasks, projects , todos}) => {
   const selectedProject = null; //set this based on user interaction
   return (
     <div>

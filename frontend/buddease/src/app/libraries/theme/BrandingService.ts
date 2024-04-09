@@ -19,6 +19,27 @@ interface BrandingSettings {
   textColor: string;
   backgroundColor?: string;
 
+  borderColor?: string;
+  shadowColor?: string;
+  hoverColor?: string;
+
+  accentColor: string,
+  successColor: string,
+  errorColor: string,
+  warningColor: string,
+  infoColor: string,
+  darkModeBackground: string,
+  darkModeText: string,
+  fontPrimary: string,
+  fontSecondary: string,
+  fontHeading: string,
+  fontSizeSmall: string,
+  fontSizeMedium: string,
+  fontSizeLarge: string,
+  lineHeightNormal: string,
+  lineHeightMedium: string,
+  lineHeightLarge: string,
+  
   // Border radius
   borderRadiusLarge?: string;
   borderRadiusMedium?: string;
@@ -100,6 +121,11 @@ interface BrandingSettings {
       textColor: string;
       textColorHover: string;
       textColorActive: string;
+      borderColorHover: string;
+      borderColorActive: string;
+      borderColorDisabled: string;
+      borderColorFocus: string;
+      borderColor: string;
     };
   };
 
@@ -211,6 +237,22 @@ const defaultBrandingSettings: BrandingSettings = {
     laptop: "",
     desktop: "",
   },
+  accentColor: "",
+  successColor: "",
+  errorColor: "",
+  warningColor: "",
+  infoColor: "",
+  darkModeBackground: "",
+  darkModeText: "",
+  fontPrimary: "",
+  fontSecondary: "",
+  fontHeading: "",
+  fontSizeSmall: "",
+  fontSizeMedium: "",
+  fontSizeLarge: "",
+  lineHeightNormal: "",
+  lineHeightMedium: "",
+  lineHeightLarge: ""
 };
 
 // Create a function to override default values with custom values
