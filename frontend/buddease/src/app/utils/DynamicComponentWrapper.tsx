@@ -12,7 +12,13 @@ import DynamicSelectionControls, {
 import Logger, { ComponentLogger } from "../components/logging/Logger";
 import { DappProps } from "../components/web3/dAppAdapter/DAppAdapterConfig";
 
-const DynamicComponentWrapper: React.FC = () => {
+interface DynamicComponentProps {
+  component: React.ReactNode; // Define the type of the component prop
+}
+
+const DynamicComponentWrapper: React.FC<DynamicComponentProps> = ({
+  component,
+}) => {
   const { setDynamicConfig, updateDynamicConfig } = useDynamicComponents(); // Use the context hook
   const { handleError } = useErrorHandling();
 
@@ -82,17 +88,17 @@ const DynamicComponentWrapper: React.FC = () => {
         <h1>Design Dashboard</h1>
         {/* ... other design dashboard elements ... */}
 
-        {/* Example: Integrate with ChatComponent */}
-        <ChatComponent
-          dappProps={
-            {
-              /* Pass props to ChatComponent */
-            } as DappProps
-          }
-        />
+        {/* Render the component passed as prop */}
+        {component}
+
       </div>
       {/* Example usage of Logger */}
-      <button onClick={() => ComponentLogger.log("User", "Clicked the button", "123")}>
+      <button onClick={() => Logger.log("Clicked the button")}>Click Me</button>
+
+      {/* Example usage of Logger */}
+      <button
+        onClick={() => ComponentLogger.log("User", "Clicked the button", "123")}
+      >
         Click Me
       </button>
       {/* Example usage of handleError */}

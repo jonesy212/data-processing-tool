@@ -2,7 +2,7 @@
 import 'quill/dist/quill.snow.css';
 import { useEffect, useState } from 'react';
 import Quill from 'react-quill';
-import { sanitizeData } from './SanitizationFunctions'; // Import the sanitizeData function
+import { sanitizeData } from '../security/SanitizationFunctions';
 
 const RichTextEditor = ({ onChange }) => {
   const [quill, setQuill] = useState(null);

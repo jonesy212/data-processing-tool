@@ -51,10 +51,11 @@ export const handleApiErrorAndNotify = (
   }
 };
 
-export const fetchData = async (): Promise<YourResponseType[]> => {
+// Modify the fetchData function to accept the endpoint for fetching highlights
+export async function fetchData(endpoint: string): Promise<YourResponseType> {
   try {
-    const fetchDataEndpoint = `${API_BASE_URL}.fetchData`;
-    const response = await axiosInstance.get(fetchDataEndpoint, {
+    const fetchDataEndpoint = `${API_BASE_URL}${endpoint}`;
+    const response = await axiosInstance.get<YourResponseType>(fetchDataEndpoint, {
       headers: headersConfig,
     });
     return response.data;
@@ -65,6 +66,32 @@ export const fetchData = async (): Promise<YourResponseType[]> => {
       error as AxiosError<unknown>,
       errorMessage,
       'FetchDataErrorId'
+    );
+    throw error;
+  }
+}
+
+
+// Use fetchData to fetch highlights
+
+// Use fetchData to fetch highlights
+export const fetchHighlights = async (): Promise<HighlightEvent[]> => {
+  try {
+    // Use dotProp to retrieve the endpoint string
+    const endpoint = dotProp.getProperty(endpoints, 'highlights.list');
+    
+    if (typeof endpoint !== 'string') {
+      throw new Error('Endpoint is not a string');
+    }
+
+    const response: YourResponseType = await fetchData(endpoint);
+    // Assuming highlights are nested within YourResponseType, adjust this accordingly
+    const highlights = response.highlights as HighlightEvent[];
+    return highlights;
+  } catch (error: any) {
+    handleApiError(
+      error,
+      NOTIFICATION_MESSAGES.errorMessage.FETCH_HIGHLIGHTS_ERROR
     );
     throw error;
   }
@@ -194,3 +221,4 @@ export const deleteData = async (dataId: number): Promise<void> => {
     throw error;
   }
 };
+

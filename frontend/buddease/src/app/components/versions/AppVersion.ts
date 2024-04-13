@@ -1,7 +1,7 @@
 // AppVersion.ts
 
+import { API_VERSION_HEADER } from "@/app/configs/AppConfig";
 import Version from "./Version";
-
 // Define the AppVersion interface without access modifiers
 interface AppVersion {
   appName: string;
@@ -73,9 +73,12 @@ class AppVersionImpl extends Version implements AppVersion {
 
   // Implement getVersionString method
   getVersionString() {
-    // Implement getVersionString logic here
-    return `${this.major}.${this.minor}.${this.patch}.${this.build}`;
+    // Integrate API_VERSION_HEADER here
+    const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
+    const apiVersionHeader = API_VERSION_HEADER ? `- API Version: ${this.API_VERSION_HEADER}` : ''; // Check if API_VERSION_HEADER is defined
+    return `${versionString} ${apiVersionHeader}`;
   }
+
 
   // Implement getVersionStringWithBuildNumber method
   getVersionStringWithBuildNumber(buildNumber: number) {
@@ -106,3 +109,4 @@ const currentAppName = appVersion.getAppName(); // Returns 'MyApp'
 // Update the appName
 appVersion.updateAppName('NewApp');
 const updatedAppName = appVersion.getAppName(); // Returns 'NewApp'
+export {updatedAppName, currentAppName};

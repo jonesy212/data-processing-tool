@@ -104,10 +104,12 @@ export const createPhaseHook = (config: PhaseHookConfig) => {
       // Your implementation here
     },
     resetIdleTimeout: async () => {
-      clearTimeout(userSettings.idleTimeout as number);
+      clearTimeout(
+        userSettings.idleTimeout as number
+      );
       userSettings.idleTimeout = setTimeout(() => {
         // handle idle timeout
-      }, userSettings.idleTimeoutDuration) as unknown as DynamicHookResult;
+      }, userSettings.idleTimeoutDuration) as unknown as NodeJS.Timeout;
     },
     isActive: false,
     intervalId: 0, // Initialize with null or assign a valid value

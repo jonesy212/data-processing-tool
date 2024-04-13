@@ -1,4 +1,4 @@
-import ChartComponent from '@/app/pages/forms/ChartComponent';
+import ChartComponent from '@/app/components/charts/ChartComponent';
 import { ChartOptions } from 'chart.js';
 
 export { ChartComponent };

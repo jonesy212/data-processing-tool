@@ -143,6 +143,7 @@ import { Events } from "pg";
 import StructuredMetadataViewer from "@/app/components/development/MetadataViewer";
 import MetadataViewer from "@/app/components/development/MetadataViewer";
 import { metadata } from '../../layout';
+import UpdatePreference from "@/app/components/users/preferences/UserPreference";
 
 
 interface DynamicComponentWrapperProps<T> {
@@ -209,7 +210,7 @@ const backendStructure: ExtendedBackendStructure = {
     const versionNumber = backendConfig.versionNumber;
     const appVersion = backendConfig.appVersion;
 
-    const files = traverseDirectory(getAppPath(versionNumber, appVersion));
+    const files = await traverseDirectory(getAppPath(versionNumber, appVersion));
     files.forEach((file: AppStructureItem) => {
       structure[file.path] = file;
     });
@@ -231,14 +232,16 @@ const DesignDashboard: React.FC<{
   const { isModalOpen, handleCloseModal, handleFileUpload } =
     useModalFunctions();
   const [isFileUploadModalOpen, setFileUploadModalOpen] = useState(false);
-  const versionNumber = backendConfig.versionNumber
+  const versionNumber = backendConfig.versionNumber;
   const appVersion = backendConfig.appVersion;
 
- 
-  const backendStructureWrapper = new BackendStructureWrapper(getAppPath(versionNumber, appVersion));
+  const backendStructureWrapper = new BackendStructureWrapper(
+    getAppPath(versionNumber, appVersion)
+  );
   const apiConfigs = useSelector(selectApiConfigs);
 
-  const designNotification = notificationData as NotificationData & NotificationData[]; // Assuming notificationData is a type
+  const designNotification = notificationData as NotificationData &
+    NotificationData[]; // Assuming notificationData is a type
   const designcompletionMessageLog = {} as LogData & NotificationData;
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [completionMessageLog, setCompletionMessageLog] = useState<LogData>({
@@ -246,19 +249,18 @@ const DesignDashboard: React.FC<{
     content: "Design Completed",
     date: new Date(),
     timestamp: new Date(),
-    level: 'info',
+    level: "info",
     type: "DesignCompleted" as NotificationType,
   });
 
   const initialNotification: NotificationData = {
     id: UniqueIDGenerator.generateNotificationID(
       designNotification,
-      new Date(), 
+      new Date(),
       NotificationTypeEnum.Test,
       designcompletionMessageLog,
       () => {
-        "DesignNotifications" as NotificationType,
-          designcompletionMessageLog
+        "DesignNotifications" as NotificationType, designcompletionMessageLog;
       }
     ),
     createdAt: new Date(),
@@ -267,7 +269,7 @@ const DesignDashboard: React.FC<{
     message: "New notification added",
     content: "This is a test notification",
     completionMessageLog: completionMessageLog,
-    sendStatus: "Error"
+    sendStatus: "Error",
   };
 
   // Function to add a notification
@@ -283,28 +285,27 @@ const DesignDashboard: React.FC<{
       content: "Design Completed",
       date: new Date(),
       timestamp: new Date(),
-      level: 'info',
+      level: "info",
       type: "DesignCompleted" as NotificationType,
     };
 
+    const generatedDashboardId = UniqueIDGenerator.generateDashboardID();
     // Ensure the correct parameter is passed to generateNotificationID
     let newNotification: NotificationData = {
-      id: UniqueIDGenerator.generateDashboardId(),
+      id: generatedDashboardId,
       date,
       type,
       message,
       content,
       createdAt: new Date(),
       completionMessageLog,
-      sendStatus: "Error"
+      sendStatus: "Error",
     };
-
 
     setNotifications((prevNotifications: NotificationData[]) => [
       ...prevNotifications,
       newNotification,
     ]);
-
 
     // Sample usage of the notify function
     notify(
@@ -326,7 +327,6 @@ const DesignDashboard: React.FC<{
         notify(message, type, content, date);
         return Promise.resolve();
       },
-
 
       addNotification: function (notification: NotificationData): void {
         setNotifications((prevNotifications) => [
@@ -385,7 +385,15 @@ const DesignDashboard: React.FC<{
 
   const handleNewTitleChange = (newTitle: string) => newTitle
 
+    // Extract the required properties from UserPreferences
+    const { modules, actions, reducers, ...otherPreferences } = UserPreferences;
 
+    // Use the extracted properties as needed
+    console.log("Modules:", modules);
+    console.log("Actions:", actions);
+    console.log("Reducers:", reducers);
+    console.log("Other Preferences:", otherPreferences);
+  
 
 
   useEffect(() => {
@@ -408,7 +416,11 @@ const DesignDashboard: React.FC<{
         {(component: any) => component}
       </DynamicComponentWrapper>
 
-      <ChatRoom roomId={""} />
+      <ChatRoom
+        roomId={""}
+        topics={[]}
+        chatEvent={(newTitle: string) => newTitle}
+        />
       <CalendarComponent />
       <FeedbackLoop feedback={""} feedbackType={""} />
       <GoogleAnalyticsScript />

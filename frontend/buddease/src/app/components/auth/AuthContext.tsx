@@ -10,6 +10,7 @@ interface AuthState {
   userRoles: string[]; // New property for user roles
   timestamp: number; 
   userNFTs: string[]; // New property for user NFTs
+  authToken: string | null; // Add authToken property
 
 }
 
@@ -17,14 +18,15 @@ interface AuthContextProps {
   state: AuthState;
   dispatch: React.Dispatch<AuthAction>;
   resetAuthState: () => void;
-  loginWithRoles: (user: User, roles: string[], nfts: string[]) => void; 
+  loginWithRoles: (user: User, roles: string[], nfts: string[], authToken: string) => void; // Update loginWithRoles method
+
   token: string | null;
   user?: User | null;
 }
 
 interface AuthAction {
   type: 'LOGIN' | 'LOGOUT' | 'LOGIN_WITH_ROLES'; // New action type
-  payload?: { user: User; roles?: string[], nfts?: string[] }; // Updated payload
+  payload?: { user: User; roles?: string[], nfts?: string[], authToken: string }; // Updated payload
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -35,7 +37,8 @@ const initialState: AuthState = {
   user: null,
   userRoles: [],
   timestamp: 0,
-  userNFTs: []
+  userNFTs: [],
+  authToken: null
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
@@ -66,8 +69,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode, token: string }> = ({ 
   };
 
   // Function to login with roles
-  const loginWithRoles = (user: User, roles: string[], nfts: string[]) => {
-   // Verify user's NFTs and add corresponding roles
+  const loginWithRoles = (user: User, roles: string[], nfts: string[], authToken: string) => {
+    // Verify user's NFTs and add corresponding roles
   const verifiedRoles = roles.filter(role => {
     // Logic to check if user has the required NFT for each role
     return nfts.includes(role);
@@ -75,7 +78,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode, token: string }> = ({ 
     
   dispatch({
     type: 'LOGIN_WITH_ROLES',
-    payload: { user, roles: verifiedRoles, nfts }, // Update payload with verified roles and NFTs
+    payload: { user, roles: verifiedRoles, nfts, authToken }, // Update payload with verified roles and NFTs
   });
   };
 
@@ -86,6 +89,32 @@ const AuthProvider: React.FC<{ children: React.ReactNode, token: string }> = ({ 
   );
 };
 
+
+
+const fetchDataWithToken = async () => {
+  try {
+    const { state } = useAuth(); // Access the AuthContext to get the authentication token
+    const authToken = state.authToken; // Get the authentication token from the context
+    if (!authToken) {
+      throw new Error('Authentication token not found');
+    }
+
+
+    const response = await fetch('/api/data', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/vnd.yourapp.v1+json' // Example API version
+      }
+    });
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+
 const useAuth = (): AuthContextProps => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -94,5 +123,5 @@ const useAuth = (): AuthContextProps => {
   return context;
 };
 
-export { AuthProvider, useAuth };
+export { AuthProvider, fetchDataWithToken, useAuth };
 

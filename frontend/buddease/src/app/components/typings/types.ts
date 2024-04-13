@@ -17,6 +17,7 @@ import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { Exchange } from "../crypto/Exchange";
+import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
 
 // Define the structure of YourResponseType based on the actual response from the backend
 interface YourResponseType {
@@ -35,6 +36,7 @@ interface YourResponseType {
   prototype: any;
   browsers: any;
   endpoints: NestedEndpoints;
+  highlights: HighlightEvent[]
   data: {
     id: number;
     projectName: Project["name"];

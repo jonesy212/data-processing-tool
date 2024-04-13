@@ -10,3 +10,5 @@ export interface ScheduledData extends Data{
     // Add other properties as needed
   }
   
+
+// ScheduledData typically represents any data that has been scheduled for a specific date and time, such as tasks, appointments, or events. It may include additional properties like the ID, the creator of the scheduled item, and any relevant details.

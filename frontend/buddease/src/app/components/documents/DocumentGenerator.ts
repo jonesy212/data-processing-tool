@@ -8,13 +8,16 @@ import { Document } from '../state/stores/DocumentStore';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { DocumentData } from './DocumentBuilder';
 import { saveDocumentToDatabase, saveTradeToDatabase } from '@/app/configs/database/updateDocumentInDatabase';
+import { DatasetModel } from '../todos/tasks/DataSetModel';
  var xl = require('excel4node');
 
 
 
  interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip> {
   load(content: any): void;
-}
+ }
+ type DocumentPath = DocumentData | DatasetModel;
+
 enum DocumentTypeEnum {
   Text = 'text',
   Spreadsheet = 'spreadsheet',
@@ -88,6 +91,8 @@ declare namespace DXT {
 }
 
 
+
+
 function loadTextDocumentContent(document: DocumentData): string {
   // Logic to load content for a text document
   // Example: Load content from a database or a cloud storage service
@@ -95,7 +100,7 @@ function loadTextDocumentContent(document: DocumentData): string {
   // Assuming the text content is stored in the document's `content` property
   const textContent = document.content;
 
-  // You can replace the above line with logic to fetch the content from a database or a cloud storage service
+  // todo You can replace the above line with logic to fetch the content from a database or a cloud storage service
   // For example, if the content is stored in a database:
   // const textContent = fetchTextContentFromDatabase(document.id);
 
@@ -105,6 +110,22 @@ function loadTextDocumentContent(document: DocumentData): string {
   // Return the loaded text content
   return textContent;
 }
+
+
+
+
+function loadSpreadsheetDocumentContent(document: DocumentData): string { 
+  // Logic to load content for a spreadsheet document
+  // For example, if the content is stored in a database:
+  const workbook = new xl.Workbook();
+  const sheet = workbook.addWorksheet();
+  sheet.cell(1, 1).string(document.content);
+  // Return the loaded spreadsheet content
+  return workbook.xlsx();
+
+}
+
+
 
 
 class DocumentGenerator {
@@ -135,19 +156,19 @@ class DocumentGenerator {
 
 
 
-  loadDocumentContent(document: DocumentData, docx: CustomDocxtemplater<any>): string | undefined {
+  loadDocumentContent(document: DocumentPath, docx: CustomDocxtemplater<any>): string | undefined {
     switch(document.type) {
       case DocumentTypeEnum.Text:
         // Logic to load content for a text document
         return loadTextDocumentContent(document);
       case DocumentTypeEnum.Spreadsheet:
       // Logic to load content for a spreadsheet document
-        // todo add document types
-      //   return loadSpreadsheetDocumentContent(document);
-      // case DocumentTypeEnum.Diagram:
-      //   // Logic to load content for a diagram document
-      //   return loadDiagramDocumentContent(document);
-      // case DocumentTypeEnum.CalendarEvents:
+      //   todo add document types
+        return loadSpreadsheetDocumentContent(document);
+      case DocumentTypeEnum.Diagram:
+        // Logic to load content for a diagram document
+        return loadDiagramDocumentContent(document);
+      case DocumentTypeEnum.CalendarEvents:
       //   // Logic to load content for a calendar events document
       //   return loadCalendarEventsDocumentContent(document);
       // case DocumentTypeEnum.Drawing:
@@ -195,7 +216,7 @@ class DocumentGenerator {
   }
 
 
-  saveDocumentContent(document: DocumentData, content: string) { 
+  saveDocumentContent(document: DatasetModel, content: string) { 
     // Logic to save the loaded/generated content
 
     // Example:
@@ -220,7 +241,7 @@ wb.write('spreadsheet.xlsx');
   }
   
 
-  manageDocument(documentPath: DocumentData, newContent: CustomDocxtemplater<any>): string {
+  manageDocument(documentPath: DocumentPath, newContent: CustomDocxtemplater<any>): string {
     // Real-world logic to manage existing documents
     try {
       // Load the existing document content

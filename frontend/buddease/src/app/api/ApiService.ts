@@ -1,27 +1,24 @@
 import { handleApiError } from "@/app/api/ApiLogs";
+import { calendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import dotProp from "dot-prop";
+import { useBrainstormingPhase, useMeetingsPhase, useProjectManagementPhase, useTeamBuildingPhase } from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
+import { authenticationPhaseHook, dataAnalysisPhaseHook, generalCommunicationFeaturesPhaseHook, ideationPhaseHook, jobSearchPhaseHook, productBrainstormingPhaseHook, productLaunchPhaseHook, recruiterDashboardPhaseHook, teamCreationPhaseHook } from "../components/hooks/phaseHooks/PhaseHooks";
+import useErrorHandling from "../components/hooks/useErrorHandling";
+import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
 import { SupportedData } from "../components/models/CommonData";
-import axiosInstance from "./axiosInstance";
 import { headersConfig } from "../components/shared/SharedHeaders";
+import VersionGenerator from "../components/versions/VersionGenerator";
+import { backendConfig } from "../configs/BackendConfig";
+import { dataVersions } from "../configs/DataVersionsConfig";
+import { frontendConfig } from "../configs/FrontendConfig";
+import userSettings from "../configs/UserSettings";
+import { backendStructure } from "../configs/appStructure/BackendStructure";
+import { frontendStructure } from "../configs/appStructure/FrontendStructure";
+import { CacheData, realtimeData } from "../generators/GenerateCache";
 import { handleApiErrorAndNotify } from "./ApiData";
 import { endpoints } from "./ApiEndpoints";
-import useErrorHandling from "../components/hooks/useErrorHandling";
-import { CacheData } from "../generators/GenerateCache";
-import userSettings from "../configs/UserSettings";
-import FrontendStructure, { frontendStructure } from "../configs/appStructure/FrontendStructure";
-import { backendConfig } from "../configs/BackendConfig";
-import useRealtimeData  from '@/app/components/hooks/commHooks/useRealtimeData';
-import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
-import { authenticationPhaseHook, dataAnalysisPhaseHook, generalCommunicationFeaturesPhaseHook, ideationPhaseHook, jobSearchPhaseHook, productBrainstormingPhaseHook, productLaunchPhaseHook, recruiterDashboardPhaseHook, teamCreationPhaseHook } from "../components/hooks/phaseHooks/PhaseHooks";
-import { useBrainstormingPhase, useMeetingsPhase, useProjectManagementPhase, useTeamBuildingPhase } from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
-import { CalendarEvent, calendarEvent, events } from '@/app/components/state/stores/CalendarEvent';
-import RealtimeData from "../../../models/realtime/RealtimeData";
-import { dataVersions } from "../configs/DataVersionsConfig";
-import { backendStructure } from "../configs/appStructure/BackendStructure";
-import { frontendConfig } from "../configs/FrontendConfig";
- import VersionGenerator from "../components/versions/VersionGenerator";
-import Version from "../components/versions/Version";
+import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = dotProp.getProperty(endpoints, "data");
 
@@ -111,15 +108,12 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
       lastUpdated: "2024-03-22T12:00:00", // Example last updated timestamp
       userSettings: userSettings, // Example user settings object
       dataVersions: dataVersions, // Example data versions object
-      frontendStructure: frontendStructure, // Example frontend structure object
+      frontendStructure: frontendStructure?.[0], // Example frontend structure object
       backendStructure: backendStructure, // Example backend structure object
       backendConfig: backendConfig, // Example backend configuration object
       frontendConfig: frontendConfig, // Example frontend configuration object
-      realtimeData: {
-        id: "realtime-data-id", // Add missing id property
-        name: "Realtime Data",
-        ...RealtimeData,
-      }, // Example realtime data object
+      realtimeData: realtimeData, // Example realtime data object
+       // Example realtime data object
       notificationBarPhaseHook: notificationBarPhaseHook, // Example notification bar phase hook
       darkModeTogglePhaseHook: darkModeTogglePhaseHook, // Example dark mode toggle phase hook
       authenticationPhaseHook: authenticationPhaseHook, // Example authentication phase hook
@@ -153,8 +147,6 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
   }
 };
 
-
-// Class to manage API calls and cache data
 // Class to manage API calls and cache data
 class ApiService {
   private API_BASE_URL: string;

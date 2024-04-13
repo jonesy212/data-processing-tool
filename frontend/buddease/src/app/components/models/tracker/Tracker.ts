@@ -249,10 +249,14 @@ class TrackerClass implements Tracker {
     const { dispatch } = useAuth();
 
     // Dispatch action to update user profile
-    dispatch({ type: "LOGIN_WITH_ROLES", payload: { user: userData } });
+    dispatch({
+      type: "LOGIN_WITH_ROLES",
+      payload: { user: userData, authToken: "YOUR_AUTH_TOKEN" },
+    });
     console.log("Updating user profile:", userData);
     //  Dispatch update actions using userManagerSlice.actions
     // For example:
+    // todo 
     // dispatch(updateFullName(userData.fullName));
     // dispatch(updateBio(userData.bio));
     // dispatch(updateProfilePicture(userData.profilePicture));
@@ -263,7 +267,10 @@ class TrackerClass implements Tracker {
     const { dispatch } = useAuth();
 
     // Dispatch sendNotification action using userManagerSlice.actions
-    dispatch({ type: "LOGIN_WITH_ROLES", payload: { user: userData } });
+    dispatch({
+      type: "LOGIN_WITH_ROLES",
+      payload: { user: userData, authToken: "YOUR_AUTH_TOKEN" },
+    });
 
     console.log("Sending notification:", notification);
   }

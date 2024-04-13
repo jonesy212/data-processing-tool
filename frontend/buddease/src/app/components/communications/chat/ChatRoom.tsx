@@ -11,12 +11,16 @@ import ChatMessageData from "./ChatRoomDashboard";
 interface ChatRoomProps {
   roomId: string;
   topics: string[];
-  chatEvent: { title: string }; // Define the structure of chatEvent
+  chatEvent: (newTitle: string) => string;
 
   
 }
 
-const ChatRoomComponent: React.FC<ChatRoomProps> = ({ roomId ,topics, chatEvent }) => {
+const ChatRoomComponent: React.FC<ChatRoomProps> = ({
+  roomId,
+  topics,
+  chatEvent,
+}) => {
   const [chatMessages, setChatMessages] = useState<ChatMessageData[]>([]);
   const { primaryColor, fontSize } = useThemeConfig();
 
@@ -26,7 +30,7 @@ const ChatRoomComponent: React.FC<ChatRoomProps> = ({ roomId ,topics, chatEvent 
     if (socket) {
       socket.addEventListener("message", (event) => {
         const newMessage = JSON.parse(event.data);
-        setMessages([...chatMessages, newMessage]);
+        setChatMessages([...chatMessages, newMessage]);
       });
     }
 
@@ -80,10 +84,8 @@ const ChatRoomComponent: React.FC<ChatRoomProps> = ({ roomId ,topics, chatEvent 
     return [];
   };
 
-
-  // Now you can access the topics property in ChatRoomProps
-  topics.push(`${roomId}: ${chatEvent.title}`);
-
+  const newTitle = chatEvent("");
+  topics.push(`${roomId}: ${newTitle}`);
 
   return (
     <div style={{ borderColor: primaryColor, fontSize }}>

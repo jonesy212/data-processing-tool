@@ -10,14 +10,22 @@ interface CardProps {
   content: string;
 }
 
+interface EntityProps {
+  id: string;
+  name: string;
+  type: string;
+  // Add more properties as needed
+}
+
 interface DynamicComponentProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
+  entity?: EntityProps; // Add EntityProps as a prop
 }
 
 const DynamicComponent: React.FC<
   DynamicComponentProps & (ButtonProps | CardProps)
 > = (props: DynamicComponentProps & (ButtonProps | CardProps)) => {
-  const { dynamicContent, ...rest } = props;
+  const { dynamicContent, entity, ...rest } = props;
 
   return (
     <div>
@@ -26,6 +34,17 @@ const DynamicComponent: React.FC<
       {/* Add more dynamic/static content examples as needed */}
       {/* Usage with ButtonProps */}
       {/* New Components */}
+      {entity ? (
+        <DynamicComponent
+          dynamicContent
+          entity={entity}
+          title={entity.name}
+          content={entity.type}
+        />
+      ) : (
+        <></>
+      )}
+
       <DynamicComponent dynamicContent label="Click me" />
       {/* OR */}
       <DynamicComponent
@@ -46,16 +65,25 @@ const renderStaticContent = () => {
   );
 };
 
-const renderDynamicContent = (props: ButtonProps | CardProps) => {
+const renderDynamicContent = (props: ButtonProps | CardProps | EntityProps) => {
   if ("label" in props) {
     // Dynamic rendering of Button component
     return <button>{props.label}</button>;
-  } else {
+  } else if ("title" in props && "content" in props) {
     // Dynamic rendering of Card component
     return (
       <div>
         <h3>{props.title}</h3>
         <p>{props.content}</p>
+      </div>
+    );
+  } else {
+    // Dynamic rendering of Entity component
+    return (
+      <div>
+        <h3>{props.name}</h3>
+        <p>ID: {props.id}</p>
+        <p>Type: {props.type}</p>
       </div>
     );
   }

@@ -151,8 +151,6 @@ export const addDocumentAPI = async (documentData: any): Promise<any> => {
     }
   };
 
-
-
   export const fetchAllDocumentsAPI = async (): Promise<any[]> => {
     try {
       const fetchAllDocumentsEndpoint = `${API_BASE_URL}/documents`;
@@ -171,8 +169,6 @@ export const addDocumentAPI = async (documentData: any): Promise<any> => {
       throw error;
     }
   };
-
-  
 
   
 // Add the searchDocument method
@@ -1385,9 +1381,3 @@ export const documentTemplates = async (templatesData: any): Promise<any> => {
 };
 
   
-  
-  
-  
-  
-  
-// Add more functions for adding, updating, and deleting documents as needed

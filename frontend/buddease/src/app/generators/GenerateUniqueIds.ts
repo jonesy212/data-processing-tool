@@ -341,13 +341,15 @@ class UniqueIDGenerator {
     );
   }
 
-  static generateSnapshotID(snapshotId: string): string {
+  static generateSnapshotID(): string {
+    // Generate a unique ID without requiring any arguments
     return this.generateID(
-      snapshotId,
-      "Snapshot",
-      NotificationTypeEnum.GeneratedID
+      "Snapshot", // Assuming "Snapshot" is a prefix for the generated ID
+      NotificationTypeEnum.GeneratedID,
+      "snapshot" as NotificationType
     );
   }
+  
   static generateSessionID(): string {
     return this.generateID(
       "SessionID",

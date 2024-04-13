@@ -113,10 +113,10 @@ const useTodoManagerStore = (): TodoManagerStore => {
         // Take snapshot for each todo
         if (data) {
           // Use lodash omit to exclude 'id' property
-          const updatedSnapshots: Snapshot<Data> = {
-            timestamp: Date.now(),
+          const updatedSnapshots: SnapshotStore<Snapshot<Data>> = {
+            timestamp: new Date,
             data: {} as Data,
-          };
+          } as SnapshotStore<Snapshot<Data>>
           data.takeSnapshot(updatedSnapshots);
         }
       });
@@ -157,7 +157,9 @@ const useTodoManagerStore = (): TodoManagerStore => {
     }
     loading.current = true;
     try {
-      const response = await fetch(endpoints.todos.fetch);
+      const response = await fetch(
+        `${window.location.origin}${endpoints.todos.fetch}`
+      );
       const todos = await response.json();
       fetchTodosSuccess({ todos });
     } catch (error: any) {
@@ -275,7 +277,10 @@ const useTodoManagerStore = (): TodoManagerStore => {
   };
 
   const openTodoSettingsPage = (todoId: number, teamId: number) => {
-    window.location.href = endpoints.todos.assign(todoId, teamId);
+    window.location.href =
+      typeof endpoints.todos.assign === "function"
+        ? endpoints.todos.assign(todoId, teamId)
+        : "";
   };
 
   const batchFetchSnapshotsRequest = () => {

@@ -4,6 +4,7 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Channel } from "../../../interfaces/chat/Channel";
 import { User } from "../../../users/User";
+import { WritableDraft } from "../ReducerGenerator";
 
 interface ChatState {
   users: User[];
@@ -58,7 +59,7 @@ const chatManagerSlice = createSlice({
     setOnlineUsers: (state, action: PayloadAction<User[]>) => {
       state.onlineUsers = action.payload;
     },
-    addNotification: (state, action: PayloadAction<Notification>) => {
+    addNotification: (state, action: PayloadAction<WritableDraft<NotificationData>>) => {
       state.notifications.push(action.payload);
     },
     // Additional reducers for communication properties

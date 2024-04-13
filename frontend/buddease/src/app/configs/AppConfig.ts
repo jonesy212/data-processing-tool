@@ -1,12 +1,18 @@
 //AppConfig
+import { current } from "immer";
 import { Theme } from "../components/libraries/ui/theme/Theme";
 import { Data } from "../components/models/data/Data";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import { User } from "../components/users/User";
 import { UserRole } from "../components/users/UserRole";
-import { AppVersion } from "../components/versions/AppVersion";
+import { AppVersion, currentAppName } from "../components/versions/AppVersion";
 import Version from "../components/versions/Version";
-import { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
+import configurationService, { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
+
+// Define the API version header constant
+const API_VERSION_HEADER: string = configurationService.getApiVersionHeader()
+const DATA_PATH: string = configurationService.getDataPath()
+
 
 // Define the AppConfig interface
 interface AppConfig {
@@ -64,10 +70,15 @@ interface AppConfig {
 // Define the function to retrieve AppConfig
 export const getAppConfig = (): AppConfig => {
   // Implement the logic to retrieve AppConfig here
+  const config = configurationService.getApiConfig();
+  
+
+  config.name = "Mock Config";
   // For example, you can fetch it from local storage or a server
   // For demonstration purposes, let's return a mock AppConfig object
+  currentAppName
   return {
-    appName: "Your App Name",
+    appName: current(configurationService.getAppName(currentAppName)),
     appVersion: {
       major: 1,
       minor: 0,
@@ -96,8 +107,10 @@ export const getAppConfig = (): AppConfig => {
       },
 
       getVersionString() {
-        return `${this.major}.${this.minor}.${this.patch}.${this.build}`;
-      },
+        // Integrate API_VERSION_HEADER here
+        const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
+        return `${versionString} - API Version: ${API_VERSION_HEADER}`;
+    },
 
       getVersionStringWithBuildNumber(buildNumber: number) {
         return `${this.major}.${this.minor}.${this.patch}.${this.build}.${buildNumber}`;
@@ -221,3 +234,5 @@ const appConfig: AppConfig = getAppConfig();
 console.log(appConfig.appName); // Accessing properties of AppConfig
 
 export type { AppConfig };
+// Export the API version header constant
+  export { API_VERSION_HEADER };

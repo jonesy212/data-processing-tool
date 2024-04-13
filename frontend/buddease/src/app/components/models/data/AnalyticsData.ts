@@ -1,4 +1,4 @@
-import Project from "../../projects/Project";
+import {Project} from "../../projects/Project";
 import { SupportedData } from "../CommonData";
 
   // AnalyticsData.ts

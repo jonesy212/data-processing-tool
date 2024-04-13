@@ -1,6 +1,6 @@
 import os
-from urllib.parse import urlparse
 
+import httpx  # Import the httpx library
 import pandas as pd
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_jwt_extended import current_identity, jwt_required
@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 
 from authentication.auth import auth_bp
 from configs.config import app, db
+from data_analysis import analyze_data
 from models.dataset import DatasetModel
 from preprocessing.tokenize_text import predictive_analytics
 
@@ -56,11 +57,12 @@ def convert_file(file_path, output_format):
         data = pd.read_csv(file_path) if file_path.endswith('.csv') else pd.read_excel(file_path)
         output_file_path = file_path.replace(os.path.splitext(file_path)[1], '.json')
         data.to_json(output_file_path, orient='records')
-
 @auth_bp.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_dataset():
-    file_format = secure_filename(file.filename).split('.')[-1]
+    client = httpx.Client()
+
+    file_format = secure_filename(request.files['file'].filename).split('.')[-1]
     # Check if the current user has remaining quota
     if current_user.is_authenticated and current_user.has_quota() > 0:
         # Perform the upload
@@ -91,7 +93,16 @@ def upload_dataset():
             if os.path.exists(file_path):
                 return f"A file with the same name already exists. Please choose a different name or consider updating the existing file."
 
-            file.save(file_path)
+            # Use client to send the file
+            with client as http_client:
+                response = http_client.post('http://example.com/upload', files={'file': file.read()})
+
+                # Check if the upload was successful
+                if response.status_code == 200:
+                    file.save(file_path)
+                else:
+                    return f"Failed to upload file: {response.text}"
+
         elif url:
             # You might want to add validation for the URL
             file_path = url
@@ -145,8 +156,6 @@ def upload_dataset():
         return 'You have reached your quota limit for the month. You can upgrade or purchase more credits.'
 
 
-
-
 # Your existing Flask route for saving data analysis
 @app.route('/save_data_analysis', methods=['POST'])
 def save_data_analysis():
@@ -160,14 +169,30 @@ def save_data_analysis():
 
 # Your existing Flask route for processing data analysis
 @app.route('/process_data_analysis', methods=['POST'])
-
 def process_data_analysis():
-    file_path = request.files['file']
+    # Retrieve the file path from the request
+    file = request.files['file']
 
-    # Implement the logic to process the uploaded data analysis
-    # This may involve reading the file, performing analysis, and storing the results
-    
-    
+    try:
+        # Load the data from the file
+        if file.filename == '':
+            return 'No selected file'
+
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
+        file.save(file_path)
+
+        # Perform the analysis on the loaded data
+        data = pd.read_csv(file_path)  # Assuming the file is in CSV format
+        # Perform your analysis here
+        analysis_result = analyze_data(data)
+
+        # Optionally, store the analysis results or return them
+        return f"Analysis result: {analysis_result}"
+
+    except Exception as e:
+        # Handle any exceptions that occur during the process
+        return f"Error processing data analysis: {str(e)}"
+ 
     
 @auth_bp.route('/upload-data-analysis', methods=['POST'])
 @jwt_required()

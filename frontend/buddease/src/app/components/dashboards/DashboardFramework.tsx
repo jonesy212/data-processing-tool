@@ -50,9 +50,13 @@ const DashboardFramework: React.FC<DashboardFrameworkProps> = ({
       id: "1234567890",
       type: 'SOME_ACTION_TYPE'
     });
+
   dispatch(action);
 
-  const enhancedPrompt = await processAutoGPTOutputWithSpaCy(action);
+  // Extract the user idea from the action object
+  const userIdea = action.payload.type;
+
+  const enhancedPrompt = await processAutoGPTOutputWithSpaCy(userIdea);
 
   
     if (enhancedPrompt) {

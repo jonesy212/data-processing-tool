@@ -2,7 +2,7 @@
 import axiosInstance from "@/app/api/axiosInstance";
 import { useAuth } from "@/app/components/auth/AuthContext";
 import CommonDetails, {
-  DetailsProps,
+  
   SupportedData,
 } from "@/app/components/models/CommonData";
 import PaymentProcess from "@/app/components/payment/PaymentProcess";
@@ -22,6 +22,8 @@ import WelcomePage from "./WelcomePage";
 import RegistrationPhase from "./RegistrationPhase";
 import { OnboardingPhase } from "../personas/UserJourneyManager";
 import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
+import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
+import DetailsProps from "@/app/components/models/data/Details";
 
 
 
@@ -72,7 +74,9 @@ const UserJourneyManager: React.FC = () => {
         return <EmailConfirmationPhase />;
       case OnboardingPhase.WELCOME:
         // Render the welcome phase
-        return <WelcomePhase />;
+        return <WelcomePhase
+          onNextPhase={() => setCurrentPhase(OnboardingPhase.QUESTIONNAIRE)}
+        />;
       case OnboardingPhase.QUESTIONNAIRE:
         // Render the questionnaire phase
         return <UserQuestionnaire
@@ -97,7 +101,7 @@ const UserJourneyManager: React.FC = () => {
     id: state.user?.data?.id ?? "", // Use optional chaining and nullish coalescing operator to handle undefined id
     ...(state.user?.data || {}),
     questionnaireResponses: {},
-    traits: (props: DetailsProps<SupportedData>, context?: any): ReactNode => {
+    traits: (props: DetailsProps<SupportedData>) => {
       return <CommonDetails {...props} />;
     },
     timeBasedCode: timeBasedCode,
@@ -223,7 +227,7 @@ const TwoFactorSetupPhase: React.FC<{ onSetupComplete: () => void }> = ({ onSetu
   const handleSubmit = async () => {
     try {
       // Make an API call to verify the two-factor authentication token
-      const response = await axios.post('/auth/verify-2fa', { token });
+      const response = await axiosInstance.post('/auth/verify-2fa', { token });
       // Handle response and call the onSetupComplete callback if successful
       onSetupComplete();
     } catch (error) {

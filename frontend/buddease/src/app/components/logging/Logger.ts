@@ -45,12 +45,6 @@ const errorLogger = {
   },
 };
 
-class SearchLogger {
-  static logError(errorMessage: string, query: string) {
-    // Log the error message with the search query
-    Logger.logError(errorMessage, query);
-  }
-}
 
 class Logger {
   static log(message: string) {
@@ -198,10 +192,75 @@ class AudioLogger extends Logger {
   }
 }
 
+class ConfigLogger {
+  static async logConfigUpdate(configName: string, newValue: any) {
+    try {
+      const logUrl = this.getLogUrl("configUpdateEvent");
+
+      const response = await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ configName, newValue }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log config update event");
+      }
+    } catch (error: any) {
+      console.error("Error logging config update event:", error);
+      // Handle the error using the provided error handling function or any other mechanism
+      throw error; // Re-throw the error to propagate it further if needed
+    }
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    // Determine the log URL based on the action
+    // You can customize this logic based on your application's requirements
+    // For now, let's assume a predefined log URL
+    // Example: logUrl = endpoints.logs.logConfigEvent;
+
+    return logUrl;
+  }
+}
+
+
 class DexLogger extends Logger {
   static logDEXEvent(event: string, dexId: string) {
     this.logWithOptions("DEX Event", `${event} (DEX ID: ${dexId})`, dexId);
   }
+}
+
+class SearchLogger extends Logger {
+  static logSearch(query: string, userId: string) {
+    super.logWithOptions(
+      "Search",
+      `Search performed (Query: ${query}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  
+
+  static logSearchResults(query: string, resultsCount: number, userId: string) {
+    super.logWithOptions(
+      "Search",
+      `Search results received (Query: ${query}, Results Count: ${resultsCount}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logSearchError(query: string, errorMessage: string, userId: string) {
+    super.logWithOptions(
+      "Search",
+      `Error performing search (Query: ${query}, Error: ${errorMessage}, User ID: ${userId})`,
+      userId
+    );
+  }
+  // Add more methods for other search-related events as needed
 }
 
 class TeamLogger {
@@ -447,7 +506,7 @@ class AnimationLogger {
 }
 
 class DataLogger {
-  static async log(message: string): Promise<void> {
+  static async log(message: string, data?: {} ): Promise<void> {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
     try {
@@ -891,8 +950,10 @@ class TaskLogger extends Logger {
     );
   }
 
-  static logTaskCreated(taskID: string) {
-    super.logWithOptions("Task Created", `Task ${taskID} created`, taskID);
+  static logTaskCreated(name: string, taskID: string) {
+    super.logWithOptions(
+      "Task Created",
+      `Task ${taskID} created`, taskID);
     // Additional logic specific to logging task creation
   }
 
@@ -1046,6 +1107,8 @@ class SecurityLogger extends Logger {
 
   // Add more methods for other security-related events as needed
 }
+
+
 
 class ContentLogger extends Logger {
   static logContentCreation(contentId: string, userId: string) {
@@ -1217,8 +1280,13 @@ export {
   AudioLogger,
   BugLogger,
   CalendarLogger,
-  ChannelLogger, ChatLogger, CollaborationLogger,
-  CommunityLogger, ComponentLogger, ContentLogger,
+  ChannelLogger,
+  ChatLogger,
+  CollaborationLogger,
+  CommunityLogger,
+  ComponentLogger,
+  ConfigLogger,
+  ContentLogger,
   DataLogger,
   DexLogger,
   DocumentLogger,

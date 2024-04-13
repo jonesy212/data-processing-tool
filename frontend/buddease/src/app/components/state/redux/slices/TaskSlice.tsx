@@ -1,16 +1,30 @@
 // TaskSlice.ts
+import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {  useProjectManagerStore } from '../../stores/ProjectStore';
+
+import { useWebNotifications } from '@/app/components/hooks/commHooks/useWebNotifications';
+import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 import FileSaver from "file-saver";
 import * as Papa from "papaparse";
 import * as XLSX from "xlsx";
+import { TaskLogger } from "../../../logging/Logger";
 import { Data } from "../../../models/data/Data";
-import { Idea, Task, TaskDetails, tasksDataSource } from "../../../models/tasks/Task";
-import Project from '../../../projects/Project';
-import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
+import TaskDetails, { Task, tasksDataSource } from "../../../models/tasks/Task";
+import { Project } from '../../../projects/Project';
+import { NotificationType, NotificationTypeEnum, useNotification } from "../../../support/NotificationContext";
+import NOTIFICATION_MESSAGES, { NamingConventionsError } from "../../../support/NotificationMessages";
+import { VideoData } from "../../../video/Video";
 import { WritableDraft } from "../ReducerGenerator";
+import { Progress } from "../../../models/tracker/ProgressBar";
+import { User } from "../../../users/User";
+import { sanitizeInput } from "../../../security/SanitizationFunctions";
+import { userManagerStore } from "../../stores/UserStore";
+import { useProjectManagerSlice } from "./ProjectSlice";
+import { Idea } from "../../../users/Ideas";
+
 const { notify } = useNotification();
 const { showNotification } = useWebNotifications();
-
 
 
 interface TaskManagerState extends Task {
@@ -32,7 +46,8 @@ completedTasks: [], // Initialize completedTasks array
 const tasks: Record<string, Task> = { ...tasksDataSource };
 const initialState:  TaskManagerState = {
 tasks: [],
-taskTitle: "",
+  taskTitle: "",
+name: "taskManager",
 taskDescription: "",
 taskStatus: "pending",
 actionStack: [],
@@ -113,7 +128,7 @@ reducers: {
 
   updateTaskDetails: (
     state,
-    action: PayloadAction<{ taskId: string; updatedDetails: Partial<typeof Task> }>
+    action: PayloadAction<{ taskId: string; updatedDetails: Partial<Task> }>
   ) => {
     const { taskId, updatedDetails } = action.payload;
     const taskToUpdate = state.tasks.find((task) => task.id === taskId);
@@ -154,12 +169,12 @@ reducers: {
       return;
     }
 
-    const newTask: WritableDraft<typeof Task> = {
+    const newTask: WritableDraft<Task> = {
       id: generatedTaskID,
       title,
       description: state.taskDescription,
       status: state.taskStatus,
-    } as WritableDraft<typeof Task>;
+    } as WritableDraft<Task>;
 
     state.tasks.push(newTask);
     TaskLogger.logTaskCreated("New Task", generatedTaskID);
@@ -187,10 +202,11 @@ reducers: {
     if (!completedTask) {
       // If the task does not exist, display an error notification
       notify(
+        "completedTask",
         "Could not find task to complete.",
         NOTIFICATION_MESSAGES.Notifications.DEFAULT,
         new Date(),
-        "Error"
+        "Error" as NotificationType
       );
       return;
     }
@@ -202,6 +218,7 @@ reducers: {
       });
     } else {
       notify(
+        "completedTask",
         "Notification permission not granted.",
         NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SEND_FAILED,
         new Date(),
@@ -217,7 +234,7 @@ reducers: {
       return (
         task.title.toLowerCase().includes(keyword) || // Filter by task title
         task.description.toLowerCase().includes(keyword) || // Filter by task description
-        task.status.toLowerCase() === keyword
+        task.status?.toLowerCase() === keyword
       ); // Filter by task status
     });
   },
@@ -231,7 +248,15 @@ reducers: {
       } else if (sortBy === "description") {
         return a.description.localeCompare(b.description); // Sort by task description
       } else if (sortBy === "status") {
-        return a.status.localeCompare(b.status); // Sort by task status
+        if (a.status && b.status) {
+          return a.status.localeCompare(b.status); // Sort by task status
+        } else if (!a.status && b.status) {
+          return 1; // If a.status is falsy and b.status is truthy, sort b before a
+        } else if (a.status && !b.status) {
+          return -1; // If a.status is truthy and b.status is falsy, sort a before b
+        } else {
+          return 0; // If both a.status and b.status are falsy, consider them equal
+        }
       } else {
         // Default sorting criteria
         return a.title.localeCompare(b.title); // Sort by task title if sorting criteria is not recognized
@@ -271,7 +296,7 @@ reducers: {
       const updatedTasks = state.tasks.filter((task, index) => index !== taskIndex);
   
       // Determine the target array based on the destination
-      let targetArray: WritableDraft<typeof Task[]> = [];
+      let targetArray: WritableDraft<Task[]> = [];
       if (destination === "pending") {
         targetArray = state.pendingTasks;
       } else if (destination === "inProgress") {
@@ -324,7 +349,7 @@ reducers: {
 
   editTask: (
     state,
-    action: PayloadAction<{ taskId: string; updatedTask: WritableDraft<typeof Task> }>
+    action: PayloadAction<{ taskId: string; updatedTask: WritableDraft<Task> }>
   ) => {
     const { taskId, updatedTask } = action.payload;
     const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
@@ -343,7 +368,7 @@ reducers: {
       return (
         task.title.toLowerCase().includes(searchQuery) ||
         task.description.toLowerCase().includes(searchQuery) ||
-        task.status.toLowerCase().includes(searchQuery)
+        task.status?.toLowerCase().includes(searchQuery)
       );
     });
   },
@@ -492,8 +517,9 @@ reducers: {
         notify(
           "Export Error",
           `An error occurred while exporting tasks: ${error.message}`,
+          NOTIFICATION_MESSAGES.File.EXPORT_ERROR,
           new Date(),
-          "Error"
+          "Error" as NotificationType
         );
       } else {
         // Handle other types of errors
@@ -502,8 +528,9 @@ reducers: {
         notify(
           "Export Error",
           `An error occurred while exporting tasks. Please try again later.`,
+          NOTIFICATION_MESSAGES.File.EXPORT_ERROR,
           new Date(),
-          "Error"
+          "Error" as NotificationType
         );
       }
     }
@@ -567,7 +594,7 @@ reducers: {
   // Method to handle task dependencies
   addTaskDependency: (
     state,
-    action: PayloadAction<{ taskId: string; dependencyId: WritableDraft<typeof Task> }>
+    action: PayloadAction<{ taskId: string; dependencyId: WritableDraft<Task> }>
   ) => {
     const { taskId, dependencyId } = action.payload;
     const taskToUpdate = state.tasks.find((task) => task.id === taskId);
@@ -662,12 +689,12 @@ reducers: {
     const reader = new FileReader();
 
     reader.onload = (event) => {
-      let parsedTasks: WritableDraft<typeof Task>[] = [];
+      let parsedTasks: WritableDraft<Task>[] = [];
 
       try {
         switch (format) {
           case "csv":
-            parsedTasks = Papa.parse<WritableDraft<typeof Task>>(
+            parsedTasks = Papa.parse<WritableDraft<Task>>(
               event.target?.result as string,
               { header: true }
             ).data;
@@ -683,7 +710,7 @@ reducers: {
             const sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
             parsedTasks =
-              XLSX.utils.sheet_to_json<WritableDraft<typeof Task>>(sheet);
+              XLSX.utils.sheet_to_json<WritableDraft<Task>>(sheet);
             break;
           case "pdf":
             // Implement PDF parsing logic here
@@ -957,17 +984,6 @@ undoAction,
 redoAction,
 exportTasks,
 importTasks,
-import { Task } from '@/app/components/models/tasks/Task';
-import { TaskLogger } from '@/app/pages/logging/Logger';
-import { generateNewTask } from '@/app/generators/GenerateNewTask';
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
-import { useProjectManagerSlice } from './ProjectSlice';
-import { userManagerStore } from "../../stores/UserStore";
-import { VideoData } from "../../../video/Video";
-import { sanitizeInput } from "../../../security/SanitizationFunctions";
-import { NamingConventionsError } from '@/app/shared/shared-error-handling';
-
 updateTaskDetails,
 updateTaskTags,
 updateTaskDueDate,

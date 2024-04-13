@@ -1,4 +1,5 @@
 export interface Attachment extends File {
+  id: string;
   url: string;
   name: string;
   fileType: FileType;

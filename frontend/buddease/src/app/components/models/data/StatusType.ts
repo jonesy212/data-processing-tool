@@ -122,6 +122,14 @@ enum PriorityStatus {
   Normal = "normal",
 }
 
+enum ProductStatus {
+  Planned = StatusType.Tentative,
+  InDevelopment = StatusType.InProgress,
+  Testing = StatusType.InProgress,
+  ReadyForLaunch = StatusType.Confirmed,
+  Launched = StatusType.Completed
+}
+
 export enum PriorityTypeEnum {
   Low = PriorityStatus.Low,
   Medium = PriorityStatus.Medium,
@@ -174,6 +182,7 @@ export {
   StatusType,
   TaskStatus,
   TeamStatus,
-  TodoStatus
+  TodoStatus,
+  ProductStatus,
 };
 

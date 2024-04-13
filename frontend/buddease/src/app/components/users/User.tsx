@@ -2,9 +2,11 @@
 import React from "react";
 import CommonDetails from "../models/CommonData";
 // import { Data } from "../models/data/Data";
+import { Persona } from "@/app/pages/personas/Persona";
 import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "../community/ActivityFeedComponent";
+import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
@@ -13,8 +15,6 @@ import { Project } from "../projects/Project";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { UserRole } from "./UserRole";
-import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
-import { Persona } from "@/app/pages/personas/Persona";
 
 export interface User extends UserData {
   _id?: string; // Add this line
@@ -33,7 +33,7 @@ export interface User extends UserData {
   role: UserRole;
   persona: Persona;
   analysisResults?: DataAnalysisResult[]
-
+  isLoggedIn?: boolean;
 }
 
 const timeBasedCode: string = generateTimeBasedCode();
@@ -78,7 +78,7 @@ export type DocumentTree = {
 
 // Define the DocumentNode type
 export interface DocumentNode {
-  [key: string]: string[] | DocumentNode;
+  [key: string]: string|   string[] | DocumentNode;
 }
 
 // Example usage:

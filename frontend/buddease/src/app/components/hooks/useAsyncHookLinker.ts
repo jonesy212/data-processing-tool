@@ -1,3 +1,4 @@
+// AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
 
 export interface AsyncHook {

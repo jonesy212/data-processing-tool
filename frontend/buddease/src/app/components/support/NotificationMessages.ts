@@ -4,6 +4,10 @@ interface MessageCategory<T> {
   [key: string]: T 
 }
 
+export class NamingConventionsError extends Error {
+  constructor(errorType: string, details: string);
+}
+
 // Helper function to handle dynamic notification message
 export const handleDynamicNotificationMessage = (
   message: string | ((errorType: string, details: string) => string),
@@ -45,6 +49,8 @@ const setDynamicNotificationMessageWrapper = (
 interface NotificationMessages {
   [category: string]: MessageCategory<string>;
 }
+
+
 
 
 const NOTIFICATION_MESSAGES: NotificationMessages = {
@@ -232,6 +238,8 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     UPLOAD_ERROR: "Error uploading data analysis. Please try again",
     UPDATE_ERROR: "Error updating data analysis. Please try again",
     REMOVE_ERROR: "Error removing data analysis. Please try again",
+    
+    
     SET_DATA_ANALYSIS_PHASE_SUCCESS: "Data analysis phase set successfully",
     SET_DATA_ANALYSIS_PHASE_ERROR:
       "Error setting data analysis phase. Please try again",
@@ -315,6 +323,8 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     ONBOARDING_ERROR: "Error in the onboarding process. Please try again",
     ERROR_FETCHING_TASK: "Error fetching task. Please try again",
     TASK_NOT_FOUND: "Task not found",
+    DELETE_HIGHLIGHT_ERROR: "Error deleting highlight. Please try again",
+    
   },
 
   // Event-related
@@ -406,6 +416,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   Launch: {
+    
     SET_LAUNCH_PHASE_SUCCESS: "Info items generated successfully",
     SET_LAUNCH_PHASE_ERROR: "Error generating info items. Please try again",
   },
@@ -470,15 +481,6 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     CLEAR_ALL_SUCCESS: "Cleared all milestones",
   },
 
-  NamingConventionsError: {
-    DEFAULT: (errorType: any, details: any) => `Error in Define Naming Conventions (${typeof errorType}): ${typeof details}`,
-
-    // New Error Messages for Naming Conventions
-    INVALID_NAME_FORMAT:
-      "Invalid name format. Please follow the specified conventions",
-    DUPLICATE_NAME: "Duplicate name found. Choose a unique name",
-    // Add more messages for the NamingConventionsError type
-  },
 
   NO_NOTIFICATIONS: {
     DEFAULT: "NO NOTIFICATION WENT OFF.",
@@ -783,8 +785,24 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     SET_THEME_SUCCESS: "Theme set successfully!",
     SET_LANGUAGE_ERROR: "Error setting language. Please try again",
     SET_LANGUAGE_SUCCESS: "Language set successfully!",
+    FETCHING_PREFERENCES_ERROR: "Error fetching user preferences. Please try again",
+    USER_PREFERENCE_UPDATED_SUCCESS: "User preference updated successfully",
+    FONT_SIZE_SETTING_FAILED: "Failed to set font size. Please try again",
+    USER__PREFERENCE_UPDATED_FAILED: "Failed to update user preference. Please try again",
     SET_IDEATION_PHASE_ERROR: "Error setting ideation phase. Please try again",
+    THEME_SET_SUCCESSFULLY: "Theme set successfully",
+    THEME_SETTING_FAILED: "Failed to set theme. Please try again",
+    USER_PREFERENCES_DELETION_FAILED: "Failed to delete user preferences. Please try again",
+    BRAINSTORMING_PHASE_SET_SUCCESSFULLY: "Brainstorming phase set successfully",
+    BRAINSTORMING_PHASE_SETTING_FAILED: "Failed to set brainstorming phase. Please try again",
+    DATA_ANALYSIS_PHASE_SET_SUCCESSFULLY: "Data analysis phase set successfully",
+    DATA_ANALYSIS_PHASE_SETTING_FAILED: "Failed to set data analysis phase. Please try again",
+    LAUNCH_PHASE_SET_SUCCESSFULLY: "Launch phase set successfully",
+    LAUNCH_PHASE_SETTING_FAILED: "Failed to set launch phase. Please try again",
+    IDEATION_PHASE_SET_SUCCESSFULLY: "Ideation phase set successfully",
+    IDEATION_PHASE_SETTING_FAILED: "Failed to set ideation phase. Please try again",
     FETCH_THEME_FAILURE: "Error getting theme. Please try again",
+    USER_PREFERENCES_DELETED_SUCCESSFULLY: "User preferences deleted successfully",
   },
 
   Validation: {

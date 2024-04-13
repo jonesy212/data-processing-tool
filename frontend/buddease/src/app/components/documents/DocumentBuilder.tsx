@@ -59,7 +59,6 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   onOptionsChange,
   setOptions,
   documents,
-  
 }) => {
 
   const [editorState, setEditorState] = useState(() =>
@@ -296,12 +295,10 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           Animation Type:
           <select
             value={options.animations.type}
-            onChange={(e) =>
-              handleAnimationChange({
-                ...options.animations,
-                type: e.target.value as "slide" | "fade" | "custom",
-              })
-            }
+            onChange={(e) => handleOptionsChange({
+              ...options,
+              animations: { ...options.animations, type: e.target.value as "slide" | "fade" | "custom" }
+            })}
           >
             <option value="slide">Slide</option>
             <option value="fade">Fade</option>
@@ -316,9 +313,9 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           <select
             value={options.animations.type}
             onChange={(e) =>
-              handleAnimationChange({
-                ...options.animations,
-                type: e.target.value as "slide" | "fade" | "custom",
+              handleOptionsChange({
+                ...options,
+                animations: { ...options.animations, type: e.target.value as "slide" | "fade" | "custom" }
               })
             }
           >
@@ -336,9 +333,9 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
                 type="number"
                 value={options.animations.duration}
                 onChange={(e) =>
-                  handleAnimationChange({
-                    ...options.animations,
-                    duration: parseInt(e.target.value, 10),
+                  handleOptionsChange({
+                    ...options,
+                    animations: { ...options.animations, duration: parseInt(e.target.value, 10) }
                   })
                 }
               />

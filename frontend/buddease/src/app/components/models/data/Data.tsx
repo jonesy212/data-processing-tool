@@ -10,9 +10,9 @@ import { AllTypes } from "../../typings/PropTypes";
 import { User } from "../../users/User";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
-import { Idea } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
 import { Attachment } from "../../documents/Attachment/attachment";
+import { Idea } from "../../users/Ideas";
 
 // Define the interface for DataDetails
 interface DataDetails {

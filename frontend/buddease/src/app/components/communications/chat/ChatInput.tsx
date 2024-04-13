@@ -1,5 +1,6 @@
 // ChatInput.tsx
 import React, { useState } from "react";
+import { sanitizeInput } from "../../security/SanitizationFunctions";
 
 interface ChatInputProps {
   controlled?: boolean; // Add a controlled prop to determine the mode
@@ -17,10 +18,12 @@ const ChatInput = ({
   const [message, setMessage] = useState(controlled ? value || "" : "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitizedMessage = sanitizeInput(event.target.value); // Sanitize input value
+
     if (controlled && onChange) {
       onChange(event);
     }
-    setMessage(event.target.value);
+    setMessage(sanitizedMessage);
   };
 
   const handleSubmit = (event: React.FormEvent) => {

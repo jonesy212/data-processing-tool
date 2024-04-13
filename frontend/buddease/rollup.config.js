@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 
 export default {
-  input: 'src/index.js', // Adjust the input file path as per your project structure
+  input: 'src/index.ts', // Adjust the input file path as per your project structure
   output: {
     dir: 'dist', // Adjust the output directory as needed
     format: 'cjs', // CommonJS format for Node.js compatibility

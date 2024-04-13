@@ -4,15 +4,17 @@ import React, { ReactNode, useEffect, useState } from "react";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
-import { Idea, Task } from "../models/tasks/Task";
+import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { implementThen } from '../state/stores/CommonEvent';
-import { Attachment, default as Comment, default as TodoImpl } from "../todos/Todo";
+import { default as Comment, default as TodoImpl } from "../todos/Todo";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
+import { Attachment } from "../documents/Attachment/attachment";
+import { Idea } from "../users/Ideas";
 
 
 export enum ProjectType {

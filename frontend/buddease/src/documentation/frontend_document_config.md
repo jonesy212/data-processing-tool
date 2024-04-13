@@ -1,4 +1,4 @@
-<!-- frontend_document_config.md -->
+**<!-- frontend_document_config.md -->
 ### User Journey: Frontend Document Configuration
 
 1. **User Scenario**: 
@@ -81,4 +81,4 @@ Step 3: Usage in Application:
 
 Users access the design dashboard where they can find the frontend document configuration section.
 They input or modify document settings such as document title, format, page size, etc.
-Upon submission, the document settings are saved and sent to the backend for further processing.
+Upon submission, the document settings are saved and sent to the backend for further processing.**

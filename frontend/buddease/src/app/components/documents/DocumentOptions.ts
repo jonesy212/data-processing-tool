@@ -19,9 +19,16 @@ export interface DocumentOptions {
   isDynamic: boolean;
   size: DocumentSize;
   animations: DocumentAnimationOptions; // New property for animations
+  margin?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  }
 
   visibility: "public" | "private";
   fontSize: number;
+  font: string;
   textColor: string;
   backgroundColor: string;
   fontFamily: string;
@@ -76,6 +83,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     textColor: "#000000",
     backgroundColor: "#ffffff",
     fontFamily: "Arial, sans-serif",
+    font: "normal",
     lineSpacing: 1.5,
     alignment: "left",
     indentSize: 20,
@@ -102,6 +110,12 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     unorderedTodoList: false,
     isDynamic: true,
     visibility: "private",
+    margin: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0
+    },
     content: "content", // Property for document content
     css: "css", // Property for document CSS
     html: "html", // Property for document HTML
@@ -139,6 +153,3 @@ export const getDocumentPhase = (document: DocumentData) => {
   return document.documentPhase;
 
 }
-
-
-

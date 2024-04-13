@@ -1,13 +1,12 @@
+import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { ClientActions } from "@/app/pages/personas/ClientActions";
+import clientApiService from "@/app/api/ApiClient"; // Import the clientApiService
+import { Effect, call, put, takeLatest } from "redux-saga/effects";
+import { ClientConfig } from "@/app/components/database/Client";
 
-// clientSaga.ts
-import { clientApiService } from "@/app/components/models/client/ClientService"; // Adjust the import path accordingly
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages"; // Adjust the import path accordingly
-import clientConfig from "@/app/configs/clientConfig"; // Adjust the import path accordingly
-import { call, put, takeLatest } from "redux-saga/effects";
-import { ClientActions } from "../actions/ClientActions";
-
+const clientConfig = {} as ClientConfig
 // Worker Saga: Fetch Client Details
-function* fetchClientDetailsSaga(action: any) {
+function* fetchClientDetailsSaga(action: any): Generator<Effect, void, any> {
   try {
     const clientId = action.payload;
     // Adjust the service method accordingly
@@ -15,15 +14,15 @@ function* fetchClientDetailsSaga(action: any) {
     yield put(ClientActions.fetchClientDetailsSuccess({ clientDetails }));
   } catch (error) {
     yield put(
-      ClientActions.fetchClientDetailsFailure({
-        error: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
-      })
+      ClientActions.fetchClientDetailsFailure(
+       NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
+      )
     );
   }
 }
 
 // Worker Saga: Update Client Details
-function* updateClientDetailsSaga(action: any) {
+function* updateClientDetailsSaga(action: any): Generator<Effect, void, any> {
   try {
     const { clientId, clientData } = action.payload;
     // Adjust the service method accordingly
@@ -39,7 +38,7 @@ function* updateClientDetailsSaga(action: any) {
 }
 
 // Watcher Saga: Watches for the fetch and update client details actions
-function* watchClientSagas() {
+function* watchClientSagas(): Generator<Effect, void, any> {
   yield takeLatest(ClientActions.fetchClientDetailsRequest.type, fetchClientDetailsSaga);
   yield takeLatest(ClientActions.updateClientDetailsRequest.type, updateClientDetailsSaga);
 }

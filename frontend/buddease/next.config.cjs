@@ -12,6 +12,36 @@ const nextConfig = {
     // Customize webpack configuration as needed
     if (isServer) {
       // Server-side webpack configuration
+
+      // Add resolve.modules to allow imports from specified paths
+      config.resolve.modules.push(__dirname);
+
+      // Bundle Rollup configuration with the server-side bundle
+      // Update to use config.plugins.push()
+      config.plugins.push({
+        apply: (compiler) => {
+          compiler.hooks.afterEmit.tap('Bundle Rollup', async () => {
+            const bundle = await rollup.rollup({
+              input: './src/server/server.js',
+              output: {
+                file: './dist/server/server.js',
+                format: 'cjs',
+              },
+              plugins: rollupConfig.plugins,
+              external: ['fs'],
+            });
+            await bundle.write({
+              file: './dist/server/server.js',
+              format: 'cjs',
+            });
+          });
+        },
+      });
+
+      // Ensure that the 'fs' module is treated as external
+      config.externals = [...(config.externals || []), 'fs'];
+      
+      // Exclude the 'fs' module from the webpack build
       config.node = {
         fs: 'empty'
       };
@@ -43,11 +73,6 @@ const nextConfig = {
         ],
       },
     ];
-  },
-  async afterBuild() {
-    // Execute Rollup build after Next.js build completes
-    const bundle = await rollup.rollup(rollupConfig);
-    await bundle.write(rollupConfig.output);
   },
 };
 

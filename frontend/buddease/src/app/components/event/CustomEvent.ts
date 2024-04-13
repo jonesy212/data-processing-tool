@@ -1,7 +1,7 @@
 // CustomEvent.ts
 
 // Define interfaces for events
-interface CustomEvent extends EventTarget, Event {
+interface CustomEvent extends EventTarget, Event, ExtendedCalendarEvent {
   id: string;
   title: string;
   description: string;

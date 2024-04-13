@@ -14,6 +14,7 @@ interface Product extends UserData {
   inventory: number;
   manufacturer: string;
   releaseDate: Date;
+  status: "planned" | "in development" | "testing" | "launched";
   dimensions: {
     width: number;
     height: number;

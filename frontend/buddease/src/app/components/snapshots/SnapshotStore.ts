@@ -14,7 +14,7 @@ import { showErrorMessage, showToast } from "../models/display/ShowToast";
 import { Task } from "../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { notificationStore } from "../support/NotificationProvider";
-import { SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
+import SnapshotStoreConfig, { , snapshotConfig } from "./SnapshotConfig";
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
   
 const { notify } = useNotification();
@@ -53,7 +53,7 @@ const createTypedSnapshot = (
       updateSnapshot: () => Promise.resolve({ snapshot: [] }),
       getSnapshots: () => Promise.resolve([{ snapshot: [] }]),
       takeSnapshot: async (snapshot) => ({ snapshot: [snapshot] }),
-      getSnapshot: async (snapshot) => snapshot,
+      getSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>) => Promise.resolve(snapshot),
       getAllSnapshots: async (
         data: (
           subscribers: SnapshotStore<Snapshot<Data>>[],
@@ -252,8 +252,9 @@ class SnapshotStore<T extends Snapshot<Data>> {
             // Logic to process snapshots goes here
             const processedSnapshots = snapshots.map(({ snapshot }) => snapshot);
             // Convert processedSnapshots to SnapshotStore<Snapshot<Data>>[]
-            const convertedSnapshots: SnapshotStore<Snapshot<Data>>[] = processedSnapshots.filter((snapshot): snapshot is SnapshotStore<Snapshot<Data>> => !!snapshot);
-            Promise.resolve(convertedSnapshots);
+
+            const convertedSnapshots: SnapshotStore<Snapshot<Data>>[] = processedSnapshots.filter((snapshot): snapshot is Snapshot<Data> => snapshot !== undefined).map(snapshot => ({ snapshot, handleSnapshot: this.handleSnapshot, key: this.key, state: this.state, snapshotData: this.snapshotData }));
+            resolve(convertedSnapshots);
           });
         },
         this.snapshots
@@ -1414,6 +1415,17 @@ export const snapshotStore = {
       data: snapshotData.data,
     });
   },
+  set(snapshot: SnapshotStore<Snapshot<Data>>, event: Event) {
+    // Set the event in the snapshot store
+    snapshot.set(event.type, event);
+  
+    // Handle sorting of the snapshot store
+    handleSorting(snapshot);
+  
+    // Optionally, you can return the updated snapshot store
+    return snapshot;
+  }
+  
 };
 
 export default SnapshotStore;

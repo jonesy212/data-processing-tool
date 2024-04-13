@@ -1,5 +1,5 @@
-import * as path from 'path';
-import React from 'react';
+import * as path from "path";
+import React from "react";
 
 interface DataVersionsProps {
   dataPath: string; // Added a prop to pass the data path
@@ -9,13 +9,13 @@ interface DataVersions {
   [key: string]: number;
 }
 
-const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath }) => {
+const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath: DATA_PATH}) => {
   const [dataVersions, setDataVersions] = React.useState<DataVersions>({});
 
   React.useEffect(() => {
     // Check if 'fs' is available (only in server-side)
-    if (typeof window === 'undefined') {
-      import('fs').then((fsModule) => {
+    if (typeof window === "undefined") {
+      import("fs").then((fsModule) => {
         const fs = fsModule.default;
         const versions: DataVersions = {};
 
@@ -31,7 +31,7 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath }) => {
             } else {
               // Logic to parse file and update dataVersions accordingly
               // Example: if (file.endsWith('.json')) { /* update dataVersions */ }
-              if (file.endsWith('.json')) {
+              if (file.endsWith(".json")) {
                 const dataKey = path.basename(file, path.extname(file));
                 versions[dataKey] = 0; // Initialize with 0, you can customize this based on your needs
               }
@@ -40,13 +40,13 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath }) => {
         };
 
         // Update the file path based on the provided dataPath
-        traverseDirectory(dataPath);
+        traverseDirectory(DATA_PATH);
         setDataVersions(versions);
       });
     } else {
       console.error("'fs' module can only be used in a Node.js environment.");
     }
-  }, [dataPath]);
+  }, [DATA_PATH]);
 
   return (
     <div>
@@ -63,3 +63,7 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath }) => {
 
 export default DataVersionsComponent;
 export type { DataVersions, DataVersionsProps };
+
+
+const dataVersions = {} as DataVersions
+export { dataVersions };

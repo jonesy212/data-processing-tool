@@ -206,7 +206,7 @@ export const UserBrandingPreferencesActions = {
 export const UserVisualPreferencesActions = {
   setTheme: createAction<string>("setTheme"),
   setDarkMode: createAction<boolean>("setDarkMode"),
-  setFontSize: createAction<number>("setFontSize"),
+  setFontSize: createAction<string>("setFontSize"),
   setColorScheme: createAction<string>("setColorScheme"),
   setLogoPreferences: createAction<any>("setLogoPreferences"),
   setIconPreferences: createAction<any>("setIconPreferences"),

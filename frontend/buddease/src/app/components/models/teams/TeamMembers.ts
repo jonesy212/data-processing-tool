@@ -1,7 +1,7 @@
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
-import {Team} from "./Team";
+import { Team } from "./Team";
 
 export interface Member extends User {
   teamId: string;
@@ -9,6 +9,12 @@ export interface Member extends User {
   memberName: string;
   teams?: Team[];
   // Add other member-specific properties here
+}
+
+// Define the Contributor interface or type// Define the Contributor interface extending Member
+interface Contributor extends Member {
+  contributions: number;
+  // Add any other properties specific to Contributor
 }
 
 // Define the MemberData interface extending Member
@@ -63,6 +69,6 @@ interface TeamMember {
   };
 
 export default MemberData; 
-  export type { TeamMember };
+  export type { Contributor, TeamMember };
 
   export { memberData, teamMember };

@@ -4,12 +4,17 @@ import { CollaborationActions } from "@/app/components/actions/CollaborationActi
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
-function* fetchCollaborationSaga(): Generator<Effect, void, any> {
+function* fetchCollaborationSaga(action: any): Generator<Effect, void, any> {
   try {
+    const projectId = action.payload;
     yield put(CollaborationActions.fetchCollaborationRequest());
-    // Replace with the actual API call or service function to fetch collaboration data
-    const collaborationData: any = yield call(collaborationApiService.fetchCollaborationData);
-    yield put(CollaborationActions.fetchCollaborationSuccess({ collaborationData }));
+    const collaborationData: any = yield call(
+      collaborationApiService.fetchCollaborationData,
+      projectId
+    );
+    yield put(
+      CollaborationActions.fetchCollaborationSuccess({ collaborationData })
+    );
   } catch (error) {
     yield put(
       CollaborationActions.fetchCollaborationFailure({
@@ -19,15 +24,28 @@ function* fetchCollaborationSaga(): Generator<Effect, void, any> {
   }
 }
 
-function* fetchCollaborationRequestSaga(): Generator<Effect, void, any> {
+function* fetchCollaborationRequestSaga(
+  action: any
+): Generator<Effect, void, any> {
   try {
+    const projectId = action.payload;
+
     yield put(CollaborationActions.fetchCollaborationRequest());
     // Use collaboration service to fetch collaboration data
-    const collaborationData: any = yield call(collaborationService.fetchCollaborationData);
-    yield put(CollaborationActions.fetchCollaborationSuccess({ collaborationData }));
+    const collaborationData: any = yield call(
+      collaborationApiService.fetchCollaborationData,
+      projectId
+    );
+    yield put(
+      CollaborationActions.fetchCollaborationSuccess({ collaborationData })
+    );
+    yield put(CollaborationActions.fetchCollaboration(projectId));
   } catch (error) {
-    yield put(CollaborationActions.fetchCollaborationFailure({ error: String(error) }));
+    yield put(
+      CollaborationActions.fetchCollaborationFailure({ error: String(error) })
+    );
   }
+
 }
 
 function* fetchCollaborationSuccessSaga(
@@ -38,20 +56,28 @@ function* fetchCollaborationSuccessSaga(
     // Handle the success action
     // Update the state or perform other actions based on the fetched collaboration data
     yield put({
-      type: 'UPDATE_COLLABORATION_ACTION_TYPE', // Replace with your actual action type for updating collaboration data
+      type: "UPDATE_COLLABORATION_ACTION_TYPE", // Replace with your actual action type for updating collaboration data
       payload: { collaborationData },
     });
-    console.log('Fetch Collaboration Success:', collaborationData);
+    console.log("Fetch Collaboration Success:", collaborationData);
   } catch (error) {
-    console.error('Error in fetchCollaborationSuccessSaga:', error);
+    console.error("Error in fetchCollaborationSuccessSaga:", error);
   }
 }
 
-export function* watchCollaborationSagas() {
-  yield takeLatest(CollaborationActions.fetchCollaborationRequest.type, fetchCollaborationSaga);
-  yield takeLatest(CollaborationActions.fetchCollaborationRequest.type, fetchCollaborationRequestSaga);
-  yield takeLatest(CollaborationActions.fetchCollaborationSuccess.type, fetchCollaborationSuccessSaga);
-  // Add more sagas as needed for other collaboration actions
+function* watchCollaborationSagas(): Generator<Effect, void, any> {
+  yield takeLatest(
+    CollaborationActions.fetchCollaborationRequest.type,
+    fetchCollaborationRequestSaga
+  );
+  yield takeLatest(
+    CollaborationActions.fetchCollaborationSuccess.type,
+    fetchCollaborationSuccessSaga
+  );
+  yield takeLatest(
+    CollaborationActions.fetchCollaboration.type,
+    fetchCollaborationSaga
+  )
 }
 
 export function* collaborationSagas() {

@@ -6,27 +6,20 @@ import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysi
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { AllTypes } from "../../typings/PropTypes";
+import { Idea } from "../../users/Ideas";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data } from "../data/Data";
 import { TaskStatus } from "../data/StatusType";
 import { Team, TeamDetails } from "../teams/Team";
-export type Idea = {
-  id: string; // Unique identifier for the idea
-  title: string; // Title or headline of the idea
-  description: string; // Detailed description or content of the idea
-  author: string; // Author or creator of the idea
-  createdAt: Date; // Date and time when the idea was created
-  tags: string[]; // Tags or categories associated with the idea
-  status?: AllStatus
-  // Add more properties as needed to represent an idea
-};
+
 
 
 
 interface Task extends Data {
   id: string
   title: string;
+  name: string | null;
   description: string;
   assignedTo: WritableDraft<User> | null; 
   assigneeId: User["id"];
@@ -95,10 +88,11 @@ const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
 );
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
-export const tasksDataSource: Record<string, Task> = {
+const tasksDataSource: Record<string, Task> = {
   "1": {
     id: "1",
     title: "Task 1",
+    name: "Unique Task Identifier",
     description: "Description for Task 1",
     assignedTo: {} as WritableDraft<User>, // Example value for assignedTo, an array of User objects
     assigneeId: "123", // Example value for assigneeId, assuming it's a string
@@ -150,6 +144,7 @@ export const tasksDataSource: Record<string, Task> = {
   "2": {
     id: "2",
     title: "Task 2",
+    name: "Unique Task Identifier",
     description: "Description for Task 2",
     assignedTo: {} as WritableDraft<User>, // Example value for assignedTo, an array of User objects
     assigneeId: "456", // Example value for assigneeId, assuming it's a string
@@ -207,3 +202,4 @@ export const tasksDataSource: Record<string, Task> = {
 export default TaskDetails 
 export type { Task };
 
+  export { tasksDataSource };

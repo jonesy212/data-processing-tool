@@ -1,6 +1,7 @@
 // idleTimeoutUtils.ts
 import axios from "axios";
-
+import Swal from 'sweetalert2';
+// 
 // Define the type for the idleTimeoutCondition function
 type IdleTimeoutConditionFunction = (lastUserInteractionTime: number | null) => boolean;
 
@@ -8,7 +9,7 @@ type IdleTimeoutConditionFunction = (lastUserInteractionTime: number | null) => 
 type FetchLastUserInteractionTimeFunction = () => Promise<number | null>;
 
 // Define the type for the showModalOrNotification function
-type ShowModalOrNotificationFunction = (message: string) => void;
+type ShowModalOrNotificationFunction = (title: string, message: string) => void;
 
 // Define the type for the clearUserData function
 type ClearUserDataFunction = () => void;
@@ -26,11 +27,17 @@ const idleTimeoutCondition: IdleTimeoutConditionFunction = (lastUserInteractionT
   return lastUserInteractionTime === null || (Date.now() - lastUserInteractionTime) >= IDLE_TIMEOUT_DURATION;
 };
 
-// Placeholder function for displaying a modal or notification
-const showModalOrNotification: ShowModalOrNotificationFunction = (message) => {
-  // Replace this with your actual logic for showing a modal or notification
-  console.log(`Show Modal or Notification: ${message}`);
+
+const showModalOrNotification: ShowModalOrNotificationFunction = (title, message) => {
+  // Use SweetAlert2 to display a modal or notification
+  Swal.fire({
+    title: title,
+    text: message,
+    icon: 'info', // You can customize the icon (info, success, warning, error)
+    confirmButtonText: 'OK'
+  });
 };
+
 
 
 
@@ -59,10 +66,7 @@ const resetIdleTimeout: ResetIdleTimeoutFunction = () => {
 };
 
 export {
-  idleTimeoutCondition,
-  showModalOrNotification,
-  clearUserData,
-  fetchLastUserInteractionTime,
-  resetIdleTimeout,
-  IDLE_TIMEOUT_DURATION,
+  IDLE_TIMEOUT_DURATION, clearUserData,
+  fetchLastUserInteractionTime, idleTimeoutCondition, resetIdleTimeout, showModalOrNotification
 };
+

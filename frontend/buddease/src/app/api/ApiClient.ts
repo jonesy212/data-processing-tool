@@ -1,5 +1,5 @@
 // ApiClient.ts
-
+import  FileImportData  from '../components/documents/FileImportData';
 import axiosInstance from "@/app/api/axiosInstance";
 import {
   NotificationType,
@@ -120,20 +120,20 @@ class ClientApiService {
   }
 
   async getRequestHandeler() {
-  return async (
-    request: () => Promise<AxiosResponse>,
-    errorMessage: string,
-  ): Promise<AxiosResponse<any, any> | undefined> => {
+    return async (
+      request: () => Promise<AxiosResponse>,
+      errorMessage: string,
+    ): Promise<AxiosResponse<any, any> | undefined> => {
 
-    try {
-      const response: AxiosResponse = await request();
-      return response;
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown, any>, errorMessage);
+      try {
+        const response: AxiosResponse = await request();
+        return response;
+      } catch (error) {
+        handleApiError(error as AxiosError<unknown, any>, errorMessage);
+      }
+      return undefined;
     }
-    return undefined;
   }
-}
 
   
   async fetchClientDetails(clientId: number): Promise<any> {
@@ -188,7 +188,7 @@ class ClientApiService {
       const response: AxiosResponse = await axiosInstance.put(
         clientDetailsUrl,
         updatedDetails,
-        { headers } 
+        { headers }
       );
   
       const updatedClientDetails = response.data;
@@ -238,7 +238,7 @@ class ClientApiService {
       () =>
         axiosInstance.post(`${API_BASE_URL}/message/${tenantId}`, { message }), // Using client endpoint
       "Failed to send message to tenant",
-      "SendMessageToTenantError"  as keyof ClientNotificationMessages,
+      "SendMessageToTenantError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.SEND_MESSAGE_TO_TENANT_ERROR,
       { tenantId, message }
     );
@@ -248,7 +248,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get(`${API_BASE_URL}/connected-tenants`), // Using client endpoint
       "Failed to list connected tenants",
-      "ListConnectedTenantsError"  as keyof ClientNotificationMessages,
+      "ListConnectedTenantsError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_CONNECTED_TENANTS_ERROR
     );
   }
@@ -257,7 +257,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/messages"),
       "Failed to list messages",
-      "ListMessagesError"  as keyof ClientNotificationMessages,
+      "ListMessagesError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_MESSAGES_ERROR
     );
   }
@@ -266,16 +266,16 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post("/api/client/tasks/create", taskData),
       "Failed to create task",
-      "CreateTaskError"  as keyof ClientNotificationMessages,
+      "CreateTaskError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.CREATE_TASK_ERROR
     );
   }
 
-  async removeCalendarEvent(eventId: number): Promise<AxiosResponse> { 
+  async removeCalendarEvent(eventId: number): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.delete(`/api/client/calendar/${eventId}`),
       "Failed to remove calendar event",
-      "RemoveCalendarEventError"  as keyof ClientNotificationMessages,
+      "RemoveCalendarEventError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.REMOVE_CALENDAR_EVENT_ERROR
     );
   }
@@ -284,7 +284,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/tasks"),
       "Failed to list tasks",
-      "ListTasksError"  as keyof ClientNotificationMessages,
+      "ListTasksError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_TASKS_ERROR
     );
   }
@@ -297,7 +297,7 @@ class ClientApiService {
           proposalData
         ),
       "Failed to submit project proposal",
-      "SubmitProjectProposalError"  as keyof ClientNotificationMessages,
+      "SubmitProjectProposalError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.SUBMIT_PROJECT_PROPOSAL_ERROR
     );
   }
@@ -312,7 +312,7 @@ class ClientApiService {
           challengeData
         ),
       "Failed to participate in community challenges",
-      "ParticipateInCommunityChallengesError"  as keyof ClientNotificationMessages,
+      "ParticipateInCommunityChallengesError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR
     );
   }
@@ -321,7 +321,7 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/rewards"),
       "Failed to list rewards",
-      "ListRewardsError"  as keyof ClientNotificationMessages,
+      "ListRewardsError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.LIST_REWARDS_ERROR
     );
   }
@@ -351,8 +351,125 @@ class ClientApiService {
   };
   
 
+  async startCollaborativeEdit(
+    fileId: string): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.post(`/api/files/${fileId}/collaborative-edit`),
+      "Failed to start collaborative edit",
+      "StartCollaborativeEditError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.START_COLLABORATIVE_EDIT_ERROR,
+    )
+  }
+
+  async createFileVersion(
+    fileId: string,
+    versionData: VersionData
+  ): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),
+      "Failed to create file version",
+      "CreateFileVersionError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.CREATE_FILE_VERSION_ERROR,
+    )
+  }
+
+  async receiveFileUpdate(
+    fileId: string,
+    updateData: any
+  ): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.post(`/api/files/${fileId}/updates`, updateData),
+      "Failed to receive file update",
+      "ReceiveFileUpdateError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.RECEIVE_FILE_UPDATE_ERROR,
+    )
+  }
+
+
+
+  async fetchFileVersions(
+    fileId: string): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.get(`/api/files/${fileId}/versions`),
+      "Failed to fetch file versions",
+      "FetchFileVersionsError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.FETCH_FILE_VERSIONS_ERROR
+    )
+  }
+  
+  async shareFile(fileId: string, shareData: any): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.post(`/api/files/${fileId}/share`, shareData),
+      "Failed to share file",
+      "ShareFileError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.SHARE_FILE_ERROR
+    );
+  }
+
+
+  async requestAccessToFile(
+    fileId: string,
+    accessData: any
+  ): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.post(`/api/files/${fileId}/access`, accessData),
+      "Failed to request access to file",
+      "RequestAccessToFileError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.REQUEST_ACCESS_TO_FILE_ERROR
+    )
+  }
+
+
+  async exportFile(
+    fileId: string,
+
+  ): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.get(`/api/files/${fileId}/export`),
+      "Failed to export file",
+      "ExportFileError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.EXPORT_FILE_ERROR,
+    )
+  }
+
+  
+  async archiveFile(
+    fileId: string): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.delete(`/api/files/${fileId}`),
+      "Failed to archive file",
+      "ArchiveFileError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.ARCHIVE_FILE_ERROR
+    )
+  }
+
+  async determineFileType(fileId: string): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.get(`/api/files/${fileId}/type`),
+      "Failed to determine file type",
+      "DetermineFileTypeError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.DETERMINE_FILE_TYPE_ERROR
+    )
+  }
+
+
+  async importFile(
+    fileData: typeof FileImportData
+  ): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.post(`/api/files/import`, fileData),
+      "Failed to import file",
+      "ImportFileError" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.Client.IMPORT_FILE_ERROR
+    )
+  }
+
+
+  
+  
   // Additional client API methods can be added here...
-} 
+
+}
 
 
 // Ensure that useNotification returns a function that returns a Promise<string>
@@ -375,7 +492,12 @@ const updateCalendarEvent = async (
   return await clientApiService.updateCalendarEvent(eventId, updatedEvent);
 };
 
+
+
+
 const clientApiService = new ClientApiService(useNotification, updateCalendarEvent, getFileContent);
 
 export default clientApiService;
+export { clientNotificationMessages };
 export type { ClientNotificationMessages };
+

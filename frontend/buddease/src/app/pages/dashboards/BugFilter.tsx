@@ -5,9 +5,17 @@ import {
   clearFilteredEvents,
   removeFilteredEvent,
 } from "@/app/components/state/redux/slices/FilteredEventsSlice";
+import { eventService } from "@/app/components/event/EventService";
+import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { CustomEvent } from "@/app/components/event/CustomEvent";
+import { Data } from "@/app/components/models/data/Data";
+import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { implementThen } from "@/app/components/state/stores/CommonEvent";
 
 interface BugFilterProps {
   filters: any;
+  eventId: string;
   onFilterChange: (filters: any) => void;
 }
 
@@ -37,18 +45,42 @@ const BugFilter: React.FC<BugFilterProps> = ({ filters, onFilterChange }) => {
     dispatch(clearFilteredEvents());
   };
 
-    // Function to handle adding back a filtered event
-    const handleAddBackFilteredEvent = (eventId: any) => {
-        // Retrieve event based on eventId (replace this with your actual logic)
-        const eventToAddBack = eventService.getEventById(eventId); // Example: findEventById is a function to retrieve the event
-        if (eventToAddBack) {
-        // Check if the event is found
-        dispatch(addFilteredEvent(eventToAddBack)); // Add the event back using dispatch
-        } else {
-        console.error("Event not found!"); // Log an error if event is not found
-        }
-    };
+ // Function to handle adding back a filtered event
+const handleAddBackFilteredEvent = (eventId: any) => {
+  // Retrieve event based on eventId (replace this with your actual logic)
+  const event = eventService.getEventById(eventId);
   
+  if (event) {
+    // If the event is a CalendarEvent, dispatch it directly
+    if ('content' in event) {
+      dispatch(addFilteredEvent(event as CalendarEvent));
+    } else {
+      // If it's a CustomEvent, convert it to a CalendarEvent before dispatching
+      const eventToAddBack: CalendarEvent = {
+        id: event?.id ?? "", // Use optional chaining to safely access id
+        title: event?.title ?? "",
+        description: event?.description ?? "",
+        startDate: event?.startDate ?? new Date(),
+        endDate: event?.endDate ?? new Date(),
+        content: "", // Add default values for properties specific to CalendarEvent
+        topics: [],
+        highlights: [],
+        files: [],
+        rsvpStatus: "maybe",
+        priority: "",
+        host: {} as Member,
+        participants: [],
+        teamMemberId: "",
+        date: new Date,
+        then: implementThen,
+      };
+      dispatch(addFilteredEvent(eventToAddBack));
+    }
+  } else {
+    console.error("Event not found!");
+  }
+};
+
 
   return (
     <div>
@@ -59,7 +91,8 @@ const BugFilter: React.FC<BugFilterProps> = ({ filters, onFilterChange }) => {
           type="text"
           name="title"
           value={filters.title || ""}
-wwwwww        />
+          onChange={handleInputChange}
+        />
       </label>
       <label>
         Status:
@@ -81,10 +114,22 @@ wwwwww        />
       <button onClick={() => handleClearFilteredEvents()}>
         Clear Filtered Events
       </button>
-      <button onClick={() => handleRemoveFilteredEvent(eventId)}>
+      <button
+        onClick={(event) =>
+          event.currentTarget.id &&
+          handleRemoveFilteredEvent(event.currentTarget.id)
+        }
+      >
         Remove Filtered Events
       </button>
-    <button onClick={() => handleAddBackFilteredEvent(event.id)}>
+      <button
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+          const eventId = (event.currentTarget as HTMLButtonElement).id;
+          if (eventId) {
+            handleAddBackFilteredEvent(eventId);
+          }
+        }}
+      >
         Add Back Filtered Event
       </button>
 

@@ -1,5 +1,4 @@
 // generateCache.ts
-import RealtimeData from "../../../models/realtime/RealtimeData";
 import useRealtimeData from "../components/hooks/commHooks/useRealtimeData";
 import {
   useBrainstormingPhase,
@@ -23,6 +22,7 @@ import {
   notificationBarPhaseHook,
 } from "../components/hooks/userInterface/UIPhaseHooks";
 import { Data } from "../components/models/data/Data";
+import { sanitizeCallback, sanitizeInitialData } from "../components/security/DOMPurify";
 import { CalendarEvent, updateCallback } from "../components/state/stores/CalendarEvent";
 import { backendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
@@ -33,8 +33,8 @@ import FrontendStructure from "../configs/appStructure/FrontendStructure";
 
 const initialData: any = {}; 
 
+export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
 
-const realtimeData = useRealtimeData(initialData, updateCallback);
 // Updated cache data structure based on the provided tree structure
 export interface CacheData extends Data {
   lastUpdated: string;
@@ -44,7 +44,7 @@ export interface CacheData extends Data {
   backendStructure: BackendStructure;
   backendConfig: typeof backendConfig;
   frontendConfig: typeof frontendConfig
-  realtimeData:  RealtimeData;
+  realtimeData:  typeof realtimeData
   // fetchData?: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
   // Add new top-level cache properties for UI phases
   notificationBarPhaseHook: typeof notificationBarPhaseHook;

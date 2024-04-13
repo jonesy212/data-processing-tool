@@ -1,15 +1,15 @@
 // components/DynamicNamingConventions.tsx
-import React from 'react';
 import configurationService from '@/configs/ConfigurationService';
+import React from 'react';
 import { NamingConventionsError } from '../shared/shared_error_handling';
 import { useDynamicComponents } from './DynamicComponentsContext';
 import { useNotification } from './support/NotificationContext';
 import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from './support/NotificationMessages';
 import { NOTIFICATION_TYPES } from './support/NotificationTypes';
+
 interface DynamicNamingConventionsProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
 }
-
 
 const { notify } = useNotification();  // Destructure notify from useNotification
 

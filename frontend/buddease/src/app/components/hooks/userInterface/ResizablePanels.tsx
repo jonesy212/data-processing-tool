@@ -76,10 +76,19 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({
                 axis="x"
                 onResize={handleResize(index)}
               >
-                <div ref={(ref) => (panelRefs.current[index] = ref)}>
+                <div
+                  ref={(ref) => {
+                    if (ref) {
+                      panelRefs.current[index] = ref;
+                    }
+                  }}
+                >
                   {/* You can conditionally render static or dynamic content here */}
                   {renderStaticContent()}
-                  {renderDynamicContent({ title: "Example Dashboard", content: child })}
+                  {renderDynamicContent({
+                    title: "Example Dashboard",
+                    content: child,
+                  })}
                   {child}
                 </div>
               </ResizableBox>

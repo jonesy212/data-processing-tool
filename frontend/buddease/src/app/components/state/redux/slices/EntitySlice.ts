@@ -5,6 +5,7 @@ import { RootState } from './RootSlice';
 
 interface Entity {
     id: string;
+    name: string
     // Add other properties as needed
 }
 
@@ -78,3 +79,4 @@ export default useEntitytManagerSlice;
  
 // Export the reducer
 export type EntityReducer = ReturnType<typeof useEntitytManagerSlice>['reducer'];
+export type { Entity };

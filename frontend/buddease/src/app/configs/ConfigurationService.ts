@@ -9,6 +9,8 @@ import {
   backendConfig,
 } from "./BackendConfig";
 
+import { getConfigsData } from '../api/getConfigsApi';
+import { API_VERSION_HEADER } from './AppConfig';
 import dataVersions from "./DataVersionsConfig";
 import { frontendConfig } from "./FrontendConfig";
 import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
@@ -82,6 +84,10 @@ interface ConfigurationOptions {
 }
 
 
+
+// Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
+export const DATA_PATH = getConfigsData()
+
 const notify = useNotification
 class ConfigurationService {
   private static instance: ConfigurationService;
@@ -116,7 +122,7 @@ private getDefaultApiConfig(): ApiConfig {
     retry: {} as RetryConfig,
     cache: {} as CacheConfig,
     responseType: {
-      contentType: "application/json", // Default content type
+      contentType: API_VERSION_HEADER, // Use dynamic API version header
       encoding: "utf-8", // Default encoding
     },
     withCredentials: false,
@@ -353,6 +359,19 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
     return this.apiConfig;
   }
 
+   // Method to retrieve the API version header
+   getApiVersionHeader(): string {
+    // Define and return the API version header value
+    const API_VERSION_HEADER = 'application/vnd.yourapp.v1+json'; // Example API version header
+    return API_VERSION_HEADER;
+   }
+  
+  getDataPath(): string { 
+    // Return the data path
+    const DATA_PATH = './data';
+    return DATA_PATH;
+  }
+
   getConfigurationOptions(): ConfigurationOptions {
     return {} as ConfigurationOptions;
   }
@@ -388,4 +407,5 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
 const configurationService = ConfigurationService.getInstance();
 
 export default configurationService;
-export type {ConfigurationOptions}
+export type { ConfigurationOptions };
+

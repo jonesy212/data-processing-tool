@@ -139,6 +139,41 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, 'id'>) => {
   }
 };
 
+export const fetchSnapshotById = async (snapshotId: number): Promise<Snapshot<Data>> => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
+    const currentAppVersion = configData.currentAppVersion;
+
+    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
+      accessToken,
+      userId,
+      currentAppVersion
+    );
+
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ''),
+      // Add other header objects as needed
+    ];
+
+    const headers = Object.assign({}, ...headersArray);
+
+    const response = await axiosInstance.get<Snapshot<Data>>(`${API_BASE_URL}/${snapshotId}`, {
+      headers: headers as Record<string, string>,
+    });
+
+    return response.data;
+  } catch (error) {
+    const errorMessage = "Failed to fetch snapshot by ID";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+};
+
 
 export const removeSnapshot = async (snapshotId: number): Promise<void> => {
   try {

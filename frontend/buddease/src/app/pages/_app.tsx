@@ -1,29 +1,29 @@
 // _app.tsx
-import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
 import { DataProvider, Refine } from "@refinedev/core";
-import { IDataContextProvider } from "@refinedev/core/dist/interfaces";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
+import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
 
 import {
-  Link,
   Route,
   Router,
   useLocation,
   useNavigate,
-  useSearchParams,
+  useSearchParams
 } from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
 import BlogComponent from "../components/blogs/BlogComponent";
+import ChartComponent from "../components/charts/ChartComponent";
 import ConfirmationModal from "../components/communications/ConfirmationModal";
 import { Lesson } from "../components/documents/CourseBuilder";
 import EditorWithPrompt from "../components/documents/EditorWithPrompt";
 import Toolbar from "../components/documents/Toolbar";
 import ChildComponent from "../components/hooks/ChildComponent";
 import { handleLogin } from "../components/hooks/dynamicHooks/dynamicHooks";
+import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
 import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import { LogData } from "../components/models/LogData";
@@ -47,19 +47,17 @@ import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
 import DynamicErrorBoundary from "../shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "../shared/ErrorBoundaryProvider";
+import ErrorHandler from "../shared/ErrorHandler";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
 import ChangePasswordForm from "./forms/ChangePasswordForm";
-import ChartComponent from "./forms/ChartComponent";
 import ForgotPasswordForm from "./forms/ForgotPasswordForm";
 import LoginForm from "./forms/LoginForm";
 import RegisterForm from "./forms/RegisterForm";
+import UserSettingsForm from "./forms/UserSettingsForm";
 import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
-import ErrorHandler from "../shared/ErrorHandler";
-import UserSettingsForm from "./forms/UserSettingsForm";
-import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
 
 const phases: Phase[] = [
   {

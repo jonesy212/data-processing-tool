@@ -3,7 +3,7 @@ import { fetchTasks, updateTask } from "@/app/api/TasksApi";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import DynamicRenderer from "../libraries/ui/DynamicRenderer";
+import ContentRenderer from "../libraries/ui/ContentRenderer";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { Data } from "../models/data/Data";
 import { PriorityStatus, StatusType } from "../models/data/StatusType";
@@ -386,7 +386,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
 
   return (
     <div>
-      <DynamicRenderer
+      <ContentRenderer
         dynamicContent={tasks} // Assuming tasks is an array of tasks
         handleTaskClick={handleTaskClick}
         handleTodoClick={handleTodoClick}

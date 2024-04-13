@@ -1,54 +1,58 @@
-// //TODO: CRYPTO
-// // TokenUtils.ts
+//TODO: CRYPTO
+// TokenUtils.ts
 
-// // Utility function to check if a user has a certain amount of tokens
-// export const hasEnoughTokens = (userTokens: number, requiredTokens: number): boolean => {
-//   // ... Existing implementation
+import { useNotification } from "../components/support/NotificationContext";
 
-//   if (!hasEnough) {
-//     // Notify the user about insufficient funds
-//     sendTokenNotification('INSUFFICIENT_FUNDS');
-//   }
 
-//   return hasEnough;
-// };
+const notify = useNotification()
+// Utility function to check if a user has a certain amount of tokens
+export const hasEnoughTokens = (userTokens: number, requiredTokens: number): boolean => {
+  // ... Existing implementation
 
-// // Utility function to stake tokens and earn rewards
-// export const stakeTokens = (userTokens: number, stakedTokens: number): number => {
-//   // ... Existing implementation
+  if (!p) {
+    // Notify the user about insufficient funds
+    sendTokenNotification('INSUFFICIENT_FUNDS');
+  }
 
-//   // Notify the user about successful staking
-//   sendTokenNotification('TOKEN_STAKED');
+  return hasEnough;
+};
 
-//   return newStakedTokens;
-// };
+// Utility function to stake tokens and earn rewards
+export const stakeTokens = (userTokens: number, stakedTokens: number): number => {
+  // ... Existing implementation
 
-// // Utility function to check if the token supply has reached its cap
-// export const isTokenSupplyCapped = (currentSupply: number, maxSupply: number): boolean => {
-//   // ... Existing implementation
+  // Notify the user about successful staking
+  sendTokenNotification('TOKEN_STAKED');
 
-//   if (isCapped) {
-//     // Notify the user about capped token supply
-//     sendTokenNotification('TOKEN_SUPPLY_CAPPED');
-//   }
+  return newStakedTokens;
+};
 
-//   return isCapped;
-// };
+// Utility function to check if the token supply has reached its cap
+export const isTokenSupplyCapped = (currentSupply: number, maxSupply: number): boolean => {
+  // ... Existing implementation
 
-// // Utility function to transfer tokens between users
-// export const transferTokens = (senderTokens: number, receiverTokens: number, amount: number): [number, number] => {
-//   // ... Existing implementation
+  if (isCapped) {
+    // Notify the user about capped token supply
+    sendTokenNotification('TOKEN_SUPPLY_CAPPED');
+  }
 
-//   // Notify the user about successful token transfer
-//   sendTokenNotification('TOKEN_TRANSFERRED');
+  return isCapped;
+};
 
-//   return [newSenderTokens, newReceiverTokens];
-// };
+// Utility function to transfer tokens between users
+export const transferTokens = (senderTokens: number, receiverTokens: number, amount: number): [number, number] => {
+  // ... Existing implementation
 
-// // Add more utility functions based on your specific token-related requirements
+  // Notify the user about successful token transfer
+  sendTokenNotification('TOKEN_TRANSFERRED');
 
-// // Helper function to send token-related notifications
-// const sendTokenNotification = (type: string) => {
-//   // Use your notification system to display messages
-//   notify('TokenUtils', type);
-// };
+  return [newSenderTokens, newReceiverTokens];
+};
+
+// Add more utility functions based on your specific token-related requirements
+
+// Helper function to send token-related notifications
+const sendTokenNotification = (type: string) => {
+  // Use your notification system to display messages
+  notify.showNotification("TokenUtils", type);
+};

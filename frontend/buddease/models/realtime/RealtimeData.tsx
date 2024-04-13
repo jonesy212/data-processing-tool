@@ -8,21 +8,25 @@ import SnapshotStore, {
   Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
-interface RealtimeDataItem {
+interface BaseRealtimeData {
   id: string;
   name: string;
+  // Add other common properties shared by RealtimeDataItem and RealtimeData here
+}
+
+interface RealtimeDataItem extends BaseRealtimeData {
+  timestamp?: number;
   title?: string;
   date: Date;
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
-  // Add other properties of RealtimeDataItem here
+  // Add other properties specific to RealtimeDataItem here
 }
 
-interface RealtimeData {
-  id: string; // Example property
-  name: string; // Example property
-  // Define other properties of RealtimeData here
+interface RealtimeData extends BaseRealtimeData {
+  date: Date;
+  // Define other properties specific to RealtimeData here
 }
 
 interface RealtimeDataProps {
@@ -134,6 +138,5 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
     </div>
   );
 };
-
 export default RealtimeData;
 export type { RealtimeDataItem };

@@ -16,8 +16,21 @@ import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
+import Logger, { DataLogger } from "../../logging/Logger";
+import isValidAuthToken from "../../security/AuthValidation";
+import useErrorHandling from "../../hooks/useErrorHandling";
+import { handleApiError } from "@/app/api/ApiLogs";
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
+
+
+interface CustomApp {
+  id: string;
+  name: string;
+  description: string;
+  authToken: string;
+  // Add any other properties as needed
+}
 
   class CustomDAppAdapter<T extends DappProps> extends YourClass {
     private adapter: FC<DAppAdapterProps>;
@@ -77,8 +90,101 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
     };
 
     this.adapter = AdapterComponent as FC<DAppAdapterProps>;
+    }
+    
+  createCustomApp(appData: CustomApp, errorMessage: string): YourClass {
+    try {
+      // Validate appData
+      if (!appData.id || !appData.name || !appData.description) {
+        throw new Error(
+          "Incomplete app data. Please provide id, name, and description."
+        );
+      }
+
+      // Initialize error handling
+      const { handleError } = useErrorHandling();
+
+      try {
+        // Validate appData
+        if (!appData.id || !appData.name || !appData.description) {
+          throw new Error(
+            "Incomplete app data. Please provide id, name, and description."
+          );
+        }
+
+        // Validate authentication token
+        const authToken = appData.authToken;
+        if (!isValidAuthToken(authToken)) {
+          throw new Error("Invalid authentication token.");
+        }
+
+        // Implement your logic here for creating a custom app
+        // For example, you might save the app data to a database or perform other operations
+
+        // Simulate saving the app data to a database
+        const savedAppData = this.saveAppDataToDatabase(appData);
+
+        // Perform additional operations, if needed
+
+        // Log custom app creation
+        DataLogger.log("Custom app created:", savedAppData);
+
+        console.log("Custom app created:", savedAppData);
+
+        // Additional logic...
+      } catch (error) {
+        console.error("Error creating custom app:", error);
+      }
+
+      return this;
+    } catch (error: any) {
+      handleApiError(error, errorMessage);
+      throw error;
+    }
+  }
+    
+    private saveAppDataToDatabase(appData: CustomApp): CustomApp {
+      // Simulate saving the app data to a database
+      // Replace this with actual code to interact with your database
+    
+      // For example, you might use an ORM or a database driver to save the data
+      // Here, we're simply logging the app data as if it's being saved to a database
+      console.log("Saving app data to database:", appData);
+    
+      // Return the saved app data
+      return appData;
+    }
+    
+
+  updateCustomApp(appId: string, updatedAppData: Partial<CustomApp>): YourClass {
+    try {
+      // Implement your logic here for updating a custom app
+      console.log("Updating custom app with ID:", appId, "New data:", updatedAppData);
+
+      // Additional logic...
+
+    } catch (error) {
+      console.error("Error updating custom app:", error);
+    }
+
+    return this;
   }
 
+  deleteCustomApp(appId: string): YourClass {
+    try {
+      // Implement your logic here for deleting a custom app
+      console.log("Deleting custom app with ID:", appId);
+
+      // Additional logic...
+
+    } catch (error) {
+      console.error("Error deleting custom app:", error);
+    }
+
+    return this;
+  }
+
+    
   enableRealtimeCollaboration(): YourClass {
     // Implement your logic here for enabling realtime collaboration
     console.log("Realtime collaboration enabled");
@@ -195,8 +301,6 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
     this.config.dappProps.currentUser = userData;
 
-    // Additional logic...
-
     return this;
   }
 
@@ -227,7 +331,7 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
     // Simulate loading a component dynamically
     switch (componentName) {
       case "ChartComponent":
-        return import("../../../components/charts/*");
+        return import("../../../components/charts/ChartComponent");
       case "UserFormComponent":
         return import("../../../pages/forms/UserFormComponent");
       // Add more cases as needed
@@ -235,16 +339,21 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
         return null;
     }
   }
+    
   private async loadComponentAsync(componentName: string) {
     // Simulate async loading of component
     let component;
     switch (componentName) {
       case "ChartComponent":
-        component = await import("../../components/charts/ChartComponent");
+        component = await import("../../../components/charts/ChartComponent");
         break;
       case "UserFormComponent":
         component = await import("../../../pages/forms/UserFormComponent");
         break;
+      case "authToken":
+        component = await import('../../auth/authToken')
+        break
+
 
       default:
         throw new Error("Component not found");
@@ -253,7 +362,7 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
     return component;
   }
 
-  manageDocuments(newDocument: Document) {
+  manageDocuments(newDocument: DocumentData) {
     // Implement your logic here for document management
     console.log("Document management functionality enabled");
 
@@ -285,7 +394,7 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
     return username === "demoUser" && password === "demoPassword";
   }
 
-  integrateAnalytics(dappProps: DappProps): boolean {
+  integrateAnalytics(dappProps: DappProps): CustomDAppAdapter<T> {
     try {
       // Implement your logic here for analytics integration
       winston.info("Analytics integration in progress...");
@@ -360,7 +469,7 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
   
 
   
-  customizeTheme(themeConfig: ThemeConfig, dappProps: DappProps): void {
+  customizeTheme(themeConfig: ThemeConfig, dappProps: DappProps): YourClass {
     try {
       console.log("Theme customization in progress...");
 
@@ -413,7 +522,10 @@ export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 }
 
 // Example usage:
-const yourClassInstance = new YourClass();
+abstract class YourClass {
+  // Class implementation
+}
+
 const themeConfig = {
   fonts: { primary: 'Roboto', heading: 'Arial' },
   colors: { primary: '#3498db', secondary: '#2ecc71' },

@@ -39,6 +39,7 @@ export enum NotificationTypeEnum {
   EventReminder = "EventReminder",
   FileID = "FileID",
   GeneratedID = "GeneratedID",
+  INFO = "INFO",
   LocationID = "LocationID",
   MeetingID = "MeetingId",
   PhaseID = "PhaseID",

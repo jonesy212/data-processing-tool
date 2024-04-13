@@ -1,7 +1,12 @@
 // SanitizationFunctions.ts
+import { databaseConfig } from "@/app/configs/DatabaseConfig";
+import performDatabaseOperation from "../database/DatabaseOperations";
 import { User } from "../users/User";
+import isValidAuthToken from "./AuthValidation";
 import { decryptedData } from "./decryptedData";
+import  express  from 'express';
 
+const app = express();
 
 export const validatePassword = (password: string): string[] => {
   const errors: string[] = [];
@@ -214,8 +219,27 @@ export const isNullOrUndefined = (value: any): boolean => {
   return value === null || value === undefined;
 };
 
+const operation = 'createDatabase'; // Define the operation variable
+// Backend endpoint to handle database requests using the authentication token
+app.post('/database-request', async (req: any, res: any) => {
+  const { authToken, databaseQuery } = req.body;
 
-
-
-
+  // Validate the authToken (e.g., check if it's valid and not expired)
+  if (isValidAuthToken(authToken)) {
+    try {
+      // If the token is valid, perform the database operation using secure backend credentials
+      const databaseResult = await performDatabaseOperation(
+        operation,
+        databaseConfig,
+        databaseQuery
+      );
+      res.json({ result: databaseResult });
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  } else {
+    // If the token is invalid or expired, return an error
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+});
 

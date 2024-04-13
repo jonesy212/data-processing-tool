@@ -78,7 +78,7 @@ useEffect(() => {
     // Cleanup: Unsubscribe when the component unmounts
     return () => {
       if (unsubscribe) {
-        unsubscribe();
+        unsubscribe
       }
     };
   }

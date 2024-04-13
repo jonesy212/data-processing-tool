@@ -1,4 +1,5 @@
 import React from "react";
+import { sanitizeInput } from "../../security/SanitizationFunctions";
 
 interface InputProps {
   id: string;
@@ -26,12 +27,16 @@ export const Input: React.FC<InputProps> = ({
   accept,
 
 }) => {
+
+    // Sanitize input value to prevent XSS attacks
+    const sanitizedValue = sanitizeInput(value);
+
   return (
     <input
       id={id}
       type={type}
       placeholder={placeholder}
-      value={value}
+      value={sanitizedValue}
       onChange={onChange}
       accept={accept}
     />

@@ -1,13 +1,17 @@
 // TaskManagementPhase.tsx
 import React, { useState } from "react";
+import { Task } from "../models/tasks/Task";
 import LaunchPhase from "../phases/onboarding/LaunchPhase";
 import TaskManagerComponent from "../tasks/TaskManagerComponent";
 import DataAnalysisPhase from "./DataAnalysisPhase/DataAnalysisPhase";
-import { Task } from "../models/tasks/Task";
 
 export enum TaskManagementPhase {
   LAUNCH,
   DATA_ANALYSIS,
+  PLANNING,
+  EXECUTION,
+  TESTING,
+  COMPLETION,
 }
 
 const TaskManagementManager: React.FC = () => {
@@ -34,6 +38,25 @@ const TaskManagementManager: React.FC = () => {
       {currentPhase === TaskManagementPhase.DATA_ANALYSIS && (
         <DataAnalysisPhase onSubmit={() => handlePhaseTransition} />
       )}
+      {currentPhase === TaskManagementPhase.PLANNING && (
+        <PlanningPhase
+          onSubmit={() => handlePhaseTransition(TaskManagementPhase.EXECUTION)}
+        />
+      )}
+      {currentPhase === TaskManagementPhase.TESTING && (
+        <TestingPhase
+          onSubmit={() => handlePhaseTransition(TaskManagementPhase.COMPLETION)}
+        />
+      )}
+      {currentPhase === TaskManagementPhase.EXECUTION && (
+        <ExecutionPhase
+          onSubmit={() => handlePhaseTransition(TaskManagementPhase.TESTING)}
+        />
+      )}
+      {currentPhase === TaskManagementPhase.COMPLETION && (
+        <CompletionPhase />
+      )}
+      
       {/* Add more phases as needed */}
     </div>
   );

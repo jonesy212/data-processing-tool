@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sanitizeInput } from '../../security/SanitizationFunctions';
 
 interface DynamicInputFieldsProps {
   fields: { label: string; type: string }[];
@@ -8,6 +9,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = ({ fields }) => {
   const [formData, setFormData] = useState<{ [key: string]: string }>({});
 
   const handleInputChange = (label: string, value: string) => {
+    const sanitizedValue = sanitizeInput(value); // Sanitize input value
     setFormData((prevData) => ({ ...prevData, [label]: value }));
   };
 

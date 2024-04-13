@@ -5,8 +5,8 @@ import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
-import { ColorSwatchProps } from "./ColorPalette";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
+import { ColorSwatchProps } from "./ColorPalette";
  
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -760,7 +760,9 @@ function setNewExample(arg0: { title: string; description: string }) {
 }
 
 const responsiveDesignStore = new ResponsiveDesignStore();
-export default responsiveDesignStore;
+const responsiveDesignStoreProps: ResponsiveDesignStoreProps = {} as ResponsiveDesignStoreProps;
+export default responsiveDesignStore; 
+export { ResponsiveDesign, responsiveDesignStoreProps };
 
 // Examples
 // Now you can use these actions in your application to dynamically update breakpoints, media queries, and other responsive properties.

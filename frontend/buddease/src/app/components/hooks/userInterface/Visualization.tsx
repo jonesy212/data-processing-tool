@@ -1,4 +1,4 @@
-import ChartComponent from "@/app/pages/forms/ChartComponent";
+import ChartComponent from "@/app/components/charts/ChartComponent";
 import { NextApiRequest, NextApiResponse } from "next";
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";

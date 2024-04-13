@@ -11,14 +11,18 @@ import  headersConfig  from '@/app/api/headers/HeadersConfig';
 import { DataFrameActions } from '@/app/components/actions/DataFrameActions';
 import { DataActions } from '@/app/components/projects/DataAnalysisPhase/DataActions';
 import { FileActions } from '@/app/components/actions/FileActions';
+import { fetchFiles, uploadFile, batchRemoveFiles, markFileAsComplete, startCollaborativeEdit, createFileVersion, fetchFileVersions, shareFile, requestAccessToFile, receiveFileUpdate, exportFile, archiveFile, determineFileType, importFile } from '@/app/api/FilesApi';
 
 
+// Import other unused imports
+
+// Define the fileSagasConfig object
 const fileSagasConfig = {
-  BASE_URL: endpoints.BASE_API_URL, // Replace with your actual backend URL
-  headersConfig, // Import or define your headers configuration
+  BASE_URL: endpoints.BASE_API_URL,
+  headersConfig,
 };
 
-
+// Define UpdateDataTitle function
 const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
   try {
     const response = await axios.post(
@@ -34,264 +38,197 @@ const UpdateDataTitle = async (title: string): Promise<AxiosResponse<Data>> => {
   }
 };
 
-
-
-function* fetchNewFileData(
-  action: ReturnType<typeof fetchDataFrame>
-): Generator<any, void, any> {
+// Define fetchNewFileData saga
+function* fetchNewFileData(action: ReturnType<typeof fetchDataFrame>): Generator<any, void, any> {
   try {
     const response = yield call(fetchDataFrame, action);
     const data = response.data;
-
-    // Dispatch success action
     yield put(fetchDataFrameSuccess(data));
   } catch (error) {
     yield call(handleError, error);
   }
 }
 
-// Similarly implement other update functions
-
-function* handleUpdateDataTitle(
-  action: ReturnType<typeof updateDataTitle>
-): Generator<any, void, any> {
+// Define handleUpdateDataTitle saga
+function* handleUpdateDataTitle(action: ReturnType<typeof updateDataTitle>): Generator<any, void, any> {
   try {
     const { payload } = action;
-    // Example usage of dotProp (replace with your actual logic)
     const data = {
       title: "New Title",
     };
-
-    // Dispatch success action
-    yield put(FileActions.updateFile({ id:0, newTitle: data.title })); // Use FileActions here
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-function* handleFetchFilesRequest(): Generator<any, void, any> {
-  try {
-    const files = yield call(FileActions); // Call your API to fetch files
-    yield put(FileActions.fetchFilesSuccess(files)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-function* handleUploadFileRequest(): Generator<any, void, any> {
-  try {
-    const file = yield call(FileActions.uploadFile); // Call your API to upload file
-    yield put(FileActions.uploadFileSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-function* handleBatchRemoveFilesRequest(): Generator<any, void, any> { 
-  try {
-    const files = yield call(FileActions.batchRemoveFiles); // Call your API to remove files
-    yield put(FileActions.batchRemoveFilesSuccess(files)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-function* handleStartCollaborativeEdit(
-  action: ReturnType<typeof FileActions.startCollaborativeEdit>
-): Generator<any, void, any> {
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.startCollaborativeEdit, payload); // Call your API to start collaborative edit
-    yield put(FileActions.startCollaborativeEditSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-    // Use handleError utility function
-    FileActions.startCollaborativeEditSuccess
-  }
-}
-
-function* handleStopCollaborativeEdit(
-  action: ReturnType<typeof FileActions.stopCollaborativeEdit>
-): Generator<any, void, any> {
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.stopCollaborativeEdit, payload); // Call your API to stop collaborative edit
-    yield put(FileActions.stopCollaborativeEditSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-
-function* handleCreateFileVersion(
-  action: ReturnType<typeof FileActions.createFileVersion>
-): Generator<any, void, any> {
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.createFileVersion, payload); // Call your API to create file version
-    yield put(FileActions.createFileVersionSuccess(file)); // Dispatch success action
+    yield put(FileActions.updateFile({ id:0, newTitle: data.title }));
   } catch (error) {
     yield call(handleError, error);
-    // Use handleError utility function
-    FileActions.createFileVersionSuccess
   }
 }
 
-
-function* handleFetchFileVersions(): Generator<any, void, any> {
+// Define handleFetchFilesRequest saga
+function* handleFetchFilesRequest(): Generator<any, void, any> {
   try {
-    const fileVersions = yield call(FileActions.fetchFileVersions); // Call your API to fetch file versions
-    yield put(FileActions.fetchFileVersionsSuccess(fileVersions)); // Dispatch success action
+    const files = yield call(fetchFiles);
+    yield put(FileActions.fetchFilesSuccess(files));
   } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-    // Use handleError utility function
-    FileActions.fetchFileVersionsSuccess
+    yield call(handleError, error);
   }
 }
 
-
-function* handleShareFile(
-  action: ReturnType<typeof FileActions.shareFile>
-): Generator<any, void, any> {
+// Define handleUploadFileRequest saga
+function* handleUploadFileRequest(): Generator<any, void, any> {
   try {
-    const { payload } = action;
-    const file = yield call(FileActions.shareFile, payload); // Call your API to share file
-    yield put(FileActions.shareFileSuccess(file)); // Dispatch success action
+    const file = yield call(uploadFile);
+    yield put(FileActions.uploadFileSuccess(file));
   } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
+    yield call(handleError, error);
   }
 }
 
-function* handleRequestAccessToFile(
-  action: ReturnType<typeof FileActions.requestAccessToFile>
-): Generator<any, void, any> {
+// Define handleBatchRemoveFilesRequest saga
+function* handleBatchRemoveFilesRequest(): Generator<any, void, any> {
   try {
-    const { payload } = action;
-    yield call(FileActions.requestAccessToFile, action); // Call your API to request access to file
-    const file = yield call(FileActions.requestAccessToFile, payload); // Call your API to request access to file
-    yield put(FileActions.requestAccessToFileSuccess(file)); // Dispatch success action
+    const files = yield call(batchRemoveFiles);
+    yield put(FileActions.batchRemoveFilesSuccess(files));
   } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
+    yield call(handleError, error);
   }
 }
 
-function* handleReceiveFileUpdate(
-  action: ReturnType<typeof FileActions.receiveFileUpdate>
-): Generator<any, void, any> {
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.receiveFileUpdate, payload); // Call your API to receive file update
-    yield put(FileActions.receiveFileUpdateSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-
-
-function* handleExportFile(
-  action: ReturnType<typeof FileActions.exportFile>
-): Generator<any, void, any> { 
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.exportFile, payload); // Call your API to export file
-    yield put(FileActions.exportFileSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-function* handleArchiveFile( 
-  action: ReturnType<typeof FileActions.archiveFile>
-): Generator<any, void, any> {
-  console.log(
-    "handleArchiveFile",
-    action.payload
-)
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.archiveFile, payload); // Call your API to archive file
-    yield put(FileActions.archiveFileSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-
-
-function* handleDetermineFileType(
-  action: ReturnType<typeof FileActions.determineFileType>
-): Generator<any, void, any> {
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.determineFileType, payload); // Call your API to determine file type
-    yield put(FileActions.determineFileTypeSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-}
-
-function* handleImportFile(
-  action: ReturnType<typeof FileActions.importFile>
-): Generator<any, void, any> {
-  try {
-    const { payload } = action;
-    const file = yield call(FileActions.importFile, payload); // Call your API to import file
-    yield put(FileActions.importFileSuccess(file)); // Dispatch success action
-  } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
-  }
-  
-}
-
-fun
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+// Define handleMarkFileAsCompleteRequest saga
 function* handleMarkFileAsCompleteRequest(): Generator<any, void, any> {
   try {
-    const file = yield call(FileActions.markFileAsComplete); // Call your API to mark file as complete
-    yield put(FileActions.markFileAsCompleteSuccess(file)); // Dispatch success action
+    const file = yield call(markFileAsComplete);
+    yield put(FileActions.markFileAsCompleteSuccess(file));
   } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
+    yield call(handleError, error);
   }
 }
 
-    function* handleRemoveFileRequest(
-  action: ReturnType<typeof FileActions.removeFile>
-): Generator<any, void, any> {
+// Define handleStartCollaborativeEdit saga
+function* handleStartCollaborativeEdit(action: ReturnType<typeof FileActions.startCollaborativeEdit>): Generator<any, void, any> {
   try {
-    const file = yield call(FileActions.removeFile); // Call your API to remove file
-    yield put(FileActions.removeFileSuccess(file)); // Dispatch success action
+    const { payload } = action;
+    const file = yield call(startCollaborativeEdit, payload);
+    yield put(FileActions.startCollaborativeEditSuccess(file));
   } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
+    yield call(handleError, error);
   }
 }
 
+// Define handleCreateFileVersion saga
+function* handleCreateFileVersion(action: ReturnType<typeof FileActions.createFileVersion>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(createFileVersion, payload);
+    yield put(FileActions.createFileVersionSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleFetchFileVersions saga
+function* handleFetchFileVersions(): Generator<any, void, any> {
+  try {
+    const fileVersions = yield call(fetchFileVersions);
+    yield put(FileActions.fetchFileVersionsSuccess(fileVersions));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleShareFile saga
+function* handleShareFile(action: ReturnType<typeof FileActions.shareFile>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(shareFile, payload);
+    yield put(FileActions.shareFileSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleRequestAccessToFile saga
+function* handleRequestAccessToFile(action: ReturnType<typeof FileActions.requestAccessToFile>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    yield call(requestAccessToFile, action);
+    const file = yield call(requestAccessToFile, payload);
+    yield put(FileActions.requestAccessToFileSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleReceiveFileUpdate saga
+function* handleReceiveFileUpdate(action: ReturnType<typeof FileActions.receiveFileUpdate>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(receiveFileUpdate, payload);
+    yield put(FileActions.receiveFileUpdateSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleExportFile saga
+function* handleExportFile(action: ReturnType<typeof FileActions.exportFile>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(exportFile, payload);
+    yield put(FileActions.exportFileSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleArchiveFile saga
+function* handleArchiveFile(action: ReturnType<typeof FileActions.archiveFile>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(archiveFile, payload);
+    yield put(FileActions.archiveFileSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleDetermineFileType saga
+function* handleDetermineFileType(action: ReturnType<typeof FileActions.determineFileType>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(determineFileType, payload);
+    yield put(FileActions.determineFileTypeSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleImportFile saga
+function* handleImportFile(action: ReturnType<typeof FileActions.importFile>): Generator<any, void, any> {
+  try {
+    const { payload } = action;
+    const file = yield call(importFile, payload);
+    yield put(FileActions.importFileSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleRemoveFileRequest saga
+function* handleRemoveFileRequest(action: ReturnType<typeof FileActions.removeFile>): Generator<any, void, any> {
+  try {
+    const file = yield call(FileActions.removeFile);
+    yield put(FileActions.removeFileSuccess(file));
+  } catch (error) {
+    yield call(handleError, error);
+  }
+}
+
+// Define handleFetchDataFrame saga
 function* handleFetchDataFrame(): Generator<any, void, any> {
   try {
-    const dataFrame = yield call(fetchDataFrame); // Call your API to fetch data frame
-    yield put(DataFrameActions.fetchDataFrameSuccess(dataFrame)); // Dispatch success action
+    const dataFrame = yield call(fetchDataFrame);
+    yield put(DataFrameActions.fetchDataFrameSuccess(dataFrame));
   } catch (error) {
-    yield call(handleError, error); // Handle errors using handleError utility function
+    yield call(handleError, error);
   }
 }
 
@@ -312,8 +249,8 @@ function* fileSagas() {
   yield takeLatest(FileActions.exportFile.type, handleExportFile);
   yield takeLatest(FileActions.archiveFile.type, handleArchiveFile);
   yield takeLatest(FileActions.determineFileType.type, handleDetermineFileType);
-
-  // DataFrame actions
+  yield takeLatest(FileActions.importFile.type, handleImportFile);
+  yield takeLatest(FileActions.removeFile.type, handleRemoveFileRequest);
   yield takeLatest(DataActions.updateDataFrame.type, handleUpdateDataFrame);
   yield takeLatest(DataActions.deleteDataFrame.type, handleDeleteDataFrame);
   yield takeLatest(DataActions.updateDataTitle.type, handleUpdateDataTitle);

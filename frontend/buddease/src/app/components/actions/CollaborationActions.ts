@@ -5,7 +5,8 @@ import { createAction } from '@reduxjs/toolkit';
 // Collaboration actions
 export const CollaborationActions = {
   
-  fetchCollaboration: createAction('collaboration/fetchCollaboration'),
+  
+  fetchCollaboration: createAction<{id: string}>('collaboration/fetchCollaboration'),
   fetchCollaborationRequest: createAction('collaboration/fetchCollaborationRequest'),
   fetchCollaborationSuccess: createAction<{ collaborationData: any }>('collaboration/fetchCollaborationSuccess'),
   fetchCollaborationFailure: createAction<{ error: string }>('collaboration/fetchCollaborationFailure'),

@@ -102,7 +102,8 @@ const configData = {
   detailsConfig,
   frontendStructure,
   backendStructure,
-  currentAppVersion
+  currentAppVersion,
+  database
 };
 
 export default configData;

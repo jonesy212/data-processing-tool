@@ -14,13 +14,13 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
-import { DataStatus, PriorityStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
+import { DataStatus, PriorityStatus, ProductStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { Progress } from "../../models/tracker/ProgressBar";
 import { Project } from "../../projects/Project";
 import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
-import { Attachment } from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
+import { Attachment } from "../../documents/Attachment/attachment";
 const { notify } = useNotification();
 
 
@@ -34,6 +34,7 @@ export type AllStatus = StatusType
   | TeamStatus
   | DocumentStatus
   | PriorityStatus
+  | ProductStatus
 // Define a generic interface for details
 interface DetailsItem<T> extends DataDetails {
   _id?: string;

@@ -8,7 +8,9 @@ import { produce } from "immer";
 import { useDispatch } from "react-redux";
 import socketIOClient, { io } from "socket.io-client";
 import { CalendarActions } from "../actions/CalendarEventActions";
+import EventSentiment from '../event/EventSentiment';
 import { Theme } from "../libraries/ui/theme/Theme";
+import EventCategory from "../event/EventCategory";
 import {
   CalendarStatus,
   PriorityStatus,
@@ -35,7 +37,6 @@ import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
-
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { initiateDataAnalysis } from "@/app/services/dataAnalysisService";
 import { ChangeEvent } from "react";
@@ -43,6 +44,7 @@ import { ChatMessage } from "../communications";
 import { Attachment } from "../documents/Attachment/attachment";
 import CustomFile from "../documents/File";
 import useFileUpload from "../hooks/commHooks/useFileUpload";
+import { EventContentAnalysis } from "../models/data/EventContentAnalysis";
 import { LogData } from "../models/LogData";
 import { Member } from "../models/teams/TeamMembers";
 import { ChatActions } from "../projects/DataAnalysisPhase/ChatActions";
@@ -132,6 +134,12 @@ interface CalendarManagerState {
   suggestEventPartnerships: CalendarEventPartnership[];
   suggestedPartnerships: CalendarEventPartnership[];
   suggestedTags: Tag[];
+  suggestedTimingOptimization: CalendarEventTimingOptimization[];
+  suggestedLocations: Location[];
+  eventContentAnalysis: EventContentAnalysis | null;
+  generatedPrompt: string | null;
+  detectedSentiment: typeof EventSentiment | null;
+  classifiedCategory: typeof EventCategory | null;
 }
 
 export const exportCalendarEvents = async (
@@ -497,6 +505,12 @@ const initialState: CalendarManagerState = {
   suggestEventPartnerships: [] as CalendarEventPartnership[],
   suggestedPartnerships: [] as CalendarEventPartnership[],
   suggestedTags: [] as Tag[],
+  suggestedLocations: [] as Location[],
+  suggestedTimingOptimization: [],
+  eventContentAnalysis: {} as EventContentAnalysis,
+  generatedPrompt: "",
+  detectedSentiment: {} as typeof EventSentiment,
+  classifiedCategory: {} as typeof EventCategory,
 };
 
 const { notify } = useNotification();
@@ -865,13 +879,51 @@ export const useCalendarManagerSlice = createSlice({
       return state;
     },
 
-    setCalendarView: (
+
+
+    optimizeEventTiming: (
       state,
-      action: PayloadAction<"day" | "week" | "month" | "quarter" | "year">
+      action: PayloadAction<WritableDraft<CalendarEventTimingOptimization[]>>
     ) => {
-      state.currentView = action.payload;
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedTimingOptimization = action.payload;
+      return state;
     },
 
+
+    analyzeEventContent: (
+      state,
+      action: PayloadAction<{
+        event: CalendarEvent;
+        analysis: EventContentAnalysis;
+      }>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventContentAnalysis = action.payload.analysis;
+    },
+
+    generateEventPrompt: (state, action: PayloadAction<string>) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.generatedPrompt = action.payload;
+      return state;
+    },
+
+
+    detectEventSentiment: (state, action: PayloadAction<typeof EventSentiment>) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.detectedSentiment = action.payload;
+      return state;
+    },
+
+    classifyEventCategory: (
+      state,
+      action: PayloadAction<typeof EventCategory>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.classifiedCategory = action.payload;
+      return state;
+    },
+    
     // Update the viewCalendarEventDetails reducer to use EventDetailsComponent
     viewCalendarEventDetails: (
       state,
@@ -892,6 +944,13 @@ export const useCalendarManagerSlice = createSlice({
         dispatch,
         eventId
       );
+    },
+
+    setCalendarView: (
+      state,
+      action: PayloadAction<"day" | "week" | "month" | "quarter" | "year">
+    ) => {
+      state.currentView = action.payload;
     },
 
     // Action to share calendar event
@@ -1954,7 +2013,9 @@ export const {
   addCalendarEvent, // Create Calendar Event
   removeCalendarEvent, // Delete Calendar Event
   updateCalendarEventTitle, // Edit Calendar Event
+
   // New actions for calendar events
+  setCalendarView,
   viewCalendarEventDetails, // View Calendar Event Details
   shareCalendarEvent, // Share Calendar Event
   rsvpToCalendarEvent, // RSVP to Calendar Event
@@ -2044,6 +2105,7 @@ export const {
   suggestEventPartnerships, // Suggest Event Partnerships using AI
   recommendEventTags, // Recommend Event Tags using AI
 
+
   // // AI Analysis and Prediction
   // optimizeEventTiming, // Optimize Event Timing using AI
   // analyzeAttendeeAvailability, // Analyze Attendee Availability using AI
@@ -2065,10 +2127,11 @@ export const {
   // suggestEventFollowUpActions, // Suggest Event Follow-Up Actions using AI
 
   // // AI Integration with Spacy and Prompting
-  // analyzeEventContent, // Analyze Event Content using Spacy
-  // generateEventPrompt, // Generate Prompt for Event using AI
-  // detectEventSentiment, // Detect Sentiment of Event using AI
-  // classifyEventCategory, // Classify Event Category using AI
+  optimizeEventTiming,
+  analyzeEventContent, // Analyze Event Content using Spacy
+  generateEventPrompt, // Generate Prompt for Event using AI
+  detectEventSentiment, // Detect Sentiment of Event using AI
+  classifyEventCategory, // Classify Event Category using AI
   // generateEventSummary, // Generate Event Summary using AI
   // improveEventDetails, // Improve Event Details using AI
   // validateEventContent, // Validate Event Content using AI

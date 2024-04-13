@@ -1,6 +1,34 @@
+import { object } from 'prop-types';
+import { IDLE_TIMEOUT_DURATION } from '../components/hooks/commHooks/idleTimeoutUtils';
 import useIdleTimeout from '../components/hooks/idleTimeoutHooks';
 import { Settings } from '../components/state/stores/SettingsStore';
+import useAuthentication from '../components/hooks/useAuthentication';
  
+const logoutUser = useAuthentication().logout;
+
+const onTimeout = () => {
+  // Handle timeout event
+  console.log("User idle timeout occurred.");
+
+  // Log the timeout event and perform necessary actions
+  logoutUser();
+  showModal("Session Timeout", "Your session has expired due to inactivity. Please log in again.");
+  resetAppState();
+};
+
+
+// Show modal function
+const showModal = (title: any, message: any) => {
+  // Display a modal with provided title and message
+  console.log(`Showing modal with title: ${title} and message: ${message}`);
+};
+
+// Reset application state function
+const resetAppState = () => {
+  // Reset the application state
+  console.log("Resetting application state...");
+};
+
 
 export interface UserSettings extends Settings {
   communicationMode: string;
@@ -95,8 +123,8 @@ const userSettings: UserSettings = {
   enableGroupManagement: true,
   enableTeamManagement: true,
 
-  idleTimeout: useIdleTimeout('idleTimeout'),
-  startIdleTimeout: useIdleTimeout('idleTimeout').startIdleTimeout(timeoutDuration, onTimeout),
+  idleTimeout: useIdleTimeout("idleTimeout"),
+  startIdleTimeout: () => useIdleTimeout("idleTimeout").startIdleTimeout(IDLE_TIMEOUT_DURATION, onTimeout),
   idleTimeoutDuration: 0,
   activePhase: "current phase",
   realTimeChatEnabled: false,
@@ -169,6 +197,11 @@ const userSettings: UserSettings = {
   enableFileSharing: false,
   enableBlockchainCommunication: false,
   enableDecentralizedStorage: false,
+  id: '',
+  filter: function (key: keyof Settings): void {
+    // filter settings
+    object
+    }
 }
 
 

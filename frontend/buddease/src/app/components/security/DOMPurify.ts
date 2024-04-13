@@ -1,32 +1,59 @@
-// DOMPurify.ts
 import DOMPurify from 'dompurify';
 
-// Function to sanitize HTML inputs using DOMPurify
-const sanitizeHTML = (html: string): string => {
-  return DOMPurify.sanitize(html);
-};
- 
-// Function to validate and sanitize user inputs
+/**
+ * Function to validate and sanitize user inputs.
+ * @param input The input string to validate and sanitize.
+ * @returns The sanitized input string.
+ * @throws Error if input is empty or exceeds maximum length.
+ */
 const validateAndSanitizeInput = (input: string): string => {
-  // Perform validation (e.g., check for length, format, etc.)
+  // Check for empty input or whitespace
   if (!input || input.trim() === '') {
     throw new Error('Input cannot be empty');
   }
 
-  // Example: Validate input length
-  if (input.length > 100) {
-    throw new Error('Input length exceeds maximum limit');
+  // Validate input length
+  const maxLength = 100;
+  if (input.length > maxLength) {
+    throw new Error(`Input length exceeds maximum limit of ${maxLength} characters`);
   }
-
-  // Example: Validate input format (e.g., email format)
-  // Example: if (!isValidEmail(input)) {
-  // Example:    throw new Error('Invalid email format');
-  // Example: }
 
   // Sanitize input to prevent XSS attacks
   const sanitizedInput = sanitizeHTML(input);
 
   return sanitizedInput;
+};
+
+/**
+ * Function to sanitize HTML inputs using DOMPurify.
+ * @param html The HTML string to sanitize.
+ * @returns The sanitized HTML string.
+ */
+const sanitizeHTML = (html: string): string => {
+  return DOMPurify.sanitize(html);
+};
+
+
+
+
+// Function to sanitize initial data
+export const sanitizeInitialData = (data: any): any => {
+  // Implement sanitization logic for initial data
+  // Here we can use DOMPurify to sanitize any HTML content in the initial data
+  // For example, if the initial data contains HTML content, sanitize it using DOMPurify
+  if (typeof data === 'string') {
+    return sanitizeHTML(data);
+  }
+  // If the data is not a string, return it as is (assuming it's already sanitized or not HTML)
+  return data;
+};
+
+// Function to sanitize callback functions
+export const sanitizeCallback = (callback: any): any => {
+  // Implement sanitization logic for callback functions
+  // Here we assume the callback function is already safe to execute and does not contain any malicious code
+  // So, we simply return the callback function as it is
+  return callback;
 };
 
 // Example usage:
@@ -37,5 +64,3 @@ try {
 } catch (error: any) {
   console.error('Error:', error.message);
 }
-
-// Use validateAndSanitizeInput function to sanitize user inputs before using them in the application

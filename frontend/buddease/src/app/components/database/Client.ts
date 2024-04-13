@@ -9,6 +9,9 @@ export interface ClientConfig {
   clientId: string;
   clientName: string;
   clientEmail: string;
+  notificationMessages: {
+    updateClientDetailsError: string; // Define any other necessary properties
+  };
   // Add other properties as needed
 }
 
@@ -145,6 +148,9 @@ const clientConfig: ClientConfig = {
   clientId: "123",
   clientName: "Example Corp",
   clientEmail: "example@example.com",
+  notificationMessages: {
+    updateClientDetailsError: "Error updating client details." // Set the error message
+  }
   // Add other properties as needed
 };
 

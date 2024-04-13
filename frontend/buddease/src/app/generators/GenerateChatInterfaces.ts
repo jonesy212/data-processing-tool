@@ -9,6 +9,7 @@ import { User, UserData } from "../components/users/User";
     content: string;
     timestamp: Date;
     text: string;
+    isUserMessage?: boolean
   }
   
   // Function to generate dynamic interfaces

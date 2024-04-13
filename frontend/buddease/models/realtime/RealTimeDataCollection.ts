@@ -14,32 +14,193 @@ import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import RealtimeData, { RealtimeDataItem } from "./RealtimeData";
+import { ExchangeDataType } from "@/app/components/crypto/exchangeIntegration";
 
 const RealTimeDataCollection: React.FC = () => {
   const dispatch = useDispatch();
 
   // Define an array of exchanges to fetch data from
   const exchanges: Exchange[] = [
-    { name: "Coinbase Pro", apiUrl: "https://api.pro.coinbase.com" },
-    { name: "Kraken", apiUrl: "https://api.kraken.com" },
-    { name: "Bitfinex", apiUrl: "https://api.bitfinex.com" },
-    { name: "Bittrex", apiUrl: "https://api.bittrex.com" },
-    { name: "Huobi Global", apiUrl: "https://api.huobi.pro" },
-    { name: "OKEx", apiUrl: "https://www.okex.com/api" },
-    { name: "Bitstamp", apiUrl: "https://www.bitstamp.net/api" },
-    { name: "Gemini", apiUrl: "https://api.gemini.com" },
-    { name: "BitMEX", apiUrl: "https://www.bitmex.com/api" },
-    { name: "eToro", apiUrl: "https://api.etoro.com" },
-    { name: "Deribit", apiUrl: "https://www.deribit.com/api" },
-    { name: "Poloniex", apiUrl: "https://poloniex.com/public" },
-    { name: "BitFlyer", apiUrl: "https://api.bitflyer.com/v1" },
-    { name: "Liquid", apiUrl: "https://api.liquid.com" },
-    { name: "Bybit", apiUrl: "https://api.bybit.com" },
-    { name: "HitBTC", apiUrl: "https://api.hitbtc.com" },
-    { name: "Gate.io", apiUrl: "https://api.gate.io" },
-    { name: "Upbit", apiUrl: "https://api.upbit.com" },
-    { name: "CoinEx", apiUrl: "https://api.coinex.com/v1" },
-    { name: "CoinDCX", apiUrl: "https://public.coindcx.com" },
+    {
+      name: "Coinbase Pro", apiUrl: "https://api.pro.coinbase.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Kraken", apiUrl: "https://api.kraken.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Bitfinex", apiUrl: "https://api.bitfinex.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Bittrex", apiUrl: "https://api.bittrex.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Huobi Global", apiUrl: "https://api.huobi.pro",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "OKEx", apiUrl: "https://www.okex.com/api",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Bitstamp", apiUrl: "https://www.bitstamp.net/api",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Gemini", apiUrl: "https://api.gemini.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "BitMEX", apiUrl: "https://www.bitmex.com/api",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "eToro", apiUrl: "https://api.etoro.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Deribit", apiUrl: "https://www.deribit.com/api",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Poloniex", apiUrl: "https://poloniex.com/public",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "BitFlyer", apiUrl: "https://api.bitflyer.com/v1",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Liquid", apiUrl: "https://api.liquid.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Bybit", apiUrl: "https://api.bybit.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "HitBTC", apiUrl: "https://api.hitbtc.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Gate.io", apiUrl: "https://api.gate.io",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "Upbit", apiUrl: "https://api.upbit.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "CoinEx", apiUrl: "https://api.coinex.com/v1",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
+    {
+      name: "CoinDCX", apiUrl: "https://public.coindcx.com",
+      id: "",
+      pair: "",
+      price: 0,
+      volume: 0,
+      type: ExchangeDataType.TRADES,
+      data: undefined
+    },
     // Add more exchanges as needed
   ];
 

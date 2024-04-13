@@ -8,11 +8,11 @@ import {
 } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { Member } from "../models/teams/TeamMembers";
+import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEvent, CustomEventExtension } from "./CustomEvent";
-import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 
 
 
@@ -25,7 +25,8 @@ interface CustomMouseEvent<T = Element>
   description: string;
   startDate: Date;
   endDate: Date;
-
+  startTime: Date;
+  endTime: Date;
   // MouseEvent properties
   altKey: boolean;
   button: number;
@@ -131,7 +132,8 @@ export const createCustomEvent = (
     bubbles: false,
     cancelBubble: false,
     cancelable: false,
-
+    startTime: new Date,
+    endTime: new Date,
     // Methods and properties related to event handling
     addEventListener: (
       type: string,
@@ -246,12 +248,11 @@ class EventService {
     return this.events;
   }
 
-  getEventById(eventId: string): CustomEvent | undefined {
+  getEventById(eventId: string): CalendarEvent | CustomEvent | undefined {
     const event = this.events.find((evt) => evt.id === eventId);
-    if (event) {
-      return event;
-    }
+    return event;
   }
+  
 
   updateEvent(eventId: string, updatedEvent: Partial<Event>): void {
     const eventIndex = this.events.findIndex((evt) => evt.id === eventId);
@@ -442,9 +443,6 @@ const customEvent = createCustomEvent(
   new Date()
 );
 
-// Usage:
-const eventService = new EventService();
-
 // Add events
 const event1: CustomMouseEvent = {
   id: "event1",
@@ -463,9 +461,10 @@ const event1: CustomMouseEvent = {
   returnValue: false,
   srcElement: null,
   target: null || ({} as EventTarget & Element),
-  timeStamp: 0,
   type: "",
-
+  timeStamp: 0,
+  startTime: new Date,
+  endTime: new Date,
   composedPath: function (): EventTarget[] {
     const event = this as CustomMouseEvent;
     const path: EventTarget[] = [];
@@ -518,8 +517,6 @@ const event1: CustomMouseEvent = {
     eventService.removeEventListener(type, listener, options, useCapture);
   },
 
-  
-  
   dispatchEvent: function (): boolean {
     return false;
   },  
@@ -611,7 +608,6 @@ const event1: CustomMouseEvent = {
   },
 };
 
-eventService.addEvent(event1);
 
 // Create a custom event using the createCustomEvent function
 const event2 = createCustomEvent(
@@ -622,6 +618,8 @@ const event2 = createCustomEvent(
   new Date()
 );
 
+export const eventService = new EventService();
+eventService.addEvent(event1);
 eventService.addEvent(event2);
 
 // Get all events

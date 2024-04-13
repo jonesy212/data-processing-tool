@@ -11,6 +11,13 @@ class Subscriber<T> {
     this.subscribers.push(callback);
   }
 
+  unsubscribe(callback: (data: Snapshot<T>) => void) { 
+    const index = this.subscribers.indexOf(callback);
+    if (index !== -1) {
+      this.subscribers.splice(index, 1);
+    }
+  }
+
 
   notify(data: Snapshot<T>) {
     this.subscribers.forEach(callback => callback(data));

@@ -33,6 +33,10 @@ interface UserPreferences {
   customAppDevelopmentEnabled: boolean;
   teamIncentivesEnabled: boolean;
   revenueContributionEnabled: boolean;
+  fontSize: string; // Add fontSize property
+  colorScheme: string; // Add colorScheme property
+  fontStyles: { fontFamily: string; fontSize: number }; // Add fontStyles property
+
 }
 //todo update to modue names
 export type ModuleType =

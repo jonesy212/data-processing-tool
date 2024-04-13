@@ -2,18 +2,15 @@
 import {
   Pool,
   PoolConfig,
-  QueryArrayResult,
   QueryConfig,
   QueryConfigValues,
   QueryResult,
-  QueryResultRow,
+  QueryResultRow
 } from "pg";
 
 import { AxiosResponse } from "axios";
 import { Team } from "../../models/teams/Team";
 import axiosInstance from "../../security/csrfToken";
-import Connection from "../../database/Connection";
-import { da } from "@faker-js/faker";
 
 interface DatasetModel {
   id: number;
@@ -52,10 +49,12 @@ const dataset: DatasetModel = {
 
 class DatabaseClient {
   private pool: Pool;
-  // private config: PoolConfig;
+  private config: PoolConfig; // Declare config as an instance variable
 
-  constructor(private config: PoolConfig) {
+
+  constructor(config: PoolConfig) {
     this.pool = new Pool(config);
+    this.config = config; // Store the provided config
   }
 
   // Method to connect to the database
@@ -102,7 +101,6 @@ class DatabaseClient {
       throw error;
     }
   }
-  
   
   
 
@@ -177,3 +175,4 @@ export default DatabaseClient;
 
 export { dataset };
 export type { DatasetModel };
+

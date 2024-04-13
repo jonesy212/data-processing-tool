@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 interface DocumentFormattingOptions {
   fontFamily: string;
-  fontSize: number;
+  fontSize: number | string;
   margin: number;
   textColor: string;
   // Add more formatting options as needed

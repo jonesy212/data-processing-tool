@@ -1,5 +1,4 @@
 // setThresholdUtils.ts
-
 import { ParsedData } from "../components/crypto/parseData";
 
 // Function to set a threshold for price disparities indicating potential arbitrage opportunities

@@ -7,7 +7,11 @@ import {
   useNotification,
 } from "../components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
+import { databaseService } from "../components/database/DatabaseOperations";
+import { databaseConfig, databaseQuery } from "../configs/DatabaseConfig";
 
+
+const {notify} = useNotification()
 const DatabaseGenerator: React.FC = () => {
   const [databaseType, setDatabaseType] = useState<string>("");
   const [databaseName, setDatabaseName] = useState<string>("");
@@ -76,3 +80,21 @@ const DatabaseGenerator: React.FC = () => {
 };
 
 export default DatabaseGenerator;
+
+
+const handleGenerate = async () => { 
+  // Validate inputs
+  if (!databaseType || !databaseName) {
+    notify(
+      "databaseGenerationError",
+      "Database type and name are required.",
+      NOTIFICATION_MESSAGES.Database.ERROR_CONNECTING,
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
+  }
+}
+
+
+const database = await databaseService.createDatabase(databaseConfig, String(databaseQuery));
+export {database}

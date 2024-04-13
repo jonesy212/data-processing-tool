@@ -36,6 +36,31 @@ export const getUsersData = async (userIds: string[]) => {
 };
 
 
+// Function to process user data
+export const processUserData = (userData: any): any => {
+  // Ensure userData is an object
+  if (userData && typeof userData === 'object') {
+    // Iterate over each property of the user data object
+    for (const key in userData) {
+      if (userData.hasOwnProperty(key)) {
+        // Check if the property value is a string
+        if (typeof userData[key] === 'string') {
+          // Convert the string value to uppercase
+          userData[key] = userData[key].toUpperCase();
+        }
+        // Add additional processing logic for other data types if needed
+      }
+    }
+  } else {
+    // Log a warning if userData is not an object
+    console.warn('Input data is not an object.');
+  }
+  
+  return userData;
+};
+
+
+
 
 // Function to save user profiles to the database
 export const saveUserProfiles = async (userId: string) => {
@@ -63,9 +88,10 @@ export const fetchUserData = async (req: any, res: any) => {
     const userId = req.params.userId; // Example: Extract userId from request parameters
 
     // Fetch user data using req or any other parameters if needed
-    const userData = await fetchDataFromExternalAPI(userId); // Example function to fetch user data from an external API
+    let userData = await fetchDataFromExternalAPI(userId); // Example function to fetch user data from an external API
 
     // Process the fetched data if necessary
+    userData = processUserData(userData);
 
     // Send response with fetched user data
     res.status(200).json(userData);
@@ -77,7 +103,6 @@ export const fetchUserData = async (req: any, res: any) => {
 // Helper function to save user profile to database (example)
 const saveToDatabase = async (userProfile: any) => {
   try {
-    // Example logic to save user profile to database
     // For demonstration, let's assume saving is successful
     console.log('Saving user profile to database:', userProfile);
     Logger.info('Saving user profile to database:', userProfile);
@@ -99,7 +124,6 @@ const saveToDatabase = async (userProfile: any) => {
 const fetchDataFromExternalAPI = async (userId: string) => {
   try {
     // Example logic to fetch user data from an external API
-    // For demonstration, let's assume data is fetched successfully
     const response = await axios.get(`/api/users/${userId}`);
     return response.data;
   } catch (error) {

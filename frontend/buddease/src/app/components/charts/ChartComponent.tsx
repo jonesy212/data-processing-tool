@@ -9,7 +9,11 @@ interface ChartComponentProps {
   options?: ChartOptions; // Include ChartOptions from 'react-chartjs-2'
 }
 
-const ChartComponent: React.FC<ChartComponentProps> = ({ type, data, options }) => {
+const ChartComponent: React.FC<ChartComponentProps> = ({
+  type,
+  data,
+  options,
+}) => {
   const defaultOptions: ChartOptions = {
     maintainAspectRatio: false,
     responsive: true,
@@ -19,10 +23,12 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ type, data, options }) 
   const mergedOptions = { ...defaultOptions, ...options };
 
   switch (type) {
-    case 'line':
-      return <Line data={data} options={mergedOptions} />;
-    case 'bar':
-      return <Bar data={data} options={mergedOptions} />;
+    case "line":
+      return (
+        <Line data={data} options={mergedOptions as ChartOptions<"line">} />
+      );
+    case "bar":
+      return <Bar data={data} options={mergedOptions as ChartOptions<"bar">} />;
     default:
       console.error(`Unsupported chart type: ${type}`);
       return null;

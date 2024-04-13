@@ -18,6 +18,7 @@ import { ComponentStatus } from "@/app/components/models/data/StatusType";
 import { Project } from "@/app/components/projects/Project";
  import io from "socket.io-client";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
+import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
 
 const dispatch = useDispatch();
 const { notify } = useNotification();
@@ -60,7 +61,7 @@ export const handleRemoveComponent = () => {
     // Dispatch an action to remove a component
     dispatch(ComponentActions.removeComponent(1)); // Provide the ID of the component to remove
     // Provide feedback to users
-    const notification: NotificationData = {
+    const notification: WritableDraft<NotificationData> = {
       id: "2", // Provide a unique ID for the notification
       message: "Component removed successfully",
       createdAt: new Date(),
@@ -71,12 +72,12 @@ export const handleRemoveComponent = () => {
       completionMessageLog: {} as NotificationData & LogData,
       sendStatus: "Sent",
       options: {
-        additionalOptions: readonly string[] | string | number | any[] | undefined
+        additionalOptions: undefined
       }
     }
     addNotification(notification); // Updated argument to pass notification object
   } catch (error: any) {
-    const errorNotification: NotificationData = {
+    const errorNotification: WritableDraft<NotificationData> = {
       id: "error", // Provide a unique ID for the error notification
       message: "Failed to remove component: " + error.message,
       createdAt: new Date(),
@@ -103,7 +104,7 @@ export const handleUpdateComponent = () => {
       })
     );
     // Provide feedback to users
-    const notification: NotificationData = {
+    const notification: WritableDraft<NotificationData> = {
       id: "3",
       message: "Component updated successfully",
       createdAt: new Date(),
@@ -118,7 +119,7 @@ export const handleUpdateComponent = () => {
   } catch (error: any) {
     console.error("Error updating component:", error);
     // Handle error and provide feedback to users
-    const errorNotification: NotificationData = {
+    const errorNotification: WritableDraft<NotificationData> = {
       id: "error",
       message: "Failed to update component: " + error.message,
       createdAt: new Date(),

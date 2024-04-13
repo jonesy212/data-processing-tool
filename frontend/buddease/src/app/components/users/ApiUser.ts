@@ -24,7 +24,7 @@ export const fetchUserRequest = (userId: string) => ({
 const dispatch = useDispatch();
 
 // Dispatching the action
-const { userId } = useParams(); // Extract userId from URL params
+export const { userId } = useParams(); // Extract userId from URL params
 
 // Convert userId to a number
 const parsedUserId = Number(userId);

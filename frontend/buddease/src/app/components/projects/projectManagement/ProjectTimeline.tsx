@@ -1,4 +1,5 @@
-import ProjectCard from './ProjectCard';
+import ProjectCard from "../../cards/ProjectCard";
+import { Project } from "../Project";
 
 const ProjectTimeline = () => {
   // Assume projectData is an array with project details
@@ -11,7 +12,7 @@ const ProjectTimeline = () => {
   return (
     <div>
       <h3>Project Timeline</h3>
-      {projectData.map((project) => (
+      {projectData.map((project: any) => (
         <ProjectCard key={project.id} project={project} />
       ))}
     </div>

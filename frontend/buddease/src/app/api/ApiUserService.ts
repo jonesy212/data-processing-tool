@@ -1,12 +1,12 @@
+import { endpoints } from '@/app/api/ApiEndpoints';
+import dotProp from 'dot-prop';
 import { observable, runInAction } from 'mobx';
+import { CalendarActions } from '../components/actions/CalendarEventActions';
 import { useAuth } from "../components/auth/AuthContext";
-import { CalendarActions } from '../components/calendar/CalendarActions';
 import { fetchEventsRequest } from '../components/state/stores/CalendarEvent';
 import { User } from "../components/users/User";
 import { UserActions } from "../components/users/UserActions";
- import axiosInstance from "./axiosInstance";
-import { endpoints } from '@/app/api/ApiEndpoints';
-import dotProp  from 'dot-prop';
+import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.users;
 

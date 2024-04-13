@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-        "target": "es6",
+        "target": "es2017",
 
     // "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -31,7 +31,8 @@
       "@/*": ["./src/*"],
       "@/shared/*": ["./src/app/shared/*"],
       "@sharing/*": ["./src/app/shared/*"],
-
+      // "shared_error_handling": ["./src/app/components/"],
+      "shared_error_handling": ["./src/app/configs/declarations/global.d.ts"],
       // app
       "@/api/*": ["./src/app/api/*"],
       "@/backendStructure/*": ["./src/app/configs/appStructure/*"],
@@ -79,7 +80,7 @@
   "src/app/components/web3/dAppAdapter/remove", "src/app/components/state/mobx/reactions.tsx",
   "src/app/components/phases/collaborationPhase/CollaborationContext.js", "src/app/utils/EmojiPickerUtils.jsx",
   "src/app/components/libraries/ui/UILibrary.tsx", "src/app/pages/dashboards/DashboardOverview.jsx", 
-  "src/app/shared/shared_error_handling.d.ts", 
+  "src/app/shared/*.d.ts", 
   "src/app/components/documents/types.d.ts",
   "src/app/components/phases/PhasesNavigation.jsx", "src/app/utils/MyPromise.tjsx", 
   "src/app/components/communications/chat/features/clearChatImageCache.js", "src/app/pages/forms/DynamicConfigurationLogic.jsx", "src/app/pages/content/CaptionManagementPage.js",

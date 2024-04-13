@@ -6,13 +6,23 @@ import { useAuth } from "@/app/components/auth/AuthContext";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import DatabaseClient from "@/app/components/todos/tasks/DataSetModel";
+import DatabaseClient, { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
 import { AxiosError, AxiosResponse } from "axios";
+import { PoolConfig } from 'pg';
+import configData from "../configData";
 
 const { notify } = useNotification();
 
 const API_BASE_URL = endpoints.documents;
 
+
+const config: PoolConfig = {
+  host: configData.database.host,
+  port: configData.database.port,
+  database: configData.database.database,
+  user: configData.database.username,
+  password: configData.database.password
+}
 export const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
   try {
     const documentUrl = `${API_BASE_URL}/documents/${documentId}`;
@@ -73,7 +83,7 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
 export const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   try {
     // Initialize database client
-    const dbClient = new DatabaseClient();
+    const dbClient = new DatabaseClient(config);
 
     // Connect to the database
     await dbClient.connect();
@@ -91,7 +101,7 @@ export const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   }
 };
 
-export const saveDocumentToDatabase = async (document: Document, content: string): Promise<void> => { 
+export const saveDocumentToDatabase = async (document: DatasetModel, content: string): Promise<void> => { 
   try {
 
     // Initialize database client
@@ -112,7 +122,7 @@ export const saveDocumentToDatabase = async (document: Document, content: string
 export const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
   try {
     // Initialize database client
-    const dbClient = new DatabaseClient();
+    const dbClient = new DatabaseClient(config);
 
     // Connect to the database
     await dbClient.connect();

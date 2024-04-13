@@ -109,10 +109,7 @@ export const endpoints: Endpoints = {
     eventDetails: (eventId: string) =>
       `${BASE_URL}/api/calendar/events/${eventId}/details`,
   },
-  chat: {
-    
-  },
-  
+  chat: {},
 
   client: {
     fetchClientDetails: (clientId: number) => `/api/client/${clientId}`, // Endpoint to fetch client details
@@ -129,6 +126,20 @@ export const endpoints: Endpoints = {
       "/api/client/community/challenges/participate", // Endpoint to participate in community challenges
     listRewards: "/api/client/rewards", // Endpoint to list rewards earned by the client
     listFiles: "/api/client/files", // Endpoint to list files shared with the
+    fetchFiles: "/api/client/fetchFiles", // Endpoint to fetch files
+    uploadFile: "/api/client/uploadFile", // Endpoint to upload a file
+    batchRemoveFiles: "/api/client/batchRemoveFiles", // Endpoint to remove multiple files
+    markFileAsComplete: "/api/client/markFileAsComplete", // Endpoint to mark a file as complete
+    startCollaborativeEdit: "/api/client/startCollaborativeEdit", // Endpoint to start collaborative editing
+    createFileVersion: "/api/client/createFileVersion", // Endpoint to create a new version of a file
+    fetchFileVersions: "/api/client/fetchFileVersions", // Endpoint to fetch file versions
+    shareFile: "/api/client/shareFile", // Endpoint to share a file
+    requestAccessToFile: "/api/client/requestAccessToFile", // Endpoint to request access to a file
+    receiveFileUpdate: "/api/client/receiveFileUpdate", // Endpoint to receive an updated file
+    exportFile: "/api/client/exportFile", // Endpoint to export a file
+    archiveFile: "/api/client/archiveFile", // Endpoint to archive a file
+    determineFileType: "/api/client/determineFileType", // Endpoint to determine file type
+    importFile: "/api/client/importFile", // Endpoint to import a file
     // Add more client-specific endpoints related to tenant interaction or communication with businesses
   },
 
@@ -138,7 +149,8 @@ export const endpoints: Endpoints = {
     add: `${BASE_URL}/api/documents`,
     remove: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
     update: (documentId: string) => `${BASE_URL}/api/documents/${documentId}`,
-    download: (documentId: string) => `${BASE_URL}/api/documents/downloadDocument/${documentId}`,
+    download: (documentId: string) =>
+      `${BASE_URL}/api/documents/downloadDocument/${documentId}`,
     // Add more document-related endpoints as needed
 
     search: `${BASE_URL}/api/documents/search`, // Search Documents
@@ -154,7 +166,6 @@ export const endpoints: Endpoints = {
     rename: `${BASE_URL}/api/documents/rename`, // Rename Document
     changePermissions: `${BASE_URL}/api/documents/changePermissions`, // Change Document Permissions
     // Add more document-related endpoints as needed
-
 
     merge: `${BASE_URL}/api/documents/merge`, // Merge Documents
     split: `${BASE_URL}/api/documents/split`, // Split Document
@@ -205,7 +216,6 @@ export const endpoints: Endpoints = {
     redact: `${BASE_URL}/api/documents/redact`, // Document Redaction
     accessControls: `${BASE_URL}/api/documents/accessControls`, // Document Access Controls
     templates: `${BASE_URL}/api/documents/templates`, // Document Templates
-  
   },
 
   collaborationTools: {
@@ -371,6 +381,7 @@ export const endpoints: Endpoints = {
     streamData: `${BASE_URL}/stream_data`,
     dataProcessing: `${BASE_URL}/data/data-processing`,
     updateData: `${BASE_URL}/data/update`,
+
     highlightList: `${BASE_URL}/api/highlights`, // Highlight list endpoint
     addHighlight: (newHighlight: Omit<HighlightEvent, "id">) =>
       `${BASE_URL}/api/highlights/${newHighlight}`,
@@ -392,26 +403,26 @@ export const endpoints: Endpoints = {
 
   dataProviders: {
     list: `${BASE_URL}/api/data-providers`,
-    single: (providerId: string) => `${BASE_URL}/api/data-providers/${providerId}`,
+    single: (providerId: string) =>
+      `${BASE_URL}/api/data-providers/${providerId}`,
     create: `${BASE_URL}/api/data-providers/create`, // Endpoint for creating a data provider
-    update: (providerId: string) => `${BASE_URL}/api/data-providers/update/${providerId}`, // Endpoint for updating a data provider
-    delete: (providerId: string) => `${BASE_URL}/api/data-providers/delete/${providerId}`, // Endpoint for deleting a data provider
+    update: (providerId: string) =>
+      `${BASE_URL}/api/data-providers/update/${providerId}`, // Endpoint for updating a data provider
+    delete: (providerId: string) =>
+      `${BASE_URL}/api/data-providers/delete/${providerId}`, // Endpoint for deleting a data provider
     getMany: `${BASE_URL}/api/data-providers/getBatchDataProviders`, // Endpoint for getting multiple data providers
     createMany: `${BASE_URL}/api/data-providers/createBatchDataProviders`, // Endpoint for creating multiple data providers
     updateMany: `${BASE_URL}/api/data-providers/updateBatchDataProviders`, // Endpoint for updating multiple data providers
     deleteMany: `${BASE_URL}/api/data-providers/deleteBatchDataProviders`, // Endpoint for deleting multiple data providers
+  },
 
-},
-
-
-  dex: { 
+  dex: {
     list: `${BASE_URL}/api/dex`,
     single: (dexId: string) => `${BASE_URL}/api/dex/${dexId}`,
     add: `${BASE_URL}/api/dex`,
     remove: (dexId: string) => `${BASE_URL}/api/dex/${dexId}`,
-    update: (dexId: string) => `${BASE_URL}/api/update/${dexId}`
+    update: (dexId: string) => `${BASE_URL}/api/update/${dexId}`,
   },
-
 
   document: {
     list: `${BASE_URL}/api/documents`,
@@ -549,10 +560,8 @@ export const endpoints: Endpoints = {
     videos: {
       send: `${BASE_URL}/api/messages/video/send`,
       get: `${BASE_URL}/api/messages/video/get`,
-      edit: `${BASE_URL}/api/videos/edit`, 
+      edit: `${BASE_URL}/api/videos/edit`,
     },
-
-    
 
     videoMessages: {
       send: `${BASE_URL}/api/messages/video/send`,
@@ -598,7 +607,6 @@ export const endpoints: Endpoints = {
     customizeFeedbackForm: `${BASE_URL}/api/customize_feedback_form`,
   },
 
-
   parameterCustomization: {
     getParameterForm: `${BASE_URL}/api/parameter-customization/form`,
     fetchParameterCustomization: `${BASE_URL}/api/parameter-customization`,
@@ -606,17 +614,43 @@ export const endpoints: Endpoints = {
 
   projectOwner: {
     base: `${BASE_URL}/api/project/owner`, // Endpoint for project owner operations
-    list: `${BASE_URL}/api/project/owner/list`, // Endpoint for listing projects owned by the user
+    list: `${BASE_URL}/api/project-owners`,
+    single: (ownerId: number) => `${BASE_URL}/api/project-owners/${ownerId}`,
+    createProject: `${BASE_URL}/api/project-owners/create-project`,
     addTeamMember: `${BASE_URL}/api/project/owner/team/members`, // Endpoint for adding a team member to a project
     removeTeamMember: (projectId: number, memberId: number) =>
       `${BASE_URL}/api/project/owner/team/members/${projectId}/${memberId}`, // Endpoint for removing a team member from a project
-    assignTask: (taskId: number) =>
+    signTask: (taskId: number) =>
       `${BASE_URL}/api/project/owner/tasks/${taskId}/assign`, // Endpoint for assigning a task to a team member
     createMeeting: `${BASE_URL}/api/project/owner/meetings`, // Endpoint for creating a meeting
     updateMeeting: (meetingId: number) =>
       `${BASE_URL}/api/project/owner/meetings/${meetingId}`, // Endpoint for updating a meeting
     deleteMeeting: (meetingId: number) =>
       `${BASE_URL}/api/project/owner/meetings/${meetingId}`, // Endpoint for deleting a meeting
+    manageProject: (projectId: number) =>
+      `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
+    inviteMember: (projectId: number, memberId: number) =>
+      `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
+
+    fetchProjectMembers: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/members`, // Endpoint for fetching project members
+    fetchProjectTasks: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/tasks`, // Endpoint for fetching project tasks
+    fetchProjectMeetings: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/meetings`, // Endpoint for fetching project meetings
+    fetchProjectComments: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/comments`, // Endpoint for fetching project comments
+    uploadFileToProject: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/files`, // Endpoint for uploading file to project
+    fetchProjectFiles: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/files`, // Endpoint for fetching project files
+    generateProjectReport: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/report`, // Endpoint for generating project report
+    fetchProjectAnalytics: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/analytics`, // Endpoint for fetching project analytics
+    manageProjectNotifications: (projectId: string) =>
+      `${BASE_URL}/api/project/owner/${projectId}/notifications`, // Endpoint for managing project notifications
+    // Add more project owner-related endpoints as needed
   },
 
   projects: {
@@ -723,8 +757,6 @@ export const endpoints: Endpoints = {
     listProjects: `${BASE_URL}/api/project-management/projects`,
   },
 
-
-
   randomWalk: {
     list: `${BASE_URL}/api/random-walks`,
     single: (walkId: string) => `${BASE_URL}/api/random-walks/${walkId}`,
@@ -737,10 +769,10 @@ export const endpoints: Endpoints = {
   reports: {
     list: `${BASE_URL}/api/reports`,
     generate: `${BASE_URL}/api/reports/generate`, // Endpoint to generate a new report
-    download: (reportId: string) => `${BASE_URL}/api/reports/${reportId}/download`, // Endpoint to download a report by ID
+    download: (reportId: string) =>
+      `${BASE_URL}/api/reports/${reportId}/download`, // Endpoint to download a report by ID
     delete: (reportId: string) => `${BASE_URL}/api/reports/${reportId}`, // Endpoint to delete a report by ID
   },
-
 
   registration: {
     registerUser: `${BASE_URL}/api/users/register`, // POST request for registering a new user
@@ -822,7 +854,8 @@ export const endpoints: Endpoints = {
     // Pagination endpoints
     applyPagination: `${BASE_URL}/api/pagination/apply`,
     updatePaginationOptions: `${BASE_URL}/api/pagination/update-options`,
-    markInProgress: (taskId: number) => `${BASE_URL}/api/tasks/${taskId}/mark-in-progress`,
+    markInProgress: (taskId: number) =>
+      `${BASE_URL}/api/tasks/${taskId}/mark-in-progress`,
   },
 
   todos: {
@@ -830,8 +863,9 @@ export const endpoints: Endpoints = {
     update: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/update`, // Endpoint for updating a todo
     delete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/delete`, // Endpoint for deleting a todo
     complete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/complete`, // Endpoint for marking a todo as completed
-    uncomplete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/uncomplete`, // Endpoint for marking a todo as uncompleted
-   
+    uncomplete: (todoId: number) =>
+      `${BASE_URL}/api/todos/${todoId}/uncomplete`, // Endpoint for marking a todo as uncompleted
+
     fetch: `${BASE_URL}/api/todos`,
     assign: (todoId: number, teamId: number) =>
       `${BASE_URL}/api/tasks/${todoId}/assign/${teamId}`,
@@ -1000,17 +1034,6 @@ export const endpoints: Endpoints = {
       `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
     redeemGift: (giftId: string) =>
       `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
-  },
-
-  projectOwners: {
-    list: `${BASE_URL}/api/project-owners`,
-    single: (ownerId: number) => `${BASE_URL}/api/project-owners/${ownerId}`,
-    createProject: `${BASE_URL}/api/project-owners/create-project`,
-    manageProject: (projectId: number) =>
-      `${BASE_URL}/api/project-owners/projects/${projectId}/manage`,
-    inviteMember: (projectId: number, memberId: number) =>
-      `${BASE_URL}/api/project-owners/projects/${projectId}/invite/${memberId}`,
-    // Add more project owner-related endpoints as needed
   },
 
   toolbar: {
