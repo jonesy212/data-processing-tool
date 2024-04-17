@@ -11,14 +11,14 @@ import { ChangeEvent } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { io } from "socket.io-client";
 import { CalendarActions } from "../actions/CalendarEventActions";
-import { ChatMessage } from "../communications";
+import ChatMessage from "../communications/chat/ChatMessage";
 import { Attachment } from "../documents/Attachment/attachment";
 import CustomFile from "../documents/File";
 import EventCategory from "../event/EventCategory";
-import EventSentiment from '../event/EventSentiment';
+import EventSentiment from "../event/EventSentiment";
 import useFileUpload from "../hooks/commHooks/useFileUpload";
 import { Theme } from "../libraries/ui/theme/Theme";
-import { EventContentAnalysis } from "../models/data/EventContentAnalysis";
+import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from "../models/data/EventContentAnalysis";
 import {
   CalendarStatus,
   PriorityStatus,
@@ -45,17 +45,32 @@ import {
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { User } from "../users/User";
+import CalendarEventCategory from "./CalendarEventCategory";
 import CalendarEventImprovement from "./CalendarEventImprovement";
-import CalendarEventViewingDetailsProps from "./CalendarEventViewingDetails";
+import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps } from "./CalendarEventViewingDetails";
 import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
+import { EventDetailsEnhancement } from "./EventDetailsEnhancement";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
 
 interface Milestone {
   id: string;
   title: string;
   date: Date;
+}
+
+
+// Define the type for ScheduleOptimizationResults
+interface ScheduleOptimizationResults {
+  eventId: string; // ID of the calendar event
+  optimizedSchedule: string[]; // Array of optimized schedule items
+  // Add more properties as needed
+}
+
+interface EventBudgetOptimizationResults {
+  eventId: string;
+  optimizedBudget: number[]; // Array of optimized budget items
 }
 
 interface ProductMilestone extends Milestone {
@@ -94,6 +109,8 @@ type CalendarViewType =
   | "quarter"
   | "year"
   | React.FC<CalendarViewProps>;
+
+
 
 interface CalendarManagerState {
   entities: Record<string, CalendarEvent>;
@@ -136,7 +153,17 @@ interface CalendarManagerState {
   generatedPrompt: string | null;
   detectedSentiment: typeof EventSentiment | null;
   classifiedCategory: typeof EventCategory | null;
+  generatedSummary: string | null;
+  enhancedDetails: typeof CalendarEventViewingDetails | null;
+  contentValidationResults: EventContentValidationResults | null;
+  impactAnalysis: EventImpactAnalysis | null;
+  budgetOptimization: EventBudgetOptimizationResults | null;
+  teamCollaborationAnalysis: TeamCollaborationAnalysis | null;
+  scheduleOptimization: ScheduleOptimization | null;
+  optimizedEventSchedule:  ScheduleOptimizationResults | null;
 }
+
+
 
 export const exportCalendarEvents = async (
   eventId: string
@@ -507,6 +534,13 @@ const initialState: CalendarManagerState = {
   generatedPrompt: "",
   detectedSentiment: {} as typeof EventSentiment,
   classifiedCategory: {} as typeof EventCategory,
+  generatedSummary: "",
+  enhancedDetails: null,
+  contentValidationResults: null,
+  impactAnalysis: null,
+  scheduleOptimization: null,
+  optimizedEventSchedule: null,
+  budgetOptimization: null,
 };
 
 const { notify } = useNotification();
@@ -618,29 +652,23 @@ export const useCalendarManagerSlice = createSlice({
     ) => {
       const updatedEvent = action.payload;
 
-      // Update the calendar event in the state
-      state.calendarEvent = updatedEvent;
+      state.entities[updatedEvent.id] = updatedEvent;
 
-      // Dispatch a notification indicating that the calendar event was updated successfully
       dispatchNotification(
         "calendarEvent",
         "Calendar event updated successfully",
         "Invalid payload for calendarEvent action",
         dispatch,
-        updatedEvent // Pass the updated event as payload for the notification
+        updatedEvent
       );
 
-      // Perform additional actions if needed, such as updating related data or triggering side effects
       if (
-        updatedEvent.phase && // Ensure phase is defined
+        updatedEvent.phase &&
         updatedEvent.phase.name === ProjectPhaseTypeEnum.DataAnalysis &&
         updatedEvent.status === StatusType.Completed
       ) {
-        // Trigger the data analysis process
-        initiateDataAnalysis(updatedEvent);
+        initiateDataAnalysis(updatedEvent as CalendarEvent); // Cast updatedEvent as CalendarEvent
       }
-      // Return the updated state
-      return state;
     },
 
     // For "addCalendarEvent" action:
@@ -875,8 +903,6 @@ export const useCalendarManagerSlice = createSlice({
       return state;
     },
 
-
-
     optimizeEventTiming: (
       state,
       action: PayloadAction<WritableDraft<CalendarEventTimingOptimization[]>>
@@ -885,7 +911,6 @@ export const useCalendarManagerSlice = createSlice({
       draftState.suggestedTimingOptimization = action.payload;
       return state;
     },
-
 
     analyzeEventContent: (
       state,
@@ -904,8 +929,10 @@ export const useCalendarManagerSlice = createSlice({
       return state;
     },
 
-
-    detectEventSentiment: (state, action: PayloadAction<typeof EventSentiment>) => {
+    detectEventSentiment: (
+      state,
+      action: PayloadAction<typeof EventSentiment>
+    ) => {
       const draftState = state as WritableDraft<CalendarManagerState>;
       draftState.detectedSentiment = action.payload;
       return state;
@@ -919,7 +946,81 @@ export const useCalendarManagerSlice = createSlice({
       draftState.classifiedCategory = action.payload;
       return state;
     },
+
+    generateEventSummary: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.generatedSummary = action.payload;
+      return state;
+    },
+
+    improveEventDetails: (
+      state,
+      action: PayloadAction<typeof CalendarEventViewingDetails>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.enhancedDetails = action.payload;
+      return state;
+    },
+
+    validateEventContent: (
+      state,
+      action: PayloadAction<{
+        event: CalendarEvent;
+        validationResults: EventContentValidationResults
+      }>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.contentValidationResults = action.payload.validationResults
+      return state
+    },
+
+    optimizedEventSchedule: (
+      state,
+      action: PayloadAction<ScheduleOptimization>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.scheduleOptimization = action.payload;
     
+      return {
+        ...state,
+        scheduleOptimization: action.payload
+      }
+    },
+  
+    evaluateEventImpact: (
+      state,
+      action: PayloadAction<EventImpactAnalysis>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.impactAnalysis = action.payload;
+      return state;
+    }, 
+    optimizeEventBudget: (
+      state,
+      action: PayloadAction<WritableDraft<EventBudgetOptimizationResults>>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.budgetOptimization = action.payload;
+
+      return {
+        ...state,
+        budgetOptimization: action.payload
+      }
+    },
+
+    analyzeTeamCollaboration: (
+      state,
+      action: PayloadAction<TeamCollaborationAnalysis>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.teamCollaborationAnalysis = action.payload;
+      return state;
+    },
+  
+
     // Update the viewCalendarEventDetails reducer to use EventDetailsComponent
     viewCalendarEventDetails: (
       state,
@@ -988,16 +1089,26 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     // Action to filter calendar events
-    filterCalendarEvents: (state, action: PayloadAction<string>) => {
+    // Action to filter calendar events
+    filterCalendarEvents: (
+      state,
+      action: PayloadAction<{
+        filter: string;
+        category: CalendarEventCategory;
+      }>
+    ) => {
       const filterCriteria = action.payload;
-      // Add logic to filter calendar events here
-      // For example, you can filter events based on the provided criteria and update the state accordingly
       const filteredEvents = Object.values(state.entities).filter(
-        (event: CalendarEvent) => event.category === filterCriteria
+        (event: CalendarEvent) => event.category === filterCriteria.category
       );
       state.filteredEvents = filteredEvents;
 
-      // Perform additional actions if needed
+      dispatchNotification(
+        "filterCalendarEvents",
+        "Calendar events filtered successfully",
+        "Error filtering calendar events",
+        dispatch
+      );
     },
 
     searchCalendarEvents: (state, action: PayloadAction<string>) => {
@@ -2101,19 +2212,18 @@ export const {
   suggestEventPartnerships, // Suggest Event Partnerships using AI
   recommendEventTags, // Recommend Event Tags using AI
 
-
   // // AI Analysis and Prediction
   // optimizeEventTiming, // Optimize Event Timing using AI
   // analyzeAttendeeAvailability, // Analyze Attendee Availability using AI
   // predictEventAttendance, // Predict Event Attendance using AI
-  // generateEventAgenda, // Generate Event Agenda using AI
+  generateEventAgenda, // Generate Event Agenda using AI
   // detectEventConflicts, // Detect Event Conflicts using AI
-  // classifyEventPriority, // Classify Event Priority using AI
+  classifyEventPriority, // Classify Event Priority using AI
   // analyzeEventFeedback, // Analyze Event Feedback using AI
-  // predictEventSuccess, // Predict Event Success using AI
+  predictEventSuccess, // Predict Event Success using AI
   // evaluateEventEffectiveness, // Evaluate Event Effectiveness using AI
-  // detectEventTrends, // Detect Event Trends using AI
-  // analyzeEventROI, // Analyze Event Return on Investment using AI
+  detectEventTrends, // Detect Event Trends using AI
+  analyzeEventROI, // Analyze Event Return on Investment using AI
   // predictEventOutcomeVariability, // Predict Event Outcome Variability using AI
   // assessEventRisk, // Assess Event Risk using AI
   // generateEventContent, // Generate Event Content using AI
@@ -2128,12 +2238,12 @@ export const {
   generateEventPrompt, // Generate Prompt for Event using AI
   detectEventSentiment, // Detect Sentiment of Event using AI
   classifyEventCategory, // Classify Event Category using AI
-  // generateEventSummary, // Generate Event Summary using AI
-  // improveEventDetails, // Improve Event Details using AI
-  // validateEventContent, // Validate Event Content using AI
-  // evaluateEventImpact, // Evaluate Event Impact using AI
-  // optimizeEventSchedule, // Optimize Event Schedule using AI
-  // analyzeTeamCollaboration, // Analyze Team Collaboration using AI
+  generateEventSummary, // Generate Event Summary using AI
+  improveEventDetails, // Improve Event Details using AI
+  validateEventContent, // Validate Event Content using AI
+  evaluateEventImpact, // Evaluate Event Impact using AI
+  optimizedEventSchedule, // Optimize Event Schedule using AI
+  analyzeTeamCollaboration, // Analyze Team Collaboration using AI
 } = useCalendarManagerSlice.actions;
 export const selectCalendarEvents = (state: {
   calendarEvents: CalendarManagerState;

@@ -1,7 +1,7 @@
 // ChatApi.ts
 import { AxiosResponse } from "axios";
 import { CalendarManagerState, ChatRoom } from "../components/calendar/CalendarSlice";
-import { ChatMessage } from "../components/communications";
+import  ChatMessage  from "../components/communications";
 import Group from "../components/communications/chat/Group";
 import axiosInstance from "./axiosInstance";
 class ChatApi {

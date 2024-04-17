@@ -12,7 +12,7 @@ import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisRe
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
-import { CustomEvent, CustomEventExtension } from "./CustomEvent";
+import { CustomEvent, CustomEventExtension } from "./BaseCustomEvent";
 
 
 

@@ -1,7 +1,7 @@
 // CustomEvent.ts
 
 // Define interfaces for events
-interface CustomEvent extends EventTarget, Event, ExtendedCalendarEvent {
+export interface BaseCustomEvent extends EventTarget, Event, ExtendedCalendarEvent {
   id: string;
   title: string;
   description: string;
@@ -31,6 +31,7 @@ const CustomEventExtensionConstructor = CustomEvent as unknown as {
   new (type: string, eventInitDict?: EventInit): CustomEventExtension;
 };
 
-export type { CustomEvent, CustomEventExtension };
+export type { CustomEventExtension };
 
-export { CustomEventExtensionConstructor };
+  export { CustomEventExtensionConstructor };
+

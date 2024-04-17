@@ -2,7 +2,7 @@
 import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from Ant Design icons
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";
-import { CustomEventExtension } from "../components/event/CustomEvent";
+import { CustomEventExtension } from "../components/event/BaseCustomEvent";
 import { createCustomEvent } from "../components/event/EventService";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import AnimationDial from "../components/libraries/animations/AnimationDial";

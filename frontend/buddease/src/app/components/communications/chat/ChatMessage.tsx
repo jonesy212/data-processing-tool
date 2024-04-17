@@ -258,8 +258,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
         autoReconnect: false
       }
 
-
-      
       const aquaChat = new AquaChat(aquaConfig)
       const fluenceConnection = new FluenceConnection
       const handleFileUploadClick = () => {
@@ -270,39 +268,39 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
 
 
       
-      //   // 1. Clear Cache for Chat Images
-      //     clearChatImageCache();
+      //  // 1. Clear Cache for Chat Images
+      //  clearChatImageCache();
 
-      //     // 2. Close Emoji Picker
-      //     emojiPicker.close();
+      //  // 2. Close Emoji Picker
+      //  emojiPicker.close();
 
-      //     // 3. Revoke Media Permissions
-      //     revokeMediaPermissions();
+      //  // 3. Revoke Media Permissions
+      //  revokeMediaPermissions();
 
-      //     // 4. Stop Background Audio
-      //     stopBackgroundChatAudio();
+      //  // 4. Stop Background Audio
+      //  stopBackgroundChatAudio();
 
-      //     // 5. Clear Draft Messages
-      //     clearDraftMessages(roomId);
+      //  // 5. Clear Draft Messages
+      //  clearDraftMessages(roomId);
 
-      //     // 6. Close Chat Sidebar
-      //     sidebar.close();
+      //  // 6. Close Chat Sidebar
+      //  sidebar.close();
 
-      //     // 7. Reset Chat Preferences
-      //     resetChatPreferences();
+      //  // 7. Reset Chat Preferences
+      //  resetChatPreferences();
 
-      //     // 8. Dispose of Speech-to-Text Engine
-      //     speechToTextEngine.dispose();
+      //  // 8. Dispose of Speech-to-Text Engine
+      //  speechToTextEngine.dispose();
 
-      //     // 9. Remove User from Typing Indicators
-      //     removeUserFromTypingIndicators(roomId, currentUser);
+      //  // 9. Remove User from Typing Indicators
+      //  removeUserFromTypingIndicators(roomId, currentUser);
 
-      //     // 10. Clear Chat Analytics Data
-      //   clearChatAnalyticsData();
+      //  // 10. Clear Chat Analytics Data
+      //  clearChatAnalyticsData();
 
-      //   // 11. Clear Interval Timer
-      //   clearInterval(timerId);
-      //   // Any cleanup logic can go here
+      //  // 11. Clear Interval Timer
+      //  clearInterval(timerId);
+      //  // Any cleanup logic can go here
 
       // 11. Disconnect from Real-time Chat Server
       disconnectFromChatServer(fluenceConnection, aquaChat)

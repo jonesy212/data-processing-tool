@@ -9,6 +9,14 @@ import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 
+
+// Define the type for the document content
+interface DocumentContent {
+  eventId: string;
+  content: string;
+  // Add more properties as needed
+}
+
 interface Document extends DocumentData {
   id: number;
   title: string;
@@ -87,6 +95,28 @@ const useDocumentStore = (): DocumentStore => {
     ); // Notify success
   };
 
+
+// Function to load document content for calendar events
+ const loadCalendarEventsDocumentContent = async (eventId: string): Promise<DocumentContent> => {
+  try {
+    // Fetch document content from the backend based on the event ID
+    const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
+    
+    // Extract the content from the response data
+    const content = response.data.content;
+    
+    // Return the document content along with the event ID
+    return {
+      eventId: eventId,
+      content: content
+    };
+  } catch (error) {
+    // Handle errors
+    console.error("Error loading document content for calendar event:", error);
+    throw error;
+  }
+};
+
   const updateDocument = (id: string, updatedDocument: Document) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
@@ -146,6 +176,7 @@ const useDocumentStore = (): DocumentStore => {
     updateDocument,
     deleteDocument,
     updateDocumentTags,
+    loadCalendarEventsDocumentContent
     // Add more methods as needed
   });
 

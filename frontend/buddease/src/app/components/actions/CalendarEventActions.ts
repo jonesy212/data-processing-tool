@@ -22,6 +22,7 @@ export const CalendarActions = {
     "updateEventTitle"
   ),
 
+  filterCalendarEvents: createAction<{ filter: string }>("filterCalendarEvents"),
   updateEventDate: createAction<{ id: string; newDate: Date }>(
     "updateEventDate"
   ),

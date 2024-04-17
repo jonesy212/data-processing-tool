@@ -41,10 +41,14 @@ const CollaborationPage: React.FC<CollaborationPageProps> = ({ speed, onChangeSp
     // Integrate components
     const realtimeVisualization = <RealTimeVisualization />;
     
-    realtimeVisualization.props.setControlPanel(controlPanel);
-    realtimeVisualization.props.setTaskManager(taskManager);
-    controlPanel.setTaskManager(taskManager);
-    controlPanel?.props.setCalendar(calendar);
+    if (realtimeVisualization.props) {
+        realtimeVisualization.props.setControlPanel(controlPanel);
+        realtimeVisualization.props.setTaskManager(taskManager);
+    }
+    if (controlPanel) {
+        controlPanel.setTaskManager(taskManager);
+        controlPanel.props.setCalendar(calendar);
+    }
 
     // Define your async hooks here
     const hooks = [
@@ -120,20 +124,5 @@ const CollaborationPage: React.FC<CollaborationPageProps> = ({ speed, onChangeSp
                     medium: {
                         container: "grid", // Use "grid" for medium screens
                         gap: 20, // Adjust the gap according to your design
-                        columnGap: 20, // Adjust the columnGap according to your design
-                        rowGap: 20, // Adjust the rowGap according to your design
-                    },
-                    large: {
-                        container: "grid", // Use "grid" for large screens
-                        gap: 30, // Adjust
-                        columnGap: 30, // Adjust the columnGap according to your design
-                        rowGap: 30, // Adjust the rowGap according to your design
-
-                    }
-                }}
-            />
-
-              </div>
-    )
-}
+                        columnGap: 20, // Adjust the columnGap according to
 export default CollaborationPage;

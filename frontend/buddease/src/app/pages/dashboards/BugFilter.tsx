@@ -1,17 +1,14 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import { eventService } from "@/app/components/event/EventService";
+import { Member } from "@/app/components/models/teams/TeamMembers";
 import {
   addFilteredEvent,
   clearFilteredEvents,
   removeFilteredEvent,
 } from "@/app/components/state/redux/slices/FilteredEventsSlice";
-import { eventService } from "@/app/components/event/EventService";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
-import { CustomEvent } from "@/app/components/event/CustomEvent";
-import { Data } from "@/app/components/models/data/Data";
-import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
-import { Member } from "@/app/components/models/teams/TeamMembers";
 import { implementThen } from "@/app/components/state/stores/CommonEvent";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 interface BugFilterProps {
   filters: any;

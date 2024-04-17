@@ -5,6 +5,30 @@ import axiosInstance from "../../security/csrfToken";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
 
 // Define a class or interface for content analysis
+export interface ScheduleOptimization {
+  eventId: string;
+  suggestedStartTime: Date;
+  suggestedEndTime: Date;
+  recommendedDuration: number; // Duration in minutes
+  alternativeTimes: { startTime: Date; endTime: Date }[]; // Array of alternative time slots
+  // Add more properties as needed
+}
+
+export interface EventImpactAnalysis {
+  id: string;
+  eventName: string;
+  impactLevel: string;
+  insights: string[];
+  // Add more properties as needed
+}
+
+export interface EventContentValidationResults {
+  isValid: boolean;
+  validationErrors: string[];
+  // Add more properties as needed
+}
+
+
 export class EventContentAnalysis {
   constructor(public result: string) {}
 }

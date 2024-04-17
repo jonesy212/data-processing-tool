@@ -71,5 +71,5 @@ const CalendarEventViewingDetails: React.FC<CalendarEventViewingDetailsProps> = 
   );
 };
 
-export type { EventDetails };
-export default CalendarEventViewingDetailsProps; CalendarEventViewingDetails;
+export type { CalendarEventViewingDetailsProps, EventDetails };
+export default CalendarEventViewingDetails;

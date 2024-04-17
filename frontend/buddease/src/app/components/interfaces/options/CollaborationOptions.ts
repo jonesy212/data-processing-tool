@@ -3,6 +3,17 @@ interface CollaborationOptions {
     description: string;
   }
   
+
+  // Define the type for TeamCollaborationAnalysis
+interface TeamCollaborationAnalysis {
+  teamId: string; // ID of the team being analyzed
+  collaborationScore: number; // Score representing the level of collaboration within the team
+  feedback: string; // Feedback or insights from the analysis
+  // Add more properties as needed
+}
+
+export default TeamCollaborationAnalysis;
+
 // Define types/interfaces for collaboration options
 interface CommunicationOption {
     name: string;

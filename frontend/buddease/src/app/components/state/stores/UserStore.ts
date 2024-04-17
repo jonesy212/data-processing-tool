@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { Task } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
@@ -8,8 +8,8 @@ import { AssignBaseStore } from "../AssignBaseStore";
 import { WritableDraft } from "../redux/ReducerGenerator";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import { Meeting } from "../../communications/scheduler/Meeting";
-import { Team } from "../../models/teams/Team";
+import { Todo } from "../../todos/Todo";
+import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
 
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
@@ -18,9 +18,6 @@ type EventStoreSubset = Pick<
   | "assignedEvents"
   | "assignedTodos"
   | "assignEvent"
-  | "assignUser"
-  | "unassignUser"
-  | "reassignUser"
   | "assignUsersToEvents"
   | "unassignUsersFromEvents"
   | "setDynamicNotificationMessage"
@@ -78,22 +75,45 @@ const userManagerStore = (): UserStore => {
     }
   };
 
-  const assignMeetingToTeam = (meeting: Meeting, team: any) => {
-    eventSubset.assignEvent(meeting.eventId!, team.teamId!);
-    if (team.meetings && Array.isArray(team.meetings)) {
-      team.meetings.push(meeting);
-      meeting.assignedTo = team;
-    }
+  const assignUser = {} as Record<string, string[]>
+
+  const reassignUser = {} as Record<string, string[]>
+
+  const unassignUser = {} as Record<string, string[]>
+
+  const reassignUsersForArray = (
+    user: string,
+    newUser: string[],
+    eventOrTodo: BaseCustomEvent | Todo
+  ) => {
+    newUser.forEach((newSingleUser) => {
+      if (Array.isArray(newSingleUser)) {
+        reassignUsersToEvents([user], newSingleUser, eventOrTodo.id);
+      } else {
+        reassignUsersToEvents(
+          [user],
+          [newSingleUser].toString(),
+          eventOrTodo.id
+        );
+      }
+    });
   };
+
+  const reassignUserForSingle = (
+    user: string,
+    newUser: string,
+    eventOrTodo: BaseCustomEvent | Todo
+  ) => {
+    reassignUsersToEvents([user], [newUser].toString(), eventOrTodo.id);
+  };
+
   // Use the useAssignEventStore hook to access methods and properties from AssignEventStore
   const {
     assignedUsers,
     assignedEvents,
     assignedTodos,
     assignEvent,
-    assignUser,
-    reassignUser,
-    unassignUser,
+
     assignUsersToEvents,
     unassignUsersFromEvents,
     setDynamicNotificationMessage,
@@ -123,18 +143,20 @@ const userManagerStore = (): UserStore => {
     assignTodoToTeam,
     assignTodosToUsersOrTeams,
     assignTeamMemberToTeam,
-    unassignTeamMemberFromItem, 
+    unassignTeamMemberFromItem,
     snapshotStore,
     reassignUsersToItems,
-    
+
     assignTeamToTodo,
-    unassignTeamToTodo, 
+    unassignTeamToTodo,
     reassignTeamToTodo,
     assignTeamToTodos,
     unassignTeamFromTodos,
     reassignTeamToTodos,
     reassignTeamsInTodos,
-    assignMeetingToTeam
+    assignMeetingToTeam,
+    assignProjectToTeam,
+    unassignTeamsFromTodos,
   } = useAssignTeamMemberStore();
 
   const userStore = makeAutoObservable({
@@ -169,10 +191,7 @@ const userManagerStore = (): UserStore => {
     assignTodoToTeam,
     assignTodosToUsersOrTeams,
     assignTeamMemberToTeam,
-    unassignTeamMemberFromItem, 
-
-
-
+    unassignTeamMemberFromItem,
 
     assignTeam,
     assignUsersToItems,
@@ -181,7 +200,7 @@ const userManagerStore = (): UserStore => {
     snapshotStore,
     reassignUsersToItems,
     assignTeamToTodo,
-    unassignTeamToTodo, 
+    unassignTeamToTodo,
     reassignTeamToTodo,
     assignTeamToTodos,
     unassignTeamFromTodos,
@@ -190,6 +209,7 @@ const userManagerStore = (): UserStore => {
     assignMeetingToTeam,
     assignProjectToTeam,
     unassignTeamsFromTodos,
+    reassignUsersForArray,
     ...rest, // Spread the remaining properties from useAssignEventStore
   });
 

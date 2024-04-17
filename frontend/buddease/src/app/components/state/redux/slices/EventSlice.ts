@@ -1,7 +1,7 @@
 // EventSlice.ts
 
 import axiosInstance from '@/app/api/axiosInstance';
-import { CustomEvent } from '@/app/components/event/CustomEvent';
+import { CustomEvent } from '@/app/components/event/BaseCustomEvent';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './RootSlice';
 
