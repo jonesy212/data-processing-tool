@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 
 from database.init_db import db
 
-
 class DatasetModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)

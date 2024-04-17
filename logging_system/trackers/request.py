@@ -1,5 +1,10 @@
-from flask import Response, jsonify, request, Flask, render_template
+from flask import Flask, Response, jsonify, redirect, request, url_for
 from flask_socketio import SocketIO
+
+from blueprint_routes.notifications.notification_routes import notification_bp
+from database.extensions import db
+from models.regulations.regulatory_requirement import RegulatoryRequirement
+from flask_mail import Message
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -26,22 +31,50 @@ def send_message_to_frontend(message):
 
 @app.route('/')
 def index():
-    return send_message_to_frontend("Hello, world!")
+    requirements = RegulatoryRequirement.query.all()
+    return send_message_to_frontend("Hello, world!",  requirements=requirements)
 
+
+@app.route('/add_requirement', methods=['POST'])
+def add_requirement():
+    # Get data from form submission
+    country_or_region = request.form['country_or_region']
+    gdpr_compliant = request.form.get('gdpr_compliant', 'No')
+    ccpa_compliant = request.form.get('ccpa_compliant', 'No')
+    hipaa_compliant = request.form.get('hipaa_compliant', 'No')
+    
+    # Create a new RegulatoryRequirement instance
+    requirement = RegulatoryRequirement(country_or_region=country_or_region,
+                                        gdpr_compliant=gdpr_compliant,
+                                        ccpa_compliant=ccpa_compliant,
+                                        hipaa_compliant=hipaa_compliant)
+    
+    # Add the new requirement to the database
+    db.session.add(requirement)
+    db.session.commit()
+    
+    return redirect(url_for('index'))
 
 
 
 # Define a route to handle AJAX requests and send messages to the frontend
 @app.route('/get_messages', methods=['GET'])
+
 def get_messages():
-    messages = ["Message 1", "Message 2", "Message 3"]
-    return jsonify(messages)
+    # Retrieve messages from the database
+    messages = Message.query.all()
+    
+    # Extract message texts from Message objects
+    message_texts = [message.text for message in messages]
+    
+    return jsonify(message_texts)
 
-
-# Define a mechanism to send messages to the frontend
+# Define a mechanism to send messages to the frontend using Server-Sent Events (SSE)
 def send_message_to_frontend(message):
-    # Implement your logic to send the message to the frontend
-    pass
+    def generate():
+        yield f"data: {message}\n\n"
+    return Response(generate(), mimetype='text/event-stream')
+
 
 # Intercept requests to blueprints
 @app.before_request

@@ -11,7 +11,7 @@ from database.update_notification_settings_db import \
     update_notification_settings_db
 from database.validation.validate_notification_settings import \
     validate_notification_settings
-from models.notifications.notification import Notification
+from models.notification.notification import Notification
 from models.user.user import User
 
 notification_bp = Blueprint('notification_bp', __name__)
@@ -22,9 +22,6 @@ notification_routes = [
     ('/notifications/create-notification', 'create_notification', create_notification, ['POST']),
        # Add other notification routes as needed
 ]
-
-
-
 
 @notification_bp.route('/notifications/update-settings', methods=['PUT'])
 @jwt_required()

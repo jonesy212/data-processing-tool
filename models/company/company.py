@@ -9,6 +9,9 @@ class Company(db.Model):
     industry = db.Column(db.String(50))
     size = db.Column(db.String(20))  # Small, Medium, Large, etc.
 
+    country_or_region = db.Column(db.String(100), nullable=False)
+    regulatory_requirement_id = db.Column(db.Integer, db.ForeignKey('regulatory_requirements.id'))
+
     # Bidirectional Relationship: Linking to the RecruiterProfile model
     recruiter_profile = relationship('RecruiterProfile', back_populates='company', uselist=False)
     # Bidirectional Relationship: Linking to the User model for employees
@@ -22,8 +25,6 @@ class Company(db.Model):
     recruiter_profile = relationship('RecruiterProfile', back_populates='company', uselist=False)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     team = relationship('Team', back_populates='companies')
-
-    
 
     def __repr__(self):
         return f"<Company(id={self.id}, name={self.name}, industry={self.industry})>"

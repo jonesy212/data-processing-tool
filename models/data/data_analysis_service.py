@@ -8,7 +8,6 @@ from models.data.data_analysis import DataAnalysis
 
 data_analysis_bp = Blueprint('data_analysis_bp', __name__)  # Create a Flask Blueprint if not already done
 
-
 class DataAnalysisService:
     @staticmethod
     def fetch_data_analysis():

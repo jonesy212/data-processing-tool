@@ -31,7 +31,8 @@ from models.user.user import User
 from preprocessing.clean_transformed_data import (clean_and_transform_data,
                                                   process_data_async)
 from versioning.version import Version
-
+from versioning.backup_directory import perform_backup, restore_backup
+import time
 # create gobao instance of AuditingLogger
 auditor = AuditingLogger(log_file='auditing.log')
 migrate = Migrate()
@@ -205,6 +206,17 @@ if __name__ == "__main__":
 
     #Display the transformed data
     print(result)
+
+
+   # Configure and perform automated backup during application startup
+    perform_backup()
+    
+    # Simulate a disaster scenario (e.g., database corruption)
+    print("Simulating database corruption...")
+    time.sleep(2)
+    
+    # Perform disaster recovery during application startup
+    restore_backup()
 
     #Run the Flask app in debug mode 
     create_app().run(debug=True)

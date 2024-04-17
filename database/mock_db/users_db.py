@@ -1,8 +1,9 @@
 import random
 
-from flask_mail import Mail, Message
+from flask_mail import Message
 
-from configs.config import app, mail
+from configs.config import app
+from database.Mail import mail
 
 # Mock user database (replace with actual database integration)
 users_db = {}

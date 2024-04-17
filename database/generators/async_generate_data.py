@@ -136,8 +136,6 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    # Add your authentication logic here
-    # For simplicity, let's assume the user exists and the password is correct
     access_token = create_access_token(identity=username)
     return jsonify(access_token=access_token)
 

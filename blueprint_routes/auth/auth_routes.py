@@ -66,9 +66,6 @@ def get_user_profile():
         return jsonify({"error": str(e)}), 500
 
 # auth_routes.py
-
-# ... (other imports)
-
 @auth_bp.route('/verify-email', methods=['GET'])
 def verify_email():
     return render_template('verify_email.html')

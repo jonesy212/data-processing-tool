@@ -1,6 +1,8 @@
-# fetchDataWithToken.py
+# fetch_data_withh_token.py
 import os
+
 import requests
+
 
 def fetchDataWithToken():
     try:
