@@ -2,6 +2,7 @@ import axiosInstance from "@/app/api/axiosInstance";
 import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import dotProp from 'dot-prop';
+import { useParams } from "react-router-dom";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
@@ -43,6 +44,9 @@ const teamNotificationMessages: TeamNotificationMessages = {
   // Add more properties as needed
 };
 
+
+
+const {teamId} = useParams()
 class TeamApiService {
   notify: (
     id: string,
@@ -117,6 +121,17 @@ class TeamApiService {
     );
   }
 
+  
+  async getTeamById(todoId: string): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.get(`${API_BASE_URL}/teams/${teamId}`),
+      "Failed to fetch team by ID",
+      "FETCH_TEAM_DATA_SUCCESS",
+      "FETCH_TEAM_DATA_ERROR",
+    )
+
+  }
+
   async addTeam(newTeam: any): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`${API_BASE_URL}/teams`, newTeam), // Adjust the endpoint URL
@@ -171,6 +186,16 @@ class TeamApiService {
       throw new Error(`The fetchTeamData endpoint is not defined.`);
     }
   }
+
+
+  async assignNoteToTeam(teamId: string, noteId: string): Promise<AxiosResponse>{
+    return await this.requestHandler(
+      () => axiosInstance.post(`${API_BASE_URL}/teams/${teamId}/notes/${noteId}`),
+      "Failed to assign note to team",
+      "FETCH_TEAM_DATA_SUCCESS",
+      "FETCH_TEAM_DATA_ERROR"
+      );
+   }
 
   // Additional team API methods can be added here...
 }

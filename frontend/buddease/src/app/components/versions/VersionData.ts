@@ -1,4 +1,9 @@
-// VersionData.ts
+interface VersionHistory {
+  // Define the structure of the version history
+  // Each element represents a version of the data
+  versions: VersionData[];
+}
+
 interface VersionData {
   content: string; // Updated content of the file
   metadata: {
@@ -28,6 +33,20 @@ const versionData: VersionData = {
 
 // Function to calculate checksum (example implementation)
 function calculateChecksum(content: string): string {
-  // Implement your checksum calculation logic here
-  return "checksum123"; // Placeholder for demonstration
+  let checksum = 0;
+
+  for (let i = 0; i < content.length; i++) {
+    // Convert each character to its Unicode code point and add it to the checksum
+    checksum += content.charCodeAt(i);
+  }
+
+  // Convert the checksum to a hexadecimal string representation
+  const hexChecksum = checksum.toString(16);
+
+  return hexChecksum;
 }
+
+// Now, you can create a VersionHistory instance and add VersionData to it
+const versionHistory: VersionHistory = {
+  versions: [versionData] // Add the VersionData to the versions array
+};

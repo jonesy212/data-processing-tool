@@ -7,9 +7,9 @@ import Calendar from '../../src/app/components/calendar/Calendar';
 // Define a function to integrate existing components into the real-time visualization and control panel
 const integrateComponents = () => {
   // Initialize existing components
-  const controlPanel = new ControlPanel();
-  const taskManager = new TaskManager();
-  const calendar = new Calendar();
+  const controlPanel =   ControlPanel();
+  const taskManager =   TaskManager();
+  const calendar = new Calendar
 
     
 

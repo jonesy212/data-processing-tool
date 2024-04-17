@@ -11,9 +11,13 @@ import {
 import { CalendarEvent } from "../components/state/stores/CalendarEvent";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import clientApiService from "./ApiClient";
+import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 
+
+
+const API_BASE_URL = endpoints.calendar
 interface CalendarNotificationMessages {
   FETCH_CALENDAR_EVENTS_SUCCESS: string;
   FETCH_CALENDAR_EVENTS_ERROR: string;
@@ -175,6 +179,43 @@ class CalendarApiService {
       throw error;
     }
   }
+
+
+
+// Function to fetch calendar events from the database
+async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent[]> {
+  try {
+    // Make a GET request to the API endpoint with documentId
+    const response = await axiosInstance.get<CalendarEvent[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
+
+    // Extract the data from the response
+    const calendarEvents = response.data;
+
+    return calendarEvents;
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching calendar events:", error);
+    throw error;
+  }
+}
+// Function to fetch calendar events data from the database
+async  fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent[]>> {
+  try {
+    // Make a GET request to the API endpoint
+    const response = await axiosInstance.get<Record<string, CalendarEvent[]>>(`${API_BASE_URL}/calendar/events/data`);
+
+    // Extract the data from the response
+    const calendarEventsData = response.data;
+
+    return calendarEventsData;
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching calendar events data:", error);
+    throw error;
+  }
+}
+
+  
 
   async fetchGoogleCalendarEvents(): Promise<any> {
     try {

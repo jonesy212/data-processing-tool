@@ -41,7 +41,7 @@ type ChatNotification = {
   // other properties and methods specific to the notification
 };
 
-export interface ChatMessage {
+interface ChatMessage {
   id: string; // Unique identifier for the message
   sender: string;
   message: string;

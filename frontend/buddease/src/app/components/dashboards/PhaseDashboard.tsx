@@ -1,19 +1,38 @@
 // PhaseDashboard.tsx
-import { OnboardingPhase } from "@/app/pages/onboarding/OnboardingPhase";
+import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
+import { useRef, useState } from "react";
 import { DndProvider, useDrag } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import EmailSetupForm from "../communications/email/EmailSetUpForm";
 import ProjectManager from "../projects/projectManagement/ProjectManager";
 
+export const dragRef = useRef<HTMLDivElement>(null);
 const DraggablePhaseCard: React.FC<{ phase: OnboardingPhase }> = ({
   phase,
 }) => {
-  const [, drag] = useDrag(() => ({ type: "PHASE_CARD", item: { phase } }));
+  const [text, setText] = useState("");
+
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: "PHASE_CARD",
+      item: { phase },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    }),
+    [phase]
+  );
 
   return (
     <div
-      ref={drag}
-      style={{ border: "1px solid", margin: "8px", padding: "8px" }}
+      ref={dragRef}
+      style={{
+        border: "1px solid",
+        margin: "8px",
+        padding: "8px",
+        opacity: isDragging ? 0.5 : 1,
+        cursor: isDragging ? "grabbing" : "grab",
+      }}
     >
       {getPhaseTitle(phase)}
     </div>
@@ -30,7 +49,7 @@ const PhaseDashboard: React.FC = () => {
         {/* Add more draggable cards for other phases */}
       </div>
       {/* Include EmailSetupForm component */}
-      <EmailSetupForm />
+      <EmailSetupForm handleRegisterEmail={() => {}} />
     </DndProvider>
   );
 };

@@ -10,7 +10,7 @@ var PhaseImpl = /** @class */ (function () {
         // component: React.FC = () => <div>Phase Component</div>,
         this.hooks = {
             canTransitionTo: function () { return true; },
-            handleTransitionTo: function () { },
+            handleTransitionTo: function () {},
             resetIdleTimeout: function () { return Promise.resolve(); },
             isActive: false,
         };

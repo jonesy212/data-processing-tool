@@ -6,6 +6,8 @@ import { Meeting } from "../components/communications/scheduler/Meeting";
 import FileData from "../components/models/data/FileData";
 import { Task } from "../components/models/tasks/Task";
 import { Project, ProjectData } from "../components/projects/Project";
+import { WritableDraft } from "../components/state/redux/ReducerGenerator";
+import { User } from "../components/users/User";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
@@ -13,7 +15,39 @@ import axiosInstance from "./axiosInstance";
 const API_BASE_URL = endpoints.projectOwner.base;
 
 export const ApiProject = observable({
-  fetchProjectOwner: async (projectId: string): Promise<any> => {
+  getProjectByIdAPI: async (projectId: string) => {
+    try {
+      const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
+      return response.data;
+    } catch (error) {
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to fetch project by ID"
+      );
+      throw error;
+    } finally {
+      return null;
+    }
+  },
+
+  fetchProjectByIdsAPI: async (projectIds: string[]) => {
+    try {
+      const response = await axiosInstance.post(`${API_BASE_URL}/fetch`, {
+        projectIds,
+      });
+      return response.data;
+    } catch (error) {
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to fetch projects by IDs"
+      );
+      throw error;
+    } finally {
+      return null;
+    }
+  },
+
+  fetchProjectOwnerAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/owner/${projectId}`
@@ -25,7 +59,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectDetails: async (projectId: string): Promise<any> => {
+  fetchProjectDetailsAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
       return response.data;
@@ -38,7 +72,7 @@ export const ApiProject = observable({
     }
   },
 
-  addProject: async (projectData: Project): Promise<any> => {
+  addProjectAPI: async (projectData: Project): Promise<any> => {
     try {
       const response = await axiosInstance.post(`${API_BASE_URL}`, projectData);
       return response.data;
@@ -48,7 +82,44 @@ export const ApiProject = observable({
     }
   },
 
-  updateProject: async (
+  assignTaskToProjectInAPI: async (
+    projectId: string,
+    taskId: string
+  ): Promise<any> => {
+    try {
+      const response = await axiosInstance.post(
+        `${API_BASE_URL}/${projectId}/tasks/${taskId}`
+      );
+      return response.data;
+    } catch (error) {
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to assign task to project"
+      );
+      throw error;
+    }
+  },
+  assignTaskToCurrentUserAPI: async (
+    projectId: string,
+    taskId: string,
+    assignedTo: WritableDraft<User>
+  ): Promise<any> => {
+    try {
+      const response = await axiosInstance.put(
+        `${API_BASE_URL}/${projectId}/tasks/${taskId}/assignee`,
+        { assignedTo } // Update the request body to include assignedTo
+      );
+      return response.data;
+    } catch (error) {
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to assign task to current user"
+      );
+      throw error;
+    }
+  },
+
+  updateProjectAPI: async (
     projectId: string,
     updatedProjectData: Partial<ProjectData>
   ): Promise<any> => {
@@ -64,7 +135,7 @@ export const ApiProject = observable({
     }
   },
 
-  createProject: async (projectData: Project): Promise<any> => {
+  createProjectAPI: async (projectData: Project): Promise<any> => {
     try {
       const response = await axiosInstance.post(`${API_BASE_URL}`, projectData);
       return response.data;
@@ -74,7 +145,7 @@ export const ApiProject = observable({
     }
   },
 
-  updateProjectDetails: async (
+  updateProjectDetailsAPI: async (
     projectId: string,
     updatedProjectData: Partial<Project>
   ): Promise<any> => {
@@ -93,7 +164,7 @@ export const ApiProject = observable({
     }
   },
 
-  deleteProject: async (projectId: string): Promise<void> => {
+  deleteProjectAPI: async (projectId: string): Promise<void> => {
     try {
       await axiosInstance.delete(`${API_BASE_URL}/${projectId}`);
     } catch (error) {
@@ -102,7 +173,7 @@ export const ApiProject = observable({
     }
   },
 
-  inviteMemberToProject: async (
+  inviteMemberToProjectAPI: async (
     projectId: string,
     memberId: string
   ): Promise<void> => {
@@ -119,7 +190,7 @@ export const ApiProject = observable({
     }
   },
 
-  removeMemberFromProject: async (
+  removeMemberFromProjectAPI: async (
     projectId: string,
     memberId: string
   ): Promise<void> => {
@@ -136,7 +207,7 @@ export const ApiProject = observable({
     }
   },
 
-  assignTaskToMember: async (
+  assignTaskToMemberAPI: async (
     projectId: string,
     taskId: string,
     memberId: string
@@ -155,7 +226,7 @@ export const ApiProject = observable({
     }
   },
 
-  updateTaskDetails: async (
+  updateTaskDetailsAPI: async (
     projectId: string,
     taskId: string,
     updatedTaskData: Partial<Task>
@@ -174,7 +245,7 @@ export const ApiProject = observable({
     }
   },
 
-  deleteTask: async (projectId: string, taskId: string): Promise<void> => {
+  deleteTaskAPI: async (projectId: string, taskId: string): Promise<void> => {
     try {
       await axiosInstance.delete(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}`
@@ -185,7 +256,7 @@ export const ApiProject = observable({
     }
   },
 
-  createMeetingForProject: async (
+  createMeetingForProjectAPI: async (
     projectId: string,
     meetingData: MeetingData
   ): Promise<void> => {
@@ -203,7 +274,7 @@ export const ApiProject = observable({
     }
   },
 
-  updateMeetingDetails: async (
+  updateMeetingDetailsAPI: async (
     projectId: string,
     meetingId: string,
     updatedMeetingData: Partial<Meeting>
@@ -222,7 +293,7 @@ export const ApiProject = observable({
     }
   },
 
-  deleteMeetingFromProject: async (
+  deleteMeetingFromProjectAPI: async (
     projectId: string,
     meetingId: string
   ): Promise<void> => {
@@ -239,7 +310,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjects: async (): Promise<any> => {
+  fetchProjectsAPI: async (): Promise<any> => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}`);
       return response.data;
@@ -249,7 +320,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectMembers: async (projectId: string): Promise<any> => {
+  fetchProjectMembersAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/members`
@@ -264,7 +335,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectTasks: async (projectId: string): Promise<any> => {
+  fetchProjectTasksAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/tasks`
@@ -279,7 +350,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectMeetings: async (projectId: string): Promise<any> => {
+  fetchProjectMeetingsAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/meetings`
@@ -294,7 +365,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectComments: async (projectId: string): Promise<any> => {
+  fetchProjectCommentsAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/comments`
@@ -309,7 +380,7 @@ export const ApiProject = observable({
     }
   },
 
-  uploadFileToProject: async (
+  uploadFileToProjectAPI: async (
     projectId: string,
     fileData: FileData
   ): Promise<void> => {
@@ -324,7 +395,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectFiles: async (projectId: string): Promise<any> => {
+  fetchProjectFilesAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/files`
@@ -339,7 +410,25 @@ export const ApiProject = observable({
     }
   },
 
-  generateProjectReport: async (projectId: string): Promise<any> => {
+  assignTaskToIdeationPhaseAPI: async (
+    projectId: string,
+    taskId: Task,
+    phaseId: any
+  ): Promise<void> => {
+    try {
+      await axiosInstance.put(
+        `${API_BASE_URL}/${projectId}/tasks/${taskId}/phase`,
+        { phaseId }
+      );
+    } catch (error) {
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to assign task to ideation phase"
+      );
+    }
+  },
+
+  generateProjectReportAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/report`
@@ -354,7 +443,7 @@ export const ApiProject = observable({
     }
   },
 
-  fetchProjectAnalytics: async (projectId: string): Promise<any> => {
+  fetchProjectAnalyticsAPI: async (projectId: string): Promise<any> => {
     try {
       const response = await axiosInstance.get(
         `${API_BASE_URL}/${projectId}/analytics`
@@ -369,7 +458,7 @@ export const ApiProject = observable({
     }
   },
 
-  manageProjectNotifications: async (
+  manageProjectNotificationsAPI: async (
     projectId: string,
     notificationSettings: NotificationSettings
   ): Promise<void> => {
@@ -388,7 +477,7 @@ export const ApiProject = observable({
   },
 
   // Example function for non-project owner to submit task
-  submitTask: async (projectId: string, taskData: any): Promise<any> => {
+  submitTaskAPI: async (projectId: string, taskData: any): Promise<any> => {
     try {
       const response = await axiosInstance.post(
         `${API_BASE_URL}/${projectId}/tasks`,
@@ -402,7 +491,7 @@ export const ApiProject = observable({
   },
 
   // Example function for non-project owner to update task status
-  updateTaskStatus: async (
+  updateTaskStatusAPI: async (
     projectId: string,
     taskId: string,
     status: string

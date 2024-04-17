@@ -1,9 +1,11 @@
 // projects/ProjectActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import Milestone from "../calendar/CalendarSlice";
 import { ProjectDetails } from "../models/data";
 import { Task } from "../models/tasks/Task";
 import { Phase } from "../phases/Phase";
-import {Project} from "../projects/Project";
+import { Product } from "../products/Product";
+import { Project } from "../projects/Project";
 import { User } from "../users/User";
 
 export const ProjectActions = {
@@ -14,6 +16,7 @@ export const ProjectActions = {
   updateProjectSuccess: createAction<{ project: Project }>("updateProjectSuccess"),
   updateProjectFailure: createAction<{ error: string }>("updateProjectFailure"), 
   
+  assignedTeams: createAction<string, string>("assignedTeams"),
   deleteProjectSuccess: createAction<{projectId: string, project: Project}>("deleteProjectSuccess"),
   deleteProjectFailure: createAction<{ error: string }>("deleteProjectFailure"),
   
@@ -34,7 +37,7 @@ export const ProjectActions = {
     "fetchProjectsSuccess"
     ),
 
-
+  updateUIWithProjectDetails: createAction<{projectId: string, projectDetails: ProjectDetails}>("updateUIWithProjectDetails"),
 
   fetchProjectsFailure: createAction<{ error: string }>("fetchProjectsFailure"),
   
@@ -132,8 +135,8 @@ export const ProjectActions = {
   brainstormProduct: createAction<{ projectId: number; ideas: string[] }>(
     "brainstormProduct"
   ),
-  launchProduct: createAction<number>("launchProduct"),
-  performDataAnalysis: createAction<number>("performDataAnalysis"),
+  launchProduct: createAction<{ projectId: string, productId: string, product: Product }>("launchProduct"),
+  performDataAnalysis: createAction<{ projectId: string, productId: string, insights: { id: string, description: string }[] }>("performDataAnalysis"),
   rewardContributors: createAction<{
     projectId: number;
     contributors: User[];
@@ -141,6 +144,10 @@ export const ProjectActions = {
   }>("rewardContributors"),
   investInCommunityCoin: createAction<number>("investInCommunityCoin"),
   launchCommunityCoin: createAction<number>("launchCommunityCoin"),
+  createMilestone: createAction<{ projectId: string, milestone: Milestone }>("createMilestone"),
+  updateMilestone: createAction<{ projectId: string, milestoneId: string, updates: Partial<Milestone> }>("updateMilestone"),
+  deleteMilestone: createAction<{ projectId: string, milestoneId: string, project: { id: string, name: string, milestones: any[] }, milestone: { id: string, name: string } }>("deleteMilestone"),
+
 
   // Add more actions as needed
 };

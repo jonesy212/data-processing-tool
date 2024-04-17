@@ -1,48 +1,63 @@
 // AssignBaseStore.tsx
+import { Config } from "@/app/api/ApiConfig";
+import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
+import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
+import teamApiService from "../../api/TeamApi";
 import { Data } from "../models/data/Data";
-import SnapshotStore, { Snapshot, snapshotStore } from "../snapshots/SnapshotStore";
+import { Team } from "../models/teams/Team";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { useNotification } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
+import { todoService } from "../todos/TodoService";
 import { User } from "../users/User";
 
-
-
-
-
-
-const {notify} = useNotification()
+const { notify } = useNotification();
 export interface AssignBaseStore {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
   assignedItems: Record<string, string[]>; // Use ID as key and array of item IDs as value
+  assignMeetingToTeam: (
+    meetingId: string,
+    teamId: string
+  ) => Promise<AxiosResponse>;
+  assignProjectToTeam: (
+    projectId: string,
+    teamId: string
+  ) => Promise<AxiosResponse>;
+
+  reassignTeamsInTodos: (
+    todoIds: string[],
+    oldTeamId: string,
+    newTeamId: string
+  ) => Promise<AxiosResponse>;
+
   assignedTodos: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTasks: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTeams: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   events: Record<string, Data[]>;
-  assignItem: (itemId: string, userId: string) => void;
-  assignUser: (itemId: string, userId: string) => void;
-  assignTeam: (itemId: string, teamId: string) => void;
-  unassignUser: (itemId: string, userId: string) => void;
-  reassignUser: (itemId: string, oldUserId: string, newUserId: string) => void;
-  assignUsersToItems: (itemIds: string[], userId: string) => void;
-  unassignUsersFromItems: (itemIds: string[], userId: string) => void;
-  
+  assignItem: Record<string, string[]>;
+  assignUser: Record<string, string[]>;
+  assignTeam: Record<string, string[]>;
+  unassignUser: Record<string, string[]>;
+  reassignUser: Record<string, string[]>;
+  assignUsersToItems: Record<string, string[]>;
+  unassignUsersFromItems: Record<string, string[]>;
+
   assignTaskToTeam: (taskId: string, userId: string) => Promise<void>;
   assignTodoToTeam: (todoId: string, teamId: string) => Promise<void>;
-  assignTodosToUsersOrTeams: (todoIds: string[], assignees: string[]) => Promise<void>;
+  assignTodosToUsersOrTeams: (
+    todoIds: string[],
+    assignees: string[]
+  ) => Promise<void>;
 
   assignTeamMemberToTeam: (teamId: string, userId: string) => void;
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
 
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Snapshot<Data>>
+  snapshotStore: SnapshotStore<Snapshot<Data>>;
 
-  reassignUsersToItems: (
-    itemIds: string[],
-    oldUserId: string,
-    newUserId: string
-  ) => void;
+  reassignUsersToItems: Record<string, string[]>;
 
   assignUserToTodo: (todoId: string, userId: string) => void;
   unassignUserFromTodo: (todoId: string, userId: string) => void;
@@ -67,18 +82,20 @@ export interface AssignBaseStore {
     oldTeamId: string,
     newTeamId: string
   ) => void;
-  
-  assignTeamToTodos: (todoIds: string[], teamId: string) => void;
+
+  assignTeamToTodos: (todoIds: Team[], teamId: string) => void;
   unassignTeamFromTodos: (todoIds: string[], teamId: string) => void;
   reassignTeamToTodos: (
     teamIds: string[],
     teamId: string,
     newTeamId: string
-
   ) => void;
+
   // Success and Failure methods
   assignUserSuccess: () => void;
   assignUserFailure: (error: string) => void;
+
+  unassignTeamsFromTodos: Record<string, string[]>;
 
   // Add more methods or properties as needed
 }
@@ -90,146 +107,51 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignedTeams: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
   const events: Record<string, Data[]> = {};
-  // Create an instance of SnapshotStore
 
-    
+  //todo set up:
+  const assignedProjects: Record<string, string[]> = {};
+  const assignedMeetings: Record<string, string[]> = {};
+  const assignedNotes: Record<string, string[]> = {};
+  const assignedGoals: Record<string, string[]> = {};
+  const assignedFiles: Record<string, string[]> = {};
+  const assignedEvents: Record<string, string[]> = {};
+  const assignedContacts: Record<string, string[]> = {};
+  const assignedCalendarEvents: Record<string, string[]> = {};
 
-  const assignItem = (itemId: string, assignedTo: string) => {
-    // Perform the item assignment logic here
-    // For example, update the assignedItems record
-    if (!assignedItems[itemId]) {
-      assignedItems[itemId] = [assignedTo];
-    } else {
-      assignedItems[itemId].push(assignedTo);
-    }
+  const assignedBookmarks: Record<string, string[]> = {};
+  const assignedBoardItems: Record<string, string[]> = {};
+  const assignedBoardColumns: Record<string, string[]> = {};
+  const assignedBoardLists: Record<string, string[]> = {};
+  const assignedBoardCards: Record<string, string[]> = {};
+  const assignedBoardViews: Record<string, string[]> = {};
+  const assignedBoardComments: Record<string, string[]> = {};
+  const assignedBoardActivities: Record<string, string[]> = {};
+  const assignedBoardLabels: Record<string, string[]> = {};
+  const assignedBoardMembers: Record<string, string[]> = {};
+  const assignedBoardSettings: Record<string, string[]> = {};
+  const assignedBoardPermissions: Record<string, string[]> = {};
+  const assignedBoardNotifications: Record<string, string[]> = {};
+  const assignedBoardIntegrations: Record<string, string[]> = {};
+  const assignedBoardAutomations: Record<string, string[]> = {};
+  const assignedBoardCustomFields: Record<string, string[]> = {};
 
-    // TODO: Implement any additional logic needed when assigning an item
-  };
+  const assignItem = {} as Record<string, string[]>;
 
-  const assignUser = (itemId: string, userId: string) => {
-    // Check if the itemId already exists in the assignedUsers
-    if (!assignedUsers[itemId]) {
-      assignedUsers[itemId] = [userId];
-    } else {
-      // Check if the user is not already assigned to the item
-      if (!assignedUsers[itemId].includes(userId)) {
-        assignedUsers[itemId].push(userId);
-      }
-    }
+  const assignUser = {} as Record<string, string[]>;
 
-    // TODO: Implement any additional logic needed when assigning a user to an item
-  };
+  const assignTeam = {} as Record<string, string[]>;
 
+  const unassignUser = {} as Record<string, string[]>;
 
-  const assignTeam = (itemId: string, teamId: string) => {
-    // Check if the itemId already exists in the assignedTeams
-    if (!assignedTeams[itemId]) {
-      assignedTeams[itemId] = [teamId];
-    } else {
-      // Check if the team is not already assigned to the item
-      if (!assignedTeams[itemId].includes(teamId)) {
-        assignedTeams[itemId].push(teamId);
-      }
-    }
-  }
+  const reassignUser = {} as Record<string, string[]>;
 
+  const assignUsersToItems = {} as Record<string, string[]>;
 
-  const unassignUser = (itemId: string, userId: string) => {
-    // Check if the itemId exists in the assignedUsers
-    if (assignedUsers[itemId]) {
-      // Remove the user from the assignedUsers for the given itemId
-      assignedUsers[itemId] = assignedUsers[itemId].filter(
-        (id) => id !== userId
-      );
+  const unassignUsersFromItems = {} as Record<string, string[]>;
 
-      // Remove the itemId entry if there are no more assigned users
-      if (assignedUsers[itemId].length === 0) {
-        delete assignedUsers[itemId];
-      }
-    }
-    // TODO: Implement any additional logic needed when unassigning a user from an item
-  };
+  const reassignUsersToItems = {} as Record<string, string[]>;
 
-  const reassignUser = (
-    itemId: string,
-    oldUserId: string,
-    newUserId: string
-  ) => {
-    // Check if the itemId exists in the assignedUsers
-    if (assignedUsers[itemId]) {
-      // Remove the oldUserId from the assignedUsers for the given itemId
-      assignedUsers[itemId] = assignedUsers[itemId].filter(
-        (id) => id !== oldUserId
-      );
-
-      // Check if the newUserId is not already assigned to the item
-      if (!assignedUsers[itemId].includes(newUserId)) {
-        assignedUsers[itemId].push(newUserId);
-      }
-
-      // Remove the itemId entry if there are no more assigned users
-      if (assignedUsers[itemId].length === 0) {
-        delete assignedUsers[itemId];
-      }
-    }
-    // TODO: Implement any additional logic needed when reassigning a user from old user to new user for an item
-  };
-
-  const assignUsersToItems = (itemIds: string[], userId: string) => {
-    itemIds.forEach((itemId) => {
-      // Check if the itemId already exists in the assignedUsers
-      if (!assignedUsers[itemId]) {
-        assignedUsers[itemId] = [userId];
-      } else {
-        // Check if the user is not already assigned to the item
-        if (!assignedUsers[itemId].includes(userId)) {
-          assignedUsers[itemId].push(userId);
-        }
-      }
-    });
-    // TODO: Implement any additional logic needed when assigning a user to multiple items
-  };
-
-  const unassignUsersFromItems = (itemIds: string[], userId: string) => {
-    itemIds.forEach((itemId) => {
-      // Check if the itemId exists in the assignedUsers
-      if (assignedUsers[itemId]) {
-        // Remove the user from the assignedUsers for the given itemId
-        assignedUsers[itemId] = assignedUsers[itemId].filter(
-          (id) => id !== userId
-        );
-
-        // Remove the itemId entry if there are no more assigned users
-        if (assignedUsers[itemId].length === 0) {
-          delete assignedUsers[itemId];
-        }
-      }
-    });
-    // TODO: Implement any additional logic needed when unassigning a user from multiple items
-  };
-
-  const reassignUsersToItems = (
-    itemIds: string[],
-    oldUserId: string,
-    newUserId: string
-  ) => {
-    itemIds.forEach((itemId) => {
-      // Check if the itemId exists in the assignedUsers
-      if (assignedUsers[itemId]) {
-        // Remove the oldUserId and add the newUserId to the assignedUsers for the given itemId
-        assignedUsers[itemId] = [
-          ...assignedUsers[itemId].filter((id) => id !== oldUserId),
-          newUserId,
-        ];
-
-        // Remove the itemId entry if there are no more assigned users
-        if (assignedUsers[itemId].length === 0) {
-          delete assignedUsers[itemId];
-        }
-      }
-    });
-    // TODO: Implement any additional logic needed when reassigning a user from old user to new user for multiple items
-  };
+  const unassignTeamsFromTodos = {} as Record<string, string[]>;
 
   const assignUserToTodo = (todoId: string, userId: string) => {
     // Check if the todoId already exists in the assignedUsers
@@ -318,8 +240,6 @@ const useAssignBaseStore = (): AssignBaseStore => {
     setDynamicNotificationMessage(message);
   };
 
-
-
   const assignTaskToTeam = async (taskId: string, teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>((resolve) => {
@@ -338,13 +258,18 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   };
 
-   const assignTodoToUser = async (user: User, todo: Todo) => { 
+  const assignTodoToUser = async (user: User, todo: Todo) => {
+    // check if user has an ID
+    if (!user._id) {
+      throw new Error("User must have an ID");
+    }
     // Add user to todo's assignedUsers
-    todo.assignedUsers.push(user._id);
-
-    // Save updates to todo
-    await todo.save();
-  }
+    if (user._id) {
+      todo.assignedUsers.push(user._id);
+      // Save updates to todo
+      await todo.save();
+    }
+  };
 
   const assignTodoToTeam = async (todoId: string, teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
@@ -392,8 +317,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     // TODO: Implement any additional logic needed when unassigning a team member from an item
   };
 
-
-  const assignTeamToTodo = async (todoId: string, teamId: string) => { 
+  const assignTeamToTodo = async (todoId: string, teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>((resolve) => {
       // Perform the todo assignment logic here
@@ -409,9 +333,12 @@ const useAssignBaseStore = (): AssignBaseStore => {
       // Resolve the promise after completing the operation
       resolve();
     });
-  }
+  };
 
-  const assignTodosToUsersOrTeams = async (todoIds: string[], assignees: string[]) => { 
+  const assignTodosToUsersOrTeams = async (
+    todoIds: string[],
+    assignees: string[]
+  ) => {
     for (let i = 0; i < todoIds.length; i++) {
       const todoId = todoIds[i];
       for (let j = 0; j < assignees.length; j++) {
@@ -430,7 +357,124 @@ const useAssignBaseStore = (): AssignBaseStore => {
     }
   };
 
-  const unassignTeamToTodo = async (todoId: string, teamId: string) => { 
+  async function unassignTeamFromTodo(
+    teamId: string,
+    todoId: string
+  ): Promise<void> {
+    try {
+      // Make a request to the API to unassign the team from the todo
+      await todoService.unassignTodoFromTeam(todoId, teamId);
+
+      console.log(`Successfully unassigned team ${teamId} from todo ${todoId}`);
+    } catch (error) {
+      console.error(
+        `Failed to unassign team ${teamId} from todo ${todoId}:`,
+        error
+      );
+      // Handle error
+      throw new Error(`Failed to unassign team ${teamId} from todo ${todoId}`);
+    }
+  }
+  const reassignTeamsInTodos = async (
+    todoIds: string[],
+    oldTeamId: string,
+    newTeamId: string
+  ): Promise<AxiosResponse<any, any>> => {
+    for (let todoId of todoIds) {
+      // Fetch the team object by its ID
+      const teamResponse: AxiosResponse<Team[]> =
+        await teamApiService.getTeamById(todoId);
+
+      // Extract the team array from the response data
+      const teams: Team[] = teamResponse.data;
+
+      if (!teams || teams.length === 0) continue; // Skip if no teams are found
+
+      // Unassign old team and assign new team for each team
+      for (const team of teams) {
+        team.assignedTeams = team.assignedTeams.filter(
+          (id: string) => id !== oldTeamId
+        );
+        team.assignedTeams.push(newTeamId);
+        // await team.save();
+
+        // Unassign old team and assign new team for the current todo
+        await unassignTeamFromTodo(oldTeamId, todoId);
+        await assignTeamToTodo(newTeamId, todoId);
+      }
+    }
+
+    // Return a mock AxiosResponse to satisfy the return type
+    return {
+      data: {},
+      status: 200,
+      statusText: "OK",
+      headers: {} as HeadersConfig,
+      config: {} as InternalAxiosRequestConfig<Config>,
+    };
+  };
+
+  const assignMeetingToTeam = async (
+    meetingId: string,
+    teamId: string
+  ): Promise<AxiosResponse<any, any>> => {
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<AxiosResponse<any, any>>((resolve, reject) => {
+      // Perform the meeting assignment logic here
+      // For example, update the assignedMeetings record
+      if (!assignedMeetings[meetingId]) {
+        assignedMeetings[meetingId] = [teamId];
+      } else {
+        assignedMeetings[meetingId].push(teamId);
+      }
+      // Resolve the promise after completing the operation
+      Promise.resolve();
+      // TODO: Implement any additional logic needed when assigning a meeting to a team
+    });
+  };
+
+  const assignProjectToTeam = async (
+    projectId: string,
+    teamId: string
+  ): Promise<AxiosResponse<any, any>> => {
+    // Simulate an asynchronous operation, such as an API call
+    return new Promise<AxiosResponse<any, any>>((resolve, reject) => {
+      // Perform the project assignment logic here
+      // For example, update the assignedProjects record
+      if (!assignedProjects[projectId]) {
+        assignedProjects[projectId] = [teamId];
+      } else {
+        assignedProjects[projectId].push(teamId);
+      }
+      // Resolve the promise after completing the operation
+      resolve({
+        data: {},
+        status: 200,
+        statusText: "OK",
+        headers: {} as HeadersConfig,
+        config: {} as InternalAxiosRequestConfig<Config>,
+      });
+    });
+  };
+
+  const unassignTeamsFromProjects = async (
+    Projects: any,
+    Meetings: any,
+    oldTeamId: string,
+    todoIds: string[],
+    projectIds: string[],
+    meetingIds: string[]
+  ) => {
+    // Unassign old team from todos
+    await Promise.all(
+      projectIds.map(async (projectId: string) => {
+        // Assuming unassignTeamToTodo is a function that unassigns a team from a todo
+        await unassignTeamToTodo(projectId, oldTeamId);
+      })
+    );
+  };
+
+  const unassignTeamToTodo = async (todoId: string, teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>((resolve) => {
       // Check if the todoId exists in the assignedTodos
@@ -449,10 +493,13 @@ const useAssignBaseStore = (): AssignBaseStore => {
       // Resolve the promise after completing the operation
       resolve();
     });
-  }
+  };
 
-
-  const reassignTeamToTodo = async (todoId: string, oldTeamId: string, newTeamId: string) => { 
+  const reassignTeamToTodo = async (
+    todoId: string,
+    oldTeamId: string,
+    newTeamId: string
+  ) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>((resolve) => {
       // Unassign old team and assign new team to todo
@@ -462,91 +509,143 @@ const useAssignBaseStore = (): AssignBaseStore => {
       // Resolve the promise after completing the operation
       resolve();
     });
-  }
+  };
 
-
-  const assignTeamToTodos = async (todoIds: string[], teamId: string) => { 
+  const assignTeamToTodos = async (todoIds: Team[], teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>(async (resolve) => {
       // Loop through todos and assign team to each
-      for(let todoId of todoIds) {
-        await assignTeamToTodo(todoId, teamId);
+      for (let todoId of todoIds) {
+        await assignTeamToTodo(String(todoId), teamId);
       }
 
       // Resolve the promise after completing the operation
       resolve();
     });
-  }
+  };
 
-  const unassignTeamFromTodos = async (todoIds: string[], teamId: string) => { 
+  const unassignTeamToTodos = async (teamId: string, team: Team) => {
+    // Loop through todos and unassign team from each
+    for (let todoId of team.assignedTodos) {
+      await unassignTeamToTodo(String(todoId), teamId);
+      // Remove todoId from team's assignedTodos array
+      team.assignedTodos = team.assignedTodos.filter(
+        (id: any) => id !== todoId
+      );
+      // Remove todoId from team's assignedTodos array if empty
+      if (team.assignedTodos.length === 0) {
+        delete team.assignedTodos;
+      }
+      return { teamId, team };
+    }
+  };
+
+  const unassignTeamFromTodos = async (todoIds: string[], teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>(async (resolve) => {
       // Loop through todos and unassign team from each
-      for(let todoId of todoIds) {
+      for (let todoId of todoIds) {
         await unassignTeamToTodo(todoId, teamId);
       }
-
       // Resolve the promise after completing the operation
       resolve();
     });
-  }
+  };
 
-
-  const reassignTeamToTodos = async (todoIds: string[], oldTeamId: string, newTeamId: string) => { 
+  const reassignTeamToTodos = async (
+    todoIds: string[],
+    oldTeamId: string,
+    newTeamId: string
+  ) => {
     // Simulate an asynchronous operation, such as an API call
     return new Promise<void>(async (resolve) => {
       // Loop through todos and reassign team for each
-      for(let todoId of todoIds) {
+      for (let todoId of todoIds) {
         await reassignTeamToTodo(todoId, oldTeamId, newTeamId);
       }
 
       // Resolve the promise after completing the operation
       resolve();
     });
-  }
+  };
 
-
+  const snapshotStore: SnapshotStore<Snapshot<Data>> = {} as SnapshotStore<
+    Snapshot<Data>
+    >;
+  
   const store: AssignBaseStore = makeAutoObservable({
-      assignItem,
-      assignedUsers,
-      events: {},
-      assignedItems: {},
-      assignedTasks: {},
-      assignedTodos: {},
-      assignedTeams: {},
-      assignTeamToTodo,
-      unassignTeamToTodo,
-      reassignTeamToTodo,
-      assignTeamToTodos, 
-      assignTeamMemberToTeam,
-      assignTeam,
-      assignTaskToTeam,
-      assignTodoToTeam,
-      unassignTeamMemberFromItem,
-      assignUser,
-      unassignUser,
-      reassignUser,
-      assignUsersToItems,
-      unassignUsersFromItems,
-      reassignUsersToItems,
-      assignUserToTodo,
-      unassignUserFromTodo,
-      reassignUserInTodo,
-      assignUsersToTodos,
-      unassignUsersFromTodos,
-      reassignUsersInTodos,
-      assignUserSuccess,
-      assignUserFailure,
-      setDynamicNotificationMessage,
-      reassignTeamToTodos,
-      unassignTeamFromTodos,
-      assignTodosToUsersOrTeams,
-      snapshotStore: snapshotStore,
-      // Add more properties or methods as needed
-    
-  })
-  return store
-   
+    assignItem,
+    assignedUsers,
+    events,
+    assignedItems,
+    assignedTasks,
+
+    //new
+    assignedNotes,
+
+    assignedGoals,
+    assignedFiles,
+    assignedEvents,
+    assignedContacts,
+    assignedCalendarEvents,
+    assignedBookmarks,
+    assignedBoardItems,
+    assignedBoardColumns,
+    assignedBoardLists,
+    assignedBoardCards,
+    assignedBoardViews,
+    assignedBoardComments,
+    assignedBoardActivities,
+    assignedBoardLabels,
+    assignedBoardMembers,
+    assignedBoardSettings,
+    assignedBoardPermissions,
+    assignedBoardNotifications,
+    assignedBoardIntegrations,
+    assignedBoardAutomations,
+    assignedBoardCustomFields,
+
+    assignedTodos,
+    assignedTeams,
+
+    assignTeamToTodo,
+    unassignTeamToTodo,
+    unassignTeamsFromProjects,
+    reassignTeamToTodo,
+    assignTeamToTodos,
+    unassignTeamToTodos,
+    assignTeamMemberToTeam,
+    assignTeam,
+    assignTaskToTeam,
+    assignTodoToTeam,
+    unassignTeamMemberFromItem,
+    assignUser,
+    unassignUser,
+    reassignUser,
+    assignUsersToItems,
+    unassignUsersFromItems,
+    reassignUsersToItems,
+    assignUserToTodo,
+    unassignUserFromTodo,
+    reassignUserInTodo,
+    assignUsersToTodos,
+    unassignUsersFromTodos,
+    reassignUsersInTodos,
+    assignUserSuccess,
+    assignUserFailure,
+    setDynamicNotificationMessage,
+    reassignTeamToTodos,
+    unassignTeamFromTodos,
+    assignTodosToUsersOrTeams,
+    reassignTeamsInTodos,
+    assignMeetingToTeam,
+    assignProjectToTeam,
+    unassignTeamsFromTodos,
+
+    snapshotStore: snapshotStore,
+    // Add more properties or methods as needed
+  });
+  return store;
 };
 
 export { useAssignBaseStore };

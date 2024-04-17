@@ -68,7 +68,7 @@ class UniqueIDGenerator {
     return calendarId;
   }
 
-  static generateChatID(): string { 
+  static generateChatID(): string {
     return UniqueIDGenerator.generateRoomID();
   }
 
@@ -256,45 +256,11 @@ class UniqueIDGenerator {
     );
   }
 
-  static generateProjectID(projectName: string): string {
-    return this.generateID(
-      projectName,
-      NotificationTypeEnum.ProjectRevenueID,
-      "proj" as NotificationType
-    );
-  }
-
-  static generateUserID(userName: string): string {
-    return this.generateID(
-      userName,
-      NotificationTypeEnum.UserID,
-      "user" as NotificationType
-    );
-  }
-
-  static generateTeamID(teamName: string): string {
-    return this.generateID(
-      teamName,
-      NotificationTypeEnum.TeamJoinRequest,
-      "team" as NotificationType
-    );
-  }
-
-  static generateElementID(elementName: string): string {
-    return this.generateID(
-      elementName,
-      NotificationTypeEnum.GeneratedID,
-      "element" as NotificationType
-    );
-  }
-
-  // Add more specific ID generation methods as needed
-
-  static generatePhaseID(phaseName: string): string {
-    return this.generateID(
-      phaseName,
-      NotificationTypeEnum.PhaseID,
-      "phase" as NotificationType
+  static generateCommentID() {
+    return UniqueIDGenerator.generateID(
+      "comment",
+      NotificationTypeEnum.CommentID,
+      "comment" as NotificationType
     );
   }
 
@@ -314,14 +280,55 @@ class UniqueIDGenerator {
     );
   }
 
-  static generateCommentID() {
-    return UniqueIDGenerator.generateID(
-      "comment",
-      NotificationTypeEnum.CommentID,
-      "comment" as NotificationType
+  static generateElementID(elementName: string): string {
+    return this.generateID(
+      elementName,
+      NotificationTypeEnum.GeneratedID,
+      "element" as NotificationType
     );
   }
 
+  static generatePresentationID(presentationName: string): string {
+    return this.generateID(
+      presentationName,
+      NotificationTypeEnum.PresentationID,
+      "presentation" as NotificationType
+    );
+  }
+
+  static generateProjectID(projectName: string): string {
+    return this.generateID(
+      projectName,
+      NotificationTypeEnum.ProjectRevenueID,
+      "proj" as NotificationType
+    );
+  }
+
+  static generateTeamID(teamName: string): string {
+    return this.generateID(
+      teamName,
+      NotificationTypeEnum.TeamJoinRequest,
+      "team" as NotificationType
+    );
+  }
+
+  static generateUserID(userName: string): string {
+    return this.generateID(
+      userName,
+      NotificationTypeEnum.UserID,
+      "user" as NotificationType
+    );
+  }
+
+  // Add more specific ID generation methods as needed
+
+  static generatePhaseID(phaseName: string): string {
+    return this.generateID(
+      phaseName,
+      NotificationTypeEnum.PhaseID,
+      "phase" as NotificationType
+    );
+  }
   static animationID(
     prefix: string,
     name: string,
@@ -349,7 +356,7 @@ class UniqueIDGenerator {
       "snapshot" as NotificationType
     );
   }
-  
+
   static generateSessionID(): string {
     return this.generateID(
       "SessionID",

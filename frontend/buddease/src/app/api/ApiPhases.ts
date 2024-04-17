@@ -1,13 +1,13 @@
-import axiosInstance from './axiosInstance';
-import { createHeaders } from './ApiClient';
-import { handleApiError } from './ApiLogs';
-import { NestedEndpoints, endpoints } from './ApiEndpoints';
-import headersConfig, { HeadersConfig } from './headers/HeadersConfig';
 import dotProp from 'dot-prop';
+import { createHeaders } from './ApiClient';
+import { endpoints } from './ApiEndpoints';
+import { handleApiError } from './ApiLogs';
+import axiosInstance from './axiosInstance';
+import headersConfig from './headers/HeadersConfig';
 
 const API_BASE_URL = dotProp.getProperty(endpoints, 'phases.base');
 
-interface Phase {
+export interface Phase {
   id: number;
   name: string;
   startDate: Date;

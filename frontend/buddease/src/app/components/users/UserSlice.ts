@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { User, UserData } from "./User";
 
-interface UserManagerState {
+export interface UserManagerState {
   users: User[];
   fullName: string;
   bio: string;
@@ -169,3 +169,4 @@ export const selectUsers = (state: { userManager: UserManagerState }) =>
   state.userManager.users;
 
 export default userManagerSlice.reducer;
+

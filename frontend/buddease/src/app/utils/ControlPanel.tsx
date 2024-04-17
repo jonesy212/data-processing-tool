@@ -160,7 +160,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       <h2>Customizable Timers</h2>
       <CustomizableTimersComponent initialTime={60} />
       <h2>Theme Customization</h2>
-      <ThemeCustomization />
+      <ThemeCustomization
+        
+        themeState={}
+        setThemeState={}
+        notificationState={}
+      />
       <h2>Custom Event</h2>
       <button onClick={handleCustomEvent}>Dispatch Custom Event</button>
 
@@ -182,4 +187,5 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   );
 };
 
-export default ControlPanel;
+export default ControlPanel
+export type { ControlPanelProps };

@@ -75,7 +75,7 @@ class AppVersionImpl extends Version implements AppVersion {
   getVersionString() {
     // Integrate API_VERSION_HEADER here
     const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
-    const apiVersionHeader = API_VERSION_HEADER ? `- API Version: ${this.API_VERSION_HEADER}` : ''; // Check if API_VERSION_HEADER is defined
+    const apiVersionHeader = API_VERSION_HEADER ? `- API Version: ${API_VERSION_HEADER}` : ''; // Check if API_VERSION_HEADER is defined
     return `${versionString} ${apiVersionHeader}`;
   }
 

@@ -141,7 +141,8 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
     console.error("Error fetching cache data:", error);
 
     // Call the handleError function to handle and log the error
-    handleError("Error fetching cache data", error);
+    const errorMessage = "Error fetching cache data";
+    handleError(errorMessage, { componentStack: error.stack });
 
     throw error;
   }

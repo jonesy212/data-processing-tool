@@ -5,8 +5,8 @@ import { SupportedData } from "./CommonData";
 
 // Define a generic type for data
 interface CommonData<T> {
-  title?: React.ReactNode;
-  description?: React.ReactNode;
+  title?: string | undefined;
+  description?: string | null | undefined;
   data?: T;
   tags?: string[];
   categories?: string[];

@@ -86,14 +86,14 @@ const ApiConfigComponent: React.FC = () => {
               name: "task-tracker",
               id: "taskId",
               phases: {} as Phase[],
-              trackFileChanges: (file: DocumentData) => file,
+              trackFileChanges: (file: File) => file,
               trackFolderChanges(fileLoader?: DocumentData) {
                 // Make fileLoader optional
                 if (fileLoader) {
                   // Add a null check
                   if (typeof fileLoader.load === "function") {
                     // Check if load method exists
-                    fileLoader.load(); // Invoke load method if it exists
+                    fileLoader.load(file); // Invoke load method if it exists
                     return fileLoader.files;
                   } else {
                     console.error(

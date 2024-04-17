@@ -1,20 +1,23 @@
 //projects/Project.ts
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import React, { ReactNode, useEffect, useState } from "react";
+import { Exchange } from "../crypto/Exchange";
+import { Attachment } from "../documents/Attachment/attachment";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
+import { ExchangeData } from "../models/data/ExchangeData";
 import { StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
+import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import { implementThen } from '../state/stores/CommonEvent';
 import { default as Comment, default as TodoImpl } from "../todos/Todo";
+import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
-import { Attachment } from "../documents/Attachment/attachment";
-import { Idea } from "../users/Ideas";
 
 
 export enum ProjectType {
@@ -118,7 +121,6 @@ class ProjectImpl implements Project {
   then: typeof implementThen = implementThen;
   analysisType?: AnalysisTypeEnum | undefined;
   analysisResults: DataAnalysisResult[] = [];
-
   videoUrl: string = "videoUrl";
   videoThumbnail: string = "thumbnail";
   videoDuration: number = 0;
@@ -185,6 +187,31 @@ export interface ProjectData extends Project {
   projects: Project[];
   phases: Phase[];
   transitionToNextPhase: () => void;
+  projectMetadata?: {
+    id: number;
+    projectName: Project["name"];
+    description: Project["description"];
+    teamMembers: Team["members"];
+    exchange: Exchange;
+    communication: {
+      audio: boolean;
+      video: boolean;
+      text: boolean;
+    };
+    collaborationOptions: {
+      brainstorming: boolean;
+      fileSharing: boolean;
+      realTimeEditing: boolean;
+    };
+    metadata: {
+      createdBy: string;
+      createdAt: Date;
+      updatedBy: string;
+      updatedAt: Date;
+    };
+    exchangeData: ExchangeData[];
+    averagePrice: number;
+  };
 }
 
 currentProject.phases = [

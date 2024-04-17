@@ -1,4 +1,5 @@
 declare function require(path: string): any;
+import { Presentation } from '../../components/documents/Presentation';
 
 interface MyPropertiesOptions extends DocumentOptions {
   sections: any; // Add all required properties
@@ -6,9 +7,43 @@ interface MyPropertiesOptions extends DocumentOptions {
   // Add other properties as needed
 }
 
+
 declare module "shared_error_handling" {
   export class NamingConventionsError extends Error {
     constructor(errorType: string, details: string);
+  }
+}
+
+
+
+declare module 'drawingLibrary' {
+  export class DrawingError extends Error {
+    constructor(errorType: string, details: string);
+  }
+
+  export interface DrawingOptions {
+      color: string;
+      size: number;
+      fillColor: string;
+      fill: boolean;
+      strokeColor: string;
+    lineWidth: number;
+    
+      // Add more drawing options as needed
+  }
+  
+  export interface DrawingFunctions {
+    // Define drawing functions
+    createDrawing(name: string, content: string): Drawing;
+    
+  }
+}
+
+
+declare module 'presentationsLibrary' { 
+
+  export interface PresentationFunctions{
+    createPresentation(name: string, slides: Slide[]): Presentation;
   }
 }
 

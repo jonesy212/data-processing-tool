@@ -5,7 +5,7 @@ import { User, UserData } from "../components/users/User";
 
   interface Message extends User, UserData {
     id: string;
-    channelId: ChatRoom[];
+    channelId: ChatRoom;
     content: string;
     timestamp: Date;
     text: string;

@@ -4,6 +4,8 @@ import { NotificationTypeEnum, useNotification } from '@/app/components/support/
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
 import { DocumentData } from '../components/documents/DocumentBuilder';
+import { DocumentOptions } from '../components/documents/DocumentOptions';
+import { Presentation } from '../components/documents/Presentation';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
@@ -18,7 +20,7 @@ const DOWNLOAD_API_BASE_URL = endpoints.documents;
 
 
 // Define the allowed formats for downloading documents
-const allowedFormats = ['pdf', 'docx', 'txt'];
+const allowedFormats = ['pdf', 'docx', 'txt', 'csv'];
 
 interface DocumentNotificationMessages {
   FETCH_DOCUMENT_SUCCESS: string;
@@ -114,6 +116,22 @@ export const addDocumentAPI = async (documentData: any): Promise<any> => {
     }
   };
   
+
+
+
+  export const loadPresentationFromDatabase= async (presentationId: DocumentData): Promise<Presentation> => { 
+    try {
+      // Make a GET request to the API endpoint
+      const response = await axiosInstance.get<Presentation>(`${API_BASE_URL}/presentation/${presentationId}`);
+      // Extract the data from the response
+      const presentation = response.data;
+      return presentation;
+    } catch (error) {
+      console.error("Error loading presentation from database:", error);
+      throw error;
+    }
+  }
+
   export const updateDocumentAPI = async (documentId: number, updatedData: any): Promise<any> => {
     try {
       const updateDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}`;
@@ -1218,6 +1236,27 @@ export const exportToExternalSystem = async (exportData: any): Promise<any> => {
     throw error;
   }
 };
+
+export const generateDocument = async (
+  documentData: any,
+  options: DocumentOptions
+): Promise<DocumentData> => {
+  try {
+    const response = await axiosInstance.post(`${API_BASE_URL}/api/documents/generate`, { documentData, options }, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating document:', error);
+    const errorMessage = 'Failed to generate document';
+    handleDocumentApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'GENERATE_DOCUMENT_ERROR'
+    );
+    throw error;
+  }
+}
 
 export const generateDocumentReport = async (reportData: any): Promise<any> => {
   try {

@@ -8,6 +8,8 @@ import { AssignBaseStore } from "../AssignBaseStore";
 import { WritableDraft } from "../redux/ReducerGenerator";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
+import { Meeting } from "../../communications/scheduler/Meeting";
+import { Team } from "../../models/teams/Team";
 
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
@@ -38,7 +40,7 @@ const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
 export interface UserStore extends AssignEventStore, AssignBaseStore {
   // Add additional properties specific to UserStore if needed
-  users: Record<string, User[]>;
+  users: WritableDraft<Record<string, User[]>>;
   currentUser: User | null;
   updateUserState: (newUsers: Record<string, User[]>) => void;
   assignTask: (task: Task, user: User) => void;
@@ -76,6 +78,13 @@ const userManagerStore = (): UserStore => {
     }
   };
 
+  const assignMeetingToTeam = (meeting: Meeting, team: any) => {
+    eventSubset.assignEvent(meeting.eventId!, team.teamId!);
+    if (team.meetings && Array.isArray(team.meetings)) {
+      team.meetings.push(meeting);
+      meeting.assignedTo = team;
+    }
+  };
   // Use the useAssignEventStore hook to access methods and properties from AssignEventStore
   const {
     assignedUsers,
@@ -123,7 +132,9 @@ const userManagerStore = (): UserStore => {
     reassignTeamToTodo,
     assignTeamToTodos,
     unassignTeamFromTodos,
-    reassignTeamToTodos
+    reassignTeamToTodos,
+    reassignTeamsInTodos,
+    assignMeetingToTeam
   } = useAssignTeamMemberStore();
 
   const userStore = makeAutoObservable({
@@ -175,6 +186,10 @@ const userManagerStore = (): UserStore => {
     assignTeamToTodos,
     unassignTeamFromTodos,
     reassignTeamToTodos,
+    reassignTeamsInTodos,
+    assignMeetingToTeam,
+    assignProjectToTeam,
+    unassignTeamsFromTodos,
     ...rest, // Spread the remaining properties from useAssignEventStore
   });
 

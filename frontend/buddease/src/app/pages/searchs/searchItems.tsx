@@ -7,7 +7,14 @@ import { useEffect, useState } from "react";
 import { SearchLogger } from "../../components/logging/Logger";
 import { debounce } from "./Debounce";
 
-const SearchItems = () => {
+
+export interface SearchItemProps {
+  userId: string;
+  query: string;
+  toLowerCase?: () => string;
+}
+
+const SearchItems: React.FC<SearchItemProps> = ({  query, userId }: { query: string, userId: string,  }) => {
   const { error: searchError, handleError: handleSearchError } = useErrorHandling(); // Initialize the useErrorHandling hook
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>(null);

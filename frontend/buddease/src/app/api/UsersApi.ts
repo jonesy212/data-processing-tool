@@ -61,25 +61,33 @@ export const processUserData = (userData: any): any => {
 
 
 
-
 // Function to save user profiles to the database
-export const saveUserProfiles = async (userId: string) => {
+// Function to save user profiles to the database
+export const saveUserProfiles = async (userIds: string[]) => {
   try {
-    // Fetch user profile data
-    const userProfile = await userService.fetchUserProfile(userId);
+    // Initialize an array to store user profiles
+    const userProfiles = [];
 
-    // Save user profile to the database
-    await saveToDatabase(userProfile);
+    // Loop through each userId and fetch user profile data
+    for (const userId of userIds) {
+      
+      const userProfile = await userService.fetchUserProfile(userId); // Pass userId to fetchUserProfile
+      userProfiles.push(userProfile);
+    }
+
+    // Save user profiles to the database
+    await saveToDatabase(userProfiles);
 
     // Return success message or result if needed
-    return { success: true, message: "User profile saved successfully." };
+    return { success: true, message: "User profiles saved successfully." };
   } catch (error) {
-    console.error("Error saving user profile:", error);
-    Logger.error("Error saving user profile:", error);
+    console.error("Error saving user profiles:", error);
+    Logger.error("Error saving user profiles:", error);
     // Return error message or handle error as needed
-    return { success: false, error: "Failed to save user profile." };
+    return { success: false, error: "Failed to save user profiles." };
   }
 };
+
 
 
 // Function to fetch user data (example)

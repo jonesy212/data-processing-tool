@@ -1,5 +1,7 @@
 // Import type declarations from the corresponding .d.ts file
-import type { DrawingFunctions, DrawingOptions } from "drawingLibrary";
+import path from 'path';
+import 'drawingLibrary';
+import { DrawingFunctions, DrawingOptions } from 'drawingLibrary';
 
 // Class implementation for DrawingError
 export class DrawingError extends Error {
@@ -9,6 +11,8 @@ export class DrawingError extends Error {
     this.errorType = errorType;
   }
 }
+
+
 
 // Implementation of drawing functions
 const drawingFunctions: DrawingFunctions = {
@@ -630,3 +634,4 @@ const drawingFunctions: DrawingFunctions = {
 };
 
 export { drawingFunctions as DrawingFunctions }; // Exporting the drawingFunctions as DrawingFunctions
+// Export the mock implementation

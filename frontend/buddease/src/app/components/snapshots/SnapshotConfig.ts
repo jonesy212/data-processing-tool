@@ -83,7 +83,13 @@ interface SnapshotStoreConfig<T> {
     {
       snapshot: SnapshotStore<Snapshot<Data>>[];
     }[]
-  >;
+    >;
+  
+    batchTakeSnapshotsRequest: (
+      snapshotData: any
+    ) => Promise<{
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }>
 
   batchUpdateSnapshotsSuccess: (
     subscribers: SnapshotStore<Snapshot<Data>>[],

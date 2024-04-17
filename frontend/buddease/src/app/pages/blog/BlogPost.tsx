@@ -10,7 +10,7 @@ interface BlogPostProps{
 
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ title, content, author, date }) => {
+const BlogPostComponent: React.FC<BlogPostProps> = ({ title, content, author, date }) => {
   return (
     <div className="blog-post">
       <h2 className="blog-post-title">{title}</h2>
@@ -25,4 +25,4 @@ const BlogPost: React.FC<BlogPostProps> = ({ title, content, author, date }) => 
   );
 };
 
-export default BlogPost;
+export default BlogPostComponent;

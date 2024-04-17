@@ -43,6 +43,7 @@ export enum NotificationTypeEnum {
   LocationID = "LocationID",
   MeetingID = "MeetingId",
   PhaseID = "PhaseID",
+  PresentationID = "PresentationID",
   ProjectRevenueID = "ProjectRevenueID",
   IdeationBrainstorming = "Ideation:Brainstorming",
   Info = "Info",

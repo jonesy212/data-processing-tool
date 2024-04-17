@@ -9,7 +9,7 @@ import { BackendConfig } from "./BackendConfig";
 import { FrontendConfig } from "./FrontendConfig";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
-import { getCurrentAppInfo } from "../generators/VersionGenerator";
+import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 const { TabPane } = Tabs;
 
 interface MainConfigProps {

@@ -1,7 +1,7 @@
 // components/DynamicNamingConventions.tsx
 import configurationService from '@/configs/ConfigurationService';
 import React from 'react';
-import { NamingConventionsError } from '../shared/shared_error_handling';
+import { NamingConventionsError } from '../shared/shared_error';
 import { useDynamicComponents } from './DynamicComponentsContext';
 import { useNotification } from './support/NotificationContext';
 import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from './support/NotificationMessages';

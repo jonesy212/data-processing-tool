@@ -1,6 +1,8 @@
 // @/types.ts
 
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { Exchange } from "../crypto/Exchange";
+import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
@@ -16,8 +18,6 @@ import { TaskManagerStore } from "../state/stores/TaskStore ";
 import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
-import { Exchange } from "../crypto/Exchange";
-import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
 
 // Define the structure of YourResponseType based on the actual response from the backend
 interface YourResponseType {
@@ -36,8 +36,8 @@ interface YourResponseType {
   prototype: any;
   browsers: any;
   endpoints: NestedEndpoints;
-  highlights: HighlightEvent[]
-  data: {
+  highlights: HighlightEvent[];
+  data?: {
     id: number;
     projectName: Project["name"];
     description: Project["description"];

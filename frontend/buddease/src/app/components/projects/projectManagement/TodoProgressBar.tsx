@@ -1,6 +1,6 @@
 // TodoProgressBar.tsx
 import React from "react";
-import ProgressBar, { Progress } from "../../models/tracker/ProgressBar";
+import ProgressBar, { Progress, ProgressPhase } from "../../models/tracker/ProgressBar";
 
 interface TodoProgressBarProps {
   todoProgress: number; // Todo progress value between 0 and 100
@@ -16,6 +16,10 @@ const TodoProgressBar: React.FC<TodoProgressBarProps> = ({
     label: `Todo Progress: ${todoProgress}%`,
   };
 
+
+  const handleProgressID = () => {
+    onUpdateProgress();
+  }
   return (
     <div>
       <h3>Todo Progress</h3>
@@ -24,6 +28,7 @@ const TodoProgressBar: React.FC<TodoProgressBarProps> = ({
         duration={0}
         animationID={""}
         uniqueID={""}
+        phase={{} as ProgressPhase}
       />
       <button onClick={onUpdateProgress}>Update Progress</button>
     </div>

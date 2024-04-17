@@ -5,6 +5,7 @@ import ContentItem from "../../models/data/ContentItem";
 import ContentToolbar from "../../models/content/ContentToolbar";
 import ContentDetailsListItem from "../../models/data/ContentDetailsListItem";
 import UserRoles from "../../users/UserRoles";
+import { Persona } from "@/app/pages/personas/Persona";
 
 interface Content {
   id: number;
@@ -401,6 +402,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               profilePicture: null,
               processingTasks: [],
               role: UserRoles.Member,
+              persona:{} as Persona,
               snapshots: [],
               // other properties
             },
@@ -438,6 +440,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               profilePicture: null,
               processingTasks: [],
               role: UserRoles.Administrator,
+              persona:{} as Persona,
               snapshots: [],
               // other properties
             },
@@ -475,3 +478,4 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 };
 
 export default AddContent;
+export type {ContentProps}

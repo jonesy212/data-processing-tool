@@ -30,6 +30,7 @@ import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
 import { useTeamManagerSlice } from './TeamSlice';
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
+import { useCollaborationSlice } from "./CollaborationSlice";
 const randomTaskId = uuidv4().toString();
 
 
@@ -57,6 +58,7 @@ export interface RootState {
   projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>;
   realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>;
   eventManager: ReturnType<typeof useEventManagerSlice.reducer>;
+  collaborationManager: ReturnType<typeof useCollaborationSlice.reducer>;
   entityManager: CustomEntityState<string, string>; // Use EntityState<string, unknown> for entityManager
 }
 
@@ -88,6 +90,7 @@ const initialState: RootState = {
   projectOwner: useProjectOwnerSlice.reducer(undefined, { type: "init" }),
   realtimeManager: useRealtimeDataSlice.reducer(undefined, { type: "init" }),
   eventManager: useEventManagerSlice.reducer(undefined, { type: "init" }),
+  collaborationManager: useCollaborationSlice.reducer(undefined, { type: "init" }),
   entityManager: { entities: {}, selectedEntityId: null } as CustomEntityState<string, string>
 };
 
@@ -142,6 +145,7 @@ const rootReducerSlice = createSlice({
       const newTask: Task = {
         _id: "newTaskId2",
         id: randomTaskId, // generate unique id
+        name: "", 
         title: "",
         description: "",
         assignedTo: {} as WritableDraft<User>,

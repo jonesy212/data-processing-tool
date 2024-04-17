@@ -14,7 +14,7 @@ import { showErrorMessage, showToast } from "../models/display/ShowToast";
 import { Task } from "../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { notificationStore } from "../support/NotificationProvider";
-import SnapshotStoreConfig, { , snapshotConfig } from "./SnapshotConfig";
+import SnapshotStoreConfig, {  snapshotConfig } from "./SnapshotConfig";
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
   
 const { notify } = useNotification();
@@ -36,23 +36,23 @@ const createTypedSnapshot = (
     {
       key: "example_key",
       initialState: {} as SnapshotStore<Snapshot<Data>>,
-      snapshotData: () => ({ snapshot: [] }),
+      snapshotData: () => ({ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }),
       createSnapshot: () => {},
       [taskId]: tasks,
       clearSnapshots: () => {},
-      snapshots: [{ snapshot: [] }],
+      snapshots: [],
       subscribers: [],
       notify: notify,
       configureSnapshotStore: (config) => {},
       createSnapshotSuccess: () => {},
       createSnapshotFailure: (error) => {},
       onSnapshot: (snapshot) => {},
-      snapshot: () => Promise.resolve({ snapshot: [] }),
+      snapshot: () => Promise.resolve({ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }),
       initSnapshot: () => {},
       clearSnapshot: () => {},
-      updateSnapshot: () => Promise.resolve({ snapshot: [] }),
-      getSnapshots: () => Promise.resolve([{ snapshot: [] }]),
-      takeSnapshot: async (snapshot) => ({ snapshot: [snapshot] }),
+      updateSnapshot: () => Promise.resolve({ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }),
+      getSnapshots: () => Promise.resolve([{ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }]),
+      takeSnapshot: async (snapshot) => ({ snapshot: [snapshot] as SnapshotStore<Snapshot<Data>>[] }),
       getSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>) => Promise.resolve(snapshot),
       getAllSnapshots: async (
         data: (
@@ -72,7 +72,10 @@ const createTypedSnapshot = (
       updateSnapshotSuccess: () => {},
       updateSnapshotsSuccess: (snapshots) => {},
       fetchSnapshotSuccess: (snapshotData) => {},
-      batchUpdateSnapshots: async (subscribers, snapshot) => [{ snapshot: [] }],
+      batchUpdateSnapshots: async (subscribers, snapshot) => [{ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }],
+      batchTakeSnapshotsRequest: (
+        snapshotData: any
+      ) => Promise<{ snapshots: SnapshotStore<Snapshot<Data>>[]; }[]>,
       batchUpdateSnapshotsSuccess: (subscribers, snapshots) => [{ snapshots }],
       batchUpdateSnapshotsRequest: (snapshotData: any) => ({
         subscribers: [],

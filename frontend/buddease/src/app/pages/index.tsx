@@ -14,6 +14,8 @@ import { UserRole } from "../components/users/UserRole";
 import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
 import RootLayout from "../RootLayout";
+import { Persona } from "./personas/Persona";
+import { authToken } from "../components/auth/authToken";
 
  // pages/index.tsx
 
@@ -26,7 +28,7 @@ const hydrate = (key: string) => {
 };
 
 
-const Index: React.FC = () => {
+const Index: React.FC<{}> = () => {
   const router = useRouter();
   const { state: authState, dispatch: authDispatch } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -36,7 +38,7 @@ const Index: React.FC = () => {
     hydrate(rootStores.constructor.name);
 
     const authenticateUser = async () => {
-      const timeBasedCode = generateTimeBasedCode()
+      const timeBasedCode = generateTimeBasedCode();
       const user: User = {
         // user object
         _id: "123",
@@ -52,10 +54,13 @@ const Index: React.FC = () => {
         processingTasks: [],
         uploadQuota: 0,
         role: {} as UserRole,
-        timeBasedCode: timeBasedCode
+        timeBasedCode: timeBasedCode,
+        persona: {} as Persona,
+        snapshots: [],
+        token: authToken
       };
 
-      authDispatch({ type: "LOGIN", payload: { user: user } });
+      authDispatch({ type: "LOGIN", payload: { user: {} as User, roles: [], nfts: [], authToken: authToken } });
     };
 
     const establishSocketConnection = () => {
@@ -72,6 +77,8 @@ const Index: React.FC = () => {
     };
 
     const socket = establishSocketConnection();
+
+
     interface MessagingSystemOptions {
       onMessageReceived: (message: string) => void;
       socket: Socket
@@ -109,33 +116,28 @@ const Index: React.FC = () => {
     }
   }, [authState.isAuthenticated, router, authDispatch, socket]);
 
+  // Generate dynamic content using the function
+  const appName = "MyApp"; // Replace with actual logic to fetch app name
+  const currentDate = new Date().toLocaleDateString(); // Get current date
+  const dynamicContent = generateDynamicContent(appName, currentDate);
 
 
-
-    // Generate dynamic content using the function
-    const appName = "MyApp"; // Replace with actual logic to fetch app name
-    const currentDate = new Date().toLocaleDateString(); // Get current date
-    const dynamicContent = generateDynamicContent(appName, currentDate);
-
-  
   return (
     <RootLayout>
 
-    <Layout>
-      <div>
-      <YourApp />
-        <h1>Redirecting to the Dashboard...</h1>
-        <PaymentForm /> {/* Include the PaymentForm component */}
-        {/* Render the dynamic content */}
+      <Layout>
+        <div>
+          <YourApp />
+          <h1>Redirecting to the Dashboard...</h1>
+          <PaymentForm /> {/* Include the PaymentForm component */}
+          {/* Render the dynamic content */}
 
-        <div>{dynamicContent}</div>
+          <div>{dynamicContent}</div>
 
-      </div>
-    </Layout>
+        </div>
+      </Layout>
     </RootLayout>
   );
 };
 
-  
- 
 export default Index;

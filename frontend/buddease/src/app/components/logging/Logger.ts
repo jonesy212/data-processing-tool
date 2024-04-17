@@ -235,13 +235,16 @@ class DexLogger extends Logger {
 }
 
 class SearchLogger extends Logger {
-  static logSearch(query: string, userId: string) {
+  static logSearch(query: string, userId?: string) {
+    const userIdMessage = userId ? `, User ID: ${userId}` : "";
     super.logWithOptions(
       "Search",
-      `Search performed (Query: ${query}, User ID: ${userId})`,
-      userId
+      `Search performed (Query: ${query}${userIdMessage})`,
+      userId ? userId : "Unknown"
     );
   }
+
+  
 
   
 
@@ -866,6 +869,28 @@ class FileLogger extends Logger {
 
   static logFileError(errorMessage: string) {
     this.logToFile(errorMessage, "error_log.txt");
+  }
+
+  static logDocumentEvent(uniqueID: string, documentID: string) {
+    let logDocumentEventUrl: string;
+
+    if (typeof endpoints.logs.logDocumentEvent === "string") {
+      // If it's a string, directly use the endpoint URL
+      logDocumentEventUrl = endpoints.logs.logDocumentEvent;
+    }
+    if (typeof endpoints.logs.logDocumentEvent === "function") {
+      // If it's a function, call it to get the endpoint
+      logDocumentEventUrl = endpoints.logs.logDocumentEvent();
+    }
+    else {
+      // Handle the case where it's neither a string nor a function
+      throw new Error("Invalid log document event endpoint");
+    }
+  }
+
+  static logDocument(message: string, uniqueID: string, documentID: string) {
+    super.logWithOptions("Document", message, uniqueID);
+    this.logDocumentEvent(uniqueID, documentID);
   }
   // You can add more specific logging methods for different log types as needed
 

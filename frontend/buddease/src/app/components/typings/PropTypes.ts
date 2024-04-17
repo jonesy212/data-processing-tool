@@ -17,7 +17,7 @@ import {
   ProgressPhase,
 } from "../models/tracker/ProgressBar";
 
-type AnimationType = "fade" | "slide" | "bounce";
+type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";;
 type NotificationCategory = "general" | "urgent" | "important";
 type ButtonType = "submit" | "reset" | "button" | undefined;
 // Union type of all types enums
@@ -101,3 +101,4 @@ const progressBarProps: ProgressBarProps = {
 
 export { chatCardProps, notificationProps, progressBarProps };
 export type { AllTypes };
+

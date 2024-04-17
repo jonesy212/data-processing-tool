@@ -177,7 +177,8 @@ const useSnapshotManager = () => {
   const takeSnapshotsSuccess = (snapshots: Todo[]) => {
     todoManagerStore.takeSnapshotsSuccess({ snapshots });
   };
-  const addSnapshot = async (newSnapshot: Omit<Todo, "id">) => {
+  
+  const addSnapshot = async (newSnapshot: Omit<T, "id">) => {
     try {
       // Adjust the API endpoint and request details based on your project
       const response = await fetch("/api/snapshots", {

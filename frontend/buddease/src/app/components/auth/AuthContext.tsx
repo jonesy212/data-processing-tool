@@ -38,7 +38,7 @@ const initialState: AuthState = {
   userRoles: [],
   timestamp: 0,
   userNFTs: [],
-  authToken: null
+  authToken: null,
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {

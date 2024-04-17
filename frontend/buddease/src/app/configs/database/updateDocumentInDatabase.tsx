@@ -10,6 +10,7 @@ import DatabaseClient, { DatasetModel } from "@/app/components/todos/tasks/DataS
 import { AxiosError, AxiosResponse } from "axios";
 import { PoolConfig } from 'pg';
 import configData from "../configData";
+import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 
 const { notify } = useNotification();
 
@@ -23,7 +24,7 @@ const config: PoolConfig = {
   user: configData.database.username,
   password: configData.database.password
 }
-export const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
+const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
   try {
     const documentUrl = `${API_BASE_URL}/documents/${documentId}`;
     const headers = headersConfig;
@@ -79,8 +80,68 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
 
 
 
+
+
+let documentId: DocumentData | undefined;
+
+if (typeof documentId === "string" || typeof documentId === "object") {
+  // No need to reassign documentId here
+} else {
+  // Handle case where documentId is undefined or not a string/object
+  // Handle non-string/object case if needed
+}
+
+
+// Combined function to load drawing from the database
+async function loadDrawingFromDatabase(
+  documentId: DocumentData | DocumentId
+): Promise<Drawing | string> {
+  try {
+    // Check if the documentId is of type DocumentData
+    if ("id" in documentId) {
+      // Mock implementation to simulate loading drawing from database
+      // Replace this with actual database query or API call
+      const drawing: Drawing = {
+        id: String(documentId.id),
+        name: "Mock Drawing",
+        // Add other properties of the drawing
+      };
+      return drawing;
+    } else if (typeof documentId === "string") {
+      // Initialize database client
+      const dbClient = new DatabaseClient(config);
+
+      // Connect to the database
+      await dbClient.connect();
+
+      // Query the database for the drawing content
+      const result = await dbClient.query(
+        "SELECT content FROM drawings WHERE document_id = $1",
+        [documentId as string]
+      );
+
+      // Check if the query result has any rows
+      if (result.rows.length > 0) {
+        // Get the drawing content from the query result
+        const drawingContent = result.rows[0].content;
+        return drawingContent;
+      } else {
+        throw new Error("No drawing found for the given document ID");
+      }
+    } else {
+      throw new Error("Invalid documentId");
+    }
+  } catch (error: any) {
+    handleApiError(error, "loadDrawingFromDatabase");
+    throw error;
+  }
+}
+
+
+
+
 // Function to save to-do data to the database
-export const saveTodoToDatabase = async (todoData: any): Promise<void> => {
+const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   try {
     // Initialize database client
     const dbClient = new DatabaseClient(config);
@@ -101,7 +162,7 @@ export const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   }
 };
 
-export const saveDocumentToDatabase = async (document: DatasetModel, content: string): Promise<void> => { 
+ const saveDocumentToDatabase = async (document: DatasetModel, content: string): Promise<void> => { 
   try {
 
     // Initialize database client
@@ -117,9 +178,8 @@ export const saveDocumentToDatabase = async (document: DatasetModel, content: st
   }
 }
 
-
 // Function to save trade data to the database
-export const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
+ const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
   try {
     // Initialize database client
     const dbClient = new DatabaseClient(config);
@@ -140,4 +200,12 @@ export const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
   }
 };
 
-export default updateDocumentInDatabase;
+export {
+  fetchDocumentFromArchive,
+  loadDrawingFromDatabase,
+  saveDocumentToDatabase,
+  saveTodoToDatabase,
+  saveTradeToDatabase,
+  updateDocumentInDatabase,
+};
+

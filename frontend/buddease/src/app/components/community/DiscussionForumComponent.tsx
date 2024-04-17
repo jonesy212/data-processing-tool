@@ -158,3 +158,4 @@ const DiscussionForumComponent: React.FC = () => {
 };
 
 export default DiscussionForumComponent;
+export type {BlogPost}

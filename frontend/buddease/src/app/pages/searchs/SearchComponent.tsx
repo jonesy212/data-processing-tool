@@ -1,4 +1,4 @@
-// Search.tsx
+// SearchComponent.tsx
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
@@ -54,6 +54,11 @@ const globalDocumentData: DocumentData[] = [
     keywords: ["keyword 1", "keyword 2"],
     options: {} as DocumentOptions,
     documentType: DocumentTypeEnum.Draft,
+    load: function (content: any): void {
+      throw new Error("Function not implemented.");
+    },
+    lastModifiedDate: new Date,
+    version: {} as VersionData
   },
   // Add more document data as needed
 ];
@@ -61,6 +66,7 @@ const globalDocumentData: DocumentData[] = [
 
 export interface SearchComponentProps {
   documentData: DocumentData[];
+  searchQuery: string;
 }
 
 export interface SearchComponentProps {

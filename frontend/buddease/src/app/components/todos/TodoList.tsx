@@ -46,6 +46,8 @@ const TodoList: React.FC = observer(() => {
   const handleUpdateTitle = (id: string, newTitle: string) => {
     todoStore.updateTodoTitle({ id: id, newTitle: newTitle });
   };
+
+  
   const handleToggle = (id: string) => {
     todoStore.toggleTodo(id as keyof typeof todoStore.todos);
   };

@@ -1,12 +1,40 @@
 // TodoService.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
 import axios from "axios";
 import { Todo } from "./Todo";
 
-
-const BASE_URL = "https://your-api-base-url"; // Replace with your actual API base URL
+const BASE_URL = endpoints.todos
 
 export const todoService = {
-  fetchTodos: async (): Promise<Todo[]> => {
+
+  fetchTodoById: async (todoId: string): Promise<Todo> => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/todos/${todoId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to fetch todo');
+    }
+  },
+
+  assignTodoToUser: async (todoId: string, userId: string) => { 
+    try {
+      const response = await axios.post(`${BASE_URL}/api/todos/${todoId}/users/${userId}`);
+      return response.data
+    } catch (error) {
+      throw new Error('Failed to assign todo to user');
+    }
+  },
+
+  unassignTodoFromTeam: async (todoId: string, teamId: string) => { 
+    try {
+      await axios.delete(`${BASE_URL}/api/todos/${todoId}/teams/${teamId}`);
+      
+    } catch (error) {
+      throw new Error("Failed to unassign todo from team");
+    }
+  },
+    
+    fetchTodos: async (): Promise<Todo[]> => {
     try {
       const response = await axios.get(`${BASE_URL}/api/todos`);
       return response.data;

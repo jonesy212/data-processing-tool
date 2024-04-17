@@ -35,6 +35,9 @@ export const fetchParameterCustomizationData =
     // Create an instance of the ApiService class with the API base URL
     const apiService = new ApiService(`${API_BASE_URL}`);
 
+
+
+    
     try {
       // Now you can pass this requestData object to your API call
       const response: AxiosResponse<ParameterCustomizationData> =
@@ -52,3 +55,5 @@ export const fetchParameterCustomizationData =
       );
     }
   };
+
+  export { requestData };

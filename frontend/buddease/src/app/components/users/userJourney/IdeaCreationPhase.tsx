@@ -1,7 +1,29 @@
 // IdeaCreationPhase.tsx
 import React from 'react';
+import { setCurrentPhase } from '../../hooks/phaseHooks/EnhancePhase';
+import { Idea } from '../Ideas';
+import { IdeaCreationPhase } from '@/app/components/users/userJourney/IdeaCreationPhase';
 
-const IdeaCreationPhase: React.FC = () => {
+export enum IdeaCreationPhaseEnum {
+  CREATE_IDEA,
+  REVIEW_IDEA,
+  SUGGESTIONS,
+
+}
+interface IdeaFormProps {
+  onSubmit: (idea: any) => void;
+  onTransition: (idea: any) => void;
+}
+
+
+const handlePhaseTransition = (nextPhase: IdeaCreationPhase) => {
+  // Add logic for transitioning to the next phase
+  setCurrentPhase(nextPhase);
+};
+const IdeaCreationPhaseManager: React.FC<IdeaFormProps> = ({
+  onSubmit,
+  onTransition
+}) => {
   // Implementation logic for Idea Creation phase
   return (
     <div>
@@ -12,4 +34,4 @@ const IdeaCreationPhase: React.FC = () => {
   );
 };
 
-export default IdeaCreationPhase;
+export default IdeaCreationPhaseManager;

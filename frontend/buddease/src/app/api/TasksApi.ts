@@ -213,20 +213,20 @@ export const fetchTask = async (taskId: number): Promise<Task> => {
   }
 };
 
-export const createTask = async (newTask: Task): Promise<void> => {
-  try {
-    const createTaskEndpoint = `${API_BASE_URL}.add`;
-    await axiosInstance.post(createTaskEndpoint, newTask);
-  } catch (error) {
-    console.error('Error creating task:', error);
-    handleTaskApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to create task',
-      'CreateTaskErrorId'
-    );
-    throw error;
-  }
-};
+  export const createTask = async (newTask: Promise<Task>): Promise<Task> => {
+    try {
+      const createTaskEndpoint = `${API_BASE_URL}.add`;
+      await axiosInstance.post(createTaskEndpoint, newTask);
+    } catch (error) {
+      console.error('Error creating task:', error);
+      handleTaskApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        'Failed to create task',
+        'CreateTaskErrorId'
+      );
+      throw error;
+    }
+  };
 
 export const deleteTask = async (taskId: number): Promise<void> => {
   try {

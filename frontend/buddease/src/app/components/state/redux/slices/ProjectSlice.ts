@@ -17,23 +17,50 @@ import { useDispatch } from "react-redux";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
 import { Phase } from "@/app/components/phases/Phase";
+import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
+import ProjectProgress from '../../../projects/projectManagement/ProjectProgress';
+import { Meeting } from "@/app/components/communications/scheduler/Meeting";
+import { ProjectFeedback } from "@/app/components/support/ProjectFeedback";
 interface ProjectState {
   project: Project | null;
   projects: Project[];
   loading: boolean;
   error: string | null;
+  currentProject: Project | null;
+  selectedProject: Project | null;
 }
+
+interface Deadline {
+  id: string;
+  projectId: string;
+  title: string;
+  dueDate: Date;
+  description?: string;
+}
+
 
 const initialState: ProjectState = {
   project: null,
   projects: [],
   loading: false,
   error: null,
+  currentProject: null,
+  selectedProject: null,
+
 };
 
 interface YourStateType {
   projects: Project[];
 }
+
+
+
+export interface ProjectMetrics {
+  // Define the properties of ProjectMetrics
+  completionRate: number;
+  // Add more properties if needed
+}
+
 
 function createUpdatedProject(
   payload: WritableDraft<Project>
@@ -98,10 +125,12 @@ export const useProjectManagerSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
+
     fetchProjectSuccess(state, action: PayloadAction<WritableDraft<Project>>) {
       state.loading = false;
       state.project = action.payload;
     },
+
     fetchProjectFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
@@ -110,6 +139,7 @@ export const useProjectManagerSlice = createSlice({
     addProject(state, action: PayloadAction<WritableDraft<Project>>) {
       state.projects.push(action.payload);
     },
+
     updateProject(state, action: PayloadAction<WritableDraft<Project>>) {
       const index = state.projects.findIndex(
         (p: any) => p.id === action.payload.id
@@ -118,6 +148,11 @@ export const useProjectManagerSlice = createSlice({
         state.projects[index] = action.payload;
       }
     },
+
+    currentProject(state, action: PayloadAction<WritableDraft<Project>>) {
+      state.project = action.payload;
+    },
+
     deleteProject(state, action: PayloadAction<string>) {
       state.projects = state.projects.filter((p) => p.id !== action.payload);
     },
@@ -554,7 +589,6 @@ export const useProjectManagerSlice = createSlice({
       return state;
     },
 
-
     buildCustomApp(
       state: ProjectState, // Replace YourStateType with the actual type of your state
       action: PayloadAction<{
@@ -586,6 +620,784 @@ export const useProjectManagerSlice = createSlice({
       // If project is not found, return state as is
       return state;
     },
+
+    meetProjectMetrics(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        metrics: ProjectMetrics;
+      }>
+    ): ProjectState {
+      const { projectId, metrics } = action.payload;
+
+      // Find the project in the state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.metrics = metrics;
+
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+      return state;
+    },
+
+    generateRevenue(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        amount: number;
+      }>
+    ) {
+      const { projectId, amount } = action.payload;
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.revenue = updatedProject.revenue + amount;
+
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+    },
+
+    joinCommunityProject(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        userId: WritableDraft<Member>;
+      }>
+    ) {
+      const { projectId, userId } = action.payload;
+
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.members.push(userId);
+
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+    },
+
+    promoteUnity(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        message: string;
+      }>
+    ) {
+      const { projectId, message } = action.payload;
+
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.messages.push(message);
+
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+
+    },
+
+    shareProjectProgress(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        progress: typeof ProjectProgress;
+      }>
+    ) {
+      const { projectId, progress } = action.payload;
+
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.progress = progress;
+
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+    },
+
+    celebrateMilestones(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        milestoneId: string;
+      }>
+    ) {
+      const { projectId, milestoneId } = action.payload;
+
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.milestones.find((m: any) => m.id === milestoneId).isCelebrated = true;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+      return state;
+    },
+
+    provideFeedback(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        feedback: ProjectFeedback;
+      }>
+    ) {
+      const { projectId, feedback } = action.payload;
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.feedback.push(feedback);
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+      return state;
+    },
+
+    inviteMembers(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        invitedMembers: WritableDraft<Member>[];
+      }>
+    ) {
+      const { projectId, invitedMembers } = action.payload;
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.invitedMembers = invitedMembers;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+      return state
+    },
+
+    
+    assignTasks(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        tasks: Task[];
+      }>
+    ) {
+      const { projectId, tasks } = action.payload;
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.tasks = tasks;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+      return state
+    },
+
+
+    scheduleMeetings(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        meetings: Meeting[];
+      }>
+    ) {
+      const { projectId, meetings } = action.payload;
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.meetings = meetings;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        }
+      }
+      return state
+    },
+
+
+
+
+
+    updateProjectMetrics(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        metrics: Partial<ProjectMetrics>
+      }>
+    ) {
+      const { projectId, metrics } = action.payload;
+
+      // Find the project in state
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        updatedProject.metrics = {
+          ...updatedProject.metrics,
+          ...metrics
+        };
+
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+
+          ]
+        }
+      }
+    },
+
+    shareResources(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        resources: any[]; // Define the type for resources
+      }>
+    ) {
+      const { projectId, resources } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with shared resources
+        // Assuming the resources are stored in an array within the project object
+        updatedProject.resources = resources;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    trackProgress(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        progress: number;
+      }>
+    ) {
+      const { projectId, progress } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with progress
+        // Assuming progress is stored within the project object
+        updatedProject.progress = progress;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    resolveConflicts(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        conflicts: any[]; // Define the type for conflicts
+      }>
+    ) {
+      const { projectId, conflicts } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with resolved conflicts
+        // Assuming the conflicts are stored in an array within the project object
+        updatedProject.conflicts = conflicts;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    resolveBugs(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        bugs: any[]; // Define the type for bugs
+      }>
+    ) {
+      const { projectId, bugs } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with resolved bugs
+        // Assuming the bugs are stored in an array within the project object
+        updatedProject.bugs = bugs;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    conductSurveys(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        surveys: any[]; // Define the type for surveys
+      }>
+    ) {
+      const { projectId, surveys } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with conducted surveys
+        // Assuming the surveys are stored in an array within the project object
+        updatedProject.surveys = surveys;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    facilitateTraining(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        trainingSessions: any[]; // Define the type for training sessions
+      }>
+    ) {
+      const { projectId, trainingSessions } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with facilitated training sessions
+        // Assuming the training sessions are stored in an array within the project object
+        updatedProject.trainingSessions = trainingSessions;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    provideMentorship(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        mentorshipOpportunities: any[]; // Define the type for mentorship opportunities
+      }>
+    ) {
+      const { projectId, mentorshipOpportunities } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with provided mentorship opportunities
+        // Assuming the mentorship opportunities are stored in an array within the project object
+        updatedProject.mentorshipOpportunities = mentorshipOpportunities;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    ensureAccessibility(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        accessibilityFeatures: any[]; // Define the type for accessibility features
+      }>
+    ) {
+      const { projectId, accessibilityFeatures } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with ensured accessibility features
+        // Assuming the accessibility features are stored in an array within the project object
+        updatedProject.accessibilityFeatures = accessibilityFeatures;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+
+
+    implementSecurityMeasures(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        securityMeasures: any[]; // Define the type for security measures
+      }>
+    ) {
+      const { projectId, securityMeasures } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with implemented security measures
+        // Assuming the security measures are stored in an array within the project object
+        updatedProject.securityMeasures = securityMeasures;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    ensurePrivacy(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        privacyFeatures: any[]; // Define the type for privacy features
+      }>
+    ) {
+      const { projectId, privacyFeatures } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with ensured privacy features
+        // Assuming the privacy features are stored in an array within the project object
+        updatedProject.privacyFeatures = privacyFeatures;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    implementDataProtection(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        dataProtectionMeasures: any[]; // Define the type for data protection measures
+      }>
+    ) {
+      const { projectId, dataProtectionMeasures } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Update project with implemented data protection measures
+        // Assuming the data protection measures are stored in an array within the project object
+        updatedProject.dataProtectionMeasures = dataProtectionMeasures;
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    deleteMilestone(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        milestoneId: string;
+      }>
+    ) {
+      const { projectId, milestoneId } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Remove the milestone with the specified ID
+        updatedProject.milestones = updatedProject.milestones.filter((milestone: Milestone) => milestone.id !== milestoneId);
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+    
+    createDeadline(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        deadline: Deadline;
+      }>
+    ) {
+      const { projectId, deadline } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Add the new deadline to the project
+        updatedProject.deadlines.push(deadline);
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+    
+    updateDeadline(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        deadlineId: string;
+        updatedDeadline: Partial<Deadline>;
+      }>
+    ) {
+      const { projectId, deadlineId, updatedDeadline } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Find the deadline with the specified ID and update its properties
+        updatedProject.deadlines = updatedProject.deadlines.map((deadline: Deadline) => {
+          if (deadline.id === deadlineId) {
+            return { ...deadline, ...updatedDeadline };
+          }
+          return deadline;
+        });
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+
+    deleteDeadline: (
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        deadlineId: string
+      }>
+    ): WritableDraft<ProjectState> => {
+      const { projectId, deadlineId } = action.payload
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Remove the deadline with the specified ID
+        updatedProject.deadlines = updatedProject.deadlines.filter((deadline: Deadline) => deadline.id !== deadlineId);
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1),
+            // Remove the deadline with the specified ID
+            updatedProject.deadlines = updatedProject.deadlines.filter((deadline: Deadline) => deadline.id !== deadlineId),
+
+          
+          ]
+        }
+        }
+      return state
+    },
+
+
+
+
+    getProjectDetails: (
+      state: WritableDraft<ProjectState>,
+      action: PayloadAction<string>
+    ): WritableDraft<ProjectState> => {
+      const projectId = action.payload;
+      const project = state.projects.find(
+        (project) => project.id === projectId
+      );
+      if (project) {
+        // Update both currentProject and selectedProject
+        return { 
+          ...state, 
+          currentProject: project.id === state.currentProject?.id ? state.currentProject : project,
+          selectedProject: project
+        };
+      }
+      return state;
+    },
+
+    getProjectList: (state: WritableDraft<ProjectState>): WritableDraft<ProjectState> => {
+      const projects = state.projects || [];
+      return { ...state, projects };
+    },
+    
+    createMilestone(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        milestone: Milestone;
+      }>
+    ) {
+      const { projectId, milestone } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Add the new milestone to the project
+        updatedProject.milestones.push(milestone);
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+    
+    updateMilestone(
+      state,
+      action: PayloadAction<{
+        projectId: string;
+        milestoneId: string;
+        updatedMilestone: Partial<Milestone>;
+      }>
+    ) {
+      const { projectId, milestoneId, updatedMilestone } = action.payload;
+      const projectIndex = state.projects.findIndex(project => project.id === projectId);
+      if (projectIndex !== -1) {
+        const updatedProject = { ...state.projects[projectIndex] };
+        // Find the milestone with the specified ID and update its properties
+        updatedProject.milestones = updatedProject.milestones.map((milestone: Milestone) => {
+          if (milestone.id === milestoneId) {
+            return { ...milestone, ...updatedMilestone };
+          }
+          return milestone;
+        });
+        return {
+          ...state,
+          projects: [
+            ...state.projects.slice(0, projectIndex),
+            updatedProject,
+            ...state.projects.slice(projectIndex + 1)
+          ]
+        };
+      }
+      return state;
+    },
+    
+
+  }
 });
 
 export const {
@@ -596,7 +1408,8 @@ export const {
   addProject,
   updateProject,
   deleteProject,
-
+  currentProject,
+  
   // User Assignment
   assignUserToProject,
   removeUserFromProject,
@@ -617,7 +1430,6 @@ export const {
   checkReferences,
   coordinateSelectionProcess,
   onboardNewTeamMembers,
-
   brainstormProduct, // Action to facilitate brainstorming sessions for the product
   launchProduct, // Action to mark the project as launched
   analyzeData, // Action to initiate data analysis for project insights
@@ -670,6 +1482,7 @@ export default ProjectState;
 useProjectManagerSlice.reducer;
 
 // Selectors
+
 export const selectProject = (state: RootState) =>
   state.useProjectManager.project;
 export const selectProjects = (state: RootState) =>

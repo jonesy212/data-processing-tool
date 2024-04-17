@@ -21,6 +21,7 @@ class YourClass {
     return this;
   }
 
+
   customizeTheme(themeConfig: ThemeConfig, dappProps?: DappProps): YourClass {
     // Implement customizeTheme functionality
     return this;

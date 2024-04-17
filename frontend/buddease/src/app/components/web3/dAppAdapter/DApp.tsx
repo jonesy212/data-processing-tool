@@ -23,7 +23,6 @@ import { handleApiError } from "@/app/api/ApiLogs";
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
-
 interface CustomApp {
   id: string;
   name: string;
@@ -32,33 +31,33 @@ interface CustomApp {
   // Add any other properties as needed
 }
 
-  class CustomDAppAdapter<T extends DappProps> extends YourClass {
-    private adapter: FC<DAppAdapterProps>;
-    private config: DAppAdapterConfig<T>;
+class CustomDAppAdapter<T extends DappProps> extends YourClass {
+  private adapter: FC<DAppAdapterProps>;
+  private config: DAppAdapterConfig<T>;
 
-    constructor(config: DAppAdapterConfig<T>) {
-      super();
-      this.config = config;
-      this.implementAnalytics()
-      interface AdapterProps extends DAppAdapterProps {
-        appName: string;
-        appVersion: string;
-        dappProps: T;
-      }
+  constructor(config: DAppAdapterConfig<T>) {
+    super();
+    this.config = config;
+    this.implementAnalytics();
+    interface AdapterProps extends DAppAdapterProps {
+      appName: string;
+      appVersion: string;
+      dappProps: T;
+    }
 
-      const AdapterComponent: FC<AdapterProps> = (props) => {
-        const { appName, appVersion, dappProps, ...rest } = props;
-        // Use the useSocialAuthentication hook
-        const socialAuth = useSocialAuthentication();
+    const AdapterComponent: FC<AdapterProps> = (props) => {
+      const { appName, appVersion, dappProps, ...rest } = props;
+      // Use the useSocialAuthentication hook
+      const socialAuth = useSocialAuthentication();
 
-        // Your component logic here
+      // Your component logic here
 
-        manageDocuments(
-          {
-            /* newDocument */
-          } as DocumentData,
-          dappProps
-        );
+      manageDocuments(
+        {
+          /* newDocument */
+        } as DocumentData,
+        dappProps
+      );
       // Use initiateSocialLogin from useSocialAuthentication
       socialAuth.initiateSocialLogin("demoProvider");
       // Create an instance of FluencePlugin
@@ -90,8 +89,8 @@ interface CustomApp {
     };
 
     this.adapter = AdapterComponent as FC<DAppAdapterProps>;
-    }
-    
+  }
+
   createCustomApp(appData: CustomApp, errorMessage: string): YourClass {
     try {
       // Validate appData
@@ -142,27 +141,33 @@ interface CustomApp {
       throw error;
     }
   }
-    
-    private saveAppDataToDatabase(appData: CustomApp): CustomApp {
-      // Simulate saving the app data to a database
-      // Replace this with actual code to interact with your database
-    
-      // For example, you might use an ORM or a database driver to save the data
-      // Here, we're simply logging the app data as if it's being saved to a database
-      console.log("Saving app data to database:", appData);
-    
-      // Return the saved app data
-      return appData;
-    }
-    
 
-  updateCustomApp(appId: string, updatedAppData: Partial<CustomApp>): YourClass {
+  private saveAppDataToDatabase(appData: CustomApp): CustomApp {
+    // Simulate saving the app data to a database
+    // Replace this with actual code to interact with your database
+
+    // For example, you might use an ORM or a database driver to save the data
+    // Here, we're simply logging the app data as if it's being saved to a database
+    console.log("Saving app data to database:", appData);
+
+    // Return the saved app data
+    return appData;
+  }
+
+  updateCustomApp(
+    appId: string,
+    updatedAppData: Partial<CustomApp>
+  ): YourClass {
     try {
       // Implement your logic here for updating a custom app
-      console.log("Updating custom app with ID:", appId, "New data:", updatedAppData);
+      console.log(
+        "Updating custom app with ID:",
+        appId,
+        "New data:",
+        updatedAppData
+      );
 
       // Additional logic...
-
     } catch (error) {
       console.error("Error updating custom app:", error);
     }
@@ -176,7 +181,6 @@ interface CustomApp {
       console.log("Deleting custom app with ID:", appId);
 
       // Additional logic...
-
     } catch (error) {
       console.error("Error deleting custom app:", error);
     }
@@ -184,7 +188,6 @@ interface CustomApp {
     return this;
   }
 
-    
   enableRealtimeCollaboration(): YourClass {
     // Implement your logic here for enabling realtime collaboration
     console.log("Realtime collaboration enabled");
@@ -196,10 +199,11 @@ interface CustomApp {
 
     // Additional logic...
 
+    
     return this;
   }
 
-    enableChatFunctionality(): YourClass {
+  enableChatFunctionality(): YourClass {
     // Implement your logic here for enabling chat functionality
     console.log("Chat functionality enabled");
 
@@ -339,7 +343,7 @@ interface CustomApp {
         return null;
     }
   }
-    
+
   private async loadComponentAsync(componentName: string) {
     // Simulate async loading of component
     let component;
@@ -351,9 +355,8 @@ interface CustomApp {
         component = await import("../../../pages/forms/UserFormComponent");
         break;
       case "authToken":
-        component = await import('../../auth/authToken')
-        break
-
+        component = await import("../../auth/authToken");
+        break;
 
       default:
         throw new Error("Component not found");
@@ -413,22 +416,27 @@ interface CustomApp {
   implementAnalytics(): YourClass {
     try {
       winston.info("Analytics integration in progress...");
-  
+
       // Connect to analytics service and get analytics object
       const analytics = this.initiateAnalyticsConnection();
-  
+
       // Check if analytics object has required methods
-      if (analytics && typeof analytics.connect === 'function' && typeof analytics.trackPageView === 'function' && typeof analytics.trackEvent === 'function') {
+      if (
+        analytics &&
+        typeof analytics.connect === "function" &&
+        typeof analytics.trackPageView === "function" &&
+        typeof analytics.trackEvent === "function"
+      ) {
         // Track page views
         analytics.trackPageView();
-  
+
         // Track custom events
         analytics.trackEvent({
-          eventCategory: 'Button Clicks',
-          eventAction: 'Save Button',
-          eventLabel: 'File Saved'
+          eventCategory: "Button Clicks",
+          eventAction: "Save Button",
+          eventLabel: "File Saved",
         });
-  
+
         winston.info("Analytics integration successful");
       } else {
         winston.error("Analytics object is missing required methods");
@@ -436,16 +444,16 @@ interface CustomApp {
     } catch (error) {
       winston.error("Error integrating analytics", error);
     }
-  
+
     return this;
   }
-  
+
   private initiateAnalyticsConnection() {
     try {
       // Simulate connecting to an analytics service
       // Ensure to replace this with a real implementation using secure practices
       winston.info("Analytics connection initiated");
-  
+
       // Simulate returning an analytics object
       return {
         connect: () => {
@@ -456,19 +464,21 @@ interface CustomApp {
           // Simulate tracking page view
           console.log("Page view tracked");
         },
-        trackEvent: (event: { eventCategory: string, eventAction: string, eventLabel: string }) => {
+        trackEvent: (event: {
+          eventCategory: string;
+          eventAction: string;
+          eventLabel: string;
+        }) => {
           // Simulate tracking custom event
           console.log("Event tracked:", event);
-        }
+        },
       };
     } catch (error) {
       winston.error("Error during analytics connection initiation", error);
       return null;
     }
   }
-  
 
-  
   customizeTheme(themeConfig: ThemeConfig, dappProps: DappProps): YourClass {
     try {
       console.log("Theme customization in progress...");
@@ -488,7 +498,7 @@ interface CustomApp {
 
     return this;
   }
-    
+
   getConfig(): DAppAdapterConfig<T> {
     return this.config;
   }
@@ -499,21 +509,21 @@ interface CustomApp {
     // Replace this with actual theme application logic
   }
 
-  private modifyFonts(fonts: ThemeConfig['fonts']) {
+  private modifyFonts(fonts: ThemeConfig["fonts"]) {
     if (fonts) {
       console.log("Modifying fonts:", fonts);
       // Implement logic to modify fonts
     }
   }
 
-  private adjustColors(colors: ThemeConfig['colors']) {
+  private adjustColors(colors: ThemeConfig["colors"]) {
     if (colors) {
       console.log("Adjusting colors:", colors);
       // Implement logic to adjust colors
     }
   }
 
-  private applyLayoutChanges(layout: ThemeConfig['layout']) {
+  private applyLayoutChanges(layout: ThemeConfig["layout"]) {
     if (layout) {
       console.log("Applying layout changes:", layout);
       // Implement logic to apply layout changes
@@ -527,9 +537,9 @@ abstract class YourClass {
 }
 
 const themeConfig = {
-  fonts: { primary: 'Roboto', heading: 'Arial' },
-  colors: { primary: '#3498db', secondary: '#2ecc71' },
-  layout: { spacing: 8, containerWidth: 1200 }
+  fonts: { primary: "Roboto", heading: "Arial" },
+  colors: { primary: "#3498db", secondary: "#2ecc71" },
+  layout: { spacing: 8, containerWidth: 1200 },
 };
 
 yourClassInstance.customizeTheme(themeConfig);
@@ -617,6 +627,7 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
 };
 
 export { CustomDAppAdapter };
+export type { CustomApp };
 const customDapp = new CustomDAppAdapter<DappProps>(dappConfig);
 
 // Enable realtime collaboration and chat functionality

@@ -1,16 +1,24 @@
 import calendarApiService from "@/app/api/ApiCalendar";
+import { endpoints } from "@/app/api/ApiEndpoints";
 import { fetchEventData } from "@/app/api/ApiEvent";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { initiateDataAnalysis } from "@/app/services/dataAnalysisService";
 import ErrorHandler from "@/app/shared/ErrorHandler";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
+import { ChangeEvent } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { io } from "socket.io-client";
 import { CalendarActions } from "../actions/CalendarEventActions";
-import EventSentiment from '../event/EventSentiment';
-import { Theme } from "../libraries/ui/theme/Theme";
+import { ChatMessage } from "../communications";
+import { Attachment } from "../documents/Attachment/attachment";
+import CustomFile from "../documents/File";
 import EventCategory from "../event/EventCategory";
+import EventSentiment from '../event/EventSentiment';
+import useFileUpload from "../hooks/commHooks/useFileUpload";
+import { Theme } from "../libraries/ui/theme/Theme";
+import { EventContentAnalysis } from "../models/data/EventContentAnalysis";
 import {
   CalendarStatus,
   PriorityStatus,
@@ -18,9 +26,13 @@ import {
   StatusType,
 } from "../models/data/StatusType";
 import { showErrorMessage, showToast } from "../models/display/ShowToast";
+import { LogData } from "../models/LogData";
 import { Task } from "../models/tasks/Task";
+import { Member } from "../models/teams/TeamMembers";
+import { ChatActions } from "../projects/DataAnalysisPhase/ChatActions";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
+import CalendarEventAlternative from "../state/stores/CalendarEventAlternative";
 import {
   dispatchNotification,
   NotificationData,
@@ -32,25 +44,13 @@ import {
   useNotification,
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
+import { User } from "../users/User";
+import CalendarEventImprovement from "./CalendarEventImprovement";
 import CalendarEventViewingDetailsProps from "./CalendarEventViewingDetails";
 import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
-import { endpoints } from "@/app/api/ApiEndpoints";
-import { initiateDataAnalysis } from "@/app/services/dataAnalysisService";
-import { ChangeEvent } from "react";
-import { ChatMessage } from "../communications";
-import { Attachment } from "../documents/Attachment/attachment";
-import CustomFile from "../documents/File";
-import useFileUpload from "../hooks/commHooks/useFileUpload";
-import { EventContentAnalysis } from "../models/data/EventContentAnalysis";
-import { LogData } from "../models/LogData";
-import { Member } from "../models/teams/TeamMembers";
-import { ChatActions } from "../projects/DataAnalysisPhase/ChatActions";
-import CalendarEventAlternative from "../state/stores/CalendarEventAlternative";
-import { User } from "../users/User";
-import CalendarEventImprovement from "./CalendarEventImprovement";
 
 interface Milestone {
   id: string;
@@ -78,10 +78,6 @@ export interface ChatRoom {
   topics: any[]; // Adjust 'any[]' to the actual type of 'topics'
   messages: ChatMessage[]; // Add 'messages' property
   users: User[]; // Add 'users' property
-
-  addMessage: (message: ChatMessage) => {
-    // Add logic to add message to room
-  };
 }
 
 interface ShareFilesPayload {

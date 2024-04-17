@@ -1,8 +1,9 @@
 // FeatureStore.ts
 import { makeAutoObservable } from "mobx";
+import { Data } from "../../models/data/Data";
 
 // Define the interface for a feature
-interface Feature {
+interface Feature extends Data{
   id: string;
   name: string;
   description: string;
@@ -43,3 +44,4 @@ class FeatureStore {
 
 const featureStore = new FeatureStore();
 export default FeatureStore; featureStore;
+export type { Feature };

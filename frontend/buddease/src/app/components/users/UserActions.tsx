@@ -26,7 +26,7 @@ export const UserActions = {
   fetchUserRequest: createAction<{userId: User["id"]}>("fetchUserRequest"),
   
   
-  fetchUserById: createAction<{ userId: number }>("fetchUserById"),
+  fetchUserById: createAction<{ userId: User['id'] }>("fetchUserById"),
   fetchUserByIdSuccess: createAction<{ user: User }>("fetchUserByIdSuccess"),
   fetchUserByIdFailure: createAction<{ error: string }>("fetchUserByIdFailure"),
   

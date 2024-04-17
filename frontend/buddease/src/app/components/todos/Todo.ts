@@ -5,11 +5,11 @@ import ChecklistItem, {
   ChecklistItemProps,
 } from "../models/data/ChecklistItem";
 import { PriorityStatus, StatusType } from "../models/data/StatusType";
-import { Idea } from "../models/tasks/Task";
 import { Progress } from "../models/tracker/ProgressBar";
 import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../snapshots/SnapshotStore";
+import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 export interface Todo {

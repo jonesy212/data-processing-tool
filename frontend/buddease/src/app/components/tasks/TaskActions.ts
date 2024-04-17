@@ -10,7 +10,12 @@ export const TaskActions = {
   toggle: createAction<number>("toggleTask"),
   updateTask: createAction<{ id: number, newTitle: string }>("updateTaskTitle"), // Adjusted
   validateTask: createAction<Task>("validateTask"),
+  
   fetchTasksRequest: createAction("fetchTasksRequest"),
+  fetchTasksByTaskUserId: createAction<{
+    assigneeId: string,
+    tasks: string[],
+  }>("fetchTasksByTaskUserId"),
   fetchTasksSuccess: createAction<{ tasks: Task[] }>("fetchTasksSuccess"),
   fetchTasksFailure: createAction<{ error: string }>("fetchTasksFailure"),
   
@@ -20,7 +25,7 @@ export const TaskActions = {
   completeAllTasksSuccess: createAction("completeAllTasksSuccess"),
   completeAllTasksFailure: createAction<{ error: string }>("completeAllTasksFailure"),
 
-
+  assignTaskToCurrentUser: createAction<{generatedTask: Promise<Task>, currentUser: string }>("assignTaskToCurrentUser"),
   addTaskSuccess: createAction<{ task: Task }>("addTaskSuccess"),
   addTaskFailure: createAction<{ error: string }>("addTaskFailure"),
 
@@ -34,6 +39,23 @@ export const TaskActions = {
   removeTasksSuccess: createAction<{ tasks: Task[] }>("removeTasksSuccess"),
   removeTaskFailure: createAction<{ error: string }>("removeTaskFailure"),
   
+
+
+  // Additional actions for updating task assignee
+  sortByDueDate: createAction("sortByDueDate"),
+  exportTasksToCSV: createAction("exportTasksToCSV"),
+  updateTaskPriority: createAction<{ taskId: number, newPriority: string }>("updateTaskPriority"),
+  updateTaskPriorityFailure: createAction<{ taskId: string, error: string }>("updateTaskPriorityFailure"),
+
+  filterTasksByStatus: createAction<{ status: string }>("filterTasksByStatus"),
+  getTaskCountByStatus: createAction("getTaskCountByStatus"),
+  clearAllTasks: createAction("clearAllTasks"),
+  archiveCompletedTasks: createAction("archiveCompletedTasks"),
+
+
+
+  markTaskAsInProgressSuccess: createAction<{taskId: Task, requestData: string}>("markTaskAsInProgressSuccess"),
+
   // Batch actions for fetching
   batchFetchTasksRequest: createAction("batchFetchTasksRequest"),
   batchFetchTasksSuccess: createAction<{ tasks: Task[] }>("batchFetchTasksSuccess"),

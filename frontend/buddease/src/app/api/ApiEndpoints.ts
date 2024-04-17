@@ -59,6 +59,11 @@ export const endpoints: Endpoints = {
     // Add more endpoints as needed
   },
 
+  externaAuth: {
+    wixAuthentication: `${BASE_URL}/external/wix/authenticate`,
+    // Add more external authentication endpoints as needed
+  },
+
   auth: {
     admin: `${BASE_URL}/api/admin/login`,
     forgotPassword: `${BASE_URL}/auth/forgot-password`,
@@ -108,6 +113,48 @@ export const endpoints: Endpoints = {
     search: `${BASE_URL}/api/calendar/events/search`,
     eventDetails: (eventId: string) =>
       `${BASE_URL}/api/calendar/events/${eventId}/details`,
+     // Event Reminder
+  setEventReminder: `${BASE_URL}/api/calendar/events/set-reminder`,
+
+  // Delete Event
+  deleteEvent: (eventId: string) =>
+    `${BASE_URL}/api/calendar/events/${eventId}/delete`,
+
+  // Filter Events
+  filterEventsByCategory: `${BASE_URL}/api/calendar/events/filter-by-category`,
+
+  // Search Events
+  searchEvents: `${BASE_URL}/api/calendar/events/search`,
+
+  // Export Calendar
+  exportCalendar: `${BASE_URL}/api/calendar/export`,
+
+  // Undo/Redo Actions
+  undoAction: `${BASE_URL}/api/calendar/undo`,
+  redoAction: `${BASE_URL}/api/calendar/redo`,
+
+  // View Event Details
+  viewEventDetails: (eventId: string) =>
+    `${BASE_URL}/api/calendar/events/${eventId}/details`,
+
+  // Bulk Edit Events
+  bulkEditEvents: `${BASE_URL}/api/calendar/events/bulk-edit`,
+
+  // Recurring Events
+  createRecurringEvent: `${BASE_URL}/api/calendar/events/create-recurring`,
+
+  // Custom Event Notifications
+  setCustomEventNotifications: `${BASE_URL}/api/calendar/events/set-custom-notifications`,
+
+  // Event Comments/Notes
+  addEventComment: `${BASE_URL}/api/calendar/events/add-comment`,
+
+  // Event Attachments
+  attachEventFile: `${BASE_URL}/api/calendar/events/attach-file`,
+
+  // Task Visibility
+  toggleShowTasks: `${BASE_URL}/api/calendar/toggle-show-tasks`,
+
   },
   chat: {},
 
@@ -887,8 +934,7 @@ export const endpoints: Endpoints = {
     fetchTeamData: (teamId: number) => `${BASE_URL}/api/teams/${teamId}/data`,
     remove: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
     update: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
-    updateTeams: (teamIds: number[]) =>
-      `${BASE_URL}/api/teams/${teamIds.join(",")}`,
+    updateTeams: (teamIds: number[]) => `${BASE_URL}/api/teams/${teamIds.join(",")}`,
     // Add other team-related endpoints as needed
   },
 
@@ -961,8 +1007,7 @@ export const endpoints: Endpoints = {
   screenSharing: {
     startSession: `${BASE_URL}/api/screen-sharing/start-session`,
     endSession: `${BASE_URL}/api/screen-sharing/end-session`,
-    getSessionDetails: (sessionId: string) =>
-      `${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
+    getSessionDetails: (sessionId: string) =>`${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
   },
 
   dataAnalysis: {
@@ -1010,8 +1055,7 @@ export const endpoints: Endpoints = {
 
   moderators: {
     list: `${BASE_URL}/api/moderators`,
-    single: (moderatorId: number) =>
-      `${BASE_URL}/api/moderators/${moderatorId}`,
+    single: (moderatorId: number) =>`${BASE_URL}/api/moderators/${moderatorId}`,
     manageCommunity: `${BASE_URL}/api/moderators/manage-community`,
     moderateContent: `${BASE_URL}/api/moderators/moderate-content`,
     participateInDecisions: `${BASE_URL}/api/moderators/participate-decisions`,
@@ -1021,19 +1065,12 @@ export const endpoints: Endpoints = {
   monetization: {
     startClientProject: `${BASE_URL}/api/monetization/start-client-project`,
     getClientProjects: `${BASE_URL}/api/monetization/client-projects`,
-    getClientProjectDetails: (projectId: string) =>
-      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    updateClientProject: (projectId: string) =>
-      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    deleteClientProject: (projectId: string) =>
-      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-
-    sendGift: (userId: string, giftId: string) =>
-      `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
-    getReceivedGifts: (userId: string) =>
-      `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
-    redeemGift: (giftId: string) =>
-      `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
+    getClientProjectDetails: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    updateClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    deleteClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    sendGift: (userId: string, giftId: string) => `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
+    getReceivedGifts: (userId: string) => `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
+    redeemGift: (giftId: string) => `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
   },
 
   toolbar: {

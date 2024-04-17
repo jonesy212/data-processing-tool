@@ -1,6 +1,7 @@
 // DraggableAnimation.tsx
 import React, { ReactNode, useEffect } from "react";
 import { useDrag } from "react-dnd";
+import { dragRef } from "../../dashboards/PhaseDashboard";
 interface DraggableAnimationProps {
   onDragStart: () => void;
   onDragEnd: () => void;
@@ -35,7 +36,7 @@ const DraggableAnimation: React.FC<DraggableAnimationProps> = ({
   return (
     <>
       <div
-        ref={drag}
+        ref={dragRef}
         style={{
           opacity: isDragging ? 0.5 : 1,
           cursor: "grab",

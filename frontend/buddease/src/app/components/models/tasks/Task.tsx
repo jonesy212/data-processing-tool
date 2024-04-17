@@ -21,6 +21,8 @@ interface Task extends Data {
   title: string;
   name: string | null;
   description: string;
+  projectName: string;
+
   assignedTo: WritableDraft<User> | null; 
   assigneeId: User["id"];
   dueDate: Date;

@@ -3,6 +3,9 @@ import { makeAutoObservable } from "mobx";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
+import teamApiService from "@/app/api/TeamApi";
+
+
 
 export interface AssignTeamMemberStore extends AssignBaseStore {
   assignTeamMember: (teamId: string, userId: string) => void;
@@ -38,6 +41,14 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
     }
     // TODO: Implement any additional logic needed when assigning a team member
   };
+
+
+  const assignNoteToTeam = async (teamId: string, noteId: string) => { 
+    await teamApiService.assignNoteToTeam(teamId, noteId);
+    assignNote(noteId, teamId);
+    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Team.ASSIGN_NOTE_SUCCESS);
+
+  }
 
   const unassignTeamMember = (teamId: string, userId: string) => {
     if (assignedTeamMembers[teamId]) {
@@ -162,6 +173,7 @@ const reassignUsersInTeams = (teamIds: string[], oldUserId: string, newUserId: s
   makeAutoObservable({
     assignedTeams,
     assignedTeamMembers,
+    assignNoteToTeam,
     assignTeamMember,
     unassignTeamMember,
     reassignTeamMember,
@@ -177,6 +189,7 @@ const reassignUsersInTeams = (teamIds: string[], oldUserId: string, newUserId: s
     ...baseStore,
     ...assignedTeamMembers,
     assignTeamMember,
+    assignNoteToTeam,
     assignUsersToTeams,
     unassignUsersFromTeams,
     reassignUsersInTeams,

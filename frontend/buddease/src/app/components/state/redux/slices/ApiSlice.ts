@@ -34,6 +34,14 @@ export const useApiManagerSlice = createSlice({
       state.apiConfigUrl = action.payload;
     },
 
+    markTaskPending: (state, action: PayloadAction<{ id: string }>) => { 
+      const { id } = action.payload;
+      const taskIndex = state.tasks.findIndex((task) => task.id === id);
+      if (taskIndex >= 0) {
+        state.tasks[taskIndex].isComplete = false;
+      }
+    },
+
     updateApiConfigTimeout: (state, action: PayloadAction<number>) => {
       state.apiConfigTimeout = action.payload;
     },
@@ -50,6 +58,22 @@ export const useApiManagerSlice = createSlice({
         (config) => config.id !== action.payload
       );
     },
+
+    enableRealTimeCollaboration: (
+      state,
+      action: PayloadAction<void>
+    ) => { 
+      // logic to enable real-time collaboration
+      console.log("Real-time collaboration enabled");
+      dispatch(addTask({
+        id: Date.now().toString(),
+        title: "Enable real-time collaboration",
+        isComplete: false
+      }));
+      state.realTimeCollaboration = true;
+
+
+    }
 
     markTaskComplete: (
       state,

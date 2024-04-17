@@ -1,5 +1,6 @@
 // phases/PhaseActions.ts
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
+import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Phase } from "./Phase";
 
 export const PhaseActions = {
@@ -12,7 +13,8 @@ export const PhaseActions = {
   // Actions for handling transitions and hooks
   canTransitionTo: createAction<{ nextPhase: Phase }>("canTransitionTo"),
   handleTransitionTo: createAction<{ nextPhase: Phase }>("handleTransitionTo"),
-
+  setCurrentPhase: createAction<ProjectPhaseTypeEnum>("setCurrentPhase"),
+  setNextPhase: createAction<ProjectPhaseTypeEnum>("setNextPhase"),
   // Additional actions for custom hooks
   resetIdleTimeout: createAction("resetIdleTimeout"),
   activatePhase: createAction("activatePhase"),

@@ -1,7 +1,8 @@
 
 // blogActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { BlogComment, BlogPost } from "./types"; // Replace with actual types
+import { BlogComment } from "../../state/redux/slices/BlogSlice";
+import { BlogPost } from "../../community/DiscussionForumComponent";
 
 export const BlogActions = {
   // Fetch Posts

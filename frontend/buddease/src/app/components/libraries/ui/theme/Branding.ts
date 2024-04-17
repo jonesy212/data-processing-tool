@@ -1,3 +1,4 @@
+import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
 import { Theme } from "./Theme";
 import { validateHexColor } from "./ThemeConfig";
 

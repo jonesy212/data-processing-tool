@@ -3,23 +3,23 @@ import { action, observable, runInAction } from 'mobx';
 import { useAuth } from '../../auth/AuthContext';
 import axiosInstance from '../../security/csrfToken';
 import DATA_NOTIFICATIONS from '../../support/DataNotifications';
-import { NotificationContextProps } from '../../support/NotificationContext';
-import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
+import { NotificationContextProps, NotificationTypeEnum } from '../../support/NotificationContext';
 import { Data } from './Data';
+import { YourResponseType } from '../../typings/types';
 
 class DataService {
   @observable notification: NotificationContextProps | null = null;
-  @observable dataAnalysis: Data[] | null = null;
+  @observable dataAnalysis: YourResponseType[] | null = null;
   @observable loading = false;
   @observable error: string | null = null;
 
- @action
-fetchData = async () => {
+  @action
+fetchData = async (): Promise<void> => {
   try {
     this.loading = true;
 
     const authStore = useAuth();
-    const response = await axiosInstance.get('/api/data', { headers: { Authorization: `Bearer ${authStore.token}` } });
+    const response = await axiosInstance.get<YourResponseType[]>('/api/data', { headers: { Authorization: `Bearer ${authStore.token}` } });
 
     if (response.status !== 200) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
@@ -30,11 +30,11 @@ fetchData = async () => {
     runInAction(() => {
       if (this.notification) {
         this.notification.notify(
-          
-          NOTIFICATION_TYPES.OPERATION_SUCCESS,
+          "fetchDataSuccess",
+          "Data fetched successfully",
           DATA_NOTIFICATIONS.DataOperationSuccess.FETCH_SUCCESS,
           new Date(),
-          NOTIFICATION_TYPES.OPERATION_SUCCESS
+          NotificationTypeEnum.OperationSuccess
         );
       }
       this.dataAnalysis = dataAnalysis;
@@ -44,10 +44,11 @@ fetchData = async () => {
     runInAction(() => {
         if (this.notification) {
           this.notification.notify(
-            NOTIFICATION_TYPES.ERROR,
+            "fetchDataFailure",
+            "Failed to fetch data",
             DATA_NOTIFICATIONS.DataError.FETCH_ERROR,
             new Date(),
-            NOTIFICATION_TYPES.ERROR
+            NotificationTypeEnum.Error
           );
         }
         this.error = error.message || 'Error fetching data'; // Set error message

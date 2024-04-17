@@ -1,35 +1,60 @@
-// SearchComponent.tsx
+import React, { useState, useEffect } from 'react';
 import SearchComponent from '@/app/pages/searchs/SearchComponent';
-import Script from 'next/script';
-import React from 'react';
+import { searchDocuments, SearchResult } from '@/app/api/ApiDocument'; // Assuming SearchResult is the type of each item in searchResults
+import useErrorHandling from '../hooks/useErrorHandling';
+import LoadingSpinner from '../models/tracker/LoadingSpinner';
 
 const SearchPage: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]); // Specify the type of searchResults as SearchResult[]
+  const [loading, setLoading] = useState(false);
+  const { error, handleError, clearError } = useErrorHandling();
+
+  useEffect(() => {
+    if (searchQuery) {
+      performSearch(searchQuery);
+    }
+  }, [searchQuery]);
+
+  const performSearch = async (query: string) => {
+    try {
+      setLoading(true);
+      const results = await searchDocuments(query);
+      setSearchResults(results);
+      setLoading(false);
+      clearError();
+    } catch (error) {
+      handleError("Failed to fetch search results. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        #TODO CONNECT STYSHEET
-        <link rel="stylesheet" href="search.css" />
-        <title>Global Search</title>
-      </head>
-      <body>
-        <div className="search-container">
-          <input type="text" id="searchInput" placeholder="Search..." />
-          <button id="searchButton">Search</button>
-          <div id="searchResults" className="search-results"></div>
-        </div>
-
-        <Script src="Search.tsx">
-
-        </Script>
-        <SearchComponent
-          documentData={[]}
-          componentSpecificData={[]}
+    <div>
+      <div className="search-container">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search..."
+          onChange={(e) => handleSearch(e.target.value)}
         />
-
-      </body>
-    </html>
+        <button id="searchButton">Search</button>
+      </div>
+      <LoadingSpinner loading={loading} />
+      {error && <div>Error: {error}</div>}
+      <div className="search-results">
+        {searchResults.map((result, index) => (
+          <div key={index}>
+            <h3>{result.title}</h3>
+            <p>{result.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

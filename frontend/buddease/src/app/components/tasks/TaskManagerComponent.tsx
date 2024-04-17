@@ -25,6 +25,10 @@ import { VideoData } from "../video/Video";
 import TaskAssignmentSnapshot from "./TaskAssignmentSnapshot";
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import TaskList from "../lists/TaskList";
+import { ProjectActions } from "../actions/ProjectActions";
+import { Project } from "../projects/Project";
+import updateUI from "../documents/editing/updateUI";
+import { ProjectDetails } from '@/app/components/projects/Project';
 
 interface TaskAssignmentProps {
   taskId: () => string;
@@ -93,6 +97,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     {
       _id: "taskData", // Example value
       id: "1",
+      name: "Task 1",
       title: "Task 1",
       description: "Description for Task 1",
       assignedTo: null,
@@ -137,6 +142,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     {
       _id: "taskData", // Example value
       id: "2",
+      name: "Task 2",
       title: "Task 2",
       description: "Description for Task 2",
       assignedTo: null,
@@ -181,6 +187,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     {
       _id: "taskData", // Example value
       id: "3",
+      name: "Task",
       title: "Task 3",
       description: "Description for Task 3",
       assignedTo: null,
@@ -311,6 +318,48 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     }
   };
 
+  const updateUIWithProjectDetails = async (projectId: { projectId: string; project: Project; details: typeof ProjectDetails; }) => {
+    // Update UI with project details
+    const projectDetails = ProjectActions.fetchProjectDetails(projectId);
+    updateUI(projectDetails);
+
+  };
+
+  const handleProjectClick = async (projectId: { projectId: string; project: Project; details: typeof ProjectDetails; },
+    type: string) => {
+    try {
+      // Call API to update project
+      await updateProject(Number(projectId.projectId), { type });
+      // Optimistically update local project data
+      updateUIWithProjectDetails(projectId);
+      // Additional use case: Optimistically check project completion
+      if (updatedFields.done !== undefined) {
+        updateUIWithProjectDetails((prevProjectDetails) =>
+          prevProjectDetails.map((projectDetail) =>
+            projectDetail.projectId === projectId.projectId && updatedFields.done
+              ? { ...projectDetail, done: true }
+              : projectDetail
+          )
+        );
+
+        // Call function to check project completion asynchronously
+        await checkProjectCompletion(projectId);
+        if (type === "complete") {
+          // Mark project as complete
+          ProjectActions.updateProjectCompletion(projectId);
+        }
+      // Assuming you have a function to fetch the project details based on its ID
+        const projectDetails = await ProjectActions.fetchProjectDetails(projectId);
+        const { project, details } = projectDetails;
+      // Assuming you have a function to update the UI or perform any other action
+      ProjectActions.updateUIWithProjectDetails(projectDetails);
+      // Log a message to the console
+      console.log(`Project clicked: ${projectId}`);
+      // Assuming you have a function to fetch project details based on its ID
+    } catch (error: any) {
+      console.error("Error fetching project details:", error);
+    }
+  }
   // Function to fetch todo details from the server
   const fetchTodoDetails = async (todoId: Todo) => {
     // Simulated fetch operation, replace this with your actual API call
@@ -390,6 +439,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
         dynamicContent={tasks} // Assuming tasks is an array of tasks
         handleTaskClick={handleTaskClick}
         handleTodoClick={handleTodoClick}
+        handleProjectClick={handleProjectClick}
       />
       <input
         type="text"

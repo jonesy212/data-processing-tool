@@ -1,10 +1,10 @@
 // DatabaseOperations.ts
 
 import {
-    DatabaseConfig,
-    DatabaseService,
-    MysqlDatabaseService,
-    PostgresDatabaseService
+  DatabaseConfig,
+  DatabaseService,
+  MysqlDatabaseService,
+  PostgresDatabaseService
 } from "@/app/configs/DatabaseConfig";
 // Function to perform database operation
 const performDatabaseOperation = async (
@@ -14,11 +14,12 @@ const performDatabaseOperation = async (
 ): Promise<any> => {
     let databaseService: DatabaseService;
   
+  
     // Determine which database service to use based on the configuration
     if (config.url.includes('postgres')) {
-      databaseService = new PostgresDatabaseService();
+      databaseService = new PostgresDatabaseService(config);
     } else if (config.url.includes('mysql')) {
-      databaseService = new MysqlDatabaseService();
+      databaseService = new MysqlDatabaseService(config);
     } else {
       throw new Error('Unsupported database type');
     }
@@ -37,10 +38,3 @@ const performDatabaseOperation = async (
 export default performDatabaseOperation;
 export let databaseService: DatabaseService;
 
-if (config.url.includes("postgres")) {
-  databaseService = new PostgresDatabaseService();
-} else if (config.url.includes("mysql")) {
-  databaseService = new MysqlDatabaseService();
-} else {
-  throw new Error("Unsupported database type");
-}

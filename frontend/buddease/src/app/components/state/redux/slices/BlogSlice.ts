@@ -48,5 +48,5 @@ const blogSlice = createSlice({
 
 export const { addPost, addComment } = blogSlice.actions;
 export default blogSlice.reducer;
-export type { CustomComment };
+export type { BlogComment, CustomComment };
 

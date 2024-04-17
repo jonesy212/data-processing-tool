@@ -94,7 +94,6 @@ class UserService {
   fetchUserProfile = async (userId: string) => {
     try {
       const user = await this.fetchUserById(userId);
-
       // Create UserProfile interface
       interface UserProfile extends User {
         id: string;
@@ -130,27 +129,25 @@ class UserService {
   };
 
 
-
-  
-
-  fetchUserById = async (userId: string) => {
-    try {
-      const response = await axiosInstance.get(
-        `${dotProp.getProperty(API_BASE_URL, "single", [Number(userId)])}`
-      );
-      const user = response.data;
-      // Dispatch the success action
-      UserActions.fetchUserByIdSuccess({ user });
-      sendNotification(`User with ID ${userId} fetched successfully`);
-      return user;
-    } catch (error) {
-      // Dispatch the failure action
-      UserActions.fetchUserByIdFailure({ error: String(error) });
-      sendNotification(`Error fetching user with ID ${userId}: ${error}`);
-      console.error("Error fetching user:", error);
-      throw error;
+    fetchUserById = async (userId: string) => {
+      try {
+        const response = await axiosInstance.get(
+          `${dotProp.getProperty(API_BASE_URL, "single", [Number(userId)])}`
+        );
+        const user = response.data;
+        // Dispatch the success action
+        UserActions.fetchUserByIdSuccess({ user });
+        sendNotification(`User with ID ${userId} fetched successfully`);
+        return user;
+      } catch (error) {
+        // Dispatch the failure action
+        UserActions.fetchUserByIdFailure({ error: String(error) });
+        sendNotification(`Error fetching user with ID ${userId}: ${error}`);
+        console.error("Error fetching user:", error);
+        throw error;
+      }
     }
-  };
+    
 
   fetchUserByIdSuccess = async () => {
     try {
@@ -503,6 +500,9 @@ updateUserRoles = async (users: {
     }
     return [];
   };
+
+
+
 }
 
 const userService = new UserService();

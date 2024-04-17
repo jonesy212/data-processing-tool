@@ -4,10 +4,6 @@ interface MessageCategory<T> {
   [key: string]: T 
 }
 
-export class NamingConventionsError extends Error {
-  constructor(errorType: string, details: string);
-}
-
 // Helper function to handle dynamic notification message
 export const handleDynamicNotificationMessage = (
   message: string | ((errorType: string, details: string) => string),
@@ -646,10 +642,10 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     TASK_DELETED: "Task deleted successfully",
     TASK_UPDATED: "Task updated successfully",
     COMPLETED: "Task marked as complete successfully!",
+    TASK_MARKED_IN_PROGRESS_FAILED: "Error marking task as in progress. Please try again",
     // New Error Messages for Tasks
-    TASK_DUPLICATE_ERROR:
-      "Duplicate task found. Please choose a different name",
-
+    TASK_DUPLICATE_ERROR: "Duplicate task found. Please choose a different name",
+    TASK_EXPORT_ERROR: "Error exporting tasks. Please try again",
     TASK_ASSIGN_ERROR: "Error assigning task. Please try again",
     TASK_ADD_ERROR: "Error adding task. Please try again",
     TASK_UPDATE_ERROR: "Task did not update successfully, please try again",
@@ -727,6 +723,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     //Batch
     FETCH_TEAMS_ERROR: "Error fetching teams. Please try again",
     UPDATE_TEAMS_ERROR: "Error updating teams. Please try again",
+    ASSIGN_NOTE_SUCCESS: "Note assigned successfully",
   },
 
   TeamManagement: {
@@ -759,6 +756,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     TODO_REMOVE_ERROR: "Error removing todo. Please try again",
     COMPLETE_ALL_TODOS_ERROR: "Error completing all todo. Please try again",
     TODO_TOGGLE_ERROR: "Error toggling todo status. Please try again",
+    
     BATCH_ASSIGN_ERROR: "Error assigning todos in batch. Please try again",
   },
 

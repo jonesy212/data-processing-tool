@@ -1,8 +1,8 @@
 // NotificationsService.ts
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { NotificationData } from "../components/support/NofiticationsSlice";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
+import NOTIFICATION_MESSAGES from '@/app/components/support/NotificationMessages';
 
 // Define API base URL
 const API_BASE_URL = endpoints.notifications;
@@ -23,6 +23,7 @@ class ApiNotificationsService {
   ) => void;
   notificationMessages: ApiNotificationMessages;
 
+  
   constructor(
     notify: (
       id: string,
@@ -39,6 +40,32 @@ class ApiNotificationsService {
       // Add more notification messages as needed
     };
   }
+
+  async error(messageKey: keyof typeof NOTIFICATION_MESSAGES) {
+    const errorMessage = this.resolveErrorMessage(messageKey);
+    if (!errorMessage) {
+      throw new Error(`Notification message key '${messageKey}' not found.`);
+    }
+  }
+
+
+  private resolveErrorMessage(messageKey: keyof typeof NOTIFICATION_MESSAGES): string {
+    // Ensure messageKey is a string before splitting
+    const messageKeyString = messageKey as string;
+
+    // Resolve the error message by traversing the nested objects using the messageKey
+    const keys = messageKeyString.split('.');
+    let errorMessage: any = this.notificationMessages;
+    for (const key of keys) {
+      errorMessage = errorMessage[key];
+      if (typeof errorMessage !== 'object') {
+        break;
+      }
+    }
+    return errorMessage as string;
+}
+
+
 
   async fetchNotifications(): Promise<NotificationData[]> {
     try {

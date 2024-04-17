@@ -146,6 +146,15 @@ export enum ProjectPhaseTypeEnum {
   DataAnalysis = 'data_analysis',
 }
 
+export enum DevelopmentPhaseEnum{
+  Planning,
+  Design,
+  Development,
+  Testing,
+  Deployment,
+  IdeaCreation,
+}
+
 
 export enum CommunicationMediaType {
   Audio = 'audio',
@@ -178,11 +187,9 @@ export {
   ComponentStatus,
   DataStatus,
   NotificationStatus,
-  PriorityStatus,
-  StatusType,
+  PriorityStatus, ProductStatus, StatusType,
   TaskStatus,
   TeamStatus,
-  TodoStatus,
-  ProductStatus,
+  TodoStatus
 };
 

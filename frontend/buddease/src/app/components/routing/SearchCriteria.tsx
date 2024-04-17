@@ -1,13 +1,13 @@
+import { debounce } from "@/app/pages/searchs/Debounce";
+import { SearchItemProps } from "@/app/pages/searchs/SearchItems";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../state/redux/slices/RootSlice";
-import { debounce } from "@/app/pages/searchs/Debounce";
-import { fuzzyMatchEntities } from "./FuzzyMatch";
-import { Entity } from "../state/redux/slices/EntitySlice";
-import { SearchLogger } from "../logging/Logger";
 import { useParams } from "react-router-dom";
-import { fetchUserData } from "@/app/api/UsersApi";
+import { SearchLogger } from "../logging/Logger";
+import { Entity } from "../state/redux/slices/EntitySlice";
+import { RootState } from "../state/redux/slices/RootSlice";
 import userService from "../users/ApiUser";
+import { fuzzyMatchEntities } from "./FuzzyMatch";
 
 const SearchCriteria: React.FC<{
   onUpdateCriteria: (criteria: string) => void;
@@ -19,7 +19,8 @@ const SearchCriteria: React.FC<{
   const entities = useSelector((state: RootState) => state.entityManager);
 
   // Function to perform fuzzy search with debounce
-  const { userId } = useParams();
+  const { userId } = useParams()
+
   const debouncedSearch = debounce(async (term: string) => {
     try {
       const matchedEntities = await fuzzyMatchEntities(
@@ -65,7 +66,7 @@ const SearchCriteria: React.FC<{
     debouncedSearch(value);
     // Log search query
     if (userId !== undefined) {
-      SearchLogger.logSearch(value, userId);
+      SearchLogger.logSearch(value, userId as unknown as SearchItemProps);
     }
   };
 

@@ -1,5 +1,4 @@
 // UserQuestionnaire.tsx
-import { setCurrentPhase } from '@/app/components/hooks/phaseHooks/EnhancePhase';
 import axios from 'axios';
 import React from 'react';
 import { Question } from '../onboarding/Question';
@@ -7,10 +6,13 @@ import QuestionnairePage from '../onboarding/QuestionnairePage';
 
 interface UserQuestionnaireProps {
   onSubmit: (userResponses: any) => void;
-  onComplete: () => void; // Change the return type to void
+  onComplete: (userResponses: any) => Promise<void>; // Change the return type to void
 }
 
-const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({ onSubmit }) => {
+const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({
+  onSubmit,
+  onComplete
+}) => {
   const onboardingQuestionnaireData: {
     title: string;
     description: string;
@@ -38,6 +40,10 @@ const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({ onSubmit }) => {
 
       // Call the parent component's onSubmit function
       onSubmit(userResponses);
+
+      // Call the parent component's onComplete function
+      await onComplete(userResponses);
+   
     } catch (error) {
       // Handle any network or unexpected errors
       console.error('Error sending questionnaire responses:', error);

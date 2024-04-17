@@ -1,5 +1,4 @@
 // CryptoCallsSystem.tsx
-// CryptoCallsSystem.tsx
 import ProfessionalTraderCalls from "@/app/pages/personas/ProfessionalTraderCalls";
 import React, { useEffect, useState } from "react";
 import CryptoEnthusiastCalls from "../phases/crypto/CryptoEnthusiastCalls";

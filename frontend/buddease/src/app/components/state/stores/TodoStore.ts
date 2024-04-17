@@ -5,9 +5,13 @@ import { useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
+import { todoService } from "../../todos/TodoService";
 
+
+const {notify} = useNotification()
 export interface TodoManagerStore {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
@@ -16,10 +20,11 @@ export interface TodoManagerStore {
   addTodo: (todo: Todo) => void;
   addTodos: (newTodos: Todo[], data: SnapshotStore<Snapshot<Data>>) => void;
   removeTodo: (id: string) => void;
+  assignTodoToUser: (todoId: string, userId: string) => void;
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
   fetchTodosSuccess: (payload: { todos: Todo[] }) => void;
   fetchTodosFailure: (payload: { error: string }) => void;
-
+  
   openTodoSettingsPage: (todoId: number, teamId: number) => void;
   getTodoId: (todo: Todo) => string;
   
@@ -44,6 +49,29 @@ const useTodoManagerStore = (): TodoManagerStore => {
     >({});
     const [uiState, setUIState] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   
+  const assignTodoToUser = async (todoId: string, userId: string) => { 
+    setUIState({ loading: true, error: null });
+    try {
+      await todoService.assignTodoToUser(todoId, userId);
+      notify(
+        "assignTodoToUser",
+        "Todo assigned successfully!",
+        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGNED_SUCCESSFULLY,
+        new Date,
+        NotificationTypeEnum.Success
+      );
+    } catch (error: any) {
+      setUIState({ loading: false, error: error.message });
+      notify(
+        "assignTodoToUserFailure",
+        error.message,
+        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGN_ERROR,
+        new Date,
+        NotificationTypeEnum.Error,
+      );
+    }
+  }
+
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
 
   // Inside useTodoManagerStore function
@@ -97,6 +125,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
   const addTodo = (todo: Todo & { id: string | number }) => {
     setTodos((prevTodos) => ({ ...prevTodos, [todo.id]: todo }));
   };
+
 
   const loading = useRef(false);
 
@@ -181,6 +210,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
       return { ...prevTodos, [payload.id]: todo };
     });
   };
+
 
   const fetchTodosSuccess = (payload: { todos: Todo[] }) => {
     const { todos: newTodos } = payload;
@@ -318,6 +348,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
       todoList,
       removeTodo,
       updateTodoTitle,
+      assignTodoToUser,
       setSubscriptions,
       // Fetching Todos
       fetchTodosSuccess,

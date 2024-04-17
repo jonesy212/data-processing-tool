@@ -1,5 +1,6 @@
 import docx from "docx";
 import { DocumentData } from "./DocumentBuilder";
+import { NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
 
@@ -8,6 +9,16 @@ export interface CustomDocument extends docx.Document {
   addParagraph(paragraph: docx.Paragraph): void;
 }
 
+
+
+
+export const getDefaultNoteOptions = (): NoteOptions => {
+  const defaultOptions = getDefaultDocumentOptions();
+  return {
+    ...defaultOptions,
+    additionalOption2: "", // Add default value for additional option 2
+  };
+};
 
 // documentOptions.ts
 export interface DocumentOptions {

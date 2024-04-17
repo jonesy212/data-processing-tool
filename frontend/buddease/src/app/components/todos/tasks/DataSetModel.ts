@@ -23,11 +23,11 @@ interface DatasetModel {
   format: string;
   visibility: "public" | "private" | "shared"; // Assuming visibility can only be one of these values
   // Add other fields as needed
-
+  type: "file" | "url";
   // Relationships
   uploadedByTeamId: number | null; // Assuming this is the team ID
   uploadedByTeam: Team | null; // Assuming you have a Team interface
-
+  lastModifiedDate: Date;
   // Optional: Add other relationships as needed
 }
 
@@ -44,6 +44,8 @@ const dataset: DatasetModel = {
   visibility: "private",
   uploadedByTeamId: 1, // Assuming team ID 1
   uploadedByTeam: null,
+  type: "url",
+  lastModifiedDate: new Date()
   // Other fields
 };
 

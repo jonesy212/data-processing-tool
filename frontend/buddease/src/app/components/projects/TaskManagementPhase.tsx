@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import { Task } from "../models/tasks/Task";
 import LaunchPhase from "../phases/onboarding/LaunchPhase";
-import TaskManagerComponent from "../tasks/TaskManagerComponent";
-import DataAnalysisPhase from "./DataAnalysisPhase/DataAnalysisPhase";
+ import DataAnalysisPhase from "./DataAnalysisPhase/DataAnalysisPhase";
+import TaskManagerComponent from '../tasks/TaskManagerComponent';
+import { PlanningPhase } from "@/app/pages/development/DevelopmentPhase";
 
 export enum TaskManagementPhase {
   LAUNCH,

@@ -23,6 +23,7 @@ interface EntityProps {
 interface ContentRendererProps {
   dynamicContent?: Task[] | Project[]; // Union type of Task[] or Project[]
   handleTaskClick: (task: Task) => void;
+  handleTodoClick: (todo: Todo) => void;
   handleProjectClick: (project: Project) => void;
   entity?: EntityProps; // Add EntityProps as a prop
   button?: ButtonProps;

@@ -1,8 +1,10 @@
 // SearchBar.tsx
 import React, { useState } from 'react';
+import { userId } from '../users/ApiUser';
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch: (userId:  string, query:  string) => Promise<void>
+  
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
@@ -21,14 +23,23 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSearch = () => {
     // Perform search action when the search button is clicked
-    onSearch(searchQuery);
+    const user = userId !== undefined ? userId : undefined;
+    if (user !== undefined) {
+      onSearch(user, searchQuery);
+    }
+
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     // Perform search action when the Enter key is pressed
     if (event.key === 'Enter') {
-      onSearch(searchQuery);
+      const user = userId !== undefined ? userId : undefined;
+      if (user !== undefined) {
+        onSearch(user, searchQuery);
+      }
     }
+    // Perform search on Enter key press
+    handleSearch();
   };
 
   return (

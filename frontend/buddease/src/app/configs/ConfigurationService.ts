@@ -149,9 +149,14 @@ private getDefaultApiConfig(): ApiConfig {
 
       }
     }
-  };
+  }
 }
 
+  
+  getAppName(currentAppName: string): string {
+    return currentAppName || this.getDefaultApiConfig().name;
+  }
+  
   // New public method to expose getDefaultApiConfig
   getPublicDefaultApiConfig(): ApiConfig {
     return this.getDefaultApiConfig();

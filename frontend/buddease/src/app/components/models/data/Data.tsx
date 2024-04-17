@@ -1,18 +1,23 @@
 import { ColorPalettes } from "antd/es/theme/interface";
 import { FakeData } from "../../Inteigents/FakeDataGenerator";
+import { Exchange } from "../../crypto/Exchange";
+import { Attachment } from "../../documents/Attachment/attachment";
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { Project } from "../../projects/Project";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import Todo from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
+import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
+import { Team } from "../teams/Team";
 import { Member } from "../teams/TeamMembers";
-import { Attachment } from "../../documents/Attachment/attachment";
-import { Idea } from "../../users/Ideas";
+import { ExchangeData } from "./ExchangeData";
+import { ProjectPhaseTypeEnum } from "./StatusType";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -75,7 +80,7 @@ export interface Comment {
 
 interface Data {
   _id?: string;
-  id: string | number;
+  id?: string | number | undefined;
   title?: string;
   description?: string | null;
   startDate?: Date;
@@ -86,7 +91,9 @@ interface Data {
   isActive?: boolean;
   tags?: string[];
   phase?: Phase | null;
+  phaseType?: ProjectPhaseTypeEnum;
   then?: (callback: (newData: Snapshot<Data>) => void) => void;
+  
   // Properties specific to Todo
   dueDate?: Date | null;
   priority?: AllStatus
@@ -122,6 +129,8 @@ interface Data {
   // tasks?: Todo[];
   leader?: User | null;
   snapshots?: SnapshotStore<Snapshot<Data>>[];
+  // Incorporating the data structure from YourResponseType
+  
 }
 
 // Define the UserDetails component
