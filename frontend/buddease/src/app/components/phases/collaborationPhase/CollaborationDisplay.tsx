@@ -55,11 +55,11 @@ const CollaborationDisplay: React.FC<CollaborationDisplayProps> = ({ /* Add prop
         }}
           >
               {/* Render collaboration elements or tools within this div */}
-        {positions.map((position, index) => (
+        {positions.map((position: { x: number; y: number }, index) => (
           <div
             key={index}
             style={{
-              position: 'absolute',
+              position: "absolute",
               left: `${position.x}px`,
               top: `${position.y}px`,
               // Additional styles as needed
@@ -68,6 +68,7 @@ const CollaborationDisplay: React.FC<CollaborationDisplayProps> = ({ /* Add prop
             {/* Your collaboration element */}
           </div>
         ))}
+
         {/* Use collaborationState to determine what to render */}
       </div>
       {/* Zoom and Pan Controls */}

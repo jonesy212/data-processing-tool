@@ -1,10 +1,9 @@
 import { ColorPalettes } from "antd/es/theme/interface";
 import { FakeData } from "../../Inteigents/FakeDataGenerator";
-import { Exchange } from "../../crypto/Exchange";
 import { Attachment } from "../../documents/Attachment/attachment";
+import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project } from "../../projects/Project";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
@@ -14,9 +13,7 @@ import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
-import { Team } from "../teams/Team";
 import { Member } from "../teams/TeamMembers";
-import { ExchangeData } from "./ExchangeData";
 import { ProjectPhaseTypeEnum } from "./StatusType";
 
 // Define the interface for DataDetails
@@ -117,6 +114,7 @@ interface Data {
   analysisType?: AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult[];
   
+  audioUrl?: string;
   videoUrl?: string;
   videoThumbnail?: string;
   videoDuration?: number;
@@ -128,6 +126,7 @@ interface Data {
   members?: Member[];
   // tasks?: Todo[];
   leader?: User | null;
+  // actions?: SnapshotStoreConfig<Snapshot<Data>[]>[];
   snapshots?: SnapshotStore<Snapshot<Data>>[];
   // Incorporating the data structure from YourResponseType
   

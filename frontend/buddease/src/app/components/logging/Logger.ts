@@ -1053,6 +1053,49 @@ class CalendarLogger extends Logger {
   }
 }
 
+class WebLogger {
+  static async logWebEvent(action: string, message: string, data?: any) {
+    try {
+      const logUrl = this.getLogUrl(action);
+
+      const response = await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ action, message, data }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log web event");
+      }
+    } catch (error: any) {
+      console.error("Error logging web event:", error);
+
+      // Handle the error accordingly
+      throw error;
+    }
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    if (typeof endpoints.logs.logEvent === "string") {
+      logUrl = endpoints.logs.logEvent;
+    } else if (typeof endpoints.logs.logEvent === "function") {
+      logUrl = endpoints.logs.logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
+      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
+    }
+
+    return logUrl;
+  }
+}
+
+
+
 class TenantLogger extends Logger {
   static logUserRegistration(userId: string) {
     super.logWithOptions(
@@ -1326,6 +1369,7 @@ export {
   TaskLogger,
   TeamLogger,
   TenantLogger,
-  VideoLogger
+  VideoLogger,
+  WebLogger,
 };
 

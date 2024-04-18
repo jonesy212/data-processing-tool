@@ -18,6 +18,7 @@ export enum TeamCreationPhase {
   MEMBERS,
   PREFERENCES,
   REVIEW,
+  QUESTIONNAIRE,
   CONFIRMATION,
 }
 

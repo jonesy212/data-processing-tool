@@ -8,7 +8,7 @@ interface ButtonProps {
   color?: string; // Add color prop
   disabled?: boolean; // Add disabled prop
   style?: React.CSSProperties; // Add style prop
-  label: string;
+  label?: string
   onClick?: () => void;
   onEvent?: (clickEvent: React.MouseEvent<HTMLButtonElement>) => void;
   onCancel?: () => void;
@@ -29,16 +29,15 @@ interface ButtonProps {
 }
 
 const ReusableButton: React.FC<ButtonProps> = ({
-  label,
+  label = "",
   variant,
   onClick,
   onEvent,
-  
 }) => {
   // Additional logic before button action if needed
   const handleOnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log(`${label} button clicked!`);
-    
+
     if (onEvent) {
       onEvent(event); // Call the custom event handler if provided
     } else if (onClick) {
@@ -48,7 +47,7 @@ const ReusableButton: React.FC<ButtonProps> = ({
 
   return (
     <button onClick={handleOnClick} className={variant}>
-      {label}
+      {label.toString()}
     </button>
   );
 };

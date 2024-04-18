@@ -37,7 +37,8 @@ const ExampleDashboard: React.FC = () => {
   };
 
   return (
-    <ResizablePanels sizes={sizes} onResize={onResize}>
+    <ResizablePanels
+      sizes={sizes} onResize={onResize}>
       <DashboardPanel title="Panel 1" content={<p>Content for panel 1</p>} />
       <DynamicDashboard title="Panel 2" content={<p>Content for panel 2</p>} />
     </ResizablePanels>

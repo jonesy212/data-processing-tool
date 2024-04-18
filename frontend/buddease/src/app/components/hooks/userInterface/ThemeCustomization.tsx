@@ -1,14 +1,22 @@
 // ThemeCustomization.tsx
-import React, { useState } from "react";
-import { NotificationManagerServiceProps } from "../../notifications/NotificationService";
-import { useThemeConfig } from "./ThemeConfigContext";
 import { ThemeConfig } from '@/app/components/libraries/ui/theme/ThemeConfig';
-
-const ThemeCustomization: React.FC<{
+import React, { SetStateAction, useState } from "react";
+import { NotificationManagerServiceProps } from '../../notifications/NotificationService';
+import { useThemeConfig } from "./ThemeConfigContext";
+ 
+interface ThemeCustomizationProps { 
   themeState: ThemeConfig;
   setThemeState: React.Dispatch<React.SetStateAction<ThemeConfig>>;
   notificationState: NotificationManagerServiceProps;
-}> = ({ themeState, setThemeState, notificationState }) => {
+  setPrimaryColor: React.Dispatch<SetStateAction<ThemeConfig>>
+  setSecondaryColor: React.Dispatch<SetStateAction<ThemeConfig>>
+  setFontSize: React.Dispatch<React.SetStateAction<string>>;
+}
+const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
+  themeState,
+  setThemeState,
+  notificationState
+}) => {
   const {
     primaryColor,
     setPrimaryColor,

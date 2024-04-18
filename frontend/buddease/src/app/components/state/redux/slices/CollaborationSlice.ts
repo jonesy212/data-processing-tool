@@ -4,21 +4,29 @@ import { Task } from "@/app/components/models/tasks/Task";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Project } from "@/app/components/projects/Project";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Communication } from '../../../communications/chat/Communication';
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
+import { action } from 'mobx';
+import ProjectProgress from '../../../projects/projectManagement/ProjectProgress';
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
 
 interface CollaborationState {
   sharedProjects: Project[];
     sharedMeetings: Meeting[];
     tasks: Task[]
+    communications: Communication[]
+    sharedResources: Resource[]
+    projects: Project[]
   // Add other collaboration-related state properties here
 }
 
 const initialState: CollaborationState = {
-  sharedProjects: [],
+    sharedProjects: [],
     sharedMeetings: [],
-  tasks: []
-  // Initialize other collaboration-related state properties here
+    tasks: [],
+    // Initialize other collaboration-related state properties here
+    communications: []
 };
 
 export const useCollaborationSlice = createSlice({
@@ -138,7 +146,35 @@ export const useCollaborationSlice = createSlice({
           
           sendCommunication(state, action: PayloadAction<Communication>) {
             state.communications.push(action.payload);
-          }
+        },
+        receiveCommunication(state, action: PayloadAction<Communication>) { 
+            state.communications.push(action.payload);
+        },
+        shareResource(state, action: PayloadAction<Resource>) { 
+            state.sharedResources.push(action.payload);
+        },
+        unshareResource(state, action: PayloadAction<Resource>) {
+            state.sharedResources = state.sharedResources.filter(
+                (resource) => resource.id !== action.payload.id
+            );
+        },
+
+        trackProjectProgress(
+            state,
+            action: PayloadAction<{
+                projectId: string;
+                progress: Progress
+            }>) {
+            // Logic to track progress of a project
+            const projectIndex = state.projects.findIndex(project => project.id === action.payload.projectId);
+            if (projectIndex !== -1) {
+                const project = state.projects[projectIndex];
+                project.progress = project.progress + 1;
+                state.projects[projectIndex] = project;
+            }
+        
+        },
+
           // Add other collaboration-related reducers here
           
 

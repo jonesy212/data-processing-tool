@@ -1,11 +1,11 @@
 // AddContent.tsx
 
-import React, { FormEvent, useState } from "react";
-import ContentItem from "../../models/data/ContentItem";
-import ContentToolbar from "../../models/content/ContentToolbar";
-import ContentDetailsListItem from "../../models/data/ContentDetailsListItem";
-import UserRoles from "../../users/UserRoles";
 import { Persona } from "@/app/pages/personas/Persona";
+import React, { FormEvent, useState } from "react";
+import UserRoles from "../../users/UserRoles";
+import ContentDetailsListItem from "./ContentDetailsListItem";
+import ContentToolbar from "./ContentToolbar";
+import ContentItemComponent from '@/app/components/models/content/ContentItem';
 
 interface Content {
   id: number;
@@ -404,6 +404,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               role: UserRoles.Member,
               persona:{} as Persona,
               snapshots: [],
+              token: null
               // other properties
             },
           ],
@@ -415,7 +416,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
       />
 
       {/* Render ContentItem */}
-      <ContentItem
+      <ContentItemComponent
         item={{
           _id: "new",
           id: "0",
@@ -442,6 +443,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               role: UserRoles.Administrator,
               persona:{} as Persona,
               snapshots: [],
+              token: null
               // other properties
             },
           ],
@@ -478,4 +480,4 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 };
 
 export default AddContent;
-export type {ContentProps}
+export type { ContentProps };

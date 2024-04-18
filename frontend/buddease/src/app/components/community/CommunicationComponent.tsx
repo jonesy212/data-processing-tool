@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import Communication from '../communications/chat/Communication';
 import { CommunicationActions } from './CommunicationActions';
 import { ChatRoom } from '../calendar/CalendarSlice';
-import { User } from '@/app/components/users/User';
 
 const CommunicationComponent: React.FC = () => {
   const dispatch = useDispatch();

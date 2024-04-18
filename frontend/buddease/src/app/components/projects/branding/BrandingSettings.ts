@@ -101,6 +101,10 @@ interface BrandingSettings {
   defaultColor?: string;
 }
 
+interface Label {
+  text: string;
+  color: string;
+}
   
 // Define a default branding settings object
   const defaultBrandingSettings: BrandingSettings = {
@@ -121,6 +125,11 @@ const createBrandingSettings = (
   };
 };
 
+
+export const label: { text: string; color: string } = {
+  text: "Custom Label",
+  color: "#333",
+};
 
 
 export const brandingSettings: BrandingSettings = createBrandingSettings({

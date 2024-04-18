@@ -1,7 +1,7 @@
 import React from "react";
+import { ContentItem } from "../models/content/ContentItem";
 import DummyCard from "./DummyCard";
-import { ContentItem } from "./UserCard";
-
+ 
 
 
 interface DummyCardLoaderProps {
@@ -41,12 +41,24 @@ const fileFolderItems: {
   {
     type: 'file',
     name: 'IdeaDocument.pdf',
-    content: { heading: 'Idea Document', description: 'Details of the new feature idea' },
+    content: {
+      heading: 'Idea Document',
+      description: 'Details of the new feature idea',
+      id: "",
+      title: "",
+      body: ""
+    },
   },
   {
     type: 'folder',
     name: 'Sketches',
-    content: { heading: 'Sketches', description: 'Visual representations of ideas' },
+    content: {
+      heading: 'Sketches',
+      description: 'Visual representations of ideas',
+      id: "",
+      title: "",
+      body: ""
+    },
   },
 ];
 
@@ -58,12 +70,24 @@ const productFeedbackItems: {
   {
     type: 'product',
     name: 'FeatureX',
-    content: { heading: 'Feature X', description: 'A suggested product feature' },
+    content: {
+      heading: 'Feature X',
+      description: 'A suggested product feature',
+      id: "",
+      title: "",
+      body: ""
+     },
   },
   {
     type: 'feedback',
     name: 'UserFeedback',
-    content: { heading: 'User Feedback', description: 'Feedback on existing features' },
+    content: {
+      heading: 'User Feedback',
+      description: 'Feedback on existing features',
+      id: "",
+      title: "",
+      body: ""
+    },
   },
 ];
 
@@ -124,4 +148,5 @@ const OrganizedCardLoader: React.FC<OrganizedCardLoaderProps> = ({ items }) => {
 };
 
 export default OrganizedCardLoader;
-export type { DummyCardLoaderProps, OrganizedCardLoaderProps, ContentItem };
+export type { ContentItem, DummyCardLoaderProps, OrganizedCardLoaderProps };
+

@@ -12,6 +12,7 @@ import {
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
+import { Attachment } from "../../documents/Attachment/attachment";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import { DataStatus, PriorityStatus, ProductStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
@@ -20,7 +21,6 @@ import { Progress } from "../../models/tracker/ProgressBar";
 import { Project } from "../../projects/Project";
 import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
-import { Attachment } from "../../documents/Attachment/attachment";
 const { notify } = useNotification();
 
 
@@ -61,6 +61,9 @@ interface DetailsItem<T> extends DataDetails {
   phase?: Phase | null;
   isActive?: boolean;
   tags?: string[];
+  subtitle?: string,
+  date?: Date,
+  author?: string;
   // data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
   communication?: CommunicationActionTypes;

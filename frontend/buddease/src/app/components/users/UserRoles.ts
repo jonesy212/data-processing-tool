@@ -1,14 +1,10 @@
 // UserRoles.ts
 import { UserRole } from './UserRole';
 
-
-
 // Extend the UserRole interface to include JobRole
 export interface JobRole extends UserRole {
   salary: number;
 }
-
-
 
 const UserRoles: { [key: string]: UserRole } = {
   Administrator: {

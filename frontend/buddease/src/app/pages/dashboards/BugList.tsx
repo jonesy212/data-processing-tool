@@ -1,8 +1,8 @@
 // BugList.ts
 import React from 'react';
-import { Data } from "../components/models/data/Data";
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import ListGenerator from './ListGenerator'; // Import the ListGenerator component
+import ListGenerator from '@/app/generators/ListGenerator';
+import { Data } from '@/app/components/models/data/Data';
+import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
 
 interface BugListProps {
   bugs: DetailsItem<Data>[]; // Assuming 'bugs' contain DetailsItem with Data type

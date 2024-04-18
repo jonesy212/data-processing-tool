@@ -3,7 +3,7 @@ import { DataProvider, Refine } from "@refinedev/core";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
 import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
 
@@ -12,7 +12,7 @@ import {
   Router,
   useLocation,
   useNavigate,
-  useSearchParams
+  useSearchParams,
 } from "react-router-dom";
 import { AuthProvider } from "../components/auth/AuthContext";
 import BlogComponent from "../components/blogs/BlogComponent";
@@ -24,10 +24,12 @@ import Toolbar from "../components/documents/Toolbar";
 import ChildComponent from "../components/hooks/ChildComponent";
 import { handleLogin } from "../components/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
-import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
+import {
+  ThemeConfigProvider,
+  useThemeConfig,
+} from "../components/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
 import { LogData } from "../components/models/LogData";
-import ContentItem from "../components/models/data/ContentItem";
 import { Data } from "../components/models/data/Data";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
@@ -43,7 +45,6 @@ import {
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { ButtonGenerator } from "../generators/GenerateButtons";
-import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
 import DynamicErrorBoundary from "../shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "../shared/ErrorBoundaryProvider";
@@ -58,7 +59,24 @@ import UserSettingsForm from "./forms/UserSettingsForm";
 import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
+import ContentItemComponent from "../components/models/content/ContentItem";
+import BrandingSettings from "../libraries/theme/BrandingService";
+import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
+import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
+import { Dispatch } from "@reduxjs/toolkit";
 
+interface ExtendedAppProps extends AppProps {
+  brandingSettings: BrandingSettings;
+  hooks: {
+    useIdleTimeout: typeof useIdleTimeout;
+    handleLogin: typeof handleLogin;
+  };
+  utilities: {
+    generateUtilityFunctions: () => void;
+  };
+  phases: Phase[];
+  contentItem: DetailsItem<Data>;
+}
 const phases: Phase[] = [
   {
     name: "Calendar Phase",
@@ -88,7 +106,7 @@ async function MyApp({
   pageProps,
   router,
   brandingSettings,
-}: AppProps) {
+}: ExtendedAppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
@@ -99,7 +117,9 @@ async function MyApp({
   const [username, setUsername] = useState<string>("defaultUsername");
   const [password, setPassword] = useState<string>("<PASSWORD>");
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(true); // Example state for user login status
-  const idleTimeout = useIdleTimeout({ /* pass any required props here */ });
+  const idleTimeout = useIdleTimeout({
+    /* pass any required props here */
+  });
 
   // Define the 'addNotifications' function to add new notifications
   const addNotifications = (message: string, randomBytes: BytesLike) => {
@@ -219,9 +239,15 @@ async function MyApp({
     history(`/node/${node.id}`);
   };
 
-
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
 
+  const {
+    themeConfig,
+    setPrimaryColor,
+    setSecondaryColor,
+    setFontSize,
+    setFontFamily,
+  } = useThemeConfig();
 
   const handleIdleTimeout = (duration: any) => {
     // Start the idle timeout with the provided duration
@@ -250,7 +276,7 @@ async function MyApp({
           }}
           routerProvider={{
             basename: "",
-            Link: React.Component<{ to: string; children?: React.ReactNode; }>,
+            Link: React.Component<{ to: string; children?: React.ReactNode }>,
             Router: Router,
             Route: Route,
             Routes: Routes,
@@ -276,10 +302,15 @@ async function MyApp({
             {({ children, componentSpecificData }: Props) => (
               <ThemeConfigProvider>
                 <ThemeCustomization
-                  themeState={themeState}
-                  setThemeState={setThemeState}
+                  themeState={themeConfig}
+                  setThemeState={{
+                    setPrimaryColor,
+                    setSecondaryColor,
+                    setFontSize,
+                    setFontFamily,
+      
+                  }}
                   notificationState={notificationState}
-
                 />
                 <CollaborationDashboard />
                 <NotificationProvider>
@@ -431,7 +462,11 @@ async function MyApp({
                   {/* Toolbar component with activeDashboard and progress props */}
                   <Toolbar
                     activeDashboard={activeDashboard}
-                    progress={{ value: progress, label: "Progress" }}
+                    progress={{
+                      id: "progress",
+                      value: progress,
+                      label: "Progress",
+                    }}
                   />
                   <div>
                     {/* Include router and brandingSettings in JSX */}
@@ -456,7 +491,7 @@ async function MyApp({
 
             <Layout>{Component && <Component {...pageProps} />}</Layout>
           </SearchComponent>
-          <ContentItem item={contentItem} />
+          <ContentItemComponent item={contentItem} />
         </Refine>
       </DynamicErrorBoundary>
     </ErrorBoundaryProvider>
@@ -464,3 +499,4 @@ async function MyApp({
 }
 
 export default MyApp;
+export type { ExtendedAppProps };

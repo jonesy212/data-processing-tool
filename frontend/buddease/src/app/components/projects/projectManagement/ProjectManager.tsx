@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
-
+import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+ 
 // Define project phases
 enum ProjectPhase {
   PHASE_1 = "Phase 1",
@@ -46,19 +47,24 @@ const ProjectManager: React.FC = () => {
     // and perform any other necessary actions
   };
 
-  const getActionHistory = ():  Promise<SnapshotStoreConfig<Data>> => {
-    const entityActions =  useSnapshotManager(); // Ensure to await the async function
-    const snapshotStoreSnapshots: Promise<SnapshotStoreConfig<Data>> = entityActions.getSnapshots();
+  const getActionHistory = (
+    snapshot: SnapshotStore<Snapshot<Data>>
+  ): Promise<SnapshotStoreConfig<Data>> => {
+    const entityActions = useSnapshotManager();
+    const snapshotStoreSnapshots: Promise<SnapshotStoreConfig<Snapshot<Data>>> =
+      entityActions.getSnapshots(snapshot);
 
-    return snapshotStoreSnapshots.then((snapshotActions: SnapshotStoreConfig<Data>) => {
-      // Replace the following line with your actual implementation to retrieve other actions
-      const otherActions: PayloadAction[] = [];
-  
-      // Combine snapshot actions with other actions
-      const actionHistory: PayloadAction[] = [...snapshotActions, ...otherActions];
-  
-      return actionHistory;
-    })
+    return snapshotStoreSnapshots.then(
+      (snapshotActions: SnapshotStoreConfig<Snapshot<Data>>) => {
+        const otherActions: PayloadAction[] = [];
+        const actionHistory: SnapshotStoreConfig<Snapshot<Data>> = {
+          ...snapshotActions,
+          actions: [...snapshotActions.actions, ...otherActions],
+        };
+
+        return actionHistory;
+      }
+    );
   };
 
   // Function to undo the last action

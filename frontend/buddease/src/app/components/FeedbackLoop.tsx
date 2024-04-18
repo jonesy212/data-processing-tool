@@ -1,21 +1,32 @@
 //FeedbackLoop.tsx
 import React from 'react';
+import { Feedback } from './support/Feedback';
 
 interface FeedbackLoopProps {
-  feedback: string;
+  feedback: Feedback;
   feedbackType: string
+  audioUrl?: string
+  videoUrl?: string
 }
 
-const FeedbackLoop: React.FC<FeedbackLoopProps> = ({ feedback, feedbackType }) => {
+const FeedbackLoop: React.FC<FeedbackLoopProps> = ({
+  feedback,
+  feedbackType,
+  audioUrl,
+  videoUrl,
+}) => {
   return (
     <div>
       <h2>Feedback Loop</h2>
-      <p>{feedback}</p>
+      <p>{feedback.toString()}</p>
       {/* Render additional content based on feedback type */}
-      {feedbackType === 'audio' && <audio controls src={feedback} />}
-      {feedbackType === 'video' && <video controls src={feedback} />}
+      {feedbackType === "audio" && audioUrl && (
+        <audio controls src={audioUrl} />
+      )}
+      {feedbackType === "video" && videoUrl && (
+        <video controls src={videoUrl} />
+      )}
       {/* Add more conditions for different feedback types */}
-    
     </div>
   );
 };

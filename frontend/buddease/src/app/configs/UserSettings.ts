@@ -31,13 +31,14 @@ const resetAppState = () => {
 
 
 export interface UserSettings extends Settings {
+  userSettings: NodeJS.Timeout;
   communicationMode: string;
   enableRealTimeUpdates: boolean;
   defaultFileType: string;
   allowedFileTypes: string[];
   enableGroupManagement: boolean;
   enableTeamManagement: boolean;
-  idleTimeout: ReturnType<typeof useIdleTimeout>;
+  idleTimeout: ReturnType<typeof useIdleTimeout>; 
   startIdleTimeout: () => void;
   idleTimeoutDuration: number;
   activePhase: string;
@@ -115,6 +116,7 @@ export interface UserSettings extends Settings {
 
 
 const userSettings: UserSettings = {
+  userSettings: new NodeJS.Timeout,
   communicationMode: "text",
   enableRealTimeUpdates: true,
 

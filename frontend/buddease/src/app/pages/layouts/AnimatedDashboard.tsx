@@ -3,13 +3,13 @@ import DynamicIntroTooltip from "@/app/components/DynamicIntroTooltip";
 import { AnimatedComponent } from "@/app/components/libraries/animations/AnimationComponent";
 
 import SwingCard from "@/app/components/cards/animation/SwingCard";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import ClickableList from "@/app/components/actions/ClickableList";
 import { ImageCard } from "@/app/components/cards";
 import {
   LayoutGeneratorProps,
-  default as useLayoutGenerator
+  default as useLayoutGenerator,
 } from "@/app/components/hooks/GenerateUserLayout";
 import {
   darkModeTogglePhaseHook,
@@ -24,9 +24,11 @@ import useTodoManagerStore from "@/app/components/state/stores/TodoStore";
 import TodoList from "@/app/components/todos/TodoList";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
-import responsiveDesignStore from '../../components/styling/ResponsiveDesign';
+import ContentItemComponent, {
+  ContentItem,
+} from "../../components/models/content/ContentItem";
+import responsiveDesignStore from "../../components/styling/ResponsiveDesign";
 import { useLayout } from "./LayoutContext";
-
 interface ClickableListItem {
   id: number;
   label: string;
@@ -34,76 +36,90 @@ interface ClickableListItem {
   onClick: () => void;
 }
 
-const AnimatedDashboard: React.FC = () => {
+const AnimatedDashboard: React.FC<ClickableListItem> = ({
+  id,
+  label,
+  imageSrc,
+  onClick,
+}) => {
   const animatedComponentRef = React.useRef<AnimatedComponentRef | null>(null);
   const taskManagerStore = useTaskManagerStore();
   const todoManagerStore = useTodoManagerStore();
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+
   // Use the useDarkModeToggle hook
   const { isDarkMode, toggleDarkMode } = useDarkModeToggle();
   const { setLayout } = useLayout();
 
+  const [duckDuckGoIcon, setDuckDuckGoIcon] = useState<React.ReactNode | null>(
+    null
+  );
+
+  useEffect(() => {
+    const fetchDuckDuckGoIcon = async () => {
+      const iconComponent = await loadDuckDuckGoIcon();
+      setDuckDuckGoIcon(iconComponent);
+    };
+
+    fetchDuckDuckGoIcon();
+  }, []); // Run only once on component mount
 
   // Define your layout effect function
   const layoutEffect = () => {
-    setLayout({ backgroundColor: isDarkMode ? '#1a1a1a' : '#fff' });
+    setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
     console.log("Layout effect applied!");
-  }
- 
+  };
+
   // Layout effect function
   const layoutEffectFunction = () => {
     // Your layout effect logic here
-    setLayout({ backgroundColor: isDarkMode ? '#1a1a1a' : '#fff' });
+    setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
     console.log("Layout effect applied!");
   };
 
   // Cleanup function (optional)
   const cleanupFunction = () => {
     // Your cleanup logic here
-    setLayout({ backgroundColor: '' });
+    setLayout({ backgroundColor: "" });
     console.log("Cleanup function called!");
   };
 
-
   const shouldApplyLayoutEffect = true;
 
-
-   // Define your layout config getter function
-   const layoutConfigGetter = async () => ({
+  // Define your layout config getter function
+  const layoutConfigGetter = async () => ({
     documentGeneration: "Generate Document",
     designDashboard: <div>Layout Config Content</div>,
-    responsiveDesignStore: {} as typeof responsiveDesignStore
+    responsiveDesignStore: {} as typeof responsiveDesignStore,
   });
 
   // Use the layout generator hook
   const layoutGenerator = useLayoutGenerator({
     condition: () => shouldApplyLayoutEffect,
     layoutEffect: layoutEffectFunction,
-    generateDocument: async (options: DocxGeneratorOptions) => options.data.generateDocument(options),
+    generateDocument: async (options: DocxGeneratorOptions) =>
+      options.data.generateDocument(options),
     documentGeneratorOptions: {} as DocxGeneratorOptions,
-    layoutConfigGetter: async () => ({ 
+    layoutConfigGetter: async () => ({
       documentGeneration: "Generate Document",
       designDashboard: <div>Layout Config Content</div>,
-      responsiveDesignStore: {} as typeof responsiveDesignStore
+      responsiveDesignStore: {} as typeof responsiveDesignStore,
     }),
     cleanup: cleanupFunction,
   });
 
-
-
-
-   // Use the useLayoutGenerator hook
-   const { toggleActivation } = useLayoutGenerator({
+  // Use the useLayoutGenerator hook
+  const { toggleActivation } = useLayoutGenerator({
     condition: () => shouldApplyLayoutEffect,
     layoutEffect,
     generateDocument: async (options: DocxGeneratorOptions) => {
       // Implement your document generation logic here
       return { success: true, message: "Document generated successfully" };
     },
-     documentGeneratorOptions: {} as DocxGeneratorOptions,
+    documentGeneratorOptions: {} as DocxGeneratorOptions,
     layoutConfigGetter,
-   });
-  
-  
+  });
+
   const taskListItems: ClickableListItem[] = [
     {
       id: 1,
@@ -118,12 +134,13 @@ const AnimatedDashboard: React.FC = () => {
 
   // Toggle activation functions
 
-  const toggleAnimatedComponent = () => animatedComponentRef.current?.toggleActivation();
+  const toggleAnimatedComponent = () =>
+    animatedComponentRef.current?.toggleActivation();
   const toggleNotificationBar = () => notificationBarHook.toggleActivation();
   const toggleDarkModeToggle = () => darkModeToggleHook.toggleActivation();
 
-    // Button generator configurations
-    const buttonTypes = ['submit', 'reset', 'cancel'];
+  // Button generator configurations
+  const buttonTypes = ["submit", "reset", "cancel"];
 
   return (
     <SwingCard
@@ -139,8 +156,8 @@ const AnimatedDashboard: React.FC = () => {
       </button>
       <DynamicIntroTooltip
         steps={[
-          { element: ".task-list", content: "This is the task list" },
-          { element: ".todo-list", content: "This is the todo list" },
+          { element: ".task-list", intro: "This is the task list" },
+          { element: ".todo-list", intro: "This is the todo list" },
         ]}
       />
       <ButtonGenerator
@@ -175,10 +192,15 @@ const AnimatedDashboard: React.FC = () => {
           },
         ]}
       />
-      {loadDuckDuckGoIcon()}
+      {duckDuckGoIcon} {/* Render the DuckDuckGo icon */}
       <button onClick={toggleAnimatedComponent}>
         Toggle Animated Component
       </button>
+      <h1>Animated Dashboard</h1>
+      {/* Render content items */}
+      {contentItems.map((item) => (
+        <ContentItemComponent key={item.id} {...item} />
+      ))}
       <button onClick={toggleNotificationBar}>Toggle Notification Bar</button>
       <button onClick={toggleDarkModeToggle}>Toggle Dark Mode Toggle</button>
       <button onClick={toggleDarkModeToggle}>
@@ -198,7 +220,8 @@ const AnimatedDashboard: React.FC = () => {
   );
 };
 // Use phase hooks
-const notificationBarHook = notificationBarPhaseHook();
-const darkModeToggleHook = darkModeTogglePhaseHook();
+const notificationBarHook = notificationBarPhaseHook;
+const darkModeToggleHook = darkModeTogglePhaseHook;
 
-export default AnimatedDashboard; useLayoutGenerator({} as LayoutGeneratorProps);
+export default AnimatedDashboard;
+useLayoutGenerator({} as LayoutGeneratorProps);

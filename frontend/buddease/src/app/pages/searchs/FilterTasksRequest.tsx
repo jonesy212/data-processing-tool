@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import Filter from './Filter';
-import useFiltering from '@/app/components/hooks/useFiltering';
-import { SearchOptions, SortingOption } from './SearchOptions';
-import { usePagination } from '@/app/components/hooks/userInterface/usePagination';
 import useSearchPagination from '@/app/components/hooks/commHooks/useSearchPagination';
+import useFiltering from '@/app/components/hooks/useFiltering';
+import { usePagination } from '@/app/components/hooks/userInterface/usePagination';
+import React from 'react';
+import Filter from './Filter';
+import { SearchOptions, SortingOption } from './SearchOptions';
 
 // Define the type for the filter column
 type FilterType = keyof SearchOptions['additionalOptions'];
@@ -15,9 +15,9 @@ interface FilterTasksRequestProps {
 
 const FilterTasksRequest: React.FC<FilterTasksRequestProps> = async ({ onSubmit, options }) => {
   const { addFilter, handleSubmit /* Other necessary values */, filters } = useFiltering(options);
-  
   // Use both pagination and search pagination hooks
   const { currentPage, pageSize, goToPage, changePageSize, nextPage, previousPage } = useSearchPagination();
+  const { data, totalPages, totalItems, applyFilter } = usePagination(fetchPageData, filters);
   // Define the fetchData function to be used with usePagination hook
   const fetchPageData = async (page: number, perPage: number, filterCriteria?: any) => {
     // Implement your data fetching logic here
@@ -25,8 +25,6 @@ const FilterTasksRequest: React.FC<FilterTasksRequestProps> = async ({ onSubmit,
     // Return the fetched data in PaginationData format
     return { items: [], pages: 0, total: 0 }; // Example return statement, replace with actual data
   };
-
-  const { data, totalPages, totalItems, applyFilter } = usePagination(fetchPageData, filters);
 
   const handleFilterChange = (
     column: FilterType,

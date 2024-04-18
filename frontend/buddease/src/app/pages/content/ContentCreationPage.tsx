@@ -1,8 +1,8 @@
 // ContentCreationPage.tsx
 
-import React from 'react';
-import AddContent from '@/app/components/phases/crypto/AddContent';
+import AddContent from '@/app/components/models/content/AddContent';
 import { ButtonGenerator, buttonGeneratorProps } from '@/app/generators/GenerateButtons';
+import React from 'react';
 
 interface ContentCreateionPageProps {
   onComplete: () => void;

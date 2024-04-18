@@ -1,13 +1,15 @@
-import ResizablePanels from "@/app/components/hooks/userInterface/ResizablePanels";
+import ResizablePanels, {
+  ResizablePanelsProps,
+} from "@/app/components/hooks/userInterface/ResizablePanels";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
 } from "@/app/generators/GenerateButtons";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
-import FormControl from '@/app/pages/forms/FormControl';
+import FormControl from "@/app/pages/forms/FormControl";
 import { Input } from "antd";
 import { Router, useRouter } from "next/router";
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import DynamicNamingConventions from "../DynamicNamingConventions";
 import InputLabel from "../hooks/userInterface/InputFields";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
@@ -15,14 +17,27 @@ import { brandingSettings } from "../projects/branding/BrandingSettings";
 import DynamicComponent from "../styling/DynamicComponents";
 import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import DynamicTypography from "../styling/DynamicTypography";
+import CustomSlider from "../libraries/ui/buttons/CustomSlider";
+import { usePanelContents } from "@/app/generators/usePanelContents";
 
-interface CustomBoxProps {
-  children: ReactNode;
+export const generatePanelContents = (numPanels: number): React.ReactNode[] => {
+  const panels: React.ReactNode[] = [];
+  for (let i = 1; i <= numPanels; i++) {
+    panels.push(<div key={`panel-${i}`}>Panel {i}</div>);
+  }
+  return panels;
+};
+
+interface CustomBoxProps extends ResizablePanelsProps {
+  children: ReactNode[];
   selectedFile?: File | null;
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFileUpload: () => void;
   mt: number;
 }
+
+
+
 
 const CustomBox: React.FC<CustomBoxProps> = ({
   children,
@@ -30,16 +45,30 @@ const CustomBox: React.FC<CustomBoxProps> = ({
   handleFileSelect,
   handleFileUpload,
 }) => {
-  const sizes = () => [300, 300];
+  const panelSizes = () => [300, 300]; // Change sizes to panelSizes
   const router = useRouter(); // Get the router object using useRouter hook
   const formID = useRef<HTMLFormElement>(null);
+  // Define state to hold the number of panels
+  const { numPanels, handleNumPanelsChange, panelContents } = usePanelContents();
+
+  // Usage in JSX
+  <input type="number" value={numPanels} onChange={handleNumPanelsChange} />;
 
   const onResize = (newSizes: number[]) => {
     console.log("New sizes:", newSizes);
   };
-
+ 
   return (
-    <ResizablePanels sizes={sizes} onResize={onResize}>
+    <ResizablePanels
+      sizes={panelSizes()}
+      onResizeStop={(newSizes) => {
+        onResize(newSizes);
+      }}
+      onResize={onResize}
+    >
+      {panelContents.map((content, index) => (
+        <div key={index}>{content}</div>
+      ))}
       <div>
         <DynamicTypography
           variant="h5"
@@ -55,10 +84,7 @@ const CustomBox: React.FC<CustomBoxProps> = ({
           <InternalDivider />
 
           <div style={{ marginTop: "16px" }}>
-            <FormControl
-              formID={formID}
-              fullWidth
-            >
+            <FormControl formID={formID} fullWidth>
               <InputLabel htmlFor="file-upload">Select File</InputLabel>
               <Input
                 id="file-upload"
@@ -103,6 +129,13 @@ const CustomBox: React.FC<CustomBoxProps> = ({
         <ButtonGenerator {...buttonGeneratorProps} />
       </div>
       <div>{children}</div>
+      // Usage in JSX
+      <CustomSlider
+        min={1}
+        max={10} // Adjust the maximum value as needed
+        value={numPanels}
+        onChange={handleNumPanelsChange}
+      />
     </ResizablePanels>
   );
 };

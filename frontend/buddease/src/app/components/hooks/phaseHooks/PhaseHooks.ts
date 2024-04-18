@@ -104,12 +104,10 @@ export const createPhaseHook = (config: PhaseHookConfig) => {
       // Your implementation here
     },
     resetIdleTimeout: async () => {
-      clearTimeout(
-        userSettings.idleTimeout as number
-      );
+      clearTimeout(userSettings.idleTimeout);
       userSettings.idleTimeout = setTimeout(() => {
         // handle idle timeout
-      }, userSettings.idleTimeoutDuration) as unknown as NodeJS.Timeout;
+      }, userSettings.idleTimeoutDuration);
     },
     isActive: false,
     intervalId: 0, // Initialize with null or assign a valid value
@@ -479,3 +477,4 @@ export async function initializeAllPhases() {
 }
 
 export default initializeDecentralizedStorage;
+export {initializeCollaborationPreferences, applyCollaborationPreferences};

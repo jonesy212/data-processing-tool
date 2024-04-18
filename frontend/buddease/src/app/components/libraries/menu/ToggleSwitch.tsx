@@ -1,7 +1,15 @@
 // ToggleSwitch.tsx
+
 import React from "react";
 
-const ToggleSwitch = ({ label, checked, onChange }) => {
+
+interface ToggleSwitchProps {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, checked, onChange }) => {
   return (
     <div className="toggle-switch">
       <input

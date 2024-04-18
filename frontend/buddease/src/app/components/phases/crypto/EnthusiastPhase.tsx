@@ -1,13 +1,13 @@
 // EnthusiastPhase.tsx
 import { useState } from 'react';
+import AddContent from '../../models/content/AddContent'; // Import AddContent component
+import CallsConferences from './CallsConferences';
+import DoYourOwnResearch from './DoYourOwnResearch';
+import EnthusiastProfile from './EnthusiastProfile';
+import FollowTraders from './FollowTraders';
 import RiskAssessment from './RiskAssessment';
 import TraderTypesSelection from './TraderTypesSelection';
 import VerificationProcess from './VerificationProcess';
-import EnthusiastProfile from './EnthusiastProfile';
-import AddContent from './AddContent'; // Import AddContent component
-import FollowTraders from './FollowTraders';
-import DoYourOwnResearch from './DoYourOwnResearch';
-import CallsConferences from './CallsConferences';
 
 // Define an enum for trading phases
 enum TradingPhase {

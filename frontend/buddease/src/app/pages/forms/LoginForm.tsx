@@ -1,6 +1,6 @@
 // LoginForm.tsx
 import authService from "@/app/components/auth/AuthService";
-import { NotificationContext } from "@/app/components/support/NotificationContext";
+import { NotificationContext, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import { NOTIFICATION_TYPES } from "@/app/components/support/NotificationTypes";
 import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,10 +42,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
           console.error("Admin login failed");
           // Use notify directly without checking notificationContext
           notificationContext.notify(
+            "handeLoginFailure",
             NOTIFICATION_TYPES.ERROR,
             "Admin login failed",
             new Date(),
-            "Error"
+            NotificationTypeEnum.Error
           );
           // Redirect to welcome page or handle error accordingly
           history("/frontend/buddease/src/app/pages/onboarding/Welcome.tsx");
@@ -63,10 +64,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ setUsername, setPassword }) => {
           console.error("Regular user login failed");
           // Use notify directly without checking notificationContext
           notificationContext.notify(
+            "handeSubmitFailure",
             NOTIFICATION_TYPES.ERROR,
             "Regular user login failed",
             new Date(),
-            "Error"
+            NotificationTypeEnum.Error
           );
           // Redirect to welcome page or handle error accordingly
           history("/frontend/buddease/src/app/pages/onboarding/Welcome.tsx");

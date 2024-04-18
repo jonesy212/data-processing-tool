@@ -11,6 +11,9 @@ import BrandingSettings from "../libraries/theme/BrandingService";
 import MyApp from "./_app";
 import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
+ import { AsyncHook } from "async_hooks";
+import { brandingSettings } from '@/app/libraries/theme/BrandingService';
+
 
 // Extend NextRouter with additional properties
 type ExtendedRouter = NextRouter & {
@@ -22,6 +25,10 @@ type ExtendedRouter = NextRouter & {
   pageLoader: any;
   _bps: any;
   _wrapApp: any;
+  hooks: AsyncHook[];
+  utilities: ReturnType<typeof generateUtilityFunctions>;
+  router: ExtendedRouter & Router;
+  brandingSettings: BrandingSettings;
 };
 
 // Extend AppProps to include hooks
@@ -34,16 +41,17 @@ export const EnhancedCaptionManagementPage = contentManagementPage(
 type ExtendedAppProps = AppProps & {
   hooks: Record<string, any>;
   utilities: any;
+  brandingSettings: BrandingSettings;
 };
 
 
-function MyAppWrapper({ Component, pageProps }: ExtendedAppProps) {
+function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
   // Extend AppProps to include hooks
 
   // Define a generic type for hooks
   type Hooks = Record<string, PhaseHookConfig>;
 
-  const router = useRouter();
+  // const router = useRouter();
 
   // Generate utility functions
   const utilities = generateUtilityFunctions();
@@ -104,11 +112,29 @@ function MyAppWrapper({ Component, pageProps }: ExtendedAppProps) {
       laptop: "992px", // Laptop breakpoint
       desktop: "1200px", // Desktop breakpoint
     },
-    // Add other branding settings as needed
+    accentColor: "",
+    successColor: "",
+    errorColor: "",
+    warningColor: "",
+    infoColor: "",
+    darkModeBackground: "",
+    darkModeText: "",
+    fontPrimary: "",
+    fontSecondary: "",
+    fontHeading: "",
+    fontSizeSmall: "",
+    fontSizeMedium: "",
+    fontSizeLarge: "",
+    lineHeightNormal: "",
+    lineHeightMedium: "",
+    lineHeightLarge: "",
   };
 
   // Generate hooks dynamically based on your phases
-  const hooks: Record<string, any> = {
+  const hooks: Record<string, PhaseHookConfig> & {
+    useIdleTimeout: any;
+    handleLogin: any;
+  } = {
     components: createPhaseHook({
       name: "Components Phase",
       condition: () => true,
@@ -159,6 +185,8 @@ function MyAppWrapper({ Component, pageProps }: ExtendedAppProps) {
         return () => {};
       },
     } as PhaseHookConfig),
+    useIdleTimeout: undefined,
+    handleLogin: undefined,
   };
 
   return (
@@ -168,11 +196,11 @@ function MyAppWrapper({ Component, pageProps }: ExtendedAppProps) {
         pageProps={pageProps}
         router={router as ExtendedRouter & Router}
         brandingSettings={brandingSettings} // Pass branding settings to MyApp
-        utilities={utilities}
         hooks={hooks}
+        utilities={utilities}
       />
       <EnhancedCaptionManagementPage />
-            {/* Include the CaptionManagementPageComponent */}
+      {/* Include the CaptionManagementPageComponent */}
       <CaptionManagementPageComponent />
     </>
   );

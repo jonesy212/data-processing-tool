@@ -1,7 +1,4 @@
-import {
-  applyCollaborationPreferences,
-  initializeCollaborationPreferences,
-} from "../components/hooks/phaseHooks/PhaseHooks";
+import { applyCollaborationPreferences, initializeCollaborationPreferences } from "../components/hooks/phaseHooks/PhaseHooks";
 
 export const generateUtilityFunctions = () => {
   return {

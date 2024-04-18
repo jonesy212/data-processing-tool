@@ -8,10 +8,12 @@ import { NotificationType } from "../../support/NotificationContext";
 export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
 
 interface Progress {
+  id: string;
   value: number;
   label: string;
   // additional properties as needed
 }
+
 // ProgressPhase enum to represent different phases of the project
 enum ProgressPhase {
   Ideation = "Ideation",

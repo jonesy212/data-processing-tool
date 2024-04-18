@@ -3,13 +3,20 @@
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import React from "react";
 
+
+interface Communication {
+    id: string;
+  messages: Message[];
+  participants: Sender[];
+}
 interface CommunicationProps {
   message: Message;
   sender: Sender;
   timestamp: Date;
 }
 
-const Communication: React.FC<CommunicationProps> = ({ message, sender, timestamp }) => {
+
+const CommunicationPage: React.FC<CommunicationProps> = ({ message, sender, timestamp }) => {
   return (
     <div className="communication">
       <div className="communication-sender">{sender}</div>
@@ -19,4 +26,5 @@ const Communication: React.FC<CommunicationProps> = ({ message, sender, timestam
   );
 };
 
-export default Communication;
+export default CommunicationPage;
+export type { Communication };

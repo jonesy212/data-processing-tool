@@ -3,15 +3,18 @@ import React from "react";
 import ProgressBar, { Progress, ProgressPhase } from "../../models/tracker/ProgressBar";
 
 interface ProjectProgressProps {
+  projectId: string;
   projectProgress: number; // Project progress value between 0 and 100
   onUpdateProgress: () => void;
 }
 
 const ProjectProgress: React.FC<ProjectProgressProps> = ({
+  projectId,
   projectProgress,
   onUpdateProgress,
 }) => {
   const projectProgressData: Progress = {
+    id: projectId,
     value: projectProgress,
     label: `Project Progress: ${projectProgress}%`,
   };

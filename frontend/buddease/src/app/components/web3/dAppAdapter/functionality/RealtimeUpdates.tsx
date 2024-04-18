@@ -4,20 +4,29 @@ import { User, UserData } from "@/app/components/users/User";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { useEffect, useState } from "react";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
+import SortableTableHeaders from "@/app/components/libraries/menu/SortableTableHeaders";
+import ClearFiltersButton from "@/app/components/libraries/menu/ClearFiltersButton";
+import Dropdown from "@/app/components/libraries/menu/Dropdown";
+import TagCloud from "@/app/components/libraries/menu/TagCloud";
+import Checkbox from "@/app/components/libraries/menu/Checkbox";
+import DatePicker from "@/app/components/calendar/DatePicker";
+import ToggleSwitch from "@/app/components/libraries/menu/ToggleSwitch";
+import router from "@/app/components/projects/projectManagement/ProjectManagementSimulator";
+import { brandingSettings, label } from "@/app/components/projects/branding/BrandingSettings";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 
-// Import UI components for sorting and filtering
-import {
-  Dropdown,
-  Checkbox,
-  ToggleSwitch,
-  DatePicker,
-  TagCloud,
-  ClearFiltersButton,
-  SortableTableHeaders
-} from "./YourUIComponents";
-
-
-
+import { Router } from "next/router";
+import { BaseRouter } from "next/dist/shared/lib/router/router";
+// // Import UI components for sorting and filtering
+// import {
+//   Dropdown,
+//   Checkbox,
+//   ToggleSwitch,
+//   DatePicker,
+//   TagCloud,
+//   ClearFiltersButton,
+//   SortableTableHeaders
+// } from "./YourUIComponents";
 
 // Define the type for participant data
 interface ParticipantData {
@@ -58,8 +67,7 @@ const RealtimeUpdatesComponent: React.FC = () => {
       if (authState.user) {
         const realTimeUpdateSubscription = subscribeToRealtimeUpdates(
           authState.user,
-          (user: User,
-            update:  RealtimeUpdates) => {
+          (user: User, update: RealtimeUpdates) => {
             // Process the update here as needed
             setRealtimeData(update);
             setChatSettings({
@@ -144,13 +152,49 @@ const RealtimeUpdatesComponent: React.FC = () => {
       <p>Email: {authState.user.email}</p>
       {/* ... Other real-time data */}
       <p>Real-time Data: {JSON.stringify(realtimeData)}</p>
+      {/* Use the imported components */}
+      <SortableTableHeaders
+        headers={[]} // Pass headers data here
+        onSort={(key: string) => {}} // Implement sorting logic
+        headersConfig={{}} // Pass headers configuration here
+      />
+      <ClearFiltersButton
+        label="Clear Filters" // Provide a string value for the label prop
+        router={router as BaseRouter & Router}
+        brandingSettings={brandingSettings}
+        onClick={() => {}}
+      />{" "}
+      {/* Implement clear filters logic */}
+      <Dropdown
+        options={[]} // Pass dropdown options here
+        selectedOption={""} // Pass selected option here
+        onSelectOption={(option: any) => {}} // Implement option selection logic
+      />
+      <TagCloud
+        tags={[]} // Pass tag data here
+        onSelectTag={(tag: string) => {}} // Implement tag selection logic
+      />
+      <Checkbox
+        label="Example Checkbox"
+        checked={false} // Provide checked state
+        onChange={(checked: boolean) => {}} // Implement onChange logic
+      />
+      <DatePicker
+        selectedDate="" // Provide selected date
+        onSelectDate={(date: string) => {}} // Implement onSelectDate logic
+      />
+      <ToggleSwitch
+        label="Example Toggle"
+        checked={false} // Provide checked state
+        onChange={(checked: boolean) => {}} // Implement onChange logic
+      />
     </div>
   );
 };
 
 export const subscribeToRealtimeUpdates = (
   user: User,
-  callback?: (user: User, update:  RealtimeUpdates) => void
+  callback?: (user: User, update: RealtimeUpdates) => void
 ) => {
   // Implement your subscription logic here
   // For example, connect to a WebSocket or use other real-time communication methods
@@ -158,7 +202,7 @@ export const subscribeToRealtimeUpdates = (
   // Mock implementation for demonstration purposes
   const mockWebSocket = new WebSocket("ws://example.com/realtime");
   mockWebSocket.onmessage = (event) => {
-    const newData:  RealtimeUpdates = JSON.parse(event.data); // Assuming RealtimeUpdates is the correct interface for your real-time updates
+    const newData: RealtimeUpdates = JSON.parse(event.data); // Assuming RealtimeUpdates is the correct interface for your real-time updates
     if (callback) {
       callback(user, newData);
     }

@@ -8,10 +8,6 @@ import TeamCreationQuestionnaire from "@/app/pages/teams/TeamCreationQuestionnai
 import TeamCreationAPI from "./teamCreationAPI";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 
-enum TeamCreationPhase {
-  QUESTIONNAIRE,
-  CONFIRMATION,
-}
 
 const TeamCreationPhaseManager: React.FC = () => {
   const { state } = useAuth();

@@ -1,28 +1,44 @@
-// Toolbar.tsx
+import { EditorState } from "draft-js";
 import React, { useState } from "react";
 import { Progress } from "../models/tracker/ProgressBar";
 import ToolbarItem from "./ToolbarItem";
 
-
-
 interface ToolbarProps {
-  activeDashboard: keyof typeof toolbarOptions; 
-  progress: Progress
+  activeDashboard: keyof typeof toolbarOptions;
+  progress: Progress;
 }
 
+// Define toolbar options with the editor state change handler
 const toolbarOptions = {
   communication: ["Chat", "Call", "Video"],
-  // Add more dashboard options as needed
-  documents: ["Documents", "Reports", "Presentations"],
+  documents: [
+    "Documents", "Surveys",
+    "Reports", "Presentations",
+    "Templates", "Diagrams",
+    "Charts", "Proposals",
+    "Contracts", "Agreements",
+    "Briefs", "Whitepapers",
+    "Manuals", "Guides",
+    "Policies", "Forms",
+  ],
   tasks: ["Tasks", "Todos", "Reminders"],
   settings: ["Settings", "Preferences", "Account"],
-} as const; // Specify as const to infer the exact string literals
+  crypto: ["Portfolio", "Trade", "Market Analysis", "Community"],
+  analytics: ["Data Analysis", "Insights", "Reports"],
+  community: ["Forums", "Collaboration", "Events"],
+  onEditorStateChange: (state: EditorState) => {
+    // Call method to update editor state
+    console.log("Editor state changed:", state);
+    // You can add your logic here to handle the editor state change
+  },
+  editorState: {},
+} as const;
+
 
 const Toolbar: React.FC<ToolbarProps> = ({ activeDashboard, progress }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleOptionClick = (option: string) => {
-    // Logic to handle option click based on the active dashboard
     console.log(`Clicked ${option} in ${activeDashboard} dashboard`);
     setSelectedOption(option);
   };
@@ -31,7 +47,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ activeDashboard, progress }) => {
     <div className="toolbar">
       <h2>Toolbar</h2>
       <ul>
-        {toolbarOptions[activeDashboard].map(
+        {(toolbarOptions[activeDashboard] as unknown as string[]).map(
           (option: string, index: number) => (
             <li key={index}>
               <ToolbarItem

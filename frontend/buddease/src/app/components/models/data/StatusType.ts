@@ -147,12 +147,12 @@ export enum ProjectPhaseTypeEnum {
 }
 
 export enum DevelopmentPhaseEnum{
-  Planning,
-  Design,
-  Development,
-  Testing,
-  Deployment,
-  IdeaCreation,
+  PLANNING,
+  DESIGN,
+  DEVELOPMENT,
+  TESTING,
+  DEPLOYMENT,
+  IDEA_CREATION,
 }
 
 

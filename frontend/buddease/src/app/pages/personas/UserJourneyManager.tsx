@@ -14,18 +14,111 @@ import OfferPage from "../onboarding/OfferPage";
 import onboardingQuestionnaireData from "../onboarding/OnboardingQuestionnaireData";
 import WelcomePage from "../onboarding/WelcomePage";
 import UserQuestionnaire from "./UserQuestionnaire";
- 
+import ContentManagementPhase from "@/app/components/phases/ContentManagementPhase";
+import { TeamCreationPhase } from "@/app/components/phases/actions/TeamCreation";
+ import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 export enum OnboardingPhase {
   REGISTER,
   EMAIL_CONFIRMATION,
   WELCOME,
   QUESTIONNAIRE,
-  PROFILE_SETUP,
   OFFER,
+  PROFILE_SETUP,
   TWO_FACTOR_SETUP,
   PAYMENT_PROCESS,
   NEXT_PHASE,
 }
+
+type PhaseOptions = OnboardingPhase | DevelopmentPhaseEnum | ContentManagementPhaseEnum;
+interface UserJourneyManagerProps {
+  user: User;
+  phaseName: PhaseOptions;
+}
+
+// Define the mapping of phases to components
+const phaseComponents: Record<string, React.FC> = {
+  // Onboarding Phases
+  [OnboardingPhase.EMAIL_CONFIRMATION]: EmailConfirmationPage,
+  [OnboardingPhase.WELCOME]: WelcomePage,
+  [OnboardingPhase.QUESTIONNAIRE]: UserQuestionnaire,
+  [OnboardingPhase.OFFER]: OfferPage,
+  [OnboardingPhase.PROFILE_SETUP]: ProfileSetupPhase,
+
+  // Development Phases
+  [DevelopmentPhaseEnum.PLANNING]: IdeationPhase,
+  [DevelopmentPhaseEnum.IDEA_CREATION]: IdeaCreationPhase,
+
+  // Content Management Phases
+  [ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION]: ContentManagementPhaseEnum,
+  [ContentManagementPhase.CONTENT_EDITING]: ContentManagementPhase,
+  [ContentManagementPhase.CONTENT_CREATION]: ContentManagementPhase,
+  [ContentManagementPhase.CONTENT_ORGANIZATION]: ContentManagementPhase,
+  [ContentManagementPhase.CONTENT_PUBLISHING]: ContentManagementPhase,
+
+  // Feedback Phases
+  [FeedbackPhaseEnum.FEEDBACK_SELECTION]: FeedbackProcess,
+  [FeedbackPhase.FEEDBACK_PROVIDING]: FeedbackProcess,
+  [FeedbackPhase.FEEDBACK_PROCESSING]: FeedbackProcess,
+  [FeedbackPhase.FEEDBACK_ANALYSIS]: FeedbackProcess,
+  [FeedbackPhase.FEEDBACK_REPORTING]: FeedbackProcess,
+
+  // Task Phases
+  [TaskPhase.Planning]: TaskProcess,
+  [TaskPhase.Execution]: TaskProcess,
+  [TaskPhase.Testing]: TaskProcess,
+  [TaskPhase.Completion]: TaskProcess,
+
+  // Team Creation Phases
+  [TeamCreationPhase.QUESTIONNAIRE]: TeamCreationProcess,
+  [TeamCreationPhase.CONFIRMATION]: TeamCreationProcess,
+
+  // Trading Phases
+  [TradingPhase.VERIFICATION]: TradingProcess,
+  [TradingPhase.RISK_ASSESSMENT]: TradingProcess,
+  [TradingPhase.TRADER_TYPE_SELECTION]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_CALLS]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
+
+  // Idea Lifecycle Phases
+  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
+  [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
+  [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
+
+  // Post-Launch Activities Phases
+  [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]: PostLaunchActivitiesProcess,
+  [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]: PostLaunchActivitiesProcess,
+
+  // Task Management Phases
+  [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
+  [TaskManagementPhase.DATA_ANALYSIS]: TaskManagementProcess,
+  [TaskManagementPhase.PLANNING]: TaskManagementProcess,
+  [TaskManagementPhase.EXECUTION]: TaskManagementProcess,
+  [TaskManagementPhase.TESTING]: TaskManagementProcess,
+  [TaskManagementPhase.COMPLETION]: TaskManagementProcess,
+
+  // Data Analysis Sub Phases
+  [DataAnalysisSubPhase.DEFINE_OBJECTIVE]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.DATA_COLLECTION]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.CLEAN_DATA]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.DATA_ANALYSIS]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.DATA_VISUALIZATION]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.TRANSFORM_INSIGHTS]: DataAnalysisSubProcess,
+
+  // Progress Phases
+  [ProgressPhase.Ideation]: ProgressPhaseProcess,
+  [ProgressPhase.TeamFormation]: ProgressPhaseProcess,
+  [ProgressPhase.ProductDevelopment]: ProgressPhaseProcess,
+  [ProgressPhase.LaunchPreparation]: ProgressPhaseProcess,
+  [ProgressPhase.DataAnalysis]: ProgressPhaseProcess,
+
+  // User Support Phases
+  [UserSupportPhase.PLANNING]: UserSupportProcess,
+  [UserSupportPhase.EXECUTION]: UserSupportProcess,
+  [UserSupportPhase.MONITORING]: UserSupportProcess,
+  [UserSupportPhase.CLOSURE]: UserSupportProcess,
+};
 
 const UserJourneyManager: React.FC = () => {
   const { state } = useAuth();
@@ -117,8 +210,20 @@ const UserJourneyManager: React.FC = () => {
     await handleQuestionnaireSubmit(userResponses);
   };
 
+
+  const PhaseComponent = phaseComponents[Number(currentPhase.phase)];
+
+
   return (
     <div>
+            <PhaseComponent
+        phaseName={currentPhase.phase}
+        onSubmit={handleQuestionnaireSubmitWrapper}
+        onComplete={handleQuestionnaireSubmit}
+        onSubmitProfile={handleProfileSetup}
+        onIdeaSubmission={handleIdeaSubmission}
+        onTransition={handlePhaseTransition}
+      />
       {currentPhase.phase ===
         OnboardingPhase[OnboardingPhase.EMAIL_CONFIRMATION] && (
         <EmailConfirmationPage />

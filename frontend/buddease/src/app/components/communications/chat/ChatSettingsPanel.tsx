@@ -228,4 +228,6 @@ useEffect(() => {
   );
 };
 
-export default ChatSettings; ChatSettingsPanel;
+export default ChatSettings;
+export { ChatSettingsPanel };
+

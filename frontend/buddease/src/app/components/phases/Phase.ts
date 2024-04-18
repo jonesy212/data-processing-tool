@@ -6,6 +6,7 @@ import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { DetailsItem } from "../state/stores/DetailsListStore";
+import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 
 // Define a type for a phase
 export interface Phase extends CommonData<Data> {

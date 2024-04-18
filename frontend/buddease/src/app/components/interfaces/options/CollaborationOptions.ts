@@ -111,3 +111,4 @@ const communicationOption: CollaborationOptions = {
   
 
     
+export type {CollaborationOptions}

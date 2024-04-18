@@ -7,6 +7,8 @@ import QuestionnairePage from '../onboarding/QuestionnairePage';
 interface UserQuestionnaireProps {
   onSubmit: (userResponses: any) => void;
   onComplete: (userResponses: any) => Promise<void>; // Change the return type to void
+  onSubmitProfile: (profileData: any) => void // Add a new prop for submitting profile
+  onIdeaSubmission: (ideaData: any) => void // Add a new prop for submitting ideas
 }
 
 const UserQuestionnaire: React.FC<UserQuestionnaireProps> = ({

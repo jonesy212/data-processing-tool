@@ -13,6 +13,16 @@ interface Endpoints {
 }
 
 export const endpoints: Endpoints = {
+  apiWebBase: {
+    login: `${BASE_URL}/login`,
+    logout: `${BASE_URL}/logout`,
+    register: `${BASE_URL}/register`,
+    forgotPassword: `${BASE_URL}/forgot-password`,
+    resetPassword: `${BASE_URL}/reset-password`,
+    verifyEmail: `${BASE_URL}/verify-email`,
+    resendVerificationEmail: `${BASE_URL}/resend-verification-email`,
+    
+  },
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
@@ -156,7 +166,13 @@ export const endpoints: Endpoints = {
   toggleShowTasks: `${BASE_URL}/api/calendar/toggle-show-tasks`,
 
   },
-  chat: {},
+  chat: {
+    getThreads: `${BASE_URL}/api/chat/threads`,
+    getMessages: `${BASE_URL}/api/chat/messages`,
+    createThread: `${BASE_URL}/api/chat/threads`,
+    addMessage: `${BASE_URL}/api/chat/messages`,
+
+  },
 
   client: {
     fetchClientDetails: (clientId: number) => `/api/client/${clientId}`, // Endpoint to fetch client details
@@ -188,6 +204,17 @@ export const endpoints: Endpoints = {
     determineFileType: "/api/client/determineFileType", // Endpoint to determine file type
     importFile: "/api/client/importFile", // Endpoint to import a file
     // Add more client-specific endpoints related to tenant interaction or communication with businesses
+  },
+
+  dev: {
+    // Add development endpoints here
+    getMockData: `${BASE_URL}/mock/data`,
+    generateMockResponse: `${BASE_URL}/mock/generate`,
+    list: `${BASE_URL}/api/dev/mocks`,
+    create: `${BASE_URL}/api/dev/mocks`,
+    delete: `${BASE_URL}/api/dev/mocks/delete`,
+    update: `${BASE_URL}/api/dev/mocks/update`
+
   },
 
   documents: {
@@ -623,6 +650,13 @@ export const endpoints: Endpoints = {
       update: `${BASE_URL}/api/messages/notifications/update`,
       delete: `${BASE_URL}/api/messages/notifications/delete`,
     },
+  },
+  web: {
+    send: `${BASE_URL}/api/messages/web/send`,
+    get: `${BASE_URL}/api/messages/web/get`,
+    update: `${BASE_URL}/api/messages/web/update`,
+    delete: `${BASE_URL}/api/messages/web/delete`,
+    
   },
   payment: {
     initiatePayment: `${BASE_URL}/api/payment/initiate`, // Endpoint for initiating a payment transaction

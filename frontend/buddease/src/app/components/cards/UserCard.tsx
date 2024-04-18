@@ -1,13 +1,8 @@
 // UserCard.tsx
 import React from "react";
 import DummyCard from "./DummyCard";
+import { ContentItem } from '@/app/components/models/content/ContentItem';
 
-interface ContentItem {
-  heading: React.ReactNode;
-  subheading?: React.ReactNode;
-  description?: React.ReactNode;
-  footer?: React.ReactNode;
-}
 
 interface OrganizedCardLoaderProps {
   items: {
@@ -41,5 +36,5 @@ const OrganizedCardLoader: React.FC<OrganizedCardLoaderProps> = ({ items }) => {
 };
 
 export default OrganizedCardLoader;
-export type { ContentItem, OrganizedCardLoaderProps };
+export type { OrganizedCardLoaderProps };
 
