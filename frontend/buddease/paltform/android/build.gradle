@@ -2,13 +2,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion <your_compile_sdk_version>
+    compileSdkVersion 33
     defaultConfig {
-        applicationId "<your_application_id>"
-        minSdkVersion <your_min_sdk_version>
-        targetSdkVersion <your_target_sdk_version>
-        versionCode <your_version_code>
-        versionName "<your_version_name>"
+        applicationId "com.example.myapp"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
     }
     buildTypes {
         release {

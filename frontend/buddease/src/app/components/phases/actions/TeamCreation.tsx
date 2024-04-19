@@ -5,8 +5,9 @@ import TeamData from "../../models/teams/TeamData";
 
 import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
 import TeamCreationQuestionnaire from "@/app/pages/teams/TeamCreationQuestionnaire";
-import TeamCreationAPI from "./teamCreationAPI";
+import * as TeamCreationAPI from "../../../../app/api/ApiTeam";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
+import { TeamCreationPhase } from "./TeamCreationManager";
 
 
 const TeamCreationPhaseManager: React.FC = () => {
@@ -24,8 +25,8 @@ const TeamCreationPhaseManager: React.FC = () => {
       const response = await TeamCreationAPI.createTeam(teamResponses);
 
       // Handle the server response if needed
-      console.log("Server response:", response.data);
-
+         console.log("Server response:", response.data);
+ 
       // Update team data locally
       setTeamData({
         ...teamData,
@@ -101,3 +102,6 @@ const TeamCreationPhaseManager: React.FC = () => {
 
 export default TeamCreationPhaseManager;
 export { TeamCreationPhase };
+
+
+

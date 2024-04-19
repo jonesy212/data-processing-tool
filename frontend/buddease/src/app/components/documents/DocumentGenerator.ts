@@ -94,12 +94,14 @@ const documents: Document[] = [
     highlights: ["goals", "objectives"],
     keywords: [],
     files: [],
+    folders: [],
     options: getDefaultDocumentOptions(),
     load: function (content: any): void {
       this.documentData = content;
     },
     lastModifiedDate: new Date(),
     version: {} as VersionData,
+
   },
   // Add more documents as needed
 ];

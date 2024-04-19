@@ -181,7 +181,7 @@ export const CalendarActions = {
   }>("createEventTemplate"),
 
   importEvents: createAction<File>("importEvents"),
-  exportEvents: createAction("exportEvents"),
+  exportEvents: createAction("pexportEvents"),
 
   viewEventHistory: createAction<string>("viewEventHistory"),
   revertEventChanges: createAction<string>("revertEventChanges"),

@@ -1,4 +1,5 @@
 // ThemeSettingsSagas.ts
+import { handleApiErrorAndNotify } from "@/app/api/ApiData";
 import { ThemeActions } from "@/app/components/actions/ThemeActions";
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
 import Logger from "@/app/components/logging/Logger";
@@ -11,8 +12,9 @@ import { useDispatch } from "react-redux";
 import { call, put, takeLatest } from "redux-saga/effects";
 
 
-const {notify} = useNotification()
+const {notify} = handleApiErrorAndNotify()
 const dispatch = useDispatch()
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 
 
@@ -25,7 +27,7 @@ function* setHeaderColor(action: PayloadAction<Theme>) {
     const notificationInstance = notify({
       type: "success",
       message: NOTIFICATION_MESSAGES.THEME.HEADER_COLOR_CHANGED,
-    })[0];
+    });
     yield delay(3000);
     notificationInstance.remove();
     yield put(ThemeActions.setHeaderColorSuccess());
@@ -38,7 +40,40 @@ function* setHeaderColor(action: PayloadAction<Theme>) {
     const notificationInstance = notify({
       type: "error",
       message: error.message,
-    })[0];
+    });
+    yield delay(3000);
+    notificationInstance.remove();
+  }
+}
+
+function* setFooterColor(action: PayloadAction<Theme>) {
+  try {
+    yield put({
+      type: ThemeActions.setFooterColor.type,
+      payload: action.payload
+    });
+
+    const notificationInstance = notify({
+      type: "success",
+      message: NOTIFICATION_MESSAGES.THEME.FOOTER_COLOR_CHANGED
+    });
+
+    yield delay(3000);
+    notificationInstance.remove();
+    yield put(ThemeActions.setFooterColorSuccess());
+
+  } catch (error: any) {
+    Logger.error("Error setting footer color", error);
+    yield put({
+      type: ThemeActions.setFooterColorFailure.type,
+      error: error.message
+    });
+
+    const notificationInstance = notify({
+      type: "error",
+      message: error.message
+    });
+
     yield delay(3000);
     notificationInstance.remove();
   }
@@ -70,20 +105,7 @@ function* validateThemeSettings(action: PayloadAction<Partial<Theme>>) {
     yield call(Logger.logError, "An error occurred during data validation.");
   }
 }
-
-export function* sagaFunctionFor(action: PayloadAction<string>) {
-  try {
-    yield put(validationSuccess());
-    yield put(ValidationActions.saveThemeSettings(action.payload));
-  } catch (error) {
-    yield put(
-      ValidationActions.validationFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_VALIDATION_ERROR,
-      })
-    )
-  }
-}
-
+ 
 // Watcher saga for theme validation
 function* watchThemeValidationActions() {
   yield takeLatest(
@@ -95,103 +117,103 @@ function* watchThemeValidationActions() {
   // Header, Footer, Body, Border
   yield takeLatest(
     ThemeActions.setHeaderColor.type,
-    sagaFunctionFor(setHeaderColor)
+    setHeaderColor
   );
   yield takeLatest(
-    ThemeActions.setFooterColor,
-    sagaFunctionFor(setFooterColor)
-  );
-  yield takeLatest(ThemeActions.setBodyColor, sagaFunctionFor(setBodyColor));
+    ThemeActions.setFooterColor.type,
+    setFooterColor)
+
+  yield takeLatest(ThemeActions.setBodyColor, setBodyColor)
   yield takeLatest(
     ThemeActions.setBorderColor,
-    sagaFunctionFor(setBorderColor)
+    setBorderColor
   );
   // Border Width, Border Style
   yield takeLatest(
-    ThemeActions.setBorderWidth,
-    sagaFunctionFor(setBorderWidth)
+    ThemeActions.setBorderWidth.type,
+    setBorderWidth
   );
   yield takeLatest(
     ThemeActions.setBorderStyle,
-    sagaFunctionFor(setBorderStyle)
-  );
+    setBorderStyle)
+  
   // Padding, Margin
-  yield takeLatest(ThemeActions.setPadding, sagaFunctionFor(setPadding));
-  yield takeLatest(ThemeActions.setMargin, sagaFunctionFor(setMargin));
+  yield takeLatest(ThemeActions.setPadding, setPadding)
+  yield takeLatest(ThemeActions.setMargin, setMargin)
   // Brand Icon, Brand Name
-  yield takeLatest(ThemeActions.setBrandIcon, sagaFunctionFor(setBrandIcon));
-  yield takeLatest(ThemeActions.setBrandName, sagaFunctionFor(setBrandName));
+  yield takeLatest(ThemeActions.setBrandIcon, setBrandIcon)
+  yield takeLatest(ThemeActions.setBrandName, setBrandName)
 
   // Theme Configuration
-  yield takeLatest(ThemeActions.updateTheme, sagaFunctionFor(updateTheme));
-  yield takeLatest(ThemeActions.resetTheme, sagaFunctionFor(resetTheme));
+  yield takeLatest(ThemeActions.updateTheme, updateTheme)
+  yield takeLatest(ThemeActions.resetTheme, resetTheme)
   yield takeLatest(
     ThemeActions.toggleDarkMode,
-    sagaFunctionFor(toggleDarkMode)
-  );
+    toggleDarkMode)
+  
   yield takeLatest(
     ThemeActions.setPrimaryColor,
-    sagaFunctionFor(setPrimaryColor)
-  );
+    setPrimaryColor)
+  
   yield takeLatest(
     ThemeActions.setSecondaryColor,
-    sagaFunctionFor(setSecondaryColor)
-  );
-  yield takeLatest(ThemeActions.setFontSize, sagaFunctionFor(setFontSize));
-  yield takeLatest(ThemeActions.setFontFamily, sagaFunctionFor(setFontFamily));
+    setSecondaryColor)
+  
+  yield takeLatest(ThemeActions.setFontSize, setFontSize)
+  yield takeLatest(ThemeActions.setFontFamily, setFontFamily)
   yield takeLatest(
     ThemeActions.applyThemeConfig,
-    sagaFunctionFor(applyThemeConfig)
-  );
+    applyThemeConfig)
+  
 
   // Customization
   yield takeLatest(
     ThemeActions.customizeThemeProperties,
-    sagaFunctionFor(customizeThemeProperties)
-  );
+    customizeThemeProperties)
+  
 
   // Theme Management
-  yield takeLatest(ThemeActions.switchTheme, sagaFunctionFor(switchTheme));
+  yield takeLatest(ThemeActions.switchTheme, switchTheme)
   yield takeLatest(
     ThemeActions.localizeThemeSettings,
-    sagaFunctionFor(localizeThemeSettings)
-  );
+    localizeThemeSettings)
+  
   yield takeLatest(
     ThemeActions.handleThemeEvents,
-    sagaFunctionFor(handleThemeEvents)
-  );
+    handleThemeEvents)
+ 
   yield takeLatest(
     ThemeActions.documentThemeSettings,
-    sagaFunctionFor(documentThemeSettings)
-  );
+    documentThemeSettings)
+ 
 
   // Optimization and Performance
   yield takeLatest(
     ThemeActions.optimizeThemePerformance,
-    sagaFunctionFor(optimizeThemePerformance)
-  );
+    optimizeThemePerformance)
+ 
   yield takeLatest(
     ThemeActions.analyzeThemeUsage,
-    sagaFunctionFor(analyzeThemeUsage)
-  );
+    analyzeThemeUsage)
+ 
   yield takeLatest(
     ThemeActions.visualizeThemeMetrics,
-    sagaFunctionFor(visualizeThemeMetrics)
-  );
+    visualizeThemeMetrics)
+ 
 
   // Security and Governance
   yield takeLatest(
     ThemeActions.secureThemeSettings,
-    sagaFunctionFor(secureThemeSettings)
-  );
+    secureThemeSettings)
+ 
   yield takeLatest(
     ThemeActions.governThemeGovernance,
-    sagaFunctionFor(governThemeGovernance)
-  );
+    governThemeGovernance)
+ 
   yield takeLatest(
     ThemeActions.auditThemeCompliance,
-    sagaFunctionFor(auditThemeCompliance)
-  );
+    auditThemeCompliance)
+ 
 }
 
 export function* themeValidation() {

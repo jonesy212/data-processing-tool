@@ -1,6 +1,7 @@
 // DocumentBuilder.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { usePanelContents } from "@/app/generators/usePanelContents";
 import Clipboard from "@/app/ts/clipboard";
 import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
@@ -10,6 +11,8 @@ import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
 import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
+import FileData from "../models/data/FileData";
+import FolderData from "../models/data/FolderData";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
 import axiosInstance from "../security/csrfToken";
@@ -19,7 +22,7 @@ import {
   createPdfDocument,
   getFormattedOptions,
 } from "./DocumentCreationUtils";
-import { DocumentTypeEnum } from "./DocumentGenerator";
+import { DocumentPath, DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentOptions, DocumentSize } from "./DocumentOptions";
 import {
   DocumentAnimationOptions,
@@ -27,7 +30,6 @@ import {
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { usePanelContents } from "@/app/generators/usePanelContents";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
@@ -39,7 +41,12 @@ export interface DocumentData extends CommonData<Data> {
   highlights: string[];
   keywords: string[];
   load(content: any): void;
-  files: any[];
+  
+  file?: FileData;
+  files?: FileData[]; // Array of FileData associated with the document
+  folder?: FolderData
+  folders: FolderData[]; // Array of FolderData associated with the document
+  filePath?: DocumentPath;
   status?: AllStatus;
   type?: DocumentTypeEnum;
   locked?: boolean;

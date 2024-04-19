@@ -28,11 +28,15 @@ import { selectApiConfigs } from "../state/redux/slices/ApiSlice";
 import { UserData } from "../users/User";
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
+import useFilePath from "../hooks/useFilePath";
+import FileData from '../models/data/FileData';
 
 const ApiConfigComponent: React.FC = () => {
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Specify correct type
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const userPreferences = useSelector((state: any) => state.userPreferences);
+  const [filePath, setFilePath] = useState<string>('');
+
   // Access API configurations from Redux state
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
 
@@ -43,6 +47,9 @@ const ApiConfigComponent: React.FC = () => {
 
   // Update local state with API configurations from Redux state
   useEffect(() => {
+
+    const path = useFilePath();
+    setFilePath(path);
     setApiConfigs(apiConfigsFromRedux);
   }, [apiConfigsFromRedux]);
 
@@ -86,14 +93,17 @@ const ApiConfigComponent: React.FC = () => {
               name: "task-tracker",
               id: "taskId",
               phases: {} as Phase[],
-              trackFileChanges: (file: File) => file,
-              trackFolderChanges(fileLoader?: DocumentData) {
+              trackFileChanges: (file: FileData) => file,
+              trackFolderChanges(
+                content: FileData,
+                fileLoader?: DocumentData,
+              ) {
                 // Make fileLoader optional
                 if (fileLoader) {
                   // Add a null check
                   if (typeof fileLoader.load === "function") {
                     // Check if load method exists
-                    fileLoader.load(file); // Invoke load method if it exists
+                    fileLoader.load(content); // Invoke load method if it exists
                     return fileLoader.files;
                   } else {
                     console.error(

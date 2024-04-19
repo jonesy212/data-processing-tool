@@ -11,12 +11,13 @@ import {
   updateProfilePicture,
   updateQuota,
 } from "../../users/UserSlice";
+import FileData from "../data/FileData";
 export interface Tracker {
   id: string;
   name: string;
   phases: Phase[];
   getUserProfile?: (userData: User) => void; // New method to get user profile
-  trackFileChanges: (file: DocumentData) => void;
+  trackFileChanges: (file: FileData) => void;
   trackFolderChanges: (fileLoader: DocumentData) => void;
   getName?: (trackerName: string) => string;
   updateUserProfile?: (userData: User) => void; // New method to update user profile
@@ -38,7 +39,7 @@ class TrackerClass implements Tracker {
   }
 
   // Method to track changes for a file
-  trackFileChanges(file: DocumentData): void {
+  trackFileChanges(file: FileData): void {
     // Simulate tracking content changes
     const contentChanges = this.detectContentChanges(file);
 

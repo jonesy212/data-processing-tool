@@ -5,7 +5,7 @@ const API_BASE_URL = endpoints.teams.list;
 
 export const fetchTeams = async (): Promise<any[]> => {
   try {
-    const response = await axiosInstance.get(API_BASE_URL);
+    const response = await axiosInstance.get(`${API_BASE_URL}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching teams:', error);
@@ -15,7 +15,7 @@ export const fetchTeams = async (): Promise<any[]> => {
 
 export const createTeam = async (newTeam: any): Promise<void> => {
   try {
-    await axiosInstance.post(API_BASE_URL, newTeam);
+    await axiosInstance.post(`${API_BASE_URL}`, newTeam);
   } catch (error) {
     console.error('Error creating team:', error);
     throw error;
