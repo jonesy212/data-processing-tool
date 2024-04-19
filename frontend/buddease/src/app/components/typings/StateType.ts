@@ -6,6 +6,7 @@ import { User } from "../users/User";
 import { Settings } from '../state/stores/SettingsStore';
 import { UserManagerState } from '../users/UserSlice';
 import { TaskManagerState } from "../state/redux/slices/TaskSlice";
+import { NotificationState } from "../state/redux/slices/NotificationSlice";
 
 // Define the StateType interface
 interface StateType {

@@ -1,23 +1,18 @@
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
-
-export interface AsyncHook {
-  condition: (idleTimeoutDuration: number) => Promise<boolean>;
-  asyncEffect: ({ idleTimeoutId, startIdleTimeout }: {
-    idleTimeoutId: NodeJS.Timeout | null;
-    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Correct type definition
-  }) => Promise<void | (() => void)>;
+import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
+export interface AsyncHook extends PhaseHookConfig {
   isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   resetIdleTimeout: () => void;
   idleTimeoutId: NodeJS.Timeout | null;
-  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Correct type definition
-  cleanup: (() => void) | undefined
   startAnimation: () => void;
   stopAnimation: () => void;
   animateIn: () => void;
   toggleActivation: (accessToken?: string | null | undefined) => void; // Make accessToken optional and nullable
- }
+  cleanup: (() => void) | undefined;
+}
+
 
 
 // Library's AsyncHook type

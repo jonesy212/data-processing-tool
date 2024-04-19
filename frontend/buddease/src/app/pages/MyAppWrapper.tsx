@@ -13,6 +13,9 @@ import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
  import { AsyncHook } from "async_hooks";
 import { brandingSettings } from '@/app/libraries/theme/BrandingService';
+import { Phase } from "../components/phases/Phase";
+import { ContentItem } from "../components/cards/DummyCardLoader";
+import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
 
 
 // Extend NextRouter with additional properties
@@ -131,63 +134,56 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
   };
 
   // Generate hooks dynamically based on your phases
-  const hooks: Record<string, PhaseHookConfig> & {
-    useIdleTimeout: any;
-    handleLogin: any;
-  } = {
-    components: createPhaseHook({
-      name: "Components Phase",
-      condition: () => true,
-      asyncEffect: async () => {
-        // updated return type to match PhaseHookConfig
-        return () => {};
-      },
-    } as PhaseHookConfig),
+  // Define a function to create phase hooks dynamically
+  const createPhaseHooks = (
+    phaseNames: string[]
+  ): Hooks & { useIdleTimeout: any; handleLogin: any } => {
+    const hooks: Hooks & { useIdleTimeout: any; handleLogin: any } = {
+      useIdleTimeout: {} as PhaseHookConfig,
+      handleLogin: {} as PhaseHookConfig,
+    };
 
-    pageLoader: createPhaseHook({
-      name: "Page Loader Phase",
-      condition: () => true,
-      asyncEffect: async () => {
-        // trigger animation
-        return () => {};
-      },
-    } as PhaseHookConfig),
+    // Iterate over the phase names and create hooks for each phase
+    phaseNames.forEach((phaseName) => {
+      hooks[phaseName] = createPhaseHook({
+        name: phaseName,
+        condition: () => true,
+        duration: "1000",
+        asyncEffect: async () => {
+          // trigger animation
+          return () => {};
+        },
+        isActive: false,
+        initialStartIdleTimeout: () => {},
+        resetIdleTimeout: () => {},
+        idleTimeoutId: null,
+        startIdleTimeout: () => {},
+        clearIdleTimeout: () => {},
+        onPhaseStart: () => {},
+        onPhaseEnd: () => {},
+        cleanup: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
+        toggleActivation: () => {},
+      });
+    });
 
-    sdc: createPhaseHook({
-      name: "SDC Phase",
-      condition: () => true,
-      asyncEffect: async () => {
-        // trigger animation
-        return () => {};
-      },
-    } as PhaseHookConfig),
-    sbc: createPhaseHook({
-      name: "SBC Phase",
-      condition: () => true,
-      asyncEffect: async () => {
-        // trigger animation
-        return () => {};
-      },
-    } as PhaseHookConfig),
-    sub: createPhaseHook({
-      name: "SUB Phase",
-      condition: () => true,
-      asyncEffect: async () => {
-        // trigger animation
-        return () => {};
-      },
-    } as PhaseHookConfig),
-    clc: createPhaseHook({
-      name: "CLC Phase",
-      condition: () => true,
-      asyncEffect: async () => {
-        // trigger animation
-        return () => {};
-      },
-    } as PhaseHookConfig),
-    useIdleTimeout: undefined,
-    handleLogin: undefined,
+    return hooks;
   };
+
+  // Generate hooks dynamically based on your phases
+  const phaseNames = [
+    "Components Phase",
+    "Page Loader Phase",
+    "SDC Phase",
+    "SBC Phase",
+    "SUB Phase",
+    "CLC Phase",
+  ];
+
+  const hooks: Hooks & { useIdleTimeout: any; handleLogin: any } =
+    createPhaseHooks(phaseNames);
 
   return (
     <>
@@ -197,7 +193,11 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
         router={router as ExtendedRouter & Router}
         brandingSettings={brandingSettings} // Pass branding settings to MyApp
         hooks={hooks}
-        utilities={utilities}
+        utilities={{ generateUtilityFunctions: () => {} }}
+        phases={{} as Phase[]}
+        contentItem={{} as ContentItem}
+        setThemeState={setThemeState} // Pass setThemeState here
+
       />
       <EnhancedCaptionManagementPage />
       {/* Include the CaptionManagementPageComponent */}

@@ -6,7 +6,6 @@ import { LogData } from '../models/LogData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { AllStatus } from '../state/stores/DetailsListStore';
 import { NotificationType, NotificationTypeEnum } from './NotificationContext';
-import { StatusType } from '../models/data/StatusType';
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -21,16 +20,18 @@ export type DataStatus = "processing" | "completed" | "failed"; // Define DataSt
 interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   id: string;
   message: string;
-  createdAt: Date;
+
+  createdAt?: Date;
+  updatedAt?: Date;
   content: string;
   type: NotificationType;
   sendStatus: SendStatus; // Add sendStatus property
   completionMessageLog: LogData;
-  updatedAt?: Date;
+  date: Date;
   email?: string;
   status?: AllStatus
   inApp?: boolean; // Add inApp property to differentiate push vs in-app
-  notificationType?: NotificationTypeEnum;
+  notificationType: NotificationTypeEnum | string
   options?: {
     additionalOptions: readonly string[] | string | number | any[] | undefined
   }
@@ -58,7 +59,8 @@ export const dispatchNotification = (
     dispatch(
       addNotification({
         id: actionType,
-        createdAt: new Date(),
+        // createdAt: new Date(),
+        date: new Date(),
         content: successMessage,
         completionMessageLog: {} as WritableDraft<LogData>,
         type: NotificationTypeEnum.Info,
@@ -66,6 +68,7 @@ export const dispatchNotification = (
         status: "tentative",
         sendStatus: "Sent",
         email: "test@email.com",
+        notificationType: NotificationTypeEnum.Info,
         inApp: true,
         options: {
           additionalOptions: undefined
@@ -85,11 +88,15 @@ export const dispatchNotification = (
         status: "tentative",
         sendStatus: "Error",
         email: "test@email.com",
+        notificationType: NotificationTypeEnum.Error,
         inApp: true,
         options: {
           additionalOptions: undefined
-        }
-      })
+        },
+        data: payload,
+        date: new Date(),
+      },
+      )
     );
   }
 };

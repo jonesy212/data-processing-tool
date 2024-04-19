@@ -1,82 +1,82 @@
+// Import necessary dependencies
 import axiosInstance from '@/app/api/axiosInstance';
-import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { Draft } from 'immer';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from './RootSlice';
 
+// Define the entity interface
 interface Entity {
     id: string;
-    name: string
+    name: string;
     // Add other properties as needed
 }
 
-interface EntityState<T> {
+// Define the initial state for the entity slice
+interface EntityState<T, Id extends string> {
     entities: T[];
-    selectedEntityId: string | null;
-    
+    selectedEntityId: Id | null;
 }
 
-export const useEntitytManagerSlice = <T>(entityName: string) => {
-    const initialState: EntityState<T> = {
-        entities: [],
-        selectedEntityId: null,
-    };
+// Define CustomEntityState interface
+interface CustomEntityState<T, Id extends string> extends EntityState<T, Id> {
+    selectedEntityId: Id | null;
+}
 
-    const entitySlice = createSlice({
-        name: entityName,
-        initialState,
-        reducers: {
-            addEntity: (state, action: PayloadAction<Draft<T>>) => {
-                state.entities.push(action.payload);
-            },
-
-            removeEntity: (state, action: PayloadAction<string>) => {
-                state.entities = state.entities.filter(
-                    (entity: Draft<T>) => (entity as Entity).id !== action.payload
-                );
-            },
-            
-
-            selectEntity: (state, action: PayloadAction<string>) => {
-                state.selectedEntityId = action.payload;
-            },
-
-            removeAllEntities: (state) => {
-                state.entities = [];
-            },
-        },
-    });
-
-    const entitySliceActions = {
-        fetchEntities: () => {
-            return async (dispatch: Dispatch) => {
-                try {
-                    const response = await axiosInstance.get(`/api/${entityName}`);
-                    const entities = response.data;
-                    dispatch(addEntity(entities));
-                } catch (error) {
-                    console.error(`Error fetching ${entityName}:`, error);
-                }
-            };
-        },
-
-        clearAllEntities: () => {
-            return (dispatch: Dispatch) => {
-                dispatch(removeAllEntities());
-            };
-        },
-    };
-
-
-    const { addEntity, removeEntity, removeAllEntities, selectEntity } = entitySlice.actions;
-
-  const selectEntities = (state: RootState): T[] =>
-    state.entityManager[entityName as keyof RootState["entityManager"]] as T[];
-
-    return { ...entitySlice.actions, ...entitySliceActions, selectEntities, reducer: entitySlice.reducer };
+// Define the initial state for the entity slice
+const initialState: CustomEntityState<any, string> = {
+    entities: [],
+    selectedEntityId: null,
 };
-export default useEntitytManagerSlice;
 
- 
+// Create the entity slice using createSlice
+export const useEntityManagerSlice = createSlice({
+    name: 'entityManager',
+    initialState,
+    reducers: {
+        // Define reducer functions to update the state
+        addEntity: (state, action: PayloadAction<Entity>) => {
+            state.entities.push(action.payload);
+        },
+
+        removeEntity: (state, action: PayloadAction<string>) => {
+            state.entities = state.entities.filter(entity => entity.id !== action.payload);
+        },
+
+        selectEntity: (state, action: PayloadAction<string>) => {
+            state.selectedEntityId = action.payload;
+        },
+
+        removeAllEntities: (state) => {
+            state.entities = [];
+        },
+    },
+});
+
+// Define async thunks for fetching entities and clearing all entities
+export const fetchEntities = createAsyncThunk(
+    'entityManager/fetchEntities',
+    async (entityName: string) => {
+        try {
+            const response = await axiosInstance.get(`/api/${entityName}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching ${entityName}:`, error);
+            throw error;
+        }
+    }
+);
+
+export const clearAllEntities = createAsyncThunk(
+    'entityManager/clearAllEntities',
+    async (_, { dispatch }) => {
+        dispatch(removeAllEntities());
+    }
+);
+
+// Define selector function to access the entity state
+export const selectEntities = (state: RootState) => state.entityManager.entities;
+
+// Export the reducer and actions
+export const { addEntity, removeEntity, selectEntity, removeAllEntities } = useEntityManagerSlice.actions;
+
 // Export the reducer
-export type EntityReducer = ReturnType<typeof useEntitytManagerSlice>['reducer'];
-export type { Entity };
+export const entityManagerReducer = useEntityManagerSlice.reducer;

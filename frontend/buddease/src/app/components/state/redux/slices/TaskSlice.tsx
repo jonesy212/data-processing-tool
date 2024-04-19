@@ -166,7 +166,7 @@ export const taskManagerSlice = createSlice({
       }
     },
 
-    addTask: (state, action: PayloadAction<{ id: string; title: string }>) => {
+    addTask: (state, action: PayloadAction<{ id: string; title: string, isComplete: boolean }>) => {
       const { id, title } = action.payload;
       // Generate a unique ID for the new task
       const generatedTaskID = UniqueIDGenerator.generateTaskID(id, title);

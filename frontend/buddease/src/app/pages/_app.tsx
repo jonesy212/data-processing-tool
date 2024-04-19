@@ -41,6 +41,7 @@ import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
   NotificationProvider,
   NotificationType,
+  NotificationTypeEnum,
 } from "../components/support/NotificationContext";
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
@@ -64,19 +65,50 @@ import BrandingSettings from "../libraries/theme/BrandingService";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
 import { Dispatch } from "@reduxjs/toolkit";
+import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
+import useNotificationManagerService from "../components/notifications/NotificationService";
+import apiNotificationsService from "../api/NotificationsService";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
-  hooks: {
-    useIdleTimeout: typeof useIdleTimeout;
-    handleLogin: typeof handleLogin;
+  setThemeState:{
+    setThemeConfig: React.Dispatch<React.SetStateAction<ThemeConfig>>; // Setter for theme configuration
+    setPrimaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for primary color
+    setSecondaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for secondary color
+    setFontFamily: React.Dispatch<React.SetStateAction<string>>; // Setter for font family
+    setFontSize: React.Dispatch<React.SetStateAction<string>>; // Setter for font size
+    setHeaderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for header color
+    setFooterColor: React.Dispatch<React.SetStateAction<string>>; // Setter for footer color
+    setBodyColor: React.Dispatch<React.SetStateAction<string>>; // Setter for body color
+    setBorderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for border color
+  setBorderWidth: React.Dispatch<React.SetStateAction<number>>; // Setter for border width
+  setBorderStyle: React.Dispatch<React.SetStateAction<string>>; // Setter for border style
+  setPadding: React.Dispatch<React.SetStateAction<string>>; // Setter for padding
+  setMargin: React.Dispatch<React.SetStateAction<string>>; // Setter for margin
+   // Branding related setters
+   setBrandIcon: React.Dispatch<React.SetStateAction<string>>; // Setter for brand icon
+   setBrandName: React.Dispatch<React.SetStateAction<string>>; // Setter for brand name
+ 
   };
+  hooks: Record<string, PhaseHookConfig>;
   utilities: {
     generateUtilityFunctions: () => void;
   };
   phases: Phase[];
   contentItem: DetailsItem<Data>;
 }
+
+
+export const {
+  themeConfig,
+  
+  setThemeConfig,
+  setPrimaryColor,
+  setSecondaryColor,
+  setFontSize,
+  setFontFamily,
+} = useThemeConfig();
+
 const phases: Phase[] = [
   {
     name: "Calendar Phase",
@@ -106,6 +138,7 @@ async function MyApp({
   pageProps,
   router,
   brandingSettings,
+  setThemeState
 }: ExtendedAppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
@@ -146,10 +179,11 @@ async function MyApp({
     ]);
   };
 
-  const handleButtonClick = () => {
-    // Example: Update progress when a button is clicked
-    setProgress((prevProgress) => prevProgress + 10); // Increase progress by 10%
-  };
+  const handleButtonClick = () =>
+    Promise.resolve().then(() => {
+      // Example: Update progress when a button is clicked
+      setProgress((prevProgress) => prevProgress + 10); // Increase progress by 10%
+    });
 
   interface Props {
     children: (props: { hooks: any; utilities: any }) => React.ReactNode;
@@ -241,14 +275,6 @@ async function MyApp({
 
   const appTree: AppTree | null = generateAppTree({} as DocumentTree); // Provide an empty DocumentTree or your actual data
 
-  const {
-    themeConfig,
-    setPrimaryColor,
-    setSecondaryColor,
-    setFontSize,
-    setFontFamily,
-  } = useThemeConfig();
-
   const handleIdleTimeout = (duration: any) => {
     // Start the idle timeout with the provided duration
     idleTimeout.startIdleTimeout(duration, () => {
@@ -256,6 +282,14 @@ async function MyApp({
       setIsUserLoggedIn(false);
     });
   };
+  const {
+    sendPushNotification,
+    sendAnnouncement,
+    dismissNotification,
+    addNotification,
+    removeNotification,
+    clearNotifications,
+  } = useNotificationManagerService();
 
   return (
     <ErrorBoundaryProvider ErrorHandler={ErrorHandler}>
@@ -303,14 +337,7 @@ async function MyApp({
               <ThemeConfigProvider>
                 <ThemeCustomization
                   themeState={themeConfig}
-                  setThemeState={{
-                    setPrimaryColor,
-                    setSecondaryColor,
-                    setFontSize,
-                    setFontFamily,
-      
-                  }}
-                  notificationState={notificationState}
+                  setThemeState={setThemeState}
                 />
                 <CollaborationDashboard />
                 <NotificationProvider>
@@ -322,7 +349,6 @@ async function MyApp({
                           navigator={{} as Navigator}
                         >
                           <Routes location={location}>
-                            {" "}
                             {/* Routes to render only the first matching route */}
                             <Route path="/login">
                               <LoginForm
@@ -487,6 +513,7 @@ async function MyApp({
                 </NotificationProvider>
               </ThemeConfigProvider>
             )}
+
             <ChartComponent {...pageProps} />
 
             <Layout>{Component && <Component {...pageProps} />}</Layout>

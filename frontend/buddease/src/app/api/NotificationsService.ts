@@ -3,7 +3,7 @@ import { NotificationTypeEnum, useNotification } from "@/app/components/support/
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import { endpoints } from "./ApiEndpoints";
 import NOTIFICATION_MESSAGES from '@/app/components/support/NotificationMessages';
-
+import { NotificationType } from '@/app/components/support/NotificationContext';
 // Define API base URL
 const API_BASE_URL = endpoints.notifications;
 
@@ -19,7 +19,7 @@ class ApiNotificationsService {
     message: string,
     data: any,
     date: Date,
-    type: NotificationTypeEnum
+    type: NotificationType
   ) => void;
   notificationMessages: ApiNotificationMessages;
 
@@ -30,7 +30,7 @@ class ApiNotificationsService {
       message: string,
       data: any,
       date: Date,
-      type: NotificationTypeEnum
+      type: NotificationType
     ) => void
   ) {
     this.notify = notify;

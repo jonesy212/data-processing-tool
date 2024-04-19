@@ -1,16 +1,20 @@
 import { emitPanOffsetUpdate } from '@/app/utils/emitPanOffsetUpdate';
 import React, { useEffect, useRef, useState } from 'react';
 import io,{ Socket as SocketIOClientSocket } from "socket.io-client";
+import { RootState } from '../state/redux/slices/RootSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { DrawingActions } from '../actions/DrawingActions';
+import { setIsDrawing } from '../state/redux/slices/DrawingSlice';
 
 
 const Whiteboard: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = useState<SocketIOClientSocket| null>(null);
+  const isDrawing = useSelector((state: RootState) => state.drawingManager.isDrawing);
+const dispatch = useDispatch()
 
 
-
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
-
+ 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -34,6 +38,45 @@ const Whiteboard: React.FC = () => {
       }
     };
   }, []); // Run only once on component mount
+
+
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    dispatch(DrawingActions.startDrawing(event));
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.beginPath();
+    context.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+  };
+
+  const handleMouseUp = () => {
+    dispatch(DrawingActions.stopDrawing());
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+    context.stroke();
+    // Emit drawing data to the server, if needed
+  };
+
+  const handleClearDrawing = () => {
+    dispatch(DrawingActions.clearDrawing());
+  };
+
+
+
+
 
   const startDrawing = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     setIsDrawing(true);

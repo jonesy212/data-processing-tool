@@ -12,7 +12,7 @@ type IdleTimeoutConditionFunction = (
 type FetchLastUserInteractionTimeFunction = () => Promise<number | null>;
 
 // Define the type for the showModalOrNotification function
-type ShowModalOrNotificationFunction = (title: string, message: string) => void;
+type ShowModalOrNotificationFunction = (title: string, message?: string) => void;
 
 // Define the type for the clearUserData function
 type ClearUserDataFunction = () => void;

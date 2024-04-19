@@ -1,146 +1,297 @@
-// ThemeCustomization.tsx
-import { ThemeConfig } from '@/app/components/libraries/ui/theme/ThemeConfig';
-import React, { SetStateAction, useState } from "react";
-import { NotificationManagerServiceProps } from '../../notifications/NotificationService';
-import { useThemeConfig } from "./ThemeConfigContext";
- 
-interface ThemeCustomizationProps { 
-  themeState: ThemeConfig;
-  setThemeState: React.Dispatch<React.SetStateAction<ThemeConfig>>;
-  notificationState: NotificationManagerServiceProps;
-  setPrimaryColor: React.Dispatch<SetStateAction<ThemeConfig>>
-  setSecondaryColor: React.Dispatch<SetStateAction<ThemeConfig>>
-  setFontSize: React.Dispatch<React.SetStateAction<string>>;
+import React from "react";
+import { ThemeConfig } from "../../libraries/ui/theme/ThemeConfig";
+import { NotificationData } from "../../support/NofiticationsSlice";
+import { NotificationTypeEnum } from "../../support/NotificationContext";
+
+interface ThemeCustomizationProps {
+  themeState: ThemeConfig; // Theme configuration state
+  setThemeState: {
+    setThemeConfig: React.Dispatch<React.SetStateAction<ThemeConfig>>; // Setter for theme configuration
+    setPrimaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for primary color
+    setSecondaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for secondary color
+    setFontFamily: React.Dispatch<React.SetStateAction<string>>; // Setter for font family
+    setFontSize: React.Dispatch<React.SetStateAction<string>>; // Setter for font size
+    // Additional setters for other theme states
+    setHeaderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for header color
+    setFooterColor: React.Dispatch<React.SetStateAction<string>>; // Setter for footer color
+    setBodyColor: React.Dispatch<React.SetStateAction<string>>; // Setter for body color
+    setBorderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for border color
+    setBorderWidth: React.Dispatch<React.SetStateAction<number>>; // Setter for border width
+    setBorderStyle: React.Dispatch<React.SetStateAction<string>>; // Setter for border style
+    setPadding: React.Dispatch<React.SetStateAction<string>>; // Setter for padding
+    setMargin: React.Dispatch<React.SetStateAction<string>>; // Setter for margin
+    setBrandIcon: React.Dispatch<React.SetStateAction<string>>; // Setter for brand icon
+    setBrandName: React.Dispatch<React.SetStateAction<string>>; // Setter for brand name
+  };
+  // Notification related setters and functions
+  notificationState: {
+    notifications: NotificationData[],
+    setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>,
+      notify: (
+      id: string,
+      message: string,
+      content: any,
+      date: Date,
+      type: NotificationTypeEnum
+    ) => Promise<void>;
+    sendPushNotification: () => Promise<void>;
+    sendAnnouncement: () => void; // Define the function to send announcements
+    handleButtonClick: () => void; // Define the function to handle button clicks
+    // Include other required properties here
+  };
 }
+
 const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
   themeState,
   setThemeState,
-  notificationState
 }) => {
-  const {
-    primaryColor,
-    setPrimaryColor,
-    secondaryColor,
-    setSecondaryColor,
-    fontSize,
-    setFontSize,
-    fontFamily,
-    setFontFamily,
-  } = useThemeConfig();
-
-
-  const [localThemeState, setLocalThemeState] = useState<ThemeConfig>({
-    ...themeState,
-  });
-
-
-
-
-  const handleSecondaryColorChange = (color: string) => {
-    setLocalThemeState((prevState) => ({
-      ...prevState,
-      secondaryColor: color,
-    }));
-  };
-
-  const handleFontSizeChange = (size: string) => {
-    setLocalThemeState((prevState) => ({
-      ...prevState,
-      fontSize: size,
-    }));
-  };
-
-  const handleFontFamilyChange = (family: string) => {
-    setLocalThemeState((prevState) => ({
-      ...prevState,
-      fontFamily: family,
-    }));
-  };
-
-  const saveThemeSettings = () => {
-    setThemeState(localThemeState);
-    // Additional logic to save theme settings, e.g., to local storage or server
-  };
+  // Function to handle primary color change
   const handlePrimaryColorChange = (color: string) => {
-    setPrimaryColor(color);
+    setThemeState.setPrimaryColor(color);
   };
 
-
-  const handleNotificationSettingsChange = (setting: string) => {
-    notificationState.setNotifications((prevState: any) => ({
-      ...prevState,
-      [setting]: !prevState[setting],
-    }));
-    // Additional logic to update notification settings in the application
+  // Function to handle secondary color change
+  const handleSecondaryColorChange = (color: string) => {
+    setThemeState.setSecondaryColor(color);
   };
 
+  // Function to handle theme configuration change
+  const handleThemeConfigChange = (config: ThemeConfig) => {
+    setThemeState.setThemeConfig(config);
+  };
+
+  // Function to handle font size change
+  const handleFontSizeChange = (size: string) => {
+    setThemeState.setFontSize(size);
+  };
+
+  // Function to handle font family change
+  const handleFontFamilyChange = (family: string) => {
+    setThemeState.setFontFamily(family);
+  };
+
+  // Function to save theme settings
+  const saveThemeSettings = async () => {
+    const themeConfig = {
+      primaryColor: themeState.primaryColor,
+      secondaryColor: themeState.secondaryColor,
+      fontSize: themeState.fontSize,
+      fontFamily: themeState.fontFamily,
+      headerColor: themeState.headerColor,
+      footerColor: themeState.footerColor,
+      bodyColor: themeState.bodyColor,
+      borderColor: themeState.borderColor,
+      borderWidth: themeState.borderWidth,
+      borderStyle: themeState.borderStyle,
+      padding: themeState.padding,
+      margin: themeState.margin,
+      brandIcon: themeState.brandIcon,
+      brandName: themeState.brandName,
+      themeConfig: themeState.themeConfig,
+    };
+
+    // Additional logic to save theme settings
+    console.log("Theme settings saved");
+
+    // Save theme settings to localStorage
+    try {
+      localStorage.setItem("themeSettings", JSON.stringify(themeConfig));
+      console.log("Theme settings saved to localStorage");
+    } catch (error) {
+      console.error("Error saving theme settings to localStorage:", error);
+    }
+
+    // Save theme settings to API
+    try {
+      // Assuming you have an API endpoint to save theme settings
+      const response = await fetch("api/theme/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add any other headers as needed
+        },
+        body: JSON.stringify(themeConfig),
+      });
+
+      if (response.ok) {
+        console.log("Theme settings saved to API");
+      } else {
+        console.error(
+          "Failed to save theme settings to API:",
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error saving theme settings to API:", error);
+    }
+  };
+
+  // Function to handle header color change
+  const handleHeaderColorChange = (color: string) => {
+    setThemeState.setHeaderColor(color);
+  };
+
+  // Function to handle footer color change
+  const handleFooterColorChange = (color: string) => {
+    setThemeState.setFooterColor(color);
+  };
+
+  // Function to handle body color change
+  const handleBodyColorChange = (color: string) => {
+    setThemeState.setBodyColor(color);
+  };
+
+  // Function to handle border color change
+  const handleBorderColorChange = (color: string) => {
+    setThemeState.setBorderColor(color);
+  };
+
+  // Function to handle border width change
+  const handleBorderWidthChange = (width: number) => {
+    setThemeState.setBorderWidth(width);
+  };
+
+  // Function to handle border style change
+  const handleBorderStyleChange = (style: string) => {
+    setThemeState.setBorderStyle(style);
+  };
+
+  // Function to handle padding change
+  const handlePaddingChange = (padding: string) => {
+    setThemeState.setPadding(padding);
+  };
+
+  // Function to handle margin change
+  const handleMarginChange = (margin: string) => {
+    setThemeState.setMargin(margin);
+  };
+
+  // Function to handle brand icon change
+  const handleBrandIconChange = (icon: string) => {
+    setThemeState.setBrandIcon(icon);
+  };
+
+  // Function to handle brand name change
+  const handleBrandNameChange = (name: string) => {
+    setThemeState.setBrandName(name);
+  };
+
+  // Add UI elements for other theme settings
+  const themeSettings = {
+    headerColor: {
+      label: "Header Color",
+      value: themeState.headerColor,
+      onChange: handleHeaderColorChange,
+    },
+    footerColor: {
+      label: "Footer Color",
+      value: themeState.footerColor,
+      onChange: handleFooterColorChange,
+    },
+    bodyColor: {
+      label: "Body Color",
+      value: themeState.bodyColor,
+      onChange: handleBodyColorChange,
+    },
+    borderColor: {
+      label: "Border Color",
+      value: themeState.borderColor,
+      onChange: handleBorderColorChange,
+    },
+    borderWidth: {
+      label: "Border Width",
+      value: themeState.borderWidth,
+      onChange: handleBorderWidthChange,
+    },
+    borderStyle: {
+      label: "Border Style",
+      value: themeState.borderStyle,
+      onChange: handleBorderStyleChange,
+    },
+    padding: {
+      label: "Padding",
+      value: themeState.padding,
+      onChange: handlePaddingChange,
+    },
+    margin: {
+      label: "Margin",
+      value: themeState.margin,
+      onChange: handleMarginChange,
+    },
+    brandIcon: {
+      label: "Brand Icon",
+      value: themeState.brandIcon,
+      onChange: handleBrandIconChange,
+    },
+    brandName: {
+      label: "Brand Name",
+      value: themeState.brandName,
+      onChange: handleBrandNameChange,
+    },
+    themeConfig: {
+      label: "Theme Configuration",
+      value: themeState.themeConfig,
+      onChange: handleThemeConfigChange,
+    },
+  };
 
   return (
     <div>
       <h2>Theme Customization</h2>
+      {/* Render UI elements for primary color, secondary color, font size, and font family */}
+      {/* Primary Color */}
       <label>
-      Primary Color:
+        Primary Color:
         <input
           type="color"
-          value={localThemeState.primaryColor}
+          value={themeState.primaryColor}
           onChange={(e) => handlePrimaryColorChange(e.target.value)}
         />
       </label>
+      {/* Secondary Color */}
       <label>
         Secondary Color:
         <input
           type="color"
-          value={localThemeState.secondaryColor}
+          value={themeState.secondaryColor}
           onChange={(e) => handleSecondaryColorChange(e.target.value)}
         />
       </label>
+      {/* Font Size */}
       <label>
         Font Size:
         <input
           type="text"
-          value={localThemeState.fontSize}
+          value={themeState.fontSize}
           onChange={(e) => handleFontSizeChange(e.target.value)}
         />
       </label>
+      {/* Font Family */}
       <label>
         Font Family:
         <input
           type="text"
-          value={localThemeState.fontFamily}
+          value={themeState.fontFamily}
           onChange={(e) => handleFontFamilyChange(e.target.value)}
         />
       </label>
+  
+      {/* Render UI elements for other theme settings */}
+      {Object.entries(themeSettings).map(([key, setting]) => (
+        <label key={key}>
+          {setting.label}:
+          <input
+            type="text"
+            value={setting.value?.toString() || ""}
+            onChange={(e) => setting.onChange(e.target.value as never)}
+          />
+        </label>
+      ))}
+  
+      {/* Save button */}
       <button onClick={saveThemeSettings}>Save Theme Settings</button>
-      {/* Example of integrating notification settings */}
-      <div>
-        <h2>Notification Settings</h2>
-        <label>
-          <input
-            type="checkbox"
-            checked={!!(notificationState.notifications.length > 0 && notificationState.notifications[0].email)}
-            onChange={() => handleNotificationSettingsChange("email")}
-          />
-          Email Notifications
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={!!(notificationState.notifications.length > 0 && notificationState.notifications[0].inApp)}
-            onChange={() => handleNotificationSettingsChange("inApp")}
-          />
-          In-App Notifications
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={notificationState.notifications.length > 0}
-            onChange={() => handleNotificationSettingsChange("push")}
-          />
-          Push Notifications
-        </label>
-      </div>
     </div>
   );
-};
-
+}  
 export default ThemeCustomization;
+export type { ThemeCustomizationProps};

@@ -9,7 +9,7 @@ interface ContentItem {
   body: string;
   heading: React.ReactNode;
   subheading?: React.ReactNode;
-  description?: React.ReactNode;
+  description?: string | null | undefined
   footer?: React.ReactNode;
   // Add more properties as needed
 }

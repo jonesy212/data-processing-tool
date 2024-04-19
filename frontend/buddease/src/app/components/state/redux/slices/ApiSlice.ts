@@ -10,6 +10,7 @@ interface ApiManagerState {
   apiConfigTimeout: number;
   todos: string[];
   tasks: { id: string; title: string; isComplete: boolean }[];
+  realTimeCollaboration: boolean;
 }
 
 const initialState: ApiManagerState = {
@@ -71,9 +72,7 @@ export const useApiManagerSlice = createSlice({
         isComplete: false
       }));
       state.realTimeCollaboration = true;
-
-
-    }
+    },
 
     markTaskComplete: (
       state,

@@ -21,26 +21,42 @@ import { v4 as uuidv4 } from "uuid";
 import { Video } from "../../stores/VideoStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { useApiManagerSlice } from "./ApiSlice";
+import { useBlogManagerSlice } from "./BlogSlice";
+import { useCollaborationSlice } from "./CollaborationSlice";
 import { useDataManagerSlice } from "./DataSlice";
 import { useDocumentManagerSlice } from "./DocumentSlice";
 import { useEventManagerSlice } from "./EventSlice";
+import { useNotificationManagerSlice } from "./NotificationSlice";
 import { usePagingManagerSlice } from './pagingSlice';
 import { useProjectManagerSlice } from "./ProjectSlice";
 import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
+import { useSettingsManagerSlice } from "./SettingsSlice";
 import { useTeamManagerSlice } from './TeamSlice';
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
-import { useCollaborationSlice } from "./CollaborationSlice";
+import {useEntityManagerSlice} from "./EntitySlice";
+import { useDrawingManagerSlice } from "./DrawingSlice";
 const randomTaskId = uuidv4().toString();
 
 
-
-interface CustomEntityState<T, Id extends EntityId> extends EntityState<T, Id> {
+// Define your custom entity state
+interface CustomEntityState<T, Id extends string>  extends EntityState<T, Id extends string>{
+  entities: Record<Id, T>;
   selectedEntityId: Id | null;
 }
+
+
+// Define the EntityState interface if not already defined
+interface EntityState<T, Id extends string> {
+  // Define EntityState properties here
+}
+
+// Define your EntityId type if not already defined
+type EntityId = string;
+
 export interface RootState {
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
-  useProjectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
+  projectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
   userTodoManager: ReturnType<typeof userManagerSlice.reducer>;
   todoManager: ReturnType<typeof useTodoManagerSlice.reducer>;
   taskManager: ReturnType<typeof taskManagerSlice.reducer>;
@@ -59,14 +75,18 @@ export interface RootState {
   realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>;
   eventManager: ReturnType<typeof useEventManagerSlice.reducer>;
   collaborationManager: ReturnType<typeof useCollaborationSlice.reducer>;
-  entityManager: CustomEntityState<string, string>; // Use EntityState<string, unknown> for entityManager
+  entityManager: ReturnType<typeof useEntityManagerSlice.reducer>
+  notificationManager: ReturnType<typeof useNotificationManagerSlice.reducer>
+  settingsManager: ReturnType<typeof useSettingsManagerSlice.reducer>;
+  blogManager: ReturnType<typeof useBlogManagerSlice.reducer>;
+  drawingManager: ReturnType<typeof useDrawingManagerSlice.reducer>;
 }
 
 
 
 const initialState: RootState = {
   toolbarManager: useToolbarManagerSlice.reducer(undefined, { type: "init" }),
-  useProjectManager: useProjectManagerSlice.reducer(undefined, {
+  projectManager: useProjectManagerSlice.reducer(undefined, {
     type: "init",
   }),
   dataManager: useDataManagerSlice.reducer(undefined, { type: "init" }),
@@ -91,7 +111,11 @@ const initialState: RootState = {
   realtimeManager: useRealtimeDataSlice.reducer(undefined, { type: "init" }),
   eventManager: useEventManagerSlice.reducer(undefined, { type: "init" }),
   collaborationManager: useCollaborationSlice.reducer(undefined, { type: "init" }),
-  entityManager: { entities: {}, selectedEntityId: null } as CustomEntityState<string, string>
+  entityManager: useEntityManagerSlice.reducer(undefined, { type: "init" }),
+  notificationManager: useNotificationManagerSlice.reducer(undefined, { type: "init" }),
+  settingsManager: useSettingsManagerSlice.reducer(undefined, { type: "init" }),
+  blogManager: useBlogManagerSlice.reducer(undefined, { type: "init" }),
+  drawingManager: useDrawingManagerSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -362,20 +386,28 @@ const rootReducer = combineReducers({
   taskManager: taskManagerSlice.reducer,
   trackerManager: trackerManagerSlice.reducer,
   userManager: userManagerSlice.reducer,
-  dataAnalyisManager: useDataAnalysisManagerSlice.reducer,
-  useCalendarManager: useCalendarManagerSlice.reducer,
-  todoManager: useTodoManagerSlice.reducer,
-  calendarManager: useCalendarManagerSlice.reducer,
-  videoManager: useVideoManagerSlice.reducer,
-  useUserManager: userManagerSlice.reducer,
-  useProjectManager: useProjectManagerSlice.reducer,
   dataAnalysisManager: useDataAnalysisManagerSlice.reducer,
+  calendarManager: useCalendarManagerSlice.reducer,
+  todoManager: useTodoManagerSlice.reducer,
+  videoManager: useVideoManagerSlice.reducer,
+  projectManager: useProjectManagerSlice.reducer,
   documentManager: useDocumentManagerSlice.reducer,
-  userTodoManager: userManagerSlice.reducer,
   apiManager: useApiManagerSlice.reducer,
   randomWalkManager: useRandomWalkManagerSlice.reducer,
   pagingManager: usePagingManagerSlice.reducer,
   teamManager: useTeamManagerSlice.reducer,
+  projectOwner: useProjectOwnerSlice.reducer,
+  realtimeManager: useRealtimeDataSlice.reducer,
+  eventManager: useEventManagerSlice.reducer,
+  collaborationManager: useCollaborationSlice.reducer,
+  entityManager: {} as CustomEntityState<string, string>,
+  notificationManager: useNotificationManagerSlice.reducer,
+  settingsManager: useSettingsManagerSlice.reducer,
+  blogManager: useBlogManagerSlice.reducer,
+  // todo create code for
+  // tagManager: useTagManagerSlice.reducer,
+  // bookmarkManager: useBookmarkManagerSlice.reducer,
+
   // Add other slices as needed
 });
 

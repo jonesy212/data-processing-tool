@@ -4,7 +4,6 @@ import { clearUserData, resetIdleTimeout, showModalOrNotification } from "./comm
 import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 
 
-
 // Define your custom hook function
 const useIdleTimeout = (props: any) => {
   const startIdleTimeout = () => {

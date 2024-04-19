@@ -19,9 +19,9 @@ import { Team, TeamDetails } from "../teams/Team";
 interface Task extends Data {
   id: string
   title: string;
-  name: string | null;
   description: string;
-  projectName: string;
+  name?: string | null;
+  projectName?: string;
 
   assignedTo: WritableDraft<User> | null; 
   assigneeId: User["id"];

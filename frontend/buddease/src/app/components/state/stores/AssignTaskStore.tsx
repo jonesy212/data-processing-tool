@@ -7,9 +7,6 @@ import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
 
 export interface AssignTaskStore extends AssignBaseStore {
   assignTask: (taskId: string, userId: string) => void;
-  assignUser: (taskId: string, userId: string) => void;
-  unassignUser: (taskId: string, userId: string) => void;
-  reassignUser: (taskId: string, oldUserId: string, newUserId: string) => void;
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
@@ -50,7 +47,6 @@ const useAssignTaskStore = (): AssignTaskStore => {
   const assignedUsers: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
   const assignedTodos: Record<string, string[]> = {};
-
   const assignTask = (taskId: string, assignedTo: string) => {
     // Perform the task assignment logic here
     // For example, update the assignedTasks record
@@ -286,9 +282,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
     assignedUsers,
     assignedTasks,
     assignedTodos,
-    assignUser,
-    unassignUser,
-    reassignUser,
+    // 
     assignUsersToTasks,
     unassignUsersFromTasks,
     reassignUsersToTasks,

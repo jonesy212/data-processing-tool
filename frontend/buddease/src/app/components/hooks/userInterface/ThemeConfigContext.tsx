@@ -11,14 +11,17 @@ interface ThemeConfigProps {
   secondaryColor: string;
   backgroundColor: string;
   isDarkMode: boolean;
-    toggleDarkMode: () => void;
-    setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;
-    setSecondaryColor: React.Dispatch<React.SetStateAction<string>>;
-    setFontSize: React.Dispatch<React.SetStateAction<string>>;
-    setFontFamily: React.Dispatch<React.SetStateAction<string>>;
+  toggleDarkMode: () => void;
+  setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;
+  setThemeConfig: React.Dispatch<React.SetStateAction<ThemeConfig>>;
+  setSecondaryColor: React.Dispatch<React.SetStateAction<string>>;
+  setFontSize: React.Dispatch<React.SetStateAction<string>>;
+  setFontFamily: React.Dispatch<React.SetStateAction<string>>;
+
   children: React.ReactNode;
-  themeConfig: ThemeConfig
-  applyThemeConfig: (themeConfig: ThemeConfig) => void
+  themeConfig: ThemeConfig;
+  applyThemeConfig: (themeConfig: ThemeConfig) => void;
+  
   // Add more theme-related options as needed
 }
 
@@ -34,27 +37,24 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   const [secondaryColor, setSecondaryColor] = useState("#e74c3c");
   const [fontSize, setFontSize] = useState("16px");
   const [fontFamily, setFontFamily] = useState("Arial, sans-serif");
-  
+
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(
     {} as ThemeConfig | (() => ThemeConfig)
   );
-  
+
   let yourClassInstance: YourClass;
 
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
   };
 
-
   const applyThemeConfig = (config: ThemeConfig) => {
-    
     setThemeConfig(config);
     // Additional logic for theme customization
     yourClassInstance.customizeTheme(config, {} as DappProps); // Assuming yourClassInstance is accessible here
   };
 
-
-  const backgroundColor = isDarkMode? "#1a1a1a" : "#fff";
+  const backgroundColor = isDarkMode ? "#1a1a1a" : "#fff";
 
   return (
     <ThemeConfigContext.Provider
@@ -70,6 +70,7 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
         fontFamily,
         setFontFamily,
         themeConfig,
+        setThemeConfig,
         applyThemeConfig,
         backgroundColor,
         children,

@@ -1,22 +1,31 @@
-// libraries/animations/DraggableAnimation/useDrag.ts
 import { useEffect, useRef } from 'react';
-import { DragSourceHookSpec } from 'react-dnd';
+import { DragSourceHookSpec, DragSourceMonitor } from 'react-dnd';
 
-interface DragEventHandlers {
+export interface DragEventHandlers extends DragSourceHookSpec<CustomDragObject, any, CollectedProps> {
   onDragStart: () => void;
   onDragMove: (dragX: number, dragY: number) => void;
   onDragEnd: () => void;
+  beginDrag: (e: MouseEvent | TouchEvent) => void; // Include beginDrag in the interface
 }
 
-interface DragObject extends DragObjectWithType {
-  // Define your drag object properties if needed
+export interface DragObjectWithType {
+  id: string;
+  type: string;
 }
 
 interface CollectedProps {
   isDragging: boolean;
 }
 
-const useDragImpl = (): DragSourceHookSpec<DragObject, any, CollectedProps> => {
+interface CustomDragObject extends DragObjectWithType {
+  id: string;
+  type: string;
+}
+
+const useDragImpl = (
+  id: string,
+  type: string
+): DragEventHandlers => { // Change the return type to DragEventHandlers
   const isDraggingRef = useRef(false);
   const startDragPositionRef = useRef({ x: 0, y: 0 });
 
@@ -57,9 +66,24 @@ const useDragImpl = (): DragSourceHookSpec<DragObject, any, CollectedProps> => {
     };
   }, [handleDragMove, handleDragEnd]);
 
-  return { item: {}, type: 'yourDragType', isDragging: false, beginDrag: handleDragStart };
+  const startDrag = (e: MouseEvent | TouchEvent) => {
+    handleDragStart(e);
+  };
+
+  return {
+    item: {
+      id: id,
+      type: type,
+    },
+    type: 'yourDragType',
+    isDragging: (monitor: DragSourceMonitor<CustomDragObject, any>) => isDraggingRef.current,
+    beginDrag: startDrag,
+    onDragStart: () => {}, // Placeholder functions for the other event handlers
+    onDragMove: () => {},
+    onDragEnd: () => {},
+  };
 };
 
-const useDrag = () => useDragImpl();
+const useDrag = (id: string, type: string) => useDragImpl(id, type);
 
 export { useDrag };

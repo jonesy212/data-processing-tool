@@ -6,7 +6,7 @@ import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { useEffect } from "react";
 import { ipfsConfig } from '../../../configs/ipfsConfig';
 import { useAuth } from "../../auth/AuthContext";
-import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
+import { BrainstormingSettings } from "../../interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
 import { CustomPhaseHooks, Phase } from "../../phases/Phase";
@@ -14,9 +14,7 @@ import {
   ExtendedDAppAdapter,
   ExtendedDappProps
 } from "../../web3/dAppAdapter/IPFS";
-import createDynamicHook, {
-  DynamicHookResult,
-} from "../dynamicHooks/dynamicHookGenerator";
+import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
 
 export interface PhaseHookConfig {
   name: string;
@@ -24,8 +22,22 @@ export interface PhaseHookConfig {
   asyncEffect: () => Promise<() => void>;
   canTransitionTo?: (nextPhase: string) => boolean;
   handleTransitionTo?: (nextPhase: string) => Promise<void>;
-  duration: number;
+  duration: string;
+  isActive: boolean;
+  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  resetIdleTimeout: () => void;
+  idleTimeoutId: NodeJS.Timeout | null;
+  clearIdleTimeout: () => void;
+  onPhaseStart: () => void;
+  onPhaseEnd: () => void;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  cleanup: (() => void) | undefined;
+  startAnimation: () => void;
+  stopAnimation: () => void;
+  animateIn: () => void;
+  toggleActivation: (accessToken?: string | null | undefined) => void;
 }
+
 
 interface TestPhaseHooks {
   createTestPhaseHook(config: TestPhaseHookConfig): void;
@@ -87,6 +99,7 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
   };
 };
 const { resetAuthState } = useAuth();
+
 export const createPhaseHook = (config: PhaseHookConfig) => {
   return createDynamicHook({
     condition: async () => {
@@ -104,8 +117,10 @@ export const createPhaseHook = (config: PhaseHookConfig) => {
       // Your implementation here
     },
     resetIdleTimeout: async () => {
-      clearTimeout(userSettings.idleTimeout);
-      userSettings.idleTimeout = setTimeout(() => {
+      if (userSettings.idleTimeout.idleTimeoutId) {
+        clearTimeout(userSettings.idleTimeout.idleTimeoutId);
+      }
+      userSettings.idleTimeout.idleTimeoutId = setTimeout(() => {
         // handle idle timeout
       }, userSettings.idleTimeoutDuration);
     },
@@ -115,8 +130,7 @@ export const createPhaseHook = (config: PhaseHookConfig) => {
       timeoutDuration: number,
       onTimeout: () => void
     ) => {
-      // Your implementation here
-      userSettings.idleTimeout = setTimeout(() => {});
+      idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
     },
   });
 };
@@ -147,11 +161,22 @@ const phaseNames = [
 ];
 
 const phaseHooks: { [key: string]: CustomPhaseHooks } = {};
+let idleTimeoutId: NodeJS.Timeout | null = null; // Initialize idleTimeoutId to null
 
 phaseNames.forEach((phaseName) => {
+
   phaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] = createPhaseHook({
     name: phaseName,
     condition: () => true,
+    clearIdleTimeout: () => {
+      clearTimeout(idleTimeoutId!);
+    },
+    onPhaseStart: () => {
+      console.log(`${phaseName} phase started`);
+    },
+    onPhaseEnd: () => {
+      console.log(`${phaseName} phase ended`);
+    },
     asyncEffect: async () => {
       console.log(`Transitioning to ${phaseName}`);
       // Add phase-specific logic here
@@ -161,9 +186,26 @@ phaseNames.forEach((phaseName) => {
         resetAuthState();
       };
     },
-    duration: 10000, // Assign a direct number value for duration
+    duration: "10000", // Assign a direct number value for duration
+    isActive: true, // Add isActive property
+    initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout property
+    resetIdleTimeout: () => {}, // Add resetIdleTimeout property
+    idleTimeoutId: null, // Initialize idleTimeoutId property
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+      clearTimeout(idleTimeoutId!);
+      idleTimeoutId = setTimeout(() => {
+        onTimeout();
+      }, timeoutDuration);
+    },
+    
+    startAnimation: () => { }, // Add startAnimation property
+    stopAnimation: () => {}, // Add stopAnimation property
+    animateIn: () => {}, // Add animateIn property
+    toggleActivation: () => {}, // Add toggleActivation property
+    cleanup: undefined, // Add cleanup property
   }) as unknown as CustomPhaseHooks;
 });
+
 
 // Define additional phases based on your project
 const additionalPhaseNames = [
@@ -180,12 +222,21 @@ const additionalPhaseNames = [
 
 const additionalPhaseHooks: { [key: string]: CustomPhaseHooks } = {};
 
-additionalPhaseNames.forEach((phaseName, duration) => {
+additionalPhaseNames.forEach(([phaseName, duration]) => {
   additionalPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] =
     createPhaseHook({
       name: phaseName,
       duration: duration,
       condition: () => true, // Adjust the condition based on your requirements
+      clearIdleTimeout: () => {
+        clearTimeout(idleTimeoutId!);
+      },
+      onPhaseStart: () => {
+        console.log(`${phaseName} phase started`);
+      },
+      onPhaseEnd: () => {
+        console.log(`${phaseName} phase ended`);
+      },
       asyncEffect: async () => {
         console.log(`Transitioning to ${phaseName}`);
         // Add phase-specific logic here
@@ -195,8 +246,24 @@ additionalPhaseNames.forEach((phaseName, duration) => {
           resetAuthState();
         };
       },
+      isActive: true, // Add isActive property
+      initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout property
+      resetIdleTimeout: () => {}, // Add resetIdleTimeout property
+      idleTimeoutId: null, // Initialize idleTimeoutId property
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+        clearTimeout(idleTimeoutId!);
+        idleTimeoutId = setTimeout(() => {
+          onTimeout();
+        }, timeoutDuration);
+      },
+      startAnimation: () => { }, // Add startAnimation property
+      stopAnimation: () => {}, // Add stopAnimation property
+      animateIn: () => {}, // Add animateIn property
+      toggleActivation: () => {}, // Add toggleActivation property
+      cleanup: undefined, // Add cleanup property
     }) as unknown as CustomPhaseHooks;
 });
+
 
 const allPhaseHooks = {
   ...phaseHooks,
@@ -477,4 +544,4 @@ export async function initializeAllPhases() {
 }
 
 export default initializeDecentralizedStorage;
-export {initializeCollaborationPreferences, applyCollaborationPreferences};
+export { applyCollaborationPreferences, initializeCollaborationPreferences };

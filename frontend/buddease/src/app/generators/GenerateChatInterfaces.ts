@@ -5,11 +5,14 @@ import { User, UserData } from "../components/users/User";
 
   interface Message extends User, UserData {
     id: string;
+    from: User;
+    
     channelId: ChatRoom;
     content: string;
     timestamp: Date;
     text: string;
     isUserMessage?: boolean
+
   }
   
   // Function to generate dynamic interfaces

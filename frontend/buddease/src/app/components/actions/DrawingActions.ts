@@ -3,6 +3,9 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const DrawingActions = {
   // Drawing operations
+  startDrawing: createAction<React.MouseEvent<HTMLCanvasElement, MouseEvent>>("startDrawing"),
+  stopDrawing: createAction<void>("stopDrawing"),
+  clearDrawing: createAction<void>("clearDrawing"),
   drawShape: createAction<{ shape: string; options: any }>("drawShape"),
   eraseShape: createAction<{ shape: string; options: any }>("eraseShape"),
   moveShape: createAction<{ shape: string; deltaX: number; deltaY: number }>(

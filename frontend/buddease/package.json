@@ -66,6 +66,7 @@
     "file-saver": "^2.0.5",
     "fs": "0.0.1-security",
     "fuzzysort": "^2.0.4",
+    "graphql": "^16.8.1",
     "gsap": "^3.12.4",
     "immer": "^10.0.3",
     "intro.js": "^7.2.0",

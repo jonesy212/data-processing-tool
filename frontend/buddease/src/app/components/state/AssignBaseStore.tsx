@@ -46,6 +46,8 @@ export interface AssignBaseStore {
 
   assignTaskToTeam: (taskId: string, userId: string) => Promise<void>;
   assignTodoToTeam: (todoId: string, teamId: string) => Promise<void>;
+
+  assignNote: Record<string, string[]>;
   assignTodosToUsersOrTeams: (
     todoIds: string[],
     assignees: string[]
@@ -111,6 +113,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
   //todo set up:
   const assignedProjects: Record<string, string[]> = {};
   const assignedMeetings: Record<string, string[]> = {};
+  const assignNote: Record<string, string[]> = {};
+
   const assignedNotes: Record<string, string[]> = {};
   const assignedGoals: Record<string, string[]> = {};
   const assignedFiles: Record<string, string[]> = {};
@@ -581,8 +585,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignedTasks,
 
     //new
+    assignNote,
     assignedNotes,
-
     assignedGoals,
     assignedFiles,
     assignedEvents,

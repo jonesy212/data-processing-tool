@@ -34,6 +34,7 @@ export enum NotificationTypeEnum {
   Dismiss = "Dismiss",
   DocumentEditID = "DocumentEditID",
   Error = "Error",
+  
   EventID = "EventID",
   EventOccurred = "EventOccurred",
   EventReminder = "EventReminder",
@@ -81,36 +82,40 @@ export enum NotificationTypeEnum {
   Warning = "Warning",
   Welcome = "Welcome",
   Configuration = "Configuration",
+  // Example of injecting build-time configuration
+  __FILE_PATH__ = 'filePath',
+  
+
 }
 
 export interface NotificationContextProps {
   sendNotification: (
     type: NotificationType,
     userName?: string | number,
-    sendComment?: string,
+    sendComment?: string
   ) => void;
   addNotification: (notification: NotificationData) => void;
   notify: (
     id: string,
     message: string,
     content: any,
-    date?: Date | undefined,
-    type?: NotificationType
+    date: Date,
+    type: NotificationType
   ) => Promise<void>;
 
   notifications: NotificationData[];
-  // Add more notification functions as needed
+
+  showMessage: (message: string, type: NotificationType) => void;
+
   showMessageWithType: (message: string) => void;
-  // Overloaded function signatures
-    // Overloaded function signature for showSuccessNotification
-    showSuccessNotification: (
-      id: string,
-      message: string,
-      content: any,
-      date?: Date | undefined,
-      type?: NotificationType
-    ) => void | Promise<void>;
-  
+  showSuccessNotification: (
+    id: string,
+    message: string,
+    content: any,
+    date?: Date | undefined,
+    type?: NotificationType
+  ) => void | Promise<void>;
+
   showErrorNotification: (
     id: string,
     message: string,
@@ -135,7 +140,7 @@ export interface NotificationContextProps {
     ) => void | Promise<void>;
     dismiss?: (id: string) => void;
     dismissAll?: () => void;
-  }
+  };
 }
 
 
@@ -152,6 +157,7 @@ const DefaultNotificationContext: NotificationContextProps = {
   showMessageWithType: () => { }, // Placeholder function
   showSuccessNotification: async () => { },
   showErrorNotification: async () => { },
+  showMessage: (message: string, type: NotificationType) => { },
 };
 
 
@@ -168,8 +174,8 @@ export interface NotificationContextProps {
     message: string,
     content: any,
     // randomBytes?: BytesLike,
-    date?: Date | undefined,
-    type?: NotificationType
+    date: Date,
+    type: NotificationType
   ) => Promise<void>;
   notifications: NotificationData[];
   // Add more notification functions as needed
@@ -259,7 +265,6 @@ export const useNotification = (): NotificationContextProps => {
   }
   // Complete context with same properties and methods
   return {
-    
     sendNotification: context.sendNotification,
     addNotification: context.addNotification,
     notify: context.notify,
@@ -267,6 +272,7 @@ export const useNotification = (): NotificationContextProps => {
     showMessageWithType: context.showMessageWithType,
     showSuccessNotification: context.showSuccessNotification,
     showErrorNotification: context.showErrorNotification,
+    showMessage: context.showMessage,
     actions: {
       showSuccessNotification: context.showSuccessNotification,
       showErrorNotification: context.showErrorNotification,

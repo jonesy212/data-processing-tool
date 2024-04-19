@@ -1,5 +1,5 @@
 import { LogData } from '@/app/components/models/LogData';
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { useDispatch, useSelector } from "react-redux";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import AnnouncementManager from "../support/AnnouncementManager";
@@ -14,8 +14,8 @@ interface NotificationManagerServiceProps {
   notify: (id: string,
     message: string,
     content: any,
-    date?: Date | undefined,
-    type?: NotificationType | undefined
+    date: Date,
+    type: NotificationType
   ) => Promise<void>
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
@@ -65,25 +65,33 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       completionMessageLog: logData,
       sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
       status: "confirmed",
-
+      notificationType: NotificationTypeEnum.AccountCreated
     }));
     // Use the PushNotificationManager to send push notifications
     PushNotificationManager.sendPushNotification(message, sender);
   };
-  const sendAnnouncement = async (message: string, sender: string): Promise<void> => {
+  const sendAnnouncement = async (
+    message: string,
+    sender: string
+  ): Promise<void> => {
     // Dispatch action to send announcement
-    dispatch(NotificationActions.addNotification({
-      id: "", // Generate unique ID for notification
-      date: new Date(),
-      message: message,
-      createdAt: new Date(),
-      type: "Announcement" as NotificationType,
-      content: sender,
-      completionMessageLog: logData,
-      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error"
-    }));
+    dispatch(
+      NotificationActions.addNotification({
+        id: "", // Generate unique ID for notification
+        date: new Date(),
+        message: message,
+        createdAt: new Date(),
+        type: "Announcement" as NotificationType,
+        content: sender,
+        completionMessageLog: logData,
+        sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
+        notificationType: NotificationTypeEnum.AccountCreated,
+      })
+    );
     // Use the AnnouncementManager to send announcements
-    await Promise.resolve(AnnouncementManager.sendAnnouncement(message, sender));
+    await Promise.resolve(
+      AnnouncementManager.sendAnnouncement(message, sender)
+    );
   };
   
   const handleButtonClick = async (): Promise<void> => {
@@ -96,7 +104,8 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       type: "ButtonClick" as NotificationType,
       content: "App",
       completionMessageLog: logData,
-      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error"
+      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
+      notificationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/support/NotificationContext" as NotificationType
     }));
     // Send push notification on button click
     await Promise.resolve(sendPushNotification("New message!", "App"));

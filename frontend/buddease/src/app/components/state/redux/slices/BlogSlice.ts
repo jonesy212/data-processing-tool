@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
 
-interface CustomComment {
+interface CustomComment extends BlogComment {
   // Define properties specific to your custom comment type
   // content: string;
 }
@@ -24,6 +24,7 @@ interface BlogComment {
   id: string;
   postId: string;
   text: string;
+  pinned: boolean;
 }
 
 const initialState: BlogState = {
@@ -32,7 +33,7 @@ const initialState: BlogState = {
   // Initialize other state properties
 };
 
-const blogSlice = createSlice({
+const useBlogManagerSlice = createSlice({
   name: 'blog',
   initialState,
   reducers: {
@@ -46,7 +47,7 @@ const blogSlice = createSlice({
   },
 });
 
-export const { addPost, addComment } = blogSlice.actions;
-export default blogSlice.reducer;
+export const { addPost, addComment } = useBlogManagerSlice.actions;
+export default useBlogManagerSlice.reducer;
 export type { BlogComment, CustomComment };
 

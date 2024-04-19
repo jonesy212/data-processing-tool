@@ -1,5 +1,5 @@
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
-import { BrainstormingSettings } from "../../interfaces/BrainstormingSettings";
+import { BrainstormingSettings } from "../../interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
 import { Project } from "../../projects/Project";

@@ -1484,10 +1484,10 @@ useProjectManagerSlice.reducer;
 // Selectors
 
 export const selectProject = (state: RootState) =>
-  state.useProjectManager.project;
+  state.projectManager.project;
 export const selectProjects = (state: RootState) =>
-  state.useProjectManager.projects;
+  state.projectManager.projects;
 export const selectProjectLoading = (state: RootState) =>
-  state.useProjectManager.loading;
+  state.projectManager.loading;
 export const selectProjectError = (state: RootState) =>
-  state.useProjectManager.error;
+  state.projectManager.error;

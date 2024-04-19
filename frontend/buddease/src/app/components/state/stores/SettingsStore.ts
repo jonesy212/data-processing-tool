@@ -1,12 +1,12 @@
 // SettingsStore.ts
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import axiosInstance from "../../security/csrfToken";
 import useErrorHandling from "../../hooks/useErrorHandling";
+import axiosInstance from "../../security/csrfToken";
 
 // Define the interface for different types of settings
 export interface Settings {

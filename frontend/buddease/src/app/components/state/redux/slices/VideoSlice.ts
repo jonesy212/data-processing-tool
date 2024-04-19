@@ -140,7 +140,7 @@ export const useVideoManagerSlice = createSlice({
         isActive: false,
         phase: null,
         then: implementThen,
-        analysisType: "",
+        analysisType: undefined,
         analysisResults: [],
         videoData: {} as WritableDraft<VideoData>,
         content: "",
@@ -214,18 +214,30 @@ export const useVideoManagerSlice = createSlice({
 
    
 
-    commentOnVideo: (state, action: PayloadAction<{ videoId: string, comment: Comment }>) => {
+ commentOnVideo: (
+      state,
+      action: PayloadAction<{ videoId: string; comment: CustomComment }>
+    ) => {
       const { videoId, comment } = action.payload;
-      const videoIndex = state.videos.findIndex((video) => video.id === videoId);
+      const videoIndex = state.videos.findIndex(
+        (video) => video.id === videoId
+      );
       if (videoIndex !== -1) {
-        // Check if state.videos[videoIndex].comments is defined before pushing the comment
         if (Array.isArray(state.videos[videoIndex]?.comments)) {
-          // Create a writable draft of the comment object
-          const draftComment = createDraft(comment);
+          const draftComment = createDraft<CustomComment>({
+            id: comment.id,
+            text: comment.text,
+            pinned: false,
+          });
           state.videos[videoIndex].comments?.push(draftComment);
         } else {
-          // If comments array is undefined or not an array, initialize it with an empty array and push the comment
-          state.videos[videoIndex].comments = [comment];
+          state.videos[videoIndex].comments = [
+            {
+              id: comment.id,
+              text: comment.text,
+              pinned: false,
+            },
+          ];
         }
       }
     },

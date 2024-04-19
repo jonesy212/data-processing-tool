@@ -1,8 +1,7 @@
 import { object } from 'prop-types';
-import { IDLE_TIMEOUT_DURATION } from '../components/hooks/commHooks/idleTimeoutUtils';
 import useIdleTimeout from '../components/hooks/idleTimeoutHooks';
-import { Settings } from '../components/state/stores/SettingsStore';
 import useAuthentication from '../components/hooks/useAuthentication';
+import { Settings } from '../components/state/stores/SettingsStore';
  
 const logoutUser = useAuthentication().logout;
 
@@ -39,7 +38,7 @@ export interface UserSettings extends Settings {
   enableGroupManagement: boolean;
   enableTeamManagement: boolean;
   idleTimeout: ReturnType<typeof useIdleTimeout>; 
-  startIdleTimeout: () => void;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Update function signature
   idleTimeoutDuration: number;
   activePhase: string;
   realTimeChatEnabled: boolean;
@@ -126,7 +125,11 @@ const userSettings: UserSettings = {
   enableTeamManagement: true,
 
   idleTimeout: useIdleTimeout("idleTimeout"),
-  startIdleTimeout: () => useIdleTimeout("idleTimeout").startIdleTimeout(IDLE_TIMEOUT_DURATION, onTimeout),
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+    userSettings.idleTimeout.idleTimeoutId = setTimeout(() => {
+      onTimeout();
+    }, timeoutDuration);
+  },
   idleTimeoutDuration: 0,
   activePhase: "current phase",
   realTimeChatEnabled: false,

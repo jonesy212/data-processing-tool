@@ -9,7 +9,8 @@ import teamApiService from "@/app/api/TeamApi";
 
 export interface AssignTeamMemberStore extends AssignBaseStore {
   assignTeamMember: (teamId: string, userId: string) => void;
-
+  
+  assignNoteToTeam: Record<string, string[]>
   unassignTeamMember: (teamId: string, userId: string) => void;
   reassignTeamMember: (teamId: string, oldUserId: string, newUserId: string) => void;
   assignTeamMembersToTeams: (teamIds: string[], userId: string) => void;
@@ -42,13 +43,9 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
     // TODO: Implement any additional logic needed when assigning a team member
   };
 
+   const assignNote: Record<string, string[]> = {};
 
-  const assignNoteToTeam = async (teamId: string, noteId: string) => { 
-    await teamApiService.assignNoteToTeam(teamId, noteId);
-    assignNote(noteId, teamId);
-    this.setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Team.ASSIGN_NOTE_SUCCESS);
-
-  }
+  const assignNoteToTeam: Record<string, string[]> = {};
 
   const unassignTeamMember = (teamId: string, userId: string) => {
     if (assignedTeamMembers[teamId]) {
@@ -173,6 +170,7 @@ const reassignUsersInTeams = (teamIds: string[], oldUserId: string, newUserId: s
   makeAutoObservable({
     assignedTeams,
     assignedTeamMembers,
+    assignNote,
     assignNoteToTeam,
     assignTeamMember,
     unassignTeamMember,

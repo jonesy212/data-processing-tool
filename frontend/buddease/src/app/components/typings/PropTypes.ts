@@ -89,7 +89,11 @@ const notificationProps: NotificationProps = {
 };
 
 const progressBarProps: ProgressBarProps = {
-  progress: { value: 75, label: "Progress Label" }, // Corrected to match the Progress interface
+  progress: {
+    id: "unique-progress-id",
+    value: 75,
+    label: "Progress Label"
+  }, // Corrected to match the Progress interface
   duration: 1000,
   barStyle: { backgroundColor: "blue" },
   containerStyle: { width: "80%", border: "1px solid black" },

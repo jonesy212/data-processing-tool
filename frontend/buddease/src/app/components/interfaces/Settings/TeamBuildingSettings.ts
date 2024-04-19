@@ -1,5 +1,5 @@
 import { Settings } from "../../state/stores/SettingsStore";
-import { BrainstormingSettings } from "../BrainstormingSettings";
+import { BrainstormingSettings } from "./BrainstormingSettings";
 
 interface TeamBuildingSettings extends Settings {
   enableTeamBuilding: boolean;

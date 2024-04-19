@@ -13,12 +13,16 @@ import CustomizableTimersComponent from "../components/stopwatches/CustomizableT
 import responsiveDesignStore from "../components/styling/ResponsiveDesign";
 import {
   NotificationType,
+  NotificationTypeEnum,
   useNotification,
 } from "../components/support/NotificationContext";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
 } from "../generators/GenerateButtons";
+import { themeConfig } from "../pages/_app";
+import apiNotificationsService from "../api/NotificationsService";
+import  NotificationStore  from './../components/support/NoticicationStore';
 
 interface ControlPanelProps {
   speed: number; // Current speed of the automated processes
@@ -32,7 +36,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const [newSpeed, setNewSpeed] = useState(speed);
   const [animationSpeed, setAnimationSpeed] = useState(speed);
   const { sendNotification } = useNotification();
-
+  const { notifications } = NotificationStore.useContainer();
+  const setNotifications = NotificationStore.useSetState();
   const presetPercentages = [0, 25, 50, 75, 100]; // Define preset percentages
 
   const handleSpeedChange = (
@@ -162,9 +167,22 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       <h2>Theme Customization</h2>
       <ThemeCustomization
         
-        themeState={}
+        themeState={themeConfig}
         setThemeState={}
-        notificationState={}
+        notificationState={{
+          notifications: notifications,
+          setNotifications: setNotifications,
+          notify: (id: string, message: string, content: any, date: Date = new Date(), type: NotificationType = NotificationTypeEnum.INFO) => Promise.resolve(apiNotificationsService.notify(id, message, content, date, type)),
+          sendPushNotification: sendPushNotification,
+
+          sendAnnouncement: /* function to send announcements */,
+          handleButtonClick: /* function to handle button clicks */,
+          dismissNotification,
+          addNotification,
+          removeNotification,
+          clearNotifications,
+          // Include other required properties here
+        }}
       />
       <h2>Custom Event</h2>
       <button onClick={handleCustomEvent}>Dispatch Custom Event</button>

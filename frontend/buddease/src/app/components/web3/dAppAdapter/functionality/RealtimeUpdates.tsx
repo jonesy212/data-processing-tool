@@ -160,7 +160,7 @@ const RealtimeUpdatesComponent: React.FC = () => {
       />
       <ClearFiltersButton
         label="Clear Filters" // Provide a string value for the label prop
-        router={router as BaseRouter & Router}
+        router={router as unknown as BaseRouter & Router}
         brandingSettings={brandingSettings}
         onClick={() => {}}
       />{" "}

@@ -1,4 +1,7 @@
 // NotificationMessages.ts
+
+import { VALID_LOADERS } from "next/dist/shared/lib/image-config";
+
 /// Define a generic interface for message categories
 interface MessageCategory<T> {
   [key: string]: T 
@@ -651,6 +654,8 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     TASK_UPDATE_ERROR: "Task did not update successfully, please try again",
     TASK_FETCH_ERROR: "Error fetching tasks. Please try again",
     TASK_REMOVE_ERROR: "Error removing task. Please try again",
+    TASK_VALIDATION_ERROR:     "An error occurred during theme validation.",
+
     COMPLETE_ALL_TASKS_ERROR: "Error completing all tasks. Please try again",
     TASK_TOGGLE_ERROR: "Error toggling task status. Please try again",
 
