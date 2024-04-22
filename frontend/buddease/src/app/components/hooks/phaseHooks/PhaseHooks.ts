@@ -23,19 +23,19 @@ export interface PhaseHookConfig {
   canTransitionTo?: (nextPhase: string) => boolean;
   handleTransitionTo?: (nextPhase: string) => Promise<void>;
   duration: string;
-  isActive: boolean;
-  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-  resetIdleTimeout: () => void;
-  idleTimeoutId: NodeJS.Timeout | null;
-  clearIdleTimeout: () => void;
-  onPhaseStart: () => void;
-  onPhaseEnd: () => void;
-  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-  cleanup: (() => void) | undefined;
-  startAnimation: () => void;
-  stopAnimation: () => void;
-  animateIn: () => void;
-  toggleActivation: (accessToken?: string | null | undefined) => void;
+  isActive?: boolean;
+  initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
+  resetIdleTimeout?: () => void;
+  idleTimeoutId?: NodeJS.Timeout | null;
+  clearIdleTimeout?: () => void;
+  onPhaseStart?: () => void;
+  onPhaseEnd?: () => void;
+  startIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
+  cleanup?: (() => void) | undefined;
+  startAnimation?: () => void;
+  stopAnimation?: () => void;
+  animateIn?: () => void;
+  toggleActivation?: (accessToken?: string | null | undefined) => void;
 }
 
 

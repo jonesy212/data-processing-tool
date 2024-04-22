@@ -8,6 +8,7 @@ type DetailsItemCommon<T> = DetailsItem<Partial<AllProperties>>;
 
 interface ListGeneratorProps<T extends Data> {
   items: DetailsItemCommon<T>[]; // Use DetailsItemCommon type
+  onItemClick?: (contentItemId: DetailsItemCommon<Data>) => void
 }
 
 const ListGenerator = <T extends Data>({ items }: ListGeneratorProps<T>) => {
@@ -31,3 +32,4 @@ const ListGenerator = <T extends Data>({ items }: ListGeneratorProps<T>) => {
 };
 
 export default ListGenerator;
+export type { DetailsItemCommon };

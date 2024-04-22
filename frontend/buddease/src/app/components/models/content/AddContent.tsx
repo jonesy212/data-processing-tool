@@ -402,10 +402,17 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               profilePicture: null,
               processingTasks: [],
               role: UserRoles.Member,
-              persona:{} as Persona,
+              persona: {} as Persona,
               snapshots: [],
               token: null
               // other properties
+              ,
+              avatarUrl: null,
+              createdAt: new Date,
+              updatedAt: undefined,
+              isVerified: false,
+              isAdmin: false,
+              isActive: false
             },
           ],
           analysisResults: [],
@@ -441,10 +448,17 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               profilePicture: null,
               processingTasks: [],
               role: UserRoles.Administrator,
-              persona:{} as Persona,
+              persona: {} as Persona,
               snapshots: [],
               token: null
               // other properties
+              ,
+              avatarUrl: null,
+              createdAt: new Date,
+              updatedAt: undefined,
+              isVerified: false,
+              isAdmin: false,
+              isActive: false
             },
           ],
           analysisResults: [],

@@ -5,7 +5,8 @@ export interface DragEventHandlers extends DragSourceHookSpec<CustomDragObject, 
   onDragStart: () => void;
   onDragMove: (dragX: number, dragY: number) => void;
   onDragEnd: () => void;
-  beginDrag: (e: MouseEvent | TouchEvent) => void; // Include beginDrag in the interface
+  beginDrag: (e: MouseEvent | TouchEvent) => void;
+  startDrawing: (e: MouseEvent | TouchEvent) => void;
 }
 
 export interface DragObjectWithType {
@@ -24,8 +25,11 @@ interface CustomDragObject extends DragObjectWithType {
 
 const useDragImpl = (
   id: string,
-  type: string
-): DragEventHandlers => { // Change the return type to DragEventHandlers
+  type: string,
+  onDragStart: () => void,
+  onDragMove: (dragX: number, dragY: number) => void,
+  onDragEnd: () => void
+): DragEventHandlers => {
   const isDraggingRef = useRef(false);
   const startDragPositionRef = useRef({ x: 0, y: 0 });
 
@@ -33,7 +37,7 @@ const useDragImpl = (
     isDraggingRef.current = true;
     const { clientX, clientY } = e instanceof MouseEvent ? e : e.touches[0];
     startDragPositionRef.current = { x: clientX, y: clientY };
-    // Call your custom onDragStart logic here
+    onDragStart(); // Call onDragStart
   };
 
   const handleDragMove = (e: MouseEvent | TouchEvent) => {
@@ -41,28 +45,28 @@ const useDragImpl = (
       const { clientX, clientY } = e instanceof MouseEvent ? e : e.touches[0];
       const dragX = clientX - startDragPositionRef.current.x;
       const dragY = clientY - startDragPositionRef.current.y;
-      // Call your custom onDragMove logic here
+      onDragMove(dragX, dragY); // Call onDragMove
     }
   };
 
   const handleDragEnd = () => {
     if (isDraggingRef.current) {
       isDraggingRef.current = false;
-      // Call your custom onDragEnd logic here
+      onDragEnd(); // Call onDragEnd
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mousemove', handleDragMove);
-    document.addEventListener('touchmove', handleDragMove);
-    document.addEventListener('mouseup', handleDragEnd);
-    document.addEventListener('touchend', handleDragEnd);
+    document.addEventListener("mousemove", handleDragMove);
+    document.addEventListener("touchmove", handleDragMove);
+    document.addEventListener("mouseup", handleDragEnd);
+    document.addEventListener("touchend", handleDragEnd);
 
     return () => {
-      document.removeEventListener('mousemove', handleDragMove);
-      document.removeEventListener('touchmove', handleDragMove);
-      document.removeEventListener('mouseup', handleDragEnd);
-      document.removeEventListener('touchend', handleDragEnd);
+      document.removeEventListener("mousemove", handleDragMove);
+      document.removeEventListener("touchmove", handleDragMove);
+      document.removeEventListener("mouseup", handleDragEnd);
+      document.removeEventListener("touchend", handleDragEnd);
     };
   }, [handleDragMove, handleDragEnd]);
 
@@ -75,15 +79,23 @@ const useDragImpl = (
       id: id,
       type: type,
     },
-    type: 'yourDragType',
-    isDragging: (monitor: DragSourceMonitor<CustomDragObject, any>) => isDraggingRef.current,
+    type: "yourDragType",
+    isDragging: (monitor: DragSourceMonitor<CustomDragObject, any>) =>
+      isDraggingRef.current,
     beginDrag: startDrag,
-    onDragStart: () => {}, // Placeholder functions for the other event handlers
-    onDragMove: () => {},
-    onDragEnd: () => {},
+    startDrawing: startDrag,
+    onDragStart: () => {}, // Use this as needed
+    onDragMove: () => {}, // Use this as needed
+    onDragEnd: () => {}, // Use this as needed
   };
 };
 
-const useDrag = (id: string, type: string) => useDragImpl(id, type);
+const useDrag = (
+  id: string,
+  type: string,
+  onDragStart: () => void,
+  onDragMove: (dragX: number, dragY: number) => void,
+  onDragEnd: () => void
+) => useDragImpl(id, type, onDragStart, onDragMove, onDragEnd);
 
 export { useDrag };

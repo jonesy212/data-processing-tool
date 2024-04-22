@@ -3,9 +3,10 @@ import { NotificationTypeEnum, useNotification } from "@/app/components/support/
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { Partial } from "react-spring";
+import { Attachment } from "../components/documents/Attachment/attachment";
 import useVideoStore, { Video } from "../components/state/stores/VideoStore";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { Attachment } from "../components/todos/Todo";
+import { VideoActions } from "../components/users/VideoActions";
 import { VideoData } from "../components/video/Video";
 import { VideoMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
@@ -71,7 +72,7 @@ export const videoService = observable({
     description: string
   ): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.post(API_BASE_URL, {
+      const response = await axiosInstance.post(`${API_BASE_URL}`, {
         title,
         description,
       });
@@ -193,6 +194,25 @@ export const videoService = observable({
       throw error;
     }
   },
+
+  fetchVideoByUserId: async function (userId: string): Promise<Video[]> {
+    try {
+      const response = await axiosInstance.get(
+        `${API_BASE_URL}/user/${userId}`
+      );
+      const videoData: Video[] = response.data;
+      runInAction(() => {
+        // Update state or perform other MobX-related actions
+        VideoActions.setVideos(videoData);
+        // Update state or perform other MobX-related actions
+      });
+      return videoData;
+    } catch (error) {
+      // Handle error
+      throw error;
+    }
+  },
+  
 
   deleteVideo: async function (id: string): Promise<{ video: Video }> {
     try {
@@ -371,6 +391,8 @@ export const videoService = observable({
       playlists: [],
       status: "pending",
       isActive: false,
+      content: "",
+      watchLater: false,
     };
 
     try {
@@ -400,3 +422,5 @@ export const videoService = observable({
     return { video: { ...dummyVideo } };
   },
 });
+
+

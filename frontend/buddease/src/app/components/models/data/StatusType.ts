@@ -30,6 +30,7 @@ enum StatusType {
   Scheduled = "scheduled",
   Completed = "completed",
   Upcoming = "upcoming",
+  Status = "status"
 }
 
 

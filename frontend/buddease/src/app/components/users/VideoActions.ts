@@ -1,12 +1,16 @@
 import { createAction } from "@reduxjs/toolkit";
 import { Video } from "../state/stores/VideoStore";
+import { VideoData } from "../video/Video";
 
 export const VideoActions = {
   // General Video Actions
   createVideo: createAction<{ id: string, updatedVideo: Video }>("createVideo"),
   updateVideo: createAction<{ id: string; title: string, description: string, newData: VideoData }>("updateVideo"),
   deleteVideo: createAction<{id: string}>("deleteVideo"),
-  
+  fetchVideoByUserId: createAction<{ userId: string }>("fetchVideoByUserId"),
+  setVideos: createAction<Video[]>("setVideos"),
+  addVideoTags: createAction<{ id: string, tags: string[] }>("addVideoTags"),
+  removeVideoTags: createAction<{ id: string, tags: string[] }>("removeVideoTags"),
   // Video Metadata Actions
   createVideoSuccess: createAction<{id: string, video: Video }>("createVideoSuccess"),
   createVideoFailure: createAction<{ id: string, error: string, video: Video }>("createVideoFailure"),

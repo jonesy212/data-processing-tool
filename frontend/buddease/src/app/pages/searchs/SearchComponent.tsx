@@ -35,6 +35,7 @@ const globalDocumentData: DocumentData[] = [
     highlights: ["highlighted phrase 1", "tagged item 2"],
     topics: ["topic 1", "topic 2"],
     folderPath: "/documents/folder1",
+    folders: [],
     previousMetadata: {
       tags: {
         originalPath: "/path/to/file.txt",
@@ -55,27 +56,27 @@ const globalDocumentData: DocumentData[] = [
     options: {} as DocumentOptions,
     documentType: DocumentTypeEnum.Draft,
     load: function (content: any): void {
-      throw new Error("Function not implemented.");
+      // load document content
+      this.content = content;
     },
     lastModifiedDate: new Date,
-    version: {} as VersionData
+    version: {} as VersionData,
+    
   },
+  
   // Add more document data as needed
 ];
 
-
 export interface SearchComponentProps {
-  documentData: DocumentData[];
   searchQuery: string;
-}
-
-export interface SearchComponentProps {
+  documentData: DocumentData[];
   componentSpecificData: {
     id: number;
     title: string;
     description: string;
     source: string; // a 'source' property to indicate the origin
   }[];
+  // result: any; // search results
 }
 
 // Add this function at an appropriate location in your codebase
@@ -146,6 +147,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
     );
     setComponentSearchResults(results);
 
+    
     // Perform global search
     const globalResults = globalSearchData.filter(
       item =>

@@ -1,13 +1,16 @@
+import { handleApiErrorAndNotify } from "@/app/api/ApiData";
+import { endpoints } from "@/app/api/ApiEndpoints";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext"; // Import useNotification
+import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Data } from "../../models/data/Data";
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext"; // Import useNotification
-import { AxiosError } from "axios";
 import axiosInstance from "../../security/csrfToken";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
-import { endpoints } from "@/app/api/ApiEndpoints";
-import { handleApiErrorAndNotify } from "@/app/api/ApiData";
 
 export interface Video extends Data {
   id: string;
@@ -21,15 +24,19 @@ export interface Video extends Data {
 }
 
 export interface VideoStore {
-  videos: Record<string, Video>;
+  videos: Record<string, VideoData[]>;
   fetchVideos: () => void;
   addVideo: (video: Video) => void;
   updateVideo: (id: string, updatedVideo: Video) => void;
   deleteVideo: (id: string) => void;
+  getVideoData: (id: string, video: Video) => VideoData | null;
+  getVideosData: (ids: string[], videos: VideoData[]) => Promise<Record<string, VideoData>>
+  updateVideoTags: (id: string, tags: string[]) => void;
 }
 
 const useVideoStore = (): VideoStore => {
-  const [videos, setVideos] = useState<Record<string, Video>>({});
+
+  const [videos, setVideos] = useState<Record<string, Video[]>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
@@ -57,21 +64,25 @@ const useVideoStore = (): VideoStore => {
     }
     return {} as VideoData;
   };
-  
-  const getVideosData = async (ids: string[]): Promise<Record<string, VideoData>> => {
+
+  const getVideosData = async (
+    ids: string[],
+    videos: Video[]
+  ): Promise<Record<string, VideoData>> => {
     try {
-      const response = await axiosInstance.get('/videos', {
+      const response = await axiosInstance.get("/videos", {
         params: {
           ids,
+          videos: videos.map((video) => video.id),
         },
       });
-  
+
       // Assuming the response data structure is an object where keys are video IDs
       return response.data as Record<string, VideoData>;
     } catch (error) {
       handleApiErrorAndNotify(
         error as AxiosError<unknown, any>,
-        'getVideosData',
+        "getVideosData",
         NOTIFICATION_MESSAGES.Api.GET_VIDEOS_DATA_ERROR
       );
       // Return an empty object if there's an error
@@ -82,7 +93,7 @@ const useVideoStore = (): VideoStore => {
   const addVideo = (video: Video) => {
     setVideos((prevVideos) => ({
       ...prevVideos,
-      [video.id]: video,
+      [video.id]: [video],
     }));
     notify(
       "addVideoSuccess",
@@ -96,7 +107,7 @@ const useVideoStore = (): VideoStore => {
   const updateVideo = (id: string, updatedVideo: Video) => {
     setVideos((prevVideos) => ({
       ...prevVideos,
-      [id]: updatedVideo,
+      [id]: [updatedVideo],
     }));
     notify(
       "updateVideoSuccess",
@@ -113,7 +124,9 @@ const useVideoStore = (): VideoStore => {
       delete updatedVideos[id];
       return updatedVideos;
     });
-    const videoId = await axiosInstance.delete(endpoints.videos.deleteVideo + id);
+    const videoId = await axiosInstance.delete(
+      endpoints.videos.deleteVideo + id
+    );
     notify(
       "deletedVideoSuccess",
       `You have successfully deleted the video ${videoId}`,
@@ -121,6 +134,18 @@ const useVideoStore = (): VideoStore => {
       new Date(),
       NotificationTypeEnum.OperationSuccess
     ); // Notify success
+  };
+
+  
+  const updateVideoTags = (id: string, tags: string[]) => {
+    setVideos((prevVideos) => {
+      const updatedVideos = [...prevVideos[id]];
+      const video = updatedVideos.find((v) => v.id === id);
+      if (video) {
+        video.tags = tags;
+      }
+      return { ...prevVideos, [id]: updatedVideos };
+    });
   };
 
   const handleError = (error: any, action: string) => {
@@ -141,6 +166,10 @@ const useVideoStore = (): VideoStore => {
     addVideo,
     updateVideo,
     deleteVideo,
+    getVideoData,
+    getVideosData,
+
+    updateVideoTags
   });
 
   return store;

@@ -26,6 +26,7 @@ import { VideoData } from "../../../video/Video";
 import { implementThen } from "../../stores/CommonEvent";
 import { ProjectManagerStore } from "../../stores/ProjectStore";
 import { WritableDraft } from "../ReducerGenerator";
+import { CustomComment } from "./BlogSlice";
 
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
@@ -639,7 +640,10 @@ export const taskManagerSlice = createSlice({
     // Method to handle task comments/notes
     addTaskComment: (
       state,
-      action: PayloadAction<{ taskId: string; comment: WritableDraft<Comment> }>
+      action: PayloadAction<{
+        taskId: string;
+        comment: WritableDraft<CustomComment>;
+      }>
     ) => {
       const { taskId, comment } = action.payload;
       const taskToUpdate = state.tasks.find((task) => task.id === taskId);

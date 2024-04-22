@@ -96,7 +96,7 @@ const ApiConfigComponent: React.FC = () => {
               trackFileChanges: (file: FileData) => file,
               trackFolderChanges(
                 content: FileData,
-                fileLoader?: DocumentData,
+                fileLoader?: FileData,
               ) {
                 // Make fileLoader optional
                 if (fileLoader) {

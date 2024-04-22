@@ -1,4 +1,5 @@
 // NotificationContext.tsx
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createContext, useContext } from "react";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { PriorityTypeEnum } from "../models/data/StatusType";
@@ -23,6 +24,7 @@ export enum NotificationTypeEnum {
   CalendarNotification = "CalendarNotification",
   ChatMention = "ChatMention",
   CommentID = "CommentID",
+  ContentID = "ContentID",
   ContributionID = "ContributionID",
   ContentItem = "ContentItem",
   CouponCode = "CouponCode",
@@ -105,7 +107,7 @@ export interface NotificationContextProps {
 
   notifications: NotificationData[];
 
-  showMessage: (message: string, type: NotificationType) => void;
+  showMessage: (message: Message, type: NotificationType) => void;
 
   showMessageWithType: (message: string) => void;
   showSuccessNotification: (
@@ -157,7 +159,7 @@ const DefaultNotificationContext: NotificationContextProps = {
   showMessageWithType: () => { }, // Placeholder function
   showSuccessNotification: async () => { },
   showErrorNotification: async () => { },
-  showMessage: (message: string, type: NotificationType) => { },
+  showMessage: (message: Message, type: NotificationType) => { },
 };
 
 

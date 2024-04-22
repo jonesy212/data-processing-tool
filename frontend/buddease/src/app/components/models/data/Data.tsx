@@ -15,12 +15,16 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Member } from "../teams/TeamMembers";
 import { ProjectPhaseTypeEnum } from "./StatusType";
+import { UserRole } from '../../users/UserRole';
+import UserRoles from "../../users/UserRoles";
+import { Persona } from "@/app/pages/personas/Persona";
+import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
   id: string;
-  title?: string;
+  title: string;
   description?: string | null | undefined;
   details?: DetailsItem<SupportedData>;
   startDate?: Date;
@@ -94,7 +98,7 @@ interface Data {
   // Properties specific to Todo
   dueDate?: Date | null;
   priority?: AllStatus
-  assignee?: User | null;
+  assignee?: User
   collaborators?: string[];
   comments?: (Comment | CustomComment)[];
   attachments?: Attachment[];
@@ -157,6 +161,79 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
     }}
   />
 );
+const data: Data = {
+  _id: "1",
+  id: "data1",
+  title: "Sample Data",
+  description: "Sample description",
+  startDate: new Date(),
+  endDate: new Date(),
+  scheduled: true,
+  status: "Pending",
+  isActive: true,
+  tags: ["tag1", "tag2"],
+  phase: {} as Phase,
+  phaseType: ProjectPhaseTypeEnum.Ideation,
+  dueDate: new Date(),
+  priority: "High",
+  assignee: {
+    id: "assignee1",
+    username: "Assignee Name",
+  } as User,
+  collaborators: ["collab1", "collab2"],
+  comments: [],
+  attachments: [],
+  subtasks: [],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  createdBy: "creator1",
+  updatedBy: "updater1",
+  analysisResults: [],
+  audioUrl: "sample-audio-url",
+  videoUrl: "sample-video-url",
+  videoThumbnail: "sample-thumbnail-url",
+  videoDuration: 60,
+  collaborationOptions: [],
+  videoData: {
+  //   id: "video1",
+  //   campaignId: 123,
+  //   resolution: "1080p",
+  //   size: "100MB",
+  //   aspectRatio: "16:9",
+  //   language: "en",
+  //   subtitles: [],
+  //   duration: 60,
+  //   codec: "H.264",
+  //   frameRate: 30,
+  } as VideoData,
+  additionalData: {},
+  ideas: [],
+  members: [],
+  leader: {
+    id: "leader1",
+    username: "Leader Name",
+    email: "leader@example.com",
+    fullName: "Leader Full Name",
+    bio: "Leader Bio",
+    userType: "Admin",
+    hasQuota: true,
+    tier: "0",
+    token: "leader-token",
+    uploadQuota: 100,
+    usedQuota: 50,
+    avatarUrl: "avatar-url",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isVerified: false,
+    isAdmin: false,
+    isActive: true,
+    profilePicture: null,
+    processingTasks: [],
+    role: UserRoles.Leader,
+    persona: new Persona(PersonaTypeEnum.Default),
+  },
+  snapshots: [],
+};
 
 export type { Data, DataDetails, DataDetailsComponent, DataDetailsProps };
 

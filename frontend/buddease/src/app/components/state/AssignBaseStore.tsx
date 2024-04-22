@@ -12,15 +12,20 @@ import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
 import { User } from "../users/User";
+import { useAssignTeamMemberStore } from "./stores/AssignTeamMemberStore";
+import { PresentationStore, presentationStore } from "./stores/presentationStore";
+import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
+import { ReassignEventResponse } from "./stores/AssignEventStore";
 
 const { notify } = useNotification();
 export interface AssignBaseStore {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
-  assignedItems: Record<string, string[]>; // Use ID as key and array of item IDs as value
+  assignedItems: Record<string, ExtendedCalendarEvent[]>; // Use ID as key and array of item IDs as value
   assignMeetingToTeam: (
     meetingId: string,
     teamId: string
   ) => Promise<AxiosResponse>;
+  
   assignProjectToTeam: (
     projectId: string,
     teamId: string
@@ -35,12 +40,13 @@ export interface AssignBaseStore {
   assignedTodos: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTasks: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTeams: Record<string, string[]>; // Use ID as key and array of todo IDs as value
-  events: Record<string, Data[]>;
-  assignItem: Record<string, string[]>;
+  events: Record<string, ExtendedCalendarEvent[]>; // Correct the type of events
+
+  assignItem: Record<string, ExtendedCalendarEvent[]>;
   assignUser: Record<string, string[]>;
   assignTeam: Record<string, string[]>;
   unassignUser: Record<string, string[]>;
-  reassignUser: Record<string, string[]>;
+  reassignUser: Record<string, ReassignEventResponse[]>;
   assignUsersToItems: Record<string, string[]>;
   unassignUsersFromItems: Record<string, string[]>;
 
@@ -86,29 +92,61 @@ export interface AssignBaseStore {
   ) => void;
 
   assignTeamToTodos: (todoIds: Team[], teamId: string) => void;
+  
   unassignTeamFromTodos: (todoIds: string[], teamId: string) => void;
   reassignTeamToTodos: (
     teamIds: string[],
     teamId: string,
     newTeamId: string
   ) => void;
-
+  
+  
+  
   // Success and Failure methods
   assignUserSuccess: () => void;
   assignUserFailure: (error: string) => void;
-
+  
+  assignTeamsToTodos: Record<string, string[]>
   unassignTeamsFromTodos: Record<string, string[]>;
 
+
+  assignNoteToTeam: Record<string, string[]>;
+  unassignNoteFromTeam: (noteId: string, teamId: string) => Promise<void>;
+
+
+  assignFileToTeam: Record<string, string[]>;
+  assignContactToTeam: Record<string, string[]>;
+  assignEventToTeam: Record<string, string[]>;
+  assignGoalToTeam: Record<string, string[]>;
+  assignBookmarkToTeam: Record<string, string[]>;
+  assignCalendarEventToTeam: Record<string, string[]>;
+  assignBoardItemToTeam: Record<string, string[]>;
+  assignBoardColumnToTeam: Record<string, string[]>;
+  assignBoardListToTeam: Record<string, string[]>,
+  assignBoardCardToTeam: Record<string, string[]>,
+  assignBoardViewToTeam: Record<string, string[]>,
+  assignBoardCommentToTeam: Record<string, string[]>,
+  assignBoardActivityToTeam: Record<string, string[]>,
+  assignBoardLabelToTeam: Record<string, string[]>,
+  assignBoardMemberToTeam: Record<string, string[]>,
+  assignBoardSettingToTeam: Record<string, string[]>,
+  assignBoardPermissionToTeam: Record<string, string[]>,
+  assignBoardNotificationToTeam: Record<string, string[]>,
+  assignBoardIntegrationToTeam: Record<string, string[]>,
+  assignBoardAutomationToTeam: Record<string, string[]>,
+  assignBoardCustomFieldToTeam: Record<string, string[]>,
   // Add more methods or properties as needed
 }
 
 const useAssignBaseStore = (): AssignBaseStore => {
   const assignedUsers: Record<string, string[]> = {};
-  const assignedItems: Record<string, string[]> = {};
+  const assignedItems: Record<string, ExtendedCalendarEvent[]> = {};
   const assignedTodos: Record<string, string[]> = {};
   const assignedTeams: Record<string, string[]> = {};
+  const assignTeamsToTodos: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
-  const events: Record<string, Data[]> = {};
+  const events: Record<string, ExtendedCalendarEvent[]> = {};
+
 
   //todo set up:
   const assignedProjects: Record<string, string[]> = {};
@@ -147,7 +185,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
 
   const unassignUser = {} as Record<string, string[]>;
 
-  const reassignUser = {} as Record<string, string[]>;
+  const reassignUser = {} as Record<string, ReassignEventResponse[]>;
 
   const assignUsersToItems = {} as Record<string, string[]>;
 
@@ -156,6 +194,9 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const reassignUsersToItems = {} as Record<string, string[]>;
 
   const unassignTeamsFromTodos = {} as Record<string, string[]>;
+
+  const assignFileToTeam = {} as Record<string, string[]>
+
 
   const assignUserToTodo = (todoId: string, userId: string) => {
     // Check if the todoId already exists in the assignedUsers
@@ -320,6 +361,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
     }
     // TODO: Implement any additional logic needed when unassigning a team member from an item
   };
+
+  
 
   const assignTeamToTodo = async (todoId: string, teamId: string) => {
     // Simulate an asynchronous operation, such as an API call
@@ -577,16 +620,12 @@ const useAssignBaseStore = (): AssignBaseStore => {
     Snapshot<Data>
     >;
   
+  const assignPresentationStore: PresentationStore = {} as PresentationStore
   const store: AssignBaseStore = makeAutoObservable({
-    assignItem,
-    assignedUsers,
-    events,
-    assignedItems,
-    assignedTasks,
-
-    //new
+    ...assignPresentationStore,
+    assignPresentationStore: assignPresentationStore,
     assignNote,
-    assignedNotes,
+    assignedNotes: presentationStore().assignedNotes,
     assignedGoals,
     assignedFiles,
     assignedEvents,
@@ -611,6 +650,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
 
     assignedTodos,
     assignedTeams,
+    assignTeamsToTodos,
 
     assignTeamToTodo,
     unassignTeamToTodo,
@@ -619,11 +659,11 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignTeamToTodos,
     unassignTeamToTodos,
     assignTeamMemberToTeam,
-    assignTeam,
     assignTaskToTeam,
     assignTodoToTeam,
     unassignTeamMemberFromItem,
     assignUser,
+    assignTeam,
     unassignUser,
     reassignUser,
     assignUsersToItems,
@@ -645,8 +685,12 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignMeetingToTeam,
     assignProjectToTeam,
     unassignTeamsFromTodos,
-
     snapshotStore: snapshotStore,
+    assignedItems,
+    assignNoteToTeam: useAssignTeamMemberStore().assignNoteToTeam,
+    assignFileToTeam,
+    assignedProjects
+
     // Add more properties or methods as needed
   });
   return store;

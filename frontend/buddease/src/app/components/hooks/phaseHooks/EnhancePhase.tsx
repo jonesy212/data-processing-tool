@@ -37,7 +37,6 @@ const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
     handleTransitionTo,
   };
 };
-
 const myPhaseHook = createPhaseHook({
   condition: () => true,
   asyncEffect: async () => {
@@ -47,8 +46,22 @@ const myPhaseHook = createPhaseHook({
     };
   },
   name: "",
-  duration: 0,
+  duration: "0",
+  isActive: false,
+  initialStartIdleTimeout: () => {},
+  resetIdleTimeout: () => {},
+  idleTimeoutId: null,
+  clearIdleTimeout: () => {},
+  onPhaseStart: () => {},
+  onPhaseEnd: () => {},
+  startIdleTimeout: () => {},
+  cleanup: undefined,
+  startAnimation: () => {},
+  stopAnimation: () => {},
+  animateIn: () => {},
+  toggleActivation: () => {},
 });
+
 
 // Ensure myPhaseHook is used somewhere to avoid the warning
 console.log(myPhaseHook); // This line will prevent the warning
@@ -60,7 +73,7 @@ const enhancedPhaseHook = enhancePhaseHook({
     return () => {};
   },
   name: "",
-  duration: 0,
+  duration: "0",
 });
 
 const nextPhaseConfig = {
@@ -74,7 +87,7 @@ enhancedPhaseHook.handleTransitionTo({
   asyncEffect: async () => {
     return () => {};
   },
-  duration: 0,
+  duration: "0",
 });
 
 const canTransitionTo = async (nextPhaseConfig: PhaseHookConfig) => {

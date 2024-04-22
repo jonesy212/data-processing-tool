@@ -1,6 +1,6 @@
 // AdapterContent.tsx
 import React, { useState } from "react";
-import NavigationGenerator from "../../hooks/userInterface/Navigation";
+import NavigationGenerator from "../../hooks/userInterface/NavigationGenerator";
 import DraggableAnimation from "../../libraries/animations/DraggableAnimation";
 import Link from "../../routing/Link";
 import {

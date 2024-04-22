@@ -4,11 +4,34 @@ import { ThemeCustomizationProps } from "@/app/components/hooks/userInterface/Th
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
 import ThemeValidator from "@/app/components/security/validateTheme";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import React, { SetStateAction } from "react";
 import { useDispatch } from "react-redux";
 import { WritableDraft } from "../ReducerGenerator";
 
+interface ThemeSetterState {
+  setThemeConfig: React.Dispatch<React.SetStateAction<string>>;
+  setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;
+  setSecondaryColor: React.Dispatch<React.SetStateAction<string>>;
+  setFontFamily: React.Dispatch<React.SetStateAction<string>>;
+  setFontSize: React.Dispatch<React.SetStateAction<string>>;
+  // Additional setters for other theme states
+  setHeaderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for header color
+  setFooterColor: React.Dispatch<React.SetStateAction<string>>; // Setter for footer color
+  setBodyColor: React.Dispatch<React.SetStateAction<string>>; // Setter for body color
+  setBorderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for border color
+  setBorderWidth: React.Dispatch<React.SetStateAction<number>>; // Setter for border width
+  setBorderStyle: React.Dispatch<React.SetStateAction<string>>; // Setter for border style
+  setPadding: React.Dispatch<React.SetStateAction<string>>; // Setter for padding
+  setMargin: React.Dispatch<React.SetStateAction<string>>; // Setter for margin
+  setBrandIcon: React.Dispatch<React.SetStateAction<string>>; // Setter for brand icon
+  setBrandName: React.Dispatch<React.SetStateAction<string>>; // Setter for brand name
+  // Add other setter functions as needed
+}
+
 interface ThemeState {
   theme: Theme;
+  infoColor: string;
+  notificationState: React.Dispatch<React.SetStateAction<string | null>>;
   isDarkMode: boolean;
   themeUsage: {
     colorsUsed: {
@@ -18,6 +41,7 @@ interface ThemeState {
       [key: string]: number;
     };
   };
+  setThemeState: ThemeSetterState;
 }
 
 const initialState: ThemeState = {
@@ -52,6 +76,9 @@ const initialState: ThemeState = {
     },
   },
   isDarkMode: false,
+  infoColor: "",
+  notificationState: {} as  React.Dispatch<SetStateAction<string | null>>,
+  setThemeState: {} as ThemeSetterState,
 };
 
 const dispatch = useDispatch();
@@ -405,3 +432,6 @@ export const {
 } = themeSlice.actions;
 
 export const themeReducer = themeSlice.reducer;
+export { initialState as initialThemeState };
+export type { ThemeState };
+

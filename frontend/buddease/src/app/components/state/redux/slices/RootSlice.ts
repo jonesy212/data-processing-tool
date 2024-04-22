@@ -1,5 +1,5 @@
 // rootSlice.ts
-import { combineReducers, createSlice, EntityId, EntityState, PayloadAction } from "@reduxjs/toolkit";
+import { combineReducers, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Task } from "../../../models/tasks/Task";
 import { Tracker } from "../../../models/tracker/Tracker";
 import { userManagerSlice } from "../../../users/UserSlice";
@@ -36,11 +36,13 @@ import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
 import {useEntityManagerSlice} from "./EntitySlice";
 import { useDrawingManagerSlice } from "./DrawingSlice";
+import { useUIManagerSlice } from "../../stores/UISlice";
+import { filterReducer } from "./FilterSlice";
 const randomTaskId = uuidv4().toString();
 
 
 // Define your custom entity state
-interface CustomEntityState<T, Id extends string>  extends EntityState<T, Id extends string>{
+interface CustomEntityState<T, Id extends string> extends EntityState<T, Id> {
   entities: Record<Id, T>;
   selectedEntityId: Id | null;
 }
@@ -53,31 +55,46 @@ interface EntityState<T, Id extends string> {
 
 // Define your EntityId type if not already defined
 type EntityId = string;
-
 export interface RootState {
+  // User Interface
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
+  uiManager: ReturnType<typeof useUIManagerSlice.reducer>;
+
+  // Project Management
   projectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
-  userTodoManager: ReturnType<typeof userManagerSlice.reducer>;
-  todoManager: ReturnType<typeof useTodoManagerSlice.reducer>;
   taskManager: ReturnType<typeof taskManagerSlice.reducer>;
   trackerManager: ReturnType<typeof trackerManagerSlice.reducer>;
   userManager: ReturnType<typeof userManagerSlice.reducer>;
-  dataAnalysisManager: ReturnType<typeof useDataAnalysisManagerSlice.reducer>;
+  teamManager: ReturnType<typeof useTeamManagerSlice.reducer>;
+  projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>;
+
+  // Data Management
   dataManager: ReturnType<typeof useDataManagerSlice.reducer>;
+  dataAnalysisManager: ReturnType<typeof useDataAnalysisManagerSlice.reducer>;
   calendarManager: ReturnType<typeof useCalendarManagerSlice.reducer>;
+  todoManager: ReturnType<typeof useTodoManagerSlice.reducer>;
   documentManager: ReturnType<typeof useDocumentManagerSlice.reducer>;
+  userTodoManager: ReturnType<typeof userManagerSlice.reducer>;
+
+  // API & Networking
   apiManager: ReturnType<typeof useApiManagerSlice.reducer>;
+  realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>;
+
+  // Event & Collaboration
+  eventManager: ReturnType<typeof useEventManagerSlice.reducer>;
+  collaborationManager: ReturnType<typeof useCollaborationSlice.reducer>;
+
+  // Entity & Notification
+  entityManager: ReturnType<typeof useEntityManagerSlice.reducer>;
+  notificationManager: ReturnType<typeof useNotificationManagerSlice.reducer>;
+
+  // Settings & Utilities
+  settingsManager: ReturnType<typeof useSettingsManagerSlice.reducer>;
+
+  // Miscellaneous
   videoManager: ReturnType<typeof useVideoManagerSlice.reducer>;
   randomWalkManager: ReturnType<typeof useRandomWalkManagerSlice.reducer>;
   pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>;
-  teamManager: ReturnType<typeof useTeamManagerSlice.reducer>;
-  projectOwner: ReturnType<typeof useProjectOwnerSlice.reducer>;
-  realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>;
-  eventManager: ReturnType<typeof useEventManagerSlice.reducer>;
-  collaborationManager: ReturnType<typeof useCollaborationSlice.reducer>;
-  entityManager: ReturnType<typeof useEntityManagerSlice.reducer>
-  notificationManager: ReturnType<typeof useNotificationManagerSlice.reducer>
-  settingsManager: ReturnType<typeof useSettingsManagerSlice.reducer>;
   blogManager: ReturnType<typeof useBlogManagerSlice.reducer>;
   drawingManager: ReturnType<typeof useDrawingManagerSlice.reducer>;
 }
@@ -116,6 +133,7 @@ const initialState: RootState = {
   settingsManager: useSettingsManagerSlice.reducer(undefined, { type: "init" }),
   blogManager: useBlogManagerSlice.reducer(undefined, { type: "init" }),
   drawingManager: useDrawingManagerSlice.reducer(undefined, { type: "init" }),
+  uiManager: useUIManagerSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -404,6 +422,7 @@ const rootReducer = combineReducers({
   notificationManager: useNotificationManagerSlice.reducer,
   settingsManager: useSettingsManagerSlice.reducer,
   blogManager: useBlogManagerSlice.reducer,
+  filterManager: filterReducer,
   // todo create code for
   // tagManager: useTagManagerSlice.reducer,
   // bookmarkManager: useBookmarkManagerSlice.reducer,

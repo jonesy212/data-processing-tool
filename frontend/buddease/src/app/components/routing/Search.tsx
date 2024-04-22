@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import SearchComponent from '@/app/pages/searchs/SearchComponent';
-import { searchDocuments, SearchResult } from '@/app/api/ApiDocument'; // Assuming SearchResult is the type of each item in searchResults
-import useErrorHandling from '../hooks/useErrorHandling';
-import LoadingSpinner from '../models/tracker/LoadingSpinner';
+import { searchDocuments } from "@/app/api/ApiDocument"; // Assuming SearchResult is the type of each item in searchResults
+import SearchComponent, {
+  SearchComponentProps,
+} from "@/app/pages/searchs/SearchComponent";
+import React, { useEffect, useState } from "react";
+import useErrorHandling from "../hooks/useErrorHandling";
+import { SearchLogger } from "../logging/Logger";
+import LoadingSpinner from "../models/tracker/LoadingSpinner";
+import { userId } from "../users/ApiUser";
+import SearchResult from "./SearchResult";
+import { sanitizeInput } from "../security/SanitizationFunctions";
 
-const SearchPage: React.FC = () => {
+const SearchPage: React.FC<SearchComponentProps> = ({
+  componentSpecificData,
+  documentData,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]); // Specify the type of searchResults as SearchResult[]
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { error, handleError, clearError } = useErrorHandling();
 
@@ -19,18 +28,24 @@ const SearchPage: React.FC = () => {
   const performSearch = async (query: string) => {
     try {
       setLoading(true);
-      const results = await searchDocuments(query);
+      const sanitizedQuery = sanitizeInput(query); // Sanitize the search query
+      const results = await searchDocuments(sanitizedQuery);
       setSearchResults(results);
       setLoading(false);
+      SearchLogger.logSearchResults(query, results.length, String(userId)); // Replace "userId" with actual user ID
       clearError();
-    } catch (error) {
+    } catch (error: any) {
       handleError("Failed to fetch search results. Please try again.");
+      // Log search error
+      SearchLogger.logSearchError(query, error.message, String(userId)); // Replace "userId" with actual user ID
+
       setLoading(false);
     }
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    SearchLogger.logSearch(query, userId);
   };
 
   return (
@@ -48,11 +63,18 @@ const SearchPage: React.FC = () => {
       {error && <div>Error: {error}</div>}
       <div className="search-results">
         {searchResults.map((result, index) => (
-          <div key={index}>
-            <h3>{result.title}</h3>
-            <p>{result.description}</p>
-          </div>
+          <SearchResult key={index} result={result} />
         ))}
+        <SearchComponent
+          componentSpecificData={searchResults.filter(
+            (result) =>
+              typeof result.source === "string" && result.source === "local"
+          )}
+          documentData={searchResults.filter(
+            (result) => result.source === "global"
+          )}
+          searchQuery={searchQuery}
+        />
       </div>
     </div>
   );

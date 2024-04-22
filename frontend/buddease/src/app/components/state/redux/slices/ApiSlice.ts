@@ -35,9 +35,14 @@ export const useApiManagerSlice = createSlice({
       state.apiConfigUrl = action.payload;
     },
 
-    markTaskPending: (state, action: PayloadAction<{ id: string }>) => { 
+    markTaskPending: (
+      state,
+      action: PayloadAction<{
+        id: string
+      }>) => { 
       const { id } = action.payload;
-      const taskIndex = state.tasks.findIndex((task) => task.id === id);
+      const taskIndex = state.tasks.findIndex(
+        (task) => task.id === id);
       if (taskIndex >= 0) {
         state.tasks[taskIndex].isComplete = false;
       }

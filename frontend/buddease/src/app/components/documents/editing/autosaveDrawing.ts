@@ -1,4 +1,6 @@
 // autosaveDrawing.ts
+import { Tracker } from '../../models/tracker/Tracker';
+import { WritableDraft } from '../../state/redux/ReducerGenerator';
 import autosave from './autosave'; // Import the autosave function
 
 
@@ -10,7 +12,7 @@ type Draw = {
   };
   
 // Function to perform autosave of the drawing
-const autosaveDrawing = async (drawing: string) => {
+const autosaveDrawing = async (drawing: WritableDraft<Tracker>[]) => {
   try {
     // Check if drawing content is provided
     if (!drawing) {
@@ -44,3 +46,4 @@ const autosaveDrawing = async (drawing: string) => {
 // Export the function for external use
 export { autosaveDrawing };
 export type { Draw };
+

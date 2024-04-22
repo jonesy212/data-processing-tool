@@ -12,13 +12,13 @@ import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisRe
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
-import { CustomEvent, CustomEventExtension } from "./BaseCustomEvent";
-
-
-
-
+import { CustomEventExtension } from "./BaseCustomEvent";
+import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
+  initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
+  
+  _shouldPersist: boolean;
   // Properties related to the custom event
   id: string;
   title: string;
@@ -82,7 +82,7 @@ interface CustomMouseEvent<T = Element>
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
     useCapture?: boolean
-  ): void
+  ): void;
   dispatchEvent(event: Event): boolean;
   // Event phase constants
   NONE: 0;
@@ -91,30 +91,29 @@ interface CustomMouseEvent<T = Element>
   BUBBLING_PHASE: 3;
 }
 
-
-
-interface CustomEventWithProperties extends CustomEventExtension {
+interface CustomEventWithProperties extends CustomEvent {
   id: string;
   title: string;
   description: string;
   startDate: Date;
   endDate: Date;
+  startTime?: Date;
+  endTime?: Date;
   addEventListener: (
     type: string,
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions
-  ) => void
+  ) => void;
   removeEventListener: (
     type: string,
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions
-  ) => void
-  dispatchEvent: (event: CustomEvent) => boolean
-  preventDefaultEvent: (event: CustomEvent) => void
-  stopImmediatePropagationEvent: (event: CustomEvent) => void
-  getModifierState: (key: string) => boolean
+  ) => void;
+  dispatchEvent: (event: CustomEvent) => boolean;
+  preventDefaultEvent: (event: CustomEvent) => void;
+  stopImmediatePropagationEvent: (event: CustomEvent) => void;
+  getModifierState: (key: string) => boolean;
 }
-
 
 export const createCustomEvent = (
   id: string,
@@ -132,8 +131,8 @@ export const createCustomEvent = (
     bubbles: false,
     cancelBubble: false,
     cancelable: false,
-    startTime: new Date,
-    endTime: new Date,
+    startTime: new Date(),
+    endTime: new Date(),
     // Methods and properties related to event handling
     addEventListener: (
       type: string,
@@ -163,7 +162,7 @@ export const createCustomEvent = (
     },
 
     preventDefaultEvent: (event: CustomEvent): void => {
-       console.log("preventDefaultEvent has been called.");
+      console.log("preventDefaultEvent has been called.");
       // Here you can put your logic for handling preventDefaultEvent
     },
 
@@ -199,7 +198,7 @@ export const createCustomEvent = (
     composedPath(): EventTarget[] {
       return [];
     },
-    initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void { },
+    initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void {},
     getModifierState(key: string): boolean {
       return false;
     },
@@ -209,7 +208,16 @@ export const createCustomEvent = (
     BUBBLING_PHASE: 3,
     stopPropagation: function (): void {
       throw new Error("Function not implemented.");
-    }
+    },
+    detail: undefined,
+    initCustomEvent: function (
+      type: string,
+      bubbles?: boolean | undefined,
+      cancelable?: boolean | undefined,
+      detail?: any
+    ): void {
+      throw new Error("Function not implemented.");
+    },
   };
 
   // Add dispatchEvent method
@@ -230,13 +238,13 @@ export const createCustomEvent = (
 
 // Service to manage events
 class EventService {
-  private events: CustomEvent[];
+  private events: CustomEventExtension[];
 
   constructor() {
     this.events = [];
   }
 
-  addEvent(event: CustomEvent): void {
+  addEvent(event: CustomEventExtension): void {
     this.events.push(event);
   }
 
@@ -252,7 +260,6 @@ class EventService {
     const event = this.events.find((evt) => evt.id === eventId);
     return event;
   }
-  
 
   updateEvent(eventId: string, updatedEvent: Partial<Event>): void {
     const eventIndex = this.events.findIndex((evt) => evt.id === eventId);
@@ -261,10 +268,10 @@ class EventService {
     }
   }
 
-  dispatchEvent(event: CustomEvent): void {
+  dispatchEvent(event: CustomEventExtension): void {
     this.events.push(event);
   }
-    
+
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
@@ -275,7 +282,6 @@ class EventService {
     console.log("addEventListener has been called.");
     // Here you can put your logic for handling addEventListener
     eventService.addEventListener(type, listener, options, useCapture);
-
   }
 
   removeEventListener(
@@ -291,7 +297,6 @@ class EventService {
     // Assuming eventService is an instance of the EventService class
     eventService.removeEventListener(type, listener, options, useCapture);
   }
-
 
   // Function to create a new event
   static createCustomEvent(
@@ -325,8 +330,8 @@ class EventService {
       teamMemberId: "",
       date: new Date(),
       then: implementThen,
-      analysisType: {} as AnalysisTypeEnum, 
-      analysisResults: {} as DataAnalysisResult[], 
+      analysisType: {} as AnalysisTypeEnum,
+      analysisResults: {} as DataAnalysisResult[],
       videoData: {} as VideoData,
     };
 
@@ -364,6 +369,10 @@ class EventService {
     }
   };
 
+
+  
+  
+  
   // Example event handlers
   private handleFullscreenMode(event: Event & SyntheticEvent) {
     // Logic for handling fullscreen mode
@@ -407,14 +416,7 @@ class EventService {
     // Additional logic for progress indicators...
   }
 
-  // Additional methods for event handling can be added here
-
-  // Separate event handlers for keyboard and mouse events
-  handleKeyboardEvent = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // Logic for handling keyboard events
-    console.log("Handling keyboard event:", event);
-    // Additional logic for keyboard events...
-  };
+ 
 
   handleMouseEvent = (event: MouseEvent & SyntheticEvent) => {
     // Logic for handling mouse events
@@ -422,7 +424,8 @@ class EventService {
     // Additional logic for mouse events...
   };
 
-  // Additional event handling methods can be added here
+
+
 
   // Clean up event listeners when the component unmounts
   cleanupEventListeners = () => {
@@ -445,6 +448,7 @@ const customEvent = createCustomEvent(
 
 // Add events
 const event1: CustomMouseEvent = {
+  initCustomEvent("click", true, true, window) {},
   id: "event1",
   title: "Event 1",
   description: "Event Description 1",
@@ -463,8 +467,8 @@ const event1: CustomMouseEvent = {
   target: null || ({} as EventTarget & Element),
   type: "",
   timeStamp: 0,
-  startTime: new Date,
-  endTime: new Date,
+  startTime: new Date(),
+  endTime: new Date(),
   composedPath: function (): EventTarget[] {
     const event = this as CustomMouseEvent;
     const path: EventTarget[] = [];
@@ -495,8 +499,6 @@ const event1: CustomMouseEvent = {
     eventService.dispatchEvent(customEvent);
   },
 
-
-
   addEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
@@ -504,9 +506,14 @@ const event1: CustomMouseEvent = {
     useCapture?: boolean
   ): void {
     // Add event listener
-    eventService.addEventListener(type, listener, useCapture ? options : undefined, useCapture);
+    eventService.addEventListener(
+      type,
+      listener,
+      useCapture ? options : undefined,
+      useCapture
+    );
   },
-  
+
   removeEventListener(
     type: string,
     listener: EventListenerOrEventListenerObject,
@@ -519,8 +526,7 @@ const event1: CustomMouseEvent = {
 
   dispatchEvent: function (): boolean {
     return false;
-  },  
-
+  },
 
   initEvent: function (
     type: string,
@@ -597,17 +603,55 @@ const event1: CustomMouseEvent = {
   detail: 0,
   view: {} as Window,
   nativeEvent: {} as MouseEvent,
-  isDefaultPrevented: function (): boolean {
-    throw new Error("Function not implemented.");
+  isDefaultPrevented(): boolean {
+    // Check if the event has a 'defaultPrevented' property
+    if (this.defaultPrevented !== undefined) {
+      // Return the value of the 'defaultPrevented' property
+      return this.defaultPrevented;
+    } else {
+      // If 'defaultPrevented' is not available, log a warning message
+      console.warn("Event does not have a 'defaultPrevented' property.");
+      // Return false by default
+      return false;
+    }
   },
-  isPropagationStopped: function (): boolean {
-    throw new Error("Function not implemented.");
-  },
-  persist: function (): void {
-    throw new Error("Function not implemented.");
-  },
-};
 
+  // Method to check if propagation is stopped
+  isPropagationStopped(): boolean {
+    // Check if the event has a 'cancelBubble' property
+    if (this.cancelBubble !== undefined) {
+      // Return the negation of the 'cancelBubble' property
+      // If 'cancelBubble' is true, propagation has been stopped, so return true
+      // If 'cancelBubble' is false or undefined, propagation has not been stopped, so return false
+      return !!this.cancelBubble;
+    } else {
+      // If 'cancelBubble' is not available, log a warning message
+      console.warn("Event does not have a 'cancelBubble' property.");
+      // Return false by default
+      return false;
+    }
+  },
+
+  // Method to indicate that the event should not be recycled by the event pool
+  persist: function (): void {
+    // Check if the event object has a property to store the persistence flag
+    if (this.hasOwnProperty("_shouldPersist")) {
+      // Set the persistence flag to true
+      this._shouldPersist = true;
+    } else {
+      // If the property doesn't exist, create it and set it to true
+      Object.defineProperty(this, "_shouldPersist", {
+        value: true,
+        writable: true,
+        enumerable: false,
+        configurable: true,
+      });
+    }
+  },
+
+  // Private property to store the persistence flag
+  _shouldPersist: false,
+};
 
 // Create a custom event using the createCustomEvent function
 const event2 = createCustomEvent(
@@ -633,4 +677,4 @@ console.log(retrievedEvent);
 // Remove event
 eventService.removeEvent("event1");
 
-export default EventService
+export default EventService;

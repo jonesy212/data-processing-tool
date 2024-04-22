@@ -1,26 +1,41 @@
-import { observable, action } from 'mobx';
-// import NOTIFICATION_MESSAGES from './NotificationMessages';
+import { action, observable } from 'mobx';
+import { createContext } from 'react';
 import { NotificationData } from '../../support/NofiticationsSlice';
 import { NotificationContextProps, NotificationTypeEnum } from '../../support/NotificationContext';
-import { createContext } from 'react';
 
-export interface NotificationTypeDefinition {
-  type: string;
-  subtype?: string; // Add subtype for more modular messages
+// Define the type for notification messages
+interface NotificationMessages {
+  [key: string]: string | ((userName: string) => string);
 }
-
-
-
-// const NOTIFICATION_MESSAGES: { [key in NotificationTypeEnum]: string | { [key: string]: string | Function } } = {
-//   [NotificationTypeEnum.Welcome]: (userName: string) => `Welcome, ${userName}!`,
-//   [NotificationTypeEnum.Error]: (userName: string) => `Error: ${userName}`,
-// };
-
-const NOTIFICATION_MESSAGES: { [key: string]: string | ((userName: string) => string) } = {
-  [NotificationTypeEnum.Welcome]: (userName: string) => `Welcome, ${userName}!`,
+// Define the messages for different notification types
+const NOTIFICATION_MESSAGES: NotificationMessages = {
+  [NotificationTypeEnum.AccountCreated]: (userName: string) => `Account created for ${userName}`,
+  [NotificationTypeEnum.AnalyticsID]: "Analytics ID notification message",
+  [NotificationTypeEnum.Announcement]: "Announcement notification message",
+  [NotificationTypeEnum.AssignmentOperation]: "Assignment operation notification message",
+  [NotificationTypeEnum.BrainstormingSessionID]: "Brainstorming session ID notification message",
+  [NotificationTypeEnum.ButtonClick]: "Button click notification message",
+  [NotificationTypeEnum.CalendarEvent]: "Calendar event notification message",
+  [NotificationTypeEnum.CustomID]: "Custom ID notification message",
+  [NotificationTypeEnum.CalendarID]: "Calendar ID notification message",
+  [NotificationTypeEnum.ChatID]: "Chat ID notification message",
+  [NotificationTypeEnum.CalendarNotification]: "Calendar notification message",
+  [NotificationTypeEnum.ChatMention]: "Chat mention notification message",
+  [NotificationTypeEnum.CommentID]: "Comment ID notification message",
+  [NotificationTypeEnum.ContributionID]: "Contribution ID notification message",
+  [NotificationTypeEnum.ContentItem]: "Content item notification message",
+  [NotificationTypeEnum.CouponCode]: "Coupon code notification message",
+  [NotificationTypeEnum.CreationSuccess]: "Creation success notification message",
+  [NotificationTypeEnum.CustomNotification1]: (userName: string) => `Custom message 1 for ${userName}`,
+  [NotificationTypeEnum.CustomNotification2]: (userName: string) => `Custom message 2 for ${userName}`,
+  [NotificationTypeEnum.DataLimitApproaching]: "Data limit approaching notification message",
+  [NotificationTypeEnum.DataLoading]: "Data loading notification message",
+  [NotificationTypeEnum.Dismiss]: "Dismiss notification message",
+  [NotificationTypeEnum.DocumentEditID]: "Document edit ID notification message",
   [NotificationTypeEnum.Error]: (userName: string) => `Error: ${userName}`,
-[NotificationTypeEnum.CustomNotification1]: (userName: string) => `Custom message: ${userName}`,
+  // Add more notification types as needed
 };
+
 
 class NotificationStore {
   @observable notifications: NotificationData[] = [];
@@ -41,41 +56,61 @@ class NotificationStore {
   };
 
   @action
-  notify = (id: string, content: string, date: Date, notificationType: NotificationTypeEnum.__FILE_PATH__) => {
-    const message = this.generateNotificationMessage(notificationType, content);
+  notify = (
+    id: string,
+    content: string,
+    date: Date,
+    notificationType: NotificationTypeEnum,
+    userName?: string
+  ) => {
+    const message = this.generateNotificationMessage(
+      notificationType,
+      userName
+    );
     this.addNotification({
-      id, content: message, date, notificationType,
-      message: '',
-      createdAt: new Date,
+      id,
+      content: message,
+      date,
+      notificationType,
+      message: "",
+      createdAt: new Date(),
       type: NotificationTypeEnum.AccountCreated,
-      sendStatus: 'Sent',
+      sendStatus: "Sent",
       completionMessageLog: {
-        timestamp,
-        level: 'info',
+        timestamp: new Date(Date.now()),
+        level: "info",
         message: `Notification of type ${notificationType} sent to ${content}`,
         sent: new Date(),
         delivered: null,
         opened: null,
         clicked: null,
-        responded: null
-      }
+        responded: null,
+      },
     });
   };
 
+  // Generate the notification message based on the notification type
   private generateNotificationMessage = (
     type: NotificationTypeEnum,
-    userName?: string | number
+    userName?: string
   ): string => {
     const message = NOTIFICATION_MESSAGES[type];
     if (typeof message === 'string') {
       return message;
     } else if (typeof message === 'function') {
-      return message(userName?.toString() || '');
+      return message(userName || '');
     } else {
       return 'Unknown Notification Type';
     }
   };
 }
 
-export const notificationStore = new NotificationStore();
+
+
+
+
+// Create an instance of the combined NotificationStore
+export const notificationStoreInstance = new NotificationStore();
+
+// Create a context for accessing the notification store
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);

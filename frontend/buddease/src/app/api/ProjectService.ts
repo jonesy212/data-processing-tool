@@ -18,6 +18,29 @@ class ProjectService {
     makeAutoObservable(this);
   }
 
+
+
+// Method to save project data to the database
+static saveProjectData = async (projectData) => {
+  try {
+    // Check if the project already exists in the database
+    const existingProject = await ProjectModel.findOne({ where: { id: projectData.id } });
+
+    if (existingProject) {
+      // If the project exists, update its data
+      await ProjectModel.update(projectData, { where: { id: projectData.id } });
+      console.log('Project data updated successfully:', projectData);
+    } else {
+      // If the project doesn't exist, create a new entry
+      await ProjectModel.create(projectData);
+      console.log('New project data saved successfully:', projectData);
+    }
+  } catch (error) {
+    console.error('Error saving project data:', error);
+    throw error;
+  }
+}
+
   createProject = async (newProject: Project) => { 
     try {
       const response = await axiosInstance.post(

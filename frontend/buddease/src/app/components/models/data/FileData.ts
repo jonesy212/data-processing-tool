@@ -13,7 +13,6 @@ interface FileData extends ScheduledData {
   uploader: User; // User who uploaded the file
   attachments?: Attachment[]; // Any attachments associated with the file
   // Add other properties as needed
-
   // Additional properties for expanded usage
   fileName: string; // Name of the file
   uploadDate: Date; // Date when the file was uploaded

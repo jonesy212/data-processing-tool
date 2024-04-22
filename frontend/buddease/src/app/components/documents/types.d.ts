@@ -2,7 +2,7 @@
 
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 
-type DocumentStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'published' | 'restored' | string;;
+type DocumentStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'published' | 'restored' | string;
 
 /**
  * Represents the ID of a document.

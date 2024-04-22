@@ -1,15 +1,16 @@
+import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
 import { makeAutoObservable } from "mobx";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
+import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { Task } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
-import { User } from "../../users/User";
-import { AssignBaseStore } from "../AssignBaseStore";
-import { WritableDraft } from "../redux/ReducerGenerator";
-import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
-import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 import { Todo } from "../../todos/Todo";
-import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
+import { User } from "../../users/User";
+import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
+import { WritableDraft } from "../redux/ReducerGenerator";
+import { AssignEventStore, ReassignEventResponse, useAssignEventStore } from "./AssignEventStore";
+import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
@@ -34,6 +35,17 @@ type EventStoreSubset = Pick<
 
 const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
+
+// todo incorporate
+// Define the necessary types and interfaces
+type UserStoreSubset = Pick<
+  AssignBaseStore,
+  | "snapshotStore"
+  | "events"
+>;
+
+
+
 // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
 export interface UserStore extends AssignEventStore, AssignBaseStore {
   // Add additional properties specific to UserStore if needed
@@ -41,6 +53,11 @@ export interface UserStore extends AssignEventStore, AssignBaseStore {
   currentUser: User | null;
   updateUserState: (newUsers: Record<string, User[]>) => void;
   assignTask: (task: Task, user: User) => void;
+    assignFileToTeam: Record<string, string[]>; // Add this property
+  assignContactToTeam: Record<string, string[]>; // Add this property
+  assignEventToTeam: Record<string, string[]>; // Add this property
+  assignGoalToTeam: Record<string, string[]>; // Add this property
+  events:Record<string, ExtendedCalendarEvent[]>
 }
 
 const userManagerStore = (): UserStore => {
@@ -75,145 +92,126 @@ const userManagerStore = (): UserStore => {
     }
   };
 
-  const assignUser = {} as Record<string, string[]>
+  const assignUser = {} as Record<string, string[]>;
 
-  const reassignUser = {} as Record<string, string[]>
+  const reassignUser = {} as Record<string, ReassignEventResponse[]>
 
-  const unassignUser = {} as Record<string, string[]>
+  const unassignUser = {} as Record<string, string[]>;
 
   const reassignUsersForArray = (
     user: string,
-    newUser: string[],
+    newUser: ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
   ) => {
-    newUser.forEach((newSingleUser) => {
-      if (Array.isArray(newSingleUser)) {
-        reassignUsersToEvents([user], newSingleUser, eventOrTodo.id);
-      } else {
-        reassignUsersToEvents(
-          [user],
-          [newSingleUser].toString(),
-          eventOrTodo.id
-        );
-      }
-    });
+    reassignUserForSingle(
+      user,
+      newUser,
+      eventOrTodo);
   };
 
   const reassignUserForSingle = (
     user: string,
-    newUser: string,
+    newUser: ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
   ) => {
-    reassignUsersToEvents([user], [newUser].toString(), eventOrTodo.id);
+    reassignUsersToEvents([user], newUser, eventOrTodo);
   };
 
-  // Use the useAssignEventStore hook to access methods and properties from AssignEventStore
   const {
-    assignedUsers,
-    assignedEvents,
-    assignedTodos,
-    assignEvent,
-
-    assignUsersToEvents,
-    unassignUsersFromEvents,
-    setDynamicNotificationMessage,
-    reassignUsersToEvents,
-    assignUserToTodo,
-    unassignUserFromTodo,
-    reassignUserInTodo,
-    assignUsersToTodos,
-    unassignUsersFromTodos,
-    reassignUsersInTodos,
-    assignUserSuccess,
-    assignUserFailure,
-
-    ...rest // Capture the remaining properties
-  } = useAssignEventStore();
-
-  const {
-    assignedTasks,
-    assignedItems,
-    assignedTeams,
-    events,
-    assignItem,
-    assignTeam,
-    assignUsersToItems,
-    unassignUsersFromItems,
-    assignTaskToTeam,
-    assignTodoToTeam,
-    assignTodosToUsersOrTeams,
-    assignTeamMemberToTeam,
-    unassignTeamMemberFromItem,
-    snapshotStore,
-    reassignUsersToItems,
-
-    assignTeamToTodo,
-    unassignTeamToTodo,
-    reassignTeamToTodo,
-    assignTeamToTodos,
-    unassignTeamFromTodos,
-    reassignTeamToTodos,
-    reassignTeamsInTodos,
-    assignMeetingToTeam,
-    assignProjectToTeam,
-    unassignTeamsFromTodos,
-  } = useAssignTeamMemberStore();
-
+    reassignUsersToEvents
+  } = eventSubset;
   const userStore = makeAutoObservable({
+    // User-related properties and methods
     users,
     currentUser,
     updateUserState,
     assignTask,
-    assignedUsers,
-    assignedEvents,
-    assignedTodos,
-    assignEvent,
     assignUser,
     reassignUser,
     unassignUser,
-    assignUsersToEvents,
-    unassignUsersFromEvents,
-    setDynamicNotificationMessage,
-    reassignUsersToEvents,
-    assignUserToTodo,
-    unassignUserFromTodo,
-    reassignUserInTodo,
-    assignUsersToTodos,
-    unassignUsersFromTodos,
-    reassignUsersInTodos,
-    assignUserSuccess,
-    assignUserFailure,
-    assignedTasks,
-    assignedItems,
-    assignedTeams,
-    events,
-    assignItem,
-    assignTodoToTeam,
-    assignTodosToUsersOrTeams,
-    assignTeamMemberToTeam,
-    unassignTeamMemberFromItem,
-
-    assignTeam,
-    assignUsersToItems,
-    unassignUsersFromItems,
-    assignTaskToTeam,
-    snapshotStore,
-    reassignUsersToItems,
-    assignTeamToTodo,
-    unassignTeamToTodo,
-    reassignTeamToTodo,
-    assignTeamToTodos,
-    unassignTeamFromTodos,
-    reassignTeamToTodos,
-    reassignTeamsInTodos,
-    assignMeetingToTeam,
-    assignProjectToTeam,
-    unassignTeamsFromTodos,
     reassignUsersForArray,
-    ...rest, // Spread the remaining properties from useAssignEventStore
-  });
+    assignUserSuccess: useAssignBaseStore().assignUserSuccess,
+    assignUserFailure: useAssignBaseStore().assignUserFailure,
+  
+    // Event-related properties and methods
+    events: eventSubset.assignedEvents, // Adjusted to match the type,
+    assignedUsers: useAssignEventStore().assignedUsers,
+    assignedEvents: useAssignEventStore().assignedEvents,
+    assignedTodos: useAssignEventStore().assignedTodos,
+    assignEvent: useAssignEventStore().assignEvent,
+    assignUsersToEvents: useAssignEventStore().assignUsersToEvents,
+    unassignUsersFromEvents: useAssignEventStore().unassignUsersFromEvents,
+    setDynamicNotificationMessage: useAssignEventStore().setDynamicNotificationMessage,
+    reassignUsersToEvents: useAssignEventStore().reassignUsersToEvents,
+    updateEventStatus: useAssignEventStore().updateEventStatus,
+    connectResponsesToTodos: useAssignEventStore().connectResponsesToTodos,
+  
+    // Task-related properties and methods
+    assignedTasks: useAssignTeamMemberStore().assignedTasks,
+    assignedItems: useAssignTeamMemberStore().assignedItems,
+    assignedTeams: useAssignTeamMemberStore().assignedTeams,
+    assignItem: useAssignTeamMemberStore().events,
+    assignTodoToTeam: useAssignTeamMemberStore().assignTodoToTeam,
+    assignTodosToUsersOrTeams: useAssignTeamMemberStore().assignTodosToUsersOrTeams,
+    assignTeamMemberToTeam: useAssignTeamMemberStore().assignTeamMemberToTeam,
+    unassignTeamMemberFromItem: useAssignTeamMemberStore().unassignTeamMemberFromItem,
+    assignTaskToTeam: useAssignTeamMemberStore().assignTaskToTeam,
+    assignTeam: useAssignTeamMemberStore().assignTeam,
+    assignUsersToItems: useAssignTeamMemberStore().assignUsersToItems,
+    unassignUsersFromItems: useAssignTeamMemberStore().unassignUsersFromItems,
+    reassignUsersToItems: useAssignTeamMemberStore().reassignUsersToItems,
+    snapshotStore: useAssignTeamMemberStore().snapshotStore,
+    assignTeamToTodo: useAssignTeamMemberStore().assignTeamToTodo,
+    unassignTeamToTodo: useAssignTeamMemberStore().unassignTeamToTodo,
+    reassignTeamToTodo: useAssignTeamMemberStore().reassignTeamToTodo,
+  
+    // Team-related properties and methods
+    assignTeamsToTodos: useAssignTeamMemberStore().assignTeamsToTodos,
+    assignTeamToTodos: useAssignTeamMemberStore().assignTeamToTodos,
+    unassignTeamFromTodos: useAssignTeamMemberStore().unassignTeamFromTodos,
+    reassignTeamToTodos: useAssignTeamMemberStore().reassignTeamToTodos,
+    reassignTeamsInTodos: useAssignTeamMemberStore().reassignTeamsInTodos,
+    assignMeetingToTeam: useAssignTeamMemberStore().assignMeetingToTeam,
+    assignProjectToTeam: useAssignTeamMemberStore().assignProjectToTeam,
+  
 
+    // todo-releated methods
+    assignUserToTodo: useAssignEventStore().assignUserToTodo,
+    unassignUserFromTodo: useAssignEventStore().unassignUserFromTodo,
+    reassignUserInTodo: useAssignEventStore().reassignUserInTodo,
+    assignUsersToTodos: useAssignEventStore().assignUsersToTodos,
+    unassignUsersFromTodos: useAssignEventStore().unassignUsersFromTodos,
+    reassignUsersInTodos: useAssignEventStore().reassignUsersInTodos,
+    
+    // Other properties and methods
+    assignNote: useAssignTeamMemberStore().assignNote,
+    unassignNoteFromTeam: useAssignTeamMemberStore().unassignNoteFromTeam,
+    unassignTeamsFromTodos: useAssignTeamMemberStore().unassignTeamsFromTodos,
+    assignContactToTeam: useAssignBaseStore().assignContactToTeam,
+    assignEventToTeam: useAssignBaseStore().assignEventToTeam,
+    assignGoalToTeam: useAssignBaseStore().assignGoalToTeam,
+    assignBookmarkToTeam: useAssignBaseStore().assignBookmarkToTeam,
+    assignNoteToTeam: useAssignTeamMemberStore().assignNoteToTeam,
+    assignFileToTeam: useAssignBaseStore().assignFileToTeam,
+    assignCalendarEventToTeam: useAssignBaseStore().assignCalendarEventToTeam,
+    assignBoardItemToTeam: useAssignBaseStore().assignBoardItemToTeam,
+    assignBoardColumnToTeam: useAssignBaseStore().assignBoardColumnToTeam,
+    assignBoardViewToTeam: useAssignBaseStore().assignBoardViewToTeam,
+    assignBoardListToTeam: useAssignBaseStore().assignBoardListToTeam,
+    assignBoardLabelToTeam: useAssignBaseStore().assignBoardLabelToTeam,
+    assignBoardCommentToTeam: useAssignBaseStore().assignBoardCommentToTeam,
+    assignBoardActivityToTeam: useAssignBaseStore().assignBoardActivityToTeam,
+    assignBoardCardToTeam: useAssignBaseStore().assignBoardCardToTeam,
+    assignBoardMemberToTeam: useAssignBaseStore().assignBoardMemberToTeam,
+    assignBoardSettingToTeam: useAssignBaseStore().assignBoardSettingToTeam,
+    assignBoardPermissionToTeam: useAssignBaseStore().assignBoardPermissionToTeam,
+    assignBoardNotificationToTeam: useAssignBaseStore().assignBoardNotificationToTeam,
+    assignBoardIntegrationToTeam: useAssignBaseStore().assignBoardIntegrationToTeam,
+    assignBoardAutomationToTeam: useAssignBaseStore().assignBoardAutomationToTeam,
+    assignBoardCustomFieldToTeam: useAssignBaseStore().assignBoardCustomFieldToTeam,
+  });
+  
   return userStore;
-};
+}  
 
 export { userManagerStore };

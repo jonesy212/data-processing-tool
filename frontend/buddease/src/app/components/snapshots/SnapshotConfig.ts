@@ -9,6 +9,7 @@ interface SnapshotStoreConfig<T> {
   clearSnapshots: any;
   key: string;
   initialState: T;
+  
   snapshot: (
     snapshot: SnapshotStore<Snapshot<Data>>[]
   ) => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }>;
@@ -149,6 +150,9 @@ interface SnapshotStoreConfig<T> {
     date: Date,
     type: NotificationType
   ) => void;
+
+
+  [Symbol.asyncIterator]: () => AsyncIterableIterator<Snapshot<T>>;
 }
 
 const generateSnapshotId = UniqueIDGenerator.generateSnapshotID();
@@ -307,7 +311,7 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
   snapshots: SnapshotStore<Snapshot<Data>>[]
   ): Promise<{
     snapshots: SnapshotStore<Snapshot<Data>>[];
-  }> {
+  }[]> {
     return Promise.resolve({ snapshots: snapshotConfig.snapshots });
   },
 

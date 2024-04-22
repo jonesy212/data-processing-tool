@@ -40,6 +40,9 @@ export const DrawingActions = {
     "applyCollaborativeEdits"
   ),
 
+  autosaveDrawingAsync: createAction("autosaveDrawingAsync"),
+  resetDrawingState: createAction("drawing/resetDrawingState"),
+  resetMilestones: createAction("milestones/resetMilestones"),
   // Additional drawing actions
   exportDrawing: createAction<{ format: string }>("exportDrawing"),
   importDrawing: createAction<{ source: string }>("importDrawing"),
@@ -121,7 +124,7 @@ export const DrawingActions = {
   flattenDrawing: createAction("flattenDrawing"),
 
   // Export/Import Options
-  exportDrawingAsFile: createAction<{ fileName: string; format: string }>(
+  exportDrawingAsFile: createAction<{ fileName: string; format: string, status: string }>(
     "exportDrawingAsFile"
   ),
   importDrawingFromFile: createAction<{ file: File }>("importDrawingFromFile"),
@@ -144,5 +147,4 @@ export const DrawingActions = {
     "adjustCanvasResolution"
     ),
   
-  // Add more drawing actions as needed
 };

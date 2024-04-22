@@ -3,24 +3,31 @@ import { useState } from "react";
 import { Team } from "../../models/teams/Team";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { useNotification } from "@/app/components/support/NotificationContext";
 import { generateNewTeam } from "@/app/generators/GenerateNewTeam";
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import TeamData from "../../models/teams/TeamData";
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { snapshotConfig } from "../../snapshots/SnapshotConfig";
-import { NotificationType, NotificationTypeEnum } from "../../support/NotificationContext";
+import SnapshotStoreConfig, {
+  snapshotConfig,
+} from "../../snapshots/SnapshotConfig";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+} from "../../support/NotificationContext";
 import { VideoData } from "../../video/Video";
 import {
   AssignTeamMemberStore,
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore, { Video } from "./VideoStore";
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import userService from "../../users/ApiUser";
-
+import { useAssignBaseStore } from "../AssignBaseStore";
+import configData from "@/app/configs/configData";
+import { videoService } from "@/app/api/ApiVideo";
 
 interface CustomData extends Data {
   _id: string;
@@ -40,19 +47,19 @@ export interface TeamManagerStore {
   teamStatus: "active" | "inactive" | "archived";
 
   assignedTeamMemberStore: AssignTeamMemberStore;
-  
+
   updateTeamData: (teamId: number, data: Data) => void;
   updateTeamName: (name: string) => void;
   updateTeamDescription: (description: string) => void;
   updateTeamStatus: (status: "active" | "inactive" | "archived") => void;
-  
+
   addTeamSuccess: (payload: { team: Team }) => void;
   addTeam: (team: Team) => void;
   addTeams: (teams: Team[]) => void;
-  
+
   removeTeam: (teamId: string) => void;
   removeTeams: (teamIds: string[]) => void;
-  
+
   getTeamData: (teamId: string, team: Team) => Team | null;
   getTeamsData: (teamId: string, team: Team[]) => Team | null;
   fetchTeamsSuccess: (payload: { teams: Team[] }) => void;
@@ -66,13 +73,13 @@ export interface TeamManagerStore {
   setDynamicNotificationMessage: (message: string) => void;
   snapshotStore: SnapshotStore<Snapshot<Data>>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
-  getTeamId: (team: Team, teamId: Team['id']) => number;
+  getTeamId: (team: Team, teamId: Team["id"]) => number;
   // Add more methods or properties as needed
 }
 
-const useTeamManagerStore = (): TeamManagerStore => {
+const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   const { notify } = useNotification();
-  
+
   const [teams, setTeams] = useState<Record<string, Team[]>>({
     active: [],
     inactive: [],
@@ -88,17 +95,18 @@ const useTeamManagerStore = (): TeamManagerStore => {
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
-  const initialSnapshot = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+  const initialSnapshot = {} as SnapshotStoreConfig<
+    SnapshotStore<Snapshot<Data>>
+  >;
   const snapshotStore = new SnapshotStore(initialSnapshot, () => {
     notify(
       "initialSnapshot",
       "Initial Snapshot has been taken.",
       NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
       new Date(),
-     NotificationTypeEnum.Info
+      NotificationTypeEnum.Info
     );
   });
-  
 
   const updateTeamName = (name: string) => {
     setTeamName(name);
@@ -120,33 +128,37 @@ const useTeamManagerStore = (): TeamManagerStore => {
     });
   };
 
-  const getTeamId = (teamId: string) => { 
-    return teamId
-  }
+  const getTeamId = (teamId: string) => {
+    return teamId;
+  };
 
-  const getTeamData = (teamId: string, data: TeamData) => { 
+  const getTeamData = (teamId: string, data: TeamData) => {
     const teamData = {
       ...data,
       id: teamId,
-    }
+    };
     return teamData;
-  }
+  };
 
-
-  const getTeamsData = (teamId: string, data: TeamData[]): (Team & TeamData)[] | null => { 
+  const getTeamsData = (
+    teamId: string,
+    data: TeamData[]
+  ): (Team & TeamData)[] | null => {
     // Retrieve the team corresponding to the provided teamId
     const team = teams[teamId];
     if (!team) {
       // Return null if the team is not found
       return null;
     }
-  
+
     // Combine team data with additional data
     const teamsData = team.map((teamItem) => {
       // Find the matching data for the team
       // (i.e. the data that was passed in)
       // convert item.id and teamItem.id to as string
-      const matchingData = data.find((item) => item.id.toString() === teamItem.id);
+      const matchingData = data.find(
+        (item) => item.id.toString() === teamItem.id
+      );
       if (!matchingData) {
         // Handle case where data for a team is missing
         console.error(`Data not found for team with id ${teamItem.id}`);
@@ -158,35 +170,24 @@ const useTeamManagerStore = (): TeamManagerStore => {
         ...matchingData,
       } as Team & TeamData; // Ensure proper type
     });
-    
+
     // Filter out any null values and cast the result to the correct type
     return teamsData.filter(Boolean) as (Team & TeamData)[];
-  }
-  
-  
-  
-  
+  };
 
-  
-
-  const takeTeamSnapshot = (teamId: string, userIds?: string[]) => {
+  const takeTeamSnapshot = async (teamId: string, userIds?: string[]) => {
     // Ensure the teamId exists in the teams
     if (!teams[teamId]) {
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-
-    const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {
-      clearSnapshots: () => {}, // Implement clearSnapshots method
-      initialState: new SnapshotStore<Snapshot<Data>>(), // Provide initial state
-      batchFetchSnapshots: () => [], // Implement batchFetchSnapshots method
-      [Symbol.iterator]: () => ({}), // Implement iterator method
-    };
-    const { notify } = snapshotConfig;
+    const config = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+    const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
 
     // Create a snapshot of the current teams for the specified teamId
     const teamSnapshot = new SnapshotStore<Snapshot<Data>>(snapshotConfig, () =>
       notify(
+        "Snapshot taken for team " + teamId,
         "teamSnapshot",
         "Team Snapshot has been taken.",
         new Date(),
@@ -198,37 +199,36 @@ const useTeamManagerStore = (): TeamManagerStore => {
     snapshotStore.takeSnapshot(teamSnapshot);
 
     if (userIds) {
-      const videos: Video[] = [];
-      const videoData: Promise<Record<string, VideoData>> = useVideoStore().getVideosData(userIds);
+      const videos: VideoData[] = [];
+      let videoData: Record<string, VideoData> = {};
+      const videosDataPromise: Promise<Record<string, VideoData>> =
+        useVideoStore().getVideosData(userIds, videos);
       userIds.forEach(async (userId) => {
-        const videoPromise = new Promise<Video | undefined>((resolve) => {
-          const videoStore = useVideoStore();
-          const user = userService.fetchUserById(userId);
-          if (videoStore.getVideoData(userId)) {
-            videoStore.getVideoData(userId).then((videoData: VideoData) => {
-              resolve(videoData);
-            });
+        const videoPromise = new Promise<VideoData>(
+          async (resolve, reject) => {
+            const videoStore = useVideoStore();
+            const user = await userService.fetchUserById(userId);
+            const video = await videoService.fetchVideoByUserId(userId);
+            if (video && video.length > 0) {
+              const videoDataForUser = videoStore.getVideoData(userId, video[0]);
+              if (videoDataForUser) {
+                resolve(videoDataForUser);
+              } else {
+                reject(new Error("No video data found for user"));
+              }
+            } else {
+              reject(new Error("No video found for user"));
+            }
           }
-        });
+        );
         videos.push(await videoPromise);
       });
 
-      const teamAssignmentsSnapshot: Snapshot<Data> = {
-        timestamp: new Date(), // Add a timestamp to the snapshot
-        data: {
-          [teamId]: [
-            ...assignedTeamMemberStore.getAssignedTeamMembers(teamId, userIds),
-            ...videos,
-          ],
-          analysisResults: {} as DataAnalysisResult,
-          videoData: videoData,
-          analysisType: "",
-        },
-      };
+      videoData = await videosDataPromise;
+      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<Data>> = {} as SnapshotStore<Snapshot<Data>>
       snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
     }
-  };
-  
+  }
 
   const addTeam = () => {
     // Ensure the name is not empty before adding a team
@@ -237,20 +237,24 @@ const useTeamManagerStore = (): TeamManagerStore => {
       return;
     }
 
-    generateNewTeam().then((newTeam: Snapshot<Team>) => {
-      setTeams((prevTeams) => {
-        const updatedTeams = { ...prevTeams };
-        updatedTeams[newTeam.data.id] = [
-          ...(updatedTeams[newTeam.data.id] || []),
-          newTeam.data,
-        ];
-        return updatedTeams;
-      });
+    generateNewTeam().then((newTeam: Snapshot<Team> | undefined) => {
+      if (newTeam?.data) {
+        setTeams((prevTeams) => {
+          const updatedTeams = { ...prevTeams };
+          updatedTeams[newTeam.data.id] = [
+            ...(updatedTeams[newTeam.data.id] || []),
+            newTeam.data,
+          ];
+          return updatedTeams;
+        });
 
-      // Reset input fields after adding a team
-      setTeamName("");
-      setTeamDescription("");
-      setTeamStatus("active");
+        // Reset input fields after adding a team
+        setTeamName("");
+        setTeamDescription("");
+        setTeamStatus("active");
+      } else {
+        console.error("Failed to generate a new team.");
+      }
     });
   };
 
@@ -293,10 +297,9 @@ const useTeamManagerStore = (): TeamManagerStore => {
     setTeamStatus("active");
   };
 
-
-  const updateTeamData = (teamId: number, data: Data) => { 
+  const updateTeamData = (teamId: number, data: Data) => {
     const updatedTeams = { ...teams };
-    
+
     // Check if the teamId exists in updatedTeams
     if (updatedTeams[teamId]) {
       // Assuming data contains some of the properties of Team
@@ -304,15 +307,14 @@ const useTeamManagerStore = (): TeamManagerStore => {
         console.error(`Team with ID ${teamId} not found.`);
         return; // Handle the case where id is undefined
       }
-      
+
       updatedTeams[teamId] = [...teams[teamId], { ...data }];
       setTeams(updatedTeams);
     } else {
       console.error(`Team with ID ${teamId} not found.`);
     }
-  }
-  
-  
+  };
+
   const fetchTeamsSuccess = (payload: { teams: Team[] }) => {
     const { teams: newTeams } = payload;
     setTeams((prevTeams) => {
@@ -371,9 +373,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
   const fetchTeamsRequest = () => {
     console.log("Fetching Teams...");
     // You can add loading indicators or other UI updates here
-    setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.Data.PAGE_LOADING
-    );
+    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
   };
 
   const completeAllTeamsFailure = (payload: { error: string }) => {
@@ -389,9 +389,7 @@ const useTeamManagerStore = (): TeamManagerStore => {
 
   // Add more methods or properties as needed
 
-
-  const useTeamManagerStore = 
-  makeAutoObservable({
+  const useTeamManagerStore = makeAutoObservable({
     teams,
     ...teams,
     teamName,
@@ -420,13 +418,13 @@ const useTeamManagerStore = (): TeamManagerStore => {
     takeTeamSnapshot,
     snapshotStore: snapshotStore,
     getTeamsData,
-    getTeamData
+    getTeamData,
+    assignedProjects: useAssignBaseStore().assignProjectToTeam,
   });
 
-  return  useTeamManagerStore
+  return useTeamManagerStore;
 };
 
 export { useTeamManagerStore };
 
-
-export default CustomData
+export type { CustomData };

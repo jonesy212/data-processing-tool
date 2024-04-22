@@ -6,6 +6,7 @@ import CommonEvent from "../../state/stores/CommonEvent";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
 import { Data } from "./Data";
+import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 
 export type DataAndEventDetails = Data | CommonEvent;
 

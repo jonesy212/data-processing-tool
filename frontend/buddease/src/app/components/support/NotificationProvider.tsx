@@ -1,40 +1,14 @@
-import { action, observable } from 'mobx';
 import React, { ReactNode, createContext } from 'react';
-import { NotificationContextProps, NotificationTypeEnum } from './NotificationContext';
+import { NotificationContextProps, NotificationType, NotificationTypeEnum } from './NotificationContext';
 import { NotificationData } from './NofiticationsSlice';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
+import { notificationStoreInstance } from '../state/stores/NotificationStore';
+import { logData } from '../notifications/NotificationService';
 
 
+ 
 
-
-class NotificationStore {
-  @observable notifications: { id: string; content: string; date: Date, notificationType: NotificationTypeEnum }[] = [];
-
-  @observable notification: NotificationData | null = null;
-
-  @action
-  addNotification = (notification: { id: string; content: string; date: Date,  notificationType: NotificationTypeEnum  }) => {
-    this.notifications.push(notification);
-  };
-  
-
-  @action
-  removeNotification = (notificationId: string) => {
-    this.notifications = this.notifications.filter((notification) => notification.id !== notificationId);
-  };
-
-  @action
-  clearNotifications = () => {
-    this.notifications = [];
-  };
-
-  @action
-  notify = (id: string, content: string, date: Date, notificationType: NotificationTypeEnum) => {
-    this.addNotification({ id, content, date, notificationType });
-  };
-}
-
-export const notificationStore = new NotificationStore();
+export const notificationStore = notificationStoreInstance
 export const notificationData: NotificationData[] = [];
 
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
@@ -65,6 +39,19 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       content: message,
       date: new Date(),
       notificationType: NotificationTypeEnum.OperationSuccess,
+      message: '',
+      type: NotificationTypeEnum.AccountCreated,
+      sendStatus: 'Sent',
+      completionMessageLog: {
+        id: Date.now().toString(), // Example: You can assign a unique ID for the completion log
+        message: `Notification of type ${NotificationTypeEnum.OperationSuccess} sent`, // Example: Log message
+        createdAt: new Date(), // Example: Timestamp of when the log is created
+        type: NotificationTypeEnum.OperationSuccess, // Example: Type of notification
+        content: message, // Example: Content of the notification
+        completionMessageLog: '', // Example: Additional details specific to completion logging
+        timestamp: new Date(), // Example: Timestamp of when the notification was sent
+        level: 'info', // Example: Log level
+      }
     });
   };
 
@@ -82,12 +69,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         sendNotification,
         addNotification: (
-          notification: {
-            id: string;
-            content: string;
-            date: Date;
-            notificationType: NotificationTypeEnum;
-          }
+          notification: NotificationData
         ) => {
           notificationStore.addNotification(notification);
         },
@@ -103,12 +85,17 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
             content,
             date,
             notificationType: type,
+            message: '',
+            type: NotificationTypeEnum.AccountCreated,
+            sendStatus: 'Sent',
+            completionMessageLog: LogData
           });
           console.log(`Notification: ${message}`);
           return Promise.resolve();
         },
+
         notifications: notificationData,
-        showMessage: (message: Message) => {
+        showMessage: (message: Message, type: NotificationType) => {
           sendNotification("Custom", `${message.from}: ${message.text}`);
           console.log(`Notification: ${message}`);
         },

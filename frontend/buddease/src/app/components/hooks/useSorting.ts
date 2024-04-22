@@ -1,8 +1,9 @@
 // useSorting.tsx
 import { useState } from 'react';
-
+import SortCriteria from '../../pages/searchs/SortCriteria';
+import { CalendarEvent } from '../state/stores/CalendarEvent';
 const useSorting = () => {
-  const [sortCriteria, setSortCriteria] = useState<"title" | "date">("date");
+  const [sortCriteria, setSortCriteria] = useState<SortCriteria>(SortCriteria.Date);
 
   const sortEvents = (events: CalendarEvent[]) => {
     return events.slice().sort((a, b) => {
@@ -15,8 +16,8 @@ const useSorting = () => {
     });
   };
 
-  const setSortByTitle = () => setSortCriteria("title");
-  const setSortByDate = () => setSortCriteria("date");
+  const setSortByTitle = () => setSortCriteria(SortCriteria.Title);
+  const setSortByDate = () => setSortCriteria(SortCriteria.Date);
 
   return { sortEvents, setSortByTitle, setSortByDate };
 };

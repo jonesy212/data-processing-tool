@@ -9,6 +9,7 @@ export interface NotificationState {
   notifications: NotificationData[];
   loading: boolean;
   error: string | null;
+  
 }
 
 const initialState: NotificationState = {
@@ -16,6 +17,16 @@ const initialState: NotificationState = {
   loading: false,
   error: null,
 };
+
+
+const initialNotificationState: NotificationState = {
+  notifications: [],
+  loading: false,
+  error: null,
+}
+
+
+
 
 export const useNotificationManagerSlice = createSlice({
   name: "notification",
@@ -84,3 +95,4 @@ export const useNotificationSlice = () => {
   };
 };
 
+export { initialNotificationState };

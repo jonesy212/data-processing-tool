@@ -18,11 +18,12 @@ export interface Tracker {
   phases: Phase[];
   getUserProfile?: (userData: User) => void; // New method to get user profile
   trackFileChanges: (file: FileData) => void;
-  trackFolderChanges: (fileLoader: DocumentData) => void;
+  trackFolderChanges: (fileLoader: FileData) => void;
   getName?: (trackerName: string) => string;
   updateUserProfile?: (userData: User) => void; // New method to update user profile
   sendNotification?: (notification: string, userData: User) => void; // New method to send notification
 
+  
   // Add more properties as needed
 }
 
@@ -56,7 +57,7 @@ class TrackerClass implements Tracker {
     console.log("Access history:", accessHistory);
   }
 
-  detectContentChanges(file: DocumentData): string {
+  detectContentChanges(file: FileData): string {
     // Dummy implementation: Check if the content length has changed
     const previousContentLength = file.previousContent?.length;
     const currentContentLength = file.currentContent?.length;
@@ -69,7 +70,7 @@ class TrackerClass implements Tracker {
   }
 
   // Function to track changes for a folder
-  async trackFolderChanges(fileLoader: DocumentData): Promise<void> {
+  async trackFolderChanges(fileLoader: FileData): Promise<void> {
     try {
       // Make a fetch request to the folder URL to get its contents
       const folderPathUrl = new URL(fileLoader.folderPath, 'file://');
@@ -138,7 +139,7 @@ class TrackerClass implements Tracker {
   }
 
   // Function to detect metadata changes in a document
-  detectMetadataChanges(file: DocumentData): string {
+  detectMetadataChanges(file: FileData): string {
     let changesDetected = false;
     let metadataChanges = "";
 
@@ -168,7 +169,7 @@ class TrackerClass implements Tracker {
   }
 
   // Function to track access history of the document
-  trackAccessHistory(file: DocumentData): string {
+  trackAccessHistory(file: FileData): string {
     // Implement logic to track access history (actual implementation)
     const currentTime = new Date().toISOString();
     const accessRecord = `Accessed at: ${currentTime}`;

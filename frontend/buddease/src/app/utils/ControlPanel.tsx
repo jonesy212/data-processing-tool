@@ -22,7 +22,7 @@ import {
 } from "../generators/GenerateButtons";
 import { themeConfig } from "../pages/_app";
 import apiNotificationsService from "../api/NotificationsService";
-import  NotificationStore  from './../components/support/NoticicationStore';
+import { NotificationStore } from '@/app/components/support';
 
 interface ControlPanelProps {
   speed: number; // Current speed of the automated processes

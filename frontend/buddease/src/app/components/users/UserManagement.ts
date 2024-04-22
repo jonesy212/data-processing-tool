@@ -1,12 +1,11 @@
 import userService from '@/app/components/users/ApiUser';
 import { User } from '@/app/components/users/User';
+import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import CommonDetails from '../models/CommonData';
 import { UserRole } from './UserRole';
 
 class UserManagement {
-  constructor() {
-    // Initialize user management component
-  }
+ 
 
   // Fetch user by ID
   fetchUser = async (userId: User['id']) => {
@@ -21,7 +20,7 @@ class UserManagement {
   };
 
   // Update user data
-  updateUser = async (userId: User['id'], updatedUserData: Partial<User>) => {
+   updateUser = async (userId: User['id'], updatedUserData: Partial<User>) => {
     try {
       const updatedUser = await userService.updateUser(userId, updatedUserData as User);
       // Handle user update success
@@ -69,6 +68,13 @@ class UserManagement {
 
   // Create new user
   createUser = async (userData: Partial<User>) => {
+    const persona: User['persona'] = {
+      type: PersonaTypeEnum.CasualUser,
+      id: '',
+      name: '',
+      age: 0,
+      gender: ''
+    };
     try {
       // Ensure all required properties are provided with default values
       const newUser: User = {
@@ -84,6 +90,8 @@ class UserManagement {
         hasQuota: false,
         profilePicture: null,
         processingTasks: [],
+        token: null,
+        persona: persona,
         traits: {} as typeof CommonDetails,
         ...userData,
         role: {} as UserRole, // Add default value for role
@@ -97,16 +105,25 @@ class UserManagement {
       throw error;
     }
   };
+// Assign role to user
+assignUserRole = async (userId: User['id'], role: string) => {
+  try {
+    // Retrieve the user object based on the userId
+    const user = await userService.fetchUser(userId);
 
-  // Assign role to user
-  assignUserRole = async (userId: User['id'], role: string) => {
-    try {
-      // Implement logic to assign the role to the user
-    } catch (error) {
-      // Handle role assignment failure
-      throw error;
-    }
-  };
+    // Update the user's role
+    user.role = role;
+
+    // Call the updateUser method to save the changes
+    await this.updateUser(userId, user);
+
+    // Optionally, return the updated user
+    return user;
+  } catch (error) {
+    // Handle role assignment failure
+    throw error;
+  }
+};
 
 
   updateUserRole = async (userId: User['id'], newRole: UserRole) => {

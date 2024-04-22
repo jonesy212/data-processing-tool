@@ -6,13 +6,20 @@ import { Data } from './Data';
 
 
 interface SearchResultItemProps {
+  id: number;
+  title: string;
+  description: string;
+  source: string;
   items: DetailsItem<Data>[];
+  result: any; // Add the result property here
 }
 
-const SearchResultItem: React.FC<SearchResultItemProps> = ({ items }) => {
+const SearchResultItem: React.FC<SearchResultItemProps> = ({ items, id, title, description, source }) => {
+
   return (
     <div className="search-result-item">
       <ListGenerator items={items} />
+      {/* <p>{result}</p> */}
     </div>
   );
 };

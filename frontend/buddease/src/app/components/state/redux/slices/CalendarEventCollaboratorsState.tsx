@@ -3,6 +3,7 @@ import CalendarEventCollaborator from "@/app/components/calendar/CalendarEventCo
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import InvitationData from "./InvitationData";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 
 interface CalendarEventCollaboratorsState {
   collaborators: CalendarEventCollaborator[];

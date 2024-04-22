@@ -1,5 +1,7 @@
 // authenticateWithWix.ts
 
+import { Page } from "openai/pagination.mjs";
+
 // Function to authenticate with Wix API
 async function authenticateWithWix() {
     // Make API request to obtain access token using authentication credentials
@@ -8,7 +10,7 @@ async function authenticateWithWix() {
   }
   
   // Function to create a new web page on Wix
-  async function createWebPage(pageData) {
+  async function createWebPage(pageData: PageData) {
     const accessToken = await authenticateWithWix();
   
     // Make API request to Wix API to create a new web page

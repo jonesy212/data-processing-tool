@@ -10,6 +10,7 @@ export enum PersonaTypeEnum {
   CasualUser = "Casual User",
   ProjectManager = "Project Manager Persona",
   Developer = "Developer Persona",
+  Default = "Default Persona",
   UIDesigner = "UI Designer Persona",
   Influencer = "Influencer Persona",
   Strategist = "Strategist Persona",
@@ -27,12 +28,12 @@ export enum PersonaTypeEnum {
 }
 
 export class PersonaBuilder {
-  static buildPersona(type: PersonaTypeEnum): any {
+  static buildPersona(type: PersonaTypeEnum, props: any): any {
     switch (type) {
       case PersonaTypeEnum.ProjectManager:
-        return new ProjectManagerPersona();
+        return  ProjectManagerPersona(props);
       case PersonaTypeEnum.Art:
-        return new ArtistPersona();
+        return  ArtistPersona();
       case PersonaTypeEnum.Developer:
         return new DeveloperPersona();
       // case PersonaTypeEnum.Trainer:

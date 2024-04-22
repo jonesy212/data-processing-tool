@@ -15,7 +15,7 @@ function* handleSetTheme(action: PayloadAction<string>) {
     // Logic to handle setting theme
     const { payload: theme } = action;
     yield call(useApiUserPreferences().setTheme, theme);
-  } catch (error) {
+  } catch (error) {w
     console.error('Error setting theme:', error);
     // Dispatch an action to show error notification
     yield put({ type: NOTIFICATION_MESSAGES.Preferences.DEFAULT_SETTINGS_ERROR, payload: 'Failed to set theme.' });

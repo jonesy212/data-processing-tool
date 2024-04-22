@@ -12,12 +12,24 @@ export interface ThemeStore {
 
 const useThemeStore = (): ThemeStore => {
   const defaultTheme: Theme = {
-      primaryColor: "#007bff",
-      secondaryColor: "#6c757d",
-      fontSize: "16px",
-      fontFamily: "Arial, sans-serif",
-      logoUrl: "",
-      themeColor: ""
+    primaryColor: "#007bff",
+    secondaryColor: "#6c757d",
+    fontSize: "16px",
+    fontFamily: "Arial, sans-serif",
+    logoUrl: "",
+    themeColor: "",
+    headerColor: "",
+    footerColor: "",
+    bodyColor: "",
+    borderColor: "",
+    borderStyle: "",
+    padding: "",
+    margin: "",
+    brandIcon: "",
+    brandName: "",
+    borderWidth: "",
+    borderRadius: "",
+    boxShadow: ""
   };
 
   let theme: Theme = { ...defaultTheme };

@@ -40,7 +40,7 @@ export interface DocumentData extends CommonData<Data> {
   topics: string[];
   highlights: string[];
   keywords: string[];
-  load(content: any): void;
+  load?(content: any): void;
   
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document

@@ -1,9 +1,15 @@
-import { LogData } from '@/app/components/models/LogData';
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import { LogData } from "@/app/components/models/LogData";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
 import { useDispatch, useSelector } from "react-redux";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import AnnouncementManager from "../support/AnnouncementManager";
-import { NotificationData, selectNotifications } from "../support/NofiticationsSlice";
+import {
+  NotificationData,
+  selectNotifications,
+} from "../support/NofiticationsSlice";
 import { NotificationActions } from "../support/NotificationActions";
 import { NotificationType } from "../support/NotificationContext";
 import PushNotificationManager from "../support/PushNotificationManager";
@@ -11,12 +17,13 @@ import PushNotificationManager from "../support/PushNotificationManager";
 interface NotificationManagerServiceProps {
   notifications: NotificationData[];
   setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
-  notify: (id: string,
+  notify: (
+    id: string,
     message: string,
     content: any,
     date: Date,
     type: NotificationType
-  ) => Promise<void>
+  ) => Promise<void>;
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
   handleButtonClick: () => Promise<void>;
@@ -26,47 +33,47 @@ interface NotificationManagerServiceProps {
   clearNotifications: () => void;
 }
 
-export const eventHandler = typeof DynamicEventHandlerExample
+export const eventHandler = typeof DynamicEventHandlerExample;
 
-
-
+export const logData: LogData = {
+  id: "",
+  message: "",
+  createdAt: new Date(),
+  type: "PushNotification" as NotificationType,
+  content: "",
+  completionMessageLog: "",
+  timestamp: new Date(),
+  level: "",
+};
 
 const useNotificationManagerService = (): NotificationManagerServiceProps => {
   const { notify } = useNotification();
   const notifications = useSelector(selectNotifications);
   const dispatch = useDispatch();
 
-  const logData: LogData = {
-    id: "",
-    message: "",
-    createdAt: new Date(),
-    type: "PushNotification" as NotificationType,
-    content: "",
-    completionMessageLog: "",
-    timestamp: new Date,
-    level: ""
-  }
-
-
-  const setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>> = (value) => { 
+  const setNotifications: React.Dispatch<
+    React.SetStateAction<NotificationData[]>
+  > = (value) => {
     // Dispatch action to set notifications in the store or update local state
     dispatch(NotificationActions.setNotifications(value));
   };
 
   const sendPushNotification = (message: string, sender: string): void => {
     // Dispatch action to send push notification
-    dispatch(NotificationActions.addNotification({
-      id: "", // Generate unique ID for notification
-      date: new Date(),
-      message: message,
-      createdAt: new Date(),
-      type: "PushNotification" as NotificationType,
-      content: sender,
-      completionMessageLog: logData,
-      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
-      status: "confirmed",
-      notificationType: NotificationTypeEnum.AccountCreated
-    }));
+    dispatch(
+      NotificationActions.addNotification({
+        id: "", // Generate unique ID for notification
+        date: new Date(),
+        message: message,
+        createdAt: new Date(),
+        type: "PushNotification" as NotificationType,
+        content: sender,
+        completionMessageLog: logData,
+        sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
+        status: "confirmed",
+        notificationType: NotificationTypeEnum.AccountCreated,
+      })
+    );
     // Use the PushNotificationManager to send push notifications
     PushNotificationManager.sendPushNotification(message, sender);
   };
@@ -93,24 +100,26 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
       AnnouncementManager.sendAnnouncement(message, sender)
     );
   };
-  
+
   const handleButtonClick = async (): Promise<void> => {
     // Dispatch action to handle button click
-    dispatch(NotificationActions.addNotification({
-      id: "", // Generate unique ID for notification
-      date: new Date(),
-      message: "New message!",
-      createdAt: new Date(),
-      type: "ButtonClick" as NotificationType,
-      content: "App",
-      completionMessageLog: logData,
-      sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
-      notificationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/support/NotificationContext" as NotificationType
-    }));
+    dispatch(
+      NotificationActions.addNotification({
+        id: "", // Generate unique ID for notification
+        date: new Date(),
+        message: "New message!",
+        createdAt: new Date(),
+        type: "ButtonClick" as NotificationType,
+        content: "App",
+        completionMessageLog: logData,
+        sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
+        notificationType:
+          "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/support/NotificationContext" as NotificationType,
+      })
+    );
     // Send push notification on button click
     await Promise.resolve(sendPushNotification("New message!", "App"));
   };
-  
 
   const dismissNotification = (notification: NotificationData): void => {
     // Dispatch action to dismiss notification
@@ -119,21 +128,19 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
     console.log("Notification dismissed:", notification);
   };
 
-  const addNotification = (notification: NotificationData): void => { 
+  const addNotification = (notification: NotificationData): void => {
     dispatch(NotificationActions.addNotification(notification));
-  }
+  };
 
-  const removeNotification = (id: string): void => { 
+  const removeNotification = (id: string): void => {
     // Dispatch action to remove notification
     dispatch(NotificationActions.removeNotification(id));
-  }
+  };
 
-  const clearNotifications = (): void => {  
+  const clearNotifications = (): void => {
     // Dispatch action to clear all notifications
     dispatch(NotificationActions.clearNotifications());
-  }
-
-
+  };
 
   return {
     notifications,
@@ -145,7 +152,7 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
     sendPushNotification,
     addNotification,
     removeNotification,
-    clearNotifications
+    clearNotifications,
   };
 };
 

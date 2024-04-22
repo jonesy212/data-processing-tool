@@ -13,6 +13,17 @@ enum AnimationTypeEnum {
   Bounce = "bounce", // Additional animation type
   Flip = "flip", // Additional animation type
   FadeScale = "fadeScale", // Additional animation type
+
+  Scale = "scale", // Scale animation
+  Spin = "spin", // Spin animation
+  ColorChange = "colorChange", // Color change animation
+  Shake = "shake", // Shake animation
+  Path = "path", // Path animation
+  Swing = "swing", // Swing animation
+  Pulse = "pulse", // Pulse animation
+  Typing = "typing", // Typing animation
+  Glow = "glow", // Glow animation
+  Wave = "wave", // Wave animation
 }
 
 // Define the AnimationType as a union type of string literals and the AnimationType enum
@@ -96,3 +107,4 @@ export default AnimationTypeEnum
 
 // Example usage:
 export const animationType: AnimationType = AnimationTypeEnum.Fade;
+export type { AnimationLibrary, AnimationType };

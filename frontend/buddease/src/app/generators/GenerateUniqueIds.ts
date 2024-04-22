@@ -187,6 +187,8 @@ class UniqueIDGenerator {
     prefix: string,
     name: string,
     type: NotificationType,
+    id?: string,
+    title?: string,
     dataDetails?: DataDetails,
     generatorType?: string
   ): string {
@@ -216,7 +218,9 @@ class UniqueIDGenerator {
       case NotificationTypeEnum.BrainstormingSessionID:
         return UniqueIDGenerator.generateBrainstormingSessionID();
       case NotificationTypeEnum.CommentID:
-        return UniqueIDGenerator.generateCommentID();
+        return UniqueIDGenerator.generateCommentID(id || "", title || "");
+      case NotificationTypeEnum.ContentID:
+        return UniqueIDGenerator.generateContentID();
       case NotificationTypeEnum.MeetingID:
         return UniqueIDGenerator.generateMeetingID(name);
       case NotificationTypeEnum.ProductID:
@@ -256,12 +260,22 @@ class UniqueIDGenerator {
     );
   }
 
-  static generateCommentID() {
+  static generateCommentID(id: string, title: string) {
+    // Generate a unique ID using the provided parameters
     return UniqueIDGenerator.generateID(
       "comment",
-      NotificationTypeEnum.CommentID,
+      `${id}_${title}`, // Concatenate the id and title to ensure uniqueness
       "comment" as NotificationType
     );
+}
+
+
+  static generateContentID() {
+    return UniqueIDGenerator.generateID(
+      "content",
+      NotificationTypeEnum.ContentID,
+      "content" as NotificationType
+    )
   }
 
   static generateDocumentEditID(documentName: string): string {
@@ -473,7 +487,7 @@ const uniqueVideoID = UniqueIDGenerator.generateID(
   "video",
   videoDetailsString,
   NotificationTypeEnum.GeneratedID,
-  videoDataDetails
+  videoDataDetails as unknown as string
 );
 
 // Adjusted usage of generateID function

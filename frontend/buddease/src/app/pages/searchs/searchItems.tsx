@@ -7,15 +7,21 @@ import { useEffect, useState } from "react";
 import { SearchLogger } from "../../components/logging/Logger";
 import { debounce } from "./Debounce";
 
-
 export interface SearchItemProps {
   userId: string;
   query: string;
   toLowerCase?: () => string;
 }
 
-const SearchItems: React.FC<SearchItemProps> = ({  query, userId }: { query: string, userId: string,  }) => {
-  const { error: searchError, handleError: handleSearchError } = useErrorHandling(); // Initialize the useErrorHandling hook
+const SearchItems: React.FC<SearchItemProps> = ({
+  query,
+  userId,
+}: {
+  query: string;
+  userId: string;
+}) => {
+  const { error: searchError, handleError: handleSearchError } =
+    useErrorHandling(); // Initialize the useErrorHandling hook
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>(null);
 
@@ -34,7 +40,7 @@ const SearchItems: React.FC<SearchItemProps> = ({  query, userId }: { query: str
     } catch (error: any) {
       console.error("Error fetching search results:", error);
       handleSearchError(error.message); // Handle error using the useErrorHandling hook
-   } finally {
+    } finally {
       setIsLoading(false); // Set loading state to false after fetching
     }
   };
@@ -74,41 +80,29 @@ const SearchItems: React.FC<SearchItemProps> = ({  query, userId }: { query: str
               //todo - implement asyncEffect return cleanup
               // // Close audio/video connections
               // closeAudioVideoConnections();
-
               // // Save project data to the database
-              // saveProjectData();
-
+              saveProjectData();
               // // Clear any temporary files or resources
               // clearTemporaryResources();
-
               // // Additional cleanup tasks:
               // // 1. Close WebSocket connections
               // closeWebSocketConnections();
-
               // // 2. Clear local storage
               // clearLocalStorage();
-
               // // 3. Cancel pending fetch requests
               // cancelPendingFetchRequests();
-
               // // 4. Reset form fields
               // resetFormFields();
-
               // // 5. Dispose of event listeners
               // disposeEventListeners();
-
               // // 6. Stop ongoing animations
               // stopAnimations();
-
               // // 7. Unload large assets
               // unloadLargeAssets();
-
               // // 8. Close database connections
               // closeDatabaseConnections();
-
               // // 9. Release resources used for caching
               // releaseCachingResources();
-
               // // 10. Dispose of any active timers or intervals
               // disposeTimersAndIntervals();
             };
@@ -127,17 +121,26 @@ const SearchItems: React.FC<SearchItemProps> = ({  query, userId }: { query: str
     return <div>Loading...</div>;
   }
 
-
-  if (searchError) { // Use the error from useErrorHandling hook
+  if (searchError) {
+    // Use the error from useErrorHandling hook
     return <div>Error: {searchError}</div>;
   }
-
 
   // Process and display search results
   if (data) {
     return (
       <div>
-        <SearchResultItem items={data} />
+        {data.map((item: any, index: number) => (
+          <SearchResultItem
+            items={data}
+            key={index}
+            id={item.id}
+            title={item.title}
+            description={item.description}
+            source={item.source}
+            result={item}
+          />
+        ))}
       </div>
     );
   }

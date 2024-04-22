@@ -20,7 +20,7 @@ interface Video extends VideoProperties {
   commentsCount: number;
   videoAuthor: string;
   videoDurationInSeconds: number;
-  tags: string[];
+  tags?: string[];
   uploadDate: Date;
   category: string;
   resolution: string;
@@ -40,13 +40,17 @@ interface Video extends VideoProperties {
   playlists: []
 }
 
-interface VideoData extends DataDetails {
+interface VideoData extends DataDetails, Video {
   // Define properties specific to video data
   // For example:
+  
   resolution: string;
+  size:string; // Size of the video file in bytes
   aspectRatio: string;
   language: string;
-  subtitles: boolean;
+  subtitles: string[];
+  codec: string;
+  frameRate: number;
   duration: number; // Duration of the video in seconds
   campaignId: number; // ID of the associated campaign
  

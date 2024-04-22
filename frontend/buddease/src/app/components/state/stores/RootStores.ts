@@ -2,13 +2,13 @@
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { CalendarManagerStore, useCalendarManagerStore } from './CalendarEvent';
-import { IconStore } from './IconStore';
+import useIconStore, { IconStore } from './IconStore';
 import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
+import { TeamManagerStore, useTeamManagerStore } from './TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
 import { UndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
-import {TeamStore}
 
 
 export interface Dispatchable {
@@ -23,7 +23,7 @@ export class RootStores {
   iconStore:  IconStore;
   calendarStore: CalendarManagerStore;
   undoRedoStore: UndoRedoStore;
-  
+  teamStore: Promise<TeamManagerStore>
   userStore: UserStore;
   prototype: any  
   browsers: any
@@ -36,7 +36,8 @@ export class RootStores {
     this.calendarStore = useCalendarManagerStore()
     this.undoRedoStore = new UndoRedoStore();
     this.userStore =  userManagerStore();
-    this.iconStore = IconStore
+    this.iconStore = useIconStore(rootStores)
+    this.teamStore = useTeamManagerStore()
     makeAutoObservable(this);
   }
 

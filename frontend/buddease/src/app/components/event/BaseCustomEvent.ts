@@ -1,7 +1,12 @@
 // CustomEvent.ts
 
+import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
+
 // Define interfaces for events
-export interface BaseCustomEvent extends EventTarget, Event, ExtendedCalendarEvent {
+export interface BaseCustomEvent
+  extends EventTarget,
+    Event,
+    ExtendedCalendarEvent {
   id: string;
   title: string;
   description: string;
@@ -23,7 +28,8 @@ export interface BaseCustomEvent extends EventTarget, Event, ExtendedCalendarEve
 }
 
 interface CustomEventExtension extends CustomEvent {
-  dispatchEvent(event: Event): boolean;
+  id: string;
+  dispatchEvent?(event: Event): boolean;
 }
 
 // Type assertion for compatibility

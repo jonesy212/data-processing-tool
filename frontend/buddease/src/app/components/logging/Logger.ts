@@ -244,9 +244,6 @@ class SearchLogger extends Logger {
     );
   }
 
-  
-
-  
 
   static logSearchResults(query: string, resultsCount: number, userId: string) {
     super.logWithOptions(
@@ -263,6 +260,23 @@ class SearchLogger extends Logger {
       userId
     );
   }
+  
+  static logSearchTimeout(query: string, userId: string) {
+    super.logWithOptions(
+      "Search",
+      `Search timeout (Query: ${query}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logEmptySearchResults(query: string, userId: string) {
+    super.logWithOptions(
+      "Search",
+      `No results found for search query (Query: ${query}, User ID: ${userId})`,
+      userId
+    );
+  }
+
   // Add more methods for other search-related events as needed
 }
 

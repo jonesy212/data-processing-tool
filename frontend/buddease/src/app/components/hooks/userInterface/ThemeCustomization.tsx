@@ -1,74 +1,60 @@
-import React from "react";
+import React, { SetStateAction } from "react";
 import { ThemeConfig } from "../../libraries/ui/theme/ThemeConfig";
-import { NotificationData } from "../../support/NofiticationsSlice";
-import { NotificationTypeEnum } from "../../support/NotificationContext";
-
+import { NotificationState } from "../../state/redux/slices/NotificationSlice";
+import { ThemeState } from "../../state/redux/slices/ThemeSlice";
+ 
 interface ThemeCustomizationProps {
-  themeState: ThemeConfig; // Theme configuration state
-  setThemeState: {
-    setThemeConfig: React.Dispatch<React.SetStateAction<ThemeConfig>>; // Setter for theme configuration
-    setPrimaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for primary color
-    setSecondaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for secondary color
-    setFontFamily: React.Dispatch<React.SetStateAction<string>>; // Setter for font family
-    setFontSize: React.Dispatch<React.SetStateAction<string>>; // Setter for font size
-    // Additional setters for other theme states
-    setHeaderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for header color
-    setFooterColor: React.Dispatch<React.SetStateAction<string>>; // Setter for footer color
-    setBodyColor: React.Dispatch<React.SetStateAction<string>>; // Setter for body color
-    setBorderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for border color
-    setBorderWidth: React.Dispatch<React.SetStateAction<number>>; // Setter for border width
-    setBorderStyle: React.Dispatch<React.SetStateAction<string>>; // Setter for border style
-    setPadding: React.Dispatch<React.SetStateAction<string>>; // Setter for padding
-    setMargin: React.Dispatch<React.SetStateAction<string>>; // Setter for margin
-    setBrandIcon: React.Dispatch<React.SetStateAction<string>>; // Setter for brand icon
-    setBrandName: React.Dispatch<React.SetStateAction<string>>; // Setter for brand name
-  };
-  // Notification related setters and functions
-  notificationState: {
-    notifications: NotificationData[],
-    setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>,
-      notify: (
-      id: string,
-      message: string,
-      content: any,
-      date: Date,
-      type: NotificationTypeEnum
-    ) => Promise<void>;
-    sendPushNotification: () => Promise<void>;
-    sendAnnouncement: () => void; // Define the function to send announcements
-    handleButtonClick: () => void; // Define the function to handle button clicks
-    // Include other required properties here
-  };
+  themeState: ThemeConfig;
+  infoColor: string;
+  setThemeState: React.Dispatch<SetStateAction<ThemeState>>;
+  notificationState:React.Dispatch<SetStateAction<NotificationState[]>>;
 }
 
 const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
   themeState,
   setThemeState,
+  
 }) => {
+
   // Function to handle primary color change
-  const handlePrimaryColorChange = (color: string) => {
-    setThemeState.setPrimaryColor(color);
-  };
+const handlePrimaryColorChange = (color: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    primaryColor: color,
+  }));
+};
 
-  // Function to handle secondary color change
-  const handleSecondaryColorChange = (color: string) => {
-    setThemeState.setSecondaryColor(color);
-  };
+// Function to handle secondary color change
+const handleSecondaryColorChange = (color: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    secondaryColor: color,
+  }));
+};
 
-  // Function to handle theme configuration change
-  const handleThemeConfigChange = (config: ThemeConfig) => {
-    setThemeState.setThemeConfig(config);
-  };
+// Function to handle theme configuration change
+const handleThemeConfigChange = (config: ThemeConfig) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    themeConfig: config,
+  }));
+};
 
-  // Function to handle font size change
-  const handleFontSizeChange = (size: string) => {
-    setThemeState.setFontSize(size);
-  };
+// Function to handle font size change
+const handleFontSizeChange = (size: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    fontSize: size,
+  }));
+};
 
-  // Function to handle font family change
-  const handleFontFamilyChange = (family: string) => {
-    setThemeState.setFontFamily(family);
-  };
+// Function to handle font family change
+const handleFontFamilyChange = (family: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    fontFamily: family,
+  }));
+};
 
   // Function to save theme settings
   const saveThemeSettings = async () => {
@@ -128,53 +114,83 @@ const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
 
   // Function to handle header color change
   const handleHeaderColorChange = (color: string) => {
-    setThemeState.setHeaderColor(color);
+    setThemeState((prevState) => ({
+      ...prevState,
+      headerColor: color,
+    }));
   };
+// Function to handle footer color change
+const handleFooterColorChange = (color: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    footerColor: color,
+  }));
+};
 
-  // Function to handle footer color change
-  const handleFooterColorChange = (color: string) => {
-    setThemeState.setFooterColor(color);
-  };
+// Function to handle body color change
+const handleBodyColorChange = (color: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    bodyColor: color,
+  }));
+};
 
-  // Function to handle body color change
-  const handleBodyColorChange = (color: string) => {
-    setThemeState.setBodyColor(color);
-  };
+// Function to handle border color change
+const handleBorderColorChange = (color: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    borderColor: color,
+  }));
+};
 
-  // Function to handle border color change
-  const handleBorderColorChange = (color: string) => {
-    setThemeState.setBorderColor(color);
-  };
+// Function to handle border width change
+const handleBorderWidthChange = (width: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    borderWidth: width,
+  }));
+};
 
-  // Function to handle border width change
-  const handleBorderWidthChange = (width: number) => {
-    setThemeState.setBorderWidth(width);
-  };
+// Function to handle border style change
+const handleBorderStyleChange = (style: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    borderStyle: style,
+  }));
+};
 
-  // Function to handle border style change
-  const handleBorderStyleChange = (style: string) => {
-    setThemeState.setBorderStyle(style);
-  };
+// Function to handle padding change
+const handlePaddingChange = (padding: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    padding: padding,
+  }));
+};
 
-  // Function to handle padding change
-  const handlePaddingChange = (padding: string) => {
-    setThemeState.setPadding(padding);
-  };
+// Function to handle margin change
+const handleMarginChange = (margin: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    margin: margin,
+  }));
+};
 
-  // Function to handle margin change
-  const handleMarginChange = (margin: string) => {
-    setThemeState.setMargin(margin);
-  };
+// Function to handle brand icon change
+const handleBrandIconChange = (icon: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    brandIcon: icon,
+  }));
+};
 
-  // Function to handle brand icon change
-  const handleBrandIconChange = (icon: string) => {
-    setThemeState.setBrandIcon(icon);
-  };
+// Function to handle brand name change
+const handleBrandNameChange = (name: string) => {
+  setThemeState((prevState) => ({
+    ...prevState,
+    brandName: name,
+  }));
+};
 
-  // Function to handle brand name change
-  const handleBrandNameChange = (name: string) => {
-    setThemeState.setBrandName(name);
-  };
 
   // Add UI elements for other theme settings
   const themeSettings = {
@@ -294,4 +310,5 @@ const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({
   );
 }  
 export default ThemeCustomization;
-export type { ThemeCustomizationProps};
+export type { ThemeCustomizationProps };
+

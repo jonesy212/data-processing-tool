@@ -52,7 +52,7 @@ const chatManagerSlice = createSlice({
     setMessages: (state, action: PayloadAction<Message[]>) => {
       state.messages = action.payload;
     },
-    addMessage: (state, action: PayloadAction<Message>) => {
+    addMessage: (state, action: PayloadAction<WritableDraft<Message>>) => {
       state.messages.push(action.payload);
     },
     // Define reducers for the new properties

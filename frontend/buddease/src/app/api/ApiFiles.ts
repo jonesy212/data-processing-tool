@@ -1,16 +1,16 @@
-import { AxiosResponse, AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
+import { AxiosError, AxiosResponse } from "axios";
+import {
+  NotificationType
+} from "../components/support/NotificationContext";
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
+import { sendNotification } from "../components/users/UserSlice";
 import clientApiService, {
   ClientNotificationMessages,
   clientNotificationMessages,
 } from "./ApiClient";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-} from "../components/support/NotificationContext";
-import axiosInstance from "./axiosInstance";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
+import { handleApiError } from "./ApiLogs";
+import axiosInstance from "./axiosInstance";
 
 
 
@@ -89,7 +89,30 @@ class FileApiService {
     );
   }
 
-  fetchFliDetails(fileId: string): Promise<AxiosResponse> {
+  async fetchFile(): Promise<AxiosResponse> { 
+    return await this.requestHandler(
+      () => axiosInstance.get(`${API_BASE_URL}/files`),
+      "FetchFileError",
+      "Failed to fetch file" as keyof ClientNotificationMessages,
+      NOTIFICATION_MESSAGES.File.FETCH_FILE_ERROR
+    )
+  }
+
+
+  async fetchFileFromDatabase(id: string): Promise<AxiosResponse> {
+    try {
+      const response = await this.fetchFile();
+      // Handle the response data here if needed
+
+      return response;
+    } catch (error) {
+      // Handle errors here
+      console.error("Error fetching file:", error);
+      throw error;
+    }
+  }
+
+  async fetchFliDetails(fileId: string): Promise<AxiosResponse> {
     return this.requestHandler(
       () => axiosInstance.get(`${API_BASE_URL}/files/${fileId}`),
       "FetchFileDetailsError",
@@ -213,7 +236,7 @@ class FileApiService {
     return await this.requestHandler(
       () => clientApiService.importFile(file),
       "Failed to import file",
-      "ImportFileError" as keyof ClientNotificationMessages,
+      "ImportFile Error" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.IMPORT_FILE_ERROR
     );
   }
@@ -325,3 +348,13 @@ class FileApiService {
 }
 
 export default FileApiService;
+export const fileApiService = new FileApiService(
+  (id, message, data, date, type) => {
+    // Implement the logic to send notifications here
+    
+    sendNotification(`Notification sent: ${message}`)
+
+  }
+);
+
+

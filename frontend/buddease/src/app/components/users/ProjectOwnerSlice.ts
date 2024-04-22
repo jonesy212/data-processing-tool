@@ -32,9 +32,9 @@ interface ProjectOwnerState {
   unityPromoted: boolean;
   communityParticipation: boolean;
   contributionsRewarded: boolean;
-  customAppsBuilt: number
-  projectMetricsIncentivized: boolean,
-  sustainabilityContributed: boolean
+  customAppsBuilt: number;
+  projectMetricsIncentivized: boolean;
+  sustainabilityContributed: boolean;
 }
 
 const initialState: ProjectOwnerState = {
@@ -55,10 +55,8 @@ const initialState: ProjectOwnerState = {
   contributionsRewarded: false,
   customAppsBuilt: 0,
   projectMetricsIncentivized: false,
-  sustainabilityContributed: false
+  sustainabilityContributed: false,
 };
-
-
 
 const generateReport = (
   state: WritableDraft<ProjectOwnerState>,
@@ -104,10 +102,8 @@ const generateReport = (
   return report;
 };
 
-
-
 export const generateReportAsync = createAsyncThunk(
-  'projectOwner/generateReport',
+  "projectOwner/generateReport",
   async (payload: any, { getState }) => {
     try {
       // Access state
@@ -115,13 +111,13 @@ export const generateReportAsync = createAsyncThunk(
 
       // Add your logic to generate the report using state and payload data
       // Example:
-      const report =  generateReport(currentState, payload);
+      const report = generateReport(currentState, payload);
 
       // Return the generated report
       return report;
     } catch (error) {
       // Handle errors
-      console.error('Error generating report:', error);
+      console.error("Error generating report:", error);
       // You can throw the error here if necessary, or handle it accordingly
       throw error;
     }
@@ -131,7 +127,7 @@ export const generateReportAsync = createAsyncThunk(
 // Create an asynchronous thunk action creator named exportData
 export const exportData = createAsyncThunk(
   // Specify the action type string
-  'projectOwner/exportData',
+  "projectOwner/exportData",
   // Define the asynchronous function that handles exporting data
   async (payload: any, { getState }) => {
     try {
@@ -156,14 +152,12 @@ export const exportData = createAsyncThunk(
       return exportedData;
     } catch (error) {
       // Handle errors
-      console.error('Error exporting data:', error);
+      console.error("Error exporting data:", error);
       // You can throw the error here if necessary, or handle it accordingly
       throw error;
     }
   }
 );
-
-
 
 const { notify } = useNotification();
 export const useProjectOwnerSlice = createSlice({
@@ -326,7 +320,7 @@ export const useProjectOwnerSlice = createSlice({
           new Date(),
           NotificationTypeEnum.OperationError
         );
-      } catch (error) { }
+      } catch (error) {}
     },
 
     updateMeeting: (state, action: PayloadAction<any>) => {
@@ -393,13 +387,10 @@ export const useProjectOwnerSlice = createSlice({
       }
     },
 
-    getTeamMembers: (
-      state,
-      action: PayloadAction<any>
-    ) => { 
+    getTeamMembers: (state, action: PayloadAction<any>) => {
       try {
         // Extract team members from state
-        const teamMembers = state
+        const teamMembers = state;
       } catch (error) {
         // Handle error
         notify(
@@ -408,15 +399,11 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.GET_TEAM_MEMBERS_ERROR,
           new Date(),
           NotificationTypeEnum.OperationError
-        )
+        );
         // Return team members
-
-
       }
     },
-    
-    
-    
+
     generateReport: (
       state,
       action: PayloadAction<{ reportData: any; customSections?: string[] }>
@@ -424,7 +411,7 @@ export const useProjectOwnerSlice = createSlice({
       try {
         // Extract necessary data from the action payload
         const { reportData, customSections } = action.payload;
-        
+
         // Generate report using reportData and customSections
         const report = generateReport(state, reportData, customSections);
 
@@ -453,12 +440,15 @@ export const useProjectOwnerSlice = createSlice({
         return undefined;
       }
     },
-    updateTask: (state, action: PayloadAction<{ taskId: string; updatedTask: Task }>) => {
+    updateTask: (
+      state,
+      action: PayloadAction<{ taskId: string; updatedTask: Task }>
+    ) => {
       try {
         const { taskId, updatedTask } = action.payload;
 
         // Find the task by taskId and update it
-        const taskToUpdate = state.tasks?.find(task => task.id === taskId);
+        const taskToUpdate = state.tasks?.find((task) => task.id === taskId);
         if (taskToUpdate) {
           Object.assign(taskToUpdate, updatedTask);
           notify(
@@ -494,12 +484,14 @@ export const useProjectOwnerSlice = createSlice({
     deleteTask: (state, action: PayloadAction<string>) => {
       try {
         const taskIdToDelete = action.payload;
-    
+
         // Check if state.tasks is not null or undefined
         if (state.tasks !== null && state.tasks !== undefined) {
           // Remove the task with taskIdToDelete
-          state.tasks = state.tasks.filter(task => task.id !== taskIdToDelete);
-    
+          state.tasks = state.tasks.filter(
+            (task) => task.id !== taskIdToDelete
+          );
+
           notify(
             "deleteTaskSuccess",
             "Delete Task Success",
@@ -509,7 +501,9 @@ export const useProjectOwnerSlice = createSlice({
           );
         } else {
           // Handle case where state.tasks is null or undefined
-          console.error("Error deleting task: state.tasks is null or undefined");
+          console.error(
+            "Error deleting task: state.tasks is null or undefined"
+          );
           notify(
             "deleteTaskError",
             NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
@@ -530,12 +524,6 @@ export const useProjectOwnerSlice = createSlice({
         );
       }
     },
-
-
-
-
-
-
 
     hireDeveloper: (state, action: PayloadAction<DeveloperPersona>) => {
       try {
@@ -563,11 +551,16 @@ export const useProjectOwnerSlice = createSlice({
       }
     },
 
-    compensateDeveloper: (state, action: PayloadAction<{ developerId: string; amount: number }>) => {
+    compensateDeveloper: (
+      state,
+      action: PayloadAction<{ developerId: string; amount: number }>
+    ) => {
       try {
         const { developerId, amount } = action.payload;
         // Find the developer in the state and update compensation
-        const developer = state.developers.find(dev => dev.id === developerId);
+        const developer = state.developers.find(
+          (dev) => dev.id === developerId
+        );
         if (developer) {
           developer.compensation += amount;
         }
@@ -595,9 +588,9 @@ export const useProjectOwnerSlice = createSlice({
     selectDeveloper: (state, action: PayloadAction<string>) => {
       try {
         const selectedDeveloperId = action.payload;
-        
+
         // select the developer
-      
+
         state.selectedDeveloper = selectedDeveloperId;
 
         notify(
@@ -624,7 +617,7 @@ export const useProjectOwnerSlice = createSlice({
       try {
         // Logic to initiate the ideation phase
         // This could involve setting a flag in the state or performing other operations
-        
+
         notify(
           "ideationPhaseInitiated",
           "Ideation Phase Initiated",
@@ -694,7 +687,7 @@ export const useProjectOwnerSlice = createSlice({
         );
       }
     },
-  
+
     launchProduct: (state) => {
       try {
         // Add logic to launch the product
@@ -791,7 +784,7 @@ export const useProjectOwnerSlice = createSlice({
         );
       }
     },
-    
+
     rewardContributions: (state) => {
       try {
         // Add logic to reward contributions within the community
@@ -821,7 +814,7 @@ export const useProjectOwnerSlice = createSlice({
       try {
         const numberOfApps = action.payload;
         // Add logic to build custom apps
-        
+
         state.customAppsBuilt += numberOfApps;
 
         notify(
@@ -869,7 +862,6 @@ export const useProjectOwnerSlice = createSlice({
     },
     contributeToSustainability: (state) => {
       try {
-        
         // Add logic to contribute to sustainability
         state.sustainabilityContributed = true;
 

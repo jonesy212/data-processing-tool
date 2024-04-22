@@ -8,6 +8,7 @@ import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { implementThen } from '../../state/stores/CommonEvent';
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
+import { Idea } from '../../users/Ideas';
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
@@ -15,16 +16,15 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
 import { StatusType, TeamStatus } from '../data/StatusType';
-import { Idea, Task } from "../tasks/Task";
+import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from './TeamMembers';
 
-
-
-
-
 interface Team extends Data {
+  team: {
+    value: number; label: string; // Example label
+  };
   _id: string;
   id: string;
   teamName: string;
@@ -65,6 +65,10 @@ const team: Team = {
   id: '1',
   teamName: "Development Team",
   description: "A team focused on software development",
+  team: {
+    value: 0,
+    label: ''
+  },
   members: [
     {
       _id: "member-1",
@@ -88,8 +92,13 @@ const team: Team = {
       teams: [] as Team[],
       persona: {} as Persona,
       snapshots: [] as SnapshotStore<Snapshot<Data>>[],
-      // isActive: true,
-      // isAdmin: false,
+      token: null,
+      avatarUrl: null,
+      createdAt: new Date,
+      updatedAt: new Date,
+      isVerified: false,
+      isAdmin: false,
+      isActive: false
     },
     {
       _id: "member-2",
@@ -113,6 +122,13 @@ const team: Team = {
       memberName: "Jane English",
       persona: {} as Persona,
       snapshots: [] as SnapshotStore<Snapshot<Data>>[],
+      token: null,
+      avatarUrl: null,
+      createdAt: new Date,
+      updatedAt: new Date,
+      isVerified: false,
+      isAdmin: false,
+      isActive: false
     },
   ],
   projects: [
@@ -291,7 +307,7 @@ const team: Team = {
     timeBasedCode: timeBasedCode,
     persona: {} as Persona,
     snapshots: [] as SnapshotStore<Snapshot<Data>>[],
-  },
+  } as User,
 
   then(callback: (newData: Snapshot<Team>) => void) {
     const newData = {
@@ -350,6 +366,7 @@ const team: Team = {
 
     // Update the progress object
     team.progress = {
+      id: team._id,
       value: progressValue,
       label: `${progressValue}% completed` // Example label
     };

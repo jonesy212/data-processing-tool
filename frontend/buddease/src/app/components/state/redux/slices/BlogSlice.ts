@@ -33,7 +33,7 @@ const initialState: BlogState = {
   // Initialize other state properties
 };
 
-const useBlogManagerSlice = createSlice({
+export const useBlogManagerSlice = createSlice({
   name: 'blog',
   initialState,
   reducers: {

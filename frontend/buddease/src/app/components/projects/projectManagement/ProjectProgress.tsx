@@ -33,5 +33,6 @@ const ProjectProgress: React.FC<ProjectProgressProps> = ({
     </div>
   );
 };
-
+export const projectProgressData: Progress = {} as Progress;
 export default ProjectProgress;
+export type { ProjectProgressProps };

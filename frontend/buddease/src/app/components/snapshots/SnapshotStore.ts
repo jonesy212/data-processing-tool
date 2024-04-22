@@ -290,7 +290,12 @@ class SnapshotStore<T extends Snapshot<Data>> {
     return this.subscribers;
   }
 
-  getSnapshots(): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }[]> {
+  getSnapshots(): Promise<{
+    data: any;
+    snapshot: Snapshot<SnapshotStore<Snapshot<Data>>>;
+    snapshot: SnapshotStore<Snapshot<Data>>[],
+    
+   }[]> {
     return Promise.resolve(this.snapshots);
   }
 

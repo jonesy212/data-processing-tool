@@ -3,14 +3,10 @@ import { DocumentData } from "./DocumentBuilder";
 import { NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
-
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
   addParagraph(paragraph: docx.Paragraph): void;
 }
-
-
-
 
 export const getDefaultNoteOptions = (): NoteOptions => {
   const defaultOptions = getDefaultDocumentOptions();
@@ -24,7 +20,7 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 export interface DocumentOptions {
   uniqueIdentifier: string;
   documentType: DocumentData; // Add documentType property
-  userIdea: string; 
+  userIdea: string;
   additionalOptions: readonly string[] | string | number | any[] | undefined;
 
   isDynamic: boolean;
@@ -35,7 +31,7 @@ export interface DocumentOptions {
     bottom: number;
     left: number;
     right: number;
-  }
+  };
 
   visibility: "public" | "private";
   fontSize: number;
@@ -67,12 +63,12 @@ export interface DocumentOptions {
   todoList: boolean;
   orderedTodoList: boolean;
   unorderedTodoList: boolean;
-  content?: string; 
-  css?: string; 
-  html?: string; 
+  content?: string;
+  css?: string;
+  html?: string;
   colorCoding: boolean;
-  customSettings: Record<string, any>; 
-  documents: DocumentData[]; 
+  customSettings: Record<string, any>;
+  documents: DocumentData[];
   includeType: "all" | "selected" | "none";
   includeTitle: boolean; // New property to include title in the report
   includeContent: boolean; // New property to include content in the report
@@ -81,6 +77,10 @@ export interface DocumentOptions {
 
   // Properties specific to DocumentGenerator
   title?: string;
+  enableStemming?: boolean;
+  enableStopWords?: boolean;
+  enableWildcards?: boolean;
+  enableFuzzy?: boolean;
 }
 
 export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
@@ -125,31 +125,29 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       top: 0,
       bottom: 0,
       left: 0,
-      right: 0
+      right: 0,
     },
     content: "content", // Property for document content
     css: "css", // Property for document CSS
     html: "html", // Property for document HTML
-    size: "0" as DocumentSize, 
+    size: "0" as DocumentSize,
     colorCoding: false,
     additionalOptions: [],
     customSettings: {},
     documents: [] as DocumentData[],
-    animations: {} as DocumentAnimationOptions, 
-  
+    animations: {} as DocumentAnimationOptions,
+
     // Default values for properties specific to DocumentGenerator
     includeType: "all",
     includeTitle: true, // New property to include title in the report
     includeContent: true, // New property to include content in the report
     includeStatus: true, // New property to include status in the report
     includeAdditionalInfo: true, // Example: include additional information
-  
-      // Default values for properties specific to DocumentGenerator
-      title: "",
+
+    // Default values for properties specific to DocumentGenerator
+    title: "",
   };
 };
-
-
 
 // Extend DocumentOptions to include additional properties
 export interface ExtendedDocumentOptions extends DocumentOptions {
@@ -157,10 +155,7 @@ export interface ExtendedDocumentOptions extends DocumentOptions {
   additionalOption2: string;
 }
 
-
-
-export const getDocumentPhase = (document: DocumentData) => { 
+export const getDocumentPhase = (document: DocumentData) => {
   // Get the document phase from the document data
   return document.documentPhase;
-
-}
+};

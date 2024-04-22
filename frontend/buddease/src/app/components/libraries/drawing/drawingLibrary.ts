@@ -5,6 +5,9 @@ import { DrawingFunctions, DrawingOptions } from 'drawingLibrary';
 
 // Class implementation for DrawingError
 export class DrawingError extends Error {
+  
+  errorType: string;
+
   constructor(errorType: string, details: string) {
     super(details);
     this.name = "DrawingError";
@@ -106,7 +109,7 @@ const drawingFunctions: DrawingFunctions = {
   },
 
   drawPolygon: (
-    vertices: { x: number; y: number }[],
+    vertices: { x: number; y: number; }[],
     options: DrawingOptions
   ) => {
     // Logic to draw a polygon
@@ -468,7 +471,7 @@ const drawingFunctions: DrawingFunctions = {
   },
 
   drawIrregularPolygon: (
-    vertices: { x: number; y: number }[],
+    vertices: { x: number; y: number; }[],
     options: DrawingOptions
   ) => {
     // Logic to draw an irregular polygon
@@ -481,7 +484,7 @@ const drawingFunctions: DrawingFunctions = {
   },
 
   drawBezierSurface: (
-    controlPoints: { x: number; y: number }[][],
+    controlPoints: { x: number; y: number; }[][],
     options: DrawingOptions
   ) => {
     // Logic to draw a bezier surface
@@ -629,8 +632,9 @@ const drawingFunctions: DrawingFunctions = {
       options
     );
   },
-
-  // Implement more drawing functions if needed
+  createDrawing: function (name: string, content: string): Drawing {
+    throw new Error('Function not implemented.');
+  }
 };
 
 export { drawingFunctions as DrawingFunctions }; // Exporting the drawingFunctions as DrawingFunctions

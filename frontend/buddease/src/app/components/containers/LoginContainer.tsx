@@ -6,12 +6,16 @@ import React, { lazy, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Define a custom type for require.context
-interface RequireContext {
+interface RequireContext extends NodeRequire {
   keys(): string[];
   <T>(id: string): T;
   <T>(id: string, recursive: boolean): T;
   <T>(id: string, recursive: boolean, pattern: RegExp): T;
-  context: (directory: string, useSubdirectories?: boolean, regExp?: RegExp) => any;
+  context: (
+    directory: string,
+    useSubdirectories?: boolean,
+    regExp?: RegExp
+  ) => any;
 }
 
 interface LoginResult {

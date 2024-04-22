@@ -1,6 +1,6 @@
 // NavigationGenerator.tsx
 import React, { useEffect, useState } from 'react';
-import createDynamicHook, { DynamicHookResult } from '../dynamicHooks/dynamicHookGenerator';
+import createDynamicHook from '../dynamicHooks/dynamicHookGenerator';
 
 interface NavigationItem {
   label: string;
@@ -131,3 +131,5 @@ const TasksIcon: React.FC = () => <span>✅</span>;
 const NewPageIcon: React.FC = () => <span>➕</span>;
 
 export default NavigationGenerator;
+export type { NavigationGeneratorProps, NavigationItem };
+

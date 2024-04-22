@@ -23,6 +23,7 @@ import { Member } from "./teams/TeamMembers";
 import { MeetingData } from "../calendar/MeetingData";
 import { FakeData } from "../Inteigents/FakeDataGenerator";
 import { AllTypes } from "../typings/PropTypes";
+import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 
 // Define a generic type for data
 interface CommonData<T> {

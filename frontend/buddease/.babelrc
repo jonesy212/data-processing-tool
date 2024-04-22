@@ -1,0 +1,13 @@
+{
+    "presets": ["next/babel", "@babel/preset-typescript"],
+    "plugins": [
+      ["react-native-web", { "commonjs": true }],
+      [
+        "module-resolver",
+        {
+          "root": ["./"],
+          "extensions": [".tsx", ".ts", ".js", ".json"]
+        }
+      ]
+    ]
+  }

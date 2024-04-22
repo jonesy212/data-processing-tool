@@ -1,7 +1,7 @@
 // TrackerSlice.ts
-import Milestone from '@/app/components/calendar/CalendarSlice';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Tracker } from '../../../models/tracker/Tracker';
+import Milestone from "@/app/components/calendar/CalendarSlice";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Tracker } from "../../../models/tracker/Tracker";
 
 export interface TrackerManagerState {
   trackers: Tracker[];
@@ -10,7 +10,7 @@ export interface TrackerManagerState {
 
 export const initialState: TrackerManagerState = {
   trackers: [],
-  milestones: []
+  milestones: [],
 };
 
 export const trackerManagerSlice = createSlice({
@@ -39,26 +39,45 @@ export const trackerManagerSlice = createSlice({
       );
     },
 
-        // Implement logic to create a milestone for tracking project progress
-        createMilestone: (state, action: PayloadAction<Milestone>) => {
-          state.milestones.push(action.payload);
-        },
-    
+    // Implement logic to create a milestone for tracking project progress
+    createMilestone: (state, action: PayloadAction<Milestone>) => {
+      state.milestones.push(action.payload);
+    },
+
+    resetTrackers(state) {
+      state.trackers = [];
+    },
+    resetMiilestone(state, action: PayloadAction<number>) {
+      state.milestones = state.milestones.filter(
+        (milestone) => milestone.id.toString() !== action.payload.toString()
+      );
+    },
+    resetMilestones(state) {
+      state.milestones = [];
+    },
   },
 });
 
 // Export actions
-export const { addTracker, updateTracker, removeTracker, createMilestone } = trackerManagerSlice.actions;
- 
-// Export selector for accessing the trackers from the state
-export const selectTrackers = (state: { trackers: TrackerManagerState }) => state.trackers.trackers;
+export const {
+  addTracker,
+  updateTracker,
+  removeTracker,
+  resetTrackers,
+  
+  createMilestone,
+  resetMiilestone,
+  resetMilestones,
+  
+} = trackerManagerSlice.actions;
 
+// Export selector for accessing the trackers from the state
+export const selectTrackers = (state: { trackers: TrackerManagerState }) =>
+  state.trackers.trackers;
 
 // Export selector for accessing the milestones from the state
-export const selectMilestones = (state: { trackers: TrackerManagerState }) => state.trackers.milestones;
-
+export const selectMilestones = (state: { trackers: TrackerManagerState }) =>
+  state.trackers.milestones;
 
 // Export reducer for the tracker entity slice
 export default trackerManagerSlice.reducer;
-
-

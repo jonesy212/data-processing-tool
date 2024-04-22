@@ -23,7 +23,14 @@ export interface User extends UserData {
   tier: string;
   token: string | null;
   uploadQuota: number;
+  usedQuota?: number;
+  avatarUrl: string | null;
+  createdAt: Date;
+  updatedAt: Date | undefined;
   fullName: string | null;
+  isVerified: boolean;
+  isAdmin: boolean;
+  isActive: boolean;
   bio: string | null;
   userType: string;
   hasQuota: boolean;

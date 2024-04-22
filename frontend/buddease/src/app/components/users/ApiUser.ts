@@ -38,6 +38,13 @@ export const url: string | undefined = dotProp.getProperty(
 // Dispatching the action with the correct userId
 dispatch(UserActions.fetchUserRequest({ userId: parsedUserId }));
 
+
+
+
+
+
+
+
 class UserService {
   // Constructor remains unchanged
 
