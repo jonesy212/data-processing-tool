@@ -139,6 +139,7 @@ const DynamicEventHandlerService = ({
     );
   
     // Example usage
+    const createEventHandler = DynamicEventHandlerExample.createEventHandler;
     const keyboardEventHandler = createEventHandler(
       "handleKeyboardShortcuts",
       DynamicEventHandlerExample.handleKeyboardShortcuts

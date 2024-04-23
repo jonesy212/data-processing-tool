@@ -40,7 +40,6 @@ import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import {
   NotificationProvider,
-  NotificationType,
   NotificationTypeEnum,
 } from "../components/support/NotificationContext";
 import NotificationManager from "../components/support/NotificationManager";
@@ -68,10 +67,11 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import apiNotificationsService from "../api/NotificationsService";
+import { NotificationType } from '@/app/components/support/NotificationContext';
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
-  setThemeState:{
+  setThemeState: {
     setThemeConfig: React.Dispatch<React.SetStateAction<ThemeConfig>>; // Setter for theme configuration
     setPrimaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for primary color
     setSecondaryColor: React.Dispatch<React.SetStateAction<string>>; // Setter for secondary color
@@ -81,14 +81,13 @@ interface ExtendedAppProps extends AppProps {
     setFooterColor: React.Dispatch<React.SetStateAction<string>>; // Setter for footer color
     setBodyColor: React.Dispatch<React.SetStateAction<string>>; // Setter for body color
     setBorderColor: React.Dispatch<React.SetStateAction<string>>; // Setter for border color
-  setBorderWidth: React.Dispatch<React.SetStateAction<number>>; // Setter for border width
-  setBorderStyle: React.Dispatch<React.SetStateAction<string>>; // Setter for border style
-  setPadding: React.Dispatch<React.SetStateAction<string>>; // Setter for padding
-  setMargin: React.Dispatch<React.SetStateAction<string>>; // Setter for margin
-   // Branding related setters
-   setBrandIcon: React.Dispatch<React.SetStateAction<string>>; // Setter for brand icon
-   setBrandName: React.Dispatch<React.SetStateAction<string>>; // Setter for brand name
- 
+    setBorderWidth: React.Dispatch<React.SetStateAction<number>>; // Setter for border width
+    setBorderStyle: React.Dispatch<React.SetStateAction<string>>; // Setter for border style
+    setPadding: React.Dispatch<React.SetStateAction<string>>; // Setter for padding
+    setMargin: React.Dispatch<React.SetStateAction<string>>; // Setter for margin
+    // Branding related setters
+    setBrandIcon: React.Dispatch<React.SetStateAction<string>>; // Setter for brand icon
+    setBrandName: React.Dispatch<React.SetStateAction<string>>; // Setter for brand name
   };
   hooks: Record<string, PhaseHookConfig>;
   utilities: {
@@ -98,10 +97,9 @@ interface ExtendedAppProps extends AppProps {
   contentItem: DetailsItem<Data>;
 }
 
-
 export const {
   themeConfig,
-  
+
   setThemeConfig,
   setPrimaryColor,
   setSecondaryColor,
@@ -138,13 +136,32 @@ async function MyApp({
   pageProps,
   router,
   brandingSettings,
-  setThemeState
+  setThemeState,
 }: ExtendedAppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const editorState = useEditorState();
   const [activeDashboard, setActiveDashboard] = useState<
-    "communication" | "documents" | "tasks" | "settings"
+    | "communication"
+    | "documents"
+    | "tasks"
+    | "settings"
+    | "crypto"
+    | "analytics"
+    // | "projects"
+    // | "files"
+    // | "todos"
+    // | "calendar"
+    // | "profile"
+    // | "team"
+    // | "planner"
+    // | "notes"
+    // | "mindmaps"
+    // | "wiki"
+    | "community"
+    | "onEditorStateChange"
+    | "editorState"
   >("communication");
   const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
   const [username, setUsername] = useState<string>("defaultUsername");
@@ -170,6 +187,7 @@ async function MyApp({
       completionMessageLog: {} as LogData,
       status: undefined,
       sendStatus: "Sent",
+      notificationType: NotificationTypeEnum.NewNotification
     };
 
     // Update notifications state by appending the new notification
@@ -277,7 +295,7 @@ async function MyApp({
 
   const handleIdleTimeout = (duration: any) => {
     // Start the idle timeout with the provided duration
-    idleTimeout.startIdleTimeout(duration, () => {
+    idleTimeout?.startIdleTimeout(duration, () => {
       // Callback function when timeout occurs (e.g., logout the user)
       setIsUserLoggedIn(false);
     });
@@ -487,6 +505,8 @@ async function MyApp({
                   />
                   {/* Toolbar component with activeDashboard and progress props */}
                   <Toolbar
+                    editorState={editorState}
+                    onEditorStateChange={setEditorState}
                     activeDashboard={activeDashboard}
                     progress={{
                       id: "progress",

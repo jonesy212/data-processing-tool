@@ -1,8 +1,8 @@
 // ApiDrawing.ts
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import dotProp from "dot-prop";
@@ -85,6 +85,27 @@ export async function fetchDrawing(): Promise<YourResponseType> {
   }
 }
 
+
+export const fetchDrawingById = async (drawingId: number): Promise<YourResponseType> => { 
+  try {
+    const fetchDrawingByIdEndpoint = `${API_BASE_URL}/fetch/${drawingId}`;
+    const response = await axiosInstance.get<YourResponseType>(
+      fetchDrawingByIdEndpoint,
+      {
+        headers: headersConfig
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleDrawingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to fetch drawing by ID",
+      "FetchDrawingByIdErrorId"
+    );
+    throw error;
+  }
+
+}
 // Create a new drawing
 export const createDrawing = async (newDrawingData: any): Promise<void> => {
   try {

@@ -10,7 +10,7 @@ import { Member } from "./TeamMembers";
 
 interface TeamData extends Partial<Data> {
   id: number | string;
-  teamName: Data["title"];
+  teamName: string
   description?: string;
   members?: Member[];
   projects: Project[];

@@ -10,7 +10,7 @@ interface CustomComment extends BlogComment {
 
 interface BlogState {
   posts: BlogPost[];
-  comments: (BlogComment | CustomComment)[];
+  comments: (BlogComment |VideoComment | CustomComment)[];
   // Add more state properties as needed
 }
 
@@ -25,8 +25,17 @@ interface BlogComment {
   postId: string;
   text: string;
   pinned: boolean;
+  postedId: string;
 }
 
+
+interface VideoComment {
+  id: string;
+  videoId: string;
+  text: string;
+  pinned: boolean;
+  postedId: string;
+}
 const initialState: BlogState = {
   posts: [],
   comments: [],

@@ -73,18 +73,16 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
       <h2>Track Progress</h2>
       {/* Render search results if available, otherwise render all teams */}
       {searchResults.length > 0
-        ? searchResults.map((team, index) => (
+        ? searchResults.map((item, index) => (
             <div key={index}>
-              {team.data && <TeamProgressBar team={team.data} />}{" "}
-              {/* Updated usage */}
+              {item.data && <TeamProgressBar team={item.data} />}
               <ProgressBar
-                progress={projectProgressData}
+                progress={calculateProgress(item.data)}
                 phase={{} as ProgressPhase}
                 duration={0}
                 animationID={""}
                 uniqueID={""}
-              />{" "}
-              {/* Updated usage */}
+              />
             </div>
           ))
         : teams.map((team, index) => (
@@ -102,23 +100,37 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
       {/* Render search results list */}
       {/* Render SearchResult component */}
       <SearchResult
-        result={searchResults.map((item) => ({
-          id: item.id,
-          title: item.data?.teamName || "",
-          description: `Team ID: ${item.id}`,
-          source: "",
-          content: "",
-          topics: [],
-          highlights: [],
-          keywords: [],
-          load: () => {},
+        result={{
+          id: 1,
+          title: "Example Result",
+          description: "This is an example result",
+          source: "https://example.com",
+          content: "Example content",
+          topics: ["example", "topic"],
+          highlights: ["example", "highlight"],
+          keywords: ["example", "keyword"],
+          load: (content: any) => console.log(content),
           folders: [],
-          version: { version: "", versionCount: 0 },
-        }))}
+          repoName: "example-repo",
+          repoURL: "https://example.com/repo",
+          version: {
+            name: "1.0.0",
+            url: "https://example.com/repo/1.0.0",
+          },
+        }}
       />
 
       {/* Render CommunityProjectsPage component */}
-      <CommunityProjectsPage teams={teams} />
+      <CommunityProjectsPage
+        community={{
+          teams,
+          id: "",
+          name: "",
+          description: "",
+          projects: [],
+          teamMembers: [],
+        }}
+      />
     </div>
   );
 };

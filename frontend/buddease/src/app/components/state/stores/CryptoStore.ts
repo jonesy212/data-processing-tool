@@ -73,7 +73,13 @@ const useCryptoStore = (): CryptoStore => {
   const handleError = (error: any, action: string) => {
     console.error(`Error ${action}:`, error);
     setError(`Error ${action}: ${error.message || "Unknown error"}`);
-    notify(`Error ${action}`, "Failed to perform action", new Date());
+    notify(
+      `Error ${action}`,
+      "Failed to perform action",
+      "error", // Changed null to "error" to fix the error
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
   };
 
   const store: CryptoStore = makeAutoObservable({

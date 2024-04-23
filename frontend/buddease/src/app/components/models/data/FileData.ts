@@ -12,10 +12,10 @@ interface FileData extends ScheduledData {
   filePath: string; // Path to the file location
   uploader: User; // User who uploaded the file
   attachments?: Attachment[]; // Any attachments associated with the file
-  // Add other properties as needed
   // Additional properties for expanded usage
   fileName: string; // Name of the file
   uploadDate: Date; // Date when the file was uploaded
+  imageData?: string; // Base64-encoded image data
 }
 
 export default FileData;

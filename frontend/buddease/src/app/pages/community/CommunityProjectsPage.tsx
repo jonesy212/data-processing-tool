@@ -8,7 +8,8 @@ import React from 'react';
 // Utility function to transform teams into DetailsItem<Data> array
 const transformTeamsToDetailsItems = (teams: Team[]): DetailsItem<Team>[] => {
   return teams.map(team => ({
-    id: team._id,
+    id: team.id,
+    title: team._id || 'No title',
     label: team.teamName,
     value: team.description || 'No description available', // Add default description if not provided
     data: team, // Assign team data to 'data' property

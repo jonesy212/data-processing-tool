@@ -59,6 +59,7 @@ export enum NotificationTypeEnum {
   Milestone = "Milestone",
   NewChatMessage = "NewChatMessage",
   NewFeatureAvailable = "NewFeatureAvailable",
+  NewNotification = "NewNotification",
   OperationStart = "OperationStart",
   OperationError = "OperationError",
   OperationSuccess = "OperationSuccess",

@@ -7,6 +7,17 @@ import triggerAutosave from './triggerAutosave';
 import wordCount from './wordCount';
 import wordCountAnalysis from './wordCountAnalysis';
 
+
+
+
+const updateUIWithCopiedText = (editorContent, store) => {
+  // Get word count info
+  const wordCountInfo = wordCount(editorContent);
+
+  // Update UI with word count
+  wordCountAnalysis(wordCountInfo);
+}
+
 // Function to update the user interface with relevant information
 const updateUI = (editorContent, store) => {
     // Logic to update the UI based on the editor content and store
@@ -79,3 +90,10 @@ const displaySettingsOptions = (settingsData) => {
 
 // Export the function for external use
 export default updateUI;
+export {
+  updateUIWithCopiedText,
+  countWords,
+  updateEditorWordCountUI,
+  displayUserProfile,
+  displaySettingsOptions
+};

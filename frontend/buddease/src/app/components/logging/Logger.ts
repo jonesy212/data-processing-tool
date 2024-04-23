@@ -377,7 +377,7 @@ class TeamLogger {
     try {
       // Convert teamId to a number using the utility method
 
-      const teamData: TeamData | null = useTeamManagerStore().getTeamData(
+      const teamData: TeamData | null = (await useTeamManagerStore()).getTeamData(
         teamId,
         team
       );
@@ -616,10 +616,12 @@ class VideoLogger extends Logger {
       })
       .catch((error) => {
         notify(
+          "logEventError" + error.message,
           "Error logging video event.",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
           new Date(),
           error
+
         );
       });
   }
@@ -659,6 +661,7 @@ class ChannelLogger extends Logger {
       })
       .catch((error) => {
         notify(
+          "logEventError" + error.message,
           "Error logging channel event",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
           new Date(),
@@ -704,6 +707,7 @@ class ChatLogger extends Logger {
       })
       .catch((error) => {
         notify(
+          "logEventError" + error.message,
           "Error logging chat event.",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
           new Date(),
@@ -802,6 +806,7 @@ class CollaborationLogger extends Logger {
       })
       .catch((error) => {
         notify(
+          "logCollaborationEventError" + error.message,
           "Error logging collaboration event.",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
           new Date(),
@@ -852,6 +857,7 @@ class DocumentLogger extends Logger {
       })
       .catch((error) => {
         notify(
+          "logDocumentEventError" + error.message,
           "Error logging document event.",
           NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
           new Date(),
@@ -1055,6 +1061,7 @@ class CalendarLogger extends Logger {
         })
         .catch((error) => {
           notify(
+            "logCalendarEvent failed: " + error.message,
             "Error logging calendar event.",
             NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
             new Date(),
@@ -1384,6 +1391,6 @@ export {
   TeamLogger,
   TenantLogger,
   VideoLogger,
-  WebLogger,
+  WebLogger
 };
 

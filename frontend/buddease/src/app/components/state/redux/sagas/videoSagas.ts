@@ -131,8 +131,9 @@ function* fetchVideoSuccessSaga(
     const { video } = action.payload;
     // Use the 'video' variable here if needed
     notify(
-      NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_SUCCESS,
+      "Video updated successfully",
       "Fetch Video Success",
+      NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_SUCCESS,
       new Date(),
       NotificationTypeEnum.OperationSuccess
     );
@@ -142,6 +143,7 @@ function* fetchVideoSuccessSaga(
     // Handle error if needed
     console.error("Error in fetchVideoSuccessSaga:", error);
     notify(
+      "Error trying to fetch video",
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
@@ -155,6 +157,7 @@ function* updateVideoSuccessSaga( action: ReturnType<typeof VideoActions.updateV
     const { id, updatedVideo } = action.payload;
     // Use the 'updatedVideo' variable here if needed
     notify(
+      "Sucessfully updated video metadata",
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
       "Update Video Success",
       new Date(),
@@ -165,6 +168,7 @@ function* updateVideoSuccessSaga( action: ReturnType<typeof VideoActions.updateV
     // Handle error if needed
     console.error("Error in updateVideoSuccessSaga:", error);
     notify(
+      "Error in updateVideoSuccessSaga:" + error,
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
       "Error trying to update video",
       new Date(),

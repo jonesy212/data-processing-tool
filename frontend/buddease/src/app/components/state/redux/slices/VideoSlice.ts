@@ -228,6 +228,8 @@ export const useVideoManagerSlice = createSlice({
             id: comment.id,
             text: comment.text,
             pinned: false,
+            postedId: comment.postedId,
+            postId: ""
           });
           state.videos[videoIndex].comments?.push(draftComment);
         } else {
@@ -253,14 +255,24 @@ export const useVideoManagerSlice = createSlice({
     },
     
     
-    editVideoComment: (state, action: PayloadAction<{ videoId: string, commentId: string, updatedComment: string }>) => {
+
+    editVideoComment: (
+      state,
+      action: PayloadAction<{
+        videoId: string;
+        commentId: string;
+        updatedComment: string;
+      }>
+    ) => {
       const { videoId, commentId, updatedComment } = action.payload;
-      const video = state.videos.find(video => video.id === videoId);
+      const video = state.videos.find((video) => video.id === videoId);
       if (video) {
-        // Find the comment with the specified commentId and update its content
-        const commentToUpdate = video.comments?.find(comment => comment.id === commentId);
+        const commentToUpdate = video.comments?.find(
+          (comment) => comment.id === commentId
+        );
         if (commentToUpdate) {
-          commentToUpdate.content = updatedComment;
+          (commentToUpdate as WritableDraft<CustomComment>).text =
+            updatedComment;
         }
       }
     },
@@ -734,16 +746,15 @@ export const useVideoManagerSlice = createSlice({
     
     predictiveAnalyticsForVideoEngagement: (
       state,
-      action: PayloadAction<{ videoId: string, engagement: string[] }>
+      action: PayloadAction<{ videoId: string; engagement: string[] }>
     ): VideoState => {
       const { videoId, engagement } = action.payload;
-      // Find the video with the given videoId
-      const updatedVideos = state.videos.map(video => {
+      const updatedVideos = state.videos.map((video) => {
         if (video.id === videoId) {
-          // Create a copy of the video object to avoid mutating the original state
           const updatedVideo = { ...video };
-          // Logic to integrate predictive analytics for video engagement into the video
-          updatedVideo.engagement = `Predictive analytics for video engagement integrated into the video with the following engagement: ${engagement.join(', ')}.`;
+          updatedVideo.engagement = `Predictive analytics for video engagement integrated into the video with the following engagement: ${engagement.join(
+            ", "
+          )}.`;
           return updatedVideo;
         }
         return video;

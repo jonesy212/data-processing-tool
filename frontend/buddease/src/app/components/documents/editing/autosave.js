@@ -90,6 +90,31 @@ const autosave = async (editorContent, autoSaveEnabled) => {
   }
 };
 
+
+
+// Function to save file data as a blob and trigger download
+ const saveAs = (data, filename) => {
+  // Create a Blob object containing the file data
+  const blob = new Blob([data]);
+
+  // Check if the property exists before accessing it
+  if (window.navigator.msSaveOrOpenBlob) {
+    // For Internet Explorer
+    window.navigator.msSaveOrOpenBlob(blob, filename);
+  } else {
+    // For other browsers, create a temporary link element
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+
+    // Trigger click event to initiate download
+    link.click();
+
+    // Cleanup: remove the temporary link element
+    URL.revokeObjectURL(link.href);
+  }
+};
+
 // Simulate network connectivity issues
 const simulateNetworkConnectivityIssue = () => {
   // Simulate a random network error with a 10% probability
@@ -120,3 +145,5 @@ const simulateSessionPersistence = (editorContent) => {
 
 // Export the function for external use
 export default autosave;
+export { saveAs, simulateNetworkConnectivityIssue, simulateSessionPersistence, simulateUserInterruptions };
+

@@ -1,5 +1,5 @@
-import DatabaseClient from './DatabaseClient';
-import { Project } from './models/projects/Project'; // Assuming you have a Project interface
+import { Project } from '@/app/components/projects/Project';
+import DatabaseClient, { DatasetModel } from '@/app/components/todos/tasks/DataSetModel';
 
 class ProjectModel {
   private readonly tableName: string = 'projects';
@@ -9,27 +9,26 @@ class ProjectModel {
     this.dbClient = dbClient;
   }
 
-  async createProject(projectData: Project): Promise<Project | null> {
+  async createProject(projectData: DatasetModel): Promise<DatasetModel | null> {
     try {
       // Insert project data into the database
       const result = await this.dbClient.insert(this.tableName, projectData);
-      return result as Project;
+      return result.rows[0] || null;
     } catch (error) {
-      console.error('Error creating project:', error);
+      console.error("Error creating project:", error);
       return null;
     }
   }
 
   async getProjectById(projectId: number): Promise<Project | null> {
     try {
-      // Query the database to fetch project data by ID
       const queryResult = await this.dbClient.query<Project>(
         `SELECT * FROM ${this.tableName} WHERE id = $1`,
         [projectId]
       );
       return queryResult.rows[0] || null;
     } catch (error) {
-      console.error('Error fetching project by ID:', error);
+      console.error("Error fetching project by ID:", error);
       return null;
     }
   }

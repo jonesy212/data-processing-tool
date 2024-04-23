@@ -1,13 +1,46 @@
 // EventSentiment.tsx
 import React, { useEffect, useState } from "react";
 import { processAutoGPTOutputWithSpaCy } from "../Inteigents/AutoGPTSpaCyIntegration";
-import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import useErrorHandling from "../hooks/useErrorHandling";
+import LoadingSpinner from "../models/tracker/LoadingSpinner";
+import { CalendarEvent } from "../state/stores/CalendarEvent";
 
 const EventSentiment: React.FC<{ event: CalendarEvent }> = ({ event }) => {
   const [sentiment, setSentiment] = useState<string>(""); // State to store sentiment
   const [loading, setLoading] = useState<boolean>(true); // State to manage loading state
   const { handleError } = useErrorHandling(); // Use the useErrorHandling hook
+
+
+
+  const performSentimentAnalysis = async () => {
+    setLoading(true);
+    try {
+      // Call API to perform sentiment analysis
+      const response = await fetch('/api/sentiment-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${API_KEY}'
+        },
+        body: JSON.stringify({
+          text: event.title,
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          setSentiment(data.sentiment);
+          setLoading(false);
+        })
+      // Call API to perform sentiment analysis
+      performSentimentAnalysis();
+      
+    } catch (error: any) {
+      console.error('Error performing sentiment analysis:', error);
+      setLoading(false);
+      handleError('Error performing sentiment analysis', error);
+    }
+  }
+
 
   useEffect(() => {
     // Process AutoGPT output with spaCy and extract sentiment

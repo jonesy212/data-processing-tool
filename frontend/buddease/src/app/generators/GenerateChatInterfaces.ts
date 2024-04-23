@@ -8,7 +8,8 @@ import { User, UserData } from "../components/users/User";
     from: User;
     channelId: ChatRoom;
     content: string;
-    timestamp: Date;
+    userId?: number
+    timestamp: Date | string;
     text: string;
     isUserMessage?: boolean
   }

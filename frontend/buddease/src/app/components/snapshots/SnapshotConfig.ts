@@ -9,7 +9,7 @@ interface SnapshotStoreConfig<T> {
   clearSnapshots: any;
   key: string;
   initialState: T;
-  
+
   snapshot: (
     snapshot: SnapshotStore<Snapshot<Data>>[]
   ) => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }>;
@@ -84,13 +84,11 @@ interface SnapshotStoreConfig<T> {
     {
       snapshot: SnapshotStore<Snapshot<Data>>[];
     }[]
-    >;
-  
-    batchTakeSnapshotsRequest: (
-      snapshotData: any
-    ) => Promise<{
-      snapshots: SnapshotStore<Snapshot<Data>>[];
-    }>
+  >;
+
+  batchTakeSnapshotsRequest: (snapshotData: any) => Promise<{
+    snapshots: SnapshotStore<Snapshot<Data>>[];
+  }>;
 
   batchUpdateSnapshotsSuccess: (
     subscribers: SnapshotStore<Snapshot<Data>>[],
@@ -151,7 +149,6 @@ interface SnapshotStoreConfig<T> {
     type: NotificationType
   ) => void;
 
-
   [Symbol.asyncIterator]: () => AsyncIterableIterator<Snapshot<T>>;
 }
 
@@ -162,7 +159,7 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
   key: "teamSnapshotKey",
   initialState: {} as SnapshotStore<Snapshot<Data>>[],
   snapshots: [],
-  initSnapshot: () => { },
+  initSnapshot: () => {},
 
   updateSnapshot: async (
     snapshot: SnapshotStore<Snapshot<Data>>
@@ -202,17 +199,17 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
       throw error;
     }
   },
-  clearSnapshot: () => { },
-  configureSnapshotStore: () => { },
-  takeSnapshotSuccess: () => { },
-  updateSnapshotFailure: () => { },
-  takeSnapshotsSuccess: () => { },
-  fetchSnapshot: () => { },
-  updateSnapshotSuccess: () => { },
-  updateSnapshotsSuccess: () => { },
-  fetchSnapshotSuccess: () => { },
-  createSnapshotSuccess: () => { },
-  createSnapshotFailure: () => { },
+  clearSnapshot: () => {},
+  configureSnapshotStore: () => {},
+  takeSnapshotSuccess: () => {},
+  updateSnapshotFailure: () => {},
+  takeSnapshotsSuccess: () => {},
+  fetchSnapshot: () => {},
+  updateSnapshotSuccess: () => {},
+  updateSnapshotsSuccess: () => {},
+  fetchSnapshotSuccess: () => {},
+  createSnapshotSuccess: () => {},
+  createSnapshotFailure: () => {},
   batchTakeSnapshot: (
     snapshots: SnapshotStore<Snapshot<Data>>[]
   ): Promise<{
@@ -268,8 +265,8 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
   ): SnapshotStore<Snapshot<Data>>[] => {
     return [...subscribers, ...snapshots];
   },
-  batchFetchSnapshotsFailure: () => { },
-  batchUpdateSnapshotsFailure: () => { },
+  batchFetchSnapshotsFailure: () => {},
+  batchUpdateSnapshotsFailure: () => {},
 
   notifySubscribers: (
     subscribers: SnapshotStore<Snapshot<Data>>[]
@@ -307,11 +304,11 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
       snapshot: [snapshot],
     };
   },
-  getSnapshots: function (
-  snapshots: SnapshotStore<Snapshot<Data>>[]
-  ): Promise<{
-    snapshots: SnapshotStore<Snapshot<Data>>[];
-  }[]> {
+  getSnapshots: function (snapshots: SnapshotStore<Snapshot<Data>>[]): Promise<
+    {
+      snapshots: SnapshotStore<Snapshot<Data>>[];
+    }[]
+  > {
     return Promise.resolve({ snapshots: snapshotConfig.snapshots });
   },
 
@@ -322,7 +319,7 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
       if (snapshot) {
         snapshotConfig.snapshots.push({ snapshot: snapshot });
       }
-  
+
       return Promise.resolve({
         snapshot: [snapshot],
       });
@@ -331,18 +328,13 @@ const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]> = {
     }
   },
 
-
-
   getSnapshot: function (
     snapshot: SnapshotStore<Snapshot<Data>>
   ): Promise<SnapshotStore<Snapshot<Data>>> {
     return Promise.resolve(
-      snapshotConfig.snapshots.find(
-        snap => snap.id === snapshot.id
-      )
+      snapshotConfig.snapshots.find((snap) => snap.id === snapshot.id)
     );
-    },
-
+  },
 
   batchUpdateSnapshotsRequest: function (
     snapshotData: (

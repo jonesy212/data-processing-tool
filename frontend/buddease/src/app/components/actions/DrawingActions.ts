@@ -65,7 +65,8 @@ export const DrawingActions = {
   selectColor: createAction<{ color: string }>("selectColor"),
   fillShape: createAction<{ shapeId: string; color: string }>("fillShape"),
   adjustStroke: createAction<{ shapeId: string; options: any }>("adjustStroke"),
-  activateTextTool: createAction("activateTextTool"),
+  activateTextTool: createAction<{ id: string }>("activateTextTool"),
+
   setLayerOpacity: createAction<{ layerId: string; opacity: number }>(
     "setLayerOpacity"
   ),
@@ -90,6 +91,7 @@ export const DrawingActions = {
   applyDrawingTemplate: createAction<{ templateId: string }>(
     "applyDrawingTemplate"
   ),
+  updateTextPosition: createAction<{ id: string; x: number; y: number }>("updateTextPosition"),
 
   // Transformations
   flipShapeX: createAction<{ shapeId: string }>("flipShapeX"),
@@ -124,7 +126,13 @@ export const DrawingActions = {
   flattenDrawing: createAction("flattenDrawing"),
 
   // Export/Import Options
-  exportDrawingAsFile: createAction<{ fileName: string; format: string, status: string }>(
+  exportDrawingAsFile: createAction<{
+    
+    format: string,
+    fileName: string;
+    status: number;
+    data: string | null
+}>(
     "exportDrawingAsFile"
   ),
   importDrawingFromFile: createAction<{ file: File }>("importDrawingFromFile"),
@@ -147,4 +155,10 @@ export const DrawingActions = {
     "adjustCanvasResolution"
     ),
   
+  
+  elementDroppedInSpecificArea: createAction<{
+    x: number; y: number; elementId: string; areaId: string
+  }>(
+    "elementDroppedInSpecificArea"
+  )
 };

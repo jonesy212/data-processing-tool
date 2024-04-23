@@ -24,7 +24,7 @@ class CryptoService {
   @action
   public async fetchCryptoDataFromServer(): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE_URL}`); // Fetch crypto data from API endpoint
+      const response = await fetch(`${API_BASE_URL}`);
       const cryptoData = await response.json();
 
       // Apply crypto data asynchronously

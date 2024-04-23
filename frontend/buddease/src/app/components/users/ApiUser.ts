@@ -48,6 +48,10 @@ dispatch(UserActions.fetchUserRequest({ userId: parsedUserId }));
 class UserService {
   // Constructor remains unchanged
 
+
+  getCurrentUserId = () => {
+    return parsedUserId;
+  }
   createUser = async (newUser: User) => {
     try {
       const API_ADD_ENDPOINT = dotProp.getProperty(

@@ -11,6 +11,7 @@ import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
+import { DocumentActions } from '../tokens/DocumentActions';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.documents;
@@ -898,6 +899,8 @@ export const documentAnnotation = async (documentId: string, annotationData: any
     const response = await axiosInstance.post(`${API_BASE_URL}/api/documents/annotation`, { documentId, ...annotationData }, {
       headers: headersConfig,
     });
+    // Dispatch an action to update the document content or metadata after annotation
+    DocumentActions.updateDocumentDetailsSuccess({ id: documentId, ...annotationData });
     return response.data;
   } catch (error) {
     console.error('Error annotating document:', error);

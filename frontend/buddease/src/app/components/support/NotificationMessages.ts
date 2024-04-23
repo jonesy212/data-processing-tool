@@ -201,6 +201,13 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     // Add more messages for communication and collaboration
   },
 
+  Config: {
+    CONFIG_UPDATED: "Configuration updated successfully",
+    CONFIG_UPDATE_FAILED: "Failed to update configuration. Please try again",
+    FETCH_CONFIG_SUCCESS: "Fetched configuration successfully",
+    CONFIG_ROLLEDBACK: "Configuration changes rolled back",
+  },
+
   // Custom Notifications
   CustomNotification1: {
     DEFAULT: "Notification message: CustomNotification1",
@@ -219,6 +226,8 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     ERROR_EXPORTING_DATA: "Error exporting data. Please try again",
     // Add more messages for the DataLoading type
   },
+
+
 
   Database: {
     DEFAULT: "Database loading...",

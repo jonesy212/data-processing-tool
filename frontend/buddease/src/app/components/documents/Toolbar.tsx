@@ -4,8 +4,11 @@ import { Progress } from "../models/tracker/ProgressBar";
 import ToolbarItem from "./ToolbarItem";
 
 interface ToolbarProps {
+  editorState: EditorState;
   activeDashboard: keyof typeof toolbarOptions;
   progress: Progress;
+  onEditorStateChange: (state: EditorState) => void;
+
 }
 
 // Define toolbar options with the editor state change handler
@@ -20,6 +23,9 @@ const toolbarOptions = {
     "Briefs", "Whitepapers",
     "Manuals", "Guides",
     "Policies", "Forms",
+    "Cryptocurrencies", "NFTs",
+    "CryptoMarketNews", "CryptoTradingSignals",
+    
   ],
   tasks: ["Tasks", "Todos", "Reminders"],
   settings: ["Settings", "Preferences", "Account"],
@@ -35,7 +41,7 @@ const toolbarOptions = {
 } as const;
 
 
-const Toolbar: React.FC<ToolbarProps> = ({ activeDashboard, progress }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ activeDashboard, progress, editorState , onEditorStateChange}) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleOptionClick = (option: string) => {

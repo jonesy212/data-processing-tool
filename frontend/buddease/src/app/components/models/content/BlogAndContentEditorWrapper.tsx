@@ -1,30 +1,47 @@
 // BlogAndContentEditorWrapper.tsx
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import BlogAndContentEditor from './BlogAndContentEditor'; // Import the BlogAndContentEditor component
-import { addPostRequest } from './blogActions'; // Import the necessary Redux action
+import { BlogActions } from '../blogs/BlogAction';
+import { blogApiService } from '@/app/api/BlogAPI';
+import { ContentItem } from './ContentItem';
+import ContentType from '../../typings/ContentType';
 
 const BlogAndContentEditorWrapper = () => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  const handleTitleChange = (event) => {
+  const handleTitleChange = (event: any) => {
     setTitle(event.target.value);
   };
 
-  const handleContentChange = (newContent) => {
+  const handleContentChange = (newContent: ContentType) => {
     setContent(newContent);
   };
 
   const handlePublish = () => {
     // Dispatch action to add the post to Redux store
-    dispatch(addPostRequest({ title, content, author: 'User', date: new Date() }));
+    dispatch(BlogActions.addPostRequest({
+      id: blogId,
+      title,
+      content,
+      author: 'User',
+      date: new Date(),
+      upvotes: 0,
+    }));
     // Optionally, you can redirect the user to the blog page or show a success message
     // Here, we'll just clear the inputs for demonstration
     setTitle('');
     setContent('');
   };
+
+  // Define an array of content types with their respective labels
+  const contentTypes = [
+    { label: 'Text', value: 'text' },
+    { label: 'Image', value: 'image' },
+    // Add more content types as needed
+  ];
 
   return (
     <div>
@@ -38,7 +55,18 @@ const BlogAndContentEditorWrapper = () => {
           onChange={handleTitleChange}
           placeholder="Enter title..."
         />
-        <BlogAndContentEditor initialContent={content} onContentChange={handleContentChange} />
+        {/* Render content editors for each content type */}
+        {contentTypes.map((contentType) => (
+          <div key={contentType.value}>
+            <label htmlFor={`postContent_${contentType.value}`}>{contentType.label}:</label>
+            <BlogAndContentEditor
+              contentItemId={`postContent_${contentType.value}`}
+              initialContent={content}
+              onContentChange={handleContentChange}
+              contentType={contentType.value} // Pass the content type to the editor
+            />
+          </div>
+        ))}
         <button onClick={handlePublish}>Publish</button>
       </div>
     </div>

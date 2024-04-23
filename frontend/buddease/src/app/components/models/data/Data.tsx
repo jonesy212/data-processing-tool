@@ -1,3 +1,5 @@
+import { Persona } from "@/app/pages/personas/Persona";
+import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { ColorPalettes } from "antd/es/theme/interface";
 import { FakeData } from "../../Inteigents/FakeDataGenerator";
 import { Attachment } from "../../documents/Attachment/attachment";
@@ -11,20 +13,17 @@ import Todo from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
+import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Member } from "../teams/TeamMembers";
 import { ProjectPhaseTypeEnum } from "./StatusType";
-import { UserRole } from '../../users/UserRole';
-import UserRoles from "../../users/UserRoles";
-import { Persona } from "@/app/pages/personas/Persona";
-import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
   id: string;
-  title: string;
+  title?: string;
   description?: string | null | undefined;
   details?: DetailsItem<SupportedData>;
   startDate?: Date;
@@ -59,25 +58,27 @@ interface DataDetailsProps {
 
 export interface Comment {
   id: string;
-  text: string;
+  text?: string;
   editedAt?: Date;
   editedBy?: string;
   attachments?: Attachment[];
   replies?: Comment[];
-  likes?: User[];
+  likes?: number;
   watchLater?: boolean;
   highlightColor?: ColorPalettes;
   tags?: string[];
   highlights?: string[];
-  commentBy?: User | Member;
+  // Consolidating commentBy and author into one field
+  author?: string | number | readonly string[] | undefined
+  upvotes?: number | undefined
   content?: string | undefined;
   pinned?: boolean;
-  postId?: string | number; // Added postId field to match the other Comment interface
-  author?: string; // Added author field to match the other Comment interface
-  upvotes?: number; // Added upvotes field to match the other Comment interface
-  data: string
+  // Consolidating upvotes into likes if they serve the same purpose
+  postId?: string | number;
+  data?: string;
   // Add other properties as needed
 }
+
 
 interface Data {
   _id?: string;
