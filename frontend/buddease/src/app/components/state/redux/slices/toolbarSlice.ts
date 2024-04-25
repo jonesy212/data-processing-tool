@@ -1,10 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+
+
+interface Toolbar {
+  id: string; // Unique identifier for the toolbar
+  options: string[]; // Array of toolbar options/settings
+}
+
 // Define the initial state for the toolbar
 interface ToolbarState {
   isFeatureEnabled: boolean;
   isToolbarOpen: boolean;
   selectedTool: string | null;
+  selectedToolBar: string | null;
   isDraggable: boolean;
   isFloating: boolean;
   order: number;
@@ -15,30 +23,38 @@ interface ToolbarState {
   isUnderline: boolean;
   leftToolbar: {
     isVisible: boolean;
-    alignment: "left" | "center" | "right";
+    alignment: AlignmentOptions
+    selectedLeftToolbar: AlignmentOptions
+
   };
   rightToolbar: {
     isVisible: boolean;
-    alignment: "left" | "center" | "right";
+    alignment: AlignmentOptions
+    selectedRightToolbar: AlignmentOptions
   };
   videoRecordingEnabled: boolean;
   videoStreamingEnabled: boolean;
   qualitySettingsEnabled: boolean;
   screenSharingEnabled: boolean;
   participantManagementEnabled: boolean;
+  selectedToolbar: AlignmentOptions | null;
+  toolbars: Toolbar[];
 }
 
+
 // Define an enum for alignment options
-enum AlignmentOptions {
+export enum AlignmentOptions {
   LEFT = "left",
   CENTER = "center",
   RIGHT = "right",
+  NULL = "null"
 }
 
 const initialState: ToolbarState = {
   isFeatureEnabled: false,
   isToolbarOpen: false,
   selectedTool: null,
+  selectedToolBar: null,
   isDraggable: false,
   isFloating: false,
   order: 0,
@@ -50,16 +66,20 @@ const initialState: ToolbarState = {
   leftToolbar: {
     isVisible: true,
     alignment: AlignmentOptions.LEFT,
+    selectedLeftToolbar: AlignmentOptions.NULL
   },
   rightToolbar: {
     isVisible: true,
     alignment: AlignmentOptions.RIGHT,
+    selectedRightToolbar: AlignmentOptions.NULL
   },
   videoRecordingEnabled: false,
   videoStreamingEnabled: false,
   qualitySettingsEnabled: false,
   screenSharingEnabled: false,
   participantManagementEnabled: false,
+  selectedToolbar: null,
+  toolbars: []
 };
 
 // Create the toolbar slice
@@ -129,6 +149,14 @@ export const useToolbarManagerSlice = createSlice({
     participantManagementEnabled(state, action: PayloadAction<boolean>) {
       state.participantManagementEnabled = action.payload;
     },
+
+    // New reducer actions for selectedLeftToolbar and selectedRightToolbar
+    selectLeftToolbar(state, action: PayloadAction<AlignmentOptions>) {
+      state.leftToolbar.selectedLeftToolbar = action.payload;
+    },
+    selectRightToolbar(state, action: PayloadAction<AlignmentOptions>) {
+      state.rightToolbar.selectedRightToolbar = action.payload;
+    },
   },
 });
 
@@ -154,6 +182,9 @@ export const {
   qualitySettingsEnabled,
   screenSharingEnabled,
   participantManagementEnabled,
+  selectLeftToolbar,
+  selectRightToolbar,
 } = useToolbarManagerSlice.actions;
 
 export default useToolbarManagerSlice.reducer;
+export type { ToolbarState};

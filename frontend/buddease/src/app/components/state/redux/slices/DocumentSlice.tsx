@@ -1803,3 +1803,4 @@ export const selectSelectedDocument = (state: RootState) =>
 // Export the reducer
 export default useDocumentManagerSlice.reducer;
 
+export type {DocumentSliceState}

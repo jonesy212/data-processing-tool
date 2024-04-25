@@ -1,10 +1,10 @@
 // CalendarActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import { default as CustomFile, default as File } from "../documents/File";
 import { Theme } from "../libraries/ui/theme/Theme";
+import { PriorityTypeEnum } from "../models/data/StatusType";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { NotificationData } from "../support/NofiticationsSlice";
-import File from "../documents/File";
-import CustomFile from "../documents/File";
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
@@ -221,7 +221,7 @@ export const CalendarActions = {
 
   setEventPriority: createAction<{
     eventId: string;
-    priority: "low" | "medium" | "high";
+    priority: PriorityTypeEnum;
     // Additional parameters as needed
   }>("setEventPriority"),
 

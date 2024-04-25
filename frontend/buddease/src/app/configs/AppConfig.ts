@@ -180,11 +180,11 @@ export const getAppConfig = (): AppConfig => {
       },
       appName: "",
       getAppName: function (): string {
-        throw new Error("Function not implemented.");
-      },
+        return this.appName;
+            },
       updateAppName: function (newAppName: string): void {
-        throw new Error("Function not implemented.");
-      }
+        this.appName = newAppName;
+            }
     },
     apiBaseUrl: "https://your-api-base-url.com",
     ios: {
@@ -222,6 +222,22 @@ export const getAppConfig = (): AppConfig => {
       children: undefined,
       logoUrl: "",
       themeColor: "",
+      primaryColor: "",
+      secondaryColor: "",
+      fontSize: "",
+      fontFamily: "",
+      headerColor: "",
+      footerColor: "",
+      bodyColor: "",
+      borderColor: "",
+      borderStyle: "",
+      padding: "",
+      margin: "",
+      brandIcon: "",
+      brandName: "",
+      borderWidth: "",
+      borderRadius: "",
+      boxShadow: ""
     },
     changeTheme: () => {},
     navigateTo: () => {},

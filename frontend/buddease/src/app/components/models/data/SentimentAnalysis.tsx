@@ -18,6 +18,7 @@ const SentimentAnalysis: React.FC<{ text: string }> = ({ text }) => {
       });
   }, [text]);
 
+
   const fetchSentimentAnalysis = async (text: string): Promise<{ sentiment: string }> => {
     // Simulate API call to fetch sentiment analysis result
     // Replace this with actual API call to your sentiment analysis service

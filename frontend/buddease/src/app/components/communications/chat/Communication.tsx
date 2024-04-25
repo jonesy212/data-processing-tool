@@ -4,6 +4,14 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import React from "react";
 
 
+
+
+interface Sender {
+  id: string;
+  name: string;
+  // Add any other properties specific to the sender
+}
+
 interface Communication {
     id: string;
   messages: Message[];

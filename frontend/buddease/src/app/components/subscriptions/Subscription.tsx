@@ -5,28 +5,48 @@ import { Data } from "../models/data/Data";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 
+type Subscription = {
+  unsubscribe: () => void;
+  portfolioUpdates: () => void;
+  tradeExecutions: () => void;
+  marketUpdates: () => void;
+  communityEngagement: () => void;
+};
+
 const SubscriptionComponent = (
   initialData: Data,
   updateCallback: (
-    events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>
+    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    events: Record<string, CalendarEvent[]>
   ) => void
 ) => {
-  const [subscriptionData, setSubscriptionData] = useState<string | null>(null);
+  const [subscriptionData, setSubscriptionData] = useState<Subscription | null>(null);
   const data = useRealtimeData(initialData, updateCallback);
 
   useEffect(() => {
     // Subscribe to the data service
-    const subscription = subscriptionService.subscribe(
+    const subscription = subscriptionService
+    const subscriptionUsage: Subscription = subscription.subscribe(
       "yourHookName",
-      () => void setSubscriptionData("subscription data")
-    );
+      () => {
+        // Construct and return the Subscription object
+        return {
+          unsubscribe: () => {}, // Placeholder function
+          portfolioUpdates: () => {}, // Placeholder function
+          tradeExecutions: () => {}, // Placeholder function
+          marketUpdates: () => {}, // Placeholder function
+          communityEngagement: () => {}, // Placeholder function
+        };
+      }
+    ) as Subscription;
 
     // Cleanup: Unsubscribe when the component unmounts
-    return () => {
-      subscriptionService.unsubscribe("yourHookName");
+      return () => {
+        if (typeof subscriptionUsage !== "string") {
+          subscriptionUsage.unsubscribe();
+        }
     };
-  }, [data]); // Update dependency array to include 'data'
+  }, [data]);
 
   return (
     <div>
@@ -44,20 +64,4 @@ const SubscriptionComponent = (
 };
 
 export default SubscriptionComponent;
-
-// Create a web3 provider instance
-const web3Provider = new Web3Provider(
-  "https://example.com/web3",
-  "your-api-key",
-  5000
-);
-// Connect the web3 provider
-subscriptionService.connectWeb3Provider(web3Provider);
-// Subscribe to a web3-related hook
-subscriptionService.subscribe("web3Hook", () => {
-  console.log("Web3 hook callback");
-  // Your callback logic for web3-related events
-});
-
-// Unsubscribe from the web3-related hook
-subscriptionService.unsubscribe("web3Hook"); // You might want to unsubscribe based on a certain condition or component unmount
+export type { Subscription };

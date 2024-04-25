@@ -4,6 +4,12 @@ import { DataAnalysis } from "./DataAnalysis";
 
 export const DataAnalysisActions = {
   // Standard actions
+  analyzeText: createAction<string>("analysisText"),
+  addAnalysisLog: createAction<{
+    type: string;
+    message: string;
+    timestamp: number;
+  }>("addAnalysisLog"),
   fetchDataAnalysisRequest: createAction("fetchDataAnalysisRequest"),
   fetchDataAnalysisSuccess: createAction<{ dataAnalysis: DataAnalysis[] }>("fetchDataAnalysisSuccess"),
   fetchDataAnalysisFailure: createAction<{ error: string }>("fetchDataAnalysisFailure"),

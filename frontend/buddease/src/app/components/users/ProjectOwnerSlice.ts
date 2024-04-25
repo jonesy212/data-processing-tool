@@ -928,3 +928,4 @@ export const selectProjectOwner = (state: RootState) => state.projectOwner;
 
 // Export the reducer
 export default useProjectOwnerSlice.reducer;
+export type { ProjectOwnerState};

@@ -20,6 +20,7 @@ interface Theme extends BrandingSettings {
   borderWidth: string;
   borderRadius: string;
   boxShadow: string;
+  children?: React.ReactNode;
   // Add more theme properties as needed
 }
 // Define the ThemeContext

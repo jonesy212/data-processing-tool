@@ -1,10 +1,7 @@
 // TaskSlice.ts
-import { generateNewTask } from "@/app/generators/GenerateNewTask";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import FileSaver from "file-saver";
 import * as Papa from "papaparse";
-import { NamingConventionsError } from "shared_error_handling";
 import * as XLSX from "xlsx";
 import useWebNotifications from "../../../hooks/commHooks/useWebNotifications";
 import { TaskLogger } from "../../../logging/Logger";
@@ -14,11 +11,15 @@ import TaskDetails, { Task, tasksDataSource } from "../../../models/tasks/Task";
 import { Progress } from "../../../models/tracker/ProgressBar";
 import { Project } from "../../../projects/Project";
 import { sanitizeInput } from "../../../security/SanitizationFunctions";
+import {AnalysisTypeEnum} from "../../../../components/projects//DataAnalysisPhase/AnalysisType"
 import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
 } from "../../../support/NotificationContext";
+import { NamingConventionsError } from 'shared_error_handling';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
 import { Idea } from "../../../users/Ideas";
 import { User } from "../../../users/User";
@@ -188,7 +189,7 @@ export const taskManagerSlice = createSlice({
       state.tasks.push(newTask);
       TaskLogger.logTaskCreated("New Task", generatedTaskID);
 
-      generateNewTask().then((newTask: any) => {
+      UniqueIDGenerator.generateNewTask().then((newTask: any) => {
         state.tasks.push(newTask);
       });
 
@@ -955,7 +956,7 @@ export const {
   redoAction,
   exportTasks,
   importTasks,
-  updateTaskDetails,
+updateTaskDetails,
 
   updateTaskTags,
   updateTaskDueDate,

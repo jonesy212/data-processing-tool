@@ -18,9 +18,8 @@ interface DatabaseConfig {
   username: string; // Assuming the username is always required
   authToken: string; // Authentication token to be used for backend authentication
   database?: string;
-  // ...other options
+  saveUserProfiles?(userProfiles: any[]): Promise<void>;
 }
-
 interface DatabaseService {
   createDatabase(config: DatabaseConfig, databaseQuery: string): Promise<any>;
 

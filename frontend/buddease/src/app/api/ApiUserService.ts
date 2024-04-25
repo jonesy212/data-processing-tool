@@ -56,6 +56,19 @@ export const userApiService = observable({
     }
   ),
 
+  saveUserProfiles: handleSuccess((payload: { profiles: User[] }) => UserActions.saveUserProfilesSuccess(payload))(
+    async (profiles: User[]): Promise<{  profiles: User[] }> => {
+      try {
+        const response = await axiosInstance.post(`${API_BASE_URL}`, profiles);
+        return { profiles: response.data as User[] };
+      } catch (error) {
+        console.error("Error saving user profiles:", error);
+      }
+
+      return { profiles: profiles };
+    },
+  ),
+
   updateUser: handleSuccess((payload: { user: User }) => UserActions.updateUserSuccess(payload))(
     async (userId: number, updatedUserData: any): Promise<{ user: User }> => {
       try {

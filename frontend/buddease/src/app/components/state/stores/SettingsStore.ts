@@ -12,6 +12,7 @@ import axiosInstance from "../../security/csrfToken";
 export interface Settings {
     id: string;
     filter: (key: keyof Settings) => void;
+    appName: string;
   // Define common properties and methods for settings if needed
 }
 

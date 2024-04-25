@@ -91,10 +91,11 @@ import UserList from "@/app/components/lists/UserList";
 import NotificationManager from "@/app/components/support/NotificationManager";
 import UserDetails, { User, UserData } from "@/app/components/users/User";
 
-import ApiConfigComponent from "@/app/components/api/ApiConfigComponent";
 import FileUploadModal from "@/app/components/cards/modal/FileUploadModal";
 import FrontendStructureViewer from "@/app/components/development/FrontendStructureViewer";
+import MetadataViewer from "@/app/components/development/MetadataViewer";
 import DocumentBuilderConfigComponent from "@/app/components/documents/DocumentBuilderConfigComponent";
+import VersioningComponent from "@/app/components/hooks/VersioningComponent";
 import { LogData } from "@/app/components/models/LogData";
 import DataProcessingComponent from "@/app/components/models/data/DataProcessingComponent";
 import { Task } from "@/app/components/models/tasks/Task";
@@ -108,6 +109,8 @@ import { NotificationType, NotificationTypeEnum } from "@/app/components/support
 import { notificationData } from "@/app/components/support/NotificationProvider";
 import { PermissionsEditor } from "@/app/components/users/PermissionsEditor";
 import UserRolesEditor from "@/app/components/users/UserRolesEditor";
+import UpdatePreference from "@/app/components/users/preferences/UserPreference";
+import ApiConfigComponent from "@/app/configs/ApiConfigComponent";
 import { BackendConfig, backendConfig } from "@/app/configs/BackendConfig";
 import BackendConfigComponent from "@/app/configs/BackendConfigComponent";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
@@ -116,6 +119,8 @@ import { DocumentBuilderConfig } from '@/app/configs/DocumentBuilderConfig';
 import { FrontendConfig, frontendConfig } from "@/app/configs/FrontendConfig";
 import FrontendConfigComponent from "@/app/configs/FrontendConfigComponent";
 import FrontendDocumentConfig from "@/app/configs/FrontendDocumentConfig";
+import { GenerateUserPreferences } from "@/app/configs/GenerateUserPreferences";
+import { lazyLoadScriptConfig } from "@/app/configs/LazyLoadScriptConfig";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import BackendStructureWrapper from "@/app/configs/appStructure/BackendStructureWrapper";
@@ -126,6 +131,7 @@ import DesignComponent from "@/app/css/DesignComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import AppCacheManagerBase from "@/app/utils/AppCacheManager";
 import MyPromise from "@/app/utils/MyPromise";
+import { Events } from "pg";
 import { useSelector } from "react-redux";
 import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
@@ -135,15 +141,6 @@ import DataPreview, {
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";
-import { GenerateUserPreferences } from "@/app/configs/GenerateUserPreferences";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { lazyLoadScriptConfig } from "@/app/configs/LazyLoadScriptConfig";
-import VersioningComponent from "@/app/components/hooks/VersioningComponent";
-import { Events } from "pg";
-import StructuredMetadataViewer from "@/app/components/development/MetadataViewer";
-import MetadataViewer from "@/app/components/development/MetadataViewer";
-import { metadata } from '../../layout';
-import UpdatePreference from "@/app/components/users/preferences/UserPreference";
 
 
 interface DynamicComponentWrapperProps<T> {

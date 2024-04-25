@@ -892,6 +892,9 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     SUCCESS_GENERATING_TRANSFER_TOKEN: "Transfer token generated successfully",
     // Add more messages for the TokenUtils type
   },
+  UI: {
+    NO_NOTIFICATIONS_DEFAULT: "No notifications to display",
+  }
 } as const;
 
 export default NOTIFICATION_MESSAGES;

@@ -12,6 +12,7 @@ import { UserRole } from "./UserRole";
 import { UserRoleActions } from "./UserRoleActions";
 import { sendNotification } from "./UserSlice";
 // Other imports remain unchanged
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import updateUI from '../documents/editing/updateUI';
 
 const API_BASE_URL = dotProp.getProperty(endpoints, "users");
@@ -46,10 +47,9 @@ dispatch(UserActions.fetchUserRequest({ userId: parsedUserId }));
 
 
 class UserService {
+
   // Constructor remains unchanged
-
-
-  getCurrentUserId = () => {
+  static getCurrentUserId() {
     return parsedUserId;
   }
   createUser = async (newUser: User) => {
@@ -158,8 +158,20 @@ class UserService {
         throw error;
       }
     }
+    fetchUserData = async (
+      req: { userId: string },
+      res: {
+        dispatch: Dispatch<UnknownAction>;
+      }
+    ) => { 
+      try {
+        const userData = UserActions.fetchUserData({ userId: req.userId });
+        return userData; // Return the fetched user data
+      } catch (error) {
+        throw error;
+      }
+    }
     
-
   fetchUserByIdSuccess = async () => {
     try {
       const API_LIST_ENDPOINT = dotProp.getProperty(
@@ -516,5 +528,5 @@ updateUserRoles = async (users: {
 
 }
 
-const userService = new UserService();
-export default userService;
+export const userService = new UserService();
+export default UserService;

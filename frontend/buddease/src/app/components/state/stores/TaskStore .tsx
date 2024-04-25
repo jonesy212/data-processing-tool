@@ -15,12 +15,14 @@ import { TaskActions } from "../../tasks/TaskActions";
 import { taskService } from "../../tasks/TaskService";
 import { User } from "../../users/User";
 import { useApiManagerSlice } from "../redux/slices/ApiSlice";
-import { taskManagerSlice } from "../redux/slices/TaskSlice";
+import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 import { Todo } from "../../todos/Todo";
 import useApiManager from "../../hooks/dynamicHooks/useApiManager";
 import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
 import { saveToLocalStorage } from "../../hooks/useLocalStorage";
+import { saveAs } from '@/app/components/documents/editing/autosave';
+import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -86,7 +88,7 @@ export interface TaskManagerStore {
 
 const useTaskManagerStore = (): TaskManagerStore => {
   const { notify } = useNotification();
-  const { markTaskAsCompleteSuccess, markTaskAsCompleteFailure } = TaskActions;
+  const { markTaskAsCompleteSuccess, markTaskAsCompleteFailure, setAssignedTaskStore } = TaskActions;
   const assignTaskToUser = useApiManager();
   const [tasks, setTasks] = useState<Record<string, Task[]>>({
     pending: [],
@@ -95,11 +97,12 @@ const useTaskManagerStore = (): TaskManagerStore => {
   });
   const [taskTitle, setTaskTitle] = useState<string>("");
   const [taskDescription, setTaskDescription] = useState<string>("");
-  const [taskStatus, setTaskStatus] = useState<
+   const [taskStatus, setTaskStatus] = useState<
     "pending" | "inProgress" | "completed"
   >("pending");
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(""); // Initialize it with an empty string
 
+  const taskStore = useAssignTaskStore(); // Include the AssignTaskStore
   // Include the AssignTaskStore
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
@@ -138,18 +141,55 @@ const useTaskManagerStore = (): TaskManagerStore => {
         break;
       case TaskActions.markTaskAsCompleteSuccess.type:
         markTaskAsCompleteSuccess(payload);
+      case TaskActions.setAssignedTaskStore.type:
+        setAssignedTaskStore(payload);
     }
+
+
+    taskStore.setAssignedTaskStore ({
+      ...assignedTaskStore,
+      [taskId]: reassignedTasks,
+    });
     // Method to reassign a task to a new user
     const reassignTask = (
       taskId: string,
       oldUserId: string,
       newUserId: string
     ) => {
-      assignedTaskStore.reassignUser(taskId, oldUserId, newUserId);
-      // You can add additional logic or trigger notifications as needed
+      const reassignedTasks =
+        assignedTaskStore[taskId]?.map((task: { userId: string }) => {
+          if (task.userId === oldUserId) {
+            return { ...task, userId: newUserId };
+          }
+          return task;
+        }) || [];
+
+      setAssignedTaskStore({
+        ...assignedTaskStore,
+        [taskId]: reassignedTasks,
+      });
+
       setDynamicNotificationMessage(
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
       );
+    };
+
+    const reassignUser = (
+      taskId: string,
+      oldUserId: string,
+      newUserId: string
+    ) => {
+      const reassignedTasks = assignedTaskStore[taskId].map((task) => {
+        if (task.userId === oldUserId) {
+          return { ...task, userId: newUserId };
+        }
+        return task;
+      });
+
+      setAssignedTaskStore({
+        ...assignedTaskStore,
+        [taskId]: reassignedTasks,
+      });
     };
 
     const updateTaskTitle = (title: string) => {
@@ -426,10 +466,10 @@ const useTaskManagerStore = (): TaskManagerStore => {
       // Dispatch the synchronous action immediately
       dispatch(markTaskAsCompleteSuccess(taskId));
 
-      const { markTaskComplete } = taskManagerSlice.actions;
+      const { markTaskComplete } = useTaskManagerSlice.actions;
 
       // Dispatch the asynchronous action (no need to await)
-      markTaskComplete(taskId as unknown as number);
+      markTaskComplete(taskId);
 
       // Simulating asynchronous operation
       setTimeout((error: Error) => {
@@ -464,7 +504,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           const updatedTasks = { ...prevTasks };
           const taskToUpdate = updatedTasks[taskId];
           if (taskToUpdate) {
-            taskToUpdate[0].status = "inProgress";
+            taskToUpdate.status = "inProgress";
           }
           return updatedTasks;
         });
@@ -472,21 +512,26 @@ const useTaskManagerStore = (): TaskManagerStore => {
         console.error(`Error marking task ${taskId} as in progress`, err);
       }
       dispatch(
-        TaskActions.markTaskAsInProgressSuccess({ taskId, requestData })
+        TaskActions.markTaskAsInProgressSuccess({
+          taskId: taskToUpdate,
+          requestData,
+        })
       );
-      const { markTaskAsInProgress } = taskManagerSlice.actions;
-      markTaskAsInProgress(taskId as unknown as number);
+      const { markTaskAsInProgress } = useTaskManagerSlice.actions;
+      markTaskAsInProgress(taskToUpdate);
       // Simulating asynchronous operation
-      setTimeout((error: Error) => {
+      setTimeout(() => {
         notify(
           "markTaskAsInProgressFailure",
-          `Error marking task ${taskId} as in progress`,
+          `Error marking task ${taskToUpdate} as in progress`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
           NotificationTypeEnum.OperationSuccess
         );
       }, 1000);
     };
+
+
 
   // Function to fetch a task by its ID
   const getTaskById = async (taskId: string): Promise<Task | null> => {
@@ -537,7 +582,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
 
   const updateTaskPriority =
-    (taskId: string, priority: Priority) => async (dispatch: any) => {
+    (taskId: string, priority: PriorityTypeEnum) => async (dispatch: any) => {
       try {
         // Update task priority
         // Assuming setTasks is a local state updater
@@ -545,14 +590,17 @@ const useTaskManagerStore = (): TaskManagerStore => {
           const updatedTasks = { ...prevTasks };
           const taskToUpdate = updatedTasks[taskId];
           if (taskToUpdate) {
-            taskToUpdate[0].priority = priority;
+            taskToUpdate[0].priority = priority as "medium" | "low" | "high";
           }
           return updatedTasks;
         });
         // Dispatch the synchronous action immediately
-        dispatch(updateTaskPrioritySuccess(taskId, priority));
+        dispatch(TaskActions.updateTaskPrioritySuccess({
+          taskId: taskId,
+          priority: priority
+        }));
         // Dispatch the asynchronous action (no need to await)
-        updateTaskPriority(taskId, priority as unknown as number);
+        updateTaskPriority(taskId, priority);
         // Simulating asynchronous operation
         setTimeout((error: Error) => {
           notify(
@@ -582,6 +630,11 @@ const useTaskManagerStore = (): TaskManagerStore => {
       }
     };
 
+
+
+  const filterTasksByStatus = (status: TaskStatus) => { 
+    return tasksDataSource.filter((task: Task) => task.status === status);
+  }
   const updateTaskAssignee =
     (taskId: string, assignee: User) => async (dispatch: any) => {
       try {

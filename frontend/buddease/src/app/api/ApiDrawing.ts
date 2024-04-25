@@ -160,9 +160,10 @@ export const updateDrawing = async (
     throw error;
   }
 };
+
 export const saveDrawingToDatabase = async (
   drawingData: any
-): Promise<void> => {
+): Promise<boolean> => {
   try {
     const saveDrawingEndpoint = `${API_BASE_URL}/save`;
     await axiosInstance.post(saveDrawingEndpoint, drawingData, {
@@ -176,6 +177,9 @@ export const saveDrawingToDatabase = async (
       new Date(),
       NotificationTypeEnum.Success
     );
+
+    // Return true to indicate successful saving
+    return true;
   } catch (error: any) {
     console.error("Error saving drawing to database:", error);
     handleDrawingApiErrorAndNotify(
@@ -183,9 +187,11 @@ export const saveDrawingToDatabase = async (
       "Failed to save drawing to database",
       "SaveDrawingErrorId"
     );
-    throw error;
+    // Return false to indicate failure
+    return false;
   }
 };
+
 // Delete a drawing
 export const deleteDrawing = async (drawingId: number): Promise<void> => {
   try {

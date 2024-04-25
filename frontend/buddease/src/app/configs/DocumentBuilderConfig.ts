@@ -93,7 +93,8 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       includeTitle: false,
       includeContent: false,
       includeStatus: false,
-      includeAdditionalInfo: false
+      includeAdditionalInfo: false,
+      font: ""
     },
     fontFamily: "Arial",
     fontSize: 12,

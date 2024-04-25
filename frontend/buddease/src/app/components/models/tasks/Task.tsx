@@ -12,6 +12,7 @@ import CommonDetails, { CommonData } from "../CommonData";
 import { Data } from "../data/Data";
 import { TaskStatus } from "../data/StatusType";
 import { Team, TeamDetails } from "../teams/Team";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 
 
@@ -20,6 +21,7 @@ interface Task extends Data {
   id: string
   title: string;
   description: string;
+  
   name?: string | null;
   projectName?: string;
 

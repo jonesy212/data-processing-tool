@@ -1,9 +1,10 @@
 // NoteData.ts
 
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Collaborator } from "../models/teams/TeamMembers";
+import { Progress } from "../models/tracker/ProgressBar";
 import Version from "../versions/Version";
 import { DocumentOptions } from "./DocumentOptions";
-import { Collaborator } from "../models/teams/TeamMembers";
 
 
 
@@ -12,6 +13,10 @@ export interface Change {
   description: string;
   timestamp: Date;
   author: string;
+  type: "task" | "milestone" | "project" | "communication" | "resource" | "cryptoTransaction" | "added" | "modified" | "removed";
+  progress: Progress
+  payload: any
+  escalated: boolean
   // Add more properties as needed
 }
 

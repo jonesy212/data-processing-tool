@@ -1,7 +1,9 @@
 import { Snapshot } from '@/app/components/snapshots/SnapshotStore';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Data } from "../models/data/Data";
 
 interface SnapshotItem {
+  id: string;
   value: Snapshot<Data>
   label: string;
   // Define properties of a snapshot item
@@ -9,14 +11,20 @@ interface SnapshotItem {
 
 class SnapshotList {
   private snapshots: SnapshotItem[];
-
+  private id: string;
   constructor() {
+    this.id = UniqueIDGenerator.generateSnapshoItemID(Date.now().toString());
     this.snapshots = [];
   }
 
   // Methods to manipulate snapshot items
   addSnapshot(snapshot: SnapshotItem) {
+    snapshot.id = UniqueIDGenerator.generateSnapshoItemID(this.id);
     this.snapshots.push(snapshot);
+  }
+
+  fetchSnaphostById(id: string): SnapshotItem | undefined {
+    return this.snapshots.find(snapshot => snapshot.id === id);
   }
 
   removeSnapshot(snapshotId: string) {

@@ -18,9 +18,13 @@ import { TaskManagerStore } from "../state/stores/TaskStore ";
 import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
+import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
 
 // Define the structure of YourResponseType based on the actual response from the backend
 interface YourResponseType {
+  forEach(arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void): unknown;
+  length: number;
+
   calendarEvents: CalendarEvent[]; // Assuming CalendarEvent is a type/interface for calendar events
   todos: Todo[]; // Assuming Todo is a type/interface for todos
   tasks: Task[]; // Assuming Task is a type/interface for tasks
@@ -64,6 +68,7 @@ interface YourResponseType {
     exchangeData: ExchangeData[];
     averagePrice: number;
   };
+  analysisResults: DataAnalysisResult
   // Add other properties if necessary
 }
 

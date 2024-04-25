@@ -1,25 +1,46 @@
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
-import React, { MouseEvent, SyntheticEvent } from "react";
-import { useDispatch } from "react-redux";
+import React, { SyntheticEvent, useState } from "react";
 import { DragActions } from "../../actions/DragActions";
 import {
   initiateBitcoinPayment,
   initiateEthereumPayment,
 } from "../../payment/initCryptoPayments";
+import { ContentActions } from "../../security/ContentActions";
 import {
   sanitizeData,
   sanitizeInput,
 } from "../../security/SanitizationFunctions";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { addMessage } from "../../state/redux/slices/ChatSlice";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import updateUI, { updateUIWithCopiedText } from "../editing/updateUI";
-import userService from "../../users/ApiUser";
-import { ContentActions } from "../../security/ContentActions";
 
-import * as  ApiAnalysis from '../../../api/ApiAnalysisService';
+import { DataAnalysisActions } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisActions";
+import userService from "@/app/components/users/ApiUser";
+import { RetryConfig } from "@/app/configs/ConfigurationService";
+import { AxiosResponse } from "axios";
+import { useDispatch } from "react-redux";
+import * as ApiAnalysis from "../../../api/ApiAnalysisService";
+import { SearchActions } from "../../actions/SearchActions";
+import { UIActions } from "../../actions/UIActions";
+import getSocketConnection from "../../communications/getSocketConnection";
+import { currentAppType } from "../../getCurrentAppType";
+import useErrorHandling from "../../hooks/useErrorHandling";
+import useWebSocket from "../../hooks/useWebSocket";
+import { Subscription } from "../../subscriptions/Subscription";
+import { saveCryptoPortfolioData } from "../editing/autosave";
+import { useAppSelector } from "@/app/utils/useAppSelector";
+import { AppState, AppStateStatic } from "react-native";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
+import { RootState } from "../../state/redux/slices/RootSlice";
 const dispatch = useDispatch();
+const [state, setState] = useState("");
+// Initialize the useErrorHandling hook
+const useError = useErrorHandling();
+// Define the subscription variable
+const subscription = null; // You need to define subscription before passing it to cleanupState
+const [pointerPosition, setPointerPosition] = useState({ x: 0, y: 0 });
 
 export const handleCryptoPaymentSelect = (cryptoOption: string) => {
   // Implement logic to handle the selected crypto payment option
@@ -53,7 +74,101 @@ const handleKeyboardShortcuts = (
   }
 };
 
+const cleanupState = (subscription: any) => {
+  // Use the useWebSocket hook to manage WebSocket connection
+  const { socket, sendMessage } = useWebSocket("ws://example.com");
+
+  // Clean up any state variables or resources
+
+  // For example, reset state variables to their initial values
+  // or clear any resources that are no longer needed
+  resetStateVariables();
+  clearResources(socket, subscription);
+};
+const cleanupSubscriptions = (subscription: Subscription | null) => {
+  // Clean up any subscriptions
+  if (subscription) {
+    subscription.unsubscribe();
+  }
+};
+
+const cleanupSocketConnection = (socket: WebSocket) => {
+  if (socket) {
+    socket.close();
+  }
+};
+
+const closeConnections = (
+  socket: WebSocket,
+  subscription: Subscription | null
+) => {
+  // Close any open connections
+
+  if (socket) {
+    socket.close();
+  }
+
+  if (subscription) {
+    subscription.unsubscribe();
+  }
+};
+
+// Then call cleanupState with the subscription argument
+cleanupState(subscription);
+
+const clearResources = (socket: any, subscription: any) => {
+  // Clear any resources that are no longer needed
+
+  // For example, if you have event listeners, subscriptions, or connections,
+  // you can unsubscribe or disconnect them here to free up resources
+
+  // Unsubscribe from subscriptions
+  subscription.unsubscribe();
+
+  // Disconnect the WebSocket connection
+  if (socket) {
+    socket.disconnect();
+  }
+};
+const resetStateVariables = () => {
+  // Reset any state variables to their initial values
+
+  setState("");
+};
+
+// Handle specific actions based on the type of app
+const handleAppSpecificActions = (selectedText: string | null) => {
+  if (selectedText) {
+    switch (currentAppType) {
+      case "Text Editing App":
+        // Dispatch action to show formatting options or context menu
+        UIActions.setShowModal(true);
+        break;
+      case "Search App":
+        // Dispatch action to trigger a search based on the selected text
+        UIActions.setNotification({
+          message: "Initiating search...",
+          type: "info",
+        });
+        SearchActions.initiateSearch(selectedText);
+        break;
+      case "Document Analysis App":
+        // Dispatch action to analyze the selected text
+        UIActions.setLoading(true);
+        DataAnalysisActions.analyzeText(selectedText);
+        break;
+      default:
+        console.log("No specific actions defined for the current app.");
+    }
+  } else {
+    console.log("No text selected. No specific actions to perform.");
+  }
+};
+
 const DynamicEventHandlerExample = {
+  
+  // Define state using useState hook
+
   // Separate event handlers for keyboard and mouse events
   handleKeyboardEvent: (event: React.KeyboardEvent<HTMLInputElement>) => {
     // Sanitize input value before processing
@@ -145,7 +260,7 @@ const DynamicEventHandlerExample = {
     return;
   },
 
-  handleHighlighting: (event: React.SyntheticEvent) => {
+  handleHighlighting: async (event: React.SyntheticEvent) => {
     const highlightEvent = event as React.MouseEvent<HTMLDivElement>;
 
     // Accessing highlighting-related information
@@ -159,21 +274,27 @@ const DynamicEventHandlerExample = {
     if (selectedText) {
       highlightEvent.preventDefault();
       const messageId = UniqueIDGenerator.generateMessageID();
-      // Perform an action when text is highlighted
-      const message: Partial<Message> = {
-        id: messageId,
-        content: `You highlighted: ${selectedText}`,
-        userId: userService.getCurrentUserId(), // Include user ID if available
-        timestamp: new Date().toISOString(), // Include timestamp of highlighting event
-      };
-      addMessage(message as Message);
 
-      console.log("You highlighted some text:", selectedText);
+      // Additional logic for highlighting...
+      if (selectedText) {
+        highlightEvent.preventDefault();
+        const messageId = UniqueIDGenerator.generateMessageID();
+        const currentUser = userService.getCurrentUserId(); // Call getCurrentUserId method
+
+        // Perform an action when text is highlighted
+        const message: Partial<Message> = {
+          id: messageId,
+          content: `You highlighted: ${selectedText}`,
+          userId: currentUser, // Assign the current user ID
+          timestamp: new Date().toISOString(), // Include timestamp of highlighting event
+        };
+        addMessage(message as Message);
+
+        console.log("You highlighted some text:", selectedText);
+        // Add more specific logic based on your application's requirements
+      }
     }
-
-    // Add more specific logic based on your application's requirements
   },
-
   handleAnnotations: (event: React.MouseEvent<HTMLDivElement>) => {
     // Accessing annotation-related information
     const annotationDetails =
@@ -183,8 +304,7 @@ const DynamicEventHandlerExample = {
     console.log("Handling annotations:");
     console.log("Annotation Details:", annotationDetails);
 
-    // Additional logic for annotations...
-    // For example, update UI based on annotations or trigger further actions.
+    //  update UI based on annotations or trigger further actions.
     const messageId = UniqueIDGenerator.generateMessageID();
     const message: Partial<Message> = {
       id: messageId,
@@ -248,48 +368,55 @@ const DynamicEventHandlerExample = {
       setClipboardHistory(clipboardHistory);
     }
 
-
-    const processCopiedText = async (text: string, analysisType: AnalysisTypeEnum): Promise<void> => {
+    const processCopiedText = async (
+      text: string,
+      analysisType: AnalysisTypeEnum
+    ): Promise<void> => {
       try {
-        let sentiment: string;
-        
+        let sentiment: AxiosResponse<any, any>;
+
         // Perform sentiment analysis based on the specified analysis type
         switch (analysisType) {
           case AnalysisTypeEnum.SENTIMENT:
-            sentiment = await ApiAnalysis.apiAnalysisService.performSentimentAnalysis(text);
+            sentiment =
+              await ApiAnalysis.apiAnalysisService.performSentimentAnalysis(
+                text
+              );
             break;
           case AnalysisTypeEnum.DESCRIPTIVE:
-            sentiment = await  ApiAnalysis.apiAnalysisService.performDescriptiveAnalysis(text);
+            sentiment =
+              await ApiAnalysis.apiAnalysisService.performDescriptiveAnalysis(
+                text
+              );
             break;
           // Add cases for other analysis types as needed
           default:
-            throw new Error('Invalid analysis type');
+            throw new Error("Invalid analysis type");
         }
-      
-    
+
         // Dispatch an action to handle the sentiment analysis result
-        dispatch(ContentActions.handleSentimentAnalysis(sentiment, analysisType));
+        dispatch(ContentActions.handleSentimentAnalysis(sentiment.data));
       } catch (error) {
         // Handle any errors that occur during sentiment analysis
-        console.error('Error during sentiment analysis:', error);
+        console.error("Error during sentiment analysis:", error);
       }
-    
 
       if (copiedText) {
+        const analysisType = AnalysisTypeEnum.SENTIMENT;
         // Process the copied text, such as formatting or analyzing it
-        const processedText = processCopiedText(copiedText);
+        const processedText = processCopiedText(copiedText, analysisType);
         console.log("Processed Copied Text:", processedText);
 
         // Update the UI based on the copied text, e.g., display a notification or apply styles
         updateUIWithCopiedText(processedText);
 
-        updateUI
+        updateUI;
         // Perform action on paste like adding to clipboard history
         addToClipboardHistory(copiedText);
       } else {
         console.log("No text copied.");
       }
-    }
+    };
     // Add more specific logic based on your application's requirements
   },
 
@@ -333,30 +460,81 @@ const DynamicEventHandlerExample = {
 
     // Add more specific logic based on your application's requirements
   },
-
   handleSettingsPanel: (event: React.SyntheticEvent) => {
     // Logic for handling settings panel
     console.log("Handling settings panel:", event);
+
     // Additional logic for settings panel...
+    // For example, you can toggle the visibility of the settings panel or perform other actions based on the event
+
+    // Example: Toggle visibility of settings panel
+    const settingsPanel = document.getElementById("settings-panel");
+    if (settingsPanel) {
+      if (settingsPanel.style.display === "none") {
+        // Show the settings panel
+        settingsPanel.style.display = "block";
+      } else {
+        // Hide the settings panel
+        settingsPanel.style.display = "none";
+      }
+    }
   },
 
-  // Simulating the functions you want to call
   handleHelpFAQ: (event: React.SyntheticEvent) => {
     // Logic for handling help/FAQ
     console.log("Handling help/FAQ:", event);
+
     // Additional logic for help/FAQ...
+    // Add any specific actions you want to perform when the help/FAQ event is triggered
+
+    // Example: Open a modal with help/FAQ content
+    const helpFAQModal = document.getElementById("help-faq-modal");
+    if (helpFAQModal) {
+      // Open the modal
+      helpFAQModal.classList.add("open");
+    }
   },
 
   handleSearchFunctionality: (event: React.SyntheticEvent) => {
     // Logic for handling search functionality
     console.log("Handling search functionality:", event);
+
     // Additional logic for search functionality...
+    // Add any specific actions you want to perform when the search functionality is triggered
+
+    // Example: Get the search query from the event and perform a search
+    const searchInput = (event.target as HTMLInputElement).value;
+    if (searchInput) {
+      // Perform search based on the input value
+      console.log("Performing search for:", searchInput);
+
+      // Example: Call a search API endpoint with the search query
+      // replace `apiEndpoint` with your actual API endpoint
+      fetch(`apiEndpoint?query=${searchInput}`)
+        .then((response) => response.json())
+        .then((data) => {
+          // Process search results
+          console.log("Search results:", data);
+          // Update UI with search results
+        })
+        .catch((error) => {
+          // Handle errors
+          console.error("Error performing search:", error);
+          // Display error message to the user
+        });
+    } else {
+      // Handle case where search input is empty
+      console.log("Search input is empty. Please enter a search query.");
+      // Display message to the user indicating that search input is required
+    }
   },
 
   // Simulating the function you want to call
   handleProgressIndicators: (event: React.SyntheticEvent) => {
+    type AppRootState = AppState & RootState
     // Assuming you have some progress-related information in your application state
-    const currentProgress = 50; // Example: current progress is 50%
+    const currentProgress = useAppSelector((state: RootState) => state.appManager.progress);
+      
 
     // Logic for handling progress indicators
     console.log("Handling progress indicators:", event);
@@ -388,9 +566,15 @@ const DynamicEventHandlerExample = {
   },
 
   handleDragStart: (event: React.DragEvent<HTMLDivElement>) => {
-    const { clientX, clientY , } = event;
+    const { clientX, clientY } = event;
 
-    dispatch(DragActions.dragStart({ clientX: clientX, clientY: clientY, highlightEvent: event }));
+    dispatch(
+      DragActions.dragStart({
+        clientX: clientX,
+        clientY: clientY,
+        highlightEvent: event,
+      })
+    );
 
     // Update UI to indicate dragging has started
     const draggedElement = event.currentTarget;
@@ -477,10 +661,312 @@ const DynamicEventHandlerExample = {
     // Additional logic for drag enter
     event.dataTransfer.dropEffect = "move";
     // Additional logic for drag enter
-    
+
     // Prevent default drag behaviors
     event.preventDefault();
   },
+
+  handleDragOver: (event: React.DragEvent<HTMLDivElement>) => {
+    // Additional logic for drag over
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  },
+
+  handleDragLeave: (event: React.DragEvent<HTMLDivElement>) => {
+    // if drag leave occurs on a valid drop zone
+    // Logic for drag leave
+    const dropZone = event.currentTarget;
+    if (!dropZone.classList.contains("drop-active")) return;
+    if (dropZone && dropZone.classList.contains("drop-active")) {
+      dropZone.classList.remove("drop-active");
+    }
+    console.log("Drag leave occurrend");
+  },
+
+  handleDrop: (event: DragEvent) => {
+    event.preventDefault();
+
+    try {
+      // Retrieve dropped data
+      const droppedData = event.dataTransfer?.getData("text/plain");
+
+      // Perform action based on dropped data
+      if (droppedData) {
+        // Example: Display dropped text in console
+        console.log("Dropped text:", droppedData);
+
+        // Update UI with dropped text
+        setState(droppedData);
+      } else {
+        console.log("No data dropped or unsupported data type.");
+      }
+    } catch (error) {
+      console.error("Error handling drop event:", error);
+      // Handle error gracefully
+    } finally {
+      // Clean up if needed
+    }
+  },
+
+  handleFocus: (event: React.FocusEvent<HTMLDivElement>) => {
+    // Logic for focus event
+    console.log("Element gained focus");
+
+    // Additional logic for focus event
+    const focusedElement = event.currentTarget;
+    if (focusedElement) {
+      focusedElement.classList.add("focused");
+      console.log("Element gained focus");
+    }
+
+    // Prevent default focus behaviors
+    event.preventDefault();
+  },
+
+  handleBlur: (event: React.FocusEvent<HTMLDivElement>) => {
+    // Logic for blur event
+    // Additional logic for blur event
+    const blurredElement = event.currentTarget;
+    blurredElement.classList.remove("focused");
+    console.log("Element lost focus");
+    event.preventDefault();
+    // Remove focused class
+    if (blurredElement) {
+      blurredElement.classList.remove("focused");
+    }
+  },
+
+  handleFocusIn: (event: React.FocusEvent<HTMLDivElement>) => {
+    // Logic for focus in event
+    console.log("Element focused in");
+
+    // Additional logic for focus in event
+    const focusedElement = event.currentTarget;
+    if (focusedElement) {
+      focusedElement.classList.add("focused-in");
+      console.log("Element focused in");
+    }
+
+    // Prevent default focus in behaviors
+    event.preventDefault();
+  },
+
+  handleFocusOut: (event: React.FocusEvent<HTMLDivElement>) => {
+    // Logic for focus out event
+    console.log("Element focused out");
+
+    // Additional logic for focus out event
+    const focusedElement = event.currentTarget;
+    if (focusedElement) {
+      focusedElement.classList.remove("focused-in");
+      console.log("Element focused out");
+    }
+
+    // Prevent default focus out behaviors
+    event.preventDefault();
+  },
+
+  handleResize: (event: UIEvent) => {
+    // Logic for resize event
+    console.log("Window resized");
+
+    // Additional logic for resize event
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    console.log("Window width:", windowWidth);
+    console.log("Window height:", windowHeight);
+
+    // Additional logic based on window size
+    if (windowWidth < 768) {
+      console.log("Small screen size detected");
+    }
+  },
+
+  handleSelect: (event: React.MouseEvent<HTMLDivElement>) => {
+    // Logic for select event
+    console.log("Text selected");
+
+    // Additional logic for select event
+    const selectedText = window.getSelection()?.toString() || null;
+    console.log("Selected text:", selectedText);
+
+    // Check if text is being dragged to highlight
+    const isDragging =
+      event.nativeEvent instanceof MouseEvent && event.nativeEvent.which === 1;
+    if (isDragging) {
+      console.log("Text is being dragged to highlight.");
+      // Perform specific actions for highlighting, such as applying styles or triggering events
+    } else {
+      console.log("Text is being selected intentionally.");
+
+      // Handle specific actions based on the type of app
+      // Example: Text Editing App
+      // Provide formatting options or context menu for selected text
+      // Example: Reading App
+      // Offer options for bookmarking or annotating selected text
+      // Example: Search App
+      // Automatically initiate a search based on the selected text
+      handleAppSpecificActions(selectedText);
+    }
+
+    // Ensure accessibility by clearing any existing errors
+    useErrorHandling().clearError();
+
+    // Handle any unexpected errors
+    try {
+      // Perform additional logic here...
+    } catch (error: any) {
+      // Handle error gracefully using the useErrorHandling hook
+      useErrorHandling().handleError("Error handling select event", {
+        componentStack: error.stack,
+      });
+    }
+  },
+  handleUnload: (event: Event, roomId: string, retryConfig: RetryConfig) => {
+    const socket = getSocketConnection(roomId, retryConfig);
+
+    // Logic for unload event
+    console.log("Page unloaded");
+
+    // Clean up any state, subscriptions, or connections
+    cleanupState(subscription);
+    cleanupSubscriptions(subscription);
+
+    if (socket) {
+      closeConnections(socket, subscription);
+      cleanupSocketConnection(socket);
+      socket.close();
+    }
+  },
+
+  handleBeforeUnload: (event: BeforeUnloadEvent) => {
+    try {
+      // Logic for beforeunload event
+      console.log("Before page unload");
+
+      // Save crypto portfolio data before the page unloads
+      saveCryptoPortfolioData();
+
+      // Prompt the user to confirm before leaving the page
+      event.returnValue =
+        "Are you sure you want to leave? Your crypto portfolio data may not be saved.";
+    } catch (error) {
+      // Handle errors gracefully
+      console.error("Error handling beforeunload event:", error);
+    }
+  },
+
+  handleTouchStart: (event: React.TouchEvent<HTMLDivElement>) => {
+    // Logic for touch start event
+    console.log("Touch started");
+
+    // Additional logic for touch start event
+    const touchedElement = event.currentTarget;
+    if (touchedElement) {
+      touchedElement.classList.add("touched");
+      console.log("Element touched");
+    }
+
+    // Prevent default touch start behaviors
+    event.preventDefault();
+  },
+
+  // Touch Move Event Handler
+  handleTouchMove: (event: React.TouchEvent<HTMLDivElement>) => {
+    // Logic for touch move event
+    console.log("Touch moved");
+
+    // Additional logic for touch move event
+    // Implement specific actions based on touch movement
+
+    // Example: Calculate touch coordinates
+    const touchX = event.touches[0].clientX;
+    const touchY = event.touches[0].clientY;
+
+    // Example: Update UI based on touch coordinates
+    if (touchX > 500 && touchY < 200) {
+      // If touch is in a specific area of the screen
+      UIActions.setLoading(true); // Set loading state to true
+    } else {
+      UIActions.setLoading(false); // Set loading state to false
+    }
+  },
+
+  // Touch End Event Handler
+  handleTouchEnd: (event: React.TouchEvent<HTMLDivElement>) => {
+    // Logic for touch end event
+    console.log("Touch ended");
+
+    // Additional logic for touch end event
+    // Implement specific actions based on touch ending
+
+    // Example: Set loading state to false as touch ended
+    UIActions.setLoading(false); // Set loading state to false when touch ends
+  },
+
+  // Touch Cancel Event Handler
+  handleTouchCancel: (event: React.TouchEvent<HTMLDivElement>) => {
+    // Logic for touch cancel event
+    console.log("Touch canceled");
+
+    // Additional logic for touch cancel event
+    // Implement specific actions based on touch canceling
+
+    // Example: Reset any state or action related to touch operation
+    UIActions.setLoading(false); // Set loading state to false in case of touch cancel
+    UIActions.setError("Touch operation canceled"); // Set an error message indicating touch operation was canceled
+  },
+
+  handlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => {
+    // Logic for pointer down event
+    console.log("Pointer down");
+
+    // Example: Set isPointerDown state to true
+    UIActions.setIsPointerDown(true);
+    // Additional logic for pointer down event
+    // Implement specific actions based on pointer down event
+
+    // todo for usebe in the future in other parts of the app
+    // Additional logic for pointer down event
+
+    // // Example 1: Change the background color of the div
+    // event.currentTarget.style.backgroundColor = "lightblue";
+
+    // // Example 2: Fetch additional data or perform an API call
+    // fetchData();
+
+    // // Example 3: Update the state to track the pointer position
+    // const pointerPosition = { x: event.clientX, y: event.clientY };
+    // setPointerPosition(pointerPosition);
+
+    // // Example 4: Trigger a navigation or route change
+    // history.push("/new-route");
+
+    // // Example 5: Dispatch a Redux action
+    // dispatch({ type: "POINTER_DOWN", payload: { event } })
+  },
+
+   // Define state using useState hook
+   handlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => {
+     // Logic for pointer move event
+     console.log("Pointer moved");
+ 
+     // Example: Track pointer position
+     const newPointerPosition = {
+       x: event.clientX,
+       y: event.clientY
+     };
+ 
+     // Example: Update pointer position state using action
+     UIActions.setPointerPosition(newPointerPosition);
+ 
+     // Example: Call UIActions to update pointer position
+     UIActions.setPointerPosition(newPointerPosition);
+ 
+     // Prevent default pointer behavior like text selection
+     event.preventDefault();
+     // Additional logic for pointer move event
+   },
 
   // Dynamic event handler generator
   createEventHandler:

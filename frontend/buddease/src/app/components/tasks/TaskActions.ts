@@ -24,7 +24,11 @@ export const TaskActions = {
   completeAllTasksRequest: createAction("completeAllTasksRequest"),
   completeAllTasksSuccess: createAction("completeAllTasksSuccess"),
   completeAllTasksFailure: createAction<{ error: string }>("completeAllTasksFailure"),
-
+  
+  updateTaskPrioritySuccess: createAction<{
+    taskId: Task, priority: string
+    
+   }>("updateTaskPrioritySuccess"),
   assignTaskToCurrentUser: createAction<{generatedTask: Promise<Task>, currentUser: string }>("assignTaskToCurrentUser"),
   addTaskSuccess: createAction<{ task: Task }>("addTaskSuccess"),
   addTaskFailure: createAction<{ error: string }>("addTaskFailure"),
@@ -75,4 +79,8 @@ export const TaskActions = {
   markTaskAsCompleteRequest: createAction<string>("markTaskAsCompleteRequest"),
   markTaskAsCompleteSuccess: createAction<string>("markTaskAsCompleteSuccess"),
   markTaskAsCompleteFailure: createAction<{ taskId: string, error: string }>("markTaskAsCompleteFailure"),
+
+
+  setAssignedTaskStore: createAction<{ task: Task, assignee: string, assignees?: string[], tasks?: string[] }>("setAssignedTaskStore"),
+  
 };

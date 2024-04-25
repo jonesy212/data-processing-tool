@@ -1,8 +1,15 @@
 import React from "react";
+interface CheckBoxProps{
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  className?: string;
+  style?: React.CSSProperties;
+}
 
-const Checkbox = ({ label, checked, onChange }) => {
+const Checkbox: React.FC<CheckBoxProps> = ({ label, checked, onChange, className, style }) => {
   return (
-    <label className="checkbox-container">
+    <label className={`checkbox-container ${className}`} style={style}>
       <input
         type="checkbox"
         checked={checked}

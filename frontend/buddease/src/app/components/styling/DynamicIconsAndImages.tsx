@@ -57,7 +57,7 @@ const renderDynamicContent = (iconExamples: IconProps[], imageExamples: ImagePro
     <div>
       <h3>Dynamic Icons</h3>
       {iconExamples.map((icon, index) => (
-        <LazyIcon key={index} loadIcon={() => import(`./DynamicIcons/${icon.name}`)} />
+        <LazyIcon key={index} loadIcon={() => import(`./../../components/icons/${icon.name}.svg`)} />
       ))}
       <h3>Dynamic Images</h3>
       {imageExamples.map((image, index) => (

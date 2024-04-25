@@ -5,7 +5,7 @@ export interface ScheduledData extends Data{
     id: string | number;
     title: string;
     description: string;
-    scheduledDate: Date;
+    scheduledDate: Date
     createdBy: string;
     // Add other properties as needed
   }

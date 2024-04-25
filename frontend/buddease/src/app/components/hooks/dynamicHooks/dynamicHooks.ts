@@ -5,9 +5,9 @@ import { loadDashboardState } from "../../dashboards/LoadDashboard";
 import { generatePrompt } from "../../prompts/promptGenerator";
 import useAqua from "../../web3/aquaIntegration/hooks/useAqua";
 import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuence";
+import { myPhaseHook } from "../phaseHooks/EnhancePhase";
 import useAsyncHookLinker, { LibraryAsyncHook } from "../useAsyncHookLinker";
 import createDynamicHook from "./dynamicHookGenerator";
-import { myPhaseHook } from "../phaseHooks/EnhancePhase";
 
 interface AsyncHook {
   condition: () => boolean;
@@ -25,6 +25,15 @@ const adaptAsyncHook = (asyncHook: AsyncHook): LibraryAsyncHook => ({
   disable: () => {}, // Placeholder function
   condition: asyncHook.condition,
   asyncEffect: asyncHook.asyncEffect,
+  idleTimeoutId: null,
+  startIdleTimeout: function (
+    timeoutDuration: number,
+    onTimeout: () => void
+  ): void {
+    const timeoutId = setTimeout(() => {
+      onTimeout();
+    });
+  },
 });
 
 const [username, setUsername] = useState("");
@@ -73,19 +82,29 @@ const createCleanupPromiseHook = (cleanupLogic: () => void) => {
 
 const authenticationHook = createDynamicHook({
   condition: async () => !!localStorage.getItem("token"),
-  asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: { idleTimeoutId: any; startIdleTimeout: any; }
-  ): Promise<() => void> => {
+  asyncEffect: async ({
+    idleTimeoutId,
+    startIdleTimeout,
+  }: {
+    idleTimeoutId: any;
+    startIdleTimeout: any;
+  }): Promise<() => void> => {
     try {
-      await performLogin(username, password, () => {
-        console.log("Login successful!");
-        loadDashboardState();
-      }, (error) => {
-        console.error("Login failed:", error);
-      });
+      await performLogin(
+        username,
+        password,
+        () => {
+          console.log("Login successful!");
+          loadDashboardState();
+        },
+        (error) => {
+          console.error("Login failed:", error);
+        }
+      );
     } catch (error) {
       console.error("Login failed:", error);
     }
-    return () => {}
+    return () => {};
   },
   ...createPlaceholderHook(),
 });
@@ -132,14 +151,6 @@ const userProfileHook = createDynamicHook({
   ...createPlaceholderHook(),
 });
 
-
-
-
-
-
-
-
-
 const useDynamicHookByName = (hookName: string) => {
   const hook = dynamicHooks[hookName]?.hook;
   return hook || null;
@@ -162,21 +173,19 @@ const fluenceHook = useFluence;
 const aquaHook = useAqua;
 
 const dynamicHooks: Record<string, { hook: AsyncHook }> = {
-  authentication: { hook:  authenticationHook as AsyncHook },
-    
+  authentication: { hook: authenticationHook as AsyncHook },
+
   jobSearch: { hook: jobSearchHook as AsyncHook }, // Ensure jobSearchHook is of type AsyncHook
   recruiterDashboard: { hook: recruiterDashboardHook as AsyncHook }, // Ensure recruiterDashboardHook is of type AsyncHook
   chatDashboard: { hook: chatDashboardHook as AsyncHook }, // Ensure chatDashboardHook is of type AsyncHook
   userProfile: { hook: userProfileHook as AsyncHook }, // Ensure userProfileHook is of type AsyncHook
-  fluence: { hook: fluenceHook as AsyncHook}, // Ensure fluenceHook is of type AsyncHook
+  fluence: { hook: fluenceHook as AsyncHook }, // Ensure fluenceHook is of type AsyncHook
   aqua: { hook: aquaHook as AsyncHook }, // Ensure aquaHook is of type AsyncHook
-  phase: {hook: myPhaseHook as AsyncHook}
+  phase: { hook: myPhaseHook as AsyncHook },
 };
 
-
-
 // Define a caching mechanism, for example, using local storage
-const cacheKey = 'hookNamesCache';
+const cacheKey = "hookNamesCache";
 
 // Function to retrieve hook names from cache
 const getHookNamesFromCache = (): string[] | null => {
@@ -199,8 +208,10 @@ storeHookNamesInCache(hookNames);
 const specificHook = jobSearchHook;
 
 // Find the corresponding hook name dynamically
-const foundHookName = hookNames.find(name => specificHook === dynamicHooks[name].hook);
-const hookName = foundHookName || 'authentication'; // Default to 'authentication' if no matching hook name is found
+const foundHookName = hookNames.find(
+  (name) => specificHook === dynamicHooks[name].hook
+);
+const hookName = foundHookName || "authentication"; // Default to 'authentication' if no matching hook name is found
 const dynamicHookAdapter = adaptAsyncHook(useDynamicHookByName(hookName));
 
 useAsyncHookLinker({
@@ -209,15 +220,30 @@ useAsyncHookLinker({
       enable: dynamicHookAdapter.enable,
       disable: dynamicHookAdapter.disable,
       condition: dynamicHookAdapter.condition,
-      asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: { idleTimeoutId: any; startIdleTimeout: any; }): Promise<() => void> => {
+      asyncEffect: async ({
+        idleTimeoutId,
+        startIdleTimeout,
+      }: {
+        idleTimeoutId: any;
+        startIdleTimeout: any;
+      }): Promise<() => void> => {
         await dynamicHookAdapter.asyncEffect({
-          idleTimeoutId: 'idleTimeoutId',
-          startIdleTimeout: 'startIdleTimeout'
+          idleTimeoutId: "idleTimeoutId",
+          startIdleTimeout: "startIdleTimeout",
         });
         return () => {
           // Perform any cleanup or additional actions if needed
-          console.log('Async effect completed');
+          console.log("Async effect completed");
         };
+      },
+      idleTimeoutId: null,
+      startIdleTimeout: function (
+        timeoutDuration: number,
+        onTimeout: () => void
+      ): void {
+        const timeoutId = setTimeout(() => {
+          onTimeout();
+        });
       },
     },
   ],
@@ -243,29 +269,48 @@ const subscriptionService = {
               enable: dynamicHookAdapter.enable,
               disable: dynamicHookAdapter.disable,
               condition: dynamicHookAdapter.condition,
-              asyncEffect: async ({ idleTimeoutId, startIdleTimeout, }: {
+              asyncEffect: async ({
+                idleTimeoutId,
+                startIdleTimeout,
+              }: {
                 idleTimeoutId: any;
                 startIdleTimeout: any;
-              } 
-              ): Promise<() => void> => {
+              }): Promise<() => void> => {
                 await dynamicHookAdapter.asyncEffect({
-                  idleTimeoutId:'',
-                  startIdleTimeout:''
+                  idleTimeoutId: "",
+                  startIdleTimeout: "",
                 });
-                return () => void {}
+                return () => void {};
               },
-
+              idleTimeoutId: null,
+              startIdleTimeout: function (
+                timeoutDuration: number,
+                onTimeout: () => void
+              ): void {
+                const timeoutId = setTimeout(() => {
+                  onTimeout();
+                });
+              },
             },
           ],
         });
       }
+      // Return a default Subscription object if needed
+      return {
+        unsubscribe: () => {}, // Placeholder function
+        portfolioUpdates: () => {}, // Placeholder function
+        tradeExecutions: () => {}, // Placeholder function
+        marketUpdates: () => {}, // Placeholder function
+        communityEngagement: () => {}, // Placeholder function
+      };
     }
   },
 
-  unsubscribe: (hookName: string) => {
+  unsubscribe: (hookName: string, subscriptionUsage: string) => {
     if (subscriptionService.subscriptions.has(hookName)) {
       subscriptionService.subscriptions.delete(hookName);
     }
+
   },
 
   unsubscribeAll: () => {

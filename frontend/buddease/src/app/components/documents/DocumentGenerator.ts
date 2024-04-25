@@ -16,17 +16,16 @@ import Docxtemplater from "docxtemplater";
 import { DrawingFunctions, DrawingOptions } from "drawingLibrary";
 import fs from "fs";
 import * as path from "path";
-import {
-  loadCryptoWatchlistFromDatabase
-} from "../crypto/CryptoWatchlist";
+import { loadCryptoWatchlistFromDatabase } from "../crypto/CryptoWatchlist";
 import { generateCryptoWatchlistJSON } from "../crypto/generateCryptoWatchlistJSON";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { generatePresentationJSON } from "../libraries/presentations/generatePresentationJSON";
 import { FileLogger } from "../logging/Logger";
+import { Tracker } from "../models/tracker/Tracker";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { Document } from "../state/stores/DocumentStore";
 import { DatasetModel } from "../todos/tasks/DataSetModel";
-import userService, { userId } from "../users/ApiUser";
+import { userId, userService } from "../users/ApiUser";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 import generateFinancialReportContent from "./documentation/report/generateFinancialReportContent";
@@ -34,6 +33,12 @@ import { autosaveDrawing } from "./editing/autosaveDrawing";
 import { parseCSV } from "./parseCSV";
 import { parseExcel } from "./parseExcel";
 import { parseXML } from "./parseXML";
+import loadDraftFromDatabase from "../database/loadDraftFromDatabase";
+import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
+import generateDraftJSON from "@/app/generators/generateDraftJSON";
+
+import * as apiDocument from "@/app/api/ApiDocument";
+import FormatEnum from "../form/FormatEnum";
 var xl = require("excel4node");
 
 const { handleError } = useErrorHandling();
@@ -43,6 +48,7 @@ interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip>, DocumentData {
 type DocumentPath = DocumentData | DatasetModel;
 
 enum DocumentTypeEnum {
+  Default = "default",
   Text = "text",
   Spreadsheet = "spreadsheet",
   Diagram = "diagram",
@@ -56,7 +62,9 @@ enum DocumentTypeEnum {
   FinancialReport = "financialReport",
   MarketAnalysis = "marketAnalysis",
   ClientPortfolio = "clientPortfolio",
-  Template = "template"
+  Template = "template",
+  Image = "image",
+  PDF = "pdf",
 }
 
 enum DocumentStatusEnum {
@@ -101,7 +109,6 @@ const documents: Document[] = [
     },
     lastModifiedDate: new Date(),
     version: {} as VersionData,
-
   },
   // Add more documents as needed
 ];
@@ -132,8 +139,9 @@ function loadTextDocumentContent(document: DocumentData): string {
 }
 
 async function loadDiagramDocumentContent(
+  
   documentId: number,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+   dataCallback: (data: WritableDraft<DocumentData>) => void
 ): Promise<string> {
   // Adjust the return type to match expected type
   let parsedContent: any; // Declare parsedContent variable here
@@ -220,6 +228,137 @@ async function loadPresentationDocumentContent(
   }
 }
 
+async function loadDraftDocumentContent(
+  config: DatabaseConfig,
+  draftId: string
+  
+): Promise<string> { 
+  try {
+
+    // Logic to load draft document content
+    const draft = await loadDraftFromDatabase(config, draftId);
+
+    // Generate JSON from draft object
+    const draftJSON = generateDraftJSON(draft);
+
+    // Return draft JSON as string
+    return JSON.stringify(draftJSON);
+
+  } catch (error) {
+    console.error("Error loading draft document content:", error);
+    // handle error appropriately
+    return "";
+  }
+}
+
+
+async function loadGenericDocumentContent(
+  documentId: DocumentData,
+  format: string,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+
+): Promise<string> {
+  let parsedContent: any;
+
+  try {
+
+    // Logic to fetch document data
+    const document = await fetchDocumentByIdAPI(Number(documentId), dataCallback);
+
+    // Validate format
+    const allowedFormats = ['pdf', 'docx', 'xlsx']; // Define allowedFormats array
+    if (!allowedFormats.includes(format)) {
+      throw new Error(`Unsupported format: ${format}`);
+    }
+  } catch (error: any) {
+    console.error("Error parsing document content", error);
+    throw error;
+  }
+  return JSON.stringify(parsedContent);
+}
+
+async function loadDocumentContentFromDatabase(
+  documentId: number,
+  format: string,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+): Promise<string> {
+  let parsedContent: any;
+
+  try {
+
+    // Logic to fetch document data
+    const document = await fetchDocumentByIdAPI(documentId, dataCallback);
+
+    // Validate format
+    const allowedFormats = ['pdf', 'docx', 'xlsx', 'json'];
+    if (!allowedFormats.includes(format)) {
+      throw new Error(`Unsupported format: ${format}`);
+    }
+    // Logic to parse document content based on format
+    switch (format) {
+      case "pdf":
+        parsedContent = parsePDF(document.content);
+        break;
+      case "docx":
+        parsedContent = parseDocx(document.content);
+        break;
+      case "xlsx":
+        parsedContent = parseExcel(document.content);
+        break;
+      case 'json':
+        parsedContent = JSON.parse(document.content);
+      default:
+        throw new Error(`Unsupported format: ${format}`);
+    }
+
+  } catch(error) {
+    console.error("Error parsing document content", error);
+    throw error;
+  }
+  return "";
+}
+
+
+async function loadOtherDocumentContent(
+  documentId: number,
+   format: string,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+): Promise<string> {
+  try {
+    // Logic to load other document content
+    const documentContent = await loadDocumentContentFromDatabase(
+      Number(documentId),
+       format,
+      dataCallback
+    );
+
+    // Return document content
+    return documentContent;
+  } catch (error) {
+    console.error("Error loading other document content:", error);
+  } finally {
+    // Ensure dataCallback is called even if error occurs
+    dataCallback({
+      id: Number(documentId),
+      title: "",
+      content: "",
+      topics: [],
+      highlights: [],
+      keywords: [],
+      folders: [],
+      options: {} as WritableDraft<DocumentOptions>,
+      folderPath: "",
+      previousMetadata: {} as WritableDraft<StructuredMetadata>,
+      currentMetadata: {} as WritableDraft<StructuredMetadata>,
+      accessHistory: [],
+      lastModifiedDate: new Date() as WritableDraft<Date>,
+      version: {} as WritableDraft<VersionData>,
+    });
+  }
+
+  return "";
+}
+
 async function loadCryptoWatchDocumentContent(
   documentId: DocumentData,
   userId: string
@@ -283,7 +422,13 @@ function loadSpreadsheetDocumentContent(document: DocumentData): string {
 }
 
 // Define the allowed diagram formats
-const allowedDiagramFormats = ["json", "xml", "csv", "xls", "xlsx"]; // Updated list of allowed diagram formats
+  const allowedDiagramFormats = [
+    "json",
+    "xml",
+    "csv",
+    "xls",
+    "xlsx"
+  ]; // Updated list of allowed diagram formats
 
 class DocumentGenerator {
   createTextDocument(
@@ -311,65 +456,90 @@ class DocumentGenerator {
   }
 
   async loadDocumentContent(
-    documentId: number,
+    draftId: string | undefined,
     document: DocumentPath,
+    newContent: CustomDocxtemplater<any>,
     dataCallback: (data: WritableDraft<DocumentPath>) => void,
-    docx?: CustomDocxtemplater<any>
+    format: string,
+    docx?: CustomDocxtemplater<any>,
+    config?: DatabaseConfig,
+    documentId?: number,
+    formData?: FormData,
   ): Promise<string | undefined> {
-    switch (document.type) {
-      case DocumentTypeEnum.Text:
-        // Logic to load content for a text document
-        return loadTextDocumentContent(document);
-      case DocumentTypeEnum.Spreadsheet:
-        // Logic to load content for a spreadsheet document
-        //   todo add document types
-        return loadSpreadsheetDocumentContent(document);
-      case DocumentTypeEnum.Diagram:
-        // Logic to load content for a diagram document
-        return await loadDiagramDocumentContent(documentId, dataCallback);
-      case DocumentTypeEnum.CalendarEvents:
-        // Logic to load content for a calendar events document
-        return loadCalendarEventsDocumentContent(Number(document));
-      case DocumentTypeEnum.Drawing:
-        // Logic to load content for a drawing document
-        return loadDrawingDocumentContent(document);
-      case DocumentTypeEnum.Presentation:
-        // //   // Logic to load content for a presentation document
-        return loadPresentationDocumentContent(document);
-      case DocumentTypeEnum.CryptoWatch:
-        // Logic to load content for a CryptoWatch document
-        // Call userServices to fetch the user ID
-
-        if(userId){
-        const user = await userService.fetchUserById(userId); // Adjust this according to your user services implementation
-        return loadCryptoWatchDocumentContent(document, user);
-        }
-        else {
-          throw new Error("User ID not provided");
-        }
-      // todo finish setting up doc types
-      // case DocumentTypeEnum.Draft:
-      // //   // Logic to load content for a draft document
-      // //   return loadDraftDocumentContent(document);
-      // // case DocumentTypeEnum.Document:
-      //   // Logic to load content for a generic document
-      //   return loadGenericDocumentContent(document);
-      // case DocumentTypeEnum.Other:
-      //   // Logic to load content for another type of document
-      //   return loadOtherDocumentContent(document);
-      // case DocumentTypeEnum.FinancialReport:
-      //   // Logic to load content for a financial report document
-      //   return loadFinancialReportDocumentContent(document);
-      // case DocumentTypeEnum.MarketAnalysis:
-      //   // Logic to load content for a market analysis document
-      //   return loadMarketAnalysisDocumentContent(document);
-      // case DocumentTypeEnum.ClientPortfolio:
-      //   // Logic to load content for a client portfolio document
-      //   return loadClientPortfolioDocumentContent(document);
-      default:
-        console.error(`Unsupported document type: ${document.type}`);
-        return undefined; // Return undefined for unsupported document types
+    if (config && draftId) {
+      switch (document.type) {
+     
+        case DocumentTypeEnum.Text:
+          // Logic to load content for a text document
+          return loadTextDocumentContent(document);
+        case DocumentTypeEnum.Spreadsheet:
+          // Logic to load content for a spreadsheet document
+          //   todo add document types
+          return loadSpreadsheetDocumentContent(document);
+        case DocumentTypeEnum.Diagram:
+          // Logic to load content for a diagram document
+          return await loadDiagramDocumentContent(Number(document), dataCallback);
+        case DocumentTypeEnum.CalendarEvents:
+          // Logic to load content for a calendar events document
+          return loadCalendarEventsDocumentContent(Number(document));
+        case DocumentTypeEnum.Drawing:
+          // Logic to load content for a drawing document
+          return loadDrawingDocumentContent(document);
+        case DocumentTypeEnum.Presentation:
+          // //   // Logic to load content for a presentation document
+          return loadPresentationDocumentContent(document);
+        case DocumentTypeEnum.CryptoWatch:
+          // Logic to load content for a CryptoWatch document
+          // Call userServices to fetch the user ID
+          if (userId) {
+            const user = await userService.fetchUserById(userId); // Adjust this according to your user services implementation
+            return loadCryptoWatchDocumentContent(document, user);
+          } else {
+            throw new Error("User ID not provided");
+          }
+        // todo finish setting up doc types
+        case DocumentTypeEnum.Draft:
+          // Logic to load content for a draft document
+          return loadDraftDocumentContent(config, draftId);
+        case DocumentTypeEnum.Document:
+          // Logic to load content for a generic document
+          return loadGenericDocumentContent(document, format, dataCallback);
+        case DocumentTypeEnum.Other:
+          // Logic to load content for another type of document
+          return loadOtherDocumentContent(Number(documentId), format, dataCallback);
+        // case DocumentTypeEnum.FinancialReport:
+        //   // Logic to load content for a financial report document
+        //   return loadFinancialReportDocumentContent(document);
+        // case DocumentTypeEnum.MarketAnalysis:
+        //   // Logic to load content for a market analysis document
+        //   return loadMarketAnalysisDocumentContent(document);
+        // case DocumentTypeEnum.ClientPortfolio:
+        //   // Logic to load content for a client portfolio document
+        //   return loadClientPortfolioDocumentContent(document);
+        default:
+          console.error(`Unsupported document type: ${document.type}`);
+          return undefined; // Return undefined for unsupported document types
+      }
     }
+  }
+
+  async createMarketAnalysis(
+    type: DocumentTypeEnum,
+    options: DocumentOptions,
+    fileContent: Buffer
+  ): Promise<string> {
+    // Logic to generate market analysis document
+    const content = options.content || "Default Market Analysis Content";
+    const contentData = { content };
+
+    const docx = new Docxtemplater();
+    docx.loadZip(fileContent);
+    docx.setData(contentData);
+    return await docx.getZip().generate({ type: "nodebuffer" });
+  }
+  catch(error: any) {
+    console.error(error);
+    return "Error generating document: " + error.message;
   }
 
   async createCalendarEvents(options: DocumentOptions): Promise<string> {
@@ -437,17 +607,21 @@ class DocumentGenerator {
   }
 
   manageDocument(
+    draftId: string,
     documentPath: DocumentPath,
     newContent: CustomDocxtemplater<any>,
-    dataCallback: (data: WritableDraft<DocumentPath>) => void
+    dataCallback: (data: WritableDraft<DocumentPath>) => void,
+    format: FormatEnum,
   ): string {
     // Real-world logic to manage existing documents
     try {
       // Load the existing document content
       const existingContent = this.loadDocumentContent(
-        Number(documentPath),
+        draftId,
+        documentPath,
         newContent,
-        dataCallback
+        dataCallback,
+        format,
       );
 
       // Perform actions on the existing document content (e.g., append, modify, etc.)
@@ -464,9 +638,10 @@ class DocumentGenerator {
   }
 
   exportDocument(
-    documentId: number,
+    documentId: string,
     documentPath: DocumentPath,
-    exportPath: DocumentPath,
+    exportPath: CustomDocxtemplater<any>,
+    format: FormatEnum,
     dataCallback: (data: WritableDraft<DocumentPath>) => void,
     docx?: CustomDocxtemplater<any> | undefined
   ): Promise<string> {
@@ -474,7 +649,10 @@ class DocumentGenerator {
     return new Promise<string>((resolve, reject) => {
       try {
         // Load the content of the document to export
-        this.loadDocumentContent(documentId, documentPath, dataCallback, docx)
+        this.loadDocumentContent(documentId, documentPath,
+          exportPath,
+          dataCallback,
+          format, docx)
           .then((fileContent: string | undefined) => {
             if (fileContent !== undefined) {
               // Save the content to the export path
@@ -513,7 +691,7 @@ class DocumentGenerator {
       // Perform any additional logic specific to the chosen drawing library
 
       // Autosave the drawing
-      autosaveDrawing(drawing); // Assuming autosaveDrawing takes care of saving the drawing
+      autosaveDrawing(drawing as unknown as WritableDraft<Tracker>[]);
 
       return drawing;
     } catch (error) {
@@ -650,5 +828,5 @@ class DocumentGenerator {
 
 export default DocumentGenerator;
 export { DocumentStatusEnum, DocumentTypeEnum };
-export type { DocumentPath };
+export type { DocumentPath, CustomDocxtemplater };
 

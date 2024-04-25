@@ -27,6 +27,7 @@ import { saveAs } from "@/app/components/documents/editing/autosave";
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import * as drawingApi from "@/app/api/ApiDrawing";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
+import TextType from "@/app/components/documents/TextType";
 // Define interface for drawing state
 interface DrawingState {
   id: string;
@@ -500,11 +501,10 @@ export const useDrawingManagerSlice = createSlice({
         useEffect(() => {
           if (drawingId) {
             const { beginText } = useText({
-              drawingId,
-              "text", // Replace 'text' with appropriate type
+              TextType,
               onTextDragStart,
               onTextDragMove,
-              onTextDragEnd
+              onTextDragEnd,
             });
             const handleMouseDown = (e: MouseEvent) =>
               beginText({ x: e.clientX, y: e.clientY });
@@ -520,7 +520,7 @@ export const useDrawingManagerSlice = createSlice({
               document.removeEventListener("touchstart", handleTouchStart);
             };
           }
-        }, [beginText, drawingId]); // Include beginText and drawingId as dependencies
+        }, [beginText, drawingId]);
       };
     },
 

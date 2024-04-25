@@ -37,7 +37,7 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
   }
 
 
-  const 
+  const useTrackerStore =
   makeAutoObservable({
     dispatch,
     trackers,
@@ -47,14 +47,7 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
     removeTracker,
   });
 
-  return {
-    dispatch,
-    trackers,
-    addTracker,
-    getTracker,
-    getTrackers,
-    removeTracker,
-  };
+  return useTrackerStore
 };
 
 export default useTrackerStore;

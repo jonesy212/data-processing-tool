@@ -68,6 +68,7 @@ import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import apiNotificationsService from "../api/NotificationsService";
 import { NotificationType } from '@/app/components/support/NotificationContext';
+import useEditorState from "../components/state/useEditorState";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
@@ -295,11 +296,13 @@ async function MyApp({
 
   const handleIdleTimeout = (duration: any) => {
     // Start the idle timeout with the provided duration
-    idleTimeout?.startIdleTimeout(duration, () => {
-      // Callback function when timeout occurs (e.g., logout the user)
-      setIsUserLoggedIn(false);
-    });
+    idleTimeout &&
+      idleTimeout.startIdleTimeout(duration, () => {
+        // Callback function when timeout occurs (e.g., logout the user)
+        setIsUserLoggedIn(false);
+      });
   };
+  
   const {
     sendPushNotification,
     sendAnnouncement,
@@ -492,6 +495,9 @@ async function MyApp({
                             onRoutesLayout={handleButtonClick}
                             onOpenDashboard={handleButtonClick}
                           />
+                                      <Route path="/logs" component={LogViewer} />
+                <Route path="/" component={OtherComponent} />
+    
                         </Router>
                       </StoreProvider>
                     </AuthProvider>
@@ -503,6 +509,7 @@ async function MyApp({
                     notify={addNotifications}
                     setNotifications={setNotifications}
                   />
+                  <FormBuilder />
                   {/* Toolbar component with activeDashboard and progress props */}
                   <Toolbar
                     editorState={editorState}

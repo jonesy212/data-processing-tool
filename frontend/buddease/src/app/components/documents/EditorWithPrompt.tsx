@@ -55,11 +55,65 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
   };
 
 
-  const handleDocumentTypeChange = (documentType: DocumentTypeEnum) => { 
-    // Add your logic to handle the document type change
-    console.log("Document type changed to:", documentType);
-
+  const getCurrentDocumentType = (): DocumentTypeEnum => {
+    // Assuming you have some way of storing and retrieving the current document type,
+    // such as using state management like Redux, React context, or local storage
+  
+    // For demonstration purposes, let's say we are retrieving the current document type from local storage
+    const storedDocumentType = localStorage.getItem('currentDocumentType');
+  
+    // Check if the stored document type exists
+    if (storedDocumentType) {
+      // Parse the stored document type (assuming it's stored as a string)
+      return JSON.parse(storedDocumentType);
+    } else {
+      // If no document type is stored, return a default value or handle the absence of a document type
+      return DocumentTypeEnum.Default;
+    }
+  };
+  
+  const setCurrentDocumentType = (documentType: DocumentTypeEnum) => { 
+    localStorage.setItem('currentDocumentType', JSON.stringify(documentType));
   }
+
+  const handleDocumentTypeChange = (documentType: DocumentTypeEnum) => {
+    // Add your logic to handle the document type change
+    // Assuming you have a variable to store the current document type
+    let currentDocumentType: DocumentTypeEnum = getCurrentDocumentType();
+  
+    // Check if the document type has changed
+    if (documentType !== currentDocumentType) {
+      // Update the current document type with the new value
+      setCurrentDocumentType(documentType);
+  
+      // Perform actions based on the new document type
+      switch (documentType) {
+        case DocumentTypeEnum.Text:
+          // Logic for handling text document type
+          console.log("Handling text document type...");
+          break;
+        case DocumentTypeEnum.Image:
+          // Logic for handling image document type
+          console.log("Handling image document type...");
+          break;
+        case DocumentTypeEnum.PDF:
+          // Logic for handling PDF document type
+          console.log("Handling PDF document type...");
+          break;
+        default:
+          // Default logic if document type is not recognized
+          console.log("Unknown document type:", documentType);
+          break;
+      }
+  
+      // Log the change
+      console.log("Document type changed to:", documentType);
+    } else {
+      // If the document type remains the same, log a message
+      console.log("Document type remains the same:", documentType);
+    }
+  };
+  
 
   const renderOptions = () => {
     switch (contentVariation) {

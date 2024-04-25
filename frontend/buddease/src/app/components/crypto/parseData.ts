@@ -9,6 +9,10 @@ export interface ParsedData {
   priceDisparity: number; // New field to store the price disparity
   prices: number[]; // Array to store prices for calculating disparity
   sources: string[]; // Array to store sources for prices
+  // Add any additional fields specific to this feature
+  pdfContent?: string; // Optional field to store PDF content
+  docxContent?: string; // Optional field to store Docx content
+  
   // Define additional fields as needed
 }
 
@@ -23,7 +27,7 @@ export const parseData = (
   // Iterate through the received data and extract relevant information
   data.forEach((item: YourResponseType) => {
     // Extract relevant information such as cryptocurrency pairs, prices, and trading volumes
-    item.data.exchangeData.forEach((exchange: ExchangeData) => {
+    item.data?.exchangeData.forEach((exchange: ExchangeData) => {
       const cryptocurrencyPair: string = exchange.pair;
       const price: number = exchange.price;
       const tradingVolume: number = exchange.volume;
@@ -31,12 +35,10 @@ export const parseData = (
       // You can customize this logic based on your specific requirements
       const priceDisparity: number = calculatePriceDisparity(
         exchange.price,
-        item.data.averagePrice,
+        item.data?.averagePrice || 0,
         threshold
       );
 
-
-        
       // Create an array to store the price from the current exchange
       const prices: number[] = [exchange.price];
 
@@ -51,6 +53,9 @@ export const parseData = (
         priceDisparity,
         prices,
         sources,
+        pdfContent: "", 
+        docxContent: "", 
+        
         // Add more extracted fields as needed
       };
 

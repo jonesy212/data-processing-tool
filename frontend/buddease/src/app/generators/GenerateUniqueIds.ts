@@ -371,6 +371,16 @@ class UniqueIDGenerator {
     );
   }
 
+  static generateSnapshoItemID(id: string): string {
+    return this.generateID(
+      id,
+      "SnapshotItem",
+      NotificationTypeEnum.GeneratedID,
+      "snapshot_item" as NotificationType
+    );
+  }
+
+
   static generateSessionID(): string {
     return this.generateID(
       "SessionID",

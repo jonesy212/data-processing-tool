@@ -18,7 +18,11 @@ import TeamData from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
 import dotProp from "dot-prop";
 const API_BASE_URL = endpoints.logging;
+  // Update the SecurityLogger class to use encryption and decryption functions
 
+// Import the encryptData function
+  import { encryptData } from "../security/encryptedData";
+  
 const { notify } = useNotification();
 
 function createErrorNotificationContent(error: Error): any {
@@ -47,7 +51,7 @@ const errorLogger = {
 
 
 class Logger {
-  static log(message: string) {
+  static log(logType: string, message: string, extraInfo?: any) {
     console.log(message);
   }
 
@@ -1177,38 +1181,30 @@ class PaymentLogger extends Logger {
   // Add more methods for other payment-related events as needed
 }
 
-class SecurityLogger extends Logger {
-  static logLoginAttempt(userId: string, success: boolean) {
-    super.logWithOptions(
-      "Security",
-      `Login attempt ${success ? "succeeded" : "failed"} (User ID: ${userId})`,
-      userId
-    );
-  }
 
-  static logSuspiciousActivity(userId: string, activity: string) {
-    super.logWithOptions(
-      "Security",
-      `Suspicious activity detected: ${activity} (User ID: ${userId})`,
-      userId
-    );
-  }
-
-  // Add more methods for other security-related events as needed
-}
 
 
 
 class ContentLogger extends Logger {
-  static logContentCreation(contentId: string, userId: string) {
+  static logContentCreation(title: string, contentId: string, userId: string) {
     super.logWithOptions(
       "Content",
-      `Content created (Content ID: ${contentId}, User ID: ${userId})`,
+      `${title} created (Content ID: ${contentId}, User ID: ${userId})`,
       userId
     );
   }
 
-  static logContentDeletion(contentId: string, userId: string) {
+  static logContentUpdate(title: string, contentId: string, userId: string, changes: string, upsert= false) {
+    super.logWithOptions(
+      "Content",
+      `${title} updated (Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`,
+      userId
+    );
+  }
+
+  
+
+  static logContentDeletion(title: string, contentId: string, userId: string) {
     super.logWithOptions(
       "Content",
       `Content deleted (Content ID: ${contentId}, User ID: ${userId})`,
@@ -1358,6 +1354,57 @@ class BugLogger extends Logger {
     );
   }
 
+}
+
+
+class SecurityLogger extends Logger {
+  static async logLoginAttempt(userId: string, success: boolean) {
+    try {
+      // Encrypt the user ID before logging
+      const encryptedUserId = encryptData(userId, `${process.env.ENCRYPTION_KEY}`);
+      super.logWithOptions(
+        "Security",
+        `Login attempt ${success ? "succeeded" : "failed"} (Encrypted User ID: ${encryptedUserId})`,
+        userId
+      );
+    } catch (error: any) {
+      console.error("Error logging login attempt:", error);
+      // Handle the error accordingly
+      throw error;
+    }
+  }
+
+  static async logSuspiciousActivity(userId: string, activity: string) {
+    try {
+      // Encrypt the user ID before logging
+      const encryptedUserId = encryptData(userId, `${process.env.ENCRYPTION_KEY}`);
+      super.logWithOptions(
+        "Security",
+        `Suspicious activity detected: ${activity} (Encrypted User ID: ${encryptedUserId})`,
+        userId
+      );
+    } catch (error: any) {
+      console.error("Error logging suspicious activity:", error);
+      // Handle the error accordingly
+      throw error;
+    }
+  }
+
+  static async logSuccessfulLogin(userId: string) {
+    try {
+      // Encrypt the user ID before logging
+      const encryptedUserId = encryptData(userId, `${process.env.ENCRYPTION_KEY}`);
+      super.logWithOptions(
+        "Security",
+        `Successful login (Encrypted User ID: ${encryptedUserId})`,
+        userId
+      );
+    } catch (error: any) {
+      console.error("Error logging successful login:", error);
+      // Handle the error accordingly
+      throw error;
+    }
+  }
   // Add more methods for other bug-related events as needed
 }
 

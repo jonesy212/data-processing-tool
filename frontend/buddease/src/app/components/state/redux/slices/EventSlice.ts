@@ -1,10 +1,9 @@
 // EventSlice.ts
 
 import axiosInstance from "@/app/api/axiosInstance";
+import { CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./RootSlice";
-import { WritableDraft } from "../ReducerGenerator";
-import { CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
 
 // Define the initial state for the EventSlice
 interface EventState {
@@ -107,3 +106,4 @@ export const selectEvents = (state: RootState) => state.eventManager.events;
 
 // Export the reducer
 export default useEventManagerSlice.reducer;
+export type  {EventState}

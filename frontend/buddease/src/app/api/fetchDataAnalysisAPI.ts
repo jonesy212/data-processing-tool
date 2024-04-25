@@ -5,7 +5,7 @@ import { DataAnalysis } from "../components/projects/DataAnalysisPhase/DataAnaly
 import { DataAnalysisActions } from "../components/projects/DataAnalysisPhase/DataAnalysisActions";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { dataAnalysisService } from "../components/typings/dataAnalysisTypes";
-DataAnalysisActions
+
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchDataAnalysisAPI = () => axios.get('/api/data-analysis');
 

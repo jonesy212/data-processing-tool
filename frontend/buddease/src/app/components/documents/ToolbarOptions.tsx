@@ -1,9 +1,16 @@
 import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
 import React, { useState } from "react";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
+import CustomModifier from "./CustomModifier";
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import ToolbarItem from "./ToolbarItem";
-import CustomModifier from "./CustomModifier";
+import { toolbarOptions } from "./Toolbar";
+
+
+// Define a new type for the toolbar options
+type ToolbarOptions = {
+  [key in keyof typeof toolbarOptions]: string[];
+};
 
 export interface ToolbarOptionsProps {
   isDocumentEditor?: boolean;

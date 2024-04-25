@@ -25,6 +25,7 @@ type RootLayoutProps = {
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   const [isComponentLoaded, setComponentLoaded] = useState<boolean>(false);
+  const [isMinimized, setIsMinimized] = useState<boolean>(false); // State to track if the layout control button is minimized
 
   const { setLayout } = useLayout();
   const {
@@ -34,6 +35,14 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     setFontSize,
     setFontFamily,
   } = useThemeConfig();
+
+  const handleMinimizeToggle = (): void => {
+    setIsMinimized(!isMinimized); // Toggle the state to minimize or maximize the layout control button
+  };
+
+  const handleExitFullscreen = (): void => {
+    document.exitFullscreen(); // Exit fullscreen mode
+  };
 
   const condition = () => {
     // Your condition logic goes here
@@ -133,7 +142,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
             colors={responsiveDesignStore.colors}
             frontendStructure={responsiveDesignStore.frontendStructure}
             backendStructure={responsiveDesignStore.backendStructure}
-            onColorChange={(newColors: string[]) =>{}}
+            onColorChange={(newColors: string[]) => {}}
             onCloseFileUploadModal={async function () {}}
             onHandleFileUpload={async (file: FileList | null) => {
               if (file) {
@@ -168,23 +177,76 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
 
   // Add useEffect to handle layout effect on component mount
   useEffect(() => {
-    if (condition()) {
-      layoutEffect();
+    if (isComponentLoaded) {
+      if (condition()) {
+        layoutEffect();
+      }
     }
-  }, [condition, layoutEffect]);
+  }, [condition, isComponentLoaded, layoutEffect]);
+
+  // Function to handle layout effect
+  const handleLayoutEffect = async () => {
+    if (animatedComponentRef.current) {
+      animatedComponentRef.current.toggleActivation();
+  
+      // Set theme properties
+      setPrimaryColor("#3498db");
+      setSecondaryColor("#e74c3c");
+      setFontSize("16px");
+      setFontFamily("Arial, sans-serif");
+      setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
+  
+      // Call layoutConfig to update layout configuration
+      const configResult = await layoutConfig();
+      console.log(configResult);
+  
+      // Log theme properties
+      console.log("Is Dark Mode:", isDarkMode);
+      console.log("Primary Color:", setPrimaryColor);
+      console.log("Secondary Color:", setSecondaryColor);
+      console.log("Font Size:", setFontSize);
+      console.log("Font Family:", setFontFamily);
+    }
+  };
+  
 
   return (
-    <html lang="en">
-      <body onClick={toggleActivation}>
-        {animatedComponent}
-        <AnimatedComponent
-          ref={animatedComponentRef}
-          animationClass={""}
-        />
-        <DynamicRootLayout>{children}</DynamicRootLayout>
-      </body>
-    </html>
+    <div>
+      {!isMinimized && (
+        <div>
+          {/* Toggle switch for fullscreen mode */}
+          <ToggleSwitch
+            label="Fullscreen"
+            checked={isComponentLoaded}
+            onChange={(checked) => {
+              if (checked) {
+                document.documentElement.requestFullscreen();
+              } else {
+                document.exitFullscreen();
+              }
+              setComponentLoaded(checked);
+            }}
+          />
+          {/* Button to exit fullscreen mode */}
+          <button onClick={handleExitFullscreen}>Exit Fullscreen</button>
+        </div>
+      )}
+      {/* Minimize button */}
+      <button onClick={handleMinimizeToggle}>
+        {isMinimized ? "Maximize" : "Minimize"}
+      </button>
+  
+      {/* Existing content */}
+      <html lang="en">
+        <body onClick={toggleActivation}>
+          {animatedComponent}
+          <AnimatedComponent ref={animatedComponentRef} animationClass={""} />
+          <DynamicRootLayout>{children}</DynamicRootLayout>
+        </body>
+      </html>
+    </div>
   );
+  
 };
 
 // DefaultRootLayout.tsx

@@ -1,11 +1,20 @@
 // Dropdown.tsx
 import React, { useState } from "react";
-
-const Dropdown = ({ options, selectedOption, onSelectOption }) => {
+import { Option } from "../animations/DynamicSelectionControls";
+interface DropDownProps {
+  options: string[];
+  selectedOption: string;
+  onSelectOption: (option: string) => void;
+}
+const Dropdown: React.FC<DropDownProps> = ({
+  options,
+  selectedOption,
+  onSelectOption,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleOptionSelect = (option) => {
-    onSelectOption(option);
+  const handleOptionSelect = (option: Option) => {
+    onSelectOption(String(option));
     setIsOpen(false);
   };
 
@@ -17,7 +26,12 @@ const Dropdown = ({ options, selectedOption, onSelectOption }) => {
       {isOpen && (
         <ul className="dropdown-options">
           {options.map((option) => (
-            <li key={option} onClick={() => handleOptionSelect(option)}>
+            <li
+              key={option}
+              onClick={() =>
+                handleOptionSelect({ value: option, label: option })
+              }
+            >
               {option}
             </li>
           ))}

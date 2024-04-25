@@ -58,12 +58,6 @@ const handleCryptoApiErrorAndNotify = (
 
 
 
-
-  
-
-
-
-
 export const fetchCryptoData = async (): Promise<any> => {
   try {
     const fetchCryptoDataEndpoint = `${API_BASE_URL}.fetchCryptoData`;

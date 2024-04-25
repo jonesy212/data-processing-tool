@@ -7,11 +7,11 @@ import { DocumentData } from '../components/documents/DocumentBuilder';
 import { DocumentOptions } from '../components/documents/DocumentOptions';
 import { Presentation } from '../components/documents/Presentation';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
+import { DocumentActions } from '../tokens/DocumentActions';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
-import { DocumentActions } from '../tokens/DocumentActions';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.documents;
@@ -68,7 +68,8 @@ const handleDocumentApiErrorAndNotify = (
 };
 
 export const fetchDocumentByIdAPI = async (
-    documentId: number,
+  documentId: number,
+  
     dataCallback: (data: WritableDraft<DocumentData>) => void
   ): Promise<any> => {
     try {
@@ -94,7 +95,29 @@ export const fetchDocumentByIdAPI = async (
     }
   };
   
+export const fetchJsonDocumentByIdAPI = async(
+  documentId: number,
+  dataCallback: (data: any) => void
+) => {
+  try {
+    const fetchDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}.json`;
+    const response = await axiosInstance.get(fetchDocumentEndpoint, {
+      headers: headersConfig,
+    });
 
+    dataCallback(response.data);
+
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = 'Failed to fetch JSON document';
+    handleDocumentApiErrorAndNotify(
+      error.errorMessage,
+      'Faile to fetch JSON document',
+      'FETCH_DOCUMENT_ERROR'
+    );
+  }
+ 
+  }
 
 
 

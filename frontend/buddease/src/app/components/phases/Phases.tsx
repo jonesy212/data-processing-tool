@@ -2,10 +2,10 @@
 // Import the calendar phase
 import { AsyncHook } from "async_hooks";
 import { calendarPhase } from "../calendar/CalendarPhase";
+import { Lesson } from "../documents/CourseBuilder";
 import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker, { AsyncHookLinkerConfig, LibraryAsyncHook } from "../hooks/useAsyncHookLinker";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
-import { Lesson } from "../documents/CourseBuilder";
 export const additionalPhase1: Phase = {
   name: 'Additional Phase 1',
   startDate: new Date(),
@@ -15,7 +15,7 @@ export const additionalPhase1: Phase = {
   component: () => <div>Additional Phase 1 Component</div>,
   lessons: {} as Lesson[],
   hooks: createPhaseHook({
-    duration: 0,
+    duration: "0",
     canTransitionTo: () => true,
     handleTransitionTo: async () => {
       console.log('Transitioning to Additional Phase 1');
@@ -56,14 +56,15 @@ export const additionalPhase2: Phase = {
   component: () => <div>Additional Phase 2 Component</div>,
   lessons: {} as Lesson[],
   hooks: createPhaseHook({
-      duration: 0,
+      duration: '0',
       canTransitionTo: () => true,
       handleTransitionTo: async () => {
           console.log('Transitioning to Additional Phase 2');
       },
       name: "",
       condition: function (): boolean {
-          // Adjust the condition based on your requirements
+        // Adjust the condition based on your requirements
+        
           // Example: Allow transition only if the calendar phase is completed
           return calendarPhase.endDate < new Date();
       },

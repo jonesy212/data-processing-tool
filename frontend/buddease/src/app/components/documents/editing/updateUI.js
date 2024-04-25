@@ -1,5 +1,6 @@
 // updateUI.js
 // Import modules providing relevant information
+import useEditorState from '../../state/useEditorState';
 import autosave from './autosave';
 import formattingChecks from './formattingChecks';
 import spellCheck from './spellCheck';
@@ -9,27 +10,31 @@ import wordCountAnalysis from './wordCountAnalysis';
 
 
 
-
-const updateUIWithCopiedText = (editorContent, store) => {
-  // Get word count info
-  const wordCountInfo = wordCount(editorContent);
-
-  // Update UI with word count
-  wordCountAnalysis(wordCountInfo);
-}
+const updateUIWithCopiedText = (editorState, store) => {
+    // Get the content from the editorState
+    const editorContent = editorState.getCurrentContent().getPlainText();
+    // Get word count info
+    const wordCountInfo = wordCount(editorContent);
+    // Update UI with word count
+    wordCountAnalysis(wordCountInfo);
+  }
+  
 
 // Function to update the user interface with relevant information
 const updateUI = (editorContent, store) => {
-    // Logic to update the UI based on the editor content and store
-    // This could involve displaying word count, character count, formatting information, etc.
-    // Replace this with your actual UI update logic based on the store
-    
-    // Determine the store and update UI accordingly
-    switch (store) {
-        case 'editor':
+        // This could involve displaying word count, character count, formatting information, etc.
+        // Replace this with your actual UI update logic based on the store
+            
+        // Determine the store and update UI accordingly
+        switch (store) {
+            case 'editor':
+            // Update UI for the editor store
             // Update UI for the editor store
             console.log('Updating editor UI with relevant information...');
-            // Perform formatting checks
+            // Get the content from the editorState
+            const editorContent = useEditorState.getCurrentContent().getPlainText();
+                    // Perform formatting checks
+            updateUIWithCopiedText(editorContent, store);
             formattingChecks(editorContent);
             // Perform spell check
             spellCheck(editorContent);
@@ -91,9 +96,5 @@ const displaySettingsOptions = (settingsData) => {
 // Export the function for external use
 export default updateUI;
 export {
-  updateUIWithCopiedText,
-  countWords,
-  updateEditorWordCountUI,
-  displayUserProfile,
-  displaySettingsOptions
+    countWords, displaySettingsOptions, displayUserProfile, updateEditorWordCountUI, updateUIWithCopiedText
 };

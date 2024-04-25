@@ -44,6 +44,7 @@ const useAssignTaskStore = (): AssignTaskStore => {
   const {...baseStore } =
     useAssignBaseStore();
 
+  
   const assignedUsers: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
   const assignedTodos: Record<string, string[]> = {};
@@ -253,50 +254,19 @@ const useAssignTaskStore = (): AssignTaskStore => {
     setDynamicNotificationMessage(message);
   };
 
-  makeAutoObservable({
+  const useAssignTaskStore = makeAutoObservable({
     assignTask,
-    assignedUsers,
-    assignedTasks,
-    assignedTodos,
-    assignUser,
-    unassignUser,
-    reassignUser,
     assignUsersToTasks,
     unassignUsersFromTasks,
     reassignUsersToTasks,
-    assignUserToTodo,
-    unassignUserFromTodo,
-    reassignUserInTodo,
-    assignUsersToTodos,
-    unassignUsersFromTodos,
-    reassignUsersInTodos,
-    assignUserSuccess,
-    assignUserFailure,
-    setDynamicNotificationMessage,
+    ...baseStore,
     // Add more properties or methods as needed
   });
+  
 
-  return {
-    assignTask,
-    ...baseStore,
-    assignedUsers,
-    assignedTasks,
-    assignedTodos,
-    // 
-    assignUsersToTasks,
-    unassignUsersFromTasks,
-    reassignUsersToTasks,
-    assignUserToTodo,
-    unassignUserFromTodo,
-    reassignUserInTodo,
-    assignUsersToTodos,
-    unassignUsersFromTodos,
-    reassignUsersInTodos,
-    assignUserSuccess,
-    assignUserFailure,
-    setDynamicNotificationMessage,
-    // Add more properties or methods as needed
-  };
+  return useAssignTaskStore
+
+  // Add more properties or methods as needed
 };
 
 export { useAssignTaskStore };

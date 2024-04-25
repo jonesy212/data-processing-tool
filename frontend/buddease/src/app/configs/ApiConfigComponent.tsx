@@ -11,25 +11,24 @@ import UserSettings from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
-import { Form, Input } from "antd"
+import ErrorBoundary from "@/app/shared/ErrorBoundary";
+import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import getAppPath from "../../../../appPath";
-import { DocumentData } from "../documents/DocumentBuilder";
-import { ComponentActions } from "../libraries/ui/components/ComponentActions";
-import CreateComponentForm from "../libraries/ui/components/CreateComponentForm";
-import DeleteComponent from "../libraries/ui/components/DeleteComponent";
-import UpdateComponent from "../libraries/ui/components/UpdateComponent";
-import TaskTrackingComponent from "../models/tracker/TaskTrackingComponent";
-import { Phase } from "../phases/Phase";
-import ProfileSetupPhase from "../phases/onboarding/ProfileSetupPhase";
-import axiosInstance from "../security/csrfToken";
-import { selectApiConfigs } from "../state/redux/slices/ApiSlice";
-import { UserData } from "../users/User";
-import ErrorBoundary from "@/app/shared/ErrorBoundary";
-import { getCurrentAppInfo } from "../versions/VersionGenerator";
-import useFilePath from "../hooks/useFilePath";
-import FileData from '../models/data/FileData';
+import getAppPath from "../../../appPath";
+import useFilePath from "../components/hooks/useFilePath";
+import { ComponentActions } from "../components/libraries/ui/components/ComponentActions";
+import CreateComponentForm from "../components/libraries/ui/components/CreateComponentForm";
+import DeleteComponent from "../components/libraries/ui/components/DeleteComponent";
+import UpdateComponent from "../components/libraries/ui/components/UpdateComponent";
+import FileData from '../components/models/data/FileData';
+import TaskTrackingComponent from "../components/models/tracker/TaskTrackingComponent";
+import { Phase } from "../components/phases/Phase";
+import ProfileSetupPhase from "../components/phases/onboarding/ProfileSetupPhase";
+import axiosInstance from "../components/security/csrfToken";
+import { selectApiConfigs } from "../components/state/redux/slices/ApiSlice";
+import { UserData } from "../components/users/User";
+import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 
 const ApiConfigComponent: React.FC = () => {
   const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Specify correct type

@@ -85,18 +85,7 @@ const useDataStore = (): DataStore => {
     addDataSuccess
   });
 
-  return {
-    data,
-    fetchData,
-    addData,
-    removeData,
-    updateData,
-    updateDataTitle,
-    updateDataDescription,
-    updateDataStatus,
-    addDataSuccess
-    // Add more methods or properties as needed
-  };
+  return useDataStore
 };
 
 export { useDataStore };

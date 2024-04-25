@@ -1,14 +1,14 @@
 import { DocumentStatusEnum } from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
-import updateDocumentInDatabase from "@/app/configs/database/updateDocumentInDatabase";
+import {updateDocumentInDatabase} from "@/app/configs/database/updateDocumentInDatabase";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React, { useState } from "react";
 
 
 
 const documentName = "crypto_document";
-const cryptoDocumentID = UniqueIDGenerator.generateDocumentId(documentName, NotificationTypeEnum.GeneratedID);
+const cryptoDocumentID = UniqueIDGenerator.generateDocumentID(documentName, NotificationTypeEnum.GeneratedID);
 
 interface CryptoEnthusiastDocumentsProps {
   // Function to allow sharing documents

@@ -1,18 +1,20 @@
 // SettingsSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "./RootSlice";
 import { Settings } from "../../stores/SettingsStore";
+import { RootState } from "./RootSlice";
 
 interface SettingsState {
   settings: Settings | null;
   loading: boolean;
   error: string | null;
+  appName: string;
 }
 
 const initialState: SettingsState = {
   settings: null,
   loading: false,
   error: null,
+  appName: "Buddease"
 };
 
 export const useSettingsManagerSlice = createSlice({
@@ -63,6 +65,10 @@ export const useSettingsManagerSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    appNameChange(state, action: PayloadAction<string>) {
+      state.settings!.appName = action.payload;
+    },
+
   },
 });
 
@@ -85,4 +91,4 @@ export default useSettingsManagerSlice.reducer;
 export const selectSettings = (state: RootState) => state.settingsManager.settings;
 export const selectSettingsLoading = (state: RootState) => state.settingsManager.loading;
 export const selectSettingsError = (state: RootState) => state.settingsManager.error;
-   
+   export type { SettingsState };

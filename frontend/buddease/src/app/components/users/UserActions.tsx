@@ -21,6 +21,8 @@ export const UserActions = {
   // Pagination Actions
   
   
+  saveUserProfilesSuccess: createAction<{ profiles: UserProfile[] }>("saveUserProfiilesSuccess"),
+  
   fetchUserSuccess: createAction<{ user: User }>("fetchUserSuccess"),
   fetchUserFailure: createAction<{ error: string }>("fetchUserFailure"),
   fetchUserRequest: createAction<{userId: User["id"]}>("fetchUserRequest"),
@@ -72,7 +74,7 @@ export const UserActions = {
   updateUserRoles: createAction<{ ids: number[], newRole: string }>("updateUserRoles"),
   
 
-
+  fetchUserData: createAction<{userId: string}>("fetchUserData"),
 
   // Batch
   bulkUpdateUserRolesFailure: createAction<{ error: string }>("bulkUpdateUserRolesFailure"),

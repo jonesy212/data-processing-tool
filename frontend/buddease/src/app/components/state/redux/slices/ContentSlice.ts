@@ -26,6 +26,7 @@ import { ProjectManagerStore } from "../../stores/ProjectStore";
 import { CustomComment } from "./BlogSlice";
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import { WritableDraft } from "../ReducerGenerator";
+import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
@@ -37,7 +38,7 @@ interface ContentManagerState {
     contentTitle: string;
     contentDescription: string;
     contentType: string;
-    priority: "low" | "medium" | "high";
+    priority: PriorityTypeEnum;
     projectManager: ProjectManagerStore | null;
     pendingContent: ContentItem[]; // Initialize pendingContent array
     inProgressContent: ContentItem[]; // Initialize inProgressContent array
@@ -80,7 +81,7 @@ interface ContentManagerState {
     contentType: "",
     actionStack: [],
     redoStack: [],
-    priority: "low",
+    priority: PriorityTypeEnum.Low,
     pendingContent: [],
     inProgressContent: [],
     completedContent: [],
@@ -171,7 +172,10 @@ export const contentSlice = createSlice({
       }
     },
 
-    addContent: (state, action: PayloadAction<{ id: string; title: string, isComplete: boolean }>) => {
+    addContent: (
+      state,
+      action: PayloadAction<{ id: string; title: string; isComplete: boolean }>
+    ) => {
       const { id, title } = action.payload;
       // Generate a unique ID for the new content
       const generatedContentID = UniqueIDGenerator.generateContentID(id, title);
@@ -187,6 +191,8 @@ export const contentSlice = createSlice({
         title,
         description: state.contentDescription,
         type: state.contentType,
+        body: "",
+        heading: "",
       } as WritableDraft<ContentItem>;
 
       state.contentItems.push(newContent);

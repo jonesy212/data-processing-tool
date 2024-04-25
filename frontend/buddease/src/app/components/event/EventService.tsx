@@ -13,7 +13,6 @@ import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
-import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
   initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
@@ -368,17 +367,22 @@ class EventService {
         break;
     }
   };
-
-
-  
-  
   
   // Example event handlers
-  private handleFullscreenMode(event: Event & SyntheticEvent) {
-    // Logic for handling fullscreen mode
-    console.log("Handling fullscreen mode:", event);
-    // Additional logic for fullscreen mode...
-  }
+  // Define the handleFullscreenMode function
+  private handleFullscreenMode(event: Event & SyntheticEvent): void {
+    // Check if the document is currently in fullscreen mode
+    const isFullscreen = document.fullscreenElement !== null;
+  
+    if (!isFullscreen) {
+      // Enter fullscreen mode
+      document.documentElement.requestFullscreen();
+    } else {
+      // Exit fullscreen mode
+      document.exitFullscreen();
+    }
+  };
+  
 
   private handleContextMenus(event: Event & SyntheticEvent) {
     // Logic for handling context menus
@@ -392,11 +396,21 @@ class EventService {
     // Additional logic for settings panel...
   }
 
-  private handleHelpFAQ(event: Event & SyntheticEvent) {
+  private handleHelpFAQ(event: React.SyntheticEvent) {
     // Logic for handling help/FAQ
     console.log("Handling help/FAQ:", event);
+  
     // Additional logic for help/FAQ...
+    // Add any specific actions you want to perform when the help/FAQ event is triggered
+  
+    // Example: Open a modal with help/FAQ content
+    const helpFAQModal = document.getElementById("help-faq-modal");
+    if (helpFAQModal) {
+        // Open the modal
+        helpFAQModal.classList.add("open");
+    }
   }
+  
 
   private handleSearchFunctionality(event: Event & SyntheticEvent) {
     // Logic for handling search functionality
@@ -448,7 +462,12 @@ const customEvent = createCustomEvent(
 
 // Add events
 const event1: CustomMouseEvent = {
-  initCustomEvent("click", true, true, window) {},
+  initCustomEvent(
+    type: string,
+    bubbles: boolean,
+    cancelable: boolean,
+    details: CustomEventInit
+  ): void {},
   id: "event1",
   title: "Event 1",
   description: "Event Description 1",

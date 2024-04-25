@@ -3,6 +3,7 @@ import { DataDetails } from "../models/data/Data";
 import { Member } from "../models/teams/TeamMembers";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { Project } from "../projects/Project";
+import { PriorityTypeEnum } from "../models/data/StatusType";
 
 // Define the type for calendar data
 type SimpleCalendarEvent = {
@@ -23,7 +24,7 @@ type SimpleCalendarEvent = {
   description: string;
   startDate: Date;
   endDate: Date;
-  priority?: "low" | "medium" | "high";
+  priority?: PriorityTypeEnum;
   location?: string;
   attendees?: Member[];
   shared: React.ReactNode;

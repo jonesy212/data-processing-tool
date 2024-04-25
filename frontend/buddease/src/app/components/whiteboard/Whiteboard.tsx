@@ -5,11 +5,20 @@ import { DrawingActions } from "../actions/DrawingActions";
 import { setIsDrawing } from "../state/redux/slices/DrawingSlice";
 import { RootState } from "../state/redux/slices/RootSlice";
 
+
+
+interface Whiteboard {
+  id: string; // Assuming id is a string, adjust if it's a different type
+  // Add other properties if needed
+}
+
+
 interface CanvasProps extends React.CanvasHTMLAttributes<HTMLCanvasElement> {
+  id: string;
   onPan: (offsetX: number, offsetY: number) => void;
 }
 
-const Whiteboard: React.FC<CanvasProps> = ({ onPan }) => {
+const WhiteboardCanvas: React.FC<CanvasProps> = ({ onPan, id }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = useState<SocketIOClientSocket | null>(null);
   const isDrawing = useSelector(
@@ -175,5 +184,5 @@ const Whiteboard: React.FC<CanvasProps> = ({ onPan }) => {
   );
 };
 
-export default Whiteboard;
-export type {CanvasProps}
+export default WhiteboardCanvas;
+export type { CanvasProps, Whiteboard };

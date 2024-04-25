@@ -1,8 +1,8 @@
-import userService from '@/app/components/users/ApiUser';
 import { User } from '@/app/components/users/User';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import CommonDetails from '../models/CommonData';
 import { UserRole } from './UserRole';
+import { userService } from './ApiUser';
 
 class UserManagement {
  
@@ -83,20 +83,29 @@ class UserManagement {
         username: "",
         email: "",
         tier: "",
+        token: null,
         uploadQuota: 0,
+        usedQuota: undefined, // Add missing prop with default value
+        avatarUrl: null,
+        createdAt: new Date(),
+        updatedAt: undefined, // Add missing prop with default value
         fullName: null,
+        isVerified: false, // Add missing prop with default value
+        isAdmin: false, // Add missing prop with default value
+        isActive: false, // Add missing prop with default value
         bio: null,
         userType: "",
         hasQuota: false,
         profilePicture: null,
         processingTasks: [],
-        token: null,
+        data: undefined, // Add missing prop with default value
+        role: {} as UserRole,
         persona: persona,
-        traits: {} as typeof CommonDetails,
+        analysisResults: [], // Add missing prop with default value
+        isLoggedIn: false, // Add missing prop with default value
         ...userData,
-        role: {} as UserRole, // Add default value for role
       };
-
+      
       const createdUser = await userService.createUser(newUser);
       // Handle create user success
       return createdUser;

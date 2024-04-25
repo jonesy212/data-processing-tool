@@ -117,7 +117,12 @@ const userData: UserData = {
 // Instantiate a CryptoDocumentManager
 const documentManager = new CryptoDocumentManager();
 
-const encryptDocument = async (document: DocumentTree) => {};
+// Function to encrypt a document
+const encryptDocument = async (document: DocumentTree) => {
+  // Encrypt the document using CryptoDocumentManager
+  const encryptedDocument = documentManager.encryptDocument(document);
+  return encryptedDocument;
+};
 
 // Inside a function or component where document management is required, you can use documentManager
 const handleDocumentEncryption = (document: DocumentTree) => {
@@ -131,12 +136,14 @@ const handleDocumentEncryption = (document: DocumentTree) => {
 const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   const { id, analysisResults, snapshots, ...rest } = user;
 
-  if (user && user.data) {
+  if (user && user.data && user.yourDocuments!) {
+      // Call handleDocumentEncryption with user's documents
+      handleDocumentEncryption(user.yourDocuments);
+    
     return (
       <CommonDetails
         details={{
           id: id ? id.toString() : "",
-          isActive: true,
           analysisResults: [] as DataAnalysisResult[],
           data: user.data,
           ...rest,

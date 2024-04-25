@@ -1,5 +1,6 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
 import axios from 'axios';
+import { UIActions } from '../../actions/UIActions';
 import { LogData } from '../../models/LogData';
 import { NotificationData } from '../../support/NofiticationsSlice';
 import { NotificationTypeEnum } from '../../support/NotificationContext';
@@ -9,9 +10,9 @@ import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
 import useNotificationBar from '../commHooks/useNotificationBar';
 import { createPhaseHook } from '../phaseHooks/PhaseHooks';
 import useDarkModeToggle from './useDarkModeToggle';
-import { useDispatch } from 'react-redux';
-import { useNotification } from '@/app/components/support/NotificationContext';
-
+import { fetchData } from '@/app/api/ApiData';
+import userService from '../../users/ApiUser';
+import * as userApi from '../../../api/UsersApi';
 
 const usePhaseUI = () => {
   const dispatch = useNotificationBar();
@@ -61,16 +62,27 @@ const usePhaseUI = () => {
   
 
 
-  const notify = async (type: NotificationTypeEnum, message: string) => {
+  const notify = async (
+    type: NotificationTypeEnum,
+    message: string,
+    isDarkMode: boolean
+  ) => {
     const dispatch = useNotificationBar();
     try {
-      await dispatch({
-        type,
-        message,
-        isDarkMode
+      await dispatch.addNotification({
+        message: message,
+        type: "success",
+        onCancel: () => {
+          console.log("Notification dispatched successfully");
+        }
       });
     } catch (error) {
-      console.error('Failed to dispatch notification:', error);
+      await dispatch.addNotification({
+        message: message,
+        type: "error",
+        onCancel: undefined
+      });
+      console.error("Failed to dispatch notification:", error);
     }
   };
 
@@ -133,7 +145,8 @@ const usePhaseUI = () => {
 
   const fetchUserDataAndDisplayNotification = async (addNotification: Function) => {
     try {
-      const userData = await fetchData('user');
+
+      const userData = await userApi.fetchUserData(req, res);
       addNotification(NotificationMessagesFactory.createCustomMessage('User data fetched'), 'success');
       return userData;
     } catch (error: any) {
@@ -241,7 +254,29 @@ throw new Error('Function not implemented.');
 });
 };
 
-const isLoggedIn = () => true;
+  const isLoggedIn = () => true;
+  
 };
+
+
+const createDarkModeTogglePhaseHook = () => { 
+  return createPhaseHook(
+    {
+
+      name: 'Dark Mode Toggle Phase',
+      condition: () => true,
+      duration: '10000',
+      asyncEffect: async () => {
+        const { toggleDarkMode, isDarkMode } = useDarkModeToggle();
+        console.log('Dark Mode Toggle Phase Hook triggered');
+        await fetchData('dark-mode-settings');
+        if (!isDarkMode) {
+          toggleDarkMode();
+        }
+        await UIActions.fetchUserDataAndDisplayNotification(useNotificationBar().addNotification);
+        return () => console.log('Cleanup for Dark Mode Toggle Phase');
+      },
+    })
+}
 export const darkModeTogglePhaseHook = createDarkModeTogglePhaseHook();
 export const notificationBarPhaseHook = createNotificationBarPhaseHook();

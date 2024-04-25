@@ -58,7 +58,9 @@ interface Milestone {
   id: string;
   title: string;
   date: Date;
+  dueDate: Date;
 }
+
 
 
 // Define the type for ScheduleOptimizationResults

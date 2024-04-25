@@ -1,28 +1,29 @@
-// Import UIActions into your component
+// Import the FetchUserDataPayload interface and UIActions
 import { endpoints } from '@/app/api/ApiEndpoints';
 import generateCustomHeaders from '@/app/api/headers/customHeaders';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { UIActions } from '../../actions/UIActions';
+import { FetchUserDataPayload, UIActions } from '../../actions/UIActions'; // Import FetchUserDataPayload
 import axiosInstance from '../../security/csrfToken';
 
-
 const API_BASE_URL = endpoints.notification;
+
 const useNotificationBar = () => {
   const dispatch = useDispatch();
-  const [notifications, setNotifications] = useState<
-      { message: string; type: string; onCancel?: () => void }[]
-  >([]);
+  const [notifications, setNotifications] = useState<FetchUserDataPayload[]>([]);
 
-  const addNotification = async (
-    message: string,
-    type: "info" | "success" | "error" | "warning" = "info",
-    onCancel?: () => void
-  ) => {
+  // Update the addNotification function signature to use FetchUserDataPayload
+  const addNotification = async ({
+    message,
+    userData,
+    notificationType,
+    notificationMessage,
+    type = "info",
+    onCancel
+  }: FetchUserDataPayload) => {
     const newNotification = { message, type, onCancel };
     setNotifications([...notifications, newNotification]);
 
-    // Call generateCustomHeaders function to get custom headers
     const headers = generateCustomHeaders({ apiKey: 'your-api-key', token: 'your-token' });
 
     try {
@@ -30,16 +31,20 @@ const useNotificationBar = () => {
         message: newNotification.message,
         type: newNotification.type
       };
-      const response =  await axiosInstance.post(`${API_BASE_URL}`, data,  headers );
+      const response = await axiosInstance.post(`${API_BASE_URL}`, data, headers);
       // Handle response
-      return response.data
+      return response.data;
     } catch (error) {
       console.error('Error:', error);
       // Handle error
     }
 
-    // Dispatch the setNotification action
-    dispatch(UIActions.setNotification({ message, type }));
+    // Dispatch the addUINotification action
+    await dispatch(UIActions.addUINotification({
+      type,
+      message,
+      isDarkMode: false
+    }));
   };
 
   const clearNotifications = () => {

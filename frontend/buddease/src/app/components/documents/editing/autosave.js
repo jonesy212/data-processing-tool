@@ -3,9 +3,10 @@ import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { useDispatch } from "react-redux";
 import useErrorHandling from "../../hooks/useErrorHandling";
 
+const handleError = useErrorHandling(); // Error handling hook
+
 // Function to perform autosave of editor content
 const autosave = async (editorContent, autoSaveEnabled) => {
-  const handleError = useErrorHandling();
   const dispatch = useDispatch();
 
   try {
@@ -63,6 +64,7 @@ const autosave = async (editorContent, autoSaveEnabled) => {
     const response = await axios.post("/api/autosave", {
       content: editorContent,
     });
+
     // Here, we're logging the editor content as if it's being saved to a database or cloud storage
     setTimeout(() => {
       console.log("Autosave completed.");
@@ -90,30 +92,61 @@ const autosave = async (editorContent, autoSaveEnabled) => {
   }
 };
 
+// Function to save crypto portfolio data
+const saveCryptoPortfolioData = () => {
+  try {
+    // Your logic to save crypto portfolio data goes here
 
+    // For example:
+    // Retrieve crypto portfolio data from a state or API
+    const cryptoPortfolioData = getCryptoPortfolioData();
 
-// Function to save file data as a blob and trigger download
- const saveAs = (data, filename) => {
-  // Create a Blob object containing the file data
-  const blob = new Blob([data]);
+    // Perform any necessary processing or validation
 
-  // Check if the property exists before accessing it
-  if (window.navigator.msSaveOrOpenBlob) {
-    // For Internet Explorer
-    window.navigator.msSaveOrOpenBlob(blob, filename);
-  } else {
-    // For other browsers, create a temporary link element
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
+    // Save the crypto portfolio data to storage (e.g., local storage, database)
+    // Example:
+    localStorage.setItem("cryptoPortfolio", JSON.stringify(cryptoPortfolioData));
 
-    // Trigger click event to initiate download
-    link.click();
-
-    // Cleanup: remove the temporary link element
-    URL.revokeObjectURL(link.href);
+    console.log("Crypto portfolio data saved successfully.");
+  } catch (error) {
+    // Handle errors gracefully
+    console.error("Error saving crypto portfolio data:", error);
+    handleError(error, "Error saving crypto portfolio data");
   }
 };
+
+// Function to save file data as a blob and trigger download
+const saveAs = (data, filename) => {
+  try {
+    // Sanitize input
+    const sanitizedFilename = sanitizeInput(filename);
+
+    // Create a Blob object containing the file data
+    const blob = new Blob([data]);
+
+    // Check if the property exists before accessing it
+    if (window.navigator.msSaveOrOpenBlob) {
+      // For Internet Explorer
+      window.navigator.msSaveOrOpenBlob(blob, sanitizedFilename);
+    } else {
+      // For other browsers, create a temporary link element
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = sanitizedFilename;
+
+      // Trigger click event to initiate download
+      link.click();
+
+      // Cleanup: remove the temporary link element
+      URL.revokeObjectURL(link.href);
+    }
+  } catch (error) {
+    // Handle errors gracefully
+    console.error("Error saving file data:", error);
+    handleError(error, "Error saving file data");
+  }
+};
+
 
 // Simulate network connectivity issues
 const simulateNetworkConnectivityIssue = () => {
@@ -137,7 +170,13 @@ const simulateUserInterruptions = () => {
   });
 };
 
-// Simulate handling session persistence
+const mergeChanges = (original, changes) => {
+  // Merge changes object into original
+  const merged = { ...original, ...changes };
+
+  // Return merged object
+  return merged;
+};
 const simulateSessionPersistence = (editorContent) => {
   // Simulate storing editor content in local storage for session persistence
   localStorage.setItem("editorContent", editorContent);
@@ -145,5 +184,12 @@ const simulateSessionPersistence = (editorContent) => {
 
 // Export the function for external use
 export default autosave;
-export { saveAs, simulateNetworkConnectivityIssue, simulateSessionPersistence, simulateUserInterruptions };
+export {
+  mergeChanges,
+  saveAs,
+  saveCryptoPortfolioData,
+  simulateNetworkConnectivityIssue,
+  simulateSessionPersistence,
+  simulateUserInterruptions
+};
 

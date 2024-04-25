@@ -129,6 +129,13 @@ const FileSharingComponent: React.FC = () => {
         mt={2}
         handleFileSelect={handleformId}
         handleFileUpload={handleFileUpload}
+        sizes={[]}
+        onResize={(newSizes: number[]): void => {
+          throw new Error("Function not implemented.");
+        }}
+        onResizeStop={(newSizes: number[]): void => {
+          throw new Error("Function not implemented.");
+        }}
       >
         <DynamicTypography
           variant="h5"
@@ -141,9 +148,16 @@ const FileSharingComponent: React.FC = () => {
         </DynamicTypography>
         <MenuDivider />
         <CustomBox
+          mt={2}
           handleFileSelect={handleformId}
           handleFileUpload={handleFileUpload}
-          mt={2}
+          sizes={[]}
+          onResize={(newSizes: number[]): void => {
+            throw new Error("Function not implemented.");
+          }}
+          onResizeStop={(newSizes: number[]): void => {
+            throw new Error("Function not implemented.");
+          }}
         >
           <FormControl formID={formID} fullWidth>
             <InputLabel htmlFor="file-upload">Select File</InputLabel>
@@ -156,9 +170,16 @@ const FileSharingComponent: React.FC = () => {
             />
           </FormControl>
           <CustomBox
+            mt={2}
             handleFileSelect={handleformId}
             handleFileUpload={handleFileUpload}
-            mt={2}
+            sizes={[]}
+            onResize={(newSizes: number[]): void => {
+              throw new Error("Function not implemented.");
+            }}
+            onResizeStop={(newSizes: number[]): void => {
+              throw new Error("Function not implemented.");
+            }}
           >
             {selectedFile && (
               <DynamicTypography

@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid"; // Import UUID library for generating uniqu
 import useDataExport from "../../hooks/dataHooks/useDataExport";
 import userService from "../../users/ApiUser";
 import { UndoRedoStore } from "./UndoRedoStore";
+import { apiService } from "@/app/api/ApiDetails";
+import * as userApi from '../../../api/UsersApi';
 
 interface HistoryEntry {
   id: string;
@@ -181,9 +183,13 @@ const historyManagerStore = (): HistoryStore => {
     const userId = "";
     const userIds: string[] = [userId];
     // For example, fetch user profiles and update them with relevant data
-    // For example, fetch user profiles and update them with relevant data
     const userProfilesPromise = getUsersData(userIds);
-    const newData = await userService.fetchUser(userId); // Example function returning a Promise for new data
+    
+    const newUserProfiles = await Promise.all([
+      userProfilesPromise,
+      userService.fetchUser(userId)
+    ]);
+    const newData = await userApi.fetchUserById(userId); // Example function returning a Promise for new data
 
     // Wait for user profiles to resolve
     const userProfiles = await userProfilesPromise;
@@ -196,7 +202,7 @@ const historyManagerStore = (): HistoryStore => {
       });
 
       // Save updated user profiles
-      saveUserProfiles(userProfiles); // Example function to save user profiles
+      saveUserProfiles(([String(userProfiles)])); // Example function to save user profiles
     }
   };
 

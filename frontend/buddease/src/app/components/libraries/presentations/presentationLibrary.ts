@@ -7,32 +7,38 @@ import { generatePresentationJSON } from "./generatePresentationJSON";
 
 // Function to create a new presentation
 function createPresentation(title: string, slides: Slide[]): Presentation {
-    // Generate a unique ID for the presentation
-    const presentationName = title;
-    const id = UniqueIDGenerator.generateID(
-      // Prefix for presentation IDs
-      presentationName,
-      NotificationTypeEnum.PresentationID,
-      "presentation" as NotificationType,
-      {} as DataDetails
-    );
-    
-    // Create the presentation object
-    const presentation: Presentation = {
-      id,
-      title,
-      slides, // Use the provided slides parameter
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      createdBy: "admin",
-      // Add other properties as needed
-    };
-    
-    // Generate JSON representation of the presentation
-    const presentationJSON = generatePresentationJSON(presentation);
-    console.log("Created presentation JSON:", presentationJSON);
-    
-    return presentation;
+  // Generate a unique ID for the presentation
+  const presentationName = title;
+  let id: string;
+
+  // Create the presentation object
+  const presentation: Presentation = {
+    id: "",
+    title,
+    slides, // Use the provided slides parameter
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: "admin",
+    // Add other properties as needed
+  };
+
+  id = UniqueIDGenerator.generateID(
+    // Prefix for presentation IDs
+    "created Presentation",
+    presentationName,
+    NotificationTypeEnum.PresentationID,
+    "Presentation ID generated for " + presentationName,
+    "presentation" as NotificationType,
+    {} as DataDetails
+  );
+
+  presentation.id = id;
+
+  // Generate JSON representation of the presentation
+  const presentationJSON = generatePresentationJSON(presentation);
+  console.log("Created presentation JSON:", presentationJSON);
+
+  return presentation;
 }
   
 
@@ -72,6 +78,6 @@ function removeSlideFromPresentation(
 
 // Export the presentation library functions and types
 export {
-    addSlideToPresentation, createPresentation, removeSlideFromPresentation
+  addSlideToPresentation, createPresentation, removeSlideFromPresentation
 };
 

@@ -4,7 +4,6 @@ import { Task } from "../../../models/tasks/Task";
 import { Tracker } from "../../../models/tracker/Tracker";
 import { userManagerSlice } from "../../../users/UserSlice";
 import { useDataAnalysisManagerSlice } from "./DataAnalysisSlice";
-import { taskManagerSlice } from "./TaskSlice";
 import { useTodoManagerSlice } from "./TodoSlice";
 import { trackerManagerSlice } from "./TrackerSlice";
 // Import uuid
@@ -27,19 +26,21 @@ import { useDataManagerSlice } from "./DataSlice";
 import { useDocumentManagerSlice } from "./DocumentSlice";
 import { useEventManagerSlice } from "./EventSlice";
 import { useNotificationManagerSlice } from "./NotificationSlice";
-import { usePagingManagerSlice } from './pagingSlice';
+import { usePagingManagerSlice } from "./pagingSlice";
 import { useProjectManagerSlice } from "./ProjectSlice";
 import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
 import { useSettingsManagerSlice } from "./SettingsSlice";
-import { useTeamManagerSlice } from './TeamSlice';
+import { useTeamManagerSlice } from "./TeamSlice";
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
-import {useEntityManagerSlice} from "./EntitySlice";
+import { useEntityManagerSlice } from "./EntitySlice";
 import { useDrawingManagerSlice } from "./DrawingSlice";
 import { useUIManagerSlice } from "../../stores/UISlice";
 import { filterReducer } from "./FilterSlice";
+import { useVersionManagerSlice } from "./VersionSlice";
+import { TaskState, useTaskManagerSlice } from "./TaskSlice";
+import { useAppManagerSlice } from "./AppSlice";
 const randomTaskId = uuidv4().toString();
-
 
 // Define your custom entity state
 interface CustomEntityState<T, Id extends string> extends EntityState<T, Id> {
@@ -47,22 +48,22 @@ interface CustomEntityState<T, Id extends string> extends EntityState<T, Id> {
   selectedEntityId: Id | null;
 }
 
-
 // Define the EntityState interface if not already defined
 interface EntityState<T, Id extends string> {
   // Define EntityState properties here
 }
 
 // Define your EntityId type if not already defined
-type EntityId = string;
+export type EntityId = string;
 export interface RootState {
   // User Interface
+  appManager: ReturnType<typeof useAppManagerSlice.reducer>;
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
   uiManager: ReturnType<typeof useUIManagerSlice.reducer>;
 
   // Project Management
   projectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
-  taskManager: ReturnType<typeof taskManagerSlice.reducer>;
+  taskManager: ReturnType<typeof useTaskManagerSlice.reducer>;
   trackerManager: ReturnType<typeof trackerManagerSlice.reducer>;
   userManager: ReturnType<typeof userManagerSlice.reducer>;
   teamManager: ReturnType<typeof useTeamManagerSlice.reducer>;
@@ -97,17 +98,17 @@ export interface RootState {
   pagingManager: ReturnType<typeof usePagingManagerSlice.reducer>;
   blogManager: ReturnType<typeof useBlogManagerSlice.reducer>;
   drawingManager: ReturnType<typeof useDrawingManagerSlice.reducer>;
+  versionManager: ReturnType<typeof useVersionManagerSlice.reducer>;
 }
 
-
-
 const initialState: RootState = {
+  appManager: useAppManagerSlice.reducer(undefined, { type: "init" }),
   toolbarManager: useToolbarManagerSlice.reducer(undefined, { type: "init" }),
   projectManager: useProjectManagerSlice.reducer(undefined, {
     type: "init",
   }),
   dataManager: useDataManagerSlice.reducer(undefined, { type: "init" }),
-  taskManager: taskManagerSlice.reducer(undefined, { type: "init" }),
+  taskManager: useTaskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
   userManager: userManagerSlice.reducer(undefined, { type: "init" }),
   dataAnalysisManager: useDataAnalysisManagerSlice.reducer(undefined, {
@@ -121,15 +122,20 @@ const initialState: RootState = {
   randomWalkManager: useRandomWalkManagerSlice.reducer(undefined, {
     type: "init",
   }),
+  versionManager: useVersionManagerSlice.reducer(undefined, { type: "init" }),
   pagingManager: usePagingManagerSlice.reducer(undefined, { type: "init" }),
   videoManager: useVideoManagerSlice.reducer(undefined, { type: "init" }),
   teamManager: useTeamManagerSlice.reducer(undefined, { type: "init" }),
   projectOwner: useProjectOwnerSlice.reducer(undefined, { type: "init" }),
   realtimeManager: useRealtimeDataSlice.reducer(undefined, { type: "init" }),
   eventManager: useEventManagerSlice.reducer(undefined, { type: "init" }),
-  collaborationManager: useCollaborationSlice.reducer(undefined, { type: "init" }),
+  collaborationManager: useCollaborationSlice.reducer(undefined, {
+    type: "init",
+  }),
   entityManager: useEntityManagerSlice.reducer(undefined, { type: "init" }),
-  notificationManager: useNotificationManagerSlice.reducer(undefined, { type: "init" }),
+  notificationManager: useNotificationManagerSlice.reducer(undefined, {
+    type: "init",
+  }),
   settingsManager: useSettingsManagerSlice.reducer(undefined, { type: "init" }),
   blogManager: useBlogManagerSlice.reducer(undefined, { type: "init" }),
   drawingManager: useDrawingManagerSlice.reducer(undefined, { type: "init" }),
@@ -144,28 +150,40 @@ const rootReducerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(
-      taskManagerSlice.actions.updateTaskTitle,
-      (state, action: PayloadAction<string>) => {
-        state.taskManager.taskTitle = action.payload;
+      useTaskManagerSlice.actions.updateTaskTitle,
+      (state, action: PayloadAction<{ id: string; title: string }>) => {
+        const taskToUpdate = state.taskManager.tasks.find(
+          (task) => task.id === action.payload.id
+        );
+        if (taskToUpdate) {
+          taskToUpdate.title = action.payload.title;
+        }
       }
-    );
+    ),
+      builder.addCase(
+        useTaskManagerSlice.actions.updateTaskDescription,
+        (state, action: PayloadAction<{ id: string; description: string }>) => {
+          const { id, description } = action.payload;
+          const taskToUpdate = state.taskManager.tasks.find(
+            (task: WritableDraft<Task>) => task.id === id
+          );
+
+          if (taskToUpdate) {
+            taskToUpdate.description = description;
+          }
+        }
+      );
     builder.addCase(
-      taskManagerSlice.actions.updateTaskDescription,
-      (state, action: PayloadAction<string>) => {
-        state.taskManager.taskDescription = action.payload;
-      }
-    );
-    builder.addCase(
-      taskManagerSlice.actions.updateTaskStatus,
+      useTaskManagerSlice.actions.updateTaskStatus,
       (
         state,
         action: PayloadAction<"pending" | "inProgress" | "completed">
       ) => {
-        state.taskManager.taskStatus = action.payload;
+        state.taskManager.status = action.payload;
       }
     );
     builder.addCase(
-      taskManagerSlice.actions.updateTaskDetails, // Replace with your specific action
+      useTaskManagerSlice.actions.updateTaskDetails, // Replace with your specific action
       (
         state,
         action: PayloadAction<{ taskId: string; updatedDetails: Partial<Task> }>
@@ -187,7 +205,7 @@ const rootReducerSlice = createSlice({
       const newTask: Task = {
         _id: "newTaskId2",
         id: randomTaskId, // generate unique id
-        name: "", 
+        name: "",
         title: "",
         description: "",
         assignedTo: {} as WritableDraft<User>,
@@ -211,12 +229,15 @@ const rootReducerSlice = createSlice({
         },
         previouslyAssignedTo: [],
         done: false,
-        analysisType:AnalysisTypeEnum.TASK,
+        analysisType: AnalysisTypeEnum.TASK,
         analysisResults: [],
         data: {} as Data,
         source: "user",
         // Implementation of some method
-        some(callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+        some(
+          callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+          thisArg?: any
+        ): boolean {
           // Check if 'this' is an array
           if (Array.isArray(this)) {
             for (let i = 0; i < this.length; i++) {
@@ -232,7 +253,7 @@ const rootReducerSlice = createSlice({
 
         [Symbol.iterator](): IterableIterator<any> {
           // Check if 'this' is an object
-          if (typeof this === 'object' && this !== null) {
+          if (typeof this === "object" && this !== null) {
             const taskKeys = Object.keys(this);
             let index = 0;
             return {
@@ -246,7 +267,7 @@ const rootReducerSlice = createSlice({
               },
               [Symbol.iterator]: function () {
                 return this;
-              }
+              },
             };
           } else {
             throw new Error("'Symbol.iterator' can only be used on objects.");
@@ -260,7 +281,7 @@ const rootReducerSlice = createSlice({
         videoThumbnail: "",
         videoDuration: 0,
         videoUrl: "",
-        ideas: []
+        ideas: [],
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
     });
@@ -289,7 +310,10 @@ const rootReducerSlice = createSlice({
         analysisResults: [],
         data: {} as VideoData & Data,
         source: "user",
-        some(callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+        some(
+          callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+          thisArg?: any
+        ): boolean {
           // Check if 'this' is an array
           if (Array.isArray(this)) {
             for (let i = 0; i < this.length; i++) {
@@ -304,7 +328,7 @@ const rootReducerSlice = createSlice({
         },
         [Symbol.iterator](): IterableIterator<any> {
           // Check if 'this' is an object
-          if (typeof this === 'object' && this !== null) {
+          if (typeof this === "object" && this !== null) {
             const taskKeys = Object.keys(this);
             let index = 0;
             return {
@@ -318,7 +342,7 @@ const rootReducerSlice = createSlice({
               },
               [Symbol.iterator]: function () {
                 return this;
-              }
+              },
             };
           } else {
             throw new Error("'Symbol.iterator' can only be used on objects.");
@@ -329,12 +353,12 @@ const rootReducerSlice = createSlice({
         assigneeId: "",
         payload: undefined,
         type: "addTask",
-        startDate: new Date,
-        endDate: new Date,
+        startDate: new Date(),
+        endDate: new Date(),
         videoThumbnail: "",
         videoDuration: 0,
         videoUrl: "",
-        ideas: []
+        ideas: [],
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";
@@ -342,60 +366,74 @@ const rootReducerSlice = createSlice({
       state.taskManager.taskStatus = "pending";
       state.taskManager.priority = "medium";
       state.taskManager.dueDate = new Date();
-
     });
 
     // Add other slices as needed
 
-// Inside your reducer function
-builder.addCase(
-  trackerManagerSlice.actions.addTracker,
-  (state, action: PayloadAction<Tracker>) => {
-    // Create a draft of the payload
-    const draftPayload = createDraft(action.payload);
-    // Push the draft into the trackers array
-    state.trackerManager.trackers.push(draftPayload);
-  }
-);
-// Add video-related actions
+    // Inside your reducer function
+    builder.addCase(
+      trackerManagerSlice.actions.addTracker,
+      (state, action: PayloadAction<Tracker>) => {
+        // Create a draft of the payload
+        const draftPayload = createDraft(action.payload);
+        // Push the draft into the trackers array
+        state.trackerManager.trackers.push(draftPayload);
+      }
+    );
+    // Add video-related actions
     builder.addCase(
       useVideoManagerSlice.actions.setVideos,
       (state, action: PayloadAction<Video[]>) => {
-      state.videoManager.videos = action.payload;
-    });
-    builder.addCase(
-      useVideoManagerSlice.actions.setCurrentVideoId, (state, action: PayloadAction<string | null>) => {
-      state.videoManager.currentVideoId = action.payload;
-    });
-    builder.addCase(
-      useVideoManagerSlice.actions.updateVideoThumbnail, (state, action: PayloadAction<{ id: string, newThumbnail: string }>) => {
-      const { id, newThumbnail } = action.payload;
-      const videoIndex = state.videoManager.videos.findIndex(video => video.id === id);
-      if (videoIndex !== -1) {
-        state.videoManager.videos[videoIndex].thumbnailUrl = newThumbnail;
+        state.videoManager.videos = action.payload;
       }
-    });
+    );
+    builder.addCase(
+      useVideoManagerSlice.actions.setCurrentVideoId,
+      (state, action: PayloadAction<string | null>) => {
+        state.videoManager.currentVideoId = action.payload;
+      }
+    );
+    builder.addCase(
+      useVideoManagerSlice.actions.updateVideoThumbnail,
+      (state, action: PayloadAction<{ id: string; newThumbnail: string }>) => {
+        const { id, newThumbnail } = action.payload;
+        const videoIndex = state.videoManager.videos.findIndex(
+          (video) => video.id === id
+        );
+        if (videoIndex !== -1) {
+          state.videoManager.videos[videoIndex].thumbnailUrl = newThumbnail;
+        }
+      }
+    );
     builder.addCase(
       useVideoManagerSlice.actions.updateVideoTitle,
-      (state, action: PayloadAction<{ id: string, newTitle: string }>) => {
-      const { id, newTitle } = action.payload;
-      const videoIndex = state.videoManager.videos.findIndex(video => video.id === id);
-      if (videoIndex !== -1) {
-        state.videoManager.videos[videoIndex].title = newTitle;
+      (state, action: PayloadAction<{ id: string; newTitle: string }>) => {
+        const { id, newTitle } = action.payload;
+        const videoIndex = state.videoManager.videos.findIndex(
+          (video) => video.id === id
+        );
+        if (videoIndex !== -1) {
+          state.videoManager.videos[videoIndex].title = newTitle;
+        }
       }
-    });
+    );
     builder.addCase(
       useVideoManagerSlice.actions.updateVideoDescription,
-      (state, action: PayloadAction<{ id: string, newDescription: string }>) => {
-      const { id, newDescription } = action.payload;
-      const videoIndex = state.videoManager.videos.findIndex(video => video.id === id);
-      if (videoIndex !== -1) {
-        state.videoManager.videos[videoIndex].description = newDescription;
+      (
+        state,
+        action: PayloadAction<{ id: string; newDescription: string }>
+      ) => {
+        const { id, newDescription } = action.payload;
+        const videoIndex = state.videoManager.videos.findIndex(
+          (video) => video.id === id
+        );
+        if (videoIndex !== -1) {
+          state.videoManager.videos[videoIndex].description = newDescription;
+        }
       }
-    });
-  }
+    );
+  },
 });
-
 
 // Combine reducers
 const rootReducer = combineReducers({
@@ -439,6 +477,5 @@ export const selectDataAnalysisManager = (state: RootState) =>
   state.dataAnalysisManager;
 // Add other selectors as needed
 
-export default  rootReducer;
+export default rootReducer;
 export { initialState };
-

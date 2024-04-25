@@ -138,3 +138,4 @@ export const selectData = (state: { data: DataSliceState }) => state.data.data;
 
 // Export reducer for the data entity slice
 export default useDataManagerSlice.reducer;
+export type { DataSliceState };

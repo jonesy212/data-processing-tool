@@ -5,12 +5,16 @@ import { generateValidationRulesCode } from "@/app/components/security/validatio
 import fs from "fs";
 import { useState } from "react";
 import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
+import { User } from "@/app/components/users/User";
+import FileData from "@/app/components/models/data/FileData";
 
 // Define categories and their associated properties
 interface CategoryProperties {
   UserInterface: string[];
   DataVisualization: string[];
-  Forms: string[];
+  Forms: FormData[];
+  
+
   // Add more categories and properties as needed
 }
 
@@ -18,26 +22,48 @@ const categoryProperties: CategoryProperties = {
   UserInterface: ["componentName", "componentDescription"],
   DataVisualization: ["dataProperties", "chartType"],
   Forms: ["formFields", "validationRules"],
+  
 };
 
 // Define function to create user scenarios and map out user journey
-async function createUserScenarios() {
+async function createUserScenarios(props: any) {
   const [options, setOptions] = useState(getDefaultDocumentOptions());
 
   // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
   const userPersonaBuilder = new PersonaBuilder();
-  const phaseManager = PhaseManager({ phases: [] }) as
-    | typeof PhaseManager
-    | null;
+  const phaseManager = new PhaseManager({ phases: [] });
 
   // Use the modules to create detailed user scenarios and map out user journey
   // Example:
-  const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
+  const userPersona = PersonaBuilder.buildPersona(
+    PersonaTypeEnum.CasualUser,
+    props
+  );
   // Check if phaseManager is not null or undefined before accessing its properties
-  if (phaseManager) {
-    // Call the createPhases method if it exists
-    const phases = phaseManager.createPhases(/* parameters */);
+  const phases = phaseManager.phases ? phaseManager.phases[0] : undefined;
+  // Generate user scenarios and map out user journey
+  if (phases) {
+    phases.scenarios = userPersonaBuilder.buildScenarios(userPersona);
+    phases.userJourney = userPersonaBuilder.mapUserJourney(phases.scenarios);
   }
+  // Output or utilize the created user scenarios and mapped user journey
+  console.log("User scenarios and user journey mapped successfully.");
+  // Generate validation rules code
+  const validationRules = generateValidationRulesCode(
+    categoryProperties.Forms.validationRules
+  );
+  // Generate component code
+  generateComponent(
+    "ValidationRules",
+    "Forms",
+    {
+      formFields: categoryProperties.Forms.validationRules,
+    },
+    validationRules
+  );
+  // Save component code to file
+  fs.writeFileSync(componentFilePath, reactCode);
+  // Return component name
 
   const document = await DocumentBuilder.buildDocument(
     userPersona,
@@ -54,7 +80,38 @@ async function createUserScenarios() {
           content: "Content for Document 1",
           highlights: ["highlighted phrase 1", "tagged item 2"],
           topics: ["topic 1", "topic 2"],
-          files: ["file 1", "file 2"],
+          files: [
+            {
+              name: "file 1",
+              content: "",
+              fileSize: 0,
+              fileType: "",
+              filePath: "",
+              uploader: {} as FileData["username"],
+              fileName: "",
+              uploadDate: new Date(),
+              id: "",
+              title: "",
+              description: "",
+              scheduledDate: new Date(),
+              createdBy: "",
+            },
+            {
+              name: "file 2",
+              content: "",
+              fileSize: 0,
+              fileType: "",
+              filePath: "",
+              uploader: undefined,
+              fileName: "",
+              uploadDate: undefined,
+              id: "",
+              title: "",
+              description: "",
+              scheduledDate: undefined,
+              createdBy: "",
+            },
+          ],
           documentType: "document type 1",
           options: getDefaultDocumentOptions(),
           documentPhase: getDocumentPhase(document),
@@ -216,6 +273,7 @@ function generateFormsComponent(
   const validationRulesCode = generateValidationRulesCode(validationRules); // Generate component code
   const componentCode = `
       import React from 'react';
+import { User } from '../../components/users/User';
 
       interface ${componentName}Props {
         ${formFieldsCode}

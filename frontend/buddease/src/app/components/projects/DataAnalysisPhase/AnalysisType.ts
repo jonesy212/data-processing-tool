@@ -64,3 +64,5 @@ enum AnalysisTypeEnum {
     GLOBAL = "Global Analysis",
     IMPACT = "Impact Analysis",
 }
+
+export {AnalysisTypeEnum};

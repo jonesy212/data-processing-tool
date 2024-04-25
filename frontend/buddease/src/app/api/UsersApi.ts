@@ -1,6 +1,9 @@
 import axios from 'axios';
 import Logger from '../components/logging/Logger';
 import userService from '../components/users/ApiUser';
+import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
+import UserService from '../components/users/ApiUser';
+import { databaseConfig } from '../configs/DatabaseConfig';
 
 // Function to log API errors
 const handleApiError = (error: any) => {
@@ -20,14 +23,16 @@ export const getUserData = async (userId: string) => {
   }
 };
 
-
 export const getUsersData = async (userIds: string[]) => {
   try {
     const userDataArray = [];
     for (const userId of userIds) {
       // Use the user ID to fetch data for each user
-      const response = await axios.get(`/api/users/${userId}`);
-      userDataArray.push(response.data);
+      const userService = new UserService(); // Create an instance of UserService
+      const response = await userService.fetchUserData({ userId }, {
+        dispatch: {} as Dispatch<UnknownAction>
+      }); // Pass an empty object as the second argument
+      userDataArray.push(response.payload); // Access the payload property instead of data
     }
     return userDataArray;
   } catch (error) {
@@ -59,8 +64,6 @@ export const processUserData = (userData: any): any => {
   return userData;
 };
 
-
-
 // Function to save user profiles to the database
 // Function to save user profiles to the database
 export const saveUserProfiles = async (userIds: string[]) => {
@@ -70,13 +73,19 @@ export const saveUserProfiles = async (userIds: string[]) => {
 
     // Loop through each userId and fetch user profile data
     for (const userId of userIds) {
-      
-      const userProfile = await userService.fetchUserProfile(userId); // Pass userId to fetchUserProfile
+      const userService = new UserService(); // Create an instance of UserService
+
+      const userProfile = await userService.fetchUserProfile(userId); // Assuming UserService has a fetchUserProfile method
       userProfiles.push(userProfile);
     }
-
-    // Save user profiles to the database
-    await saveToDatabase(userProfiles);
+    
+    // Check if the databaseConfig object has a saveUserProfiles method
+    if (databaseConfig.saveUserProfiles) {
+      // Call the saveUserProfiles method, passing the array of user profiles
+      await databaseConfig.saveUserProfiles(userProfiles);
+    } else {
+      throw new Error('saveUserProfiles method is not implemented in the databaseConfig object.');
+    }
 
     // Return success message or result if needed
     return { success: true, message: "User profiles saved successfully." };

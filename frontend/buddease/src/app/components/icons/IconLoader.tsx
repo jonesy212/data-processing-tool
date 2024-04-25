@@ -1,3 +1,4 @@
+//iconloader.tsx
 import Image from "next/image";
 
 export type IconLoader = () => Promise<React.ReactNode>;
@@ -12,22 +13,6 @@ export const createIconLoader = (iconPath: string, altText: string): IconLoader 
     });
   };
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export const loadDuckDuckGoIcon: IconLoader = createIconLoader(
