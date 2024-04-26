@@ -34,7 +34,8 @@ import FrontendStructure from "../configs/appStructure/FrontendStructure";
 
 const initialData: any = {}; 
 
-export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
+// export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
+export const realtimeData = {} as RealtimeData
 
 // Updated cache data structure based on the provided tree structure
 export interface CacheData extends Data {

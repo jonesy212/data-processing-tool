@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import SnapshotList from "../snapshots/SnapshotList";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import { createEvent } from "@testing-library/react";
@@ -6,24 +6,41 @@ import { setMessages } from "../state/redux/slices/ChatSlice";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import useSorting from "../hooks/useSorting";
 
+
+
+
+
+const createEventHandler = DynamicEventHandlerExample.createEventHandler;
+  
 const DynamicEventHandlerService = ({
   handleSorting,
 }: {
-  handleSorting: (snapshotList: SnapshotList) => void;
+    handleSorting: (
+      snapshotList: SnapshotList,
+      event: SyntheticEvent<Element, Event>) => void
 }) => {
   // State and other logic...
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
 
+
+const handleSortingEvent = createEventHandler(
+  "handleSorting",
+  handleSorting
+)
   // Helper function to add messages
   const addMessage = (message: string) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-  const sort = useSorting(messages, setMessages);
+  const sort = useSorting
+    (messages,
+    setMessages
+  );
    handleSorting = (snapshotList: SnapshotList) => {
     // Handle sorting logic
+    // Assuming snapshotList is an array or object with sorting functionality
     snapshotList.sort();
 
     // Add message
@@ -32,16 +49,10 @@ const DynamicEventHandlerService = ({
 };
 
       // Helper function to add messages
-      const addMessage = (message: string) => {
+      const addMessage = (message: Message) => {
         setMessages((prevMessages: Message[]) => [...prevMessages, message as Message]);
       };
     
-      const createEventHandler = DynamicEventHandlerExample.createEventHandler;
-      const handleSortingEvent = createEventHandler(
-        "handleSorting",
-        handleSorting
-      )
-  
   const handleKeyboardShortcuts = createEventHandler(
     "handleKeyboardShortcuts",
     (event) => {
@@ -168,72 +179,70 @@ const DynamicEventHandlerService = ({
 
   useEffect(() => {
     // Attach event listeners using the imported event handlers
-    window.addEventListener("keydown", handleKeyboardEvent);
-    window.addEventListener("click", handleMouseEvent);
-    window.addEventListener("scroll", handleScrolling);
-    window.addEventListener("wheel", handleZoom);
-    window.addEventListener("mouseup", handleHighlighting);
-    window.addEventListener("mousedown", handleAnnotations);
-    window.addEventListener("copy", handleCopyPaste);
-    window.addEventListener("redo", handleUndoRedo);
-    window.addEventListener("contextmenu", handleContextMenus);
-    window.addEventListener("fullscreen", handleFullscreenMode);
-    window.addEventListener("settingsPanel", handleSettingsPanel);
-    window.addEventListener("helpFAQ", handleHelpFAQ);
-    window.addEventListener("searchFunctionality", handleSearchFunctionality);
-    window.addEventListener("progressIndicators", handleProgressIndicators);
+  //   window.addEventListener("keydown", handleKeyboardEvent);
+  //   window.addEventListener("click", handleMouseEvent);
+  //   window.addEventListener("scroll", handleScrolling);
+  //   window.addEventListener("wheel", handleZoom);
+  //   window.addEventListener("mouseup", handleHighlighting);
+  //   window.addEventListener("mousedown", handleAnnotations);
+  //   window.addEventListener("copy", handleCopyPaste);
+  //   window.addEventListener("redo", handleUndoRedo);
+  //   window.addEventListener("contextmenu", handleContextMenus);
+  //   window.addEventListener("fullscreen", handleFullscreenMode);
+  //   window.addEventListener("settingsPanel", handleSettingsPanel);
+  //   window.addEventListener("helpFAQ", handleHelpFAQ);
+  //   window.addEventListener("searchFunctionality", handleSearchFunctionality);
+  //   window.addEventListener("progressIndicators", handleProgressIndicators);
   
-    // Clean up event listeners on unmount
-    return () => {
-      window.removeEventListener("keydown", handleKeyboardEvent);
-      window.removeEventListener("click", handleMouseEvent);
-      window.removeEventListener("scroll", handleScrolling);
-      window.removeEventListener("wheel", handleZoom);
-      window.removeEventListener("mouseup", handleHighlighting);
-      window.removeEventListener("mousedown", handleAnnotations);
-      window.removeEventListener("copy", handleCopyPaste);
-      window.removeEventListener("redo", handleUndoRedo);
-      window.removeEventListener("contextmenu", handleContextMenus);
-      window.removeEventListener("fullscreen", handleFullscreenMode);
-      window.removeEventListener("settingsPanel", handleSettingsPanel);
-      window.removeEventListener("helpFAQ", handleHelpFAQ);
-      window.removeEventListener("searchFunctionality", handleSearchFunctionality);
-      window.removeEventListener("progressIndicators", handleProgressIndicators);
-    };
+  //   // Clean up event listeners on unmount
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyboardEvent);
+  //     window.removeEventListener("click", handleMouseEvent);
+  //     window.removeEventListener("scroll", handleScrolling);
+  //     window.removeEventListener("wheel", handleZoom);
+  //     window.removeEventListener("mouseup", handleHighlighting);
+  //     window.removeEventListener("mousedown", handleAnnotations);
+  //     window.removeEventListener("copy", handleCopyPaste);
+  //     window.removeEventListener("redo", handleUndoRedo);
+  //     window.removeEventListener("contextmenu", handleContextMenus);
+  //     window.removeEventListener("fullscreen", handleFullscreenMode);
+  //     window.removeEventListener("settingsPanel", handleSettingsPanel);
+  //     window.removeEventListener("helpFAQ", handleHelpFAQ);
+  //     window.removeEventListener("searchFunctionality", handleSearchFunctionality);
+  //     window.removeEventListener("progressIndicators", handleProgressIndicators);
+  //   };
   }, [handleKeyboardEvent, handleMouseEvent, handleScrolling, handleZoom, handleHighlighting, handleAnnotations, handleCopyPaste, handleUndoRedo, handleContextMenus, handleFullscreenMode, handleSettingsPanel, handleHelpFAQ, handleSearchFunctionality, handleProgressIndicators, handleDragStart, 
-    handleDragEnd, 
-    handleDragEnter, 
-    handleDragOver, 
-    handleDragLeave, 
-    handleDrop, 
-    handleFocus, 
-    handleBlur, 
-    handleFocusIn, 
-    handleFocusOut, 
-    handleResize, 
-    handleSelect, 
-    handleUnload, 
-    handleBeforeUnload, 
-    handleTouchStart, 
-    handleTouchMove, 
-    handleTouchEnd, 
-    handleTouchCancel, 
-    handlePointerDown, 
-    handlePointerMove, 
-    handlePointerUp, 
-    handlePointerCancel, 
-    handlePointerEnter, 
-    handlePointerLeave, 
-    handlePointerOver, 
-    handlePointerOut, 
-    handleAuxClick, 
-    handleGestureStart, 
-    handleGestureChange, 
-    handleGestureEnd, 
+  //   handleDragEnd, 
+  //   handleDragEnter, 
+  //   handleDragOver, 
+  //   handleDragLeave, 
+  //   handleDrop, 
+  //   handleFocus, 
+  //   handleBlur, 
+  //   handleFocusIn, 
+  //   handleFocusOut, 
+  //   handleResize, 
+  //   handleSelect, 
+  //   handleUnload, 
+  //   handleBeforeUnload, 
+  //   handleTouchStart, 
+  //   handleTouchMove, 
+  //   handleTouchEnd, 
+  //   handleTouchCancel, 
+  //   handlePointerDown, 
+  //   handlePointerMove, 
+  //   handlePointerUp, 
+  //   handlePointerCancel, 
+  //   handlePointerEnter, 
+  //   handlePointerLeave, 
+  //   handlePointerOver, 
+  //   handlePointerOut, 
+  //   handleAuxClick, 
+  //   handleGestureStart, 
+  //   handleGestureChange, 
+  //   handleGestureEnd, 
     ]);
   
-  useEffect(() => {
-
     const handleSortingEvent = createEventHandler(
       "handleSorting",
       (event: React.SyntheticEvent) => {
@@ -265,20 +274,32 @@ const DynamicEventHandlerService = ({
         };
       }
     );
-  
-    // Example usage
+
+
+useEffect(() => {
+    
     const createEventHandler = DynamicEventHandlerExample.createEventHandler;
+
     const keyboardEventHandler = createEventHandler(
       "handleKeyboardShortcuts",
       DynamicEventHandlerExample.handleKeyboardShortcuts
     );
   
-    const mouseClickEventHandler = DynamicEventHandlerExample.createEventHandler(
+  const handleSortingEvent = createEventHandler(
+    "handleSorting",
+    (event: React.SyntheticEvent) => {
+      // Logic for handling sorting event
+      console.log("Handling sorting event:", event);
+      DynamicEventHandlerExample.handleSorting(event);
+    }
+  )
+  
+    const mouseClickEventHandler = createEventHandler(
       "handleMouseClick",
       DynamicEventHandlerExample.handleMouseClick
     );
 
-    const handleDynamicEvent = DynamicEventHandlerExample.createEventHandler(
+    const handleDynamicEvent = createEventHandler(
       "handleDynamicEvent",
       (event: React.SyntheticEvent) => {
         console.log("Handling dynamic event:", event);
@@ -287,7 +308,7 @@ const DynamicEventHandlerService = ({
 
 
   
-    const handleContextMenu = DynamicEventHandlerExample.createEventHandler(
+    const handleContextMenu = createEventHandler(
       "contextMenu",
       (event: React.SyntheticEvent) => {
         // Logic for handling context menu
@@ -310,6 +331,26 @@ const DynamicEventHandlerService = ({
         };
       }
     );
+
+    const handleHighlighting = createEventHandler(
+      "handleHighlighting",
+      (event: React.SyntheticEvent) => {
+        console.log("Handling text highlighting:", event);
+
+        // Logic for handling text selection/highlighting
+        const selection = window.getSelection();
+        // Update UI to show highlighted text
+        const highlightedTextElement = document.getElementById("highlightedText");
+        if (highlightedTextElement && selection) {
+          highlightedTextElement.innerHTML = selection.toString();
+        }
+        return () => {
+          window.removeEventListener("selectionchange", handleHighlighting);
+        };
+
+        // For example, update UI to reflect highlighted text
+      }
+    );
   
     window.addEventListener("contextmenu", handleContextMenu);
     window.addEventListener("selectionchange", handleHighlighting);
@@ -329,6 +370,7 @@ const DynamicEventHandlerService = ({
       window.removeEventListener("customEvent2", handleDynamicEvent);
     };
   }, [handleSortingEvent, handleKeyboardShortcuts, handleMouseClick, handleHighlighting, handleContextMenu, handleDynamicEvent]);
+
 
   return (
     <div>

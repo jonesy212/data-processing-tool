@@ -1,8 +1,8 @@
 // useSorting.tsx
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { useState } from 'react';
 import SortCriteria from '../../pages/searchs/SortCriteria';
 import { CalendarEvent } from '../state/stores/CalendarEvent';
-import { Message } from '@/app/generators/GenerateChatInterfaces';
 const useSorting = () => {
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>(SortCriteria.Date);
 
@@ -24,7 +24,9 @@ const useSorting = () => {
         return (a.sender.username || "").localeCompare(b.sender.username || "");
       }
       if (sortCriteria === "receiver") {
-        return (a.receiver.username || "").localeCompare(b.receiver.username || "");
+        return (a.receiver.username || "").localeCompare(
+          b.receiver.username || ""
+        );
       }
       if (sortCriteria === "timestamp") {
         return (
@@ -35,13 +37,7 @@ const useSorting = () => {
         return (a.content || "").localeCompare(b.content || "");
       }
       if (sortCriteria === "tags") {
-        return (a.tags || "").localeCompare(b.tags || "");
-      }
-      if (sortCriteria === "wordSearch") {
-        return (
-          (a.content || "").toLowerCase().indexOf(wordSearch || "") -
-          (b.content || "").toLowerCase().indexOf(wordSearch || "")
-        );
+        return (a.tags.join(",") || "").localeCompare(b.tags.join(",") || "");
       }
       return 0;
     });
@@ -50,7 +46,7 @@ const useSorting = () => {
   const setSortByTitle = () => setSortCriteria(SortCriteria.Title);
   const setSortByDate = () => setSortCriteria(SortCriteria.Date);
 
-  return { sortEvents, setSortByTitle, setSortByDate };
+  return { sortEvents, setSortByTitle, setSortByDate, sortMessages };
 };
 
 export default useSorting;

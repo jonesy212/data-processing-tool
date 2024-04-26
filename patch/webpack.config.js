@@ -7,7 +7,7 @@ export default function (webpackEnv) {
   const isEnvDevelopmentProfile =
     isEnvDevelopment && process.argv.includes("--profile");
 
-  const shouldUseSourceMap = true; // Utilize shouldUseSourceMap
+  const shouldUseSourceMap = true;
   const imageInlineSizeLimit = parseInt(
     process.env.IMAGE_INLINE_SIZE_LIMIT || "10000"
   );
@@ -15,6 +15,18 @@ export default function (webpackEnv) {
   const webpackConfig = {
     // Other Webpack configuration options...
 
+    entry: "../../data_analysis/frontend/buddease/src/index.ts", // Entry point of your application
+    output: {
+      filename: "main.js", // Output bundle filename
+      path: path.resolve(__dirname, "../../data_analysis/frontend/buddease/dist"), // Output directory path
+    },
+    alias: {
+      'react-native$': 'react-native-web'
+    },
+    externals: {
+      "react-native": true,
+      // Add other externals if needed
+    },
     module: {
       rules: [
         // Other rules...
@@ -44,19 +56,26 @@ export default function (webpackEnv) {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
           use: {
-            loader: 'ts-loader',
+            loader: "ts-loader",
             options: {
-              transpileOnly: true, // Don't type-check files during build for performance
+              transpileOnly: true,
             },
           },
           resolve: {
-            extensions: ['.ts', '.tsx', '.js', '.jsx', '.d.ts'], 
+            extensions: [".ts", ".tsx", ".js", ".jsx", ".d.ts"],
           },
-        }
+        
+        },
         
       ],
     },
-
+    plugins: [
+      ["module-resolver", {
+        "alias": {
+          "^react-native$": "react-native-web"
+        }
+      }]
+    ],
     optimization: {
       minimize: isEnvProduction,
       minimizer: [
@@ -107,4 +126,4 @@ export default function (webpackEnv) {
   };
 
   return webpackConfig;
-};
+}

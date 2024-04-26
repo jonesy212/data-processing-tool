@@ -18,6 +18,7 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Member } from "../teams/TeamMembers";
 import { ProjectPhaseTypeEnum } from "./StatusType";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -88,7 +89,8 @@ interface Data {
   startDate?: Date;
   endDate?: Date;
   scheduled?: boolean;
-  status?: AllStatus
+  status?: AllStatus;
+  
 
   isActive?: boolean;
   tags?: string[];

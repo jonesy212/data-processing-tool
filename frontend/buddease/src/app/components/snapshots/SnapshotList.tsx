@@ -3,6 +3,7 @@ import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Data } from "../models/data/Data";
 
 interface SnapshotItem {
+  user: any;
   id: string;
   value: Snapshot<Data>
   label: string;
@@ -15,6 +16,51 @@ class SnapshotList {
   constructor() {
     this.id = UniqueIDGenerator.generateSnapshoItemID(Date.now().toString());
     this.snapshots = [];
+  }
+
+
+  sortSnapshotByDate() {
+    this.snapshots.sort((a, b) => {
+      return (
+        (a.value.timestamp.getTime() as number) -
+        (b.value.timestamp.getTime() as number)
+      );
+    });
+  }
+  sort(){
+    this.snapshots.sort((a, b) => {
+      return (
+        (a.value.timestamp.getTime() as number) -
+        (b.value.timestamp.getTime() as number)
+      );
+    });
+  }
+
+  sortSnapshotItems() {
+    this.snapshots.sort((a, b) => {
+      return (
+        (a.value.timestamp.getTime() as number) -
+        (b.value.timestamp.getTime() as number)
+      );
+    });
+  }
+
+  sortSnapshotsByUser() {
+    this.snapshots.sort((a, b) => {
+      return a.user.localeCompare(b.user);
+    });
+  }
+
+  sortSnapshotsByAlpabeticalOrder() {
+    this.snapshots.sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    });
+  }
+
+  sortSnapshotsByTags() {
+    this.snapshots.sort((a, b) => {
+      return (a.value.tags || []).localeCompare(b.value.tags || []);
+    });
   }
 
   // Methods to manipulate snapshot items

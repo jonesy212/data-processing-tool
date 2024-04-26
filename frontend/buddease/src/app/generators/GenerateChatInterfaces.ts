@@ -15,6 +15,7 @@ import { User, UserData } from "../components/users/User";
     text: string;
     isUserMessage?: boolean
     receiver: User;
+    
   }
 
 

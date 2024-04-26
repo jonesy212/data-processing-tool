@@ -14,7 +14,7 @@ interface FetchUserDataPayload {
   onCancel?: () => void;
 }
 
-type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<HTMLDivElement>
+export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<HTMLDivElement>
 
 
 export const UIActions = {
@@ -22,6 +22,10 @@ export const UIActions = {
   setPointerPosition: createAction<{ x: number; y: number }>(
     "setPointerPosition"
   ),
+  setGesturePosition: createAction<{gesturePosition: {
+    payload: GesterEvent;
+    type: string;
+} }>("setGesturePosition"),
   setIsPointerInside: createAction<boolean>("setIsPointerInside"),
   setIsPointerHovering: createAction<boolean>("setIsPointerHovering"),
   setIsAuxClicked: createAction<boolean>("setIsAuxClicked"),

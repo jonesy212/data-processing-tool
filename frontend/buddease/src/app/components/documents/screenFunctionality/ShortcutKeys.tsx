@@ -24,7 +24,8 @@ import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import * as ApiAnalysis from "../../../api/ApiAnalysisService";
 import { SearchActions } from "../../actions/SearchActions";
-import { UIActions } from "../../actions/UIActions";
+import { TooltipActions } from "../../actions/TooltipActions";
+import { GesterEvent, UIActions } from "../../actions/UIActions";
 import getSocketConnection from "../../communications/getSocketConnection";
 import { currentAppType } from "../../getCurrentAppType";
 import useErrorHandling from "../../hooks/useErrorHandling";
@@ -33,7 +34,6 @@ import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType"
 import { RootState } from "../../state/redux/slices/RootSlice";
 import { Subscription } from "../../subscriptions/Subscription";
 import { saveCryptoPortfolioData } from "../editing/autosave";
-import { TooltipActions } from "../../actions/TooltipActions";
 const dispatch = useDispatch();
 const [state, setState] = useState("");
 // Initialize the useErrorHandling hook
@@ -190,6 +190,28 @@ const DynamicEventHandlerExample = {
     addMessage(message as WritableDraft<Message>);
   },
 
+  handleSorting(event: React.SyntheticEvent) {
+    // Logic for handling sorting
+    console.log("Handling sorting:", event);
+    switch (event.type) {
+      case "asc":
+        // Sort ascending logic
+        break;
+      case "desc":
+        // Sort descending logic
+        break;
+      default:
+        console.log("Invalid sort type");
+        break;
+    }
+
+    const message: Partial<Message> = {
+      content: "Handling sorting"
+    };
+
+    addMessage(message as WritableDraft<Message>);
+  },
+
   handleMouseEvent: (event: MouseEvent & SyntheticEvent) => {
     // Sanitize input value before processing
 
@@ -211,7 +233,7 @@ const DynamicEventHandlerExample = {
     };
 
     // Call addMessage with the created Message object
-    addMessage(message as Message); // Type assertion to Message
+    addMessage(message as WritableDraft<Message>); // Type assertion to Message
   },
 
   handleScrolling: (event: React.UIEvent<HTMLDivElement>) => {
@@ -1077,12 +1099,27 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
   },
 
-  handleGestureChange: (event: React.TouchEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>) => { 
+  handleGestureChange: (
+    event: React.TouchEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>
+  ) => {
     // Logic for gesture change event during gesture
     console.log("Gesture changed");
 
     // Example: Update gesture position/scale state
-    const gesturePosition = UIActions.getGesturePosition(event);
+    const gesturePosition =
+      event.type === "touchstart" ||
+      event.type === "touchmove" ||
+      event.type === "touchend"
+        ? UIActions.getGesturePosition(
+            event as GesterEvent
+          )
+        : UIActions.getGesturePosition(
+            event as GesterEvent
+          );
+
+    // register gesturPosition in state
+    UIActions.setGesturePosition({gesturePosition: gesturePosition});
+    // Additional logic to handle gesture change
   },
   
   handleGestureEnd: (event: React.TouchEvent<HTMLDivElement>) => { 
