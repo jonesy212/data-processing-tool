@@ -7,6 +7,7 @@ import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
+import { Progress } from "../models/tracker/ProgressBar";
 
 // Define a type for a phase
 export interface Phase extends CommonData<Data> {
@@ -33,6 +34,11 @@ export class PhaseImpl implements Phase {
     handleTransitionTo: () => {},
     resetIdleTimeout: () => Promise.resolve(),
     isActive: false,
+    progress: {
+      id: "default",
+      value: 0,
+      label: ""
+    } as Progress
   };
   title: string = "";
   description: string = "";
@@ -92,5 +98,6 @@ export interface CustomPhaseHooks {
   handleTransitionTo: (nextPhase: Phase) => void;
   resetIdleTimeout: () => Promise<void>;
   isActive: boolean;
+  progress: Progress
   // Add other methods if needed
 }

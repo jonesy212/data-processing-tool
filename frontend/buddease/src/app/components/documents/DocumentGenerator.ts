@@ -38,12 +38,24 @@ import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
 
 import * as apiDocument from "@/app/api/ApiDocument";
-import FormatEnum from "../form/FormatEnum";
+import FormatEnum, { allowedDiagramFormats } from "../form/FormatEnum";
+import { AppType, PDFData, loadPDFFile, parsePDF } from "./parsePDF";
+import { ParsedData, parsedData } from "../crypto/parseData";
+import { PDFDocument, PDFPage } from "pdf-lib";
+
+import { YourPDFType } from "./DocType";
 var xl = require("excel4node");
 
 const { handleError } = useErrorHandling();
 interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip>, DocumentData {
   load(content: any): void;
+}
+
+
+
+// Extend the PDFPage type to include the getText method
+interface CustomPDFPage extends PDFPage {
+  getText(): Promise<string>;
 }
 type DocumentPath = DocumentData | DatasetModel;
 
@@ -115,6 +127,7 @@ const documents: Document[] = [
 
 // // Add the namespace declaration for DXT if it's not already imported
 // declare namespace DXT {import { fs } from 'fs';
+import { PDFDocument } from 'pdf-lib';
 
 //   // todo
 //   // Define your types here...
@@ -149,6 +162,7 @@ async function loadDiagramDocumentContent(
   try {
     // Fetch the document data
     const document = await fetchDocumentByIdAPI(documentId, dataCallback);
+
 
     // Validate the document format
     const format = document.format.toLowerCase();
@@ -277,9 +291,41 @@ async function loadGenericDocumentContent(
   return JSON.stringify(parsedContent);
 }
 
+
+
+
+// Update the extractTextFromPDF function to use CustomPDFPage instead of PDFPage
+async function extractTextFromPDF(pdfString: string): Promise<string> {
+  try {
+    // Load the PDF from the provided string
+    const pdfBytes = Uint8Array.from(atob(pdfString), c => c.charCodeAt(0));
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    
+    // Extract text from each page of the PDF
+    let text = '';
+    const numPages = pdfDoc.getPageCount();
+    for (let i = 0; i < numPages; i++) {
+      const page = await pdfDoc.getPage(i) as CustomPDFPage; // Cast to CustomPDFPage
+      const pageText = await page.getText();
+      text += pageText;
+    }
+
+    return text;
+  } catch (error) {
+    console.error("Error extracting text from PDF:", error);
+    throw error;
+  }
+}
+
 async function loadDocumentContentFromDatabase(
+
+  pdfType: YourPDFType,[],
+  pdfData: PDFData[],
+  pdfFilePath: string,
+  appType: AppType,
   documentId: number,
   format: string,
+  parsedData: ParsedData<PDFData>[],
   dataCallback: (data: WritableDraft<DocumentData>) => void
 ): Promise<string> {
   let parsedContent: any;
@@ -297,7 +343,8 @@ async function loadDocumentContentFromDatabase(
     // Logic to parse document content based on format
     switch (format) {
       case "pdf":
-        parsedContent = parsePDF(document.content);
+
+        parsedContent = parsePDF(pdfData, pdfFilePath, appType, parsedData);
         break;
       case "docx":
         parsedContent = parseDocx(document.content);
@@ -822,6 +869,14 @@ class DocumentGenerator {
       default:
         throw new Error(`Unsupported document type: ${type}`);
     }
+  },  
+
+  createExecutiveSummary(options: DocumentOptions): string { 
+    // Logic to generate executive summary
+    const executiveSummaryContent = generateExecutiveSummaryContent(options);
+    // Write the executive summary content to a file
+    fs.writeFileSync("executive_summary.docx", executiveSummaryContent);
+    return "Executive summary created successfully.";
   }
   // Additional methods for document management, export, etc.
 }

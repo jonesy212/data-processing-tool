@@ -1,6 +1,6 @@
 // EventContentAnalysis.tsx
 
-import { processAutoGPTOutputWithSpaCy } from "../../Inteigents/AutoGPTSpaCyIntegration";
+import { processAutoGPTOutputWithSpaCy } from "../../intelligence/AutoGPTSpaCyIntegration";
 import axiosInstance from "../../security/csrfToken";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
 

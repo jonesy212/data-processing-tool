@@ -40,6 +40,9 @@ import { filterReducer } from "./FilterSlice";
 import { useVersionManagerSlice } from "./VersionSlice";
 import { TaskState, useTaskManagerSlice } from "./TaskSlice";
 import { useAppManagerSlice } from "./AppSlice";
+import { usePhaseManagerSlice } from "./phaseSlice";
+import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
+import { PriorityStatus } from '@/app/components/models/data/StatusType';
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -76,6 +79,7 @@ export interface RootState {
   todoManager: ReturnType<typeof useTodoManagerSlice.reducer>;
   documentManager: ReturnType<typeof useDocumentManagerSlice.reducer>;
   userTodoManager: ReturnType<typeof userManagerSlice.reducer>;
+  phaseManager: ReturnType<typeof usePhaseManagerSlice.reducer>;
 
   // API & Networking
   apiManager: ReturnType<typeof useApiManagerSlice.reducer>;
@@ -140,6 +144,7 @@ const initialState: RootState = {
   blogManager: useBlogManagerSlice.reducer(undefined, { type: "init" }),
   drawingManager: useDrawingManagerSlice.reducer(undefined, { type: "init" }),
   uiManager: useUIManagerSlice.reducer(undefined, { type: "init" }),
+  phaseManager: usePhaseManagerSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -177,30 +182,49 @@ const rootReducerSlice = createSlice({
       useTaskManagerSlice.actions.updateTaskStatus,
       (
         state,
-        action: PayloadAction<"pending" | "inProgress" | "completed">
+        action: PayloadAction<{ id: string; status: string; }>
       ) => {
-        state.taskManager.status = action.payload;
+        const { id, status } = action.payload;
+        const taskToUpdate = state.taskManager.tasks.find(
+          (task: WritableDraft<Task>) => task.id === id
+        );
+        if (taskToUpdate) {
+          taskToUpdate.status = status;
+        }
+        
       }
     );
     builder.addCase(
-      useTaskManagerSlice.actions.updateTaskDetails, // Replace with your specific action
+      useTaskManagerSlice.actions.updateTaskDetails,
       (
         state,
-        action: PayloadAction<{ taskId: string; updatedDetails: Partial<Task> }>
+        action: PayloadAction<{
+          id: string,
+          updates: {
+            title?: string,
+            description?: string
+          }
+        }>
       ) => {
         // Handle the action for updating task details
-        const { taskId, updatedDetails } = action.payload;
-        const taskToUpdate = state.taskManager.tasks.find(
-          (task: WritableDraft<Task>) => task.id === taskId
-        );
-
+        const { id, updates } = action.payload;
+        const taskToUpdate = state.taskManager.tasks.find((task) => task.id === id);
+    
         if (taskToUpdate) {
           // Update the task details
-          Object.assign(taskToUpdate, updatedDetails);
+          if (updates.title) {
+            taskToUpdate.title = updates.title;
+          }
+          if (updates.description) {
+            taskToUpdate.description = updates.description;
+          }
         }
       }
     );
-    builder.addCase(taskManagerSlice.actions.addTask, (state) => {
+    
+    builder.addCase(
+      useTaskManagerSlice.actions.addTask, (
+        state) => {
       // Handle the action for adding a task
       const newTask: Task = {
         _id: "newTaskId2",
@@ -285,7 +309,8 @@ const rootReducerSlice = createSlice({
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
     });
-    builder.addCase(taskManagerSlice.actions.addTask, (state) => {
+    builder.addCase(
+      useTaskManagerSlice.actions.addTask, (state) => {
       // Handle the action for adding a task
       const newTaskId = uuidv4();
       const newTask: Task = {
@@ -362,9 +387,9 @@ const rootReducerSlice = createSlice({
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";
-      state.taskManager.taskDescription = "";
-      state.taskManager.taskStatus = "pending";
-      state.taskManager.priority = "medium";
+      state.taskManager.taskDescription = ""
+      state.taskManager.taskStatus = PriorityStatus.PendingReview
+      state.taskManager.priority = PriorityStatus.Medium
       state.taskManager.dueDate = new Date();
     });
 

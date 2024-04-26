@@ -84,6 +84,7 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
+  
   options?: {
     // ...
     additionalOptions: readonly string[] | string | number | any[] | undefined;

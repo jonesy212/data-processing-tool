@@ -49,8 +49,12 @@ const chatManagerSlice = createSlice({
     setCurrentChannelId: (state, action: PayloadAction<string | null>) => {
       state.currentChannelId = action.payload;
     },
-    setMessages: (state, action: PayloadAction<Message[]>) => {
-      state.messages = action.payload;
+    setMessages: (
+      state,
+      action: PayloadAction<(prevMessages: Message[]) => Message[]>
+    ) => {
+      const { payload } = action;
+      state.messages = payload(state.messages);
     },
     addMessage: (state, action: PayloadAction<WritableDraft<Message>>) => {
       state.messages.push(action.payload);

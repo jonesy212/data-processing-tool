@@ -988,6 +988,28 @@ export const endpoints: Endpoints = {
     fetchTeamMemberData: `${BASE_URL}/api/team-management/teammember-data`,
     // Add other team-management endpoints as needed
   },
+  uiSettings: {
+    fetchInterfaceContent: "/ui/fetchInterfaceContent",
+    updateInterfaceSettings: "/ui/updateInterfaceSettings",
+    fetchUserDashboard: "/ui/fetchUserDashboard",
+    updateUserDashboardLayout: "/ui/updateUserDashboardLayout",
+    fetchUserWidgets: "/ui/fetchUserWidgets",
+    customizeUserWidget: "/ui/customizeUserWidget",
+    fetchUserThemes: "/ui/fetchUserThemes",
+    switchUserTheme: "/ui/switchUserTheme",
+    fetchUserPreferences: "/ui/fetchUserPreferences",
+    updateUserPreferences: "/ui/updateUserPreferences",
+    fetchUserNotifications: "/ui/fetchUserNotifications",
+    markNotificationAsRead: "/ui/markNotificationAsRead",
+    clearAllNotifications: "/ui/clearAllNotifications",
+    fetchUserMessages: "/ui/fetchUserMessages",
+    sendMessageToUser: "/ui/sendMessageToUser",
+    toggleDarkMode: "/ui/toggleDarkMode",
+    fetchUserAvatar: "/ui/fetchUserAvatar",
+    updateUserAvatar: "/ui/updateUserAvatar",
+    fetchUserSettings: "/ui/fetchUserSettings",
+    updateUserSettings: "/ui/updateUserSettings",
+  },
   // Video content endpoints
   videos: {
     list: `${BASE_URL}/api/videos`, // Endpoint to list all videos

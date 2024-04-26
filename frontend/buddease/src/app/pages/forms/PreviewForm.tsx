@@ -1,6 +1,6 @@
-import React, { MouseEventHandler, useState } from 'react';
-import './PreviewForm.css'; // Import CSS for styling
 import { saveDrawingToDatabase } from '@/app/api/ApiDrawing';
+import React, { useState } from 'react';
+import './PreviewForm.css'; // Import CSS for styling
 
 
 interface FormData {
@@ -122,3 +122,4 @@ const PreviewForm: React.FC<PreviewFormProps> = ({
 };
 
 export default PreviewForm;
+export

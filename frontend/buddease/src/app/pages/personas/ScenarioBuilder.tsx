@@ -21,7 +21,9 @@ interface CategoryProperties {
 const categoryProperties: CategoryProperties = {
   UserInterface: ["componentName", "componentDescription"],
   DataVisualization: ["dataProperties", "chartType"],
-  Forms: ["formFields", "validationRules"],
+  Forms: {
+
+  } as FormData[],
   
 };
 

@@ -1,5 +1,5 @@
 // UISlice.ts
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { UIActions } from "../../actions/UIActions";
 import { PhaseHookConfig } from "../../hooks/phaseHooks/PhaseHooks";
@@ -20,6 +20,11 @@ interface UIState {
   isSidebarOpen: false,
   selectedTheme: 'light',
   selectedLanguage: 'en'
+  pointerPosition: {
+    x: 0,
+    y: 0
+  },
+  isPointerDown: false,
   // Define UI-related state properties here
 }
 
@@ -36,7 +41,12 @@ const initialState: UIState = {
   previousPhase: null,
   isSidebarOpen: false,
   selectedTheme: "light",
-  selectedLanguage: "en"
+  selectedLanguage: "en",
+  pointerPosition: {
+    x: 0,
+    y: 0
+  },
+  isPointerDown: false,
 };
 
 // Create UI slice
@@ -45,10 +55,21 @@ export const useUIManagerSlice = createSlice({
   initialState,
   reducers: {
     // Define reducers for UI actions here
-    setLoading: (state, action) => {
-      state.isLoading = action.payload;
+    setLoading: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isLoading = action.payload
+      const { payload } = action;
+      return {
+        ...state,
+        isLoading: payload
+      };
     },
-    setError: (state, action) => {
+    setError: (
+      state,
+      action: PayloadAction<string>
+    ) => {
       state.error = action.payload;
     },
     setShowModal: (state, action) => {
@@ -77,6 +98,15 @@ export const useUIManagerSlice = createSlice({
     },
     resetUI: (state) => {
       Object.assign(state, initialState);
+    },
+    getGesterPosition: (
+      state,
+      action: PayloadAction<{ x: 0; y: 0 }>
+    ) => {
+      const { payload } = action;
+      // Update the pointer position
+      state.pointerPosition = { x: payload.x, y: payload.y };
+      return state;
     },
 
     // You can also include additional UI-related actions as needed

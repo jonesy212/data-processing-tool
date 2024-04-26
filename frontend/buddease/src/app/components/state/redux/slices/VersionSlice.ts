@@ -11,7 +11,8 @@ interface VersionState {
 
 const initialState: VersionState = {
   appVersion: "1.0.0",
-    databaseVersion: "v1",
+  databaseVersion: "v1",
+  version: ''
 };
 
 // Create a slice for managing version information
@@ -36,3 +37,4 @@ export const {
 
 // Export reducer for the version slice
 export default useVersionManagerSlice.reducer;
+export type { VersionState };

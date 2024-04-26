@@ -38,3 +38,4 @@ export const useRandomWalkManagerSlice = createSlice({
 export const { fetchRandomWalkRequest, fetchRandomWalkSuccess, fetchRandomWalkFailure } = useRandomWalkManagerSlice.actions;
 
 export default useRandomWalkManagerSlice.reducer;
+export type { RandomWalkState };

@@ -19,6 +19,7 @@ import updateUI, { updateUIWithCopiedText } from "../editing/updateUI";
 import { DataAnalysisActions } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisActions";
 import userService from "@/app/components/users/ApiUser";
 import { RetryConfig } from "@/app/configs/ConfigurationService";
+import { useAppSelector } from "@/app/utils/useAppSelector";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import * as ApiAnalysis from "../../../api/ApiAnalysisService";
@@ -28,12 +29,11 @@ import getSocketConnection from "../../communications/getSocketConnection";
 import { currentAppType } from "../../getCurrentAppType";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import useWebSocket from "../../hooks/useWebSocket";
-import { Subscription } from "../../subscriptions/Subscription";
-import { saveCryptoPortfolioData } from "../editing/autosave";
-import { useAppSelector } from "@/app/utils/useAppSelector";
-import { AppState, AppStateStatic } from "react-native";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { RootState } from "../../state/redux/slices/RootSlice";
+import { Subscription } from "../../subscriptions/Subscription";
+import { saveCryptoPortfolioData } from "../editing/autosave";
+import { TooltipActions } from "../../actions/TooltipActions";
 const dispatch = useDispatch();
 const [state, setState] = useState("");
 // Initialize the useErrorHandling hook
@@ -529,42 +529,39 @@ const DynamicEventHandlerExample = {
     }
   },
 
-  // Simulating the function you want to call
-  handleProgressIndicators: (event: React.SyntheticEvent) => {
-    type AppRootState = AppState & RootState
-    // Assuming you have some progress-related information in your application state
-    const currentProgress = useAppSelector((state: RootState) => state.appManager.progress);
-      
+ // Simulating the function you want to call
+handleProgressIndicators: (event: React.SyntheticEvent) => {
+  // Assuming you have some progress-related information in your application state
+  const currentProgress = useAppSelector((state: RootState) => state.phaseManager.progress.value);
 
-    // Logic for handling progress indicators
-    console.log("Handling progress indicators:", event);
+  // Logic for handling progress indicators
+  console.log("Handling progress indicators:", event);
 
-    // Additional logic for progress indicators...
-    // For example, update a progress bar or display a loading spinner.
+  // Additional logic for progress indicators...
+  // For example, update a progress bar or display a loading spinner.
 
-    // Assuming you have a progress bar element in your UI
-    const progressBar = document.getElementById("progressBar");
+  // Assuming you have a progress bar element in your UI
+  const progressBar = document.getElementById("progressBar");
 
-    if (progressBar) {
-      // Update the progress bar based on the current progress
-      progressBar.style.width = `${currentProgress}%`;
+  if (progressBar) {
+    // Update the progress bar based on the current progress
+    progressBar.style.width = `${currentProgress}%`;
 
-      // Display a loading spinner when progress is ongoing
-      if (currentProgress < 100) {
-        const loadingSpinner = document.getElementById("loadingSpinner");
-        if (loadingSpinner) {
-          loadingSpinner.style.display = "block";
-        }
-      } else {
-        // Hide the loading spinner when progress is complete
-        const loadingSpinner = document.getElementById("loadingSpinner");
-        if (loadingSpinner) {
-          loadingSpinner.style.display = "none";
-        }
+    // Display a loading spinner when progress is ongoing
+    if (currentProgress < 100) {
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      if (loadingSpinner) {
+        loadingSpinner.style.display = "block";
+      }
+    } else {
+      // Hide the loading spinner when progress is complete
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      if (loadingSpinner) {
+        loadingSpinner.style.display = "none";
       }
     }
+  }
   },
-
   handleDragStart: (event: React.DragEvent<HTMLDivElement>) => {
     const { clientX, clientY } = event;
 
@@ -967,6 +964,140 @@ const DynamicEventHandlerExample = {
      event.preventDefault();
      // Additional logic for pointer move event
    },
+
+  handlePointerUp: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for pointer up event
+    console.log("Pointer up");
+
+    // Example: Set isPointerDown state to false
+    UIActions.setIsPointerDown(false);
+
+    // Additional logic for pointer up event
+    // Example: Reset any state changes made on pointer down
+    UIActions.setIsPointerDown(false);
+
+    // Example: Reset pointer position state
+    UIActions.setPointerPosition({x: 0, y: 0});
+  },
+
+  handlePointerCancel: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for pointer cancel event
+    console.log("Pointer canceled");
+
+    // Example: Reset any state changes made on pointer down or move
+    UIActions.setIsPointerDown(false);
+    UIActions.setPointerPosition({ x: 0, y: 0 });
+
+    // Additional real-world logic: Hide a tooltip when pointer is canceled
+    TooltipActions.hideTooltip();
+},
+
+handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for pointer enter event
+    console.log("Pointer entered");
+
+    // Example: Update state to indicate pointer is within bounds
+    UIActions.setIsPointerInside(true);
+
+    // Additional real-world logic: Show a tooltip when pointer enters the element
+    TooltipActions.showTooltip("Hover over me for more information");
+},
+
+
+
+  handlePointerLeave: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for pointer leave event
+    console.log("Pointer left");
+
+    const newPointerPosition = {
+      x: 0,
+      y: 0
+    };
+
+    newPointerPosition.x = 0;
+
+    // Example: Update state to indicate pointer is no longer within bounds
+    UIActions.setIsPointerInside(false);
+  },
+
+  
+  handlePointerOver: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for pointer over event
+    console.log("Pointer over");
+
+    // Example: Update state to indicate pointer is hovering
+    UIActions.setIsPointerHovering(true);
+
+    // Prevent default pointer behavior like text selection
+    event.preventDefault();
+
+    // Additional logic for pointer over event
+    // Set pointer position to current client coordinates
+    UIActions.setPointerPosition({
+      x: event.clientX,
+      y: event.clientY
+    });
+  },
+
+  handlePointerOut: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for pointer out event
+    console.log("Pointer out");
+
+    // Example: Update state to indicate pointer is no longer hovering
+    UIActions.setIsPointerHovering(false);
+
+    // Additional logic for pointer out event
+    // Reset pointer position
+    UIActions.setPointerPosition({ x: 0, y: 0 });
+  },
+
+
+
+  handleAuxClick: (event: React.MouseEvent<HTMLDivElement>) => { 
+       // Declare isAuxClicked variable or access it from the appropriate state management system
+       const isAuxClicked = true; // Example: You can initialize it with a default value or access it from state
+
+    // Logic for auxiliary click event
+    console.log("Auxiliary click");
+
+    // Example: Toggle some state
+    UIActions.setIsAuxClicked(!isAuxClicked);
+    // Prevent default behavior like text selection
+    event.preventDefault();
+  },
+
+  handleGestureStart: (event: React.TouchEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for gesture start event
+    console.log("Gesture started");
+  
+    // Example: Update state to indicate gesture is in progress
+    UIActions.setIsGestureActive(true);
+  
+    // Prevent default behavior
+    event.preventDefault();
+  },
+
+  handleGestureChange: (event: React.TouchEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>) => { 
+    // Logic for gesture change event during gesture
+    console.log("Gesture changed");
+
+    // Example: Update gesture position/scale state
+    const gesturePosition = UIActions.getGesturePosition(event);
+  },
+  
+  handleGestureEnd: (event: React.TouchEvent<HTMLDivElement>) => { 
+    // Logic for gesture end event
+    console.log("Gesture ended");
+
+    // Example: Update state to indicate gesture is no longer in progress
+    UIActions.setIsGestureActive(false);
+
+    // Additional logic to handle gesture end
+
+    // Prevent default behavior
+    event.preventDefault();
+  },
+
 
   // Dynamic event handler generator
   createEventHandler:

@@ -1477,8 +1477,8 @@ export const {
   // Add other actions here
 } = useProjectManagerSlice.actions;
 
+export type { ProjectState }
 // Export reducer
-export default ProjectState;
 useProjectManagerSlice.reducer;
 
 // Selectors

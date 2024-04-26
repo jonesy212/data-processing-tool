@@ -28,7 +28,14 @@ enum SortCriteria {
   Owner = "owner",
   AccessLevel = "accessLevel",
 
-  // 
+  // messages
+  Sender = 'sender',
+  Receiver = 'receiver',
+  Timestamp = 'timestamp',
+  Message = 'message',
+  Tags = 'tags',
+  WordSearch = 'wordSearch',
+
   // Add more sorting criteria as needed
 }
 

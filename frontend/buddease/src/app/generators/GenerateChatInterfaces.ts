@@ -1,17 +1,20 @@
 // GenerateChatInterfaces.ts
 
 import { ChatRoom } from "../components/calendar/CalendarSlice";
+import { TaggableItem } from "../components/intelligence/Tag";
 import { User, UserData } from "../components/users/User";
 
   interface Message extends User, UserData {
     id: string;
-    from: User;
+    sender: User;
     channelId: ChatRoom;
     content: string;
+    tags: TaggableItem[];
     userId?: number
     timestamp: Date | string;
     text: string;
     isUserMessage?: boolean
+    receiver: User;
   }
 
 

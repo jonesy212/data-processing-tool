@@ -9,6 +9,7 @@ import { Video } from "../../stores/VideoStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { ApiManagerState } from "./ApiSlice";
 import { CustomComment } from "./BlogSlice";
+import { VideoMetadata } from "@/app/configs/StructuredMetadata";
 
 
 
@@ -24,7 +25,6 @@ const generateCaptions = (video: any): string[] => {
 };
 
 
-
 interface VideoState {
   videos: Video[];
   currentVideoId: string | null;
@@ -37,6 +37,16 @@ interface VideoState {
   skipped: string[];
   content: VideoData | null;
   pinned: string[];
+  snapshots: { [videoId: string]: string }; // Map of video ID to snapshot URL
+  playbackHistory: string[]; // Array of video IDs representing the playback history
+  favorited: string[]; // Array of video IDs representing favorited videos
+    // Other properties...
+    playbackSpeed: number; // Current playback speed (e.g., 1 for normal speed)
+    playbackQuality: string; // Playback quality (e.g., '720p', '1080p')
+    videoMetadata: { [videoId: string]: VideoMetadata }; // Map of video ID to metadata
+    videoTags: { [videoId: string]: string[] }; // Map of video ID to an array of tags
+  
+
 }
 
 const initialState: VideoState = {
@@ -50,7 +60,14 @@ const initialState: VideoState = {
   blockedUsers: [],
   skipped: [],
   content: null,
-  pinned: []
+  pinned: [],
+  snapshots: {},
+  playbackHistory: [],
+  favorited: [],
+  playbackSpeed: 0,
+  playbackQuality: "",
+  videoMetadata: {},
+  videoTags: {}
 };
 
 export const useVideoManagerSlice = createSlice({
@@ -727,7 +744,9 @@ export const useVideoManagerSlice = createSlice({
 
     autoGenerateVideoTrailers: (
       state,
-      action: PayloadAction<{ videoId: string, trailer: string[] }>
+      action: PayloadAction<
+        { videoId: string, trailer: string[] }
+      >
     ): VideoState => {
       const { videoId, trailer } = action.payload;
       // Find the video with the given videoId
@@ -879,3 +898,4 @@ export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
 // Export reducer for the API manager slice
 
 export default useVideoManagerSlice.reducer;
+export type {VideoState}

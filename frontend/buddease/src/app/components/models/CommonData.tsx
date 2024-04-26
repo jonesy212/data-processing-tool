@@ -4,14 +4,19 @@ import { CacheData } from "@/app/generators/GenerateCache";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import RealtimeData from "../../../../models/realtime/RealtimeData";
+import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
+import { CryptoData } from "../crypto/parseData";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import { FakeData } from "../intelligence/FakeDataGenerator";
+import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { ProjectData } from "../projects/Project";
 import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Todo } from "../todos/Todo";
+import { AllTypes } from "../typings/PropTypes";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
@@ -20,10 +25,6 @@ import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
-import { MeetingData } from "../calendar/MeetingData";
-import { FakeData } from "../Inteigents/FakeDataGenerator";
-import { AllTypes } from "../typings/PropTypes";
-import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 
 // Define a generic type for data
 interface CommonData<T> {
@@ -73,6 +74,7 @@ type SupportedData = UserData &
   CacheData &
   ScheduledData &
   MeetingData &
+  CryptoData &
   LogData &
   DataDetails &
   DataType &

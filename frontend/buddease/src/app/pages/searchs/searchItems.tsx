@@ -81,7 +81,7 @@ const SearchItems: React.FC<SearchItemProps> = ({
               // // Close audio/video connections
               // closeAudioVideoConnections();
               // // Save project data to the database
-              saveProjectData();
+              // saveProjectData();
               // // Clear any temporary files or resources
               // clearTemporaryResources();
               // // Additional cleanup tasks:

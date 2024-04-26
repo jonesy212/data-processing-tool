@@ -1,4 +1,4 @@
-// Logger.ts
+// Uogger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
@@ -437,6 +437,88 @@ class TeamLogger {
     return logUrl;
   }
 }
+class UILogger extends Logger {
+  static logInterfaceContentFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched interface content for user ID: ${userId}`, userId);
+  }
+
+  static logInterfaceSettingsUpdate(userId: string) {
+    this.logWithOptions("UI", `Updated interface settings for user ID: ${userId}`, userId);
+  }
+
+  static logDashboardFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched user dashboard for user ID: ${userId}`, userId);
+  }
+
+  static logDashboardLayoutUpdate(userId: string) {
+    this.logWithOptions("UI", `Updated user dashboard layout for user ID: ${userId}`, userId);
+  }
+
+  static logWidgetsFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched widgets for user ID: ${userId}`, userId);
+  }
+
+  static logWidgetCustomization(userId: string, widgetId: string) {
+    this.logWithOptions("UI", `Customized widget ${widgetId} for user ID: ${userId}`, userId);
+  }
+
+  static logThemeFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched themes for user ID: ${userId}`, userId);
+  }
+
+  static logThemeSwitch(userId: string, themeId: string) {
+    this.logWithOptions("UI", `Switched theme to ${themeId} for user ID: ${userId}`, userId);
+  }
+
+  static logPreferencesFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched preferences for user ID: ${userId}`, userId);
+  }
+
+  static logPreferencesUpdate(userId: string) {
+    this.logWithOptions("UI", `Updated preferences for user ID: ${userId}`, userId);
+  }
+
+  static logNotificationFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched notifications for user ID: ${userId}`, userId);
+  }
+
+  static logNotificationMarkAsRead(userId: string, notificationId: string) {
+    this.logWithOptions("UI", `Marked notification ${notificationId} as read for user ID: ${userId}`, userId);
+  }
+
+  static logAllNotificationsClear(userId: string) {
+    this.logWithOptions("UI", `Cleared all notifications for user ID: ${userId}`, userId);
+  }
+
+  static logMessagesFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched messages for user ID: ${userId}`, userId);
+  }
+
+  static logMessageSent(userId: string) {
+    this.logWithOptions("UI", `Sent message for user ID: ${userId}`, userId);
+  }
+
+  static logDarkModeToggle(userId: string) {
+    this.logWithOptions("UI", `Toggled dark mode for user ID: ${userId}`, userId);
+  }
+
+  static logAvatarFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched avatar for user ID: ${userId}`, userId);
+  }
+
+  static logAvatarUpdate(userId: string) {
+    this.logWithOptions("UI", `Updated avatar for user ID: ${userId}`, userId);
+  }
+
+  static logSettingsFetch(userId: string) {
+    this.logWithOptions("UI", `Fetched settings for user ID: ${userId}`, userId);
+  }
+
+  static logSettingsUpdate(userId: string) {
+    this.logWithOptions("UI", `Updated settings for user ID: ${userId}`, userId);
+  }
+}
+
 
 class AnimationLogger {
   static async logAnimation(
@@ -1436,8 +1518,7 @@ export {
   SecurityLogger,
   TaskLogger,
   TeamLogger,
-  TenantLogger,
-  VideoLogger,
+  TenantLogger, UILogger, VideoLogger,
   WebLogger
 };
 

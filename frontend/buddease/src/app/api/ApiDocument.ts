@@ -12,6 +12,7 @@ import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
+import { DatabaseConfig } from '../configs/DatabaseConfig';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.documents;
@@ -95,31 +96,53 @@ export const fetchDocumentByIdAPI = async (
     }
   };
   
-export const fetchJsonDocumentByIdAPI = async(
-  documentId: number,
+
+  export const fetchJsonDocumentByIdAPI = async (
+    documentId: string,
+    config: DatabaseConfig,
+    dataCallback: (data: any) => void,
+  ) => {
+    try {
+      const fetchDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}.json`;
+      const response = await axiosInstance.get(fetchDocumentEndpoint, {
+        headers: headersConfig,
+      });
+  
+      dataCallback(response.data);
+  
+      return response.data;
+    } catch (error:any) {
+      const errorMessage = 'Failed to fetch JSON document';
+      handleDocumentApiErrorAndNotify(
+        error.errorMessage,
+        errorMessage,
+        'FETCH_DOCUMENT_ERROR'
+      );
+    }
+  }
+
+export const fetchXmlDocumentByIdAPI = async (
+  documentId: string,
+  config: DatabaseConfig,
   dataCallback: (data: any) => void
 ) => {
   try {
-    const fetchDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}.json`;
+    const fetchDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}.xml`;
     const response = await axiosInstance.get(fetchDocumentEndpoint, {
       headers: headersConfig,
     });
-
     dataCallback(response.data);
-
     return response.data;
-  } catch (error: any) {
-    const errorMessage = 'Failed to fetch JSON document';
+  }
+  catch (error: any) {
+    const errorMessage = 'Failed to fetch XML document';
     handleDocumentApiErrorAndNotify(
       error.errorMessage,
-      'Faile to fetch JSON document',
+      errorMessage,
       'FETCH_DOCUMENT_ERROR'
     );
   }
- 
-  }
-
-
+}
 
 export const addDocumentAPI = async (documentData: any): Promise<any> => {
     try {

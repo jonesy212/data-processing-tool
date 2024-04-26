@@ -1,25 +1,24 @@
 // ButtonGenerator.tsx
+import { Router, useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
 import RealtimeData from "../../../models/realtime/RealtimeData";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import {
-  startVoiceRecognition,
-  stopVoiceRecognition,
-} from "../components/Inteigents/VoiceControl";
+    startVoiceRecognition,
+    stopVoiceRecognition,
+} from "../components/intelligence/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import { Phase } from "../components/phases/Phase";
 import {
-  nextPhase,
-  previousPhase,
+    nextPhase,
+    previousPhase,
 } from "../components/phases/PhaseTransitions";
 import { AllTypes } from "../components/typings/PropTypes";
 import userService from "../components/users/ApiUser";
 import { brandingSettings } from "../libraries/theme/BrandingService";
-import { useRouter } from "next/router";
 import { ExtendedRouter } from "../pages/MyAppWrapper";
-import { Router } from "next/router";
 
 startVoiceRecognition;
 /**

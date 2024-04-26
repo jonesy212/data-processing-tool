@@ -1,8 +1,8 @@
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { ColorPalettes } from "antd/es/theme/interface";
-import { FakeData } from "../../Inteigents/FakeDataGenerator";
 import { Attachment } from "../../documents/Attachment/attachment";
+import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Phase } from "../../phases/Phase";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";

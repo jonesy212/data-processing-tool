@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
-import { default as RealtimeData, default as RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
+import { RealtimeData, RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
 import { Data } from "../../models/data/Data";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";

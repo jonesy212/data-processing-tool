@@ -1,8 +1,7 @@
 // DynamicPromptHook.ts
 import { useEffect } from 'react';
-import { processAutoGPTOutputWithSpaCy } from '../Inteigents/AutoGPTSpaCyIntegration';
 import createDynamicHook, { DynamicHookParams } from '../hooks/dynamicHooks/dynamicHookGenerator';
-import useIdleTimeout from '../hooks/idleTimeoutHooks';
+import { processAutoGPTOutputWithSpaCy } from '../intelligence/AutoGPTSpaCyIntegration';
 
 interface DynamicPromptConfig {
   condition: () => boolean;

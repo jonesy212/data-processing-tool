@@ -1,9 +1,8 @@
 import UserSettings from "@/app/configs/UserSettings";
-import RealtimeData from "../../../models/realtime/RealtimeData";
+import { RealtimeData } from "../../../models/realtime/RealtimeData";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { CalendarEvent } from "../components/state/stores/CalendarEvent";
-import userService from "../components/users/ApiUser";
 import { VideoData } from "../components/video/Video";
 import { BackendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
@@ -11,6 +10,8 @@ import { FrontendConfig } from "../configs/FrontendConfig";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
 import { CacheData } from "../generators/GenerateCache";
+import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
+import { userService } from "../components/users/ApiUser";
 
 // Define the structure of the response data
 interface CacheResponse {
@@ -90,46 +91,49 @@ async function readCache(userId: string): Promise<CacheData | null> {
   });
 }
 
+ 
 
-// Usage
-// Usage with async/await
+
 // Assuming userService.fetchUser and userService.fetchUserById return promises
-const user = await userService.fetchUser("");
-const userId = await userService.fetchUserById(user);
+const writeCache = async (userId: string, userData: Promise<CacheData>) => {
+  try {
+    // Fetch user data
+    const user = await userService.fetchUser("");
 
-try {
-  // Attempt to read cached data for the user
-  const cachedData = await readCache(userId);
-  if (cachedData) {
-    // If cached data exists, log it
-    console.log('Cached data:', cachedData);
-  } else {
-    // If no cached data found, log a message
-    console.log('No cached data found.');
+    // Fetch user ID
+    const userId = await userService.fetchUserById(user);
+
+    // Write cache
+    await writeCache(userId, userData); // Assuming userData is defined elsewhere
+    console.log('Cached data successfully written.');
+  } catch (error) {
+    // If an error occurs during cache writing, log the error
+    console.error('Error writing cache:', error);
   }
-} catch (error) {
-  // If an error occurs during cache reading, log the error
-  console.error('Error reading cache:', error);
-}
+};
+
 
 // Usage with .then()
 // Assuming userService.fetchUser and userService.fetchUserById return promises
 userService.fetchUser("").then(user => {
-  userService.fetchUserById(user).then(userId => {
-    // Read cached data for the user
-    readCache(userId).then(cachedData => {
-      if (cachedData) {
-        // If cached data exists, log it
-        console.log('Cached data:', cachedData);
-      } else {
-        // If no cached data found, log a message
-        console.log('No cached data found.');
-      }
-    }).catch(error => {
-      // If an error occurs during cache reading, log the error
-      console.error('Error reading cache:', error);
-    });
+  userService.fetchUserById(user).then((userId) => {
+    const userData = readCache(userId) || {
+      lastUpdated: null,
+      userSettings: null,
+      dataVersions: null,
+      frontendStructure: null,
+      backendStructure: null,
+    };
+    writeCache(userId, userData)
+      .then(() => {
+        console.log("Cached data successfully written.");
+      })
+      .catch((error) => {
+        console.error("Error writing cache:", error);
+      });
   });
 });
+
+
 
 

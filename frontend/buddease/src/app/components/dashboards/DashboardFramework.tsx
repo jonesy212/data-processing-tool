@@ -8,14 +8,14 @@ import DataDashboard from "@/app/pages/dashboards/DataDashboard";
 import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
+import { DocumentActions } from "@/app/tokens/DocumentActions";
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { processAutoGPTOutputWithSpaCy } from "../Inteigents/AutoGPTSpaCyIntegration";
 import { AdminDashboard, AdminDashboardProps } from "../admin/AdminDashboard";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
+import { processAutoGPTOutputWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
-import  selectUserIdea  from "../state/redux/slices/DocumentSlice";
-import { RootState } from "../state/redux/slices/RootSlice";
 import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import { AquaConfig } from "../web3/web_configs/AquaConfig";
 import MeetingScheduler from "./../communications/scheduler/MeetingScheduler";
@@ -25,8 +25,6 @@ import {
     default as TeamOverviewToolbar,
 } from "./../communications/scheduler/TeamOverview";
 import PhaseDashboard from "./PhaseDashboard";
-import { useDispatch } from "react-redux";
-import { DocumentActions } from "@/app/tokens/DocumentActions";
 interface DashboardFrameworkProps {
   children: React.ReactNode;
   activeDashboard: string;

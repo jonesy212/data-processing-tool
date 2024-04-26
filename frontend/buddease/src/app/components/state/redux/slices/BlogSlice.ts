@@ -58,5 +58,5 @@ export const useBlogManagerSlice = createSlice({
 
 export const { addPost, addComment } = useBlogManagerSlice.actions;
 export default useBlogManagerSlice.reducer;
-export type { BlogComment, CustomComment };
+export type { BlogComment, BlogState, CustomComment };
 

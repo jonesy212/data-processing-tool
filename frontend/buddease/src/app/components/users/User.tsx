@@ -14,6 +14,7 @@ import { Project } from "../projects/Project";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { UserRole } from "./UserRole";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 export interface User extends UserData {
   _id?: string; // Add this line
@@ -41,6 +42,8 @@ export interface User extends UserData {
   persona: Persona;
   analysisResults?: DataAnalysisResult[];
   isLoggedIn?: boolean;
+  localeCompare?: (other: Message) => number;
+
 }
 
 const timeBasedCode: string = generateTimeBasedCode();

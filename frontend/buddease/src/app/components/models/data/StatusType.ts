@@ -121,6 +121,7 @@ enum PriorityStatus {
   Medium = "medium",
   High = "high",
   Normal = "normal",
+  PendingReview = StatusType.Pending,
 }
 
 enum ProductStatus {
@@ -136,6 +137,7 @@ export enum PriorityTypeEnum {
   Medium = PriorityStatus.Medium,
   High = PriorityStatus.High,
   Normal = PriorityStatus.Normal,
+  PendingReview = StatusType.Pending,
 }
 
 

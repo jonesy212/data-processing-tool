@@ -1,46 +1,76 @@
 // FormatEnum.ts
 
+import {
+  fetchJsonDocumentByIdAPI,
+  fetchXmlDocumentByIdAPI,
+} from "@/app/api/ApiDocument";
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
-import { CustomDocxtemplater, DocumentPath } from "../documents/DocumentGenerator";
+import {
+  CustomDocxtemplater,
+  DocumentPath,
+} from "../documents/DocumentGenerator";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 
 enum FormatEnum {
-    JSON = "json",
-    XML = "xml",
-    CSV = "csv",
-    XLS = "xls",
-    XLSX = "xlsx",
-    // Add more formats as needed
-  }
-  
-  export default FormatEnum;
+  JSON = "json",
+  XML = "xml",
+  CSV = "csv",
+  XLS = "xls",
+  XLSX = "xlsx",
+  // Add more formats as needed
+}
 
-  
+export default FormatEnum;
+
 // Define the allowed diagram formats
 const allowedDiagramFormats: FormatEnum[] = [
   FormatEnum.JSON,
   FormatEnum.XML,
   FormatEnum.CSV,
   FormatEnum.XLS,
-  FormatEnum.XLSX
+  FormatEnum.XLSX,
 ]; // Updated list of allowed diagram formats
 
-
 async function loadJsonContent(
-  draftId: string | undefined,
+  draftId: string,
   document: DocumentPath,
-  config: DatabaseConfig
+  config: DatabaseConfig,
+  dataCallback: (data: any) => void
 ): Promise<any> {
-  const jsonContent = await fetchJsonDocumentByIdAPI(
-    draftId,
-    config
-  );
+  try {
+    const jsonContent = await fetchJsonDocumentByIdAPI(
+      draftId,
+      config,
+      dataCallback
+    );
+    return jsonContent;
+  } catch (error) {
+    // Handle error if necessary
+  }
+}
 
+async function loadXmlContent(
+  draftId: string,
+  document: DocumentPath,
+  config: DatabaseConfig,
+  dataCallback: (data: any) => void
+): Promise<any> {
+  // Fetch XML content from API
+  const response = await fetchXmlDocumentByIdAPI(draftId, config, dataCallback);
+
+  return response;
+}
+
+async function csvToJson(csvContent: string) {
+  // parse CSV string to JSON
+  const csv = require("csvtojson");
+  const jsonContent = await csv.toJSON(csvContent);
   return jsonContent;
 }
+
 // Function to load document content
 async function loadDocumentContent(
-  draftId: string | undefined,
+  draftId: string,
   document: DocumentPath,
   newContent: CustomDocxtemplater<any>,
   dataCallback: (data: WritableDraft<DocumentPath>) => void,
@@ -48,38 +78,42 @@ async function loadDocumentContent(
   docx?: CustomDocxtemplater<any>,
   config?: DatabaseConfig,
   documentId?: number,
-  formData?: FormData,
+  formData?: FormData
 ): Promise<string | undefined> {
   let content: string | undefined;
+  if (config) {
+    switch (format) {
+      case FormatEnum.JSON:
+        content = await loadJsonContent(
+          draftId,
+          document,
+          config,
+          dataCallback
+        );
+        break;
 
-  switch (format) {
-    case FormatEnum.JSON:
-      content = await loadJsonContent(
-        draftId,
-        document,
-        config
-      );
-      break;
+      case FormatEnum.XML:
+        content = await loadXmlContent(draftId, document, config, dataCallback);
+        break;
+      case FormatEnum.CSV:
+        if (content) {
+          content = await csvToJson(content);
+        }
+      // Add more cases for other formats as needed
 
-    case FormatEnum.XML:
-      content = await loadXmlContent(
-        draftId,
-        document,
-        config
-      );
-      break;
-      
-    // Add more cases for other formats as needed
+      default:
+        console.error(`Unsupported document format: ${format}`);
+        break;
+    }
 
-    default:
-      console.error(`Unsupported document format: ${format}`);
-      break;
+    return content;
   }
-
   return content;
 }
 
-async function loadDocumentContentByFormat(format: FormatEnum): Promise<string | undefined> {
+async function loadDocumentContentByFormat(
+  format: FormatEnum
+): Promise<string | undefined> {
   // Check the format and handle accordingly
   switch (format) {
     case FormatEnum.JSON:
@@ -100,3 +134,6 @@ async function loadDocumentContentByFormat(format: FormatEnum): Promise<string |
       return undefined;
   }
 }
+
+
+export {allowedDiagramFormats}

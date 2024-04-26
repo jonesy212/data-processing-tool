@@ -1,73 +1,57 @@
-import { ExchangeData } from "../models/data/ExchangeData";
-import { YourResponseType } from "../typings/types";
-import safeParseData from "./SafeParseData";
-// Define the type for parsed data
-export interface ParsedData {
+
+// Function to parse and process the received data
+import useSearchPagination from '../hooks/commHooks/useSearchPagination';
+import { YourResponseType } from '../typings/types';
+
+// Define a separate interface for cryptocurrency-specific data
+export interface CryptoData {
   cryptocurrencyPair: string;
   price: number;
   tradingVolume: number;
-  priceDisparity: number; // New field to store the price disparity
-  prices: number[]; // Array to store prices for calculating disparity
-  sources: string[]; // Array to store sources for prices
-  // Add any additional fields specific to this feature
+  prices?: {
+    date: Date;
+    price: number;
+  }[]
+  priceDisparity: number;
+  pricesDisparityPercentage?: number;
+}
+
+// Define a generic interface for parsed data to handle various data types
+export interface ParsedData<T extends object> {
+  data: T; // Generic field to hold different types of data
+  pageNumber: number; // Optional field to store page number from PDF
   pdfContent?: string; // Optional field to store PDF content
   docxContent?: string; // Optional field to store Docx content
-  
-  // Define additional fields as needed
 }
 
 // Function to parse and process the received data
-export const parseData = (
-  data: YourResponseType[],
-  threshold: number
-): ParsedData[] => {
+export const parseData = <T extends object>(
+  data: T[],
+  threshold: number,
+): ParsedData<T>[] => {
+  const { currentPage } = useSearchPagination(); // Get the current page from the pagination hook
+  const pageNumber = currentPage; // Assign the current page to pageNumber
+
   // Initialize an empty array to store parsed data
-  const parsedData: ParsedData[] = [];
+  const parsedData: ParsedData<T>[] = [];
 
   // Iterate through the received data and extract relevant information
-  data.forEach((item: YourResponseType) => {
-    // Extract relevant information such as cryptocurrency pairs, prices, and trading volumes
-    item.data?.exchangeData.forEach((exchange: ExchangeData) => {
-      const cryptocurrencyPair: string = exchange.pair;
-      const price: number = exchange.price;
-      const tradingVolume: number = exchange.volume;
-      // Calculate the price disparity for the cryptocurrency pair (example logic)
-      // You can customize this logic based on your specific requirements
-      const priceDisparity: number = calculatePriceDisparity(
-        exchange.price,
-        item.data?.averagePrice || 0,
-        threshold
-      );
+  data.forEach((item: T) => {
+    // Create a parsed data object for the current item
+    const parsedItem: ParsedData<T> = {
+      data: item,
+      pageNumber,
+      pdfContent: '',
+      docxContent: '',
+    };
 
-      // Create an array to store the price from the current exchange
-      const prices: number[] = [exchange.price];
-
-      // Create an array to store the source (exchange name) for the price
-      const sources: string[] = [exchange.name]; // Access the name property of the Exchange object
-
-      // Create a parsed data object
-      const parsedItem: ParsedData = {
-        cryptocurrencyPair,
-        price,
-        tradingVolume,
-        priceDisparity,
-        prices,
-        sources,
-        pdfContent: "", 
-        docxContent: "", 
-        
-        // Add more extracted fields as needed
-      };
-
-      // Push the parsed item to the parsed data array
-      parsedData.push(parsedItem);
-    });
+    // Push the parsed item to the parsed data array
+    parsedData.push(parsedItem);
   });
 
   // Return the parsed data
-  return safeParseData(data, threshold);
+  return parsedData;
 };
-
 // Function to calculate the price disparity
 const calculatePriceDisparity = (
   currentPrice: number,
@@ -77,27 +61,45 @@ const calculatePriceDisparity = (
   // Calculate the absolute difference between the current price and the average price
   const priceDifference = Math.abs(currentPrice - averagePrice);
 
+  // Calculate the percentage difference between the current price and the average price
+  const percentageDifference = (priceDifference / averagePrice) * 100;
+
   // Check if the price difference exceeds the threshold
   if (priceDifference > threshold) {
     // If the price difference exceeds the threshold, it indicates a significant disparity
-    // Return a value indicating the magnitude of the disparity, such as the percentage difference
-    return (priceDifference / averagePrice) * 100; // Return percentage difference
+    // Return the percentage difference to indicate the magnitude of the disparity
+    return percentageDifference;
   } else {
     // If the price difference does not exceed the threshold, it may not be significant
-    // Return 0 or any other value to indicate no significant disparity
-    return 0;
+    
+    // Check if the percentage difference is within a certain range
+    // For example, if the percentage difference is less than 1%, it may not be considered significant
+    const insignificantThresholdMin = 1; // Define the minimum threshold for insignificant disparity (1%)
+    const insignificantThresholdMax = 5; // Define the maximum threshold for insignificant disparity (5%)
+
+    if (percentageDifference >= insignificantThresholdMin && percentageDifference <= insignificantThresholdMax) {
+      // If the percentage difference falls within the safe range of insignificant disparity
+      // Log this information for further analysis or monitoring
+      console.log('Percentage difference within the safe range of insignificant disparity:', percentageDifference);
+
+      // Return 0 or any other value to indicate no significant disparity
+      return 0;
+    } else {
+      // If the percentage difference is within the range of insignificant disparity,
+      // it may still be considered noteworthy but not significant enough to trigger an alert
+      // Log this information for further analysis or monitoring
+      console.log('Percentage difference within the range of insignificant disparity:', percentageDifference);
+      
+      // For now, let's return the percentage difference to indicate the disparity
+      return percentageDifference;
+    }
   }
 };
 
 // Example usage:
-const currentPrice = 100; // Current price of the cryptocurrency pair
-const averagePrice = 95; // Average price of the cryptocurrency pair
+const yourResponseTypeData: YourResponseType[] = []; // Your array of data of type YourResponseType
 const threshold = 5; // Threshold value to consider a significant disparity (in currency units)
 
-// Calculate the price disparity
-const priceDisparity = calculatePriceDisparity(
-  currentPrice,
-  averagePrice,
-  threshold
-);
-console.log("Price Disparity:", priceDisparity);
+// Parse and process the received data
+const parsedData = parseData(yourResponseTypeData, threshold);
+export { calculatePriceDisparity , parsedData };

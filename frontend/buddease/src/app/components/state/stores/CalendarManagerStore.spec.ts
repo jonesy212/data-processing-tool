@@ -1,12 +1,12 @@
 import { NotificationType } from '@/app/components/support/NotificationContext';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import generateFakeData, { FakeDataPartial } from "../../Inteigents/FakeDataGenerator";
+import generateFakeData, { FakeDataPartial } from "../../intelligence/FakeDataGenerator";
 import { Data } from "../../models/data/Data";
 import { Member } from '../../models/teams/TeamMembers';
 import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
 import CalendarManagerStoreClass, {
-  CalendarEvent,
-  useCalendarManagerStore,
+    CalendarEvent,
+    useCalendarManagerStore,
 } from "./CalendarEvent";
 
 const eventIds: string[] = [];

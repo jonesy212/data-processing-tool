@@ -12,6 +12,9 @@ import FrontendStructure from "../configs/appStructure/FrontendStructure";
 import { generateInterfaces } from "../generators/GenerateInterfaces";
 import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";
 import { readCache, writeCache } from "./ReadAndWriteCache";
+import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
+import { realtimeData } from "../generators/GenerateCache";
+import { VideoData } from "../components/video/Video";
 
 const backendModelPaths = ["path/to/backend/models"]; // Update this with the actual path
 
@@ -47,8 +50,9 @@ export const readAndLogCache = async () => {
 
 
 // Define or import projectPath here
-const projectPath = getAppPath()
 
+const { versionNumber, appVersion } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
 const frontendStructure = new FrontendStructure(projectPath);
 const backendStructure = new BackendStructure(projectPath);
 // Write cache data
@@ -140,6 +144,7 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
       enableDecentralizedStorage: false,
       idleTimeout: {
         isActive: false,
+        intervalId: undefined,
         animateIn: function (selector: string): void {
           const element = document.querySelector(selector);
           if (element) {

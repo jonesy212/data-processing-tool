@@ -670,7 +670,7 @@ export const {
 } = useDrawingManagerSlice.actions;
 
 export default useDrawingManagerSlice.reducer;
-
+export type {DrawingState}
 // Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;
 

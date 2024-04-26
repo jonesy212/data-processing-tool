@@ -1,8 +1,7 @@
-import { createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
-import { VideoState } from "./VideoSlice";
+import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
 import { AlignmentOptions, ToolbarState } from "./toolbarSlice";
 import { UIState } from "../../stores/UISlice";
-import ProjectState from "./ProjectSlice";
+import {ProjectState} from "./ProjectSlice";
 import { TaskState } from "./TaskSlice";
 import { TrackerManagerState } from "./TrackerSlice";
 import { UserManagerState } from "@/app/components/users/UserSlice";
@@ -22,6 +21,14 @@ import { EntityId } from "./RootSlice";
 import { NotificationState } from "./NotificationSlice";
 import { SettingsState } from "./SettingsSlice";
 import { string } from "prop-types";
+import { VideoState } from "./VideoSlice";
+import { Project } from "@/app/components/projects/Project";
+import { RandomWalkState } from "./RandomWalkManagerSlice";
+import { PagingState } from "./pagingSlice";
+import { BlogState } from "./BlogSlice";
+import { DrawingState } from "./DrawingSlice";
+import { VersionState } from "./VersionSlice";
+import { AppActions } from '../../../actions/AppActions';
 
 interface AppState {
     currentPage: null,
@@ -69,11 +76,17 @@ interface AppState {
   settingsManager: SettingsState
 
     
+  videoManager: VideoState
+
+  randomWalkManager: RandomWalkState
+  pagingManager: PagingState,
+  blogManager: BlogState,
+  drawingManager: DrawingState,
+  versionManager: VersionState,
   // Add other state properties here if needed
 }
 
 const initialState: AppState = {
-
   toolbarManager: {
     isFeatureEnabled: false,
     isToolbarOpen: false,
@@ -88,14 +101,14 @@ const initialState: AppState = {
     isItalic: false,
     isUnderline: false,
     leftToolbar: {
-        isVisible: true,
-        alignment: AlignmentOptions.LEFT,
-        selectedLeftToolbar: AlignmentOptions.LEFT
+      isVisible: true,
+      alignment: AlignmentOptions.LEFT,
+      selectedLeftToolbar: AlignmentOptions.LEFT
     },
     rightToolbar: {
-        isVisible: true,
-        alignment: AlignmentOptions.RIGHT,
-        selectedRightToolbar: AlignmentOptions.RIGHT
+      isVisible: true,
+      alignment: AlignmentOptions.RIGHT,
+      selectedRightToolbar: AlignmentOptions.RIGHT
     },
     videoRecordingEnabled: false,
     videoStreamingEnabled: false,
@@ -107,50 +120,49 @@ const initialState: AppState = {
   },
 
   uiManager: {
-      isSidebarOpen: false,
-      selectedTheme: 'light',
-      selectedLanguage: 'en',
-      isLoading: false,
-      error: null,
-      showModal: false,
-      notification: {
-          message: "",
-          type: null
-      },
-      currentPhase: null,
-      previousPhase: null
-  }
+    isSidebarOpen: false,
+    selectedTheme: 'light',
+    selectedLanguage: 'en',
+    isLoading: false,
+    error: null,
+    showModal: false,
+    notification: {
+      message: "",
+      type: null
+    },
+    currentPhase: null,
+    previousPhase: null
+  },
 
   // Project Management
-  projectManager: /* Initial state for projectManager */,
-  taskManager: /* Initial state for taskManager */,
-  trackerManager: /* Initial state for trackerManager */,
-  userManager: /* Initial state for userManager */,
-  teamManager: /* Initial state for teamManager */,
-  projectOwner: /* Initial state for projectOwner */,
+  projectManager: {} as ProjectState,
+  taskManager: {} as TaskState,
+  trackerManager: {} as TrackerManagerState,
+  userManager: {} as UserManagerState,
+  teamManager: {} as TrackerManagerState,
+  projectOwner: {} as ProjectOwnerState,
 
   // Data Management
-  dataManager: /* Initial state for dataManager */,
-  dataAnalysisManager: /* Initial state for dataAnalysisManager */,
-  calendarManager: /* Initial state for calendarManager */,
-  todoManager: /* Initial state for todoManager */,
-  documentManager: /* Initial state for documentManager */,
-  userTodoManager: /* Initial state for userTodoManager */,
+  dataManager: {} as DataSliceState,
+  dataAnalysisManager: {} as DataAnalysisState,
+  calendarManager: {} as CalendarManagerState,
+  todoManager: {} as TodoManagerState,
+  documentManager: {} as DocumentSliceState,
 
   // API & Networking
-  apiManager: /* Initial state for apiManager */,
-  realtimeManager: /* Initial state for realtimeManager */,
+  apiManager: {} as ApiManagerState,
+  realtimeManager: {} as RealtimeDataState,
 
   // Event & Collaboration
-  eventManager: /* Initial state for eventManager */,
-  collaborationManager: /* Initial state for collaborationManager */,
+  eventManager: {} as EventState,
+  collaborationManager: {} as CollaborationState,
 
   // Entity & Notification
-  entityManager: /* Initial state for entityManager */,
-  notificationManager: /* Initial state for notificationManager */,
+  entityManager: {} as EntityState<any, EntityId>,
+  notificationManager: {} as NotificationState,
 
   // Settings & Utilities
-  settingsManager: /* Initial state for settingsManager */,
+  settingsManager: {} as SettingsState,
 
   // Miscellaneous
   videoManager: {
@@ -165,16 +177,26 @@ const initialState: AppState = {
     skipped: [],
     content: null,
     pinned: [],
+    snapshots: {},
+    playbackHistory: [],
+    favorited: [],
+    playbackSpeed: 0,
+    playbackQuality: "",
+    videoMetadata: {},
+    videoTags: {}
   },
-  randomWalkManager: /* Initial state for randomWalkManager */,
-  pagingManager: /* Initial state for pagingManager */,
-  blogManager: /* Initial state for blogManager */,
-  drawingManager: /* Initial state for drawingManager */,
-  versionManager: /* Initial state for versionManager */,
-};
-
-export default initialState;
-
+  randomWalkManager: {} as RandomWalkState,
+  pagingManager: {} as PagingState,
+  blogManager: {} as BlogState,
+  drawingManager: {} as DrawingState,
+  versionManager: {} as VersionState,
+  currentPage: null,
+  currentLayout: null,
+  currentTheme: null,
+  currentLanguage: null,
+  isSidebarOpen: false,
+  selectedTheme: "light",
+  selectedLanguage: "en",
   videoState: {
     videos: [],
     currentVideoId: null,
@@ -187,10 +209,16 @@ export default initialState;
     skipped: [],
     content: null,
     pinned: [],
+    snapshots: {},
+    playbackHistory: [],
+    playbackQuality: "",
+    videoMetadata: {},
+    videoTags: {},
+    favorited: [],
+    playbackSpeed: 0,
   },
-  // Initialize other state properties here if needed
-};
-
+  selectedToolBar: null,
+}
 export const useAppManagerSlice = createSlice({
   name: "app",
   initialState,
@@ -198,11 +226,13 @@ export const useAppManagerSlice = createSlice({
     // Define reducers specific to the app state here, if any
     // You can also use reducers from the VideoSlice if needed
   },
-  extraReducers: (builder) => {
-    builder.addCase(
-      // Add extra reducers here if needed
-    );
-  },
+  extraReducers: (builder: ActionReducerMapBuilder<AppState>) => {
+    // Add additional case reducers here
+    builder.addCase(AppActions.createTask, (state, action: PayloadAction<string>) => {
+      // In a real-world scenario, you would handle adding the new task to your state here
+      console.log(`Creating task: ${action.payload}`);
+    });
+  }
 });
 
 export const { /* Extract action creators if needed */ } = useAppManagerSlice.actions;

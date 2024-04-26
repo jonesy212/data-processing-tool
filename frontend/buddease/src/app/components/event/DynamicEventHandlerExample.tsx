@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import SnapshotList from "../snapshots/SnapshotList";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
+import { createEvent } from "@testing-library/react";
+import { setMessages } from "../state/redux/slices/ChatSlice";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import useSorting from "../hooks/useSorting";
 
 const DynamicEventHandlerService = ({
   handleSorting,
@@ -9,14 +13,108 @@ const DynamicEventHandlerService = ({
 }) => {
   // State and other logic...
 
-      // State to track messages
-      const [messages, setMessages] = useState<string[]>([]);
+  // State to track messages
+  const [messages, setMessages] = useState<string[]>([]);
+
+  // Helper function to add messages
+  const addMessage = (message: string) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
+
+  const sort = useSorting(messages, setMessages);
+   handleSorting = (snapshotList: SnapshotList) => {
+    // Handle sorting logic
+    snapshotList.sort();
+
+    // Add message
+    addMessage("Sorted snapshots");
+  };
+};
 
       // Helper function to add messages
       const addMessage = (message: string) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
+        setMessages((prevMessages: Message[]) => [...prevMessages, message as Message]);
       };
     
+      const createEventHandler = DynamicEventHandlerExample.createEventHandler;
+      const handleSortingEvent = createEventHandler(
+        "handleSorting",
+        handleSorting
+      )
+  
+  const handleKeyboardShortcuts = createEventHandler(
+    "handleKeyboardShortcuts",
+    (event) => {
+      // Handle keyboard shortcut logic
+      console.log("Handling keyboard shortcut:", event);
+
+      return () => {};
+    }
+  );
+
+  const handleMouseClick = createEventHandler(
+    "handleMouseClick",
+    (event) => {
+      // Handle mouse click logic
+      console.log("Handling mouse click:", event);
+
+      return () => {};
+    }
+  );
+
+  
+  const handleButtonClick = createEventHandler(
+    "handleButtonClick",
+    (event) => {
+      // Handle button click logic
+      console.log("Handling button click:", event);
+
+      return () => {};
+    }
+  );
+
+
+  const handleDivMouseMove = createEventHandler(
+    "handleDivMouseMove",
+    (event) => {
+      console.log("Handling div mouse move:", event);
+
+      return () => {};
+    }
+  );
+  
+
+  const handleContextMenu = createEventHandler(
+    "handleContextMenu",
+    (event) => {
+      console.log("Handling context menu:", event);
+
+      return () => {};
+    }
+  );
+  
+  const handleDynamicEvent = (
+    eventName: any,
+    handler: any) => {
+    switch (eventName) {
+      case "handleKeyboardShortcuts":
+        return handleKeyboardShortcuts;
+
+      case "handleMouseClick":
+        return handleMouseClick;
+
+      case "handleButtonClick":
+        return handleButtonClick;
+      case "handleDivMouseMove":
+        return handleDivMouseMove;
+      case "handleContextMenu":
+        return handleContextMenu;
+      case "handleDynamicEvent":
+        return handleDynamicEvent;
+      default:
+        throw new Error(`No handler found for event: ${eventName}`);
+    }
+  }
 
   // Usage of event handler functions
   const handleKeyboardEvent = DynamicEventHandlerExample.handleKeyboardEvent;
@@ -26,7 +124,6 @@ const DynamicEventHandlerService = ({
   const handleHighlighting = DynamicEventHandlerExample.handleHighlighting;
   const handleAnnotations = DynamicEventHandlerExample.handleAnnotations;
   const handleCopyPaste = DynamicEventHandlerExample.handleCopyPaste;
-  
   const handleUndoRedo = DynamicEventHandlerExample.handleUndoRedo;
   const handleContextMenus = DynamicEventHandlerExample.handleContextMenus;
   const handleFullscreenMode = DynamicEventHandlerExample.handleFullscreenMode;
@@ -103,9 +200,40 @@ const DynamicEventHandlerService = ({
       window.removeEventListener("searchFunctionality", handleSearchFunctionality);
       window.removeEventListener("progressIndicators", handleProgressIndicators);
     };
-  }, [handleKeyboardEvent, handleMouseEvent, handleScrolling, handleZoom, handleHighlighting, handleAnnotations, handleCopyPaste, handleUndoRedo, handleContextMenus, handleFullscreenMode, handleSettingsPanel, handleHelpFAQ, handleSearchFunctionality, handleProgressIndicators]);
+  }, [handleKeyboardEvent, handleMouseEvent, handleScrolling, handleZoom, handleHighlighting, handleAnnotations, handleCopyPaste, handleUndoRedo, handleContextMenus, handleFullscreenMode, handleSettingsPanel, handleHelpFAQ, handleSearchFunctionality, handleProgressIndicators, handleDragStart, 
+    handleDragEnd, 
+    handleDragEnter, 
+    handleDragOver, 
+    handleDragLeave, 
+    handleDrop, 
+    handleFocus, 
+    handleBlur, 
+    handleFocusIn, 
+    handleFocusOut, 
+    handleResize, 
+    handleSelect, 
+    handleUnload, 
+    handleBeforeUnload, 
+    handleTouchStart, 
+    handleTouchMove, 
+    handleTouchEnd, 
+    handleTouchCancel, 
+    handlePointerDown, 
+    handlePointerMove, 
+    handlePointerUp, 
+    handlePointerCancel, 
+    handlePointerEnter, 
+    handlePointerLeave, 
+    handlePointerOver, 
+    handlePointerOut, 
+    handleAuxClick, 
+    handleGestureStart, 
+    handleGestureChange, 
+    handleGestureEnd, 
+    ]);
   
   useEffect(() => {
+
     const handleSortingEvent = createEventHandler(
       "handleSorting",
       (event: React.SyntheticEvent) => {
@@ -149,6 +277,15 @@ const DynamicEventHandlerService = ({
       "handleMouseClick",
       DynamicEventHandlerExample.handleMouseClick
     );
+
+    const handleDynamicEvent = DynamicEventHandlerExample.createEventHandler(
+      "handleDynamicEvent",
+      (event: React.SyntheticEvent) => {
+        console.log("Handling dynamic event:", event);
+      }
+    );
+
+
   
     const handleContextMenu = DynamicEventHandlerExample.createEventHandler(
       "contextMenu",

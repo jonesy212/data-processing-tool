@@ -1,6 +1,6 @@
 // userSaga.ts
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import userService from "@/app/components/users/ApiUser";
+import { userService } from "@/app/components/users/ApiUser";
 import { User } from "@/app/components/users/User";
 import { UserActions } from "@/app/components/users/UserActions";
 import { call, put, takeLatest } from "redux-saga/effects";

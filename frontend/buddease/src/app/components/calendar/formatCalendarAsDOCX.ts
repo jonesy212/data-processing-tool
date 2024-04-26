@@ -4,6 +4,7 @@ import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { SimpleCalendarEvent } from "./CalendarContext";
 import { CustomDocument } from '../documents/DocumentOptions';
+import { MyPropertiesOptions } from '@/app/configs/declarations/global';
 
 
 

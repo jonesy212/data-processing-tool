@@ -8,7 +8,7 @@ import SnapshotStore, {
   Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 
 interface BaseRealtimeData {
   id: string;
@@ -49,7 +49,7 @@ const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
   });
 };
 
-const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
+const RealtimeDataComponent: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
   // Initial data can be an empty array or any initial state you want
   const initialData: RealtimeDataItem[] = [];
   const { error, handleError, clearError } = useErrorHandling(); // Initialize error handling
@@ -132,11 +132,12 @@ const RealtimeData: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
         <div key={index}>
           {/* Display each data item */}
           <p>{dataItem}</p>
-          <RealtimeData userId={userId} dispatch={dispatch} />
+          <RealtimeDataComponent userId={userId} dispatch={dispatch} />
         </div>
       ))}
     </div>
   );
 };
-export default RealtimeData;
-export type { RealtimeDataItem };
+export default RealtimeDataComponent;
+export type { RealtimeData, RealtimeDataItem };
+

@@ -1,8 +1,8 @@
 // FuzzyMatch.ts
 import AppTreeService from "@/app/services/AppTreeService";
 import fuzzysort from "fuzzysort";
-import { processTextWithSpaCy } from "../Inteigents/AutoGPTSpaCyIntegration";
 import { useAuth } from "../auth/AuthContext";
+import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 
 // Define a type for your entities
 interface Entity {

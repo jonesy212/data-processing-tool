@@ -1,12 +1,12 @@
-// phases/phaseSlice.ts
+// phases/usePhaseSlice.ts
+import { CustomPhaseHooks } from "@/app/components/phases/Phase";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Phase, CustomPhaseHooks } from "../../models/phases/Phase";
 
 // Define the initial state for the phases
 const initialState: { [key: string]: CustomPhaseHooks } = {};
 
 // Create a slice for managing phases
-const phaseSlice = createSlice({
+export const usePhaseManagerSlice = createSlice({
   name: "phase",
   initialState,
   reducers: {
@@ -24,7 +24,7 @@ const phaseSlice = createSlice({
 });
 
 // Export the actions
-export const { addPhase, removePhase } = phaseSlice.actions;
+export const { addPhase, removePhase } = usePhaseManagerSlice.actions;
 
 // Export the reducer
-export default phaseSlice.reducer;
+export default usePhaseManagerSlice.reducer;
