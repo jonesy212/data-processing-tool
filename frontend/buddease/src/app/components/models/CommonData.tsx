@@ -30,14 +30,15 @@ import { Member } from "./teams/TeamMembers";
 interface CommonData<T> {
   title?: string;
   description?: string | null | undefined;
-  startDate?:  Date;
+  startDate?: Date;
   endDate?: Date;
-  status?: AllStatus
+  status?: AllStatus;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   metadata?: StructuredMetadata;
   details?: DetailsItem<T>;
-  data?: T;
+  data?: T extends CommonData<infer R> ? R : never;
+  projectId?: string;
   tags?: string[];
   categories?: string[];
   documentType?: string;

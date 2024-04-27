@@ -23,16 +23,24 @@ import { useAppSelector } from "@/app/utils/useAppSelector";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import * as ApiAnalysis from "../../../api/ApiAnalysisService";
+import { CalendarActions } from "../../actions/CalendarEventActions";
+import { DrawingActions } from "../../actions/DrawingActions";
+import { ProjectActions } from "../../actions/ProjectActions";
 import { SearchActions } from "../../actions/SearchActions";
+import { SelectActions } from "../../actions/SelectActions";
 import { TooltipActions } from "../../actions/TooltipActions";
-import { GesterEvent, UIActions } from "../../actions/UIActions";
+import { FetchUserDataPayload, GesterEvent, UIActions } from "../../actions/UIActions";
+import { ZoomActions } from "../../actions/ZoomActions";
 import getSocketConnection from "../../communications/getSocketConnection";
 import { currentAppType } from "../../getCurrentAppType";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import useWebSocket from "../../hooks/useWebSocket";
+import { BlogActions } from "../../models/blogs/BlogAction";
+import { PhaseActions } from "../../phases/PhaseActions";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { RootState } from "../../state/redux/slices/RootSlice";
 import { Subscription } from "../../subscriptions/Subscription";
+import { MeetingActions } from "../../tasks/MeetingActions";
 import { saveCryptoPortfolioData } from "../editing/autosave";
 const dispatch = useDispatch();
 const [state, setState] = useState("");
@@ -166,18 +174,17 @@ const handleAppSpecificActions = (selectedText: string | null) => {
 };
 
 const DynamicEventHandlerExample = {
-  
   // Define state using useState hook
 
   // Separate event handlers for keyboard and mouse events
   handleKeyboardEvent: (event: React.KeyboardEvent<HTMLInputElement>) => {
     // Sanitize input value before processing
-    const syntheticEvent = event as React.KeyboardEvent<HTMLInputElement>;
     const sanitizedInput = sanitizeInput(event.currentTarget.value);
     console.log("Sanitized input:", sanitizedInput);
     handleKeyboardShortcuts(event);
-    handleKeyboardShortcuts(syntheticEvent);
   },
+  
+  
 
   handleMouseClick: (event: React.SyntheticEvent) => {
     // Logic for handling mouse click
@@ -206,7 +213,7 @@ const DynamicEventHandlerExample = {
     }
 
     const message: Partial<Message> = {
-      content: "Handling sorting"
+      content: "Handling sorting",
     };
 
     addMessage(message as WritableDraft<Message>);
@@ -254,13 +261,7 @@ const DynamicEventHandlerExample = {
 
     // Add more specific logic based on your application's requirements
   },
-
-  handleZoom: (
-    event: React.WheelEvent<HTMLDivElement>,
-    highlightEvent: React.MouseEvent<HTMLDivElement>,
-    clientX: number,
-    clientY: number
-  ) => {
+  handleZoom: (event: React.WheelEvent<HTMLDivElement>) => {
     // Accessing zoom-related information
     const scale = event.deltaY;
 
@@ -277,8 +278,15 @@ const DynamicEventHandlerExample = {
       console.log("You zoomed out.");
     }
 
+    dispatch(ZoomActions.zoomIn(scale));
     // Add more specific logic based on your application's requirements
-    dispatch(DragActions.dragStart({ highlightEvent, clientX, clientY }));
+    dispatch(
+      DragActions.dragStart({
+        highlightEvent: event, // or provide the appropriate mouse event
+        clientX: event.clientX, // or provide the appropriate clientX value
+        clientY: event.clientY, // or provide the appropriate clientY value
+      })
+    );
     return;
   },
 
@@ -310,7 +318,7 @@ const DynamicEventHandlerExample = {
           userId: currentUser, // Assign the current user ID
           timestamp: new Date().toISOString(), // Include timestamp of highlighting event
         };
-        addMessage(message as Message);
+        addMessage(message as WritableDraft<Message>);
 
         console.log("You highlighted some text:", selectedText);
         // Add more specific logic based on your application's requirements
@@ -445,8 +453,22 @@ const DynamicEventHandlerExample = {
   handleUndoRedo: (event: React.SyntheticEvent) => {
     // Logic for handling undo/redo
     console.log("Handling undo/redo:", event);
-    // Additional logic for undo/redo...
+  
+    // Determine the action to be performed (e.g., undo or redo)
+    const actionType = event.type; // Assuming event.type indicates the action type (e.g., "undo" or "redo")
+  
+    // Implement the logic to undo or redo the action
+    if (actionType === "undo") {
+      // Undo the action
+      console.log("Undoing the action...");
+      // Perform the necessary operations to revert the action
+    } else if (actionType === "redo") {
+      // Redo the action
+      console.log("Redoing the action...");
+      // Perform the necessary operations to reapply the action
+    }
   },
+  
 
   handleContextMenus: (event: React.MouseEvent<HTMLDivElement>) => {
     // Logic for handling context menus
@@ -479,9 +501,9 @@ const DynamicEventHandlerExample = {
     } else {
       console.log("Entering fullscreen mode.");
     }
-
     // Add more specific logic based on your application's requirements
   },
+
   handleSettingsPanel: (event: React.SyntheticEvent) => {
     // Logic for handling settings panel
     console.log("Handling settings panel:", event);
@@ -551,39 +573,42 @@ const DynamicEventHandlerExample = {
     }
   },
 
- // Simulating the function you want to call
-handleProgressIndicators: (event: React.SyntheticEvent) => {
-  // Assuming you have some progress-related information in your application state
-  const currentProgress = useAppSelector((state: RootState) => state.phaseManager.progress.value);
+  // Simulating the function you want to call
+  handleProgressIndicators: (event: React.SyntheticEvent) => {
+    // Assuming you have some progress-related information in your application state
+    const currentProgress = useAppSelector(
+      (state: RootState) => state.phaseManager.progress.value
+    );
 
-  // Logic for handling progress indicators
-  console.log("Handling progress indicators:", event);
+    // Logic for handling progress indicators
+    console.log("Handling progress indicators:", event);
 
-  // Additional logic for progress indicators...
-  // For example, update a progress bar or display a loading spinner.
+    // Additional logic for progress indicators...
+    // For example, update a progress bar or display a loading spinner.
 
-  // Assuming you have a progress bar element in your UI
-  const progressBar = document.getElementById("progressBar");
+    // Assuming you have a progress bar element in your UI
+    const progressBar = document.getElementById("progressBar");
 
-  if (progressBar) {
-    // Update the progress bar based on the current progress
-    progressBar.style.width = `${currentProgress}%`;
+    if (progressBar) {
+      // Update the progress bar based on the current progress
+      progressBar.style.width = `${currentProgress}%`;
 
-    // Display a loading spinner when progress is ongoing
-    if (currentProgress < 100) {
-      const loadingSpinner = document.getElementById("loadingSpinner");
-      if (loadingSpinner) {
-        loadingSpinner.style.display = "block";
-      }
-    } else {
-      // Hide the loading spinner when progress is complete
-      const loadingSpinner = document.getElementById("loadingSpinner");
-      if (loadingSpinner) {
-        loadingSpinner.style.display = "none";
+      // Display a loading spinner when progress is ongoing
+      if (currentProgress < 100) {
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        if (loadingSpinner) {
+          loadingSpinner.style.display = "block";
+        }
+      } else {
+        // Hide the loading spinner when progress is complete
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        if (loadingSpinner) {
+          loadingSpinner.style.display = "none";
+        }
       }
     }
-  }
   },
+
   handleDragStart: (event: React.DragEvent<HTMLDivElement>) => {
     const { clientX, clientY } = event;
 
@@ -804,11 +829,11 @@ handleProgressIndicators: (event: React.SyntheticEvent) => {
   handleSelect: (event: React.MouseEvent<HTMLDivElement>) => {
     // Logic for select event
     console.log("Text selected");
-
+  
     // Additional logic for select event
     const selectedText = window.getSelection()?.toString() || null;
     console.log("Selected text:", selectedText);
-
+  
     // Check if text is being dragged to highlight
     const isDragging =
       event.nativeEvent instanceof MouseEvent && event.nativeEvent.which === 1;
@@ -817,30 +842,114 @@ handleProgressIndicators: (event: React.SyntheticEvent) => {
       // Perform specific actions for highlighting, such as applying styles or triggering events
     } else {
       console.log("Text is being selected intentionally.");
+  
+      // Determine the type of app
+      const isTextEditor = true; // Example: Text Editing App
+      const isReadingApp = false;
+      const isSearchApp = false;
+      const isProjectManagementApp = false;
+      const isCalendarApp = false;
+      const isMeetingApp = false;
+      const isPhaseManagerApp = false;
+      const isDocumentManagerApp = true;
 
+      const isBlogManagerApp = false;
+      const isDrawingManagerApp = false;
+      const isUIManagerApp = false;
       // Handle specific actions based on the type of app
-      // Example: Text Editing App
-      // Provide formatting options or context menu for selected text
-      // Example: Reading App
-      // Offer options for bookmarking or annotating selected text
-      // Example: Search App
-      // Automatically initiate a search based on the selected text
-      handleAppSpecificActions(selectedText);
+      if (isTextEditor) {
+        console.log("Text Editing App detected.");
+        // Offer options for formatting, spellcheck, etc.
+        console.log("Offering formatting and spellcheck options...");
+        // Example: Update UI with word count
+        updateUIWithCopiedText(selectedText, 'editor');
+      } else if (isReadingApp) {
+        console.log("Reading App detected.");
+        // Offer options to bookmark, annotate selected text
+        console.log("Offering options to bookmark or annotate selected text...");
+        SelectActions.showOptionsForSelectedText(selectedText);
+      } else if (isSearchApp) {
+        console.log("Search App detected.");
+        // Automatically initiate a search based on the selected text
+        console.log("Initiating search based on selected text...");
+        SearchActions.initiateSearch(selectedText);
+      } else if (isProjectManagementApp) {
+        console.log("Project Management App detected.");
+        // Handle actions specific to Project Management App
+        console.log("Performing actions for Project Management App...");
+        ProjectActions.performProjectActions(selectedText);
+      } else if (isCalendarApp) {
+        console.log("Calendar App detected.");
+        // Handle actions specific to Calendar App
+        console.log("Performing actions for Calendar App...");
+        CalendarActions.performCalendarActions(selectedText);
+      } else if (isMeetingApp) {
+        console.log("Meeting App detected.");
+        // Handle actions specific to Meeting App
+        console.log("Performing actions for Meeting App...");
+        MeetingActions.performMeetingActions(selectedText);
+    } else if (isDocumentManagerApp) {
+      console.log("Document Manager App detected.");
+      // Handle actions specific to Document Manager App
+      console.log("Performing actions for Document Manager App...");
+    //   DocumentManagerActions.performDocumentActions(selectedText);
+    // } else if (isApiManagerApp) {
+    //   console.log("API Manager App detected.");
+    //   // Handle actions specific to API Manager App
+    //   console.log("Performing actions for API Manager App...");
+    //   ApiManagerActions.performApiActions(selectedText);
+    // } else if (isEventManagerApp) {
+    //   console.log("Event Manager App detected.");
+    //   // Handle actions specific to Event Manager App
+    //   console.log("Performing actions for Event Manager App...");
+    //   EventManagerActions.performEventActions(selectedText);
+    // } else if (isSettingsManagerApp) {
+    //   console.log("Settings Manager App detected.");
+    //   // Handle actions specific to Settings Manager App
+    //   console.log("Performing actions for Settings Manager App...");
+    //   SettingsManagerActions.performSettingsActions(selectedText);
+    } else if (isBlogManagerApp) {
+      console.log("Blog Manager App detected.");
+      // Handle actions specific to Blog Manager App
+      console.log("Performing actions for Blog Manager App...");
+      BlogActions.performBlogActions(selectedText);
+    } else if (isDrawingManagerApp) {
+      console.log("Drawing Manager App detected.");
+      // Handle actions specific to Drawing Manager App
+      console.log("Performing actions for Drawing Manager App...");
+      DrawingActions.performDrawingActions(selectedText);
+    } else if (isUIManagerApp) {
+      console.log("UI Manager App detected.");
+      // Handle actions specific to UI Manager App
+        console.log("Performing actions for UI Manager App...");
+        const payload: FetchUserDataPayload | null = selectedText ? { message: selectedText } : null;
+        UIActions.performUIActions(payload);
+    } else if (isPhaseManagerApp) {
+      console.log("Phase Manager App detected.");
+      // Handle actions specific to Phase Manager App
+      console.log("Performing actions for Phase Manager App...");
+      PhaseActions.performPhaseActions(selectedText);
     }
-
-    // Ensure accessibility by clearing any existing errors
-    useErrorHandling().clearError();
-
-    // Handle any unexpected errors
-    try {
-      // Perform additional logic here...
-    } catch (error: any) {
-      // Handle error gracefully using the useErrorHandling hook
-      useErrorHandling().handleError("Error handling select event", {
-        componentStack: error.stack,
-      });
+      
+  
+      // Prevent default text selection behavior
+      event.preventDefault();
+  
+      // Ensure accessibility by clearing any existing errors
+      useErrorHandling().clearError();
+  
+      // Handle any unexpected errors
+      try {
+        // Perform additional logic here...
+      } catch (error: any) {
+        // Handle error gracefully using the useErrorHandling hook
+        useErrorHandling().handleError("Error handling select event", {
+          componentStack: error.stack,
+        });
+      }
     }
   },
+  
   handleUnload: (event: Event, roomId: string, retryConfig: RetryConfig) => {
     const socket = getSocketConnection(roomId, retryConfig);
 
@@ -965,29 +1074,29 @@ handleProgressIndicators: (event: React.SyntheticEvent) => {
     // dispatch({ type: "POINTER_DOWN", payload: { event } })
   },
 
-   // Define state using useState hook
-   handlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => {
-     // Logic for pointer move event
-     console.log("Pointer moved");
- 
-     // Example: Track pointer position
-     const newPointerPosition = {
-       x: event.clientX,
-       y: event.clientY
-     };
- 
-     // Example: Update pointer position state using action
-     UIActions.setPointerPosition(newPointerPosition);
- 
-     // Example: Call UIActions to update pointer position
-     UIActions.setPointerPosition(newPointerPosition);
- 
-     // Prevent default pointer behavior like text selection
-     event.preventDefault();
-     // Additional logic for pointer move event
-   },
+  // Define state using useState hook
+  handlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => {
+    // Logic for pointer move event
+    console.log("Pointer moved");
 
-  handlePointerUp: (event: React.PointerEvent<HTMLDivElement>) => { 
+    // Example: Track pointer position
+    const newPointerPosition = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    // Example: Update pointer position state using action
+    UIActions.setPointerPosition(newPointerPosition);
+
+    // Example: Call UIActions to update pointer position
+    UIActions.setPointerPosition(newPointerPosition);
+
+    // Prevent default pointer behavior like text selection
+    event.preventDefault();
+    // Additional logic for pointer move event
+  },
+
+  handlePointerUp: (event: React.PointerEvent<HTMLDivElement>) => {
     // Logic for pointer up event
     console.log("Pointer up");
 
@@ -999,10 +1108,10 @@ handleProgressIndicators: (event: React.SyntheticEvent) => {
     UIActions.setIsPointerDown(false);
 
     // Example: Reset pointer position state
-    UIActions.setPointerPosition({x: 0, y: 0});
+    UIActions.setPointerPosition({ x: 0, y: 0 });
   },
 
-  handlePointerCancel: (event: React.PointerEvent<HTMLDivElement>) => { 
+  handlePointerCancel: (event: React.PointerEvent<HTMLDivElement>) => {
     // Logic for pointer cancel event
     console.log("Pointer canceled");
 
@@ -1012,9 +1121,9 @@ handleProgressIndicators: (event: React.SyntheticEvent) => {
 
     // Additional real-world logic: Hide a tooltip when pointer is canceled
     TooltipActions.hideTooltip();
-},
+  },
 
-handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => { 
+  handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     // Logic for pointer enter event
     console.log("Pointer entered");
 
@@ -1023,17 +1132,15 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
 
     // Additional real-world logic: Show a tooltip when pointer enters the element
     TooltipActions.showTooltip("Hover over me for more information");
-},
+  },
 
-
-
-  handlePointerLeave: (event: React.PointerEvent<HTMLDivElement>) => { 
+  handlePointerLeave: (event: React.PointerEvent<HTMLDivElement>) => {
     // Logic for pointer leave event
     console.log("Pointer left");
 
     const newPointerPosition = {
       x: 0,
-      y: 0
+      y: 0,
     };
 
     newPointerPosition.x = 0;
@@ -1042,8 +1149,7 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     UIActions.setIsPointerInside(false);
   },
 
-  
-  handlePointerOver: (event: React.PointerEvent<HTMLDivElement>) => { 
+  handlePointerOver: (event: React.PointerEvent<HTMLDivElement>) => {
     // Logic for pointer over event
     console.log("Pointer over");
 
@@ -1057,11 +1163,11 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     // Set pointer position to current client coordinates
     UIActions.setPointerPosition({
       x: event.clientX,
-      y: event.clientY
+      y: event.clientY,
     });
   },
 
-  handlePointerOut: (event: React.PointerEvent<HTMLDivElement>) => { 
+  handlePointerOut: (event: React.PointerEvent<HTMLDivElement>) => {
     // Logic for pointer out event
     console.log("Pointer out");
 
@@ -1073,11 +1179,9 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     UIActions.setPointerPosition({ x: 0, y: 0 });
   },
 
-
-
-  handleAuxClick: (event: React.MouseEvent<HTMLDivElement>) => { 
-       // Declare isAuxClicked variable or access it from the appropriate state management system
-       const isAuxClicked = true; // Example: You can initialize it with a default value or access it from state
+  handleAuxClick: (event: React.MouseEvent<HTMLDivElement>) => {
+    // Declare isAuxClicked variable or access it from the appropriate state management system
+    const isAuxClicked = true; // Example: You can initialize it with a default value or access it from state
 
     // Logic for auxiliary click event
     console.log("Auxiliary click");
@@ -1088,13 +1192,15 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
   },
 
-  handleGestureStart: (event: React.TouchEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>) => { 
+  handleGestureStart: (
+    event: React.TouchEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>
+  ) => {
     // Logic for gesture start event
     console.log("Gesture started");
-  
+
     // Example: Update state to indicate gesture is in progress
     UIActions.setIsGestureActive(true);
-  
+
     // Prevent default behavior
     event.preventDefault();
   },
@@ -1110,19 +1216,15 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
       event.type === "touchstart" ||
       event.type === "touchmove" ||
       event.type === "touchend"
-        ? UIActions.getGesturePosition(
-            event as GesterEvent
-          )
-        : UIActions.getGesturePosition(
-            event as GesterEvent
-          );
+        ? UIActions.getGesturePosition(event as GesterEvent)
+        : UIActions.getGesturePosition(event as GesterEvent);
 
     // register gesturPosition in state
-    UIActions.setGesturePosition({gesturePosition: gesturePosition});
+    UIActions.setGesturePosition({ gesturePosition: gesturePosition });
     // Additional logic to handle gesture change
   },
-  
-  handleGestureEnd: (event: React.TouchEvent<HTMLDivElement>) => { 
+
+  handleGestureEnd: (event: React.TouchEvent<HTMLDivElement>) => {
     // Logic for gesture end event
     console.log("Gesture ended");
 
@@ -1135,7 +1237,6 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
   },
 
-
   // Dynamic event handler generator
   createEventHandler:
     (eventName: string, customLogic?: (event: React.SyntheticEvent) => void) =>
@@ -1146,7 +1247,7 @@ handlePointerEnter: (event: React.PointerEvent<HTMLDivElement>) => {
         )}`,
       };
 
-      addMessage(message as Message);
+      addMessage(message as WritableDraft<Message>);
 
       // Check if custom logic is provided, use it; otherwise, use the default logic
       const eventHandler = customLogic || (() => {});

@@ -22,6 +22,7 @@ export const UIActions = {
   setPointerPosition: createAction<{ x: number; y: number }>(
     "setPointerPosition"
   ),
+  performUIActions: createAction<FetchUserDataPayload | null>("performUIActions"),
   setGesturePosition: createAction<{gesturePosition: {
     payload: GesterEvent;
     type: string;
@@ -49,6 +50,19 @@ export const UIActions = {
     type: string;
     isDarkMode: boolean;
   }>("addUINotification"),
+  updateUIWithTodoDetails: createAction<{ 
+    todoId: string;
+    todoDetails: {
+      title: string;
+      description: string;
+    };
+  }>("updateUIWithTodoDetails"),
+  updateUI: createAction<{ 
+    state: {
+      // UI state
+
+    }
+  }>("updateUI"),
   resetDrawingState: createAction<{
     drawing: string[]; // Example: Array of drawings
     shapes: string[]; // Example: Array of shapes

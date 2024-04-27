@@ -30,6 +30,7 @@ const resetAppState = () => {
 
 
 export interface UserSettings extends Settings {
+  userId: number;
   userSettings: NodeJS.Timeout;
   communicationMode: string;
   enableRealTimeUpdates: boolean;
@@ -115,6 +116,7 @@ export interface UserSettings extends Settings {
 
 
 const userSettings: UserSettings = {
+  userId: 1,
   userSettings: new NodeJS.Timeout,
   communicationMode: "text",
   enableRealTimeUpdates: true,
@@ -205,8 +207,9 @@ const userSettings: UserSettings = {
   id: '',
   filter: function (key: keyof Settings): void {
     // filter settings
-    object
-    }
+    object;
+  },
+  appName: ''
 }
 
 

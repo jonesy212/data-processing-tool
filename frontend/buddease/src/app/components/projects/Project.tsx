@@ -3,6 +3,7 @@ import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import React, { ReactNode, useEffect, useState } from "react";
 import { Exchange } from "../crypto/Exchange";
 import { Attachment } from "../documents/Attachment/attachment";
+import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
@@ -11,14 +12,16 @@ import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { implementThen } from '../state/stores/CommonEvent';
 import { default as Comment, default as TodoImpl } from "../todos/Todo";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
+import { AnalysisTypeEnum } from "./DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
-
+ 
 
 export enum ProjectType {
   Internal = "Internal",
@@ -34,7 +37,7 @@ export enum ProjectType {
 interface Project extends Data {
   id: string;
   name: string;
-  description: string | null; // Updated this line
+  description: string; // Updated this line
   members: Member[];
   tasks: Task[];
   startDate: Date
@@ -46,10 +49,24 @@ interface Project extends Data {
   phases: Phase[];
   type: ProjectType
   currentPhase: Phase | null; // Provide a default value or mark as optional
-  comments?: Comment[];  // Add other project-related fields as needed
+  comments?: (Comment | CustomComment)[] | undefined  // Add other project-related fields as needed
   commnetBy?: User | Member;
   then?: typeof implementThen;
-  
+  data?: ProjectData
+}
+
+
+
+export interface ProjectDetails {
+  _id?: string  | undefined;
+  id?: string;
+  title: string;
+  name: string;
+  description: string;
+  status: StatusType;
+  tasks: Task[];
+  projectDetails?: Partial<ProjectDetails>
+  // Add other properties as needed
 }
 
 // Function to determine if the project is in a special phase
@@ -83,9 +100,9 @@ class ProjectImpl implements Project {
   ideas: Idea[] = [];
   dueDate?: Date | null | undefined;
   priority?: "low" | "medium" | "high" | undefined;
-  assignee?: User | null | undefined;
+  assignee?: User | undefined;
   collaborators?: string[] | undefined;
-  comments?: Comment[] | undefined;
+  comments?: (Comment | CustomComment)[] | undefined
   attachments?: Attachment[] | undefined;
 
   subtasks?: TodoImpl[] | undefined;
@@ -114,7 +131,7 @@ class ProjectImpl implements Project {
   phase: Phase | null = null;
   phases: Phase[] = []; // Provide a default value or mark as optional
   currentPhase: Phase | null = null; // Provide a default value or mark as optional
-  description: string | null = null;
+  description: string = "";
   title: string = "project_title";
   status: StatusType.Pending | StatusType.InProgress | StatusType.Completed = StatusType.Pending;
   tags: string[] = [];
@@ -266,13 +283,18 @@ const transitionToPreviousPhase = (setCurrentPhase: React.Dispatch<React.SetStat
   setCurrentPhase(previousPhase);
 };
 
-const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = ({ projectDetails }) => {
+const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({ projectDetails }) => {
   const [details, setDetails] = useState<ProjectData | null>(null);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
-      const details = await projectDetails;
-      setDetails(details);
+      try {
+        const response = await fetch("/api/projects/details"); // Replace with the appropriate API endpoint
+        const details = await response.json();
+        setDetails(details);
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
     };
 
     fetchProjectDetails();
@@ -300,6 +322,6 @@ const ProjectDetails: React.FC<UpdatedProjectDetailsProps> = ({ projectDetails }
   ) : null;
 };
   
-
-export type { Project, ProjectDetails };
+export default ProjectDetailsComponents
+export type { Project };
 

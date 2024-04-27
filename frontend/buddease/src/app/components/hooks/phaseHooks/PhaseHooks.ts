@@ -9,6 +9,7 @@ import { useAuth } from "../../auth/AuthContext";
 import { BrainstormingSettings } from "../../interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
+import { Progress } from "../../models/tracker/ProgressBar";
 import { CustomPhaseHooks, Phase } from "../../phases/Phase";
 import {
   ExtendedDAppAdapter,
@@ -20,12 +21,12 @@ export interface PhaseHookConfig {
   name: string;
   condition: () => boolean;
   asyncEffect: () => Promise<() => void>;
-  canTransitionTo?: (nextPhase: string) => boolean;
-  handleTransitionTo?: (nextPhase: string) => Promise<void>;
+  canTransitionTo?: (nextPhase: Phase) => boolean;
+  handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
   duration: string;
   isActive?: boolean;
   initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
-  resetIdleTimeout?: () => void;
+  resetIdleTimeout?: () => Promise<void>;
   idleTimeoutId?: NodeJS.Timeout | null;
   clearIdleTimeout?: () => void;
   onPhaseStart?: () => void;
@@ -49,8 +50,8 @@ export interface TestPhaseHookConfig {
   name: string;
   condition: () => boolean;
   asyncEffect: () => Promise<() => void>;
-  canTransitionTo?: (nextPhase: string) => boolean;
-  handleTransitionTo?: (nextPhase: string) => Promise<void>;
+  canTransitionTo?: (nextPhase: Phase) => boolean;
+  handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
   duration: number;
 }
 
@@ -76,9 +77,7 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
         // Logic to execute when the test phase ends
         console.log("Test phase ended");
       },
-      canTransitionTo: function (nextPhase: Phase): boolean {
-        throw new Error("Function not implemented.");
-      },
+      canTransitionTo: (nextPhase: Phase) => true,
       handleTransitionTo: function (nextPhase: Phase): void {
         throw new Error("Function not implemented.");
       },
@@ -86,6 +85,7 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
         throw new Error("Function not implemented.");
       },
       isActive: false,
+      progress: {} as Progress,
     };
 
     // Return the custom phase hooks
@@ -164,7 +164,6 @@ const phaseHooks: { [key: string]: CustomPhaseHooks } = {};
 let idleTimeoutId: NodeJS.Timeout | null = null; // Initialize idleTimeoutId to null
 
 phaseNames.forEach((phaseName) => {
-
   phaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] = createPhaseHook({
     name: phaseName,
     condition: () => true,
@@ -189,7 +188,7 @@ phaseNames.forEach((phaseName) => {
     duration: "10000", // Assign a direct number value for duration
     isActive: true, // Add isActive property
     initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout property
-    resetIdleTimeout: () => {}, // Add resetIdleTimeout property
+    resetIdleTimeout: async () => {}, // Change resetIdleTimeout to return a Promise
     idleTimeoutId: null, // Initialize idleTimeoutId property
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
       clearTimeout(idleTimeoutId!);
@@ -197,8 +196,7 @@ phaseNames.forEach((phaseName) => {
         onTimeout();
       }, timeoutDuration);
     },
-    
-    startAnimation: () => { }, // Add startAnimation property
+    startAnimation: () => {}, // Add startAnimation property
     stopAnimation: () => {}, // Add stopAnimation property
     animateIn: () => {}, // Add animateIn property
     toggleActivation: () => {}, // Add toggleActivation property
@@ -248,7 +246,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
       },
       isActive: true, // Add isActive property
       initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout property
-      resetIdleTimeout: () => {}, // Add resetIdleTimeout property
+      resetIdleTimeout: async () => {}, // Add resetIdleTimeout property
       idleTimeoutId: null, // Initialize idleTimeoutId property
       startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
         clearTimeout(idleTimeoutId!);

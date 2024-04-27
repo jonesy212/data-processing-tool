@@ -47,6 +47,8 @@ function calculateChecksum(content: string): string {
 }
 
 // Now, you can create a VersionHistory instance and add VersionData to it
-const versionHistory: VersionHistory = {
+export const versionHistory: VersionHistory = {
   versions: [versionData] // Add the VersionData to the versions array
 };
+
+export type { VersionData, VersionHistory };

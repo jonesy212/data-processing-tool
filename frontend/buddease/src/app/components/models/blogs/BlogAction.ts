@@ -1,10 +1,12 @@
 
 // blogActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { BlogComment } from "../../state/redux/slices/BlogSlice";
 import { BlogPost } from "../../community/DiscussionForumComponent";
+import { BlogComment } from "../../state/redux/slices/BlogSlice";
 
 export const BlogActions = {
+
+  performBlogActions: createAction<string | null>("blog/performBlogActions"),
   // Fetch Posts
   fetchPostsRequest: createAction("blog/fetchPostsRequest"),
   fetchPostsSuccess: createAction<{ posts: BlogPost[] }>("blog/fetchPostsSuccess"),

@@ -7,17 +7,25 @@ interface DataVersionsProps {
 
 interface DataVersions {
   [key: string]: number;
+  backend: number; // Version number for backend data
+  frontend: number; // Version number for frontend data
 }
 
 const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath: DATA_PATH}) => {
-  const [dataVersions, setDataVersions] = React.useState<DataVersions>({});
+  const [dataVersions, setDataVersions] = React.useState<DataVersions>({
+    backend: 0,
+    frontend: 0
+  });
 
   React.useEffect(() => {
     // Check if 'fs' is available (only in server-side)
     if (typeof window === "undefined") {
       import("fs").then((fsModule) => {
         const fs = fsModule.default;
-        const versions: DataVersions = {};
+        const versions: DataVersions = {
+          backend: 0,
+          frontend: 0
+        };
 
         const traverseDirectory = (dir: string) => {
           const files = fs.readdirSync(dir);
@@ -65,5 +73,7 @@ export default DataVersionsComponent;
 export type { DataVersions, DataVersionsProps };
 
 
-const dataVersions = {} as DataVersions
-export { dataVersions };
+const dataVersions: DataVersions = {
+  backend: 0,
+  frontend: 0
+};export { dataVersions };

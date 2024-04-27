@@ -1,3 +1,7 @@
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import { UserSettings } from "@/app/configs/UserSettings";
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import docx from "docx";
 import { DocumentData } from "./DocumentBuilder";
 import { NoteOptions } from "./NoteData";
@@ -80,16 +84,21 @@ export interface DocumentOptions {
   enableStemming?: boolean;
   enableStopWords?: boolean;
   enableWildcards?: boolean;
+  userSettings: UserSettings;
   enableFuzzy?: boolean;
+  dataVersions: DataVersions
+  backendStructure?: BackendStructure;
+  frontendStructure?: FrontendStructure
 }
 
 export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
 
+
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
     uniqueIdentifier: "",
-    documentType: {} as DocumentData, // Add documentType property,
-    userIdea: "", // Add userIdea property
+    documentType: {} as DocumentData,
+    userIdea: "",
     fontSize: 14,
     textColor: "#000000",
     backgroundColor: "#ffffff",
@@ -127,25 +136,23 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       left: 0,
       right: 0,
     },
-    content: "content", // Property for document content
-    css: "css", // Property for document CSS
-    html: "html", // Property for document HTML
+    content: "content",
+    css: "css",
+    html: "html",
     size: "0" as DocumentSize,
     colorCoding: false,
     additionalOptions: [],
     customSettings: {},
     documents: [] as DocumentData[],
     animations: {} as DocumentAnimationOptions,
-
-    // Default values for properties specific to DocumentGenerator
     includeType: "all",
-    includeTitle: true, // New property to include title in the report
-    includeContent: true, // New property to include content in the report
-    includeStatus: true, // New property to include status in the report
-    includeAdditionalInfo: true, // Example: include additional information
-
-    // Default values for properties specific to DocumentGenerator
+    includeTitle: true,
+    includeContent: true,
+    includeStatus: true,
+    includeAdditionalInfo: true,
     title: "",
+    userSettings: {} as UserSettings,
+    dataVersions: { backend: 0, frontend: 0 },
   };
 };
 

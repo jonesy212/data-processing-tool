@@ -12,6 +12,7 @@ import { Snapshot } from "../snapshots/SnapshotStore";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 export interface Todo {
   _id: string;
   id: string;

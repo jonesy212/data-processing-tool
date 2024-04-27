@@ -4,6 +4,7 @@ import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import teamApiService from "../../api/TeamApi";
+import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
@@ -12,10 +13,9 @@ import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
 import { User } from "../users/User";
+import { ReassignEventResponse } from "./stores/AssignEventStore";
 import { useAssignTeamMemberStore } from "./stores/AssignTeamMemberStore";
 import { PresentationStore, presentationStore } from "./stores/presentationStore";
-import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
-import { ReassignEventResponse } from "./stores/AssignEventStore";
 
 const { notify } = useNotification();
 export interface AssignBaseStore {
@@ -135,6 +135,9 @@ export interface AssignBaseStore {
   assignBoardIntegrationToTeam: Record<string, string[]>,
   assignBoardAutomationToTeam: Record<string, string[]>,
   assignBoardCustomFieldToTeam: Record<string, string[]>,
+
+
+  setAssignedTaskStore: (store: SnapshotStore<Snapshot<Data>>) => void;
   // Add more methods or properties as needed
 }
 
@@ -146,7 +149,6 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignTeamsToTodos: Record<string, string[]> = {};
   const assignedTasks: Record<string, string[]> = {};
   const events: Record<string, ExtendedCalendarEvent[]> = {};
-
 
   //todo set up:
   const assignedProjects: Record<string, string[]> = {};

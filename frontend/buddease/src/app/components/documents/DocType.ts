@@ -1,4 +1,4 @@
-import { PDFData } from "./parsePDF";
+import { AppType, PDFData } from "./parsePDF";
 
 // DocType.ts
 interface YourPDFType {
@@ -6,6 +6,7 @@ interface YourPDFType {
     pageNumber: number;
   textContent: string;
   text: Promise<PDFData>
+  
     // Add more fields as needed based on the content of your PDF files
   }
   

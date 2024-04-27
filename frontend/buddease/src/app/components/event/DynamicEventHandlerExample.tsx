@@ -1,10 +1,8 @@
-import { SyntheticEvent, useEffect, useState } from "react";
-import SnapshotList from "../snapshots/SnapshotList";
+ import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
-import { createEvent } from "@testing-library/react";
-import { setMessages } from "../state/redux/slices/ChatSlice";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import useSorting from "../hooks/useSorting";
+import SnapshotList from "../snapshots/SnapshotList";
+import ReusableButton from "../libraries/ui/buttons/ReusableButton";
+import { CustomMouseEvent } from "./EventService";
 
 
 
@@ -23,35 +21,34 @@ const DynamicEventHandlerService = ({
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
+  const snapshhotListRef = useRef<SnapshotList>();
+  const handleSortingEvent = createEventHandler(
+    "handleSorting",
+    (event) => handleSorting(snapshhotListRef.current!, event)
+  );
 
-
-const handleSortingEvent = createEventHandler(
-  "handleSorting",
-  handleSorting
-)
   // Helper function to add messages
   const addMessage = (message: string) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-  const sort = useSorting
-    (messages,
-    setMessages
-  );
-   handleSorting = (snapshotList: SnapshotList) => {
+
+  const handleSortingWrapper = (snapshotList: SnapshotList) => {
     // Handle sorting logic
     // Assuming snapshotList is an array or object with sorting functionality
     snapshotList.sort();
-
+  
     // Add message
     addMessage("Sorted snapshots");
+    return (event: SyntheticEvent<Element, Event>) => {
+      handleSorting(snapshotList, event);
   };
 };
 
-      // Helper function to add messages
-      const addMessage = (message: Message) => {
-        setMessages((prevMessages: Message[]) => [...prevMessages, message as Message]);
-      };
+      // // Helper function to add messages
+      // const addMessage = (message: Message) => {
+      //   setMessages((prevMessages: Message[]) => [...prevMessages, message as Message]);
+      // };
     
   const handleKeyboardShortcuts = createEventHandler(
     "handleKeyboardShortcuts",
@@ -179,103 +176,78 @@ const handleSortingEvent = createEventHandler(
 
   useEffect(() => {
     // Attach event listeners using the imported event handlers
-  //   window.addEventListener("keydown", handleKeyboardEvent);
-  //   window.addEventListener("click", handleMouseEvent);
-  //   window.addEventListener("scroll", handleScrolling);
-  //   window.addEventListener("wheel", handleZoom);
-  //   window.addEventListener("mouseup", handleHighlighting);
-  //   window.addEventListener("mousedown", handleAnnotations);
-  //   window.addEventListener("copy", handleCopyPaste);
-  //   window.addEventListener("redo", handleUndoRedo);
-  //   window.addEventListener("contextmenu", handleContextMenus);
-  //   window.addEventListener("fullscreen", handleFullscreenMode);
-  //   window.addEventListener("settingsPanel", handleSettingsPanel);
-  //   window.addEventListener("helpFAQ", handleHelpFAQ);
-  //   window.addEventListener("searchFunctionality", handleSearchFunctionality);
-  //   window.addEventListener("progressIndicators", handleProgressIndicators);
+    window.addEventListener(
+      "keydown",
+      window.addEventListener("keydown", (event: KeyboardEvent) =>
+        handleKeyboardEvent(event)
+      )
+    );
+    // window.addEventListener("click", (event: MouseEvent) => handleMouseEvent(event));
+    // window.addEventListener("scroll", handleScrolling);
+    // window.addEventListener("wheel", handleZoom);
+    // window.addEventListener("mouseup", handleHighlighting);
+    // window.addEventListener("mousedown", handleAnnotations);
+    // window.addEventListener("copy", handleCopyPaste);
+    // window.addEventListener("redo", handleUndoRedo);
+    // window.addEventListener("contextmenu", handleContextMenus);
+    // window.addEventListener("fullscreen", handleFullscreenMode);
+    // window.addEventListener("settingsPanel", handleSettingsPanel);
+    // window.addEventListener("helpFAQ", handleHelpFAQ);
+    // window.addEventListener("searchFunctionality", handleSearchFunctionality);
+    // window.addEventListener("progressIndicators", handleProgressIndicators);
   
-  //   // Clean up event listeners on unmount
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyboardEvent);
-  //     window.removeEventListener("click", handleMouseEvent);
-  //     window.removeEventListener("scroll", handleScrolling);
-  //     window.removeEventListener("wheel", handleZoom);
-  //     window.removeEventListener("mouseup", handleHighlighting);
-  //     window.removeEventListener("mousedown", handleAnnotations);
-  //     window.removeEventListener("copy", handleCopyPaste);
-  //     window.removeEventListener("redo", handleUndoRedo);
-  //     window.removeEventListener("contextmenu", handleContextMenus);
-  //     window.removeEventListener("fullscreen", handleFullscreenMode);
-  //     window.removeEventListener("settingsPanel", handleSettingsPanel);
-  //     window.removeEventListener("helpFAQ", handleHelpFAQ);
-  //     window.removeEventListener("searchFunctionality", handleSearchFunctionality);
-  //     window.removeEventListener("progressIndicators", handleProgressIndicators);
-  //   };
-  }, [handleKeyboardEvent, handleMouseEvent, handleScrolling, handleZoom, handleHighlighting, handleAnnotations, handleCopyPaste, handleUndoRedo, handleContextMenus, handleFullscreenMode, handleSettingsPanel, handleHelpFAQ, handleSearchFunctionality, handleProgressIndicators, handleDragStart, 
-  //   handleDragEnd, 
-  //   handleDragEnter, 
-  //   handleDragOver, 
-  //   handleDragLeave, 
-  //   handleDrop, 
-  //   handleFocus, 
-  //   handleBlur, 
-  //   handleFocusIn, 
-  //   handleFocusOut, 
-  //   handleResize, 
-  //   handleSelect, 
-  //   handleUnload, 
-  //   handleBeforeUnload, 
-  //   handleTouchStart, 
-  //   handleTouchMove, 
-  //   handleTouchEnd, 
-  //   handleTouchCancel, 
-  //   handlePointerDown, 
-  //   handlePointerMove, 
-  //   handlePointerUp, 
-  //   handlePointerCancel, 
-  //   handlePointerEnter, 
-  //   handlePointerLeave, 
-  //   handlePointerOver, 
-  //   handlePointerOut, 
-  //   handleAuxClick, 
-  //   handleGestureStart, 
-  //   handleGestureChange, 
-  //   handleGestureEnd, 
+    // Clean up event listeners on unmount
+    return () => {
+      window.removeEventListener("keydown", (event: React.KeyboardEvent<HTMLInputElement>) =>
+        handleKeyboardEvent(event)
+      );
+      // window.removeEventListener("click", (event: MouseEvent) => handleMouseEvent(event as unknown as CustomMouseEvent<Element>));
+      // window.removeEventListener("scroll", handleScrolling);
+      // window.removeEventListener("wheel", handleZoom);
+      // window.removeEventListener("mouseup", handleHighlighting);
+      // window.removeEventListener("mousedown", handleAnnotations);
+      // window.removeEventListener("copy", handleCopyPaste);
+      // window.removeEventListener("redo", handleUndoRedo);
+      // window.removeEventListener("contextmenu", handleContextMenus);
+      // window.removeEventListener("fullscreen", handleFullscreenMode);
+      // window.removeEventListener("settingsPanel", handleSettingsPanel);
+      // window.removeEventListener("helpFAQ", handleHelpFAQ);
+      // window.removeEventListener("searchFunctionality", handleSearchFunctionality);
+      // window.removeEventListener("progressIndicators", handleProgressIndicators);
+    };
+  }, [handleKeyboardEvent, handleMouseEvent,
+
+    handleDragEnd, 
+    handleDragEnter, 
+    handleDragOver, 
+    handleDragLeave, 
+    handleDrop, 
+    handleFocus, 
+    handleBlur, 
+    handleFocusIn, 
+    handleFocusOut, 
+    handleResize, 
+    handleSelect, 
+    handleUnload, 
+    handleBeforeUnload, 
+    handleTouchStart, 
+    handleTouchMove, 
+    handleTouchEnd, 
+    handleTouchCancel, 
+    handlePointerDown, 
+    handlePointerMove, 
+    handlePointerUp, 
+    handlePointerCancel, 
+    handlePointerEnter, 
+    handlePointerLeave, 
+    handlePointerOver, 
+    handlePointerOut, 
+    handleAuxClick, 
+    handleGestureStart, 
+    handleGestureChange, 
+    handleGestureEnd, 
     ]);
   
-    const handleSortingEvent = createEventHandler(
-      "handleSorting",
-      (event: React.SyntheticEvent) => {
-        // Logic for handling sorting
-        console.log("Handling sorting:", event);
-  
-        // Additional logic for sorting...
-        // For example, trigger a sorting algorithm or update UI based on sorting action.
-        const sortableList = document.getElementById("sortableList");
-  
-        if (sortableList) {
-          // Simulate sorting algorithm (e.g., sorting list items alphabetically)
-          const listItems = Array.from(sortableList.children);
-          const sortedItems = listItems.sort(
-            (a, b) => a.textContent?.localeCompare(b.textContent || "") || 0
-          );
-  
-          // Update UI with sorted items
-          sortableList.innerHTML = "";
-          sortedItems.forEach((item) => sortableList.appendChild(item));
-        }
-  
-        // Remove event listener on unmount
-        return () => {
-          const sortingButton = document.getElementById("sortingButton");
-          if (sortingButton) {
-            sortingButton.removeEventListener("click", handleSortingEvent);
-          }
-        };
-      }
-    );
-
-
 useEffect(() => {
     
     const createEventHandler = DynamicEventHandlerExample.createEventHandler;
@@ -376,8 +348,8 @@ useEffect(() => {
     <div>
       <div
         onScroll={handleScrolling}
-        onWheel={handleZoom}
         onMouseDown={handleAnnotations}
+        onWheel={handleZoom}
         onKeyDown={handleKeyboardEvent}
         onMouseUp={handleHighlighting}
         onCopy={handleCopyPaste}
@@ -386,7 +358,11 @@ useEffect(() => {
         Hover over me
       </div>
       <h2>Dynamic Event Handlers</h2>
-      <button onClick={handleButtonClick}>Click Me</button>
+      <ReusableButton 
+        label ="" 
+        onEvent= {handleButtonClick}
+      onClick={handleButtonClick}
+      />
       <div
         onMouseDown={handleMouseEvent}
         onMouseMove={handleDivMouseMove}

@@ -10,7 +10,7 @@ interface TodoProgressProps {
   newProgress: number; // Add newProgress prop
   selectedTodo?: Todo;
   onUpdateProgress: (todo: Todo, newProgress: number) => void; // Update function signature
-  onTodoClick: (todoId: Todo) => void;
+  onTodoClick: (todoId: Todo['id']) => Promise<void>
   
 }
 
@@ -29,7 +29,7 @@ const TodoProgress: React.FC<TodoProgressProps> = ({
 
   const handleTodoClick = () => {
     if (selectedTodo) {
-      onTodoClick(selectedTodo);
+      onTodoClick(String(selectedTodo));
     }
   };
   return (

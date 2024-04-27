@@ -19,7 +19,8 @@ export const previousPhase: Phase = {
           <p>Previous Phase: {previousPhase.name}</p>
         </div>
       );
-    },
+  },
+    duration: 0,
   };
   
 export const nextPhase: Phase = {
@@ -35,6 +36,7 @@ export const nextPhase: Phase = {
           <p>Next Phase: {nextPhase.name}</p>
         </div>
       );
-    },
+  },
+    duration: 0,
   };
   

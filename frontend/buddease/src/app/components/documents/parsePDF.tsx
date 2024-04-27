@@ -3,6 +3,7 @@ import { ParsedData } from "../crypto/parseData";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
 import { YourPDFType } from "./DocType";
+import { extractTextFromPDF } from "./DocumentGenerator";
 
 enum AppType {
   Web = "web",
@@ -128,10 +129,11 @@ function loadPDF(pdfFilePath: string): YourPDFType[] {
     return pdf;
 }
 // Function to parse PDF files and populate the pdfContent field in ParsedData objects
-// Function to parse PDF files and populate the pdfContent field in ParsedData objects
 function parsePDFData<T extends object>(
-  { pdfDataType, parsedData }: {
-    pdfDataType: YourPDFType[]; parsedData: ParsedData<T>[]
+  { pdfDataType, parsedData, appType }: {
+    pdfDataType: YourPDFType[];
+    parsedData: ParsedData<T>[];
+    appType?: AppType; // Make appType optional
   }): void {
   // Iterate through the PDF data and populate the pdfContent field in the corresponding ParsedData objects
   pdfDataType.forEach((pdf: YourPDFType) => {
@@ -153,23 +155,26 @@ function parsePDFData<T extends object>(
 }
 
 
+
   // Update parsePDF function call
-function parsePDF<T extends PDFData>(
-  pdfDataType: YourPDFType[],
+// Update parsePDF function call
+async function parsePDF<T extends PDFData>(
+  pdfData: string | Uint8Array,
   pdfFilePath: string,
-  appType: AppType,
-  parsedData: ParsedData<T>[]
-): PDFData {
+  parsedData: ParsedData<T>[],
+  pdfDataType: YourPDFType[],
+  appType?: AppType,
+): Promise<PDFData> {
   // Logic to load PDF data from the file using pdfFilePath
   const pdf = loadPDF(pdfFilePath);
   // Initialize pdfData here after loading from file
 
-  // Call parsePDF function with PDF data and parsed data
-  parsePDFData({ pdfDataType, parsedData });
+  // Extract text from PDF data using extractTextFromPDF function
+  const parsedContent = await extractTextFromPDF(pdfData);
 
-  return {} as PDFData; // Placeholder return value
+  return { pdfContent: parsedContent }; // Return the extracted PDF content
 }
-  
+
 
 // Function to extract content from a PDF file
 function extractPDFContent(pdf: YourPDFType): string {

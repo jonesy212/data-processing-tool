@@ -1,16 +1,18 @@
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
 import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
+import { Progress } from '../models/tracker/ProgressBar';
 export interface AsyncHook extends PhaseHookConfig {
   isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-  resetIdleTimeout: () => void;
+  resetIdleTimeout: () => Promise<void>;
   idleTimeoutId: NodeJS.Timeout | null;
   startAnimation: () => void;
   stopAnimation: () => void;
   animateIn: () => void;
   toggleActivation: (accessToken?: string | null | undefined) => void; // Make accessToken optional and nullable
   cleanup: (() => void) | undefined;
+  progress: Progress | null;
 }
 
 
@@ -28,7 +30,8 @@ export interface LibraryAsyncHook {
   }: {
     idleTimeoutId: any;
     startIdleTimeout: any;
-  }) => Promise<() => void>;
+    }) => Promise<() => void>;
+  
 }
 
 
@@ -108,4 +111,18 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
   };
 };
 
+
+
+
+const asyncHook: AsyncHook = {
+  enable: () => {},
+  disable: () => {},
+  condition: () => true,
+  idleTimeoutId: null,
+  startIdleTimeout: (timeoutDuration, onTimeout) => {},
+  asyncEffect: async () => {
+    // async logic
+    return () => {};
+  },
+};
 export default useAsyncHookLinker;

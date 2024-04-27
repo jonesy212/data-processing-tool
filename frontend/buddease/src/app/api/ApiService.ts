@@ -8,6 +8,7 @@ import useErrorHandling from "../components/hooks/useErrorHandling";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
 import { SupportedData } from "../components/models/CommonData";
 import { headersConfig } from "../components/shared/SharedHeaders";
+import { versionHistory } from "../components/versions/VersionData";
 import VersionGenerator from "../components/versions/VersionGenerator";
 import { backendConfig } from "../configs/BackendConfig";
 import { dataVersions } from "../configs/DataVersionsConfig";
@@ -105,7 +106,7 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
     const mockCacheData: CacheData = {
       _id: "",
       id: "",
-      lastUpdated: "2024-03-22T12:00:00", // Example last updated timestamp
+      lastUpdated:  versionHistory,
       userSettings: userSettings, // Example user settings object
       dataVersions: dataVersions, // Example data versions object
       frontendStructure: frontendStructure?.[0], // Example frontend structure object

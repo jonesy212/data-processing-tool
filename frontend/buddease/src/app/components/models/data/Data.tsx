@@ -5,6 +5,7 @@ import { Attachment } from "../../documents/Attachment/attachment";
 import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Phase } from "../../phases/Phase";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
@@ -18,7 +19,6 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Member } from "../teams/TeamMembers";
 import { ProjectPhaseTypeEnum } from "./StatusType";
-import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -39,7 +39,7 @@ interface DataDetails {
   // Use enums for status property
   phase?: Phase | null;
   fakeData?: FakeData;
-  comments?: (Comment | CustomComment)[];
+  comments?: (Comment | CustomComment)[] | undefined
   todos?: Todo[];
   analysisData?: {
     snapshots?: SnapshotStore<Snapshot<Data>>[];
@@ -76,7 +76,7 @@ export interface Comment {
   pinned?: boolean;
   // Consolidating upvotes into likes if they serve the same purpose
   postId?: string | number;
-  data?: string;
+  data?: Data | undefined;
   // Add other properties as needed
 }
 
@@ -103,7 +103,7 @@ interface Data {
   priority?: AllStatus
   assignee?: User
   collaborators?: string[];
-  comments?: (Comment | CustomComment)[];
+  comments?: (Comment | CustomComment)[] | undefined
   attachments?: Attachment[];
   subtasks?: Todo[];
 

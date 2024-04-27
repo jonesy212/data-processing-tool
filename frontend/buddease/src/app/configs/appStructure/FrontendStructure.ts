@@ -49,7 +49,7 @@ const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
 // Create frontend structure instance
-let frontendStructure: FrontendStructure | null = null;
+let frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
 
 // Check if 'fs' is available (only in server-side)
 if (typeof window === 'undefined') {

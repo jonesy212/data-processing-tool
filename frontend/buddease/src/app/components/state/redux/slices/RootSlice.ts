@@ -314,16 +314,10 @@ const rootReducerSlice = createSlice({
       // Handle the action for adding a task
       const newTaskId = uuidv4();
       const newTask: Task = {
-        _id: "newTaskId2",
         id: newTaskId,
         title: state.taskManager.taskTitle,
         description: state.taskManager.taskDescription,
         status: state.taskManager.taskStatus,
-        then: function (arg0: (newTask: any) => void): unknown {
-          arg0(newTask);
-          return newTask;
-          // You can add any further logic here if needed
-        },
         assignedTo: {} as WritableDraft<User>,
         dueDate: new Date(),
         priority: "medium",
@@ -335,48 +329,9 @@ const rootReducerSlice = createSlice({
         analysisResults: [],
         data: {} as VideoData & Data,
         source: "user",
-        some(
-          callbackfn: (value: Task, index: number, array: Task[]) => unknown,
-          thisArg?: any
-        ): boolean {
-          // Check if 'this' is an array
-          if (Array.isArray(this)) {
-            for (let i = 0; i < this.length; i++) {
-              if (callbackfn(this[i], i, this)) {
-                return true; // Return true if the callback returns true for any element
-              }
-            }
-            return false; // Return false if the callback returns false for all elements
-          } else {
-            throw new Error("'some' method can only be used on arrays.");
-          }
-        },
-        [Symbol.iterator](): IterableIterator<any> {
-          // Check if 'this' is an object
-          if (typeof this === "object" && this !== null) {
-            const taskKeys = Object.keys(this);
-            let index = 0;
-            return {
-              next: () => {
-                if (index < taskKeys.length) {
-                  const key = taskKeys[index++];
-                  return { value: this[key as keyof Task], done: false }; // Cast 'key' to keyof Task
-                } else {
-                  return { value: undefined, done: true };
-                }
-              },
-              [Symbol.iterator]: function () {
-                return this;
-              },
-            };
-          } else {
-            throw new Error("'Symbol.iterator' can only be used on objects.");
-          }
-        },
         phase: null,
         videoData: {} as VideoData,
         assigneeId: "",
-        payload: undefined,
         type: "addTask",
         startDate: new Date(),
         endDate: new Date(),
@@ -387,9 +342,9 @@ const rootReducerSlice = createSlice({
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";
-      state.taskManager.taskDescription = ""
-      state.taskManager.taskStatus = PriorityStatus.PendingReview
-      state.taskManager.priority = PriorityStatus.Medium
+      state.taskManager.taskDescription = "";
+      state.taskManager.taskStatus = PriorityStatus.PendingReview;
+      state.taskManager.priority = PriorityStatus.Medium;
       state.taskManager.dueDate = new Date();
     });
 
@@ -408,7 +363,7 @@ const rootReducerSlice = createSlice({
     // Add video-related actions
     builder.addCase(
       useVideoManagerSlice.actions.setVideos,
-      (state, action: PayloadAction<Video[]>) => {
+      (state, action: PayloadAction<WritableDraft<Video>[]>) => {
         state.videoManager.videos = action.payload;
       }
     );
@@ -464,7 +419,7 @@ const rootReducerSlice = createSlice({
 const rootReducer = combineReducers({
   root: rootReducerSlice.reducer,
   dataManager: useDataManagerSlice.reducer,
-  taskManager: taskManagerSlice.reducer,
+  taskManager: useTaskManagerSlice.reducer,
   trackerManager: trackerManagerSlice.reducer,
   userManager: userManagerSlice.reducer,
   dataAnalysisManager: useDataAnalysisManagerSlice.reducer,

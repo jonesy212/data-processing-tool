@@ -21,11 +21,8 @@ export const endpoints: Endpoints = {
     resetPassword: `${BASE_URL}/reset-password`,
     verifyEmail: `${BASE_URL}/verify-email`,
     resendVerificationEmail: `${BASE_URL}/resend-verification-email`,
-    
   },
-  database: {
-    
-  },
+  database: {},
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
@@ -43,6 +40,26 @@ export const endpoints: Endpoints = {
     updateRole: (userId: number) => `${BASE_URL}/users/${userId}/update-role`,
     updateRoles: (userIds: number[]) =>
       `${BASE_URL}/users/${userIds.join(",")}/update-roles`,
+  },
+
+  userSettings: {
+    getUserSettings: `${BASE_URL}/api/user-settings`, // Endpoint to get user settings
+    updateUserSettings: `${BASE_URL}/api/user-settings/update`, // Endpoint to update user settings
+    resetUserSettings: `${BASE_URL}/api/user-settings/reset`, // Endpoint to reset user settings
+    // Add more endpoints as needed
+
+    validateUserSettings: `${BASE_URL}/api/user-settings/validate`,
+    saveUserSettings: `${BASE_URL}/api/user-settings/save`,
+
+    getDefaultSettings: `${BASE_URL}/api/user-settings/default`,
+
+    backupUserSettings: `${BASE_URL}/api/user-settings/backup`,
+
+    restoreUserSettings: `${BASE_URL}/api/user-settings/restore`,
+
+    exportUserSettings: `${BASE_URL}/api/user-settings/export`,
+
+    importUserSettings: `${BASE_URL}/api/user-settings/import`,
   },
 
   userRoles: {
@@ -126,55 +143,53 @@ export const endpoints: Endpoints = {
     search: `${BASE_URL}/api/calendar/events/search`,
     eventDetails: (eventId: string) =>
       `${BASE_URL}/api/calendar/events/${eventId}/details`,
-     // Event Reminder
-  setEventReminder: `${BASE_URL}/api/calendar/events/set-reminder`,
+    // Event Reminder
+    setEventReminder: `${BASE_URL}/api/calendar/events/set-reminder`,
 
-  // Delete Event
-  deleteEvent: (eventId: string) =>
-    `${BASE_URL}/api/calendar/events/${eventId}/delete`,
+    // Delete Event
+    deleteEvent: (eventId: string) =>
+      `${BASE_URL}/api/calendar/events/${eventId}/delete`,
 
-  // Filter Events
-  filterEventsByCategory: `${BASE_URL}/api/calendar/events/filter-by-category`,
+    // Filter Events
+    filterEventsByCategory: `${BASE_URL}/api/calendar/events/filter-by-category`,
 
-  // Search Events
-  searchEvents: `${BASE_URL}/api/calendar/events/search`,
+    // Search Events
+    searchEvents: `${BASE_URL}/api/calendar/events/search`,
 
-  // Export Calendar
-  exportCalendar: `${BASE_URL}/api/calendar/export`,
+    // Export Calendar
+    exportCalendar: `${BASE_URL}/api/calendar/export`,
 
-  // Undo/Redo Actions
-  undoAction: `${BASE_URL}/api/calendar/undo`,
-  redoAction: `${BASE_URL}/api/calendar/redo`,
+    // Undo/Redo Actions
+    undoAction: `${BASE_URL}/api/calendar/undo`,
+    redoAction: `${BASE_URL}/api/calendar/redo`,
 
-  // View Event Details
-  viewEventDetails: (eventId: string) =>
-    `${BASE_URL}/api/calendar/events/${eventId}/details`,
+    // View Event Details
+    viewEventDetails: (eventId: string) =>
+      `${BASE_URL}/api/calendar/events/${eventId}/details`,
 
-  // Bulk Edit Events
-  bulkEditEvents: `${BASE_URL}/api/calendar/events/bulk-edit`,
+    // Bulk Edit Events
+    bulkEditEvents: `${BASE_URL}/api/calendar/events/bulk-edit`,
 
-  // Recurring Events
-  createRecurringEvent: `${BASE_URL}/api/calendar/events/create-recurring`,
+    // Recurring Events
+    createRecurringEvent: `${BASE_URL}/api/calendar/events/create-recurring`,
 
-  // Custom Event Notifications
-  setCustomEventNotifications: `${BASE_URL}/api/calendar/events/set-custom-notifications`,
+    // Custom Event Notifications
+    setCustomEventNotifications: `${BASE_URL}/api/calendar/events/set-custom-notifications`,
 
-  // Event Comments/Notes
-  addEventComment: `${BASE_URL}/api/calendar/events/add-comment`,
+    // Event Comments/Notes
+    addEventComment: `${BASE_URL}/api/calendar/events/add-comment`,
 
-  // Event Attachments
-  attachEventFile: `${BASE_URL}/api/calendar/events/attach-file`,
+    // Event Attachments
+    attachEventFile: `${BASE_URL}/api/calendar/events/attach-file`,
 
-  // Task Visibility
-  toggleShowTasks: `${BASE_URL}/api/calendar/toggle-show-tasks`,
-
+    // Task Visibility
+    toggleShowTasks: `${BASE_URL}/api/calendar/toggle-show-tasks`,
   },
   chat: {
     getThreads: `${BASE_URL}/api/chat/threads`,
     getMessages: `${BASE_URL}/api/chat/messages`,
     createThread: `${BASE_URL}/api/chat/threads`,
     addMessage: `${BASE_URL}/api/chat/messages`,
-
   },
 
   client: {
@@ -216,8 +231,7 @@ export const endpoints: Endpoints = {
     list: `${BASE_URL}/api/dev/mocks`,
     create: `${BASE_URL}/api/dev/mocks`,
     delete: `${BASE_URL}/api/dev/mocks/delete`,
-    update: `${BASE_URL}/api/dev/mocks/update`
-
+    update: `${BASE_URL}/api/dev/mocks/update`,
   },
 
   documents: {
@@ -659,7 +673,6 @@ export const endpoints: Endpoints = {
     get: `${BASE_URL}/api/messages/web/get`,
     update: `${BASE_URL}/api/messages/web/update`,
     delete: `${BASE_URL}/api/messages/web/delete`,
-    
   },
   payment: {
     initiatePayment: `${BASE_URL}/api/payment/initiate`, // Endpoint for initiating a payment transaction
@@ -971,7 +984,8 @@ export const endpoints: Endpoints = {
     fetchTeamData: (teamId: number) => `${BASE_URL}/api/teams/${teamId}/data`,
     remove: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
     update: (teamId: number) => `${BASE_URL}/api/teams/${teamId}`,
-    updateTeams: (teamIds: number[]) => `${BASE_URL}/api/teams/${teamIds.join(",")}`,
+    updateTeams: (teamIds: number[]) =>
+      `${BASE_URL}/api/teams/${teamIds.join(",")}`,
     // Add other team-related endpoints as needed
   },
 
@@ -1066,7 +1080,8 @@ export const endpoints: Endpoints = {
   screenSharing: {
     startSession: `${BASE_URL}/api/screen-sharing/start-session`,
     endSession: `${BASE_URL}/api/screen-sharing/end-session`,
-    getSessionDetails: (sessionId: string) =>`${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
+    getSessionDetails: (sessionId: string) =>
+      `${BASE_URL}/api/screen-sharing/session-details/${sessionId}`,
   },
 
   dataAnalysis: {
@@ -1114,7 +1129,8 @@ export const endpoints: Endpoints = {
 
   moderators: {
     list: `${BASE_URL}/api/moderators`,
-    single: (moderatorId: number) =>`${BASE_URL}/api/moderators/${moderatorId}`,
+    single: (moderatorId: number) =>
+      `${BASE_URL}/api/moderators/${moderatorId}`,
     manageCommunity: `${BASE_URL}/api/moderators/manage-community`,
     moderateContent: `${BASE_URL}/api/moderators/moderate-content`,
     participateInDecisions: `${BASE_URL}/api/moderators/participate-decisions`,
@@ -1124,12 +1140,18 @@ export const endpoints: Endpoints = {
   monetization: {
     startClientProject: `${BASE_URL}/api/monetization/start-client-project`,
     getClientProjects: `${BASE_URL}/api/monetization/client-projects`,
-    getClientProjectDetails: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    updateClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    deleteClientProject: (projectId: string) => `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    sendGift: (userId: string, giftId: string) => `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
-    getReceivedGifts: (userId: string) => `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
-    redeemGift: (giftId: string) => `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
+    getClientProjectDetails: (projectId: string) =>
+      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    updateClientProject: (projectId: string) =>
+      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    deleteClientProject: (projectId: string) =>
+      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
+    sendGift: (userId: string, giftId: string) =>
+      `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
+    getReceivedGifts: (userId: string) =>
+      `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
+    redeemGift: (giftId: string) =>
+      `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
   },
 
   toolbar: {

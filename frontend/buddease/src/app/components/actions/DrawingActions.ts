@@ -2,6 +2,10 @@
 import { createAction } from "@reduxjs/toolkit";
 
 export const DrawingActions = {
+
+  performDrawingActions: createAction<string | null>(
+    "drawing/performDrawingActions"
+  ),
   // Drawing operations
   startDrawing: createAction<React.MouseEvent<HTMLCanvasElement, MouseEvent>>("startDrawing"),
   stopDrawing: createAction<void>("stopDrawing"),

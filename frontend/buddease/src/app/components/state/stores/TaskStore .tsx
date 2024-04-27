@@ -5,7 +5,7 @@ import { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
-import { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
   useNotification,
@@ -27,6 +27,8 @@ import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
   taskTitle: string;
+  taskId: string;
+
   taskDescription: string;
   taskStatus: "pending" | "inProgress" | "completed";
 
@@ -145,11 +147,20 @@ const useTaskManagerStore = (): TaskManagerStore => {
         setAssignedTaskStore(payload);
     }
 
+    // Ensure taskId is defined
+    const taskId: string = "someTaskId"; // or get it from somewhere dynamically
 
-    taskStore.setAssignedTaskStore ({
+    // Assuming assignedTaskStore is an object
+    const reassignedTasks = ["task1", "task2", "task3"];
+
+    const snapshotStore: SnapshotStore = useSnapshotStore();
+    // Assign reassignedTasks to assignedTaskStore using taskId as key
+    // Assuming taskStore is an instance of a class or an object that has a method named setAssignedTaskStore
+    taskStore.setAssignedTaskStore({
       ...assignedTaskStore,
       [taskId]: reassignedTasks,
     });
+
     // Method to reassign a task to a new user
     const reassignTask = (
       taskId: string,
@@ -167,6 +178,8 @@ const useTaskManagerStore = (): TaskManagerStore => {
       setAssignedTaskStore({
         ...assignedTaskStore,
         [taskId]: reassignedTasks,
+        task: undefined,
+        assignee: ""
       });
 
       setDynamicNotificationMessage(
@@ -189,6 +202,8 @@ const useTaskManagerStore = (): TaskManagerStore => {
       setAssignedTaskStore({
         ...assignedTaskStore,
         [taskId]: reassignedTasks,
+        task: undefined,
+        assignee: ""
       });
     };
 
@@ -497,6 +512,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
   const markTaskAsInProgress =
     (taskId: string, requestData: string) => async (dispatch: any) => {
+      const taskToUpdate = tasks[taskId];
       try {
         // Update task status to in progress
         // Assuming setTasks is a local state updater
@@ -513,12 +529,16 @@ const useTaskManagerStore = (): TaskManagerStore => {
       }
       dispatch(
         TaskActions.markTaskAsInProgressSuccess({
-          taskId: taskToUpdate,
+          taskId: {
+            taskId: taskId,
+            requestData: requestData,
+            ...tasks
+          },
           requestData,
         })
       );
       const { markTaskAsInProgress } = useTaskManagerSlice.actions;
-      markTaskAsInProgress(taskToUpdate);
+      markTaskAsInProgress(String(taskToUpdate));
       // Simulating asynchronous operation
       setTimeout(() => {
         notify(
@@ -565,12 +585,9 @@ const useTaskManagerStore = (): TaskManagerStore => {
     // Convert tasks data to CSV format
     const tasksCSV = tasksDataSourceToCSV(tasksDataSource);
 
-    // Download CSV file
-    downloadCSVFile(tasksCSV, "tasks.csv");
-    // Download CSV file as a blob
     const downloadCSVFile = (data: any, filename: any) => {
       const blob = new Blob([data], { type: "text/csv" });
-
+      
       // Check if the property exists before accessing it
       if ((window.navigator as any).msSaveOrOpenBlob) {
         (window.navigator as any).msSaveBlob(blob, filename);
@@ -578,6 +595,9 @@ const useTaskManagerStore = (): TaskManagerStore => {
       } else {
         saveAs(blob, filename);
       }
+      // Download CSV file
+      downloadCSVFile(tasksCSV, "tasks.csv");
+      // Download CSV file as a blob
     };
   };
 

@@ -1,11 +1,10 @@
 // projects/ProjectActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import Milestone from "../calendar/CalendarSlice";
-import { ProjectDetails } from "../models/data";
 import { Task } from "../models/tasks/Task";
 import { Phase } from "../phases/Phase";
 import { Product } from "../products/Product";
-import { Project } from "../projects/Project";
+import { Project, ProjectDetails } from "../projects/Project";
 import { User } from "../users/User";
 
 export const ProjectActions = {
@@ -16,6 +15,7 @@ export const ProjectActions = {
   updateProjectSuccess: createAction<{ project: Project }>("updateProjectSuccess"),
   updateProjectFailure: createAction<{ error: string }>("updateProjectFailure"), 
   
+  performProjectActions: createAction<string | null>("performProjectActions"),
   assignedTeams: createAction<string, string>("assignedTeams"),
   deleteProjectSuccess: createAction<{projectId: string, project: Project}>("deleteProjectSuccess"),
   deleteProjectFailure: createAction<{ error: string }>("deleteProjectFailure"),
@@ -37,24 +37,48 @@ export const ProjectActions = {
     "fetchProjectsSuccess"
     ),
 
-  updateUIWithProjectDetails: createAction<{projectId: string, projectDetails: ProjectDetails}>("updateUIWithProjectDetails"),
+    
+    fetchProjectsFailure: createAction<{ error: string }>("fetchProjectsFailure"),
+    
+    
+    fetchProjectDetails: createAction<{projectId: string, project: Project, projectDetails: ProjectDetails }>("fetchProjectDetails"),
+    fetchProjectDetailsSuccess: createAction<{ project: Project }>("fetchProjectDetailsSuccess"),
+    fetchProjectDetailsFailure: createAction<{ error: string }>("fetchProjectDetailsFailure"),
+  updateUIWithProjectDetails: createAction<{payload: {
+    projectId: string, project: Project, projectDetails:  ProjectDetails
+  }, type: any}>("updateUIWithProjectDetails"),
+    updateProject: createAction<{ 
+      projectId: string;
+      project: Project;
+      type: string;
+    }>("updateProject"),
+    
 
-  fetchProjectsFailure: createAction<{ error: string }>("fetchProjectsFailure"),
+    
+    // Associated entities actions
+  checkProjectCompletion: createAction<{ projectId: string, project: Project }>("checkProjectCompletion"),
+  updateProjectCompletion: createAction<{ projectId: string, completion: number }>("updateProjectCompletion"),
+  updateProjectPending: createAction<{ projectId: string, pending: boolean }>( "updateProjectPending"),
+
+
+
+
+
+
+
+    // Batch actions for fetching
+    batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),
+    batchFetchProjectsSuccess: createAction<{ projects: Project[] }>(
+      "batchFetchProjectsSuccess"
+    ),
+    batchFetchProjectsFailure: createAction<{ error: string }>(
+      "batchFetchProjectsFailure"
+    ),
   
-
-  fetchProjectDetails: createAction<{projectId: string, project: Project, details: ProjectDetails }>("fetchProjectDetails"),
-  fetchProjectDetailsSuccess: createAction<{ project: Project }>("fetchProjectDetailsSuccess"),
-  fetchProjectDetailsFailure: createAction<{ error: string }>("fetchProjectDetailsFailure"),
   
-  // Batch actions for fetching
-  batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),
-  batchFetchProjectsSuccess: createAction<{ projects: Project[] }>(
-    "batchFetchProjectsSuccess"
-  ),
-  batchFetchProjectsFailure: createAction<{ error: string }>(
-    "batchFetchProjectsFailure"
-  ),
-
+  
+  
+  
   // Batch actions for updating
   batchUpdateProjectsRequest: createAction<{
     ids: number[];
@@ -63,6 +87,16 @@ export const ProjectActions = {
   batchUpdateProjectsSuccess: createAction<{ projects: Project[] }>(
     "batchUpdateProjectsSuccess"
   ),
+
+
+  generateExecutiveSummaryContent: createAction<{ projectId: string, executiveSummaryContent: string }>("generateExecutiveSummaryContent"),
+  updateExecutiveSummary: createAction<{ projectId: string, executiveSummaryContent: string }>("updateExecutiveSummary"),
+  shareExcecutiveSummary: createAction<{ projectId: string, recipients: string[] }>("shareExcecutiveSummary"),
+  removeExecutiveSummary: createAction<{ projectId: string }>("removeExecutiveSummary"),
+
+  
+
+
   batchUpdateProjectsFailure: createAction<{ error: string }>(
     "batchUpdateProjectsFailure"
   ),

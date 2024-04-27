@@ -11,7 +11,7 @@ import {
   saveDocumentToDatabase,
 } from "@/app/configs/database/updateDocumentInDatabase";
 import { generateDiagram } from "@/app/generators/diagramGenerationLibrary";
-import { } from "@faker-js/faker";
+import {} from "@faker-js/faker";
 import Docxtemplater from "docxtemplater";
 import { DrawingFunctions, DrawingOptions } from "drawingLibrary";
 import fs from "fs";
@@ -44,14 +44,15 @@ import { ParsedData, parsedData } from "../crypto/parseData";
 import { PDFDocument, PDFPage } from "pdf-lib";
 
 import { YourPDFType } from "./DocType";
+import { parseDocx } from "./parseDocx";
+import { generateExecutiveSummaryContent } from "@/app/generators/generateDevConfigurationSummaryContent";
+import { VersionData } from "../versions/VersionData";
 var xl = require("excel4node");
 
 const { handleError } = useErrorHandling();
 interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip>, DocumentData {
   load(content: any): void;
 }
-
-
 
 // Extend the PDFPage type to include the getText method
 interface CustomPDFPage extends PDFPage {
@@ -127,7 +128,6 @@ const documents: Document[] = [
 
 // // Add the namespace declaration for DXT if it's not already imported
 // declare namespace DXT {import { fs } from 'fs';
-import { PDFDocument } from 'pdf-lib';
 
 //   // todo
 //   // Define your types here...
@@ -152,9 +152,8 @@ function loadTextDocumentContent(document: DocumentData): string {
 }
 
 async function loadDiagramDocumentContent(
-  
   documentId: number,
-   dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentData>) => void
 ): Promise<string> {
   // Adjust the return type to match expected type
   let parsedContent: any; // Declare parsedContent variable here
@@ -162,7 +161,6 @@ async function loadDiagramDocumentContent(
   try {
     // Fetch the document data
     const document = await fetchDocumentByIdAPI(documentId, dataCallback);
-
 
     // Validate the document format
     const format = document.format.toLowerCase();
@@ -245,10 +243,8 @@ async function loadPresentationDocumentContent(
 async function loadDraftDocumentContent(
   config: DatabaseConfig,
   draftId: string
-  
-): Promise<string> { 
+): Promise<string> {
   try {
-
     // Logic to load draft document content
     const draft = await loadDraftFromDatabase(config, draftId);
 
@@ -257,7 +253,6 @@ async function loadDraftDocumentContent(
 
     // Return draft JSON as string
     return JSON.stringify(draftJSON);
-
   } catch (error) {
     console.error("Error loading draft document content:", error);
     // handle error appropriately
@@ -265,22 +260,22 @@ async function loadDraftDocumentContent(
   }
 }
 
-
 async function loadGenericDocumentContent(
   documentId: DocumentData,
   format: string,
   dataCallback: (data: WritableDraft<DocumentData>) => void
-
 ): Promise<string> {
   let parsedContent: any;
 
   try {
-
     // Logic to fetch document data
-    const document = await fetchDocumentByIdAPI(Number(documentId), dataCallback);
+    const document = await fetchDocumentByIdAPI(
+      Number(documentId),
+      dataCallback
+    );
 
     // Validate format
-    const allowedFormats = ['pdf', 'docx', 'xlsx']; // Define allowedFormats array
+    const allowedFormats = ["pdf", "docx", "xlsx"]; // Define allowedFormats array
     if (!allowedFormats.includes(format)) {
       throw new Error(`Unsupported format: ${format}`);
     }
@@ -291,21 +286,23 @@ async function loadGenericDocumentContent(
   return JSON.stringify(parsedContent);
 }
 
-
-
-
 // Update the extractTextFromPDF function to use CustomPDFPage instead of PDFPage
-async function extractTextFromPDF(pdfString: string): Promise<string> {
+async function extractTextFromPDF(
+  pdfString: string | Uint8Array
+): Promise<string> {
   try {
-    // Load the PDF from the provided string
-    const pdfBytes = Uint8Array.from(atob(pdfString), c => c.charCodeAt(0));
+    // Load the PDF from the provided string or Uint8Array
+    const pdfBytes =
+      typeof pdfString === "string"
+        ? Uint8Array.from(atob(pdfString), (c) => c.charCodeAt(0))
+        : pdfString;
     const pdfDoc = await PDFDocument.load(pdfBytes);
-    
+
     // Extract text from each page of the PDF
-    let text = '';
+    let text = "";
     const numPages = pdfDoc.getPageCount();
     for (let i = 0; i < numPages; i++) {
-      const page = await pdfDoc.getPage(i) as CustomPDFPage; // Cast to CustomPDFPage
+      const page = (await pdfDoc.getPage(i)) as CustomPDFPage; // Cast to CustomPDFPage
       const pageText = await page.getText();
       text += pageText;
     }
@@ -318,64 +315,133 @@ async function extractTextFromPDF(pdfString: string): Promise<string> {
 }
 
 async function loadDocumentContentFromDatabase(
-
-  pdfType: YourPDFType,[],
-  pdfData: PDFData[],
+  pdfType: YourPDFType,
+  [],
+  pdfData: string | Uint8Array,
   pdfFilePath: string,
+  parsedData: ParsedData<PDFData>[],
+  pdfDataType: YourPDFType[],
   appType: AppType,
   documentId: number,
   format: string,
-  parsedData: ParsedData<PDFData>[],
   dataCallback: (data: WritableDraft<DocumentData>) => void
 ): Promise<string> {
   let parsedContent: any;
 
   try {
-
     // Logic to fetch document data
     const document = await fetchDocumentByIdAPI(documentId, dataCallback);
 
     // Validate format
-    const allowedFormats = ['pdf', 'docx', 'xlsx', 'json'];
+    const allowedFormats = ["pdf", "docx", "xlsx", "json", "txt", "csv", "md", "html", "jpeg", "png", "gif", "mp3", "wav", "mp4", "avi", "xml", "yaml", "pptx", "dwg", "dxf", "shp", "geojson", "sql"];
+
+
     if (!allowedFormats.includes(format)) {
       throw new Error(`Unsupported format: ${format}`);
     }
     // Logic to parse document content based on format
     switch (format) {
       case "pdf":
-
-        parsedContent = parsePDF(pdfData, pdfFilePath, appType, parsedData);
+        parsedContent = await extractTextFromPDF(pdfData);
         break;
       case "docx":
-        parsedContent = parseDocx(document.content);
+        const docxFilePath = document.filePath;
+        parsedContent = parseDocx(docxFilePath, parsedData);
         break;
       case "xlsx":
         parsedContent = parseExcel(document.content);
         break;
-      case 'json':
+      case "json":
         parsedContent = JSON.parse(document.content);
+      // Add support for additional formats here
+      // TODO: Add support for TXT, CSV, Markdown, HTML, Image formats, Audio formats, Video formats,
+      // Binary data, JSON, XML, YAML, DOCX, XLSX, PPTX, CAD files, GIS files, Database dump files
+      case "txt":
+        // Logic to parse plain text content
+        break;
+      case "csv":
+        // Logic to parse CSV content
+        break;
+      case "md":
+        // Logic to parse Markdown content
+        break;
+      case "html":
+        // Logic to parse HTML content
+        break;
+      case "jpeg":
+      case "png":
+      case "gif":
+        // Logic to parse image content
+        break;
+      case "mp3":
+      case "wav":
+        // Logic to parse audio content
+        break;
+      case "mp4":
+      case "avi":
+        // Logic to parse video content
+        break;
+      case "json":
+        // Logic to parse JSON content
+        break;
+      case "xml":
+        // Logic to parse XML content
+        break;
+      case "yaml":
+        // Logic to parse YAML content
+        break;
+      case "pptx":
+        // Logic to parse PowerPoint content
+        break;
+      case "dwg":
+      case "dxf":
+        // Logic to parse CAD file content
+        break;
+      case "shp":
+      case "geojson":
+        // Logic to parse GIS file content
+        break;
+      case "sql":
+        // Logic to parse SQL dump file content
+        break;
       default:
         throw new Error(`Unsupported format: ${format}`);
     }
-
-  } catch(error) {
+  } catch (error) {
     console.error("Error parsing document content", error);
     throw error;
   }
   return "";
 }
 
-
 async function loadOtherDocumentContent(
   documentId: number,
-   format: string,
+  format: string,
   dataCallback: (data: WritableDraft<DocumentData>) => void
 ): Promise<string> {
   try {
     // Logic to load other document content
-    const documentContent = await loadDocumentContentFromDatabase(
+    const document = await fetchDocumentByIdAPI(
       Number(documentId),
-       format,
+      dataCallback
+    );
+    const pdfFilePath = document.filePath;
+    const pdfDataType = document.type;
+    const parsedData = document.parsedData;
+    const appType = document.appType;
+
+    const pdfData = document.content;
+    const pdfType = document.type;
+    const documentContent = await loadDocumentContentFromDatabase(
+      pdfType,
+      pdfData,
+      pdfData,
+      pdfFilePath,
+      parsedData,
+      pdfDataType,
+      appType,
+      documentId,
+      format,
       dataCallback
     );
 
@@ -468,14 +534,14 @@ function loadSpreadsheetDocumentContent(document: DocumentData): string {
   return workbook.xlsx();
 }
 
-// Define the allowed diagram formats
-  const allowedDiagramFormats = [
-    "json",
-    "xml",
-    "csv",
-    "xls",
-    "xlsx"
-  ]; // Updated list of allowed diagram formats
+// // Define the allowed diagram formats
+//   const allowedDiagramFormats = [
+//     "json",
+//     "xml",
+//     "csv",
+//     "xls",
+//     "xlsx"
+//   ]; // Updated list of allowed diagram formats
 
 class DocumentGenerator {
   createTextDocument(
@@ -511,11 +577,10 @@ class DocumentGenerator {
     docx?: CustomDocxtemplater<any>,
     config?: DatabaseConfig,
     documentId?: number,
-    formData?: FormData,
+    formData?: FormData
   ): Promise<string | undefined> {
     if (config && draftId) {
       switch (document.type) {
-     
         case DocumentTypeEnum.Text:
           // Logic to load content for a text document
           return loadTextDocumentContent(document);
@@ -525,7 +590,10 @@ class DocumentGenerator {
           return loadSpreadsheetDocumentContent(document);
         case DocumentTypeEnum.Diagram:
           // Logic to load content for a diagram document
-          return await loadDiagramDocumentContent(Number(document), dataCallback);
+          return await loadDiagramDocumentContent(
+            Number(document),
+            dataCallback
+          );
         case DocumentTypeEnum.CalendarEvents:
           // Logic to load content for a calendar events document
           return loadCalendarEventsDocumentContent(Number(document));
@@ -553,7 +621,11 @@ class DocumentGenerator {
           return loadGenericDocumentContent(document, format, dataCallback);
         case DocumentTypeEnum.Other:
           // Logic to load content for another type of document
-          return loadOtherDocumentContent(Number(documentId), format, dataCallback);
+          return loadOtherDocumentContent(
+            Number(documentId),
+            format,
+            dataCallback
+          );
         // case DocumentTypeEnum.FinancialReport:
         //   // Logic to load content for a financial report document
         //   return loadFinancialReportDocumentContent(document);
@@ -658,7 +730,7 @@ class DocumentGenerator {
     documentPath: DocumentPath,
     newContent: CustomDocxtemplater<any>,
     dataCallback: (data: WritableDraft<DocumentPath>) => void,
-    format: FormatEnum,
+    format: FormatEnum
   ): string {
     // Real-world logic to manage existing documents
     try {
@@ -668,7 +740,7 @@ class DocumentGenerator {
         documentPath,
         newContent,
         dataCallback,
-        format,
+        format
       );
 
       // Perform actions on the existing document content (e.g., append, modify, etc.)
@@ -696,10 +768,14 @@ class DocumentGenerator {
     return new Promise<string>((resolve, reject) => {
       try {
         // Load the content of the document to export
-        this.loadDocumentContent(documentId, documentPath,
+        this.loadDocumentContent(
+          documentId,
+          documentPath,
           exportPath,
           dataCallback,
-          format, docx)
+          format,
+          docx
+        )
           .then((fileContent: string | undefined) => {
             if (fileContent !== undefined) {
               // Save the content to the export path
@@ -869,9 +945,9 @@ class DocumentGenerator {
       default:
         throw new Error(`Unsupported document type: ${type}`);
     }
-  },  
+  }
 
-  createExecutiveSummary(options: DocumentOptions): string { 
+  createExecutiveSummary(options: DocumentOptions): string {
     // Logic to generate executive summary
     const executiveSummaryContent = generateExecutiveSummaryContent(options);
     // Write the executive summary content to a file
@@ -882,6 +958,5 @@ class DocumentGenerator {
 }
 
 export default DocumentGenerator;
-export { DocumentStatusEnum, DocumentTypeEnum };
+export { DocumentStatusEnum, DocumentTypeEnum, extractTextFromPDF };
 export type { DocumentPath, CustomDocxtemplater };
-

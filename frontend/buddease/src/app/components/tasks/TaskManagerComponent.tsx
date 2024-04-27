@@ -1,8 +1,13 @@
 // TaskManagerComponent.tsx
+import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import { fetchTasks, updateTask } from "@/app/api/TasksApi";
+import { ProjectDetails } from "@/app/components/projects/Project";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { ProjectActions } from "../actions/ProjectActions";
+import { UIActions } from "../actions/UIActions";
+import updateUI from "../documents/editing/updateUI";
 import ContentRenderer from "../libraries/ui/ContentRenderer";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { Data } from "../models/data/Data";
@@ -10,7 +15,9 @@ import { PriorityStatus, StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+import { Project } from "../projects/Project";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
 import TaskProgress from "../projects/projectManagement/TaskProgress";
 import TeamProgress from "../projects/projectManagement/TeamProgress";
@@ -21,14 +28,9 @@ import { rootStores } from "../state/stores/RootStores";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTrackerStore from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
+import { todoService } from "../todos/TodoService";
 import { VideoData } from "../video/Video";
 import TaskAssignmentSnapshot from "./TaskAssignmentSnapshot";
-import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
-import TaskList from "../lists/TaskList";
-import { ProjectActions } from "../actions/ProjectActions";
-import { Project } from "../projects/Project";
-import updateUI from "../documents/editing/updateUI";
-import { ProjectDetails } from '@/app/components/projects/Project';
 
 interface TaskAssignmentProps {
   taskId: () => string;
@@ -249,9 +251,14 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
         todo._id === todoId
           ? {
               ...todo,
-              progress: { value: newProgress, label: todo.progress?.label || '' },
+              progress: {
+                value: newProgress,
+                label: todo.progress?.label || "",
+                id: todo.progress?.id || "",
+              },
             }
-          : todo)
+          : todo
+      )
     );
   };
 
@@ -302,14 +309,21 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     }
   };
 
+
   // Define handleTodoClick with the correct signature
-  const handleTodoClick = async (todoId: Todo) => {
+  const handleTodoClick = async (todoId: Todo['id']) => {
     try {
       // Assuming you have a function to fetch the todo details based on its ID
-      const todoDetails = await fetchTodoDetails(todoId);
+      const todoDetails = await todoService.fetchTodoDetails(todoId);
 
       // Assuming you have a function to update the UI or perform any other action
-      updateUIWithTodoDetails(todoDetails);
+      UIActions.updateUIWithTodoDetails({
+        todoId: todoId,
+        todoDetails: {
+          title: todoDetails.title,
+          description: todoDetails.description,
+        },
+      });
 
       // Log a message to the console
       console.log(`Todo clicked: ${todoId}`);
@@ -318,48 +332,69 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     }
   };
 
-  const updateUIWithProjectDetails = async (projectId: { projectId: string; project: Project; details: typeof ProjectDetails; }) => {
+  const updateUIWithProjectDetails = async (projectId: {
+    projectId: string;
+    project: Project;
+    projectDetails:  ProjectDetails;
+  }) => {
     // Update UI with project details
     const projectDetails = ProjectActions.fetchProjectDetails(projectId);
     updateUI(projectDetails);
-
   };
 
-  const handleProjectClick = async (projectId: { projectId: string; project: Project; details: typeof ProjectDetails; },
-    type: string) => {
+  const handleProjectClick = async (
+    projectId: {
+      projectId: string;
+      project: Project;
+      projectDetails: ProjectDetails;
+      completion: number;
+      pending: boolean;
+    },
+    type: string
+  ) => {
     try {
       // Call API to update project
-      await updateProject(Number(projectId.projectId), { type });
-      // Optimistically update local project data
+      ProjectActions.updateProject({
+        projectId: projectId.projectId,
+        project: projectId.project,
+        type: type,
+      }); // Optimistically update local project data
       updateUIWithProjectDetails(projectId);
       // Additional use case: Optimistically check project completion
-      if (updatedFields.done !== undefined) {
-        updateUIWithProjectDetails((prevProjectDetails) =>
-          prevProjectDetails.map((projectDetail) =>
-            projectDetail.projectId === projectId.projectId && updatedFields.done
-              ? { ...projectDetail, done: true }
-              : projectDetail
-          )
-        );
+      if (projectId.project.done !== undefined) {
+        // Assuming done is a property of project
+        // Map over the previous project details array and update the done property for the matching projectId
+        updateUIWithProjectDetails({
+          projectId: projectId.projectId,
+          project: projectId.project,
+          projectDetails: projectId.projectDetails,
+        });
+      }
 
-        // Call function to check project completion asynchronously
-        await checkProjectCompletion(projectId);
-        if (type === "complete") {
-          // Mark project as complete
-          ProjectActions.updateProjectCompletion(projectId);
-        }
+      // Call function to check project completion asynchronously
+      ProjectActions.checkProjectCompletion(projectId);
+      if (type === "complete") {
+        // Mark project as complete
+        ProjectActions.updateProjectCompletion(projectId);
+      }
+      if (type === "pending") {
+        // Mark project as pending
+        ProjectActions.updateProjectPending(projectId);
+      }
+
       // Assuming you have a function to fetch the project details based on its ID
-        const projectDetails = await ProjectActions.fetchProjectDetails(projectId);
-        const { project, details } = projectDetails;
-      // Assuming you have a function to update the UI or perform any other action
-      ProjectActions.updateUIWithProjectDetails(projectDetails);
+      const updatedProjectDetails =   ProjectActions.fetchProjectDetails(
+        projectId
+      );
+
+      // Update UI with updated project details
+      ProjectActions.updateUIWithProjectDetails(updatedProjectDetails);
       // Log a message to the console
-      console.log(`Project clicked: ${projectId}`);
-      // Assuming you have a function to fetch project details based on its ID
+      console.log(`Project details updated: ${projectId.projectId}`);
     } catch (error: any) {
       console.error("Error fetching project details:", error);
     }
-  }
+  };
   // Function to fetch todo details from the server
   const fetchTodoDetails = async (todoId: Todo) => {
     // Simulated fetch operation, replace this with your actual API call
@@ -406,11 +441,16 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
 
   // Function to update the UI with task details
   const updateUIWithTaskDetails = (taskDetails: any) => {
-    // Assuming you have logic to update the UI with task details
-    // For example:
-    // document.getElementById("taskTitle").innerText = taskDetails.title;
-    // document.getElementById("taskDescription").innerText = taskDetails.description;
-    // Update UI as per your application's requirements
+    const taskTitleElement = document.getElementById("taskTitle");
+    const taskDescriptionElement = document.getElementById("taskDescription");
+
+    if (taskTitleElement && taskDescriptionElement) {
+      taskTitleElement.innerText = taskDetails.title;
+      taskDescriptionElement.innerText = taskDetails.description;
+    }
+    UIActions.updateUI();
+    // Return null if elements not found
+    return;
   };
 
   // Component-specific logic using localState
@@ -423,6 +463,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       id: "milestone1",
       title: "Project Kickoff",
       date: new Date(),
+      dueDate: new Date("2024-03-21"),
       description: "Initiating the project",
     };
     dispatch(createMilestone(milestoneData));
@@ -430,7 +471,10 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
 
   useEffect(() => {
     // Update global state when local state changes
-    taskManagerStore.updateTaskTitle(taskManagerStore.taskTitle);
+    taskManagerStore.updateTaskTitle(
+      taskManagerStore.taskId,
+      taskManagerStore.taskTitle,
+    );
   }, [localState, taskManagerStore]);
 
   return (

@@ -1,13 +1,13 @@
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { FC } from "react";
 import { Lesson } from "../documents/CourseBuilder";
+import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
-import { DetailsItem } from "../state/stores/DetailsListStore";
-import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import { Progress } from "../models/tracker/ProgressBar";
+import { DetailsItem } from "../state/stores/DetailsListStore";
 
 // Define a type for a phase
 export interface Phase extends CommonData<Data> {
@@ -17,10 +17,10 @@ export interface Phase extends CommonData<Data> {
   subPhases: string[];
   component: React.FC;
   hooks: CustomPhaseHooks;
-  lessons: Lesson[];
-  duration: number; // Duration of the phase in seconds
-  tasks?: Task[]
-  members?: Member[]
+  lessons?: Lesson[];
+  duration: number;
+  tasks?: Task[];
+  members?: Member[];
 }
 
 export class PhaseImpl implements Phase {
@@ -94,10 +94,26 @@ export class PhaseImpl implements Phase {
 
 export interface CustomPhaseHooks {
   [x: string]: any;
-  canTransitionTo: (nextPhase: Phase) => boolean;
-  handleTransitionTo: (nextPhase: Phase) => void;
+  canTransitionTo?: (nextPhase: Phase) => boolean;
+  handleTransitionTo?: (nextPhase: Phase) => void;
   resetIdleTimeout: () => Promise<void>;
   isActive: boolean;
-  progress: Progress
+  progress: Progress | null
   // Add other methods if needed
+}
+
+
+export const customPhaseHooks = {
+  canTransitionTo: (nextPhase: Phase) => {
+    // custom transition logic
+    return true;
+  },
+  handleTransitionTo: async (nextPhase: Phase) => {
+    // custom transition handling
+    await Promise.resolve();
+  },
+  resetIdleTimeout: async () => {
+    // reset idle timeout
+    await Promise.resolve();
+  }
 }

@@ -90,8 +90,8 @@ const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
           useTodoManagerStore().addTodo(todo);
         break;
       case "Manage Todos":
-        const todoId = useTodoManagerStore().getTodoId
-        const teamId = useTeamManagerStore().getTeamId
+        const todoId = (await useTodoManagerStore()).getTodoId
+        const teamId = (await useTeamManagerStore()).getTeamId
         // Call MobX action to manage todo settings or preferences
         useTodoManagerStore().openTodoSettingsPage(todoId as unknown as number, teamId as unknown as number);
         break;

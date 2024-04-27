@@ -1,10 +1,11 @@
 // ContentRenderer.tsx
+import { Project, ProjectDetails } from "@/app/components/projects/Project";
 import React from "react";
+import { StatusType } from "../../models/data/StatusType";
 import { Task } from "../../models/tasks/Task";
-import { isProject, isTask } from "./ContentHelpers";
 import { Todo } from "../../todos/Todo";
-import { Project } from '@/app/components/projects/Project';
-
+import { isProject, isTask } from "./ContentHelpers";
+ 
 interface ButtonProps {
   label: string;
 }
@@ -24,8 +25,17 @@ interface EntityProps {
 interface ContentRendererProps {
   dynamicContent?: Task[] | Project[]; // Union type of Task[] or Project[]
   handleTaskClick: (task: Task) => void;
-  handleTodoClick: (todo: Todo) => void;
-  handleProjectClick: (project: Project) => void;
+  handleTodoClick: (todoId: Todo["id"]) => Promise<void>;
+  handleProjectClick: (
+    project: {
+      projectId: string;
+      project: Project;
+      projectDetails: ProjectDetails;
+      completion: number;
+      pending: boolean;
+    },
+    type: string
+  ) => Promise<void>;
   entity?: EntityProps; // Add EntityProps as a prop
   button?: ButtonProps;
   card?: CardProps;
@@ -46,29 +56,34 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
         ? renderDynamicContent(
             dynamicContent,
             handleTaskClick,
-            handleProjectClick
+            handleProjectClick,
+            entity,
+            button,
+            card
           )
         : renderStaticContent()}
     </div>
   );
 };
 
-const renderStaticContent = () => {
-  return (
-    <div>
-      <h3>Static Card</h3>
-      <p>Static Card Content</p>
-    </div>
-  );
-};
+
 
 const renderDynamicContent = (
   dynamicContent: (Task | Project)[],
   handleTaskClick?: (task: Task) => void,
-  handleProjectClick?: (project: Project) => void,
+  handleProjectClick?: (
+    project: {
+      projectId: string;
+      project: Project;
+      projectDetails: ProjectDetails;
+      completion: number;
+      pending: boolean;
+    },
+    type: string
+  ) => Promise<void>,
   entity?: EntityProps,
   button?: ButtonProps,
-  card?: CardProps,
+  card?: CardProps
 ) => {
   // Check if entity, button, or card props are provided
   if (dynamicContent && dynamicContent.length > 0) {
@@ -87,7 +102,28 @@ const renderDynamicContent = (
           <>
             <h3>{(content as Project).name}</h3>
             {handleProjectClick && (
-              <button onClick={() => handleProjectClick(content)}>
+              <button
+                onClick={() =>
+                  handleProjectClick(
+                    {
+                      projectId: content.id,
+                      project: content,
+                      completion: 0,
+                      pending: false,
+                      projectDetails: {
+                        _id: (content as Project)._id as string,
+                        name: (content as Project).name,
+                        title: (content as Project).title as string,
+                        description: "Project Description",
+                        status: StatusType.Pending,
+                        tasks: [],
+                        
+                      }
+                    },
+                    "update"
+                  )
+                }
+              >
                 Click Project
               </button>
             )}
@@ -100,5 +136,17 @@ const renderDynamicContent = (
     return <p>No content available</p>;
   }
 };
+
+
+
+const renderStaticContent = () => {
+  return (
+    <div>
+      <h3>Static Card</h3>
+      <p>Static Card Content</p>
+    </div>
+  );
+};
+
 
 export default ContentRenderer;

@@ -1,57 +1,76 @@
-import UserSettings from "@/app/configs/UserSettings";
 import { RealtimeData } from "../../../models/realtime/RealtimeData";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { CustomPhaseHooks } from "../components/phases/Phase";
-import { CalendarEvent } from "../components/state/stores/CalendarEvent";
-import { VideoData } from "../components/video/Video";
-import { BackendConfig } from "../configs/BackendConfig";
-import { DataVersions } from "../configs/DataVersionsConfig";
-import { FrontendConfig } from "../configs/FrontendConfig";
-import BackendStructure from "../configs/appStructure/BackendStructure";
-import FrontendStructure from "../configs/appStructure/FrontendStructure";
-import { CacheData } from "../generators/GenerateCache";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
+import { CalendarEvent } from "../components/state/stores/CalendarEvent";
 import { userService } from "../components/users/ApiUser";
+import { VersionHistory, versionHistory } from "../components/versions/VersionData";
+import { VideoData } from "../components/video/Video";
+import { BackendConfig, backendConfig } from "../configs/BackendConfig";
+import { DataVersions, dataVersions } from "../configs/DataVersionsConfig";
+import { FrontendConfig, frontendConfig } from "../configs/FrontendConfig";
+import userSettings, { UserSettings } from "../configs/UserSettings";
+import BackendStructure, {
+  backendStructure,
+} from "../configs/appStructure/BackendStructure";
+import {
+  frontendStructure,
+} from "../configs/appStructure/FrontendStructure";
+import { CacheData, realtimeData } from "../generators/GenerateCache";
 
 // Define the structure of the response data
 interface CacheResponse {
-  lastUpdated: string;
-  userSettings: typeof UserSettings; // Define the type of userSettings
+  lastUpdated: VersionHistory; // Define the type of userSettings
   dataVersions: DataVersions; // Define the type of dataVersions
-  frontendStructure: FrontendStructure; // Define the type of frontendStructure
+  frontendStructure: typeof frontendStructure; // Define the type of frontendStructure
   backendStructure: BackendStructure; // Define the type of backendStructure
   backendConfig: BackendConfig;
   frontendConfig: FrontendConfig;
   realtimeData: RealtimeData;
+  userSettings: UserSettings;
+  notificationBarPhaseHook: CustomPhaseHooks
+  teamBuildingPhaseHook: AsyncHook
+  brainstormingPhaseHook: AsyncHook
+  projectManagementPhaseHook: AsyncHook
+  meetingsPhaseHook: AsyncHook
+  darkModeTogglePhaseHook: AsyncHook; // Define the type of darkModeTogglePhaseHook
+  authenticationPhaseHook: AsyncHook
+  // notificationBarPhaseHook: 
   // Add other properties as needed
 }
 
 // Function to construct the CacheData object
-const constructCacheData = (data: CacheResponse): CacheData => {
-  return {
-    lastUpdated: data.lastUpdated,
+const constructCacheData = (
+  data: CacheResponse,
+): CacheData => {
+  if (!data) {
+    throw new Error("Data is required");
+  }
+
+  const constructedData: CacheData = {
     userSettings: data.userSettings,
     dataVersions: data.dataVersions,
     frontendStructure: data.frontendStructure,
     backendStructure: data.backendStructure,
+    lastUpdated: data.lastUpdated,
     frontendConfig: data.frontendConfig,
     backendConfig: data.backendConfig,
     realtimeData: data.realtimeData,
-    notificationBarPhaseHook: {} as AsyncHook,
-    darkModeTogglePhaseHook: {} as AsyncHook,
-    authenticationPhaseHook: {} as CustomPhaseHooks,
-    jobSearchPhaseHook: {} as CustomPhaseHooks,
-    recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
-    teamBuildingPhaseHook: {} as AsyncHook,
-    brainstormingPhaseHook: {} as AsyncHook,
-    projectManagementPhaseHook: {} as AsyncHook,
-    meetingsPhaseHook: {} as AsyncHook,
-    ideationPhaseHook: {} as CustomPhaseHooks,
-    teamCreationPhaseHook: {} as CustomPhaseHooks,
-    productBrainstormingPhaseHook: {} as CustomPhaseHooks,
-    productLaunchPhaseHook: {} as CustomPhaseHooks,
-    dataAnalysisPhaseHook: {} as CustomPhaseHooks,
-    generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks,
+    notificationBarPhaseHook: data.notificationBarPhaseHook,
+    darkModeTogglePhaseHook: data.darkModeTogglePhaseHook,
+    authenticationPhaseHook: data.authenticationPhaseHook,
+    jobSearchPhaseHook: data.notificationBarPhaseHook,
+    recruiterDashboardPhaseHook: data.notificationBarPhaseHook,
+    teamBuildingPhaseHook: data.teamBuildingPhaseHook,
+    brainstormingPhaseHook: data.brainstormingPhaseHook,
+    projectManagementPhaseHook: data.projectManagementPhaseHook,
+    meetingsPhaseHook: data.meetingsPhaseHook,
+    ideationPhaseHook: data.notificationBarPhaseHook,
+    teamCreationPhaseHook: data.notificationBarPhaseHook,
+    productBrainstormingPhaseHook: data.notificationBarPhaseHook,
+    productLaunchPhaseHook: data.notificationBarPhaseHook,
+    dataAnalysisPhaseHook: data.notificationBarPhaseHook,
+    generalCommunicationFeaturesPhaseHook: data.notificationBarPhaseHook,
     fileType: "",
     calendarEvent: {} as CalendarEvent,
     _id: "",
@@ -66,33 +85,24 @@ const constructCacheData = (data: CacheResponse): CacheData => {
     videoData: {} as VideoData,
     // Construct other properties here
   };
+  return constructedData;
 };
 
-
-
 // Function to read cache data
-async function readCache(userId: string): Promise<CacheData | null> {
-  return new Promise<CacheData | null>((resolve, reject) => {
-    try {
-      const cachedData = localStorage.getItem("cached" + userId);
-      if (cachedData) {
-        // If cached data exists, parse it and construct CacheData using constructCacheData
-        const data = JSON.parse(cachedData);
-        const constructedData = constructCacheData(data as CacheResponse);
-        resolve(constructedData);
-      } else {
-        // If no cached data found, resolve with null
-        resolve(null);
-      }
-    } catch (err) {
-      // If an error occurs during data retrieval, reject the promise with the error
-      reject(err);
+function readCache(userId: string): CacheData | null {
+  try {
+    const cachedData = localStorage.getItem("cached" + userId);
+    if (cachedData) {
+      const data = JSON.parse(cachedData);
+      const constructedData = constructCacheData(data as CacheResponse);
+      return constructedData;
+    } else {
+      return null;
     }
-  });
+  } catch (err) {
+    throw err;
+  }
 }
-
- 
-
 
 // Assuming userService.fetchUser and userService.fetchUserById return promises
 const writeCache = async (userId: string, userData: Promise<CacheData>) => {
@@ -105,35 +115,49 @@ const writeCache = async (userId: string, userData: Promise<CacheData>) => {
 
     // Write cache
     await writeCache(userId, userData); // Assuming userData is defined elsewhere
-    console.log('Cached data successfully written.');
+    console.log("Cached data successfully written.");
   } catch (error) {
     // If an error occurs during cache writing, log the error
-    console.error('Error writing cache:', error);
+    console.error("Error writing cache:", error);
   }
 };
 
-
 // Usage with .then()
 // Assuming userService.fetchUser and userService.fetchUserById return promises
-userService.fetchUser("").then(user => {
-  userService.fetchUserById(user).then((userId) => {
-    const userData = readCache(userId) || {
-      lastUpdated: null,
-      userSettings: null,
-      dataVersions: null,
-      frontendStructure: null,
-      backendStructure: null,
-    };
-    writeCache(userId, userData)
-      .then(() => {
-        console.log("Cached data successfully written.");
-      })
-      .catch((error) => {
-        console.error("Error writing cache:", error);
-      });
+// Usage with .then()
+// Assuming userService.fetchUser and userService.fetchUserById return promises
+userService.fetchUser("").then((user) => {
+  userService.fetchUserById(user)?.then((userId) => {
+    const userDataPromise = Promise.resolve(
+      readCache(userId) || {
+        lastUpdated: versionHistory,
+        userSettings: userSettings,
+        dataVersions: dataVersions,
+        frontendStructure: frontendStructure,
+        backendStructure: backendStructure,
+        backendConfig: backendConfig,
+        frontendConfig: frontendConfig,
+        realtimeData: realtimeData,
+        notificationBarPhaseHook: {} as AsyncHook,
+        darkModeTogglePhaseHook: {} as AsyncHook,
+        authenticationPhaseHook: {} as CustomPhaseHooks,
+        jobSearchPhaseHook: {} as AsyncHook,
+        recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
+        teamBuildingPhaseHook: {} as AsyncHook,
+        brainstormingPhaseHook:  {} as AsyncHook,
+        projectManagementPhaseHook: {} as AsyncHook,
+        meetingsPhaseHook:  {} as AsyncHook,
+        ideationPhaseHook: {} as CustomPhaseHooks,
+        teamCreationPhaseHook: {} as CustomPhaseHooks,
+        productBrainstormingPhaseHook: {} as CustomPhaseHooks,
+        productLaunchPhase: {} as CustomPhaseHooks,
+        productLaunchPhaseHook: {} as CustomPhaseHooks,
+        dataAnalysisPhaseHook: {} as CustomPhaseHooks,
+        generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks,
+        fileType: "json",
+        calendarEvent: { } as CalendarEvent,
+      }
+    );
+    writeCache(userId, userDataPromise);
   });
 });
-
-
-
-

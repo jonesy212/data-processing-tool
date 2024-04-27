@@ -105,7 +105,7 @@ export const calendarPhase: Phase = {
     canTransitionTo: () => true,
     handleTransitionTo: handleTransitionToCalendarPhase,
     name: 'Calendar Phase',
-    duration: 0,
+    duration: "0",
     condition: function (): boolean {
       // Implement your condition logic here
       // Example: Check if a certain date is in the future

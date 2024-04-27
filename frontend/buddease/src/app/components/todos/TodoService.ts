@@ -42,6 +42,15 @@ export const todoService = {
       throw new Error("Failed to fetch todos");
     }
   },
+    
+  fetchTodoDetails: async (todoId: string): Promise<Todo> => { 
+    try {
+      const response = await axios.get(`${BASE_URL}/api/todos/${todoId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch todo details");
+    }
+  },
 
   addTodo: async (newTodo: Todo): Promise<Todo> => {
     try {

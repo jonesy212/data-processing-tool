@@ -30,6 +30,7 @@ import {
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { VersionData } from "../versions/VersionData";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx

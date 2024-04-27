@@ -9,7 +9,7 @@ export const PhaseActions = {
   addSubPhase: createAction<string>("addSubPhase"),
   removeSubPhase: createAction<string>("removeSubPhase"),
   updateSubPhase: createAction<{ subPhaseId: number; newDetails: any }>("updateSubPhase"),
-
+  performPhaseActions: createAction<string | null>("performPhaseActions"),
   // Actions for handling transitions and hooks
   canTransitionTo: createAction<{ nextPhase: Phase }>("canTransitionTo"),
   handleTransitionTo: createAction<{ nextPhase: Phase }>("handleTransitionTo"),

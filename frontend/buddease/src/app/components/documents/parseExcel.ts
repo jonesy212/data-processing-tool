@@ -6,6 +6,7 @@ import ExcelJS from 'exceljs';
  * @param excelBuffer The Excel file buffer to parse.
  * @returns An array of parsed rows.
  */
+
 export async function parseExcel(excelBuffer: Buffer): Promise<any[]> {
   const workbook = new ExcelJS.Workbook();
 

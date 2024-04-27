@@ -12,6 +12,7 @@ import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import HeadersConfig from "./headers/HeadersConfig";
+import { VersionData } from '../components/versions/VersionData';
 
 
 const API_BASE_URL = endpoints.client;

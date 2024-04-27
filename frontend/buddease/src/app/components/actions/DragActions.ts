@@ -14,4 +14,5 @@ export const DragActions = {
   dragEnd: createAction<{ finalX: number; finalY: number }>("dragEnd"),
     
   dragReset: createAction("dragReset")
-  };
+};
+  

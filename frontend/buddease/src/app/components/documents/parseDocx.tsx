@@ -84,7 +84,11 @@ function parseDocxData<T extends object>(
     if (matchedParsedData) {
       // Update the DocxData object with parsed data
       // For example, you might update specific fields or merge the extracted data with existing data
-      matchedParsedData.someField = extractedData.someField; // Example update
+      // Let's assume we're updating project details
+      if (matchedParsedData.projectId === extractedData.projectId) {
+        // Update project details with extracted data
+        matchedParsedData.projectDetails = extractedData.projectDetails;
+      }
     }
   });
 }
@@ -117,3 +121,5 @@ const filePath = 'example.docx';
 // Load Docx data based on the application version
 const docxData = loadDocxByVersion(versionNumber, appVersion, filePath);
 console.log('Docx Data:', docxData);
+
+export {parseDocx}

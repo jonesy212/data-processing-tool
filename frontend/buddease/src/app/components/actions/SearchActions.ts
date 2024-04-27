@@ -2,7 +2,7 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const SearchActions = {
   // Actions for initiating search
-  initiateSearch: createAction<string>("initiateSearch"),
+  initiateSearch: createAction<string | null>("initiateSearch"),
   initiateSearchRequest: createAction<string>("initiateSearchRequest"),
   initiateSearchSuccess: createAction<any>("initiateSearchSuccess"),
   initiateSearchFailure: createAction<{ error: string }>("initiateSearchFailure"),

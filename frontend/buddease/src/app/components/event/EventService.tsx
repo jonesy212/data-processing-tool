@@ -13,6 +13,7 @@ import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
   initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
@@ -697,3 +698,4 @@ console.log(retrievedEvent);
 eventService.removeEvent("event1");
 
 export default EventService;
+export type { CustomMouseEvent}

@@ -4,12 +4,14 @@ import { makeAutoObservable } from 'mobx';
 import { ProjectActions } from "../components/actions/ProjectActions";
 import { Task } from "../components/models/tasks/Task";
 import { Phase } from "../components/phases/Phase";
-import {Project} from "../components/projects/Project";
+import {Project, ProjectData} from "../components/projects/Project";
 import { User } from "../components/users/User";
 import { sendNotification } from "../components/users/UserSlice";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import ProjectMetadata from "../configs/StructuredMetadata";
 import  dotProp  from 'dot-prop';
+import ProjectModel from "../../../models/ProjectModel";
+import { Product } from "../components/products/Product";
 
 const API_BASE_URL = endpoints.projects;
 
@@ -19,27 +21,27 @@ class ProjectService {
   }
 
 
+  // Method to save project data to the database
+  static saveProjectData = async (projectData: ProjectData) => {
+    try {
+      // Check if the project already exists in the database
+      const existingProject = await ProjectModel.findOne({ where: { id: projectData.id } });
 
-// Method to save project data to the database
-static saveProjectData = async (projectData) => {
-  try {
-    // Check if the project already exists in the database
-    const existingProject = await ProjectModel.findOne({ where: { id: projectData.id } });
-
-    if (existingProject) {
-      // If the project exists, update its data
-      await ProjectModel.update(projectData, { where: { id: projectData.id } });
-      console.log('Project data updated successfully:', projectData);
-    } else {
-      // If the project doesn't exist, create a new entry
-      await ProjectModel.create(projectData);
-      console.log('New project data saved successfully:', projectData);
+      if (existingProject) {
+        // If the project exists, update its data
+        await ProjectModel.update(projectData, { where: { id: projectData.id } });
+        console.log('Project data updated successfully:', projectData);
+      } else {
+        // If the project doesn't exist, create a new entry
+        await ProjectModel.create(projectData);
+        console.log('New project data saved successfully:', projectData);
+      }
+    } catch (error) {
+      console.error('Error saving project data:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error('Error saving project data:', error);
-    throw error;
   }
-}
+
 
   createProject = async (newProject: Project) => { 
     try {
@@ -423,27 +425,27 @@ static saveProjectData = async (projectData) => {
     }
   };
   
-  launchProduct = async (projectId: number): Promise<void> => {
+  launchProduct = async (project: { projectId: string; productId: string; product: Product; }): Promise<void> => {
     try {
-      await axiosInstance.put(`${API_BASE_URL}/${projectId}/launch`);
-      ProjectActions.launchProduct(projectId);
-      sendNotification(`Product launched for project with ID ${projectId}`);
+      await axiosInstance.put(`${API_BASE_URL}/${project}/launch`);
+      ProjectActions.launchProduct(project);
+      sendNotification(`Product launched for project with ID ${project.projectId}`);
     } catch (error) {
       ProjectActions.updateProjectFailure({ error: String(error) });
-      sendNotification(`Error launching product for project with ID ${projectId}: ${error}`);
+      sendNotification(`Error launching product for project with ID ${project.projectId}: ${error}`);
       console.error('Error launching product for project:', error);
       throw error;
     }
   };
   
-  performDataAnalysis = async (projectId: number): Promise<void> => {
+  performDataAnalysis = async (project:{ projectId: string; productId: string; insights: { id: string; description: string; }[]; }): Promise<void> => {
     try {
-      await axiosInstance.post(`${API_BASE_URL}/${projectId}/data-analysis`);
-      ProjectActions.performDataAnalysis(projectId);
-      sendNotification(`Data analysis performed for project with ID ${projectId}`);
+      await axiosInstance.post(`${API_BASE_URL}/${project.projectId}/data-analysis`);
+      ProjectActions.performDataAnalysis(project);
+      sendNotification(`Data analysis performed for project with ID ${project.projectId}`);
     } catch (error) {
       ProjectActions.updateProjectFailure({ error: String(error) });
-      sendNotification(`Error performing data analysis for project with ID ${projectId}: ${error}`);
+      sendNotification(`Error performing data analysis for project with ID ${project.projectId});}: ${error}`);
       console.error('Error performing data analysis for project:', error);
       throw error;
     }

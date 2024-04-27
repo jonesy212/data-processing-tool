@@ -26,8 +26,8 @@ export interface TodoManagerStore {
   fetchTodosFailure: (payload: { error: string }) => void;
   
   openTodoSettingsPage: (todoId: number, teamId: number) => void;
-  getTodoId: (todo: Todo) => string;
-  
+  getTodoId: (todo: Todo) => string | null;
+  getTeamId: (todo: Todo) => string | null;
   fetchTodosRequest: () => void;
   completeAllTodosSuccess: () => void;
   completeAllTodos: () => void;
@@ -176,8 +176,11 @@ const useTodoManagerStore = (): TodoManagerStore => {
   };
 
 
-  const getTodoId = (todo: Todo): string => { 
+  const getTodoId = (todo: Todo): string | null => { 
     return todo.id as string;
+  }
+  const getTeamId = (todo: Todo): string | null => {
+    return todo.teamId as string
   }
 
   const fetchTodo = async (): Promise<void> => {
@@ -355,6 +358,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
       fetchTodosRequest,
       fetchTodosFailure,
       getTodoId,
+      getTeamId,
       // Completing Todos
       completeAllTodosSuccess,
       completeAllTodos,

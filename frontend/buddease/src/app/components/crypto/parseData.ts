@@ -2,6 +2,7 @@
 // Function to parse and process the received data
 import useSearchPagination from '../hooks/commHooks/useSearchPagination';
 import { YourResponseType } from '../typings/types';
+import ProjectDetails  from '@/app/components/projects/Project';
 
 // Define a separate interface for cryptocurrency-specific data
 export interface CryptoData {
@@ -22,6 +23,8 @@ export interface ParsedData<T extends object> {
   pageNumber: number; // Optional field to store page number from PDF
   pdfContent?: string; // Optional field to store PDF content
   docxContent?: string; // Optional field to store Docx content
+  projectId?: string; // Optional field to store project id
+  projectDetails?: typeof ProjectDetails
 }
 
 // Function to parse and process the received data

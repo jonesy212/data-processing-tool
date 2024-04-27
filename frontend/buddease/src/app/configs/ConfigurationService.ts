@@ -16,6 +16,7 @@ import { frontendConfig } from "./FrontendConfig";
 import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
+import { VersionHistory } from '../components/versions/VersionData';
 
 
 export interface RetryConfig {
@@ -54,7 +55,7 @@ interface ConfigurationOptions {
   namingConventions: any;
   lazyLoadScriptConfig: LazyLoadScriptConfigImpl;
   apiConfig: ApiConfig;
-  lastUpdated: string;
+  lastUpdated: VersionHistory;
   userPreferences: {
     modules: ModuleType;
     actions: never[];

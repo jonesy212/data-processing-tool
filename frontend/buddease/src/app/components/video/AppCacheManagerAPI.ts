@@ -1,10 +1,45 @@
 import axios from 'axios';
-import RealtimeData from '../../../../models/realtime/RealtimeData';
+import { RealtimeData } from '../../../../models/realtime/RealtimeData';
+import { VersionHistory } from '../versions/VersionData';
+import { UserSettings } from '@/app/configs/UserSettings';
+import { DataVersions } from '@/app/configs/DataVersionsConfig';
+import FrontendStructure from '@/app/configs/appStructure/FrontendStructure';
+import BackendStructure from '@/app/configs/appStructure/BackendStructure';
+import { BackendConfig } from '@/app/configs/BackendConfig';
+import { FrontendConfig } from '@/app/configs/FrontendConfig';
+import { AsyncHook } from 'async_hooks';
+import { CustomPhaseHooks } from '../phases/Phase';
+import { CalendarEvent } from '../state/stores/CalendarEvent';
 
 interface CacheData {
-  key: string;
-  data: RealtimeData;   // Add more properties as needed
+  lastUpdated: VersionHistory;
+  userSettings: UserSettings;
+  dataVersions: DataVersions;
+  frontendStructure: FrontendStructure;
+  backendStructure: BackendStructure;
+  backendConfig: BackendConfig;
+  frontendConfig: FrontendConfig;
+  realtimeData: RealtimeData;
+  notificationBarPhaseHook: AsyncHook;
+  darkModeTogglePhaseHook: AsyncHook | null;
+  jobSearchPhaseHook: CustomPhaseHooks | null;
+  authenticationPhaseHook: CustomPhaseHooks | null;
+  recruiterDashboardPhaseHook: CustomPhaseHooks | null;
+  teamBuildingPhaseHook: AsyncHook | null;
+  brainstormingPhaseHook: AsyncHook | null;
+  projectManagementPhaseHook: AsyncHook | null;
+  meetingsPhaseHook: AsyncHook | null;
+  ideationPhaseHook: CustomPhaseHooks | null;
+  teamCreationPhaseHook: CustomPhaseHooks | null;
+  productBrainstormingPhaseHook: CustomPhaseHooks | null;
+  productLaunchPhaseHook: CustomPhaseHooks | null;
+  dataAnalysisPhaseHook: CustomPhaseHooks | null;
+  generalCommunicationFeaturesPhaseHook: CustomPhaseHooks | null;
+  fileType: string | null;
+  calendarEvent: CalendarEvent | null;
+  // Add other properties as needed
 }
+
 
 class AppCacheManagerAPI {
   private static baseURL = 'https://example.com/api/cache';
