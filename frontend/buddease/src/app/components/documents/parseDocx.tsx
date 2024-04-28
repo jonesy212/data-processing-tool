@@ -1,30 +1,36 @@
 import { set } from "lodash";
-import { YourDocxType } from "./DocType";
-import { ParsedData } from "../crypto/parseData";
 import path from "path";
 import getAppPath from "../../../../appPath";
-
-interface DocxData<T extends object> {
-  parsedData: ParsedData<T>[];
-}
-
-
-
+import { ParsedData } from "../crypto/parseData";
+import mammoth from "mammoth";
+import { DocData, YourDocxType } from "./DocType";
+import cheerio, { load } from 'cheerio';
 
 
 // Function to load and parse a Docx file
-const loadDocx = (filePath: string): YourDocxType[] => {
-  // Placeholder logic to load and parse the Docx file
-  // Use existing docx parsing library/method
-  const docxParser = require('docx-parser');
-  const docxData: YourDocxType[] = []; // Placeholder for Docx data
-  // Logic to load and parse the Docx file from the filePath
-  // Example:
-  // const docxData = docxParser.parse(filePath);
-  return docxData;
-};
+const loadDocx = async (filePath: string): Promise<YourDocxType[]> => { 
+  // Parse the Docx file using mammoth
+  const result = await mammoth.convertToHtml({path: filePath});
 
-
+  // Get the raw text
+  const text = result.value;
+  // Parse the text into an object structure
+  const $ = load(text);
+  const parsedData: ParsedData<object>[] = [];
+  $("w|p").each((i, el) => {
+    const text = $(el).text();
+    if (text) {
+      parsedData.push({
+        text,
+        data: {},
+        pageNumber: i + 1,
+      });
+    }
+  });
+  return {
+    parsedData
+  };
+}
 
 // Function to get the appropriate file path for the application version
 const getAppVersionedPath = (versionNumber: string, appVersion: string): string => {
@@ -34,7 +40,10 @@ const getAppVersionedPath = (versionNumber: string, appVersion: string): string 
 };
 
 // Function to load Docx data based on application version
-const loadDocxByVersion = (versionNumber: string, appVersion: string, filePath: string): YourDocxType[] => {
+const loadDocxByVersion = (
+  versionNumber: string,
+  appVersion: string,
+  filePath: string): Promise<YourDocxType[]> => {
   // Get the versioned app path
   const versionedAppPath = getAppVersionedPath(versionNumber, appVersion);
   
@@ -47,21 +56,21 @@ const loadDocxByVersion = (versionNumber: string, appVersion: string, filePath: 
   return docxData;
 };
 
-function parseDocx<T extends object>(
+async function parseDocx<T extends object>(
   docxFilePath: string,
   parsedData: ParsedData<T>[]
-): DocxData<T> {
-  let docxData: YourDocxType[]; // Placeholder for Docx data, replace with actual Docx data
+): Promise<DocData<T>> {
+  let docxData: Promise<YourDocxType[]>; // Placeholder for Docx data, replace with actual Docx data
   // Logic to load Docx data from the file using docxFilePath
   const docx = loadDocx(docxFilePath);
   docxData = docx;
   // Set docxData to loaded docx data
   set(parsedData, "parsedData", docxData);
   // Call parseDocxData function with Docx data and parsed data
-  parseDocxData(docxData, parsedData);
+  parseDocxData(await docxData, parsedData);
 
   // Call parseDocx function with Docx data and parsed data
-  return { parsedData } as DocxData<T>; // Return Docx
+  return { parsedData } as DocData<T>; // Return Docx
 }
 
 // Function to parse Docx files and update DocxData with parsed data
@@ -122,4 +131,4 @@ const filePath = 'example.docx';
 const docxData = loadDocxByVersion(versionNumber, appVersion, filePath);
 console.log('Docx Data:', docxData);
 
-export {parseDocx}
+export { parseDocx };

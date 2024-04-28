@@ -17,7 +17,6 @@ import { addMessage } from "../../state/redux/slices/ChatSlice";
 import updateUI, { updateUIWithCopiedText } from "../editing/updateUI";
 
 import { DataAnalysisActions } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisActions";
-import userService from "@/app/components/users/ApiUser";
 import { RetryConfig } from "@/app/configs/ConfigurationService";
 import { useAppSelector } from "@/app/utils/useAppSelector";
 import { AxiosResponse } from "axios";
@@ -42,6 +41,7 @@ import { RootState } from "../../state/redux/slices/RootSlice";
 import { Subscription } from "../../subscriptions/Subscription";
 import { MeetingActions } from "../../tasks/MeetingActions";
 import { saveCryptoPortfolioData } from "../editing/autosave";
+import { CustomEventListener, ReactiveEventHandler } from "../../event/DynamicEventHandlerExample";
 const dispatch = useDispatch();
 const [state, setState] = useState("");
 // Initialize the useErrorHandling hook
@@ -49,6 +49,28 @@ const useError = useErrorHandling();
 // Define the subscription variable
 const subscription = null; // You need to define subscription before passing it to cleanupState
 const [pointerPosition, setPointerPosition] = useState({ x: 0, y: 0 });
+
+
+
+const createEventHandler: CustomEventListener["createEventHandler"] = (
+  eventName,
+  handler
+) => {
+  const eventHandler = (event: ReactiveEventHandler) => {
+    const message: Partial<Message> = {
+      content: `Event '${eventName}' occurred. Details: ${JSON.stringify(
+        event
+      )}`,
+    };
+
+    addMessage(message as WritableDraft<Message>);
+
+    // Call the provided handler function
+    handler(event);
+  };
+
+  return eventHandler;
+};
 
 export const handleCryptoPaymentSelect = (cryptoOption: string) => {
   // Implement logic to handle the selected crypto payment option
@@ -173,11 +195,11 @@ const handleAppSpecificActions = (selectedText: string | null) => {
   }
 };
 
-const DynamicEventHandlerExample = {
+const DynamicEventHandlerExample: CustomEventListener = {
   // Define state using useState hook
 
   // Separate event handlers for keyboard and mouse events
-  handleKeyboardEvent: (event: React.KeyboardEvent<HTMLInputElement>) => {
+  handleKeyboardEvent: (event:  React.KeyboardEvent<HTMLInputElement>) => {
     // Sanitize input value before processing
     const sanitizedInput = sanitizeInput(event.currentTarget.value);
     console.log("Sanitized input:", sanitizedInput);
@@ -219,15 +241,45 @@ const DynamicEventHandlerExample = {
     addMessage(message as WritableDraft<Message>);
   },
 
-  handleMouseEvent: (event: MouseEvent & SyntheticEvent) => {
-    // Sanitize input value before processing
+  // handleMouseEvent: (event:React.MouseEvent<HTMLElement>) => {
+  //   // Sanitize input value before processing
 
-    const syntheticEvent = event as React.SyntheticEvent;
-    const sanitizedData = sanitizeData(syntheticEvent.currentTarget.toString());
-    console.log("Sanitized data:", sanitizedData);
-    DynamicEventHandlerExample.handleMouseClick(event);
+  //   const syntheticEvent = event as React.SyntheticEvent;
+  //   const sanitizedData = sanitizeData(syntheticEvent.currentTarget.toString());
+  //   console.log("Sanitized data:", sanitizedData);
+  //   DynamicEventHandlerExample.handleMouseClick(event);
+  // },
+
+
+
+
+
+  // Dynamic event handler generator
+  createEventHandler: (eventName: string, customLogic?: (event: ReactiveEventHandler) => void) =>
+    (event: Event) => {
+      const message: Partial<Message> = {
+        content: `Event '${eventName}' occurred. Details: ${JSON.stringify(
+          event
+        )}`,
+      };
+
+      addMessage(message as WritableDraft<Message>);
+
+      // Check if custom logic is provided, use it; otherwise, use the default logic
+      const eventHandler = customLogic || (() => { });
+
+      // Call the corresponding event handler
+      eventHandler(event as ReactiveEventHandler);
+    },
+
+  handleButtonClick: (event: ReactiveEventHandler) => {
+    DynamicEventHandlerExample.createEventHandler("handleClick")(event);
   },
 
+
+  handleDivMouseMove: (event: Event & React.MouseEvent<HTMLDivElement>) => {
+    DynamicEventHandlerExample.createEventHandler("handleMouseMove")(event);
+  },
   // Simulating the functions you want to call
   handleKeyboardShortcuts: (event: React.SyntheticEvent) => {
     // Logic for handling keyboard shortcuts
@@ -243,89 +295,8 @@ const DynamicEventHandlerExample = {
     addMessage(message as WritableDraft<Message>); // Type assertion to Message
   },
 
-  handleScrolling: (event: React.UIEvent<HTMLDivElement>) => {
-    // Accessing scroll-related information
-    const scrollTop = event.currentTarget.scrollTop;
-    const scrollLeft = event.currentTarget.scrollLeft;
-
-    // Your custom logic for handling scrolling
-    console.log("Handling scrolling:");
-    console.log("Scroll Top:", scrollTop);
-    console.log("Scroll Left:", scrollLeft);
-
-    // Additional logic based on scroll position or other scroll-related information
-    if (scrollTop > 100) {
-      // Perform an action when the scroll position is beyond a certain point
-      console.log("You scrolled beyond 100 pixels from the top.");
-    }
-
-    // Add more specific logic based on your application's requirements
-  },
-  handleZoom: (event: React.WheelEvent<HTMLDivElement>) => {
-    // Accessing zoom-related information
-    const scale = event.deltaY;
-
-    // Your custom logic for handling zoom
-    console.log("Handling zoom:");
-    console.log("Zoom Scale:", scale);
-
-    // Additional logic for zooming...
-    if (scale > 0) {
-      // Perform an action when zoomed in
-      console.log("You zoomed in.");
-    } else if (scale < 0) {
-      // Perform an action when zoomed out
-      console.log("You zoomed out.");
-    }
-
-    dispatch(ZoomActions.zoomIn(scale));
-    // Add more specific logic based on your application's requirements
-    dispatch(
-      DragActions.dragStart({
-        highlightEvent: event, // or provide the appropriate mouse event
-        clientX: event.clientX, // or provide the appropriate clientX value
-        clientY: event.clientY, // or provide the appropriate clientY value
-      })
-    );
-    return;
-  },
-
-  handleHighlighting: async (event: React.SyntheticEvent) => {
-    const highlightEvent = event as React.MouseEvent<HTMLDivElement>;
-
-    // Accessing highlighting-related information
-    const selectedText = window.getSelection()?.toString();
-
-    // Your custom logic for handling highlighting
-    console.log("Handling highlighting:");
-    console.log("Selected Text:", selectedText);
-
-    // Additional logic for highlighting...
-    if (selectedText) {
-      highlightEvent.preventDefault();
-      const messageId = UniqueIDGenerator.generateMessageID();
-
-      // Additional logic for highlighting...
-      if (selectedText) {
-        highlightEvent.preventDefault();
-        const messageId = UniqueIDGenerator.generateMessageID();
-        const currentUser = userService.getCurrentUserId(); // Call getCurrentUserId method
-
-        // Perform an action when text is highlighted
-        const message: Partial<Message> = {
-          id: messageId,
-          content: `You highlighted: ${selectedText}`,
-          userId: currentUser, // Assign the current user ID
-          timestamp: new Date().toISOString(), // Include timestamp of highlighting event
-        };
-        addMessage(message as WritableDraft<Message>);
-
-        console.log("You highlighted some text:", selectedText);
-        // Add more specific logic based on your application's requirements
-      }
-    }
-  },
-  handleAnnotations: (event: React.MouseEvent<HTMLDivElement>) => {
+  handleAnnotations: (event: React.SyntheticEvent) => {
+    // Logic for handling annotations
     // Accessing annotation-related information
     const annotationDetails =
       event.currentTarget.getAttribute("data-annotation");
@@ -360,8 +331,6 @@ const DynamicEventHandlerExample = {
         annotationDetailsElement.innerText = "";
       }
     }
-
-    // Add more specific logic based on your application's requirements
   },
 
   handleCopyPaste: (event: React.ClipboardEvent<HTMLDivElement>) => {
@@ -470,39 +439,7 @@ const DynamicEventHandlerExample = {
   },
   
 
-  handleContextMenus: (event: React.MouseEvent<HTMLDivElement>) => {
-    // Logic for handling context menus
-    console.log("Handling context menus:", event);
 
-    // Additional logic for context menus...
-    // For example, display a custom context menu or perform specific actions.
-    const customContextMenu = document.getElementById("customContextMenu");
-
-    if (customContextMenu) {
-      // Show the custom context menu at the mouse position
-      customContextMenu.style.display = "block";
-      customContextMenu.style.left = `${event.clientX}px`;
-      customContextMenu.style.top = `${event.clientY}px`;
-    }
-
-    // Add more specific logic based on your application's requirements
-  },
-
-  handleFullscreenMode: (event: React.SyntheticEvent) => {
-    // Logic for handling fullscreen mode
-    console.log("Handling fullscreen mode:", event);
-
-    // Additional logic for fullscreen mode...
-    // For example, toggle fullscreen mode or update UI based on fullscreen changes.
-    const isFullscreen = document.fullscreenElement !== null;
-
-    if (isFullscreen) {
-      console.log("Exiting fullscreen mode.");
-    } else {
-      console.log("Entering fullscreen mode.");
-    }
-    // Add more specific logic based on your application's requirements
-  },
 
   handleSettingsPanel: (event: React.SyntheticEvent) => {
     // Logic for handling settings panel
@@ -888,48 +825,48 @@ const DynamicEventHandlerExample = {
         // Handle actions specific to Meeting App
         console.log("Performing actions for Meeting App...");
         MeetingActions.performMeetingActions(selectedText);
-    } else if (isDocumentManagerApp) {
-      console.log("Document Manager App detected.");
-      // Handle actions specific to Document Manager App
-      console.log("Performing actions for Document Manager App...");
-    //   DocumentManagerActions.performDocumentActions(selectedText);
-    // } else if (isApiManagerApp) {
-    //   console.log("API Manager App detected.");
-    //   // Handle actions specific to API Manager App
-    //   console.log("Performing actions for API Manager App...");
-    //   ApiManagerActions.performApiActions(selectedText);
-    // } else if (isEventManagerApp) {
-    //   console.log("Event Manager App detected.");
-    //   // Handle actions specific to Event Manager App
-    //   console.log("Performing actions for Event Manager App...");
-    //   EventManagerActions.performEventActions(selectedText);
-    // } else if (isSettingsManagerApp) {
-    //   console.log("Settings Manager App detected.");
-    //   // Handle actions specific to Settings Manager App
-    //   console.log("Performing actions for Settings Manager App...");
-    //   SettingsManagerActions.performSettingsActions(selectedText);
-    } else if (isBlogManagerApp) {
-      console.log("Blog Manager App detected.");
-      // Handle actions specific to Blog Manager App
-      console.log("Performing actions for Blog Manager App...");
-      BlogActions.performBlogActions(selectedText);
-    } else if (isDrawingManagerApp) {
-      console.log("Drawing Manager App detected.");
-      // Handle actions specific to Drawing Manager App
-      console.log("Performing actions for Drawing Manager App...");
-      DrawingActions.performDrawingActions(selectedText);
-    } else if (isUIManagerApp) {
-      console.log("UI Manager App detected.");
-      // Handle actions specific to UI Manager App
+      } else if (isDocumentManagerApp) {
+        console.log("Document Manager App detected.");
+        // Handle actions specific to Document Manager App
+        console.log("Performing actions for Document Manager App...");
+        //   DocumentManagerActions.performDocumentActions(selectedText);
+        // } else if (isApiManagerApp) {
+        //   console.log("API Manager App detected.");
+        //   // Handle actions specific to API Manager App
+        //   console.log("Performing actions for API Manager App...");
+        //   ApiManagerActions.performApiActions(selectedText);
+        // } else if (isEventManagerApp) {
+        //   console.log("Event Manager App detected.");
+        //   // Handle actions specific to Event Manager App
+        //   console.log("Performing actions for Event Manager App...");
+        //   EventManagerActions.performEventActions(selectedText);
+        // } else if (isSettingsManagerApp) {
+        //   console.log("Settings Manager App detected.");
+        //   // Handle actions specific to Settings Manager App
+        //   console.log("Performing actions for Settings Manager App...");
+        //   SettingsManagerActions.performSettingsActions(selectedText);
+      } else if (isBlogManagerApp) {
+        console.log("Blog Manager App detected.");
+        // Handle actions specific to Blog Manager App
+        console.log("Performing actions for Blog Manager App...");
+        BlogActions.performBlogActions(selectedText);
+      } else if (isDrawingManagerApp) {
+        console.log("Drawing Manager App detected.");
+        // Handle actions specific to Drawing Manager App
+        console.log("Performing actions for Drawing Manager App...");
+        DrawingActions.performDrawingActions(selectedText);
+      } else if (isUIManagerApp) {
+        console.log("UI Manager App detected.");
+        // Handle actions specific to UI Manager App
         console.log("Performing actions for UI Manager App...");
         const payload: FetchUserDataPayload | null = selectedText ? { message: selectedText } : null;
         UIActions.performUIActions(payload);
-    } else if (isPhaseManagerApp) {
-      console.log("Phase Manager App detected.");
-      // Handle actions specific to Phase Manager App
-      console.log("Performing actions for Phase Manager App...");
-      PhaseActions.performPhaseActions(selectedText);
-    }
+      } else if (isPhaseManagerApp) {
+        console.log("Phase Manager App detected.");
+        // Handle actions specific to Phase Manager App
+        console.log("Performing actions for Phase Manager App...");
+        PhaseActions.performPhaseActions(selectedText);
+      }
       
   
       // Prevent default text selection behavior
@@ -1214,8 +1151,8 @@ const DynamicEventHandlerExample = {
     // Example: Update gesture position/scale state
     const gesturePosition =
       event.type === "touchstart" ||
-      event.type === "touchmove" ||
-      event.type === "touchend"
+        event.type === "touchmove" ||
+        event.type === "touchend"
         ? UIActions.getGesturePosition(event as GesterEvent)
         : UIActions.getGesturePosition(event as GesterEvent);
 
@@ -1236,33 +1173,8 @@ const DynamicEventHandlerExample = {
     // Prevent default behavior
     event.preventDefault();
   },
+}
 
-  // Dynamic event handler generator
-  createEventHandler:
-    (eventName: string, customLogic?: (event: React.SyntheticEvent) => void) =>
-    (event: Event) => {
-      const message: Partial<Message> = {
-        content: `Event '${eventName}' occurred. Details: ${JSON.stringify(
-          event
-        )}`,
-      };
-
-      addMessage(message as WritableDraft<Message>);
-
-      // Check if custom logic is provided, use it; otherwise, use the default logic
-      const eventHandler = customLogic || (() => {});
-
-      // Call the corresponding event handler
-      eventHandler(event as Event & SyntheticEvent<Element, Event>);
-    },
-
-  handleButtonClick: (event: Event & React.MouseEvent<HTMLButtonElement>) => {
-    DynamicEventHandlerExample.createEventHandler("handleClick")(event);
-  },
-
-  handleDivMouseMove: (event: Event & React.MouseEvent<HTMLDivElement>) => {
-    DynamicEventHandlerExample.createEventHandler("handleMouseMove")(event);
-  },
-};
 
 export default DynamicEventHandlerExample;
+ 

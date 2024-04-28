@@ -18,6 +18,7 @@ export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<
 
 
 export const UIActions = {
+  
   setIsPointerDown: createAction<boolean>("setIsPointerDown"),
   setPointerPosition: createAction<{ x: number; y: number }>(
     "setPointerPosition"
@@ -31,7 +32,11 @@ export const UIActions = {
   setIsPointerHovering: createAction<boolean>("setIsPointerHovering"),
   setIsAuxClicked: createAction<boolean>("setIsAuxClicked"),
   setIsGestureActive: createAction<boolean>("setIsGestureActive"),
-
+  updateContextMenuUI: createAction<{ 
+    isOpen: boolean;
+    x: number;
+    y: number;
+  }>("updateContextMenuUI"),
   setLoading: createAction<boolean>("setLoading"),
   setError: createAction<string>("setError"),
   setShowModal: createAction<boolean>("setShowModal"),
@@ -57,6 +62,12 @@ export const UIActions = {
       description: string;
     };
   }>("updateUIWithTodoDetails"),
+  mouseDown: createAction < {
+      position: {
+      x: number;
+      y: number;
+    }
+  }>("mouseDown"),
   updateUI: createAction<{ 
     state: {
       // UI state

@@ -83,7 +83,7 @@ export class ExtendedCalendarEvent {
   startTime?: Date;
   endTime?: Date;
   description: string;
-  assignedTo?: User | null;
+  assignedTo?: User | null; 
   constructor(
     id: string,
     title: string,

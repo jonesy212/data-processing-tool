@@ -1,3 +1,4 @@
+import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
 import {
   NotificationContextProps,
   NotificationType,
@@ -14,8 +15,7 @@ import { showErrorMessage, showToast } from "../models/display/ShowToast";
 import { Task } from "../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { notificationStore } from "../support/NotificationProvider";
-import SnapshotStoreConfig, {  snapshotConfig } from "./SnapshotConfig";
-import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
+import SnapshotStoreConfig, { snapshotConfig } from "./SnapshotConfig";
   
 const { notify } = useNotification();
 
@@ -116,8 +116,10 @@ const snapshotFunction = (
 
 
 interface Snapshot<T> {
+  category: any;
   id?: string;
   timestamp: Date;
+  tags?: Tag[];
   data: T;
 }
 

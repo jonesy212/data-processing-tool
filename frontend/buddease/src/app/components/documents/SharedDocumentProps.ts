@@ -20,8 +20,9 @@ export interface DocumentBuilderProps {
 }
 
 export interface DocumentAnimationOptions {
-  type: 'slide' | 'fade' | 'show' |  'custom'; // Add more animation types as needed
-  duration?: number;
+  type: 'slide' | 'fade' | 'show' |  'custom' | "none"// Add more animation types as needed
+  duration: number;
   speed?: number;
+  transition?: 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear' | 'none'
   // Add more animation-related properties
 }

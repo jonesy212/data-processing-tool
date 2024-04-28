@@ -52,8 +52,13 @@ const errorLogger = {
 
 class Logger {
   static log(logType: string, message: string, extraInfo?: any) {
-    console.log(message);
+    if (extraInfo) {
+      console.log(`[${logType}] ${message}`, extraInfo);
+    } else {
+      console.log(`[${logType}] ${message}`);
+    }
   }
+  
 
   static error(errorMessage: string, extraInfo?: any) {
     console.error(errorMessage, extraInfo);

@@ -1,10 +1,10 @@
 // SanitizationFunctions.ts
 import { databaseConfig } from "@/app/configs/DatabaseConfig";
+import express from 'express';
 import performDatabaseOperation from "../database/DatabaseOperations";
 import { User } from "../users/User";
 import isValidAuthToken from "./AuthValidation";
 import { decryptedData } from "./decryptedData";
-import  express  from 'express';
 
 const app = express();
 
@@ -184,6 +184,35 @@ export const sanitizeData = (data: string): string => {
 
   return sanitizedData;
 };
+
+
+
+export const sanitizeUIEvent = (
+  event: React.UIEvent<HTMLDivElement>
+): React.UIEvent<HTMLDivElement> => {
+  const scrollTop = (
+    event.currentTarget as HTMLDivElement
+  ).scrollTop.toString();
+  const scrollLeft = (
+    event.currentTarget as HTMLDivElement
+  ).scrollLeft.toString();
+
+  const sanitizedData = `Scroll Top: ${encodeData(
+    scrollTop
+  )}, Scroll Left: ${encodeData(scrollLeft)}`;
+
+  return {
+    ...event,
+    currentTarget: {
+      ...event.currentTarget,
+      dataset: {
+        ...event.currentTarget.dataset,
+        sanitizedData,
+      },
+    },
+  };
+};
+
 
 // Function to encode user data to prevent XSS attacks
 export const encodeData = (data: string): string => {

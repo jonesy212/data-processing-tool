@@ -1,13 +1,13 @@
 import React, { SetStateAction } from "react";
 import { ThemeConfig } from "../../libraries/ui/theme/ThemeConfig";
-import { NotificationState } from "../../state/redux/slices/NotificationSlice";
 import { ThemeState } from "../../state/redux/slices/ThemeSlice";
+import { NotificationData } from "../../support/NofiticationsSlice";
  
 interface ThemeCustomizationProps {
   themeState: ThemeConfig;
   infoColor: string;
   setThemeState: React.Dispatch<SetStateAction<ThemeState>>;
-  notificationState:React.Dispatch<SetStateAction<NotificationState[]>>;
+  notificationState:React.Dispatch<SetStateAction<NotificationData[]>>;
 }
 
 const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({

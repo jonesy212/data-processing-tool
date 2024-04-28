@@ -443,16 +443,20 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   const updateUIWithTaskDetails = (taskDetails: any) => {
     const taskTitleElement = document.getElementById("taskTitle");
     const taskDescriptionElement = document.getElementById("taskDescription");
-
+  
     if (taskTitleElement && taskDescriptionElement) {
       taskTitleElement.innerText = taskDetails.title;
       taskDescriptionElement.innerText = taskDetails.description;
     }
-    UIActions.updateUI();
-    // Return null if elements not found
-    return;
+  
+    // Dispatch the updateUI action with task details payload
+    UIActions.updateUI({
+      state: {
+        taskDetails: taskDetails
+      }
+    });
   };
-
+  
   // Component-specific logic using localState
   const handleLocalStateChange = (newValue: string) => {
     setLocalState(newValue);

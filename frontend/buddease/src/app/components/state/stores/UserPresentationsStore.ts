@@ -3,7 +3,6 @@
 import { WritableDraft } from "../redux/ReducerGenerator";
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
 import { Todo } from "../../todos/Todo";
-import { User } from "../../users/User";
 import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";

@@ -42,10 +42,10 @@ export interface DocumentData extends CommonData<Data> {
   highlights: string[];
   keywords: string[];
   load?(content: any): void;
-  
+
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document
-  folder?: FolderData
+  folder?: FolderData;
   folders: FolderData[]; // Array of FolderData associated with the document
   filePath?: DocumentPath;
   status?: AllStatus;
@@ -60,7 +60,7 @@ export interface DocumentData extends CommonData<Data> {
   previousMetadata: StructuredMetadata;
   currentMetadata: StructuredMetadata;
   accessHistory: any[];
-  lastModifiedDate: Date;
+  lastModifiedDate: { value: Date; isModified: boolean }; // Initialize as not modified
   version: VersionData;
   // Add more properties if needed
 }

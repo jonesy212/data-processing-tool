@@ -31,4 +31,4 @@ const generateFinancialReportContent = (
   return financialReportContent;
 };
 
-export default generateFinancialReportContent;
+export  {generateFinancialReportContent};

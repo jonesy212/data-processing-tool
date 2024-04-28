@@ -21,6 +21,9 @@ class CourseBuilder {
     this.course = { title, phases: [] };
   }
 
+  getCourse(): Course {
+    return this.course;
+  }
   addPhase(phaseTitle: string): void {
     this.course.phases.push({
       title: phaseTitle,
@@ -36,13 +39,25 @@ class CourseBuilder {
   }
 
   addLesson(phaseIndex: number, lesson: Lesson): void {
-    if (phaseIndex < this.course.phases.length) {
-      this.course.phases[phaseIndex].lessons.push(lesson);
+    const course = this.getCourse();
+    if (
+      course &&
+      course.phases &&
+      phaseIndex >= 0 &&
+      phaseIndex < course.phases.length
+    ) {
+      const currentPhase = course.phases[phaseIndex];
+      if (currentPhase.lessons) {
+        currentPhase.lessons.push(lesson);
+      } else {
+        // If lessons array doesn't exist, create it and add the lesson
+        currentPhase.lessons = [lesson];
+      }
     } else {
       throw new Error("Invalid phase index");
     }
   }
-
+  
   generateCourse(): Course {
     return this.course;
   }

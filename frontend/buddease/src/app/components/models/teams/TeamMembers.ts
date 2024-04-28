@@ -62,7 +62,14 @@ interface TeamMember {
     timeBasedCode: "",
     memberName: "",
     persona: {} as Persona,
-    snapshots: []
+    snapshots: [],
+    token: null,
+    avatarUrl: null,
+    createdAt: new Date(),
+    updatedAt: undefined,
+    isVerified: false,
+    isAdmin: false,
+    isActive: false
   };
   const teamMember: TeamMember = {
     id: 1,

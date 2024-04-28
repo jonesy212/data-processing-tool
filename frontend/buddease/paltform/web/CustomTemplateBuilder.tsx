@@ -166,6 +166,7 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
           }}
           handleEditorStateChange={handleEditorStateChange}
         />
+   
         <h1>Custom Template Builder</h1>
         <Clipboard onCopy={handleCopy} onPaste={handlePaste} />
       </div>

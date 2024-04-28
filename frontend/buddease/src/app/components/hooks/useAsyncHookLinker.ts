@@ -1,7 +1,8 @@
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
-import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
 import { Progress } from '../models/tracker/ProgressBar';
+import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
+import { UIActions } from '../actions/UIActions';
 export interface AsyncHook extends PhaseHookConfig {
   isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
@@ -115,14 +116,112 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
 
 
 const asyncHook: AsyncHook = {
-  enable: () => {},
-  disable: () => {},
-  condition: () => true,
-  idleTimeoutId: null,
-  startIdleTimeout: (timeoutDuration, onTimeout) => {},
-  asyncEffect: async () => {
-    // async logic
-    return () => {};
+  isActive: false,
+  initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+    // Start the idle timeout with the specified duration
+    const timeoutId = setTimeout(onTimeout, timeoutDuration);
+    // Store the timeoutId for reference
+    if (timeoutId !== null) {
+      (asyncHook as any).idleTimeoutId = timeoutId;
+    }
   },
+
+  resetIdleTimeout: async (): Promise<void> => {
+    // Implementation logic for resetIdleTimeout
+    // Here you would reset the idle timeout
+    // For example:
+    if (
+      asyncHook.idleTimeoutId !== null &&
+      asyncHook.idleTimeoutId !== undefined
+    ) {
+      clearTimeout(asyncHook.idleTimeoutId);
+      asyncHook.idleTimeoutId = null;
+    }
+  },
+
+  idleTimeoutId: null,
+   
+stopAnimation: function (): void {
+  // Implementation logic for stopping animation
+  // For example:
+  // If there's any ongoing animation, stop it
+  // You can use animation libraries or native browser APIs to control animations
+  // Here's a placeholder example:
+  const animationElement = document.getElementById("animation-element");
+  if (animationElement) {
+    animationElement.style.animationPlayState = "paused";
+  } else {
+    throw new Error("Animation element not found.");
+  }
+  },
+
+
+animateIn: function (): void {
+  // Implementation logic for animating in
+  // Here you would define the animation behavior
+  // For example, you can use CSS animations or JavaScript animations
+  // This is a placeholder example using CSS animations:
+
+  // Assuming you have an element with the class "animate-in-element"
+  const element = document.querySelector(".animate-in-element");
+  if (element) {
+    // Add a CSS class to trigger the animation
+    element.classList.add("animate-in");
+  } else {
+    throw new Error("Animate-in element not found.");
+  }
+  },
+
+  startAnimation: function (): void {
+    // Implementation logic for starting animation
+    // Here you would define the animation behavior
+    // For example, you can use CSS animations or JavaScript animations
+    // This is a placeholder example using JavaScript animations:
+    // Assuming you have an element with the id "animation-element"
+    const element = document.getElementById("animation-element");
+    if (element) {
+      // Start the animation
+      element.animate([
+        // Define keyframes for the animation
+        { transform: 'translateX(0)' }, // Initial state
+        { transform: 'translateX(100px)' }, // Final state
+      ], {
+        // Animation options
+        duration: 1000, // 1 second duration
+        easing: 'ease-in-out', // Easing function
+        iterations: 1, // Run the animation once
+      });
+    } else {
+      throw new Error("Animation element not found");
+    }
+  },
+  
+
+  toggleActivation: function (accessToken?: string | null | undefined): void {
+    if (accessToken) {
+      // If accessToken is provided, perform activation actions
+      console.log("Activated with access token:", accessToken);
+      // Perform activation actions here
+      UIActions.showActivationMessage(); // Example: Show activation message on UI
+      UIActions.enableFeatures(); // Example: Enable features on UI
+    } else {
+      // If accessToken is not provided, perform deactivation actions
+      console.log("Deactivated due to missing access token");
+      // Perform deactivation actions here
+      UIActions.showDeactivationMessage(); // Example: Show deactivation message on UI
+      UIActions.disableFeatures(); // Example: Disable features on UI
+    }
+  },
+  
+  cleanup: undefined,
+  progress: null,
+  name: "",
+  condition: function (): boolean {
+    throw new Error("Function not implemented.");
+  },
+  asyncEffect: function (): Promise<() => void> {
+    throw new Error("Function not implemented.");
+  },
+  duration: "",
 };
 export default useAsyncHookLinker;

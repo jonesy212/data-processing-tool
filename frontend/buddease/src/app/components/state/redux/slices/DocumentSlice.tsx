@@ -14,6 +14,8 @@ import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
+import { VersionData } from "@/app/components/versions/VersionData";
+import { ModifiedDate } from "@/app/components/documents/DocType";
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -457,7 +459,9 @@ const transformations = {
 
 const documentId: UniqueIDGenerator = new UniqueIDGenerator();
 // Define a function to create a new document with default values
-const createNewDocument: (documentId: number) => WritableDraft<DocumentData> = () => ({
+const createNewDocument: (
+  documentId: number
+) => WritableDraft<DocumentData> = () => ({
   id: documentId as number,
   title: "New Document",
   content: "",
@@ -479,8 +483,9 @@ const createNewDocument: (documentId: number) => WritableDraft<DocumentData> = (
   previousMetadata: {} as WritableDraft<StructuredMetadata>,
   currentMetadata: {} as WritableDraft<StructuredMetadata>,
   accessHistory: [],
-  // documentTags: [],
-  // documentAccess: [],
+  folders: [],
+  lastModifiedDate: new Date(),
+  version: {} as VersionData,
 });
 
 
@@ -503,16 +508,20 @@ export const useDocumentManagerSlice = createSlice({
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
+
+
+
+
           // Add other properties as needed
-          
-
-
           keywords: [],
           options: {} as WritableDraft<DocumentOptions>,
           folderPath: "",
           previousMetadata: {} as WritableDraft<StructuredMetadata>,
           currentMetadata: {} as WritableDraft<StructuredMetadata>,
-          accessHistory: []
+          accessHistory: [],
+          folders: [],
+          lastModifiedDate: new Date(),
+          version: {} as WritableDraft<VersionData>
         };
         return { payload: newDocument };
       },
@@ -634,6 +643,8 @@ export const useDocumentManagerSlice = createSlice({
           "filterDocumentsSuccess",
           `Filtering documents by keyword: ${filterKeyword} success`,
           NOTIFICATION_MESSAGES.Document.FILTER_DOCUMENTS_SUCCESS,
+          new Date(),
+          NotificationTypeEnum.OperationSuccess
         );
       } catch (error) {
         console.error("Error filtering documents:", error);
@@ -914,11 +925,14 @@ export const useDocumentManagerSlice = createSlice({
           files: [],
           keywords: [],
           options: {} as WritableDraft<DocumentOptions>,
-          folderPath: "New Folder", 
+          folderPath: "New Folder",
           previousMetadata: {} as WritableDraft<StructuredMetadata>,
           currentMetadata: {} as WritableDraft<StructuredMetadata>,
-          accessHistory: []
-        });
+          accessHistory: [],
+          folders: [],
+          lastModifiedDate: {} as ModifiedDate, // Updated type
+          version: {} as WritableDraft<VersionData>
+         });
         // Assuming implementation here...
         useNotification().notify(
           "fetchDocumentFromArchiveSuccess",

@@ -1,6 +1,7 @@
 // AssignEventStore.tsx
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { useNotification } from "../../support/NotificationContext";
+import { User } from "../../users/User";
 import { useAssignBaseStore } from "../AssignBaseStore";
 import { PresentationEventAssignment } from "./UserPresentationsStore";
 
@@ -19,7 +20,7 @@ export interface AssignEventStore {
   assignedEvents: Record<string, ExtendedCalendarEvent[]>; // Use eventId as key and array of event IDs as value
   assignedTodos: Record<string, string[]>; // Use eventId as key and array of todo IDs as value
   reassignUser: Record<string, ReassignEventResponse[]>; // Use eventI
-  assignEvent: (eventId: string, userId: string) => void;
+  assignEvent: (eventId: string, userId: User) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
@@ -60,7 +61,7 @@ const useAssignEventStore = (): AssignEventStore => {
   const reassignUser: Record<string, ReassignEventResponse[]> = {};
   const baseStore = useAssignBaseStore();
 
-  const assignEvent = (eventId: string, assignedTo: string) => {
+  const assignEvent = (eventId: string, assignedTo: User) => {
     // Add user to assigned events
     const event = baseStore.events[eventId] as ExtendedCalendarEvent[] | undefined;
     if (event) {
@@ -248,3 +249,4 @@ const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] =
 
 export { useAssignEventStore };
 export type { ReassignEventResponse };
+

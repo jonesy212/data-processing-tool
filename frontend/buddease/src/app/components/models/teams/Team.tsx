@@ -20,6 +20,7 @@ import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from './TeamMembers';
+import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
 
 interface Team extends Data {
   team: {
@@ -324,6 +325,7 @@ const team: Team = {
       budget: 0,
       timestamp: new Date,
       data: {} as TeamData & Team,
+      category: "Technology",
     };
     callback(newData);
   },

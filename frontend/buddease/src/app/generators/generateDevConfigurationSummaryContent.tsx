@@ -7,7 +7,7 @@ import { DocumentOptions } from "../components/documents/DocumentOptions";
  * @param cacheData The cache data containing information for generating the executive summary.
  * @returns The generated executive summary content.
  */
-export function generateConfigurationSummaryContent(options: DocumentOptions): string {
+ function generateConfigurationSummaryContent(options: DocumentOptions): string {
     // Add your logic here to generate the executive summary content based on the cache data
   
   let executiveSummaryContent = '';
@@ -32,3 +32,6 @@ export function generateConfigurationSummaryContent(options: DocumentOptions): s
 
   return executiveSummaryContent;
 }
+
+
+export default generateConfigurationSummaryContent;

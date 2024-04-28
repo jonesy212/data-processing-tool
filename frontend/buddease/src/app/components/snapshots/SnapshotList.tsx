@@ -1,23 +1,26 @@
-import { Snapshot } from '@/app/components/snapshots/SnapshotStore';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Data } from "../models/data/Data";
 
 interface SnapshotItem {
   user: any;
   id: string;
-  value: Snapshot<Data>
+  value: Snapshot<Data>;
   label: string;
+  category: string;
+  categories?: string[];
   // Define properties of a snapshot item
 }
 
 class SnapshotList {
   private snapshots: SnapshotItem[];
   private id: string;
+  public category: string;
   constructor() {
     this.id = UniqueIDGenerator.generateSnapshoItemID(Date.now().toString());
     this.snapshots = [];
+    this.category = "";
   }
-
 
   sortSnapshotByDate() {
     this.snapshots.sort((a, b) => {
@@ -27,13 +30,29 @@ class SnapshotList {
       );
     });
   }
-  sort(){
+  sort() {
     this.snapshots.sort((a, b) => {
       return (
         (a.value.timestamp.getTime() as number) -
         (b.value.timestamp.getTime() as number)
       );
     });
+  }
+  sortByDate() {
+    this.sortSnapshotByDate();
+  }
+
+  filterByCategories(categories: string[]) {
+    // Filter snapshots by categories
+    return this.snapshots.filter((snapshot) => {
+      return categories.every((category) =>
+        snapshot.categories?.includes(category)
+      );
+    });
+  }
+
+  getSnapshotList(snapshots: SnapshotItem[]) {
+    return snapshots;
   }
 
   sortSnapshotItems() {
@@ -59,7 +78,9 @@ class SnapshotList {
 
   sortSnapshotsByTags() {
     this.snapshots.sort((a, b) => {
-      return (a.value.tags || []).localeCompare(b.value.tags || []);
+      const aTags = a.value.tags || [];
+      const bTags = b.value.tags || [];
+      return aTags.join(",").localeCompare(bTags.join(","));
     });
   }
 
@@ -70,19 +91,20 @@ class SnapshotList {
   }
 
   fetchSnaphostById(id: string): SnapshotItem | undefined {
-    return this.snapshots.find(snapshot => snapshot.id === id);
+    return this.snapshots.find((snapshot) => snapshot.id === id);
   }
 
   removeSnapshot(snapshotId: string) {
     // Find the index of the snapshot with the specified ID
-    const index = this.snapshots.findIndex(snapshot => snapshot.value.id === snapshotId);
-    
+    const index = this.snapshots.findIndex(
+      (snapshot) => snapshot.value.id === snapshotId
+    );
+
     // If the snapshot is found, remove it from the array
     if (index !== -1) {
       this.snapshots.splice(index, 1);
     }
   }
-  
 
   // Implementing the Iterable interface
   [Symbol.iterator]() {
@@ -110,4 +132,3 @@ class SnapshotList {
 
 export default SnapshotList;
 export type { SnapshotItem };
-

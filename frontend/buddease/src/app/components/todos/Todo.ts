@@ -7,12 +7,13 @@ import ChecklistItem, {
 import { PriorityStatus, StatusType } from "../models/data/StatusType";
 import { Progress } from "../models/tracker/ProgressBar";
 import { Phase } from "../phases/Phase";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../snapshots/SnapshotStore";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
+import { Member } from "../models/teams/TeamMembers";
 export interface Todo {
   _id: string;
   id: string;

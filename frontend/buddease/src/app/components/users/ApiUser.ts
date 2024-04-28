@@ -398,7 +398,7 @@ updateUserRoles = async (users: {
     // Update UI to reflect the changes
     updateUI(updatedUsers);
    // Log the success of the bulk update using the Logger class
-    Logger.log('User roles updated successfully');
+     Logger.log('INFO', 'User roles updated successfully');
 
     // Dispatch success action for bulk update
     UserRoleActions.updateUserRolesSuccess({

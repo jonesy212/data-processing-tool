@@ -1,8 +1,8 @@
 
 // Function to parse and process the received data
+import ProjectDetails from '@/app/components/projects/Project';
 import useSearchPagination from '../hooks/commHooks/useSearchPagination';
 import { YourResponseType } from '../typings/types';
-import ProjectDetails  from '@/app/components/projects/Project';
 
 // Define a separate interface for cryptocurrency-specific data
 export interface CryptoData {
@@ -25,6 +25,7 @@ export interface ParsedData<T extends object> {
   docxContent?: string; // Optional field to store Docx content
   projectId?: string; // Optional field to store project id
   projectDetails?: typeof ProjectDetails
+  text?: string;
 }
 
 // Function to parse and process the received data
@@ -105,4 +106,5 @@ const threshold = 5; // Threshold value to consider a significant disparity (in 
 
 // Parse and process the received data
 const parsedData = parseData(yourResponseTypeData, threshold);
-export { calculatePriceDisparity , parsedData };
+export { calculatePriceDisparity, parsedData };
+

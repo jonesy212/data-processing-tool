@@ -28,7 +28,7 @@ import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { userId, userService } from "../users/ApiUser";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
-import generateFinancialReportContent from "./documentation/report/generateFinancialReportContent";
+import {generateFinancialReportContent} from "./documentation/report/generateFinancialReportContent";
 import { autosaveDrawing } from "./editing/autosaveDrawing";
 import { parseCSV } from "./parseCSV";
 import { parseExcel } from "./parseExcel";
@@ -45,7 +45,7 @@ import { PDFDocument, PDFPage } from "pdf-lib";
 
 import { YourPDFType } from "./DocType";
 import { parseDocx } from "./parseDocx";
-import { generateExecutiveSummaryContent } from "@/app/generators/generateDevConfigurationSummaryContent";
+import  generateDevConfigurationSummaryContent from "@/app/generators/generateDevConfigurationSummaryContent";
 import { VersionData } from "../versions/VersionData";
 var xl = require("excel4node");
 
@@ -120,7 +120,7 @@ const documents: Document[] = [
     load: function (content: any): void {
       this.documentData = content;
     },
-    lastModifiedDate: new Date(),
+    lastModifiedDate: { value: new Date(), isModified: false }, // Initialize as not modified
     version: {} as VersionData,
   },
   // Add more documents as needed
@@ -128,6 +128,10 @@ const documents: Document[] = [
 
 // // Add the namespace declaration for DXT if it's not already imported
 // declare namespace DXT {import { fs } from 'fs';
+import { ModifiedDate } from '@/app/components/documents/DocType';
+import { UserSettings } from "@/app/configs/UserSettings";
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import { DocumentAnimationOptions } from "./SharedDocumentProps";
 
 //   // todo
 //   // Define your types here...
@@ -459,13 +463,66 @@ async function loadOtherDocumentContent(
       highlights: [],
       keywords: [],
       folders: [],
-      options: {} as WritableDraft<DocumentOptions>,
+      options: {
+        additionalOptions: [] as string[],
+        uniqueIdentifier: "",
+        documentType: pdfDataType, // Use pdfDataType instead of an empty string
+        userIdea: "",
+        isDynamic: false,
+        size: "letter",
+        animations: {
+          type: "none",
+          transition: "none",
+          duration: 0,
+          speed: 0, 
+        },
+        visibility: "public",
+        fontSize: 0,
+        font: "",
+        textColor: "",
+        backgroundColor: "",
+        fontFamily: "",
+        lineSpacing: 0,
+        alignment: "left",
+        indentSize: 0,
+        bulletList: false,
+        numberedList: false,
+        headingLevel: 0,
+        bold: false,
+        italic: false,
+        underline: false,
+        strikethrough: false,
+        subscript: false,
+        superscript: false,
+        hyperlink: "",
+        image: "",
+        table: false,
+        tableRows: 0,
+        tableColumns: 0,
+        codeBlock: false,
+        blockquote: false,
+        codeInline: false,
+        quote: "",
+        todoList: false,
+        orderedTodoList: false,
+        unorderedTodoList: false,
+        colorCoding: false,
+        customSettings: {} as WritableDraft<Record<string, any>>,
+        documents: [],
+        includeType: "all",
+        includeTitle: false,
+        includeContent: false,
+        includeStatus: false,
+        includeAdditionalInfo: false,
+        userSettings: {} as WritableDraft<UserSettings>,
+        dataVersions: {} as WritableDraft<DataVersions>,
+      },
       folderPath: "",
-      previousMetadata: {} as WritableDraft<StructuredMetadata>,
-      currentMetadata: {} as WritableDraft<StructuredMetadata>,
+      previousMetadata: {} as StructuredMetadata,
+      currentMetadata: {} as StructuredMetadata,
       accessHistory: [],
-      lastModifiedDate: new Date() as WritableDraft<Date>,
-      version: {} as WritableDraft<VersionData>,
+      lastModifiedDate: { value: new Date(), isModified: false },
+      version: {} as VersionData,
     });
   }
 
@@ -949,7 +1006,7 @@ class DocumentGenerator {
 
   createExecutiveSummary(options: DocumentOptions): string {
     // Logic to generate executive summary
-    const executiveSummaryContent = generateExecutiveSummaryContent(options);
+    const executiveSummaryContent = generateDevConfigurationSummaryContent(options);
     // Write the executive summary content to a file
     fs.writeFileSync("executive_summary.docx", executiveSummaryContent);
     return "Executive summary created successfully.";

@@ -136,7 +136,7 @@ interface Data {
   // actions?: SnapshotStoreConfig<Snapshot<Data>[]>[];
   snapshots?: SnapshotStore<Snapshot<Data>>[];
   // Incorporating the data structure from YourResponseType
-  
+  text?: string;
 }
 
 // Define the UserDetails component
