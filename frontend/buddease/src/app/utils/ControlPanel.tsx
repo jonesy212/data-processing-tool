@@ -12,6 +12,7 @@ import SlideUpAnimation from "../components/libraries/animations/SlideUpAnimatio
 import CustomizableTimersComponent from "../components/stopwatches/CustomizableTimersComponent";
 import responsiveDesignStore from "../components/styling/ResponsiveDesign";
 import {
+  NotificationContextProps,
   NotificationType,
   NotificationTypeEnum,
   useNotification,
@@ -22,32 +23,42 @@ import {
 } from "../generators/GenerateButtons";
 import { themeConfig } from "../pages/_app";
 import apiNotificationsService from "../api/NotificationsService";
-import { NotificationStore } from '@/app/components/support';
+import { notificationStoreInstance, useNotificationStore } from "../components/state/stores/NotificationStore";
+import { action } from "mobx";
+import { usePresetPercentages } from "../generators/presetPercentages";
 
 interface ControlPanelProps {
   speed: number; // Current speed of the automated processes
   onChangeSpeed: (newSpeed: number) => void; // Callback function to handle speed changes
+  container: NotificationContextProps; // Update the type
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   speed,
   onChangeSpeed,
+  container
 }) => {
   const [newSpeed, setNewSpeed] = useState(speed);
   const [animationSpeed, setAnimationSpeed] = useState(speed);
   const { sendNotification } = useNotification();
-  const { notifications } = NotificationStore.useContainer();
-  const setNotifications = NotificationStore.useSetState();
-  const presetPercentages = [0, 25, 50, 75, 100]; // Define preset percentages
 
+
+
+
+// Inside ControlPanel component
+
+const notificationStoreContainer: NotificationService = notificationStore.useContainer(container.toString());
+// Check if notificationStoreContainer is not null before accessing its properties
+const notifications = notificationStoreContainer.notifications || [];
+const setNotifications = notificationStoreContainer.setNotifications || (() => {});
+
+  
   const handleSpeedChange = (
     event: React.ChangeEvent<HTMLInputElement> | number
   ) => {
     if (typeof event === "number") {
-      // If the value is directly passed as a number, update the newSpeed directly
       setNewSpeed(event);
     } else {
-      // If it's an event, extract the value from the event and update newSpeed
       const newSpeedValue = parseInt(event.target.value);
       setNewSpeed(newSpeedValue);
     }
@@ -59,14 +70,16 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   };
 
   const handlePresetPercentage = (percentage: number) => {
-    const newSpeedValue = (percentage / 100) * 10; // Calculate speed based on percentage
+    const newSpeedValue = (percentage / 100) * 10;
     setNewSpeed(newSpeedValue);
     applySpeedChange();
   };
 
+  const { percentages, handleNumPercentagesChange } = usePresetPercentages();
+
   const presetMenu = (
     <Menu>
-      {presetPercentages.map((percentage) => (
+      {percentages.map((percentage) => (
         <Menu.Item
           key={percentage}
           onClick={() => handlePresetPercentage(percentage)}
@@ -78,7 +91,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   );
 
   const handleCustomEvent = () => {
-    // Use the CustomEventExtensionConstructor for creating custom events
     const customEvent: CustomEventExtension = createCustomEvent(
       `customEventId`,
       `customEvenTitle`,
@@ -86,9 +98,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       new Date(),
       new Date()
     );
-
-    // Dispatch the custom event
-    customEvent.dispatchEvent(customEvent);
+    customEvent.dispatchEvent!(customEvent);
   };
 
   const handleNotificationClick = () => {
@@ -99,7 +109,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     );
   };
 
-  // Function to update breakpoints using the responsiveDesignStore
   const updateBreakpoint = (
     breakpoint: keyof typeof responsiveDesignStore.responsiveProps.breakpoints,
     value: number
@@ -110,7 +119,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   return (
     <div>
       <h2>Control Panel</h2>
-      {/* Animation speed dial */}
       <AnimationDial
         label="Animation Speed"
         min={1}
@@ -132,10 +140,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
       <button onClick={applySpeedChange}>Apply Speed</button>
 
-      {/* Ant Design Slider for animation speed */}
       <Slider min={1} max={10} value={newSpeed} onChange={handleSpeedChange} />
 
-      {/* Button to apply speed change */}
       <Button type="primary" onClick={applySpeedChange}>
         Apply Speed
       </Button>
@@ -149,28 +155,23 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <span>{newSpeed}</span>
       </Space>
 
-      {/* Dropdown for preset percentages */}
       <Dropdown overlay={presetMenu}>
         <Button>Select Percentage</Button>
       </Dropdown>
 
-      {/* Fade in animation */}
       <FadeInAnimation duration={animationSpeed * 100} />
 
-      {/* Slide up animation */}
       <SlideUpAnimation duration={animationSpeed * 100} />
 
-      {/* Rotate animation */}
       <RotateAnimation angle={90} duration={animationSpeed * 200} />
       <h2>Customizable Timers</h2>
       <CustomizableTimersComponent initialTime={60} />
       <h2>Theme Customization</h2>
       <ThemeCustomization
-        
         themeState={themeConfig}
-        setThemeState={}
+        setThemeState={() => {}}
         notificationState={{
-          notifications: notifications,
+          notifications: notifications || [],
           setNotifications: setNotifications,
           notify: (id: string, message: string, content: any, date: Date = new Date(), type: NotificationType = NotificationTypeEnum.INFO) => Promise.resolve(apiNotificationsService.notify(id, message, content, date, type)),
           sendPushNotification: sendPushNotification,
@@ -181,13 +182,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           addNotification,
           removeNotification,
           clearNotifications,
-          // Include other required properties here
         }}
       />
       <h2>Custom Event</h2>
       <button onClick={handleCustomEvent}>Dispatch Custom Event</button>
 
-      {/* Add controls to update breakpoints */}
       <Button onClick={() => updateBreakpoint("small", 480)}>
         Update Small Breakpoint
       </Button>
@@ -199,7 +198,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </Button>
 
       <h2>Control Panel</h2>
-      {/* Use ButtonGenerator to render buttons with predefined functionalities */}
       <ButtonGenerator {...buttonGeneratorProps} />
     </div>
   );

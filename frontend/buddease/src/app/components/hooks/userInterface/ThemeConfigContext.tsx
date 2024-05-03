@@ -10,6 +10,7 @@ interface ThemeConfigProps {
   primaryColor: string;
   secondaryColor: string;
   backgroundColor: string;
+  
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;

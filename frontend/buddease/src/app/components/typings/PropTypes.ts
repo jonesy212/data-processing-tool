@@ -16,6 +16,7 @@ import {
   ProgressBarProps,
   ProgressPhase,
 } from "../models/tracker/ProgressBar";
+import TextType from "../documents/TextType";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";;
 type NotificationCategory = "general" | "urgent" | "important";
@@ -29,12 +30,14 @@ type AllTypes =
   | CustomNotificationType
   | ProgressBarAnimationType
   | MessageNotificationStatusType
+  | TextType
   | ChatType
   | StatusType
   | TeamStatus
   | ButtonType
   | AnimationType // Add AnimationType to AllTypes
-  | NotificationCategory; // Add NotificationCategory to AllTypes
+  | NotificationCategory // Add NotificationCategory to AllTypes
+  | TextType; // Add TextType to AllTypes
 
 interface BaseProps {
   id: string;
@@ -51,6 +54,10 @@ interface NotificationProps extends BaseProps {
   content?: any;
   date?: Date;
   type?: AllTypes; // Update type property to use AllTypes
+  // backgroundColor?: string;
+  // color?: string;
+  // fontSize?: string;
+  // textColor?: string
 }
 
 interface ProgressProps {
@@ -104,5 +111,5 @@ const progressBarProps: ProgressBarProps = {
 };
 
 export { chatCardProps, notificationProps, progressBarProps };
-export type { AllTypes };
+export type { AllTypes,TextType, BaseProps, ChatCardProps, NotificationProps, ProgressProps };
 

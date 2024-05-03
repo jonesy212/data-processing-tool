@@ -10,7 +10,7 @@ import useAsyncHookLinker, { LibraryAsyncHook } from "../useAsyncHookLinker";
 import createDynamicHook from "./dynamicHookGenerator";
 
 interface AsyncHook {
-  condition: () => boolean;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: ({
     idleTimeoutId,
     startIdleTimeout,
@@ -23,7 +23,7 @@ interface AsyncHook {
 const adaptAsyncHook = (asyncHook: AsyncHook): LibraryAsyncHook => ({
   enable: () => {}, // Placeholder function
   disable: () => {}, // Placeholder function
-  condition: asyncHook.condition,
+  condition:  asyncHook.condition,
   asyncEffect: asyncHook.asyncEffect,
   idleTimeoutId: null,
   startIdleTimeout: function (
@@ -54,7 +54,7 @@ export const handleLogin = (username: string, password: string) => {
 };
 
 const createPlaceholderHook = () => ({
-  resetIdleTimeout: () => {},
+  resetIdleTimeout: async () => {},
   idleTimeoutId: null,
   startIdleTimeout: () => {},
   isActive: true,
@@ -173,15 +173,15 @@ const fluenceHook = useFluence;
 const aquaHook = useAqua;
 
 const dynamicHooks: Record<string, { hook: AsyncHook }> = {
-  authentication: { hook: authenticationHook as AsyncHook },
+  authentication: { hook: authenticationHook as unknown as AsyncHook },
 
-  jobSearch: { hook: jobSearchHook as AsyncHook }, // Ensure jobSearchHook is of type AsyncHook
-  recruiterDashboard: { hook: recruiterDashboardHook as AsyncHook }, // Ensure recruiterDashboardHook is of type AsyncHook
-  chatDashboard: { hook: chatDashboardHook as AsyncHook }, // Ensure chatDashboardHook is of type AsyncHook
-  userProfile: { hook: userProfileHook as AsyncHook }, // Ensure userProfileHook is of type AsyncHook
-  fluence: { hook: fluenceHook as AsyncHook }, // Ensure fluenceHook is of type AsyncHook
-  aqua: { hook: aquaHook as AsyncHook }, // Ensure aquaHook is of type AsyncHook
-  phase: { hook: myPhaseHook as AsyncHook },
+  jobSearch: { hook: jobSearchHook },
+  recruiterDashboard: { hook: recruiterDashboardHook as unknown as AsyncHook },
+  chatDashboard: { hook: chatDashboardHook as unknown as AsyncHook },
+  userProfile: { hook: userProfileHook as unknown as AsyncHook },
+  fluence: { hook: fluenceHook as unknown as AsyncHook },
+  aqua: { hook: aquaHook as unknown as AsyncHook },
+  phase: { hook: myPhaseHook as unknown as AsyncHook },
 };
 
 // Define a caching mechanism, for example, using local storage
@@ -208,9 +208,10 @@ storeHookNamesInCache(hookNames);
 const specificHook = jobSearchHook;
 
 // Find the corresponding hook name dynamically
-const foundHookName = hookNames.find(
-  (name) => specificHook === dynamicHooks[name].hook
+   const foundHookName = Object.keys(dynamicHooks).find(
+   (name) => dynamicHooks[name as keyof typeof dynamicHooks].hook === specificHook
 );
+ 
 const hookName = foundHookName || "authentication"; // Default to 'authentication' if no matching hook name is found
 const dynamicHookAdapter = adaptAsyncHook(useDynamicHookByName(hookName));
 
@@ -227,7 +228,7 @@ useAsyncHookLinker({
         idleTimeoutId: any;
         startIdleTimeout: any;
       }): Promise<() => void> => {
-        await dynamicHookAdapter.asyncEffect({
+        await dynamicHookAdapter.asyncEffect!({
           idleTimeoutId: "idleTimeoutId",
           startIdleTimeout: "startIdleTimeout",
         });
@@ -276,7 +277,7 @@ const subscriptionService = {
                 idleTimeoutId: any;
                 startIdleTimeout: any;
               }): Promise<() => void> => {
-                await dynamicHookAdapter.asyncEffect({
+                await dynamicHookAdapter.asyncEffect!({
                   idleTimeoutId: "",
                   startIdleTimeout: "",
                 });

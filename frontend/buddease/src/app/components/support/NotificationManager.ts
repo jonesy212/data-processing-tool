@@ -3,7 +3,7 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { BytesLike } from "ethers";
 import React from "react";
 import { LogData } from "../models/LogData";
-import { NotificationType } from "./NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "./NotificationContext";
 
 interface NotificationManagerProps {
   notifications: NotificationData[];
@@ -25,17 +25,18 @@ class NotificationManager extends React.Component<NotificationManagerProps> {
   addNotification(
     message: NotificationData,
     date: Date,
-    type: NotificationType,
-    completionMessageLog: NotificationData
+    // type: NotificationType,
+    completionMessageLog: NotificationData,
+    notificationType: NotificationType
   ): void {
     const newNotification: NotificationData = {
       id: UniqueIDGenerator.generateNotificationID(
         message,
         date,
-        type,
-        completionMessageLog
+       NotificationTypeEnum.Info,
+        completionMessageLog,
       ), // Corrected parameter type
-      type,
+      notificationType,
       createdAt: new Date(),
       date: new Date(),
       content: "",

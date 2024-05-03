@@ -2,6 +2,7 @@
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { createAction } from "@reduxjs/toolkit";
 import { DocumentStatus } from "../components/documents/types";
+import { UserIdea } from "../components/users/Ideas";
 
 export const DocumentActions = {
   // Single Document Actions
@@ -14,7 +15,7 @@ export const DocumentActions = {
   updateDocumentDetailsSuccess: createAction<Partial<DocumentData>>("updateDocumentDetailsSuccess"),
   updateDocumentDetailsFailure: createAction<string>("updateDocumentDetailsFailure"),
   updateDocumentDetailsReset: createAction("updateDocumentDetailsReset"),
-  
+  showOptionsForSelectedText: createAction<{selectedText: {id: number; text: string, startIndex: number, endIndex: number}}>("showOptionsForSelectedText"),
   
   
   deleteDocument: createAction<number>("deleteDocument"),

@@ -7,6 +7,7 @@ import { Comment } from "../models/data/Data";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 // Define different types of posts
 interface BlogPost extends Post {
+  posts?: BlogPost[]
   // Additional properties specific to BlogPost
 }
 
@@ -29,7 +30,9 @@ interface Post {
   content: string;
   author: string;
   upvotes: number;
-  date: Date
+  
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 
@@ -49,6 +52,8 @@ const DiscussionForumComponent: React.FC = () => {
       title: newPost.title ?? "",
       content: newPost.content ?? "",
       author: newPost.author ?? "",
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     setPosts([...posts, post]);
     // Reset new post form
@@ -99,7 +104,7 @@ const DiscussionForumComponent: React.FC = () => {
       id: commentId,
       likes: 0, // Assuming you want to start with 0 likes
       text: newComment.content ?? "",
-      data: newComment.data ?? "",
+      data: newComment.data, // Assign the data property directly
       author: author, // Assign the determined author value
     };
 
@@ -189,4 +194,4 @@ const DiscussionForumComponent: React.FC = () => {
 };
 
 export default DiscussionForumComponent;
-export type { BlogPost };
+export type { BlogPost, Post };

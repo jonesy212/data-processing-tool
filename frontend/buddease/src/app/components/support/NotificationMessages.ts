@@ -712,6 +712,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     ITEM_SELECTED: "Item selected in toolbar",
     ITEM_REMOVED: "Item removed from toolbar",
     ITEM_UPDATED: "Item updated in toolbar",
+    ADDED_TOOOLBAR_ITEM: "Added new item to toolbar"
   },
 
   // Team-related

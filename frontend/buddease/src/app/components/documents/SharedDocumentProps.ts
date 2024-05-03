@@ -2,6 +2,7 @@
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentOptions } from "./DocumentOptions";
+import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 
 
 
@@ -9,14 +10,13 @@ import { DocumentOptions } from "./DocumentOptions";
 
 export interface DocumentBuilderProps {
   isDynamic: boolean;
-  documentPhase: string; // Add document phase property
+  documentPhase: ProjectPhaseTypeEnum
   version: string; // Add version property
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
   setOptions: (newOptions: any) => void; // Define setOptions prop
   documents: DocumentData[]; // Add documents prop to receive document data
   options: DocumentOptions;
-  
 }
 
 export interface DocumentAnimationOptions {

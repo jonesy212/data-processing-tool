@@ -3,11 +3,11 @@ import { getUsersData, saveUserProfiles } from "@/app/api/UsersApi";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library for generating unique IDs
+import { authToken } from "../../auth/authToken";
 import useDataExport from "../../hooks/dataHooks/useDataExport";
-import userService from "../../users/ApiUser";
+import UserService from "../../users/ApiUser";
+import { useSecureUserId } from "../../utils/useSecureUserId";
 import { UndoRedoStore } from "./UndoRedoStore";
-import { apiService } from "@/app/api/ApiDetails";
-import * as userApi from '../../../api/UsersApi';
 
 interface HistoryEntry {
   id: string;
@@ -34,6 +34,7 @@ interface HistoryStore {
   collapseHistorySections: (section: any) => void;
   searchHistory: (query: string) => void;
   integrateWithUserProfiles: () => void;
+  addToClipboardHistory: (copiedText: any ) => void
 }
 
 const historyManagerStore = (): HistoryStore => {
@@ -178,33 +179,77 @@ const historyManagerStore = (): HistoryStore => {
   };
 
   const integrateWithUserProfiles = async function integrateWithUserProfiles() {
-    // Implement logic to integrate data with user profiles
-    // set user id
-    const userId = "";
-    const userIds: string[] = [userId];
-    // For example, fetch user profiles and update them with relevant data
-    const userProfilesPromise = getUsersData(userIds);
-    
-    const newUserProfiles = await Promise.all([
-      userProfilesPromise,
-      userService.fetchUser(userId)
-    ]);
-    const newData = await userApi.fetchUserById(userId); // Example function returning a Promise for new data
-
-    // Wait for user profiles to resolve
-    const userProfiles = await userProfilesPromise;
-
-    if (userProfiles) {
-      // Update user profiles with new data
-      userProfiles.forEach((profile: any) => {
-        profile.data = newData;
-        // Additional logic for updating profiles as needed
-      });
-
-      // Save updated user profiles
-      saveUserProfiles(([String(userProfiles)])); // Example function to save user profiles
+    try {
+      // Implement logic to integrate data with user profiles
+      // Set user id
+      const userId = useSecureUserId.toString()
+      const userIds: string[] = [];
+  
+      // For example, fetch user profiles and update them with relevant data
+      const userProfilesPromise = getUsersData(userIds);
+  
+      // Fetch new data for the user
+      const newData = await UserService.fetchUser(userId, authToken);
+  
+      // Wait for user profiles and new data to resolve
+      const [userProfiles] = await Promise.all([userProfilesPromise]);
+  
+      if (userProfiles) {
+        // Update user profiles with new data
+        const updatedUserProfiles = userProfiles.map(profile => ({
+          userId: profile.userId,
+          username: profile.username,
+          email: profile.email,
+          tier: profile.tier,
+          token: profile.token,
+          uploadQuota: profile.uploadQuota,
+           avatarUrl: profile.avatarUrl,
+           createdAt: profile.createdAt,
+           updatedAt: profile.updatedAt,
+           fullName: profile.fullName,
+           isVerified: profile.isVerified,
+           isAdmin: profile.isAdmin,
+           isActive: profile.isActive,
+            bio: profile.bio,
+           userType: profile.userType,
+           hasQuota: profile.hasQuota,
+           profilePicture: profile.profilePicture,
+           processingTasks: profile.processingTasks,
+           role: profile.role,
+          persona: profile.persona,
+           data: profile.data,
+          // Add more properties as needed
+        }));
+  
+        updatedUserProfiles.forEach(profile => {
+          profile.data = newData;
+          // Additional logic for updating profiles as needed
+        });
+  
+        // Save updated user profiles
+        await saveUserProfiles(updatedUserProfiles); // Example function to save user profiles
+      }
+    } catch (error) {
+      console.error("Error integrating with user profiles:", error);
+      // Handle error as needed
     }
   };
+  
+  const addToClipboardHistory = async () => {
+    try {
+      // Add current history to clipboard
+      await navigator.clipboard.writeText(
+        JSON.stringify(history)
+      );
+      // Copy history JSON to clipboard successfully
+      console.log("History copied to clipboard");
+      // Handle any errors that occur during clipboard operation
+    } catch (error: any) { 
+      console.error("Error adding history to clipboard:", error);
+      throw error
+    }
+
+  }
 
   const historyStore: HistoryStore = makeAutoObservable({
     history,
@@ -225,6 +270,7 @@ const historyManagerStore = (): HistoryStore => {
     collapseHistorySections,
     searchHistory,
     integrateWithUserProfiles,
+    addToClipboardHistory
   });
 
   return historyStore;

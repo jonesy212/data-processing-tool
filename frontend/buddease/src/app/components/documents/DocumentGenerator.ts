@@ -1,23 +1,31 @@
 // DocumentGenerator.ts
+
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
   fetchDocumentByIdAPI,
   generateDocument,
   loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
+import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import {
   loadDrawingFromDatabase,
   saveDocumentToDatabase,
 } from "@/app/configs/database/updateDocumentInDatabase";
 import { generateDiagram } from "@/app/generators/diagramGenerationLibrary";
-import {} from "@faker-js/faker";
+import generateDraftJSON from "@/app/generators/generateDraftJSON";
+import { } from "@faker-js/faker";
 import Docxtemplater from "docxtemplater";
 import { DrawingFunctions, DrawingOptions } from "drawingLibrary";
 import fs from "fs";
+import Papa from 'papaparse';
 import * as path from "path";
+import { PDFDocument, PDFPage } from "pdf-lib";
 import { loadCryptoWatchlistFromDatabase } from "../crypto/CryptoWatchlist";
 import { generateCryptoWatchlistJSON } from "../crypto/generateCryptoWatchlistJSON";
+import { ParsedData } from "../crypto/parseData";
+import loadDraftFromDatabase from "../database/loadDraftFromDatabase";
+import FormatEnum, { allowedDiagramFormats } from "../form/FormatEnum";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { generatePresentationJSON } from "../libraries/presentations/generatePresentationJSON";
 import { FileLogger } from "../logging/Logger";
@@ -28,25 +36,17 @@ import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { userId, userService } from "../users/ApiUser";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
-import {generateFinancialReportContent} from "./documentation/report/generateFinancialReportContent";
+import { generateFinancialReportContent } from "./documentation/report/generateFinancialReportContent";
 import { autosaveDrawing } from "./editing/autosaveDrawing";
 import { parseCSV } from "./parseCSV";
 import { parseExcel } from "./parseExcel";
+import { AppType, PDFData } from "./parsePDF";
 import { parseXML } from "./parseXML";
-import loadDraftFromDatabase from "../database/loadDraftFromDatabase";
-import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
-import generateDraftJSON from "@/app/generators/generateDraftJSON";
 
-import * as apiDocument from "@/app/api/ApiDocument";
-import FormatEnum, { allowedDiagramFormats } from "../form/FormatEnum";
-import { AppType, PDFData, loadPDFFile, parsePDF } from "./parsePDF";
-import { ParsedData, parsedData } from "../crypto/parseData";
-import { PDFDocument, PDFPage } from "pdf-lib";
-
+import generateDevConfigurationSummaryContent from "@/app/generators/generateDevConfigurationSummaryContent";
+import { VersionData } from "../versions/VersionData";
 import { YourPDFType } from "./DocType";
 import { parseDocx } from "./parseDocx";
-import  generateDevConfigurationSummaryContent from "@/app/generators/generateDevConfigurationSummaryContent";
-import { VersionData } from "../versions/VersionData";
 var xl = require("excel4node");
 
 const { handleError } = useErrorHandling();
@@ -122,16 +122,15 @@ const documents: Document[] = [
     },
     lastModifiedDate: { value: new Date(), isModified: false }, // Initialize as not modified
     version: {} as VersionData,
+    visibility: undefined
   },
   // Add more documents as needed
 ];
 
 // // Add the namespace declaration for DXT if it's not already imported
 // declare namespace DXT {import { fs } from 'fs';
-import { ModifiedDate } from '@/app/components/documents/DocType';
-import { UserSettings } from "@/app/configs/UserSettings";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
-import { DocumentAnimationOptions } from "./SharedDocumentProps";
+import { UserSettings } from "@/app/configs/UserSettings";
 
 //   // todo
 //   // Define your types here...
@@ -362,9 +361,11 @@ async function loadDocumentContentFromDatabase(
       // Binary data, JSON, XML, YAML, DOCX, XLSX, PPTX, CAD files, GIS files, Database dump files
       case "txt":
         // Logic to parse plain text content
+        parsedContent = document.content;
         break;
       case "csv":
         // Logic to parse CSV content
+        const csvContent = Papa.parse(document.content, {header: true});
         break;
       case "md":
         // Logic to parse Markdown content
@@ -382,6 +383,7 @@ async function loadDocumentContentFromDatabase(
         // Logic to parse audio content
         break;
       case "mp4":
+        // Logic to parse video content
       case "avi":
         // Logic to parse video content
         break;
@@ -418,7 +420,7 @@ async function loadDocumentContentFromDatabase(
   return "";
 }
 
-async function loadOtherDocumentContent(
+async function loadOtherDocumentContent(this: any, 
   documentId: number,
   format: string,
   dataCallback: (data: WritableDraft<DocumentData>) => void
@@ -466,7 +468,7 @@ async function loadOtherDocumentContent(
       options: {
         additionalOptions: [] as string[],
         uniqueIdentifier: "",
-        documentType: pdfDataType, // Use pdfDataType instead of an empty string
+        documentType: this.pdfDataType, // Use pdfDataType instead of an empty string
         userIdea: "",
         isDynamic: false,
         size: "letter",
@@ -474,7 +476,7 @@ async function loadOtherDocumentContent(
           type: "none",
           transition: "none",
           duration: 0,
-          speed: 0, 
+          speed: 0,
         },
         visibility: "public",
         fontSize: 0,
@@ -516,6 +518,12 @@ async function loadOtherDocumentContent(
         includeAdditionalInfo: false,
         userSettings: {} as WritableDraft<UserSettings>,
         dataVersions: {} as WritableDraft<DataVersions>,
+        documentPhase: "",
+        version: {
+          id: "",
+          number: 0,
+          date: new Date(),
+        }
       },
       folderPath: "",
       previousMetadata: {} as StructuredMetadata,
@@ -1016,4 +1024,5 @@ class DocumentGenerator {
 
 export default DocumentGenerator;
 export { DocumentStatusEnum, DocumentTypeEnum, extractTextFromPDF };
-export type { DocumentPath, CustomDocxtemplater };
+export type { CustomDocxtemplater, DocumentPath };
+

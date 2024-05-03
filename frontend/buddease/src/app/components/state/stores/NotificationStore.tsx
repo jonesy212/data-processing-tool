@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { createContext } from 'react';
 import { NotificationData } from '../../support/NofiticationsSlice';
 import { NotificationContextProps, NotificationTypeEnum } from '../../support/NotificationContext';
@@ -89,6 +89,22 @@ class NotificationStore {
     });
   };
 
+  @action
+  dismissNotification = (notificationId: string) => {
+    this.removeNotification(notificationId);
+  }
+
+  @action
+  useContainer = (container: React.Context<NotificationContextProps>) => {
+    
+    createContext(container);
+  }
+
+  @action
+    useSetState = (state: any) => {
+      createContext(state);
+    }
+
   // Generate the notification message based on the notification type
   private generateNotificationMessage = (
     type: NotificationTypeEnum,
@@ -103,10 +119,25 @@ class NotificationStore {
       return 'Unknown Notification Type';
     }
   };
+
+
 }
 
+const useNotificationStore = makeObservable({
+  notifications: observable,
+  addNotification: action,
+  removeNotification: action,
+  clearNotifications: action,
+  notify: action,
+  generateNotificationMessage: action,
+  dismissNotification: action,
+  useContainer: action,
+  useSetLocale: action,
+  useSetState: action
+})
 
 
+export { useNotificationStore };
 
 
 // Create an instance of the combined NotificationStore
@@ -114,3 +145,4 @@ export const notificationStoreInstance = new NotificationStore();
 
 // Create a context for accessing the notification store
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
+export default NotificationStore

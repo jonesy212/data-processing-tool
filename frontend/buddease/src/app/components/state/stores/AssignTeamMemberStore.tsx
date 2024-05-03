@@ -3,7 +3,6 @@ import { makeAutoObservable } from "mobx";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
-import teamApiService from "@/app/api/TeamApi";
 
 
 
@@ -23,12 +22,21 @@ export interface AssignTeamMemberStore extends AssignBaseStore {
   unassignUsersFromTeams: (teamIds: string[], userId: string) => void;
   reassignUsersInTeams: (teamIds: string[], oldUserId: string, newUserId: string) => void;
   getAssignedTeamMembers: (teamId: string, userIds: string[]) => (TeamMember | null)[];
+
+  shareResource: (teamId: string, resource: string, userId: string) => void;
+  unshareResource: (teamId: string, resource: string, userId: string) => void;
+  trackProjectProgress: (teamId: string, projectId: string, progress: number) => void;
+  updateProjectProgress: (teamId: string,  projectId: string, progress: number) => void;  
+  trackTaskProgress: (teamId: string, taskId: string,  progress: number) => void;
+  
 }
 const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
   const { ...baseStore } = useAssignBaseStore();
 
   // Use spread operator to create a shallow copy of assignedTeams
-  const assignedTeams: Record<string, string[]> = { ...baseStore.assignedTeams };
+  const assignedTeams: Record<string, string[]> = {
+    ...baseStore.assignedTeams,
+  };
 
   // Create a separate record for team members
   const assignedTeamMembers: Record<string, string[]> = {};
@@ -43,13 +51,15 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
     // TODO: Implement any additional logic needed when assigning a team member
   };
 
-   const assignNote: Record<string, string[]> = {};
+  const assignNote: Record<string, string[]> = {};
 
   const assignNoteToTeam: Record<string, string[]> = {};
 
   const unassignTeamMember = (teamId: string, userId: string) => {
     if (assignedTeamMembers[teamId]) {
-      assignedTeamMembers[teamId] = assignedTeamMembers[teamId].filter((id) => id !== userId);
+      assignedTeamMembers[teamId] = assignedTeamMembers[teamId].filter(
+        (id) => id !== userId
+      );
 
       if (assignedTeamMembers[teamId].length === 0) {
         delete assignedTeamMembers[teamId];
@@ -58,7 +68,11 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
     // TODO: Implement any additional logic needed when unassigning a team member
   };
 
-  const reassignTeamMember = (teamId: string, oldUserId: string, newUserId: string) => {
+  const reassignTeamMember = (
+    teamId: string,
+    oldUserId: string,
+    newUserId: string
+  ) => {
     if (assignedTeamMembers[teamId]) {
       assignedTeamMembers[teamId] = [
         ...assignedTeamMembers[teamId].filter((id) => id !== oldUserId),
@@ -86,7 +100,9 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
   const unassignTeamMembersFromTeams = (teamIds: string[], userId: string) => {
     teamIds.forEach((teamId) => {
       if (assignedTeamMembers[teamId]) {
-        assignedTeamMembers[teamId] = assignedTeamMembers[teamId].filter((id) => id !== userId);
+        assignedTeamMembers[teamId] = assignedTeamMembers[teamId].filter(
+          (id) => id !== userId
+        );
 
         if (assignedTeamMembers[teamId].length === 0) {
           delete assignedTeamMembers[teamId];
@@ -96,47 +112,53 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
     // TODO: Implement any additional logic needed when unassigning a team member from multiple teams
   };
 
-
-
   // Bulk assignment methods
-const assignUsersToTeams = (teamIds: string[], userId: string) => {
-  teamIds.forEach((teamId) => {
-    assignTeamMember(teamId, userId);
-  });
-  // Additional logic for bulk assignment if needed
-};
-  
-const unassignUsersFromTeams = (teamIds: string[], userId: string) => {
-  teamIds.forEach((teamId) => {
-    unassignTeamMember(teamId, userId);
-  });
-  // Additional logic for bulk unassignment if needed
-};
+  const assignUsersToTeams = (teamIds: string[], userId: string) => {
+    teamIds.forEach((teamId) => {
+      assignTeamMember(teamId, userId);
+    });
+    // Additional logic for bulk assignment if needed
+  };
 
-const reassignUsersInTeams = (teamIds: string[], oldUserId: string, newUserId: string) => {
-  teamIds.forEach((teamId) => {
-    reassignTeamMember(teamId, oldUserId, newUserId);
-  });
-  // Additional logic for bulk reassignment if needed
-};
+  const unassignUsersFromTeams = (teamIds: string[], userId: string) => {
+    teamIds.forEach((teamId) => {
+      unassignTeamMember(teamId, userId);
+    });
+    // Additional logic for bulk unassignment if needed
+  };
+
+  const reassignUsersInTeams = (
+    teamIds: string[],
+    oldUserId: string,
+    newUserId: string
+  ) => {
+    teamIds.forEach((teamId) => {
+      reassignTeamMember(teamId, oldUserId, newUserId);
+    });
+    // Additional logic for bulk reassignment if needed
+  };
 
   //todo fix password showing as being apart of this
   const getAssignedTeamMembers = (teamId: string, userIds: string[]) => {
-    return userIds.map(userId => {
-      const team = assignedTeamMembers[teamId];
-      if(team && team.includes(userId)) {
-        return {
-          teamId,
-          userId
-        } as unknown as TeamMember;
-      }
-      return null;
-    }).filter(member => member);
+    return userIds
+      .map((userId) => {
+        const team = assignedTeamMembers[teamId];
+        if (team && team.includes(userId)) {
+          return {
+            teamId,
+            userId,
+          } as unknown as TeamMember;
+        }
+        return null;
+      })
+      .filter((member) => member);
+  };
 
-};
-
-
-  const reassignTeamMembersToTeams = (teamIds: string[], oldUserId: string, newUserId: string) => {
+  const reassignTeamMembersToTeams = (
+    teamIds: string[],
+    oldUserId: string,
+    newUserId: string
+  ) => {
     teamIds.forEach((teamId) => {
       if (assignedTeamMembers[teamId]) {
         assignedTeamMembers[teamId] = [
@@ -152,22 +174,89 @@ const reassignUsersInTeams = (teamIds: string[], oldUserId: string, newUserId: s
     // TODO: Implement any additional logic needed when reassigning a team member from old user to new user for multiple teams
   };
 
-
   const assignTeamMemberSuccess = () => {
     console.log("Assign team member success!");
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+    );
   };
 
   const assignTeamMemberFailure = (error: string) => {
     console.error("Assign team member failure:", error);
-    setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Team.ASSIGN_TEAM_MEMBER_FAILURE);
+    setDynamicNotificationMessage(
+      NOTIFICATION_MESSAGES.Team.ASSIGN_TEAM_MEMBER_FAILURE
+    );
   };
 
   const setDynamicNotificationMessage = (message: string) => {
     setDynamicNotificationMessage(message);
   };
 
-  makeAutoObservable({
+  const shareResource = (teamId: string, resourceId: string) => {
+    if (!assignNote[teamId]) {
+      assignNote[teamId] = [resourceId];
+    } else {
+      assignNote[teamId].push(resourceId);
+    }
+  };
+
+  const shareResources = (teamId: string, resourceIds: string[]) => {
+    resourceIds.forEach((resourceId) => {
+      shareResource(teamId, resourceId);
+    });
+  };
+
+  const unshareResource = (teamId: string, resourceId: string) => {
+    if (assignNote[teamId]) {
+      assignNote[teamId] = assignNote[teamId].filter((id) => id !== resourceId);
+
+      if (assignNote[teamId].length === 0) {
+        delete assignNote[teamId];
+      }
+      // Implement any additional logic needed when unsharing a resource from a team
+    }
+  };
+
+  const trackProjectProgress = (
+    teamId: string,
+    projectId: string,
+    progress: number
+  ) => {
+    const projectProgress: Record<string, Record<string, number>> = {};
+    if (!projectProgress[teamId]) {
+      projectProgress[teamId] = {};
+    }
+
+    projectProgress[teamId][projectId] = progress;
+  };
+
+  const trackTaskProgress = (
+    teamId: string,
+    taskId: string,
+    progress: number
+  ) => {
+    const projectTasks: Record<string, Record<string, Record<string, number>>> = {};
+    if(!projectTasks[teamId]) {
+      projectTasks[teamId] = {};
+    }
+
+    if(!projectTasks[teamId][taskId]) {
+      projectTasks[teamId][taskId] = {};
+    }
+
+    projectTasks[teamId][taskId].progress = progress;
+  }
+
+  const updateProjectProgress = (
+    teamId: string,
+    projectId: string,
+    progress: number
+  ) => {
+    trackProjectProgress(teamId, projectId, progress);
+  }
+
+  const useAssignTeamMemberStore = makeAutoObservable({
+    ...baseStore,
     assignedTeams,
     assignedTeamMembers,
     assignNote,
@@ -181,27 +270,21 @@ const reassignUsersInTeams = (teamIds: string[], oldUserId: string, newUserId: s
     assignTeamMembersToTeams,
     unassignTeamMembersFromTeams,
     reassignTeamMembersToTeams,
-  });
-
-  return {
-    ...baseStore,
     ...assignedTeamMembers,
-    assignTeamMember,
-    assignNoteToTeam,
     assignUsersToTeams,
     unassignUsersFromTeams,
     reassignUsersInTeams,
-    unassignTeamMember,
-    reassignTeamMember,
-    assignTeamMembersToTeams,
-    unassignTeamMembersFromTeams,
-    reassignTeamMembersToTeams,
-    assignTeamMemberSuccess,
-    assignTeamMemberFailure,
-    setDynamicNotificationMessage,
     // Add more properties or methods as needed
-    getAssignedTeamMembers
-  };
+    getAssignedTeamMembers,
+    shareResource,
+    shareResources,
+    unshareResource,
+    trackProjectProgress,
+    trackTaskProgress,
+    updateProjectProgress
+  });
+
+  return useAssignTeamMemberStore;
 };
 
-export { useAssignTeamMemberStore };
+export { useAssignTeamMemberStore }

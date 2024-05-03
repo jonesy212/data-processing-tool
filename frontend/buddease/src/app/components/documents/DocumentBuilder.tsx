@@ -31,6 +31,7 @@ import {
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
 import { VersionData } from "../versions/VersionData";
+import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
@@ -64,6 +65,27 @@ export interface DocumentData extends CommonData<Data> {
   version: VersionData;
   // Add more properties if needed
 }
+
+
+
+// Define a custom type/interface that extends ProjectPhaseTypeEnum and includes additional properties
+export interface CustomProjectPhaseType extends ProjectPhaseTypeEnum {
+  customProp1: string;
+  customProp2: number;
+  // Add more custom properties as needed
+}
+
+// Use the custom type/interface for the documentPhase option
+const documentBuilderProps: DocumentBuilderProps = {
+  documentPhase: {
+    phaseType: 'CustomPhase', // Use the phaseType from ProjectPhaseTypeEnum or your custom type
+    customProp1: 'value1', // Custom property values
+    customProp2: 123,
+    // Add values for additional custom properties
+  },
+  // Other options...
+};
+
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   isDynamic,

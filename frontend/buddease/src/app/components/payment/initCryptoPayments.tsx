@@ -1,14 +1,25 @@
 
-import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import DynamicEventHandlerService from "../event/DynamicEventHandlerExample";
+import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { addMessage } from "../state/redux/slices/ChatSlice";
 
 
-const handleEvent =  DynamicEventHandlerExample
+const handleEvent =  DynamicEventHandlerService
   // Function to initiate Bitcoin payment
-  export const initiateBitcoinPayment = () => {
+export const initiateBitcoinPayment = () => {
+  const message = {
+    content: "Initiating Bitcoin payment...",
+    receiver: "BitcoinWalletAddress",
+    sender: "MyBitcoinWalletAddress",
+    amount: "0.005", // Amount in BTC
+    transactionFee: "0.0001", // Transaction fee
+    transactionId: "1234abcd" // Transaction ID
+    
+    }
     // Implement logic to initiate Bitcoin payment
     console.log("Initiating Bitcoin payment...");
-      addMessage();
+      addMessage(message as WritableDraft<Message>);
   };
 
 

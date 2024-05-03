@@ -27,6 +27,7 @@ import { CustomComment } from "./BlogSlice";
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import { WritableDraft } from "../ReducerGenerator";
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
+import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
@@ -43,7 +44,7 @@ interface ContentManagerState {
     pendingContent: ContentItem[]; // Initialize pendingContent array
     inProgressContent: ContentItem[]; // Initialize inProgressContent array
     completedContent: ContentItem[]; // Initialize completedContent array
-    
+    author: User;
   assignedTo: WritableDraft<User>;
     assigneeId: string;
     assigneeIds: string[];
@@ -96,7 +97,7 @@ interface ContentManagerState {
     status: "",
     previouslyAssignedTo: [],
     done: false,
-    data: {} as Data, 
+    data: {} as Data,
     source: "",
     startDate: undefined,
     endDate: undefined,
@@ -112,7 +113,11 @@ interface ContentManagerState {
     videoData: undefined,
     ideas: [],
     [Symbol.iterator]: function (): Iterator<any, any, undefined> {
-      throw new Error("Function not implemented.");
+      throw new Error("Method not implemented.");
+        },
+    author: {
+      id: "",
+      username: ""
     }
   };
   
@@ -188,6 +193,7 @@ export const contentSlice = createSlice({
 
       const newContent: WritableDraft<ContentItem> = {
         id: generatedContentID,
+        userId: state.assignedTo
         title,
         description: state.contentDescription,
         type: state.contentType,
@@ -196,7 +202,8 @@ export const contentSlice = createSlice({
       } as WritableDraft<ContentItem>;
 
       state.contentItems.push(newContent);
-      ContentLogger.logContentCreated("New Content", generatedContentID);
+      const userId = state.assignedTo._id
+      ContentLogger.logContentCreation("New Content", id, userId!);
 
       generateNewContent().then((newContent: any) => {
         state.contentItems.push(newContent);

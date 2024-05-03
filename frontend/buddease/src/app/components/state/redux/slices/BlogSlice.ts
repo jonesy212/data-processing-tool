@@ -14,11 +14,6 @@ interface BlogState {
   // Add more state properties as needed
 }
 
-interface BlogPost {
-  id: string;
-  title: string;
-  content: string;
-}
 
 interface BlogComment {
   id: string;

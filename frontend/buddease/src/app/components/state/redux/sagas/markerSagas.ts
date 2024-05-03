@@ -1,10 +1,10 @@
 // markerSagas.ts
-import { markerService } from '@/app/components/marker/MarkerService';
 import { Marker } from '@/app/components/models/data/Marker';
 import axios, { AxiosResponse } from 'axios';
 import { Effect, call, put, takeLatest } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '../../../support/NotificationMessages';
 import { MarkerActions } from '../actions/MarkerActions';
+import { markerService } from '@/app/components/marker/MarkerService';
 
 
 // Replace 'yourApiEndpoint' with the actual API endpoint
@@ -24,26 +24,27 @@ function* fetchMarkersSaga(): Generator<Effect, void, any> {
   }
 }
 
-function* addMarkerSaga(action: ReturnType<typeof MarkerActions.add>): Generator {
+function* addMarkerSaga(action: ReturnType<typeof MarkerActions.addMarker>): Generator {
   try {
     const { payload: newMarker } = action;
-    const response = yield call(markerService.addMarker, newMarker as Marker);
-    yield put(MarkerActions.updateMarkersSuccess({ markers: [response as Marker] }));
-  } catch (error) {
-    yield put(
-      MarkerActions.updateMarkerFailure({
-        error: NOTIFICATION_MESSAGES.Markers.MARKER_ADD_ERROR,
-      })
-    );
+    const response = yield call(markerService.addMarker, {
+      marker: {
+        ...newMarker
+      }
+    });
+    // Handle success
+  } catch (error: any) { // Specify 'any' type for 'error'
+    yield put(MarkerActions.updateMarkerFailure({ error: error.message }));
   }
 }
 
-function* removeMarkerSaga(action: ReturnType<typeof MarkerActions.remove>): Generator {
+
+function* removeMarkerSaga(action: ReturnType<typeof MarkerActions.deleteMarker>): Generator {
   try {
     const { payload: markerId } = action;
     yield call(markerService.removeMarker, markerId);
     // Update the state or handle success if needed
-    yield put(MarkerActions.removeMarkerSuccess(markerId));
+    yield put(MarkerActions.deleteMarkerSuccess(markerId));
   } catch (error) {
     yield put(
       MarkerActions.updateMarkerFailure({
@@ -57,8 +58,8 @@ function* removeMarkerSaga(action: ReturnType<typeof MarkerActions.remove>): Gen
 
 export function* watchMarkerSagas() {
   yield takeLatest(MarkerActions.fetchMarkersRequest.type, fetchMarkersSaga);
-  yield takeLatest(MarkerActions.add.type, addMarkerSaga);
-  yield takeLatest(MarkerActions.remove.type, removeMarkerSaga);
+  yield takeLatest(MarkerActions.addMarker.type, addMarkerSaga);
+  yield takeLatest(MarkerActions.deleteMarker.type, removeMarkerSaga);
   // Add more sagas as needed
 }
 

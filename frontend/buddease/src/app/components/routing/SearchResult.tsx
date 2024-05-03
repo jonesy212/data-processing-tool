@@ -1,36 +1,54 @@
 // SearchResult.tsx
 import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchDocumentAPI method
+import SearchResultItem from '@/app/components/models/data/SearchResultItem';
 import ListGenerator from '@/app/generators/ListGenerator';
 import React, { useEffect, useState } from 'react';
-import SearchResultItem from '../models/data/SearchResultItem';
-import FolderData from '../models/data/FolderData';
 import { DocumentOptions } from '../documents/DocumentOptions';
+import FolderData from '../models/data/FolderData';
+import SearchHistory from '../versions/SearchHistory';
+import Version from '../versions/Version';
 
 
-interface SearchResultProps {
-  result: {
-    id: number;
-    title: string;
-    description: string;
-    source: string;
-    content: string;
-    topics: string[];
-    highlights: string[];
-    keywords: string[];
-    load: (content: any) => void;
-    folders: FolderData[];
-    options: DocumentOptions;
-    folderPath: string;
-    previousMetadata: any;
-    currentMetadata: any;
-    accessHistory: any[];
-    lastModifiedDate: Date;
-    searchHistory: any[];
-    version: VersionData;
-  };
+// Define the SearchResultWithQuery interface that extends SearchResult
+interface SearchResultWithQuery<T> extends SearchResult<T> {
+  query: string;
+  searchResults?: SearchResultWithQuery<T>[];
+  // [Symbol.iterator](): IterableIterator<T>
 }
 
-const SearchResult: React.FC<SearchResultProps> = ({ result }) => {
+// Define the SearchResultProps interface for SearchResultComponent
+interface SearchResultProps<T> {
+  result: SearchResultWithQuery<T>;
+}
+interface SearchResult<T> {
+  items: T[];
+  totalCount: number;
+  id: number;
+  title: string;
+  description: string;
+  source: string;
+  content: string;
+  topics: string[];
+  highlights:  Highlight[];
+  keywords: string[];
+  folders: FolderData[];
+  options: DocumentOptions;
+  folderPath: string;
+  previousMetadata: any;
+  currentMetadata: any;
+  accessHistory: any[];
+  lastModifiedDate: Date;
+  searchHistory: SearchHistory[];
+  version: Version;
+  load: (content: any) => void;
+  query: string;
+  results: SearchResult<Document>;
+
+}
+
+
+
+const SearchResultComponent: React.FC<SearchResultProps<Document>> = ({ result }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]); // State to store search results
   const [loading, setLoading] = useState(false); // State to track loading status
   const [error, setError] = useState(""); // State to track errors
@@ -81,4 +99,6 @@ const SearchResult: React.FC<SearchResultProps> = ({ result }) => {
   );
 };
 
-export default SearchResult;
+export default SearchResultComponent;
+export type { SearchResult, SearchResultWithQuery };
+

@@ -16,6 +16,12 @@ class Version {
     this.versionNumber = newVersionNumber;
   }
 
+
+  static create(versionInfo: { versionNumber: string, appVersion: string }): Version {
+    return new Version(versionInfo);
+  }
+
+
   // Method to compare two versions
   compare(otherVersion: Version): number {
     const currentParts = this.versionNumber.split('.').map(part => parseInt(part, 10));

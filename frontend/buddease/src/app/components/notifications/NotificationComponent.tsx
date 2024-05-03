@@ -2,6 +2,8 @@ import { randomBytes } from "ethers"; // Import randomBytes from ethers
 import React from "react";
 import { NotificationType } from "../support/NotificationContext";
 import useNotificationManagerService from "./NotificationService";
+import { NotificationData } from "../support/NofiticationsSlice";
+import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 
 interface NotificationComponentProps {
   notifications: NotificationData[];
@@ -10,16 +12,16 @@ interface NotificationComponentProps {
 const NotificationComponent: React.FC<NotificationComponentProps> = ({ notifications }) => {
   const useNotificationManager = useNotificationManagerService();
 
-  const handleDismiss = async (notification: Notification): Promise<void> => {
+  const handleDismiss = async (notification: NotificationData): Promise<void> => {
     const { notify } = useNotificationManager;
     const randomBytesValue = randomBytes(8);
     const randomBytesString = Buffer.from(randomBytesValue).toString("hex");
   
     await notify(
-      "Message dismissed",
-      "content",
+      "messageDismissed" + randomBytesString, // Unique id for dismissal
+      "message was dismissed due to a random event", // Message for dismissal
+      NOTIFICATION_MESSAGES.Message.MESSAGE_DISMISSED_DUE_TO_RANDOM_EVENT, // Standardized message
       new Date(),
-      "RandomBytes" as NotificationType,
        "Dismiss" as NotificationType // Adjusted type for random dismissals
     );
   };

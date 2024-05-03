@@ -1,4 +1,5 @@
 // AssignEventStore.tsx
+import { makeObservable } from "mobx";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { useNotification } from "../../support/NotificationContext";
 import { User } from "../../users/User";
@@ -6,12 +7,21 @@ import { useAssignBaseStore } from "../AssignBaseStore";
 import { PresentationEventAssignment } from "./UserPresentationsStore";
 
 
-interface ReassignEventResponse {
+
+interface ReassignData {
+  eventId: string;       // Unique identifier for the event being reassigned
+  oldUserId: string;     // User ID of the original assignee
+  newUserId: string;     // User ID of the new assignee
+}
+
+interface ReassignEventResponse extends ExtendedCalendarEvent{
   eventId: string;       // Unique identifier for the event
   responseId: string;    // Unique identifier for the response
   userId: string;        // User ID of the responder
   comment: string;       // Comment or feedback provided by the responder
   timestamp: Date;       // Timestamp indicating when the response was submitted
+  reassignData: ReassignData[]
+
 }
 
 export interface AssignEventStore {
@@ -19,7 +29,7 @@ export interface AssignEventStore {
   updateEventStatus: (eventId: string, status: string) => void;
   assignedEvents: Record<string, ExtendedCalendarEvent[]>; // Use eventId as key and array of event IDs as value
   assignedTodos: Record<string, string[]>; // Use eventId as key and array of todo IDs as value
-  reassignUser: Record<string, ReassignEventResponse[]>; // Use eventI
+  reassignUser: Record<string, ReassignEventResponse[]> 
   assignEvent: (eventId: string, userId: User) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
@@ -58,8 +68,8 @@ const useAssignEventStore = (): AssignEventStore => {
   const assignedUsers: Record<string, string[]> = {};
   const assignedEvents: Record<string, ExtendedCalendarEvent[]>= {};
   const assignedTodos: Record<string, string[]> = {};
-  const reassignUser: Record<string, ReassignEventResponse[]> = {};
-  const baseStore = useAssignBaseStore();
+  const reassignUser: Record<string, ReassignEventResponse[]> = {}
+    const baseStore = useAssignBaseStore();
 
   const assignEvent = (eventId: string, assignedTo: User) => {
     // Add user to assigned events
@@ -190,7 +200,7 @@ const useAssignEventStore = (): AssignEventStore => {
         userId: "user1",
         comment: "Great work!",
         timestamp: new Date(),
-      },
+      } as ReassignEventResponse
       // Add more responses
     ];
 
@@ -224,7 +234,7 @@ const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] =
   };
 
   
-  return {
+  const useAssignEventStore = makeObservable({
     assignedUsers,
     assignedEvents,
     assignedTodos,
@@ -244,7 +254,9 @@ const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] =
     assignUserSuccess,
     assignUserFailure,
     connectResponsesToTodos,
-  };
+  })
+
+  return useAssignEventStore
 };
 
 export { useAssignEventStore };

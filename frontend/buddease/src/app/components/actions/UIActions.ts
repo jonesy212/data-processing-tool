@@ -1,8 +1,8 @@
 // UIActions.tsx
 import { createAction } from "@reduxjs/toolkit";
 import React from "react";
-
-
+import { Progress } from "../models/tracker/ProgressBar";
+import { SearchResultWithQuery } from "../routing/SearchResult";
 
 
 interface FetchUserDataPayload {
@@ -18,7 +18,15 @@ export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<
 
 
 export const UIActions = {
-  
+  setIsGestureInProgress: createAction<boolean>("setIsGestureInProgress"),
+  setGestureStartPosition: createAction<{ x: number; y: number }>("setGestureStartPosition"),
+  setGestureCurrentPosition: createAction<{ x: number; y: number }>("setGestureCurrentPosition"),
+  updateSearchResults: createAction<SearchResultWithQuery<any>[]>("updateSearchResults"),
+  updateUIProgressBar: createAction<Progress>("updateUIProgressBar"),
+  disableFeatures: createAction<{features: string[]}>("disableFeatures"),
+  showDeactivationMessage: createAction<FetchUserDataPayload>("showDeactivationMessage"),
+  showActivationMessage: createAction<FetchUserDataPayload>("showActivationMessage"),
+  enableFeatures: createAction<{features: string[]}>("enableFeatures"),
   setIsPointerDown: createAction<boolean>("setIsPointerDown"),
   setPointerPosition: createAction<{ x: number; y: number }>(
     "setPointerPosition"
@@ -83,9 +91,24 @@ export const UIActions = {
   fetchUserDataAndDisplayNotification: createAction<FetchUserDataPayload>(
     "fetchUserDataAndDisplayNotification"
   ),
+
+
+  toggleSettingsPanel: createAction<boolean>("toggleSettingsPanel"),
+  updateSettingsPanelState: createAction<{
+    settings: {
+      isOpen: boolean;
+      // settings state
+    }
+  }>("updateSettingsPanelState"),
+  toggleHelpFAQPanel: createAction<boolean>("toggleHelpFAQPanel"),
   // Add more actions as needed
   setRealtimeData: createAction<{ data: any; type: string }>("setRealtimeData"),
-
+  updateHelpFAQPanelState: createAction<{ 
+    helpFAQ: {
+      isOpen: boolean;
+      // helpFAQ state
+    }
+  }>("updateHelpFAQPanelState"),
   getGesturePosition: createAction<GesterEvent>("getGesturePosition"),
 }
 

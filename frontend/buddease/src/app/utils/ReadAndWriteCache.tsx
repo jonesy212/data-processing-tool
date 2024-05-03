@@ -1,9 +1,10 @@
 import { RealtimeData } from "../../../models/realtime/RealtimeData";
+import { authToken } from "../components/auth/authToken";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 import { CalendarEvent } from "../components/state/stores/CalendarEvent";
-import { userService } from "../components/users/ApiUser";
+import UserService, { userId, userService } from "../components/users/ApiUser";
 import { VersionHistory, versionHistory } from "../components/versions/VersionData";
 import { VideoData } from "../components/video/Video";
 import { BackendConfig, backendConfig } from "../configs/BackendConfig";
@@ -108,7 +109,7 @@ function readCache(userId: string): CacheData | null {
 const writeCache = async (userId: string, userData: Promise<CacheData>) => {
   try {
     // Fetch user data
-    const user = await userService.fetchUser("");
+    const user = await userService.fetchUserData(req, res);
 
     // Fetch user ID
     const userId = await userService.fetchUserById(user);
@@ -126,8 +127,8 @@ const writeCache = async (userId: string, userData: Promise<CacheData>) => {
 // Assuming userService.fetchUser and userService.fetchUserById return promises
 // Usage with .then()
 // Assuming userService.fetchUser and userService.fetchUserById return promises
-userService.fetchUser("").then((user) => {
-  userService.fetchUserById(user)?.then((userId) => {
+UserService.fetchUser(userId,authToken).then((user) => {
+  userService.fetchUserById(user).then((userId) => {
     const userDataPromise = Promise.resolve(
       readCache(userId) || {
         lastUpdated: versionHistory,
@@ -144,9 +145,9 @@ userService.fetchUser("").then((user) => {
         jobSearchPhaseHook: {} as AsyncHook,
         recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
         teamBuildingPhaseHook: {} as AsyncHook,
-        brainstormingPhaseHook:  {} as AsyncHook,
+        brainstormingPhaseHook: {} as AsyncHook,
         projectManagementPhaseHook: {} as AsyncHook,
-        meetingsPhaseHook:  {} as AsyncHook,
+        meetingsPhaseHook: {} as AsyncHook,
         ideationPhaseHook: {} as CustomPhaseHooks,
         teamCreationPhaseHook: {} as CustomPhaseHooks,
         productBrainstormingPhaseHook: {} as CustomPhaseHooks,
@@ -155,7 +156,7 @@ userService.fetchUser("").then((user) => {
         dataAnalysisPhaseHook: {} as CustomPhaseHooks,
         generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks,
         fileType: "json",
-        calendarEvent: { } as CalendarEvent,
+        calendarEvent: {} as CalendarEvent,
       }
     );
     writeCache(userId, userDataPromise);

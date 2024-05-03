@@ -4,7 +4,6 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { useDispatch, useSelector } from "react-redux";
-import DynamicEventHandlerExample from "../documents/screenFunctionality/ShortcutKeys";
 import AnnouncementManager from "../support/AnnouncementManager";
 import {
   NotificationData,
@@ -14,7 +13,9 @@ import { NotificationActions } from "../support/NotificationActions";
 import { NotificationType } from "../support/NotificationContext";
 import PushNotificationManager from "../support/PushNotificationManager";
 
-interface NotificationManagerServiceProps {
+
+
+interface NotificationContainer {
   notifications: NotificationData[];
   setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
   notify: (
@@ -33,7 +34,26 @@ interface NotificationManagerServiceProps {
   clearNotifications: () => void;
 }
 
-export const eventHandler = typeof DynamicEventHandlerExample;
+interface NotificationContainer {
+  notifications: NotificationData[];
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
+  notify: (
+    id: string,
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType
+  ) => Promise<void>;
+  sendPushNotification: (message: string, sender: string) => void;
+  sendAnnouncement: (message: string, sender: string) => void;
+  handleButtonClick: () => Promise<void>;
+  dismissNotification: (notification: NotificationData) => void;
+  addNotification: (notification: NotificationData) => void;
+  removeNotification: (id: string) => void;
+  clearNotifications: () => void;
+}
+
+export const eventHandler = 
 
 export const logData: LogData = {
   id: "",
@@ -46,7 +66,7 @@ export const logData: LogData = {
   level: "",
 };
 
-const useNotificationManagerService = (): NotificationManagerServiceProps => {
+const useNotificationManagerService = (): NotificationContainer => {
   const { notify } = useNotification();
   const notifications = useSelector(selectNotifications);
   const dispatch = useDispatch();
@@ -157,4 +177,4 @@ const useNotificationManagerService = (): NotificationManagerServiceProps => {
 };
 
 export default useNotificationManagerService;
-export type { NotificationManagerServiceProps };
+export type { NotificationContainer };

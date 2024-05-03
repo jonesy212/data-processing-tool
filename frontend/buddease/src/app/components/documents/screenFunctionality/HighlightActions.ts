@@ -2,6 +2,8 @@ import { createAction } from "@reduxjs/toolkit";
 import HighlightEvent from "./HighlightEvent";
 
 export const HighlightActions = {
+
+  highlightText: createAction<{ selectedText: {id: number; text: string, startIndex: number, endIndex: number} }>("highlightText"),
   // General Highlight Actions
   createHighlight: createAction<Omit<HighlightEvent, "id">>("createHighlight"),
   updateHighlight: createAction<HighlightEvent>("updateHighlight"),

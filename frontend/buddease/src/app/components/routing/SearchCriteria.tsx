@@ -1,13 +1,11 @@
 import { debounce } from "@/app/pages/searchs/Debounce";
-import { SearchItemProps } from "@/app/pages/searchs/SearchItems";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { SearchLogger } from "../logging/Logger";
-import { Entity } from "../state/redux/slices/EntitySlice";
 import { RootState } from "../state/redux/slices/RootSlice";
-import userService from "../users/ApiUser";
-import { fuzzyMatchEntities } from "./FuzzyMatch";
+import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
+import { userService } from "../users/ApiUser";
 
 const SearchCriteria: React.FC<{
   onUpdateCriteria: (criteria: string) => void;
@@ -66,7 +64,7 @@ const SearchCriteria: React.FC<{
     debouncedSearch(value);
     // Log search query
     if (userId !== undefined) {
-      SearchLogger.logSearch(value, userId as unknown as SearchItemProps);
+      SearchLogger.logSearch(value, userId);
     }
   };
 

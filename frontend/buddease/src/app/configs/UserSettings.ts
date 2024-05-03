@@ -112,6 +112,9 @@ export interface UserSettings extends Settings {
   enableFileSharing: boolean;
   enableBlockchainCommunication: boolean;
   enableDecentralizedStorage: boolean;
+  selectDatabaseVersion: string;
+  selectAppVersion: string;
+  enableDatabaseEncryption: boolean;
 }
 
 
@@ -120,6 +123,7 @@ const userSettings: UserSettings = {
   userSettings: new NodeJS.Timeout,
   communicationMode: "text",
   enableRealTimeUpdates: true,
+
 
   defaultFileType: "document",
   allowedFileTypes: ["document"],
@@ -132,6 +136,7 @@ const userSettings: UserSettings = {
       onTimeout();
     }, timeoutDuration);
   },
+  
   idleTimeoutDuration: 0,
   activePhase: "current phase",
   realTimeChatEnabled: false,
@@ -209,7 +214,11 @@ const userSettings: UserSettings = {
     // filter settings
     object;
   },
-  appName: ''
+  appName: '',
+  selectDatabaseVersion: '',
+  selectAppVersion: '',
+
+  enableDatabaseEncryption: false
 }
 
 

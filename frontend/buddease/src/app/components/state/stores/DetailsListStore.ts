@@ -48,6 +48,7 @@ interface DetailsItem<T> extends DataDetails {
   description?: string | null | undefined;
   assignedProjects?: Project[];
   isVisible?: boolean;
+  query?: string;
   reassignedProjects?: {
     project: Project;
     previousTeam: Team;

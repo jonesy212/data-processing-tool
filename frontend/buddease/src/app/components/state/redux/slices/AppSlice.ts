@@ -1,34 +1,30 @@
-import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
-import { AlignmentOptions, ToolbarState } from "./toolbarSlice";
-import { UIState } from "../../stores/UISlice";
-import {ProjectState} from "./ProjectSlice";
-import { TaskState } from "./TaskSlice";
-import { TrackerManagerState } from "./TrackerSlice";
-import { UserManagerState } from "@/app/components/users/UserSlice";
-import { ProjectOwnerState } from "@/app/components/users/ProjectOwnerSlice";
-import { DataAnalysis } from "@/app/components/projects/DataAnalysisPhase/DataAnalysis";
-import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
-import { DataSliceState } from "./DataSlice";
 import { CalendarManagerState } from "@/app/components/calendar/CalendarSlice";
-import { TodoManagerState } from "./TodoSlice";
-import { DocumentSliceState } from "./DocumentSlice";
-import { ApiManagerState } from "./ApiSlice";
 import { RealtimeDataState } from "@/app/components/RealtimeDataSlice";
-import { EventState } from "./EventSlice";
-import { CollaborationSettingsState } from "@/app/pages/community/CollaborationSettings";
-import { CollaborationState } from "./CollaborationSlice";
-import { EntityId } from "./RootSlice";
-import { NotificationState } from "./NotificationSlice";
-import { SettingsState } from "./SettingsSlice";
-import { string } from "prop-types";
-import { VideoState } from "./VideoSlice";
-import { Project } from "@/app/components/projects/Project";
-import { RandomWalkState } from "./RandomWalkManagerSlice";
-import { PagingState } from "./pagingSlice";
-import { BlogState } from "./BlogSlice";
-import { DrawingState } from "./DrawingSlice";
-import { VersionState } from "./VersionSlice";
+import { ProjectOwnerState } from "@/app/components/users/ProjectOwnerSlice";
+import { UserManagerState } from "@/app/components/users/UserSlice";
+import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
+import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
 import { AppActions } from '../../../actions/AppActions';
+import { UIState } from "../../stores/UISlice";
+import { ApiManagerState } from "./ApiSlice";
+import { BlogState } from "./BlogSlice";
+import { CollaborationState } from "./CollaborationSlice";
+import { DataSliceState } from "./DataSlice";
+import { DocumentSliceState } from "./DocumentSlice";
+import { DrawingState } from "./DrawingSlice";
+import { EventState } from "./EventSlice";
+import { NotificationState } from "./NotificationSlice";
+import { PagingState } from "./pagingSlice";
+import { ProjectState } from "./ProjectSlice";
+import { RandomWalkState } from "./RandomWalkManagerSlice";
+import { EntityId } from "./RootSlice";
+import { SettingsState } from "./SettingsSlice";
+import { TaskState } from "./TaskSlice";
+import { TodoManagerState } from "./TodoSlice";
+import { AlignmentOptions, ToolbarState } from "./toolbarSlice";
+import { TrackerManagerState } from "./TrackerSlice";
+import { VersionState } from "./VersionSlice";
+import { VideoState } from "./VideoSlice";
 
 interface AppState {
     currentPage: null,
@@ -131,7 +127,12 @@ const initialState: AppState = {
       type: null
     },
     currentPhase: null,
-    previousPhase: null
+    previousPhase: null,
+    pointerPosition: {
+      x: 0,
+      y: 0
+    },
+    isPointerDown: false
   },
 
   // Project Management
@@ -238,4 +239,4 @@ export const useAppManagerSlice = createSlice({
 export const { /* Extract action creators if needed */ } = useAppManagerSlice.actions;
 
 export default useAppManagerSlice.reducer;
-export type {AppState}
+export type { AppState };

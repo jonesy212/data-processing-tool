@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { ChatSettingsPanel } from "@/app/components/communications/chat/ChatSettingsPanel";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
+import RichTextEditor from "@/app/components/documents/RichTextEditor";
 import {
   ToolbarOptions,
   ToolbarOptionsProps,
@@ -35,8 +36,9 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
   );
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();
-  const {numPanels, handleNumPanelsChange, panelContents } = usePanelContents()
-  
+  const { numPanels, handleNumPanelsChange, panelContents } =
+    usePanelContents();
+
   const handleCreateDocument = async (userOptions: any) => {
     try {
       const contentState = editorState.getCurrentContent();
@@ -144,9 +146,42 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
   const handleSlide = () => {
     slide(100, "left");
   };
+
+  // Handler for saving the template
+  const handleSaveTemplate = () => {
+    const content = editorState.getCurrentContent().getPlainText();
+    // Save the template content to the backend or perform other actions
+    console.log("Template content:", content);
+  };
+
   return (
     <div>
       <div>
+        {/* Render the RichTextEditor component with necessary props */}
+        <RichTextEditor
+          editorState={editorState}
+          onChange={setEditorState}
+          // Customize the RichTextEditor based on user requirements
+          fontSize={true}
+          bold={true}
+          italic={true}
+          underline={true}
+          image={true}
+          link={true}
+          strikeThrough={undefined}
+          highlightColor={undefined}
+          alignment={undefined}
+          listType={undefined}
+          indent={undefined}
+          fontColor={undefined}
+          fontFamily={undefined}
+          imageInsert={undefined}
+          linkInsert={undefined}
+          undo={undefined}
+          redo={undefined}
+          // Add more props as needed (e.g., handleKeyCommand, handleCopy, handlePaste)
+        />
+        <button onClick={handleSaveTemplate}>Save Template</button>
         <ToolbarOptions
           isDocumentEditor={true}
           fontSize={true}
@@ -166,7 +201,7 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
           }}
           handleEditorStateChange={handleEditorStateChange}
         />
-   
+
         <h1>Custom Template Builder</h1>
         <Clipboard onCopy={handleCopy} onPaste={handlePaste} />
       </div>
@@ -174,15 +209,14 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
         <div>
           <h3>Resizable Panels</h3>
           <ResizablePanels
-  sizes={panelSizes} // Pass panelSizes directly
-  onResize={handleResize}
-  onResizeStop={handleResize}
->
-  {panelContents.map((content, index) => (
-    <div key={index}>{content}</div>
-  ))}
-</ResizablePanels>
-
+            sizes={panelSizes} // Pass panelSizes directly
+            onResize={handleResize}
+            onResizeStop={handleResize}
+          >
+            {panelContents.map((content, index) => (
+              <div key={index}>{content}</div>
+            ))}
+          </ResizablePanels>
         </div>
         <button onClick={handleDrag}>Drag</button>
         <button onClick={handleCreateButtonClick}>Create Document</button>
@@ -198,7 +232,6 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
         />
       </div>
       <ChatSettingsPanel />
-
     </div>
   );
 };

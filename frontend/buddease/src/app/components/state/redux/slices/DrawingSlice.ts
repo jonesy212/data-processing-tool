@@ -501,7 +501,7 @@ export const useDrawingManagerSlice = createSlice({
         useEffect(() => {
           if (drawingId) {
             const { beginText } = useText({
-              TextType,
+              TextType: 'text',
               onTextDragStart,
               onTextDragMove,
               onTextDragEnd,
@@ -620,7 +620,8 @@ export const {
   hideLayer,
   importDrawing,
   importDrawingFromFile,
-  invertSelection,
+  import { TextType } from '@/app/components/documents/TextType';
+invertSelection,
   lockLayer,
   // Layer Operations
   mergeAllLayers,

@@ -188,18 +188,18 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   const handleLayoutEffect = async () => {
     if (animatedComponentRef.current) {
       animatedComponentRef.current.toggleActivation();
-  
+
       // Set theme properties
       setPrimaryColor("#3498db");
       setSecondaryColor("#e74c3c");
       setFontSize("16px");
       setFontFamily("Arial, sans-serif");
       setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
-  
+
       // Call layoutConfig to update layout configuration
       const configResult = await layoutConfig();
       console.log(configResult);
-  
+
       // Log theme properties
       console.log("Is Dark Mode:", isDarkMode);
       console.log("Primary Color:", setPrimaryColor);
@@ -208,45 +208,49 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
       console.log("Font Family:", setFontFamily);
     }
   };
-  
 
   return (
-    <div>
-      {!isMinimized && (
-        <div>
-          {/* Toggle switch for fullscreen mode */}
-          <ToggleSwitch
-            label="Fullscreen"
-            checked={isComponentLoaded}
-            onChange={(checked) => {
-              if (checked) {
-                document.documentElement.requestFullscreen();
-              } else {
-                document.exitFullscreen();
-              }
-              setComponentLoaded(checked);
-            }}
-          />
-          {/* Button to exit fullscreen mode */}
-          <button onClick={handleExitFullscreen}>Exit Fullscreen</button>
-        </div>
-      )}
-      {/* Minimize button */}
-      <button onClick={handleMinimizeToggle}>
-        {isMinimized ? "Maximize" : "Minimize"}
-      </button>
-  
-      {/* Existing content */}
-      <html lang="en">
-        <body onClick={toggleActivation}>
-          {animatedComponent}
-          <AnimatedComponent ref={animatedComponentRef} animationClass={""} />
-          <DynamicRootLayout>{children}</DynamicRootLayout>
-        </body>
-      </html>
+    <div className="root-layout">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Content */}
+      <div>
+        {!isMinimized && (
+          <div>
+            {/* Toggle switch for fullscreen mode */}
+            <ToggleSwitch
+              label="Fullscreen"
+              checked={isComponentLoaded}
+              onChange={(checked) => {
+                if (checked) {
+                  document.documentElement.requestFullscreen();
+                } else {
+                  document.exitFullscreen();
+                }
+                setComponentLoaded(checked);
+              }}
+            />
+            {/* Button to exit fullscreen mode */}
+            <button onClick={handleExitFullscreen}>Exit Fullscreen</button>
+          </div>
+        )}
+        {/* Minimize button */}
+        <button onClick={handleMinimizeToggle}>
+          {isMinimized ? "Maximize" : "Minimize"}
+        </button>
+
+        {/* Existing content */}
+        <html lang="en">
+          <body onClick={toggleActivation}>
+            {animatedComponent}
+            <AnimatedComponent ref={animatedComponentRef} animationClass={""} />
+            <DynamicRootLayout>{children}</DynamicRootLayout>
+          </body>
+        </html>
+      </div>
     </div>
   );
-  
 };
 
 // DefaultRootLayout.tsx

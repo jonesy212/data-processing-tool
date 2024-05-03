@@ -182,6 +182,26 @@ enum OutcomeType {
 }
 
 
+enum BookmarkStatus {
+  Saved = "saved",
+  Pending = StatusType.Pending,
+  InProgress = StatusType.InProgress,
+  Completed = StatusType.Completed,
+  Archived = "archived",
+  Tagged = "tagged",
+  Error = "error",
+  PendingReview = PriorityStatus.PendingReview,
+  Confirmed = StatusType.Confirmed,
+  Cancelled = StatusType.Cancelled,
+  Scheduled = StatusType.Scheduled,
+  Upcoming = StatusType.Upcoming,
+  Tentative = ComponentStatus.Tentative,
+  Ready = CalendarStatus.READY,
+  Loading = CalendarStatus.LOADING,
+  Idle = CalendarStatus.IDLE,
+}
+
+export default BookmarkStatus;
 
 
 export {
@@ -193,6 +213,7 @@ export {
   PriorityStatus, ProductStatus, StatusType,
   TaskStatus,
   TeamStatus,
-  TodoStatus
+  TodoStatus,
+  BookmarkStatus
 };
 

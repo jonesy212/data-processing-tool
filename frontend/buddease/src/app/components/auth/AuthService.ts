@@ -1,5 +1,4 @@
-import userService from "../users/ApiUser";
-import { useAuth } from "./AuthContext";
+import UserService from "../users/ApiUser";
 
 // AuthService.ts
 class AuthService {
@@ -129,7 +128,7 @@ class AuthService {
 
       if (response.ok) {
         const data = await response.json();
-        const user = await userService.fetchUser(username);
+        const user = await UserService.fetchUserbyUserName(username);
         loginWithRolesFn(user, roles, nfts); // Call the loginWithRoles function passed as a parameter
         return { accessToken: data.accessToken };
       } else {
@@ -139,8 +138,6 @@ class AuthService {
       throw new Error("Login failed");
     }
   }
-
-
 }
 
 // Create a singleton instance of the AuthService

@@ -1,11 +1,11 @@
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import React, { useEffect, useState } from "react";
 import { useDynamicComponents } from "../../DynamicComponentsContext";
-import DynamicEventHandlerExample from "../../documents/screenFunctionality/ShortcutKeys";
 import { Task } from "../../models/tasks/Task";
 import LoadingSpinner from "../../models/tracker/LoadingSpinner";
 import { Todo } from "../../todos/Todo";
 import DynamicTable from "../../documents/DynamicTable";
+import DynamicEventHandlerService from "../../event/DynamicEventHandlerExample";
 
 interface DynamicRendererProps {
   handleTodoClick?: (todoId: Todo) => void;
@@ -84,7 +84,7 @@ const DynamicRenderer: React.FC<DynamicRendererProps> = ({
               <div>
                 <h3>Dynamic Content</h3>
                 {/* Render dynamic content here */}
-                <DynamicEventHandlerExample 
+                <DynamicEventHandlerService
                   handleSorting={() => {
                     // handle sorting logic
                     // You can implement sorting logic here or pass a function from outside

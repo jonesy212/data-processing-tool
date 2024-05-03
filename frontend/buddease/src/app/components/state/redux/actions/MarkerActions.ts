@@ -4,7 +4,7 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const MarkerActions = {
     // Marker CRUD Actions
-addMarker: createAction<{ marker: Marker }>("addMarker"),
+  addMarker: createAction<{ marker: Marker }>("addMarker"),
   createMarkerSuccess: createAction<{ marker: Marker }>("createMarkerSuccess"),
   createMarkerFailure: createAction<{ error: string }>("createMarkerFailure"),
   deleteMarker: createAction<number>("deleteMarker"),

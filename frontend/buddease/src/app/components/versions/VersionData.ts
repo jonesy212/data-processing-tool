@@ -5,6 +5,7 @@ interface VersionHistory {
 }
 
 interface VersionData {
+  
   content: string; // Updated content of the file
   metadata: {
     author: string; // Author who made the changes
@@ -12,6 +13,8 @@ interface VersionData {
     revisionNotes?: string; // Optional notes or comments about the revision
     // Add any other metadata fields as needed
   };
+  draft?: boolean; // Indicate if this is a draft/unpublished version
+  published?: boolean; // Indicate if this version is published
   checksum: string; // Checksum or hash value of the content for data integrity
 }
 

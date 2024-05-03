@@ -31,10 +31,11 @@ import {
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
-import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
+import { AssignEventStore, ReassignEventResponse, useAssignEventStore } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -139,7 +140,8 @@ export interface CalendarManagerStore {
   reassignEvent: (
     eventId: string,
     oldUserId: string,
-    newUserId: string
+    newUserId: string,
+    reassignData: ReassignEventResponse[]
   ) => void;
 
   addEventSuccess: (payload: { event: CalendarEvent }) => void;
@@ -410,8 +412,8 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     this.eventStatus = `undefined`; // Set to undefined when resetting
   }
 
-  reassignEvent(eventId: string, oldUserId: string, newUserId: string): void {
-    this.assignedEventStore.reassignUser(eventId, oldUserId, newUserId);
+  reassignEvent(eventId: string, oldUserId: string, newUserId: string, reassignData: ReassignEventResponse[]): void {
+    this.assignedEventStore.reassignUser(eventId, oldUserId, newUserId, reassignData);
     // You can add additional logic or trigger notifications as needed
     this.setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
@@ -640,6 +642,7 @@ export const events: Record<string, CalendarEvent[]> = {
       then: (callback: (newData: Snapshot<Data>) => void) => {
         // Implement logic to handle the snapshot of data
         const newData: Snapshot<Data> = {
+          category: "calendarEvents",
           timestamp: new Date(),
           data: convertedData,
         };

@@ -1,10 +1,10 @@
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
-import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { Task } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
+import { makeAutoObservable } from "mobx";
 import { Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
@@ -44,13 +44,12 @@ type UserStoreSubset = Pick<
   | "events"
 >;
 
-
-
+export interface UserStore extends AssignEventStore, AssignBaseStore, UserStoreSubset {
 // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
-export interface UserStore extends AssignEventStore, AssignBaseStore {
   // Add additional properties specific to UserStore if needed
   users: WritableDraft<Record<string, User[]>>;
   currentUser: User | null;
+  // setAssignedTaskStore: (task: Task, user: User) => void;
   updateUserState: (newUsers: Record<string, User[]>) => void;
   assignTask: (task: Task, user: User) => void;
     assignFileToTeam: Record<string, string[]>; // Add this property
@@ -58,6 +57,9 @@ export interface UserStore extends AssignEventStore, AssignBaseStore {
   assignEventToTeam: Record<string, string[]>; // Add this property
   assignGoalToTeam: Record<string, string[]>; // Add this property
   events:Record<string, ExtendedCalendarEvent[]>
+  // Other properties and methods...
+  reassignUser: Record<string, ReassignEventResponse[]>;
+
 }
 
 const userManagerStore = (): UserStore => {
@@ -79,7 +81,7 @@ const userManagerStore = (): UserStore => {
 
   const assignTask = (task: Task, user: User) => {
     // Assign task to user
-    eventSubset.assignEvent(task.eventId, String(user)); // Changed user._id to user
+    eventSubset.assignEvent(task.eventId, user); // Changed user._id to user
     if (
       user.tasks &&
       task.assignedTo !== undefined &&
@@ -127,7 +129,7 @@ const userManagerStore = (): UserStore => {
     updateUserState,
     assignTask,
     assignUser,
-    reassignUser,
+    reassignUser: useAssignBaseStore().reassignUser,
     unassignUser,
     reassignUsersForArray,
     assignUserSuccess: useAssignBaseStore().assignUserSuccess,
@@ -182,7 +184,7 @@ const userManagerStore = (): UserStore => {
     assignUsersToTodos: useAssignEventStore().assignUsersToTodos,
     unassignUsersFromTodos: useAssignEventStore().unassignUsersFromTodos,
     reassignUsersInTodos: useAssignEventStore().reassignUsersInTodos,
-    
+    setAssignedTaskStore: useAssignTeamMemberStore().setAssignedTaskStore,
     // Other properties and methods
     assignNote: useAssignTeamMemberStore().assignNote,
     unassignNoteFromTeam: useAssignTeamMemberStore().unassignNoteFromTeam,

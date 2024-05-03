@@ -112,9 +112,10 @@ function loadPDFFile(pdfFilePath: string): YourPDFType[] {
   
     // Populate pdfData array with text content
     pdfData.push({
-        text: pdfText,
-        pageNumber: 0,
-        textContent: ""
+      text: pdfText,
+      pageNumber: 0,
+      textContent: "",
+      parsedData: []
     });
     
     // Add logic to parse the PDF data and populate pdfData array

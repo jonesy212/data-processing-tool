@@ -153,7 +153,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     // Assuming assignedTaskStore is an object
     const reassignedTasks = ["task1", "task2", "task3"];
 
-    const snapshotStore: SnapshotStore = useSnapshotStore();
+    const snapshotStore: SnapshotStore<Snapshot<Task>> = useSnapshotStore();
     // Assign reassignedTasks to assignedTaskStore using taskId as key
     // Assuming taskStore is an instance of a class or an object that has a method named setAssignedTaskStore
     taskStore.setAssignedTaskStore({

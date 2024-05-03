@@ -1,15 +1,19 @@
+import { MovementAnimationActions, useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
 import { useEffect, useRef } from "react";
-import { DragSourceHookSpec, DragSourceMonitor } from "react-dnd";
 
-export interface DragEventHandlers extends DragSourceHookSpec<CustomDragObject, any, CollectedProps> {
+export interface DragEventHandlers extends MovementAnimationActions {
   onDragStart: () => void;
   onDragMove: (dragX: number, dragY: number) => void;
-  onDragEnd: (finalX: number, finalY: number) => void
+  onDragEnd: (finalX: number, finalY: number) => void;
   beginDrag: (e: MouseEvent | TouchEvent) => void;
   startDrawing: (e: MouseEvent | TouchEvent) => void;
   setDragX: (x: number) => void;
   setDragY: (y: number) => void;
-  
+  canDrop: () => boolean;
+  isOver: boolean;
+  isDragging: boolean; // Define isDragging here
+  item: DragObjectWithType; // Define item as a property of type DragObjectWithType
+
 }
 
 export interface DragObjectWithType {
@@ -31,18 +35,21 @@ const useDragImpl = (
   type: string,
   onDragStart: () => void,
   onDragMove: (dragX: number, dragY: number) => void,
-  onDragEnd: () => void,
+  onDragEnd: (finalX: number, finalY: number) => void,
   setDragX: (x: number) => void,
   setDragY: (y: number) => void,
 ): DragEventHandlers => {
   const isDraggingRef = useRef(false);
   const startDragPositionRef = useRef({ x: 0, y: 0 });
 
+  // Integrate movement animation functionalities
+  const movementAnimations = useMovementAnimations();
+
   const handleDragStart = (e: MouseEvent | TouchEvent) => {
     isDraggingRef.current = true;
     const { clientX, clientY } = e instanceof MouseEvent ? e : e.touches[0];
     startDragPositionRef.current = { x: clientX, y: clientY };
-    onDragStart(); // Call onDragStart
+    onDragStart(); 
   };
 
   const handleDragMove = (e: MouseEvent | TouchEvent) => {
@@ -50,25 +57,28 @@ const useDragImpl = (
       const { clientX, clientY } = e instanceof MouseEvent ? e : e.touches[0];
       const dragX = clientX - startDragPositionRef.current.x;
       const dragY = clientY - startDragPositionRef.current.y;
-      onDragMove(dragX, dragY); // Call onDragMove
+      onDragMove(dragX, dragY);
     }
   };
 
   const handleDragEnd = () => {
     if (isDraggingRef.current) {
       isDraggingRef.current = false;
-      onDragEnd(); // Call onDragEnd
+      // Calculate finalX and finalY based on the starting position
+      const finalX = startDragPositionRef.current.x - startDragPositionRef.current.x;
+      const finalY = startDragPositionRef.current.y - startDragPositionRef.current.y;
+      onDragEnd(finalX, finalY);
     }
   };
 
+  // Define handleDragX and handleDragY
   const handleDragX = (x: number) => {
     setDragX(x);
   };
 
-  const handleDragY  = (y: number) => {
+  const handleDragY = (y: number) => {
     setDragY(y);
   };
-
 
   useEffect(() => {
     document.addEventListener("mousemove", handleDragMove);
@@ -88,14 +98,15 @@ const useDragImpl = (
     handleDragStart(e);
   };
 
-  return {
+  // Merge movement animation actions with drag actions
+  const mergedActions: DragEventHandlers = {
+    ...movementAnimations,
     item: {
       id: id,
       type: type,
     },
-    type: "yourDragType",
-    isDragging: (monitor: DragSourceMonitor<CustomDragObject, any>) =>
-      isDraggingRef.current,
+    isDragging: true, // Use true for isDragging since it's defined as boolean
+
     beginDrag: startDrag,
     startDrawing: startDrag,
     onDragStart: () => {}, // Use this as needed
@@ -103,7 +114,11 @@ const useDragImpl = (
     onDragEnd: onDragEnd,
     setDragX: handleDragX, // Updated to use handleDragX
     setDragY: handleDragY, // Updated to use handleDragY
+    canDrop: () => true, // Implement your logic for canDrop
+    isOver: false, // Initialize isOver state
   };
+
+  return mergedActions;
 };
 
 const useDrag = (
@@ -111,7 +126,7 @@ const useDrag = (
   type: string,
   onDragStart: () => void,
   onDragMove: (dragX: number, dragY: number) => void,
-  onDragEnd: (finalX: number, finalY: number)  => void,
+  onDragEnd: (finalX: number, finalY: number) => void,
   setDragX: (x: number) => void,
   setDragY: (y: number) => void,
 ) => useDragImpl(id, type, onDragStart, onDragMove, onDragEnd, setDragX, setDragY);

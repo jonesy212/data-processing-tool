@@ -1,16 +1,17 @@
-import { set } from "lodash";
+import { load } from 'cheerio';
+import mammoth from "mammoth";
 import path from "path";
 import getAppPath from "../../../../appPath";
 import { ParsedData } from "../crypto/parseData";
-import mammoth from "mammoth";
 import { DocData, YourDocxType } from "./DocType";
-import cheerio, { load } from 'cheerio';
 
 
 // Function to load and parse a Docx file
-const loadDocx = async (filePath: string): Promise<YourDocxType[]> => { 
+const loadDocx = async (
+  filePath: string
+): Promise<{ parsedData: ParsedData<object>[] }> => {
   // Parse the Docx file using mammoth
-  const result = await mammoth.convertToHtml({path: filePath});
+  const result = await mammoth.convertToHtml({ path: filePath });
 
   // Get the raw text
   const text = result.value;
@@ -28,9 +29,9 @@ const loadDocx = async (filePath: string): Promise<YourDocxType[]> => {
     }
   });
   return {
-    parsedData
+    parsedData,
   };
-}
+};
 
 // Function to get the appropriate file path for the application version
 const getAppVersionedPath = (versionNumber: string, appVersion: string): string => {
@@ -40,18 +41,20 @@ const getAppVersionedPath = (versionNumber: string, appVersion: string): string 
 };
 
 // Function to load Docx data based on application version
-const loadDocxByVersion = (
+const loadDocxByVersion = async (
   versionNumber: string,
   appVersion: string,
-  filePath: string): Promise<YourDocxType[]> => {
+  filePath: string
+): Promise<YourDocxType[]> => {
   // Get the versioned app path
   const versionedAppPath = getAppVersionedPath(versionNumber, appVersion);
-  
+
   // Construct the full file path
   const fullFilePath = path.join(versionedAppPath, filePath);
 
   // Load and parse the Docx file
-  const docxData = loadDocx(fullFilePath);
+  const docx = await loadDocx(fullFilePath);
+  const docxData = docx as unknown as YourDocxType[];
 
   return docxData;
 };
@@ -60,17 +63,12 @@ async function parseDocx<T extends object>(
   docxFilePath: string,
   parsedData: ParsedData<T>[]
 ): Promise<DocData<T>> {
-  let docxData: Promise<YourDocxType[]>; // Placeholder for Docx data, replace with actual Docx data
-  // Logic to load Docx data from the file using docxFilePath
-  const docx = loadDocx(docxFilePath);
-  docxData = docx;
-  // Set docxData to loaded docx data
-  set(parsedData, "parsedData", docxData);
-  // Call parseDocxData function with Docx data and parsed data
-  parseDocxData(await docxData, parsedData);
+  let docxData: YourDocxType[] = [];
+  const docx = await loadDocx(docxFilePath);
+  docxData = docx as unknown as YourDocxType[];
+  parseDocxData(docxData, parsedData);
 
-  // Call parseDocx function with Docx data and parsed data
-  return { parsedData } as DocData<T>; // Return Docx
+  return { docxData, parsedData } as DocData<T>;
 }
 
 // Function to parse Docx files and update DocxData with parsed data

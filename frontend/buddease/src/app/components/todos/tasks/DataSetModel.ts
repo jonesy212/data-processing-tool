@@ -11,6 +11,7 @@ import {
 import { AxiosResponse } from "axios";
 import { Team } from "../../models/teams/Team";
 import axiosInstance from "../../security/csrfToken";
+import { DocumentPath } from "../../documents/DocumentGenerator";
 
 interface DatasetModel {
   id: number;
@@ -28,6 +29,8 @@ interface DatasetModel {
   uploadedByTeamId: number | null; // Assuming this is the team ID
   uploadedByTeam: Team | null; // Assuming you have a Team interface
   lastModifiedDate: Date;
+  filePath?: DocumentPath;
+
   // Optional: Add other relationships as needed
 }
 

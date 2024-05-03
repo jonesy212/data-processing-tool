@@ -4,6 +4,9 @@ interface TextProps {
   onDragStart: () => void; // Define the type for onDragStart
   onDragMove: (dragX: number, dragY: number) => void;
   onDragEnd: () => void;
+  TextType: string; // Define type for TextType
+  text: string; // Change the type of 'text' to string
+  
 }
 
 const useText = ({ onDragStart, onDragMove, onDragEnd }: TextProps) => {
@@ -35,3 +38,4 @@ const useText = ({ onDragStart, onDragMove, onDragEnd }: TextProps) => {
 };
 
 export default useText;
+export type { TextProps };

@@ -1,0 +1,9 @@
+/* tablet-styles.css */
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    body {
+        font-size: 18px;
+    }
+
+    /* Add tablet-specific styles here */
+}

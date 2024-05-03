@@ -5,6 +5,7 @@ import { UIActions } from "../../actions/UIActions";
 import { PhaseHookConfig } from "../../hooks/phaseHooks/PhaseHooks";
 import { setIsDrawing } from "../redux/slices/DrawingSlice";
 import { resetMilestones, resetTrackers } from "../redux/slices/TrackerSlice";
+import { CollaborationState } from "../redux/slices/CollaborationSlice";
 
 // Define interface for UI-related state
 interface UIState {
@@ -96,6 +97,12 @@ export const useUIManagerSlice = createSlice({
       state.currentPhase = null;
       state.previousPhase = null;
     },
+    updateCollaborationState: (
+      state,
+      action: PayloadAction<CollaborationState>
+    ) => { 
+      state.collaborationState = action.payload;
+    }
     resetUI: (state) => {
       Object.assign(state, initialState);
     },
@@ -124,6 +131,7 @@ export const {
   setCurrentPhase,
   setPreviousPhase,
   resetPhases,
+  updateCollaborationState
 } = useUIManagerSlice.actions;
 
 // Export the reducer for the UI slice
@@ -134,6 +142,11 @@ export const uiReducer = useUIManagerSlice.reducer;
 export const useUIManager = () => {
   const dispatch = useDispatch();
 
+
+  const updateCollaborationState = () => {
+    // Dispatch actions to update collaboration state as needed
+
+  };
   // Define UI-related actions
   const stopDrawing = () => {
     // Dispatch actions from DrawingSlice to reset drawing-related state properties

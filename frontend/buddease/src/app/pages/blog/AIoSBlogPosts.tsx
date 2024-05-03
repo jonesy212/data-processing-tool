@@ -1,33 +1,51 @@
 // AIoSBlogPosts.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BlogGenerator from './BlogGenerator'; // Assuming BlogGenerator is located in the same directory
+import axiosInstance from '@/app/api/axiosInstance';
+import {BlogPostProps} from './BlogPost';
+import BlogPostList from './BlogPosts';
+
+
 
 const AndroidBlogPosts: React.FC = () => {
-  const androidPosts = [
-    {
-      title: 'Android-specific files and configurations',
-      content: 'Configuration files and directories for Android development.',
-      author: 'Android Dev',
-      date: '2024-03-01',
-    },
-    // Add more Android-specific blog posts as needed
-  ];
+  const [androidPosts, setAndroidPosts] = useState<BlogPostProps['posts']>([]); // Initialize androidPosts state with the correct type
 
-  return <BlogGenerator posts={androidPosts} />;
+  useEffect(() => {
+    // Fetch Android blog posts from API or other data source
+    const fetchAndroidPosts = async () => {
+      try {
+        const response = await axiosInstance.get('/api/android/posts');
+        setAndroidPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching Android blog posts:', error);
+      }
+    };
+
+    fetchAndroidPosts();
+  }, []);
+
+  return <BlogPostList platform="android" posts={androidPosts} />; // Pass the correct type of posts to BlogPosts
 };
 
-const IOSBlogPosts: React.FC = () => {
-  const iOSPosts = [
-    {
-      title: 'iOS-specific files and configurations',
-      content: 'Configuration files and directories for iOS development.',
-      author: 'iOS Dev',
-      date: '2024-03-02',
-    },
-    // Add more iOS-specific blog posts as needed
-  ];
 
-  return <BlogGenerator posts={iOSPosts} />;
+const IoSBlogPosts: React.FC = () => {
+  const [androidPosts, setAndroidPosts] = useState<BlogPostProps['posts']>([]);
+
+  useEffect(() => {
+    const fetchAndroidPosts = async () => {
+      try {
+        const response = await axiosInstance.get('/api/android/posts');
+        setAndroidPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching Android blog posts:', error);
+      }
+    };
+
+    fetchAndroidPosts();
+  }, []);
+
+  return <AndroidBlogPosts />;
 };
 
-export { AndroidBlogPosts, IOSBlogPosts };
+ 
+export { AndroidBlogPosts, IoSBlogPosts };

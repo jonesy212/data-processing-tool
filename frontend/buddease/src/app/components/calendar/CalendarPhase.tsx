@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
+import { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "../hooks/phaseHooks/PhaseHooks";
 import { navigateToCalendarPage } from "../navigation/navigateToCalendar";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import axiosInstance from "../security/csrfToken";
@@ -94,40 +94,40 @@ const fetchDataUsingAxios = async () => {
 
 // Define the calendar phase configuration
 export const calendarPhase: Phase = {
-  name: 'Calendar Phase',
+  name: "Calendar Phase",
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
   component: () => <div>Calendar Phase Component</div>,
   lessons: [],
   duration: 0,
-  hooks: createPhaseHook({
+  hooks: createPhaseHook(idleTimeoutDuration, {
     canTransitionTo: () => true,
     handleTransitionTo: handleTransitionToCalendarPhase,
-    name: 'Calendar Phase',
+    name: "Calendar Phase",
     duration: "0",
-    condition: function (): boolean {
+    condition: async function (): Promise<boolean> {
       // Implement your condition logic here
       // Example: Check if a certain date is in the future
       const currentDate = new Date();
-      const targetDate = new Date('2023-01-01');
+      const targetDate = new Date("2023-01-01");
 
       // Return true if the current date is before the target date
       return currentDate < targetDate;
     },
     asyncEffect: async function (): Promise<() => void> {
       // Implement your asynchronous effect logic here
-      console.log('Executing async effect for Calendar Phase');
+      console.log("Executing async effect for Calendar Phase");
 
       // Example: Simulate an asynchronous task
       const asyncTask = new Promise<() => void>((resolve) => {
         // Simulate an API call or any asynchronous operation
         setTimeout(() => {
-          console.log('Async task completed');
+          console.log("Async task completed");
 
           // Resolve with a cleanup function
           resolve(() => {
-            console.log('Calendar Cleanup logic');
+            console.log("Calendar Cleanup logic");
             // Add cleanup logic here if needed
           });
         }, 2000); // Simulate a 2-second delay

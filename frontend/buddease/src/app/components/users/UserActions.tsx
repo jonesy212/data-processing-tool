@@ -1,7 +1,11 @@
 // user/UserActions.ts
+import { Persona } from "@/app/pages/personas/Persona";
 import { createAction } from "@reduxjs/toolkit";
+import { Data } from "../models/data/Data";
 import { UserProfile } from "../snapshots/userSnapshotData";
-import { User } from "./User";
+import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
+import { User, UserData } from "./User";
+import { UserRole } from "./UserRole";
 
 export const UserActions = {
   
@@ -20,13 +24,13 @@ export const UserActions = {
   updateQuota: createAction<{ id: number, newQuota: number }>("updateQuota"),
   // Pagination Actions
   
-  
   saveUserProfilesSuccess: createAction<{ profiles: UserProfile[] }>("saveUserProfiilesSuccess"),
   
-  fetchUserSuccess: createAction<{ user: User }>("fetchUserSuccess"),
+  fetchUserSuccess: createAction<{ user: UserData }>("fetchUserSuccess"),
   fetchUserFailure: createAction<{ error: string }>("fetchUserFailure"),
   fetchUserRequest: createAction<{userId: User["id"]}>("fetchUserRequest"),
-  
+  fetchUserDataSuccess: createAction<{ users: User[], totalCount: number }>("fetchUserDataSuccess"),
+  fetchUserDataFailure: createAction<{ error: string }>("fetchUserDataFailure"),
   
   fetchUserById: createAction<{ userId: User['id'] }>("fetchUserById"),
   fetchUserByIdSuccess: createAction<{ user: User }>("fetchUserByIdSuccess"),
@@ -73,9 +77,31 @@ export const UserActions = {
 
   updateUserRoles: createAction<{ ids: number[], newRole: string }>("updateUserRoles"),
   
-
-  fetchUserData: createAction<{userId: string}>("fetchUserData"),
-
+ 
+  fetchUserData: createAction<{
+    userId: string;
+    username: string;
+    email: string;
+    tier: string;
+    token: string;
+    uploadQuota: number;
+    avatarUrl: string;
+    createdAt: Date;
+    updatedAt: Date;
+    fullName: string;
+    isVerified: boolean;
+    isAdmin: boolean;
+    isActive: boolean;
+    bio: string;
+    userType: string;
+    hasQuota: boolean;
+    profilePicture: string;
+    processingTasks: DataProcessingTask[];
+    role: UserRole;
+    persona: Persona;
+    data: Data;
+  }>('fetchUserData'),
+  
   // Batch
   bulkUpdateUserRolesFailure: createAction<{ error: string }>("bulkUpdateUserRolesFailure"),
 };

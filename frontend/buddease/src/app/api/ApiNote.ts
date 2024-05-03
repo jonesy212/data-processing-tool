@@ -3,11 +3,19 @@
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
+import { NoteData } from '../components/documents/NoteData';
+import { YourResponseType } from '../components/typings/types';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
+import { SearchResponseData } from './ApiSearch';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
-import { NoteData } from '../components/documents/NoteData';
+import Version from '../components/versions/Version';
+import { ModifiedDate } from '../components/documents/DocType';
+import { StructuredMetadata } from '../configs/StructuredMetadata';
+import { Encryption } from '../components/security/Encryption';
+import FolderData from '../components/models/data/FolderData';
+import SearchHistory from '../components/versions/SearchHistory';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;
@@ -37,6 +45,46 @@ const apiNotificationMessages: NoteNotificationMessages = {
   // Add more properties as needed
 };
 
+
+// Extend SearchNotesResponse with attributes from YourResponseType
+type SearchNotesResponse = YourResponseType & {
+  // Add specific attributes related to search notes if needed
+  results: Note[]; // Assuming an array of Note objects in the response
+  totalCount: number; // Total count of search results
+  searchData: SearchResponseData;
+
+};
+
+interface Note {
+  id: number;
+  title: string;
+  content: string;
+  description: string;
+  source: string,
+  topics: string[],
+  highlights: Highlight[],
+  keywords: string[],
+      folders: FolderData[],
+      options: any,
+      folderPath: string,
+      createdAt:  Date,
+      updatedAt: Date,
+      tags: Tag[],
+      previousMetadata: string,
+      currentMetadat: string,
+      accessHistory: AccessHistory[],
+      lastModifiedDate: ModifiedDate,
+
+      permissions: string
+
+      encryption: Encryption
+      currentMetadata: StructuredMetadata
+      searchHistory: SearchHistory,
+        version: Version,
+  // Add more properties as needed
+}
+
+
 // Function to handle API errors and notify
 const handleNoteApiErrorAndNotify = (
   error: AxiosError<unknown>,
@@ -55,6 +103,9 @@ const handleNoteApiErrorAndNotify = (
     );
   }
 };
+
+
+
 
 // Fetch note by ID API
 export const fetchNoteByIdAPI = async (
@@ -295,12 +346,12 @@ export const listAllNotesAPI = async (): Promise<any[]> => {
 };
 
 // Search notes API
-export const searchNotesAPI = async (searchQuery: string): Promise<any> => {
+
+// Updated function with type annotations and centralized error handling
+export const searchNotesAPI = async (searchQuery: string): Promise<SearchNotesResponse> => {
   try {
-    const searchNotesEndpoint = `${API_BASE_URL}/notes/search?query=${encodeURIComponent(searchQuery)}`;
-    const response = await axiosInstance.get(searchNotesEndpoint, {
-      headers: headersConfig,
-    });
+    const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(searchQuery)}`;
+    const response = await axiosInstance.get<SearchNotesResponse>(searchNotesEndpoint);
     return response.data;
   } catch (error) {
     console.error('Error searching notes:', error);
@@ -337,3 +388,4 @@ export const filterNotesAPI = async (filters: Record<string, any>): Promise<any>
     throw error;
   }
 };
+export type { Note };

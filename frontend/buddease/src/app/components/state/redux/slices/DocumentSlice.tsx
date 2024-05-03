@@ -16,6 +16,8 @@ import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { ModifiedDate } from "@/app/components/documents/DocType";
+import { metadata } from "@/app/layout";
+import TextType from "@/app/components/documents/TextType";
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -263,12 +265,14 @@ export const exportDocumentsAsync = createAsyncThunk(
 
 // Define the transformations object and applyTransformation function
 const applyTransformation = (
-  document: DocumentData,
-  transformation: (doc: DocumentData, value: string) => void,
+  document: WritableDraft<DocumentData>,
+  documentTag: string,
+  transformation: (doc: WritableDraft<DocumentData>, value: string) => void,
   value: string
 ) => {
   transformation(document, value);
 };
+
 
 const transformations = {
   tag: (document: DocumentData, tag: string) => {
@@ -442,6 +446,14 @@ const transformations = {
 
   templates: (document: DocumentData, template: string) => { 
     document.content = `${template} Templates: ${document.content}`;
+  },
+
+  updateDocumentVersion: (document: DocumentData, version: string) => {
+    document.content = `${version} Version updated: ${document.content}`;
+  },
+
+  getDocumentVersion: (document: DocumentData, version: string) => { 
+    document.content = `${version} Version retrieved: ${document.content}`;
   }
 
 
@@ -484,7 +496,7 @@ const createNewDocument: (
   currentMetadata: {} as WritableDraft<StructuredMetadata>,
   accessHistory: [],
   folders: [],
-  lastModifiedDate: new Date(),
+  lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean; }>,
   version: {} as VersionData,
 });
 
@@ -520,7 +532,7 @@ export const useDocumentManagerSlice = createSlice({
           currentMetadata: {} as WritableDraft<StructuredMetadata>,
           accessHistory: [],
           folders: [],
-          lastModifiedDate: new Date(),
+          lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean; }>,
           version: {} as WritableDraft<VersionData>
         };
         return { payload: newDocument };
@@ -1089,10 +1101,25 @@ export const useDocumentManagerSlice = createSlice({
           files: [],
           keywords: [],
           options: {} as WritableDraft<DocumentOptions>,
-          folderPath: "New Folder", 
+          folderPath: "New Folder",
           previousMetadata: {} as WritableDraft<StructuredMetadata>,
           currentMetadata: {} as WritableDraft<StructuredMetadata>,
-          accessHistory: []
+          accessHistory: [],
+          folders: [],
+          lastModifiedDate: {
+            value: new Date,
+            isModified: false
+          },
+          version: {
+            metadata: {
+              author: 'System',
+              timestamp: new Date(),
+            },
+            draft: false,
+            content: '',
+            checksum: ''
+          },
+        
         });
       }
     },
@@ -1242,44 +1269,80 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
     
 
     // Add reducers for tagging, categorizing, and customizing document views
-    tagDocument: (state, action: PayloadAction<{ documentId: number; tag: string }>) => {
-      const { documentId, tag } = action.payload;
-      const documentToTag = state.documents.find(doc => doc.id === documentId);
+    tagDocument: (
+      state,
+      action: PayloadAction<{
+        document: WritableDraft<DocumentData>;
+        documentId: number;
+        tag: string;
+       }>
+    ) => {
+      const { document,documentId, tag } = action.payload;
+      const documentToTag = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToTag) {
-        applyTransformation(documentToTag, transformations.tag, tag);
+        applyTransformation(
+          document, 
+          documentId, 
+          documentToTag,
+          transformations.tag);
       }
     },
 
-    tagDocuments: (state, action: PayloadAction<{ documentIds: number[]; tag: string }>) => { 
+    tagDocuments: (
+      state,
+      action: PayloadAction<{
+        documentIds: number[];
+         tag: string
+      }>
+    ) => { 
       const { documentIds, tag } = action.payload;
       documentIds.forEach(documentId => {
         const documentToTag = state.documents.find(doc => doc.id === documentId);
         if(documentToTag){
-          applyTransformation(documentToTag, transformations.tag, tag)
+          applyTransformation(documentToTag, transformations.tag, value);
+
         }
       });
     },
+    
 
-    categorizeDocument: (state, action: PayloadAction<{ documentId: number; category: string }>) => {
+    categorizeDocument: (state,
+      action: PayloadAction<{ documentId: number; category: string }>) => {
       const { documentId, category } = action.payload;
       const documentToCategorize = state.documents.find(doc => doc.id === documentId);
       if(documentToCategorize){
-        applyTransformation(documentToCategorize, transformations.categorize, category)
+        applyTransformation(
+          documentToCategorize,
+          category,
+          transformations.categorize,
+          " "
+        )
       }
     },
 
 
-    categorizeDocuments: (state, action: PayloadAction<{ documentIds: number[]; category: string }>) => { 
+    categorizeDocuments: (
+      state,
+      action: PayloadAction<{ documentIds: number[]; category: string }>) => { 
       const { documentIds, category } = action.payload;
       documentIds.forEach(documentId => {
         const documentToCategorize = state.documents.find(doc => doc.id === documentId);
         if(documentToCategorize){
-        applyTransformation(documentToCategorize, transformations.categorize, category);
+          applyTransformation(
+            documentToCategorize,
+            transformations.categorize,
+            category,
+            "category " + category
+          );
       }});
     },
 
     
-    customizeDocumentView: (state, action: PayloadAction<{ documentId: number; view: string }>) => {
+    customizeDocumentView: (
+      state,
+      action: PayloadAction<{ documentId: number; view: string }>) => {
       const { documentId, view } = action.payload;
       const documentToCustomize = state.documents.find(doc => doc.id === documentId);
       if (documentToCustomize) {
@@ -1315,7 +1378,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
-        applyTransformation(documentToReview, transformations.requestReview, reviewer);
+        applyTransformation(documentToReview,
+          transformations.requestReview,
+          reviewer,
+          "Requested review by " + reviewer
+        );
       }
     },
     
@@ -1323,7 +1390,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, approver } = action.payload;
       const documentToApprove = state.documents.find(doc => doc.id === documentId);
       if (documentToApprove) {
-        applyTransformation(documentToApprove, transformations.approve, approver);
+        applyTransformation(documentToApprove,
+          transformations.approve,
+          approver,
+          "Approved by " + approver
+        );
       }
     },
     
@@ -1331,7 +1402,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, rejector } = action.payload;
       const documentToReject = state.documents.find(doc => doc.id === documentId);
       if (documentToReject) {
-        applyTransformation(documentToReject, transformations.reject, rejector);
+        applyTransformation(documentToReject,
+          transformations.reject,
+          rejector,
+          "Rejected by " + rejector
+        );
       }
     },
 
@@ -1339,7 +1414,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
-        applyTransformation(documentToReview, transformations.requestFeedback, reviewer);
+        applyTransformation(documentToReview,
+          transformations.requestFeedback,
+          reviewer,
+          "Requested feedback from " + reviewer
+        );
       }
     },
     
@@ -1347,7 +1426,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
-        applyTransformation(documentToReview, transformations.provideFeedback, reviewer);
+        applyTransformation(documentToReview,
+          transformations.provideFeedback,
+          reviewer,
+          "Feedback provided by " + reviewer
+        );
       }
     },
     
@@ -1355,7 +1438,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
-        applyTransformation(documentToReview, transformations.resolveFeedback, reviewer);
+        applyTransformation(documentToReview,
+          transformations.resolveFeedback,
+          reviewer,
+          "Feedback resolved by " + reviewer
+        );
       }
     },
     
@@ -1363,7 +1450,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, collaborator } = action.payload;
       const documentToCollaborate = state.documents.find(doc => doc.id === documentId);
       if (documentToCollaborate) {
-        applyTransformation(documentToCollaborate, transformations.collaborate, collaborator);
+        applyTransformation(
+          documentToCollaborate,
+          transformations.collaborate,
+          collaborator,
+          "Collaborative editing with " + collaborator
+        );
       }
     },
     

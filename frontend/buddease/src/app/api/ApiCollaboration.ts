@@ -4,7 +4,6 @@ import { endpoints } from '@/app/api/ApiEndpoints';
 import { handleApiError } from '@/app/api/ApiLogs';
 import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
-import dotProp from 'dot-prop';
 import { CollaborationLogger } from '../components/logging/Logger';
 import axiosInstance from './axiosInstance';
 
@@ -18,10 +17,9 @@ const API_BASE_URL = endpoints.collaborationTools
       this.notify = notify;
     }
 
-
     private async callApi(endpointPath: string, requestData: any): Promise<any> {
       try {
-        const endpoint = dotProp.getProperty(API_BASE_URL, endpointPath) as string | undefined;
+        const endpoint = API_BASE_URL[endpointPath] as string | undefined;
         if (!endpoint) {
           throw new Error(`${endpointPath} endpoint not found`);
         }
@@ -106,17 +104,14 @@ async startBrainstorming(projectId: number): Promise<any> {
       throw error;
     }
   }
-  
-  
   async updateWhiteboard(whiteboardId: number, whiteboardData: any): Promise<any> {
     try {
-      const endpointKey = `updateWhiteboard.${whiteboardId}`;
-      const endpoint = dotProp.getProperty(endpoints.collaborationTools, endpointKey) as string | undefined;
-      
+      const endpoint = endpoints.collaborationTools[`updateWhiteboard.${whiteboardId}`] as string | undefined;
+  
       if (!endpoint) {
-        throw new Error(`Endpoint ${endpointKey} not found`);
+        throw new Error(`Endpoint updateWhiteboard.${whiteboardId} not found`);
       }
-
+  
       const response: AxiosResponse = await axiosInstance.put(endpoint, whiteboardData);
       CollaborationLogger.logCollaboration("Whiteboard updated", whiteboardId.toString(), '');
       return response.data;

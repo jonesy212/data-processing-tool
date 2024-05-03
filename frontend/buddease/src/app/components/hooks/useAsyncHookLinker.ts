@@ -1,8 +1,8 @@
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
+import { UIActions } from '../actions/UIActions';
 import { Progress } from '../models/tracker/ProgressBar';
 import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
-import { UIActions } from '../actions/UIActions';
 export interface AsyncHook extends PhaseHookConfig {
   isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
@@ -14,6 +14,13 @@ export interface AsyncHook extends PhaseHookConfig {
   toggleActivation: (accessToken?: string | null | undefined) => void; // Make accessToken optional and nullable
   cleanup: (() => void) | undefined;
   progress: Progress | null;
+  asyncEffect: ({
+    idleTimeoutId,
+    startIdleTimeout,
+  }: {
+    idleTimeoutId: NodeJS.Timeout | null;
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  }) => Promise<() => void>
 }
 
 
@@ -22,10 +29,10 @@ export interface AsyncHook extends PhaseHookConfig {
 export interface LibraryAsyncHook {
   enable: () => void;
   disable: () => void;
-  condition: () => boolean;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>
   idleTimeoutId: NodeJS.Timeout | null; // Add idleTimeoutId property
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Add startIdleTimeout property
-  asyncEffect: ({
+  asyncEffect?: ({
     idleTimeoutId,
     startIdleTimeout,
   }: {
@@ -46,15 +53,18 @@ export interface AsyncHookLinkerConfig {
 const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
   const [currentHookIndex, setCurrentHookIndex] = useState<number>(0);
 
+
+
+const idleTimeoutDuration = 10000;
   useEffect(() => {
     const executeAsyncEffect = async () => {
       if (currentHookIndex < hooks.length) {
         const currentHook = hooks[currentHookIndex];
-        if (currentHook.condition()) {
+        if (await currentHook.condition(idleTimeoutDuration)) {
           // Execute the async effect of the current hook
           let cleanup: (() => void) | undefined;
           try {
-            const result = await currentHook.asyncEffect({
+            const result = await currentHook.asyncEffect!({
               idleTimeoutId: currentHook.idleTimeoutId,
               startIdleTimeout: currentHook.startIdleTimeout,
             });
@@ -70,9 +80,10 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
           }
         }
       }
-    
       // Move to the next hook after executing the current one
       moveToNextHook();
+
+     
     };
     
 
@@ -86,7 +97,7 @@ const useAsyncHookLinker = ({ hooks }: AsyncHookLinkerConfig) => {
         previousHookIndex >= 0 &&
         typeof hooks[previousHookIndex].asyncEffect === "function"
       ) {
-        hooks[previousHookIndex].asyncEffect({
+        hooks[previousHookIndex].asyncEffect!({
             idleTimeoutId: 'idleTimeoutId',
             startIdleTimeout: 'startIdleTimeout',
           }); // Cleanup the previous hook
@@ -125,7 +136,6 @@ const asyncHook: AsyncHook = {
       (asyncHook as any).idleTimeoutId = timeoutId;
     }
   },
-
   resetIdleTimeout: async (): Promise<void> => {
     // Implementation logic for resetIdleTimeout
     // Here you would reset the idle timeout
@@ -138,40 +148,34 @@ const asyncHook: AsyncHook = {
       asyncHook.idleTimeoutId = null;
     }
   },
-
   idleTimeoutId: null,
-   
-stopAnimation: function (): void {
-  // Implementation logic for stopping animation
-  // For example:
-  // If there's any ongoing animation, stop it
-  // You can use animation libraries or native browser APIs to control animations
-  // Here's a placeholder example:
-  const animationElement = document.getElementById("animation-element");
-  if (animationElement) {
-    animationElement.style.animationPlayState = "paused";
-  } else {
-    throw new Error("Animation element not found.");
-  }
+  stopAnimation: function (): void {
+    // Implementation logic for stopping animation
+    // For example:
+    // If there's any ongoing animation, stop it
+    // You can use animation libraries or native browser APIs to control animations
+    // Here's a placeholder example:
+    const animationElement = document.getElementById("animation-element");
+    if (animationElement) {
+      animationElement.style.animationPlayState = "paused";
+    } else {
+      throw new Error("Animation element not found.");
+    }
   },
-
-
-animateIn: function (): void {
-  // Implementation logic for animating in
-  // Here you would define the animation behavior
-  // For example, you can use CSS animations or JavaScript animations
-  // This is a placeholder example using CSS animations:
-
-  // Assuming you have an element with the class "animate-in-element"
-  const element = document.querySelector(".animate-in-element");
-  if (element) {
-    // Add a CSS class to trigger the animation
-    element.classList.add("animate-in");
-  } else {
-    throw new Error("Animate-in element not found.");
-  }
+  animateIn: function (): void {
+    // Implementation logic for animating in
+    // Here you would define the animation behavior
+    // For example, you can use CSS animations or JavaScript animations
+    // This is a placeholder example using CSS animations:
+    // Assuming you have an element with the class "animate-in-element"
+    const element = document.querySelector(".animate-in-element");
+    if (element) {
+      // Add a CSS class to trigger the animation
+      element.classList.add("animate-in");
+    } else {
+      throw new Error("Animate-in element not found.");
+    }
   },
-
   startAnimation: function (): void {
     // Implementation logic for starting animation
     // Here you would define the animation behavior
@@ -181,47 +185,71 @@ animateIn: function (): void {
     const element = document.getElementById("animation-element");
     if (element) {
       // Start the animation
-      element.animate([
-        // Define keyframes for the animation
-        { transform: 'translateX(0)' }, // Initial state
-        { transform: 'translateX(100px)' }, // Final state
-      ], {
-        // Animation options
-        duration: 1000, // 1 second duration
-        easing: 'ease-in-out', // Easing function
-        iterations: 1, // Run the animation once
-      });
+      element.animate(
+        [
+          // Define keyframes for the animation
+          { transform: "translateX(0)" }, // Initial state
+          { transform: "translateX(100px)" }, // Final state
+        ],
+        {
+          // Animation options
+          duration: 1000, // 1 second duration
+          easing: "ease-in-out", // Easing function
+          iterations: 1, // Run the animation once
+        }
+      );
     } else {
       throw new Error("Animation element not found");
     }
   },
-  
-
-  toggleActivation: function (accessToken?: string | null | undefined): void {
+  toggleActivation: function (
+    payload: any,
+    accessToken?: string | null | undefined
+  ): void {
     if (accessToken) {
       // If accessToken is provided, perform activation actions
       console.log("Activated with access token:", accessToken);
       // Perform activation actions here
-      UIActions.showActivationMessage(); // Example: Show activation message on UI
-      UIActions.enableFeatures(); // Example: Enable features on UI
+      UIActions.showActivationMessage(payload); // Example: Show activation message on UI
+      UIActions.enableFeatures(payload); // Example: Enable features on UI
     } else {
       // If accessToken is not provided, perform deactivation actions
       console.log("Deactivated due to missing access token");
       // Perform deactivation actions here
-      UIActions.showDeactivationMessage(); // Example: Show deactivation message on UI
-      UIActions.disableFeatures(); // Example: Disable features on UI
+      UIActions.showDeactivationMessage(payload); // Example: Show deactivation message on UI
+      UIActions.disableFeatures(payload); // Example: Disable features on UI
     }
   },
-  
   cleanup: undefined,
   progress: null,
   name: "",
-  condition: function (): boolean {
-    throw new Error("Function not implemented.");
+  condition: function (): Promise<boolean> {
+    // Return a promise that resolves to true if the hook should run
+    return Promise.resolve(true);
   },
-  asyncEffect: function (): Promise<() => void> {
-    throw new Error("Function not implemented.");
+
+  
+  asyncEffect: async ({
+    idleTimeoutId,
+    startIdleTimeout,
+  }: {
+    idleTimeoutId: NodeJS.Timeout | null;
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  }): Promise<() => void> => {
+    // Implementation logic for async effect
+    // This should return a cleanup function wrapped in a promise
+    return async () => {
+      // Perform async effect logic here
+      console.log("Async effect ran!");
+
+      // Return a cleanup function
+      return () => {
+        console.log("Async effect cleaned up!");
+      };
+    };
   },
   duration: "",
 };
-export default useAsyncHookLinker;
+
+
+export default useAsyncHookLinker

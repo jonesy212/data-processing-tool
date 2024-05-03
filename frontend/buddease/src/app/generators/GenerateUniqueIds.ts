@@ -37,21 +37,21 @@ class UniqueIDGenerator {
   static generateNotificationID(
     notification: NotificationData,
     date: Date,
-    type: NotificationType,
+    notificationType: NotificationType,
     completionMessageLog: NotificationData,
     callback?: () => void
   ): string {
-    const notificationID = `${type}_${notification.message}_${date.getTime()}`;
+    const notificationID = `${notificationType}_${notification.message}_${date.getTime()}`;
     const message = `Generated notification ID: ${notificationID}`;
     const content = {
       notificationID: notificationID,
       notificationMessage: notification.message,
       date: date,
-      type: type,
+      type: notificationType,
       completionMessageLog: completionMessageLog,
       // Add more properties as needed
     };
-    notify(notificationID, message, content, new Date(), type);
+    notify(notificationID, message, content, new Date(), notificationType);
     return notificationID;
   }
 
@@ -404,6 +404,18 @@ class UniqueIDGenerator {
       "meeting" as NotificationType
     );
   }
+
+
+  static generateBlogPostID(blogName: string): string {
+    // Generate a unique ID using a suitable strategy (e.g., UUID)
+    // Here, we'll use a timestamp-based ID for simplicity
+    return this.generateID(
+      blogName,
+      NotificationTypeEnum.BlogPostID,
+      "blog" as NotificationType
+    );
+  }
+  
 
   static generateProductID(): string {
     return this.generateID(

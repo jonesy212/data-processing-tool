@@ -15,7 +15,7 @@ import { sendNotification } from "./UserSlice";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import updateUI from '../documents/editing/updateUI';
 
-const API_BASE_URL = dotProp.getProperty(endpoints, "users");
+const API_BASE_URL = endpoints.users;
 
 export const fetchUserRequest = (userId: string) => ({
   type: "FETCH_USER_REQUEST",
@@ -52,54 +52,67 @@ class UserService {
   static getCurrentUserId() {
     return parsedUserId;
   }
-  createUser = async (newUser: User) => {
+ // Define the API base URL
+
+// Update the createUser method
+createUser = async (newUser: User) => {
+  try {
+    const API_ADD_ENDPOINT = API_BASE_URL.add;
+    if (!API_ADD_ENDPOINT) {
+      throw new Error("Add endpoint not found");
+    }
+
+    // Call createHeaders function to get the headers configuration
+    const headers = createHeaders();
+
+    const response = await axiosInstance.post(`${API_ADD_ENDPOINT}`, newUser, {
+      headers: headers, // Pass headers configuration in the request
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// We can then import and use these actions wherever needed in our application.
+
+static fetchUser = async (userId: User["id"], authToken: string) => {
+  try {
+    // Construct the API endpoint without using dot-prop
+    const API_SINGLE_ENDPOINT = `${API_BASE_URL}/single/${userId}`;
+
+    const response = await axiosInstance.get(API_SINGLE_ENDPOINT, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        Accept: "application/json", // Adjust as needed
+      },
+    });
+
+    UserActions.fetchUserSuccess({ user: response.data });
+    sendNotification(`User with ID ${userId} fetched successfully`);
+    
+    return response.data;
+  } catch (error) {
+    UserActions.fetchUserFailure({ error: String(error) });
+    sendNotification(`Error fetching user with ID ${userId}: ${error}`);
+    console.error("Error fetching user:", error);
+    throw error;
+  }
+};
+
+  static fetchUserbyUserName = async (userName: string) => { 
     try {
-      const API_ADD_ENDPOINT = dotProp.getProperty(
-        API_BASE_URL,
-        "add"
-      ) as string;
-      if (!API_ADD_ENDPOINT) {
-        throw new Error("Add endpoint not found");
-      }
+      // Construct API endpoint to fetch user by username
+      const API_SINGLE_BY_USERNAME_ENDPOINT = `${API_BASE_URL}/single/username/${userName}`;
 
-      // Call createHeaders function to get the headers configuration
-      const headers = createHeaders();
+      const response = await axiosInstance.get(API_SINGLE_BY_USERNAME_ENDPOINT);
 
-      const response = await axiosInstance.post(API_ADD_ENDPOINT, newUser, {
-        headers: headers, // Pass headers configuration in the request
-      });
-      UserActions.createUserSuccess({ user: response.data });
-      sendNotification(`User ${newUser.username} created successfully`);
       return response.data;
-    } catch (error) {
-      UserActions.createUserFailure({ error: String(error) });
-      sendNotification(`Error creating user: ${error}`);
-      console.error("Error creating user:", error);
+    } catch(error) {
       throw error;
     }
-  };
-
-  fetchUser = async (userId: User["id"]) => {
-    try {
-      const API_SINGLE_ENDPOINT = dotProp.getProperty(API_BASE_URL, "single", [
-        Number(userId),
-      ]) as string;
-      if (!API_SINGLE_ENDPOINT) {
-        throw new Error("Single endpoint not found");
-      }
-      const response = await axiosInstance.get(API_SINGLE_ENDPOINT);
-      UserActions.fetchUserSuccess({ user: response.data });
-      sendNotification(`User with ID ${userId} fetched successfully`);
-      return response.data;
-    } catch (error) {
-      UserActions.fetchUserFailure({ error: String(error) });
-      sendNotification(`Error fetching user with ID ${userId}: ${error}`);
-      console.error("Error fetching user:", error);
-      throw error;
-    }
-  };
-
-
+  }
 
 
   fetchUserProfile = async (userId: string) => {
@@ -110,6 +123,7 @@ class UserService {
         id: string;
         name: string;
         email: string;
+        // permissions: UserRole[];
       }
 
       // Extract user profile from user data
@@ -158,19 +172,43 @@ class UserService {
         throw error;
       }
     }
-    fetchUserData = async (
-      req: { userId: string },
-      res: {
-        dispatch: Dispatch<UnknownAction>;
-      }
-    ) => { 
-      try {
-        const userData = UserActions.fetchUserData({ userId: req.userId });
-        return userData; // Return the fetched user data
-      } catch (error) {
-        throw error;
-      }
+  fetchUserData = async (
+    req: { userId: string },
+    res: {
+      dispatch: Dispatch<UnknownAction>;
     }
+  ) => {
+    try {
+      const API_LIST_ENDPOINT = dotProp.getProperty(
+        API_BASE_URL,
+        "list"
+      ) as string;
+      if (!API_LIST_ENDPOINT) {
+        throw new Error("List endpoint not found");
+      }
+
+      const response = await axiosInstance.get(
+        `${API_LIST_ENDPOINT}/${req.userId}`
+      );
+      const userData = response.data;
+
+      // Call the action creator with the fetched user data
+      const userDataAction = UserActions.fetchUserDataSuccess(userData);
+      res.dispatch(userDataAction);
+
+      sendNotification(`User with ID ${userData.userId} fetched successfully`);
+      return userData;
+    } catch (error) {
+      const errorAction = UserActions.fetchUserDataFailure({
+        error: String(error),
+      });
+      res.dispatch(errorAction);
+      sendNotification(`Error fetching user with ID ${req.userId}: ${error}`);
+      console.error("Error fetching user:", error);
+      throw error;
+    }
+  };
+    
     
   fetchUserByIdSuccess = async () => {
     try {

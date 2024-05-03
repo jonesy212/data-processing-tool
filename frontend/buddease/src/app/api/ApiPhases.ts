@@ -4,16 +4,11 @@ import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
+import { Phase } from '../components/phases/Phase';
 
 const API_BASE_URL = dotProp.getProperty(endpoints, 'phases.base');
 
-export interface Phase {
-  id: number;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  // Add other properties as needed
-}
+
 const url = dotProp.getProperty(endpoints, 'phases.add');
 const urlString: string = typeof url === 'string' ? url : '';
 

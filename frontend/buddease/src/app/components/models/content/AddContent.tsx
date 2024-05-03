@@ -70,9 +70,6 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 
 
 
-
-
-
   const handleItalicClick = () => {
     // Get the selection range
     const selection = window.getSelection();

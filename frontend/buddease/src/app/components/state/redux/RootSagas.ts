@@ -46,6 +46,7 @@ export function* rootSaga() {
       fork(tenantSagas),
       fork(snapshotSagas),
       fork(documentSagas),
+      
       fork(undoSagas)
       // Add more sagas here...
     ]);

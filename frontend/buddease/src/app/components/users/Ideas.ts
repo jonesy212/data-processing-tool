@@ -23,3 +23,6 @@ export type Idea = {
   // Add more properties as needed to represent an idea
 };
 
+
+
+export type { UserIdea }

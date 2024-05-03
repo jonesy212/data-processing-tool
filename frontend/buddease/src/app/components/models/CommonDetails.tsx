@@ -1,17 +1,9 @@
 
 // CommonDetails.tsx
 import React, { useState } from "react";
-import { SupportedData } from "./CommonData";
+import { CommonData, SupportedData } from "./CommonData";
 
-// Define a generic type for data
-interface CommonData<T> {
-  title?: string | undefined;
-  description?: string | null | undefined;
-  data?: T;
-  tags?: string[];
-  categories?: string[];
-  // Add more common properties as needed
-}
+
 
 interface Customizations<T> {
   [key: string]: (value: any) => React.ReactNode;

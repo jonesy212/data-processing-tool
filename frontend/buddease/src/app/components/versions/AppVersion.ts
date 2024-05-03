@@ -2,7 +2,12 @@
 
 import { API_VERSION_HEADER } from "@/app/configs/AppConfig";
 import Version from "./Version";
+import { RootState } from "../state/redux/slices/RootSlice";
 // Define the AppVersion interface without access modifiers
+// Define selector functions to extract appVersion and databaseVersion from the state
+export const selectAppVersion = (state: RootState) => state.versionManager.appVersion;
+export const selectDatabaseVersion = (state: RootState) => state.versionManager.databaseVersion;
+
 interface AppVersion {
   appName: string;
   major: number;

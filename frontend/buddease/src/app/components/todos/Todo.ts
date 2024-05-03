@@ -13,7 +13,6 @@ import { Snapshot } from "../snapshots/SnapshotStore";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import { Member } from "../models/teams/TeamMembers";
 export interface Todo {
   _id: string;
   id: string;
@@ -172,6 +171,7 @@ class TodoImpl implements Todo {
     });
   };
   snapshot: Snapshot<Data> = {
+    category: "todo",
     timestamp: new Date(),
     data: {} as Data,
   };

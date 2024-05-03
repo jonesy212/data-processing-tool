@@ -4,6 +4,7 @@ import { ErrorInfo, useState } from 'react';
 import safeParseData from '../crypto/SafeParseData';
 import { ParsedData } from '../crypto/parseData';
 import { YourResponseType } from '../typings/types';
+import { Data } from '../models/data/Data';
 
 const useErrorHandling = () => {
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +26,7 @@ const useErrorHandling = () => {
 
 
   // Function to safely parse data with error handling
-  const parseDataWithErrorHandling = (data: YourResponseType[], threshold: number): ParsedData[] => {
+  const parseDataWithErrorHandling = (data: YourResponseType[], threshold: number): ParsedData<Data>[] => {
     try {
       // Call safeParseData function
       return safeParseData(data, threshold);

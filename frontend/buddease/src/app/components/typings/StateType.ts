@@ -5,9 +5,9 @@ import { Project } from "../projects/Project";
 import { User } from "../users/User";
 import { Settings } from '../state/stores/SettingsStore';
 import { UserManagerState } from '../users/UserSlice';
-import { TaskManagerState } from "../state/redux/slices/TaskSlice";
+import { TaskState  } from "../state/redux/slices/TaskSlice";
 import { NotificationState } from "../state/redux/slices/NotificationSlice";
-
+import { SettingsState } from "../state/redux/slices/SettingsSlice";
 // Define the StateType interface
 interface StateType {
     projects: Project[];
@@ -18,7 +18,7 @@ interface StateType {
     errors: Error[];
     // Add additional state types
     userState: UserManagerState;
-    taskState: TaskManagerState;
+    taskState: TaskState ;
     notificationState: NotificationState;
     settingsState: SettingsState;
     errorState: ErrorState;

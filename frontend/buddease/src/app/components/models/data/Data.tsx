@@ -73,6 +73,7 @@ export interface Comment {
   author?: string | number | readonly string[] | undefined
   upvotes?: number | undefined
   content?: string | undefined;
+  resolved?: boolean;
   pinned?: boolean;
   // Consolidating upvotes into likes if they serve the same purpose
   postId?: string | number;

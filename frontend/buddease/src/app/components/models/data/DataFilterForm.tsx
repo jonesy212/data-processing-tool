@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { Snapshot, snapshotStore } from "../../snapshots/SnapshotStore";
 import { updateCallback } from "../../state/stores/CalendarEvent";
-import userService from "../../users/ApiUser";
+import userService, { userId } from "../../users/ApiUser";
 import { Data } from "./Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from './DataFrameComponent';
@@ -20,6 +20,7 @@ import ListGenerator from "@/app/generators/ListGenerator";
 import { shuffleArray } from "@/app/utils/shuffleArray";
 import SnapshotList from "../../snapshots/SnapshotList";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { authToken } from "../../auth/authToken";
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -83,8 +84,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   const dispatch: DataAnalysisDispatch =
     useDispatch<Dispatch<DataAnalysisAction>>();
 
-  const userId = ""; // Your user ID here
-  const user = await userService.fetchUser(userId);
+  const user = await userService.fetchUser(userId, authToken);
   const addFilter = () => {
     if (
       column.trim() === "" ||
@@ -142,22 +142,23 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   useEffect(() => {
     // Process raw data and generate snapshot list
     const generator = new SnapshotListGenerator();
-    const rawData = fetchData(userId, dispatch); // Fetch raw data from API or local storage
-    const processedSnapshotList = generator.generateSnapshotList(rawData);
-
-    // Perform data transformation actions
-    processSnapshotList(processedSnapshotList);
-
-    // Update component state with processed snapshot data
-    setSnapshotList(processedSnapshotList);
-
-    // Start streaming when the component mounts
+    if (userId) {
+      const rawData = fetchData(userId, dispatch); // Fetch raw data from API or local storage
+      const processedSnapshotList = generator.generateSnapshotList(rawData);
+      // Perform data transformation actions
+      processSnapshotList(processedSnapshotList);
+      
+      // Update component state with processed snapshot data
+      setSnapshotList(processedSnapshotList);
+      
+      // Start streaming when the component mounts
     const stream = streamDataToBackend();
-
+    
     // Clean up the EventSource when the component unmounts
     return () => {
       stream.close();
     };
+  }
   }, []);
 
   const clearAllFilters = () => {

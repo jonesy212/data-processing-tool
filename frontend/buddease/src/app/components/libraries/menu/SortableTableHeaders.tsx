@@ -1,4 +1,5 @@
 import React from "react";
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
 
 interface Header {
   key: string;
@@ -8,10 +9,9 @@ interface Header {
 interface Props {
   headers: Header[];
   onSort: (key: string) => void;
-  headersConfig: { [key: string]: string }; // Define headersConfig prop
 }
 
-const SortableTableHeaders: React.FC<Props> = ({ headers, onSort, headersConfig }) => {
+const SortableTableHeaders: React.FC<Props> = ({ headers, onSort }) => {
   const handleSort = (key: string) => {
     // Example of using headersConfig when making API requests
     fetch("example.com/api/data", {

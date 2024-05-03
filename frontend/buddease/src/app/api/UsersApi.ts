@@ -1,8 +1,8 @@
+import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Logger from '../components/logging/Logger';
-import userService from '../components/users/ApiUser';
-import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import UserService from '../components/users/ApiUser';
+import { User } from '../components/users/User';
 import { databaseConfig } from '../configs/DatabaseConfig';
 
 // Function to log API errors
@@ -64,38 +64,32 @@ export const processUserData = (userData: any): any => {
   return userData;
 };
 
+//api pattern
 // Function to save user profiles to the database
-// Function to save user profiles to the database
-export const saveUserProfiles = async (userIds: string[]) => {
+export const saveUserProfiles = async (profiles: User[]): Promise<{ success: boolean, message?: string, error?: string }> => {
   try {
-    // Initialize an array to store user profiles
-    const userProfiles = [];
-
-    // Loop through each userId and fetch user profile data
-    for (const userId of userIds) {
-      const userService = new UserService(); // Create an instance of UserService
-
-      const userProfile = await userService.fetchUserProfile(userId); // Assuming UserService has a fetchUserProfile method
-      userProfiles.push(userProfile);
-    }
-    
     // Check if the databaseConfig object has a saveUserProfiles method
-    if (databaseConfig.saveUserProfiles) {
-      // Call the saveUserProfiles method, passing the array of user profiles
-      await databaseConfig.saveUserProfiles(userProfiles);
-    } else {
+    if (!databaseConfig.saveUserProfiles) {
       throw new Error('saveUserProfiles method is not implemented in the databaseConfig object.');
     }
+    
+    // Call the saveUserProfiles method, passing the array of user profiles
+    await databaseConfig.saveUserProfiles(profiles);
 
-    // Return success message or result if needed
+    // Return success message or result
     return { success: true, message: "User profiles saved successfully." };
   } catch (error) {
+    // Log and handle the error
     console.error("Error saving user profiles:", error);
     Logger.error("Error saving user profiles:", error);
-    // Return error message or handle error as needed
+
+    // Return error message
     return { success: false, error: "Failed to save user profiles." };
   }
 };
+
+
+
 
 
 
@@ -116,6 +110,9 @@ export const fetchUserData = async (req: any, res: any) => {
     handleApiError(error);
   }
 };
+
+
+
 
 // Helper function to save user profile to database (example)
 const saveToDatabase = async (userProfile: any) => {

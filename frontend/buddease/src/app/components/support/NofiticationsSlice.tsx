@@ -24,14 +24,14 @@ interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   createdAt?: Date;
   updatedAt?: Date;
   content: string;
-  type: NotificationType;
+  // type: NotificationType;
   sendStatus: SendStatus; // Add sendStatus property
   completionMessageLog: LogData;
   date: Date;
   email?: string;
   status?: AllStatus
   inApp?: boolean; // Add inApp property to differentiate push vs in-app
-  notificationType: NotificationTypeEnum | string
+  notificationType?: NotificationTypeEnum | string
   options?: {
     additionalOptions: readonly string[] | string | number | any[] | undefined
   }

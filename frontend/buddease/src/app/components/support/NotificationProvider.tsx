@@ -4,6 +4,7 @@ import { NotificationData } from './NofiticationsSlice';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { notificationStoreInstance } from '../state/stores/NotificationStore';
 import { logData } from '../notifications/NotificationService';
+import { LogData } from '@/app/components/models/LogData';
 
 
  
@@ -78,7 +79,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
           message,
           content,
           date: Date = new Date(),
-          type: NotificationTypeEnum
+          type: NotificationType
         ): Promise<void> => {
           notificationStore.addNotification({
             id,
@@ -88,7 +89,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
             message: '',
             type: NotificationTypeEnum.AccountCreated,
             sendStatus: 'Sent',
-            completionMessageLog: LogData
+            completionMessageLog: logData
           });
           console.log(`Notification: ${message}`);
           return Promise.resolve();
@@ -96,7 +97,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
 
         notifications: notificationData,
         showMessage: (message: Message, type: NotificationType) => {
-          sendNotification("Custom", `${message.from}: ${message.text}`);
+          sendNotification("Custom", `${message.sender}: ${message.text}`);
           console.log(`Notification: ${message}`);
         },
       }

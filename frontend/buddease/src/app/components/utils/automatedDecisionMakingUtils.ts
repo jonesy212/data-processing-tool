@@ -1,3 +1,5 @@
+import { MarketData } from "../crypto/TradingStrategy";
+
 // Function for automated decision making
 const automatedDecisionMaking = (marketData: MarketData[], winRate: number): void => {
     // Logic to automatically adjust trading parameters or execute trades based on analyzed market data and strategy performance

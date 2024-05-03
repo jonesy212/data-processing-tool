@@ -147,9 +147,93 @@ const handleUiApiErrorAndNotify = (
         handleError('Failed to update user settings');
         throw error;
       }
-      },  // Add more UI API functions as needed
+  },  // Add more UI API functions as needed
     
 
-    
+  
+
+// Define the fetchUIData function to fetch additional data or perform an API call
+fetchUIData: async (endpoint: string, requestData: any) => {
+  try {
+    // Perform API call using fetch or axios
+    const response = await fetch(endpoint, {
+      method: 'POST', // Adjust the method as needed
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch UI data');
+    }
+
+    // Parse the response data as needed
+    const responseData = await response.json();
+
+    // Handle the response data, update state, dispatch actions, etc.
+    console.log('Fetched UI data:', responseData);
+  } catch (error: any) {
+    console.error('Error fetching UI data:', error.message);
+    // Optionally, handle the error and notify the user
+  }
+}
   };
   
+
+
+
+
+
+// // Define the component function
+// const YourComponent: React.FC = () => {
+//   // Define state using useState hook
+//   const [pointerPosition, setPointerPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+
+//   // Define the handlePointerDown function
+//   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+//     // Logic for pointer down event
+//     console.log('Pointer down');
+
+//     // Example: Set isPointerDown state to true
+//     UIActions.setIsPointerDown(true);
+
+//     // Example 1: Change the background color of the div
+//     event.currentTarget.style.backgroundColor = 'lightblue';
+
+//     // Example 2: Fetch additional data or perform an API call
+   
+//     // Example 3: Update the state to track the pointer position
+//     const newPointerPosition = { x: event.clientX, y: event.clientY };
+//     setPointerPosition(newPointerPosition);
+
+//     // Example 4: Trigger a navigation or route change
+//     // history.push('/new-route');
+
+//     // Example 5: Dispatch a Redux action
+//     // dispatch({ type: 'POINTER_DOWN', payload: { event } });
+//   };
+
+//   // Define the handlePointerMove function
+//   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+//     // Logic for pointer move event
+//     console.log('Pointer moved');
+
+//     // Example: Track pointer position
+//     const newPointerPosition = {
+//       x: event.clientX,
+//       y: event.clientY,
+//     };
+
+//     // Example: Update pointer position state using action
+//     UIActions.setPointerPosition(newPointerPosition);
+
+//     // Example: Call UIActions to update pointer position
+//     // UIActions.setPointerPosition(newPointerPosition);
+
+//     // Prevent default pointer behavior like text selection
+//     event.preventDefault();
+//     // Additional logic for pointer move event
+  // }
+// }

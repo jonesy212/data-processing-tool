@@ -11,6 +11,8 @@ interface Progress {
   id: string;
   value: number;
   label: string;
+  current: 0,
+  max: 100
   // additional properties as needed
 }
 

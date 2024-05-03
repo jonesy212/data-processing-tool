@@ -1,16 +1,10 @@
 import crypto from 'crypto';
 import * as ApiDataAnalysis from '../../api/ApiDataAnalysis';
 import generateSecretKey from '../../utils/generateSecretKey';
+import { TextProps } from '@/app/libraries/animations/DraggableAnimation/useText';
 
 
 
-interface TextProps {
-    text: string; // Change the type of 'text' to string
-    onDragStart: () => void;
-    onDragMove: (dragX: number, dragY: number) => void;
-    onDragEnd: () => void;
-  }
-  
 
 
 class TextType {
@@ -146,7 +140,8 @@ const text = new TextType({
     text: "Welcome to our project management app!",
     onDragStart: () => {},
     onDragMove: (dragX: number, dragY: number) => {},
-    onDragEnd: () => {}
+    onDragEnd: () => { },
+    "TextType": "Plain Text"
 });
 console.log("Original Text:", text.getText());
 

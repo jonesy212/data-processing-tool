@@ -24,9 +24,12 @@ export const useVersionManagerSlice = createSlice({
     updateAppVersion: (state, action: PayloadAction<string>) => {
       state.appVersion = action.payload;
     },
+
     updateDatabaseVersion: (state, action: PayloadAction<string>) => {
       state.databaseVersion = action.payload;
     },
+
+
   },
 });
 

@@ -3,11 +3,10 @@
 import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
 
 const ClipboardData = {
-  onCopy?: (content: string) => void,
-onPaste?: (content: string) => void
-  
-}
-export interface CustomClipboardEvent  extends BaseCustomEvent {
+  onCopy: (content: string) => {},
+  onPaste: (content: string) => {},
+};
+export interface CustomClipboardEvent extends BaseCustomEvent {
   getClipboardData(): void;
 }
 // Define interfaces for events
@@ -33,7 +32,7 @@ export interface BaseCustomEvent
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions
   ) => void;
-  clipboardData: React.ClipboardEvent<HTMLDivElement>
+  clipboardData: React.ClipboardEvent<HTMLDivElement>;
 }
 
 interface CustomEventExtension extends CustomEvent {
@@ -48,5 +47,4 @@ const CustomEventExtensionConstructor = CustomEvent as unknown as {
 
 export type { CustomEventExtension };
 
-  export { CustomEventExtensionConstructor };
-
+export { CustomEventExtensionConstructor };

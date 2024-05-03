@@ -69,3 +69,4 @@ const query = "Microsft Corp"; // Intentional typo for demonstration
 const matchedEntities = fuzzyMatchEntities(query, entities);
 const filteredEntities = entities.filter((entity) => entity.type === "company");
 console.log("Matched Entities:", matchedEntities, filteredEntities);
+export type { Entity}

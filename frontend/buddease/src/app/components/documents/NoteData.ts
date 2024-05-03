@@ -4,7 +4,6 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Collaborator } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import Version from "../versions/Version";
-import { DocumentOptions } from "./DocumentOptions";
 
 
 
@@ -55,7 +54,7 @@ export interface NoteData {
   colorLabel?: string; // Hex color code or predefined label
   collaborators: Collaborator[]; // Array of user IDs
   reminderDate?: Date;
-  attachments: NoteAttachment[];
+  attachments?: NoteAttachment[];
   geolocation?: NoteGeolocation;
 }
 
@@ -78,11 +77,10 @@ export enum AttachmentType {
   LINK = "Link",
 }
 
-export interface NoteOptions extends DocumentOptions {
+export interface NoteOptions {
   size: NoteSize;
-  animations: NoteAnimationOptions;
+  animations: NoteAnimationOptions & { duration?: number };
   additionalOption2: string;
-
 }
 
 export interface NoteVersion {
@@ -99,7 +97,7 @@ export interface NoteGeolocation {
 export type NoteSize = "letter" | "legal" | "a4" | "custom";
 
 export interface NoteAnimationOptions {
-  type: "slide" | "fade" | "custom" | "show";
+  type: "slide" | "fade" | "custom" | "show" | "none";
   duration?: number;
   // Add more animation options if needed
 }

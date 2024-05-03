@@ -298,6 +298,7 @@ const notifyOrderBookUpdate = (): void => {
   const data: Snapshot<void> = {
     timestamp: new Date(),
     data: undefined,
+    category: undefined
   };
 
   // Notify subscribers about the update

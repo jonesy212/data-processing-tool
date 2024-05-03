@@ -168,16 +168,14 @@ class TeamApiService {
     );
   }
   
- // Update the fetchTeamData method in the TeamApiService class
+ 
+  // Update the fetchTeamData method
   async fetchTeamData(teamId: number): Promise<AxiosResponse> {
-    const fetchTeamDataPath = `${API_BASE_URL}.teams.fetchTeamData.${teamId}`;
-    if (dotProp.hasProperty(endpoints, fetchTeamDataPath)) {
-      const fetchTeamDataEndpoint = dotProp.getProperty(
-        endpoints,
-        fetchTeamDataPath
-      );
+    const fetchTeamDataPath = `teams.fetchTeamData.${teamId}`;
+    if (endpoints[fetchTeamDataPath]) {
+      const fetchTeamDataEndpoint = endpoints[fetchTeamDataPath];
       return await this.requestHandler(
-        () => axiosInstance.get(String(fetchTeamDataEndpoint)),
+        () => axiosInstance.get(`${API_BASE_URL}/teams`),
         "Failed to fetch team data",
         "FETCH_TEAM_DATA_SUCCESS",
         "FETCH_TEAM_DATA_ERROR"

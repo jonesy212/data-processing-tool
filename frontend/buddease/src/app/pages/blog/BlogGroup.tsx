@@ -1,24 +1,29 @@
-// BlogGroup.tsx
 import React from "react";
-import { BlogPost } from "../types"; // Assuming you have a type for BlogPost
-import GroupGenerator from "./GroupGenerator";
+import { BlogPost } from "@/app/components/community/DiscussionForumComponent";
+import GroupGenerator from "@/app/generators/GroupGenerator";
+import Group from "@/app/components/communications/chat/Group";
+import ListGenerator from "@/app/generators/ListGenerator";
+import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 
 interface BlogGroupProps {
-  blogGroups: { groupName: string; blogPosts: BlogPost[] }[];
+  blogGroups: Group<BlogPost>[];
 }
 
 const BlogGroup: React.FC<BlogGroupProps> = ({ blogGroups }) => {
-  const renderBlogGroup = (group: { groupName: string; blogPosts: BlogPost[] }) => {
+  const renderBlogGroup = (group: Group<BlogPost>): JSX.Element => {
+    const transformedPosts: DetailsItem<BlogPost>[] = group.items.map(
+      (post, index) => ({
+        id: post.id.toString(),
+        label: "Post",
+        value: post.content,
+      })
+    );
+
     return (
-      <ul>
-        {group.blogPosts.map((post, index) => (
-          <li key={index}>
-            <h3>{post.title}</h3>
-            <p>{post.content}</p>
-            {/* Render other blog post details as needed */}
-          </li>
-        ))}
-      </ul>
+      <div>
+        <h1>{group.groupName}</h1>
+        <ListGenerator items={transformedPosts} />
+      </div>
     );
   };
 

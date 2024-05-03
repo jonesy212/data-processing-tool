@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { Data } from "../components/models/data/Data";
+import SnapshotList from "../components/snapshots/SnapshotList";
 import { Snapshot } from "../components/snapshots/SnapshotStore";
 import { AppConfig, getAppConfig } from "../configs/AppConfig";
 import configData from "../configs/configData";
@@ -13,8 +14,6 @@ import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
-
-
 
 
 const appConfig: AppConfig = getAppConfig();
@@ -174,6 +173,50 @@ export const fetchSnapshotById = async (snapshotId: number): Promise<Snapshot<Da
   }
 };
 
+export const fetchAllSnapshots = async (): Promise<SnapshotList> => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
+    const currentAppVersion = configData.currentAppVersion;
+
+    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
+      accessToken,
+      userId,
+      currentAppVersion
+    );
+
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ''),
+      // Add other header objects as needed
+    ];
+    const headers = Object.assign({}, ...headersArray);
+    const response = await axiosInstance.get<SnapshotList>(`${API_BASE_URL}`, {
+      headers: headers as Record<string, string>,
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error as AxiosError<unknown>, "Failed to fetch all snapshots");
+    throw error;
+  }
+}
+
+export const getSortedList = async (target: string): Promise<SnapshotList> => {
+  try {
+    const snapshotsList = await fetchAllSnapshots(target); // Pass the target parameter to fetchAllSnapshots
+    snapshotsList.sortSnapshotItems(); // Optional: Sort snapshots within the SnapshotList object
+    return snapshotsList;
+  } catch (error) {
+    const errorMessage = "Failed to get sorted list of snapshots";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+
 
 export const removeSnapshot = async (snapshotId: number): Promise<void> => {
   try {
@@ -206,4 +249,4 @@ export const removeSnapshot = async (snapshotId: number): Promise<void> => {
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
   }
-};
+}

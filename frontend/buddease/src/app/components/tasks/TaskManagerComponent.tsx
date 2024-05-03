@@ -255,11 +255,14 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
                 value: newProgress,
                 label: todo.progress?.label || "",
                 id: todo.progress?.id || "",
+                current: todo.progress?.current || 0,
+                max: 100,
               },
             }
           : todo
       )
-    );
+    )
+    
   };
 
   const handleUpdateTask = async (taskId: number, newTitle: string) => {

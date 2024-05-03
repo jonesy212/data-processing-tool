@@ -160,3 +160,5 @@ export const useMovementAnimations = (): MovementAnimationActions => {
     // Add more movement animation methods as needed
   };
 };
+
+export type { MovementAnimationActions}

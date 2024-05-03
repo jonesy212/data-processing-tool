@@ -6,6 +6,7 @@ import { NotificationType, useNotification } from '@/app/components/support/Noti
 // Define a generic container interface
 interface Container<T> {
   data: T;
+  isActive: boolean;
   // Add more properties and methods as needed
 }
 

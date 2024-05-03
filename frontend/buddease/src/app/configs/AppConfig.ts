@@ -39,6 +39,7 @@ interface AppConfig {
   // Properties related to user authentication and authorization
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isAuthorized: () => boolean;
 
   // Properties related to user management
   users: User[]; // Define the User interface if not already defined
@@ -201,6 +202,9 @@ export const getAppConfig = (): AppConfig => {
     deleteUser: () => {},
     updateUserRole: () => {},
     notifications: [],
+    isAuthorized() {
+        return this.isAuthenticated && this.isAdmin;
+    },
     dismissNotification: () => {},
     config: {
       name: undefined,

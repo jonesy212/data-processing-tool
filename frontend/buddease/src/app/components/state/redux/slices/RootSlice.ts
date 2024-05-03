@@ -12,37 +12,37 @@ import { Data } from "@/app/components/models/data/Data";
 import { useRealtimeDataSlice } from "@/app/components/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 
-import { StatusType } from "@/app/components/models/data/StatusType";
+import { PriorityStatus, StatusType } from "@/app/components/models/data/StatusType";
+import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { User } from "@/app/components/users/User";
 import { VideoData } from "@/app/components/video/Video";
 import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
+import { useUIManagerSlice } from "../../stores/UISlice";
 import { Video } from "../../stores/VideoStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { useApiManagerSlice } from "./ApiSlice";
+import { useAppManagerSlice } from "./AppSlice";
 import { useBlogManagerSlice } from "./BlogSlice";
 import { useCollaborationSlice } from "./CollaborationSlice";
 import { useDataManagerSlice } from "./DataSlice";
 import { useDocumentManagerSlice } from "./DocumentSlice";
+import { useDrawingManagerSlice } from "./DrawingSlice";
+import { useEntityManagerSlice } from "./EntitySlice";
 import { useEventManagerSlice } from "./EventSlice";
+import { filterReducer } from "./FilterSlice";
 import { useNotificationManagerSlice } from "./NotificationSlice";
 import { usePagingManagerSlice } from "./pagingSlice";
+import { usePhaseManagerSlice } from "./phaseSlice";
 import { useProjectManagerSlice } from "./ProjectSlice";
 import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
 import { useSettingsManagerSlice } from "./SettingsSlice";
+import { useTaskManagerSlice } from "./TaskSlice";
 import { useTeamManagerSlice } from "./TeamSlice";
 import { useToolbarManagerSlice } from "./toolbarSlice";
-import { useVideoManagerSlice } from "./VideoSlice";
-import { useEntityManagerSlice } from "./EntitySlice";
-import { useDrawingManagerSlice } from "./DrawingSlice";
-import { useUIManagerSlice } from "../../stores/UISlice";
-import { filterReducer } from "./FilterSlice";
 import { useVersionManagerSlice } from "./VersionSlice";
-import { TaskState, useTaskManagerSlice } from "./TaskSlice";
-import { useAppManagerSlice } from "./AppSlice";
-import { usePhaseManagerSlice } from "./phaseSlice";
-import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
-import { PriorityStatus } from '@/app/components/models/data/StatusType';
+import { useVideoManagerSlice } from "./VideoSlice";
+import { implementThen } from "../../stores/CommonEvent";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -63,8 +63,7 @@ export interface RootState {
   appManager: ReturnType<typeof useAppManagerSlice.reducer>;
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
   uiManager: ReturnType<typeof useUIManagerSlice.reducer>;
-
-  // Project Management
+   // Project Management
   projectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
   taskManager: ReturnType<typeof useTaskManagerSlice.reducer>;
   trackerManager: ReturnType<typeof trackerManagerSlice.reducer>;
@@ -339,6 +338,24 @@ const rootReducerSlice = createSlice({
         videoDuration: 0,
         videoUrl: "",
         ideas: [],
+        payload: undefined,
+        some: function (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+          if (Array.isArray(this)) {
+            for (let i = 0; i < this.length; i++) {
+              if (callbackfn(this[i], i, this)) {
+                return true;
+              }
+            }
+          }
+          else {
+            throw new Error("'some' method can only be used on arrays.");
+          }
+          return false;
+        },
+        then: implementThen,
+        [Symbol.iterator]: function (): Iterator<any, any, undefined> {
+          throw new Error("Function not implemented.");
+        }
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";

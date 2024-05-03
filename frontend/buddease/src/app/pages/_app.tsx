@@ -64,11 +64,15 @@ import BrandingSettings from "../libraries/theme/BrandingService";
 import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
 import { Dispatch } from "@reduxjs/toolkit";
+
 import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import apiNotificationsService from "../api/NotificationsService";
 import { NotificationType } from '@/app/components/support/NotificationContext';
 import useEditorState from "../components/state/useEditorState";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ToolbarItemsContext from "../components/libraries/toolbar/ToolbarItemsProvider";
+
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
@@ -314,6 +318,7 @@ async function MyApp({
 
   return (
     <ErrorBoundaryProvider ErrorHandler={ErrorHandler}>
+      <GestureHandlerRootView style={{flex: 1}}>
       {isUserLoggedIn ? (
         <div>
           <h1>Welcome User!</h1>
@@ -322,7 +327,8 @@ async function MyApp({
         </div>
       ) : (
         <h1>User Logged Out (due to inactivity)</h1>
-      )}
+        )}
+        <ToolbarItemsContext.Provider value={contextValue}>
       <DynamicErrorBoundary>
         <Refine
           dataProvider={{
@@ -547,7 +553,10 @@ async function MyApp({
           </SearchComponent>
           <ContentItemComponent item={contentItem} />
         </Refine>
-      </DynamicErrorBoundary>
+        </DynamicErrorBoundary>
+        
+      </ToolbarItemsContext.Provider>
+      </GestureHandlerRootView>
     </ErrorBoundaryProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import { DataVersions, dataVersions } from "@/app/configs/DataVersionsConfig";
 import { UserSettings } from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
@@ -6,11 +6,39 @@ import docx from "docx";
 import { DocumentData } from "./DocumentBuilder";
 import { NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
+import Version from "../versions/Version";
 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
   addParagraph(paragraph: docx.Paragraph): void;
 }
+
+
+
+
+// Define the interface for DocumentBuilderOptions extending DocumentOptions
+export interface DocumentBuilderOptions extends DocumentOptions {
+  canComment: boolean;
+  canView: boolean;
+  canEdit: boolean;
+}
+
+// Define a function to create default DocumentBuilderOptions
+export const getDefaultDocumentBuilderOptions = (): DocumentBuilderOptions => {
+  // Get the default DocumentOptions
+  const defaultOptions = getDefaultDocumentOptions();
+
+  // Return the extended DocumentBuilderOptions with default values
+  return {
+    ...defaultOptions,
+    canComment: true,
+    canView: true,
+    canEdit: true,
+  };
+};
+
+
+
 
 export const getDefaultNoteOptions = (): NoteOptions => {
   const defaultOptions = getDefaultDocumentOptions();
@@ -26,7 +54,8 @@ export interface DocumentOptions {
   documentType: DocumentData; // Add documentType property
   userIdea: string;
   additionalOptions: readonly string[] | string | number | any[] | undefined;
-
+  documentPhase: string;
+  version: Version; // Update type to Version
   isDynamic: boolean;
   size: DocumentSize;
   animations: DocumentAnimationOptions; // New property for animations
@@ -88,7 +117,7 @@ export interface DocumentOptions {
   enableFuzzy?: boolean;
   dataVersions: DataVersions
   backendStructure?: BackendStructure;
-  frontendStructure?: FrontendStructure
+  frontendStructure?: FrontendStructure;
 }
 
 export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
@@ -98,6 +127,8 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
     uniqueIdentifier: "",
     documentType: {} as DocumentData,
+    documentPhase: "Draft",
+    version: Version.create({ versionNumber: "1.0", appVersion: "1.0" }), // Create a new Version instance
     userIdea: "",
     fontSize: 14,
     textColor: "#000000",

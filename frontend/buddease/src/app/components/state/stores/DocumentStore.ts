@@ -3,7 +3,8 @@ import { useNotification } from '@/app/components/support/NotificationContext';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
-import { DocumentTypeEnum } from "../../documents/DocumentGenerator";
+import { DocumentPath, DocumentTypeEnum } from "../../documents/DocumentGenerator";
+import { Comment } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
@@ -29,6 +30,10 @@ interface Document extends DocumentData {
   createdBy: string;
   updatedBy: string;
   documentData: any;
+  filePath?: DocumentPath;
+  visibility: "public" | "private";                    // The visibility of the file (public or private)
+  comments?: Comment[]
+
     // Other properties
 }
   
