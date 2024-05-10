@@ -1,6 +1,6 @@
 import { Data } from "@/app/components/models/data/Data";
 import SearchResultItem from "@/app/components/models/data/SearchResultItem";
-import { Team } from "@/app/components/models/teams/Team";
+import { Team, team } from "@/app/components/models/teams/Team";
 import ProgressBar, {
   Progress,
   ProgressPhase,
@@ -15,6 +15,8 @@ import {
   projectProgressData,
 } from "@/app/components/projects/projectManagement/ProjectProgress";
 import SearchResult from "@/app/components/routing/SearchResult";
+import Version from "@/app/components/versions/Version";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 
 interface ProjectManagerPersonaProps {
   teams: Team[];
@@ -23,10 +25,19 @@ interface ProjectManagerPersonaProps {
 const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
   teams,
 }) => {
-  const [searchResults, setSearchResults] = useState<DetailsItem<Team>[]>([]); // Updated state type
-  const { searchQuery } = useSearch(); // Using the useSearch hook to access search query
-
-  // Method to filter teams based on search query
+  const [searchResults, setSearchResults] = useState<DetailsItem<Team>[]>([]);
+  const { searchQuery } = useSearch();
+  const versionInfo = {
+    id: 0,
+    versionNumber: "",
+    appVersion: "",
+    content: "",
+    data: [],
+    name: "",
+    url: "",
+  };
+  const version = new Version(versionInfo);
+  const structure = version.getStructure ? version.getStructure() : {};
 
   const filterTeams = (teams: Team[]): DetailsItem<Team>[] => {
     return teams
@@ -39,24 +50,20 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
       }));
   };
 
-  // Update search results when search query changes
   React.useEffect(() => {
     setSearchResults(filterTeams(teams));
   }, [searchQuery, teams]);
 
-  // Calculate progress for a specific team
   const calculateProgress = (team: Team): Progress | null => {
-    // Calculate progress logic goes here
-    // Check if team.progress is null
     if (team.progress === null) {
-      // Handle the case where team.progress is null, for example:
       return {
         id: team.id,
         label: `${team.teamName} Progress`,
-        value: 0, // Provide a default value or handle it according to your logic
+        value: 0,
+        current: 0,
+        max: 100,
       };
     } else {
-      // If team.progress is not null, ensure that value is of type number
       const progressValue =
         typeof team.progress.value === "number" ? team.progress.value : 0;
 
@@ -64,6 +71,8 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
         id: team.id,
         label: `${team.teamName} Progress`,
         value: progressValue,
+        current: team.progress.current || 0,
+        max: team.progress.max || 100,
       };
     }
   };
@@ -71,13 +80,14 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
   return (
     <div>
       <h2>Track Progress</h2>
-      {/* Render search results if available, otherwise render all teams */}
       {searchResults.length > 0
         ? searchResults.map((item, index) => (
             <div key={index}>
-              {item.data && <TeamProgressBar team={item.data} />}
+              {item.data && <TeamProgressBar team={item.data as Team} />}
               <ProgressBar
-                progress={calculateProgress(item.data)}
+                progress={calculateProgress(
+                  Array.isArray(item.data) ? item.data[0] : (item.data as Team)
+                )}
                 phase={{} as ProgressPhase}
                 duration={0}
                 animationID={""}
@@ -97,8 +107,6 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
               />
             </div>
           ))}
-      {/* Render search results list */}
-      {/* Render SearchResult component */}
       <SearchResult
         result={{
           id: 1,
@@ -107,20 +115,27 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
           source: "https://example.com",
           content: "Example content",
           topics: ["example", "topic"],
-          highlights: ["example", "highlight"],
+          highlights: [],
           keywords: ["example", "keyword"],
           load: (content: any) => console.log(content),
           folders: [],
-          repoName: "example-repo",
-          repoURL: "https://example.com/repo",
-          version: {
-            name: "1.0.0",
-            url: "https://example.com/repo/1.0.0",
-          },
+          query: searchQuery,
+           items: searchResults,
+           totalCount: searchResults.length,
+           options: {
+             limit: 10,
+             page: 1
+           },
+           folderPath: null,
+           previousMetadata: null,
+           currentMetadata: null,
+           accessHistory: [],
+           lastModifiedDate: new Date(),
+           searchHistory: [],
+           results: searchResults,  
         }}
       />
 
-      {/* Render CommunityProjectsPage component */}
       <CommunityProjectsPage
         community={{
           teams,

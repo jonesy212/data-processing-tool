@@ -84,6 +84,8 @@ interface CustomMouseEvent<T = Element>
     useCapture?: boolean
   ): void;
   dispatchEvent(event: Event): boolean;
+  clipboardData: DataTransfer | null;
+  settings: any;
   // Event phase constants
   NONE: 0;
   CAPTURING_PHASE: 1;

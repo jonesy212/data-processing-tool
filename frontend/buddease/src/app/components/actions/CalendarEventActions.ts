@@ -22,6 +22,7 @@ export const CalendarActions = {
     "updateEventTitle"
   ),
 
+  
   performCalendarActions: createAction<string | null>("performCalendarActions"),
   filterCalendarEvents: createAction<{ filter: string }>("filterCalendarEvents"),
   updateEventDate: createAction<{ id: string; newDate: Date }>(
@@ -149,7 +150,7 @@ export const CalendarActions = {
 
   setEventVisibility: createAction<{
     eventId: string;
-    visibility: "public" | "private" | "restricted";
+    visibility: "public" | "private" | "restricted" ;
     // Additional parameters as needed
   }>("setEventVisibility"),
 
@@ -358,4 +359,6 @@ export const CalendarActions = {
   batchRemoveCalendarEventsFailure: createAction<{ error: string }>(
     "batchRemoveCalendarEventsFailure"
   ),
+
+  selectMilestones: createAction<string[]>("selectMilestones"),
 };

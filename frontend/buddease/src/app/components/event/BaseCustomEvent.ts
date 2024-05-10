@@ -1,7 +1,4 @@
 // CustomEvent.ts
-
-import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
-
 const ClipboardData = {
   onCopy: (content: string) => {},
   onPaste: (content: string) => {},

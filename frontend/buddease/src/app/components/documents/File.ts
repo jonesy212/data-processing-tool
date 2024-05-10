@@ -1,4 +1,7 @@
 // File.ts
+
+import { AllTypes } from "../typings/PropTypes";
+
 // File interface representing a file
 interface CustomFile extends File{
   readonly name: string;                               // The name of the file
@@ -10,10 +13,10 @@ interface CustomFile extends File{
   description?: string;                                // Optional description of the file
   tags?: string[];                                     // Optional tags associated with the file
   downloadCount: number;                               // The number of times the file has been downloaded
-  visibility: "public" | "private";                    // The visibility of the file (public or private)
+  visibility: AllTypes
     accessControl?: {
     // Access control settings for the file
-    visibility: "public" | "private";                 // Visibility setting for the file
+    visibility: AllTypes
     allowedUsers?: string[];                           // List of usernames or IDs allowed to access the file
     allowedGroups?: string[];                          // List of group names or IDs allowed to access the file
         permissions?: {

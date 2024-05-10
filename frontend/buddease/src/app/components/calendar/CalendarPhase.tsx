@@ -57,7 +57,7 @@ export const handleTransitionToCalendarPhase = async () => {
       endDate: new Date(),
       subPhases: [],
       component: {} as React.FC,
-      hooks: {} as CustomPhaseHooks,
+      hooks: {} as CustomPhaseHooks[],
       lessons: [],
       duration: 0
     };
@@ -115,6 +115,7 @@ export const calendarPhase: Phase = {
       // Return true if the current date is before the target date
       return currentDate < targetDate;
     },
+    phaseType: "default",
     asyncEffect: async function (): Promise<() => void> {
       // Implement your asynchronous effect logic here
       console.log("Executing async effect for Calendar Phase");
@@ -133,10 +134,11 @@ export const calendarPhase: Phase = {
         }, 2000); // Simulate a 2-second delay
       });
 
+      
       // Return the promise for the cleanup function
       return asyncTask;
     },
-  }) as unknown as CustomPhaseHooks,
+  }) as unknown as CustomPhaseHooks[],
 };
 
 

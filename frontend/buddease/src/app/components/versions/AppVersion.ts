@@ -1,8 +1,8 @@
 // AppVersion.ts
 
 import { API_VERSION_HEADER } from "@/app/configs/AppConfig";
-import Version from "./Version";
 import { RootState } from "../state/redux/slices/RootSlice";
+import Version from "./Version";
 // Define the AppVersion interface without access modifiers
 // Define selector functions to extract appVersion and databaseVersion from the state
 export const selectAppVersion = (state: RootState) => state.versionManager.appVersion;
@@ -25,6 +25,8 @@ interface AppVersion {
   addReleaseNotes: (notes: string) => void;
   getReleaseDate: () => string;
   getReleaseNotes: () => string[];
+  updateAppName: (name: string) => void;
+  getAppName: () => string;
 }
 
 // Implement the AppVersion interface
@@ -41,16 +43,23 @@ class AppVersionImpl extends Version implements AppVersion {
   isDevBuild: boolean = false;
 
   constructor(versionInfo: {
+    id: number;
     appName: string;
     versionNumber: string;
     appVersion: string;
-    releaseDate: string;
+    releaseDate: Date;
     releaseNotes: string[];
+    creator: {
+      id: number;
+      name: string;
+    };
+    content: string;
+    data: any;
   }) {
     super(versionInfo);
     // Initialize additional fields
     this.appName = versionInfo.appName;
-    this.releaseDate = versionInfo.releaseDate;
+    this.releaseDate = new Date(versionInfo.releaseDate).toString()
     this.releaseNotes = versionInfo.releaseNotes;
   }
 
@@ -96,17 +105,26 @@ class AppVersionImpl extends Version implements AppVersion {
 export { AppVersionImpl as AppVersion };
 
 
-
-// Example usage
-// Create an instance of AppVersionImpl
-export const appVersion = new AppVersionImpl({
+// Define the appVersion object with the correct structure
+const appVersion: AppVersion = new AppVersionImpl({
+  id: 1,
   appName: 'MyApp',
   versionNumber: '1.0.0',
   appVersion: 'v1',
-  releaseDate: '2024-03-07',
+  releaseDate: new Date('2024-03-07'),
   releaseNotes: ['Initial release'],
+  creator: {
+    id: 1,
+    name: 'Admin'
+  },
+  content: 'Version 1.0.0 released',
+  data: null,
+  
 });
-
+ 
+// Update the appName
+appVersion.updateAppName('NewApp');
+ 
 
 // Get the current appName
 const currentAppName = appVersion.getAppName(); // Returns 'MyApp'
@@ -114,4 +132,6 @@ const currentAppName = appVersion.getAppName(); // Returns 'MyApp'
 // Update the appName
 appVersion.updateAppName('NewApp');
 const updatedAppName = appVersion.getAppName(); // Returns 'NewApp'
-export {updatedAppName, currentAppName};
+export { currentAppName, updatedAppName };
+
+export default AppVersionImpl

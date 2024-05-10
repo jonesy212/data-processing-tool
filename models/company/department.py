@@ -54,3 +54,11 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+def has_role(self, role):
+    return any(role == r for r in self.roles)
+
+def has_permission(self, permission_name):
+    # Logic to check if the role grants the specified permission
+    # Example: Check if the role has the permission in its associated permissions
+    return any(permission.name == permission_name for permission in self.department.permissions)

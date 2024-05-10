@@ -33,7 +33,7 @@ class CourseBuilder {
       endDate: new Date(),
       subPhases: [],
       component: {} as React.FC, // Use React.FC as the type
-      hooks: {} as CustomPhaseHooks,
+      hooks: {} as CustomPhaseHooks[],
       duration: 0,
     });
   }

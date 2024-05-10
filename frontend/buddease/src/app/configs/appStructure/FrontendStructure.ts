@@ -31,7 +31,11 @@ export default class FrontendStructure {
       } else {
         if (file.endsWith('.tsx')) {
           this.structure[file] = {
+            id: file,
+            name: file,
             path: filePath,
+            type: 'file',
+            items: {},
             content: fs.readFileSync(filePath, 'utf-8'),
           };
         }

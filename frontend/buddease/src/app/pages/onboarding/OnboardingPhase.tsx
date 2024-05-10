@@ -81,7 +81,9 @@ const UserJourneyManager: React.FC = () => {
         // Render the questionnaire phase
         return <UserQuestionnaire
           onSubmit={handleQuestionnaireSubmitWrapper}
-          onComplete={() => setCurrentPhase(OnboardingPhase.PROFILE_SETUP)} />;
+          onSubmitProfile={handleProfileSetupSubmit}
+          onIdeaSubmission={() => {setCurrentPhase(OnboardingPhase.IDEA_SUBMISSION)}}
+          onComplete={async () =>  setCurrentPhase(OnboardingPhase.PROFILE_SETUP)} />;
       case OnboardingPhase.PROFILE_SETUP:
         // Render the profile setup phase
         return <ProfileSetupPhase

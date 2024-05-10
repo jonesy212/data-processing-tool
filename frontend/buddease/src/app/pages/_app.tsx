@@ -72,6 +72,7 @@ import { NotificationType } from '@/app/components/support/NotificationContext';
 import useEditorState from "../components/state/useEditorState";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ToolbarItemsContext from "../components/libraries/toolbar/ToolbarItemsProvider";
+import FormBuilder from "./forms/formBuilder/FormBuilder";
 
 
 interface ExtendedAppProps extends AppProps {
@@ -120,7 +121,7 @@ const phases: Phase[] = [
     subPhases: ["Research", "Planning", "Design"],
     component: {} as (props: {}, context?: any) => React.ReactElement,
     duration: 100,
-    hooks: {} as CustomPhaseHooks,
+    hooks: {} as CustomPhaseHooks[],
     data: {} as Data,
     lessons: {} as Lesson[],
   },
@@ -300,12 +301,26 @@ async function MyApp({
 
   const handleIdleTimeout = (duration: any) => {
     // Start the idle timeout with the provided duration
-    idleTimeout &&
+    if (idleTimeout && idleTimeout.startIdleTimeout) { // Check if idleTimeout and its startIdleTimeout method exist
       idleTimeout.startIdleTimeout(duration, () => {
         // Callback function when timeout occurs (e.g., logout the user)
         setIsUserLoggedIn(false);
       });
+    }
   };
+  
+  const contextValue = {
+        toolbarItems: [],
+        addToolbarItemToContext: () => {},
+        removeToolbarItemFromContext: () => {},
+        updateToolbarItemInContext: () => {},
+    handleNodeClick,
+    handleButtonClick,
+    addNotifications,
+    personaType,
+    appTree,
+    utilities,
+  }
   
   const {
     sendPushNotification,

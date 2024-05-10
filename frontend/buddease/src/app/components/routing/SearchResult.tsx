@@ -39,11 +39,14 @@ interface SearchResult<T> {
   accessHistory: any[];
   lastModifiedDate: Date;
   searchHistory: SearchHistory[];
-  version: Version;
-  load: (content: any) => void;
+  version?: Version;
+  load?: (content: any) => void;
   query: string;
   results: SearchResult<Document>;
 
+  // todo set up using for devs
+  repoName?: string;
+  repoURL?: string
 }
 
 

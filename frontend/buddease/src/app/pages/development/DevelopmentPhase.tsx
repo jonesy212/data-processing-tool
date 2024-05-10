@@ -1,19 +1,21 @@
 // DevelopmentPhase.tsx
 
+import { DevelopmentPhaseEnum } from "@/app/components/models/data/StatusType";
 import { OnboardingPhase } from "../personas/UserJourneyManager";
+import RegistrationPhaseComponent from "../onboarding/RegistrationPhaseComponent";
+import EmailConfirmationPhaseComponent from "./EmailConfirmationPhaseComponent";
 
-
+// Union type of all possible phase values from DevelopmentPhaseEnum and OnboardingPhase
+type PhaseUnion = DevelopmentPhaseEnum | OnboardingPhase;
 
 export interface DevelopmentPhase {
-  phase: string;
+  phase: PhaseUnion; // Adjust type to union type
   title: string;
   render(): JSX.Element;
 }
 
-
 const handleRegistrationSuccess = () => { 
   // transition to next phase
-  
 }
 
 // Implement the registration phase
@@ -23,34 +25,40 @@ const RegistrationPhase: DevelopmentPhase = {
     render: () => {
       // Implement registration phase UI and logic
       return (
-        <RegistrationPhase onSuccess={handleRegistrationSuccess} />
+        <RegistrationPhaseComponent onSuccess={handleRegistrationSuccess} />
       );
     }
-  };
+};
   
-  // Implement the email confirmation phase
-  const EmailConfirmationPhase: DevelopmentPhase = {
+// Implement the email confirmation phase
+const EmailConfirmationPhase: DevelopmentPhase = {
     phase: OnboardingPhase.EMAIL_CONFIRMATION,
     title: 'Email Confirmation',
     render: () => {
       // Implement email confirmation phase UI and logic
       return (
-        <EmailConfirmationPhase />
+        <EmailConfirmationPhaseComponent
+          onSuccess={handleRegistrationSuccess} />
+        
+  
       );
     }
-  };
-  
+};
 
-export const PlanningPhase: DevelopmentPhase  = {
-  phase: "planning",
+export const PlanningPhase: DevelopmentPhase = {
+  phase: {} as PhaseUnion,
   title: "Planning",
-  render: () => {
-    return <div>Planning Phase UI</div>;
-  },
+  render(): JSX.Element{
+    return(
+      <div>
+        Planning Phase UI
+      </div>
+    )
+  }
 };
 
 export const DesignPhase: DevelopmentPhase = {
-  phase: "design",
+  phase: {} as PhaseUnion,
   title: "Design",
   render: () => {
     return <div>Developement Phase UI</div>;
@@ -59,4 +67,3 @@ export const DesignPhase: DevelopmentPhase = {
 };
 
 // Define other phases similarly...
-

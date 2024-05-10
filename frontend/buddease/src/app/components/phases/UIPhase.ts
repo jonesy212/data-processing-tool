@@ -18,9 +18,11 @@ import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
 import useDarkModeToggle from "../hooks/userInterface/useDarkModeToggle";
 
 const createDarkModeTogglePhaseHook = () => {
-  return createPhaseHook({
+  return createPhaseHook(
+    idleTimeoutId,
+    {
     name: 'Dark Mode Toggle Phase',
-    condition: () => true,
+    condition: async () => true,
     duration: '10000',
     asyncEffect: async () => {
       const { toggleDarkMode, isDarkMode } = useDarkModeToggle();
@@ -35,6 +37,7 @@ const createDarkModeTogglePhaseHook = () => {
       });
       return () => console.log('Cleanup for Dark Mode Toggle Phase');
     },
+    phaseType: 'UI',
   });
 }
 

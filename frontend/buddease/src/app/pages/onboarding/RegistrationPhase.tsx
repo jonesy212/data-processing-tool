@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/components/state/redux/slices/RootSlice";
-import { setError, setLoading } from "@/app/components/state/stores/UIStore";
+import { setError, setLoading } from "@/app/components/state/stores/UISlice";
 
 interface RegistrationPhaseProps {
   onSuccess: (userData: UserData) => void;
@@ -32,19 +32,20 @@ const RegistrationPhase: React.FC<RegistrationPhaseProps> = ({ onSuccess }) => {
   const history = useNavigate();
 
   // Function to handle transitioning to the next phase
-  const moveToNextPhase = () => {
+  const moveToNextPhase = async () => {
     // Define the next phase configuration
     const nextPhaseConfig: PhaseHookConfig = {
-      condition: () => true, // Define condition for the next phase
+      condition: async () => true, // Define condition for the next phase
       asyncEffect: async () => {
         return () => Promise.resolve(); // Return a function that resolves the Promise
       },
       name: "NextPhase", // Name of the next phase
       duration: "0", // Duration of the next phase if needed
+      phaseType: "Registration" // Type of the next phase
     };
 
     // Check if transition to next phase is allowed
-    if (enhancedPhaseHook.canTransitionTo(nextPhaseConfig)) {
+    if (await enhancedPhaseHook.canTransitionTo(nextPhaseConfig)) {
       // Transition to next phase
       enhancedPhaseHook.handleTransitionTo(nextPhaseConfig);
       setCurrentPhase(nextPhaseConfig); // Update the current phase in local state
@@ -52,19 +53,20 @@ const RegistrationPhase: React.FC<RegistrationPhaseProps> = ({ onSuccess }) => {
   };
 
   // Function to handle transitioning to the previous phase
-  const moveToPreviousPhase = () => {
+  const moveToPreviousPhase = async () => {
     // Define the previous phase configuration
     const previousPhaseConfig: PhaseHookConfig = {
-      condition: () => true, // Define condition for the previous phase
+      condition: async () => true, // Define condition for the previous phase
       asyncEffect: async () => {
         return () => Promise.resolve(); // Return a function that resolves the Promise
       },
       name: "PreviousPhase", // Name of the previous phase
       duration: "0", // Duration of the previous phase if needed
+      phaseType: "previous", // Specify that this is a previous phase
     };
 
     // Check if transition to previous phase is allowed
-    if (enhancedPhaseHook.canTransitionTo(previousPhaseConfig)) {
+    if (await enhancedPhaseHook.canTransitionTo(previousPhaseConfig)) {
       // Transition to previous phase
       enhancedPhaseHook.handleTransitionTo(previousPhaseConfig);
       setCurrentPhase(previousPhaseConfig); // Update the current phase in local state

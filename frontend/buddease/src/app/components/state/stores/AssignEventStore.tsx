@@ -1,10 +1,11 @@
 // AssignEventStore.tsx
 import { makeObservable } from "mobx";
-import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
+import  ExtendedCalendarEvent  from "../../calendar/CalendarEventTimingOptimization";
 import { useNotification } from "../../support/NotificationContext";
 import { User } from "../../users/User";
 import { useAssignBaseStore } from "../AssignBaseStore";
 import { PresentationEventAssignment } from "./UserPresentationsStore";
+import CalendarEventTimingOptimization from "../../calendar/CalendarEventTimingOptimization";
 
 
 
@@ -29,7 +30,7 @@ export interface AssignEventStore {
   updateEventStatus: (eventId: string, status: string) => void;
   assignedEvents: Record<string, ExtendedCalendarEvent[]>; // Use eventId as key and array of event IDs as value
   assignedTodos: Record<string, string[]>; // Use eventId as key and array of todo IDs as value
-  reassignUser: Record<string, ReassignEventResponse[]> 
+  reassignUser: Record<string, ReassignEventResponse[]>;
   assignEvent: (eventId: string, userId: User) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
@@ -37,10 +38,10 @@ export interface AssignEventStore {
   connectResponsesToTodos: (eventId: string) => void;
   reassignUsersToEvents: (
     eventIds: string[],
-    oldUserId: ExtendedCalendarEvent,
-    newUserId: PresentationEventAssignment
-
+    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent, // Update parameter type
+    newUserId: PresentationEventAssignment,
   ) => void;
+  
 
   assignUserToTodo: (todoId: string, userId: string) => void;
   unassignUserFromTodo: (todoId: string, userId: string) => void;
@@ -69,29 +70,38 @@ const useAssignEventStore = (): AssignEventStore => {
   const assignedEvents: Record<string, ExtendedCalendarEvent[]>= {};
   const assignedTodos: Record<string, string[]> = {};
   const reassignUser: Record<string, ReassignEventResponse[]> = {}
+
     const baseStore = useAssignBaseStore();
 
   const assignEvent = (eventId: string, assignedTo: User) => {
     // Add user to assigned events
-    const event = baseStore.events[eventId] as ExtendedCalendarEvent[] | undefined;
+    const event = baseStore.events[eventId] 
     if (event) {
-      const updatedEvent = {
-        ...event,
-        assignedTo: assignedTo,
-      };
+      const updatedEvent = event.map((e) => {
+        return {
+          ...e,
+          assignedTo: assignedTo,
+        };
+      });
       baseStore.events[eventId] = updatedEvent;
     } else {
-      baseStore.events[eventId] = [{
-        id: eventId, // Assuming eventId serves as the ID for the event
-        title: "", // Set default values for other properties
-        startTime: new Date(),
-        endTime: new Date(),
-        description: "",
-        assignedTo: assignedTo, // Assign the user
-      }];
+      baseStore.events[eventId] = [
+        {
+          id: eventId,
+          title: "",
+          startTime: new Date(),
+          endTime: new Date(),
+          description: "",
+          assignedTo: assignedTo,
+          attendees: [],
+          location: "",
+          reminder: "",
+          pinned: false,
+          archived: false,
+        },
+      ];
     }
     useNotification();
-    // Notify success
     return assignUserSuccess();
   };
   
@@ -133,19 +143,45 @@ const useAssignEventStore = (): AssignEventStore => {
 
   const reassignUsersToEvents = (
     eventIds: string[],
-    oldUserId: ExtendedCalendarEvent,  // Update parameter type
+    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent,
     newUserId: PresentationEventAssignment,
   ) => {
     eventIds.forEach((eventId: string) => {
       const users = assignedEvents[eventId];
       if (users) {
-        const oldUserIdIndex = users.indexOf(oldUserId);  // Find index of oldUserId[0]
+        const oldUserIdIndex = users.indexOf(oldUserId);
         if (oldUserIdIndex !== -1) {
-          users.splice(oldUserIdIndex, 1, newUserId);
-        }
+          // Check if newUserId is an ExtendedCalendarEvent
+          if ("eventId" in newUserId && "suggestedStartTime" in newUserId) {
+            // If newUserId has the required properties, it's compatible with ExtendedCalendarEvent
+            if (oldUserId instanceof ExtendedCalendarEvent) {
+              // Ensure oldUserId is ExtendedCalendarEvent
+              users.splice(oldUserIdIndex, 1, newUserId);
+            } else {
+              // If oldUserId is not ExtendedCalendarEvent, we can't assign newUserId directly
+              // Handle this case according to your application's logic
+              console.error(
+                "Cannot assign newUserId directly because oldUserId is not an ExtendedCalendarEvent"
+              );
+            }
+          } else {
+            // If newUserId is not ExtendedCalendarEvent, assume it's CalendarEventTimingOptimization
+            if (oldUserId instanceof CalendarEventTimingOptimization) {
+              // Ensure oldUserId is CalendarEventTimingOptimization
+              users.splice(oldUserIdIndex, 1, newUserId);
+            } else {
+              // If oldUserId is not CalendarEventTimingOptimization, we can't assign newUserId directly
+              // Handle this case according to your application's logic
+              console.error(
+                "Cannot assign newUserId directly because oldUserId is not a CalendarEventTimingOptimization"
+              );
+            }
+          }
+        }          
       }
     });
   };
+  
   
 
   const assignUserToTodo = (todoId: string, userId: string) => {

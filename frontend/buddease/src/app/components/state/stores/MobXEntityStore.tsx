@@ -7,25 +7,30 @@ import { DocumentOptions } from '../../documents/DocumentOptions';
 import { DocumentAnimationOptions } from '../../documents/SharedDocumentProps';
 import { DesignSystemConfig } from '../../libraries/ui/theme/MapProperties';
 import { NotificationTypeEnum } from '../../support/NotificationContext';
-
+import { DocumentTypeEnum } from '../../documents/DocumentGenerator';
+import { UserSettings } from '@/app/configs/UserSettings';
+import Version from '../../versions/Version';
+import docx from 'docx';
+import { frontendStructure } from '@/app/configs/appStructure/FrontendStructure';
+import { AppStructureItem } from '@/app/configs/appStructure/AppStructure';
 
 
 
 
 class MobXEntityStore {
   globalState: DocumentOptions & DesignSystemConfig = {
-    documentType: {} as DocumentData,
-    userIdea: '',
+    documentType: {} as DocumentTypeEnum,
+    userIdea: "",
     isDynamic: false,
     documents: [],
-    size: 'letter',
-    visibility: 'public',
+    size: "letter",
+    visibility: "public",
     fontSize: 0,
-    textColor: '',
-    backgroundColor: '',
-    fontFamily: '',
+    textColor: "",
+    backgroundColor: "",
+    fontFamily: "",
     lineSpacing: 0,
-    alignment: 'left',
+    alignment: "left",
     indentSize: 0,
     bulletList: false,
     numberedList: false,
@@ -36,15 +41,15 @@ class MobXEntityStore {
     strikethrough: false,
     subscript: false,
     superscript: false,
-    hyperlink: '',
-    image: '',
+    hyperlink: "",
+    image: "",
     table: false,
     tableRows: 0,
     tableColumns: 0,
     codeBlock: false,
     blockquote: false,
     codeInline: false,
-    quote: '',
+    quote: "",
     todoList: false,
     orderedTodoList: false,
     unorderedTodoList: false,
@@ -52,23 +57,111 @@ class MobXEntityStore {
     additionalOptions: [],
     includeStatus: true,
     includeAdditionalInfo: true,
-    uniqueIdentifier: UniqueIDGenerator.generateDocumentID('uniqueIdentifier', NotificationTypeEnum.GeneratedID),
+    uniqueIdentifier: UniqueIDGenerator.generateDocumentID(
+      "uniqueIdentifier",
+      NotificationTypeEnum.GeneratedID
+    ),
     includeType: "all",
     includeTitle: true,
     includeContent: true,
     animations: {} as DocumentAnimationOptions,
     customSettings: {} as Record<string, any>,
     design: {
-      primary: '',
-      secondary: '',
-      accent: '',
-      small: '',
-      medium: '',
-      large: '',
-      bold: '',
-      italic: '',
-      underline: '',
+      primary: "",
+      secondary: "",
+      accent: "",
+      small: "",
+      medium: "",
+      large: "",
+      bold: "",
+      italic: "",
+      underline: "",
+      documentPhase: {
+        isCreating: true,
+        isEditing: false,
+        isReviewing: false,
+        isPublishing: false,
+      },
+
+      version: {
+        versionNumber: "1.0",
+      },
+
+      font: "",
+      userSettings: {} as UserSettings,
       // Add more design properties as needed
+    },
+    documentPhase: "isEditing",
+    version: {
+      versionNumber: "1.1",
+      appVersion: "",
+      id: 0,
+      content: "",
+      frontendStructure,
+      data: [],
+      generateStructureHash: function (): string {
+        const hash = (crypto as any).createHash("sha256");
+        hash.update(JSON.stringify(this.getContent()));
+        return hash.digest("hex");
+      },
+      getVersionNumber: function (): string {
+        return this.versionNumber;
+      },
+      updateVersionNumber: function (newVersionNumber: string): void {
+        this.versionNumber = newVersionNumber;
+      },
+      compare: function (otherVersion: Version): number {
+        if (this.versionNumber > otherVersion.versionNumber) {
+          return 1;
+        } else if (this.versionNumber < otherVersion.versionNumber) {
+          return -1;
+        } else {
+          return 0;
+        }
+      },
+      
+      parse: function (): number[] {
+        return JSON.parse(this.content);
+      },
+
+      isValid: function (): boolean {
+        return true;
+      },
+      
+      hash: function(value: string): string {
+        return crypto.createHash("sha256").update(value).digest("hex");
+      },
+      generateHash: function (appVersion: string): string {
+        return crypto.createHash("sha256").update(appVersion).digest("hex");
+      },
+      isNewer: function (otherVersion: Version): boolean {
+        return this.compare(otherVersion) === 1;
+      },
+      hashStructure: function(structure: AppStructureItem[]): string {
+        return this.hash(JSON.stringify(structure));
+      },
+
+      getStructureHash: function (): string {
+        return this.hashStructure(this.frontendStructure);
+            },
+      getContent: function (): string {
+        return this.content;
+            },
+      setContent: function (content: string): void {
+        this.content = content;
+            },
+    },
+    font: "Arial",
+    tableStyles: {
+      header: {
+        fontWeight: "bold",
+        root: {},
+        prepForXml: () => {},
+        addChildElement: () => {},
+        rootKey: "",
+      } as unknown as docx.Style,
+      body: {} as unknown as docx.Style,
+      footer: {} as unknown as docx.Style,
     },
   };
   generateUniqueIdentifier(generatorType: string): string {

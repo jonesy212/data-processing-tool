@@ -1,58 +1,75 @@
-import * as path from "path";
+import { IHydrateResult } from "mobx-persist";
 import React from "react";
+import { useDataStore } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 interface DataVersionsProps {
   dataPath: string; // Added a prop to pass the data path
 }
 
 interface DataVersions {
-  [key: string]: number;
-  backend: number; // Version number for backend data
-  frontend: number; // Version number for frontend data
+  backend: IHydrateResult<number> | Promise<string>
+  frontend: IHydrateResult<number> | Promise<string>; // Updated to use 'IHydrateResult<number>' or Promise<number>
 }
 
-const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath: DATA_PATH}) => {
+const DataVersionsComponent: React.FC<DataVersionsProps> = ({
+  dataPath: DATA_PATH,
+}) => {
+
+  const dataStore = useDataStore(); // Initialize DataStore
+
   const [dataVersions, setDataVersions] = React.useState<DataVersions>({
-    backend: 0,
-    frontend: 0
+    backend: new Promise<string>(() => 0),
+    frontend: new Promise<string>(() => 0),
   });
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const id = parseInt(DATA_PATH.split("/").pop()!);
+      const versions = await dataStore.getDataVersions(id);
+      if (versions) {
+        dataStore.updateDataVersions(id, versions);
+      }
+    };
+    fetchData();
+  }, [DATA_PATH, dataStore]);
 
   React.useEffect(() => {
-    // Check if 'fs' is available (only in server-side)
-    if (typeof window === "undefined") {
-      import("fs").then((fsModule) => {
-        const fs = fsModule.default;
-        const versions: DataVersions = {
-          backend: 0,
-          frontend: 0
+    // Check if IndexedDB is available
+    if (window.indexedDB) {
+      const openRequest = window.indexedDB.open("DataVersionsDB", 1);
+
+      openRequest.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        db.createObjectStore("dataVersions");
+      };
+
+      openRequest.onsuccess = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+
+        const transaction = db.transaction("dataVersions", "readwrite");
+        const store = transaction.objectStore("dataVersions");
+
+        // Add or retrieve dataVersions from IndexedDB
+        const getBackendVersion = store.get("backend");
+        const getFrontendVersion = store.get("frontend");
+
+        getBackendVersion.onsuccess = () => {
+          const backendVersion = getBackendVersion.result || 0;
+          setDataVersions((prevDataVersions) => ({
+            ...prevDataVersions,
+            backend: backendVersion,
+          }));
         };
 
-        const traverseDirectory = (dir: string) => {
-          const files = fs.readdirSync(dir);
-
-          for (const file of files) {
-            const filePath = path.join(dir, file);
-            const isDirectory = fs.statSync(filePath).isDirectory();
-
-            if (isDirectory) {
-              traverseDirectory(filePath);
-            } else {
-              // Logic to parse file and update dataVersions accordingly
-              // Example: if (file.endsWith('.json')) { /* update dataVersions */ }
-              if (file.endsWith(".json")) {
-                const dataKey = path.basename(file, path.extname(file));
-                versions[dataKey] = 0; // Initialize with 0, you can customize this based on your needs
-              }
-            }
-          }
+        getFrontendVersion.onsuccess = () => {
+          const frontendVersion = getFrontendVersion.result || 0;
+          setDataVersions((prevDataVersions) => ({
+            ...prevDataVersions,
+            frontend: frontendVersion,
+          }));
         };
-
-        // Update the file path based on the provided dataPath
-        traverseDirectory(DATA_PATH);
-        setDataVersions(versions);
-      });
+      };
     } else {
-      console.error("'fs' module can only be used in a Node.js environment.");
+      console.error("IndexedDB is not supported in this browser.");
     }
   }, [DATA_PATH]);
 
@@ -62,18 +79,18 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({ dataPath: DATA_PAT
       {Object.entries(dataVersions).map(([key, value]) => (
         <div key={key}>
           <strong>{key}</strong>
-          <p>Version: {value}</p>
+          {/* Check if value is a Promise and handle accordingly */}
+          <p>
+            Version: {Promise.resolve(value) === value ? "Loading..." : value}
+          </p>
         </div>
       ))}
     </div>
   );
 };
-
+export const dataVersions = {
+  backend: useDataStore().getBackendVersion(),
+  frontend: useDataStore().getFrontendVersion()
+}
 export default DataVersionsComponent;
 export type { DataVersions, DataVersionsProps };
-
-
-const dataVersions: DataVersions = {
-  backend: 0,
-  frontend: 0
-};export { dataVersions };

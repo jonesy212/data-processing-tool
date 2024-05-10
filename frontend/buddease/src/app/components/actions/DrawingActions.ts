@@ -1,8 +1,12 @@
 // DrawingActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import { WritableDraft } from "../state/redux/ReducerGenerator";
+import TextType from "../documents/TextType";
+import Milestone from "../calendar/CalendarSlice";
 
 export const DrawingActions = {
 
+  handleTextDragEnd: createAction<{id: string | null, text: string | WritableDraft<TextType>, x: number, y: number}>("handleTextDragEnd"),
   performDrawingActions: createAction<string | null>(
     "drawing/performDrawingActions"
   ),
@@ -164,5 +168,7 @@ export const DrawingActions = {
     x: number; y: number; elementId: string; areaId: string
   }>(
     "elementDroppedInSpecificArea"
-  )
+  ),
+
+  selectMilestones: createAction<{milestones: Milestone[]}>("selectMilestones"),
 };

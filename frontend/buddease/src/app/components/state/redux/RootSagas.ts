@@ -19,6 +19,7 @@ import { tenantSagas } from './sagas/tenantSags';
 import { todoSagas } from './sagas/todoSagas';
 import { userSagas } from './sagas/userSagas';
 import { videoSagas } from './sagas/videoSagas';
+import { undoRedoSagas } from './sagas/UndoRedoSaga';
 
 // Add more sagas as needed...
 
@@ -46,8 +47,7 @@ export function* rootSaga() {
       fork(tenantSagas),
       fork(snapshotSagas),
       fork(documentSagas),
-      
-      fork(undoSagas)
+      fork(undoRedoSagas)
       // Add more sagas here...
     ]);
   } catch (error) {

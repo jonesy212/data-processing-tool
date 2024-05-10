@@ -122,6 +122,7 @@ const initialState: AppState = {
     isLoading: false,
     error: null,
     showModal: false,
+    collaborationState: null,
     notification: {
       message: "",
       type: null

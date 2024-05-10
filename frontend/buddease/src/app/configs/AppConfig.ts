@@ -8,6 +8,8 @@ import { UserRole } from "../components/users/UserRole";
 import { AppVersion, currentAppName } from "../components/versions/AppVersion";
 import Version from "../components/versions/Version";
 import configurationService, { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
+import AppStructure, { AppStructureItem } from "./appStructure/AppStructure";
+import { frontendStructure } from "./appStructure/FrontendStructure";
 
 // Define the API version header constant
 const API_VERSION_HEADER: string = configurationService.getApiVersionHeader()
@@ -72,12 +74,11 @@ interface AppConfig {
 export const getAppConfig = (): AppConfig => {
   // Implement the logic to retrieve AppConfig here
   const config = configurationService.getApiConfig();
-  
 
   config.name = "Mock Config";
   // For example, you can fetch it from local storage or a server
   // For demonstration purposes, let's return a mock AppConfig object
-  currentAppName
+  currentAppName;
   return {
     appName: current(configurationService.getAppName(currentAppName)),
     appVersion: {
@@ -111,7 +112,7 @@ export const getAppConfig = (): AppConfig => {
         // Integrate API_VERSION_HEADER here
         const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
         return `${versionString} - API Version: ${API_VERSION_HEADER}`;
-    },
+      },
 
       getVersionStringWithBuildNumber(buildNumber: number) {
         return `${this.major}.${this.minor}.${this.patch}.${this.build}.${buildNumber}`;
@@ -182,10 +183,33 @@ export const getAppConfig = (): AppConfig => {
       appName: "",
       getAppName: function (): string {
         return this.appName;
-            },
+      },
       updateAppName: function (newAppName: string): void {
         this.appName = newAppName;
-            }
+      },
+      id: 0,
+      content: "",
+      frontendStructure: frontendStructure,
+      data: [],
+      structure: {} as AppStructure,
+      generateStructureHash: function (): string {
+        throw new Error("Function not implemented.");
+      },
+      isNewer: function (otherVersion: Version): boolean {
+        throw new Error("Function not implemented.");
+      },
+      hashStructure: function (structure: AppStructureItem[]): string {
+        throw new Error("Function not implemented.");
+      },
+      getStructureHash: function (): string {
+        throw new Error("Function not implemented.");
+      },
+      getContent: function (): string {
+        throw new Error("Function not implemented.");
+      },
+      setContent: function (content: string): void {
+        throw new Error("Function not implemented.");
+      },
     },
     apiBaseUrl: "https://your-api-base-url.com",
     ios: {
@@ -203,7 +227,7 @@ export const getAppConfig = (): AppConfig => {
     updateUserRole: () => {},
     notifications: [],
     isAuthorized() {
-        return this.isAuthenticated && this.isAdmin;
+      return this.isAuthenticated && this.isAdmin;
     },
     dismissNotification: () => {},
     config: {
@@ -215,7 +239,7 @@ export const getAppConfig = (): AppConfig => {
       cache: {} as CacheConfig,
       responseType: {
         contentType: "contentType",
-        encoding: "encode"
+        encoding: "encode",
       },
       withCredentials: false,
     },
@@ -241,7 +265,7 @@ export const getAppConfig = (): AppConfig => {
       brandName: "",
       borderWidth: "",
       borderRadius: "",
-      boxShadow: ""
+      boxShadow: "",
     },
     changeTheme: () => {},
     navigateTo: () => {},

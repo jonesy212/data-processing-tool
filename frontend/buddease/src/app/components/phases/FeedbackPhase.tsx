@@ -1,10 +1,8 @@
-// FeedbackPhaseEnum.tsx
 import React, { useState } from "react";
- import { useFeedbackManagement } from "./FeedbackManagementContext";
 import FeedbackService from "../support/FeedbackService";
 import { Feedback } from "../support/Feedback";
 import FeedbackForm from "@/app/pages/forms/FeedbackForm";
-import FeedbackReportGenerator from "@/app/generators/FeedbackReportGenerator";
+import FeedbackReportGenerator, { FeedbackReport } from "@/app/generators/FeedbackReportGenerator";
 import FeedbackLoop from "../FeedbackLoop";
 
 enum FeedbackPhaseEnum {
@@ -17,10 +15,9 @@ enum FeedbackPhaseEnum {
     FEEDBACK_COLLECTION = 'FEEDBACK_COLLECTION',
 }
 
-
 const FeedbackProcess: React.FC = () => {
   const [feedbackData, setFeedbackData] = useState<Feedback[]>([]);
-  const [feedbackType, setFeedbackType] = useState<string>("text"); // Default feedback type
+  const [feedbackType, setFeedbackType] = useState<string>("text"); // Default feedback type 
   const [currentPhase, setCurrentPhase] = useState<FeedbackPhaseEnum>(
     FeedbackPhaseEnum.FEEDBACK_COLLECTION
   );
@@ -38,6 +35,10 @@ const FeedbackProcess: React.FC = () => {
     const feedbackService = FeedbackService.getInstance();
     feedbackService.gatherFeedback(feedbackData, feedbackType);
 
+    // Generate feedback report
+    const feedbackReport: FeedbackReport = FeedbackReportGenerator.generateFeedbackReport(feedbackData);
+    console.log(feedbackReport); // Example: Log the feedback report
+
     // Change phase to feedback reporting
     setCurrentPhase(FeedbackPhaseEnum.FEEDBACK_REPORTING);
   };
@@ -53,7 +54,7 @@ const FeedbackProcess: React.FC = () => {
       )}
       {currentPhase === FeedbackPhaseEnum.FEEDBACK_REPORTING && (
         <>
-          <FeedbackReportGenerator feedbackData={feedbackData} />
+          {/* Render feedback report or its components here */}
           <hr />
         </>
       )}
@@ -71,3 +72,4 @@ const FeedbackProcess: React.FC = () => {
 };
 
 export default FeedbackProcess;
+export { FeedbackPhaseEnum };

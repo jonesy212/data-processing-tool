@@ -1,7 +1,7 @@
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
+import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { Task } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
 import { makeAutoObservable } from "mobx";
@@ -47,7 +47,7 @@ type UserStoreSubset = Pick<
 export interface UserStore extends AssignEventStore, AssignBaseStore, UserStoreSubset {
 // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
   // Add additional properties specific to UserStore if needed
-  users: WritableDraft<Record<string, User[]>>;
+  users: Record<string, User[]>;
   currentUser: User | null;
   // setAssignedTaskStore: (task: Task, user: User) => void;
   updateUserState: (newUsers: Record<string, User[]>) => void;
@@ -56,14 +56,14 @@ export interface UserStore extends AssignEventStore, AssignBaseStore, UserStoreS
   assignContactToTeam: Record<string, string[]>; // Add this property
   assignEventToTeam: Record<string, string[]>; // Add this property
   assignGoalToTeam: Record<string, string[]>; // Add this property
-  events:Record<string, ExtendedCalendarEvent[]>
+  events:Record<string, CalendarEventTimingOptimization[]| ExtendedCalendarEvent[]>
   // Other properties and methods...
   reassignUser: Record<string, ReassignEventResponse[]>;
 
 }
 
 const userManagerStore = (): UserStore => {
-  const [users, setUsers] = useState<WritableDraft<Record<string, User[]>>>({
+  const [users, setUsers] = useState<Record<string, User[]>>({
     // Initialize with the required structure
   });
 
@@ -73,7 +73,7 @@ const userManagerStore = (): UserStore => {
   } = useAuth();
 
   // Sanitize input before updating user state
-  const updateUserState = (newUsers: WritableDraft<Record<string, User[]>>) => {
+  const updateUserState = (newUsers: Record<string, User[]>) => {
     // Sanitize the data before updating
     const sanitizedUsers = sanitizeData(JSON.stringify(newUsers)); // Sanitize the data and convert it back to JSON
     setUsers(JSON.parse(sanitizedUsers)); // Convert the sanitized data back to its original format and set the state
@@ -113,7 +113,7 @@ const userManagerStore = (): UserStore => {
 
   const reassignUserForSingle = (
     user: string,
-    newUser: ExtendedCalendarEvent,
+    newUser: CalendarEventTimingOptimization | ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
   ) => {
     reassignUsersToEvents([user], newUser, eventOrTodo);

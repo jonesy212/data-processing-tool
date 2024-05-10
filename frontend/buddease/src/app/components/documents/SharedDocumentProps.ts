@@ -1,8 +1,10 @@
 // SharedDocumentProps.ts
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
+import { Dispatch, SetStateAction } from "react";
+import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
+import AppVersionImpl from "../versions/AppVersion";
 import { DocumentData } from "./DocumentBuilder";
 import { DocumentOptions } from "./DocumentOptions";
-import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 
 
 
@@ -10,11 +12,16 @@ import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 
 export interface DocumentBuilderProps {
   isDynamic: boolean;
-  documentPhase: ProjectPhaseTypeEnum
-  version: string; // Add version property
+  documentPhase: {
+    phaseType: ProjectPhaseTypeEnum;
+    onChange: (phase: ProjectPhaseTypeEnum) => void;
+    customProp1: string,
+    customProp2: number,
+  }
+  version: AppVersionImpl | undefined;
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
-  setOptions: (newOptions: any) => void; // Define setOptions prop
+  setOptions: Dispatch<SetStateAction<DocumentOptions>>; // Use Dispatch and SetStateAction
   documents: DocumentData[]; // Add documents prop to receive document data
   options: DocumentOptions;
 }

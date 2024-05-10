@@ -8,6 +8,7 @@ import { Comment } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { AllTypes } from "../../typings/PropTypes";
 
 
 
@@ -31,7 +32,7 @@ interface Document extends DocumentData {
   updatedBy: string;
   documentData: any;
   filePath?: DocumentPath;
-  visibility: "public" | "private";                    // The visibility of the file (public or private)
+  visibility: AllTypes
   comments?: Comment[]
 
     // Other properties

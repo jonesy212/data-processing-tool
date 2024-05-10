@@ -4,6 +4,7 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Collaborator } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import Version from "../versions/Version";
+import { DocumentSize } from "../models/data/StatusType";
 
 
 
@@ -78,7 +79,7 @@ export enum AttachmentType {
 }
 
 export interface NoteOptions {
-  size: NoteSize;
+  size: DocumentSize;
   animations: NoteAnimationOptions & { duration?: number };
   additionalOption2: string;
 }
@@ -94,7 +95,6 @@ export interface NoteGeolocation {
   longitude: number;
 }
 
-export type NoteSize = "letter" | "legal" | "a4" | "custom";
 
 export interface NoteAnimationOptions {
   type: "slide" | "fade" | "custom" | "show" | "none";

@@ -1,19 +1,29 @@
 // Filter.tsx
 import React, { useState } from 'react';
+import { SortingOption } from './SearchOptions';
 
 interface FilterProps {
   label: string;
   options: string[]; // Options for the filter
-  onChange: (selectedOption: string) => void;
+  onChange: (selectedOption: SortingOption | undefined, field: string) => void; // Adjusted onChange function
+  field: string;
 }
 
-const Filter: React.FC<FilterProps> = ({ label, options, onChange }) => {
+const Filter: React.FC<FilterProps> = ({ label, options, onChange, field }) => {
   const [selectedOption, setSelectedOption] = useState<string>(''); // State to track the selected option
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
     setSelectedOption(selectedValue); // Update the selected option in state
-    onChange(selectedValue); // Call the onChange callback with the selected option
+    const parsedOption = selectedValue === "" ? undefined : mapToSortingOption(selectedValue);
+    onChange(parsedOption, field); // Adjusted call to onChange
+  };
+
+  // Helper function to map string value to SortingOption
+  const mapToSortingOption = (value: string): SortingOption | undefined => {
+    // Implement logic to map string value to SortingOption
+    // For simplicity, assuming value is the field name
+    return { field: value, order: "asc" }; // Example mapping
   };
 
   return (

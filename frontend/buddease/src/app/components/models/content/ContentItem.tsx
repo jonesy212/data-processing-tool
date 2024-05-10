@@ -1,16 +1,23 @@
 import React, { useState } from "react";
+import { FileType } from "../../documents/Attachment/attachment";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { Data } from "../data/Data";
+import { StatusType } from "../data/StatusType";
 
 // Define the type for the content item
 interface ContentItem {
+  then?(arg0: (newContent: any) => void): unknown;
   id: string;
+  _id?: string;
   title: string;
-  body: string;
+  body: string | undefined;
   heading: React.ReactNode;
   subheading?: React.ReactNode;
   description?: string | null | undefined
+  type: FileType
   footer?: React.ReactNode;
+  status: StatusType | undefined
+  userId: string | undefined;
   // Add more properties as needed
 }
 

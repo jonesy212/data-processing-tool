@@ -3,6 +3,7 @@ import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { createAction } from "@reduxjs/toolkit";
 import { DocumentStatus } from "../components/documents/types";
 import { UserIdea } from "../components/users/Ideas";
+import { DocumentOptions } from "../components/documents/DocumentOptions";
 
 export const DocumentActions = {
   // Single Document Actions
@@ -22,7 +23,7 @@ export const DocumentActions = {
   
   selectDocument: createAction<number>("selectDocument"),
   selectDocumentSuccess: createAction<{id: number}>("selectDocumentSuccess"),
-
+  setOptions: createAction<{options: DocumentOptions}>("setOptions"),
 
   updateDocumentTitle: createAction<{id: number, title: string}>("updateDocumentTitle"),
   updateDocumentTitleSuccess: createAction<{ id: number; title: string }>("updateDocumentTitleSuccess"),

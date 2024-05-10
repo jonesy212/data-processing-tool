@@ -12,6 +12,7 @@ import { AxiosResponse } from "axios";
 import { Team } from "../../models/teams/Team";
 import axiosInstance from "../../security/csrfToken";
 import { DocumentPath } from "../../documents/DocumentGenerator";
+import { AllTypes } from "../../typings/PropTypes";
 
 interface DatasetModel {
   id: number;
@@ -22,7 +23,7 @@ interface DatasetModel {
   uploadedAt: string; // Assuming the date is sent as a string
   tagsOrCategories: string; // Comma-separated list or JSON array
   format: string;
-  visibility: "public" | "private" | "shared"; // Assuming visibility can only be one of these values
+  visibility: AllTypes
   // Add other fields as needed
   type: "file" | "url";
   // Relationships

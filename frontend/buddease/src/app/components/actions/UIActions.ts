@@ -3,6 +3,7 @@ import { createAction } from "@reduxjs/toolkit";
 import React from "react";
 import { Progress } from "../models/tracker/ProgressBar";
 import { SearchResultWithQuery } from "../routing/SearchResult";
+import { CollaborationState } from "../state/redux/slices/CollaborationSlice";
 
 
 interface FetchUserDataPayload {
@@ -18,6 +19,7 @@ export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<
 
 
 export const UIActions = {
+  updateCollaborationState: createAction<CollaborationState>("updateCollaborationState"),
   setIsGestureInProgress: createAction<boolean>("setIsGestureInProgress"),
   setGestureStartPosition: createAction<{ x: number; y: number }>("setGestureStartPosition"),
   setGestureCurrentPosition: createAction<{ x: number; y: number }>("setGestureCurrentPosition"),
@@ -100,6 +102,7 @@ export const UIActions = {
       // settings state
     }
   }>("updateSettingsPanelState"),
+  
   toggleHelpFAQPanel: createAction<boolean>("toggleHelpFAQPanel"),
   // Add more actions as needed
   setRealtimeData: createAction<{ data: any; type: string }>("setRealtimeData"),
@@ -107,9 +110,14 @@ export const UIActions = {
     helpFAQ: {
       isOpen: boolean;
       // helpFAQ state
+
     }
   }>("updateHelpFAQPanelState"),
   getGesturePosition: createAction<GesterEvent>("getGesturePosition"),
+
+
+  updateScrollingState: createAction<number>("updateScrollingState"),
+
 }
 
 

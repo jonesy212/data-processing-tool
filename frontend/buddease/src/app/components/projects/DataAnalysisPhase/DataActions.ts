@@ -45,6 +45,7 @@ export const DataActions = {
    updateDataStatus: createAction<PayloadAction<"pending" | "inProgress" | "completed">>("updateDataStatus"),
    updateDataDetails: createAction<PayloadAction<Data>>("updateDataDetails"),
  
+   updateDataVersions: createAction<PayloadAction<{id: number, versions: Data[]}>>("updateDataVersions"),
    // Bulk Data Actions
    bulkUpdateData: createAction<any[]>("data/bulkUpdateData"),
    bulkRemoveData: createAction<string[]>("data/bulkRemoveData")

@@ -43,7 +43,7 @@ const ApiConfigComponent: React.FC = () => {
   const projectPath = getAppPath(versionNumber, appVersion);
   const frontendStructure = new FrontendStructure(projectPath);
   const backendStructure = new BackendStructure(projectPath);
-
+  
   // Update local state with API configurations from Redux state
   useEffect(() => {
 

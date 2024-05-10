@@ -370,7 +370,9 @@ const team: Team = {
     team.progress = {
       id: team._id,
       value: progressValue,
-      label: `${progressValue}% completed` // Example label
+      label: `${progressValue}% completed`,// Example label
+      current: 0, // Update current progress value
+      max: 100 // Set max progress value
     };
   },
   currentProject: null,

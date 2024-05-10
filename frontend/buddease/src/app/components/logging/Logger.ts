@@ -1,3 +1,4 @@
+import fs from 'fs';
 // Uogger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { LogData } from "@/app/components/models/LogData";
@@ -1273,6 +1274,9 @@ class PaymentLogger extends Logger {
 
 
 class ContentLogger extends Logger {
+  static logTaskCompletion(taskId: string) {
+    throw new Error('Method not implemented.');
+  }
   static logContentCreation(title: string, contentId: string, userId: string) {
     super.logWithOptions(
       "Content",
@@ -1281,15 +1285,13 @@ class ContentLogger extends Logger {
     );
   }
 
-  static logContentUpdate(title: string, contentId: string, userId: string, changes: string, upsert= false) {
+  static logContentUpdate(title: string, contentId: string, userId: string, changes: string, upsert = false) {
     super.logWithOptions(
       "Content",
       `${title} updated (Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`,
       userId
     );
   }
-
-  
 
   static logContentDeletion(title: string, contentId: string, userId: string) {
     super.logWithOptions(
@@ -1299,9 +1301,38 @@ class ContentLogger extends Logger {
     );
   }
 
+  static logTaskCreation(taskId: string, title: string, contentId: string, userId: string) {
+    super.logWithOptions(
+      "Content",
+      `Task created (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logTaskDeletion(taskId: string, title: string, userId: string, contentId?: string) {
+    super.logWithOptions(
+      "Content",
+      `Task deleted (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId})`,
+      userId
+    );
+  }
+  static logEventToFile(logType: string, message: string, fileName: string) {
+    fs.appendFileSync(fileName, JSON.stringify({
+      event: logType,
+      data: message,
+      timestamp: new Date()
+    }) + '\n');
+  }
+
+  static logContentCompletion(title: string, contentId: string, userId: string) {
+    super.logWithOptions(
+      "Content",
+      `${title} completed (Content ID: ${contentId}, User ID: ${userId})`,
+      userId
+    );
+  }
   // Add more methods for other content-related events as needed
 }
-
 class IntegrationLogger extends Logger {
   static logAPIRequest(requestId: string, endpoint: string) {
     super.logWithOptions(

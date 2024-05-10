@@ -2,6 +2,7 @@
 import { User } from "@/app/components/users/User";
 import { FC } from "react";
 import { Phase } from "../../phases/Phase";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
@@ -12,7 +13,6 @@ import CommonDetails, { CommonData } from "../CommonData";
 import { Data } from "../data/Data";
 import { TaskStatus } from "../data/StatusType";
 import { Team, TeamDetails } from "../teams/Team";
-import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 
 
@@ -38,7 +38,7 @@ interface Task extends Data {
   dependencies?: Task[];
   previouslyAssignedTo: User[];
   done: boolean;
-  data: Data;
+  data: Data ;
   [Symbol.iterator](): Iterator<any, any, undefined>;
   source: "user" | "system";
   some: (
@@ -49,7 +49,7 @@ interface Task extends Data {
   details?: DetailsItem<typeof TeamDetails> | undefined;
 
   startDate: Date | undefined;
-  endDate: Date;
+  endDate: Date | undefined;
   isActive: boolean;
   tags: string[];
   analysisType: AnalysisTypeEnum;

@@ -85,7 +85,10 @@ const CalendarWrapper = () => {
     <div>
       <h2>Task Calendar</h2>
       <FullCalendar events={calendarData} eventDrop={handleEventDrop} />
-      <ProgressBar progress={progress} />
+      <ProgressBar
+        progress={progress} 
+        
+        />
       {/* Your calendar component goes here */}
       <button onClick={handleAddEvent}>Add Event</button> {/* Button to trigger adding an event */}
     

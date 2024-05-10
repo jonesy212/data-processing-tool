@@ -1,4 +1,5 @@
     import { useThemeConfig } from "@/app/components/hooks/userInterface/ThemeConfigContext";
+import { UserSettings } from "@/app/configs/UserSettings";
 
     // Define color properties for the design system
     interface ColorProperties {
@@ -21,6 +22,17 @@
         bold: string;
         italic: string;
         underline: string;
+        documentPhase: {
+            isCreating: boolean;
+            isEditing: boolean;
+            isReviewing: boolean;
+            isPublishing: boolean;
+        }
+        version: {
+            versionNumber: string
+        },
+        font: string;
+        userSettings: UserSettings
         // Add more styles as needed
     }
     
@@ -42,17 +54,27 @@
     export const productionThemeConfig: DesignSystemConfig = {
         ...themeConfig, // Assuming you have an existing themeConfig
         design: {
-        // Add values for the design properties
-        primary: '#3498db',
-        secondary: '#2ecc71',
-        accent: '#e74c3c',
-        small: '12px',
-        medium: '18px',
-        large: '24px',
-        bold: '700',
-        italic: 'italic',
-        underline: 'underline',
-        // Add more values as needed
+            // Add values for the design properties
+            primary: '#3498db',
+            secondary: '#2ecc71',
+            accent: '#e74c3c',
+            small: '12px',
+            medium: '18px',
+            large: '24px',
+            bold: '700',
+            italic: 'italic',
+            underline: 'underline',
+            documentPhase: {
+                isCreating: false,
+                isEditing: false,
+                isReviewing: false,
+                isPublishing: false
+            },
+            version: {
+                versionNumber: ""
+            },
+            font: "",
+            userSettings: {} as UserSettings,
         },
     };
     

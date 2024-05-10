@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { AppStructureItem } from '../appStructure/AppStructure';
-
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import * as apiFile from '@/api/ApiFiles'
 interface BackendStructure {
   // Define the structure for the backend
 }
@@ -23,10 +24,19 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
       // Logic to parse file and update backendStructure accordingly
       // Example: if (file.endsWith('.js')) { /* update backendStructure */ }
       const content = await fetchFileContent(filePath);
+      const structureId = UniqueIDGenerator.generateAppStructureID.toString()
       const appStructureItem: AppStructureItem = {
         // Populate with relevant properties
+        id: structureId,
         path: filePath,
         content: content,
+        type: apiFile.fileApiService.getFileType(file),
+        name: path.basename(file, path.extname(file)),
+        items: {
+          // Populate items for backend routes/models etc
+
+        }
+
         // ... other properties
       };
       result.push(appStructureItem);

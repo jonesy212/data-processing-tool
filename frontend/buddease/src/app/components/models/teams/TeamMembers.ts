@@ -3,8 +3,6 @@ import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import { Team } from "./Team";
 
-
-
 export interface Collaborator extends Member {
   collaborations: number; // Number of collaborations
   // Add any other properties specific to Collaborator
@@ -15,6 +13,7 @@ export interface Member extends User {
   roleInTeam: string;
   memberName: string;
   teams?: Team[];
+  // host?: boolean;
   // Add other member-specific properties here
 }
 

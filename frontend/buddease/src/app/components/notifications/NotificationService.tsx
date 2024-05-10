@@ -4,6 +4,7 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { useDispatch, useSelector } from "react-redux";
+import { EventActions } from "../actions/EventActions";
 import AnnouncementManager from "../support/AnnouncementManager";
 import {
   NotificationData,
@@ -14,7 +15,6 @@ import { NotificationType } from "../support/NotificationContext";
 import PushNotificationManager from "../support/PushNotificationManager";
 
 
-
 interface NotificationContainer {
   notifications: NotificationData[];
   setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
@@ -53,7 +53,29 @@ interface NotificationContainer {
   clearNotifications: () => void;
 }
 
-export const eventHandler = 
+  export const eventHandler = (eventName: string, eventData: any) => {
+    switch (eventName) {
+      case 'userLoggedIn':
+        // Dispatch an action for user logged in event
+        EventActions.userLoggedIn(eventData);
+        console.log('User logged in:', eventData);
+        break;
+      case 'userLoggedOut':
+        // Dispatch an action for user logged out event
+        EventActions.userLoggedOut(eventData);
+        console.log('User logged out:', eventData);
+        break;
+      case 'notificationReceived':
+        // Dispatch an action for notification received event
+        EventActions.notificationReceived(eventData);
+        console.log('Notification received:', eventData);
+        break;
+      default:
+        // Default case if event is not recognized
+        console.log('Unhandled event:', eventName);
+        break;
+    }
+  };
 
 export const logData: LogData = {
   id: "",

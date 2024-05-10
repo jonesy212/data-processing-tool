@@ -47,7 +47,10 @@ export enum AlignmentOptions {
   LEFT = "left",
   CENTER = "center",
   RIGHT = "right",
-  NULL = "null"
+  NULL = "null",
+  JUSTIFY = "justify",
+  
+
 }
 
 const initialState: ToolbarState = {
@@ -187,4 +190,5 @@ export const {
 } = useToolbarManagerSlice.actions;
 
 export default useToolbarManagerSlice.reducer;
-export type { ToolbarState};
+export type { ToolbarState };
+

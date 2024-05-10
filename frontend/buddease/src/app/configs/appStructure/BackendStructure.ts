@@ -1,18 +1,20 @@
 // BackendStructure.ts
 import Logger from "@/app/components/logging/Logger";
 import { NotificationType } from "@/app/components/support/NotificationContext";
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
-import { AppStructureItem } from "./AppStructure";
 import getAppPath from "../../../../appPath";
-import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import { AppStructureItem } from "./AppStructure";
 
 export default class BackendStructure {
+  [key: string]: any
   structure: Record<string, AppStructureItem> = {};
 
   constructor(projectPath: string) {
     this.traverseDirectory(projectPath);
+
   }
 
   async traverseDirectory(dir: string): Promise<AppStructureItem[]> {
@@ -36,9 +38,15 @@ export default class BackendStructure {
               filePath,
               "generateBackendStructureID" as NotificationType
             );
+            const fileContent = await fs.readFile(filePath, "utf-8");
             this.structure[uniqueID] = {
+
+              id: uniqueID,
+              name: file,
+              type: "file",
+              items: {},
               path: filePath,
-              content: await fs.readFile(filePath, "utf-8"),
+              content: fileContent,
             };
             Logger.logWithOptions(
               "File Change",

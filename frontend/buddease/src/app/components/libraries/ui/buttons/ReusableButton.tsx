@@ -9,7 +9,7 @@ interface ButtonProps {
   disabled?: boolean; // Add disabled prop
   style?: React.CSSProperties; // Add style prop
   label?: string
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onEvent?: (clickEvent: React.MouseEvent<HTMLButtonElement>) => void;
   onCancel?: () => void;
   onSubmit?: () => void;

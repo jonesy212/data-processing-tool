@@ -220,7 +220,7 @@ class UniqueIDGenerator {
       case NotificationTypeEnum.CommentID:
         return UniqueIDGenerator.generateCommentID(id || "", title || "");
       case NotificationTypeEnum.ContentID:
-        return UniqueIDGenerator.generateContentID();
+        return UniqueIDGenerator.generateContentID(id || "", title || "");
       case NotificationTypeEnum.MeetingID:
         return UniqueIDGenerator.generateMeetingID(name);
       case NotificationTypeEnum.ProductID:
@@ -239,6 +239,8 @@ class UniqueIDGenerator {
         return UniqueIDGenerator.generateSurveyID();
       case NotificationTypeEnum.AnalyticsID:
         return UniqueIDGenerator.generateAnalyticsID();
+      case NotificationTypeEnum.AppStructureID:
+        return UniqueIDGenerator.generateAppStructureID();
       default:
         // Use default generator logic
         const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random()
@@ -268,15 +270,16 @@ class UniqueIDGenerator {
       "comment" as NotificationType
     );
 }
-
-
-  static generateContentID() {
-    return UniqueIDGenerator.generateID(
-      "content",
-      NotificationTypeEnum.ContentID,
-      "content" as NotificationType
-    )
-  }
+static generateContentID(
+  id: string,
+  title: string
+) {
+  return UniqueIDGenerator.generateID(
+    id,
+    NotificationTypeEnum.ContentID,
+    title as NotificationType // Assuming title is of type NotificationType
+  )
+}
 
   static generateDocumentEditID(documentName: string): string {
     return this.generateID(
@@ -359,6 +362,14 @@ class UniqueIDGenerator {
       "dashboard",
       NotificationTypeEnum.GeneratedID,
       "dashboard" as NotificationType
+    );
+  }
+
+  static generateAppStructureID(): string {
+    return this.generateID(
+      "app_structure",
+      NotificationTypeEnum.AppStructureID,
+      "app_structure" as NotificationType
     );
   }
 
@@ -484,6 +495,9 @@ class UniqueIDGenerator {
       NotificationTypeEnum.GeneratedID
     );
   }
+
+
+  
 }
 
 const videoDataDetails: DataDetails = {

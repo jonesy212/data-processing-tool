@@ -1,15 +1,13 @@
-import { fetchData, addData, updateData, removeData, handleApiErrorAndNotify } from './ApiData';
-import { endpoints } from './ApiEndpoints';
-import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
 import { handleApiError } from '@/app/api/ApiLogs';
-import { useNotification, NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
-import { clientNotificationMessages } from './ApiClient';
-import  dotProp from 'dot-prop';
+import dotProp from 'dot-prop';
+import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
 import { headersConfig } from '../components/shared/SharedHeaders';
-import axiosInstance from './axiosInstance';
+import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { YourResponseType } from '../components/typings/types';
+import { handleApiErrorAndNotify, removeData, updateData } from './ApiData';
+import { endpoints } from './ApiEndpoints';
+import axiosInstance from './axiosInstance';
 
 
 
@@ -49,7 +47,7 @@ export const HighlightEventApi = {
     handleApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'FetchDataErrorId'
+      'FetchDataErrorId' as keyof DynamicNotificationMessage
     );
     throw error;
   }
@@ -122,7 +120,7 @@ getSpecificHighlight: async (
       handleApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FetchHighlightsErrorId'
+        'FetchHighlightsErrorId' as keyof DynamicNotificationMessage
       );
       throw error;
     }

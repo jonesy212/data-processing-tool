@@ -1,32 +1,33 @@
   // CollaborationSlice.ts
   import Milestone from "@/app/components/calendar/CalendarSlice";
-  import { Meeting } from "@/app/components/communications/scheduler/Meeting";
-  import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
-  import { mergeChanges } from "@/app/components/documents/editing/autosave";
-  import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
-  import { Task } from "@/app/components/models/tasks/Task";
-  import { Member } from "@/app/components/models/teams/TeamMembers";
-  import { Progress } from "@/app/components/models/tracker/ProgressBar";
-  import { Project } from "@/app/components/projects/Project";
-  import { Feedback } from "@/app/components/support/Feedback";
-  import { Idea } from "@/app/components/users/Ideas";
-  import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-  import CollaborationSettings from "../../../../pages/community/CollaborationSettings";
-  import { Communication } from "../../../communications/chat/Communication";
-  import CommunityContribution from "../../../crypto/CommunityContribution";
-  import { Whiteboard } from "../../../whiteboard/Whiteboard";
-  import { Document } from "../../stores/DocumentStore";
-  import { WritableDraft } from "../ReducerGenerator";
-  import { RootState } from "./RootSlice";
-  import { Change } from "@/app/components/documents/NoteData";
-  import { Todo } from "@/app/components/todos/Todo";
-  import { SecurityMeasure } from "@/app/components/security/SecurityMeasures";
-  import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
-  import { DocumentData } from "@/app/components/documents/DocumentBuilder";
-  import { useUIManager } from "../../stores/UISlice";
-  import UserService, { userId, userService } from "@/app/components/users/ApiUser";
-  import { Comment } from "@/app/components/models/data/Data";
-  import { useCollaboration } from "@/app/context/CollaborationContext";
+import { Meeting } from "@/app/components/communications/scheduler/Meeting";
+import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
+import { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import { DocumentBuilderOptions } from "@/app/components/documents/DocumentOptions";
+import { mergeChanges } from "@/app/components/documents/editing/autosave";
+import { Change } from "@/app/components/documents/NoteData";
+import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
+import { Comment } from "@/app/components/models/data/Data";
+import { Task } from "@/app/components/models/tasks/Task";
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { Project } from "@/app/components/projects/Project";
+import { SecurityMeasure } from "@/app/components/security/SecurityMeasures";
+import { Feedback } from "@/app/components/support/Feedback";
+import { Todo } from "@/app/components/todos/Todo";
+import UserService, { userId, userService } from "@/app/components/users/ApiUser";
+import { Idea } from "@/app/components/users/Ideas";
+import { VersionData } from "@/app/components/versions/VersionData";
+import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import CollaborationSettings from "../../../../pages/community/CollaborationSettings";
+import { Communication } from "../../../communications/chat/Communication";
+import CommunityContribution from "../../../crypto/CommunityContribution";
+import { Whiteboard } from "../../../whiteboard/Whiteboard";
+import { Document } from "../../stores/DocumentStore";
+import { useUIManager } from "../../stores/UISlice";
+import { WritableDraft } from "../ReducerGenerator";
+import { RootState } from "./RootSlice";
   interface Resource {
     id: string;
     name: string;
@@ -134,11 +135,13 @@
         } as DocumentBuilderOptions,
         folderPath: "",
         previousMetadata: undefined,
-        currentMetadata: undefined,
+        currentMetadata: {},
         accessHistory: [],
-        version: undefined
+        version: null,
+        permissions: {} as DocumentPermissions,
+        versionData: {} as VersionData
       },
-      uiManager: ReturnType<typeof useUIManager>,
+      uiManager: {} as ReturnType<typeof useUIManager>,
       userService: new UserService,
     }
   };
@@ -187,29 +190,40 @@
     }
   };
 
-  // const handleResourceChange = (
-  //     state,
-  //   action: PayloadAction<WritableDraft<Resource>>
-  // ) => {
-  //     switch (action.type) {
-  //         case "add":
-  //             state.sharedResources.push(action.payload);
-  //             break;
-  //         case "update":
-  //             const resourceToUpdate = state.sharedResources.find(
-  //                 (r) => r.id === action.payload.id
-  //             );
-  //             if (resourceToUpdate) {
-  //                 Object.assign(resourceToUpdate, action.payload);
-  //             }
-  //             break;
-  //         case "delete":
-  //             state.sharedResources = state.sharedResources.filter(
-  //                 (r) => r.id !== action.payload.id
-  //             );
-  //             break;
-  //     }
-  // }
+  
+
+export const shareDocumentAsync = createAsyncThunk(
+  'collaboration/shareDocument',
+  async (document: Document, { getState }) => {
+    const state = getState() as CollaborationState;
+    if (!state.documents.find((doc) => doc.id === document.id)) {
+      state.documents.push(document);
+    }
+    // if document is private, check user permissions
+    if (document.visibility === 'private') {
+      // check if current user has permission to view private document
+      const user = await userService.fetchUserProfile(String(userId));
+      if (!user.role.permissions.includes('view_private_documents')) {
+        throw new Error('User does not have permission to view private document');
+      }
+      // Add comment to document
+      const documentId = document.id.toString();
+      const newComment: Comment = {
+        id: documentId,
+        content: '',
+        resolved: false,
+      };
+
+      document.comments?.push(newComment);
+      // Optionally update state with the added comment to the document
+      // You may dispatch another action here to update the state with the added comment
+    }
+    // Handle logic to share the document
+    console.log('Document shared:', document);
+    // Optionally update state with the shared document
+    // You may dispatch another action here to update the state with the shared document
+  }
+);
 
   export const useCollaborationSlice = createSlice({
     name: "collaboration",
@@ -345,6 +359,7 @@
       receiveCommunication(state, action: PayloadAction<WritableDraft<Communication>>) {
         state.communications.push(action.payload);
       },
+
       handleResourceChange(
         state,
         action: PayloadAction<{
@@ -1031,46 +1046,6 @@
 
       // Document actions
 
-      // Share a document with others
-      shareDocument: async (
-        state,
-        action: PayloadAction<WritableDraft<Document>>
-      ): Promise<void> => {
-        const document = action.payload;
-        if (!state.documents.find((doc) => doc.id === document.id)) {
-          state.documents.push(document);
-        }
-        // if document is private, check user permissions
-        if (document.visibility === "private") {
-          // check if current user has permission to view private document
-          const user = await userService.fetchUserProfile(String(userId));
-          if (!user.role.permissions.includes("view_private_documents")) {
-            throw new Error(
-              "User does not have permission to view private document"
-            );
-          }
-          // Add comment to document
-          const documentId = action.payload.id.toString()
-          const newComment: WritableDraft<Comment> = {
-            id: documentId,
-            content: "",
-            resolved: false,
-          };
-
-          document.comments?.push(newComment);
-          // Optionally update state with the added comment to the document
-          useCollaborationSlice.updateCollaborationState({
-            type: "commentOnDocument",
-            payload: {
-              documentId,
-              comment: newComment.toString(),
-            },
-          });
-        }
-        // Handle logic to share the document
-        console.log("Document shared:", document);
-        // Optionally update state with the shared document
-      },
 
       // Add a comment to a document
       commentOnDocument: (
@@ -1192,6 +1167,12 @@
         // Optionally update state with the list of documents if needed
       },
     },
+
+    extraReducers: (builder) => {
+    builder.addCase(shareDocumentAsync.fulfilled, (state, action) => {
+      // Optionally update state with the shared document
+    });
+  },
     // Add other collaboration-related reducers here
   });
 
@@ -1275,8 +1256,8 @@
     listWhiteboards,
 
     // Document actions
-    shareDocument,
     commentOnDocument,
+  
     resolveComment,
     updateDocument,
     deleteDocument,
@@ -1293,4 +1274,4 @@
 
   // Reducer
   export default useCollaborationSlice.reducer;
-  export type {CollaborationState}
+  export type { CollaborationState };

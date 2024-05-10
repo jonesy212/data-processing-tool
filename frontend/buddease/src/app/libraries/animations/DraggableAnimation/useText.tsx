@@ -6,7 +6,9 @@ interface TextProps {
   onDragEnd: () => void;
   TextType: string; // Define type for TextType
   text: string; // Change the type of 'text' to string
-  
+  onTextDragStart: () => void;
+  onTextDragMove: (drawingId: string, dragX: number, dragY: number) => void;
+  onTextDragEnd: (dragX: number, dragY: number) => Promise<void>
 }
 
 const useText = ({ onDragStart, onDragMove, onDragEnd }: TextProps) => {

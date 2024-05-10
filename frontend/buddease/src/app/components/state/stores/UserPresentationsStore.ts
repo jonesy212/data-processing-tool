@@ -1,11 +1,10 @@
 // UserPresentationsStore.ts
 
-import { WritableDraft } from "../redux/ReducerGenerator";
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
+import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { Todo } from "../../todos/Todo";
-import { AssignEventStore, useAssignEventStore } from "./AssignEventStore";
-import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
+import { User } from "../../users/User";
+import { useAssignEventStore } from "./AssignEventStore";
 
 
 export type PresentationEventAssignment = BaseCustomEvent | Todo | ExtendedCalendarEvent
@@ -32,28 +31,35 @@ type EventStoreSubset = Pick<
   | "assignUserFailure"
 >;
 
+
+
+
+
 const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
 export interface UserPresentation {
   reassignUsersForArray: (
     user: string,
     newUsers: ExtendedCalendarEvent[],
+    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent,
+    newUserId: PresentationEventAssignment,
     eventOrTodo: BaseCustomEvent | Todo
   ) => void;
+  
   reassignUserForSingle: (
     user: string,
     newUser: ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
   ) => void;
+
   reassignUsersToEvents: (
     eventIds: string[],
-    oldUserId: ExtendedCalendarEvent,
-    newUserId: BaseCustomEvent | Todo, // Update the type of newUserId
-  ) => void;
-  
-  assignEvent: (eventId: string, userId: string) => void;
+    oldUserId: CalendarEventTimingOptimization,
+    newUserId: PresentationEventAssignment
+  ) => void
+  assignEvent: (eventId: string, userId: User) => void;
   assignedUsers: Record<string, string[]>;
-  assignedEvents: Record<string, ExtendedCalendarEvent[]>;
+  assignedEvents: Record<string, (ExtendedCalendarEvent | CalendarEventTimingOptimization)[]>;
   assignedTodos: Record<string, string[]>;
   assignUsersToEvents: (
     users: string[],
@@ -87,6 +93,21 @@ export interface UserPresentation {
   assignUserFailure: (error: string) => void;
 }
 
+const transformExtendedCalendarEventToOptimization = (extendedEvent: ExtendedCalendarEvent): CalendarEventTimingOptimization => {
+  return {
+    eventId: extendedEvent.eventId,
+    suggestedStartTime: extendedEvent.suggestedStartTime,
+    suggestedEndTime: extendedEvent.suggestedEndTime,
+    suggestedDuration: extendedEvent.suggestedDuration,
+    suggestedDay: extendedEvent.suggestedDay,
+    suggestedWeeks: extendedEvent.suggestedWeeks,
+    suggestedMonths: extendedEvent.suggestedMonths,
+    suggestedSeasons: extendedEvent.suggestedSeasons,
+  };
+};
+
+
+
 export const useUserPresentation = (): UserPresentation => {
   const {
     reassignUsersToEvents,
@@ -106,25 +127,34 @@ export const useUserPresentation = (): UserPresentation => {
     assignUserSuccess,
     assignUserFailure,
   } = eventSubset;
-    
+
   const reassignUsersForArray = (
     user: string,
-    newUsers: ExtendedCalendarEvent[],  // Change parameter name to newUsers
+    newUsers: ExtendedCalendarEvent[],
+    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent,
+    newUserId: PresentationEventAssignment,
     eventOrTodo: BaseCustomEvent | Todo
   ) => {
     newUsers.forEach((newUser: ExtendedCalendarEvent) => {
-      reassignUsersToEvents([user], newUser, eventOrTodo);  // Pass newUser directly
+      reassignUsersToEvents(
+        [user],
+        transformExtendedCalendarEventToOptimization(newUser),
+        eventOrTodo
+      );
     });
   };
-  
+
   const reassignUserForSingle = (
     user: string,
-    newUser: ExtendedCalendarEvent,  // Change parameter name to newUsers
+    newUser: ExtendedCalendarEvent,
     eventOrTodo: PresentationEventAssignment
   ) => {
-    reassignUsersToEvents([user], newUser, eventOrTodo);  // Pass newUsers[0] for single user
+    reassignUsersToEvents(
+      [user],
+      transformExtendedCalendarEventToOptimization(newUser),
+      eventOrTodo
+    );
   };
-  
 
   return {
     reassignUsersForArray,

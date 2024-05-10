@@ -1,3 +1,4 @@
+import { WritableDraft } from '@/app/components/state/redux/ReducerGenerator';
 // UISlice.ts
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
@@ -6,6 +7,7 @@ import { PhaseHookConfig } from "../../hooks/phaseHooks/PhaseHooks";
 import { setIsDrawing } from "../redux/slices/DrawingSlice";
 import { resetMilestones, resetTrackers } from "../redux/slices/TrackerSlice";
 import { CollaborationState } from "../redux/slices/CollaborationSlice";
+import { produce } from 'immer';
 
 // Define interface for UI-related state
 interface UIState {
@@ -26,8 +28,12 @@ interface UIState {
     y: 0
   },
   isPointerDown: false,
+  collaborationState: CollaborationState | null
   // Define UI-related state properties here
 }
+
+
+
 
 // Define initial state for UI
 const initialState: UIState = {
@@ -48,6 +54,7 @@ const initialState: UIState = {
     y: 0
   },
   isPointerDown: false,
+  collaborationState: null
 };
 
 // Create UI slice
@@ -97,12 +104,33 @@ export const useUIManagerSlice = createSlice({
       state.currentPhase = null;
       state.previousPhase = null;
     },
+    
+
+
     updateCollaborationState: (
       state,
-      action: PayloadAction<CollaborationState>
-    ) => { 
+      action: PayloadAction<WritableDraft<CollaborationState>>
+    ) => {
       state.collaborationState = action.payload;
-    }
+
+      state.collaborationState.documents =
+        state.collaborationState.documents.map((doc) => {
+          if (doc.filePath) {
+            return {
+              ...doc,
+              filePath: produce(doc.filePath, (draftPath: any) => {
+                if (draftPath.options.additionalOptions) {
+                  draftPath.options.additionalOptions = [
+                    ...draftPath.options.additionalOptions,
+                  ];
+                }
+              }),
+            };
+          }
+          return doc;
+        });
+    },
+
     resetUI: (state) => {
       Object.assign(state, initialState);
     },
@@ -138,15 +166,13 @@ export const {
 export const uiReducer = useUIManagerSlice.reducer;
 
 // Create a UI manager hook
-// Create a UI manager hook
 export const useUIManager = () => {
   const dispatch = useDispatch();
 
 
-  const updateCollaborationState = () => {
-    // Dispatch actions to update collaboration state as needed
-
-  };
+  const updateCollaborationState = (state: CollaborationState) => {
+    dispatch(UIActions.updateCollaborationState(state));
+  }
   // Define UI-related actions
   const stopDrawing = () => {
     // Dispatch actions from DrawingSlice to reset drawing-related state properties
@@ -170,4 +196,4 @@ export const useUIManager = () => {
   // Return UI-related actions
   return { stopDrawing };
 };
-export type { UIState };
+export type { UIState, produce };

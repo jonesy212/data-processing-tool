@@ -2,6 +2,7 @@
 import { MessageType } from "@/app/generators/MessaageType";
 import React from "react";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import TextType from "../documents/TextType";
 import { DataType } from "../models/CommonData";
 import {
   ChatType,
@@ -16,11 +17,12 @@ import {
   ProgressBarProps,
   ProgressPhase,
 } from "../models/tracker/ProgressBar";
-import TextType from "../documents/TextType";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";;
 type NotificationCategory = "general" | "urgent" | "important";
 type ButtonType = "submit" | "reset" | "button" | undefined;
+type VisibilityType = "public" | "private" | "restricted" | "shared" |  boolean;
+
 // Union type of all types enums
 type AllTypes =
   | DataType
@@ -37,7 +39,8 @@ type AllTypes =
   | ButtonType
   | AnimationType // Add AnimationType to AllTypes
   | NotificationCategory // Add NotificationCategory to AllTypes
-  | TextType; // Add TextType to AllTypes
+  | TextType
+  | VisibilityType; // Add TextType to AllTypes
 
 interface BaseProps {
   id: string;
@@ -99,7 +102,9 @@ const progressBarProps: ProgressBarProps = {
   progress: {
     id: "unique-progress-id",
     value: 75,
-    label: "Progress Label"
+    label: "Progress Label",
+    current: 0,
+    max: 100,
   }, // Corrected to match the Progress interface
   duration: 1000,
   barStyle: { backgroundColor: "blue" },
@@ -111,5 +116,5 @@ const progressBarProps: ProgressBarProps = {
 };
 
 export { chatCardProps, notificationProps, progressBarProps };
-export type { AllTypes,TextType, BaseProps, ChatCardProps, NotificationProps, ProgressProps };
+export type { AllTypes, BaseProps, ChatCardProps, NotificationProps, ProgressProps, TextType };
 

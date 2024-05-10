@@ -21,6 +21,14 @@ export type MessageNotificationStatusType =
   | "confirmed"
   ;
 
+
+// Define an enum for sorting types
+enum SortingType {
+  ASCENDING = "ASCENDING",
+  DESCENDING = "DESCENDING",
+}
+
+
 enum StatusType {
   Pending = "pending",
   Tentative = "tentative",
@@ -33,7 +41,34 @@ enum StatusType {
   Status = "status"
 }
 
+// Define the DocumentSize enum
+enum DocumentSize {
+  A4 = 'A4',
+  Letter = 'Letter',
+  Legal = 'Legal',
+  Custom = 'Custom'
+  // Add more sizes as needed
+}
 
+// Define the Orientation enum
+enum Orientation {
+  Portrait = 'Portrait',
+  Landscape = 'Landscape',
+}
+
+
+
+enum Visibility {
+  Private = 'Private',
+  Public = 'Public',
+  Restricted = 'Restricted',
+}
+
+enum Layout {
+  SingleColumn = 'SingleColumn',
+  Dynamic = 'Dynamic',
+  MultipleColumns = 'MultipleColumns',
+}
 
 
 // Define the ChatType enum
@@ -42,9 +77,6 @@ enum ChatType {
   Private = 'private',
   Group = 'group'
 }
-
-
-  
 
 
 // Define specific enums for different types of status
@@ -59,8 +91,6 @@ enum TodoStatus {
   InProgress = StatusType.InProgress,
   Completed = StatusType.Completed,
 }
-
-
 
 
 enum TeamStatus {
@@ -143,11 +173,16 @@ export enum PriorityTypeEnum {
 
 export enum ProjectPhaseTypeEnum {
   Ideation = 'ideation',
+  Draft = 'drafting',
   TeamFormation = 'team_formation',
   ProductBrainstorming = 'product_brainstorming',
   Launch = 'launch',
   DataAnalysis = 'data_analysis',
+  Review = 'review',
+  Final = 'final',
 }
+
+
 
 export enum DevelopmentPhaseEnum{
   PLANNING,
@@ -156,6 +191,8 @@ export enum DevelopmentPhaseEnum{
   TESTING,
   DEPLOYMENT,
   IDEA_CREATION,
+  IDEA_SUBMISSION,
+  
 }
 
 
@@ -165,6 +202,12 @@ export enum CommunicationMediaType {
   Text = 'text',
 }
 
+
+// Define the IncludeType enum
+enum IncludeType {
+  Embed = 'Embed',
+  // Add other include options if needed
+}
 
 enum CollaborationOptionType {
   ScreenSharing = 'screen_sharing',
@@ -201,19 +244,34 @@ enum BookmarkStatus {
   Idle = CalendarStatus.IDLE,
 }
 
+
+enum BorderStyle {
+  NONE = 'none',
+  SOLID = 'solid',
+  DASHED = 'dashed',
+  DOTTED = 'dotted',
+  DOUBLE = 'double',
+  GROOVE = 'groove',
+  RIDGE = 'ridge',
+  INSET = 'inset',
+  OUTSET = 'outset',
+  None = 'none',
+}
+
 export default BookmarkStatus;
 
 
 export {
-  CalendarStatus,
-  ChatType,
-  ComponentStatus,
+  BookmarkStatus, BorderStyle, CalendarStatus,
+  ChatType, CollaborationOptionType, ComponentStatus,
   DataStatus,
+  DocumentSize, IncludeType, Layout,
   NotificationStatus,
-  PriorityStatus, ProductStatus, StatusType,
+  Orientation, OutcomeType, PriorityStatus,
+  ProductStatus, SortingType, StatusType,
   TaskStatus,
   TeamStatus,
   TodoStatus,
-  BookmarkStatus
+  Visibility
 };
 

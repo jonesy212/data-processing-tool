@@ -1,4 +1,7 @@
 import clientApiService from '@/app/api/ApiClient';
+import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
+import { AxiosResponse } from 'axios';
+import getAppPath from '../../../../appPath';
 import { AppStructureItem } from '../appStructure/AppStructure';
 
 interface FrontendStructure {
@@ -7,12 +10,15 @@ interface FrontendStructure {
 
 const frontendStructure: FrontendStructure = {};
 
-export const traverseDirectory = async (dir: string): Promise<AppStructureItem[]> => {
-  const files: string[] = await clientApiService.listFiles(dir); // Use ApiClient to fetch files
+export const traverseFrontendDirectory = async (
+  dir: string
+): Promise<AppStructureItem[]> => {
+  const filesResponse: AxiosResponse<string[], any> =
+    await clientApiService.listFiles(dir); // Use ApiClient to fetch files
+  const files: string[] = filesResponse.data;
   const result: AppStructureItem[] = [];
 
-  for (const file of files) {
-    const filePath = file; // Assuming the file path is returned by the API
+  for (const filePath of files) {
     const isDirectory = false; // Assuming the API doesn't differentiate between files and directories
 
     if (isDirectory) {
@@ -20,11 +26,15 @@ export const traverseDirectory = async (dir: string): Promise<AppStructureItem[]
     } else {
       // Logic to parse file and update frontendStructure accordingly
       // Example: if (file.endsWith('.tsx')) { /* update frontendStructure */ }
-      const content: string = await clientApiService.getFileContent(filePath); // Use ApiClient to fetch file content
+      const content: AxiosResponse<string, any> =
+        await clientApiService.getFileContent(filePath); // Use ApiClient to fetch file content
       const appStructureItem: AppStructureItem = {
         path: filePath,
-        content: content,
-        // ... other properties
+        content: content.data,
+        id: '',
+        name: '',
+        type: 'file',
+        items: {}
       };
       result.push(appStructureItem);
     }
@@ -32,8 +42,12 @@ export const traverseDirectory = async (dir: string): Promise<AppStructureItem[]
   return result;
 };
 
+
+
 // Update the file path with the correct project path
-const projectPath = '/path/to/your/project';
-const projectStructure = await traverseDirectory(projectPath);
+
+const { versionNumber, appVersion } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
+const projectStructure = await traverseFrontendDirectory(projectPath);
 
 console.log(projectStructure);

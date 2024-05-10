@@ -7,6 +7,7 @@ import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProce
 import { addLog } from '../components/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { YourResponseType } from '../components/typings/types';
+import Version from '../components/versions/Version';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
@@ -20,6 +21,7 @@ interface DataNotificationMessages {
   FETCH_DATA_DETAILS_ERROR: string;
   UPDATE_DATA_DETAILS_SUCCESS: string;
   UPDATE_DATA_DETAILS_ERROR: string;
+  ERROR_WRITING_TO_CACHE: string;
   // Add more keys as needed
 }
 
@@ -29,27 +31,28 @@ const apiNotificationMessages: DataNotificationMessages = {
   FETCH_DATA_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
   UPDATE_DATA_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
   UPDATE_DATA_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
+  ERROR_WRITING_TO_CACHE: NOTIFICATION_MESSAGES.Cache.ERROR_WRITING_TO_CACHE
   // Add more properties as needed
 };
-
 // Function to handle API errors and notify
 export const handleApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof DataNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {
-    const errorMessageText = dotProp.getProperty(apiNotificationMessages, errorMessageId);
+    const errorMessageText = apiNotificationMessages[errorMessageId];
     useNotification().notify(
       errorMessageId,
-      errorMessageText as unknown as string,
+      errorMessageText,
       null,
       new Date(),
-      'ApiClientError' as NotificationType
+      "ApiClientError" as NotificationType
     );
   }
 };
+
 
 // Modify the fetchData function to accept the endpoint for fetching highlights
 export async function fetchData(endpoint: string): Promise<YourResponseType> {
@@ -65,7 +68,7 @@ export async function fetchData(endpoint: string): Promise<YourResponseType> {
     handleApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'FetchDataErrorId'
+      'FetchDataErrorId' as keyof DataNotificationMessages
     );
     throw error;
   }
@@ -114,7 +117,10 @@ export const addData = async (newData: Omit<any, 'id'>, highlight: Omit<Highligh
     }
   } catch (error) {
     console.error('Error adding data:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to add data', 'AddDataErrorId');
+    handleApiErrorAndNotify(error as AxiosError<unknown>,
+      'Failed to add data',
+      'AddDataErrorId' as keyof DataNotificationMessages
+    );
   }
 };
 
@@ -129,7 +135,34 @@ export const removeData = async (dataId: number): Promise<void> => {
     }
   } catch (error) {
     console.error('Error removing data:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to remove data', 'RemoveDataErrorId');
+    handleApiErrorAndNotify(error as AxiosError<unknown>,
+      'Failed to remove data',
+      'RemoveDataErrorId' as keyof DataNotificationMessages
+    );
+  }
+};
+
+export const getDataVersions = async (
+  versionId: number
+): Promise<Version[]> => {
+  try {
+    const versionsEndpoint = `${API_BASE_URL}.getDataVersions.${versionId}`;
+
+    if (!versionsEndpoint) {
+      throw new Error(
+        `Versions endpoint not found for version ID: ${versionId}`
+      );
+    }
+    const response:AxiosResponse = await axiosInstance.get<Version[]>(versionsEndpoint);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching versions:", error);
+    handleApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to fetch versions",
+      "FetchVersionsErrorId" as keyof DataNotificationMessages
+    );
+    return []; // Return an empty array in case of error
   }
 };
 
@@ -189,12 +222,16 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
 
 export const fetchDataById = async (dataId: number): Promise<any> => {
   try {
-    const fetchDataByIdEndpoint = `${API_BASE_URL}.single.${dataId}`;
+    const fetchDataByIdEndpoint = `${API_BASE_URL}/single/${dataId}`;
     const response = await axiosInstance.get(fetchDataByIdEndpoint);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data by ID:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to fetch data by ID', 'FetchDataByIdErrorId');
+    console.error("Error fetching data by ID:", error);
+    handleApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to fetch data by ID",
+      "FetchDataByIdError" as keyof DataNotificationMessages
+    );
     throw error;
   }
 };
@@ -205,7 +242,10 @@ export const createData = async (newData: any): Promise<void> => {
     await axiosInstance.post(createDataEndpoint, newData);
   } catch (error: any) {
     console.error('Error creating data:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to create data', 'CreateDataErrorId');
+    handleApiErrorAndNotify(error as AxiosError<unknown>,
+      'Failed to create data',
+      'CreateDataErrorId' as keyof DataNotificationMessages
+    );
     throw error;
   }
 };
@@ -217,8 +257,36 @@ export const deleteData = async (dataId: number): Promise<void> => {
   } catch (error: any) {
     const errorMessage = 'Failed to delete data';
     console.error(errorMessage, error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>, errorMessage, 'DeleteDataErrorId');
+    handleApiErrorAndNotify(
+      error as AxiosError<unknown>, errorMessage,
+      'DeleteDataErrorId' as keyof DataNotificationMessages
+    );
     throw error;
   }
 };
 
+export const getBackendVersion = async (): Promise<string> => {
+  try {
+    const versionEndpoint = `${API_BASE_URL}.getBackendVersion`;
+
+    const response = await axiosInstance.get(versionEndpoint);
+    return response.data.toString();
+  } catch (error) {
+    console.error("Error fetching backend version:", error);
+    handleApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to fetch backend version",
+      "FetchBackendVersionErrorId" as keyof DataNotificationMessages
+    );
+  }
+  return "unknown";
+};
+
+export const getFrontendVersion = async (): Promise<string> => {
+  try {
+    return process.env.REACT_APP_VERSION || "unknown";
+  } catch (error) {
+    console.error("Error fetching frontend version:", error);
+    return "unknown";
+  }
+};

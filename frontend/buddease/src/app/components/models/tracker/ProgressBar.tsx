@@ -9,10 +9,10 @@ export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
 
 interface Progress {
   id: string;
-  value: number;
+  value: string;
   label: string;
-  current: 0,
-  max: 100
+  current: number,
+  max: number
   // additional properties as needed
 }
 
@@ -61,7 +61,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 }) => {
   const { handleError } = useErrorHandling(); // Initialize useErrorHandling hook
 
-  if (progress && (progress.value < 0 || progress.value > 100)) {
+  if (progress && (progress.value < '0' || progress.value > '100')) {
     // Handle out-of-range progress values
     const errorMessage = "Progress value must be between 0 and 100";
     handleError(errorMessage); // Log and handle the error

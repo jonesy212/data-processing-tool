@@ -7,6 +7,7 @@ import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import { useDispatch } from "react-redux";
+import { Attendee } from "../../calendar/Attendee";
 import {
   getDefaultDocumentOptions
 } from "../../documents/DocumentOptions";
@@ -21,6 +22,7 @@ import {
 import { Team } from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
 import { Phase } from "../../phases/Phase";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
@@ -35,7 +37,7 @@ import { AssignEventStore, ReassignEventResponse, useAssignEventStore } from "./
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
-import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
+import { WritableDraft } from "../redux/ReducerGenerator";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -85,14 +87,15 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
-  
+
+
   options?: {
     // ...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
     
     // ...
   };
-  documentPhase?: Phase;
+  documentPhase?: WritableDraft<Phase>;
   // Add more properties if needed
   status?: AllStatus
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
@@ -102,7 +105,7 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   guestSpeakers?: Member[];
   participants: Member[];
   hosts?: Member[];
-  attendees?: Member[];
+  attendees?: Attendee[];
   color?: string;
   isImportant?: boolean;
   teamMemberId: Team["id"];
@@ -325,7 +328,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       rsvpStatus: "yes",
       host: {} as Member,
       hosts: [] as Member[],
-      attendees: [] as Member[],
+      attendees: [] as Attendee[],
       color: "",
       isImportant: false,
       teamMemberId: "0",

@@ -1,4 +1,5 @@
 // BlogSlice.ts
+import { BlogPost } from '@/app/components/community/DiscussionForumComponent';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 

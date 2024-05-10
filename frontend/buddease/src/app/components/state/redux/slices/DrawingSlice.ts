@@ -28,6 +28,7 @@ import Milestone from "@/app/components/calendar/CalendarSlice";
 import * as drawingApi from "@/app/api/ApiDrawing";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
 import TextType from "@/app/components/documents/TextType";
+import { CalendarActions } from "@/app/components/actions/CalendarEventActions";
 // Define interface for drawing state
 interface DrawingState {
   id: string;
@@ -45,6 +46,7 @@ interface DrawingState {
   } | null;
 
   selectedTextId: string | null;
+  selectedText: TextType | null;
   dragEndPosition: {
     x: number;
     y: number;
@@ -88,7 +90,8 @@ const initialState: DrawingState = {
   selectedDrawingId: null,
   trackers: [],
   selectedTrackers: [],
-  milestones: []
+  milestones: [],
+  selectedText: null
 };
 
 export const setIsDrawing = (isDrawing: boolean) => ({
@@ -493,7 +496,14 @@ export const useDrawingManagerSlice = createSlice({
         }
 
         // Dispatch an action if needed
-        dispatch(DrawingActions.someOtherActionIfNeeded());
+        dispatch(
+          DrawingActions.handleTextDragEnd({
+            id: state.selectedTextId,
+            text: state.selectedText || "",
+            x: dragX,
+            y: dragY,
+          })
+        );
         const drawingId = state.selectedDrawingId
           ? await drawingApi.fetchDrawingById(state.selectedDrawingId)
           : null;
@@ -501,10 +511,14 @@ export const useDrawingManagerSlice = createSlice({
         useEffect(() => {
           if (drawingId) {
             const { beginText } = useText({
-              TextType: 'text',
+              TextType: "text",
               onTextDragStart,
               onTextDragMove,
               onTextDragEnd,
+              onDragStart,
+              onDragMove,
+              onDragEnd,
+              text: state.selectedText || "",
             });
             const handleMouseDown = (e: MouseEvent) =>
               beginText({ x: e.clientX, y: e.clientY });
@@ -520,7 +534,7 @@ export const useDrawingManagerSlice = createSlice({
               document.removeEventListener("touchstart", handleTouchStart);
             };
           }
-        }, [beginText, drawingId]);
+        }, [beginText, drawingId, state.selectedText]);
       };
     },
 
@@ -533,14 +547,14 @@ export const useDrawingManagerSlice = createSlice({
       state.selectedTrackers = [];
     },
 
-    resetMilestones() {
-      return (dispatch: any, getState: () => RootState) => {
-        const milestones = selectMilestones(getState());
-        // Reset milestones or perform any other necessary actions
-      };
+    resetMilestones(state) {
+      state.milestones = [];
     },
 
-    createMilestoneForTrackers(trackers: Tracker[]) {
+    createMilestoneForTrackers(
+      trackers: Tracker[],
+      state: WritableDraft<DrawingState>
+    ) {
       return (dispatch: any) => {
         // Logic to create milestones based on trackers
         // For example:
@@ -549,6 +563,7 @@ export const useDrawingManagerSlice = createSlice({
             id: "milestone-" + tracker.id,
             title: "Milestone for " + tracker.name,
             date: new Date(),
+            dueDate: null
           };
           dispatch(createMilestone(milestone));
         });
@@ -620,7 +635,6 @@ export const {
   hideLayer,
   importDrawing,
   importDrawingFromFile,
-  import { TextType } from '@/app/components/documents/TextType';
 invertSelection,
   lockLayer,
   // Layer Operations

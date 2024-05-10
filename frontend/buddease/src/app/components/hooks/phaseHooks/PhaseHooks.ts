@@ -16,8 +16,8 @@ import {
   ExtendedDappProps
 } from "../../web3/dAppAdapter/IPFS";
 import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
-
-export interface PhaseHookConfig {
+import IdeationPhaseComponent from "../../phases/IdeationPhaseComponent";
+ export interface PhaseHookConfig {
   name: string;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
   canTransitionTo?: (nextPhase: Phase) => boolean;
@@ -43,7 +43,9 @@ export interface PhaseHookConfig {
     idleTimeoutId: NodeJS.Timeout | null;
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }) => Promise<() => void>;
-  
+  phaseType: string | Phase;
+  customProp1?: string;
+  customProp2?: number;
 }
 
 
@@ -108,8 +110,10 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
 const { resetAuthState } = useAuth();
 
 export const createPhaseHook =
-  (idleTimeoutDuration: number,
-  config: PhaseHookConfig) => {
+  (
+    idleTimeoutDuration: number,
+    config: PhaseHookConfig
+  ) => {
   return createDynamicHook({
     condition: async () => {
       return config.condition(idleTimeoutDuration);
@@ -124,6 +128,7 @@ export const createPhaseHook =
     idleTimeoutId: null, // Initialize with null or assign a valid value
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
       // Your implementation here
+      idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
     },
     resetIdleTimeout: async () => {
       if (userSettings.idleTimeout.idleTimeoutId) {
@@ -196,94 +201,94 @@ const additionalPhaseHooks: { [key: string]: CustomPhaseHooks } = {};
 // First block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {
   additionalPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] =
-    createPhaseHook(
-      idleTimeoutDuration, // Provide the 'idleTimeoutDuration' argument here
-      {
-        name: phaseName,
-        duration: duration,
-        condition: async () => true, // Adjust the condition based on your requirements
-        clearIdleTimeout: () => {
-          clearTimeout(idleTimeoutId!);
-        },
-        onPhaseStart: () => {
-          console.log(`${phaseName} phase started`);
-        },
-        onPhaseEnd: () => {
-          console.log(`${phaseName} phase ended`);
-        },
-        asyncEffect: async () => {
-          console.log(`Transitioning to ${phaseName}`);
-          // Add phase-specific logic here
-          return () => {
-            console.log(`Cleanup for ${phaseName}`);
-            // Perform any cleanup logic here, if needed
-            resetAuthState();
-          };
-        },
-        isActive: true, // Add isActive property
-        initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout property
-        resetIdleTimeout: async () => {}, // Add resetIdleTimeout property
-        idleTimeoutId: null, // Initialize idleTimeoutId property
-        startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
-          clearTimeout(idleTimeoutId!);
-          idleTimeoutId = setTimeout(() => {
-            onTimeout();
-          }, timeoutDuration);
-        },
-        startAnimation: () => { }, // Add startAnimation property
-        stopAnimation: () => {}, // Add stopAnimation property
-        animateIn: () => {}, // Add animateIn property
-        toggleActivation: () => {}, // Add toggleActivation property
-        cleanup: undefined, // Add cleanup property
-      } as PhaseHookConfig // Provide the 'config' object here
-    ) as unknown as CustomPhaseHooks;
+    createPhaseHook(idleTimeoutDuration, {
+      name: phaseName,
+      duration: duration,
+      condition: async () => true,
+      clearIdleTimeout: () => {
+        clearTimeout(idleTimeoutId!);
+      },
+      onPhaseStart: () => {
+        console.log(`${phaseName} phase started`);
+      },
+      onPhaseEnd: () => {
+        console.log(`${phaseName} phase ended`);
+      },
+      asyncEffect: async () => {
+        console.log(`Transitioning to ${phaseName}`);
+        return () => {
+          console.log(`Cleanup for ${phaseName}`);
+          resetAuthState();
+        };
+      },
+      isActive: true,
+      initialStartIdleTimeout: () => {},
+      resetIdleTimeout: async () => {},
+      idleTimeoutId: null,
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+        clearTimeout(idleTimeoutId!);
+        idleTimeoutId = setTimeout(() => {
+          onTimeout();
+        }, timeoutDuration);
+      },
+      startAnimation: () => {},
+      stopAnimation: () => {},
+      animateIn: () => {},
+      toggleActivation: () => {},
+      cleanup: undefined,
+    } as unknown as PhaseHookConfig) as unknown as CustomPhaseHooks;
 });
 
 
 // Second block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {
   additionalPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"] =
-    createPhaseHook(
-      idleTimeoutDuration, // Provide the 'idleTimeoutDuration' argument here
-      {
-        name: phaseName,
-        duration: duration,
-        condition: async () => true, // Adjust the condition based on your requirements
-        clearIdleTimeout: () => {
-          clearTimeout(idleTimeoutId!);
-        },
-        onPhaseStart: () => {
-          console.log(`${phaseName} phase started`);
-        },
-        onPhaseEnd: () => {
-          console.log(`${phaseName} phase ended`);
-        },
-        asyncEffect: async () => {
-          console.log(`Transitioning to ${phaseName}`);
-          // Add phase-specific logic here
-          return () => {
-            console.log(`Cleanup for ${phaseName}`);
-            // Perform any cleanup logic here, if needed
-            resetAuthState();
-          };
-        },
-        isActive: true, // Add isActive property
-        initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout property
-        resetIdleTimeout: async () => {}, // Add resetIdleTimeout property
-        idleTimeoutId: null, // Initialize idleTimeoutId property
-        startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
-          clearTimeout(idleTimeoutId!);
-          idleTimeoutId = setTimeout(() => {
-            onTimeout();
-          }, timeoutDuration);
-        },
-        startAnimation: () => { }, // Add startAnimation property
-        stopAnimation: () => {}, // Add stopAnimation property
-        animateIn: () => {}, // Add animateIn property
-        toggleActivation: () => {}, // Add toggleActivation property
-        cleanup: undefined, // Add cleanup property
-      } as PhaseHookConfig // Provide the 'config' object here
-    ) as unknown as CustomPhaseHooks;
+    createPhaseHook(idleTimeoutDuration, {
+      name: phaseName,
+      duration: duration,
+      condition: async () => true,
+      clearIdleTimeout: () => {
+        clearTimeout(idleTimeoutId!);
+      },
+      onPhaseStart: () => {
+        console.log(`${phaseName} phase started`);
+      },
+      onPhaseEnd: () => {
+        console.log(`${phaseName} phase ended`);
+      },
+      asyncEffect: async () => {
+        console.log(`Transitioning to ${phaseName}`);
+        return () => {
+          console.log(`Cleanup for ${phaseName}`);
+          resetAuthState();
+        };
+      },
+      phaseType: {
+        name: "Ideation",
+        duration: 5000,
+        type: "ideaGeneration",
+        startDate: new Date(),
+        endDate: new Date(new Date().getTime() + duration),
+        subPhases: [],
+        component: IdeationPhaseComponent,
+        hooks: [ideationPhaseHook],
+      } as Phase,
+      isActive: true,
+      initialStartIdleTimeout: () => {},
+      resetIdleTimeout: async () => {},
+      idleTimeoutId: null,
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+        clearTimeout(idleTimeoutId!);
+        idleTimeoutId = setTimeout(() => {
+          onTimeout();
+        }, timeoutDuration);
+      },
+      startAnimation: () => {},
+      stopAnimation: () => {},
+      animateIn: () => {},
+      toggleActivation: () => {},
+      cleanup: undefined,
+    } as unknown as PhaseHookConfig);
 });
 
 

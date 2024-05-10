@@ -17,8 +17,10 @@ import CustomFile from "../documents/File";
 import EventCategory from "../event/EventCategory";
 import EventSentiment from "../event/EventSentiment";
 import useFileUpload from "../hooks/commHooks/useFileUpload";
+import TeamCollaborationAnalysis from "../interfaces/options/CollaborationOptions";
 import { Theme } from "../libraries/ui/theme/Theme";
 import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from "../models/data/EventContentAnalysis";
+import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from "../models/data/EventPriorityClassification";
 import {
   CalendarStatus,
   PriorityStatus,
@@ -45,23 +47,38 @@ import {
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { User } from "../users/User";
+import AttendancePrediction from "./AttendancePrediction";
+import AttendeeAvailabilityAnalysis from "./Attendee";
+import CalendarEventAgendaItem from "./CalendarEventAgendaItem";
 import CalendarEventCategory from "./CalendarEventCategory";
+import CalendarEventConflictDetectionResult from "./CalendarEventConflictDetectionResult";
+import CalendarEventContentGeneration from "./CalendarEventContentGeneration";
+import CalendarEventEffectivenessEvaluation from "./CalendarEventEffectivenessEvaluation";
+import CalendarEventEngagementMetrics from "./CalendarEventEngagementMetrics";
+import CalendarEventFeedbackAnalysis from "./CalendarEventFeedbackAnalysis";
+import CalendarEventFollowUpActionSuggestion from "./CalendarEventFollowUpActionSuggestion";
+import CalendarEventImpactPrediction from "./CalendarEventImpactPrediction";
 import CalendarEventImprovement from "./CalendarEventImprovement";
+import { CalendarEventInvitationPersonalization } from "./CalendarEventInvitationPersonalization";
+import CalendarEventOptimizationRecommendation from "./CalendarEventOptimizationRecommendation";
+import CalendarEventOutcomeVariabilityPrediction from "./CalendarEventOutcomeVariabilityPrediction";
+import CalendarEventPriorityClassification from "./CalendarEventPriorityClassification";
+import CalendarEventRiskAssessment from "./CalendarEventRiskAssessment";
+import CalendarEventROIAnalysis from "./CalendarEventROIAnalysis";
+import CalendarEventSuccessPrediction from "./CalendarEventSuccessPrediction";
+import CalendarEventTimingOptimization from "./CalendarEventTimingOptimization";
+import CalendarEventTrendDetectionResult from "./CalendarEventTrendDetectionResult";
 import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps } from "./CalendarEventViewingDetails";
 import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
-import { EventDetailsEnhancement } from "./EventDetailsEnhancement";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
-
 interface Milestone {
   id: string;
   title: string;
   date: Date;
-  dueDate: Date;
+  dueDate: Date | null;
 }
-
-
 
 // Define the type for ScheduleOptimizationResults
 interface ScheduleOptimizationResults {
@@ -86,6 +103,7 @@ const productMilestone: ProductMilestone = {
   title: "Product Launch",
   date: new Date(),
   productId: "ABC123",
+  dueDate: new Date("2023-12-31")
 };
 
 export interface ChatRoom {
@@ -111,7 +129,6 @@ type CalendarViewType =
   | "quarter"
   | "year"
   | React.FC<CalendarViewProps>;
-
 
 
 interface CalendarManagerState {
@@ -162,7 +179,26 @@ interface CalendarManagerState {
   budgetOptimization: EventBudgetOptimizationResults | null;
   teamCollaborationAnalysis: TeamCollaborationAnalysis | null;
   scheduleOptimization: ScheduleOptimization | null;
-  optimizedEventSchedule:  ScheduleOptimizationResults | null;
+  optimizedEventSchedule: ScheduleOptimizationResults | null;
+  suggestedAgenda: WritableDraft<CalendarEventAgendaItem>[];
+  eventConflictDetectionResult: EventConflictDetectionResult | null;
+  eventPriorityClassification: EventPriorityClassification | null;
+  eventFeedbackAnalysis: EventFeedbackAnalysis | null;
+  successPrediction: EventSuccessPrediction | null;
+  effectivenessEvaluation: EventEffectivenessEvaluation | null;
+  eventTrendDetectionResult: EventTrendDetectionResult | null;
+  eventRoiAnalysis: EventRoiAnalysis | null;
+  outcomeVariabilityPrediction: OutcomeVariabilityPrediction | null;
+  eventRiskAssessment: EventRiskAssessment | null;
+  attendeeAvailabilityAnalysis: AttendeeAvailabilityAnalysis;
+  generatedEventContent: EventContent;
+  personalizedInvitations: PersonalizedInvitation[];
+  engagementMetrics: EngagementMetrics[];
+  impactPrediction: ImpactPrediction;
+  suggestedFollowUpActions: FollowUpAction[];
+  recommendedOptimizations: RecommendedOptimization[];
+  attendancePrediction: AttendancePrediction;
+  
 }
 
 
@@ -233,6 +269,7 @@ export const sendMessageToChatRoom = async (
         CalendarActions.dispatchNotification({
           id: UniqueIDGenerator.generateChatID(),
           createdAt: new Date(),
+          date: new Date(),
           content: `Discussion about calendar event "${calendarEvent.title}" (${action.payload.calendarEventId}) sent successfully to chat room`,
           message: "Message sent to chat room successfully",
           sendStatus: "Success" as SendStatus,
@@ -543,6 +580,35 @@ const initialState: CalendarManagerState = {
   scheduleOptimization: null,
   optimizedEventSchedule: null,
   budgetOptimization: null,
+  teamCollaborationAnalysis: null,
+  suggestedAgenda: [],
+  attendeeAvailabilityAnalysis: {} as AttendeeAvailabilityAnalysis,
+  attendancePrediction: {} as AttendancePrediction,
+  eventConflictDetectionResult: null,
+  eventPriorityClassification: null,
+  eventFeedbackAnalysis: null,
+  successPrediction: null,
+  effectivenessEvaluation: null,
+  eventTrendDetectionResult: null,
+  eventRoiAnalysis: null,
+  outcomeVariabilityPrediction: null,
+  eventRiskAssessment: null,
+  generatedEventContent: {
+    eventId: "",
+    title: "",
+    summary: "",
+    content: "",
+  },
+  personalizedInvitations: [],
+  engagementMetrics: [],
+  impactPrediction: {
+    eventId: "",
+
+    predictedImpact: 0,
+    confidenceScore: 0,
+  },
+  suggestedFollowUpActions: [],
+  recommendedOptimizations: []
 };
 
 const { notify } = useNotification();
@@ -861,13 +927,24 @@ export const useCalendarManagerSlice = createSlice({
       };
     },
 
+
     recommendEventCollaborators: (
       state,
       action: PayloadAction<WritableDraft<Contact>[]>
     ) => {
       const draftState = state as WritableDraft<CalendarManagerState>;
       draftState.suggestedCollaborators = action.payload;
+
+      dispatchNotification(
+        "recommendEventCollaborators",
+        "Event collaborators recommended successfully",
+        "Error recommending event collaborators",
+        dispatch,
+        action.payload
+      );
+
     },
+
 
     recommendEventEngagementStrategies: (
       state,
@@ -907,12 +984,331 @@ export const useCalendarManagerSlice = createSlice({
 
     optimizeEventTiming: (
       state,
-      action: PayloadAction<WritableDraft<CalendarEventTimingOptimization[]>>
+      action: PayloadAction<WritableDraft< CalendarEventTimingOptimization[] >>
     ) => {
       const draftState = state as WritableDraft<CalendarManagerState>;
       draftState.suggestedTimingOptimization = action.payload;
+
+      // Log optimization event
+      dispatchNotification(
+        "optimizeEventTiming",
+        "Event timing optimized successfully",
+        "Error optimizing event timing",
+        dispatch
+      );
+      
+      console.log('Event timing optimized');
+
+      return state;
+    
+    },
+
+
+    analyzeAttendeeAvailability: (
+      state,
+      action: PayloadAction<WritableDraft<AttendeeAvailabilityAnalysis>>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.attendeeAvailabilityAnalysis = action.payload;
+      // Log availability analysis event
+      dispatchNotification(
+        "analyzeAttendeeAvailability",
+        "Attendee availability analyzed successfully",
+        "Error analyzing attendee availability",
+        dispatch
+      );
+    },
+
+    predictEventAttendance: (
+      state,
+      action: PayloadAction<WritableDraft<AttendancePrediction>>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.attendancePrediction = action.payload;
+    
       return state;
     },
+    
+    generateEventAgenda: (
+      state,
+      action: PayloadAction<WritableDraft<CalendarEventAgendaItem[]>>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedAgenda = action.payload;
+      return state;
+    },
+
+
+    detectEventConflicts: (
+      state,
+      action: PayloadAction<CalendarEventConflictDetectionResult>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventConflictDetectionResult = action.payload;
+      // Log conflict detection event
+      dispatchNotification(
+        "detectEventConflicts",
+        "Event conflicts detected successfully",
+        "Error detecting event conflicts",
+        dispatch
+      );
+    },
+
+
+    classifyEventPriority: (
+      state,
+      action: PayloadAction<CalendarEventPriorityClassification>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventPriorityClassification = action.payload;
+
+      // Log priority classification event
+      dispatchNotification(
+        "classifyEventPriority",
+        "Event priority classified successfully",
+        "Error classifying event priority",
+        dispatch
+      );
+
+      return state;
+    },
+
+    analyzeEventFeedback: (
+      state,
+      action: PayloadAction<CalendarEventFeedbackAnalysis>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventFeedbackAnalysis = action.payload;
+
+      // Log feedback analysis event
+      dispatchNotification(
+        "analyzeEventFeedback",
+        "Event feedback analyzed successfully",
+        "Error analyzing event feedback",
+        dispatch
+      );
+
+      return state;
+    },
+
+    predictEventSuccess: (
+      state,
+      action: PayloadAction<CalendarEventSuccessPrediction>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.successPrediction = action.payload;
+
+      // Log success prediction event
+      dispatchNotification(
+        "predictEventSuccess",
+        "Event success predicted successfully",
+        "Error predicting event success",
+        dispatch
+      );
+
+      return state;
+    },
+
+    evaluateEventEffectiveness: (
+      state,
+      action: PayloadAction<CalendarEventEffectivenessEvaluation>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.effectivenessEvaluation = action.payload;
+
+      // Log effectiveness evaluation event
+      dispatchNotification(
+        "evaluateEventEffectiveness",
+        "Event effectiveness evaluated successfully",
+        "Error evaluating event effectiveness",
+        dispatch
+      );
+
+      return state
+    },
+
+
+    detectEventTrends: (
+      state,
+      action: PayloadAction<CalendarEventTrendDetectionResult>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventTrendDetectionResult = action.payload;
+
+      // Log trend detection event
+      dispatchNotification(
+        "detectEventTrends",
+        "Event trends detected successfully",
+        "Error detecting event trends",
+        dispatch
+      );
+
+      return state;
+    
+    },
+
+    analyzeEventROI: (
+      state,
+      action: PayloadAction<CalendarEventROIAnalysis>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventRoiAnalysis = action.payload;
+
+      // Log ROI analysis event
+      dispatchNotification(
+        "analyzeEventROI",
+        "Event ROI analyzed successfully",
+        "Error analyzing event ROI",
+        dispatch
+      );
+
+      return state;
+    },
+
+    predictEventOutcomeVariability: (
+      state,
+      action: PayloadAction<CalendarEventOutcomeVariabilityPrediction>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.outcomeVariabilityPrediction = action.payload;
+
+      // Log outcome variability prediction event
+      dispatchNotification(
+        "predictEventOutcomeVariability",
+        "Event outcome variability predicted successfully",
+        "Error predicting event outcome variability",
+        dispatch
+      );
+
+      return state;
+    },
+
+
+
+    assessEventRisk: (
+      state,
+      action: PayloadAction<CalendarEventRiskAssessment>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.eventRiskAssessment = action.payload;
+
+      // Log risk assessment event
+      dispatchNotification(
+        "assessEventRisk",
+        "Event risk assessed successfully",
+        "Error assessing event risk",
+        dispatch
+      );
+
+      return state;
+    },
+
+    generateEventContent: (
+      state,
+      action: PayloadAction<CalendarEventContentGeneration>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.generatedEventContent = action.payload;
+
+      // Log content generation event
+      dispatchNotification(
+        "generateEventContent",
+        "Event content generated successfully",
+        "Error generating event content",
+        dispatch
+      );
+    },
+
+
+    personalizeEventInvitations: (
+      state,
+      action: PayloadAction<CalendarEventInvitationPersonalization[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.personalizedInvitations = action.payload;
+
+      // Log invitation personalization event
+      dispatchNotification(
+        "personalizeEventInvitations",
+        "Event invitations personalized successfully",
+        "Error personalizing event invitations",
+        dispatch
+      );
+
+      return state;
+    },
+
+
+    analyzeEventEngagementMetrics: (
+      state,
+      action: PayloadAction<CalendarEventEngagementMetrics>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.engagementMetrics = action.payload;
+
+      // Log engagement metrics event
+      dispatchNotification(
+        "analyzeEventEngagementMetrics",
+        "Event engagement metrics analyzed successfully",
+        "Error analyzing event engagement metrics",
+        dispatch
+      );
+
+      return state;
+    },
+
+    predictEventImpact: (
+      state,
+      action: PayloadAction<CalendarEventImpactPrediction>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.impactPrediction = action.payload;
+
+      // Log impact prediction event
+      dispatchNotification(
+        "predictEventImpact",
+        "Event impact predicted successfully",
+        "Error predicting event impact",
+        dispatch
+      );
+
+      return state;
+    },
+
+    suggestEventFollowUpActions: (
+      state,
+      action: PayloadAction<CalendarEventFollowUpActionSuggestion[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.suggestedFollowUpActions = action.payload;
+
+      // Log follow up action suggestion event
+      dispatchNotification(
+        "suggestEventFollowUpActions",
+        "Event follow up actions suggested successfully",
+        "Error suggesting event follow up actions",
+        dispatch
+      )
+      return state;
+    },
+    recommendEventOptimization: (
+      state,
+      action: PayloadAction<CalendarEventOptimizationRecommendation[]>
+    ) => {
+      const draftState = state as WritableDraft<CalendarManagerState>;
+      draftState.recommendedOptimizations = action.payload;
+
+      // Log optimization recommendation event
+      dispatchNotification(
+        "recommendEventOptimization",
+        "Event optimization recommended successfully",
+        "Error recommending event optimization",
+        dispatch
+      )
+      return state;
+    },
+
+    
 
     analyzeEventContent: (
       state,
@@ -1091,7 +1487,6 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     // Action to filter calendar events
-    // Action to filter calendar events
     filterCalendarEvents: (
       state,
       action: PayloadAction<{
@@ -1100,11 +1495,16 @@ export const useCalendarManagerSlice = createSlice({
       }>
     ) => {
       const filterCriteria = action.payload;
+      
+      // Filter events based on the provided category
       const filteredEvents = Object.values(state.entities).filter(
-        (event: CalendarEvent) => event.category === filterCriteria.category
+        (event) => event.category === filterCriteria.category
       );
+      
+      // Update the state with the filtered events
       state.filteredEvents = filteredEvents;
-
+    
+      // Assuming dispatchNotification is a function defined elsewhere
       dispatchNotification(
         "filterCalendarEvents",
         "Calendar events filtered successfully",
@@ -1112,23 +1512,31 @@ export const useCalendarManagerSlice = createSlice({
         dispatch
       );
     },
-
+    
     searchCalendarEvents: (state, action: PayloadAction<string>) => {
       const searchCriteria = action.payload;
       // Add logic to search calendar events here
       // For example, you can search events based on the provided criteria and update the state accordingly
-      const searchedEvents = Object.values(state.entities).filter(
-        (event: CalendarEvent) => event.title.includes(searchCriteria)
+    
+      // Cast state.entities to WritableDraft<CalendarEvent>[]
+      const entitiesArray: WritableDraft<CalendarEvent>[] = Object.values(state.entities);
+    
+      // Use the casted array to filter events
+      const searchedEvents = entitiesArray.filter(
+        (event) => event.title.includes(searchCriteria)
       );
+    
+      // Update the state with the searched events
       state.searchedEvents = searchedEvents;
     },
+    
 
     sortCalendarEvents: (state, action: PayloadAction<string>) => {
       const sortCriteria = action.payload;
       // Add logic to sort calendar events here
       // For example, you can sort events based on the provided criteria and update the state accordingly
       const sortedEvents = Object.values(state.entities).sort(
-        (a: CalendarEvent, b: CalendarEvent) => {
+        (a: WritableDraft<CalendarEvent>, b: WritableDraft<CalendarEvent>) => {
           if (a.title < b.title) {
             return -1;
           }
@@ -1140,6 +1548,7 @@ export const useCalendarManagerSlice = createSlice({
       );
       state.sortedEvents = sortedEvents;
     },
+    
 
     markCalendarEventAsImportant: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
@@ -1383,6 +1792,7 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     // Action to notify users in real-time about calendar event updates
+    
     realTimeNotificationsForCalendarEventUpdates: (
       state,
       action: PayloadAction<CalendarEvent>
@@ -1393,6 +1803,7 @@ export const useCalendarManagerSlice = createSlice({
         // Update event in state
         state.entities[updatedEvent.id] = {
           ...updatedEvent,
+          host: updatedEvent.host ? updatedEvent.host : {} as WritableDraft<Member>, // Ensure host is a WritableDraft<Member>
           options: {
             ...updatedEvent.options,
             additionalOptions: updatedEvent.options?.additionalOptions
@@ -1414,6 +1825,8 @@ export const useCalendarManagerSlice = createSlice({
         );
       }
     },
+
+
 
     updateMilestoneTitle: (
       state,
@@ -2215,27 +2628,27 @@ export const {
   recommendEventTags, // Recommend Event Tags using AI
 
   // // AI Analysis and Prediction
-  // optimizeEventTiming, // Optimize Event Timing using AI
-  // analyzeAttendeeAvailability, // Analyze Attendee Availability using AI
-  // predictEventAttendance, // Predict Event Attendance using AI
+  optimizeEventTiming, // Optimize Event Timing using AI
+  analyzeAttendeeAvailability, // Analyze Attendee Availability using AI
+  predictEventAttendance, // Predict Event Attendance using AI
   generateEventAgenda, // Generate Event Agenda using AI
-  // detectEventConflicts, // Detect Event Conflicts using AI
+  detectEventConflicts, // Detect Event Conflicts using AI
   classifyEventPriority, // Classify Event Priority using AI
-  // analyzeEventFeedback, // Analyze Event Feedback using AI
+  analyzeEventFeedback, // Analyze Event Feedback using AI
   predictEventSuccess, // Predict Event Success using AI
-  // evaluateEventEffectiveness, // Evaluate Event Effectiveness using AI
+  evaluateEventEffectiveness, // Evaluate Event Effectiveness using AI
   detectEventTrends, // Detect Event Trends using AI
   analyzeEventROI, // Analyze Event Return on Investment using AI
-  // predictEventOutcomeVariability, // Predict Event Outcome Variability using AI
-  // assessEventRisk, // Assess Event Risk using AI
-  // generateEventContent, // Generate Event Content using AI
-  // personalizeEventInvitations, // Personalize Event Invitations using AI
-  // analyzeEventEngagementMetrics, // Analyze Event Engagement Metrics using AI
-  // predictEventImpact, // Predict Event Impact using AI
-  // suggestEventFollowUpActions, // Suggest Event Follow-Up Actions using AI
+  predictEventOutcomeVariability, // Predict Event Outcome Variability using AI
+  assessEventRisk, // Assess Event Risk using AI
+  generateEventContent, // Generate Event Content using AI
+  personalizeEventInvitations, // Personalize Event Invitations using AI
+  analyzeEventEngagementMetrics, // Analyze Event Engagement Metrics using AI
+  predictEventImpact, // Predict Event Impact using AI
+  suggestEventFollowUpActions, // Suggest Event Follow-Up Actions using AI
 
   // // AI Integration with Spacy and Prompting
-  optimizeEventTiming,
+  // optimizeEventTiming,
   analyzeEventContent, // Analyze Event Content using Spacy
   generateEventPrompt, // Generate Prompt for Event using AI
   detectEventSentiment, // Detect Sentiment of Event using AI

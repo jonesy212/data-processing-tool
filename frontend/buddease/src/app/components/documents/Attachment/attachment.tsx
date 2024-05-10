@@ -16,6 +16,15 @@ export type FileType =
   | "video"
   | "nft"
   | "archive"
-  | "other";
+  | "text"
+  | "code"
+  | "compressed"
+  | "vector"
+  | "spreadsheet"
+  | "presentation"
+  | "pdf"
+  | "other"
+  | "directory"
+  | "file"
 
 export const attachmentInitialState: Record<string, Attachment> = {};

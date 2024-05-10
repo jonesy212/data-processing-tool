@@ -42,7 +42,7 @@ export interface AssignBaseStore {
   assignedTeams: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   events: Record<string, ExtendedCalendarEvent[]>; // Correct the type of events
 
-  assignItem: Record<string, ExtendedCalendarEvent[]>;
+  assignItem: Record<string, string[] | ExtendedCalendarEvent[]>;
   assignUser: Record<string, string[]>;
   assignTeam: Record<string, string[]>;
   unassignUser: Record<string, string[]>;
@@ -179,7 +179,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignedBoardAutomations: Record<string, string[]> = {};
   const assignedBoardCustomFields: Record<string, string[]> = {};
 
-  const assignItem = {} as Record<string, string[]>;
+  const assignItem = {} as Record<string, string[] | ExtendedCalendarEvent[]>
 
   const assignUser = {} as Record<string, string[]>;
 
@@ -665,6 +665,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignTodoToTeam,
     unassignTeamMemberFromItem,
     assignUser,
+    assignItem,
     assignTeam,
     unassignUser,
     reassignUser,

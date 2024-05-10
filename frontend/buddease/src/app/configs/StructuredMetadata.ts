@@ -16,6 +16,21 @@ interface StructuredMetadata {
     originalPath: string;
     alternatePaths: string[];
     fileType: string;
+
+
+
+
+
+    title: "",
+      description: "",
+      keywords: [],
+      authors: [],
+      contributors: [],
+      publisher: "",
+      copyright: "",
+      license: "",
+      links: [],
+      tags: []
   };
 }
 
@@ -159,31 +174,41 @@ const trackStructureChanges = (
 
   
 const traverseDirectory = (dir: string) => {
-  const files = fs.readdirSync(dir);
+    const files = fs.readdirSync(dir);
 
-  for (const file of files) {
-    const filePath = path.join(dir, file);
-    const isDirectory = fs.statSync(filePath).isDirectory();
-    const fileOrFolderId = Buffer.from(filePath).toString("base64");
+    for (const file of files) {
+      const filePath = path.join(dir, file);
+      const isDirectory = fs.statSync(filePath).isDirectory();
+      const fileOrFolderId = Buffer.from(filePath).toString("base64");
 
-    if (!metadata[fileOrFolderId]) {
-      const fileType = determineFileType(filePath);
-      metadata[fileOrFolderId] = {
-        originalPath: filePath,
-        alternatePaths: [],
-        fileType: fileType as string || "Unknown", // Provide a default value if fileType is undefined
-      };
+      if (!metadata[fileOrFolderId]) {
+        const fileType = determineFileType(filePath);
+        metadata[fileOrFolderId] = {
+          originalPath: filePath,
+          alternatePaths: [],
+          fileType: (fileType as string) || "Unknown",
+          title: "",
+          description: "",
+          keywords: [],
+          authors: [],
+          contributors: [],
+          publisher: "",
+          copyright: "",
+          license: "",
+          links: [],
+          tags: [],
+        };
+      }
+
+      if (isDirectory) {
+        traverseDirectory(filePath);
+      }
+
+      if (metadata[fileOrFolderId].originalPath !== filePath) {
+        metadata[fileOrFolderId].alternatePaths.push(filePath);
+      }
     }
-
-    if (isDirectory) {
-      traverseDirectory(filePath);
-    }
-
-    if (metadata[fileOrFolderId].originalPath !== filePath) {
-      metadata[fileOrFolderId].alternatePaths.push(filePath);
-    }
-  }
-};
+  };
 
   traverseDirectory(basePath);
   writeMetadata(filename, metadata);

@@ -13,7 +13,7 @@ export const createDynamicPromptPhaseHook = (
 ) => {
   return createDynamicHook({
     ...config,
-    resetIdleTimeout: () => void {
+    resetIdleTimeout: async () => void {
       // reset any idle timeouts
     
         },

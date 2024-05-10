@@ -13,6 +13,17 @@ import { NotificationTypeEnum } from "../support/NotificationContext";
 
 const API_BASE_URL = endpoints.tasks;
 class TaskService {
+
+  static instance: TaskService;
+
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new TaskService();
+    }
+    return this.instance;
+  }
+
+
   @observable tasks: Task[] = [];
   @observable loading = false;
   @observable error: string | null = null;
@@ -110,6 +121,28 @@ class TaskService {
     }
   };
 
+
+  @action
+  processTasks = async (updatedTasks: Task[], taskType: string) => {
+    try {
+      const requestData = {
+        taskIds: updatedTasks.map((task) => task.id),
+        taskType: taskType,
+      };
+
+      this.loading = true;
+
+      const endpoint = dotProp.getProperty(API_BASE_URL, "tasks.process");
+
+      await axios.post(await apiService.callApi(`${endpoint}`, requestData), {
+        taskIds: updatedTasks.map((task) => task.id),
+        taskType: taskType,
+      });
+    } catch (error: any) {
+      throw new Error("Failed to process task");
+    }
+  };
+
   @action
   updateTask = async (
     taskId: number,
@@ -149,6 +182,7 @@ class TaskService {
       throw new Error("Failed to update task");
     }
   };
+
 
   @action
   getTasks = async (requestData: string): Promise<Task[]> => {
@@ -258,3 +292,4 @@ class TaskService {
 }  
 
 export const taskService = new TaskService();
+export default TaskService

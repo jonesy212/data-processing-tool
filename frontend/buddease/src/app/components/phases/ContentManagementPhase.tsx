@@ -2,6 +2,9 @@
 import React from "react";
 import useContentManagementStore from "../state/stores/ContentStore";
 import BlogAndContentEditor from "../models/content/BlogAndContentEditor";
+import ContentList from "../models/content/ContentList";
+import ContentType from "../typings/ContentType";
+import { EditorState } from "draft-js";
 
 
 
@@ -11,6 +14,8 @@ export enum ContentManagementPhaseEnum {
   CONTENT_CREATION = "CONTENT_CREATION",
   CONTENT_ORGANIZATION = "CONTENT_ORGANIZATION",
   CONTENT_PUBLISHING = "CONTENT_PUBLISHING",
+  PROFILE_SETUP = "PROFILE_SETUP",
+  IDEA_CREATION = "IDEA_CREATION",
 }
 
 
@@ -29,7 +34,20 @@ const ContentManagementPhase: React.FC = () => {
         contentItems={contentItems}
         onContentItemClick={handleContentItemClick}
       />
-      {selectedContentItemId && <BlogAndContentEditor contentItemId={selectedContentItemId} />}
+      {selectedContentItemId && <BlogAndContentEditor
+        
+        contentItemId={selectedContentItemId} editorState={new EditorState}
+        initialContent={""}
+        activeDashboard={""}
+        onContentChange={function (
+          newContent: ContentType): void {
+          // update content in store
+          
+                  } } contentType={{
+          label: "",
+          value: ""
+        }}
+      />}
     </div>
   );
 };

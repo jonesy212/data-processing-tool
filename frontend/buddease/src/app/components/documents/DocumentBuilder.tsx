@@ -1,11 +1,22 @@
 // DocumentBuilder.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import Clipboard from "@/app/ts/clipboard";
-import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
+import {
+  ContentState,
+  Editor,
+  EditorState,
+  Modifier,
+  RichUtils,
+} from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
+import getAppPath from "../../../../appPath";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
@@ -13,25 +24,36 @@ import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import FileData from "../models/data/FileData";
 import FolderData from "../models/data/FolderData";
+import {
+  DocumentSize,
+  IncludeType,
+  Layout,
+  Orientation,
+  ProjectPhaseTypeEnum,
+  Visibility,
+} from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
 import axiosInstance from "../security/csrfToken";
 import SharingOptions from "../shared/SharingOptions";
+import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { AllStatus } from "../state/stores/DetailsListStore";
+import AppVersionImpl from "../versions/AppVersion";
+import Version from "../versions/Version";
+import { VersionData } from "../versions/VersionData";
+import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import {
   createPdfDocument,
   getFormattedOptions,
 } from "./DocumentCreationUtils";
 import { DocumentPath, DocumentTypeEnum } from "./DocumentGenerator";
-import { DocumentOptions, DocumentSize } from "./DocumentOptions";
+import { DocumentOptions } from "./DocumentOptions";
 import {
   DocumentAnimationOptions,
   DocumentBuilderProps,
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { VersionData } from "../versions/VersionData";
-import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 // DocumentData.tsx
@@ -43,7 +65,7 @@ export interface DocumentData extends CommonData<Data> {
   highlights: string[];
   keywords: string[];
   load?(content: any): void;
-
+  permissions: DocumentPermissions;
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document
   folder?: FolderData;
@@ -58,34 +80,342 @@ export interface DocumentData extends CommonData<Data> {
   folderPath: string;
   previousContent?: string;
   currentContent?: string;
-  previousMetadata: StructuredMetadata;
+  previousMetadata: StructuredMetadata | undefined;
   currentMetadata: StructuredMetadata;
   accessHistory: any[];
   lastModifiedDate: { value: Date; isModified: boolean }; // Initialize as not modified
-  version: VersionData;
+  versionData: VersionData;
+  version: Version | null; // Update the type to accept null values
+
   // Add more properties if needed
 }
 
-
-
 // Define a custom type/interface that extends ProjectPhaseTypeEnum and includes additional properties
-export interface CustomProjectPhaseType extends ProjectPhaseTypeEnum {
+export interface CustomProjectPhaseType {
   customProp1: string;
   customProp2: number;
   // Add more custom properties as needed
 }
+const [options, setOptions] =
+  useState<DocumentOptions>(/* initial options value */);
+const editorState = EditorState.createEmpty();
+
+// Get the current content from the EditorState
+const contentState: ContentState = editorState.getCurrentContent();
+
+const { versionNumber, appVersion } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
 
 // Use the custom type/interface for the documentPhase option
 const documentBuilderProps: DocumentBuilderProps = {
   documentPhase: {
-    phaseType: 'CustomPhase', // Use the phaseType from ProjectPhaseTypeEnum or your custom type
-    customProp1: 'value1', // Custom property values
+    phaseType: ProjectPhaseTypeEnum.Draft,
+    customProp1: "value1", // Custom property values
     customProp2: 123,
-    // Add values for additional custom properties
+    onChange: (phase: ProjectPhaseTypeEnum): void => {
+      // Implementation of onChange function
+      console.log("New phase selected:", phase);
+    },
   },
-  // Other options...
-};
+  isDynamic: true, 
+  version: new AppVersionImpl({
+    id: 0,
+    content: contentState.toString(),
+    versionNumber: versionNumber,
+    appVersion: appVersion,
+    data: [] as Data[],
+    appName: "Buddease",
+    releaseDate: new Date(),
+    releaseNotes: [] = [],
+    creator: {
+      id: 0,
+      name: "Test User"
+    }
+  }),
 
+  onOptionsChange: (options: DocumentOptions) => {
+    setOptions(options);
+  },
+
+  onConfigChange: (newConfig: DocumentBuilderConfig) => {
+    setOptions((prevOptions) => ({
+      ...prevOptions,
+      metadata:
+        newConfig.metadata ||
+        {
+          /* default metadata */
+        },
+      uniqueIdentifier: newConfig.uniqueIdentifier || "",
+      documentType:
+        newConfig.documentType ||
+        {
+          /* default document type */
+        },
+      userIdea: newConfig.userIdea || "",
+      additionalOptions: newConfig.additionalOptions || "",
+      frontendStructure:
+        newConfig.frontendStructure || new FrontendStructure(projectPath),
+      documentPhase: newConfig.documentPhase || "",
+      version:
+        newConfig.version ||
+        Version.create({
+          versionNumber: "1.0",
+          name: "Test Document",
+          appVersion: "1.0",
+          id: 0,
+          content: "",
+          data: {} as Data[],
+          url: `${API_BASE_URL}`,
+        }),
+
+      backendStructure: newConfig.backendStructure || {
+        structure: {} as Record<string, AppStructureItem>,
+        traverseDirectory: traverseBackendDirectory,
+        getStructure: () => {
+          return (
+            options?.backendStructure?.getStructure() || Promise.resolve({})
+          );
+        },
+      },
+      structure: newConfig.structure || {
+        sections: [],
+      },
+      backgroundColor: newConfig.backgroundColor || "#FFFFFF",
+      fontSize: newConfig.fontSize || 12,
+      textColor: newConfig.textColor || "#000000",
+      fontFamily: newConfig.fontFamily || "Arial",
+      lineSpacing: newConfig.lineSpacing || 1.5,
+      enableSpellCheck: newConfig.enableSpellCheck || false,
+      enableAutoSave: newConfig.enableAutoSave || false,
+      autoSaveInterval: newConfig.autoSaveInterval || 0,
+      showWordCount: newConfig.showWordCount || false,
+      maxWordCount: newConfig.maxWordCount || 0,
+      enableSyncWithExternalCalendars:
+        newConfig.enableSyncWithExternalCalendars || false,
+      enableThirdPartyIntegration:
+        newConfig.enableThirdPartyIntegration || false,
+      thirdPartyAPIKey: newConfig.thirdPartyAPIKey || "",
+      thirdPartyEndpoint: newConfig.thirdPartyEndpoint || "",
+      enableAccessibilityMode: newConfig.enableAccessibilityMode || false,
+      highContrastMode: newConfig.highContrastMode || false,
+      screenReaderSupport: newConfig.screenReaderSupport || false,
+      isDynamic: newConfig.isDynamic || false,
+      size: newConfig.size || DocumentSize.A4,
+      documentSize: newConfig.documentSize || {
+        width: 595.28,
+        height: 841.89
+      },
+      orientation: newConfig.orientation || Orientation.Portrait,
+      animations: newConfig.animations || {
+        slideDuration: 300,
+        dragElasticity: 0.1,
+        showDuration: 300,
+      },
+      visibility: newConfig.visibility || Visibility.Private,
+      font: newConfig.font,
+      layout: newConfig.layout || Layout.SingleColumn,
+      panels: newConfig.panels || {
+        contents: [],
+        numColumns: 1,
+      },
+      alignment: newConfig.alignment || AlignmentOptions.LEFT,
+      pageNumbers: newConfig.pageNumbers || false,
+      footer: newConfig.footer || "",
+      indentSize: newConfig.indentSize || 2,
+      bulletList: newConfig.bulletList || {
+        symbol: "-",
+        style: "unordered",
+      },
+      numberedList: newConfig.numberedList || {
+        style: "ordered",
+        format: "%1.",
+      },
+      headingLevel: newConfig.headingLevel || 1,
+      toc: newConfig.toc || {
+        enabled: false,
+        headingLevels: [1, 2, 3],
+        format: "%1. %2",
+      },
+
+      bold: newConfig.bold || {
+        enabled: true,
+      },
+      italic: newConfig.italic || {
+        enabled: true,
+      },
+      underline: newConfig.underline || {
+        enabled: true,
+      },
+      strikethrough: newConfig.strikethrough || {
+        enabled: true,
+      },
+      subscript: newConfig.subscript || {
+        enabled: true,
+      },
+      superscript: newConfig.superscript || {
+        enabled: true,
+      },
+      hyperlink: newConfig.hyperlink || {
+        enabled: true,
+      },
+      sections: newConfig.sections || [],
+      textStyles: newConfig.textStyles || [],
+
+      links: newConfig.links || {
+        enabled: true,
+        internal: {
+          enabled: true,
+        },
+        external: {
+          enabled: true,
+        },
+      },
+     
+      embeddedContent: newConfig.embeddedContent || {
+        enabled: true,
+        language: 'en'
+      },
+
+      comments: newConfig.comments || {
+        enabled: true,
+      },
+
+      embeddedMedia: newConfig.embeddedMedia || {
+        enabled: true,
+      },
+      embeddedCode: newConfig.embeddedCode || {
+        enabled: true,
+        language: "js",
+        theme: "monokai",
+      },
+      styles: newConfig.styles || [],
+      image: newConfig.image || {
+        enabled: true,
+      },
+      table: newConfig.table || {
+        enabled: true,
+      },
+      tableRows: newConfig.tableRows || [],
+      tableColumns: newConfig.tableColumns || [],
+      watermark: newConfig.watermark || {
+        enabled: false,
+        text: "",
+        color: "#00000033",
+        opacity: 0.2
+      },
+      tableCells: newConfig.tableCells || [],
+      // tableColumns: newConfig.tableColumns || [],
+      tableStyles: newConfig.tableStyles || [],
+      codeBlock: newConfig.codeBlock || {
+        enabled: true,
+      },
+      blockquote: newConfig.blockquote || {
+        enabled: true,
+      },
+      codeInline: newConfig.codeInline || {
+        enabled: true,
+      },
+      quote: newConfig.quote || {
+        enabled: true,
+      },
+      todoList: newConfig.todoList || {
+        enabled: true,
+      },
+      orderedTodoList: newConfig.orderedTodoList || {
+        enabled: true,
+      },
+      unorderedTodoList: newConfig.unorderedTodoList || {
+        enabled: true,
+      },
+      colorCoding: newConfig.colorCoding || {
+        enabled: true,
+      },
+      highlight: newConfig.highlight || {
+        enabled: true,
+        colors: {
+          color1: "#FFFF00",
+          color2: "#FF00FF",
+          color3: "#0000FF",
+          color4: "#00FFFF",
+          color5: "#FFA500",
+          color6: "#008000",
+          color7: "#FF0000",
+          color8: "#800000",
+        },
+      },
+      highlightColor: newConfig.highlightColor || "#FFFF00",
+
+      customSettings: newConfig.customSettings || {},
+      documents: newConfig.documents || [],
+      includeType: newConfig.includeType || IncludeType.Embed,
+      footnote: newConfig.footnote || {
+        enabled: true,
+      },
+      includeTitle: newConfig.includeTitle || {
+        enabled: true,
+      },
+      includeContent: newConfig.includeContent || {
+        enabled: true,
+      },
+      includeStatus: newConfig.includeStatus || {
+        enabled: true,
+      },
+      includeAdditionalInfo: newConfig.includeAdditionalInfo || {
+        enabled: true,
+      },
+      headerFooterOptions: newConfig.headerFooterOptions || {
+        enabled: true,
+        header: {
+          enabled: true
+        },
+        footer: {
+          enabled: true
+        }
+      },
+      value: 0,
+      userSettings: newConfig.userSettings || {},
+      dataVersions: newConfig.dataVersions || [],
+      customProperties: newConfig.customProperties || {},
+      zoom: newConfig.zoom || {
+        value: 1,
+        enabled: true,
+        levels: [
+          {
+            name: "100%",
+            value: 1
+          },
+          {
+            name: "125%",
+            value: 1.25
+          },
+          {
+            name: "150%",
+            value: 3
+          }
+        ]
+      },
+      showRuler: true,
+      // rulerUnit: "px",
+      showDocumentOutline: true,
+      showComments: true,
+      showRevisions: true,
+      spellCheck: true,
+      grammarCheck: true,
+      language: false || {
+        enabled: true,
+      },
+      bookmarks: false || { enabled: true },
+      crossReferences: false || { enabled: true },
+      footnotes: false || { enabled: true },
+      endnotes: false || { enabled: true },
+      revisions: false || { enabled: true },
+      defaultZoomLevel: 100,
+    }));
+  },
+  setOptions: {} as React.Dispatch<React.SetStateAction<DocumentOptions>>,
+  documents: [],
+  options: {} as DocumentOptions,
+};
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   isDynamic,
@@ -100,7 +430,8 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   const [isPublic, setIsPublic] = useState(false);
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();
-  const {numPanels, handleNumPanelsChange, panelContents } = usePanelContents()
+  const { numPanels, handleNumPanelsChange, panelContents } =
+    usePanelContents();
 
   const toggleVisibility = () => {
     setIsPublic((prevIsPublic) => !prevIsPublic);
@@ -290,6 +621,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
           handleEditorStateChange={(newEditorState: EditorState) => {
             // Handle editor state change
             // You can perform any custom logic here
+
             // For example, update state or trigger additional actions
           }}
         />

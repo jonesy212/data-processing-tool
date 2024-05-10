@@ -29,7 +29,7 @@ enum AnimationTypeEnum {
 // Define the AnimationType as a union type of string literals and the AnimationType enum
 
 // Define the AnimationType as a union type of string literals and the AnimationType enum values
-type AnimationType = "notification" | "string" | "documentType" | "fade" | "slide" | "zoom" | "rotate" | "bounce" | "flip" | "fadeScale";
+type AnimationType = "pulse" | "shake"| "notification" | "string" | "documentType" | "fade" | "slide" | "zoom" | "rotate" | "bounce" | "flip" | "fadeScale";
 
 // Define the available animation libraries
 type AnimationLibrary =

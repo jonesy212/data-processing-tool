@@ -11,7 +11,7 @@ import { headersConfig } from "../components/shared/SharedHeaders";
 import { versionHistory } from "../components/versions/VersionData";
 import VersionGenerator from "../components/versions/VersionGenerator";
 import { backendConfig } from "../configs/BackendConfig";
-import { dataVersions } from "../configs/DataVersionsConfig";
+import { dataVersions } from '../configs/DataVersionsConfig';
 import { frontendConfig } from "../configs/FrontendConfig";
 import userSettings from "../configs/UserSettings";
 import { backendStructure } from "../configs/appStructure/BackendStructure";
@@ -20,7 +20,7 @@ import { CacheData, realtimeData } from "../generators/GenerateCache";
 import { handleApiErrorAndNotify } from "./ApiData";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
-
+ 
 const API_BASE_URL = dotProp.getProperty(endpoints, "data");
 
 // Define the structure of the response data
@@ -54,9 +54,9 @@ export const writeCache = async (data: CacheResponse): Promise<void> => {
       getData: () => Promise.resolve(data), // Use mock data as the source for version generation
       determineChanges: (data: any) => ({}), // Provide a placeholder function for determining changes
       additionalProperties: {}, // Provide any additional properties if needed
-      file: 'exampleFile', // Example file name
-      folder: 'exampleFolder', // Example folder name
-      componentName: 'exampleComponent', // Example component name
+      file: "exampleFile", // Example file name
+      folder: "exampleFolder", // Example folder name
+      componentName: "exampleComponent", // Example component name
       properties: {}, // Example properties
     });
 
@@ -81,13 +81,13 @@ export const writeCache = async (data: CacheResponse): Promise<void> => {
       );
       throw new Error("Failed to write cache data.");
     }
-  } catch (error) {
+  } catch (error: any) {
     // Handle any errors that occur during the request
     console.error("Error writing to cache:", error);
     handleApiErrorAndNotify(
       error as AxiosError<unknown>,
-      "Error writing to cache",
-      "WriteCacheErrorId"
+      "Failed to write to cache",
+       "ERROR_WRITING_TO_CACHE"
     );
     throw error;
   }

@@ -17,8 +17,6 @@ const FilterTasksRequest: React.FC<FilterTasksRequestProps> = async ({ onSubmit,
   const { addFilter, handleSubmit /* Other necessary values */, filters } = useFiltering(options);
   // Use both pagination and search pagination hooks
   const { currentPage, pageSize, goToPage, changePageSize, nextPage, previousPage } = useSearchPagination();
-  const { data, totalPages, totalItems, applyFilter } = usePagination(fetchPageData, filters);
-  // Define the fetchData function to be used with usePagination hook
   const fetchPageData = async (page: number, perPage: number, filterCriteria?: any) => {
     // Implement your data fetching logic here
     // Use page, perPage, and filterCriteria parameters to fetch data from API
@@ -26,30 +24,49 @@ const FilterTasksRequest: React.FC<FilterTasksRequestProps> = async ({ onSubmit,
     return { items: [], pages: 0, total: 0 }; // Example return statement, replace with actual data
   };
 
+
+  const { data, totalPages, totalItems, applyFilter } = usePagination(fetchPageData, filters);
+  // Define the fetchData function to be used with usePagination hook
+
   const handleFilterChange = (
     column: FilterType,
     selectedOption: SearchOptions['additionalOptions'][FilterType]
   ) => {
     // Check if the selected column is for sorting
     if (column === 'sorting') {
-      // Cast the filters to SortingOption
-      const sortingFilters = filters[column] as SortingOption;
-      // Call addFilter with the field property of sortingFilters
-      addFilter(sortingFilters.field, 'equal', selectedOption);
+      // Cast the column to the correct type
+      const sortingFilters = filters[column as keyof typeof filters];
+      // Ensure sortingFilters is not undefined
+      if (sortingFilters && 'field' in sortingFilters) { // Check if 'field' exists in sortingFilters
+        // Call addFilter with the field property of sortingFilters
+        addFilter(sortingFilters.field as keyof SearchOptions, 'equal', !selectedOption);
+      }
     } else if (column === 'filters' || column === 'pagination') {
       // Handle other special types of filters
       // Here, you can add logic for other special types of filters
     } else {
       // Handle regular filters
-      addFilter(column, 'equal', selectedOption);
+      addFilter(column, 'equal', !selectedOption);
     }
   };
   
+  
+
   return (
     <div>
       {/* Filter component */}
-      <Filter label="Priority" options={['Low', 'Medium', 'High']} onChange={(selectedOption) => handleFilterChange('sorting', selectedOption)} />
-      
+      <Filter
+        label="Priority"
+        options={['Low', 'Medium', 'High']}
+        field= "priority"
+        onChange={(selectedOption: SortingOption | undefined) =>
+          handleFilterChange(
+            "sorting",
+            selectedOption
+          )}
+        
+      />
+
       {/* Pagination controls */}
       <div>
         <button onClick={previousPage}>Previous</button>

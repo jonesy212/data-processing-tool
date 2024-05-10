@@ -103,7 +103,12 @@ const displaySettingsOptions = (settingsData) => {
 };
 
 
-const addToClipboardHistory
+const addToClipboardHistory = (content) => {
+  // Logic to add content to clipboard history
+  localStorage.setItem('clipboardHistory', JSON.stringify([...clipboardHistory, content]));
+
+  console.log("Adding to clipboard history:", content);
+}
 
 // Export the function for external use
 export default updateUI;
@@ -114,6 +119,7 @@ export {
     updateEditorWordCountUI,
     updateUIProgressBar,
     updateUIWithCopiedText,
-    updateUIWithSearchResults
+        updateUIWithSearchResults,
+  addToClipboardHistory
 };
 

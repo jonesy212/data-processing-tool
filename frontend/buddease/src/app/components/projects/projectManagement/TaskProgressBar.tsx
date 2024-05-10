@@ -12,6 +12,9 @@ const TaskProgressBar: React.FC<TaskProgressBarProps> = ({
   onUpdateProgress,
 }) => {
   const taskProgressData: Progress = {
+    id: "task-progress",
+    current: 0,
+    max: 100,
     value: taskProgress,
     label: `Task Progress: ${taskProgress}%`,
   };
@@ -24,6 +27,10 @@ const TaskProgressBar: React.FC<TaskProgressBarProps> = ({
         duration={0}
         animationID={""}
         uniqueID={""}
+        phase={{
+          type: "determinate",
+          duration: 0,
+        }}
       />
       <button onClick={onUpdateProgress}>Update Progress</button>
     </div>

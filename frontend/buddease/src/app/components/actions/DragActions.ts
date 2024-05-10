@@ -2,6 +2,11 @@
 
 import { createAction } from "@reduxjs/toolkit";
 
+interface HighlightPayload {
+  x: number;
+  y: number;
+}
+
 export const DragActions = {
     // Drag start action
   dragStart: createAction<{
@@ -13,6 +18,9 @@ export const DragActions = {
     // Drag end action
   dragEnd: createAction<{ finalX: number; finalY: number }>("dragEnd"),
     
-  dragReset: createAction("dragReset")
+  dragReset: createAction("dragReset"),
+
+   highlight: createAction<HighlightPayload>("highlight")
+  
 };
   

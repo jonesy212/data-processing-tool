@@ -9,6 +9,7 @@ interface DummyCardLoaderProps {
     type: "file" | "folder";
     name: string;
     content: ContentItem;
+    
   }[];
 }
 
@@ -46,7 +47,10 @@ const fileFolderItems: {
       description: 'Details of the new feature idea',
       id: "",
       title: "",
-      body: ""
+      body: "",
+      status: undefined,
+      type: "image",
+      userId: undefined
     },
   },
   {
@@ -57,7 +61,10 @@ const fileFolderItems: {
       description: 'Visual representations of ideas',
       id: "",
       title: "",
-      body: ""
+      body: "",
+      status: undefined,
+      type: "image",
+      userId: undefined
     },
   },
 ];
@@ -75,8 +82,11 @@ const productFeedbackItems: {
       description: 'A suggested product feature',
       id: "",
       title: "",
-      body: ""
-     },
+      body: "",
+      status: undefined,
+      type: "image",
+      userId: undefined
+    },
   },
   {
     type: 'feedback',
@@ -86,7 +96,13 @@ const productFeedbackItems: {
       description: 'Feedback on existing features',
       id: "",
       title: "",
-      body: ""
+      body: "",
+      status: undefined,
+      then: function (arg0: (newContent: any) => void): unknown {
+        throw new Error("Function not implemented.");
+      },
+      type: "image",
+      userId: undefined
     },
   },
 ];

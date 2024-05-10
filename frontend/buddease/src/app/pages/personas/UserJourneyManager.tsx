@@ -16,17 +16,24 @@ import WelcomePage from "../onboarding/WelcomePage";
 import UserQuestionnaire from "./UserQuestionnaire";
 import ContentManagementPhase from "@/app/components/phases/ContentManagementPhase";
 import { TeamCreationPhase } from "@/app/components/phases/actions/TeamCreation";
- import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
+import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
+import FeedbackProcess, { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
+import { TaskManagementPhase } from "@/app/components/projects/TaskManagementPhase";
+import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
+ 
+
 export enum OnboardingPhase {
   REGISTER,
   EMAIL_CONFIRMATION,
   WELCOME,
   QUESTIONNAIRE,
   OFFER,
+
   PROFILE_SETUP,
   TWO_FACTOR_SETUP,
   PAYMENT_PROCESS,
   NEXT_PHASE,
+  IDEA_SUBMISSION
 }
 
 type PhaseOptions = OnboardingPhase | DevelopmentPhaseEnum | ContentManagementPhaseEnum;
@@ -36,7 +43,9 @@ interface UserJourneyManagerProps {
 }
 
 // Define the mapping of phases to components
-const phaseComponents: Record<string, React.FC> = {
+const phaseComponents: Record<string, React.FC<{
+  
+}>> = {
   // Onboarding Phases
   [OnboardingPhase.EMAIL_CONFIRMATION]: EmailConfirmationPage,
   [OnboardingPhase.WELCOME]: WelcomePage,
@@ -236,6 +245,10 @@ const UserJourneyManager: React.FC = () => {
         <UserQuestionnaire
           onSubmit={handleQuestionnaireSubmitWrapper}
           onComplete={handleQuestionnaireSubmit}
+          onSubmitProfile={handleProfileSetup}
+          onIdeaSubmission={() => {
+            setCurrentPhase({ phase: DevelopmentPhaseEnum.IDEA_SUBMISSION.toString() });
+          }}
         />
       )}
       {currentPhase.phase === OnboardingPhase[OnboardingPhase.OFFER] && (

@@ -11,6 +11,11 @@ import clientApiService, {
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
+import { FileType } from "../components/documents/Attachment/attachment";
+import DetermineFileType from "../configs/DetermineFileType";
+import { VersionData } from "../components/versions/VersionData";
+
+
 
 
 
@@ -111,6 +116,8 @@ class FileApiService {
       throw error;
     }
   }
+
+
 
   async fetchFliDetails(fileId: string): Promise<AxiosResponse> {
     return this.requestHandler(
@@ -345,6 +352,40 @@ class FileApiService {
       NOTIFICATION_MESSAGES.File.ENFORCE_SECURITY_MEASURES_ERROR
     );
   }
+
+
+
+
+
+
+// Define the function to determine the file type
+async getFileType(file: string): Promise<FileType> {
+  try {
+    // Call the API to get the file type
+    const response: AxiosResponse<{ fileType?: FileType }> = await axiosInstance.get(`/api/files/${file}/type`);
+    // Extract the file type from the response data
+    const fileType: FileType | undefined = response?.data?.fileType;
+    // Check if fileType is undefined or null, and handle accordingly
+    if (!fileType) {
+      throw new Error("File type not provided in response.");
+    }
+    // Convert fileType to the appropriate enum value
+    switch (fileType) {
+      case "image":
+      case "document":
+      case "link":
+        
+      // Add more cases for other file types if needed
+        return fileType as FileType;
+      default:
+        return "other"; // Or any other default type as needed
+    }
+  } catch (error) {
+    // Handle errors if necessary
+    console.error("Error determining file type:", error);
+    throw error;
+  }
+}
 }
 
 export default FileApiService;

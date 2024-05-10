@@ -1,28 +1,67 @@
 import { useState } from "react";
-import usePhaseHooks, { PhaseHookConfig, createPhaseHook } from "./PhaseHooks";
+import usePhaseHooks, { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "./PhaseHooks";
+import configurationService, { ApiConfig } from "@/app/configs/ConfigurationService";
 
 const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
   const [currentPhase, setCurrentPhase] = useState<PhaseHookConfig | null>(
     null
   );
 
-  const canTransitionTo = (nextPhase: PhaseHookConfig) => {
-    const isAllowed =
-      currentPhase &&
-      currentPhase.condition() &&
-      nextPhase.condition() &&
-      !(currentPhase.name === "special" && nextPhase.name === "customspecial");
-
-    return isAllowed;
+  const canTransitionTo = async (nextPhase: PhaseHookConfig) => {
+    if (!currentPhase) {
+      return false; // Return false if currentPhase is not defined
+    }
+  
+    const isCurrentPhaseAllowed = await currentPhase.condition(idleTimeoutDuration);
+    const isNextPhaseAllowed = await nextPhase.condition(idleTimeoutDuration);
+  
+    const isNotAllowedSpecialTransition =
+      currentPhase.name === "special" && nextPhase.name === "customspecial";
+  
+    return isCurrentPhaseAllowed && isNextPhaseAllowed && !isNotAllowedSpecialTransition;
   };
+  
 
-  const handleTransitionTo = (nextPhase: PhaseHookConfig) => {
-    if (canTransitionTo(nextPhase)) {
-      phaseHook.asyncEffect().then((cleanup) => {
-        if (typeof cleanup === "function") {
-          cleanup();
-        }
+  const myPhaseHook = createPhaseHook(
+    60000, // Provide a value for idleTimeoutDuration
+    {
+      condition: async () => true,
+      asyncEffect: async () => {
+        console.log("useEffect triggered");
+        return () => {
+          console.log("Cleanup");
+        };
+      },
+      name: "",
+      duration: "0",
+      isActive: false,
+      initialStartIdleTimeout: () => {},
+      resetIdleTimeout: async () => {},
+      idleTimeoutId: null,
+      clearIdleTimeout: () => {},
+      onPhaseStart: () => {},
+      onPhaseEnd: () => {},
+      startIdleTimeout: () => {},
+      cleanup: undefined,
+      startAnimation: () => {},
+      stopAnimation: () => {},
+      animateIn: () => {},
+      toggleActivation: () => { },
+      phaseType: "custom",
+      customProp1: "value1",
+      customProp2: 0,
+    }
+  );
+
+  const handleTransitionTo = async (nextPhase: PhaseHookConfig) => {
+    if (await canTransitionTo(nextPhase)) {
+      const cleanup = await phaseHook.asyncEffect({
+        idleTimeoutId: myPhaseHook.idleTimeoutId,
+        startIdleTimeout: myPhaseHook.startIdleTimeout!,
       });
+      if (typeof cleanup === "function") {
+        cleanup();
+      }
 
       setCurrentPhase(nextPhase);
     } else {
@@ -37,8 +76,11 @@ const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
     handleTransitionTo,
   };
 };
-const myPhaseHook = createPhaseHook({
-  condition: () => true,
+
+const myPhaseHook = createPhaseHook(
+  idleTimeoutDuration,
+  {
+  condition: async () => true,
   asyncEffect: async () => {
     console.log("useEffect triggered");
     return () => {
@@ -49,7 +91,7 @@ const myPhaseHook = createPhaseHook({
   duration: "0",
   isActive: false,
   initialStartIdleTimeout: () => {},
-  resetIdleTimeout: () => {},
+  resetIdleTimeout: async () => {},
   idleTimeoutId: null,
   clearIdleTimeout: () => {},
   onPhaseStart: () => {},
@@ -59,7 +101,10 @@ const myPhaseHook = createPhaseHook({
   startAnimation: () => {},
   stopAnimation: () => {},
   animateIn: () => {},
-  toggleActivation: () => {},
+    toggleActivation: () => { },
+    phaseType: "custom",
+    customProp1: "value1",
+    customProp2: 0,
 });
 
 
@@ -67,13 +112,16 @@ const myPhaseHook = createPhaseHook({
 console.log(myPhaseHook); // This line will prevent the warning
 
 const enhancedPhaseHook = enhancePhaseHook({
-  condition: () => true,
+  condition: async () =>  true,
   asyncEffect: async () => {
     console.log("Async effect");
     return () => {};
   },
   name: "",
   duration: "0",
+  phaseType: "custom",
+  customProp1: "value1",
+  customProp2: 0,
 });
 
 const nextPhaseConfig = {
@@ -85,14 +133,22 @@ const nextPhaseConfig = {
 enhancedPhaseHook.handleTransitionTo({
   ...nextPhaseConfig,
   asyncEffect: async () => {
-    return () => {};
+    return new Promise<() => void>((resolve) => {
+      resolve(() => {});
+    });
   },
   duration: "0",
+  condition: async () => true,
+  name: "Enhance",
+  phaseType: "custom",
+  customProp1: "value1",
+  customProp2: 0,
 });
 
 const canTransitionTo = async (nextPhaseConfig: PhaseHookConfig) => {
-  const isTransitionAllowed =
-    enhancedPhaseHook.canTransitionTo(nextPhaseConfig);
+  const isTransitionAllowed = await enhancedPhaseHook.canTransitionTo(
+    nextPhaseConfig
+  );
 
   if (isTransitionAllowed) {
     console.log("Transition is allowed. Performing additional logic...");
@@ -106,11 +162,16 @@ const canTransitionTo = async (nextPhaseConfig: PhaseHookConfig) => {
 const handleTransitionTo = (nextPhaseConfig: PhaseHookConfig) => {
   console.log("Transitioning to next phase");
 
-  nextPhaseConfig.asyncEffect().then((cleanup) => {
-    if (typeof cleanup === "function") {
-      cleanup();
-    }
-  });
+  nextPhaseConfig
+    .asyncEffect({
+      idleTimeoutId: enhancedPhaseHook.idleTimeoutId || null,
+      startIdleTimeout: enhancedPhaseHook.startIdleTimeout || (() => {}),
+    })
+    .then((cleanup) => {
+      if (typeof cleanup === "function") {
+        cleanup();
+      }
+    });
 
   setCurrentPhase(nextPhaseConfig);
 };

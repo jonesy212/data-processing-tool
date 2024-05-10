@@ -1,5 +1,6 @@
 // DocumentSlice.tsx
 import { fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
+import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
@@ -7,6 +8,7 @@ import { DocumentStatus } from "@/app/components/documents/types";
 import useDataExport from "@/app/components/hooks/dataHooks/useDataExport";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppThunk } from "@/app/configs/appThunk";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -14,10 +16,6 @@ import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import { VersionData } from "@/app/components/versions/VersionData";
-import { ModifiedDate } from "@/app/components/documents/DocType";
-import { metadata } from "@/app/layout";
-import TextType from "@/app/components/documents/TextType";
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -275,96 +273,99 @@ const applyTransformation = (
 
 
 const transformations = {
-  tag: (document: DocumentData, tag: string) => {
+  tag: (document: WritableDraft<DocumentData>, tag: string) => {
     document.content = `${tag} Tagged: ${document.content}`;
   },
 
-  categorize: (document: DocumentData, category: string) => {
+  categorize: (document: WritableDraft<DocumentData>, category: string) => {
     document.content = `${category} Categorized: ${document.content}`;
   },
 
-  customizeView: (document: DocumentData, view: string) => {
+  customizeView: (document: WritableDraft<DocumentData>, view: string) => {
     document.content = `${view} Customized: ${document.content}`;
   },
 
-  comment: (document: DocumentData, comment: string) => {
+  comment: (document: WritableDraft<DocumentData>, comment: string) => {
     document.content = `${comment} Commented: ${document.content}`;
   },
 
-  mention: (document: DocumentData, mention: string) => {
+  mention: (document: WritableDraft<DocumentData>, mention: string) => {
     document.content = `${mention} Mentioned: ${document.content}`;
   },
 
-  assignTask: (document: DocumentData, task: string) => {
+  assignTask: (document: WritableDraft<DocumentData>, task: string) => {
     document.content = `${task} Assigned: ${document.content}`;
   },
 
-  requestReview: (document: DocumentData, review: string) => {
+  requestReview: (document: WritableDraft<DocumentData>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
-  approve: (document: DocumentData, approval: string) => {
+  approve: (document: WritableDraft<DocumentData>, approval: string) => {
     document.content = `${approval} Approved: ${document.content}`;
   },
 
-  reject: (document: DocumentData, rejection: string) => {
+  reject: (document: WritableDraft<DocumentData>, rejection: string) => {
     document.content = `${rejection} Rejected: ${document.content}`;
   },
 
-  provideFeedback: (document: DocumentData, feedback: string) => {
+  provideFeedback: (document: WritableDraft<DocumentData>, feedback: string) => {
     document.content = `${feedback} Provided: ${document.content}`;
   },
   
 
-  requestFeedback: (document: DocumentData, review: string) => {
+  requestFeedback: (document: WritableDraft<DocumentData>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
   
-  resolveFeedback: (document: DocumentData, feedback: string) => {
+  resolveFeedback: (document: WritableDraft<DocumentData>, feedback: string) => {
     document.content = `${feedback} Resolved: ${document.content}`;
   },
 
-  collaborate: (document: DocumentData, collaborator: string) => {
+  collaborate: (document: WritableDraft<DocumentData>, collaborator: string) => {
     document.content = `${collaborator} Collaborated: ${document.content}`;
   },
 
-  version: (document: DocumentData, version: string) => {
+  version: (document: WritableDraft<DocumentData>, version: string) => {
     document.content = `${version} Versioned: ${document.content}`;
   },
 
-  annotate: (document: DocumentData, annotation: string) => {
+  annotate: (document: WritableDraft<DocumentData>, annotation: string) => {
     document.content = `${annotation} Annotated: ${document.content}`;
   },
 
-  logActivity: (document: DocumentData, activity: string) => {
+  logActivity: (document: WritableDraft<DocumentData>, activity: string) => {
     document.content = `${activity} Logged: ${document.content}`;
   },
 
-  revert: (document: DocumentData, revert: string) => {
+  revert: (document: WritableDraft<DocumentData>, revert: string) => {
     document.content = `${revert} Reverted: ${document.content}`;
   },
 
-  search: (document: DocumentData, search: string) => {
+  search: (document: WritableDraft<DocumentData>, search: string) => {
     document.content = `${search} Searched: ${document.content}`;
   },
 
-  grantAccess: (document: DocumentData, access: string) => {
+  grantAccess: (document: WritableDraft<DocumentData>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
   
-  viewHistory: (document: DocumentData, view: string) => {
+  viewHistory: (document: WritableDraft<DocumentData>, view: string) => {
     document.content = `${view} Viewed: ${document.content}`;
   },
 
-  compare: (document: DocumentData, compare: string) => {
+  compare: (document: WritableDraft<DocumentData>, compare: string) => {
     document.content = `${compare} Compared: ${document.content}`;
   },
 
-  revokeAccess: (document: DocumentData, access: string) => {
+  revokeAccess: (document: WritableDraft<DocumentData>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  managePermissions: (document: DocumentData, permissions: string) => {
+  managePermissions: (document: WritableDraft<DocumentData>, permissions: string) => {
+    // Add permission transformation logic
+    document.permissions = permissions;
+    
     document.content = `${permissions} Permissions: ${document.content}`;
   },
 
@@ -372,87 +373,87 @@ const transformations = {
 
 
 
-  initiateWorkflow: (document: DocumentData, workflow: string) => {
+  initiateWorkflow: (document: WritableDraft<DocumentData>, workflow: string) => {
     document.content = `${workflow} Initiated: ${document.content}`;
   },
 
-  automateTasks: (document: DocumentData, tasks: string) => {
+  automateTasks: (document: WritableDraft<DocumentData>, tasks: string) => {
     document.content = `${tasks} Automated: ${document.content}`;
   },
 
-  triggerEvents: (document: DocumentData, events: string) => {
+  triggerEvents: (document: WritableDraft<DocumentData>, events: string) => {
     document.content = `${events} Triggered: ${document.content}`;
   },
 
-  approvalWorkflow: (document: DocumentData, workflow: string) => {
+  approvalWorkflow: (document: WritableDraft<DocumentData>, workflow: string) => {
     document.content = `${workflow} Approved: ${document.content}`;
   },
 
-  lifecycleManagement: (document: DocumentData, lifecycle: string) => {
+  lifecycleManagement: (document: WritableDraft<DocumentData>, lifecycle: string) => {
     document.content = `${lifecycle} Lifecycle: ${document.content}`;
   },
 
-  connectWithExternalSystem: (document: DocumentData, externalSystem: string) => {
+  connectWithExternalSystem: (document: WritableDraft<DocumentData>, externalSystem: string) => {
     document.content = `${externalSystem} Connected: ${document.content}`;
   },
 
-  synchronizeWithCloudStorage: (document: DocumentData, cloudStorage: string) => {
+  synchronizeWithCloudStorage: (document: WritableDraft<DocumentData>, cloudStorage: string) => {
     document.content = `${cloudStorage} Synchronized: ${document.content}`;
   },
 
-  importFromExternalSource: (document: DocumentData, externalSource: string) => {
+  importFromExternalSource: (document: WritableDraft<DocumentData>, externalSource: string) => {
     document.content = `${externalSource} Imported: ${document.content}`;
   },
 
-  exportToExternalSystem: (document: DocumentData, externalSystem: string) => {
+  exportToExternalSystem: (document: WritableDraft<DocumentData>, externalSystem: string) => {
     document.content = `${externalSystem} Exported: ${document.content}`;
   },
 
-  generateReport: (document: DocumentData, report: string) => {
+  generateReport: (document: WritableDraft<DocumentData>, report: string) => {
     document.content = `${report} Generated: ${document.content}`;
   },
 
 
-  exportReport: (document: DocumentData, report: string) => {
+  exportReport: (document: WritableDraft<DocumentData>, report: string) => {
     document.content = `${report} Exported: ${document.content}`;
   },
 
 
 
-  scheduleReportGeneration: (document: DocumentData, report: string) => {
+  scheduleReportGeneration: (document: WritableDraft<DocumentData>, report: string) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
 
-  customizeReportSettings: (document: DocumentData, report: string) => {
+  customizeReportSettings: (document: WritableDraft<DocumentData>, report: string) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: DocumentData, backup: string) => { 
+  backupDocuments: (document: WritableDraft<DocumentData>, backup: string) => { 
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: DocumentData, backup: string) => { 
+  retrieveBackup: (document: WritableDraft<DocumentData>, backup: string) => { 
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: DocumentData, redaction: string) => { 
+  redaction: (document: WritableDraft<DocumentData>, redaction: string) => { 
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: DocumentData, access: string) => { 
+  accessControls: (document: WritableDraft<DocumentData>, access: string) => { 
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: DocumentData, template: string) => { 
+  templates: (document: WritableDraft<DocumentData>, template: string) => { 
     document.content = `${template} Templates: ${document.content}`;
   },
 
-  updateDocumentVersion: (document: DocumentData, version: string) => {
+  updateDocumentVersion: (document: WritableDraft<DocumentData>, version: string) => {
     document.content = `${version} Version updated: ${document.content}`;
   },
 
-  getDocumentVersion: (document: DocumentData, version: string) => { 
+  getDocumentVersion: (document: WritableDraft<DocumentData>, version: string) => { 
     document.content = `${version} Version retrieved: ${document.content}`;
   }
 
@@ -1283,10 +1284,11 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       );
       if (documentToTag) {
         applyTransformation(
-          document, 
-          documentId, 
           documentToTag,
-          transformations.tag);
+          tag, 
+          transformations.tag,
+          "tag"
+        );
       }
     },
 
@@ -1301,7 +1303,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       documentIds.forEach(documentId => {
         const documentToTag = state.documents.find(doc => doc.id === documentId);
         if(documentToTag){
-          applyTransformation(documentToTag, transformations.tag, value);
+          applyTransformation(
+            documentToTag,
+            tag,
+            transformations.tag,
+            "tags"
+            );
 
         }
       });
@@ -1317,7 +1324,7 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
           documentToCategorize,
           category,
           transformations.categorize,
-          " "
+          "categorize" + category
         )
       }
     },
@@ -1332,8 +1339,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         if(documentToCategorize){
           applyTransformation(
             documentToCategorize,
-            transformations.categorize,
             category,
+            transformations.categorize,
             "category " + category
           );
       }});
@@ -1346,7 +1353,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, view } = action.payload;
       const documentToCustomize = state.documents.find(doc => doc.id === documentId);
       if (documentToCustomize) {
-        applyTransformation(documentToCustomize, transformations.customizeView, view);
+        applyTransformation(
+          documentToCustomize,
+          view,
+          transformations.customizeView,
+          "customize view to " + view
+        );
       }
     },
     
@@ -1354,7 +1366,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, comment } = action.payload;
       const documentToComment = state.documents.find(doc => doc.id === documentId);
       if (documentToComment) {
-        applyTransformation(documentToComment, transformations.comment, comment);
+        applyTransformation(
+          documentToComment,
+          comment,
+          transformations.comment,
+          "add comment: " + comment
+        );
       }
     },
     
@@ -1362,7 +1379,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToMention = state.documents.find(doc => doc.id === documentId);
       if (documentToMention) {
-        applyTransformation(documentToMention, transformations.mention, user);
+        applyTransformation(
+          documentToMention,
+          user,
+          transformations.mention,
+          "mention user " + user
+        );
       }
     },
     
@@ -1370,7 +1392,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, task } = action.payload;
       const documentToAssign = state.documents.find(doc => doc.id === documentId);
       if (documentToAssign) {
-        applyTransformation(documentToAssign, transformations.assignTask, task);
+        applyTransformation(
+          documentToAssign,
+          task,
+          transformations.assignTask,
+          "Assigned task: " + task
+        );
       }
     },
     
@@ -1378,9 +1405,10 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, reviewer } = action.payload;
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
-        applyTransformation(documentToReview,
-          transformations.requestReview,
+        applyTransformation(
+          documentToReview,
           reviewer,
+          transformations.requestReview,
           "Requested review by " + reviewer
         );
       }
@@ -1391,8 +1419,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const documentToApprove = state.documents.find(doc => doc.id === documentId);
       if (documentToApprove) {
         applyTransformation(documentToApprove,
-          transformations.approve,
           approver,
+          transformations.approve,
           "Approved by " + approver
         );
       }
@@ -1403,8 +1431,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const documentToReject = state.documents.find(doc => doc.id === documentId);
       if (documentToReject) {
         applyTransformation(documentToReject,
-          transformations.reject,
           rejector,
+          transformations.reject,
           "Rejected by " + rejector
         );
       }
@@ -1415,8 +1443,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
         applyTransformation(documentToReview,
-          transformations.requestFeedback,
           reviewer,
+          transformations.requestFeedback,
           "Requested feedback from " + reviewer
         );
       }
@@ -1427,8 +1455,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
         applyTransformation(documentToReview,
-          transformations.provideFeedback,
           reviewer,
+          transformations.provideFeedback,
           "Feedback provided by " + reviewer
         );
       }
@@ -1439,8 +1467,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const documentToReview = state.documents.find(doc => doc.id === documentId);
       if (documentToReview) {
         applyTransformation(documentToReview,
-          transformations.resolveFeedback,
           reviewer,
+          transformations.resolveFeedback,
           "Feedback resolved by " + reviewer
         );
       }
@@ -1452,8 +1480,8 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       if (documentToCollaborate) {
         applyTransformation(
           documentToCollaborate,
-          transformations.collaborate,
           collaborator,
+          transformations.collaborate,
           "Collaborative editing with " + collaborator
         );
       }
@@ -1463,7 +1491,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, tag } = action.payload;
       const documentToTag = state.documents.find(doc => doc.id === documentId);
       if (documentToTag) {
-        applyTransformation(documentToTag, transformations.tag, tag);
+        applyTransformation(
+          documentToTag, 
+          tag,
+          transformations.tag,
+          "Document tagged with " + tag
+          );
       }
     },
     
@@ -1471,7 +1504,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, annotation } = action.payload;
       const documentToAnnotate = state.documents.find(doc => doc.id === documentId);
       if (documentToAnnotate) {
-        applyTransformation(documentToAnnotate, transformations.annotate, annotation);
+        applyTransformation(
+          documentToAnnotate, 
+          annotation,
+          transformations.annotate,
+          "Document annotated with " + annotation
+          );
       }
     },
     
@@ -1479,7 +1517,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, activity } = action.payload;
       const documentToLog = state.documents.find(doc => doc.id === documentId);
       if (documentToLog) {
-        applyTransformation(documentToLog, transformations.logActivity, activity);
+        applyTransformation(
+          documentToLog, 
+          activity,
+          transformations.logActivity,
+          "Activity logged: " + activity
+          );
       }
     },
     
@@ -1487,7 +1530,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, search } = action.payload;
       const documentToSearch = state.documents.find(doc => doc.id === documentId);
       if (documentToSearch) {
-        applyTransformation(documentToSearch, transformations.search, search);
+        applyTransformation(
+          documentToSearch, 
+          search,
+          transformations.search,
+          "Document searched with " + search
+          );
       }
     },
     
@@ -1495,7 +1543,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, version } = action.payload;
       const documentToVersion = state.documents.find(doc => doc.id === documentId);
       if (documentToVersion) {
-        applyTransformation(documentToVersion, transformations.version, version);
+        applyTransformation(
+          documentToVersion, 
+          version,
+          transformations.version,
+          "Document versioned to " + version
+          );
       }
     },
     
@@ -1503,7 +1556,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, version } = action.payload;
       const documentToRevert = state.documents.find(doc => doc.id === documentId);
       if (documentToRevert) {
-        applyTransformation(documentToRevert, transformations.revert, version);
+        applyTransformation(
+          documentToRevert, 
+          version,
+          transformations.revert,
+          "Document reverted to version " + version
+          );
       }
     },
     
@@ -1513,7 +1571,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, version } = action.payload;
       const documentToView = state.documents.find(doc => doc.id === documentId);
       if (documentToView) {
-        applyTransformation(documentToView, transformations.viewHistory, version);
+        applyTransformation(
+          documentToView, 
+          version,
+          transformations.viewHistory,
+          "Document history viewed"
+          );
       }
     },
     
@@ -1521,7 +1584,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, version } = action.payload;
       const documentToCompare = state.documents.find(doc => doc.id === documentId);
       if (documentToCompare) {
-        applyTransformation(documentToCompare, transformations.compare, version);
+        applyTransformation(
+          documentToCompare, 
+          version,
+          transformations.compare,
+          "Document versions compared"
+          );
       }
     },
     
@@ -1529,7 +1597,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToGrant = state.documents.find(doc => doc.id === documentId);
       if (documentToGrant) {
-        applyTransformation(documentToGrant, transformations.grantAccess, user);
+        applyTransformation(
+          documentToGrant, 
+          user,
+          transformations.grantAccess,
+          "Document access granted to " + user
+          );
       }
     },
     
@@ -1537,7 +1610,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToRevoke = state.documents.find(doc => doc.id === documentId);
       if (documentToRevoke) {
-        applyTransformation(documentToRevoke, transformations.revokeAccess, user);
+        applyTransformation(
+          documentToRevoke, 
+          user,
+          transformations.revokeAccess,
+          "Document access revoked from " + user
+          );
       }
     },
     
@@ -1545,7 +1623,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToManage = state.documents.find(doc => doc.id === documentId);
       if (documentToManage) {
-        applyTransformation(documentToManage, transformations.managePermissions, user);
+        applyTransformation(
+          documentToManage, 
+          user,
+          transformations.managePermissions,
+          "Document permissions managed"
+          );
       }
     },
     
@@ -1553,7 +1636,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToInitiate = state.documents.find(doc => doc.id === documentId);
       if (documentToInitiate) {
-        applyTransformation(documentToInitiate, transformations.initiateWorkflow, user);
+        applyTransformation(
+          documentToInitiate, 
+          user,
+          transformations.initiateWorkflow,
+          "Document workflow initiated"
+          );
       }
     },
     
@@ -1561,7 +1649,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToAutomate = state.documents.find(doc => doc.id === documentId);
       if (documentToAutomate) {
-        applyTransformation(documentToAutomate, transformations.automateTasks, user);
+        applyTransformation(
+          documentToAutomate, 
+          user,
+          transformations.automateTasks,
+          "Document tasks automated"
+          );
       }
     },
     
@@ -1569,7 +1662,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToTrigger = state.documents.find(doc => doc.id === documentId);
       if (documentToTrigger) {
-        applyTransformation(documentToTrigger, transformations.triggerEvents, user);
+        applyTransformation(
+          documentToTrigger, 
+          user,
+          transformations.triggerEvents,
+          "Document events triggered"
+          );
       }
     },
     
@@ -1577,7 +1675,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToApprove = state.documents.find(doc => doc.id === documentId);
       if (documentToApprove) {
-        applyTransformation(documentToApprove, transformations.approvalWorkflow, user);
+        applyTransformation(
+          documentToApprove, 
+          user,
+          transformations.approvalWorkflow,
+          "Document approval workflow initiated"
+          );
       }
     },
     
@@ -1585,7 +1688,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToManage = state.documents.find(doc => doc.id === documentId);
       if (documentToManage) {
-        applyTransformation(documentToManage, transformations.lifecycleManagement, user);
+        applyTransformation(
+          documentToManage, 
+          user,
+          transformations.lifecycleManagement,
+          "Document lifecycle managed"
+          );
       }
     },
     
@@ -1593,7 +1701,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToConnect = state.documents.find(doc => doc.id === documentId);
       if (documentToConnect) {
-        applyTransformation(documentToConnect, transformations.connectWithExternalSystem, user);
+        applyTransformation(
+          documentToConnect, 
+          user,
+          transformations.connectWithExternalSystem,
+          "Document connected to external system"
+          );
       }
     },
     
@@ -1601,18 +1714,26 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToSynchronize = state.documents.find(doc => doc.id === documentId);
       if (documentToSynchronize) {
-        applyTransformation(documentToSynchronize, transformations.synchronizeWithCloudStorage, user);
+        applyTransformation(
+          documentToSynchronize, 
+           user,
+          transformations.synchronizeWithCloudStorage,
+          "Document synchronized with cloud storage"
+           );
       }
     },
     
-
-
 
     importFromExternalSource: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
       const { documentId, user } = action.payload;
       const documentToImport = state.documents.find(doc => doc.id === documentId);
       if (documentToImport) {
-        applyTransformation(documentToImport, transformations.importFromExternalSource, user);
+        applyTransformation(
+          documentToImport, 
+           user,
+          transformations.importFromExternalSource,
+          "Document imported from external source"
+           );
       }
     },
     
@@ -1620,7 +1741,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToExport = state.documents.find(doc => doc.id === documentId);
       if (documentToExport) {
-        applyTransformation(documentToExport, transformations.exportToExternalSystem, user);
+        applyTransformation(
+          documentToExport, 
+           user,
+          transformations.exportToExternalSystem,
+          "Document exported to external system"
+           );
       }
     },
     
@@ -1628,7 +1754,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToGenerate = state.documents.find(doc => doc.id === documentId);
       if (documentToGenerate) {
-        applyTransformation(documentToGenerate, transformations.generateReport, user);
+        applyTransformation(
+          documentToGenerate, 
+           user,
+          transformations.generateReport,
+          "Document report generated"
+           );
       }
     },
     
@@ -1636,7 +1767,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToExport = state.documents.find(doc => doc.id === documentId);
       if (documentToExport) {
-        applyTransformation(documentToExport, transformations.exportReport, user);
+        applyTransformation(
+          documentToExport, 
+           user,
+          transformations.exportReport,
+          "Document report exported"
+           );
       }
     },
     
@@ -1644,7 +1780,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToSchedule = state.documents.find(doc => doc.id === documentId);
       if (documentToSchedule) {
-        applyTransformation(documentToSchedule, transformations.scheduleReportGeneration, user);
+        applyTransformation(
+          documentToSchedule, 
+           user,
+          transformations.scheduleReportGeneration,
+          "Document report scheduled"
+           );
       }
     },
     
@@ -1652,7 +1793,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToCustomize = state.documents.find(doc => doc.id === documentId);
       if (documentToCustomize) {
-        applyTransformation(documentToCustomize, transformations.customizeReportSettings, user);
+        applyTransformation(
+          documentToCustomize, 
+           user,
+          transformations.customizeReportSettings,
+          "Document report customization initiated"
+           );
       }
     },
     
@@ -1660,7 +1806,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToBackup = state.documents.find(doc => doc.id === documentId);
       if (documentToBackup) {
-        applyTransformation(documentToBackup, transformations.backupDocuments, user);
+        applyTransformation(
+          documentToBackup, 
+           user,
+          transformations.backupDocuments,
+          "Document backed up"
+           );
       }
     },
     
@@ -1668,7 +1819,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToRetrieve = state.documents.find(doc => doc.id === documentId);
       if (documentToRetrieve) {
-        applyTransformation(documentToRetrieve, transformations.retrieveBackup, user);
+        applyTransformation(
+          documentToRetrieve, 
+           user,
+          transformations.retrieveBackup,
+          "Document backup retrieved"
+           );
       }
     },
     
@@ -1676,7 +1832,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToRedact = state.documents.find(doc => doc.id === documentId);
       if (documentToRedact) {
-        applyTransformation(documentToRedact, transformations.redaction, user);
+        applyTransformation(
+          documentToRedact, 
+           user,
+          transformations.redaction,
+          "Document redacted"
+           );
       }
     },
     
@@ -1684,7 +1845,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToControl = state.documents.find(doc => doc.id === documentId);
       if (documentToControl) {
-        applyTransformation(documentToControl, transformations.accessControls, user);
+        applyTransformation(
+          documentToControl, 
+           user,
+          transformations.accessControls,
+          "Document access controls updated"
+           );
       }
     },
     
@@ -1692,7 +1858,12 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       const { documentId, user } = action.payload;
       const documentToTemplate = state.documents.find(doc => doc.id === documentId);
       if (documentToTemplate) {
-        applyTransformation(documentToTemplate, transformations.templates, user);
+        applyTransformation(
+          documentToTemplate, 
+           user,
+          transformations.templates,
+          "Document templates updated"
+           );
       }
     },
     
@@ -1909,4 +2080,4 @@ export const selectSelectedDocument = (state: RootState) =>
 // Export the reducer
 export default useDocumentManagerSlice.reducer;
 
-export type {DocumentSliceState}
+export type { DocumentSliceState };
