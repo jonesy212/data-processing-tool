@@ -1,4 +1,4 @@
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import focusManagerInstance from "../../models/accessibility/FocusManager";
 import axiosInstance from "../../security/csrfToken";
@@ -38,6 +38,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       : NOTIFICATION_MESSAGES.FeatureToggle.DISABLE_SUCCESS;
 
     notify(
+      "Feature toggled: " + feature,
       "Admin login successful",
       NOTIFICATION_MESSAGES.Login.LOGIN_SUCCESS,
       new Date(),
@@ -85,6 +86,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
   fetchFeatureTogglesSuccess(featureToggles: FeatureToggle[]): void {
     this.featureToggles = featureToggles;
     notify(
+      "Features imported",
       "Success importing features",
       NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_SUCCESS,
       new Date(),
@@ -95,10 +97,11 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
   fetchFeatureTogglesFailure(error: string): void {
     console.error("Error fetching feature toggles:", error);
     notify(
+      "Error importing features",
       "Error import feature",
       NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_FAILURE,
       new Date(),
-      "Error"
+      NotificationTypeEnum.OperationError
     );
   }
 }

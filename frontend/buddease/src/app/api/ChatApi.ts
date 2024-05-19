@@ -1,11 +1,17 @@
+import { uiStore } from './../components/state/stores/UIStore';
 // ChatApi.ts
 import { AxiosResponse } from "axios";
 import { CalendarManagerState, ChatRoom } from "../components/calendar/CalendarSlice";
-import  ChatMessage  from "../components/communications";
+import ChatMessage from "../components/communications/chat/ChatMessage";
 import Group from "../components/communications/chat/Group";
+import { PrivacySettings } from "../components/settings/PrivacySettings";
+import { User } from "../components/users/User";
+import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
+
+
 class ChatApi {
-  private static API_BASE_URL = "https://example.com/api/chat";
+  private static API_BASE_URL = endpoints.chat;
 
   static async fetchMessages(
     groupId: string,
@@ -86,9 +92,9 @@ class ChatApi {
   static async createGroup(
     groupName: string,
     isPublic: boolean
-  ): Promise<Group> {
+  ): Promise<Group<User>> {
     try {
-      const response: AxiosResponse<Group> = await axiosInstance.post(
+      const response: AxiosResponse<Group<User>> = await axiosInstance.post(
         `${this.API_BASE_URL}/groups`,
         {
           name: groupName,
@@ -113,6 +119,99 @@ class ChatApi {
     }
   }
 
+
+  static async sendMessageToServer(roomId: string, message: string) {
+    try {
+      // Send the message to the server
+      const response = await axiosInstance.post(`/api/chat/${roomId}/messages`, { message });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending message to server:', error);
+      throw error;
+    }
+  }
+
+
+  static async saveAudioOptionsToBackend(
+    selectedOptions: { [key: string]: any },
+    roomId: string,
+    audioOptions: { [key: string]: any }
+  ) {
+    try {
+      await axiosInstance.patch(`${this.API_BASE_URL}/rooms/${roomId}/audio-options`, {
+        audioOptions: selectedOptions // Pass selectedOptions instead of audioOptions
+      });
+    } catch (error) {
+      console.error('Error saving audio options to backend:', error);
+    }
+  }
+
+  static async setPrivacySettings(roomId: string, privacySettings: { [key: string]: boolean }) { 
+    try {
+      await axiosInstance.patch(`${this.API_BASE_URL}/rooms/${roomId}/privacy-settings`, {
+        privacySettings
+      });
+    } catch(error) {
+      console.error('Error setting privacy settings:', error);
+      throw error;
+    }
+  }
+
+
+
+  static async savePrivacySettingsToBackend(
+    videoId: string,
+    selectedSettings: PrivacySettings,
+    roomId: string,
+    privacySettings: PrivacySettings
+  ): Promise<void> {
+    try {
+      await axiosInstance.patch(`${this.API_BASE_URL}/rooms/${roomId}/privacy-settings`, {
+        privacySettings,
+        selectedSettings
+      });
+    } catch (error) {
+      console.error('Error saving privacy settings to backend:', error);
+      throw error;
+    }
+  }
+
+  static fetchAudioOptions = async (
+  roomId: string
+    ) => { 
+    try {
+      const response = await axiosInstance.get(`${this.API_BASE_URL}/rooms/${roomId}/audio-options`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching audio options:", error);
+      throw error;
+    }
+  }
+
+
+
+  static displayAudioOptionsMenu = async (roomId: string) => {
+    try {
+      // Fetch audio options
+      const audioOptions = await this.fetchAudioOptions(roomId);
+
+      // Display modal
+      uiStore.displayAudioOptionsModal(async (selectedOptions) => {
+        await this.saveAudioOptionsToBackend(
+          selectedOptions,
+          roomId,
+          audioOptions
+        );
+      });
+
+    } catch (error) {
+      console.error('Error displaying audio options menu:', error);
+      throw error;
+    }
+  }
+
+  
+
   // Add more methods as needed for various chat functionalities
 
   // Example:
@@ -129,5 +228,7 @@ export const getChatData = async () => {
     console.error("Error fetching chat data:", error);
   }
 };
+
+
 
 export { ChatApi };

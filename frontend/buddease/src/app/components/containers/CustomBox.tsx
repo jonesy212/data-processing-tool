@@ -5,28 +5,21 @@ import {
   ButtonGenerator,
   buttonGeneratorProps,
 } from "@/app/generators/GenerateButtons";
+import { usePanelContents } from "@/app/generators/usePanelContents";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
 import { Input } from "antd";
 import { Router, useRouter } from "next/router";
-import React, { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useRef } from "react";
 import DynamicNamingConventions from "../DynamicNamingConventions";
 import InputLabel from "../hooks/userInterface/InputFields";
+import CustomSlider from "../libraries/ui/buttons/CustomSlider";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
 import DynamicComponent from "../styling/DynamicComponents";
 import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
 import DynamicTypography from "../styling/DynamicTypography";
-import CustomSlider from "../libraries/ui/buttons/CustomSlider";
-import { usePanelContents } from "@/app/generators/usePanelContents";
 
-export const generatePanelContents = (numPanels: number): React.ReactNode[] => {
-  const panels: React.ReactNode[] = [];
-  for (let i = 1; i <= numPanels; i++) {
-    panels.push(<div key={`panel-${i}`}>Panel {i}</div>);
-  }
-  return panels;
-};
 
 interface CustomBoxProps extends ResizablePanelsProps {
   children: ReactNode[];
@@ -35,8 +28,6 @@ interface CustomBoxProps extends ResizablePanelsProps {
   handleFileUpload: () => void;
   mt: number;
 }
-
-
 
 
 const CustomBox: React.FC<CustomBoxProps> = ({

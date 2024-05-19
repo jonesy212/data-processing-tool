@@ -4,8 +4,8 @@ import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentBuilderOptions } from "@/app/components/documents/DocumentOptions";
-import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { Change } from "@/app/components/documents/NoteData";
+import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
 import { Comment } from "@/app/components/models/data/Data";
 import { Task } from "@/app/components/models/tasks/Task";
@@ -19,7 +19,7 @@ import UserService, { userId, userService } from "@/app/components/users/ApiUser
 import { Idea } from "@/app/components/users/Ideas";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import CollaborationSettings from "../../../../pages/community/CollaborationSettings";
 import { Communication } from "../../../communications/chat/Communication";
 import CommunityContribution from "../../../crypto/CommunityContribution";
@@ -123,6 +123,7 @@ import { RootState } from "./RootSlice";
         title: '',
         lastModifiedDate: { value: new Date, isModified: false },
         // Initialize as not modified
+        _id: "",
         id: 0,
         topics: [],
         highlights: [],
@@ -139,7 +140,7 @@ import { RootState } from "./RootSlice";
         accessHistory: [],
         version: null,
         permissions: {} as DocumentPermissions,
-        versionData: {} as VersionData
+        versionData: {} as VersionData,
       },
       uiManager: {} as ReturnType<typeof useUIManager>,
       userService: new UserService,
@@ -518,7 +519,7 @@ export const shareDocumentAsync = createAsyncThunk(
                 break;
               case "communication":
                 // Iterate over each communication change
-                change.payload.forEach((communicationChange: Communication) => {
+                change.payload.forEach((communicationChange: WritableDraft<Communication>) => {
                   // Dispatch the action to handle communication changes
                   handleCommunicationChange(state, {
                     type: "communication",
@@ -1274,4 +1275,4 @@ export const shareDocumentAsync = createAsyncThunk(
 
   // Reducer
   export default useCollaborationSlice.reducer;
-  export type { CollaborationState };
+  export type { CollaborationState, Resource };

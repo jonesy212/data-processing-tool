@@ -122,3 +122,4 @@ const PreviewForm: React.FC<PreviewFormProps> = ({
 };
 
 export default PreviewForm;
+export type {FormData}

@@ -37,7 +37,7 @@ const useSnapshotManager = () => {
   const createSnapshot = async () => {
     try {
       // Make API call to create snapshot using the defined endpoint
-      const response = await fetch(endpoints.snapshots.add, {
+      const response = await fetch(endpoints.snapshots.add.toString(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

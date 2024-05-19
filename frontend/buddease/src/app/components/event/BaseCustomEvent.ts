@@ -1,3 +1,5 @@
+import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
+
 // CustomEvent.ts
 const ClipboardData = {
   onCopy: (content: string) => {},
@@ -44,4 +46,5 @@ const CustomEventExtensionConstructor = CustomEvent as unknown as {
 
 export type { CustomEventExtension };
 
-export { CustomEventExtensionConstructor };
+  export { ClipboardData, CustomEventExtensionConstructor };
+

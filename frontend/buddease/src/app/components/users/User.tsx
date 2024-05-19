@@ -1,5 +1,9 @@
 // User.tsx
+import { UserSettings } from "@/app/configs/UserSettings";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Persona } from "@/app/pages/personas/Persona";
+import { ProfileAccessControl } from "@/app/pages/profile/Profile";
+import { Transaction } from "ethers";
 import React from "react";
 import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
@@ -9,24 +13,32 @@ import CommonDetails from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
+import { NFT } from "../nft/NFT";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../projects/Project";
+import { PrivacySettings } from "../settings/PrivacySettings";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
+import { BlockchainAsset } from "./BlockchainAsset";
+import { BlockchainPermissions } from "./BlockchainPermissions";
+import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { ActivityLogEntry } from "./UserSlice";
+import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 
 export interface User extends UserData {
   _id?: string; // Add this line
   id?: string | number | undefined;
   username: string;
+  firstName: string;
+  lastName: string;
   email: string;
   tier: string;
   token: string | null;
   uploadQuota: number;
   usedQuota?: number;
   avatarUrl: string | null;
-  createdAt: Date;
+  createdAt: Date | undefined;
   updatedAt: Date | undefined;
   fullName: string | null;
   isVerified: boolean;
@@ -39,12 +51,75 @@ export interface User extends UserData {
   processingTasks: DataProcessingTask[];
   data?: UserData;
   role: UserRole;
-  persona: Persona;
+  persona: Persona | undefined;
+  friends: User[];
   analysisResults?: DataAnalysisResult[];
   isLoggedIn?: boolean;
   localeCompare?: (other: Message) => number;
-
+  blockedUsers: User[];
+  settings: UserSettings | undefined;
+  interests: string[]
+  privacySettings: PrivacySettings | undefined
+  notifications: NotificationSettings | undefined
+  activityLog: ActivityLogEntry[]
+  projects?: Project[]; // Define the type explicitly as an array of Project objects
+  socialLinks: SocialLinks | undefined;
+  relationshipStatus: string | null;
+  hobbies: string[];
+  address?: Address;
+  language?: string;
+  education?: Education[];
+  employment?: Employment[];
+  dateOfBirth?: Date;
+  skills: string[];
+  achievements: string[];
+  profileVisibility: string;
+  phoneNumber?: string;
+  profileAccessControl: ProfileAccessControl | undefined;
+  activityStatus: string;
+  isAuthorized: boolean;
+  notificationPreferences?: NotificationPreferences;
+  securitySettings?: SecuritySettings;
+  emailVerificationStatus?: boolean;
+  phoneVerificationStatus?: boolean;
+  walletAddress?: string;
+  transactionHistory?: Transaction[]
+  tokenBalance?: number;
+  smartContractInteractions?: Transaction[];
+  blockchainPermissions?: BlockchainPermissions;
+  blockchainIdentity?: string;
+  blockchainAssets?: BlockchainAsset[];
+  nftCollection?: NFT[];
+  daoMemberships?: any[];
+  decentralizedStorageUsage?: any;
+  decentralizedIdentity?: any;
+  decentralizedMessagingKeys?: any;
+  decentralizedAuthentication?: any;
 }
+
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+interface Education {
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: Date;
+  endDate?: Date;
+}
+
+interface Employment {
+  company: string;
+  position: string;
+  startDate: Date;
+  endDate?: Date;
+}
+
 
 const timeBasedCode: string = generateTimeBasedCode();
 
@@ -57,6 +132,7 @@ export interface UserData {
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;
   projects?: Project[];
+  
   teams?: Team[];
   
   teamMembers?: TeamMember[];
@@ -74,6 +150,8 @@ export interface UserData {
   unreadNotificationCount?: number;
   snapshots?: SnapshotStore<Snapshot<Data>>[] | undefined
   analysisResults?: DataAnalysisResult[];
+  role: UserRole
+
 }
 
 // Add a new type for visualization data
@@ -106,15 +184,14 @@ const userData: UserData = {
   },
   traits: CommonDetails,
 
-  timeBasedCode: timeBasedCode, // Generate the time-based code for the user
-
-  // New properties for the persona
+  timeBasedCode: timeBasedCode,
   age: 0,
   gender: "male",
   location: "Texas",
   occupation: "Software Engineer",
   incomeLevel: "string",
   snapshots: {} as SnapshotStore<Snapshot<Data>>[],
+  role: {} as UserRole,
 };
 
 // Instantiate a CryptoDocumentManager
@@ -159,3 +236,4 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
 };
 
 export default UserDetails;
+export type { Address, Education, Employment, SocialLinks };

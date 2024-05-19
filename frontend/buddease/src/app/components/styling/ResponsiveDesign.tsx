@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { ColorSwatchProps } from "./ColorPalette";
+import { BoardItem, CollaborationBoardStore } from "../state/stores/CollaborationBoardStore";
  
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -89,6 +90,7 @@ export interface ResponsiveDesignProps {
       rowGap: string | number;
     };
   };
+  collaborationBoardStore: CollaborationBoardStore;
 }
 
 interface ResponsiveDesignStoreProps {
@@ -304,9 +306,9 @@ class ResponsiveDesignStore {
     cssGridFlexboxSettings: {
       small: {
         container: "grid",
-        gap: 10, // Change to number
-        columnGap: 10, // Change to number
-        rowGap: 10, // Change to number
+        gap: 10,
+        columnGap: 10,
+        rowGap: 10,
       },
       medium: {
         container: "grid",
@@ -336,6 +338,12 @@ class ResponsiveDesignStore {
       medium: "shrink-grow-normal",
       large: "shrink-grow-slow",
     },
+    collaborationBoardStore: {
+      boardItems: [],
+      addBoardItem: (item: BoardItem) => {},
+      removeBoardItem: (itemId: string) => {},
+      updateBoardItem: (itemId: string, updatedItem: Partial<BoardItem>) => {}
+    }
   };
 
   @action

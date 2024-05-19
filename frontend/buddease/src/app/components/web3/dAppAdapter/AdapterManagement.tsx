@@ -1,8 +1,10 @@
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { Task } from "../../models/tasks/Task";
+import { ShareProps } from '../../shared/Share';
 
 class ManagementSystem {
   private static instance: ManagementSystem;
+  private sharedProps: ShareProps | null = null;
 
   private constructor() {
     // Initialization logic, if needed
@@ -14,6 +16,14 @@ class ManagementSystem {
     }
 
     return ManagementSystem.instance;
+  }
+
+  public setSharedProps(sharedProps: ShareProps): void {
+    this.sharedProps = sharedProps;
+  }
+
+  public getSharedProps(): ShareProps | null {
+    return this.sharedProps;
   }
 
   public manageUsers(): ManagementSystem {
@@ -38,10 +48,18 @@ class ManagementSystem {
     // Implement your logic here for task management
     console.log("Task management functionality enabled");
 
-    // For example, add a new task to the current project
-    this.config.dappProps.currentProject.tasks.push(newTask);
+    // Ensure sharedProps is defined before accessing its properties
+    if (this.sharedProps) {
+      const projectId = this.sharedProps.projectId;
+      const title = this.sharedProps.title;
 
-    // Additional logic...
+      // For example, add a new task to the current project
+      this.config.dappProps.currentProject.tasks.push(newTask);
+
+      // Additional logic...
+    } else {
+      console.error("SharedProps is not set. Cannot manage tasks.");
+    }
 
     return this;
   }
@@ -70,8 +88,19 @@ class ManagementSystem {
 // Usage example:
 
 const managementSystem = ManagementSystem.getInstance();
+// Assume sharedProps are set before this usage
+const sharedProps = managementSystem.getSharedProps(); // Get sharedProps
+if (sharedProps) {
+  const projectId = sharedProps.projectId;
+  const title = sharedProps.title;
 
-// Use the management functions
-managementSystem.manageUsers().manageProjects().manageTasks(generateNewTask());
-
+  managementSystem.manageUsers().manageProjects().manageTasks(generateNewTask(
+    projectId,
+    title,
+    true,
+    0
+  ));
+} else {
+  console.error("SharedProps is not set. Cannot manage tasks.");
+}
 

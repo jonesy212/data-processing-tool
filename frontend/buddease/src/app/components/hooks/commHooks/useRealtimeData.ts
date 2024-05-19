@@ -19,12 +19,9 @@ export type RealtimeUpdateCallback<T extends RealtimeData> = (
 ) => void;
 
 
-
-
-
 const useRealtimeData = <T>(
   initialData: any,
-  updateCallback: RealtimeUpdateCallback<RealtimeData>
+  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>
 ) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
   const dispatch = useDispatch(); // Initialize useDispatch hook

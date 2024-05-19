@@ -9,7 +9,7 @@ import { trackerManagerSlice } from "./TrackerSlice";
 // Import uuid
 import { useCalendarManagerSlice } from "@/app/components/calendar/CalendarSlice";
 import { Data } from "@/app/components/models/data/Data";
-import { useRealtimeDataSlice } from "@/app/components/RealtimeDataSlice";
+import { useRealtimeDataSlice } from "@/app/components/state/redux/slices/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 
 import { PriorityStatus, StatusType } from "@/app/components/models/data/StatusType";
@@ -18,6 +18,7 @@ import { User } from "@/app/components/users/User";
 import { VideoData } from "@/app/components/video/Video";
 import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
+import { implementThen } from "../../stores/CommonEvent";
 import { useUIManagerSlice } from "../../stores/UISlice";
 import { Video } from "../../stores/VideoStore";
 import { WritableDraft } from "../ReducerGenerator";
@@ -30,6 +31,7 @@ import { useDocumentManagerSlice } from "./DocumentSlice";
 import { useDrawingManagerSlice } from "./DrawingSlice";
 import { useEntityManagerSlice } from "./EntitySlice";
 import { useEventManagerSlice } from "./EventSlice";
+import { useFilteredEventsSlice } from "./FilteredEventsSlice";
 import { filterReducer } from "./FilterSlice";
 import { useNotificationManagerSlice } from "./NotificationSlice";
 import { usePagingManagerSlice } from "./pagingSlice";
@@ -42,7 +44,6 @@ import { useTeamManagerSlice } from "./TeamSlice";
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVersionManagerSlice } from "./VersionSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
-import { implementThen } from "../../stores/CommonEvent";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -102,6 +103,7 @@ export interface RootState {
   blogManager: ReturnType<typeof useBlogManagerSlice.reducer>;
   drawingManager: ReturnType<typeof useDrawingManagerSlice.reducer>;
   versionManager: ReturnType<typeof useVersionManagerSlice.reducer>;
+  filterManager: ReturnType<typeof useFilteredEventsSlice.reducer>;
 }
 
 const initialState: RootState = {
@@ -144,6 +146,7 @@ const initialState: RootState = {
   drawingManager: useDrawingManagerSlice.reducer(undefined, { type: "init" }),
   uiManager: useUIManagerSlice.reducer(undefined, { type: "init" }),
   phaseManager: usePhaseManagerSlice.reducer(undefined, { type: "init" }),
+  filterManager: useFilteredEventsSlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({

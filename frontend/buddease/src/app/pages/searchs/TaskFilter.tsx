@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 
 interface TaskFilter {
-  onChange: (selectedOption: string) => void;
+    onChange: (selectedOption: string) => void;
+    
 }
 
 const TaskFilterComponent: React.FC<TaskFilter> = ({ onChange }) => {
@@ -28,5 +29,5 @@ const TaskFilterComponent: React.FC<TaskFilter> = ({ onChange }) => {
 };
 
 export default TaskFilterComponent;
-export type { TaskFilter};
+export type { TaskFilter };
 

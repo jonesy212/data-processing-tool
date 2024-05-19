@@ -490,6 +490,19 @@ class ProjectService {
       throw error;
     }
   };
+
+  getProjectById = async (projectId: number) => {
+    try {
+      const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
+      return response.data;
+    } catch (error) {
+      ProjectActions.updateProjectFailure({ error: String(error) });
+      sendNotification(`Error getting project with ID ${projectId}: ${error}`);
+      console.error("Error getting project:", error);
+      throw error;
+    }
+  };
+  
   
   // Add other methods for updating, deleting, and other project-related operations similar to the ones in ApiUser.ts
 

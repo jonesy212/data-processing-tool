@@ -21,15 +21,19 @@ interface RealtimeDataItem extends BaseRealtimeData {
   title?: string;
   date: Date;
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
+  userId: string;
+  dispatch: (action: any) => void;
+
   // Add other properties specific to RealtimeDataItem here
 }
 
 interface RealtimeData extends BaseRealtimeData {
-  date: Date;
+
+  date: string | Date
   // Define other properties specific to RealtimeData here
 }
 
-interface RealtimeDataProps {
+interface RealtimeData {
   userId: string;
   dispatch: (action: any) => void;
 }
@@ -49,7 +53,7 @@ const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
   });
 };
 
-const RealtimeDataComponent: React.FC<RealtimeDataProps> = ({ userId, dispatch ,}) => {
+const RealtimeDataComponent: React.FC<RealtimeData> = ({ userId, dispatch ,}) => {
   // Initial data can be an empty array or any initial state you want
   const initialData: RealtimeDataItem[] = [];
   const { error, handleError, clearError } = useErrorHandling(); // Initialize error handling
@@ -132,7 +136,12 @@ const RealtimeDataComponent: React.FC<RealtimeDataProps> = ({ userId, dispatch ,
         <div key={index}>
           {/* Display each data item */}
           <p>{dataItem}</p>
-          <RealtimeDataComponent userId={userId} dispatch={dispatch} />
+          <RealtimeDataComponent
+            id={""}
+            date={new Date}
+            userId={userId}
+            dispatch={dispatch}
+            name={""} />
         </div>
       ))}
     </div>

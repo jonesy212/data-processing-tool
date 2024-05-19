@@ -5,6 +5,8 @@ import BlogAndContentEditor from "../models/content/BlogAndContentEditor";
 import ContentList from "../models/content/ContentList";
 import ContentType from "../typings/ContentType";
 import { EditorState } from "draft-js";
+import { Data } from "../models/data/Data";
+import { ListGeneratorProps } from "@/app/generators/ListGenerator";
 
 
 
@@ -23,7 +25,7 @@ export enum ContentManagementPhaseEnum {
 const ContentManagementPhase: React.FC = () => {
   const { contentItems, selectedContentItemId, setSelectedContentItemId } = useContentManagementStore();
 
-  const handleContentItemClick = (contentItemId: string) => {
+  const handleContentItemClick = (contentItemId: ListGeneratorProps<Data>['items'][0] | null) => {
     setSelectedContentItemId(contentItemId);
   };
 

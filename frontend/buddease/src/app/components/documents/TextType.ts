@@ -3,10 +3,6 @@ import * as ApiDataAnalysis from '../../api/ApiDataAnalysis';
 import generateSecretKey from '../../utils/generateSecretKey';
 import { TextProps } from '@/app/libraries/animations/DraggableAnimation/useText';
 
-
-
-
-
 class TextType {
     private text: string;
     private secretKey: string | undefined;

@@ -51,6 +51,7 @@ const createDynamicHook = ({
       current: 0,
       max: 100
     },
+    phaseType: "",
     toggleActivation: async () => {},
     startAnimation: () => {},
     stopAnimation: () => {},

@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 
 interface FileUploadModalProps {
   onFileUpload: (files: FileList) => void;
-
+  close?: () => void;
   // Add specific props for FileUploadModal
 }
 
@@ -29,3 +29,4 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({ onFileUpload }) => {
 };
 
 export default FileUploadModal;
+export type { FileUploadModalProps };

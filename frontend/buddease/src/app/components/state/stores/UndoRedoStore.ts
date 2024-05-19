@@ -4,6 +4,8 @@ import { action, observable } from 'mobx';
 export class UndoRedoStore {
   @observable actions: any[] = [];
   @observable currentIndex: number = -1;
+  static undo: any;
+  static redo: any
 
   @action
   public performAction(action: any) {

@@ -4,6 +4,7 @@ import { UserRole } from './UserRole';
 // Extend the UserRole interface to include JobRole
 export interface JobRole extends UserRole {
   salary: number;
+  isAdvertised: boolean;
 }
 
 const UserRoles: { [key: string]: UserRole } = {
@@ -23,7 +24,8 @@ const UserRoles: { [key: string]: UserRole } = {
     ],
     positions: [],
     salary: 100000 // Example salary for Administrator
-
+    ,
+    includes: []
   },
   Moderator: {
     role: 'Moderator',
@@ -38,9 +40,8 @@ const UserRoles: { [key: string]: UserRole } = {
       'Assist in approval process',
     ],
     positions: [],
-    salary: 80000 
-
-
+    salary: 80000,
+    includes: []
   },
   Member: {
     role: 'Member',
@@ -55,37 +56,39 @@ const UserRoles: { [key: string]: UserRole } = {
       'Submit new listings',
       'Vote on community decisions',
     ],
-    positions: []
-
+    positions: [],
+    includes: []
   },
   'Verified User': {
     role: 'Verified User',
     responsibilities: ['Same as regular member with verification status'],
     permissions: ['Same permissions as regular member'],
-    positions: [ ]
+    positions: [],
+    includes: []
 
   },
   Guest: {
     role: 'Guest',
     responsibilities: ['Limited access to view public content'],
     permissions: ['View public content without registration'],
-    positions: []
-
+    positions: [],
+    includes: []
   },
   TeamLeader: {
     role: 'TeamLeader',
     responsibilities: ['Team Management', 'Data Analysis'],
     permissions: ['Manage team members access', 'Access sales analytics data'],
     positions: [],
-    salary: 7000 
-
+    salary: 7000,
+    includes: []
   },
   PaidPosition: {
     role: 'PaidPosition',
     responsibilities: ['Team Management', 'Data Analysis'],
     permissions: ['Manage team members access', 'Access sales analytics data'],
     positions: [],
-    salary: 7000
+    salary: 7000,
+    includes: []
   }
 };
 

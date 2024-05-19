@@ -1,4 +1,5 @@
 // DocumentSlice.tsx
+import { v4 as uuidv4 } from 'uuid';
 import { fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
@@ -16,6 +17,8 @@ import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
+import Version from "@/app/components/versions/Version";
+import { produce } from 'immer';
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -362,16 +365,12 @@ const transformations = {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  managePermissions: (document: WritableDraft<DocumentData>, permissions: string) => {
+  managePermissions: (
+    document: WritableDraft<DocumentData>,
+    permissions: string) => {
     // Add permission transformation logic
-    document.permissions = permissions;
-    
-    document.content = `${permissions} Permissions: ${document.content}`;
+    document.content = `${permissions} Permissions Managed: ${document.content}`;
   },
-
-
-
-
 
   initiateWorkflow: (document: WritableDraft<DocumentData>, workflow: string) => {
     document.content = `${workflow} Initiated: ${document.content}`;
@@ -468,38 +467,151 @@ const transformations = {
 
 
 
-
-
-const documentId: UniqueIDGenerator = new UniqueIDGenerator();
-// Define a function to create a new document with default values
 const createNewDocument: (
   documentId: number
-) => WritableDraft<DocumentData> = () => ({
-  id: documentId as number,
-  title: "New Document",
-  content: "",
-  topics: [],
-  highlights: [],
-  files: [],
-  name: "New Document",
-  description: "New document description",
-  documentType: DocumentTypeEnum.Other,
-  documentStatus: DocumentStatusEnum.Draft,
-  documentOwner: "",
-  documentCreationDate: new Date(),
-  documentLastModifiedDate: new Date(),
-  documentVersion: 0,
-  documentContent: "",
-  keywords: [],
-  options: {} as WritableDraft<DocumentOptions>,
-  folderPath: "",
-  previousMetadata: {} as WritableDraft<StructuredMetadata>,
-  currentMetadata: {} as WritableDraft<StructuredMetadata>,
-  accessHistory: [],
-  folders: [],
-  lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean; }>,
-  version: {} as VersionData,
+) => DocumentData = (documentId) => {
+  const initialState: DocumentData = {
+    _id: uuidv4(),
+    id: documentId as number,
+    title: "New Document",
+    content: "",
+    topics: [],
+    highlights: [],
+    files: [],
+    name: "New Document",
+    description: "New document description",
+    documentType: DocumentTypeEnum.Other,
+    documentStatus: DocumentStatusEnum.Draft,
+    documentOwner: "",
+    documentCreationDate: new Date(),
+    documentLastModifiedDate: new Date(),
+    documentVersion: 0,
+    documentContent: "",
+    keywords: [],
+    options: {} as DocumentOptions,
+    folderPath: "",
+    previousMetadata: {} as WritableDraft<StructuredMetadata>,
+    currentMetadata: {} as WritableDraft<StructuredMetadata>,
+    accessHistory: [],
+    folders: [],
+    lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean }>,
+    version: {
+      id: 0,
+      name: "Initial Version",
+      url: "https://example.com/initial_version",
+      versionNumber: '1.0',
+      appVersion: "v1.0",
+      description: "Initial version description",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      content: "Initial version content",
+      userId: "user123",
+      documentId: "doc123",
+      parentId: "",
+      parentType: "document",
+      parentVersion: "",
+      parentTitle: "",
+      parentContent: "",
+      parentName: "",
+      parentUrl: "",
+      parentChecksum: "",
+      parentMetadata: {},
+      parentAppVersion: "",
+      parentVersionNumber: "",
+      checksum: "abc123",
+      isLatest: true,
+      isPublished: false,
+      publishedAt: null,
+      source: "Internal",
+      status: "Draft",
+      workspaceId: "workspace123",
+      workspaceName: "Sample Workspace",
+      workspaceType: "Team",
+      workspaceUrl: "https://example.com/workspace123",
+      workspaceViewers: ["user1", "user2"],
+      workspaceAdmins: ["admin1"],
+      workspaceMembers: ["user1", "user2", "admin1"],
+      frontendStructure: Promise.resolve([]),
+      backendStructure: Promise.resolve([]),
+      data: [],
+      draft: false,
+      metadata: {
+        author: "Author Name",
+        timestamp: new Date(),
+      },
+      getVersion: () => "1.0",
+      versionHistory: {
+        versions: []
+      },
+      mergeAndHashStructures: async (baseStructure, additionalStructure) => {
+        return "merged_structure_hash";
+      },
+      getVersionNumber: () => "1.0",
+      updateVersionNumber: (newVersionNumber) => {
+        console.log(`Updating version number to ${newVersionNumber}`);
+      },
+      getVersionData: () => {
+        return {
+          content: "Initial version content",
+          metadata: {
+            author: "Author Name",
+            timestamp: new Date(),
+          },
+          checksum: "abc123",
+        };
+      },
+      updateVersionHistory: () => {
+        console.log("Updating version history");
+      },
+      generateChecksum: () => {
+        return "abc123";
+      },
+      compare: () => 0,
+      parse: () => [],
+      isValid: () => true,
+      generateHash: (appVersion) => {
+        return "hash_value";
+      },
+      isNewer: () => false,
+      hashStructure: () => {
+        return "structure_hash";
+      },
+      getStructureHash: async () => {
+        return "structure_hash";
+      },
+      getContent: () => "Initial version content",
+      setContent: (content) => {
+        console.log(`Setting content to: ${content}`);
+      },
+
+      structure: {}, // Assuming structure is initially an empty object
+      mergeStructures: (baseStructure, additionalStructure) => {
+        // Implement mergeStructures logic here
+        // Return the merged structure
+        return baseStructure.concat(additionalStructure); // Example logic: concatenating structures
+      },
+      generateStructureHash: async () => {
+        // Implement generateStructureHash logic here
+        // Return the generated structure hash
+        return "generated_structure_hash"; // Example: returning a mock hash
+      },
+    },
+
+    permissions: new DocumentPermissions(true, false),
+    versionData: {
+      content: "Initial version content",
+      metadata: {
+        author: "Author Name",
+        timestamp: new Date(),
+      },
+      checksum: "abc123",
+    },
+  };
+
+  return produce(initialState, (draftState) => {
+  return { ...draftState };
 });
+};
 
 
 // Create a slice for managing document-related data
@@ -515,14 +627,13 @@ export const useDocumentManagerSlice = createSlice({
       prepare: () => {
         // Generate a new document with default values
         const newDocument: WritableDraft<DocumentData> = {
+          _id: "i989adn8dd",
           id: Math.floor(Math.random() * 1000), // Generate a unique ID
           title: "New Document",
           content: "", // Add default content if needed
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
-
-
 
 
           // Add other properties as needed
@@ -534,7 +645,9 @@ export const useDocumentManagerSlice = createSlice({
           accessHistory: [],
           folders: [],
           lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean; }>,
-          version: {} as WritableDraft<VersionData>
+          version: undefined,
+          versionData: undefined,
+          permissions: undefined
         };
         return { payload: newDocument };
       },
@@ -930,6 +1043,7 @@ export const useDocumentManagerSlice = createSlice({
         const documentId = action.payload;
         // Update state with the fetched document
         state.documents.push({
+          _id: "fetchedArchive",
           id: documentId,
           title: "",
           content: "",
@@ -944,7 +1058,14 @@ export const useDocumentManagerSlice = createSlice({
           accessHistory: [],
           folders: [],
           lastModifiedDate: {} as ModifiedDate, // Updated type
-          version: {} as WritableDraft<VersionData>
+          version: {} as WritableDraft<Version>,
+          versionData: {} as WritableDraft<VersionData>,
+          permissions: {
+            getReadAccess: () => true,
+            setReadAccess: () => true,
+            getWriteAccess: () => false,
+            setWriteAccess: () => false
+          },
          });
         // Assuming implementation here...
         useNotification().notify(
@@ -1085,12 +1206,18 @@ export const useDocumentManagerSlice = createSlice({
 
     splitDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToSplit = state.documents.find(doc => doc.id === documentId);
+      const documentToSplit = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToSplit) {
         // Example: Split document content into two parts
-        const splitContent = documentToSplit.content.split(' ');
-        const firstHalf = splitContent.slice(0, Math.ceil(splitContent.length / 2)).join(' ');
-        const secondHalf = splitContent.slice(Math.ceil(splitContent.length / 2)).join(' ');
+        const splitContent = documentToSplit.content.split(" ");
+        const firstHalf = splitContent
+          .slice(0, Math.ceil(splitContent.length / 2))
+          .join(" ");
+        const secondHalf = splitContent
+          .slice(Math.ceil(splitContent.length / 2))
+          .join(" ");
         // Update the original document and add the new document
         documentToSplit.content = firstHalf;
         state.documents.push({
@@ -1108,19 +1235,13 @@ export const useDocumentManagerSlice = createSlice({
           accessHistory: [],
           folders: [],
           lastModifiedDate: {
-            value: new Date,
-            isModified: false
+            value: new Date(),
+            isModified: false,
           },
-          version: {
-            metadata: {
-              author: 'System',
-              timestamp: new Date(),
-            },
-            draft: false,
-            content: '',
-            checksum: ''
-          },
-        
+          version: {} as WritableDraft<Version>,
+          permissions: undefined,
+          versionData: undefined,
+          _id: "",
         });
       }
     },

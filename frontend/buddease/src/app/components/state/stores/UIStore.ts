@@ -7,6 +7,14 @@ import { Theme } from "../../libraries/ui/theme/Theme";
 import { FileLogger } from "../../logging/Logger";
 import { UserProfile } from "../../snapshots/userSnapshotData";
 import { YourResponseType } from "../../typings/types";
+import { UIActions } from "../../actions/UIActions";
+
+
+// Extend the Event interface to include the loaded property
+interface CustomEvent extends Event {
+  loaded?: number; //  Define the loaded property as optional
+  total: number
+}
 
 class UIStore {
   theme = {
@@ -27,6 +35,42 @@ class UIStore {
    // Error handling state and methods
    error: string | null = null;
   
+
+
+
+  
+// Method to calculate progress percentage based on event properties
+calculateProgressPercentage(event: CustomEvent): number {
+  // This function should return a number between 0 and 100 representing the progress percentage.
+
+  // Check if the event has 'loaded' and 'total' properties
+  if (event.loaded !== undefined && 'total' in event) {
+    // Calculate progress percentage based on event properties
+    const progress = (event.loaded / event.total) * 100;
+
+    // Ensure progress percentage doesn't exceed 100%
+    return Math.min(progress, 100);
+  } else {
+    // If the event doesn't have 'loaded' and 'total' properties, return 0
+    return 0;
+  }
+}
+
+
+  
+
+
+
+// Function to update a progress bar UI element
+ updateProgressBar(percentage: number) {
+  // Update the progress bar UI element based on the calculated percentage
+  console.log("Updating progress bar with percentage:", percentage);
+  // Example React code to update a progress bar state
+  // Assuming you have a state variable 'progress' and a setter function 'setProgress'
+  UIActions.setProgress(percentage);
+}
+
+ 
    constructor() {
      makeAutoObservable(this);
    }
@@ -55,7 +99,7 @@ class UIStore {
    }
  
    // Function to safely parse data with error handling
-   parseDataWithErrorHandling(data: YourResponseType[], threshold: number): ParsedData[] {
+   parseDataWithErrorHandling(data: YourResponseType[], threshold: number): ParsedData<object>[] {
      try {
        // Call safeParseData function
        return safeParseData(data, threshold);
@@ -82,6 +126,16 @@ class UIStore {
 
 
 
+  activeModal: string = '';
+  displayAudioOptionsModal(callback: (selectedOptions: any) => void) {
+    this.modalOpen = true;
+    this.activeModal = 'audioOptions';
+
+    // Assume some logic here to display the modal/menu and capture user selection
+    // After user selection, call the callback with the selected options
+    const selectedOptions = {/* Logic to get selected options */};
+    callback(selectedOptions);
+  }
   // Method to handle user authentication state
   isAuthenticated = false;
   login() {

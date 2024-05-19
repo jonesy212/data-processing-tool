@@ -41,8 +41,9 @@ interface Document extends DocumentData {
 export interface DocumentStore {
   documents: Record<string, Document>;
   fetchDocuments: () => void;
+  
   addDocument: (document: Document) => void;
-  updateDocument: (id: string, updatedDocument: Document) => void;
+  updateDocument: (id: string, updatedDocument: DocumentData) => void;
   deleteDocument: (id: string) => void;
   updateDocumentTags: (id: string, newTags: string[]) => void;
   // Add more methods as needed

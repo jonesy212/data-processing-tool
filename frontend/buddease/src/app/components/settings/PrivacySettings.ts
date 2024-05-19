@@ -11,6 +11,24 @@ export interface PrivacySettings {
     hideVisitedProfiles: boolean; // Whether to hide visited profiles from others
     restrictContentSharing: boolean; // Whether to restrict content sharing
     enableIncognitoMode: boolean; // Whether to enable incognito browsing mode
-    // Add other privacy-related settings as needed
+  // Add other privacy-related settings as needed
   }
   
+
+const selectedSettings: PrivacySettings = {
+  hidePersonalInfo: true,
+  enablePrivacyMode: false,
+  enableTwoFactorAuth: false,
+  restrictVisibilityToContacts: false,
+  restrictFriendRequests: false,
+  hideOnlineStatus: false,
+  showLastSeenTimestamp: false,
+  allowTaggingInPosts: false,
+  enableLocationPrivacy: false,
+  hideVisitedProfiles: false,
+  restrictContentSharing: false,
+  enableIncognitoMode: false,
+};
+
+
+export {selectedSettings}

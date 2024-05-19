@@ -1,9 +1,20 @@
 // NFT.ts
+
+import { generateNFT } from "@/app/generators/NFTGenerator";
+
+
+export interface NFT {
+  id: string;
+  name: string;
+  imageUrl: string;
+  description: string;
+  // Add any other relevant properties
+}
 // Define the NFT type
-type NFT = string;
+type NFTType = string;
 
 // Assuming there's a function to handle the conversion and addition to NFT area
-const convertToNFT = (document: Document): NFT => {
+const convertToNFT = (document: Document): NFTType => {
   // Logic to convert document to NFT
   return generateNFT(); // Example: Using the generateNFT function from NFTGenerator.ts
 };
@@ -25,6 +36,6 @@ const uploadDocument = (document: Document) => {
   // Logic to upload the document
 };
 
-const addToNFTArea = (nft: NFT) => {
+const addToNFTArea = (nft: NFTType) => {
   // Logic to add the NFT to the user's NFT area
 };

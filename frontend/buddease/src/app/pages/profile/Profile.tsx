@@ -3,8 +3,18 @@ import React from 'react';
 import UserDetails, { User } from '../../components/users/User'; // Import the User interface
 import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '../personas/PersonaBuilder';
 
+
+
 interface ProfileProps {
   user: User; // Pass the user data as props
+}
+
+
+// Define the profile access control interface
+interface ProfileAccessControl {
+  friendsOnly: boolean;
+  allowTagging: boolean;
+  blockList: string[];
 }
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
@@ -16,7 +26,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const personaType = PersonaTypeEnum.Developer; // Define the persona type
 
   // Build the persona based on the provided type
-  const persona = PersonaBuilder.buildPersona(personaType);
+  const persona = PersonaBuilder.buildPersona(personaType, props);
 
   return (
     <div>
@@ -33,3 +43,4 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 };
 
 export default Profile;
+export type {ProfileAccessControl}

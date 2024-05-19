@@ -15,6 +15,7 @@ interface CollaborationPreferences {
 const collaborationPreferences: CollaborationPreferences = {
   teamBuilding: {
     id: "1",
+    appName: "Buddease",
     filter: (key) => {
       if (key === "id") {
         // Handle id filtering logic
@@ -139,3 +140,4 @@ const collaborationPreferences: CollaborationPreferences = {
 
 
 export type { CollaborationPreferences };
+export default collaborationPreferences;

@@ -7,7 +7,7 @@ export const TeamActions = {
   addTeam: createAction<Team>("addTeam"),
   addTeamSuccess: createAction<{ team: Team }>("addTeamSuccess"),
   addTeamFailure: createAction<{ error: string }>("addTeamFailure"),
-
+  createTeam: createAction<Team>("createTeam"),
   removeTeamSuccess: createAction<number>("removeTeamSuccess"),
   removeTeamFailureremoveTeamFailure: createAction<{ error: string }>("removeTeamFailure"),
   removeTeamFailure: createAction<{ error: string }>("removeTeamFailure"),

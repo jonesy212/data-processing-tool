@@ -1,8 +1,10 @@
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
+import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
 import { Task } from '../components/models/tasks/Task';
+import { historyManagerStore } from '../components/state/stores/HistoryStore';
 import { useTaskManagerStore } from '../components/state/stores/TaskStore ';
-import { handleApiErrorAndNotify } from './ApiData';
+import { NotificationType, useNotification } from '../components/support/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
@@ -27,6 +29,14 @@ interface TaskNotificationMessages {
   ASSIGN_TASK_TO_TEAM_ERROR: string;
   UNASSIGN_TASK_SUCCESS: string;
   UNASSIGN_TASK_ERROR: string;
+  BULK_UNASSIGN_TASKS_ERROR: string;
+  FETCH_TASK_ERROR: string;
+  CREATE_TASK_ERROR: string;
+  DELETE_TASK_ERROR: string;
+  BULK_ASSIGN_TASKS_ERROR: string;
+  BULK_ASSIGN_TODOS_ERROR: string;
+  BULK_UNASSIGN_TODOS_ERROR: string;
+  FETCH_TASK_HISTORY_ERROR: string;
   // Add more keys as needed
 }
 
@@ -48,17 +58,34 @@ const taskApiNotificationMessages: TaskNotificationMessages = {
   ASSIGN_TASK_TO_TEAM_ERROR: 'Failed to assign task to team.',
   UNASSIGN_TASK_SUCCESS: 'Task unassigned successfully.',
   UNASSIGN_TASK_ERROR: 'Failed to unassign task.',
+  BULK_UNASSIGN_TASKS_ERROR: 'Failed to bulk unassign tasks.',
+  FETCH_TASK_ERROR: 'Failed to fetch task.',
+  CREATE_TASK_ERROR: 'Failed to create task.',
+  DELETE_TASK_ERROR: 'Failed to delete task.',
+  BULK_ASSIGN_TASKS_ERROR: 'Failed to bulk assign tasks.',
+  BULK_ASSIGN_TODOS_ERROR: 'Failed to bulk assign todos',
+  BULK_UNASSIGN_TODOS_ERROR: 'Failed to bulk unassign todos',
+  FETCH_TASK_HISTORY_ERROR: 'Failed to fetch task history'
   // Add more properties as needed
 };
-
 // Function to handle API errors and notify for tasks
 const handleTaskApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof TaskNotificationMessages
 ) => {
-  handleApiErrorAndNotify(error, errorMessage, errorMessageId);
+  const errorMessageText = taskApiNotificationMessages[errorMessageId];
+  // Notify the error message
+  useNotification().notify(
+    errorMessageId,
+    errorMessageText,
+    null,
+    new Date(),
+    "ApiClientError" as NotificationType
+  );
 };
+
+
 
 export const fetchTasks = async (): Promise<Task[]> => {
   try {
@@ -69,7 +96,7 @@ export const fetchTasks = async (): Promise<Task[]> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to fetch tasks',
-      'FetchTasksErrorId'
+      'FETCH_TASKS_ERROR'
     );
     throw error;
   }
@@ -91,7 +118,7 @@ export const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to add task',
-      'AddTaskErrorId'
+      'ADD_TASK_ERROR'
     );
     throw error;
   }
@@ -111,44 +138,54 @@ export const removeTask = async (taskId: number): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to remove task',
-      'RemoveTaskErrorId'
+      'REMOVE_TASK_ERROR'
     );
     throw error;
   }
 };
 
-export const toggleTask = async (taskId: number): Promise<Task> => {
-  try {
-    const toggleTaskEndpoint = `${API_BASE_URL}.toggle.${taskId}`;
-    const response = await axiosInstance.put(toggleTaskEndpoint);
+export const toggleTask =  (taskId: number): Promise<Task | void> => {
+  return new Promise<Task | void>(async (resolve, reject) => {
+    try {
+      const toggleTaskEndpoint = `${API_BASE_URL}.toggle.${taskId}`;
+      const response = await axiosInstance.put(toggleTaskEndpoint);
 
-    return response.data;
-  } catch (error) {
-    console.error('Error toggling task:', error);
-    handleTaskApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to toggle task',
-      'ToggleTaskErrorId'
-    );
-    throw error;
-  }
+      response.data ? resolve(response.data) : resolve(); // Return task data if present, else resolve
+      return response.data;
+    } catch (error) {
+      console.error('Error toggling task:', error);
+      handleTaskApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        'Failed to toggle task',
+        'TOGGLE_TASK_ERROR'
+      );
+      reject(error)
+      throw error;
+    }
+  })
 };
 
-export const updateTask = async (taskId: number, newTitle: string): Promise<Task> => {
-  try {
-    const updateTaskEndpoint = `${API_BASE_URL}.update.${taskId}`;
-    const response = await axiosInstance.put(updateTaskEndpoint, { title: newTitle });
+export const updateTask = (taskId: number, newTitle: string): Promise<Task| void> => {
+  return new Promise<Task | void>( async (resolve, reject) => {
+    try {
+      const updateTaskEndpoint = `${API_BASE_URL}.update.${taskId}`;
+      const response = await axiosInstance.put(updateTaskEndpoint, { title: newTitle });
 
-    return response.data;
-  } catch (error) {
-    console.error('Error updating task:', error);
-    handleTaskApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to update task',
-      'UpdateTaskErrorId'
-    );
-    throw error;
-  }
+      response.data ? resolve(response.data) : resolve(); // Return task data if present, else resolve
+
+      return response.data;
+
+    } catch (error) {
+      console.error('Error updating task:', error);
+      handleTaskApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        'Failed to update task',
+        'UPDATE_TASK_ERROR'
+      );
+      reject(error)
+      throw error;
+    }
+  })
 };
 
 export const completeAllTasks = async (): Promise<void> => {
@@ -160,7 +197,7 @@ export const completeAllTasks = async (): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to complete all tasks',
-      'CompleteAllTasksErrorId'
+      'COMPLETE_ALL_TASKS_ERROR'
     );
     throw error;
   }
@@ -175,9 +212,27 @@ export const assignTaskToTeam = async (taskId: number, teamId: number): Promise<
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to assign task to team',
-      'AssignTaskToTeamErrorId'
+      'ASSIGN_TASK_TO_TEAM_ERROR'
     );
     throw error;
+  }
+};
+
+
+// Assuming getTaskHistoryFromDatabase is a function to fetch task history from the database
+export const getTaskHistoryFromDatabase = async (taskId: string) => {
+  try {
+    // Call your API endpoint to fetch task history based on taskId
+    const response = await fetch(`/api/tasks/${taskId}/history`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch task history');
+    }
+    const historyData = await response.json();
+    return historyData;
+  } catch (error) {
+    console.error('Error fetching task history:', error);
+    // Handle error as needed
+    return [];
   }
 };
 
@@ -190,43 +245,59 @@ export const unassignTask = async (taskId: number): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to unassign task',
-      'UnassignTaskErrorId'
+      'UNASSIGN_TASK_ERROR'
     );
     throw error;
   }
 };
 
 
-export const fetchTask = async (taskId: number): Promise<Task> => {
-  try {
-    const fetchTaskEndpoint = `${API_BASE_URL}.single.${taskId}`;
-    const response = await axiosInstance.get(fetchTaskEndpoint);
-    return response.data.task;
-  } catch (error) {
-    console.error('Error fetching task:', error);
-    handleTaskApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to fetch task',
-      'FetchTaskErrorId'
-    );
-    throw error;
-  }
-};
-
-  export const createTask = async (newTask: Promise<Task>): Promise<Task> => {
+export const fetchTask = (taskId: number): Promise<Task | void> => {
+  return new Promise<Task | void>(async (resolve, reject) => {
     try {
-      const createTaskEndpoint = `${API_BASE_URL}.add`;
-      await axiosInstance.post(createTaskEndpoint, newTask);
+      const fetchTaskEndpoint = `${API_BASE_URL}.get.${taskId}`;
+      const response = await axiosInstance.get<Task>(fetchTaskEndpoint); // Added type annotation for response
+
+      // Perform any necessary processing here
+
+      response.data ? resolve(response.data) : resolve(); // Return task data if present, else resolve
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error fetching task:', error);
       handleTaskApiErrorAndNotify(
         error as AxiosError<unknown>,
-        'Failed to create task',
-        'CreateTaskErrorId'
+        'Failed to fetch task',
+        'FETCH_TASK_ERROR'
       );
+      reject(error); // Reject the promise if an error occurs
+    }
+  });
+};
+
+
+export const createTask = (newTask: Task): Promise<Task | void> => { 
+  return new Promise<Task | void>(async (resolve, reject) => {
+  
+    try {
+      const createTaskEndpoint = `${API_BASE_URL}.add`;
+      const response = await axiosInstance.post(createTaskEndpoint, newTask);
+
+      response.data ? resolve(response.data) : resolve(); 
+
+      return response.data;
+    } catch (error) {
+      console.error("Error creating task:", error);
+      handleTaskApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        "Failed to create task",
+        "CREATE_TASK_ERROR"
+      );
+
+      reject(error)
       throw error;
     }
-  };
+  })
+}
+
 
 export const deleteTask = async (taskId: number): Promise<void> => {
   try {
@@ -237,7 +308,7 @@ export const deleteTask = async (taskId: number): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to delete task',
-      'DeleteTaskErrorId'
+      'DELETE_TASK_ERROR'
     );
     throw error;
   }
@@ -252,7 +323,7 @@ export const bulkAssignTasks = async (taskIds: number[], teamId: number): Promis
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk assign tasks',
-      'BulkAssignTasksErrorId'
+      'BULK_ASSIGN_TASKS_ERROR'
     );
     throw error;
   }
@@ -267,7 +338,7 @@ export const bulkUnassignTasks = async (taskIds: number[]): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk unassign tasks',
-      'BulkUnassignTasksErrorId'
+      'BULK_UNASSIGN_TASKS_ERROR'
     );
     throw error;
   }
@@ -283,7 +354,7 @@ export const bulkAssignTodos = async (todoIds: number[], teamId: number): Promis
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk assign todos',
-      'BulkAssignTodosErrorId'
+      'BULK_ASSIGN_TODOS_ERROR'
     );
     throw error;
   }
@@ -298,7 +369,25 @@ export const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk unassign todos',
-      'BulkUnassignTodosErrorId'
+      'BULK_UNASSIGN_TODOS_ERROR'
+    );
+    throw error;
+  }
+};
+
+
+
+export const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]> => {
+  try {
+    // Call the corresponding method from TaskHistoryStore to fetch task history entries
+    const taskHistoryStoreInstance = historyManagerStore();
+    return await taskHistoryStoreInstance.getTaskHistory(Number(taskId));
+  } catch (error) {
+    console.error('Error fetching task history:', error);
+    handleTaskApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      'Failed to fetch task history',
+      'FETCH_TASK_HISTORY_ERROR'
     );
     throw error;
   }

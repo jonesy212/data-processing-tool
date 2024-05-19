@@ -12,6 +12,8 @@ import generateNewRoute from "@/app/generators/generateNewRoute";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { useAppSelector } from "@/app/utils/useAppSelector";
 import React, {
+  BaseSyntheticEvent,
+  MouseEventHandler,
   SyntheticEvent,
   UIEvent,
   UIEventHandler,
@@ -68,7 +70,7 @@ import { Subscription } from "../subscriptions/Subscription";
 import { MeetingActions } from "../tasks/MeetingActions";
 import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
-import { BaseCustomEvent } from "./BaseCustomEvent";
+import { BaseCustomEvent, CustomClipboardEvent } from "./BaseCustomEvent";
 import { ListActions } from "../actions/ListActions";
 import { SortingType } from "../models/data/StatusType";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
@@ -76,6 +78,7 @@ import { addMessage } from "../state/redux/slices/ChatSlice";
 import { BaseRouter } from "next/dist/shared/lib/router/router";
 import { Route } from "react-router-dom";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import { CustomMouseEvent } from "./EventService";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -89,6 +92,7 @@ const [pointerPosition, setPointerPosition] = useState({ x: 0, y: 0 });
 // Define the type of the event parameter to match ReactiveEventHandler
 type ReactiveClipboardEvent = React.ClipboardEvent<HTMLElement>;
 
+type ReactiveBaseMouse = BaseSyntheticEvent & React.MouseEvent<HTMLElement, MouseEvent>
 // Define the type of the event parameter to match ReactiveEventHandler
 type ReactiveMouseEvent = React.MouseEvent<HTMLElement, MouseEvent> & {
   settings?: any;
@@ -179,6 +183,7 @@ interface CustomEventListener extends EventListener {
   handleScrolling: (event: Event) => void;
   handleHighlighting: (
     event: React.MouseEvent<HTMLElement, MouseEvent>
+      | MouseEvent | Event
   ) => void;
   handleAnnotations: (event: React.MouseEvent<HTMLElement>) => void;
   handleCopyPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void;
@@ -394,10 +399,13 @@ const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
   UIActions.updateScrollingState(scrollTop);
 };
 
-const handleAnnotations = (event: React.SyntheticEvent) => {
+const handleAnnotations = (
+  event: React.SyntheticEvent<Element, Event> | CustomMouseEvent
+) => {
   // Logic for handling annotations
   // Accessing annotation-related information
-  const annotationDetails = event.currentTarget.getAttribute("data-annotation");
+  const annotationDetails =
+    event.currentTarget?.getAttribute("data-annotation");
 
   // Your custom logic for handling annotations
   console.log("Handling annotations:");
@@ -500,12 +508,9 @@ const handleSorting = (
   // Update sorting state and re-render list
   dispatch(ListActions.updateSorting(sortingType));
 };
-
-// Modify the function signature to accept settings data as a separate parameter
-const handleSettingsPanel = (
-  event: React.SyntheticEvent,
-  settings: { isOpen: boolean }
-) => {
+const handleSettingsPanel: MouseEventHandler<HTMLButtonElement> = (
+  event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+): void => {
   const dispatch = useDispatch(); // Initialize useDispatch hook
 
   // Logic for handling settings panel
@@ -530,8 +535,7 @@ const handleSettingsPanel = (
   dispatch(
     UIActions.updateSettingsPanelState({
       settings: {
-        ...settings,
-        isOpen: !settings.isOpen,
+        isOpen: !event.currentTarget.dataset.isOpen,
       },
     })
   );
@@ -543,7 +547,7 @@ function isReactiveMouseEvent(event: any): event is ReactiveMouseEvent {
 }
 
 const handleHelpFAQ = (
-  event: React.MouseEvent<HTMLElement, MouseEvent> | React.SyntheticEvent
+  event: React.SyntheticEvent | Event
 ) => {
   // Common logic for handling help/FAQ
   console.log("Handling help/FAQ:", event);
@@ -575,9 +579,9 @@ const handleHelpFAQ = (
 const createEventHandler =
   (
     eventName: string,
-    customLogic?: (event: React.MouseEvent<HTMLElement>) => void
+    customLogic?: (event: React.MouseEvent<HTMLElement> | MouseEvent) => void
   ) =>
-  (event: React.MouseEvent<HTMLElement>) => {
+  (event: React.MouseEvent<HTMLElement> | MouseEvent) => {
     const message: Partial<Message> = {
       content: `Event '${eventName}' occurred. Details: ${JSON.stringify(
         event
@@ -683,7 +687,9 @@ const handleClickOutside: React.MouseEventHandler<HTMLElement> = (
 };
 
 // Define handleHighlighting as a function that accepts a MouseEvent parameter
-const handleHighlighting: React.MouseEventHandler<HTMLDivElement> = (event) => {
+const handleHighlighting = (
+event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
+) => {
   // Logic for handling text selection/highlighting
   console.log("Handling text highlighting:", event);
 
@@ -695,7 +701,7 @@ const handleHighlighting: React.MouseEventHandler<HTMLDivElement> = (event) => {
   }
 };
 
-const handleCopyPaste = (event: React.ClipboardEvent<HTMLDivElement>) => { 
+const handleCopyPaste = (event: React.ClipboardEvent<HTMLDivElement> | ClipboardEvent) => { 
   // Logic for handling copy/paste events
   console.log("Text copied/pasted:", event);
 
@@ -1095,7 +1101,7 @@ const DynamicEventHandlerService = ({
 }: {
   handleSorting: (
     snapshotList: Promise<SnapshotList>,
-    event: SyntheticEvent<Element, Event>
+    event: SyntheticEvent<Element, Event> | MouseEvent
   ) => void;
 }) => {
   // Define the subscription variable
@@ -1119,7 +1125,7 @@ const DynamicEventHandlerService = ({
       addMessage("Sorted snapshots");
     })();
 
-    return (event: SyntheticEvent<Element, Event>) => {
+    return (event: SyntheticEvent<Element, Event> | MouseEvent) => {
       handleSorting(snapshotList, event);
     };
   };
@@ -1141,7 +1147,7 @@ const DynamicEventHandlerService = ({
 
   const handleKeyboardShortcuts = createEventHandler(
     "handleKeyboardShortcuts",
-    (event: React.MouseEvent<HTMLElement>) => {
+    (event: React.MouseEvent<HTMLElement> | MouseEvent) => {
       // Handle keyboard shortcuts logic
       console.log("Handling keyboard shortcuts:", event);
       // Prevent default browser behavior for some shortcuts
@@ -1153,7 +1159,7 @@ const DynamicEventHandlerService = ({
     "handleHighlight",
     createEventHandler(
       "handleTextHighlight",
-      (event: React.MouseEvent<HTMLElement>) => {
+      (event: React.MouseEvent<HTMLElement> | MouseEvent | CustomMouseEvent) => {
         // Handle text highlight logic
         console.log("Text highlighted");
 
@@ -1171,15 +1177,11 @@ const DynamicEventHandlerService = ({
     )
   );
 
-  const handleMouseClick = createEventHandler(
-    "handleMouseClick",
-    (event: React.MouseEvent<HTMLElement>) => {
-      // Handle mouse click logic
-      console.log("Handling mouse click:", event);
+  const handleMouseClick = (event: React.MouseEvent<HTMLElement> | MouseEvent) => {
+    // Handle mouse click logic
+    console.log("Handling mouse click:", event);
+  };
 
-      return () => {};
-    }
-  );
 
   const handleButtonClick: React.MouseEventHandler<HTMLButtonElement> = (
     event
@@ -1195,19 +1197,19 @@ const DynamicEventHandlerService = ({
 
   const handleDivMouseMove = createEventHandler(
     "handleDivMouseMove",
-    (event: React.MouseEvent<HTMLElement>) => {
+    (event: React.MouseEvent<HTMLElement> | MouseEvent) => {
       console.log("Handling div mouse move:", event);
 
-      return () => {};
+      return () => { };
     }
   );
 
   const handleContextMenu = createEventHandler(
     "handleContextMenu",
-    (event: React.SyntheticEvent) => {
+    (event: React.SyntheticEvent | MouseEvent) => {
       console.log("Handling context menu:", event);
 
-      return () => {};
+      return () => { };
     }
   );
 
@@ -1239,23 +1241,23 @@ const DynamicEventHandlerService = ({
   // Define the event listener function
   const handleScrolling: UIEventHandler<HTMLDivElement> &
     EventListenerOrEventListenerObject = (event: any) => {
-    // Accessing scroll-related information
-    const scrollTop = event.currentTarget?.scrollTop;
-    const scrollLeft = event.currentTarget?.scrollLeft;
+      // Accessing scroll-related information
+      const scrollTop = event.currentTarget?.scrollTop;
+      const scrollLeft = event.currentTarget?.scrollLeft;
 
-    // Your custom logic for handling scrolling
-    console.log("Handling scrolling:");
-    console.log("Scroll Top:", scrollTop);
-    console.log("Scroll Left:", scrollLeft);
+      // Your custom logic for handling scrolling
+      console.log("Handling scrolling:");
+      console.log("Scroll Top:", scrollTop);
+      console.log("Scroll Left:", scrollLeft);
 
-    // Additional logic based on scroll position or other scroll-related information
-    if (scrollTop > 100) {
-      // Perform an action when the scroll position is beyond a certain point
-      console.log("You scrolled beyond 100 pixels from the top.");
-    }
+      // Additional logic based on scroll position or other scroll-related information
+      if (scrollTop > 100) {
+        // Perform an action when the scroll position is beyond a certain point
+        console.log("You scrolled beyond 100 pixels from the top.");
+      }
 
-    // You may not need to call the original handler here
-  };
+      // You may not need to call the original handler here
+    };
 
   const scrollEventListener: UIEventHandler<HTMLDivElement> = (event) => {
     // Access scroll-related information
@@ -1279,7 +1281,7 @@ const DynamicEventHandlerService = ({
 
 
   const handleZoom = React.useCallback(
-    (event: React.WheelEvent<HTMLDivElement>) => {
+    (event: React.WheelEvent<HTMLDivElement> | MouseEvent) => {
       // Handle zoom logic
       console.log("Handling zoom with wheel event:", event);
 
@@ -1288,6 +1290,15 @@ const DynamicEventHandlerService = ({
     },
     []
   );
+
+  const handleMouseMovement: React.MouseEventHandler<HTMLDivElement> | MouseEvent = (
+    event) => {
+    // Accessing mouse movement-related info
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+    // Handle mouse movement logic
+    console.log("Handling mouse movement:", event);
+  }
 
   const handleKeyboardEvent: React.KeyboardEventHandler<HTMLDivElement> = (
     event
@@ -1762,27 +1773,21 @@ const DynamicEventHandlerService = ({
       return event;
     };
 
-    const handleHighlighting = createEventHandler(
-      "handleHighlighting",
-      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        // Access mouse event properties
+      const handleMouseEvent = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         const x = event.clientX;
         const y = event.clientY;
 
-        // Handle mouse movement
         console.log("Mouse moved to:", x, y);
-        // Additional mouse movement handling logic
         if (event.type === "mousemove") {
           console.log("Mouse moved");
         }
-        // dispatch action to highlight element on mouse move
-        dispatch(dispatch(DragActions.highlight({ x, y })));
+        dispatch(DragActions.highlight({ x, y }));
       }
-    );
+  
 
     const handleMouseMovement = createEventHandler(
       "handleMouseMovement",
-      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {
         // Access mouse event properties
         const x = event.clientX;
         const y = event.clientY;
@@ -1795,31 +1800,45 @@ const DynamicEventHandlerService = ({
         }
       }
     );
-
     const handleAnnotations = createEventHandler(
       "handleAnnotations",
-      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {
         // Access annotation-related information
         const selectedText = window.getSelection()?.toString();
-
+    
         // Your custom logic for handling annotations
-        const annotationDetails =
-          event.currentTarget.getAttribute("data-annotation");
-
+        let annotationDetails: string | null = null;
+        if (event.currentTarget instanceof HTMLElement) {
+          annotationDetails = event.currentTarget.getAttribute("data-annotation");
+        }
+    
         // Your custom logic for handling annotations
         console.log("Handling annotations:");
+        console.log("Selected Text:", selectedText);
         console.log("Annotation Details:", annotationDetails);
-
+    
+        // Combine selected text and annotation details for the content
+        let content = "You annotated: ";
+        if (selectedText) {
+          content += selectedText;
+          if (annotationDetails) {
+            content += ` (${annotationDetails})`;
+          }
+        } else if (annotationDetails) {
+          content += annotationDetails;
+        }
+    
         //  update UI based on annotations or trigger further actions.
         const messageId = UniqueIDGenerator.generateMessageID();
         const message: Partial<Message> = {
           id: messageId,
-          content: `You annotated: ${annotationDetails || ""}`,
+          content: content,
         };
         addMessage(message.toString());
+    
         // Add UI update or other logic specific to annotations
-        updateUI(annotationDetails || "");
-
+        updateUI(content);
+    
         // Add UI update or other logic specific to annotations
         function updateUI(details: string) {
           const annotationDetailsElement =
@@ -1836,10 +1855,11 @@ const DynamicEventHandlerService = ({
             annotationDetailsElement.innerText = "";
           }
         }
-
+    
         // Add more specific logic based on your application's requirements
       }
     );
+    
 
     const handleCopyPaste = createEventHandler(
       "handleCopyPaste",
@@ -1847,6 +1867,7 @@ const DynamicEventHandlerService = ({
         event:
           | React.MouseEvent<HTMLElement, MouseEvent>
           | React.ClipboardEvent<HTMLElement>
+          | MouseEvent
       ) => {
         // Handle paste event
         if (event.type === "paste") {
@@ -1956,7 +1977,7 @@ const DynamicEventHandlerService = ({
 
   const handleUndoRedo = createEventHandler(
     "handleUndoRedo",
-    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {
       // Logic for handling undo/redo
       console.log("Handling undo/redo:", event);
 
@@ -1977,11 +1998,12 @@ const DynamicEventHandlerService = ({
       // Return the event
       return event;
     }
+    
   );
 
   const handleContextMenus = createEventHandler(
     "handleContextMenus",
-    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {
       // Access context menu trigger information
       const target = event.target;
 
@@ -2004,7 +2026,7 @@ const DynamicEventHandlerService = ({
 
   const handleFullscreenMode = createEventHandler(
     "handleFullscreenMode",
-    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {
       // Handle fullscreen requests
       if (event.type === "fullscreenchange") {
         console.log("Fullscreen mode changed");
@@ -2096,9 +2118,9 @@ const DynamicEventHandlerService = ({
   // Define the event handler function
   const handleProgressIndicators = createEventHandler(
     "handleProgressIndicators",
-    (event: ReactiveMouseEvent) => {
+    (event: ReactiveMouseEvent | MouseEvent) => {
       // Access progress indicator data
-      const progress = event.progress;
+      const progress = (event as ReactiveMouseEvent).progress;
 
       // Assuming you have some progress-related information in your application state
       const currentProgress = useAppSelector(
@@ -2135,7 +2157,7 @@ const DynamicEventHandlerService = ({
       // Dispatch action to update progress bar state
       dispatch(
         UIActions.updateUIProgressBar({
-          value: progress.value,
+          value: progress?.value || 0,
           id: "",
           label: "",
           current: 0,
@@ -2150,7 +2172,7 @@ const DynamicEventHandlerService = ({
 
   const handleMouseEvent = createEventHandler(
     "handleMouseEvent",
-    (event: ReactiveMouseEvent) => {
+    (event: ReactiveMouseEvent | MouseEvent) => {
       // Access mouse-related information
       const mouseX = event.clientX;
       const mouseY = event.clientY;
@@ -2208,7 +2230,7 @@ const DynamicEventHandlerService = ({
       return event;
     };
 
-    const handleMouseEvent = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const handleMouseEvent = (event: MouseEvent) => {
       const mouseX = event.clientX;
       const mouseY = event.clientY;
 
@@ -2230,48 +2252,80 @@ const DynamicEventHandlerService = ({
     window.addEventListener("scroll", scrollEventListener);
     window.addEventListener("click", handleMouseEvent);
     window.addEventListener("wheel", handleZoom as unknown as EventListener);
-    window.addEventListener("mouseup", handleHighlighting);
-    window.addEventListener("mousemove", handleMouseMovement);
-    window.addEventListener("mousedown", handleAnnotations);
-    window.addEventListener("copy", handleCopyPaste);
-    window.addEventListener("redo", handleUndoRedo);
+    window.addEventListener("mouseup", (event: React.MouseEvent<HTMLDivElement, MouseEvent> | MouseEvent) => {
+      // Handle mouseup event logic here
+      handleHighlighting(event as MouseEvent & React.MouseEvent<HTMLDivElement, MouseEvent>);
+    });
+    window.addEventListener("mousemove", (event: React.MouseEvent<HTMLDivElement, MouseEvent> | MouseEvent) => {
+      // Handle mouseup event logic here
+      handleMouseMovement(event as MouseEvent & React.MouseEvent<HTMLDivElement, MouseEvent>);
+    });
+    window.addEventListener("mousemove", (event: React.MouseEvent<HTMLDivElement, MouseEvent> | MouseEvent) => {
+      // Handle mouseup event logic here
+      handleAnnotations(event as MouseEvent & React.MouseEvent<HTMLDivElement, MouseEvent>);
+    });
+    window.addEventListener("copy", (event: ClipboardEvent) => {
+      // Handle mouseup event logic here
+      handleCopyPaste(event as ClipboardEvent & React.ClipboardEvent<HTMLDivElement>);
+    });
+    window.addEventListener("redo", (event: Event) => {
+      // Handle mouseup event logic here
+      handleUndoRedo(event as MouseEvent | React.MouseEvent<HTMLElement, MouseEvent>);
+    });
+
     window.addEventListener("contextmenu", handleContextMenus);
-    window.addEventListener("fullscreen", handleFullscreenMode);
-    window.addEventListener("settingsPanel", handleSettingsPanel);
-    window.addEventListener("helpFAQ", handleHelpFAQ);
-    window.addEventListener("searchFunctionality", handleSearchFunctionality);
-    window.addEventListener("progressIndicators", handleProgressIndicators);
-    window.addEventListener("handleDragStart", handleDragStart);
+    window.addEventListener("fullscreen", (event: Event) => {
+      // Handle mouseup event logic here
+      handleFullscreenMode(event as MouseEvent | React.MouseEvent<HTMLElement, MouseEvent>);
+    });
+
+    window.addEventListener("helpFAQ", (event: Event) => {
+      handleHelpFAQ(event as Event & React.SyntheticEvent<Element, Event>);
+    });
+
+    window.addEventListener("searchFunctionality", (event: Event) => {
+      handleSearchFunctionality(event as (EventListenerOrEventListenerObject & SyntheticEvent<Element, Event>) | ReactiveEventHandler);
+    });
+    window.addEventListener("progressIndicators", (event: Event) => {
+      handleProgressIndicators(event as MouseEvent | React.MouseEvent<HTMLElement, MouseEvent>);
+    });
+    window.addEventListener("handleDragStart", (event: Event) => {
+      handleDragStart(event as Event & React.DragEvent<HTMLDivElement>);
+    });
+
     // Clean up event listeners on unmount
     return () => {
       window.removeEventListener("keydown", handleKeyboardEvent);
       window.removeEventListener("click", handleMouseEvent);
       window.removeEventListener("scroll", handleScrolling);
-      window.removeEventListener(
-        "wheel",
-        handleZoom as unknown as EventListener
-      );
+      window.removeEventListener("wheel", handleZoom);
       window.removeEventListener("mouseup", handleHighlighting);
-      window.removeEventListener("mousedown", handleAnnotations);
+      window.removeEventListener(
+        "mousedown",
+        handleAnnotations as EventListener
+      );
       window.removeEventListener("copy", handleCopyPaste);
-      window.removeEventListener("redo", handleUndoRedo);
+      window.removeEventListener("redo", handleUndoRedo as EventListener);
       window.removeEventListener("contextmenu", handleContextMenus);
-      window.removeEventListener("fullscreen", handleFullscreenMode);
-      window.removeEventListener("settingsPanel", handleSettingsPanel);
-      window.removeEventListener("helpFAQ", handleHelpFAQ);
+      window.removeEventListener(
+        "fullscreen",
+        handleFullscreenMode as EventListener
+      );
+      window.removeEventListener("helpFAQ", handleHelpFAQ )
+     
+      window.removeEventListener("settingsPanel", handleSettingsPanel as EventListenerOrEventListenerObject & MouseEventHandler<HTMLButtonElement> )
       window.removeEventListener(
         "searchFunctionality",
-        handleSearchFunctionality
+        handleSearchFunctionality as EventListener 
       );
       window.removeEventListener(
         "progressIndicators",
-        handleProgressIndicators
+        handleProgressIndicators as EventListener 
       );
     };
   }, [
     handleKeyboardEvent,
     handleZoom,
-
     handleAnnotations,
     handleMouseEvent,
     handleClickOutside,
@@ -2327,21 +2381,28 @@ const DynamicEventHandlerService = ({
       handleKeyboardShortcuts
     );
 
+    
     const handleHighlighting = createEventHandler(
       "handleHighlighting",
-      (event: React.SyntheticEvent) => {
+      (event: MouseEvent | React.MouseEvent<HTMLElement, MouseEvent>) => {
         // Logic for handling highlighting event
         console.log("Handling highlighting event:", event);
-
-        handleHighlight(event.nativeEvent);
+    
+        // Check if the event is a CustomMouseEvent
+        if ('nativeEvent' in event) {
+          handleHighlight(event.nativeEvent as MouseEvent & React.MouseEvent<HTMLDivElement, MouseEvent>);
+        } else {
+          // Additional logic for synthetic events can go here
+        }
         // Additional logic for highlighting event can go here
         return event;
       }
     );
+    
 
     const handleMouseClick = createEventHandler(
       "handleMouseClick",
-      (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {
         // Logic for handling mouse click event
         console.log("Handling mouse click event:", event);
         // Call function to handle click logic
@@ -2354,7 +2415,7 @@ const DynamicEventHandlerService = ({
 
     const handleSortingEvent = createEventHandler(
       "handleSorting",
-      (event: React.SyntheticEvent) => {
+      (event: React.SyntheticEvent | MouseEvent) => {
         // Logic for handling sorting event
         console.log("Handling sorting event:", event);
         const target = event.target as HTMLDivElement;
@@ -2372,14 +2433,14 @@ const DynamicEventHandlerService = ({
 
     const handleDynamicEvent = createEventHandler(
       "handleDynamicEvent",
-      (event: React.SyntheticEvent) => {
+      (event: React.SyntheticEvent | MouseEvent) => {
         console.log("Handling dynamic event:", event);
       }
     );
 
     const handleContextMenu = createEventHandler(
       "contextMenu",
-      (event: React.SyntheticEvent) => {
+      (event: React.SyntheticEvent | MouseEvent ) => {
         // Logic for handling context menu
 
         console.log("Handling context menu:", event);
@@ -2428,22 +2489,23 @@ const DynamicEventHandlerService = ({
     // );
 
     window.addEventListener("contextmenu", handleContextMenu);
-    window.addEventListener("selectionchange", handleHighlighting);
+    window.addEventListener("selectionchange", handleHighlighting as MouseEvent & EventListenerOrEventListenerObject);
     // Attach the event listeners
-    window.addEventListener("keydown", keyboardEventHandler);
+    window.addEventListener("keydown", keyboardEventHandler as EventListenerOrEventListenerObject);
     window.addEventListener("click", handleSortingEvent);
     window.addEventListener("click", mouseClickEventHandler);
-    window.addEventListener("fullscreen", handleDynamicEvent);
-    window.addEventListener("customEvent1", handleDynamicEvent);
-    window.addEventListener("customEvent2", handleDynamicEvent);
+    window.addEventListener("fullscreen",  handleDynamicEvent as EventListenerOrEventListenerObject)
+    
+    window.addEventListener("customEvent1", handleDynamicEvent as EventListenerOrEventListenerObject);
+    window.addEventListener("customEvent2", handleDynamicEvent as EventListenerOrEventListenerObject);
 
     // Clean up the event listeners
     return () => {
-      window.removeEventListener("keydown", keyboardEventHandler);
+      window.removeEventListener("keydown", keyboardEventHandler as EventListenerOrEventListenerObject);
       window.removeEventListener("click", mouseClickEventHandler);
-      window.removeEventListener("fullscreen", handleDynamicEvent);
-      window.removeEventListener("customEvent1", handleDynamicEvent);
-      window.removeEventListener("customEvent2", handleDynamicEvent);
+      window.removeEventListener("fullscreen", handleDynamicEvent as EventListenerOrEventListenerObject);
+      window.removeEventListener("customEvent1", handleDynamicEvent as EventListenerOrEventListenerObject);
+      window.removeEventListener("customEvent2", handleDynamicEvent as EventListenerOrEventListenerObject);
     };
   }, [
     handleSortingEvent,
@@ -2498,7 +2560,7 @@ export default DynamicEventHandlerService;
 export type { CustomEventListener };
 
 function stopImmediatePropagation(
-  event: MouseEvent<HTMLElement, MouseEvent>
+  event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
 ): void {
   throw new Error("Function not implemented.");
 }

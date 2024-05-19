@@ -28,6 +28,7 @@ import { Member } from "./teams/TeamMembers";
 
 // Define a generic type for data
 interface CommonData<T> {
+  _id: string;
   title?: string;
   type?: AllTypes;
   email?: string;
@@ -47,7 +48,7 @@ interface CommonData<T> {
   documentType?: string;
   documentStatus?: string;
   documentOwner?: string;
-  documentAccess?: string;
+  documentAccpess?: string;
   documentSharing?: string;
   documentSecurity?: string;
   documentRetention?: string;
@@ -56,6 +57,7 @@ interface CommonData<T> {
   documentIntegration?: string;
   documentReporting?: string;
   documentBackup?: string;
+  date?: Date | undefined;
 
 }
 
@@ -148,10 +150,11 @@ const CommonDetails = <T extends SupportedData>({
               {data.title && <p>Title: {data.title}</p>}
               {data.description && <p>Description: {data.description}</p>}
               {data.startDate && data.endDate && (
-              <p>
-                Date: {data.startDate.toLocaleDateString()} to {data.endDate.toLocaleDateString()}
-              </p>
-            )}
+                <p>
+                  Date: {data.startDate.toLocaleDateString()} to{" "}
+                  {data.endDate.toLocaleDateString()}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -179,7 +182,13 @@ const CommonDetails = <T extends SupportedData>({
       )}
 
       {/* Include RealtimeData component */}
-      <RealtimeData userId={userId} dispatch={dispatch} />
+      <RealtimeData
+        id={data?._id || ""}
+        name={data?.username || ""}
+        date={data?.startDate || "No date"}
+        userId={userId}
+        dispatch={dispatch}
+      />
     </div>
   );
 };

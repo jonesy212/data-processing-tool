@@ -80,10 +80,12 @@ const useVideoStore = (): VideoStore => {
       // Assuming the response data structure is an object where keys are video IDs
       return response.data as Record<string, VideoData>;
     } catch (error) {
-      handleApiErrorAndNotify(
-        error as AxiosError<unknown, any>,
+      notify(
         "getVideosData",
-        NOTIFICATION_MESSAGES.Api.GET_VIDEOS_DATA_ERROR
+        "Video data fetched successfully",
+        NOTIFICATION_MESSAGES.Video.FETCH_VIDEOS_ERROR,
+        new Date,
+        NotificationTypeEnum.OperationError,
       );
       // Return an empty object if there's an error
       return {};

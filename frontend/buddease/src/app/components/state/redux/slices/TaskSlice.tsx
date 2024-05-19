@@ -2,7 +2,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import FileSaver from "file-saver";
 import * as Papa from "papaparse";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import { generateNewTask } from '../../../../../app/generators/GenerateNewTask';
+import UniqueIDGenerator from '../../../../../app/generators/GenerateUniqueIds';
+import NamingConventionsError from '../../../../components/DynamicNamingConventions';
+import { AnalysisTypeEnum } from "../../../../components/projects//DataAnalysisPhase/AnalysisType";
 import useWebNotifications from "../../../hooks/commHooks/useWebNotifications";
 import { TaskLogger } from "../../../logging/Logger";
 import { Data } from "../../../models/data/Data";
@@ -11,16 +17,13 @@ import TaskDetails, { Task, tasksDataSource } from "../../../models/tasks/Task";
 import { Progress } from "../../../models/tracker/ProgressBar";
 import { Project } from "../../../projects/Project";
 import { sanitizeInput } from "../../../security/SanitizationFunctions";
-import {AnalysisTypeEnum} from "../../../../components/projects//DataAnalysisPhase/AnalysisType"
 import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
 } from "../../../support/NotificationContext";
-import { NamingConventionsError } from 'shared_error_handling';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
+import { TaskActions } from "../../../tasks/TaskActions";
 import { Idea } from "../../../users/Ideas";
 import { User } from "../../../users/User";
 import { VideoData } from "../../../video/Video";
@@ -28,6 +31,8 @@ import { implementThen } from "../../stores/CommonEvent";
 import { ProjectManagerStore } from "../../stores/ProjectStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { CustomComment } from "./BlogSlice";
+import { Team } from "../../../models/teams/Team";
+import {TeamActions} from "../../../teams/TeamActions";
 
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
@@ -63,7 +68,7 @@ const initialState: TaskManagerState = {
   id: "",
   title: "",
   description: "",
-  assignedTo: {} as WritableDraft<User>,
+  assignedTo: [],
   assigneeId: "",
   dueDate: new Date(),
   payload: undefined,
@@ -99,6 +104,67 @@ const initialState: TaskManagerState = {
   videoData: {} as VideoData,
   ideas: [],
 };
+
+
+const history = useNavigate()
+const dispatch = useDispatch()
+export const exportTasks = (state, action: PayloadAction<string>) => {
+  const exportFormat = action.payload.toLowerCase(); // Convert format to lowercase for consistent comparison
+
+  try {
+    switch (exportFormat) {
+      case "csv":
+        const tasksCSV = Papa.unparse(state.tasks); // Convert tasks to CSV format
+        const csvBlob = new Blob([tasksCSV], {
+          type: "text/csv;charset=utf-8",
+        });
+        FileSaver.saveAs(csvBlob, "tasks.csv"); // Save tasks as a CSV file
+        break;
+      case "json":
+        const tasksJSON = JSON.stringify(state.tasks, null, 2); // Convert tasks to JSON format with indentation
+        const jsonBlob = new Blob([tasksJSON], {
+          type: "application/json",
+        });
+        FileSaver.saveAs(jsonBlob, "tasks.json"); // Save tasks as a JSON file
+        break;
+      case "xls":
+      case "xlsx":
+        const worksheet = XLSX.utils.json_to_sheet(state.tasks); // Convert tasks to worksheet
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "tasks"); // Add worksheet to workbook
+        XLSX.writeFile(workbook, `tasks.${exportFormat}`); // Save workbook as XLS or XLSX file
+        break;
+      default:
+        throw new Error(`Unsupported export format: ${exportFormat}`);
+
+    }
+  } catch (error) {
+    // Handle the NamingConventionsError
+    if (error instanceof NamingConventionsError) {
+      console.error("Naming conventions error:", (error as any).message);
+      // You can also dispatch an action or display a notification to inform the user about the error
+      notify(
+        "Export Error",
+        `An error occurred while exporting tasks: ${(error as any).message}`,
+        NOTIFICATION_MESSAGES.File.EXPORT_ERROR,
+        new Date(),
+        "Error" as NotificationType
+      );
+    } else {
+      // Handle other types of errors
+      console.error("Export error:", error.message);
+      // You can also dispatch an action or display a notification to inform the user about the error
+      notify(
+        "Export Error",
+        `An error occurred while exporting tasks. Please try again later.`,
+        NOTIFICATION_MESSAGES.File.EXPORT_ERROR,
+        new Date(),
+        "Error" as NotificationType
+      );
+    }
+  }
+};
+
 
 const handleNumberPriority = (priority: number): "low" | "medium" | "high" => {
   if (priority === 1) {
@@ -168,31 +234,37 @@ export const taskManagerSlice = createSlice({
       }
     },
 
-    addTask: (state, action: PayloadAction<{ id: string; title: string, isComplete: boolean }>) => {
-      const { id, title } = action.payload;
-      // Generate a unique ID for the new task
-      const generatedTaskID = UniqueIDGenerator.generateTaskID(id, title);
+    
+    addTask: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        title: string;
+        isComplete: boolean;
+        numberOfSubtasks?: number;
+      }>
+    ) => {
+      const { id, title, isComplete, numberOfSubtasks = 0 } = action.payload;
 
       // Ensure task title is not empty
-      if (sanitizeInput(state.taskTitle.trim()) === "") {
+      if (sanitizeInput(title.trim()) === "") {
         console.error("Task title cannot be empty.");
         return;
       }
 
-      const newTask: WritableDraft<Task> = {
-        id: generatedTaskID,
-        title,
-        description: state.taskDescription,
-        status: state.taskStatus,
-      } as WritableDraft<Task>;
+      // Generate a new task using the utility function
+      const newTask = generateNewTask(id, title, isComplete);
 
-      state.tasks.push(newTask);
-      TaskLogger.logTaskCreated("New Task", generatedTaskID);
+      // Update task properties
+      newTask.description = state.taskDescription;
+      newTask.status = state.taskStatus;
 
-      UniqueIDGenerator.generateNewTask().then((newTask: any) => {
-        state.tasks.push(newTask);
-      });
+      // Push the new task to the state
+      state.tasks.push(JSON.parse(JSON.stringify(newTask)));
 
+      TaskLogger.logTaskCreated("New Task", newTask.id);
+
+      // Clear input fields
       state.taskTitle = "";
       state.taskDescription = "";
       state.taskStatus = "pending";
@@ -518,19 +590,17 @@ export const taskManagerSlice = createSlice({
             XLSX.writeFile(workbook, `tasks.${exportFormat}`); // Save workbook as XLS or XLSX file
             break;
           default:
-            throw new NamingConventionsError(
-              "UnsupportedExportFormat",
-              `Unsupported export format: ${exportFormat}`
-            );
+            throw new Error(`Unsupported export format: ${exportFormat}`);
+
         }
-      } catch (error: any) {
+      } catch (error) {
         // Handle the NamingConventionsError
         if (error instanceof NamingConventionsError) {
-          console.error("Naming conventions error:", error.message);
+          console.error("Naming conventions error:", (error as any).message);
           // You can also dispatch an action or display a notification to inform the user about the error
           notify(
             "Export Error",
-            `An error occurred while exporting tasks: ${error.message}`,
+            `An error occurred while exporting tasks: ${(error as any).message}`,
             NOTIFICATION_MESSAGES.File.EXPORT_ERROR,
             new Date(),
             "Error" as NotificationType
@@ -733,17 +803,15 @@ export const taskManagerSlice = createSlice({
               // Implement PDF parsing logic here
               break;
             default:
-              throw new NamingConventionsError(
-                "UnsupportedFormatError",
-                `Unsupported file format: ${format}`
-              );
+              throw new Error(`Unsupported export format: ${format}`);
+
           }
 
           // Replace current tasks with imported tasks
           state.tasks = parsedTasks;
         } catch (error) {
           if (error instanceof NamingConventionsError) {
-            console.error(error.message);
+            console.error((error as any).message);
             // Handle the specific error type accordingly
           } else {
             console.error("Error parsing tasks:", error);
@@ -830,9 +898,51 @@ export const taskManagerSlice = createSlice({
       }
     },
 
+    collaborateOnIdeas: (
+      state: WritableDraft<TaskManagerState>,
+      action: PayloadAction<{ taskId: string; idea: Idea; userId: string }>
+    ) => {
+      const { taskId, idea, userId } = action.payload;
+
+      // Find the task with the specified taskId
+      const task = state.tasks.find((t) => t.id === taskId);
+
+      if (task && task.data.ideas) {
+        // Find the index of the idea within the task's ideas array
+        const ideaIndex = task.data.ideas.findIndex((i) => i.id === idea.id);
+
+        if (ideaIndex > -1) {
+          // Push the userId into the collaborators array of the idea
+          const updatedIdea = {
+            ...task.data.ideas[ideaIndex],
+            collaborators: [
+              ...(task.data.ideas[ideaIndex].collaborators || []),
+              userId,
+            ],
+          };
+          task.data.ideas[ideaIndex] = updatedIdea;
+
+          // Update the state with the modified task
+          state.tasks = state.tasks.map((t) => (t.id === taskId ? task : t));
+        }
+      }
+    },
+   
+    createTeam: (
+      state: WritableDraft<TaskManagerState>,
+      action: PayloadAction<Team>
+    ) => {
+      const newTeam = action.payload;
+
+      // Dispatch the createTeam action using the new team data
+      dispatch(TeamActions.createTeam(newTeam));
+
+      // Return the updated state
+      return state;
+    },
     // 1. Facilitate Ideation Phase
 
-    startIdeationSession: (
+  startIdeationSession: (
       state: WritableDraft<TaskManagerState>,
       action: PayloadAction<User | null>
     ) => {
@@ -904,6 +1014,8 @@ export const taskManagerSlice = createSlice({
         return task;
       };
 
+      const dispatch = useDispatch(); // Get the dispatch function from Redux
+
       const assignedTo = currentUser?._id; // Get the ID of the current user
       const projectId = state.projectManager?.currentProject; // Get the current project, safely checking for null
       const assignedTask = assignedTo
@@ -921,20 +1033,50 @@ export const taskManagerSlice = createSlice({
         ProjectPhaseTypeEnum.Ideation
       ); // Assign the task to a specific phase within the project (e.g., ideation phase)
 
-      const captureIdeas = () => {
-        // Implement logic to capture ideas
-        return;
+      const captureIdeas = (taskId: string, ideas: Idea[]) => {
+        // Dispatch an action to update the task with the captured ideas
+        dispatch(TaskActions.updateTaskIdeas({ taskId, ideas }));
       };
 
-      const collaborateOnIdeas = () => {
-        // Implement logic to collaborate on ideas
+      const collaborateOnIdeas = (taskId: string) => {
+        // Assuming you have a way to navigate to a page or component where team members can collaborate on ideas for the specified task
+        // For example, navigate to a page with a form or a discussion board specific to the task
+        history(`/tasks/${taskId}/collaborate`);
       };
 
-      // 2. Team Formation Phase
-      const createTeam = () => {
-        // Implement logic to create a team
+      const createTeam = (teamName: string, members: User[]) => {
+        // Assuming you have a backend API endpoint for creating teams, you would typically make a POST request to that endpoint
+        // Here, I'm using a placeholder URL '/api/teams' for demonstration purposes
+
+        // Construct the payload for creating the team
+        const teamData = {
+          name: teamName,
+          members: members.map((member) => member.id), // Assuming each member object has an 'id' property
+          // Other team-related data, such as description, goals, etc., can be included here
+        };
+
+        // Make a POST request to the backend API endpoint to create the team
+        fetch('/api/teams', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Include any authentication headers if required
+          },
+          body: JSON.stringify(teamData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to create team');
+            }
+            // Handle success response if necessary (e.g., show success message to user)
+            console.log('Team created successfully');
+          })
+          .catch((error) => {
+            // Handle error (e.g., show error message to user)
+            console.error('Error creating team:', error.message);
+          });
       };
-    },
+    }
   },
 });
 
@@ -954,7 +1096,7 @@ export const {
   archiveTask,
   undoAction,
   redoAction,
-  exportTasks,
+  // exportTasks,
   importTasks,
 updateTaskDetails,
 
@@ -974,6 +1116,8 @@ updateTaskDetails,
   batchFetchTaskSnapshots,
   updateTaskProgress,
   captureIdeas,
+  collaborateOnIdeas,
+  createTeam,
 } = taskManagerSlice.actions;
 
 // Export selector for accessing the tasks from the state

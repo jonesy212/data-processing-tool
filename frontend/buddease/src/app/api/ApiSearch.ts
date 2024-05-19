@@ -1,5 +1,5 @@
 // ApiSearch.ts
-import axiosInstance from "./axiosInstance";
+ import axiosInstance from "./axiosInstance";
 import { handleApiError } from "./ApiLogs";
 import { Note } from "./ApiNote";
 import { SearchResult } from "../components/routing/SearchResult";
@@ -55,6 +55,8 @@ export const searchAPI = async (
       items: [],
       totalCount,
       load: () => Promise.resolve(),
+      query,
+      results: searchResults,
     }));
 
     return searchResults;

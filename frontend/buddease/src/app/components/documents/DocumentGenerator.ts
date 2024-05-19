@@ -78,6 +78,7 @@ enum DocumentTypeEnum {
   Template = "template",
   Image = "image",
   PDF = "pdf",
+  APP_VERSION = "appVersion",
 }
 
 enum DocumentStatusEnum {
@@ -121,7 +122,8 @@ const documents: Document[] = [
       this.documentData = content;
     },
     lastModifiedDate: { value: new Date(), isModified: false }, // Initialize as not modified
-    version: {} as VersionData,
+    version: {} as Version,
+    versionData {} as VersionData,
     visibility: undefined
   },
   // Add more documents as needed
@@ -131,6 +133,7 @@ const documents: Document[] = [
 // declare namespace DXT {import { fs } from 'fs';
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { UserSettings } from "@/app/configs/UserSettings";
+import Version from "../versions/Version";
 
 //   // todo
 //   // Define your types here...

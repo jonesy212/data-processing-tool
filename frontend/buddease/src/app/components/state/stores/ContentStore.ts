@@ -2,27 +2,23 @@
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { ContentItem } from "../../models/content/ContentItem";
-
-
-
+import { DetailsItemCommon } from "@/app/generators/ListGenerator";
+import { Data } from "../../models/data/Data";
 export interface ContentManagementStore {
   contentItems: ContentItem[];
   addContentItem: (contentItem: ContentItem) => void;
-  selectedContentItemId: string | null;
-
+  selectedContentItemId: DetailsItemCommon<Data> | null; // Update type here
   updateContentItem: (id: string, updatedContentItem: ContentItem) => void;
   deleteContentItem: (id: string) => void;
   getContentItemById: (id: string) => ContentItem | undefined;
   clearAllContentItems: () => void;
-  setSelectedContentItemId: (id: string | null) => void;
-
-  // Add more methods as needed
+  setSelectedContentItemId: (id: DetailsItemCommon<Data> | null) => void; // Update type here
 }
 
 const useContentManagementStore = (): ContentManagementStore => {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [selectedContentItemId, setSelectedContentItemId] = useState<
-    string | null
+  DetailsItemCommon<Data> | null
   >(null);
 
   const addContentItem = (contentItem: ContentItem) => {

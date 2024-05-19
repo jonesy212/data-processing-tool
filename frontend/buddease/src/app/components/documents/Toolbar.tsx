@@ -13,7 +13,7 @@ interface ToolbarProps {
   activeDashboard: keyof typeof toolbarOptions;
   progress: Progress;
   onEditorStateChange: (state: EditorState) => void;
-  toolbarOptions: ToolbarOptions; // Use the new type definition
+  toolbarOptions: ToolbarOptions; 
 }
 
 const onEditorStateChangeHandler = (callback: (state: EditorState) => void) => {
@@ -118,3 +118,6 @@ const ToolbarList: React.FC<ToolbarProps> = ({
 }) => {
   return null; // Placeholder
 };
+
+
+export type { ToolbarOptions, ToolbarProps };

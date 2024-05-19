@@ -1,4 +1,4 @@
-import { ChatMessage } from "../../communications";
+ import ChatMessage from "../../communications/chat/ChatMessage";
 import { TeamMember } from "../../models/teams/TeamMembers";
 
 interface GroupChat {

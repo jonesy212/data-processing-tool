@@ -1,4 +1,4 @@
-import RealtimeData from "./RealtimeData";
+import { RealtimeData } from "./RealtimeData";
 
 // RealTimeDataStore.ts
 interface RealTimeDataStore {

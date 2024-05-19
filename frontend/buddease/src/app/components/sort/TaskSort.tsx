@@ -3,10 +3,10 @@ import React from "react";
 
 interface TaskSort {
     onSort: (criteria: SortCriteria) => void; // Define the onSort callback function
-    
+    criteria: SortCriteria; // Define the criteria prop
 }
 
-const TaskSortComponent: React.FC<TaskSort> = ({ onSort }) => {
+const TaskSortComponent: React.FC<TaskSort> = ({ onSort , criteria}) => {
   const handleSort = (criteria: SortCriteria) => {
     // Call onSort callback with the selected criteria
     onSort(criteria);

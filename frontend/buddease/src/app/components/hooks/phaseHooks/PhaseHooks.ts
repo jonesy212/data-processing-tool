@@ -57,7 +57,7 @@ interface TestPhaseHooks {
 
 export interface TestPhaseHookConfig {
   name: string;
-  condition: () => boolean;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>
   asyncEffect: () => Promise<() => void>;
   canTransitionTo?: (nextPhase: Phase) => boolean;
   handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
@@ -77,6 +77,7 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
 
     // Example: Create custom phase hooks for the test environment
     const customHooks: CustomPhaseHooks = {
+      condition: config.condition,
       // Define custom phase hooks here
       onStart: () => {
         // Logic to execute when the test phase starts
@@ -246,7 +247,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
     createPhaseHook(idleTimeoutDuration, {
       name: phaseName,
       duration: duration,
-      condition: async () => true,
+      condition: async (idleTimeoutDuration: number) => Promise<true>,
       clearIdleTimeout: () => {
         clearTimeout(idleTimeoutId!);
       },
@@ -272,7 +273,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
         subPhases: [],
         component: IdeationPhaseComponent,
         hooks: [ideationPhaseHook],
-      } as Phase,
+      } as unknown as Phase,
       isActive: true,
       initialStartIdleTimeout: () => {},
       resetIdleTimeout: async () => {},

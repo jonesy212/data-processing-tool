@@ -1,17 +1,19 @@
-import React from "react";
+import { HeadersConfig } from '@/app/api/headers/HeadersConfig';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
+import React from "react";
 
 interface Header {
   key: string;
   label: string;
 }
 
-interface Props {
+interface TableHeaders {
   headers: Header[];
   onSort: (key: string) => void;
+  headersConfig: HeadersConfig
 }
 
-const SortableTableHeaders: React.FC<Props> = ({ headers, onSort }) => {
+const SortableTableHeaders: React.FC<TableHeaders> = ({ headers, onSort }) => {
   const handleSort = (key: string) => {
     // Example of using headersConfig when making API requests
     fetch("example.com/api/data", {

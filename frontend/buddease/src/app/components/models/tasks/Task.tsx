@@ -25,11 +25,11 @@ interface Task extends Data {
   name?: string | null;
   projectName?: string;
 
-  assignedTo: WritableDraft<User> | null; 
+  assignedTo: WritableDraft<User> [] | null; 
   assigneeId: User["id"];
   dueDate: Date;
   payload: any;
-  priority: "low" | "medium" | "high";
+  priority: "low" | "medium" | "high" | "normal" | "pending";
   type?: AllTypes
   status?: AllStatus
   estimatedHours?: number | null;
@@ -41,22 +41,22 @@ interface Task extends Data {
   data: Data ;
   [Symbol.iterator](): Iterator<any, any, undefined>;
   source: "user" | "system";
-  some: (
+  some?: (
     callbackfn: (value: Task, index: number, array: Task[]) => unknown,
     thisArg?: any
   ) => boolean;
-  then(arg0: (newTask: any) => void): unknown;
+  then?(arg0: (newTask: any) => void): unknown;
   details?: DetailsItem<typeof TeamDetails> | undefined;
 
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive: boolean;
   tags: string[];
-  analysisType: AnalysisTypeEnum;
-  analysisResults: any[];
-  videoThumbnail: string;
-  videoDuration: number;
-  videoUrl: string;
+  analysisType?: AnalysisTypeEnum;
+  analysisResults?: any[];
+  videoThumbnail?: string;
+  videoDuration?: number;
+  videoUrl?: string;
 
 }
 
@@ -98,7 +98,7 @@ const tasksDataSource: Record<string, Task> = {
     title: "Task 1",
     name: "Unique Task Identifier",
     description: "Description for Task 1",
-    assignedTo: {} as WritableDraft<User>, // Example value for assignedTo, an array of User objects
+    assignedTo: {} as WritableDraft<User>[], // Example value for assignedTo, an array of User objects
     assigneeId: "123", // Example value for assigneeId, assuming it's a string
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object
@@ -150,7 +150,7 @@ const tasksDataSource: Record<string, Task> = {
     title: "Task 2",
     name: "Unique Task Identifier",
     description: "Description for Task 2",
-    assignedTo: {} as WritableDraft<User>, // Example value for assignedTo, an array of User objects
+    assignedTo: {} as WritableDraft<User>[], // Example value for assignedTo, an array of User objects
     assigneeId: "456", // Example value for assigneeId, assuming it's a string
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object

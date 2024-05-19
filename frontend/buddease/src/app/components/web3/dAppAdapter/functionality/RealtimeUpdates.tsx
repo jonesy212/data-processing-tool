@@ -17,6 +17,7 @@ import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 
 import { Router } from "next/router";
 import { BaseRouter } from "next/dist/shared/lib/router/router";
+import headersConfig from "@/app/api/headers/HeadersConfig";
 // // Import UI components for sorting and filtering
 // import {
 //   Dropdown,
@@ -156,7 +157,7 @@ const RealtimeUpdatesComponent: React.FC = () => {
       <SortableTableHeaders
         headers={[]} // Pass headers data here
         onSort={(key: string) => {}} // Implement sorting logic
-        headersConfig={{}} // Pass headers configuration here
+        headersConfig={headersConfig} // Pass headers configuration here
       />
       <ClearFiltersButton
         label="Clear Filters" // Provide a string value for the label prop

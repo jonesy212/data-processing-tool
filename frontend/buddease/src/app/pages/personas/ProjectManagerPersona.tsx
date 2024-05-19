@@ -35,6 +35,9 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
     data: [],
     name: "",
     url: "",
+    versionHistory: {
+      versions: []
+    }
   };
   const version = new Version(versionInfo);
   const structure = version.getStructure ? version.getStructure() : {};

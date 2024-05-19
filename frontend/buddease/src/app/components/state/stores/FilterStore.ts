@@ -1,41 +1,58 @@
+import {
+  clearFilteredEvents as clearFilteredEventsAction,
+  selectFilteredEvents,
+} from "@/app/components/state/redux/slices/FilteredEventsSlice";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux"; // Import useSelector and useDispatch
+import { FilterActions } from "../../actions/FilterActions";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
-import FilteredEvents from "@/app/pages/searchs/FilteredEvents";
+import HighlightEvent from "../../documents/screenFunctionality/HighlightEvent";
+import { CalendarEvent } from "./CalendarEvent";
+class FilterStore {
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-interface FilterStore {
-  filteredEvents: ExtendedCalendarEvent[]; // Define properties specific to filterStore
-  // Add other properties or methods as needed
-}
-
-const useFilterStore = (): FilterStore => {
-  const [filteredEvents, setFilteredEvents] = useState<ExtendedCalendarEvent[]>([]);
-
-  // Access the FilteredEvents module to interact with filtered events
-  const filteredEventsModule = FilteredEvents; // Use the imported module directly
+  // Access Redux dispatch function
+  private dispatch = useDispatch();
 
   // Define methods to interact with filtered events
-  const applyFilter = () => {
+  applyFilter = () => {
     // Implement logic to apply filtering
-    const filtered = filteredEventsModule.getFilteredEvents();
-    setFilteredEvents(filtered);
+    // Implement logic to apply filtering
+    const filtered = useSelector(selectFilteredEvents);
+    const filteredEvents = filtered.payload; // Extracting the payload
+    this.setFilteredEvents(filteredEvents); // Pass the extracted filtered events to setFilteredEvents
   };
 
-  const clearFilter = () => {
+  clearFilter = () => {
     // Implement logic to clear filtering
-    filteredEventsModule.clearFilteredEvents();
-    setFilteredEvents([]);
+    this.dispatch(clearFilteredEventsAction());
+    this.setFilteredEvents([]);
+  };
+  // Update selectFilteredEvents method to dispatch an action
+  selectFilteredEvents = (selectedIds: string[]) => {
+    // Dispatch the action to select filtered events
+    this.dispatch(FilterActions.selectFilteredEventsAction(selectedIds));
   };
 
   // Other methods as needed
 
-  // Use MobX to make the store observable
-  const filterStore = makeAutoObservable({
-    filteredEvents,
-    applyFilter,
-    clearFilter,
-    // Add other properties or methods as needed
-  });
+  // Optionally, define local state
+  filteredEvents: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[] =
+    [];
+
+  setFilteredEvents = (
+    events: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[]
+  ) => {
+    this.filteredEvents = events;
+  };
+}
+
+// Refactor useFilterStore hook to integrate with UIStore
+const useFilterStore = () => {
+  const [filterStore] = useState(() => new FilterStore());
 
   return filterStore;
 };

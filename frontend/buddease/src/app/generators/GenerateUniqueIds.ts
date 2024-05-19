@@ -41,7 +41,9 @@ class UniqueIDGenerator {
     completionMessageLog: NotificationData,
     callback?: () => void
   ): string {
-    const notificationID = `${notificationType}_${notification.message}_${date.getTime()}`;
+    const notificationID = `${notificationType}_${
+      notification.message
+    }_${date.getTime()}`;
     const message = `Generated notification ID: ${notificationID}`;
     const content = {
       notificationID: notificationID,
@@ -158,6 +160,25 @@ class UniqueIDGenerator {
     return generatedID;
   }
 
+
+  static generateVideoID(videoName: string, type: NotificationType): string { 
+    const videoId = `${videoName}_${Date.now()}` 
+    const message = `Generated video ID for ${videoName}: ${videoId}`
+    let content = {
+      videoName: videoName,
+      generatedID: videoId,
+      timestamp: Date.now(),
+      type: type
+    }
+    this.notifyFormatted(
+      videoId,
+      message,
+      content,
+      new Date(),
+      NotificationTypeEnum.GeneratedID
+    );
+    return videoId
+  }
   static generateVersionNumber(): string {
     const versionNumberLength = 3;
     const characters = "0123456789";
@@ -189,6 +210,9 @@ class UniqueIDGenerator {
     type: NotificationType,
     id?: string,
     title?: string,
+    chatThreadName?: string,
+    chatMessageId?: string,
+    chatThreadId?: string,
     dataDetails?: DataDetails,
     generatorType?: string
   ): string {
@@ -235,12 +259,20 @@ class UniqueIDGenerator {
         return UniqueIDGenerator.generateLocationID();
       case NotificationTypeEnum.CouponCode:
         return UniqueIDGenerator.generateCouponCode();
+      case NotificationTypeEnum.VideoID:
+        return UniqueIDGenerator.generateVideoID(name, type);
       case NotificationTypeEnum.SurveyID:
         return UniqueIDGenerator.generateSurveyID();
       case NotificationTypeEnum.AnalyticsID:
         return UniqueIDGenerator.generateAnalyticsID();
       case NotificationTypeEnum.AppStructureID:
         return UniqueIDGenerator.generateAppStructureID();
+      case NotificationTypeEnum.ChatMessageID:
+        return UniqueIDGenerator.generateChatMessageID(
+          String(chatThreadId)
+        );
+      case NotificationTypeEnum.ChatThreadID:
+        return UniqueIDGenerator.generateChatThreadID(String(chatThreadName));
       default:
         // Use default generator logic
         const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random()
@@ -262,6 +294,26 @@ class UniqueIDGenerator {
     );
   }
 
+
+  static generateChatMessageID(
+
+    chatThreadId: string
+  ): string {
+    return this.generateID(
+      "chatMessageId",
+      NotificationTypeEnum.MessageID,
+      chatThreadId as NotificationType
+    );
+  }
+
+  static generateChatThreadID(chatThreadName: string): string {
+    return this.generateID(
+      chatThreadName,
+      NotificationTypeEnum.MessageID,
+      "chat_thread" as NotificationType
+    );
+  }
+
   static generateCommentID(id: string, title: string) {
     // Generate a unique ID using the provided parameters
     return UniqueIDGenerator.generateID(
@@ -269,17 +321,14 @@ class UniqueIDGenerator {
       `${id}_${title}`, // Concatenate the id and title to ensure uniqueness
       "comment" as NotificationType
     );
-}
-static generateContentID(
-  id: string,
-  title: string
-) {
-  return UniqueIDGenerator.generateID(
-    id,
-    NotificationTypeEnum.ContentID,
-    title as NotificationType // Assuming title is of type NotificationType
-  )
-}
+  }
+  static generateContentID(id: string, title: string) {
+    return UniqueIDGenerator.generateID(
+      id,
+      NotificationTypeEnum.ContentID,
+      title as NotificationType // Assuming title is of type NotificationType
+    );
+  }
 
   static generateDocumentEditID(documentName: string): string {
     return this.generateID(
@@ -391,7 +440,6 @@ static generateContentID(
     );
   }
 
-
   static generateSessionID(): string {
     return this.generateID(
       "SessionID",
@@ -416,7 +464,6 @@ static generateContentID(
     );
   }
 
-
   static generateBlogPostID(blogName: string): string {
     // Generate a unique ID using a suitable strategy (e.g., UUID)
     // Here, we'll use a timestamp-based ID for simplicity
@@ -426,7 +473,6 @@ static generateContentID(
       "blog" as NotificationType
     );
   }
-  
 
   static generateProductID(): string {
     return this.generateID(
@@ -496,9 +542,9 @@ static generateContentID(
     );
   }
 
-
-  
 }
+
+
 
 const videoDataDetails: DataDetails = {
   _id: "",

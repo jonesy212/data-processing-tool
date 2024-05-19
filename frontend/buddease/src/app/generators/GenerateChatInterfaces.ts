@@ -6,15 +6,17 @@ import { User, UserData } from "../components/users/User";
 
   interface Message extends User, UserData {
     id: string;
-    sender: User;
-    channelId: ChatRoom;
+    sender: User | undefined;
+    senderId: string | undefined;
+    channel: ChatRoom | undefined
+    channelId: ChatRoom | undefined;
     content: string;
     tags: TaggableItem[];
     userId?: number
     timestamp: Date | string;
     text: string;
     isUserMessage?: boolean
-    receiver: User;
+    receiver: User | undefined;
     
   }
 

@@ -24,6 +24,7 @@ import { OnboardingPhase } from "../personas/UserJourneyManager";
 import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
 import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
 import DetailsProps from "@/app/components/models/data/Details";
+import TwoFactorSetupPhase from "@/app/components/phases/TwoFactorSetupPhase";
 
 
 
@@ -219,20 +220,3 @@ UserJourneyManager;
 
 
 
-
-// TwoFactorSetupPhase component
-const TwoFactorSetupPhase: React.FC<{ onSetupComplete: () => void }> = ({ onSetupComplete }) => {
-  // State for the token input
-  const [token, setToken] = useState('');
-
-  // Handler for submitting the two-factor authentication token
-  const handleSubmit = async () => {
-    try {
-      // Make an API call to verify the two-factor authentication token
-      const response = await axiosInstance.post('/auth/verify-2fa', { token });
-      // Handle response and call the onSetupComplete callback if successful
-      onSetupComplete();
-    } catch (error) {
-      // Handle error
-    }
-  };

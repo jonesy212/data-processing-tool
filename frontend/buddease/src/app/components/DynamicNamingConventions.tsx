@@ -3,7 +3,7 @@ import configurationService from '@/configs/ConfigurationService';
 import React from 'react';
 import { NamingConventionsError } from '../shared/shared_error';
 import { useDynamicComponents } from './DynamicComponentsContext';
-import { useNotification } from './support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from './support/NotificationContext';
 import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from './support/NotificationMessages';
 import { NOTIFICATION_TYPES } from './support/NotificationTypes';
 
@@ -25,7 +25,13 @@ const handleNamingConventionsErrors = (
     errorDetails
   );
 
-  notify(errorMessage, NOTIFICATION_TYPES.ERROR, new Date());
+  notify(
+    "An error occurred while retrieving naming conventions.",
+    errorMessage,
+    NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT,
+    new Date(),
+    NotificationTypeEnum.Error
+  );
 };
 
 const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({

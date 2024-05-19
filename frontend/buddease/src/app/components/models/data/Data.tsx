@@ -91,7 +91,7 @@ interface Data {
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  
+  timestamp?: Date;
 
   isActive?: boolean;
   tags?: string[];
@@ -138,6 +138,7 @@ interface Data {
   snapshots?: SnapshotStore<Snapshot<Data>>[];
   // Incorporating the data structure from YourResponseType
   text?: string;
+  category?: string
 }
 
 // Define the UserDetails component
@@ -199,16 +200,16 @@ const data: Data = {
   videoDuration: 60,
   collaborationOptions: [],
   videoData: {
-  //   id: "video1",
-  //   campaignId: 123,
-  //   resolution: "1080p",
-  //   size: "100MB",
-  //   aspectRatio: "16:9",
-  //   language: "en",
-  //   subtitles: [],
-  //   duration: 60,
-  //   codec: "H.264",
-  //   frameRate: 30,
+    //   id: "video1",
+    //   campaignId: 123,
+    //   resolution: "1080p",
+    //   size: "100MB",
+    //   aspectRatio: "16:9",
+    //   language: "en",
+    //   subtitles: [],
+    //   duration: 60,
+    //   codec: "H.264",
+    //   frameRate: 30,
   } as VideoData,
   additionalData: {},
   ideas: [],
@@ -234,7 +235,19 @@ const data: Data = {
     profilePicture: null,
     processingTasks: [],
     role: UserRoles.Leader,
+    firstName: "", // Added missing property
+    lastName: "", // Added missing property
+    friends: [], // Added missing property
+    blockedUsers: [], // Added missing property
     persona: new Persona(PersonaTypeEnum.Default),
+    settings: {
+      notificationPreferences: {
+        email: true,
+        mobile: false,
+        desktop: true
+      }
+    },
+    
   },
   snapshots: [],
 };

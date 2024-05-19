@@ -2,6 +2,7 @@ import axios from "axios";
 import { Data } from "../components/models/data/Data";
 import SnapshotStore, { Snapshot } from "../components/snapshots/SnapshotStore";
 import { VideoData } from "../components/video/Video";
+import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 
 // Define the API endpoint for retrieving snapshot data
 const SNAPSHOT_DATA_API_URL = "https://example.com/api/snapshot";
@@ -9,8 +10,9 @@ const SNAPSHOT_DATA_API_URL = "https://example.com/api/snapshot";
 // Define the type for the response data
 interface SnapshotDataResponse {
  id: number;
-  timestamp: string;
+  timestamp: Date;
   videoData: VideoData;
+  category: string
   // Other properties...
 }
 
@@ -45,6 +47,7 @@ const convertToRetrievedSnapshot = (
   // Perform the conversion here
   const retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse> = {
     id: snapshotStore.key,
+    category: snapshotStore.state.category,
     timestamp: snapshotStore.state.timestamp ?? new Date(),
     data: snapshotStore.state.data,
     // Additional properties from SnapshotDataResponse
@@ -65,6 +68,7 @@ export const RetrievedSnapshotData =
       const snapshotData: RetrievedSnapshot<SnapshotDataResponse> = {
         id: response.data.id.toString(),
         timestamp: new Date(response.data.timestamp),
+        category: response.data.category,
         data: {
           ...response.data,
           _id: "",
@@ -94,7 +98,9 @@ export const retrieveSnapshotData = async (id: string) => {
     );
     // Extract the snapshot data from the response
     const snapshotData: RetrievedSnapshot<SnapshotDataResponse> = {
+      category: response.data.category,
       id: response.data.id.toString(),
+
       timestamp: new Date(response.data.timestamp), 
       data:  {} as RetrievedSnapshot<SnapshotDataResponse>["data"],
     };

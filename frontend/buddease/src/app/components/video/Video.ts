@@ -3,8 +3,8 @@ import { DataDetails } from "../models/data/Data";
 interface VideoProperties {
   // Define essential video properties
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string | null | undefined;
 }
 
 interface Video extends VideoProperties {
@@ -26,7 +26,7 @@ interface Video extends VideoProperties {
   resolution: string;
   aspectRatio: string;
   language: string;
-  subtitles: boolean;
+  subtitles: boolean | string[]; // Updated subtitles property
   closedCaptions: boolean;
   license: string;
   isLive: boolean;
@@ -58,46 +58,52 @@ interface VideoData extends DataDetails, Video {
 }
 
 class BasicVideoGenerator {
-  static generateVideo(id: string, title: string, description: string): Video {
-      // Assign default values dynamically
-      const defaultValues = {
-          url: "",
-          thumbnailUrl: "",
-          duration: 0,
-          uploadedBy: "",
-          viewsCount: 0,
-          likesCount: 0,
-          dislikesCount: 0,
-          commentsCount: 0,
-          tags: [],
-          uploadDate: new Date(),
-          category: "",
-          resolution: "",
-          aspectRatio: "",
-          language: "",
-          subtitles: false,
-          closedCaptions: false,
-          license: "",
-          isLive: false,
-          channel: "",
-          channelId: "",
-          isLicensedContent: false,
-          isFamilyFriendly: false,
-          isEmbeddable: false,
-          isDownloadable: false,
-          videoData: {} as VideoData,
-      };
+  static generateVideo(
+    id: string,
+    title: string,
+    description: string | null = null
+  ): Video {
+    const defaultValues = {
+      url: "",
+      thumbnailUrl: "",
+      duration: 0,
+      uploadedBy: "",
+      viewsCount: 0,
+      likesCount: 0,
+      dislikesCount: 0,
+      commentsCount: 0,
+      tags: [],
+      uploadDate: new Date(),
+      category: "",
+      resolution: "",
+      aspectRatio: "",
+      language: "",
+      subtitles: [],
+      closedCaptions: false,
+      license: "",
+      isLive: false,
+      channel: "",
+      channelId: "",
+      isLicensedContent: false,
+      isFamilyFriendly: false,
+      isEmbeddable: false,
+      isDownloadable: false,
+      videoData: {} as VideoData,
+    };
 
-      // Merge default values with provided properties
-      const video: Video = {
-        ...defaultValues, id, title, description,
-        videoDislikes: 0,
-        videoAuthor: "",
-        videoDurationInSeconds: 0,
-        playlists: [],
-      };
+    const video: Video = {
+      ...defaultValues,
+      id,
+      title,
+      description: description || "",
+      videoDislikes: 0,
+      videoAuthor: "",
+      videoDurationInSeconds: 0,
+      playlists: [],
+      subtitles: []
+    };
 
-      return video;
+    return video;
   }
 }
 

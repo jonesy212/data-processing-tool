@@ -61,6 +61,7 @@ export interface DocumentOptions {
   documentType: DocumentTypeEnum; // Add documentType property
   userIdea: string;
   documentSize: DocumentSize;
+  limit: number;
   additionalOptions: readonly string[] | string | number | any[] | undefined;
   documentPhase: string | {
     name: string;
@@ -176,11 +177,6 @@ export interface DocumentOptions {
         value: 3
       }
     ]
-
-
-
-
-
   };
   showRuler: boolean;
   showDocumentOutline: boolean;
@@ -412,14 +408,49 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     uniqueIdentifier: "",
     documentType: DocumentTypeEnum.Default,
     documentPhase: "Draft",
+    limit: 0,
     version: Version.create({
       id: 0,
       name: "",
       content: "",
       appVersion: "1.0",
+      limit: 10,
       versionNumber: "1.0",
       data: [],
-      url: ""
+      url: "",
+      checksum: "",
+      versionHistory: {
+        versions: []
+      },
+      draft: false,
+      description: "",
+      userId: "",
+      documentId: "",
+      parentId: "",
+      parentType: "",
+      parentVersion: "",
+      parentTitle: "",
+      parentContent: "",
+      parentName: "",
+      parentUrl: "",
+      parentChecksum: "",
+      parentMetadata: {},
+      parentAppVersion: "",
+      parentVersionNumber: "",
+      isLatest: false,
+      isPublished: false,
+      publishedAt: null,
+      source: "",
+      status: "",
+      workspaceId: "",
+      workspaceName: "",
+      workspaceType: "",
+      workspaceUrl: "",
+      workspaceViewers: [],
+      workspaceAdmins: [],
+      workspaceMembers: [],
+      createdAt: new Date,
+      updatedAt: new Date
     }),
     userIdea: "",
     fontSize: 14,
@@ -513,8 +544,6 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
         font: "bold",
         bold: true,
         italic: true,
-          
-         
         fontSize: 12,
         fontFamily: "Arial",
         fontColor: "#000000",
@@ -591,11 +620,10 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       enabled: true,
       borders: {
         top: {} as BorderStyle,
-         bottom: {} as BorderStyle,
-         left: {} as BorderStyle,
-         right: {} as BorderStyle,
-
-       },
+        bottom: {} as BorderStyle,
+        left: {} as BorderStyle,
+        right: {} as BorderStyle,
+      },
       padding: 10,
       fontSize: 12,
       alignment: "left"

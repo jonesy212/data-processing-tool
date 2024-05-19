@@ -79,7 +79,7 @@ interface Note {
 
       encryption: Encryption
       currentMetadata: StructuredMetadata
-      searchHistory: SearchHistory,
+      searchHistory: SearchHistory[],
         version: Version,
   // Add more properties as needed
 }

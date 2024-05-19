@@ -1,5 +1,5 @@
 import { CalendarManagerState } from "@/app/components/calendar/CalendarSlice";
-import { RealtimeDataState } from "@/app/components/RealtimeDataSlice";
+import { RealtimeDataState } from "@/app/components/state/redux/slices/RealtimeDataSlice";
 import { ProjectOwnerState } from "@/app/components/users/ProjectOwnerSlice";
 import { UserManagerState } from "@/app/components/users/UserSlice";
 import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
@@ -168,6 +168,7 @@ const initialState: AppState = {
 
   // Miscellaneous
   videoManager: {
+    video: null,
     videos: [],
     currentVideoId: null,
     comments: [],
@@ -200,6 +201,7 @@ const initialState: AppState = {
   selectedTheme: "light",
   selectedLanguage: "en",
   videoState: {
+    video: null,
     videos: [],
     currentVideoId: null,
     comments: [],

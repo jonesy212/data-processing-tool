@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 
 interface ShareProps {
   projectId: string;
+  title: string;
+
 }
 
-const Share: React.FC<ShareProps> = ({ projectId }) => {
+const Share: React.FC<ShareProps> = ({ projectId,  title}) => {
   const [projectData, setProjectData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,3 +64,4 @@ const Share: React.FC<ShareProps> = ({ projectId }) => {
 };
 
 export default Share;
+export type { ShareProps };

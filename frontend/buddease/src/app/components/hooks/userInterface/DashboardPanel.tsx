@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ResizablePanels from "./ResizablePanels";
 
 interface DashboardPanelProps {
@@ -6,6 +6,10 @@ interface DashboardPanelProps {
   content: React.ReactNode;
 }
 
+interface Panel {
+  id: string;
+  size: number;
+}
 const DashboardPanel: React.FC<DashboardPanelProps> = ({ title, content }) => {
   return (
     <div className="dashboard-panel">
@@ -32,13 +36,33 @@ const DynamicDashboard: React.FC<DynamicDashboardProps> = ({ title, content }) =
 const ExampleDashboard: React.FC = () => {
   const sizes = () => [200, 400]; // Example sizes for resizable panels
 
-  const onResize = (newSizes: number[]) => {
-    // Handle resizing logic here
-  };
+ // State to manage panel sizes
+ const [panels, setPanels] = useState<Panel[]>([
+  { id: "panel1", size: 200 },
+  { id: "panel2", size: 400 }
+]);
+
+// Function to handle resizing in progress
+const onResize = (newSizes: number[]) => {
+  // Update panel sizes in state while resizing
+  setPanels(newSizes.map((size, index) => ({ ...panels[index], size })));
+};
+
+// Function to handle resizing stop
+const onResizeStop = (newSizes: number[]) => { 
+  // Handle resize stop logic here
+  console.log("Resize stopped!", newSizes);
+  // For example, you can save the new sizes to local storage
+  localStorage.setItem("panelSizes", JSON.stringify(newSizes));
+};
 
   return (
     <ResizablePanels
-      sizes={sizes} onResize={onResize}>
+      sizes={sizes}
+      onResize={onResize}
+      onResizeStop={onResizeStop}> {/* Provide onResizeStop here */}
+
+      
       <DashboardPanel title="Panel 1" content={<p>Content for panel 1</p>} />
       <DynamicDashboard title="Panel 2" content={<p>Content for panel 2</p>} />
     </ResizablePanels>

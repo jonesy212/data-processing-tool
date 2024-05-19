@@ -16,6 +16,7 @@ interface ChatSettings {
   enableDecentralizedStorage: boolean;
   collaborationPreference1: string | undefined;
   collaborationPreference2: string | undefined;
+  close?: () => void;
   // Add more settings as needed
 }
 

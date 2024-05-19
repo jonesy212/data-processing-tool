@@ -22,9 +22,7 @@ export const endpoints: Endpoints = {
     verifyEmail: `${BASE_URL}/verify-email`,
     resendVerificationEmail: `${BASE_URL}/resend-verification-email`,
   },
-  database: {
-    
-  },
+  database: {},
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
@@ -131,6 +129,20 @@ export const endpoints: Endpoints = {
     // Add more blog-related endpoints as needed
   },
 
+  content: {
+    fetchContent: (contentId: string) => `${BASE_URL}/api/content/${contentId}`, // Endpoint to fetch content by ID
+    createContent: `${BASE_URL}/api/content/create`, // Endpoint to create new content
+    updateContent: (contentId: string) =>
+      `${BASE_URL}/api/content/${contentId}/update`, // Endpoint to update content
+    deleteContent: (contentId: string) =>
+      `${BASE_URL}/api/content/${contentId}/delete`, // Endpoint to delete content
+    publishContent: (contentId: string) =>
+      `${BASE_URL}/api/content/${contentId}/publish`, // Endpoint to publish content
+    unpublishContent: (contentId: string) =>
+      `${BASE_URL}/api/content/${contentId}/unpublish`, // Endpoint to unpublish content
+    searchContent: `${BASE_URL}/api/content/search`, // Endpoint to search content
+    // Add more content-related endpoints as needed
+  },
   calendar: {
     events: `${BASE_URL}/api/calendar/events`,
     singleEvent: (eventId: string) =>

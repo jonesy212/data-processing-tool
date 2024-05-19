@@ -3,12 +3,13 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import generateFakeData, { FakeDataPartial } from "../../intelligence/FakeDataGenerator";
 import { Data } from "../../models/data/Data";
 import { Member } from '../../models/teams/TeamMembers';
-import SnapshotStore, { Snapshot, SnapshotStoreConfig } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import CalendarManagerStoreClass, {
     CalendarEvent,
     useCalendarManagerStore,
 } from "./CalendarEvent";
-
+import { ReassignEventResponse } from './AssignEventStore';
+import SnapshotStoreConfig from '../../snapshots/SnapshotConfig';
 const eventIds: string[] = [];
 const events: Record<string, CalendarEvent[]> = {};
 interface PartialFakeDataEvent extends FakeDataPartial, CalendarEvent {
@@ -24,9 +25,17 @@ const convertToPartialFakeDataEvent = (fakeData: FakeDataPartial): PartialFakeDa
   status: "scheduled", // Provide default values or leave them empty
   rsvpStatus: "notResponded", // Provide default values or leave them empty
   host: {} as Member, // Provide default values or leave them empty
-  color: "blue", // Provide default values or leave them empty
-
-  // Add other properties as needed
+  color: "blue",
+  content: '',
+  topics: [],
+  highlights: [],
+  files: [],
+  priority: '',
+  participants: [],
+  teamMemberId: '',
+  then: function (callback: (newData: Snapshot<Data>) => void): void {
+    throw new Error('Function not implemented.');
+  }
 });
 describe("CalendarManagerStoreClass", () => {
   let calendarManagerStore = useCalendarManagerStore();
@@ -42,9 +51,19 @@ describe("CalendarManagerStoreClass", () => {
       date: new Date(),
       status: "scheduled",
       metadata: {},
-      rsvpStatus: 'yes',
+      rsvpStatus: "yes",
       host: {} as Member,
-      color: ''
+      color: "",
+      content: "",
+      topics: [],
+      highlights: [],
+      files: [],
+      priority: "",
+      participants: [],
+      teamMemberId: "",
+      then: function (callback: (newData: Snapshot<Data>) => void): void {
+        throw new Error("Function not implemented.");
+      },
     };
 
     calendarManagerStore.addEvent(event);
@@ -60,9 +79,19 @@ describe("CalendarManagerStoreClass", () => {
       date: new Date(),
       status: "scheduled",
       metadata: {} as StructuredMetadata,
-      rsvpStatus: 'yes',
+      rsvpStatus: "yes",
       host: {} as Member,
-      color: ''
+      color: "",
+      content: "",
+      topics: [],
+      highlights: [],
+      files: [],
+      priority: "",
+      participants: [],
+      teamMemberId: "",
+      then: function (callback: (newData: Snapshot<Data>) => void): void {
+        throw new Error("Function not implemented.");
+      },
     };
 
     calendarManagerStore.addEvent(event);
@@ -80,9 +109,19 @@ describe("CalendarManagerStoreClass", () => {
       date: new Date(),
       status: "scheduled",
       metadata: {} as StructuredMetadata,
-      rsvpStatus: 'yes',
+      rsvpStatus: "yes",
       host: {} as Member,
-      color: ''
+      color: "",
+      content: "",
+      topics: [],
+      highlights: [],
+      files: [],
+      priority: "",
+      participants: [],
+      teamMemberId: "",
+      then: function (callback: (newData: Snapshot<Data>) => void): void {
+        throw new Error("Function not implemented.");
+      },
     };
 
     calendarManagerStore.addEvent(event);
@@ -151,7 +190,13 @@ describe("CalendarManagerStoreClass", () => {
     const eventIdToReassign = "1"; // Assuming an event with this ID exists
     const oldUserId = "user1";
     const newUserId = "user2";
-    calendarManagerStore.reassignEvent(eventIdToReassign, oldUserId, newUserId);
+    const reassignData = {} as ReassignEventResponse[];
+    calendarManagerStore.reassignEvent(
+      eventIdToReassign,
+      oldUserId,
+      newUserId,
+      reassignData
+    );
 
     // Check if the event has been reassigned in the store
     // Additional assertions or mock implementations may be required depending on implementation details
@@ -168,12 +213,9 @@ describe("CalendarManagerStoreClass", () => {
   const mockConfig: SnapshotStoreConfig<Snapshot<Data>> = {
     key: "mockKey",
     initialState: {} as Snapshot<Data>,
-    onSnapshot: {} as (snapshot: Snapshot<Data>) => void,
+    onSnapshot: {} as (snapshot: SnapshotStore<Snapshot<Data>>) => void,
     clearSnapshots: {},
-    snapshots: {} as (
-      subscribers: (data: Data) => void,
-      snapshot: Snapshot<Snapshot<Data>>[]
-    ) => void,
+    snapshots: [] as SnapshotStore<Snapshot<Data>>[],
     initSnapshot: {} as () => void,
     updateSnapshot: {} as (snapshot: Snapshot<Data>) => void,
     takeSnapshot: {} as (snapshot: Snapshot<Data>) => void,
@@ -200,14 +242,15 @@ describe("CalendarManagerStoreClass", () => {
     batchFetchSnapshotsFailure: {} as (payload: { error: string }) => void,
     batchUpdateSnapshotsFailure: {} as (payload: { error: string }) => void,
     notifySubscribers: {} as (subscribers: (data: Data) => void) => void,
-    [Symbol.iterator]: {} as () => IterableIterator<Snapshot<Snapshot<Data>>>,
-
+    [Symbol.iterator]: {} as () => IterableIterator<
+      SnapshotStore<Snapshot<Data>>
+    >,
   };
   describe("Concurrent Operations in CalendarManagerStoreClass", () => {
     it.concurrent("should handle concurrent adding of events", async () => {
       // Generate fake data for concurrent adding of events
       const fakeEvents = generateFakeData(5); // Generate 5 fake events
-  
+
       // Execute concurrent operations to add events
       await Promise.all(
         fakeEvents.map(async (fakeData) => {
@@ -216,21 +259,23 @@ describe("CalendarManagerStoreClass", () => {
           calendarManagerStore.addEvent(event);
         })
       );
-  
+
       // Assert the expected state after concurrent adding of events
       // Add assertions to check data consistency and correctness
     });
-  
+
     it.concurrent(
       "should handle concurrent updating of event status",
       async () => {
         // Generate fake data for concurrent updating of event status
-        const fakeEvents: PartialFakeDataEvent[] = generateFakeData(5).map((fakeData) => convertToPartialFakeDataEvent(fakeData));
+        const fakeEvents: PartialFakeDataEvent[] = generateFakeData(5).map(
+          (fakeData) => convertToPartialFakeDataEvent(fakeData)
+        );
         const eventIds = fakeEvents.map((event) => event.id);
-  
+
         // Add fake events to CalendarManagerStoreClass before updating status
         fakeEvents.forEach((event) => calendarManagerStore.addEvent(event));
-  
+
         // Execute concurrent operations to update event status
         await Promise.all(
           eventIds.map(async (eventId) => {
@@ -242,25 +287,27 @@ describe("CalendarManagerStoreClass", () => {
     );
   });
 
-
-
   // Test Case: Realtime Update
   it("should handle realtime updates to events and snapshot data correctly", () => {
-    
-
-    const notify = (message: string, content: any, date: Date, type: NotificationType) => {
+    const notify = (
+      message: string,
+      content: any,
+      date: Date,
+      type: NotificationType
+    ) => {
       // Log the notification details
       console.log(`Notification: ${message}`);
       console.log(`Content: ${content}`);
       console.log(`Date: ${date}`);
       console.log(`Type: ${type}`);
-      
+
       // You can add more actions here based on the notification type or content
     };
-    
+
     const events: Record<string, CalendarEvent[]> = {}; // Mocked events data
-    const snapshotData: SnapshotStore<Snapshot<Data>> = new SnapshotStore<Snapshot<Data>>(mockConfig, notify);
-  ; // Mocked snapshot data
+    const snapshotData: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
+      Snapshot<Data>
+    >(mockConfig, notify); // Mocked snapshot data
     calendarManagerStore.handleRealtimeUpdate(events, snapshotData);
     calendarManagerStore.handleRealtimeUpdate(events, snapshotData);
 

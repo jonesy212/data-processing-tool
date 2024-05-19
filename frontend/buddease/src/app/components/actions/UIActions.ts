@@ -118,6 +118,8 @@ export const UIActions = {
 
   updateScrollingState: createAction<number>("updateScrollingState"),
 
+  setProgress: createAction<number>('setProgress'),
+  calculateProgressPercentage: createAction
 }
 
 

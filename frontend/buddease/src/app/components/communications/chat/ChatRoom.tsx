@@ -1,14 +1,14 @@
 // ChatRoom.tsx
 import axiosInstance from "@/app/api/axiosInstance";
-import Logger, { ChatLogger } from "@/app/components/logging/Logger";
+import { ChatLogger } from "@/app/components/logging/Logger";
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import React, { useEffect, useState } from "react";
+import { Params } from "react-router-dom";
 import { useThemeConfig } from "../../hooks/userInterface/ThemeConfigContext";
-import { setMessages } from "../../state/redux/slices/ChatSlice";
 import connectToChatWebSocket, { retryConfig } from "../WebSocket";
 import ChatMessageData from "./ChatRoomDashboard";
 
-interface ChatRoomProps {
+interface ChatRoomProps  {
   roomId: string;
   topics: string[];
   chatEvent: (newTitle: string) => string;
@@ -119,3 +119,4 @@ const ChatRoomComponent: React.FC<ChatRoomProps> = ({
 };
 
 export default ChatRoomComponent;
+export type { ChatRoomProps };

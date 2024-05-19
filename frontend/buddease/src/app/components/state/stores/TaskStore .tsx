@@ -159,7 +159,9 @@ const useTaskManagerStore = (): TaskManagerStore => {
     taskStore.setAssignedTaskStore({
       ...assignedTaskStore,
       [taskId]: reassignedTasks,
-    });
+    } 
+      
+    );
 
     // Method to reassign a task to a new user
     const reassignTask = (
@@ -192,7 +194,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       oldUserId: string,
       newUserId: string
     ) => {
-      const reassignedTasks = assignedTaskStore[taskId].map((task) => {
+      const reassignedTasks = assignedTaskStore[taskId]?.map((task: Task) => {
         if (task.userId === oldUserId) {
           return { ...task, userId: newUserId };
         }
@@ -203,7 +205,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         ...assignedTaskStore,
         [taskId]: reassignedTasks,
         task: undefined,
-        assignee: ""
+        assignee: "",
       });
     };
 
@@ -253,7 +255,13 @@ const useTaskManagerStore = (): TaskManagerStore => {
       return;
     }
 
-    const newTask = generateNewTask();
+    const projectId = useSafeProjectId
+    const newTask = generateNewTask(
+      projectId,
+      title,
+      false,
+      0
+    );
 
     // Ensure the title is not empty before adding a task
     if (taskTitle.trim().length === 0) {

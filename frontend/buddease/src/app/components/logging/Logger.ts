@@ -202,7 +202,7 @@ class AudioLogger extends Logger {
   }
 }
 
-class ConfigLogger {
+class ConfigLogger extends Logger {
   static async logConfigUpdate(configName: string, newValue: any) {
     try {
       const logUrl = this.getLogUrl("configUpdateEvent");
@@ -290,7 +290,7 @@ class SearchLogger extends Logger {
   // Add more methods for other search-related events as needed
 }
 
-class TeamLogger {
+class TeamLogger extends Logger {
   static async logTeamCreation(teamId: string, team: Team): Promise<void> {
     try {
       // Convert teamId to a number if necessary
@@ -526,7 +526,7 @@ class UILogger extends Logger {
 }
 
 
-class AnimationLogger {
+class AnimationLogger extends Logger {
   static async logAnimation(
     message: string,
     uniqueID: string,
@@ -614,7 +614,7 @@ class AnimationLogger {
   }
 }
 
-class DataLogger {
+class DataLogger extends Logger {
   static async log(message: string, data?: {} ): Promise<void> {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
@@ -811,7 +811,7 @@ class ChatLogger extends Logger {
 
 
 
-class FormLogger {
+class FormLogger extends Logger{
   static async logFormEvent(eventType: string, formID: string, eventData: any) {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
@@ -908,7 +908,7 @@ class CollaborationLogger extends Logger {
   }
 }
 
-class ComponentLogger {
+class ComponentLogger extends Logger {
   static log(action: string, message: string, uniqueID: string) {
     Logger.logWithOptions("User", `${action} (${message})`, uniqueID);
   }
@@ -1166,7 +1166,7 @@ class CalendarLogger extends Logger {
   }
 }
 
-class WebLogger {
+class WebLogger  extends Logger {
   static async logWebEvent(action: string, message: string, data?: any) {
     try {
       const logUrl = this.getLogUrl(action);
@@ -1309,6 +1309,14 @@ class ContentLogger extends Logger {
     );
   }
 
+  static logTaskUpdate(taskId: string, title: string, contentId: string, userId: string, changes: string) {
+    super.logWithOptions(
+      "Content",
+      `Task updated (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`,
+      userId
+    );
+  }
+  
   static logTaskDeletion(taskId: string, title: string, userId: string, contentId?: string) {
     super.logWithOptions(
       "Content",

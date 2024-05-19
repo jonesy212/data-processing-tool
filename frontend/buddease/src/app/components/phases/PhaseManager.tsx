@@ -3,7 +3,7 @@ import Stopwatch from "../calendar/Stopwatch";
 import { enhancedPhaseHook, setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker from "../hooks/useAsyncHookLinker";
-import { Phase } from "./Phase";
+import { Phase, CustomPhaseHooks } from "./Phase";
 // Function to get a phase component based on the selected phase name
 function getPhaseComponent(selectedPhaseName: string): React.FC | undefined {
   const selectedPhase = genericLifecyclePhases.find(
@@ -16,12 +16,9 @@ function getPhaseComponent(selectedPhaseName: string): React.FC | undefined {
 const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
   const [currentPhase, setCurrentPhase] = useState<Phase | null>(null);
 
-
-
-
   const createPhases = () => {
     // Logic to create phases...
-  
+
     // Example: Create an array of phase objects
     const newPhases: Phase[] = [
       {
@@ -35,6 +32,8 @@ const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
           handleTransitionTo: () => {},
           resetIdleTimeout: () => Promise.resolve(),
           isActive: false,
+          progress: null,
+          condition: (): boolean => true,
         },
         duration: 1000,
         lessons: [],
@@ -50,27 +49,28 @@ const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
           handleTransitionTo: () => {},
           resetIdleTimeout: () => Promise.resolve(),
           isActive: false,
+          progress: null,
+          condition: (): boolean => {
+            throw new Error("Function not implemented.");
+          },
         },
         duration: 1500,
         lessons: [],
       },
       // Add more phase objects as needed
     ];
-  
+
     return newPhases;
   };
-  
-
-
 
   const linker = useAsyncHookLinker({
     hooks: phases.map((phase) => ({
       ...phase.hooks,
       enable: () => {},
       disable: () => {},
-      condition: () => {
+      condition: async () => {
         if (phase.hooks) {
-          return phase.hooks.condition();
+          return await phase.hooks.condition();
         }
         return currentPhase?.name === phase.name;
       },
@@ -117,14 +117,11 @@ const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
       Phase Manager
       <button onClick={moveToNextHook}>Move to Next Hook</button>
       <button onClick={moveToPreviousHook}>Move to Previous Hook</button>{" "}
-      {/* Add this button */}
       <Stopwatch
-        startDate={currentPhase?.startDate}
-        endDate={currentPhase?.endDate}
-      />{" "}
-      {/* Include the Stopwatch component */}
-      {CurrentPhaseComponent && <CurrentPhaseComponent />}{" "}
-      {/* Render the current phase component */}
+        startTime={currentPhase?.startDate}
+        endTime={currentPhase?.endDate}
+      />
+      {CurrentPhaseComponent && <CurrentPhaseComponent />}
     </div>
   );
 };
@@ -145,12 +142,16 @@ const genericLifecyclePhases: Phase[] = [
     subPhases: [],
     hooks: {
       canTransitionTo: () => true,
-      handleTransitionTo: () => {},
+      handleTransitionTo: () => { },
       resetIdleTimeout: function (): Promise<void> {
         this.resetIdleTimeout();
         return Promise.resolve();
       },
       isActive: false,
+      progress: null,
+      condition: function (): boolean {
+        throw new Error("Function not implemented.");
+      }
     },
     duration: 1000,
     lessons: ([] = []),

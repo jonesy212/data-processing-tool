@@ -166,7 +166,7 @@ const fileMapping: {
   UserAPI: { category: FileCategory.Redux, type: FileTypeEnum.API },
   UserService: { category: FileCategory.MobX, type: FileTypeEnum.Service },
   UserForm: { category: FileCategory.Component, type: FileTypeEnum.UI },
-    UserProfile: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  UserProfile: { category: FileCategory.Component, type: FileTypeEnum.UI },
   ProjectDetails: {category: FileCategory.Component, type: FileTypeEnum.UI},
   UserDetails: { category: FileCategory.Component, type: FileTypeEnum.UI },
   UserCard: { category: FileCategory.Component, type: FileTypeEnum.UI },

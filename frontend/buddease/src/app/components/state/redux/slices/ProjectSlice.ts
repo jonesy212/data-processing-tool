@@ -1,8 +1,6 @@
-import { handleApiError } from "@/app/api/ApiLogs";
 import Milestone, {
   ProductMilestone,
 } from "@/app/components/calendar/CalendarSlice";
-import { ProjectDetails } from "@/app/components/models/data";
 import { StatusType } from "@/app/components/models/data/StatusType";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Team } from "@/app/components/models/teams/Team";
@@ -12,22 +10,25 @@ import { IdentifiedNeed } from "@/app/components/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/components/projects/JobDescription";
 import { Project } from "@/app/components/projects/Project";
 import { JobRole } from "@/app/components/users/UserRoles";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import { Phase } from "@/app/components/phases/Phase";
-import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
-import ProjectProgress from '../../../projects/projectManagement/ProjectProgress';
+
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { ProjectFeedback } from "@/app/components/support/ProjectFeedback";
+import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
+import ProjectProgress from '../../../projects/projectManagement/ProjectProgress';
+
 interface ProjectState {
-  project: Project | null;
-  projects: Project[];
+  project: WritableDraft<Project> | null;
+  projects: WritableDraft<Project[]>;
+  
   loading: boolean;
   error: string | null;
-  currentProject: Project | null;
-  selectedProject: Project | null;
+  currentProject: WritableDraft<Project> | null;
+  selectedProject: WritableDraft<Project> | null
+  projectFeedback: ProjectFeedback[]
 }
 
 interface Deadline {
@@ -91,7 +92,7 @@ function createUpdatedProject(
 }
 
 const updateJobRolesAndDescriptions = (
-  state: YourStateType,
+  state: any,
   projectId: string,
   teamId: string,
   jobRoles: WritableDraft<JobRole[]>,
@@ -259,7 +260,7 @@ export const useProjectManagerSlice = createSlice({
       if (projectIndex !== -1) {
         const project = state.projects[projectIndex];
         project.tasks = project.tasks.filter(
-          async (task) => task.id !== (await taskId)
+          async (task) => task.id !== String(taskId) 
         );
         state.projects[projectIndex] = project;
       }
@@ -328,12 +329,44 @@ export const useProjectManagerSlice = createSlice({
         }
       }
     },
-    defineJobRoles: (state, action) => {
-      const { projectId, teamId, jobRoles } = action.payload;
+    defineJobRoles: (
+      state,
+      action: PayloadAction<{
+        project: Project;
+        projectId: string;
+        teamId: string;
+        jobRoles: WritableDraft<JobRole[]>;
+      }>
+    ) => {
+      const {project, projectId, teamId, jobRoles } = action.payload;
+
+      const projectIndex = state.projects.findIndex(
+        (project) => project.id === projectId
+      );
+
+      if (projectIndex !== -1) {
+        const project = state.projects[projectIndex];
+      }
+      const teamIndex = project.teams.findIndex(
+        (team: Team) => team.id === teamId
+      );
+      // Find team
+      if (teamIndex !== -1) {
+        const team = project.teams[teamIndex];
+        // Update team job roles
+        team.jobRoles = jobRoles;
+        // Update project teams
+        project.teams[teamIndex] = team;
+        // Update project
+        state.projects[projectIndex] = project;
+      }
+
       updateJobRolesAndDescriptions(state, projectId, teamId, jobRoles, []);
+
     },
 
-    createJobDescriptions: (state, action) => {
+    createJobDescriptions: (state,
+      action) => {
       const { projectId, teamId, jobRoles, jobDescriptions } = action.payload;
       updateJobRolesAndDescriptions(
         state,
@@ -344,16 +377,35 @@ export const useProjectManagerSlice = createSlice({
       );
     },
 
-    advertisePositions: (state, action) => {
-      const { projectId, teamId, jobRoles, jobDescriptions } = action.payload;
-      updateJobRolesAndDescriptions(
-        state,
-        projectId,
-        teamId,
-        jobRoles,
-        jobDescriptions
-      );
+    advertisePositions: (state,
+      action: PayloadAction<{
+        projectId: string;
+        teamId: string;
+        jobRoles: WritableDraft<JobRole[]>;
+      }>) => {
+        const { projectId, teamId, jobRoles } = action.payload;
+    
+        // Update job roles and descriptions
+        updateJobRolesAndDescriptions(
+          state,
+          projectId,
+          teamId,
+          jobRoles,
+          []
+        );
+    
+        // Advertise positions logic
+        // Add your logic here to advertise positions based on the updated job roles and descriptions
+        // For example:
+        const updatedProject = state.projects.find((project) => project.id === projectId);
+        const updatedTeam = updatedProject?.teams.find((team: Team) => team.id === teamId);
+        const advertisedPositions = updatedTeam?.jobRoles.filter((jobRole: JobRole) => jobRole.isAdvertised);
+        console.log("Advertised positions:", advertisedPositions);
+    
+        // Return the updated state
+        return state;
     },
+    
 
     reviewApplications: (state, action) => {
       const { projectId, teamId, jobRoles, jobDescriptions } = action.payload;
@@ -550,7 +602,7 @@ export const useProjectManagerSlice = createSlice({
     },
 
     rewardContributors(
-      state: YourStateType, // Replace YourStateType with the actual type of your state
+      state,
       action: PayloadAction<{
         projectId: string;
         contributors: Contributor[];
@@ -590,7 +642,7 @@ export const useProjectManagerSlice = createSlice({
     },
 
     buildCustomApp(
-      state: ProjectState, // Replace YourStateType with the actual type of your state
+      state,
       action: PayloadAction<{
         projectId: string;
         app: WritableDraft<CustomApp>;
@@ -620,7 +672,7 @@ export const useProjectManagerSlice = createSlice({
       // If project is not found, return state as is
       return state;
     },
-
+ 
     meetProjectMetrics(
       state,
       action: PayloadAction<{
@@ -633,8 +685,7 @@ export const useProjectManagerSlice = createSlice({
       // Find the project in the state
       const projectIndex = state.projects.findIndex(project => project.id === projectId);
       if (projectIndex !== -1) {
-        const updatedProject = { ...state.projects[projectIndex] };
-        updatedProject.metrics = metrics;
+        const updatedProject = { ...state.projects[projectIndex], metrics };
 
         return {
           ...state,
@@ -647,7 +698,7 @@ export const useProjectManagerSlice = createSlice({
       }
       return state;
     },
-
+ 
     generateRevenue(
       state,
       action: PayloadAction<{
@@ -1477,7 +1528,7 @@ export const {
   // Add other actions here
 } = useProjectManagerSlice.actions;
 
-export type { ProjectState }
+export type { ProjectState };
 // Export reducer
 useProjectManagerSlice.reducer;
 
@@ -1491,3 +1542,4 @@ export const selectProjectLoading = (state: RootState) =>
   state.projectManager.loading;
 export const selectProjectError = (state: RootState) =>
   state.projectManager.error;
+export type { Deadline };

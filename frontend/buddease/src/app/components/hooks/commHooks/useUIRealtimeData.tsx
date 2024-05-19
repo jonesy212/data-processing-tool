@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient from 'socket.io-client';
-import RealtimeData, { RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
+import { RealtimeData, RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
 import { Data } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
@@ -20,10 +20,11 @@ export type RealtimeUpdateCallback<T extends RealtimeData> = (
 
 const useUIRealtimeData = (
   initialData: any,
-  updateCallback: RealtimeUpdateCallback<RealtimeData>
+  updateCallback: RealtimeUpdateCallback<RealtimeData> 
+  
 ) => {
   const [realtimeData, setRealtimeData] = useState(initialData);
-  const dispatch = useDispatch(); // Initialize useDispatch hook
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);

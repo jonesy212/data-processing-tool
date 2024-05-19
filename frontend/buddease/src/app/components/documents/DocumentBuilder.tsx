@@ -7,6 +7,7 @@ import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import Clipboard from "@/app/ts/clipboard";
+import crypto from 'crypto';
 import {
   ContentState,
   Editor,
@@ -56,6 +57,17 @@ import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
+
+
+
+// Example function to compute checksum
+function computeChecksum(data: string): string {
+  return crypto.createHash('sha256').update(data, 'utf8').digest('hex');
+}
+// todo update dynamic conent version
+const versionData = "content of version 1.0.0";
+const checksum = computeChecksum(versionData);
+
 // DocumentData.tsx
 export interface DocumentData extends CommonData<Data> {
   id: number;
@@ -65,7 +77,7 @@ export interface DocumentData extends CommonData<Data> {
   highlights: string[];
   keywords: string[];
   load?(content: any): void;
-  permissions: DocumentPermissions;
+  permissions: DocumentPermissions | undefined;
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document
   folder?: FolderData;
@@ -75,18 +87,19 @@ export interface DocumentData extends CommonData<Data> {
   type?: DocumentTypeEnum;
   locked?: boolean;
   changes?: string[];
-  options: DocumentOptions;
+  options: DocumentOptions | undefined;
   documentPhase?: Phase;
   folderPath: string;
   previousContent?: string;
   currentContent?: string;
   previousMetadata: StructuredMetadata | undefined;
-  currentMetadata: StructuredMetadata;
+  currentMetadata: StructuredMetadata | undefined;
   accessHistory: any[];
-  lastModifiedDate: { value: Date; isModified: boolean }; // Initialize as not modified
-  versionData: VersionData;
-  version: Version | null; // Update the type to accept null values
-
+  lastModifiedDate: { value: Date; isModified: boolean } | undefined; // Initialize as not modified
+  versionData: VersionData | undefined;
+  version: Version | undefined | null; // Update the type to accept null values
+  
+  updatedDocument?: DocumentData; // Add property to track updated document data
   // Add more properties if needed
 }
 
@@ -107,6 +120,7 @@ const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
 // Use the custom type/interface for the documentPhase option
+// Use the custom type/interface for the documentPhase option
 const documentBuilderProps: DocumentBuilderProps = {
   documentPhase: {
     phaseType: ProjectPhaseTypeEnum.Draft,
@@ -125,12 +139,74 @@ const documentBuilderProps: DocumentBuilderProps = {
     appVersion: appVersion,
     data: [] as Data[],
     appName: "Buddease",
-    releaseDate: new Date(),
-    releaseNotes: [] = [],
+    releaseDate: new Date().toISOString(),
+    releaseNotes: [],
     creator: {
       id: 0,
-      name: "Test User"
-    }
+      name: "Test User",
+    },
+    checksum: checksum,
+    name: "Version 1.0.0",
+    url: "https://example.com/version/1.0.0",
+    versionHistory: [
+      { version: "0.9.0", releaseDate: "2023-12-01", notes: ["Beta release"] },
+      {
+        version: "0.9.1",
+        releaseDate: "2023-12-15",
+        notes: ["Minor bug fixes"],
+      },
+    ],
+    draft: true,
+    userId: '0', 
+    documentId: '0',
+    parentId: '0',
+    parentType: "document",
+    parentVersionNumber: "0.0.0",
+    documentType: DocumentTypeEnum.Document,
+    documentName: "Test Document",
+    documentDescription: "This is a test document",
+    documentTags: [],
+    documentStatus: "draft",
+    documentVisibility: "private",
+    documentCreatedAt: new Date(),
+    documentUpdatedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isLatest: true,
+    isPublished: false,
+    publishedAt: null,
+    source: "GitHub",
+    status: "Active",
+    workspaceName: "Development Workspace",
+    workspaceUrl: "https://example.com/workspace",
+    workspaceViewers: ["User1", "User2", "User3"],
+    workspaceAdmins: ["Admin1", "Admin2"],
+    parentVersion: "1.2.3",
+    parentTitle: "Parent Title",
+    parentContent: "Parent Content",
+    parentName: "Parent Name",
+    parentUrl: "https://example.com/parent",
+    parentChecksum: "abc123",
+    parentMetadata: { key: "value" },
+    parentAppVersion: "1.2.3",
+    description: "This is a description.",
+    workspaceId: "123456",
+    workspaceType: "Development",
+    workspaceMembers: ["Member1", "Member2", "Member3"],
+    workspaceRoles: ["Developer", "Designer", "Manager"],
+    workspacePermissions: ["Read", "Write", "Delete"],
+    workspaceSettings: { theme: "dark", notifications: true },
+    workspaceMetadata: { key: "value" },
+    workspaceCreator: {
+      id: 1,
+      name: "Workspace Admin",
+    },
+    workspaceCreatedAt: "2023-01-01",
+    workspaceUpdatedAt: "2023-01-02",
+    workspaceArchivedAt: "",
+    workspaceDeletedAt: "",
+    workspaceVersion: "1.0.0",
+    workspaceVersionHistory: ["1.0.0", "1.1.0"],
   }),
 
   onOptionsChange: (options: DocumentOptions) => {
@@ -140,6 +216,7 @@ const documentBuilderProps: DocumentBuilderProps = {
   onConfigChange: (newConfig: DocumentBuilderConfig) => {
     setOptions((prevOptions) => ({
       ...prevOptions,
+      limit: newConfig.limit,
       metadata:
         newConfig.metadata ||
         {
@@ -166,6 +243,40 @@ const documentBuilderProps: DocumentBuilderProps = {
           content: "",
           data: {} as Data[],
           url: `${API_BASE_URL}`,
+          versionHistory: {
+            versions: []
+          },
+          checksum: "",
+          draft: false,
+          limit: 0,
+          description: "",
+          userId: "",
+          documentId: "",
+          parentId: "",
+          parentType: "",
+          parentVersion: "",
+          parentTitle: "",
+          parentContent: "",
+          parentName: "",
+          parentUrl: "",
+          parentChecksum: "",
+          parentMetadata: undefined,
+          parentAppVersion: "",
+          parentVersionNumber: "",
+          isLatest: false,
+          isPublished: false,
+          publishedAt: null,
+          source: "",
+          status: "",
+          workspaceId: "",
+          workspaceName: "",
+          workspaceType: "",
+          workspaceUrl: "",
+          workspaceViewers: [],
+          workspaceAdmins: [],
+          workspaceMembers: [],
+          createdAt: new Date,
+          updatedAt: undefined
         }),
 
       backendStructure: newConfig.backendStructure || {

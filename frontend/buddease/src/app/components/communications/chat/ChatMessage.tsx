@@ -1,29 +1,54 @@
 // ChatMessage.tsx
-import { AquaConfig } from '@/app/components/web3/web_configs/AquaConfig';
+import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
 import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
 import { initializeGeolocationService } from "@/app/utils/GeolocationServiceUtils";
 import axios, { AxiosResponse } from "axios";
+import { EditorState } from "draft-js";
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../../auth/AuthContext";
 import ChatCard from "../../cards/ChatCard";
 import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
 import FluenceConnection from "../../web3/fluenceProtocoIntegration/FluenceConnection";
 import connectToChatWebSocket, { retryConfig } from "../WebSocket";
 import { AquaChat } from "./AquaChat";
+import { UserRole } from "../../users/UserRole";
+import ChatSettings from "./ChatSettingsPanel";
 import resetUnreadMessageCount from "./ResetUnreadMessageCount";
 import {
+  SidebarController,
+  SpeechToTextEngine,
   createRichTextEditor,
   getUnreadMessageCount,
-
   initializeSpeechToText,
   leaveChatRoom,
   openChatSettingsModal,
-
   openChatSidebar,
   openEmojiPicker,
   openFileUploadModal,
   sendChatMessage,
 } from "./chatUtils";
+import clearChatAnalyticsData from "./features/clearChatAnalyticsData";
+import clearChatImageCache from "./features/clearChatImageCache";
+import clearChatSearchHistory from "./features/clearChatSearchHistory";
+import clearDraftMessages from "./features/clearDraftMessages";
 import disconnectFromChatServer from "./features/disconnectFromChatServer";
+import removeExpiredChatTokens from "./features/removeExpiredChatTokens";
+import removeStaleChatSessions from "./features/removeStaleChatSessions";
+import resetChatPreferences from "./features/resetChatPreferences";
+import revokeMediaPermissions from "./features/revokeMediaPermissions";
+import stopAnimatedEmoticons from "./features/stopAnimatedEmoticons";
+import stopBackgroundChatAudio from "./features/stopBackgroundChatAudio";
+import unsubscribeFromChatNotifications from "./features/unsubscribeFromChatNotifications";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import UserRoles from "../../users/UserRoles";
+import { ChatMessageActions } from "../../actions/ChatMessageActions";
+import { ChatApi } from "@/app/api/ChatApi";
+import GeolocationService from "@/app/services/GeolocationService";
+import { closeChatSettingsPanel } from "./features/closeChatSettingsPanel";
+import { disposeGeolocationService } from "./features/disposeGeolocationServices";
+import { FileUploadModalProps } from "../../cards/modal/FileUploadModal";
+import useFiles from "../../hooks/useFiles";
 
 type ChatSettingsModal = {
   close?: () => void;
@@ -63,6 +88,12 @@ interface CancellablePromise<T> extends Promise<T> {
   close?: () => void;
 }
 
+// Define an interface for the props
+interface EditorComponentProps {
+  editorState: EditorState;
+  // Add other props if needed
+}
+
 export interface ChatMessageProps extends ChatMessage {
   roomId: string;
 }
@@ -98,16 +129,127 @@ const fetchChatMessages = async (
   }
 };
 
-// Subscribe to new chat messages
-const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
+  const [message, setMessage] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
+
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(false);
+  // const { roomId } = useParams<{ roomId: string }>();
+
+  const sendMessage = async () => {
+    if (message.trim() === "") return;
+    const userRole: UserRole | undefined = useAuth().user?.role;
+
+    if (userRole === UserRoles.ADMIN || userRole === UserRoles.MODERATOR) {
+      sendChatMessage(roomId, message);
+    } else {
+      ChatMessageActions.sendMessage({ roomId, message });
+    }
+    const chatThreadId = UniqueIDGenerator.generateChatThreadID(roomId);
+    const chatMessageId = UniqueIDGenerator.generateChatMessageID(chatThreadId);
+    const newMessage: Message = {
+      id: chatMessageId,
+      text: message,
+      senderId: "user",
+      timestamp: new Date(),
+      sender: undefined,
+      channel: undefined,
+      channelId: undefined,
+      content: "",
+      tags: [],
+      receiver: undefined,
+      username: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      tier: "",
+      token: null,
+      uploadQuota: 0,
+      avatarUrl: null,
+      createdAt: undefined,
+      updatedAt: undefined,
+      fullName: null,
+      isVerified: false,
+      isAdmin: false,
+      isActive: false,
+      bio: null,
+      userType: "",
+      hasQuota: false,
+      profilePicture: null,
+      processingTasks: [],
+      role: userRole || UserRoles.USER,
+      persona: undefined,
+      friends: [],
+      blockedUsers: [],
+      settings: undefined,
+      interests: [],
+      privacySettings: undefined,
+      notifications: undefined,
+      activityLog: [],
+      socialLinks: undefined,
+      relationshipStatus: null,
+      hobbies: [],
+      skills: [],
+      achievements: [],
+      profileVisibility: "",
+      profileAccessControl: undefined,
+      activityStatus: "",
+    };
+
+    setMessages([...messages, newMessage]);
+    setMessage("");
+
+    // Send message to server
+    await ChatApi.sendMessageToServer(roomId, newMessage.text);
+  };
 
   useEffect(() => {
-    const geolocationService = initializeGeolocationService();
-  // Additional logic if needed
+    const fetchData = async () => {
+      try {
+        await fetchMessages(String(roomId));
+        await fetchUnreadCount(String(roomId));
+        // Other asynchronous tasks
+      } catch (error) {
+        console.error("Error in useEffect:", error);
+      }
+    };
 
-  // Run this effect once when the component mounts
-    const fetchMessages = async () => {
+    fetchData();
+
+    let geolocationService: GeolocationService | undefined;
+    let settingsPanel: ChatSettings | undefined;
+
+    const initialize = async () => {
+      await fetchData();
+
+      // Additional initialization tasks
+      const modal = await openChatSettingsModal();
+      const request = sendChatMessage(
+        String(roomId),
+        JSON.stringify(sampleMessage)
+      );
+
+      // Check if modal has a close method before calling it
+      if (modal !== undefined && modal && typeof modal.close === "function") {
+        modal.close();
+      }
+      // Clean up resources and return cleanup function
+      return () => {
+        // Clean up resources
+      };
+    };
+
+    // const geolocationService = initializeGeolocationService();
+    // Additional logic if needed
+    const fetchUnreadCount = async (roomId: string) => {
+      const count = await getUnreadMessageCount(roomId);
+      // Use unreadCount here directly
+      console.log("Unread message count:", count);
+    };
+
+    // Run this effect once when the component mounts
+    const fetchMessages = async (roomId: string) => {
       try {
         const messages = await fetchChatMessages(roomId, 10);
 
@@ -126,7 +268,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
       }
     };
 
-    fetchMessages();
+    fetchMessages(String(roomId));
 
     //#todo impement event listeners cleanup into chat
     subscriptionService.subscribe("chat_updates_" + roomId, (message: any) => {
@@ -152,8 +294,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
       messageType: "text",
       user: {
         id: "user-id",
-        name: "User Name"
-      }
+        name: "User Name",
+      },
     };
 
     // Handle unread message count reset
@@ -161,47 +303,56 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
     //todo verify which editor and notification to use
 
     const socket = connectToChatWebSocket(roomId, retryConfig);
-    let modal: ChatSettingsModal | undefined = openChatSettingsModal();
+    // let modal: ChatSettingsModal | undefined = await openChatSettingsModal();
     const request: CancellablePromise<void> = sendChatMessage(
-      sampleMessage.message
+      String(roomId),
+      JSON.stringify(sampleMessage)
     );
-    // let editor: ChatEditor | undefined;
     let notification: ChatNotification | undefined;
-    let editor = createRichTextEditor();
+    let editorState: EditorState | undefined;
+
+    // Call createRichTextEditor to get the editor component
+    const editorComponent: React.ReactElement<EditorComponentProps> =
+      createRichTextEditor();
     // const notification = sendChatNotification(sampleMessage.message);
-    const unreadCount = getUnreadMessageCount(roomId);
+    const unreadCount = getUnreadMessageCount(String(roomId));
     const emojiPicker = openEmojiPicker();
-    const sidebar = openChatSidebar();
-    const speechToTextEngine = initializeSpeechToText();
-    leaveChatRoom(roomId);
+    const sidebar: SidebarController | undefined = openChatSidebar(
+      setIsChatSidebarOpen
+    ) as SidebarController | undefined;
+
+    // Call initializeSpeechToText() to get the speech-to-text engine
+    const speechToTextEngine: SpeechToTextEngine | undefined =
+      initializeSpeechToText() as SpeechToTextEngine | undefined;
+    leaveChatRoom(String(roomId));
     localStorage.removeItem("chatMessages");
 
-    roomId;
+    // roomId;
     // timers for auto-refresh or any periodic tasks, clear them during cleanup.
     const timerId = setInterval(() => {
       // Auto-refresh logic
     }, 5000);
-    // Cleanup logic if needed
-    return () => {
-      subscriptionService.unsubscribe("chat_updates_" + roomId);
-      socket!.close();
-      resetUnreadMessageCount(roomId);
+    // // Cleanup logic if needed
 
-      // Check if modal has a close method before calling it
-      
-      if (modal !== undefined && typeof modal.close === "function") {
-        modal.close();
-      }
+    fetchData();
+
+    initialize();
+
+    return () => {
+      subscriptionService.unsubscribe("chat_updates_" + roomId, "");
+      socket?.close();
+      resetUnreadMessageCount(String(roomId));
 
       // Check if request is a Promise with a cancel method before calling it
       if (request instanceof Promise && typeof request.cancel === "function") {
         request.cancel();
       }
 
-      // Check if editor has a dispose method before calling it
-      // Check if editor has a dispose method before calling it
-      if (editor && typeof (editor as ChatEditor).dispose === "function") {
-        editor.props.dispose();
+      // Check if editor is defined and has a dispose method before calling it
+      // If the returned component is a ReactElement, extract the EditorState from it
+      if (React.isValidElement(editorComponent)) {
+        // Extract the editorState from the props
+        editorState = editorComponent.props.editorState;
       }
 
       // Check if notification is defined and has a clear method before calling it
@@ -212,7 +363,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
       ) {
         notification.clear();
       }
-      const fileUploadModal = openFileUploadModal();
+
+      let fileUploadModal: FileUploadModalProps | undefined;
       const geolocationService = initializeGeolocationService();
       const settingsPanel = openChatSettingsPanel();
       const aquaConfig: AquaConfig = {
@@ -228,115 +380,158 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
           "Content-Type": "application/json",
         },
         chatImageUploadParams: {
-          chat_id: roomId,
+          chat_id: String(roomId),
         },
         chatImageUploadUrlParams: {
-          chat_id: roomId,
+          chat_id: String(roomId),
         },
         chatImageDownloadUrl: "chat-image-download-url",
         chatImageDownloadHeaders: {
           "Content-Type": "application/json",
         },
         chatImageDownloadParams: {
-          chat_id: roomId,
+          chat_id: String(roomId),
         },
         chatImageDownloadUrlParams: {
-          chat_id: roomId,
+          chat_id: String(roomId),
         },
         chatImageCacheUrl: "chat-image-cache-url",
         chatImageCacheHeaders: {
           "Content-Type": "application/json",
         },
         chatImageCacheParams: {
-          chat_id: roomId,
+          chat_id: String(roomId),
         },
-        apiUrl: '',
+        apiUrl: "",
         maxConnections: 0,
         timeout: 0,
         secureConnection: false,
         reconnectAttempts: 0,
-        autoReconnect: false
-      }
+        autoReconnect: false,
+      };
 
-      const aquaChat = new AquaChat(aquaConfig)
-      const fluenceConnection = new FluenceConnection
+      const aquaChat = new AquaChat(aquaConfig);
+      const fluenceConnection = new FluenceConnection();
+      const currentUser = useAuth().state.user;
+      // Use the useFiles hook to manage file upload state
+
+      const { files, handleFileUpload } = useFiles();
+
       const handleFileUploadClick = () => {
-        const fileUploadModal = openFileUploadModal();
+        if (handleFileUpload) {
+          openFileUploadModal(handleFileUpload);
+        } else {
+          console.error("handleFileUpload function is not defined");
+        }
         // Additional logic if needed
       };
 
+      // Define a map to track typing indicators for each room
+      const typingIndicators: Map<string, string[]> = new Map();
 
+      // Function to remove a user from typing indicators in a specific room
+      const removeUserFromTypingIndicators = (
+        roomId: string,
+        currentUser: string | null
+      ) => {
+        // Retrieve the typing indicators for the specified room
+        const usersTyping = typingIndicators.get(roomId);
 
-      
-      //  // 1. Clear Cache for Chat Images
-      //  clearChatImageCache();
+        // If there are users typing in the room
+        if (usersTyping) {
+          // Remove the current user from the list of users typing
+          const updatedUsersTyping = usersTyping.filter(
+            (user) => user !== currentUser
+          );
 
-      //  // 2. Close Emoji Picker
-      //  emojiPicker.close();
+          // Update the typing indicators for the room
+          typingIndicators.set(roomId, updatedUsersTyping);
 
-      //  // 3. Revoke Media Permissions
-      //  revokeMediaPermissions();
+          console.log(
+            `User ${currentUser} removed from typing indicators in room ${roomId}`
+          );
+        } else {
+          console.log(`No typing indicators found for room ${roomId}`);
+        }
+      };
 
-      //  // 4. Stop Background Audio
-      //  stopBackgroundChatAudio();
+      // 1. Clear Cache for Chat Images
+      clearChatImageCache();
 
-      //  // 5. Clear Draft Messages
-      //  clearDraftMessages(roomId);
+      // 2. Close Emoji Picker
+      emojiPicker?.close();
 
-      //  // 6. Close Chat Sidebar
-      //  sidebar.close();
+      // 3. Revoke Media Permissions
+      revokeMediaPermissions();
 
-      //  // 7. Reset Chat Preferences
-      //  resetChatPreferences();
+      // 4. Stop Background Audio
+      stopBackgroundChatAudio();
 
-      //  // 8. Dispose of Speech-to-Text Engine
-      //  speechToTextEngine.dispose();
+      // 5. Clear Draft Messages
+      clearDraftMessages(String(roomId));
 
-      //  // 9. Remove User from Typing Indicators
-      //  removeUserFromTypingIndicators(roomId, currentUser);
+      // 6. Close Chat Sidebar
+      sidebar?.close();
 
-      //  // 10. Clear Chat Analytics Data
-      //  clearChatAnalyticsData();
+      // 7. Reset Chat Preferences
+      resetChatPreferences();
 
-      //  // 11. Clear Interval Timer
-      //  clearInterval(timerId);
-      //  // Any cleanup logic can go here
+      // 8. Dispose of Speech-to-Text Engine
+      speechToTextEngine?.dispose();
+
+      // 9. Remove User from Typing Indicators
+      if (currentUser !== null) {
+        removeUserFromTypingIndicators(String(roomId), String(currentUser));
+      }
+
+      // 10. Clear Chat Analytics Data
+      clearChatAnalyticsData();
+
+      // 11. Clear Interval Timer
+      clearInterval(timerId);
+      // Any cleanup logic can go here
 
       // 11. Disconnect from Real-time Chat Server
-      disconnectFromChatServer(fluenceConnection, aquaChat)
+      disconnectFromChatServer(fluenceConnection, aquaChat);
 
-      // // 12. Close File Upload Modal
-      // fileUploadModal.close();
+      // Check if files is not null before calling openFileUploadModal
+      if (files !== null) {
+        openFileUploadModal((files: FileList | null) => {
+          // Do something with files if needed
+          console.log("File upload modal opened");
+        });
+      } else {
+        console.error("Files are null");
+      }
 
-      // // 13. Unsubscribe from Chat Notifications
-      // unsubscribeFromChatNotifications();
+      // 13. Unsubscribe from Chat Notifications
+      unsubscribeFromChatNotifications();
 
-      // // 14. Reset Unread Message Count
-      // resetUnreadMessageCount(roomId);
+      // 14. Reset Unread Message Count
+      resetUnreadMessageCount(String(roomId));
 
-      // // 15. Remove Expired Chat Tokens
-      // removeExpiredChatTokens();
+      // 15. Remove Expired Chat Tokens
+      removeExpiredChatTokens();
 
-      // // 16. Stop Animated Emoticons
-      // stopAnimatedEmoticons();
+      // 16. Stop Animated Emoticons
+      stopAnimatedEmoticons();
 
-      // // 17. Clear Chat Search History
-      // clearChatSearchHistory();
+      // 17. Clear Chat Search History
+      clearChatSearchHistory();
 
-      // // 18. Dispose of Geolocation Services
-      // geolocationService.dispose();
+      // 18. Dispose of Geolocation Services
+      disposeGeolocationService();
 
-      // // 19. Close Chat Settings Panel
-      // settingsPanel.close();
+      // 19. Close Chat Settings Panel
+      closeChatSettingsPanel();
 
-      // // 20. Remove Stale Chat Sessions
-      // removeStaleChatSessions();
+      // 20. Remove Stale Chat Sessions
+      removeStaleChatSessions();
       localStorage.setItem("chatMessages", JSON.stringify(chatMessages));
     };
   }, [roomId]);
 
   // Rest of component
-
   return (
     <div>
       <h2>Chat Dashboard</h2>
@@ -350,6 +545,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId,  }) => {
           />
         ))}
       </div>
+      <div>
+        {messages.map((message) => (
+          <div key={message.id}>
+            <span>{message.text}</span>
+          </div>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button onClick={sendMessage}>Send</button>
     </div>
   );
 };

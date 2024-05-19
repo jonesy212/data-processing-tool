@@ -1,3 +1,4 @@
+import { NotificationPreferences } from "../components/communications/chat/ChatSettingsModal";
 
 interface UserPreferences {
   theme: string;
@@ -10,7 +11,7 @@ interface UserPreferences {
   textCommunicationEnabled: boolean;
   realTimeCollaborationEnabled: boolean;
   language: string;
-  notificationPreferences: any; // Define the structure for notification preferences as needed
+  notificationPreferences: NotificationPreferences; // Define the structure for notification preferences as needed
   emailNotifications: boolean;
   pushNotifications: boolean;
   smsNotifications: boolean;
@@ -85,5 +86,71 @@ const userPreferences = {
     // ... other userPreferences content
   };
   
+
+
+
+// Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
+const getUserPreferences = async (): Promise<UserPreferences> => {
+  // Simulate fetching user preferences asynchronously
+  return new Promise<UserPreferences>((resolve, reject) => {
+    setTimeout(() => {
+      // Example user preferences
+      const userPreferences: UserPreferences = {
+        notificationPreferences: {
+          emailNotifications: true,
+          pushNotifications: false,
+          enableNotifications: false,
+          notificationSound: ""
+        },
+        theme: "",
+        ideationPhase: false,
+        brainstormingPhase: false,
+        launchPhase: false,
+        dataAnalysisPhase: false,
+        audioCommunicationEnabled: false,
+        videoCommunicationEnabled: false,
+        textCommunicationEnabled: false,
+        realTimeCollaborationEnabled: false,
+        language: "",
+        emailNotifications: false,
+        pushNotifications: false,
+        smsNotifications: false,
+        desktopNotifications: false,
+        customNotifications: undefined,
+        ideationPhaseEnabled: false,
+        teamFormationPhaseEnabled: false,
+        brainstormingPhaseEnabled: false,
+        launchPhaseEnabled: false,
+        dataAnalysisPhaseEnabled: false,
+        communityParticipationEnabled: false,
+        unityPromotionEnabled: false,
+        earningsReinvestmentEnabled: false,
+        customAppDevelopmentEnabled: false,
+        teamIncentivesEnabled: false,
+        revenueContributionEnabled: false,
+        fontSize: "",
+        colorScheme: "",
+        fontStyles: {
+          fontFamily: "",
+          fontSize: 0
+        }
+      };
+      resolve(userPreferences);
+    }, 1000); // Simulate 1 second delay
+  });
+};
+
+// Example usage:
+getUserPreferences()
+  .then((userPreferences) => {
+    console.log("User preferences:", userPreferences);
+    // Do something with the user preferences
+  })
+  .catch((error) => {
+    console.error("Error fetching user preferences:", error);
+    // Handle errors
+  });
   export default userPreferences;
-  export type { UserPreferences };
+export { getUserPreferences };
+export type { UserPreferences };
+

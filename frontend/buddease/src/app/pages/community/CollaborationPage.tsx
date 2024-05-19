@@ -125,4 +125,18 @@ const CollaborationPage: React.FC<CollaborationPageProps> = ({ speed, onChangeSp
                         container: "grid", // Use "grid" for medium screens
                         gap: 20, // Adjust the gap according to your design
                         columnGap: 20, // Adjust the columnGap according to
+                        rowGap: 20, // Adjust the rowGap according to
+                    },
+                    large: {
+                        container: "grid", // Use "grid" for large screens
+                        gap: 30, // Adjust the gap according to your design
+                        columnGap: 30, // Adjust the columnGap according to your design
+                        rowGap: 30, // Adjust the rowGap according to your design
+                    },
+                }}
+            />
+        </div>
+    )
+}
+
 export default CollaborationPage;

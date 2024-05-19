@@ -16,7 +16,7 @@ export interface Phase extends CommonData<Data> {
   endDate:  Date;
   subPhases: string[];
   component: FC<any>; // Adjust to accept any props
-  hooks: CustomPhaseHooks[];
+  hooks: CustomPhaseHooks;
   lessons?: Lesson[];
   duration: number;
   tasks?: Task[];
@@ -29,7 +29,12 @@ export class PhaseImpl implements Phase {
   endDate:  Date= new Date();
   subPhases: string[]=[];
   // component: React.FC = () => <div>Phase Component</div>,
-  hooks: CustomPhaseHooks[];
+  hooks: CustomPhaseHooks = { // Initialize hooks object
+    resetIdleTimeout: async () => {}, // Example implementation, you can adjust as needed
+    isActive: false,
+    progress: null,
+    condition: async () => true,
+  };
   title: string = "";
   description: string = "";
   data: any;
@@ -42,7 +47,7 @@ export class PhaseImpl implements Phase {
     endDate:  Date,
     subPhases: string[],
     component: React.FC,
-    hooks: CustomPhaseHooks[],
+    hooks: CustomPhaseHooks,
     data: any,
     description: string,
     title: string
@@ -89,6 +94,7 @@ export interface CustomPhaseHooks {
   resetIdleTimeout: () => Promise<void>;
   isActive: boolean;
   progress: Progress | null
+  condition: (idleTimeoutDuration: number) => Promise<boolean>
   // Add other methods if needed
 }
 

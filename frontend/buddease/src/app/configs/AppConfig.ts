@@ -1,4 +1,5 @@
 //AppConfig
+import crypto from 'crypto'
 import { current } from "immer";
 import { Theme } from "../components/libraries/ui/theme/Theme";
 import { Data } from "../components/models/data/Data";
@@ -42,6 +43,7 @@ interface AppConfig {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isAuthorized: () => boolean;
+  isPrivate: () => boolean
 
   // Properties related to user management
   users: User[]; // Define the User interface if not already defined
@@ -189,11 +191,16 @@ export const getAppConfig = (): AppConfig => {
       },
       id: 0,
       content: "",
-      frontendStructure: frontendStructure,
+      frontendStructure: {} as Promise<AppStructureItem[]>,
       data: [],
-      structure: {} as AppStructure,
-      generateStructureHash: function (): string {
-        throw new Error("Function not implemented.");
+      structure: {} as Record<string, AppStructureItem[]>,
+      generateStructureHash(): Promise<string> {
+        // Wait for the resolution of both frontendStructure and backendStructure promises
+        return Promise.all([this.frontendStructure, this.backendStructure])
+          .then(([frontendStructure, backendStructure]) => {
+            // Merge the frontend and backend structures and generate hash
+            return this.mergeAndHashStructures(frontendStructure, backendStructure);
+          });
       },
       isNewer: function (otherVersion: Version): boolean {
         throw new Error("Function not implemented.");

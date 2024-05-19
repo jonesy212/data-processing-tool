@@ -2,28 +2,35 @@ import apiNotificationsService from "@/app/api/NotificationsService";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { sortFilteredEvents } from "../state/redux/slices/FilteredEventsSlice";
+import { addFilteredEvent, sortFilteredEvents } from "../state/redux/slices/FilteredEventsSlice";
 import { NotificationData } from "../support/NofiticationsSlice";
 import { User, UserData } from "../users/User";
 import { subscribeToRealtimeUpdates } from "../web3/dAppAdapter/functionality/RealtimeUpdates";
 import useFilteredEventsSlice from "../state/redux/slices/FilteredEventsSlice";
 import useSorting from "../hooks/useSorting";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../state/redux/slices/RootSlice";
+import { useFilterStore } from "../state/stores/FilterStore";
 
 export interface RealtimeUpdates {
   id: string;
   message: string;
+  dispatch: (action: any) => void;
   // Add other properties of RealtimeUpdates here
 }
 
-const ActivityFeedComponent: React.FC = () => {
+
+const ActivityFeedComponent: React.FC<RealtimeUpdates> = ({dispatch}) => {
   const { state: authState } = useAuth();
   const id = authState.user?.id;
-  const {
-    state: filteredEventsState,
-    addFilteredEvent,
-    removeFilteredEvent,
-    clearFilteredEvents,
-  } = useFilteredEventsSlice();
+  const filteredEventsState = useSelector((state: RootState) => state.filteredEvents);
+
+
+    // Now you can dispatch actions like this
+    dispatch(useFilterStore().addFilteredEvent(event));
+    dispatch(useFilterStore().removeFilteredEvent(filteredEvents.id));
+    dispatch(useFilterStore().clearFilteredEvents(filteredEvents));
+  
 
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [realTimeUpdates, setRealTimeUpdates] = useState<RealtimeUpdates[]>([]);

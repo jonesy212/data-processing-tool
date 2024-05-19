@@ -42,7 +42,7 @@ interface SearchResult<T> {
   version?: Version;
   load?: (content: any) => void;
   query: string;
-  results: SearchResult<Document>;
+  results: SearchResult<any>[];
 
   // todo set up using for devs
   repoName?: string;

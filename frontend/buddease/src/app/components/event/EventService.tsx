@@ -6,18 +6,20 @@ import {
   MouseEvent,
   SyntheticEvent,
 } from "react";
+import { UIActions } from "../actions/UIActions";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { Member } from "../models/teams/TeamMembers";
+import { Progress } from "../models/tracker/ProgressBar";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
-import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
   initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
-  
+  getAttribute: (name: string) => string | null; // Define the getAttribute method
   _shouldPersist: boolean;
   // Properties related to the custom event
   id: string;
@@ -427,11 +429,51 @@ class EventService {
     // Additional logic for sorting...
   }
 
+  private calculateProgressPercentage(event: Event & SyntheticEvent): Progress {
+    let progress: Progress = {
+      id: "", 
+      value: 0, 
+      label: "", 
+      current: 0, 
+      max: 100, 
+    };
+  
+    // Check if the event has 'loaded' and 'total' properties
+    if ('loaded' in event && 'total' in event) {
+      // Use type assertions to inform TypeScript about the actual type of 'loaded' and 'total'
+      const loaded = event.loaded as number;
+      const total = event.total as number;
+  
+      // Calculate progress percentage based on event properties
+      const progressPercentage = (loaded / total) * 100;
+  
+      // Ensure progress percentage doesn't exceed 100%
+      progress.value = Math.min(progressPercentage, 100);
+    }
+  
+    return progress;
+  }
+  
+
   private handleProgressIndicators(event: Event & SyntheticEvent) {
     // Logic for handling progress indicators
     console.log("Handling progress indicators:", event);
+  
+    // Access event properties if needed
+    const target = event.target as HTMLInputElement;
+    console.log("Target element:", target);
+  
     // Additional logic for progress indicators...
+    // For example, you can update UI elements to show progress,
+    // trigger animations, or update state variables.
+    // You can also send progress updates to a server or perform other asynchronous tasks.
+  
+    // Example: Update a progress bar based on the event
+    const progressPercentage = this.calculateProgressPercentage(event);
+    UIActions.updateUIProgressBar(progressPercentage);
   }
+
+
 
  
 
@@ -470,7 +512,7 @@ const event1: CustomMouseEvent = {
     bubbles: boolean,
     cancelable: boolean,
     details: CustomEventInit
-  ): void {},
+  ): void { },
   id: "event1",
   title: "Event 1",
   description: "Event Description 1",
@@ -624,7 +666,9 @@ const event1: CustomMouseEvent = {
   shiftKey: false,
   detail: 0,
   view: {} as Window,
-  nativeEvent: {} as MouseEvent,
+  nativeEvent: {
+
+  } as MouseEvent,
   isDefaultPrevented(): boolean {
     // Check if the event has a 'defaultPrevented' property
     if (this.defaultPrevented !== undefined) {
@@ -673,6 +717,9 @@ const event1: CustomMouseEvent = {
 
   // Private property to store the persistence flag
   _shouldPersist: false,
+  clipboardData: null,
+  settings: undefined,
+  getAttribute: (name: string) => `${name}` || null,
 };
 
 // Create a custom event using the createCustomEvent function
@@ -700,4 +747,4 @@ console.log(retrievedEvent);
 eventService.removeEvent("event1");
 
 export default EventService;
-export type { CustomMouseEvent}
+export type { CustomMouseEvent };

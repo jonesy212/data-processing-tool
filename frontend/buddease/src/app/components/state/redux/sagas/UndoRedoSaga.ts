@@ -26,9 +26,9 @@ async function handleUndoRedo(action: PayloadAction<any>): Promise<void> {
       // Perform undo or redo based on the payload
       if (payload === "undo") {
           // Dispatch action to add to history
-          await put(addToHistory(message));
+           put(addToHistory(message));
           // Dispatch action to perform undo
-          await put(undo());
+           put(undo());
           // Show a toast message indicating successful undo action
           if (message.id) {
               await showToast(message as Message);

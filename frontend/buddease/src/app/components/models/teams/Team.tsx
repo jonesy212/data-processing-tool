@@ -21,6 +21,10 @@ import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from './TeamMembers';
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
+import { Settings } from '../../state/stores/SettingsStore';
+import { idleTimeoutDuration } from '../../hooks/phaseHooks/PhaseHooks';
+import { ProfileAccessControl } from '@/app/pages/profile/Profile';
+import { UserSettings } from '@/app/configs/UserSettings';
 
 interface Team extends Data {
   team: {
@@ -95,11 +99,147 @@ const team: Team = {
       snapshots: [] as SnapshotStore<Snapshot<Data>>[],
       token: null,
       avatarUrl: null,
-      createdAt: new Date,
-      updatedAt: new Date,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       isVerified: false,
       isAdmin: false,
-      isActive: false
+      isActive: false,
+      firstName: "",
+      lastName: "",
+      friends: [],
+      blockedUsers: [],
+      settings: {
+        userId: 0,
+        userSettings: {} as NodeJS.Timeout,
+        communicationMode: "",
+        enableRealTimeUpdates: false,
+        defaultFileType: "",
+        allowedFileTypes: [],
+        enableGroupManagement: false,
+        enableTeamManagement: false,
+        idleTimeout: {
+          intervalId: undefined,
+          isActive: false,
+          animateIn: () => {},
+          startAnimation: () => {},
+          stopAnimation: () => {},
+          resetIdleTimeout: function (): Promise<void> {
+            return Promise.resolve();
+                    },
+          idleTimeoutId: null,
+          startIdleTimeout: undefined,
+          toggleActivation: async () => false,
+        },
+        startIdleTimeout: function (
+          timeoutDuration: number,
+          onTimeout: () => void
+        ): void {
+          if (this.idleTimeoutId) {
+            clearTimeout(this.idleTimeoutId);
+          }
+        },
+        idleTimeoutDuration: 0,
+        activePhase: "",
+        realTimeChatEnabled: false,
+        todoManagementEnabled: false,
+        notificationEmailEnabled: false,
+        analyticsEnabled: false,
+        twoFactorAuthenticationEnabled: false,
+        projectManagementEnabled: false,
+        documentationSystemEnabled: false,
+        versionControlEnabled: false,
+        userProfilesEnabled: false,
+        accessControlEnabled: false,
+        taskManagementEnabled: false,
+        loggingAndNotificationsEnabled: false,
+        securityFeaturesEnabled: false,
+        theme: "",
+        language: "",
+        fontSize: 0,
+        darkMode: false,
+        enableEmojis: false,
+        enableGIFs: false,
+        emailNotifications: false,
+        pushNotifications: false,
+        notificationSound: "",
+        timeZone: "",
+        dateFormat: "",
+        timeFormat: "",
+        defaultProjectView: "",
+        taskSortOrder: "",
+        showCompletedTasks: false,
+        projectColorScheme: "",
+        showTeamCalendar: false,
+        teamViewSettings: [],
+        defaultTeamDashboard: "",
+        passwordExpirationDays: 0,
+        privacySettings: [],
+        thirdPartyApiKeys: undefined,
+        externalCalendarSync: false,
+        dataExportPreferences: [],
+        dashboardWidgets: [],
+        customTaskLabels: [],
+        customProjectCategories: [],
+        customTags: [],
+        formHandlingEnabled: false,
+        paginationEnabled: false,
+        modalManagementEnabled: false,
+        sortingEnabled: false,
+        notificationSoundEnabled: false,
+        localStorageEnabled: false,
+        clipboardInteractionEnabled: false,
+        deviceDetectionEnabled: false,
+        loadingSpinnerEnabled: false,
+        errorHandlingEnabled: false,
+        toastNotificationsEnabled: false,
+        datePickerEnabled: false,
+        themeSwitchingEnabled: false,
+        imageUploadingEnabled: false,
+        passwordStrengthEnabled: false,
+        browserHistoryEnabled: false,
+        geolocationEnabled: false,
+        webSocketsEnabled: false,
+        dragAndDropEnabled: false,
+        idleTimeoutEnabled: false,
+        enableAudioChat: false,
+        enableVideoChat: false,
+        enableFileSharing: false,
+        enableBlockchainCommunication: false,
+        enableDecentralizedStorage: false,
+        selectDatabaseVersion: "",
+        selectAppVersion: "",
+        enableDatabaseEncryption: false,
+        id: "",
+        filter: function (key: keyof Settings): void {
+          throw new Error("Function not implemented.");
+        },
+        appName: "",
+      },
+      interests: [],
+      privacySettings: undefined,
+      notifications: {
+        email: false,
+        push: false,
+        sms: false,
+        chat: false,
+        calendar: false,
+        task: false,
+        file: false,
+        meeting: false,
+        announcement: false,
+        reminder: false,
+        project: false,
+      },
+      activityLog: [],
+      projects: [],
+      socialLinks: undefined,
+      relationshipStatus: null,
+      hobbies: [],
+      skills: [],
+      achievements: [],
+      profileVisibility: "",
+      profileAccessControl: {} as ProfileAccessControl,
+      activityStatus: "",
     },
     {
       _id: "member-2",
@@ -125,11 +265,45 @@ const team: Team = {
       snapshots: [] as SnapshotStore<Snapshot<Data>>[],
       token: null,
       avatarUrl: null,
-      createdAt: new Date,
-      updatedAt: new Date,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       isVerified: false,
       isAdmin: false,
-      isActive: false
+      isActive: false,
+      firstName: "",
+      lastName: "",
+      friends: [],
+      blockedUsers: [],
+      settings: {} as UserSettings,
+      interests: [],
+      privacySettings: undefined,
+      notifications: {
+        email: false,
+        push: false,
+        sms: false,
+        chat: false,
+        calendar: false,
+        task: false,
+        file: false,
+        meeting: false,
+        announcement: false,
+        reminder: false,
+        project: false
+      },
+      activityLog: [],
+      projects: [],
+      socialLinks: undefined,
+      relationshipStatus: null,
+      hobbies: [],
+      skills: [],
+      achievements: [],
+      profileVisibility: "",
+      profileAccessControl: {
+        friendsOnly: false,
+        allowTagging: false,
+        blockList: []
+      },
+      activityStatus: "",
     },
   ],
   projects: [
@@ -159,7 +333,7 @@ const team: Team = {
       leader: null,
       budget: 0,
       ideas: {} as Idea[],
-      type: ProjectType.Default
+      type: ProjectType.Default,
     },
     {
       _id: "project-2",
@@ -189,8 +363,7 @@ const team: Team = {
           title: "Task 1",
           description: "Description of Task 1",
           phase: {} as Phase,
-          assignedTo: {} as WritableDraft<User>,
-
+          assignedTo: [],
           then(arg0: (newTask: any) => void): unknown {
             const newTask = {
               _id: "task-2",
@@ -454,7 +627,6 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
     }}
   />
 );
-
 
 
 export { DataDetailsComponent, TeamDetails, team };

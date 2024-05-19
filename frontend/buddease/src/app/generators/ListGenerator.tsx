@@ -11,12 +11,18 @@ interface ListGeneratorProps<T extends Data> {
   onItemClick?: (contentItemId: DetailsItemCommon<Data>) => void
 }
 
-const ListGenerator = <T extends Data>({ items }: ListGeneratorProps<T>) => {
+const ListGenerator = <T extends Data>({ items, onItemClick }: ListGeneratorProps<T>) => {
+
+    // Add handleContentItemClick function to handle item click
+    const handleContentItemClick = (contentItem: DetailsItemCommon<T>) => {
+      onItemClick && onItemClick(contentItem); // Call onItemClick callback with contentItem
+    };
+  
   return (
     <div>
       {items.map((item, index) => (
-        <div key={index}>
-          {/* Check if label and value are defined before passing them */}
+        <div key={index} onClick={() => handleContentItemClick(item)}> {/* Attach onClick handler */}
+        {/* Check if label and value are defined before passing them */}
           {item.label !== undefined && item.value !== undefined && (
             <DetailsListItem
               item={item}
@@ -32,4 +38,5 @@ const ListGenerator = <T extends Data>({ items }: ListGeneratorProps<T>) => {
 };
 
 export default ListGenerator;
-export type { DetailsItemCommon };
+export type { DetailsItemCommon, ListGeneratorProps };
+

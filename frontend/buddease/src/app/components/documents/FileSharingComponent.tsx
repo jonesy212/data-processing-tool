@@ -27,7 +27,6 @@ const API_BASE_URL = endpoints;
 const FileSharingComponent: React.FC = () => {
   // State for managing selected file
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
   // Ensure that inputValue is a string state
   const [inputValue, setInputValue] = useState<string>("");
   // Define state variables

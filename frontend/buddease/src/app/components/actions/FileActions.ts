@@ -10,7 +10,8 @@ export const FileActions = {
   removeFile: createAction<number>("removeFile"),
   updateFile: createAction<{ id: number, newTitle: string }>("updateFileTitle"),
   validateFile: createAction<CustomFile>("validateFile"),
-  
+  setSelectedFile: createAction<CustomFile[] | null>("setSelectedFile"),
+
   fetchFileData: createAction<number>("fetchFileData"),
   fetchFileRequest: createAction<CustomFile>("fetchFileRequest"),
 

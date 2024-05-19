@@ -105,8 +105,13 @@ class VersionGenerator {
       );
 
       const version = new Version({
+        id: 0, // Provide a default value for the missing 'id' property
         versionNumber: "1.0.0",
         appVersion: "1.0.0",
+        content: "", // Provide a default value for the missing 'content' property
+        data: [], // Provide a default value for the missing 'data' property
+        name: "", // Provide a default value for the missing 'name' property
+        url: "", // Provide a default value for the missing 'url' property
       });
 
       return { version, info: versionInfo };
@@ -118,7 +123,7 @@ class VersionGenerator {
       handleApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        "GenerateVersionErrorId"
+        `${NOTIFICATION_MESSAGES.Errors.GENERATE_VERSION_ERROR}` as keyof DynamicNotificationMessage
       );
 
       // Rethrow the error for handling at a higher level
@@ -130,23 +135,18 @@ class VersionGenerator {
     file: string,
     folder: string,
     componentName: string,
-    properties: Record<string, any>, // Define properties dynamically
-    additionalProperties: Record<string, any>, // Define additional properties dynamically
+    properties: Record<string, any>,
+    additionalProperties: Record<string, any>,
     config: VersionGeneratorConfig
   ): Promise<Version> {
     try {
-      // Retrieve real-time data
       const data = await config.getData();
-
-      // Determine changes based on the retrieved data
       const changes = config.determineChanges(data);
 
-      // Generate a unique version ID
       const versionID = `version_${Date.now()}_${Math.random()
         .toString(36)
         .substring(2, 10)}`;
 
-      // Notify about the generated version ID
       const message = `Generated version ID: ${versionID}`;
       notify(
         versionID,
@@ -155,11 +155,9 @@ class VersionGenerator {
         new Date(),
         NotificationTypeEnum.GeneratedID
       );
- 
 
-      // Log task completion event
       TaskLogger.logTaskCompleted(
-        "existingTaskId", // Provide existing task ID if available, otherwise pass null or an empty string
+        "existingTaskId",
         "Version Generation Task",
         (message, type, date, id) => {
           notify(id, message, type, date, NotificationTypeEnum.TaskBoardID);
@@ -167,10 +165,18 @@ class VersionGenerator {
       );
 
       const { versionNumber, appVersion } = getCurrentAppInfo();
-      return new Version({ versionNumber, appVersion });
+      return new Version({
+        versionNumber,
+        appVersion,
+        id: 0, // Provide a default value for id
+        content: "", // Provide a default value for content
+        data: [], // Provide a default value for data
+        name: "", // Provide a default value for name
+        url: "", // Provide a default value for url
+      });
     } catch (error) {
       console.error("Error generating version:", error);
-      throw error; // Rethrow the error for handling at a higher level
+      throw error;
     }
   }
 }

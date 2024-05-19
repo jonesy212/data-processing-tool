@@ -8,6 +8,28 @@ import useDataExport from "../../hooks/dataHooks/useDataExport";
 import UserService from "../../users/ApiUser";
 import { useSecureUserId } from "../../utils/useSecureUserId";
 import { UndoRedoStore } from "./UndoRedoStore";
+import { TaskHistoryEntry } from "../../interfaces/history/TaskHistoryEntry";
+
+
+
+
+interface BaseHistoryStore {
+  clearHistory: () => void;
+  limitHistoryEntries: (limit: number) => void;
+  formatTimestamp: (timestamp: number) => string;
+  filterHistory: (criteria: string) => HistoryEntry[];
+  exportHistory: () => void;
+  importHistory: (data: HistoryEntry[]) => void;
+  navigateHistory: (direction: "backward" | "forward") => void;
+  persistHistory: () => void;
+  customizeHistoryDisplay: (options: any) => void;
+  collapseHistorySections: (section: any) => void;
+  searchHistory: (query: string) => void;
+  integrateWithUserProfiles: () => void;
+  addToClipboardHistory: (copiedText: any) => void;
+  undoHistory: () => void;
+  redoHistory: () => void;
+}
 
 interface HistoryEntry {
   id: string;
@@ -34,8 +56,90 @@ interface HistoryStore {
   collapseHistorySections: (section: any) => void;
   searchHistory: (query: string) => void;
   integrateWithUserProfiles: () => void;
-  addToClipboardHistory: (copiedText: any ) => void
+  addToClipboardHistory: (copiedText: any) => void
+  getTaskHistory: (taskId: number) => Promise<TaskHistoryEntry[]>;
+  addTaskHistoryEntry: (taskId: number, action: string) => void;
+  
 }
+
+
+
+
+
+
+export const baseStore = (): BaseHistoryStore => {
+  const clearHistory = () => {
+    // Implement clearHistory logic here
+  };
+
+  const limitHistoryEntries = (limit: number) => {
+    // Implement limitHistoryEntries logic here
+  };
+
+  const formatTimestamp = (timestamp: number) => {
+    // Implement formatTimestamp logic here
+    return "";
+  };
+
+  const filterHistory = (criteria: string): HistoryEntry[] => [];
+
+  const exportHistory = () => {
+    // Implement exportHistory logic here
+  };
+
+  const importHistory = () => {
+    // Implement importHistory logic here
+  };
+
+  const navigateHistory = () => {
+    let direction: "backward" | "forward" = "backward"; // Assign a default value to direction
+    // Implement navigateHistory logic here to move backward/forward in history array
+    // Check if direction is 'backward' or 'forward'
+    if (direction === "backward") {
+      UndoRedoStore.undo();
+    } else {
+      UndoRedoStore.redo();
+    }
+  };
+
+
+  
+
+  const persistHistory = () => {
+    // Implement persistHistory logic here to save history to localStorage/indexedDB
+    localStorage.setItem('history', JSON.stringify(history));
+  };
+
+
+  const undoHistory = () => {
+    UndoRedoStore.undo();
+  };
+  
+  const redoHistory = () => {
+    // Implement redoHistory logic here
+  };
+
+  return {
+    clearHistory,
+    limitHistoryEntries,
+    formatTimestamp,
+    filterHistory,
+    exportHistory,
+    importHistory,
+    navigateHistory,
+    persistHistory,
+    undoHistory,
+    redoHistory,
+    customizeHistoryDisplay: () => { },
+    collapseHistorySections: () => { },
+    searchHistory: () => { },
+    integrateWithUserProfiles: () => { },
+    addToClipboardHistory: () => { },
+  };
+};
+
+
+
 
 const historyManagerStore = (): HistoryStore => {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -252,28 +356,35 @@ const historyManagerStore = (): HistoryStore => {
   }
 
   const historyStore: HistoryStore = makeAutoObservable({
-    history,
-    addHistoryEntry,
-    undo,
-    redo,
-    clearHistory,
-
-    limitHistoryEntries,
-    formatTimestamp,
-    filterHistory,
-    exportHistory,
-    importHistory,
-
-    navigateHistory,
-    persistHistory,
-    customizeHistoryDisplay,
-    collapseHistorySections,
-    searchHistory,
-    integrateWithUserProfiles,
-    addToClipboardHistory
+    history: [],
+    addHistoryEntry: historyManagerStore().addHistoryEntry,
+    undo: historyManagerStore().undo,
+    redo: historyManagerStore().redo,
+    clearHistory: historyManagerStore().clearHistory,
+    limitHistoryEntries: historyManagerStore().limitHistoryEntries,
+    formatTimestamp: historyManagerStore().formatTimestamp,
+    filterHistory: historyManagerStore().filterHistory,
+    exportHistory: historyManagerStore().exportHistory,
+    importHistory: historyManagerStore().importHistory,
+    navigateHistory: historyManagerStore().navigateHistory,
+    persistHistory: historyManagerStore().persistHistory,
+    customizeHistoryDisplay: historyManagerStore().customizeHistoryDisplay,
+    collapseHistorySections: historyManagerStore().collapseHistorySections,
+    searchHistory: historyManagerStore().searchHistory,
+    integrateWithUserProfiles: historyManagerStore().integrateWithUserProfiles,
+    addToClipboardHistory: historyManagerStore().addToClipboardHistory,
+    addTaskHistoryEntry: historyManagerStore().addTaskHistoryEntry,
+    getTaskHistory: historyManagerStore().getTaskHistory,
   });
 
   return historyStore;
 };
 
+
+
+
+
+
 export { historyManagerStore };
+export type { HistoryEntry, HistoryStore };
+

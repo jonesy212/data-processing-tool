@@ -13,10 +13,10 @@ import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
  import { AsyncHook } from "async_hooks";
 import { brandingSettings } from '@/app/libraries/theme/BrandingService';
-import { Phase } from "../components/phases/Phase";
 import { ContentItem } from "../components/cards/DummyCardLoader";
 import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
-
+import { Phase } from "../components/phases/Phase";
+import { useThemeCustomization } from "../components/hooks/useThemeCustomization";
 
 // Extend NextRouter with additional properties
 type ExtendedRouter = NextRouter & {
@@ -49,7 +49,10 @@ type ExtendedAppProps = AppProps & {
 
 
 function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
+  const {infoColor, themeState, notificationState, setNotificationState, setThemeState} = useThemeCustomization();
+
   // Extend AppProps to include hooks
+
 
   // Define a generic type for hooks
   type Hooks = Record<string, PhaseHookConfig>;
@@ -58,6 +61,66 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
 
   // Generate utility functions
   const utilities = generateUtilityFunctions();
+
+  // Generate hooks dynamically based on your phases
+  // Define a function to create phase hooks dynamically
+  const createPhaseHooks = (
+    phaseNames: string[]
+  ): Hooks & { useIdleTimeout: any; handleLogin: any } => {
+    const hooks: Hooks & { useIdleTimeout: any; handleLogin: any } = {
+      useIdleTimeout: {} as PhaseHookConfig,
+      handleLogin: {} as PhaseHookConfig,
+    };
+
+    // Iterate over the phase names and create hooks for each phase
+    phaseNames.forEach((phaseName, index) => {
+      hooks[phaseName] = createPhaseHook(index, {
+        name: phaseName,
+        condition: async () => await true,
+        duration: "1000",
+        asyncEffect: async () => {
+          // trigger animation
+          return () => {};
+        },
+        isActive: false,
+        initialStartIdleTimeout: () => {},
+        resetIdleTimeout: async () => {},
+        idleTimeoutId: null,
+        startIdleTimeout: () => {},
+        clearIdleTimeout: () => {},
+        onPhaseStart: () => {},
+        onPhaseEnd: () => {},
+        cleanup: () => {},
+        startAnimation: () => {},
+        stopAnimation: () => {},
+        animateIn: () => {},
+        toggleActivation: () => { },
+        phaseType: ""
+      });
+    });
+
+    return hooks;
+  };
+
+  // const config = {
+  //   // Pass phases, hooks, utilities
+  //   phases: {},
+  //   hooks: createPhaseHooks(phaseNames),
+  //   utilities,
+  // };
+
+  // Generate hooks dynamically based on your phases
+  const phaseNames = [
+    "Components Phase",
+    "Page Loader Phase",
+    "SDC Phase",
+    "SBC Phase",
+    "SUB Phase",
+    "CLC Phase",
+  ];
+
+  const hooks: Hooks & { useIdleTimeout: any; handleLogin: any } =
+    createPhaseHooks(phaseNames);
 
   // Update BrandingSettings with actual values or retrieve them from a source
   const brandingSettings: BrandingSettings = {
@@ -133,58 +196,6 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
     lineHeightLarge: "",
   };
 
-  // Generate hooks dynamically based on your phases
-  // Define a function to create phase hooks dynamically
-  const createPhaseHooks = (
-    phaseNames: string[]
-  ): Hooks & { useIdleTimeout: any; handleLogin: any } => {
-    const hooks: Hooks & { useIdleTimeout: any; handleLogin: any } = {
-      useIdleTimeout: {} as PhaseHookConfig,
-      handleLogin: {} as PhaseHookConfig,
-    };
-
-    // Iterate over the phase names and create hooks for each phase
-    phaseNames.forEach((phaseName) => {
-      hooks[phaseName] = createPhaseHook({
-        name: phaseName,
-        condition: () => true,
-        duration: "1000",
-        asyncEffect: async () => {
-          // trigger animation
-          return () => {};
-        },
-        isActive: false,
-        initialStartIdleTimeout: () => {},
-        resetIdleTimeout: () => {},
-        idleTimeoutId: null,
-        startIdleTimeout: () => {},
-        clearIdleTimeout: () => {},
-        onPhaseStart: () => {},
-        onPhaseEnd: () => {},
-        cleanup: () => {},
-        startAnimation: () => {},
-        stopAnimation: () => {},
-        animateIn: () => {},
-        toggleActivation: () => {},
-      });
-    });
-
-    return hooks;
-  };
-
-  // Generate hooks dynamically based on your phases
-  const phaseNames = [
-    "Components Phase",
-    "Page Loader Phase",
-    "SDC Phase",
-    "SBC Phase",
-    "SUB Phase",
-    "CLC Phase",
-  ];
-
-  const hooks: Hooks & { useIdleTimeout: any; handleLogin: any } =
-    createPhaseHooks(phaseNames);
-
   return (
     <>
       <MyApp
@@ -197,7 +208,6 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
         phases={{} as Phase[]}
         contentItem={{} as ContentItem}
         setThemeState={setThemeState} // Pass setThemeState here
-
       />
       <EnhancedCaptionManagementPage />
       {/* Include the CaptionManagementPageComponent */}

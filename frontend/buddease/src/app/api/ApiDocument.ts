@@ -7,12 +7,12 @@ import { DocumentData } from '../components/documents/DocumentBuilder';
 import { DocumentOptions } from '../components/documents/DocumentOptions';
 import { Presentation } from '../components/documents/Presentation';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
+import { DatabaseConfig } from '../configs/DatabaseConfig';
 import { DocumentActions } from '../tokens/DocumentActions';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
-import { DatabaseConfig } from '../configs/DatabaseConfig';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.documents;
@@ -1449,6 +1449,22 @@ export const documentAccessControls = async (controlsData: any): Promise<any> =>
     throw error;
   }
 };
+
+
+export const getDocumentUrl = async (url: string): Promise<any> => {
+  try {
+    // Make a POST request to the provided URL
+    const response = await axiosInstance.post(url);
+    
+    // Return the response data
+    return response.data;
+  } catch (error) {
+    // Handle any errors that occur during the request
+    console.error('Error fetching document URL:', error);
+    throw new Error('Failed to fetch document URL');
+  }
+};
+
 
 export const documentTemplates = async (templatesData: any): Promise<any> => {
   try {

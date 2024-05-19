@@ -6,4 +6,6 @@ export interface ProjectFeedback {
   comment: string;
   rating: number;
   timestamp: Date;
+  projectId: string;
+  feedback: string;
 }

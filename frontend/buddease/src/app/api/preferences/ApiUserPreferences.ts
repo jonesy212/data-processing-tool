@@ -1,3 +1,4 @@
+import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import dotProp from 'dot-prop';
@@ -15,6 +16,9 @@ type ApiUserPreferences = {
   setLaunchPhase: (launchPhase: string) => Promise<void>;
   setDataAnalysisPhase: (dataAnalysisPhase: string) => Promise<void>;
   setFontSize: (fontSize: string) => Promise<void>;
+  saveNotificationPreferencesToBackend: (
+    notificationPreferences: NotificationPreferences
+  ) => Promise<void>
 };
 
 const useApiUserPreferences = (): ApiUserPreferences => {
@@ -241,6 +245,34 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     }
   };
 
+
+
+  const saveNotificationPreferencesToBackend = async (notificationPreferences: NotificationPreferences): Promise<void> => {
+    try {
+      await axiosInstance.put(
+        dotProp.getProperty(endpointPreferences, 'userPreferences.setNotificationPreferences'),
+        { notificationPreferences }
+      );
+
+      notify(
+        "NotificationPreferencesSavedSuccessfully",
+        "Notification preferences saved successfully",
+        NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVED_SUCCESSFULLY,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      )
+    } catch (error) {
+      console.error("Error saving notification preferences:", error);
+      notify(
+        "ErrorSavingNotificationPreferences",
+        "Failed to save notification preferences",
+        NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVING_FAILED,
+        new Date(),
+        NotificationTypeEnum.OperationError
+      )
+    }
+  }
+
   // Add more functions for other user preferences operations as needed...
 
   return {
@@ -253,6 +285,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     setBrainstormingPhase,
     setLaunchPhase,
     setDataAnalysisPhase,
+    saveNotificationPreferencesToBackend
   };
 };
 

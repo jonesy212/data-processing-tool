@@ -1,40 +1,48 @@
-// emojiPickerUtils.ts
-import { Picker } from 'emoji-mart';
-import 'emoji-mart/css/emoji-mart.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from "react";
+import { Picker } from "emoji-mart/react"; // Import Picker from emoji-mart/react
+import "emoji-mart/css/emoji-mart.css";
 
-interface EmojiPickerProps {
+interface EmojiPicker {
   onSelect: (emoji: string) => void;
   onClose: () => void;
+  emojiSize: number;
 }
 
-export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
+export const EmojiPickerComponent: React.FC<EmojiPicker> = ({
+  onSelect,
+  onClose,
+  emojiSize,
+}) => {
   const [emoji, setEmoji] = useState<string | null>(null);
-  const pickerRef = useRef<Picker | null>(null);
 
-  useEffect(() => {
-    if (pickerRef.current) {
-      pickerRef.current.props.on('emoji', (selectedEmoji: any) => {
-        setEmoji(selectedEmoji.native);
-      });
-    }
-  }, []);
-  // Render the emoji picker component with additional styling
+  const handleEmojiSelect = (selectedEmoji: any) => {
+    // 'selectedEmoji' is of type 'BaseEmoji' from 'emoji-mart'
+    setEmoji(selectedEmoji.native);
+    onSelect(selectedEmoji.native);
+  };
+
   return (
     <div>
       <h2>Emoji Picker</h2>
-      <div style={{ position: 'absolute', zIndex: 1000 }}>
-      <div ref={(node) => (pickerRef.current = node ? new Picker({ onSelect: () => {} }) : null)} />
+      <div style={{ position: "absolute", zIndex: 1000 }}>
+        <Picker
+          onSelect={handleEmojiSelect}
+          emojiSize={emojiSize}
+          set="apple"
+        />
       </div>
-      <button onClick={() => { onSelect(emoji!); onClose(); }}>Close</button>
-     </div>
+      <button onClick={onClose}>Close</button>
+    </div>
   );
 };
 
-// Function to open the emoji picker
-export const openEmojiPicker = (onSelect: (emoji: string) => void, onClose: () => void) => {
-  // Replace this with the actual logic to render the emoji picker in your UI
-  // Example: This is a placeholder, replace it with your actual implementation
-  const emojiPicker = <EmojiPicker onSelect={onSelect} onClose={onClose} />;
-  document.body.appendChild(emojiPicker as unknown as Node); // Cast emojiPicker to Node before appending
+export type { EmojiPicker };
+
+export const openEmojiPicker = (
+  onSelect: (emoji: string) => void,
+  onClose: () => void,
+  emojiSize: number
+) => {
+  const emojiPicker = <EmojiPickerComponent onSelect={onSelect} onClose={onClose} emojiSize={emojiSize} />;
+  document.body.appendChild(emojiPicker as unknown as Node);
 };

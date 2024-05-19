@@ -114,6 +114,8 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
     }
   };
   
+  
+  
 
   const renderOptions = () => {
     switch (contentVariation) {
@@ -231,7 +233,7 @@ const EditorWithPrompt: React.FC<EditorWithPromptProps> = ({
       {/* Prompt System */}
       <PromptSystem
         onUserResponse={handlePromptResponse}
-        documentType={handleDocumentTypeChange} // Provide necessary information
+        documentType={DocumentTypeEnum.Text} // Provide the appropriate document type here
         userIdea="idea"
       />
 

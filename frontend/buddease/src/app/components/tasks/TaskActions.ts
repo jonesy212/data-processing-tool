@@ -2,13 +2,14 @@
 
 import { createAction } from "@reduxjs/toolkit";
 import { Task } from "../models/tasks/Task";
+import { Idea } from "../users/Ideas";
 
 export const TaskActions = {
   // Standard actions
   add: createAction<Task>("addTask"),
   remove: createAction<number>("removeTask"),
   toggle: createAction<number>("toggleTask"),
-  updateTask: createAction<{ id: number, newTitle: string }>("updateTaskTitle"), // Adjusted
+  updateTask: createAction<{ taskId: number, task: Task, newTitle?: string }>("updateTaskTitle"), // Adjusted
   validateTask: createAction<Task>("validateTask"),
   
   fetchTasksRequest: createAction("fetchTasksRequest"),
@@ -60,6 +61,7 @@ export const TaskActions = {
 
   markTaskAsInProgressSuccess: createAction<{taskId: Task, requestData: string}>("markTaskAsInProgressSuccess"),
 
+  updateTaskIdeas: createAction<{taskId: string, ideas: Idea[]}>("updateTaskIdeas"),
   // Batch actions for fetching
   batchFetchTasksRequest: createAction("batchFetchTasksRequest"),
   batchFetchTasksSuccess: createAction<{ tasks: Task[] }>("batchFetchTasksSuccess"),
@@ -81,6 +83,6 @@ export const TaskActions = {
   markTaskAsCompleteFailure: createAction<{ taskId: string, error: string }>("markTaskAsCompleteFailure"),
 
 
-  setAssignedTaskStore: createAction<{ task: Task, assignee: string, assignees?: string[], tasks?: string[] }>("setAssignedTaskStore"),
+  setAssignedTaskStore: createAction<{ task: Task | undefined , assignee: string, assignees?: string[], tasks?: string[] }>("setAssignedTaskStore"),
   
 };

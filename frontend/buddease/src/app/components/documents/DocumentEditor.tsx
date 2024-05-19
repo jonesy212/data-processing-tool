@@ -255,6 +255,9 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             versionNumber: `${appVersion} (${databaseVersion})`, // Combine app and database versions
             data: [],
             url: "",
+            versionHistory: {
+              versions:[]
+            }
           }),
           metadata: {} as StructuredMetadata, // Pass metadata
           userIdea: "",

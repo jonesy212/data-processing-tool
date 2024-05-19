@@ -26,6 +26,7 @@ const generateCaptions = (video: any): string[] => {
 
 
 interface VideoState {
+  video: Video | null;
   videos: Video[];
   currentVideoId: string | null;
   comments: (Comment | CustomComment)[];
@@ -50,6 +51,7 @@ interface VideoState {
 }
 
 const initialState: VideoState = {
+  video: null,
   videos: [],
   currentVideoId: null,
   comments: [],
@@ -74,7 +76,11 @@ export const useVideoManagerSlice = createSlice({
   name: "video",
   initialState,
   reducers: {
-    setVideos: (state, action: PayloadAction<Video[]>) => {
+    setVideo: (state, action: PayloadAction<WritableDraft<Video>>) => {
+      const video = action.payload;
+      state.videos.push(video);
+    },
+    setVideos: (state, action: PayloadAction<WritableDraft<Video[]>>) => {
       state.videos = action.payload;
     },
     setCurrentVideoId: (state, action: PayloadAction<string | null>) => {
@@ -744,16 +750,14 @@ export const useVideoManagerSlice = createSlice({
 
     autoGenerateVideoTrailers: (
       state,
-      action: PayloadAction<
-        { videoId: string, trailer: string[] }
-      >
+      action: PayloadAction<{ videoId: string, trailer: string[] }>
     ): VideoState => {
       const { videoId, trailer } = action.payload;
       // Find the video with the given videoId
       const updatedVideos = state.videos.map(video => {
         if (video.id === videoId) {
           // Create a copy of the video object to avoid mutating the original state
-          const updatedVideo = { ...video };
+          const updatedVideo: Video = { ...video };
           // Logic to integrate auto-generated video trailers into the video
           updatedVideo.trailer = `Auto-generated video trailers integrated into the video with the following trailer: ${trailer.join(', ')}.`;
           return updatedVideo;
@@ -762,6 +766,7 @@ export const useVideoManagerSlice = createSlice({
       });
       return { ...state, videos: updatedVideos };
     },
+    
     
     predictiveAnalyticsForVideoEngagement: (
       state,

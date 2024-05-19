@@ -1,13 +1,21 @@
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 
-async function showToast(message: Message): Promise<void> {
+async function showToast(message: Message | { content: string }): Promise<void> {
     // Create a new div element to hold the toast message
     const toast = document.createElement('div');
     toast.classList.add('toast');
     
-    // Assign a specific property of the Message object to the toast's textContent
-    toast.textContent = message.content;
   
+    // Extract the content from the message object
+    const content = 'content' in message ? message.content : message;
+  
+    // Assign the content to the toast's textContent
+    toast.textContent = content;
+  
+   
+    // Assign the content to the toast's textContent
+    toast.textContent = content;
+
     // Append the toast element to the body of the document
     document.body.appendChild(toast);
   

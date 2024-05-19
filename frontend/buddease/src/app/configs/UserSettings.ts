@@ -30,6 +30,8 @@ const resetAppState = () => {
 
 
 export interface UserSettings extends Settings {
+  [x: string]: string | number | Timeout | undefined;
+  [x: string]: any;
   userId: number;
   userSettings: NodeJS.Timeout;
   communicationMode: string;
@@ -78,7 +80,7 @@ export interface UserSettings extends Settings {
   defaultTeamDashboard: string;
   passwordExpirationDays: number;
   privacySettings: any[]; // Update with PrivacySettings type
-  thirdPartyApiKeys: Record<string, string>;
+  thirdPartyApiKeys: Record<string, string> | undefined;
   externalCalendarSync: boolean;
   dataExportPreferences: any[];
   dashboardWidgets: any[];

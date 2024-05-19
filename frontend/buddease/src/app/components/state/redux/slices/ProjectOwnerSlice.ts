@@ -1,7 +1,7 @@
 // ProjectOwnerSlice.ts
 
 import { TeamMember } from '@/app/components/models/teams/TeamMembers';
-import Project from '@/app/components/projects/Project';
+import { Project } from '@/app/components/projects/Project';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
  
 interface ProjectOwnerState {

@@ -1,16 +1,32 @@
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
+import { PrivacySettings } from "../../settings/PrivacySettings";
 
 // Define the ChatSettingsModal type
 type ChatSettingsModal = {
   close: () => void;
   isOpen: () => boolean;
   setNotificationPreferences: (preferences: NotificationPreferences) => void;
-  setAudioOptions: (options: AudioOptions) => void;
-  setVideoOptions: (options: VideoOptions) => void;
-  setPrivacySettings: (settings: PrivacySettings) => void;
-  setSecuritySettings: (settings: SecuritySettings) => void;
+  setAudioOptions: (
+    options: AudioOptions,
+    audioOptions: AudioOptions,
+    roomId: string,
+  ) => Promise<void>;
+  setVideoOptions: (
+    options: VideoOptions,
+    videoOptions: VideoOptions,
+    roomId: string
+  ) => Promise<void>;
+  setPrivacySettings: (
+    videoId: string,
+    selectedSettings: PrivacySettings,
+    settings: PrivacySettings
+  ) => void;
+  setSecuritySettings: (
+    selectedSettings: SecuritySettings,
+    videoId: string,
+    settings: SecuritySettings) => void;
   setDocumentEditingPermissions: (
-    permissions: DocumentEditingPermissions
+    permissions: DocumentEditingPermissions[]
   ) => void;
   setCollaborationPreferences: (preferences: CollaborationPreferences) => void;
   // Other properties and methods specific to the modal
@@ -18,6 +34,8 @@ type ChatSettingsModal = {
 
 // Define related types
 type NotificationPreferences = {
+  emailNotifications: boolean;
+  pushNotifications: boolean;
   enableNotifications: boolean;
   notificationSound: string;
 };
@@ -39,6 +57,10 @@ type DocumentEditingPermissions = {
   canComment: boolean;
   // Other permissions
 };
+
+
+
+
 
 export type {
   AudioOptions, ChatSettingsModal, DocumentEditingPermissions, NotificationPreferences, VideoOptions

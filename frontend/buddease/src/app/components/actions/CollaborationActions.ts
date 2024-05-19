@@ -1,11 +1,11 @@
 // CollaborationActions.ts
 
 import { createAction } from '@reduxjs/toolkit';
+import { CollaborationPreferences } from '../interfaces/settings/CollaborationPreferences';
 
 // Collaboration actions
 export const CollaborationActions = {
-  
-  
+
   fetchCollaboration: createAction<{id: string}>('collaboration/fetchCollaboration'),
   fetchCollaborationRequest: createAction('collaboration/fetchCollaborationRequest'),
   fetchCollaborationSuccess: createAction<{ collaborationData: any }>('collaboration/fetchCollaborationSuccess'),
@@ -24,6 +24,7 @@ export const CollaborationActions = {
   updateCollaborationSettings: createAction<{ settings: any }>('collaboration/updateCollaborationSettings'),
 
 
+  
   inviteCollaborator: createAction<{ collaboratorId: string }>('collaboration/inviteCollaborator'),
   inviteCollaboratorSuccess: createAction<string>('collaboration/inviteCollaboratorSuccess'),
   inviteCollaboratorFailure: createAction<string>('collaboration/inviteCollaboratorFailure'),
@@ -34,5 +35,7 @@ export const CollaborationActions = {
   assignRoleToCollaboratorInProject: createAction<{ projectId: string, collaboratorId: string, role: string }>('collaboration/assignRoleToCollaboratorInProject'),
   updateCollaborationNotes: createAction<{ projectId: string, notes: string }>('collaboration/updateCollaborationNotes'),
   shareDocument: createAction<{ documentId: string, collaborators: string[] }>('collaboration/shareDocument'),
-  unshareDocument: createAction<{ documentId: string }>('collaboration/unshareDocument')
+  unshareDocument: createAction<{ documentId: string }>('collaboration/unshareDocument'),
+  // Collaboration actions
+  saveCollaborationPreferences: createAction<CollaborationPreferences>('collaboration/saveCollaborationPreferences')
 };

@@ -1,6 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { Video } from "../state/stores/VideoStore";
 import { VideoData } from "../video/Video";
+import { VideoOptions } from "../communications/chat/ChatSettingsModal";
 
 export const VideoActions = {
   // General Video Actions
@@ -18,6 +19,8 @@ export const VideoActions = {
   updateMetadata: createAction<{ id: string; newMetadata: any }>(
     "updateMetadata"
   ),
+
+  showOptionsMenu: createAction<{id: string, options: VideoOptions[]}>("showOptionsMenu"),
   
   // Notification Actions
   sendVideoNotification: createAction<{ id: string; notification: string }>("sendVideoNotification"),
@@ -39,6 +42,9 @@ export const VideoActions = {
     "recommendVideo"
   ),
 
+
+
+  getSelectedVideoOptions: createAction<VideoOptions[]>("getSelectedVideoOptions"),
   // Subscription Actions
   subscribeToVideo: createAction<string>("subscribeToVideo"),
   unsubscribeFromVideo: createAction<string>("unsubscribeFromVideo"),

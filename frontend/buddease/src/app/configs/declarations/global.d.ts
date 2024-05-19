@@ -83,6 +83,8 @@ declare module "react-speech-recognition" {
     finalTranscript: string;
     listening: boolean;
     supported: boolean;
+    transcript: string;
+    isMicrophoneAvailable: boolean;
   }
 
   export function useSpeechRecognition(): SpeechRecognition;
