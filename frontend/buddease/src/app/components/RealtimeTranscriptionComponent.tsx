@@ -1,58 +1,60 @@
 // RealtimeTranscriptionComponent.tsx
 
 import { useCallback, useEffect } from "react";
-import { initializeUserData } from "../pages/onboarding/PersonaBuilderData";
 import useRealtimeData from "./hooks/commHooks/useRealtimeData";
 import useRealtimeEditing from "./hooks/useRealtimeEditing";
-import calculateKPMBasedOnEditorChanges from "./strategy/calculateKPMBasedOnEditorChanges";
 import useDocumentStore, { Document } from "./state/stores/DocumentStore";
-import { DocumentSliceState } from "./state/redux/slices/DocumentSlice";
-import { DocumentData } from "./documents/DocumentBuilder";
-
+import calculateKPMBasedOnEditorChanges from "./strategy/calculateKPMBasedOnEditorChanges";
+import * as apiDocument from './../../app/api/ApiDocument'
 const RealtimeTranscriptionComponent = () => {
-    const documentId = useDocumentStore()
-    const { editorState, sendChange } = useRealtimeEditing(documentId);
+  const { documents, fetchDocuments, updateDocument } = useDocumentStore();
+  const documentIds = Object.keys(documents);
+  const documentId: number = documentIds.length > 0 ? parseInt(documentIds[0]) : 0;
+  const { editorState, sendChange } = useRealtimeEditing(documentId);
 
-    const updateCallback = useCallback((
-        data: any,
-        events: any
-    ) => {
-    // Extract KPM data from the received data object
-    const kpm = data.kpm; // Assuming kpm is a property in the received data object
-
-    // Call the real-time transcription function with the retrieved KPM
+  const updateCallback = useCallback((
+    data: any,
+    events: any
+  ) => {
+    const kpm = data.kpm;
     realTimeTranscription(kpm);
   }, []);
 
-  // Utilize the useRealtimeData hook with the appropriate initial data and the update callback
-  useRealtimeData(initializeUserData, updateCallback);
+  useRealtimeData([], updateCallback);
 
-    
-    useEffect(() => {
-      useDocumentStore().fetchDocuments()
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
 
-        
-        
-
-        
   const handleDocumentDelete = (documentId: string) => {
-    // Call deleteDocument method from DocumentStore
-    useDocumentStore().deleteDocument(documentId);
+    apiDocument.deleteDocumentAPI(documentId);
   };
 
-  const handleDocumentUpdate = (documentId: string, updatedDocument: Document) => {
-    // Call updateDocument method from DocumentStore
-    useDocumentStore().updateDocument(documentId, updatedDocument);
+  const handleDocumentUpdate = async (documentId: number) => {
+    try {
+      const updatedData = {
+        // Assuming 'content' is the key for the content in your DocumentData interface
+        content: editorState.getCurrentContent().getPlainText(), 
+        // Add other properties as needed
+      };
+            const updatedDocumentData = await apiDocument.updateDocumentAPI(documentId, updatedData);
+      updateDocument(documentId, updatedDocumentData);
+    } catch (error) {
+      console.error('Error updating document:', error);
+    }
   };
 
-    // Calculate KPM based on editor changes (e.g., keystrokes) and call real-time transcription function
-    const kpm = calculateKPMBasedOnEditorChanges(editorState) as number; // Ensure kpm is a number
+  useEffect(() => {
+    const kpm = calculateKPMBasedOnEditorChanges(editorState) as number;
     realTimeTranscription(kpm);
   }, [editorState]);
 
+  useEffect(() => {
+    handleDocumentDelete(documentId.toString());
+    handleDocumentUpdate(documentId);
+  }, [documentId]);
 
   return <div>Realtime Transcription Component</div>;
 };
-
 
 export default RealtimeTranscriptionComponent;

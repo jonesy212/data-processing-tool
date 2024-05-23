@@ -11,7 +11,7 @@ import axiosInstance from "../../security/csrfToken";
 // Define the interface for different types of settings
 export interface Settings {
     id: string;
-    filter: (key: keyof Settings) => void;
+    filter: (key: keyof Settings | "communicationMode" | "defaultFileType") => void;
     appName: string;
   // Define common properties and methods for settings if needed
 }

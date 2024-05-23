@@ -21,6 +21,7 @@ export interface Phase extends CommonData<Data> {
   duration: number;
   tasks?: Task[];
   members?: Member[];
+  
 }
 
 export class PhaseImpl implements Phase {

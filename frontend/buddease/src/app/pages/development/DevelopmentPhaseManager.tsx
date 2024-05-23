@@ -1,7 +1,14 @@
 // DevelopmentPhaseManager.tsx
-import { DevelopementPhaseEnum } from '@/app/components/models/data/StatusType';
 import { useState } from 'react';
 
+// PhaseEnums.ts
+export enum DevelopementPhaseEnum {
+  Planning = 'Planning',
+  Development = 'Development',
+  Testing = 'Testing',
+  Deployment = 'Deployment',
+  // Add other phases as needed
+}
 const DevelopmentPhaseManager = () => {
   // State to track the current phase
   const [currentPhase, setCurrentPhase] = useState('Planning');

@@ -172,8 +172,7 @@ export const fetchSnapshotById = async (snapshotId: number): Promise<Snapshot<Da
     throw error;
   }
 };
-
-export const fetchAllSnapshots = async (): Promise<SnapshotList> => {
+export const fetchAllSnapshots = async (target: string): Promise<SnapshotList> => {
   try {
     const accessToken = localStorage.getItem('accessToken');
     const userId = localStorage.getItem('userId');
@@ -194,7 +193,7 @@ export const fetchAllSnapshots = async (): Promise<SnapshotList> => {
       // Add other header objects as needed
     ];
     const headers = Object.assign({}, ...headersArray);
-    const response = await axiosInstance.get<SnapshotList>(`${API_BASE_URL}`, {
+    const response = await axiosInstance.get<SnapshotList>(`${API_BASE_URL}/${target}`, { // Use the target parameter here
       headers: headers as Record<string, string>,
     });
     return response.data;
@@ -202,7 +201,8 @@ export const fetchAllSnapshots = async (): Promise<SnapshotList> => {
     handleApiError(error as AxiosError<unknown>, "Failed to fetch all snapshots");
     throw error;
   }
-}
+};
+
 
 export const getSortedList = async (target: string): Promise<SnapshotList> => {
   try {

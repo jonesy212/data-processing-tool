@@ -8,6 +8,7 @@ import axiosInstance from "../../security/csrfToken";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
 import { fetchData } from "../../utils/dataAnalysisUtils";
+import { useSecureUserId } from "../../utils/useSecureUserId";
 
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 
@@ -19,11 +20,11 @@ export type RealtimeUpdateCallback<T extends RealtimeData> = (
 ) => void;
 
 const useUIRealtimeData = (
-  initialData: any,
+  initialData: RealtimeDataItem[],
   updateCallback: RealtimeUpdateCallback<RealtimeData> 
   
 ) => {
-  const [realtimeData, setRealtimeData] = useState(initialData);
+  const [realtimeData, setRealtimeData] = useState<RealtimeDataItem[]>(initialData);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,31 +67,24 @@ const useUIRealtimeData = (
       }
     });
 
-    const fetchData = async () => {
+    const fetchData = async (userId: string, dispatchAction: (action: any) => void) => {
       try {
-        // Fetch updated data from the server via HTTP
         const response = await axiosInstance.get("/api/data");
-
-        // Update the state with the new data
         setRealtimeData(response.data);
-
-        // Synchronize the cache with the updated data
         await axiosInstance.post("/api/synchronize_cache", {
           preferences: response.data,
         });
-
-        // Dispatch an action to update Redux store state
-        dispatch({ type: "UPDATE_REALTIME_DATA", payload: response.data });
-
-        // Emit the updated data to the frontend via WebSocket
-        socket.emit("updateData", response.data);
+        dispatchAction({ type: "UPDATE_REALTIME_DATA", payload: response.data });
+        socket!.emit("updateData", response.data);
       } catch (error) {
         console.error("Error fetching or synchronizing data:", error);
       }
     };
+    
 
+    const userId = useSecureUserId()
     // Initial fetch
-    fetchData();
+    fetchData(String(userId), dispatch);
 
     // Interval for periodic updates
     const intervalId = setInterval(fetchData, 5000); // Fetch data every 5 seconds (adjust as needed)

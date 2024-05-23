@@ -3,6 +3,9 @@ import dotProp from 'dot-prop';
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
 import { useNotification } from "../components/support/NotificationContext";
+import { User } from "../components/users/User";
+import { Message } from "../generators/GenerateChatInterfaces";
+import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
@@ -10,6 +13,30 @@ import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.apiConfig
 
+
+const notificationContext = useNotification();
+
+// Example values for the Message object
+const generateUniqueID = UniqueIDGenerator.generateMessageID()
+const createMessage = (type: string, content: string): Partial<Message> => ({
+  id: generateUniqueID,
+  senderId: "system",
+  sender: {
+    username: "System",
+    firstName: "System",
+    lastName: "User",
+    email: "system@example.com",
+  } as User,
+  channel: {
+    id: "",
+    creatorId: "",
+    topics: [],
+    messages: [],
+    users: [],
+  },
+  timestamp: new Date().toISOString(),
+  content,
+});
 
 export const blogApiService = observable({
   notificationContext: {
@@ -21,6 +48,7 @@ export const blogApiService = observable({
     }
   },
 
+
   createBlog: async (blogData: any): Promise<AxiosResponse> => {
     try {
       const userApiConfig = dotProp.getProperty(API_BASE_URL, "getUserApiConfig");
@@ -29,44 +57,48 @@ export const blogApiService = observable({
         addLog(`Created blog: ${blogData.title}`);
       });
 
-      // Show success notification using notificationContext
       const notificationContext = useNotification();
+      const message = createMessage("success", `Blog "${blogData.title}" was created successfully.`);
       notificationContext.showSuccessNotification(
         "Blog Created",
+        { ...message, id: "blog-created", sender: undefined, senderId: undefined } as Message,
         `Blog "${blogData.title}" was created successfully.`,
-        "success"
+        blogData
       );
 
-      return response.data; // Return the created blog data
+      return response.data;
     } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to create blog"
-      );
+      handleApiError(error as AxiosError<unknown>, "Failed to create blog");
       throw error;
     }
   },
 
-  fetchBlog: async (blogId: string): Promise<AxiosResponse> => {
+
+  fetchBlogByName: async (blogName: string): Promise<AxiosResponse> => {
     try {
-      const response: AxiosResponse = await axiosInstance.get(`${API_BASE_URL}/${blogId}`);
-      // Example of handling response data
-      const blogData = response.data;
-      // Further processing of blogData
-      return blogData;
-
-    } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to fetch blog data"
+      const response: AxiosResponse = await axiosInstance.get(
+        `${API_BASE_URL}/${blogName}`
       );
+
+      return response;
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, "Failed to fetch blog data");
       throw error;
     }
   },
 
-
-
-  // Additional properties and functions
+  fetchBlog: async (blogId?: string): Promise<AxiosResponse<any, any>> => {
+    try {
+      // Check if blogId is provided
+      const url = blogId ? `${API_BASE_URL}/${blogId}` : `${API_BASE_URL}`;
+      const response: AxiosResponse = await axiosInstance.get(url);
+      return response;
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, "Failed to fetch blog data");
+      throw error;
+    }
+  },
+  
   updateBlog: async (blogId: string, updatedBlogData: any): Promise<AxiosResponse> => {
     try {
       const response: AxiosResponse = await axiosInstance.put(`${API_BASE_URL}/${blogId}`, updatedBlogData);
@@ -74,20 +106,17 @@ export const blogApiService = observable({
         addLog(`Updated blog: ${blogId}`);
       });
 
-      // Show success notification using notificationContext
       const notificationContext = useNotification();
+      const message = createMessage("success", `Blog with ID "${blogId}" was updated successfully.`);
       notificationContext.showSuccessNotification(
         "Blog Updated",
+        { ...message, id: "blog-updated", sender: undefined, senderId: undefined } as Message,
         `Blog with ID "${blogId}" was updated successfully.`,
-        "success"
       );
 
-      return response.data; // Return the updated blog data
+      return response.data;
     } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to update blog"
-      );
+      handleApiError(error as AxiosError<unknown>, "Failed to update blog");
       throw error;
     }
   },
@@ -99,18 +128,15 @@ export const blogApiService = observable({
         addLog(`Deleted blog: ${blogId}`);
       });
 
-      // Show success notification using notificationContext
       const notificationContext = useNotification();
+      const message = createMessage("success", `Blog with ID "${blogId}" was deleted successfully.`);
       notificationContext.showSuccessNotification(
         "Blog Deleted",
+        { ...message, id: "blog-deleted", sender: undefined, senderId: undefined } as Message,
         `Blog with ID "${blogId}" was deleted successfully.`,
-        "success"
       );
     } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to delete blog"
-      );
+      handleApiError(error as AxiosError<unknown>, "Failed to delete blog");
       throw error;
     }
   },

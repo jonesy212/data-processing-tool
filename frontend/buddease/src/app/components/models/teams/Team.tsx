@@ -1,12 +1,17 @@
+import { UserSettings } from '@/app/configs/UserSettings';
 import { Persona } from '@/app/pages/personas/Persona';
+import { ProfileAccessControl } from '@/app/pages/profile/Profile';
 import React from 'react';
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
+import { FileTypeEnum } from '../../documents/FileType';
+import useFiltering from '../../hooks/useFiltering';
 import { Phase } from "../../phases/Phase";
+import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
 import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project, ProjectType } from "../../projects/Project";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
-import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { implementThen } from '../../state/stores/CommonEvent';
+import { Settings } from '../../state/stores/SettingsStore';
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
 import { Idea } from '../../users/Ideas';
 import { User } from "../../users/User";
@@ -20,16 +25,33 @@ import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from './TeamMembers';
-import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { Settings } from '../../state/stores/SettingsStore';
-import { idleTimeoutDuration } from '../../hooks/phaseHooks/PhaseHooks';
-import { ProfileAccessControl } from '@/app/pages/profile/Profile';
-import { UserSettings } from '@/app/configs/UserSettings';
+
+import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
+
+
+
+
+// Assume 'options' is provided elsewhere
+const options: SearchOptions = {
+  communicationMode: 'email', // Example communication mode
+  size: "medium",
+  animations: {
+      type: "slide",
+      duration: 300,
+  },
+  additionalOptions: {
+    filters: [],
+},
+  additionalOption2: undefined,
+  defaultFileType: FileTypeEnum.Document, // Choose the appropriate file type enum value
+};
+
+// Initialize the useFiltering hook with the provided options
+const { addFilter } = useFiltering(options);
 
 interface Team extends Data {
-  team: {
-    value: number; label: string; // Example label
-  };
+  team: { id: string; current: number; max: number; label: string; value: number };
+ 
   _id: string;
   id: string;
   teamName: string;
@@ -51,7 +73,7 @@ interface Team extends Data {
 
 
   assignedProjects: Project[];
-  reassignedProjects: { project: Project; previousTeam: Team; reassignmentDate: Date }[];
+  reassignedProjects: { projectId: string, project: Project; previousTeam: Team; reassignmentDate: Date }[];
   assignProject(team: Team, project: Project): void
   reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
   unassignProject(team: Team, project: Project): void;
@@ -71,11 +93,15 @@ const team: Team = {
   teamName: "Development Team",
   description: "A team focused on software development",
   team: {
+    id: 'team-1',
+    current: 0,
+    max: 0,
+    label: '',
     value: 0,
-    label: ''
   },
   members: [
     {
+      isAuthorized: false,
       _id: "member-1",
       id: 1,
       username: "user1",
@@ -109,6 +135,7 @@ const team: Team = {
       friends: [],
       blockedUsers: [],
       settings: {
+        appName: "",
         userId: 0,
         userSettings: {} as NodeJS.Timeout,
         communicationMode: "",
@@ -208,12 +235,28 @@ const team: Team = {
         enableDecentralizedStorage: false,
         selectDatabaseVersion: "",
         selectAppVersion: "",
+        isAuthorized: true,
+
         enableDatabaseEncryption: false,
         id: "",
-        filter: function (key: keyof Settings): void {
-          throw new Error("Function not implemented.");
+        filter(key: keyof Settings | "communicationMode" | "defaultFileType"): void {
+          // Example: Filtering based on the provided key
+          switch (key) {
+            case "communicationMode":
+              addFilter("communicationMode", "equal", options.communicationMode);
+              break;
+          case "defaultFileType":
+              // Add filter for default file type
+              addFilter("defaultFileType", "equal", options.defaultFileType);
+              break;
+            // Add cases for other keys as needed
+            default:
+              // Default case if the provided key doesn't match any expected value
+              console.error(`Unhandled key "${key}" in settings filter.`);
+              break;
+          }
         },
-        appName: "",
+        
       },
       interests: [],
       privacySettings: undefined,
@@ -301,9 +344,12 @@ const team: Team = {
       profileAccessControl: {
         friendsOnly: false,
         allowTagging: false,
-        blockList: []
+        blockList: [],
+        allowMessagesFromNonContacts: false,
+        shareProfileWithSearchEngines: false
       },
       activityStatus: "",
+      isAuthorized: false
     },
   ],
   projects: [
@@ -545,7 +591,9 @@ const team: Team = {
       value: progressValue,
       label: `${progressValue}% completed`,// Example label
       current: 0, // Update current progress value
-      max: 100 // Set max progress value
+      max: 100, // Set max progress value
+      percentage: 0
+
     };
   },
   currentProject: null,
@@ -574,16 +622,14 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
     team.currentProject = null;
   };
 
-  const setCurrentTeam = (team: Team) => { 
+  const setCurrentTeam = (team: Team) => {
     // Set the current team for the team
     team.currentTeam = team;
-  
-  }
-
+  };
 
   return (
     <CommonDetails
-      data={{team: team} as  CommonData<never>}
+      data={{ team: team } as CommonData<never>}
       details={{
         _id: team._id,
         id: team.id,
@@ -591,14 +637,15 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
         title: team.title || "",
         name: team.teamName,
         isActive: team.isActive,
+        progress: team.progress,
         description: team.description,
+        analysisResults: team.analysisResults,
         assignedProjects: team.assignedProjects,
         reassignedProjects: team.reassignedProjects,
-        progress: team.progress,
+        updatedAt: team.updatedAt ? team.updatedAt : new Date(),
+        setCurrentTeam: setCurrentTeam,
         setCurrentProject: setCurrentProject,
         clearCurrentProject: clearCurrentProject,
-        setCurrentTeam: setCurrentTeam,
-        analysisResults: team.analysisResults,
         // Include other team-specific properties here
       }}
     />
@@ -622,6 +669,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       description: data.description,
       isActive: data.isActive,
       type: data.type,
+      updatedAt: data.updatedAt
       // analysisResults: data.analysisResults,
       // Include other generic data properties here
     }}

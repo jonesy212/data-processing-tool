@@ -180,6 +180,8 @@ export enum ProjectPhaseTypeEnum {
   DataAnalysis = 'data_analysis',
   Review = 'review',
   Final = 'final',
+  Test = 'test',
+  CreatePhase = 'createPhase'
 }
 
 

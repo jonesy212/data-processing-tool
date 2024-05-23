@@ -37,6 +37,9 @@ export interface BaseCustomEvent
 interface CustomEventExtension extends CustomEvent {
   id: string;
   dispatchEvent?(event: Event): boolean;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+
 }
 
 // Type assertion for compatibility

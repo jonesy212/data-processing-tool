@@ -1,18 +1,21 @@
 // PhaseStore.tsx
 import { useNotification } from "@/app/components/support/NotificationContext";
-import { OnboardingPhase } from "@/app/pages/onboarding/OnboardingPhase";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Data } from "../../models/data/Data";
 import { snapshotStore } from "../../snapshots/SnapshotStore";
 import { VideoData } from "../../video/Video";
+import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 export interface PhaseStore {
   phases: Record<string, OnboardingPhase[]>;
   currentPhase: OnboardingPhase;
+  lastActivityTimes: Record<string, number>;
   setCurrentPhase: (phase: OnboardingPhase) => void;
+  updateLastActivityTime: (phase: string) => void;
+  getLastActivityTime: (phase: string) => number;
   takePhaseSnapshot: (phase: OnboardingPhase) => void;
-
   // Add more methods or properties as needed
 }
 
@@ -25,6 +28,26 @@ const usePhaseStore = (): PhaseStore => {
   const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>(
     OnboardingPhase.WELCOME
   );
+  const [lastActivityTimes, setLastActivityTimes] = useState<Record<string, number>>({});
+
+  // Method to set the current phase and update the activity time
+  const handleSetCurrentPhase = (phase: OnboardingPhase) => {
+    setCurrentPhase(phase);
+    updateLastActivityTime(phase);
+  };
+
+  // Method to update the last activity time for a given phase
+  const updateLastActivityTime = (phase: string) => {
+    setLastActivityTimes((prevTimes) => ({
+      ...prevTimes,
+      [phase]: new Date().getTime(),
+    }));
+  };
+
+  // Method to get the last activity time for a given phase
+  const getLastActivityTime = (phase: string): number => {
+    return lastActivityTimes[phase] || 0;
+  };
 
   // Method to take a snapshot of the current phase
   const takePhaseSnapshot = (phase: OnboardingPhase) => {
@@ -45,10 +68,10 @@ const usePhaseStore = (): PhaseStore => {
       tags: [],
       then: () => { },
       [phase]: [...phases[phase]],
-      analysisType: "Phase Snapshot",
+      analysisType: AnalysisTypeEnum.SNAPSHOT,
       analysisResults: [`Phase Results for ${dynamicConvention}`],
       phase: null,
-      videoData: {} as VideoData
+      videoData: {} as VideoData,
     };
 
     snapshotStore.takeSnapshot(phaseSnapshot);
@@ -58,13 +81,13 @@ const usePhaseStore = (): PhaseStore => {
     }));
   };
 
-  // Add more methods or properties as needed
-
   makeAutoObservable({
     phases,
     currentPhase,
-    setCurrentPhase,
-    snapshotStore,
+    lastActivityTimes,
+    setCurrentPhase: handleSetCurrentPhase,
+    updateLastActivityTime,
+    getLastActivityTime,
     takePhaseSnapshot,
     // Add more methods or properties as needed
   });
@@ -72,7 +95,10 @@ const usePhaseStore = (): PhaseStore => {
   return {
     phases,
     currentPhase,
-    setCurrentPhase,
+    lastActivityTimes,
+    setCurrentPhase: handleSetCurrentPhase,
+    updateLastActivityTime,
+    getLastActivityTime,
     takePhaseSnapshot,
     // Add more methods or properties as needed
   };

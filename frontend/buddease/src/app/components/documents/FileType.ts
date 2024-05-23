@@ -46,6 +46,7 @@ export enum FileTypeEnum {
   DataVersionsConfig = "DataVersionsConfig",
   FrontendStructure = "FrontendStructure",
   UnknownType = "UnknownType",
+  PDF = 'pdf'
 }
 
 // Define the list of features and their associated file categories

@@ -22,7 +22,11 @@ export const endpoints: Endpoints = {
     verifyEmail: `${BASE_URL}/verify-email`,
     resendVerificationEmail: `${BASE_URL}/resend-verification-email`,
   },
-  database: {},
+  database: {
+    backend: `${BASE_URL}/api/user/backend`,
+    frontend: `${BASE_URL}/api/user/frontend`
+
+  },
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration

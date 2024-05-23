@@ -11,10 +11,11 @@ import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { Resource } from "../state/redux/slices/CollaborationSlice";
 import { Deadline } from "../state/redux/slices/ProjectSlice";
 import { RootState } from "../state/redux/slices/RootSlice";
+import { ProjectFeedback } from "../support/ProjectFeedback";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
 import { Address, Education, Employment, SocialLinks, User, UserData } from "./User";
-import { ProjectFeedback } from "../support/ProjectFeedback";
+import { CustomTransaction } from "../crypto/SmartContractInteraction";
 
 
 interface ActivityLogEntry {
@@ -22,6 +23,7 @@ interface ActivityLogEntry {
   timestamp: Date;
   activity: string;
   details?: string;
+  action: string
 }
 
 export interface UserManagerState {
@@ -42,7 +44,15 @@ const initialState: UserManagerState = {
   bio: "",
   profilePicture: "",
   notification: "",
-  data: {},
+  data: {
+    role: {
+      role: '',
+      responsibilities: [],
+      permissions: [],
+      positions: [],
+      includes: [],
+    }
+  },
   uploadQuota: 0,
   nftCollection: [],
   userSupportFeedbackPreferences: [],
@@ -263,11 +273,12 @@ export const userManagerSlice = createSlice({
       const { userId, projectId, role } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects?.findIndex(
+        const user = state.users[userIndex];
+        const projectIndex = user.projects?.findIndex(
           (project) => project.id === projectId
         );
         if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].role = role;
+          user.projects![projectIndex!].role = role;
         }
       }
     },
@@ -283,11 +294,12 @@ export const userManagerSlice = createSlice({
       const { userId, projectId, permissions } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (projectId) => projectId === projectId
+        const user = state.users[userIndex];
+        const projectIndex = user.projects?.findIndex(
+          (project) => project.id === projectId
         );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].permissions = permissions;
+        if (projectIndex !== -1 && user.projects) {
+          user.projects[projectIndex!].permissions = permissions;
         }
       }
     },
@@ -295,16 +307,23 @@ export const userManagerSlice = createSlice({
 
     updateUserProjectTasks: (
       state,
-      action: PayloadAction<{ userId: string; projectId: string; tasks: Task[] }>
+      action: PayloadAction<{
+        userId: string;
+        projectId: string;
+        tasks: Task[];
+      }>
     ) => {
       const { userId, projectId, tasks } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].tasks = tasks;
+        const user = state.users[userIndex];
+        const projectIndex = user.projects
+          ? user.projects.findIndex((project) => project.id === projectId)
+          : -1;
+        if (projectIndex !== -1 && user.projects) {
+          user.projects[projectIndex].tasks = tasks.map((task) => ({
+            ...task,
+          }));
         }
       }
     },
@@ -316,11 +335,14 @@ export const userManagerSlice = createSlice({
       const { userId, projectId, progress } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].progress = progress;
+        const user = state.users[userIndex];
+        if (user && user.projects) {
+          const projectIndex = user.projects.findIndex(
+            (project) => project.id === projectId
+          );
+          if (projectIndex !== -1) {
+            user.projects[projectIndex].progress = progress;
+          }
         }
       }
     },
@@ -336,95 +358,117 @@ export const userManagerSlice = createSlice({
       const { userId, projectId, collaborators } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
+        const user = state.users[userIndex];
+        const projectIndex = user.projects?.findIndex(
+          (project) => project?.id === projectId
         );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].collaborators = collaborators;
+        if (projectIndex !== undefined && user.projects) {
+          user.projects[projectIndex].collaborators = collaborators;
         }
       }
     },
 
     updateUserProjectDeadlines: (
       state,
-      action: PayloadAction<{ userId: string; projectId: string; deadlines: Deadline[] }>
+      action: PayloadAction<{
+        userId: string;
+        projectId: string;
+        deadlines: Deadline[];
+      }>
     ) => {
       const { userId, projectId, deadlines } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].deadlines = deadlines;
+        const user = state.users[userIndex];
+        const projectIndex = user.projects
+          ? user.projects.findIndex((project) => project.id === projectId)
+          : -1;
+        if (projectIndex !== -1 && user.projects) {
+          user.projects[projectIndex].deadlines = deadlines;
         }
       }
     },
 
-    updateUserProjectResources: (
-      state,
-      action: PayloadAction<{ userId: string; projectId: string; resources: Resource[] }>
-    ) => {
-      const { userId, projectId, resources } = action.payload;
-      const userIndex = state.users.findIndex((user) => user.id === userId);
-      if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].resources = resources;
-        }
+   
+ updateUserProjectResources: (
+  state: WritableDraft<UserManagerState>,
+  action: PayloadAction<{ userId: string; projectId: string; resources: Resource[] }>
+) => {
+  const { userId, projectId, resources } = action.payload;
+  const userIndex = state.users.findIndex((user) => user.id === userId);
+  if (userIndex !== -1) {
+    const user = state.users[userIndex];
+    if (user.projects) {
+      const projectIndex = user.projects.findIndex((project) => project.id === projectId);
+      if (projectIndex !== -1) {
+        user.projects[projectIndex].resources = resources;
       }
+    }
+  }
     },
-
+ 
+ 
     
-    updateUserProjectBudget: (
-      state,
+    
+   updateUserProjectBudget: (
+      state: WritableDraft<UserManagerState>,
       action: PayloadAction<{ userId: string; projectId: string; budget: number }>
     ) => {
       const { userId, projectId, budget } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].budget = budget;
+        const user = state.users[userIndex];
+        if (user.projects) {
+          const projectIndex = user.projects.findIndex((project) => project.id === projectId);
+          if (projectIndex !== -1) {
+            user.projects[projectIndex].budget = budget;
+          }
         }
       }
     },
 
     updateUserProjectReports: (
-      state,
+      state: WritableDraft<UserManagerState>,
       action: PayloadAction<{ userId: string; projectId: string; reports: Report[] }>
     ) => {
       const { userId, projectId, reports } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].reports = reports;
+        const user = state.users[userIndex];
+        if (user.projects) {
+          const projectIndex = user.projects.findIndex((project) => project.id === projectId);
+          if (projectIndex !== -1) {
+            user.projects[projectIndex].reports = reports;
+          }
         }
       }
     },
 
     updateUserProjectNotifications: (
-      state,
+      state: WritableDraft<UserManagerState>,
       action: PayloadAction<{ userId: string; projectId: string; notifications: Notification[] }>
     ) => {
       const { userId, projectId, notifications } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
-        const projectIndex = state.users[userIndex].projects.findIndex(
-          (project) => project.id === projectId
-        );
-        if (projectIndex !== -1) {
-          state.users[userIndex].projects[projectIndex].notifications = notifications;
+        const user = state.users[userIndex];
+        if (user.projects) {
+          const projectIndex = user.projects.findIndex((project) => project.id === projectId);
+          if (projectIndex !== -1) {
+            user.projects[projectIndex].notifications = notifications;
+          }
         }
       }
     },
+ 
+
+
+
+
+
+
+
+
 
     // Action to update user's phone number
     updateUserPhoneNumber: (state, action: PayloadAction<{ userId: string; phoneNumber: string }>) => {
@@ -651,7 +695,7 @@ export const userManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         userId: string;
-        transaction: WritableDraft<Transaction>;
+        transaction: WritableDraft<CustomTransaction>;
       }>
     ) => {
       const { userId, transaction } = action.payload;
@@ -679,7 +723,7 @@ export const userManagerSlice = createSlice({
     // Action to update user's smart contract interactions
     updateUserSmartContractInteractions: (
       state,
-      action: PayloadAction<{ userId: string; interaction: WritableDraft<Transaction> }>
+      action: PayloadAction<{ userId: string; interaction: WritableDraft<CustomTransaction> }>
     ) => {
       const { userId, interaction } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);

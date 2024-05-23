@@ -1,6 +1,7 @@
 import { useState } from "react";
 import usePhaseHooks, { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "./PhaseHooks";
 import configurationService, { ApiConfig } from "@/app/configs/ConfigurationService";
+import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
 
 const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
   const [currentPhase, setCurrentPhase] = useState<PhaseHookConfig | null>(
@@ -47,7 +48,7 @@ const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
       stopAnimation: () => {},
       animateIn: () => {},
       toggleActivation: () => { },
-      phaseType: "custom",
+      phaseType: ProjectPhaseTypeEnum.CreatePhase,
       customProp1: "value1",
       customProp2: 0,
     }
@@ -102,7 +103,7 @@ const myPhaseHook = createPhaseHook(
   stopAnimation: () => {},
   animateIn: () => {},
     toggleActivation: () => { },
-    phaseType: "custom",
+    phaseType: ProjectPhaseTypeEnum.CreatePhase,
     customProp1: "value1",
     customProp2: 0,
 });
@@ -119,7 +120,7 @@ const enhancedPhaseHook = enhancePhaseHook({
   },
   name: "",
   duration: "0",
-  phaseType: "custom",
+  phaseType: ProjectPhaseTypeEnum.CreatePhase,
   customProp1: "value1",
   customProp2: 0,
 });
@@ -140,7 +141,7 @@ enhancedPhaseHook.handleTransitionTo({
   duration: "0",
   condition: async () => true,
   name: "Enhance",
-  phaseType: "custom",
+  phaseType: ProjectPhaseTypeEnum.CreatePhase,
   customProp1: "value1",
   customProp2: 0,
 });

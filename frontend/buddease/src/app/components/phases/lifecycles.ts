@@ -1,3 +1,5 @@
+// lifecycles.tsx
+
 import { Lesson } from "../documents/CourseBuilder";
 import { enhancedPhaseHook } from "../hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
@@ -36,10 +38,32 @@ const generatePhase = (name: string, subPhases: string[]): PhaseOptions => {
       },
       resetIdleTimeout: async () => {},
       isActive: false,
-    } as CustomPhaseHooks,
+      progress: {
+        id: '',
+        value: 0,
+        label: '',
+        current: 0,
+        max: 0,
+        percentage: 0
+      },
+      condition: async (idleTimeoutDuration: number): Promise<boolean> => {
+        // Fetch the last activity time for the current phase
+        const lastActivityTime = getLastActivityTimeForPhase(name); // Replace with actual implementation
+        const currentTime = new Date().getTime();
+
+        // Check if the current time exceeds the last activity time plus the idle timeout duration
+        const isIdle = (currentTime - lastActivityTime) >= idleTimeoutDuration;
+        return isIdle;
+      }    } as CustomPhaseHooks,
   };
 };
 
+// Placeholder for actual implementation to fetch the last activity time
+const getLastActivityTimeForPhase = (phaseName: string): number => {
+  // Replace this with actual logic to get the last activity time for the phase
+  // For example, you might store this in your application's state or database
+  return new Date().getTime() - 3600000; // Example: 1 hour ago
+};
 
 
 // Common Functions
@@ -67,6 +91,23 @@ const generateGenericPhase = (name: string, subPhases: string[]): PhaseOptions =
       },
       resetIdleTimeout: async () => {},
       isActive: false,
+      progress: {
+        id: '',
+        value: 0,
+        label: '',
+        current: 0,
+        max: 0,
+        percentage: 0
+      },
+      condition: async (idleTimeoutDuration: number): Promise<boolean> => {
+        // Fetch the last activity time for the current phase
+        const lastActivityTime = getLastActivityTimeForPhase(name); // Replace with actual implementation
+        const currentTime = new Date().getTime();
+
+        // Check if the current time exceeds the last activity time plus the idle timeout duration
+        const isIdle = (currentTime - lastActivityTime) >= idleTimeoutDuration;
+        return isIdle;
+      }
     } as CustomPhaseHooks,
   };
 };
@@ -100,8 +141,12 @@ const ideaLifecyclePhases: PhaseOptions[] = [
         );
         return true;
       },
-      resetIdleTimeout: async () => {},
+      resetIdleTimeout: async () => { },
       isActive: false,
+      progress: null,
+      condition: function (idleTimeoutDuration: number): Promise<boolean> {
+        throw new Error("Function not implemented.");
+      }
     }
    },
 ];

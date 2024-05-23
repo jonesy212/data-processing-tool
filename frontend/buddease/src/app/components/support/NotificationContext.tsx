@@ -114,10 +114,10 @@ export interface NotificationContextProps {
 
   showMessage: (message: Message, type: NotificationType) => void;
 
-  showMessageWithType: (message: string) => void;
+  showMessageWithType: (message: Message, type: NotificationType) => void;
   showSuccessNotification: (
     id: string,
-    message: string,
+    message: Message,
     content: any,
     date?: Date | undefined,
     type?: NotificationType
@@ -133,7 +133,7 @@ export interface NotificationContextProps {
   actions?: {
     showSuccessNotification: (
       id: string,
-      message: string,
+      message: Message,
       content: any,
       date?: Date | undefined,
       type?: NotificationType

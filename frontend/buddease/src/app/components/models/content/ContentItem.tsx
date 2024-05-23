@@ -9,6 +9,7 @@ interface ContentItem {
   then?(arg0: (newContent: any) => void): unknown;
   id: string;
   _id?: string;
+  updatedAt: Date | undefined
   title: string;
   body: string | undefined;
   heading: React.ReactNode;

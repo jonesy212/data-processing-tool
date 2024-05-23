@@ -84,7 +84,7 @@
   "src/app/components/phases/PhasesNavigation.jsx", "src/app/utils/MyPromise.tjsx", 
   "src/app/components/communications/chat/features/clearChatImageCache.js", "src/app/pages/forms/DynamicConfigurationLogic.jsx", "src/app/pages/content/CaptionManagementPage.js",
   "src/app/configs/declarations/**/*.d.ts"
-, "src/app/components/libraries/toolbar/Sidebar.jsx", "src/app/context/DashboardContext.tsx"],
+, "src/app/components/libraries/toolbar/Sidebar.tsx", "src/app/context/DashboardContext.tsx"],
   
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js",]
 }

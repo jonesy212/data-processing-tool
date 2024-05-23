@@ -15,6 +15,8 @@ interface ProfileAccessControl {
   friendsOnly: boolean;
   allowTagging: boolean;
   blockList: string[];
+  allowMessagesFromNonContacts: boolean,
+  shareProfileWithSearchEngines: boolean,
 }
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {

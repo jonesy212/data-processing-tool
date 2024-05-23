@@ -9,10 +9,12 @@ import SnapshotStore, {
 } from "@/app/components/snapshots/SnapshotStore";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import React, { useEffect } from "react";
-
+import { AppActions } from "@/app/components/actions/AppActions";
+import { useDispatch } from "react-redux";
 interface BaseRealtimeData {
   id: string;
   name: string;
+  value: string;
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
@@ -23,19 +25,21 @@ interface RealtimeDataItem extends BaseRealtimeData {
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   userId: string;
   dispatch: (action: any) => void;
+  value: string;
+
 
   // Add other properties specific to RealtimeDataItem here
 }
 
 interface RealtimeData extends BaseRealtimeData {
-
-  date: string | Date
+  date:  Date;
   // Define other properties specific to RealtimeData here
 }
 
 interface RealtimeData {
   userId: string;
   dispatch: (action: any) => void;
+  value: string;
 }
 
 const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
@@ -53,7 +57,11 @@ const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
   });
 };
 
-const RealtimeDataComponent: React.FC<RealtimeData> = ({ userId, dispatch ,}) => {
+const RealtimeDataComponent: React.FC<RealtimeDataItem> = ({
+  userId,
+  dispatch,
+  value,
+}) => {
   // Initial data can be an empty array or any initial state you want
   const initialData: RealtimeDataItem[] = [];
   const { error, handleError, clearError } = useErrorHandling(); // Initialize error handling
@@ -71,22 +79,14 @@ const RealtimeDataComponent: React.FC<RealtimeData> = ({ userId, dispatch ,}) =>
     snapshotStore: SnapshotStore<Snapshot<Data>>,
     dataItems: RealtimeDataItem[]
   ) => {
-    // Your update logic here
-
-
-      // Convert exchangeData and dexData to RealtimeData if needed
-  const exchangeData: ExchangeData[] = []; // Your logic to convert or fetch exchange data
-  const dexData: any[] = []; // Your logic to convert or fetch DEX data
-  
-
+    // Convert exchangeData and dexData to RealtimeData if needed
+    const exchangeData: ExchangeData[] = []; // Your logic to convert or fetch exchange data
+    const dexData: any[] = []; // Your logic to convert or fetch DEX data
 
     try {
-      // Your update logic here
-
-       // Dispatch actions to store the fetched data in Redux store
+      // Dispatch actions to store the fetched data in Redux store
       dispatch(ExchangeActions.fetchExchangeData(exchangeData));
       // Dispatch actions to store the fetched DEX data in Redux store
-      // Implement fetchDEXData action as needed
       dispatch(fetchDEXData(dexData, dispatch));
       // Log the contents of the 'data' parameter for debugging purposes
       console.log("Snapshot store data:", data);
@@ -95,7 +95,6 @@ const RealtimeDataComponent: React.FC<RealtimeData> = ({ userId, dispatch ,}) =>
       dataItems.forEach((dataItem: RealtimeDataItem) => {
         console.log(`Updated data item with ID ${dataItem.id}:`, dataItem);
       });
-
       // Clear any previous errors if update was successful
       clearError();
     } catch (error: any) {
@@ -121,32 +120,26 @@ const RealtimeDataComponent: React.FC<RealtimeData> = ({ userId, dispatch ,}) =>
     updateCallback
   );
 
-  // You can use useEffect to perform any side effects related to the realtime data
+  const reduxDispatch = useDispatch();
+
   useEffect(() => {
-    // Example of fetching data on component mount
-    fetchData(userId, dispatch);
-  }, []);
+    fetchData(userId, reduxDispatch as any);
+  }, [userId, value, fetchData]);
 
   return (
     <div>
       // Display error message if error exists
       {error && <div>Error: {error}</div>}
       {/* Display your realtime data in the component */}
-      {realtimeData.map((dataItem: any, index: any) => (
+      {realtimeData.map((dataItem: RealtimeDataItem, index: number) => (
         <div key={index}>
           {/* Display each data item */}
-          <p>{dataItem}</p>
-          <RealtimeDataComponent
-            id={""}
-            date={new Date}
-            userId={userId}
-            dispatch={dispatch}
-            name={""} />
+          <p>{dataItem.id}</p>
+          <p>{dataItem.value}</p>
         </div>
       ))}
     </div>
   );
 };
-export default RealtimeDataComponent;
+export {RealtimeDataComponent};
 export type { RealtimeData, RealtimeDataItem };
-

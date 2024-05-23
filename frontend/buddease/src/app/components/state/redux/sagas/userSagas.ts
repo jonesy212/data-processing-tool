@@ -1,6 +1,6 @@
 // userSaga.ts
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { userService } from "@/app/components/users/ApiUser";
+import UserService, { userService } from "@/app/components/users/ApiUser";
 import { User } from "@/app/components/users/User";
 import { UserActions } from "@/app/components/users/UserActions";
 import { call, put, takeLatest } from "redux-saga/effects";
@@ -9,7 +9,7 @@ import { call, put, takeLatest } from "redux-saga/effects";
 function* fetchUserSaga(action: any) {
   try {
     const userId = action.payload;
-    const user: User = yield call(userService.fetchUser, userId); // Adjust the service method accordingly
+    const user: User = yield call(UserService.fetchUser, userId, ''); // Add an empty string as the second argument for authToken
     yield put(UserActions.fetchUserSuccess({ user }));
   } catch (error) {
     yield put(

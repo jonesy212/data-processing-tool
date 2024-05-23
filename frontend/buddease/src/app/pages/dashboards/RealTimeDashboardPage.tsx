@@ -1,15 +1,16 @@
 // RealTimeDashboardPage.tsx
-import RootLayout from '@/app/RootLayout';
-import { User } from '@/app/components/users/User';
-import React, { useState } from 'react';
-import FilterOptions from './FilterOptions'; // Import a component for filter options
-import Notifications from './Notifications'; // Import a notifications component
-import RealTimeChart from './RealTimeChart'; // Import a real-time chart component
-import SearchBar from './SearchBar'; // Import a search bar component
-import Sidebar from './Sidebar'; // Import a sidebar component
-import VisualFlowDashboard from './VisualFlowDashboard'; // Import your specific dashboard component
-import { UserProfile } from '@/app/components/users/userSnapshotData';
-
+import RootLayout from "@/app/RootLayout";
+import { User } from "@/app/components/users/User";
+import React, { useState } from "react";
+import RealTimeChart from "./RealTimeChart"; // Import a real-time chart component
+import VisualFlowDashboard from "./VisualFlowDashboard"; // Import your specific dashboard component
+ import DataFilterForm, {
+  FilterOptions,
+} from "@/app/components/models/data/DataFilterForm";
+import Sidebar from "@/app/components/libraries/toolbar/Sidebar";
+import NotificationComponent from "@/app/components/notifications/NotificationComponent";
+import UserProfileComponent from "@/app/components/community/UserProfileComponent";
+import SearchBar from "@/app/components/routing/SearchBar";
 interface RealTimeDashboardPageProps {
   user: User; // User object representing the current user
 }
@@ -49,31 +50,25 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
 
   return (
     <RootLayout>
-
-    <div>
-      <Sidebar>
-          <UserProfile
-            userProfile={user}
-          />
-      </Sidebar>
-
       <div>
-        <SearchBar onSearch={handleSearchQueryChange} />
-        <FilterOptions onSelectFilters={handleFilterSelectionChange} />
-        <RealTimeChart
-          user={user}
-          searchQuery={searchQuery}
-          selectedFilters={selectedFilters}
-        />
-          <VisualFlowDashboard user={user}
-            searchQuery={searchQuery} />
-        <Notifications />
-      </div>
-      </div>
-      </RootLayout>
+        <Sidebar>
+          <UserProfileComponent userProfile={user} />
+        </Sidebar>
 
-      );
-      
+        <div>
+          <SearchBar onSearch={handleSearchQueryChange} />
+          <DataFilterForm onSubmit={(filters, transform) => {}} options={{}} />
+          <RealTimeChart
+            user={user}
+            searchQuery={searchQuery}
+            selectedFilters={selectedFilters}
+          />
+          <VisualFlowDashboard user={user} searchQuery={searchQuery} />
+          <NotificationComponent notifications={[]} />
+        </div>
+      </div>
+    </RootLayout>
+  );
 };
 
 export default RealTimeDashboardPage;

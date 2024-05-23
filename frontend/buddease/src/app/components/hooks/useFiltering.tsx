@@ -9,7 +9,7 @@ function useFiltering(options: SearchOptions) {
 
   const addFilter = (
     column: keyof SearchOptions,
-    operation: 'equal' | 'notEqual' | 'contains' | 'notContains',
+    operation:'equal' | 'notEqual' | 'contains' | 'notContains',
     value: string | number | boolean
   ) => {
     // Logic to add filter

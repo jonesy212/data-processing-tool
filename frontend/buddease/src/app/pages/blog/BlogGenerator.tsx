@@ -1,28 +1,15 @@
 // BlogGenerator.tsx
+import { Post } from '@/app/components/community/DiscussionForumComponent';
 import React from 'react';
+import { BlogPost } from './BlogPost';
 
-interface BlogPost {
-  title: string;
-  content: string;
-  author: string;
-  date: string;
-  version: {
-    versionNumber: string;
-
-  }
-  history: {
-    entries: {
-      timestamp: number;
-      data: any;
-    }[]
-  }
-}
 
 interface BlogGeneratorProps {
   posts: BlogPost[];
+  generateBlogPosts: () => BlogPost[]; // Function signature for generateBlogPosts
 }
 
-const BlogGenerator: React.FC<BlogGeneratorProps> = ({ posts }) => {
+const BlogGenerator: React.FC<BlogGeneratorProps> = ({ posts, generateBlogPosts }) => {
   return (
     <div>
       <h1>Blog Posts</h1>
@@ -31,7 +18,7 @@ const BlogGenerator: React.FC<BlogGeneratorProps> = ({ posts }) => {
           <h2>{post.title}</h2>
           <p>{post.content}</p>
           <p>Author: {post.author}</p>
-          <p>Date: {post.date}</p>
+          <p>Date: {post.date?.toLocaleString()}</p>
           {/* Display version and history information */}
           <p>Version: {post.version.versionNumber}</p>
           {/* Display history entries */}
@@ -49,3 +36,6 @@ const BlogGenerator: React.FC<BlogGeneratorProps> = ({ posts }) => {
     </div>
   );
 };
+
+
+export default BlogGenerator

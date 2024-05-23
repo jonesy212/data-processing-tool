@@ -34,15 +34,15 @@ export async function initializeUserData(id: string | number, user: User): Promi
       tasks: '', // Add initialization logic for tasks
       questionnaireResponses: {}, // Add initialization logic for questionnaireResponses
       chatSettings: {} as ChatSettings, // Add initialization logic for chatSettings
-      projects: {} as  Project[], // Add initialization logic for projects
+      projects: {} as Project[], // Add initialization logic for projects
       teams: {} as Team[], // Add initialization logic for teams
       teamMembers: {} as TeamMember[], // Add initialization logic for teamMembers
       yourDocuments: {} as DocumentTree, // Add initialization logic for yourDocuments
       visualizations: [] as VisualizationData[], // Add initialization logic for visualizations
       traits: {} as typeof CommonDetails,
       timeBasedCode: timeBasedCode,
-      realtimeUpdates: {} as RealtimeUpdates[], // Initialize it as an empty array or with appropriate default value
-  
+      realtimeUpdates: {} as RealtimeUpdates[],
+      role: undefined
     };
 
     return userData;

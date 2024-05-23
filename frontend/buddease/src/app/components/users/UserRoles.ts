@@ -27,6 +27,68 @@ const UserRoles: { [key: string]: UserRole } = {
     ,
     includes: []
   },
+  Developer: {
+    role: 'Developer',
+    responsibilities: [
+      'Write and maintain codebase',
+      'Implement new features',
+      'Debug and resolve software issues',
+      'Collaborate with team members on project development',
+      'Participate in code reviews',
+      'Ensure application performance and responsiveness',
+    ],
+    permissions: [
+      'Access and modify code repositories',
+      'Deploy applications to staging and production environments',
+      'Access to project management tools',
+      'Request pull reviews',
+      'View and create project documentation',
+    ],
+    positions: [
+      { title: 'Junior Developer', level: 1 },
+      { title: 'Mid-level Developer', level: 2 },
+      { title: 'Senior Developer', level: 3 },
+      { title: 'Lead Developer', level: 4 },
+    ],
+    salary: 80000, // Example salary for Developer
+    includes: [
+      'Health Insurance',
+      'Paid Time Off',
+      'Remote Work Options',
+      'Professional Development Opportunities',
+    ]
+  },
+  UXUIDesigner: {
+    role: 'UX/UI Designer',
+    responsibilities: [
+      'Conduct user research and create user personas',
+      'Design wireframes, prototypes, and high-fidelity mockups',
+      'Collaborate with developers to ensure design implementation',
+      'Conduct usability testing and gather user feedback',
+      'Create and maintain design systems and style guides',
+      'Stay up-to-date with design trends and best practices',
+    ],
+    permissions: [
+      'Access design tools and software',
+      'View and contribute to project management tools',
+      'Collaborate on user research and testing',
+      'Create and update design documentation',
+      'Participate in design reviews',
+    ],
+    positions: [
+      { title: 'Junior UX/UI Designer', level: 1 },
+      { title: 'Mid-level UX/UI Designer', level: 2 },
+      { title: 'Senior UX/UI Designer', level: 3 },
+      { title: 'Lead UX/UI Designer', level: 4 },
+    ],
+    salary: 70000, // Example salary for UX/UI Designer
+    includes: [
+      'Health Insurance',
+      'Paid Time Off',
+      'Remote Work Options',
+      'Professional Development Opportunities',
+    ]
+  },
   Moderator: {
     role: 'Moderator',
     responsibilities: [

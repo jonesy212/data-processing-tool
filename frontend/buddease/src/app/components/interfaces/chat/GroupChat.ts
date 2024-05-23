@@ -7,4 +7,6 @@ interface GroupChat {
     members: TeamMember[];
     messages: ChatMessage[];
     // Add more GroupChat-specific fields as needed
-  }
+}
+  
+export type {GroupChat}

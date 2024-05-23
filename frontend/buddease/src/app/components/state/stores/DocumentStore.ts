@@ -43,9 +43,9 @@ export interface DocumentStore {
   fetchDocuments: () => void;
   
   addDocument: (document: Document) => void;
-  updateDocument: (id: string, updatedDocument: DocumentData) => void;
+  updateDocument: (id: number, updatedDocument: Document) => void;
   deleteDocument: (id: string) => void;
-  updateDocumentTags: (id: string, newTags: string[]) => void;
+  updateDocumentTags: (id: number, newTags: string[]) => void;
   // Add more methods as needed
 }
 
@@ -54,6 +54,8 @@ const useDocumentStore = (): DocumentStore => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
+
+
 
   const fetchDocuments = async () => {
     setIsLoading(true);
@@ -103,6 +105,9 @@ const useDocumentStore = (): DocumentStore => {
   };
 
 
+  
+
+
 // Function to load document content for calendar events
  const loadCalendarEventsDocumentContent = async (eventId: string): Promise<DocumentContent> => {
   try {
@@ -124,7 +129,10 @@ const useDocumentStore = (): DocumentStore => {
   }
 };
 
-  const updateDocument = (id: string, updatedDocument: Document) => {
+  
+
+  
+  const updateDocument = (id: number, updatedDocument: Document) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [id]: updatedDocument,
@@ -150,7 +158,7 @@ const useDocumentStore = (): DocumentStore => {
     );
   };
 
-  const updateDocumentTags = async (id: string, tags: string[]) => {
+  const updateDocumentTags = async (id: number, tags: string[]) => {
     try {
       const response = await fetch(endpoints.documents.updateDocumentTags.toString(), {
         method: "PUT",
@@ -181,6 +189,7 @@ const useDocumentStore = (): DocumentStore => {
     fetchDocuments,
     addDocument,
     updateDocument,
+    
     deleteDocument,
     updateDocumentTags,
     loadCalendarEventsDocumentContent

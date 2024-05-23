@@ -40,8 +40,8 @@ interface Project extends Data {
   description: string; // Updated this line
   members: Member[];
   tasks: Task[];
-  startDate: Date
-  endDate: Date
+  startDate: Date | undefined
+  endDate: Date | undefined
   isActive: boolean;
   leader: User | null;
   budget: number | null;
@@ -283,7 +283,9 @@ const transitionToPreviousPhase = (setCurrentPhase: React.Dispatch<React.SetStat
   setCurrentPhase(previousPhase);
 };
 
-const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({ projectDetails }) => {
+const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({
+  projectDetails,
+}) => {
   const [details, setDetails] = useState<ProjectData | null>(null);
 
   useEffect(() => {
@@ -304,16 +306,17 @@ const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({ projec
     <>
       <CommonDetails
         data={{} as CommonData<SupportedData>}
-        details={
-          {
-            _id: details.project._id || '',
-            id: details.project.id || '',
-            title: details.project.title || '',
-            description: details.project.description || '',
-            status: details.project.status || StatusType.Pending,
-            // analysisResults: details.project.analysisResults || [],
-          }
-        }
+        details={{
+          _id: details.project._id || "",
+          id: details.project.id || "",
+          title: details.project.title || "",
+          description: details.project.description || "",
+          status: details.project.status || StatusType.Pending,
+          updatedAt: details.updatedAt
+            ? new Date(details.updatedAt)
+            : undefined,
+          // analysisResults: details.project.analysisResults || [],
+        }}
       />
       <ButtonGenerator
         onTransitionToPreviousPhase={transitionToPreviousPhase} // Pass the function as a prop

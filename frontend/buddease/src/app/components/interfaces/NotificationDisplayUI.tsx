@@ -1,27 +1,36 @@
 // NotificationDisplayUI.tsx
-// Import necessary dependencies
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addNotification, selectNotifications } from './NotificationSlice';
-import Notification from './Notification';
+import { useSelector } from 'react-redux';
+import Notification from '../notifications/Notification';
+import { useThemeConfig } from '../hooks/userInterface/ThemeConfigContext';
+import { selectNotifications } from '../support/NofiticationsSlice';
+import { NotificationType } from '../support/NotificationContext';
+import NotificationComponent from '../notifications/NotificationComponent';
+import { NotificationProps } from '../typings/PropTypes';
 
-// Create a component to display notifications
-const NotificationDisplay = () => {
+const NotificationDisplay: React.FC = () => {
   // Get notifications from Redux state
-  const notifications = useSelector(selectNotifications);
+  const notifications = useSelector(selectNotifications) as NotificationProps[];
+  // Get theme configuration from the context
+  const { fontSize, fontColor, backgroundColor } = useThemeConfig();
 
   return (
     <div className="notification-container">
       {/* Render each notification */}
-      {notifications.map(notification => (
-        <Notification
+      {notifications.map((notification) => (
+        <NotificationComponent
           key={notification.id}
+          id={notification.id}
           message={notification.message}
           backgroundColor={notification.backgroundColor}
-          textColor={notification.textColor}
-          fontSize={notification.fontSize}
+          fontColor={fontColor}
+          fontSize={fontSize}
+          notifications={notifications}
+          type={notification.type}
         />
       ))}
     </div>
   );
 };
+
+export default NotificationDisplay;

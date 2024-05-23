@@ -1,7 +1,7 @@
 // useRealtimeDextData.ts
 
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import RealtimeData from "../../../../../models/realtime/RealtimeData";
+import {RealtimeData} from "../../../../../models/realtime/RealtimeData";
 import { processDEXData } from "../../utils/processDEXDataUtils";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
@@ -9,7 +9,7 @@ const useRealtimeDextData = <T>(
   initialData: any,
   updateCallback: RealtimeUpdateCallback<RealtimeData>
 ) => {
-  const { fetchData } = useRealtimeData<T>(initialData, updateCallback);
+  const { fetchData } = useRealtimeData(initialData, updateCallback);
   const fetchDexData = async (
     dexData: any[],
     dispatch: Dispatch<UnknownAction>

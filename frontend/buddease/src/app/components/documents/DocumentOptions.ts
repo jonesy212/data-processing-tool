@@ -62,6 +62,7 @@ export interface DocumentOptions {
   userIdea: string;
   documentSize: DocumentSize;
   limit: number;
+  page: number;
   additionalOptions: readonly string[] | string | number | any[] | undefined;
   documentPhase: string | {
     name: string;
@@ -78,17 +79,17 @@ export interface DocumentOptions {
     links: [];
     tags: [];
   };
-  version: Version; // Update type to Version
+  version: Version; 
   isDynamic: boolean | undefined;
   size: DocumentSize;
-  animations: DocumentAnimationOptions; // New property for animations
-  layout: BackendStructure | FrontendStructure; // New property for layout
-  panels: { [key: string]: any } | undefined; // Allow custom panels
+  animations: DocumentAnimationOptions; 
+  layout: BackendStructure | FrontendStructure | undefined; 
+  panels: { [key: string]: any } | undefined; 
   pageNumbers:
     | boolean
     | {
         enabled: boolean;
-        format: string; // Allow custom page number format
+        format: string; 
       };
   footer: string;
   watermark:  {
@@ -409,6 +410,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     documentType: DocumentTypeEnum.Default,
     documentPhase: "Draft",
     limit: 0,
+    page: 1,
     version: Version.create({
       id: 0,
       name: "",

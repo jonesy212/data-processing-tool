@@ -4,6 +4,7 @@ import React from "react";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import TextType from "../documents/TextType";
 import { DataType } from "../models/CommonData";
+import { LogData } from "../models/LogData";
 import {
   ChatType,
   CustomNotificationType,
@@ -17,6 +18,9 @@ import {
   ProgressBarProps,
   ProgressPhase,
 } from "../models/tracker/ProgressBar";
+import { AllStatus } from "../state/stores/DetailsListStore";
+import { SendStatus } from "../support/NofiticationsSlice";
+import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";;
 type NotificationCategory = "general" | "urgent" | "important";
@@ -54,13 +58,17 @@ interface BaseProps {
 interface NotificationProps extends BaseProps {
   category?: NotificationCategory;
   message: string;
-  content?: any;
-  date?: Date;
-  type?: AllTypes; // Update type property to use AllTypes
-  // backgroundColor?: string;
+  content: any;
+  date?: Date | undefined;
+  status?: AllStatus
+
+  backgroundColor?: string;
   // color?: string;
-  // fontSize?: string;
-  // textColor?: string
+  fontSize: string;
+  fontColor: string
+  sendStatus: SendStatus
+  completionMessageLog: LogData | undefined
+  type: NotificationType
 }
 
 interface ProgressProps {
@@ -95,7 +103,13 @@ const notificationProps: NotificationProps = {
   category: "urgent",
   content: { data: "Notification content" },
   date: new Date(),
-  type: StatusType.Pending, // Example of using StatusType
+  status: StatusType.Pending, // Example of using StatusType
+  backgroundColor: 'blue',
+  sendStatus: "Sent",
+  completionMessageLog: undefined,
+  fontSize: "",
+  fontColor: "",
+  type: NotificationTypeEnum.AccountCreated
 };
 
 const progressBarProps: ProgressBarProps = {
@@ -105,12 +119,18 @@ const progressBarProps: ProgressBarProps = {
     label: "Progress Label",
     current: 0,
     max: 100,
-  }, // Corrected to match the Progress interface
+    percentage: 0,
+  },
   duration: 1000,
   barStyle: { backgroundColor: "blue" },
   containerStyle: { width: "80%", border: "1px solid black" },
   animationType: "ease-in-out",
-  phase: ProgressPhase.Ideation,
+  phase: {
+    type: "",
+    duration: 0,
+    value: 90,
+  },
+  phaseType: ProgressPhase.Ideation,
   animationID: "",
   uniqueID: "",
 };

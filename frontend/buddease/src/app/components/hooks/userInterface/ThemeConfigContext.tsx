@@ -6,22 +6,23 @@ import { DappProps } from "../../web3/dAppAdapter/DAppAdapterConfig";
 
 interface ThemeConfigProps {
   fontSize: string;
-  fontFamily: string;
-  primaryColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
-  
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
-  setPrimaryColor: React.Dispatch<React.SetStateAction<string>>;
-  setThemeConfig: React.Dispatch<React.SetStateAction<ThemeConfig>>;
-  setSecondaryColor: React.Dispatch<React.SetStateAction<string>>;
-  setFontSize: React.Dispatch<React.SetStateAction<string>>;
-  setFontFamily: React.Dispatch<React.SetStateAction<string>>;
+  fontColor: string
+  fontFamily?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  backgroundColor?: string;
+  isDarkMode?: boolean;
+  toggleDarkMode?: () => void;
+  setPrimaryColor?: React.Dispatch<React.SetStateAction<string>>;
+  setThemeConfig?: React.Dispatch<React.SetStateAction<ThemeConfig>>;
+  setSecondaryColor?: React.Dispatch<React.SetStateAction<string>>;
+  setFontSize?: React.Dispatch<React.SetStateAction<string>>;
+  setFontFamily?: React.Dispatch<React.SetStateAction<string>>;
+  setFontColor?: React.Dispatch<React.SetStateAction<string>>; // Add setter for fontColor
 
-  children: React.ReactNode;
-  themeConfig: ThemeConfig;
-  applyThemeConfig: (themeConfig: ThemeConfig) => void;
+  children?: React.ReactNode;
+  themeConfig?: ThemeConfig;
+  applyThemeConfig?: (themeConfig: ThemeConfig) => void;
   
   // Add more theme-related options as needed
 }
@@ -38,7 +39,7 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   const [secondaryColor, setSecondaryColor] = useState("#e74c3c");
   const [fontSize, setFontSize] = useState("16px");
   const [fontFamily, setFontFamily] = useState("Arial, sans-serif");
-
+  const [fontColor, setFontColor] = useState("#000"); // Initialize fontColor with a default value
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(
     {} as ThemeConfig | (() => ThemeConfig)
   );
@@ -48,6 +49,7 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
   };
+
 
   const applyThemeConfig = (config: ThemeConfig) => {
     setThemeConfig(config);
@@ -70,6 +72,8 @@ export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
         setFontSize,
         fontFamily,
         setFontFamily,
+        fontColor,
+        setFontColor,
         themeConfig,
         setThemeConfig,
         applyThemeConfig,

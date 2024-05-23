@@ -33,7 +33,7 @@ interface SearchResult<T> {
   keywords: string[];
   folders: FolderData[];
   options: DocumentOptions;
-  folderPath: string;
+  folderPath: string | null;
   previousMetadata: any;
   currentMetadata: any;
   accessHistory: any[];
@@ -103,5 +103,5 @@ const SearchResultComponent: React.FC<SearchResultProps<Document>> = ({ result }
 };
 
 export default SearchResultComponent;
-export type { SearchResult, SearchResultWithQuery };
+export type { SearchResult, SearchResultProps, SearchResultWithQuery };
 

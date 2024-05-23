@@ -6,11 +6,13 @@ import { BlogActions } from '../blogs/BlogAction';
 import { blogApiService } from '@/app/api/BlogAPI';
 import { ContentItem } from './ContentItem';
 import ContentType from '../../typings/ContentType';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { EditorState } from 'draft-js';
 
-const BlogAndContentEditorWrapper = () => {
+const BlogAndContentEditorWrapper = async () => {
   const dispatch = useDispatch();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   const handleTitleChange = (event: any) => {
     setTitle(event.target.value);
@@ -20,27 +22,41 @@ const BlogAndContentEditorWrapper = () => {
     setContent(newContent);
   };
 
-  const handlePublish = () => {
-    // Dispatch action to add the post to Redux store
-    dispatch(BlogActions.addPostRequest({
-      id: blogId,
-      title,
-      content,
-      author: 'User',
-      date: new Date(),
-      upvotes: 0,
-    }));
-    // Optionally, you can redirect the user to the blog page or show a success message
-    // Here, we'll just clear the inputs for demonstration
-    setTitle('');
-    setContent('');
+
+
+  const fetchBlogName = async () => {
+    let blogId;
+    const response = await blogApiService.fetchBlog(blogId);
+    const blogName = response.data;
+    blogId = UniqueIDGenerator.generateBlogPostID(blogName);
+    return blogId;
+  };
+    
+  
+  const blogId = await fetchBlogName(); // Move the usage of blogId below its declaration
+
+  
+  const handlePublish = async () => {
+    const blogId = await fetchBlogName();
+    dispatch(
+      BlogActions.addPostRequest({
+        id: Number(blogId),
+        title,
+        content,
+        author: "User",
+        date: new Date(),
+        upvotes: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    );
+    setTitle("");
+    setContent("");
   };
 
-  // Define an array of content types with their respective labels
   const contentTypes = [
-    { label: 'Text', value: 'text' },
-    { label: 'Image', value: 'image' },
-    // Add more content types as needed
+    { label: "Text", value: "text" },
+    { label: "Image", value: "image" },
   ];
 
   return (
@@ -55,16 +71,19 @@ const BlogAndContentEditorWrapper = () => {
           onChange={handleTitleChange}
           placeholder="Enter title..."
         />
-        {/* Render content editors for each content type */}
         {contentTypes.map((contentType) => (
           <div key={contentType.value}>
-            <label htmlFor={`postContent_${contentType.value}`}>{contentType.label}:</label>
+            <label htmlFor={`postContent_${contentType.value}`}>
+              {contentType.label}:
+            </label>
             <BlogAndContentEditor
               contentItemId={`postContent_${contentType.value}`}
               initialContent={content}
               onContentChange={handleContentChange}
-              contentType={contentType.value} // Pass the content type to the editor
-            />
+              contentType={contentType = {
+                label: "Plain Text",
+                value:  "plaintext"
+              }} editorState={new EditorState} activeDashboard={'tasks'}            />
           </div>
         ))}
         <button onClick={handlePublish}>Publish</button>

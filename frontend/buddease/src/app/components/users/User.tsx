@@ -3,11 +3,12 @@ import { UserSettings } from "@/app/configs/UserSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
-import { Transaction } from "ethers";
 import React from "react";
 import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
+import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "../community/ActivityFeedComponent";
+import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
 import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
 import CommonDetails from "../models/CommonData";
 import { Data } from "../models/data/Data";
@@ -24,7 +25,6 @@ import { BlockchainPermissions } from "./BlockchainPermissions";
 import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
 import { ActivityLogEntry } from "./UserSlice";
-import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 
 export interface User extends UserData {
   _id?: string; // Add this line
@@ -83,9 +83,9 @@ export interface User extends UserData {
   emailVerificationStatus?: boolean;
   phoneVerificationStatus?: boolean;
   walletAddress?: string;
-  transactionHistory?: Transaction[]
+  transactionHistory?: CustomTransaction[]
   tokenBalance?: number;
-  smartContractInteractions?: Transaction[];
+  smartContractInteractions?: SmartContractInteraction[];
   blockchainPermissions?: BlockchainPermissions;
   blockchainIdentity?: string;
   blockchainAssets?: BlockchainAsset[];
@@ -95,6 +95,7 @@ export interface User extends UserData {
   decentralizedIdentity?: any;
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
+
 }
 
 interface Address {

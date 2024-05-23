@@ -234,7 +234,7 @@ const rootReducerSlice = createSlice({
         name: "",
         title: "",
         description: "",
-        assignedTo: {} as WritableDraft<User>,
+        assignedTo: [], // Assign an empty array to fix the error
         dueDate: new Date(), // Changed to Date object
         status: StatusType.Pending,
         priority: "medium",
@@ -320,7 +320,7 @@ const rootReducerSlice = createSlice({
         title: state.taskManager.taskTitle,
         description: state.taskManager.taskDescription,
         status: state.taskManager.taskStatus,
-        assignedTo: {} as WritableDraft<User>,
+        assignedTo:[],
         dueDate: new Date(),
         priority: "medium",
         isActive: false,

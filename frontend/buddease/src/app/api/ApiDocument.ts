@@ -198,7 +198,7 @@ export const addDocumentAPI = async (documentData: any): Promise<any> => {
     }
   };
   
-  export const deleteDocumentAPI = async (documentId: number): Promise<void> => {
+  export const deleteDocumentAPI = async (documentId: string): Promise<void> => {
     try {
       const deleteDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}`;
       await axiosInstance.delete(deleteDocumentEndpoint, {

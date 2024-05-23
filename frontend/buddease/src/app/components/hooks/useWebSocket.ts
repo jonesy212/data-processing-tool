@@ -93,7 +93,7 @@ const useWebSocket = (endpoint: string, options?: any): WebSocketReturnType => {
 };
 
 export default useWebSocket;
-
+export type {WebSocketReturnType}
 
 
 // sendMessage:

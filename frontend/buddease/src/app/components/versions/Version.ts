@@ -6,14 +6,13 @@ import crypto from "crypto";
 import getAppPath from "../../../../appPath";
 import { Data } from "../models/data/Data";
 import { VersionData, VersionHistory } from "./VersionData";
-
 class Version {
   name: string;
   url: string;
   versionNumber: string;
   appVersion: string;
   description: string;
-  createdAt: Date;
+  createdAt: Date | undefined;
   updatedAt: Date | undefined;
 
   id: number; // Add id property
@@ -44,35 +43,26 @@ class Version {
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  frontendStructure: Promise<AppStructureItem[]>; // Change type to AppStructureItem[]
-  backendStructure: Promise<AppStructureItem[]>; // Change type to AppStructureItem[]
+  frontendStructure: Promise<AppStructureItem[]> | undefined;
+  backendStructure: Promise<AppStructureItem[]> | undefined;
   data: Data[];
   metadata!: {
     author: string;
-    timestamp: Date;
+    timestamp: Date | undefined;
   };
   draft: boolean;
 
-  getVersion: () => {};
-
+  getVersion?: () => {};
 
   private _structure: Record<string, AppStructureItem[]> = {}; // Define private property _structure
   versionHistory: VersionHistory; // Add version history property
 
-
-
-  // Getter method for accessing structure
-  get structure(): Record<string, AppStructureItem[]> {
-    return this._structure;
-  }
-
   // Method to set structure (private)
-  private setStructure(structure: Record<string, AppStructureItem[]>): void {
+  private setStructure?(structure: Record<string, AppStructureItem[]>): void {
     this._structure = structure;
   }
 
-  
-  private mergeStructures(
+  private mergeStructures?(
     baseStructure: AppStructureItem[],
     additionalStructure: AppStructureItem[]
   ): AppStructureItem[] {
@@ -105,23 +95,23 @@ class Version {
     description: string;
     content: string;
     checksum: string;
-    data: Data[]; // Add data property to constructor parameter
-    name: string; // Add name property to constructor parameter
-    url: string; // Add url property to constructor parameter
-    versionHistory: VersionHistory; // Add versionHistory property to constructor parameter
-    userId: string; // Add userId property
-    documentId: string; // Add documentId property
-    parentId: string; // Add parentId property
-    parentType: string; // Add parentType property
-    parentVersion: string; // Add parentVersion property
-    parentTitle: string; // Add parentTitle property
-    parentContent: string; // Add parentContent property
-    parentName: string; // Add parentName property
-    parentUrl: string; // Add parentUrl property
-    parentChecksum: string; // Add parentChecksum property
-    parentMetadata: {} | undefined; // Add parentMetadata property
-    parentAppVersion: string; // Add parentAppVersion property
-    parentVersionNumber: string; // Add parentVersionNumber property
+    data: Data[];
+    name: string;
+    url: string;
+    versionHistory: VersionHistory;
+    userId: string;
+    documentId: string;
+    parentId: string;
+    parentType: string;
+    parentVersion: string;
+    parentTitle: string;
+    parentContent: string;
+    parentName: string;
+    parentUrl: string;
+    parentChecksum: string;
+    parentMetadata: {} | undefined;
+    parentAppVersion: string;
+    parentVersionNumber: string;
     createdAt: Date;
     updatedAt: Date | undefined;
     draft: boolean;
@@ -179,14 +169,9 @@ class Version {
     this.workspaceMembers = versionInfo.workspaceMembers;
 
     this.getVersion = async () => {
-      const frontendStructure = await this.frontendStructure;
-      const backendStructure = await this.backendStructure;
+ 
+      const mergedStructure = this.getStructure();
 
-      // Merge frontend and backend structures
-      const mergedStructure = this.mergeStructures(
-        frontendStructure,
-        backendStructure
-      );
 
       // Generate hash of the merged structure
       const hash = crypto
@@ -201,14 +186,14 @@ class Version {
     const frontendStructureInstance = new FrontendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.frontendStructure = frontendStructureInstance.getStructureAsArray(); // Adjust this according to the method in FrontendStructure
+    this.frontendStructure = frontendStructureInstance.getStructureAsArray() || []; // Adjust this according to the method in FrontendStructure
     const backendStructureInsatnce = new BackendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.backendStructure = backendStructureInsatnce.getStructureAsArray(); // Adjust this according to the method in BackendStructure
+    this.backendStructure = backendStructureInsatnce.getStructureAsArray() || []; // Adjust this according to the method in BackendStructure
   }
 
-  private async generateStructureHash(): Promise<string> {
+  private async generateStructureHash?(): Promise<string> {
     // Wait for the resolution of the promise
     const frontendStructure = await this.frontendStructure;
 
@@ -218,15 +203,24 @@ class Version {
       .digest("hex");
   }
 
+
+  public async setFrontendAndBackendStructure(): Promise<void> {
+    const mergedStructure = this.getStructure();
+
+    if (mergedStructure && this.setStructure) {
+      this.setStructure({
+        merged: Object.values(mergedStructure).flat() as AppStructureItem[],
+      });
+    }
+  }
+
   // Inside the Version class
-  public mergeAndHashStructures(
+  public mergeAndHashStructures?(
     baseStructure: AppStructureItem[],
     additionalStructure: AppStructureItem[]
   ): Promise<string> {
-    const mergedStructure = this.mergeStructures(
-      baseStructure,
-      additionalStructure
-    );
+    const mergedStructure =
+      this.mergeStructures?.(baseStructure, additionalStructure) || [];
     return new Promise<string>((resolve, reject) => {
       const hash = crypto
         .createHash("sha1")
@@ -236,11 +230,11 @@ class Version {
     });
   }
 
-  getVersionNumber(): string {
+  getVersionNumber?(): string {
     return this.versionNumber;
   }
 
-  updateVersionNumber(newVersionNumber: string): void {
+  updateVersionNumber?(newVersionNumber: string): void {
     this.versionNumber = newVersionNumber;
   }
 
@@ -255,21 +249,21 @@ class Version {
     data: Data[];
     name: string;
     url: string;
-    versionHistory: VersionHistory; // Add versionHistory property
+    versionHistory: VersionHistory;
     draft: boolean;
     userId: string;
-    documentId: string; // Add documentId property
-    parentId: string; // Add parentId property
-    parentType: string; // Add parentType property
-    parentVersion: string; // Add parentVersion property
-    parentTitle: string; // Add parentTitle property
-    parentContent: string; // Add parentContent property
-    parentName: string; // Add parentName property
-    parentUrl: string; // Add parentUrl property
-    parentChecksum: string; // Add parentChecksum property
-    parentMetadata: {} | undefined; // Add parentMetadata property
-    parentAppVersion: string; // Add parentAppVersion property
-    parentVersionNumber: string; // Add parentVersionNumber property
+    documentId: string;
+    parentId: string;
+    parentType: string;
+    parentVersion: string;
+    parentTitle: string;
+    parentContent: string;
+    parentName: string;
+    parentUrl: string;
+    parentChecksum: string;
+    parentMetadata: {} | undefined;
+    parentAppVersion: string;
+    parentVersionNumber: string;
     isLatest: boolean;
     isPublished: boolean;
     publishedAt: Date | null;
@@ -289,9 +283,12 @@ class Version {
   }
 
   // Method to get version data
-  getVersionData(): VersionData {
+  getVersionData?(): VersionData | undefined {
     const { content, name, url, versionNumber } = this;
-    const checksum = this.generateChecksum(content);
+    if (!content || !name || !versionNumber) {
+      return undefined;
+    }
+    const checksum = this.generateChecksum!(content);
     const metadata = {
       author: name,
       timestamp: new Date(),
@@ -301,17 +298,17 @@ class Version {
   }
 
   // Method to update version history
-  updateVersionHistory(newVersionData: VersionData): void {
+  updateVersionHistory?(newVersionData: VersionData): void {
     this.versionHistory.versions.push(newVersionData);
   }
 
   // Method to generate checksum
-  generateChecksum(content: string): string {
+  generateChecksum?(content: string): string {
     return crypto.createHash("sha256").update(content).digest("hex");
   }
 
   // Method to compare two versions
-  compare(otherVersion: Version): number {
+  compare?(otherVersion: Version): number {
     const currentParts = this.versionNumber
       .split(".")
       .map((part) => parseInt(part, 10));
@@ -328,17 +325,17 @@ class Version {
   }
 
   // Method to parse a version string into an array of version parts
-  parse(): number[] {
+  parse?(): number[] {
     return this.versionNumber.split(".").map((part) => parseInt(part, 10));
   }
 
   // Method to check if the version is valid
-  isValid(): boolean {
+  isValid?(): boolean {
     const versionParts = this.versionNumber.split(".");
     return versionParts.every((part) => /^\d+$/.test(part));
   }
 
-  generateHash(appVersion: string): string {
+  generateHash?(appVersion: string): string {
     const hash = crypto.createHash("sha256");
     hash.update(this.versionNumber);
     // Include appVersion in hash generation
@@ -347,11 +344,11 @@ class Version {
   }
 
   // Method to check if the version is newer than another
-  isNewer(otherVersion: Version): boolean {
-    return this.compare(otherVersion) === 1;
+  isNewer?(otherVersion: Version): boolean {
+    return Boolean(this.compare && this.compare(otherVersion) === 1);
   }
 
-  hashStructure(structure: AppStructureItem[]): string {
+  hashStructure?(structure: AppStructureItem[]): string {
     return crypto
       .createHash("sha1")
       .update(JSON.stringify(structure))
@@ -359,21 +356,23 @@ class Version {
   }
 
   // Method to get structure hash
-  getStructureHash(): Promise<string> {
-    return this.generateStructureHash();
+  async getStructureHash?(): Promise<string> {
+    return this.generateStructureHash && await this.generateStructureHash()
+      ? this.generateStructureHash()
+      : Promise.resolve("");
   }
 
   // Method to retrieve version content
-  getContent(): string {
+  getContent?(): string {
     return this.content;
   }
 
   // Method to set version content
-  setContent(content: string): void {
+  setContent?(content: string): void {
     this.content = content;
   }
-  getStructure?(): Record<string, AppStructureItem[]> {
-    return this.structure;
+  getStructure(): Record<string, AppStructureItem[]> {
+    return this._structure;
   }
 }
 

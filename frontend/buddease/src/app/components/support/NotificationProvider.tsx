@@ -40,28 +40,23 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       content: message,
       date: new Date(),
       notificationType: NotificationTypeEnum.OperationSuccess,
-      message: '',
+      message: "",
       type: NotificationTypeEnum.AccountCreated,
-      sendStatus: 'Sent',
+      sendStatus: "Sent",
       completionMessageLog: {
-        id: Date.now().toString(), // Example: You can assign a unique ID for the completion log
-        message: `Notification of type ${NotificationTypeEnum.OperationSuccess} sent`, // Example: Log message
-        createdAt: new Date(), // Example: Timestamp of when the log is created
-        type: NotificationTypeEnum.OperationSuccess, // Example: Type of notification
-        content: message, // Example: Content of the notification
-        completionMessageLog: '', // Example: Additional details specific to completion logging
-        timestamp: new Date(), // Example: Timestamp of when the notification was sent
-        level: 'info', // Example: Log level
-      }
+        id: Date.now().toString(),
+        message: `Notification of type ${NotificationTypeEnum.OperationSuccess} sent`,
+        createdAt: new Date(),
+        type: NotificationTypeEnum.OperationSuccess,
+        content: message,
+        completionMessageLog: "",
+        timestamp: new Date(),
+        level: "info",
+      },
     });
   };
 
-  const addNotification = (notification: {
-    id: string;
-    content: string;
-    date: Date;
-    notificationType: NotificationTypeEnum;
-  }) => {
+  const addNotification = (notification: NotificationData) => {
     notificationStore.addNotification(notification);
   };
 
@@ -69,9 +64,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
     <NotificationContext.Provider
       value={{
         sendNotification,
-        addNotification: (
-          notification: NotificationData
-        ) => {
+        addNotification: (notification: NotificationData) => {
           notificationStore.addNotification(notification);
         },
         notify: (
@@ -86,24 +79,33 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
             content,
             date,
             notificationType: type,
-            message: '',
+            message: "",
             type: NotificationTypeEnum.AccountCreated,
-            sendStatus: 'Sent',
-            completionMessageLog: logData
+            sendStatus: "Sent",
+            completionMessageLog: logData,
           });
           console.log(`Notification: ${message}`);
           return Promise.resolve();
         },
 
         notifications: notificationData,
-        showMessage: (message: Message, type: NotificationType) => {
+        showMessage: (message: Message) => {
           sendNotification("Custom", `${message.sender}: ${message.text}`);
           console.log(`Notification: ${message}`);
         },
-      }
-    }
+        showMessageWithType: (message: Message, type: NotificationType) => {
+          sendNotification("Custom", `${message.sender}: ${message.text}`);
+          console.log(`Notification: ${message}`);
+        },
+        showSuccessNotification: (message: string) => {
+          sendNotification("Success", message);
+        },
+        showErrorNotification: (message: string) => {
+          sendNotification("Error", message);
+        },
+      }}
     >
       {children}
     </NotificationContext.Provider>
-  )
+  );
 };

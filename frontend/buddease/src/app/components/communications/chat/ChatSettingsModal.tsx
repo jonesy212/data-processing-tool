@@ -38,6 +38,8 @@ type NotificationPreferences = {
   pushNotifications: boolean;
   enableNotifications: boolean;
   notificationSound: string;
+  notificationVolume: number;
+  sms: boolean;
 };
 
 type AudioOptions = {

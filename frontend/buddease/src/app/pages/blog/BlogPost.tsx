@@ -1,35 +1,43 @@
 // BlogPost.tsx
-import { Member } from '@/app/components/models/teams/TeamMembers';
-import { ReactNode } from 'react';
-// create BlogPostProps
-interface BlogPostsProps {
-  platform: 'android' | 'ios'; // Prop to specify the platform
-  posts: BlogPost[]; // Array of blog posts
-}
-
-interface BlogPost {
+ 
+export type BlogPost = {
   id: number;
   title: string;
   content: string;
-  author: string; // Assuming Member has a property memberName of type string
-  date: React.ReactNode;
-  posts?: BlogPostsProps[]; // Update to use BlogPostsProps instead of BlogPostProps
-}
+  author: string;
+  updatedAt: Date | undefined
+  createdAt: Date | undefined
+  upvotes: number;
+  date: Date | undefined;
+  version: {
+    versionNumber: string;
+  };
+  history: {
+    entries: {
+      timestamp: number;
+      data: any;
+    }[];
+  };
+  posts?: BlogPost[];
+};
 
-const BlogPostComponent: React.FC<BlogPost> = ({ title, content, author, date, posts }) => {
+const BlogPostComponent: React.FC<BlogPost> = ({
+  title,
+  content,
+  author,
+  date,
+  posts,
+}) => {
   return (
     <div className="blog-post">
       <h2 className="blog-post-title">{title}</h2>
       <div className="blog-post-meta">
         <span className="author">Author: {author}</span>
-        <span className="date">Date: {date}</span>
+        <span className="date">Date: {date?.toLocaleDateString()}</span>
       </div>
-      <div className="blog-post-content">
-        {content}
-      </div>
+      <div className="blog-post-content">{content}</div>
     </div>
   );
 };
 
 export default BlogPostComponent;
-export type { BlogPostProps };

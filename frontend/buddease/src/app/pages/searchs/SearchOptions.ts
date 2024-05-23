@@ -1,12 +1,17 @@
+import { FileTypeEnum } from "@/app/components/documents/FileType";
+
 interface SearchOptions {
     size: SearchSize;
     animations: SearchAnimationOptions;
     additionalOptions: AdditionalOptions;
-    additionalOption2: string | undefined;
+  additionalOption2: string | undefined;
+  communicationMode: "email" | "phone" | "chat";
+  defaultFileType: FileTypeEnum
   }
   
   type SearchSize = "small" | "medium" | "large" | "custom";
   
+
   interface SearchAnimationOptions {
     type: AnimationType;
     duration?: number;
@@ -46,11 +51,13 @@ interface SearchOptions {
    
 // Inside your component
 const searchOptions: SearchOptions = {
-    size: "medium",
-    animations: {
-        type: "slide",
-        duration: 300,
-    },
-    additionalOptions:{} as AdditionalOptions,
-    additionalOption2: undefined
+  size: "medium",
+  animations: {
+    type: "slide",
+    duration: 300,
+  },
+  additionalOptions: {} as AdditionalOptions,
+  additionalOption2: undefined,
+  communicationMode: "email",
+  defaultFileType: FileTypeEnum.UnknownType
 };

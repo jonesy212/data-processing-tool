@@ -23,17 +23,23 @@ const AndroidSpecificContent = ({
   // Define progress state
   const progress: Progress = {
     id: "android-progress",
-    value: "50",
     label: "Progress Label",
+    value: 50,
     max: 100,
     current: 50,
+    percentage: 0,
   };
 
   // Define progress bar props
   const progressBarProps: ProgressBarProps = {
     progress: progress,
     duration: 1000,
-    phase: ProgressPhase.LaunchPreparation, // Example phase
+    phase: {
+      type: "phaseType", 
+      duration: 0,
+      value: 0,
+    },
+    phaseType: ProgressPhase.LaunchPreparation, // Example phase
     animationID: "progress-bar-animation",
     uniqueID: "unique-progress-bar",
   };

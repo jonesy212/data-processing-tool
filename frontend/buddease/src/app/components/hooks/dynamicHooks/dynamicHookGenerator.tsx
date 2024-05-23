@@ -1,6 +1,13 @@
+import { RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
+import { ClipboardData, CustomEventExtensionConstructor } from "../../event/BaseCustomEvent";
+import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
+import { RootState } from "../../state/redux/slices/RootSlice";
+import { updateCallback } from "../../state/stores/CalendarEvent";
+import useRealtimeData from "../commHooks/useRealtimeData";
 import { AsyncHook } from "../useAsyncHookLinker";
+import useResizablePanels from "../userInterface/useResizablePanels";
 
-export type DynamicHookParams = {
+export type DynamicHookParams<T> = {
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: ({
     idleTimeoutId,
@@ -39,8 +46,26 @@ const createDynamicHook = ({
   isActive: initialIsActive,
   startIdleTimeout,
   initialStartIdleTimeout,
-}: DynamicHookParams): AsyncHook => {
+}: DynamicHookParams<RootState>): AsyncHook<RootState> => {
   let isActive = initialIsActive !== undefined ? initialIsActive : false;
+
+
+
+
+  // Define the disposeResource function
+  const disposeResource = () => {
+    console.log("Disposing resources");
+    
+    // Example logic for disposing of custom event listeners
+    const customEventInstance = new CustomEventExtensionConstructor('customEvent');
+    if ('removeEventListener' in customEventInstance) {
+      customEventInstance.removeEventListener('customEvent', () => {});
+    }
+    // Clear any clipboard event listeners
+    ClipboardData.onCopy = () => {};
+    ClipboardData.onPaste = () => {};
+  };
+
 
   return {
     name: 'Test Hook',
@@ -49,9 +74,10 @@ const createDynamicHook = ({
       value: 0,
       label: "Progress",
       current: 0,
-      max: 100
+      max: 100,
+      percentage: 0,
     },
-    phaseType: "",
+    phaseType: ProjectPhaseTypeEnum.Test,
     toggleActivation: async () => {},
     startAnimation: () => {},
     stopAnimation: () => {},
@@ -68,17 +94,31 @@ const createDynamicHook = ({
       ) => void;
     }) => {
       await asyncEffect({ idleTimeoutId, startIdleTimeout });
-      return () => {
-        // Cleanup function if needed
-        // Example 1: Resetting some state variables
-        // resetSomeState();
-        // Example 2: Clearing intervals or timeouts
-        // clearInterval(intervalId);
-        // clearTimeout(timeoutId);
-        // Example 3: Cleaning up event listeners
-        // window.removeEventListener('resize', handleResize);
-        // Example 4: Disposing resources or subscriptions
-        // disposeResource();
+      return async () => {
+        const { handleResize } = useResizablePanels();
+
+        const timeoutId = setTimeout(() => {
+          console.log("Timeout executed");
+        }, 10000);
+
+        const initialData: RealtimeDataItem[] = [];
+
+        const { fetchData } = useRealtimeData(initialData, updateCallback);
+
+        const intervalId = setInterval(() => {
+          fetchData("userId", (action) => {}).catch(console.error);
+        }, 5000);
+
+        const cleanupResize = () =>
+          window.removeEventListener(
+            "resize",
+            handleResize as unknown as EventListener
+          );
+
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+        cleanupResize();
+        disposeResource();
       };
     },
     resetIdleTimeout: resetIdleTimeout,

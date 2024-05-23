@@ -130,33 +130,3 @@ const useUserProfile = () => {
 export default useUserProfile;
 
 
-
-/**
- * Usage Example:
- * 
- * // Import the custom hook
- * import useUserProfile from './UseUserProfile.tsx';
- * 
- * // Usage within a functional component
- * const UserProfileComponent = () => {
- *   // Invoke the custom hook to get user profile data and functions
- *   const { userProfile, updateProfile, updatePersonaData, getUserProfile } = useUserProfile();
- * 
- *   // Use userProfile and functions as needed
- *   // e.g., useEffect to fetch user profile data on component mount
- *   useEffect(() => {
- *     getUserProfile();
- *   }, []);
- * 
- *   // Render user profile data and update functions
- *   return (
- *     <div>
- *       <h1>User Profile</h1>
- *       {/* Render user profile data /*}*/
-//  *       <p>{JSON.stringify(userProfile)}</p>
-//  *       {/* Button to update user profile */}
-//  *       <button onClick={() => updateProfile({ name: 'New Name' })}>Update Profile</button>
-//  *     </div>
-//  *   );
-//  * };
-//  */

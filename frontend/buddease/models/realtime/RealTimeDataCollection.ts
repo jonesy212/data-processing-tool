@@ -1,7 +1,7 @@
+import { RealtimeUpdateCallback } from './../../src/app/components/hooks/commHooks/useUIRealtimeData';
 // RealTimeDataCollection.ts
 import { DEX } from "@/app/components/crypto/DEX";
 import { Exchange } from "@/app/components/crypto/Exchange";
-import { RealtimeUpdateCallback } from "@/app/components/hooks/commHooks/useRealtimeData";
 import useRealtimeDextData from "@/app/components/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/app/components/hooks/commHooks/useRealtimeExchangeData";
 import DEXData from "@/app/components/models/data/DEXData";
@@ -13,7 +13,7 @@ import SnapshotStore, {
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import RealtimeData, { RealtimeDataItem } from "./RealtimeData";
+import  { RealtimeData, RealtimeDataItem } from "./RealtimeData";
 import { ExchangeDataType } from "@/app/components/crypto/exchangeIntegration";
 
 const RealTimeDataCollection: React.FC = () => {

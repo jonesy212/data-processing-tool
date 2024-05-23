@@ -1,6 +1,7 @@
 // SecuritySettings.tsx
 interface SecuritySettings {
   twoFactorAuthentication: boolean;
+  securityQuestions: string[],
   passwordPolicy: string;
   passwordExpirationDays: number;
   passwordStrength: string;
@@ -21,6 +22,8 @@ interface SecuritySettings {
   
   const defaultSecuritySettings: SecuritySettings = {
     twoFactorAuthentication: false,
+    securityQuestions: ["What is your pet's name?"],
+
     passwordPolicy: 'StandardPolicy',
     passwordExpirationDays: 90,
     passwordStrength: 'Strong',

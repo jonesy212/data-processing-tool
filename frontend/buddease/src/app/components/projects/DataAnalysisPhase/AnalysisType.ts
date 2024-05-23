@@ -10,7 +10,7 @@ enum AnalysisTypeEnum {
     TREND = "Trend Analysis",
     ANOMALY = "Anomaly Detection",
     SENTIMENT = "Sentiment Analysis",
-    
+    SNAPSHOT = "Snapshot", 
     // Diagnostic Analysis
     DIAGNOSTIC = "Diagnostic Analysis",
     CORRELATIONAL = "Correlational Analysis",

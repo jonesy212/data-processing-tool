@@ -1,5 +1,5 @@
 import React from 'react';
-import { AndroidBlogPosts, IOSBlogPosts } from '../blog/AIoSBlogPosts';
+import { AndroidBlogPosts, IoSBlogPosts } from '../blog/AIoSBlogPosts';
 
 const AppDevelopmentProcess: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ const AppDevelopmentProcess: React.FC = () => {
       <h2>Android-specific Configurations</h2>
       <AndroidBlogPosts />
       <h2>iOS-specific Configurations</h2>
-      <IOSBlogPosts />
+      <IoSBlogPosts />
       {/* Add other sub-phase components and forms */}
     </div>
   );

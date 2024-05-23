@@ -7,6 +7,7 @@ import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { Data } from "../components/models/data/Data";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { Snapshot } from "../components/snapshots/SnapshotStore";
+import { RootState } from "../components/state/redux/slices/RootSlice";
 import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 import { VideoData } from "../components/video/Video";
 import { backendConfig } from "../configs/BackendConfig";
@@ -22,13 +23,10 @@ const backendModelPaths = ["path/to/backend/models"]; // Update this with the ac
 generateInterfaces(backendModelPaths);
 
 
-
-
 interface MainConfigProps {
   frontendStructure: FrontendStructure; // Define frontendStructure in props interface
   backendConfig: any; // Define backendConfig in props interface with appropriate type
 }
-
 
 // Define the keys for your stores
 export const STORE_KEYS = {
@@ -197,12 +195,12 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
     fetchData: function (userId: string, dispatch: DataAnalysisDispatch): Promise<void> {
       throw new Error("Function not implemented.");
     },
-    notificationBarPhaseHook: {} as AsyncHook,
-    darkModeTogglePhaseHook: {} as AsyncHook,
-    teamBuildingPhaseHook: {} as AsyncHook,
-    brainstormingPhaseHook: {} as AsyncHook,
-    projectManagementPhaseHook: {} as AsyncHook,
-    meetingsPhaseHook: {} as AsyncHook,
+    notificationBarPhaseHook: {} as  AsyncHook<RootState>,
+    darkModeTogglePhaseHook: {} as  AsyncHook<RootState>,
+    teamBuildingPhaseHook: {} as  AsyncHook<RootState>,
+    brainstormingPhaseHook: {} as  AsyncHook<RootState>,
+    projectManagementPhaseHook: {} as  AsyncHook<RootState>,
+    meetingsPhaseHook: {} as  AsyncHook<RootState>,
     ideationPhaseHook: {} as CustomPhaseHooks,
     teamCreationPhaseHook: {} as CustomPhaseHooks,
     productBrainstormingPhaseHook: {} as CustomPhaseHooks,

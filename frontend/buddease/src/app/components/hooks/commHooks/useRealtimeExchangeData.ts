@@ -1,14 +1,14 @@
 // useRealtimeExchangeData.ts
 
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import RealtimeData from "../../../../../models/realtime/RealtimeData";
+import { RealtimeData } from "../../../../../models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
 const useRealtimeExchangeData = <T>(
   initialData: any,
   updateCallback: RealtimeUpdateCallback<RealtimeData>
 ) => {
-  const { fetchData } = useRealtimeData<T>(initialData, updateCallback);
+  const { fetchData } = useRealtimeData(initialData, updateCallback);
   const fetchExchangeData = async (
     exchangeData: any[],
     dispatch: Dispatch<UnknownAction>

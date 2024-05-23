@@ -6,7 +6,8 @@ import ToolbarItem from "./ToolbarItem";
 // Define a new type for the toolbar options
 type ToolbarOptions = {
   [key in keyof typeof toolbarOptions]: string[];
-};
+} & { calendar: boolean };
+
 
 interface ToolbarProps {
   editorState: EditorState;
@@ -56,7 +57,12 @@ export const toolbarOptions = {
   analytics: ["Data Analysis", "Insights", "Reports"],
   community: ["Forums", "Collaboration", "Events"],
   ui: ["Colors", "Fonts", "Layouts", "Templates", "Themes", "Plugins", "Extensions"],
-
+  calendar: true, 
+  contacts: ["Contacts"],
+  notes: ["Notes"],
+  reminders: ["Reminders"],
+  search: ["Search"],
+  help: ["Help"],
   onEditorStateChange: onEditorStateChangeHandler,
   editorState: {},
 } as const;

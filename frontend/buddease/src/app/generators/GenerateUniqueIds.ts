@@ -127,6 +127,7 @@ class UniqueIDGenerator {
       type: "",
       _id: "",
       analysisResults: [],
+      updatedAt: undefined
     };
     const todoDetailsString = JSON.stringify(todoDetails);
     return this.generateID(
@@ -558,6 +559,7 @@ const videoDataDetails: DataDetails = {
   createdAt: new Date(),
   uploadedAt: new Date(),
   analysisResults: [],
+  updatedAt: undefined
 };
 
 export default UniqueIDGenerator;

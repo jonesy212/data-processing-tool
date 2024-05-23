@@ -88,6 +88,12 @@ export const logData: LogData = {
   level: "",
 };
 
+export interface NotificationManagerServiceProps {
+  notify: (message: string) => void;
+  clearNotifications: () => void;
+  notifications: string[];
+}
+
 const useNotificationManagerService = (): NotificationContainer => {
   const { notify } = useNotification();
   const notifications = useSelector(selectNotifications);

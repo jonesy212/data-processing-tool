@@ -1,10 +1,9 @@
 // BlogPosts.tsx
- import { BlogPost } from '@/app/components/community/DiscussionForumComponent';
-import React from 'react';
-import { BlogPostProps } from './BlogPost';
+ import React from 'react';
+import { BlogPost } from './BlogPost';
+ 
 
-
-interface BlogPostsProps extends BlogPostProps {
+interface BlogPostsProps  {
   platform: 'android' | 'ios'; // Prop to specify the platform
   posts: BlogPost[]; // Array of blog posts
 }
@@ -19,6 +18,13 @@ const BlogPostList: React.FC<BlogPostsProps> = ({ platform }) => {
       upvotes: 0,
       createdAt: new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 7), // 1 week ago
       updatedAt: new Date(),
+      date: undefined,
+      version: {
+        versionNumber: ''
+      },
+      history: {
+        entries: []
+      }
     },
     // Add more Android-specific blog posts as needed
   ];
@@ -32,6 +38,13 @@ const BlogPostList: React.FC<BlogPostsProps> = ({ platform }) => {
       upvotes: 0,
       createdAt: new Date("2024-03-02"), // Fixed by changing 'date' to 'createdAt'
       updatedAt: new Date(),
+      date: undefined,
+      version: {
+        versionNumber: ''
+      },
+      history: {
+        entries: []
+      }
     },
     // Add more iOS-specific blog posts as needed
   ];
@@ -46,7 +59,7 @@ const BlogPostList: React.FC<BlogPostsProps> = ({ platform }) => {
           <h2>{post.title}</h2>
           <p>{post.content}</p>
           <p>Author: {post.author}</p>
-          <p>Date: {post.createdAt.toLocaleDateString()}</p>
+          <p>Date: {post.createdAt?.toLocaleDateString()}</p>
         </div>
       ))}
     </div>

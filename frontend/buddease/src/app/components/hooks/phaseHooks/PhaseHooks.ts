@@ -17,6 +17,8 @@ import {
 } from "../../web3/dAppAdapter/IPFS";
 import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
 import IdeationPhaseComponent from "../../phases/IdeationPhaseComponent";
+import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
+
  export interface PhaseHookConfig {
   name: string;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
@@ -43,7 +45,7 @@ import IdeationPhaseComponent from "../../phases/IdeationPhaseComponent";
     idleTimeoutId: NodeJS.Timeout | null;
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }) => Promise<() => void>;
-  phaseType: string | Phase;
+  phaseType?: ProjectPhaseTypeEnum;
   customProp1?: string;
   customProp2?: number;
 }

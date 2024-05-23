@@ -20,6 +20,8 @@ import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManag
 import FeedbackProcess, { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskManagementPhase } from "@/app/components/projects/TaskManagementPhase";
 import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
+import TaskProcess from "@/app/components/phases/TaskProcess";
+import UserRoles from "@/app/components/users/UserRoles";
  
 
 export enum OnboardingPhase {
@@ -57,76 +59,76 @@ const phaseComponents: Record<string, React.FC<{
   [DevelopmentPhaseEnum.PLANNING]: IdeationPhase,
   [DevelopmentPhaseEnum.IDEA_CREATION]: IdeaCreationPhase,
 
-  // Content Management Phases
-  [ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION]: ContentManagementPhaseEnum,
-  [ContentManagementPhase.CONTENT_EDITING]: ContentManagementPhase,
-  [ContentManagementPhase.CONTENT_CREATION]: ContentManagementPhase,
-  [ContentManagementPhase.CONTENT_ORGANIZATION]: ContentManagementPhase,
-  [ContentManagementPhase.CONTENT_PUBLISHING]: ContentManagementPhase,
+  // // Content Management Phases
+  // [ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION]: ContentManagementPhaseEnum,
+  // [ContentManagementPhase.CONTENT_EDITING]: ContentManagementPhase,
+  // [ContentManagementPhase.CONTENT_CREATION]: ContentManagementPhase,
+  // [ContentManagementPhase.CONTENT_ORGANIZATION]: ContentManagementPhase,
+  // [ContentManagementPhase.CONTENT_PUBLISHING]: ContentManagementPhase,
 
-  // Feedback Phases
-  [FeedbackPhaseEnum.FEEDBACK_SELECTION]: FeedbackProcess,
-  [FeedbackPhase.FEEDBACK_PROVIDING]: FeedbackProcess,
-  [FeedbackPhase.FEEDBACK_PROCESSING]: FeedbackProcess,
-  [FeedbackPhase.FEEDBACK_ANALYSIS]: FeedbackProcess,
-  [FeedbackPhase.FEEDBACK_REPORTING]: FeedbackProcess,
+  // // Feedback Phases
+  // [FeedbackPhaseEnum.FEEDBACK_SELECTION]: FeedbackProcess,
+  // [FeedbackPhaseEnum.FEEDBACK_PROVIDING]: FeedbackProcess,
+  // [FeedbackPhaseEnum.FEEDBACK_PROCESSING]: FeedbackProcess,
+  // [FeedbackPhaseEnum.FEEDBACK_ANALYSIS]: FeedbackProcess,
+  // [FeedbackPhaseEnum.FEEDBACK_REPORTING]: FeedbackProcess,
 
-  // Task Phases
-  [TaskPhase.Planning]: TaskProcess,
-  [TaskPhase.Execution]: TaskProcess,
-  [TaskPhase.Testing]: TaskProcess,
-  [TaskPhase.Completion]: TaskProcess,
+  // // Task Phases
+  // [TaskPhase.Planning]: TaskProcess,
+  // [TaskPhase.Execution]: TaskProcess,
+  // [TaskPhase.Testing]: TaskProcess,
+  // [TaskPhase.Completion]: TaskProcess,
 
-  // Team Creation Phases
-  [TeamCreationPhase.QUESTIONNAIRE]: TeamCreationProcess,
-  [TeamCreationPhase.CONFIRMATION]: TeamCreationProcess,
+  // // Team Creation Phases
+  // [TeamCreationPhase.QUESTIONNAIRE]: TeamCreationProcess,
+  // [TeamCreationPhase.CONFIRMATION]: TeamCreationProcess,
 
-  // Trading Phases
-  [TradingPhase.VERIFICATION]: TradingProcess,
-  [TradingPhase.RISK_ASSESSMENT]: TradingProcess,
-  [TradingPhase.TRADER_TYPE_SELECTION]: TradingProcess,
-  [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: TradingProcess,
-  [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: TradingProcess,
-  [TradingPhase.PROFESSIONAL_TRADER_CALLS]: TradingProcess,
-  [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
+  // // Trading Phases
+  // [TradingPhase.VERIFICATION]: TradingProcess,
+  // [TradingPhase.RISK_ASSESSMENT]: TradingProcess,
+  // [TradingPhase.TRADER_TYPE_SELECTION]: TradingProcess,
+  // [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: TradingProcess,
+  // [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: TradingProcess,
+  // [TradingPhase.PROFESSIONAL_TRADER_CALLS]: TradingProcess,
+  // [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
 
-  // Idea Lifecycle Phases
-  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
-  [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
-  [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
+  // // Idea Lifecycle Phases
+  // [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
+  // [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
+  // [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
 
-  // Post-Launch Activities Phases
-  [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]: PostLaunchActivitiesProcess,
-  [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]: PostLaunchActivitiesProcess,
+  // // Post-Launch Activities Phases
+  // [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]: PostLaunchActivitiesProcess,
+  // [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]: PostLaunchActivitiesProcess,
 
-  // Task Management Phases
-  [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
-  [TaskManagementPhase.DATA_ANALYSIS]: TaskManagementProcess,
-  [TaskManagementPhase.PLANNING]: TaskManagementProcess,
-  [TaskManagementPhase.EXECUTION]: TaskManagementProcess,
-  [TaskManagementPhase.TESTING]: TaskManagementProcess,
-  [TaskManagementPhase.COMPLETION]: TaskManagementProcess,
+  // // Task Management Phases
+  // [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
+  // [TaskManagementPhase.DATA_ANALYSIS]: TaskManagementProcess,
+  // [TaskManagementPhase.PLANNING]: TaskManagementProcess,
+  // [TaskManagementPhase.EXECUTION]: TaskManagementProcess,
+  // [TaskManagementPhase.TESTING]: TaskManagementProcess,
+  // [TaskManagementPhase.COMPLETION]: TaskManagementProcess,
 
-  // Data Analysis Sub Phases
-  [DataAnalysisSubPhase.DEFINE_OBJECTIVE]: DataAnalysisSubProcess,
-  [DataAnalysisSubPhase.DATA_COLLECTION]: DataAnalysisSubProcess,
-  [DataAnalysisSubPhase.CLEAN_DATA]: DataAnalysisSubProcess,
-  [DataAnalysisSubPhase.DATA_ANALYSIS]: DataAnalysisSubProcess,
-  [DataAnalysisSubPhase.DATA_VISUALIZATION]: DataAnalysisSubProcess,
-  [DataAnalysisSubPhase.TRANSFORM_INSIGHTS]: DataAnalysisSubProcess,
+  // // Data Analysis Sub Phases
+  // [DataAnalysisSubPhase.DEFINE_OBJECTIVE]: DataAnalysisSubProcess,
+  // [DataAnalysisSubPhase.DATA_COLLECTION]: DataAnalysisSubProcess,
+  // [DataAnalysisSubPhase.CLEAN_DATA]: DataAnalysisSubProcess,
+  // [DataAnalysisSubPhase.DATA_ANALYSIS]: DataAnalysisSubProcess,
+  // [DataAnalysisSubPhase.DATA_VISUALIZATION]: DataAnalysisSubProcess,
+  // [DataAnalysisSubPhase.TRANSFORM_INSIGHTS]: DataAnalysisSubProcess,
 
-  // Progress Phases
-  [ProgressPhase.Ideation]: ProgressPhaseProcess,
-  [ProgressPhase.TeamFormation]: ProgressPhaseProcess,
-  [ProgressPhase.ProductDevelopment]: ProgressPhaseProcess,
-  [ProgressPhase.LaunchPreparation]: ProgressPhaseProcess,
-  [ProgressPhase.DataAnalysis]: ProgressPhaseProcess,
+  // // Progress Phases
+  // [ProgressPhase.Ideation]: ProgressPhaseProcess,
+  // [ProgressPhase.TeamFormation]: ProgressPhaseProcess,
+  // [ProgressPhase.ProductDevelopment]: ProgressPhaseProcess,
+  // [ProgressPhase.LaunchPreparation]: ProgressPhaseProcess,
+  // [ProgressPhase.DataAnalysis]: ProgressPhaseProcess,
 
-  // User Support Phases
-  [UserSupportPhase.PLANNING]: UserSupportProcess,
-  [UserSupportPhase.EXECUTION]: UserSupportProcess,
-  [UserSupportPhase.MONITORING]: UserSupportProcess,
-  [UserSupportPhase.CLOSURE]: UserSupportProcess,
+  // // User Support Phases
+  // [UserSupportPhase.PLANNING]: UserSupportProcess,
+  // [UserSupportPhase.EXECUTION]: UserSupportProcess,
+  // [UserSupportPhase.MONITORING]: UserSupportProcess,
+  // [UserSupportPhase.CLOSURE]: UserSupportProcess,
 };
 
 const UserJourneyManager: React.FC = () => {
@@ -137,6 +139,7 @@ const UserJourneyManager: React.FC = () => {
   let userData: UserData = {
     ...(state.user as User)?.data,
     questionnaireResponses: {},
+    role: (state.user as User)?.data?.role || UserRoles.USER, // Ensure role is defined
   };
 
   onboardingQuestionnaireData.forEach((question: any) => {

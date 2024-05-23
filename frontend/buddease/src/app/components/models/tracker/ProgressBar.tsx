@@ -13,7 +13,8 @@ import { NotificationType } from "../../support/NotificationContext";
     value: number;
     label: string;
     current: number,
-    max: number
+    max: number,
+    percentage: number
     // additional properties as needed
   }
 
@@ -34,8 +35,12 @@ import { NotificationType } from "../../support/NotificationContext";
     containerStyle?: React.CSSProperties; // Custom style for the progress bar container
     animationClass?: string; // Animation class
     animationType?: string; // Animation type prop
-    phase: ProgressPhase; // Phase of the project
-
+    phase: {
+      type: string,
+      duration: number,
+      value: number
+    }
+    phaseType: ProgressPhase; // Phase of the project
     color?: string; // color of the progress bar
     height?: string; // height of the progress bar
     borderRadius?: string; // border radius of the progress bar

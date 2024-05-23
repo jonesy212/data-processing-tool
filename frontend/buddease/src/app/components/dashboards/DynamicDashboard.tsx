@@ -1,7 +1,7 @@
 // components/DynamicDashboard.tsx
 import React from "react";
 
-export interface DynamicDashboardProps {
+ interface DynamicDashboardProps {
   title: string;
   content: React.ReactNode;
 }
@@ -26,3 +26,5 @@ const DynamicDashboard: React.FC<DynamicDashboardProps> = ({
 };
 
 export default DynamicDashboard;
+
+export type { DynamicDashboardProps };

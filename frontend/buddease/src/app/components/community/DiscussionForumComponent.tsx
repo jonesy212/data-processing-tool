@@ -6,10 +6,7 @@ import React, { useState } from "react";
 import { Comment } from "../models/data/Data";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 // Define different types of posts
-interface BlogPost extends Post {
-  posts?: BlogPost[]
-  // Additional properties specific to BlogPost
-}
+
 
 interface ChatPost extends Post {
   // Additional properties specific to ChatPost
@@ -30,7 +27,7 @@ interface Post {
   content: string;
   author: string;
   upvotes: number;
-  
+  date: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,11 +46,12 @@ const DiscussionForumComponent: React.FC = () => {
       ...newPost,
       id: postId,
       upvotes: 0,
+      date: newPost.updatedAt,
       title: newPost.title ?? "",
       content: newPost.content ?? "",
       author: newPost.author ?? "",
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     setPosts([...posts, post]);
     // Reset new post form
@@ -118,6 +116,7 @@ const DiscussionForumComponent: React.FC = () => {
     id: post.id.toString(),
     label: "Post",
     value: JSON.stringify(post),
+    updatedAt: post.updatedAt,
   }));
 
   return (
@@ -194,4 +193,4 @@ const DiscussionForumComponent: React.FC = () => {
 };
 
 export default DiscussionForumComponent;
-export type { BlogPost, Post };
+export type {  Post };

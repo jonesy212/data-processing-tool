@@ -28,7 +28,7 @@ import { Member } from "./teams/TeamMembers";
 
 // Define a generic type for data
 interface CommonData<T> {
-  _id: string;
+  _id?: string;
   title?: string;
   type?: AllTypes;
   email?: string;
@@ -48,7 +48,7 @@ interface CommonData<T> {
   documentType?: string;
   documentStatus?: string;
   documentOwner?: string;
-  documentAccpess?: string;
+  documentAccess?: string;
   documentSharing?: string;
   documentSecurity?: string;
   documentRetention?: string;

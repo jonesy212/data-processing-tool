@@ -32,7 +32,6 @@ import { RootState } from "./RootSlice";
     id: string;
     name: string;
     description: string;
-
     // Add other properties specific to a resource
   }
 

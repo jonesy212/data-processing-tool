@@ -9,7 +9,7 @@ import { toolbarOptions } from "./Toolbar";
 
 // Define a new type for the toolbar options
 type ToolbarOptions = {
-  [key in keyof typeof toolbarOptions]: string[];
+  [key in keyof typeof toolbarOptions]: stringa[];
 };
 
 export interface ToolbarOptionsProps {

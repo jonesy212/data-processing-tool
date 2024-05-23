@@ -5,5 +5,7 @@ export interface BlockchainPermissions {
   canInteractWithSmartContracts: boolean;
   canAccessDecentralizedApplications: boolean;
   canManageBlockchainAssets: boolean;
+  canMintNFT: boolean
+  
   // Add more permissions as needed
 }

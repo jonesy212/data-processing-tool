@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Channel } from "../../../interfaces/chat/Channel";
 import { User } from "../../../users/User";
 import { WritableDraft } from "../ReducerGenerator";
+import { AllTypes } from "@/app/components/typings/PropTypes";
 
 interface ChatState {
   users: User[];
@@ -51,10 +52,25 @@ const chatManagerSlice = createSlice({
     },
     setMessages: (
       state,
-      action: PayloadAction<(prevMessages: Message[]) => Message[]>
+      action: PayloadAction<(prevMessages: WritableDraft<Message>[]) => WritableDraft<Message>[]>
     ) => {
       const { payload } = action;
-      state.messages = payload(state.messages);
+      state.messages = payload(state.messages).map((message) => ({
+        ...message,
+        sender: message.sender && {
+          ...message.sender,
+          data: message.sender.data && {
+            ...message.sender.data,
+            projects: message.sender.data.projects?.map((project) => ({
+              ...project,
+              tasks: project.tasks.map((task) => ({
+                ...task,
+                type: task.type as AllTypes,
+              })),
+            })),
+          },
+        },
+      }));
     },
     addMessage: (state, action: PayloadAction<WritableDraft<Message>>) => {
       state.messages.push(action.payload);

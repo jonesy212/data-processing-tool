@@ -7,7 +7,7 @@ import { Data } from "../../models/data/Data";
 export interface ContentManagementStore {
   contentItems: ContentItem[];
   addContentItem: (contentItem: ContentItem) => void;
-  selectedContentItemId: DetailsItemCommon<Data> | null; // Update type here
+  selectedContentItemId: string | null; // Update type to string
   updateContentItem: (id: string, updatedContentItem: ContentItem) => void;
   deleteContentItem: (id: string) => void;
   getContentItemById: (id: string) => ContentItem | undefined;

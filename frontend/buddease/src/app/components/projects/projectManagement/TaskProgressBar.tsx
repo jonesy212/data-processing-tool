@@ -1,10 +1,10 @@
 // TaskProgressBar.tsx
 import React from "react";
-import ProgressBar, { Progress } from "../../models/tracker/ProgressBar";
+import ProgressBar, { Progress, ProgressPhase } from "../../models/tracker/ProgressBar";
 
 interface TaskProgressBarProps {
   taskProgress: number; // Task progress value between 0 and 100
-  onUpdateProgress: () => void;
+  onUpdateProgress?: () => void;
 }
 
 const TaskProgressBar: React.FC<TaskProgressBarProps> = ({
@@ -17,6 +17,7 @@ const TaskProgressBar: React.FC<TaskProgressBarProps> = ({
     max: 100,
     value: taskProgress,
     label: `Task Progress: ${taskProgress}%`,
+    percentage: 0
   };
 
   return (
@@ -30,11 +31,13 @@ const TaskProgressBar: React.FC<TaskProgressBarProps> = ({
         phase={{
           type: "determinate",
           duration: 0,
+          value: taskProgress,
         }}
-      />
+        phaseType={ProgressPhase.Ideation} />
       <button onClick={onUpdateProgress}>Update Progress</button>
     </div>
   );
 };
 
 export default TaskProgressBar;
+export type { TaskProgressBarProps };

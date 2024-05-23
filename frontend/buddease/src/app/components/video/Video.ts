@@ -5,6 +5,14 @@ interface VideoProperties {
   id: string;
   title?: string;
   description?: string | null | undefined;
+  videoLikes: number;
+  videoViews: number;
+  videoComments: number;
+  videoThumbnail: string;
+  videoUrl: string;
+  videoTitle: string
+  videoDescription: string;
+  videoTags: string[];
 }
 
 interface Video extends VideoProperties {
@@ -27,17 +35,22 @@ interface Video extends VideoProperties {
   aspectRatio: string;
   language: string;
   subtitles: boolean | string[]; // Updated subtitles property
-  closedCaptions: boolean;
+  closedCaptions: string[];
   license: string;
   isLive: boolean;
+  isPrivate: boolean,
+  isUnlisted: boolean,
+  isProcessingCompleted: boolean,
+  isProcessingFailed: boolean,
+  isProcessingStarted: boolean,
   channel: string;
   channelId: string;
   isLicensedContent: boolean;
   isFamilyFriendly: boolean;
   isEmbeddable: boolean;
   isDownloadable: boolean;
-  videoData: VideoData,
-  playlists: []
+  playlists: [],
+  videoSubtitles: string[]
 }
 
 interface VideoData extends DataDetails, Video {
@@ -53,7 +66,6 @@ interface VideoData extends DataDetails, Video {
   frameRate: number;
   duration: number; // Duration of the video in seconds
   campaignId: number; // ID of the associated campaign
- 
   // Add more properties as needed
 }
 
@@ -79,7 +91,7 @@ class BasicVideoGenerator {
       aspectRatio: "",
       language: "",
       subtitles: [],
-      closedCaptions: false,
+      closedCaptions: [],
       license: "",
       isLive: false,
       channel: "",
@@ -100,7 +112,21 @@ class BasicVideoGenerator {
       videoAuthor: "",
       videoDurationInSeconds: 0,
       playlists: [],
-      subtitles: []
+      subtitles: [],
+      videoLikes: 0,
+      videoViews: 0,
+      videoComments: 0,
+      videoThumbnail: "",
+      videoUrl: "",
+      videoTitle: "",
+      videoDescription: "",
+      videoTags: [],
+      videoSubtitles: [],
+      isPrivate: false,
+      isUnlisted: false,
+      isProcessingCompleted: false,
+      isProcessingFailed: false,
+      isProcessingStarted: false
     };
 
     return video;

@@ -1,6 +1,7 @@
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import React, { useEffect, useState } from "react";
+import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
 import {
   SimpleCalendarEvent,
   useCalendarContext,
@@ -10,11 +11,9 @@ import { DataDetails } from "../models/data/Data";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar, { ProgressPhase } from "../models/tracker/ProgressBar";
 import { Tracker } from "../models/tracker/Tracker";
-import useNotificationManagerService, {
-  NotificationManagerServiceProps,
-} from "../notifications/NotificationService";
+import { NotificationManagerServiceProps } from "../notifications/NotificationService";
+import useNotificationManagerServiceProps from "../notifications/useNotificationManagerServiceProps";
 import { PromptPageProps } from "../prompts/PromptPage";
-import { initialState } from "../state/redux/slices/RootSlice";
 import { updateCallback } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { rootStores } from "../state/stores/RootStores";
@@ -23,6 +22,7 @@ import NotificationManager from "../support/NotificationManager";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
+import { useSecureUserId } from "../utils/useSecureUserId";
 
 interface HooksObject {
   [key: string]: React.FC<{}>;
@@ -99,8 +99,10 @@ const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
   children,
 }) => {
+  const initialRealtimeData: RealtimeDataItem[] = []; // Provide an appropriate initial value
+
   const { realtimeData, fetchData } = useRealtimeData(
-    initialState,
+    initialRealtimeData, // Pass the realtimeData array from initialState
     updateCallback
   );
   const { isActive, toggleActivation, resetIdleTimeout } =
@@ -110,7 +112,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [promptPages, setPromptPages] = useState<PromptPageProps[]>([]);
   const notificationManagerProps: NotificationManagerServiceProps =
-    useNotificationManagerService();
+    useNotificationManagerServiceProps();
 
   const hooks: HooksObject = Object.keys(categoryHooks).reduce(
     (acc, category) => {
@@ -193,15 +195,29 @@ const YourComponent: React.FC<YourComponentProps> = ({
       },
     ];
 
-    // Append data to the backend and trigger a manual update
-    await dataFrameAPI.appendDataToBackend(newData);
-    fetchData("", (action: any) => {
-      updateCalendarData((prevState: SimpleCalendarEvent[]) => [
-        ...prevState,
-        ...newData,
-      ]);
-    });
-  };
+    const userId = useSecureUserId()?.toString()!
+      // Append data to the backend and trigger a manual update
+      await dataFrameAPI.appendDataToBackend(newData);
+      fetchData(userId, (action: any) => {
+        updateCalendarData((prevState: SimpleCalendarEvent[]) => [
+          ...prevState,
+          ...action,
+        ]);
+      });
+    };
+
+
+
+  // Use notificationManagerProps to show notifications or any other logic
+  useEffect(() => {
+    const notifyFunction = () =>
+      notificationManagerProps.notify( "New Event Added");
+    notifyFunction();
+
+    return () => {
+      notificationManagerProps.clearNotifications();
+    };
+  }, [notificationManagerProps]);
 
   // Render UI components to display appended data
   return (
@@ -209,11 +225,17 @@ const YourComponent: React.FC<YourComponentProps> = ({
       {/* Display the progress bar and loading spinner */}
       <ProgressBar
         duration={0.5}
-        phase={{} as ProgressPhase}
+        phase={{
+          type: "determinate",
+          duration: 0,
+          value: tracker.progress,
+        }}
         animationID={"animationID"}
         uniqueID={"uniqueID"}
         progress={calendarData[0]?.projects?.[0]?.progress}
+        phaseType={ProgressPhase.Ideation}
       />
+
       {/* Display the notification manager */}
 
       <NotificationManager
@@ -260,7 +282,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
       </button>
 
       {/* Example usage of resetIdleTimeout */}
-      <button onClick={resetIdleTimeout}>Reset Idle Timeout</button>
+      <button onClick={() => resetIdleTimeout()}>Reset Idle Timeout</button>
 
       {/* Example usage of removeTracker */}
       <button onClick={() => removeTracker(tracker.id as unknown as Tracker)}>
@@ -274,8 +296,21 @@ const YourComponent: React.FC<YourComponentProps> = ({
       />
 
       {children}
+
+      {/* Example buttons to demonstrate notifications */}
+      <button
+        onClick={() =>
+          notificationManagerProps.notify("New Event Added")
+        }
+      >
+        Show Info Notification
+      </button>
+      <button onClick={notificationManagerProps.clearNotifications}>
+        Clear Notifications
+      </button>
+      
       <button onClick={handleAppendData}>Append Data</button>
-      <button onSubmit={handleNextPage}>Next</button>
+      <button onClick={handleNextPage}>Next</button>
     </div>
   );
 };

@@ -2,8 +2,9 @@
 import { useEffect, useState } from 'react';
 import { UIActions } from '../actions/UIActions';
 import { Progress } from '../models/tracker/ProgressBar';
+import { RootState } from '../state/redux/slices/RootSlice';
 import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
-export interface AsyncHook extends PhaseHookConfig {
+export interface AsyncHook<T> extends PhaseHookConfig {
   isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   resetIdleTimeout: () => Promise<void>;
@@ -124,9 +125,7 @@ const idleTimeoutDuration = 10000;
 };
 
 
-
-
-const asyncHook: AsyncHook = {
+const asyncHook: AsyncHook<RootState> = {
   isActive: false,
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
     // Start the idle timeout with the specified duration

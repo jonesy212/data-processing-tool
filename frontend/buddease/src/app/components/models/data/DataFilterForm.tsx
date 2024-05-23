@@ -18,9 +18,9 @@ import { Data } from "./Data";
 import { Phase } from '@/app/components/phases/Phase';
 import ListGenerator from "@/app/generators/ListGenerator";
 import { shuffleArray } from "@/app/utils/shuffleArray";
+import { authToken } from "../../auth/authToken";
 import SnapshotList from "../../snapshots/SnapshotList";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
-import { authToken } from "../../auth/authToken";
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -28,6 +28,8 @@ interface DataFilterFormProps {
     transform: string
   ) => void;
   options: FilterOptions;
+
+  onSearch: (userId:  string, query:  string) => Promise<void>
 }
 
 interface FilterOptions {
@@ -60,7 +62,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   );
   
   
-  const snapshotDetails: DetailsItem<Data> = {
+  const snapshwotDetails: DetailsItem<Data> = {
     label: "",
     value: "",
     id: "",
@@ -69,6 +71,8 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
     description: "",
     phase: {} as Phase
     // Add other properties as needed
+    ,
+    updatedAt: undefined
   }
 
   const snapshotListArray: DetailsItem<Data>[] = Array.from(snapshotList).map(
@@ -376,4 +380,4 @@ if (options.random) {
 };
 
 export default DataFilterForm;
-export type { DataFilterFormProps };
+export type { DataFilterFormProps, FilterOptions };
