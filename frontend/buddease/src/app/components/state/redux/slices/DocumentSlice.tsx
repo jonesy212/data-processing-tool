@@ -44,6 +44,8 @@ const initialState: DocumentSliceState = {
   documentBuilder: undefined,
 }
 
+type DocumentObject =  Document & DocumentData
+
 // Create an async thunk for deleting a document
 export const deleteDocumentAsync = createAsyncThunk(
   'document/deleteDocument',
@@ -458,13 +460,11 @@ const transformations = {
 
 
 };
-
-
-
-
-
-
-
+const toObject = (document: Document): object => {
+  // Convert Document to plain object
+  const plainObject: object = { ...document };
+  return plainObject;
+};
 
 
 const createNewDocument: (
@@ -584,7 +584,7 @@ const createNewDocument: (
         console.log(`Setting content to: ${content}`);
       },
 
-      structure: {}, // Assuming structure is initially an empty object
+      _structure: {}, 
       mergeStructures: (baseStructure, additionalStructure) => {
         // Implement mergeStructures logic here
         // Return the merged structure
@@ -636,6 +636,7 @@ export const useDocumentManagerSlice = createSlice({
           files: [], // Add default files if needed
 
 
+
           // Add other properties as needed
           keywords: [],
           options: {} as WritableDraft<DocumentOptions>,
@@ -647,7 +648,8 @@ export const useDocumentManagerSlice = createSlice({
           lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean; }>,
           version: undefined,
           versionData: undefined,
-          permissions: undefined
+          permissions: undefined,
+          visibility: undefined
         };
         return { payload: newDocument };
       },
@@ -1066,7 +1068,8 @@ export const useDocumentManagerSlice = createSlice({
             getWriteAccess: () => false,
             setWriteAccess: () => false
           },
-         });
+          visibility: undefined
+        });
         // Assuming implementation here...
         useNotification().notify(
           "fetchDocumentFromArchiveSuccess",
@@ -1090,8 +1093,9 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const documentId = action.payload;
         // Implement document restoring functionality
-        const newDocument = createNewDocument(documentId); // Create a new document using the provided ID
-        state.documents.push(newDocument); // Add the new document to the state array
+        const newDocument = createNewDocument(documentId);
+        const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
+        state.documents.push(newDocumentObject as  WritableDraft<DocumentObject>); // Add the new document object to the state array
       
         // Notify success
         useNotification().notify(
@@ -1242,6 +1246,7 @@ export const useDocumentManagerSlice = createSlice({
           permissions: undefined,
           versionData: undefined,
           _id: "",
+          visibility: undefined
         });
       }
     },

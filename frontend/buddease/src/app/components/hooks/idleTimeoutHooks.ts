@@ -1,10 +1,9 @@
-import { useEffect } from "react";
-import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
 import EXTENDED_NOTIFICATION_MESSAGES from "../support/ExtendedNotificationMessages";
-import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 import { DynamicHookParams } from "./DynamicHookParams";
-
-const useIdleTimeout = (props: any) => {
+import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
+import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
+import { IdleTimeoutType } from "@/app/configs/UserSettings";
+const useIdleTimeout = (props: any): IdleTimeoutType => {
   let timeoutId: NodeJS.Timeout | null = null; // Initialize with null instead of undefined
 
   const onTimeout = () => {
@@ -77,7 +76,7 @@ const useIdleTimeout = (props: any) => {
 
   // Return the necessary properties/methods from the dynamic hook
   return {
-    intervalId: undefined, 
+    intervalId: undefined,
     isActive: useIdleTimeoutHook.isActive,
     animateIn: () => {}, 
     startAnimation: () => {}, 
@@ -85,10 +84,8 @@ const useIdleTimeout = (props: any) => {
     resetIdleTimeout: resetIdleTimeout, 
     idleTimeoutId: useIdleTimeoutHook.idleTimeoutId,
     startIdleTimeout: useIdleTimeoutHook.startIdleTimeout,
-    toggleActivation: () => Promise.resolve(true), 
+    toggleActivation: () => Promise.resolve(true),
   };
 };
 
 export default useIdleTimeout;
-
-export { clearUserData, showModalOrNotification };

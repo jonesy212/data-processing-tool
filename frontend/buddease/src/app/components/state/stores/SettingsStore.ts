@@ -13,6 +13,8 @@ export interface Settings {
     id: string;
     filter: (key: keyof Settings | "communicationMode" | "defaultFileType") => void;
     appName: string;
+    communicationMode?: string;
+    defaultFileType?: string;
   // Define common properties and methods for settings if needed
 }
 

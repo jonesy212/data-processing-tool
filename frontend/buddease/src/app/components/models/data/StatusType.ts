@@ -68,6 +68,7 @@ enum Layout {
   SingleColumn = 'SingleColumn',
   Dynamic = 'Dynamic',
   MultipleColumns = 'MultipleColumns',
+  Default = "Default"
 }
 
 
@@ -181,20 +182,21 @@ export enum ProjectPhaseTypeEnum {
   Review = 'review',
   Final = 'final',
   Test = 'test',
-  CreatePhase = 'createPhase'
+  CreatePhase = 'createPhase',
+  Previous = 'previous',
+  Register = 'register'
 }
 
 
 
-export enum DevelopmentPhaseEnum{
-  PLANNING,
-  DESIGN,
-  DEVELOPMENT,
-  TESTING,
-  DEPLOYMENT,
-  IDEA_CREATION,
-  IDEA_SUBMISSION,
-  
+export enum DevelopmentPhaseEnum {
+  PLANNING = "PLANNING",
+  DESIGN = "DESIGN",
+  DEVELOPMENT = "DEVELOPMENT",
+  TESTING = "TESTING",
+  DEPLOYMENT = "DEPLOYMENT",
+  IDEA_CREATION = "DEV_IDEA_CREATION", // Add prefix to distinguish
+  IDEA_SUBMISSION = "IDEA_SUBMISSION",
 }
 
 

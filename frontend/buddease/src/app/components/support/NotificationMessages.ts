@@ -1,6 +1,5 @@
 // NotificationMessages.ts
 
-import { VALID_LOADERS } from "next/dist/shared/lib/image-config";
 
 /// Define a generic interface for message categories
 interface MessageCategory<T> {
@@ -633,6 +632,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     CREATED: "Snapshot created successfully",
     SNAPSHOT_TAKEN: "Snapshot taken successfully",
     Error: "Error creating snapshot. Please try again",
+    FETCHING_SNAPSHOT_SUCCESS: "Fetching all snapshots " 
   },
   StateGovCities: {
     DEFAULT: `Error in "State/Government Cities`,

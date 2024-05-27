@@ -9,7 +9,6 @@ import SnapshotStore, {
 } from "@/app/components/snapshots/SnapshotStore";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import React, { useEffect } from "react";
-import { AppActions } from "@/app/components/actions/AppActions";
 import { useDispatch } from "react-redux";
 interface BaseRealtimeData {
   id: string;
@@ -21,7 +20,7 @@ interface BaseRealtimeData {
 interface RealtimeDataItem extends BaseRealtimeData {
   timestamp?: number;
   title?: string;
-  date: Date;
+  date: string | Date;
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   userId: string;
   dispatch: (action: any) => void;
@@ -32,7 +31,7 @@ interface RealtimeDataItem extends BaseRealtimeData {
 }
 
 interface RealtimeData extends BaseRealtimeData {
-  date:  Date;
+  date:  Date | string;
   // Define other properties specific to RealtimeData here
 }
 
@@ -141,5 +140,6 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = ({
     </div>
   );
 };
-export {RealtimeDataComponent};
+export { RealtimeDataComponent };
 export type { RealtimeData, RealtimeDataItem };
+

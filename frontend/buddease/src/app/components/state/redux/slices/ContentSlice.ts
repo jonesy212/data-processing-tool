@@ -49,6 +49,7 @@ import axiosInstance from "@/app/api/axiosInstance";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import * as ApiTask from "@/app/api/TasksApi";
 import { AxiosResponse } from "axios";
+import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
 interface ContentManagerState {
@@ -67,7 +68,7 @@ interface ContentManagerState {
   inProgressContent: ContentItem[]; // Initialize inProgressContent array
   completedContent: ContentItem[]; // Initialize completedContent array
   author: User;
-  assignedTo: Task["assignedTo"];
+  assignedTo: User[];
   assigneeId: string;
   assigneeIds: string[];
   dueDate: Date | undefined;
@@ -116,7 +117,7 @@ const initialState: ContentManagerState = {
   completedContent: [],
   ...contentItems,
   projectManager: null,
-  assignedTo: {} as WritableDraft<User>,
+  assignedTo: [],
   assigneeId: "",
   assigneeIds: [],
   dueDate: undefined,
@@ -177,6 +178,7 @@ const generateNewContent = (
     _id: contentId,
     type: "text",
     userId: undefined,
+    updatedAt: undefined
   };
   state.contentItems.push(newContent);
   ContentLogger.logEventToFile(
@@ -285,11 +287,12 @@ export const contentSlice = createSlice({
         description: string;
         type: FileType;
         body: string;
-        assignedTo: Task["assignedTo"];
+        assignedTo: WritableDraft<User>[];
         userId: string;
         setAssignedUserFilter: boolean;
         priority: string;
         status: StatusType;
+        updatedAt: Date | undefined
       } = {
         id: UniqueIDGenerator.generateContentID(id, title),
         heading: "",
@@ -298,10 +301,11 @@ export const contentSlice = createSlice({
         description: state.contentDescription,
         type: state.contentType as FileType,
         body: "",
-        assignedTo: state.assignedTo,
+        assignedTo: state.assignedTo, // Ensure assignedTo is correctly typed
         setAssignedUserFilter: state.data.setAssignedUserFilter,
         priority: state.priority,
         status: StatusType.Pending,
+        updatedAt: undefined
       };
 
       state.pendingContent.push(newContent);
@@ -312,6 +316,7 @@ export const contentSlice = createSlice({
         ...newContent,
         status: StatusType.Pending,
         userId: undefined,
+        updatedAt: undefined
       });
     },
 
@@ -320,38 +325,45 @@ export const contentSlice = createSlice({
       action: PayloadAction<{ id: string; title: string; isComplete: boolean }>
     ) => {
       const { id, title } = action.payload;
-
+    
       const generatedContentID = UniqueIDGenerator.generateContentID(id, title);
-
+    
       if (sanitizeInput(state.contentTitle.trim()) === "") {
         console.error("Content title cannot be empty.");
         return;
       }
-
+    
+      // Assuming you need the first assigned user's ID for `userId`
+      const assignedUserId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : "";
+    
       const newContent: WritableDraft<ContentItem> = {
         id: generatedContentID,
-        userId: state.assignedTo ? state.assignedTo._id : "",
+        userId: assignedUserId,
         title,
         description: state.contentDescription,
         type: state.contentType as FileType,
         body: "",
         heading: "",
         status: StatusType.Pending,
+        updatedAt: undefined
       };
-
+    
       state.contentItems.push(newContent);
-      const userId = state.assignedTo?._id ?? "";
-      ContentLogger.logContentCreation("New Content", id, userId);
-
+      
+      // Log the first assigned user's ID
+      const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0].id : "";
+      ContentLogger.logContentCreation("New Content", id, String(userId));
+    
       if (generateNewContent) {
-        const newContent = generateNewContent(state, action);
-        state.contentItems.push(newContent);
+        const newGeneratedContent = generateNewContent(state, action);
+        state.contentItems.push(newGeneratedContent);
       }
-
+    
       state.contentTitle = "";
       state.contentDescription = "";
       state.contentType = "";
     },
+    
 
     removeContent: (state, action: PayloadAction<string>) => {
       state.contentItems = state.contentItems.filter(
@@ -441,7 +453,7 @@ export const contentSlice = createSlice({
         description,
         dueDate,
         status,
-        assignedTo: null,
+        assignedTo: [],
         assigneeId: undefined,
         payload: undefined,
         priority: "low",
@@ -449,15 +461,6 @@ export const contentSlice = createSlice({
         done: false,
         data: {} as WritableDraft<Data>,
         source: "user",
-        some: function (
-          callbackfn: (value: Task, index: number, array: Task[]) => unknown,
-          thisArg?: any
-        ): boolean {
-          throw new Error("Function not implemented.");
-        },
-        then: function (arg0: (newTask: any) => void): unknown {
-          throw new Error("Function not implemented.");
-        },
         startDate: undefined,
         endDate: undefined,
         isActive: false,
@@ -470,9 +473,22 @@ export const contentSlice = createSlice({
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
+        some: function (
+          callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+          thisArg?: any
+        ): boolean {
+          throw new Error("Function not implemented.");
+        },
+        then: function (arg0: (newTask: any) => void): unknown {
+          throw new Error("Function not implemented.");
+        },
+        getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+          throw new Error("Function not implemented.");
+        }
       });
-      const userId = state.assignedTo?._id;
-      // Log task creation
+    
+      // Log task creation with the ID of the first user in assignedTo array if it exists
+      const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : "";
       if (userId) {
         ContentLogger.logTaskCreation(
           generatedTaskID,
@@ -482,21 +498,23 @@ export const contentSlice = createSlice({
         );
       }
     },
-
+    
     removeTask: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
-
+    
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-      const { title } = state.tasks[taskIndex];
       if (taskIndex !== -1) {
+        const { title } = state.tasks[taskIndex];
         state.tasks.splice(taskIndex, 1);
-
-        const userId = state.assignedTo?._id;
+    
+        // Log task deletion with the ID of the first user in assignedTo array if it exists
+        const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : "";
         if (userId) {
           ContentLogger.logTaskDeletion(taskId, title, userId);
         }
       }
     },
+    
 
     filterTasks: (state, action: PayloadAction<TaskStatus>) => {
       state.taskFilter = action.payload;
@@ -553,21 +571,23 @@ export const contentSlice = createSlice({
       }>
     ) => {
       const { completedContentId, taskId, changes } = action.payload;
-
+    
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
+    
       if (taskIndex !== -1) {
         state.tasks[taskIndex] = {
           ...state.tasks[taskIndex],
           ...changes,
         };
       }
+      
       // Log content completion
-      const userId = state.asignedTo?._id;
+      const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : "";
       if (userId) {
         ContentLogger.logContentCompletion(completedContentId, taskId, userId);
       }
     },
+    
 
     searchTasks: (state, action: PayloadAction<string>) => {
       const searchTerm = action.payload;
@@ -580,19 +600,20 @@ export const contentSlice = createSlice({
 
     assignTask: (
       state,
-      action: PayloadAction<WritableDraft<ContentManagerState>>
+      action: PayloadAction<{ taskId: string; assigneeId: string }>
     ) => {
       const { taskId, assigneeId } = action.payload;
-
+    
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
+    
       if (taskIndex !== -1) {
         const assignee = state.users.find((user) => user.id === assigneeId);
         if (assignee) {
-          state.tasks[taskIndex].assignedTo = assignee;
+          state.tasks[taskIndex].assignedTo = [assignee]; // Assigning the assignee as an array
         }
       }
     },
+    
 
     archiveTask: (
       state,
@@ -628,20 +649,22 @@ export const contentSlice = createSlice({
       }>
     ) => {
       const { taskId, changes } = action.payload;
-
+    
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
+    
       if (taskIndex !== -1) {
         state.tasks[taskIndex] = {
           ...state.tasks[taskIndex],
           ...changes,
         };
+    
         // Log content completion
-        const userId = state.assignedTo?._id;
+        const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : undefined;
         const contentId = state.tasks[taskIndex].contentId;
         if (userId) {
           ContentLogger.logContentCompletion(contentId, taskId, userId);
         }
+    
         // Check if notification permission is granted before displaying notification
         if (!("Notification" in window)) {
           notify(
@@ -655,6 +678,7 @@ export const contentSlice = createSlice({
         }
       }
     },
+    
 
     exportTasks: (state, action: PayloadAction<ExportTasksPayload>) => {
       const { tasks } = action.payload;
@@ -895,16 +919,32 @@ export const contentSlice = createSlice({
       action: PayloadAction<{ taskId: string; assigneeId: string }>
     ) => {
       const { taskId, assigneeId } = action.payload;
-
+    
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
+    
       if (taskIndex !== -1) {
+        // Find the task by taskId
+        const task = state.tasks[taskIndex];
+    
+        // Find the assignee by assigneeId
         const assignee = state.users.find((user) => user.id === assigneeId);
-        if (assignee) {
-          state.tasks[taskIndex].assignedTo = assignee;
+    
+        // If the task and assignee exist, update the assignedTo property
+        if (task && assignee) {
+          // Check if assignee already exists in assignedTo array
+          if (!task.assignedTo) {
+            // If assignedTo is null, initialize it as an empty array
+            task.assignedTo = [];
+          }
+          // Check if the assignee is already assigned
+          if (!task.assignedTo.some(user => user.id === assigneeId)) {
+            // If not assigned, push the assignee to assignedTo array
+            task.assignedTo.push(assignee);
+          }
         }
       }
     },
+    
 
     batchFetchTaskSnapshots: (
       state,

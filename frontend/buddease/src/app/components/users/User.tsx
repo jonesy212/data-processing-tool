@@ -25,9 +25,10 @@ import { BlockchainPermissions } from "./BlockchainPermissions";
 import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
 import { ActivityLogEntry } from "./UserSlice";
+import { TwitterData } from "../socialMedia/TwitterIntegration";
 
 export interface User extends UserData {
-  _id?: string; // Add this line
+  _id?: string; 
   id?: string | number | undefined;
   username: string;
   firstName: string;
@@ -95,7 +96,7 @@ export interface User extends UserData {
   decentralizedIdentity?: any;
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
-
+  twitterData?: TwitterData
 }
 
 interface Address {

@@ -1,7 +1,7 @@
 // TaskPhaseEnum.ts
 enum TaskPhase {
-  Planning,
-  Execution,
-  Testing,
-  Completion
+  Planning= "Planning",
+  Execution= "Execution",
+  Testing= "Testing",
+  Completion= "Completion"
 }

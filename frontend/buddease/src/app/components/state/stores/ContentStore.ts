@@ -1,13 +1,13 @@
 // ContentStore.ts
+import { DetailsItemCommon } from "@/app/generators/ListGenerator";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { ContentItem } from "../../models/content/ContentItem";
-import { DetailsItemCommon } from "@/app/generators/ListGenerator";
 import { Data } from "../../models/data/Data";
 export interface ContentManagementStore {
   contentItems: ContentItem[];
   addContentItem: (contentItem: ContentItem) => void;
-  selectedContentItemId: string | null; // Update type to string
+  selectedContentItemId: DetailsItemCommon<Data> | null; // Update type here
   updateContentItem: (id: string, updatedContentItem: ContentItem) => void;
   deleteContentItem: (id: string) => void;
   getContentItemById: (id: string) => ContentItem | undefined;
@@ -59,4 +59,4 @@ const useContentManagementStore = (): ContentManagementStore => {
 };
 
 export default useContentManagementStore;
-export type {ContentItem}
+export type { ContentItem };

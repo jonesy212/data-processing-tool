@@ -2,12 +2,14 @@ import React, { SetStateAction } from "react";
 import { ThemeConfig } from "../../libraries/ui/theme/ThemeConfig";
 import { ThemeState } from "../../state/redux/slices/ThemeSlice";
 import { NotificationData } from "../../support/NofiticationsSlice";
- 
+ import { TableStyle } from "./TableStyle";
 interface ThemeCustomizationProps {
   themeState: ThemeConfig;
   infoColor: string;
   setThemeState: React.Dispatch<SetStateAction<ThemeState>>;
-  notificationState:React.Dispatch<SetStateAction<NotificationData[]>>;
+  notificationState: React.Dispatch<SetStateAction<NotificationData[]>>;
+  tableStyle: TableStyle; // Add the tableStyle property
+
 }
 
 const ThemeCustomization: React.FC<ThemeCustomizationProps> = ({

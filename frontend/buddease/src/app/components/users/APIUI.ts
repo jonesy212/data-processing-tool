@@ -95,23 +95,21 @@ const handleUiApiErrorAndNotify = (
 
 
 // Function to safely parse data with error handling
- const parseDataWithErrorHandling = <T extends object>(
-    data: YourResponseType[],
-    threshold: number
-  ): ParsedData<T>[] => {
-    try {
-      // Call safeParseData function without type arguments
-      return safeParseData(data, threshold);
-    } catch (error: any) {
-      // Handle error if safeParseData throws an exception
-      const errorMessage = 'Error parsing data';
-      const errorInfo: ErrorInfo = { componentStack: error.stack };
-      ErrorHandler.logError(new Error(errorMessage), errorInfo);
-      // Optionally, you can log the error or perform other actions here
-      return [];
-    }
-  };
-  
+
+const parseDataWithErrorHandling = <T extends object>(
+  data: YourResponseType[],
+  threshold: number
+): ParsedData<T>[] => {
+  try {
+    // Call safeParseData function with type arguments
+    return safeParseData<T>(data, threshold);
+  } catch (error: any) {
+    const errorMessage = 'Error parsing data';
+    const errorInfo: ErrorInfo = { componentStack: error.stack };
+    ErrorHandler.logError(new Error(errorMessage), errorInfo);
+    return [];
+  }
+}
   
   // Updated UIApi with error handling and logging
   export const UIApi = {

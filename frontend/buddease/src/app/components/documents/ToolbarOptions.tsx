@@ -9,8 +9,8 @@ import { toolbarOptions } from "./Toolbar";
 
 // Define a new type for the toolbar options
 type ToolbarOptions = {
-  [key in keyof typeof toolbarOptions]: stringa[];
-};
+  [key in keyof typeof toolbarOptions]: string[];
+} & { calendar: boolean | string[] };
 
 export interface ToolbarOptionsProps {
   isDocumentEditor?: boolean;

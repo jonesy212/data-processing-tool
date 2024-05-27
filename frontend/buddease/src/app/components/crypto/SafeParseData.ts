@@ -3,11 +3,15 @@ import { sanitizeComments } from "../security/SanitizationFunctions";
 import { ParsedData, parseData } from "./parseData";
 import { Data } from "../models/data/Data"; // Import the Data type
 
-// Wrap parseData function with error handling
-const safeParseData = (
-  data: { comment: string }[],
+// Define a specific type that extends T to include the comment property
+interface DataWithComment extends Data {
+  comment: string;
+}
+
+const safeParseData = <T extends DataWithComment>(
+  data: T[],
   threshold: number
-): ParsedData<Data>[] => {
+): ParsedData<T>[] => {
   const { handleError } = useErrorHandling();
 
   try {
@@ -17,8 +21,7 @@ const safeParseData = (
       comment: sanitizeComments(item.comment),
     })) 
 
-    // Ensure that the return type of parseData matches ParsedData<T>
-    return parseData<Data>(sanitizedData, threshold);
+    return parseData<T>(sanitizedData, threshold);
   } catch (error: any) {
     const errorMessage = "Error parsing data";
     handleError(errorMessage, { componentStack: error.stack });
@@ -27,3 +30,4 @@ const safeParseData = (
 };
 
 export default safeParseData;
+export type {DataWithComment}

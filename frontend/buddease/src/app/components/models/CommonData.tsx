@@ -3,7 +3,7 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CacheData } from "@/app/generators/GenerateCache";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import RealtimeData from "../../../../models/realtime/RealtimeData";
+import { RealtimeDataComponent } from "../../../../models/realtime/RealtimeData";
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { CryptoData } from "../crypto/parseData";
@@ -25,7 +25,6 @@ import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
-
 // Define a generic type for data
 interface CommonData<T> {
   _id?: string;
@@ -58,7 +57,7 @@ interface CommonData<T> {
   documentReporting?: string;
   documentBackup?: string;
   date?: Date | undefined;
-
+  completed: boolean
 }
 
 interface Customizations<T> {
@@ -182,12 +181,13 @@ const CommonDetails = <T extends SupportedData>({
       )}
 
       {/* Include RealtimeData component */}
-      <RealtimeData
+      <RealtimeDataComponent
         id={data?._id || ""}
         name={data?.username || ""}
         date={data?.startDate || "No date"}
         userId={userId}
         dispatch={dispatch}
+        value={""}
       />
     </div>
   );

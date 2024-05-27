@@ -2,7 +2,8 @@ import HighlightEvent from "../components/documents/screenFunctionality/Highligh
 
 // apiEndpoints.ts
 const BASE_URL = "https://your-api-base-url";
-
+const FACEBOOK_API_BASE_URL = 'https://graph.facebook.com/v12.0';
+const TWITTER_API_BASE_URL = 'https://api.twitter.com/1.1';
 type NestedEndpoints = {
   [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
 };
@@ -553,8 +554,13 @@ export const endpoints: Endpoints = {
     //SOCIA MEDIA:
     // Facebook integration endpoints
     facebook: {
-      fetchMessages: `${BASE_URL}/api/facebook/messages`,
-      postMessage: `${BASE_URL}/api/facebook/post`,
+      fetchMessages: `${BASE_URL}/me/faceook/messages`,
+      postMessage: `${BASE_URL}/me/faceook/feed`, // Assuming posting a message is done to the feed
+      addMessage: `${BASE_URL}/me/faceook/messages`, // Adjust as needed, placeholder for adding a message
+      fetchPosts: `${FACEBOOK_API_BASE_URL}/me/facebook/posts`,
+      likePost: (postId: string) => `${BASE_URL}/${postId}/likes`,
+      commentOnPost: (postId: string) => `${BASE_URL}/${postId}/comments`,
+      fetchAllNotes: `${BASE_URL}/me/notes`,
       // Add more endpoints as needed
     },
 
@@ -567,10 +573,18 @@ export const endpoints: Endpoints = {
 
     // Twitter integration endpoints
     twitter: {
-      fetchMessages: `${BASE_URL}/api/twitter/messages`,
-      postMessage: `${BASE_URL}/api/twitter/post`,
+      fetchMessages: `${TWITTER_API_BASE_URL}/api/twitter/messages`, // Fetching messages might not be applicable in Twitter, consider removing or adjusting this endpoint
+      postMessage: `${TWITTER_API_BASE_URL}/api/twitter/post`, // Posting a new tweet
+    
+      updateTweet: `${TWITTER_API_BASE_URL}/api/twitter/update`, // Endpoint for updating a tweet
+      deleteTweet: `${TWITTER_API_BASE_URL}/api/twitter/delete`, // Endpoint for deleting a tweet
+    
+      likeTweet: (tweetId: string) => `${TWITTER_API_BASE_URL}/api/twitter/like/${tweetId}`, // Endpoint for liking a tweet
+      retweet: (tweetId: string) => `${TWITTER_API_BASE_URL}/api/twitter/retweet/${tweetId}`, // Endpoint for retweeting a tweet
+    
       // Add more endpoints as needed
     },
+    
 
     // YouTube integration endpoints
     youtube: {
@@ -1176,7 +1190,12 @@ export const endpoints: Endpoints = {
     fetchToolbarSize: `${BASE_URL}/api/toolbar/size`,
     updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
   },
+
+  trading: {
+    
+  }
   // Add more sections as needed
 };
 
-export type { NestedEndpoints };
+export type { Endpoints, NestedEndpoints };
+

@@ -1,10 +1,6 @@
 // Communication.tsx
-// Communication.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import React from "react";
-
-
-
 
 interface Sender {
   id: string;
@@ -27,8 +23,8 @@ interface CommunicationProps {
 const CommunicationPage: React.FC<CommunicationProps> = ({ message, sender, timestamp }) => {
   return (
     <div className="communication">
-      <div className="communication-sender">{sender}</div>
-      <div className="communication-message">{message}</div>
+      <div className="communication-sender">{sender.name}</div>
+      <div className="communication-message">{message.content}</div>
       <div className="communication-timestamp">{timestamp.toLocaleString()}</div>
     </div>
   );

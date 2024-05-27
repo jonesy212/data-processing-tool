@@ -4,9 +4,9 @@ import Version from "@/app/components/versions/Version";
 import { useDispatch } from "react-redux";
 import * as apiData from '../../../../api//ApiData';
 import { DataActions } from "../DataActions";
+import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 export interface DataStore {
   data: Data[];
-  fetchData: () => void;
   addData: (data: Data) => void;
   removeData: (id: number) => void;
   updateData: (id: number, newData: Data) => void;
@@ -18,16 +18,34 @@ export interface DataStore {
   updateDataVersions: (id: number, versions: Data[]) => void;
   getBackendVersion: () => Promise<string>;
   getFrontendVersion: () => Promise<string>;
+  fetchData: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Modify the signature to return a Promise
+
 }
 
 const useDataStore = (): DataStore => {
   const data: Data[] = [];
   const dispatch = useDispatch();
 
-  const fetchData = () => {
-    // Dispatch the fetchDataRequest action
-    dispatch(DataActions.fetchDataRequest());
-    // You can use Redux or any other state management library here
+
+  const fetchData = async (): Promise<SnapshotStore<Snapshot<Data>>[]> => {
+    try {
+      // Dispatch the fetchDataRequest action
+      dispatch(DataActions.fetchDataRequest());
+      
+      // Simulate fetching data from an API
+      const responseData = await fetch('https://api.example.com/data');
+      const jsonData = await responseData.json();
+
+      // Assuming jsonData is the format you expect, convert it to SnapshotStore<Snapshot<Data>>[]
+      const snapshotData: SnapshotStore<Snapshot<Data>>[] = jsonData.map((item: any) => ({
+        // Map item properties to your Snapshot<Data> structure
+      }));
+
+      return snapshotData;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
   };
 
   const addData = (newData: Data) => {
@@ -80,7 +98,11 @@ const useDataStore = (): DataStore => {
         versionNumber: version.versionNumber,
         appVersion: version.appVersion,
         content: version.content,
-        // Adjust this part according to the structure of your Version class
+        getData: async () => {
+          const snapshots: SnapshotStore<Snapshot<Data>>[] = []; // Initialize an empty array
+          // Perform any necessary operations to populate the snapshots array
+          return snapshots;
+        },
       }));
       return dataVersions;
     } catch (error) {

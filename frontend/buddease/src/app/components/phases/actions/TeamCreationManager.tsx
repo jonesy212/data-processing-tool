@@ -15,16 +15,16 @@ import TeamReviewStep from "./TeamReviewStep";
 import TeamSummaryStep from "./TeamSummaryStep";
 
 export enum TeamCreationPhase {
-  BASIC_INFO,
-  MEMBERS,
-  PREFERENCES,
-  REVIEW,
-  QUESTIONNAIRE,
-  SUMMARY,
-  CONFIRMATION,
+  BASIC_INFO= "BASIC_INFO",
+  MEMBERS= "MEMBERS",
+  PREFERENCES= "PREFERENCES",
+  REVIEW= "REVIEW",
+  QUESTIONNAIRE= "QUESTIONNAIRE",
+  SUMMARY= "SUMMARY",
+  CONFIRMATION= "CONFIRMATION",
 }
 
-const TeamCreationManager: React.FC = () => {
+const TeamCreationProcess: React.FC = () => {
   const { notify } = useNotification();
   const [currentStep, setCurrentStep] = useState<TeamCreationPhase>(
     TeamCreationPhase.BASIC_INFO
@@ -131,4 +131,4 @@ const TeamCreationManager: React.FC = () => {
   );
 };
 
-export default TeamCreationManager;
+export default TeamCreationProcess;

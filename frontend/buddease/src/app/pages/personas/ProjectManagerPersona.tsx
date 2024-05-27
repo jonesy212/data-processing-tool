@@ -23,6 +23,7 @@ import { Alignment } from "docx";
 import { AlignmentOptions } from "@/app/components/state/redux/slices/toolbarSlice";
 import { Settings } from "@/app/components/state/stores/SettingsStore";
 import { VersionData } from "@/app/components/versions/VersionData";
+import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
 
 interface ProjectManagerPersonaProps {
   teams: TeamDocument[];
@@ -176,7 +177,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
             additionalOptions: undefined,
             documentPhase: "",
             version: {
-              _structure:structure,
+              _structure: structure,
               name: "",
               url: "",
               versionNumber: "",
@@ -226,7 +227,12 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
               versionHistory: {
                 versions: []
               },
-            
+              setFrontendAndBackendStructure: function (): Promise<void> {
+                throw new Error("Function not implemented.");
+              },
+              getStructure: function (): Record<string, AppStructureItem[]> {
+                throw new Error("Function not implemented.");
+              }
             },
             isDynamic: undefined,
             size: DocumentSize.A4,
@@ -247,11 +253,13 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
               x: 0,
               y: 0,
               rotation: 0,
-              borderStyle: ""
+              borderStyle: "",
+              fontSize: 0
             },
             headerFooterOptions: {
-              header: undefined,
-              footer: undefined,
+              enabled: true,
+              headerContent: undefined,
+              footerContent: undefined,
               showHeader: false,
               showFooter: false,
               dateFormat: undefined,
@@ -336,7 +344,11 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
             footnotes: false,
             endnotes: false,
             comments: false,
-            revisions: false,
+            revisions: {
+              enabled: false,
+              author: "",
+              dataFormat: ""
+            },
             embeddedMedia: false,
             embeddedCode: false,
             styles: {},
@@ -363,7 +375,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
             todoList: false,
             orderedTodoList: false,
             unorderedTodoList: false,
-            colorCoding: false,
+            colorCoding: {} as Record<string, string>,
             highlight: false,
             highlightColor: "",
             customSettings: {},
@@ -414,7 +426,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
                   this.isActive = false;
                   clearInterval(this.intervalId);
                 },
-                resetIdleTimeout: undefined
+                resetIdleTimeout: async () => {}
               },
               startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void): void {
                 throw new Error("Function not implemented.");
@@ -435,7 +447,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
               loggingAndNotificationsEnabled: false,
               securityFeaturesEnabled: false,
               theme: "",
-              language: "",
+              language: LanguageEnum.English,
               fontSize: 0,
               darkMode: false,
               enableEmojis: false,

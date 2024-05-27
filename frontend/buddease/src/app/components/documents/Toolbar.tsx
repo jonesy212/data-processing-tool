@@ -6,7 +6,7 @@ import ToolbarItem from "./ToolbarItem";
 // Define a new type for the toolbar options
 type ToolbarOptions = {
   [key in keyof typeof toolbarOptions]: string[];
-} & { calendar: boolean };
+} & { calendar: boolean | string[] };
 
 
 interface ToolbarProps {
@@ -63,6 +63,50 @@ export const toolbarOptions = {
   reminders: ["Reminders"],
   search: ["Search"],
   help: ["Help"],
+
+  content: [
+    "Articles",
+    "Blogs",
+    "Videos",
+    "Podcasts",
+    "Infographics",
+    "Webinars",
+    "Ebooks",
+    "Whitepapers",
+    "Case Studies",
+    "Interviews",
+    "Tutorials",
+    "FAQs",
+    "News",
+    "Press Releases",
+    "Presentations",
+    "Courses",
+    "Research Papers",
+    "User Guides",
+    "Product Documentation",
+    "Technical Documentation",
+    "Product Catalogs",
+    "Recipes",
+    "DIY Guides",
+    "Reviews",
+    "Opinion Pieces",
+    "Editorials",
+    "Galleries",
+    "Animations",
+    "Interactive Content",
+    // Add more options based on your specific content types
+  ],
+  userManagement: ["User Profiles", "Permissions", "Roles", "Activity Logs"],
+  notifications: ["Email Alerts", "Push Notifications", "SMS Alerts", "System Messages"],
+  integrations: ["API Management", "Webhooks", "Third-party Services", "Plugins"],
+  mediaManagement: ["Image Gallery", "Video Library", "Audio Files", "Document Library"],
+  projectManagement: ["Project Overview", "Milestones", "Resource Allocation", "Time Tracking"],
+  ecommerce: ["Product Listings", "Orders", "Customers", "Discounts", "Shipping"],
+  reporting: ["Sales Reports", "User Activity", "Engagement Metrics", "Conversion Rates"],
+  contentCreation: ["Blogs", "News", "Tutorials", "FAQs"],
+  customerSupport: ["Support Tickets", "Live Chat", "Knowledge Base", "Feedback"],
+  marketing: ["Campaigns", "Email Marketing", "Social Media", "SEO Tools"],
+  
   onEditorStateChange: onEditorStateChangeHandler,
   editorState: {},
 } as const;

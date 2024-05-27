@@ -9,6 +9,7 @@ interface SnapshotItem {
   label: string;
   category: string;
   categories?: string[];
+  updatedAt: Date | undefined
   // Define properties of a snapshot item
 }
 

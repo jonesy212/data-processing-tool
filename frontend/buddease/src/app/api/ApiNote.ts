@@ -3,19 +3,19 @@
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
+import { ModifiedDate } from '../components/documents/DocType';
 import { NoteData } from '../components/documents/NoteData';
+import FolderData from '../components/models/data/FolderData';
+import { Encryption } from '../components/security/Encryption';
 import { YourResponseType } from '../components/typings/types';
+import SearchHistory from '../components/versions/SearchHistory';
+import Version from '../components/versions/Version';
+import { StructuredMetadata } from '../configs/StructuredMetadata';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import { SearchResponseData } from './ApiSearch';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
-import Version from '../components/versions/Version';
-import { ModifiedDate } from '../components/documents/DocType';
-import { StructuredMetadata } from '../configs/StructuredMetadata';
-import { Encryption } from '../components/security/Encryption';
-import FolderData from '../components/models/data/FolderData';
-import SearchHistory from '../components/versions/SearchHistory';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;
@@ -86,7 +86,7 @@ interface Note {
 
 
 // Function to handle API errors and notify
-const handleNoteApiErrorAndNotify = (
+export const handleNoteApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   errorMessageId: string
@@ -388,4 +388,25 @@ export const filterNotesAPI = async (filters: Record<string, any>): Promise<any>
     throw error;
   }
 };
+
+
+export const searchNotes = async (keyword: string): Promise<Note[]> => {
+  try {
+    const response = await axiosInstance.get(`${API_BASE_URL}/api/notes/search`, {
+      params: { keyword },
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching notes:', error);
+    const errorMessage = 'Failed to search notes';
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'SEARCH_NOTES_ERROR'
+    );
+    throw error;
+  }
+};
+
 export type { Note };

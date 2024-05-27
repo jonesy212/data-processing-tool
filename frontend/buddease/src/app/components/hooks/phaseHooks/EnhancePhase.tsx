@@ -1,7 +1,7 @@
 import { useState } from "react";
-import usePhaseHooks, { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "./PhaseHooks";
-import configurationService, { ApiConfig } from "@/app/configs/ConfigurationService";
 import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
+import useIdleTimeout from "../idleTimeoutHooks";
+import usePhaseHooks, { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "./PhaseHooks";
 
 const enhancePhaseHook = (phaseHook: PhaseHookConfig) => {
   const [currentPhase, setCurrentPhase] = useState<PhaseHookConfig | null>(
@@ -113,7 +113,7 @@ const myPhaseHook = createPhaseHook(
 console.log(myPhaseHook); // This line will prevent the warning
 
 const enhancedPhaseHook = enhancePhaseHook({
-  condition: async () =>  true,
+  condition: async () => true,
   asyncEffect: async () => {
     console.log("Async effect");
     return () => {};
@@ -123,6 +123,8 @@ const enhancedPhaseHook = enhancePhaseHook({
   phaseType: ProjectPhaseTypeEnum.CreatePhase,
   customProp1: "value1",
   customProp2: 0,
+  startIdleTimeout: useIdleTimeout({}).startIdleTimeout,
+  
 });
 
 const nextPhaseConfig = {
@@ -135,7 +137,7 @@ enhancedPhaseHook.handleTransitionTo({
   ...nextPhaseConfig,
   asyncEffect: async () => {
     return new Promise<() => void>((resolve) => {
-      resolve(() => {});
+      resolve(() => { });
     });
   },
   duration: "0",
@@ -144,6 +146,9 @@ enhancedPhaseHook.handleTransitionTo({
   phaseType: ProjectPhaseTypeEnum.CreatePhase,
   customProp1: "value1",
   customProp2: 0,
+  startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void | undefined): void | undefined {
+    throw new Error("Function not implemented.");
+  }
 });
 
 const canTransitionTo = async (nextPhaseConfig: PhaseHookConfig) => {
@@ -204,5 +209,6 @@ export {
   handleTransitionTo,
   myPhaseHook,
   setCurrentPhase,
-  setPreviousPhase,
+  setPreviousPhase
 };
+

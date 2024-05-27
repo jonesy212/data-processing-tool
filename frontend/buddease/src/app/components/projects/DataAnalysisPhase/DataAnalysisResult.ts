@@ -1,3 +1,5 @@
+import { AllStatus } from "../../state/stores/DetailsListStore";
+
 // DataAnalysisResult.ts
 export interface DataAnalysisResult {
   id: number; // Unique identifier for the data analysis result
@@ -6,6 +8,11 @@ export interface DataAnalysisResult {
   analysisType: string;
   analysisDate: Date;
   results: string[];
+  result: number
+  description: string
+  status: AllStatus
+  createdAt: Date,
+  updatedAt: Date | undefined,
   recommendations: string[]; // Array of recommendations based on the analysis
   metrics: {
     // Object containing various metrics related to the analysis

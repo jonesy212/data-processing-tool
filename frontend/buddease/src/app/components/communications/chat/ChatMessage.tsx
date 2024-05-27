@@ -195,6 +195,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       profileVisibility: "",
       profileAccessControl: undefined,
       activityStatus: "",
+      isAuthorized: false
     };
 
     setMessages([...messages, newMessage]);

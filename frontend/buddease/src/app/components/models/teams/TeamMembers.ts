@@ -1,7 +1,8 @@
+import UserRoles from '@/app/components/users/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
-import { Team } from "./Team";
+import { Team } from './Team';
 
 export interface Collaborator extends Member {
   collaborations: number; // Number of collaborations
@@ -30,14 +31,14 @@ interface MemberData extends Member {
   questionnaireResponses?: any;
   // Add other fields specific to MemberData
 }
-interface TeamMember {
+interface TeamMember extends MemberData {
     id: number;
     username: string;
     email: string;
-    password: string;
     tier: string;
     upload_quota: number;
-    user_type: string;
+  user_type: string;
+  role: UserRole
     // Add other TeamMember-related fields as needed
   }
   
@@ -68,18 +69,35 @@ interface TeamMember {
     updatedAt: undefined,
     isVerified: false,
     isAdmin: false,
-    isActive: false
+    isActive: false,
+    firstName: "",
+    lastName: "",
+    friends: [],
+    blockedUsers: [],
+    settings: undefined,
+    interests: [],
+    privacySettings: undefined,
+    notifications: undefined,
+    activityLog: [],
+    socialLinks: undefined,
+    relationshipStatus: null,
+    hobbies: [],
+    skills: [],
+    achievements: [],
+    profileVisibility: "",
+    profileAccessControl: undefined,
+    activityStatus: "",
+    isAuthorized: false
   };
   const teamMember: TeamMember = {
     id: 1,
     username: "user1",
     email: "user1@example.com",
-    password: "password1",
     tier: "free",
     upload_quota: 0,
     user_type: "individual",
-    // Add other TeamMember-related field values
-  };
+    role: UserRoles.Member
+  } as TeamMember
 
 export default MemberData; 
   export type { Contributor, TeamMember };

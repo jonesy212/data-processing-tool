@@ -9,7 +9,6 @@ interface CrpytoCallsSystemProps {
 }
 
 const CryptoCallsSystem: React.FC = () => {
-  // Add any shared state or logic needed for both traders and enthusiasts
 
   // Define the selected platform state and handle change function for traders
   const [selectedPlatform, setSelectedPlatform] = useState<TradingPlatform | null>(null); // Fixed type to TradingPlatform | null

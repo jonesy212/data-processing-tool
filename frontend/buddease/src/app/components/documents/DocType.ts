@@ -3,10 +3,9 @@ import { ParsedData } from "../crypto/parseData";
 import { PDFData } from "./parsePDF";
 
 interface ModifiedDate extends Date {
-  value: Date;
+  value: Date | undefined;
   isModified: boolean;
 }
-
 
 // export type DocType<T> = YourPDFType | YourDocxType | ParsedData<object>;
 interface DocData<T extends object> {

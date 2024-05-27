@@ -84,3 +84,7 @@ const trade: ArbitrageTrade = {
 
 const risks = riskManager.assessRisk(trade);
 console.log('Risk assessment:', risks.length === 0 ? 'No risks identified' : risks.join(', '));
+
+
+export default ArbitrageRiskManager
+export type { ArbitrageTrade, RiskManagementOptions };

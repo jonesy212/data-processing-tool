@@ -101,3 +101,4 @@ export const {
 } = snapshotSlice.actions;
 
 export default snapshotSlice.reducer;
+export type { SnapshotState };

@@ -2,6 +2,7 @@
 import { Table } from 'antd';
 import 'antd/dist/antd.css';
 
+
 // Your component
 const YourTableComponent = () => {
   // Sample data for the table

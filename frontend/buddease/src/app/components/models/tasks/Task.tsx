@@ -25,9 +25,9 @@ interface Task extends Data {
   name?: string | null;
   projectName?: string;
 
-  assignedTo: WritableDraft<User> [] | null; 
+  assignedTo: User[] | null; 
   assigneeId: User["id"];
-  dueDate: Date;
+  dueDate: Date | undefined;
   payload: any;
   priority: "low" | "medium" | "high" | "normal" | "pending";
   type?: AllTypes
@@ -38,7 +38,7 @@ interface Task extends Data {
   dependencies?: Task[];
   previouslyAssignedTo: User[];
   done: boolean;
-  data: Data ;
+  data: Data | undefined;
   [Symbol.iterator](): Iterator<any, any, undefined>;
   source: "user" | "system";
   some?: (
@@ -61,9 +61,9 @@ interface Task extends Data {
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
-const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
+const TaskDetails: React.FC<{ task: Task, completed: boolean }> = ({ task, completed }) => (
   <CommonDetails
-    data={{ task: task } as CommonData<never>}
+    data={{ task: task, completed: completed } as CommonData<never>}
   details={
     {
       _id: task.id,
@@ -72,7 +72,7 @@ const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
       description: task.description,
       status: task.status,
       participants: task.participants,
-
+      updatedAt: task.updatedAt,
       createdAt: task.createdAt,
       // author: task.assignedTo?.name || "",
       startDate: task.createdAt,
@@ -84,6 +84,7 @@ const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
       fakeData: task.fakeData,
       comments: task.comments,
       analysisResults: task.analysisResults,
+      completed: task.isCompleted
       // Add more properties as needed
     }
 
@@ -98,7 +99,7 @@ const tasksDataSource: Record<string, Task> = {
     title: "Task 1",
     name: "Unique Task Identifier",
     description: "Description for Task 1",
-    assignedTo: {} as WritableDraft<User>[], // Example value for assignedTo, an array of User objects
+    assignedTo: [], // Example value for assignedTo, an array of User objects
     assigneeId: "123", // Example value for assigneeId, assuming it's a string
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object
@@ -150,7 +151,7 @@ const tasksDataSource: Record<string, Task> = {
     title: "Task 2",
     name: "Unique Task Identifier",
     description: "Description for Task 2",
-    assignedTo: {} as WritableDraft<User>[], // Example value for assignedTo, an array of User objects
+    assignedTo: [], // Example value for assignedTo, an array of User objects
     assigneeId: "456", // Example value for assigneeId, assuming it's a string
     dueDate: new Date(), // Example value for dueDate, a Date object
     payload: {}, // Example value for payload, an empty object

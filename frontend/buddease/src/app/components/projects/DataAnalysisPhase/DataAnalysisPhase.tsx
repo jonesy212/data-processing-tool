@@ -1,4 +1,5 @@
 import { useAuth } from "@/app/components/auth/AuthContext";
+import { PhaseProps } from "@/app/pages/development/PlanningPhase";
 import { sendDataToBackend } from "@/app/services/dataAnalysisService";
 import {
   DataAnalysisAction,
@@ -18,8 +19,8 @@ enum DataAnalysisSubPhase {
   TRANSFORM_INSIGHTS,
 }
 
-interface DataAnalysisPhaseProps {
-  onSubmit: () => void;
+interface DataAnalysisPhaseProps extends PhaseProps{
+// add props as necess specific to data anaylsis phase
 }
 
 const dataAnalysisReducer = (

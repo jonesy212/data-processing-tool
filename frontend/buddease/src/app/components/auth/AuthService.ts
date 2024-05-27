@@ -1,8 +1,28 @@
+import { DatabaseConfig, DatabaseService } from "@/app/configs/DatabaseConfig";
+import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
 import UserService from "../users/ApiUser";
-
 // AuthService.ts
+
+
+type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
+
 class AuthService {
   private accessTokenKey = "accessToken"; // Key used to store the access token in local storage
+  private databaseService: DatabaseService;
+
+  constructor(databaseConfig: DatabaseConfig) {
+    this.databaseService = new PostgresDatabaseService(databaseConfig); // Assuming you're using PostgreSQL
+  }
+
+    // Public wrapper method to save authentication providers
+    public async saveAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
+      return this.saveAuthenticationProvidersInternal(providers);
+    }
+  
+    // Public wrapper method to get authentication providers
+    public async getAuthenticationProviders(): Promise<AuthenticationProvider[]> {
+      return this.getAuthenticationProvidersInternal();
+    }
 
   // Simulate a login request (replace with actual implementation)
   async login(
@@ -138,9 +158,86 @@ class AuthService {
       throw new Error("Login failed");
     }
   }
+
+
+
+
+
+
+
+  async integrateAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
+    // Example logic to integrate authentication providers
+    // This could involve storing them in a database or cache
+
+    // For demonstration purposes, let's assume we have a list of authentication providers in the state
+    // We'll merge the new providers into the existing list
+    const existingProviders = this.getAuthenticationProviders(); // Assuming this function retrieves existing providers
+    const mergedProviders = [...await existingProviders, ...providers];
+
+    // Assuming we have a method to save the merged providers
+    this.saveAuthenticationProviders(mergedProviders);
+  }
+
+  // Example function to retrieve existing authentication providers from storage
+  
+  // Private method to save authentication providers
+  private async saveAuthenticationProvidersInternal(providers: AuthenticationProvider[]): Promise<void> {
+    try {
+      await this.databaseService.insert(providers, 'authentication_providers');
+      console.log('Authentication providers saved successfully.');
+    } catch (error) {
+      console.error('Error saving authentication providers:', error);
+      throw error;
+    }
+  }
+
+
+  // Private method to get authentication providers
+  private async getAuthenticationProvidersInternal(): Promise<AuthenticationProvider[]> {
+    try {
+      const providers = await this.databaseService.findAll('authentication_providers');
+      console.log('Authentication providers retrieved successfully.');
+      return providers;
+    } catch (error) {
+      console.error('Error retrieving authentication providers:', error);
+      throw error;
+    }
+  }
 }
 
+
+
+// Example usage
+
+const databaseConfig: DatabaseConfig = {
+  url: 'your_database_url',
+  database: 'your_database_name',
+  username: 'your_username',
+  authToken: 'YOUR_AUTH_TOKEN',
+};
+
 // Create a singleton instance of the AuthService
-const authService = new AuthService();
+const authService = new AuthService(databaseConfig);
+
+
+
+// Example usage of saveAuthenticationProviders
+const authenticationProviders: AuthenticationProvider[] = ['Google', 'Facebook', 'Twitter', 'LinkedIn', 'GitHub'];
+authService.saveAuthenticationProviders(authenticationProviders)
+  .then(() => {
+    console.log('Authentication providers saved successfully.');
+  })
+  .catch((error) => {
+    console.error('Error saving authentication providers:', error);
+  });
+
+// Example usage of getAuthenticationProviders
+authService.getAuthenticationProviders()
+  .then((providers) => {
+    console.log('Retrieved authentication providers:', providers);
+  })
+  .catch((error) => {
+    console.error('Error retrieving authentication providers:', error);
+  });
 
 export default authService;

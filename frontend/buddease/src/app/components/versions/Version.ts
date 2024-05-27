@@ -49,7 +49,7 @@ class Version {
   metadata!: {
     author: string;
     timestamp: Date | undefined;
-  };
+  } | undefined;
   draft: boolean;
 
   getVersion?: () => {};
@@ -168,11 +168,13 @@ class Version {
     this.workspaceAdmins = versionInfo.workspaceAdmins;
     this.workspaceMembers = versionInfo.workspaceMembers;
 
-    this.getVersion = async () => {
- 
-      const mergedStructure = this.getStructure();
+    
+  this.getVersion = async (): Promise<string | null> => {
+    // Access getStructure using optional chaining
+    const mergedStructure = this.getStructure?.();
 
-
+    // Check if mergedStructure is not undefined or null
+    if (mergedStructure) {
       // Generate hash of the merged structure
       const hash = crypto
         .createHash("sha256")
@@ -180,17 +182,20 @@ class Version {
         .digest("hex");
 
       return hash;
-    };
+    }
+
+    return null;
+  };
 
     // Assuming FrontendStructure provides a method to get the structure as an array
     const frontendStructureInstance = new FrontendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.frontendStructure = frontendStructureInstance.getStructureAsArray() || []; // Adjust this according to the method in FrontendStructure
-    const backendStructureInsatnce = new BackendStructure(
+    this.frontendStructure = frontendStructureInstance.getStructureAsArray() ?? []; // Use nullish coalescing operator
+    const backendStructureInstance = new BackendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.backendStructure = backendStructureInsatnce.getStructureAsArray() || []; // Adjust this according to the method in BackendStructure
+    this.backendStructure = backendStructureInstance.getStructureAsArray() ?? []; // Use nullish coalescing operator
   }
 
   private async generateStructureHash?(): Promise<string> {
@@ -204,15 +209,16 @@ class Version {
   }
 
 
-  public async setFrontendAndBackendStructure(): Promise<void> {
-    const mergedStructure = this.getStructure();
-
+  public async setFrontendAndBackendStructure?(): Promise<void> {
+    const mergedStructure = this.getStructure ? this.getStructure() : this._structure;
+  
     if (mergedStructure && this.setStructure) {
       this.setStructure({
         merged: Object.values(mergedStructure).flat() as AppStructureItem[],
       });
     }
   }
+  
 
   // Inside the Version class
   public mergeAndHashStructures?(
@@ -371,9 +377,8 @@ class Version {
   setContent?(content: string): void {
     this.content = content;
   }
-  getStructure(): Record<string, AppStructureItem[]> {
-    return this._structure;
-  }
+  getStructure?: () => Record<string, AppStructureItem[]>;
+
 }
 
 export default Version;

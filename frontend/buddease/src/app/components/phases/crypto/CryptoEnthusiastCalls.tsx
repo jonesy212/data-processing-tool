@@ -9,8 +9,10 @@ import userService from '../../users/ApiUser';
 import useTwoFactorAuthentication from '../../hooks/authentication/useTwoFactorAuthentication';
 import processSnapshotList from '@/app/generators/processSnapshotList';
 import DataFilterForm from '../../models/data/DataFilterForm';
+import { TraderCallsProps } from '../../trading/Trades';
+import { authToken } from '../../auth/authToken';
 
-interface CryptoEnthusiastCallsProps {
+interface CryptoEnthusiastCallsProps extends TraderCallsProps {
   // Define any props needed for the component
 }
 
@@ -25,7 +27,7 @@ const CryptoEnthusiastCalls: React.FC<CryptoEnthusiastCallsProps> = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = ''; // Add your user ID here
-      const user = await userService.fetchUser(userId);
+      const user = await userService.fetchUser(userId, authToken);
       // Process snapshot data and update state
       const processedSnapshotList = processSnapshotList(user.snapshots);
       setSnapshotList(processedSnapshotList);
@@ -45,7 +47,11 @@ const CryptoEnthusiastCalls: React.FC<CryptoEnthusiastCallsProps> = () => {
     <div>
       <h2>Crypto Enthusiast Calls</h2>
       {/* Add any additional components or elements as needed */}
-      <DataFilterForm onSubmit={handleSubmit} options={{}} />
+      <DataFilterForm
+        onSubmit={handleSubmit}
+        options={{}}
+        onSearch={async ()=> {}}
+      />
       {/* Display filtered data or other components based on the submitted filters */}
       {/* Add any additional logic or UI elements here */}
       <ListGenerator items={snapshotList.toArray()} />

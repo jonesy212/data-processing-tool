@@ -1,10 +1,10 @@
 // NoteData.ts
 
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { DocumentSize } from "../models/data/StatusType";
 import { Collaborator } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import Version from "../versions/Version";
-import { DocumentSize } from "../models/data/StatusType";
 
 
 
@@ -101,3 +101,5 @@ export interface NoteAnimationOptions {
   duration?: number;
   // Add more animation options if needed
 }
+
+export type{ Highlight}

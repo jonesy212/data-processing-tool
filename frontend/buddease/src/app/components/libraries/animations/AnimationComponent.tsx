@@ -19,12 +19,11 @@ export interface AnimatedComponentRef extends DynamicHookResult {
 const AnimatedComponent = forwardRef<
   AnimatedComponentRef,
   AnimatedComponentProps
-  >((_props, ref) => {
-    const { animationType = 'slideIn', duration = 1000 } = _props; // Destructure props with default values
+>((_props, ref) => {
+  const { animationType = "slideIn", duration = 1000 } = _props; // Destructure props with default values
   const [isVisible, setIsVisible] = useState(false);
   const [animationTime, setAnimationTime] = useState(1000);
   const [opacity, setOpacity] = useState(1);
-
 
   const accessToken = authService.getAccessToken() as string;
 
@@ -33,19 +32,19 @@ const AnimatedComponent = forwardRef<
 
   // Destructure the required properties or methods from the result of createDynamicHook
   const { toggleActivation, startAnimation, stopAnimation, animateIn } =
-   createDynamicHook({
-     condition: async () => isVisible,
-     asyncEffect: async () => {
-      setIsVisible(true);
-    },
-    resetIdleTimeout: () => {
-      // Reset idle timeout
-    },
-     isActive: false,
+    createDynamicHook({
+      condition: async () => isVisible,
+      asyncEffect: async () => {
+        setIsVisible(true);
+        return () => {}; // Return a cleanup function to satisfy the type requirement
+      },
+      resetIdleTimeout: async () => {
+        // Reset idle timeout
+      },
+      isActive: false,
+    });
 
-  });
-
-// Now you can use toggleActivation, startAnimation, stopAnimation, and animateIn directly
+  // Now you can use toggleActivation, startAnimation, stopAnimation, and animateIn directly
 
   useImperativeHandle(
     ref,
@@ -57,14 +56,14 @@ const AnimatedComponent = forwardRef<
       setOpacity: (opacity: number) => {
         setOpacity(opacity);
       },
-      
+
       startAnimation,
       stopAnimation,
       animateIn: () => {
         startAnimation();
       },
-      idleTimeoutId:  useIdleTimeout().idleTimeoutId,
-      startIdleTimeout: useIdleTimeout().startIdleTimeout,
+      idleTimeoutId: useIdleTimeout({}).idleTimeoutId,
+      startIdleTimeout: useIdleTimeout({}).startIdleTimeout,
       accessToken: accessToken,
       isActive: isVisible,
       loopDuration, // Pass loop duration to dynamic hook
@@ -98,7 +97,9 @@ const AnimatedComponent = forwardRef<
         <h2>This is an Animated Component</h2>
         <p>Active: {isVisible ? "Yes" : "No"}</p>
         {/* Pass accessToken when calling toggleActivation */}
-        <button onClick={() => toggleActivation(accessToken)}>Toggle Activation</button>
+        <button onClick={() => toggleActivation(accessToken)}>
+          Toggle Activation
+        </button>
         <button onClick={startAnimation}>Start Animation</button>
         <button onClick={stopAnimation}>Stop Animation</button>
         <button onClick={() => animateIn()}>Animate In</button>

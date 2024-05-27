@@ -9,6 +9,7 @@ import { useState } from 'react';
 import useErrorHandling from '../components/hooks/useErrorHandling';
 import { Data } from '../components/models/data/Data';
 import determineFileType from './DetermineFileType';
+import { LanguageEnum } from '../components/communications/LanguageEnum';
 
 // Define interfaces for metadata structures
 interface StructuredMetadata {
@@ -43,7 +44,7 @@ interface VideoMetadata {
   uploader: string;
   tags: string[];
   categories: string[];
-  language: string;
+  language: LanguageEnum;
   location: string;
   data: Data; // Assuming Data is a custom data type
 }

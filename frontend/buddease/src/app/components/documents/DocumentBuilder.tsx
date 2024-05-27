@@ -18,6 +18,7 @@ import {
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
+import { CodingLanguageEnum, LanguageEnum } from "../communications/LanguageEnum";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
@@ -39,6 +40,7 @@ import axiosInstance from "../security/csrfToken";
 import SharingOptions from "../shared/SharingOptions";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { AllStatus } from "../state/stores/DetailsListStore";
+import { AllTypes } from "../typings/PropTypes";
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
@@ -55,6 +57,7 @@ import {
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { ModifiedDate } from "./DocType";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -94,14 +97,30 @@ export interface DocumentData extends CommonData<Data> {
   currentContent?: string;
   previousMetadata: StructuredMetadata | undefined;
   currentMetadata: StructuredMetadata | undefined;
-  accessHistory: any[];
+  accessHistory: AccessHistory[];
   lastModifiedDate: { value: Date; isModified: boolean } | undefined; // Initialize as not modified
   versionData: VersionData | undefined;
   version: Version | undefined | null; // Update the type to accept null values
-  
+  visibility: AllTypes
   updatedDocument?: DocumentData; // Add property to track updated document data
   // Add more properties if needed
 }
+
+
+interface RevisionOptions {
+  enabled: boolean;
+  author: string;
+  dataFormat: string;
+}
+
+
+// Now, we can use RevisionOptions as the type for revisions
+const defaultRevisionOptions: RevisionOptions = {
+  enabled: true,
+  author: "default-author",
+  dataFormat: "DD-MM-YYYY",
+};
+
 
 // Define a custom type/interface that extends ProjectPhaseTypeEnum and includes additional properties
 export interface CustomProjectPhaseType {
@@ -216,7 +235,9 @@ const documentBuilderProps: DocumentBuilderProps = {
   onConfigChange: (newConfig: DocumentBuilderConfig) => {
     setOptions((prevOptions) => ({
       ...prevOptions,
-      limit: newConfig.limit,
+      page: 0,
+      levels: newConfig.levels,
+      limit: newConfig.limit || 0,
       metadata:
         newConfig.metadata ||
         {
@@ -233,6 +254,7 @@ const documentBuilderProps: DocumentBuilderProps = {
       frontendStructure:
         newConfig.frontendStructure || new FrontendStructure(projectPath),
       documentPhase: newConfig.documentPhase || "",
+      visibility: newConfig.visibility || Visibility.Private,
       version:
         newConfig.version ||
         Version.create({
@@ -244,7 +266,7 @@ const documentBuilderProps: DocumentBuilderProps = {
           data: {} as Data[],
           url: `${API_BASE_URL}`,
           versionHistory: {
-            versions: []
+            versions: [],
           },
           checksum: "",
           draft: false,
@@ -275,8 +297,8 @@ const documentBuilderProps: DocumentBuilderProps = {
           workspaceViewers: [],
           workspaceAdmins: [],
           workspaceMembers: [],
-          createdAt: new Date,
-          updatedAt: undefined
+          createdAt: new Date(),
+          updatedAt: undefined,
         }),
 
       backendStructure: newConfig.backendStructure || {
@@ -314,7 +336,7 @@ const documentBuilderProps: DocumentBuilderProps = {
       size: newConfig.size || DocumentSize.A4,
       documentSize: newConfig.documentSize || {
         width: 595.28,
-        height: 841.89
+        height: 841.89,
       },
       orientation: newConfig.orientation || Orientation.Portrait,
       animations: newConfig.animations || {
@@ -322,7 +344,6 @@ const documentBuilderProps: DocumentBuilderProps = {
         dragElasticity: 0.1,
         showDuration: 300,
       },
-      visibility: newConfig.visibility || Visibility.Private,
       font: newConfig.font,
       layout: newConfig.layout || Layout.SingleColumn,
       panels: newConfig.panels || {
@@ -346,6 +367,7 @@ const documentBuilderProps: DocumentBuilderProps = {
         enabled: false,
         headingLevels: [1, 2, 3],
         format: "%1. %2",
+        levels: 0,
       },
 
       bold: newConfig.bold || {
@@ -374,30 +396,37 @@ const documentBuilderProps: DocumentBuilderProps = {
 
       links: newConfig.links || {
         enabled: true,
+        color: newConfig.color,
+        underline: newConfig.underline,
         internal: {
           enabled: true,
         },
         external: {
           enabled: true,
         },
-      },
-     
+        },
+
       embeddedContent: newConfig.embeddedContent || {
         enabled: true,
-        language: 'en'
+        allow: true,
+        language: LanguageEnum.English,
       },
 
       comments: newConfig.comments || {
         enabled: true,
+        author: "string",
+        dateFormat: "string",
       },
 
       embeddedMedia: newConfig.embeddedMedia || {
         enabled: true,
+        allow: true
       },
       embeddedCode: newConfig.embeddedCode || {
         enabled: true,
-        language: "js",
+        language: CodingLanguageEnum.JavaScript,
         theme: "monokai",
+        allow: true
       },
       styles: newConfig.styles || [],
       image: newConfig.image || {
@@ -412,11 +441,9 @@ const documentBuilderProps: DocumentBuilderProps = {
         enabled: false,
         text: "",
         color: "#00000033",
-        opacity: 0.2
+        opacity: 0.2,
       },
       tableCells: newConfig.tableCells || [],
-      // tableColumns: newConfig.tableColumns || [],
-      tableStyles: newConfig.tableStyles || [],
       codeBlock: newConfig.codeBlock || {
         enabled: true,
       },
@@ -438,6 +465,7 @@ const documentBuilderProps: DocumentBuilderProps = {
       unorderedTodoList: newConfig.unorderedTodoList || {
         enabled: true,
       },
+      color: newConfig.color,
       colorCoding: newConfig.colorCoding || {
         enabled: true,
       },
@@ -459,9 +487,7 @@ const documentBuilderProps: DocumentBuilderProps = {
       customSettings: newConfig.customSettings || {},
       documents: newConfig.documents || [],
       includeType: newConfig.includeType || IncludeType.Embed,
-      footnote: newConfig.footnote || {
-        enabled: true,
-      },
+    
       includeTitle: newConfig.includeTitle || {
         enabled: true,
       },
@@ -477,13 +503,13 @@ const documentBuilderProps: DocumentBuilderProps = {
       headerFooterOptions: newConfig.headerFooterOptions || {
         enabled: true,
         header: {
-          enabled: true
+          enabled: true,
         },
         footer: {
-          enabled: true
-        }
+          enabled: true,
+        },
       },
-      value: 0,
+      value: newConfig.value || 0,
       userSettings: newConfig.userSettings || {},
       dataVersions: newConfig.dataVersions || [],
       customProperties: newConfig.customProperties || {},
@@ -493,34 +519,46 @@ const documentBuilderProps: DocumentBuilderProps = {
         levels: [
           {
             name: "100%",
-            value: 1
+            value: 1,
           },
           {
             name: "125%",
-            value: 1.25
+            value: 1.25,
           },
           {
             name: "150%",
-            value: 3
-          }
-        ]
+            value: 3,
+          },
+        ],
       },
-      showRuler: true,
-      // rulerUnit: "px",
-      showDocumentOutline: true,
-      showComments: true,
-      showRevisions: true,
-      spellCheck: true,
-      grammarCheck: true,
-      language: false || {
+      showRuler: newConfig.showRuler !== undefined ? newConfig.showRuler : true,
+      showDocumentOutline:
+        newConfig.showDocumentOutline !== undefined
+          ? newConfig.showDocumentOutline
+          : true,
+      showComments:
+        newConfig.showComments !== undefined ? newConfig.showComments : true,
+      showRevisions:
+        newConfig.showRevisions !== undefined ? newConfig.showRevisions : true,
+      spellCheck:
+        newConfig.spellCheck !== undefined ? newConfig.spellCheck : true,
+      grammarCheck:
+        newConfig.grammarCheck !== undefined ? newConfig.grammarCheck : true,
+      language: newConfig.language || {
         enabled: true,
       },
-      bookmarks: false || { enabled: true },
-      crossReferences: false || { enabled: true },
-      footnotes: false || { enabled: true },
-      endnotes: false || { enabled: true },
-      revisions: false || { enabled: true },
-      defaultZoomLevel: 100,
+      bookmarks: newConfig.bookmarks || { enabled: true },
+      crossReferences: newConfig.crossReferences || { enabled: true, format: "" },
+      footnotes: newConfig.footnotes || { enabled: true, author: "string", format: "" },
+      endnotes: newConfig.endnotes || { enabled: true, author: "string",  format: "" },
+      revisions: newConfig.revisions || { enabled: true, author: "string", dateFormat: "string" },
+      defaultZoomLevel: newConfig.defaultZoomLevel || 100,
+      previousMetadata: newConfig.previousMetadata !== undefined ? newConfig.previousMetadata : {},
+      currentMetadata: newConfig.currentMetadata !== undefined ? newConfig.currentMetadata : {},
+      accessHistory: newConfig.accessHistory !== undefined ? newConfig.accessHistory : [],
+      lastModifiedDate: newConfig.lastModifiedDate !== undefined ? newConfig.lastModifiedDate: {} as ModifiedDate,
+      tableStyles: newConfig.tableStyles !== undefined ? newConfig.tableStyles : {},
+      footnote: newConfig.footnote !== undefined ? newConfig.footnote : { enabled: true, format: "" }
     }));
   },
   setOptions: {} as React.Dispatch<React.SetStateAction<DocumentOptions>>,
@@ -871,3 +909,4 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 };
 
 export default DocumentBuilder;
+export type { RevisionOptions };

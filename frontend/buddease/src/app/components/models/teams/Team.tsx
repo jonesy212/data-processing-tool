@@ -27,6 +27,7 @@ import TeamData from "./TeamData";
 import { Member, TeamMember } from './TeamMembers';
 
 import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
+import { CodingLanguageEnum, LanguageEnum } from '../../communications/LanguageEnum';
 
 
 
@@ -61,10 +62,11 @@ interface Team extends Data {
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
+  percentage: number;
   data?: TeamData;
   members?: Member[]
   then?: (callback: (newData: Snapshot<Data>) => void) => void;
-  pointOfContact?: TeamMember[] | null;
+  pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;
   collaborationTools?: TeamData["collaborationTools"];
@@ -73,7 +75,7 @@ interface Team extends Data {
 
 
   assignedProjects: Project[];
-  reassignedProjects: { projectId: string, project: Project; previousTeam: Team; reassignmentDate: Date }[];
+  reassignedProjects: { projectId: string, projectName: Project['name']; previousTeam: Team; reassignmentDate: Date }[];
   assignProject(team: Team, project: Project): void
   reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
   unassignProject(team: Team, project: Project): void;
@@ -147,14 +149,17 @@ const team: Team = {
         idleTimeout: {
           intervalId: undefined,
           isActive: false,
-          animateIn: () => {},
-          startAnimation: () => {},
-          stopAnimation: () => {},
+          animateIn: () => { },
+          startAnimation: () => { },
+          stopAnimation: () => { },
           resetIdleTimeout: function (): Promise<void> {
             return Promise.resolve();
-                    },
+          },
           idleTimeoutId: null,
-          startIdleTimeout: undefined,
+          startIdleTimeout: (
+            timeoutDuration: number,
+            onTimeout: () => void | undefined
+          ) => { },
           toggleActivation: async () => false,
         },
         startIdleTimeout: function (
@@ -162,8 +167,9 @@ const team: Team = {
           onTimeout: () => void
         ): void {
           if (this.idleTimeoutId) {
-            clearTimeout(this.idleTimeoutId);
+            clearTimeout(String(this.idleTimeoutId));
           }
+          this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
         },
         idleTimeoutDuration: 0,
         activePhase: "",
@@ -181,7 +187,7 @@ const team: Team = {
         loggingAndNotificationsEnabled: false,
         securityFeaturesEnabled: false,
         theme: "",
-        language: "",
+        language: "" as LanguageEnum | CodingLanguageEnum,
         fontSize: 0,
         darkMode: false,
         enableEmojis: false,
@@ -245,7 +251,7 @@ const team: Team = {
             case "communicationMode":
               addFilter("communicationMode", "equal", options.communicationMode);
               break;
-          case "defaultFileType":
+            case "defaultFileType":
               // Add filter for default file type
               addFilter("defaultFileType", "equal", options.defaultFileType);
               break;
@@ -256,7 +262,6 @@ const team: Team = {
               break;
           }
         },
-        
       },
       interests: [],
       privacySettings: undefined,
@@ -589,11 +594,10 @@ const team: Team = {
     team.progress = {
       id: team._id,
       value: progressValue,
-      label: `${progressValue}% completed`,// Example label
+      label: `${progressValue}% completed`, // Example label
       current: 0, // Update current progress value
       max: 100, // Set max progress value
       percentage: 0
-
     };
   },
   currentProject: null,
@@ -605,6 +609,7 @@ const team: Team = {
   analysisType: AnalysisTypeEnum.PROJECT,
   analysisResults: [],
   videoData: {} as VideoData,
+  percentage: 0
 };
 
 

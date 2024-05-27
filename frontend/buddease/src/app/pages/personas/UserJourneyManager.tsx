@@ -1,7 +1,10 @@
 // UserJourneyManager.tsx
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
-import { DevelopmentPhaseEnum, ProjectPhaseTypeEnum } from "@/app/components/models/data/StatusType";
+import {
+  DevelopmentPhaseEnum,
+  ProjectPhaseTypeEnum,
+} from "@/app/components/models/data/StatusType";
 import { PhaseActions } from "@/app/components/phases/PhaseActions";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import { User, UserData } from "@/app/components/users/User";
@@ -9,7 +12,10 @@ import IdeaCreationPhase from "@/app/components/users/userJourney/IdeaCreationPh
 import IdeationPhase from "@/app/components/users/userJourney/IdeationPhase";
 import axios from "axios";
 import React, { useState } from "react";
-import { DevelopmentPhase, PlanningPhase } from "../development/DevelopmentPhase";
+import {
+  DevelopmentPhase,
+  PlanningPhase,
+} from "../development/DevelopmentPhase";
 import OfferPage from "../onboarding/OfferPage";
 import onboardingQuestionnaireData from "../onboarding/OnboardingQuestionnaireData";
 import WelcomePage from "../onboarding/WelcomePage";
@@ -17,12 +23,21 @@ import UserQuestionnaire from "./UserQuestionnaire";
 import ContentManagementPhase from "@/app/components/phases/ContentManagementPhase";
 import { TeamCreationPhase } from "@/app/components/phases/actions/TeamCreation";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
-import FeedbackProcess, { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
+import FeedbackProcess, {
+  FeedbackPhaseEnum,
+} from "@/app/components/phases/FeedbackPhase";
 import { TaskManagementPhase } from "@/app/components/projects/TaskManagementPhase";
 import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
 import TaskProcess from "@/app/components/phases/TaskProcess";
 import UserRoles from "@/app/components/users/UserRoles";
- 
+import {
+  ContentItemSelection,
+  ContentEditing,
+  ContentCreation,
+  ContentOrganization,
+  ContentPublishing,
+} from "@/app/components/phases/ContentMaintenance";
+import TeamCreationProcess from "@/app/components/phases/actions/TeamCreationManager";
 
 export enum OnboardingPhase {
   REGISTER,
@@ -35,19 +50,20 @@ export enum OnboardingPhase {
   TWO_FACTOR_SETUP,
   PAYMENT_PROCESS,
   NEXT_PHASE,
-  IDEA_SUBMISSION
+  IDEA_SUBMISSION,
 }
 
-type PhaseOptions = OnboardingPhase | DevelopmentPhaseEnum | ContentManagementPhaseEnum;
+type PhaseOptions =
+  | OnboardingPhase
+  | DevelopmentPhaseEnum
+  | ContentManagementPhaseEnum;
 interface UserJourneyManagerProps {
   user: User;
   phaseName: PhaseOptions;
 }
 
 // Define the mapping of phases to components
-const phaseComponents: Record<string, React.FC<{
-  
-}>> = {
+const phaseComponents: Record<string, React.FC<any>> = {
   // Onboarding Phases
   [OnboardingPhase.EMAIL_CONFIRMATION]: EmailConfirmationPage,
   [OnboardingPhase.WELCOME]: WelcomePage,
@@ -59,76 +75,78 @@ const phaseComponents: Record<string, React.FC<{
   [DevelopmentPhaseEnum.PLANNING]: IdeationPhase,
   [DevelopmentPhaseEnum.IDEA_CREATION]: IdeaCreationPhase,
 
-  // // Content Management Phases
-  // [ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION]: ContentManagementPhaseEnum,
-  // [ContentManagementPhase.CONTENT_EDITING]: ContentManagementPhase,
-  // [ContentManagementPhase.CONTENT_CREATION]: ContentManagementPhase,
-  // [ContentManagementPhase.CONTENT_ORGANIZATION]: ContentManagementPhase,
-  // [ContentManagementPhase.CONTENT_PUBLISHING]: ContentManagementPhase,
+  // Content Management Phases
+  [ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION]: ContentItemSelection,
+  [ContentManagementPhaseEnum.CONTENT_EDITING]: ContentEditing,
+  [ContentManagementPhaseEnum.CONTENT_CREATION]: ContentCreation,
+  [ContentManagementPhaseEnum.CONTENT_ORGANIZATION]: ContentOrganization,
+  [ContentManagementPhaseEnum.CONTENT_PUBLISHING]: ContentPublishing,
 
-  // // Feedback Phases
-  // [FeedbackPhaseEnum.FEEDBACK_SELECTION]: FeedbackProcess,
-  // [FeedbackPhaseEnum.FEEDBACK_PROVIDING]: FeedbackProcess,
-  // [FeedbackPhaseEnum.FEEDBACK_PROCESSING]: FeedbackProcess,
-  // [FeedbackPhaseEnum.FEEDBACK_ANALYSIS]: FeedbackProcess,
-  // [FeedbackPhaseEnum.FEEDBACK_REPORTING]: FeedbackProcess,
+  // Feedback Phases
+  [FeedbackPhaseEnum.FEEDBACK_SELECTION]: FeedbackProcess,
+  [FeedbackPhaseEnum.FEEDBACK_PROVIDING]: FeedbackProcess,
+  [FeedbackPhaseEnum.FEEDBACK_PROCESSING]: FeedbackProcess,
+  [FeedbackPhaseEnum.FEEDBACK_ANALYSIS]: FeedbackProcess,
+  [FeedbackPhaseEnum.FEEDBACK_REPORTING]: FeedbackProcess,
 
-  // // Task Phases
-  // [TaskPhase.Planning]: TaskProcess,
-  // [TaskPhase.Execution]: TaskProcess,
-  // [TaskPhase.Testing]: TaskProcess,
-  // [TaskPhase.Completion]: TaskProcess,
+  // Task Phases
+  [TaskPhase.Planning]: TaskProcess,
+  [TaskPhase.Execution]: TaskProcess,
+  [TaskPhase.Testing]: TaskProcess,
+  [TaskPhase.Completion]: TaskProcess,
 
-  // // Team Creation Phases
-  // [TeamCreationPhase.QUESTIONNAIRE]: TeamCreationProcess,
-  // [TeamCreationPhase.CONFIRMATION]: TeamCreationProcess,
+  // Team Creation Phases
+  [TeamCreationPhase.QUESTIONNAIRE]: TeamCreationProcess,
+  [TeamCreationPhase.CONFIRMATION]: TeamCreationProcess,
 
-  // // Trading Phases
-  // [TradingPhase.VERIFICATION]: TradingProcess,
-  // [TradingPhase.RISK_ASSESSMENT]: TradingProcess,
-  // [TradingPhase.TRADER_TYPE_SELECTION]: TradingProcess,
-  // [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: TradingProcess,
-  // [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: TradingProcess,
-  // [TradingPhase.PROFESSIONAL_TRADER_CALLS]: TradingProcess,
-  // [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
+  // Trading Phases
+  [TradingPhase.VERIFICATION]: TradingProcess,
+  [TradingPhase.RISK_ASSESSMENT]: TradingProcess,
+  [TradingPhase.TRADER_TYPE_SELECTION]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_CALLS]: TradingProcess,
+  [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
 
-  // // Idea Lifecycle Phases
-  // [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
-  // [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
-  // [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
+  // Idea Lifecycle Phases
+  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
+  [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
+  [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
 
-  // // Post-Launch Activities Phases
-  // [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]: PostLaunchActivitiesProcess,
-  // [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]: PostLaunchActivitiesProcess,
+  // Post-Launch Activities Phases
+  [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]:
+    PostLaunchActivitiesProcess,
+  [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]:
+    PostLaunchActivitiesProcess,
 
-  // // Task Management Phases
-  // [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
-  // [TaskManagementPhase.DATA_ANALYSIS]: TaskManagementProcess,
-  // [TaskManagementPhase.PLANNING]: TaskManagementProcess,
-  // [TaskManagementPhase.EXECUTION]: TaskManagementProcess,
-  // [TaskManagementPhase.TESTING]: TaskManagementProcess,
-  // [TaskManagementPhase.COMPLETION]: TaskManagementProcess,
+  // Task Management Phases
+  [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
+  [TaskManagementPhase.DATA_ANALYSIS]: TaskManagementProcess,
+  [TaskManagementPhase.PLANNING]: TaskManagementProcess,
+  [TaskManagementPhase.EXECUTION]: TaskManagementProcess,
+  [TaskManagementPhase.TESTING]: TaskManagementProcess,
+  [TaskManagementPhase.COMPLETION]: TaskManagementProcess,
 
-  // // Data Analysis Sub Phases
-  // [DataAnalysisSubPhase.DEFINE_OBJECTIVE]: DataAnalysisSubProcess,
-  // [DataAnalysisSubPhase.DATA_COLLECTION]: DataAnalysisSubProcess,
-  // [DataAnalysisSubPhase.CLEAN_DATA]: DataAnalysisSubProcess,
-  // [DataAnalysisSubPhase.DATA_ANALYSIS]: DataAnalysisSubProcess,
-  // [DataAnalysisSubPhase.DATA_VISUALIZATION]: DataAnalysisSubProcess,
-  // [DataAnalysisSubPhase.TRANSFORM_INSIGHTS]: DataAnalysisSubProcess,
+  // Data Analysis Sub Phases
+  [DataAnalysisSubPhase.DEFINE_OBJECTIVE]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.DATA_COLLECTION]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.CLEAN_DATA]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.DATA_ANALYSIS]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.DATA_VISUALIZATION]: DataAnalysisSubProcess,
+  [DataAnalysisSubPhase.TRANSFORM_INSIGHTS]: DataAnalysisSubProcess,
 
-  // // Progress Phases
-  // [ProgressPhase.Ideation]: ProgressPhaseProcess,
-  // [ProgressPhase.TeamFormation]: ProgressPhaseProcess,
-  // [ProgressPhase.ProductDevelopment]: ProgressPhaseProcess,
-  // [ProgressPhase.LaunchPreparation]: ProgressPhaseProcess,
-  // [ProgressPhase.DataAnalysis]: ProgressPhaseProcess,
+  // Progress Phases
+  [ProgressPhase.Ideation]: ProgressPhaseProcess,
+  [ProgressPhase.TeamFormation]: ProgressPhaseProcess,
+  [ProgressPhase.ProductDevelopment]: ProgressPhaseProcess,
+  [ProgressPhase.LaunchPreparation]: ProgressPhaseProcess,
+  [ProgressPhase.DataAnalysis]: ProgressPhaseProcess,
 
-  // // User Support Phases
-  // [UserSupportPhase.PLANNING]: UserSupportProcess,
-  // [UserSupportPhase.EXECUTION]: UserSupportProcess,
-  // [UserSupportPhase.MONITORING]: UserSupportProcess,
-  // [UserSupportPhase.CLOSURE]: UserSupportProcess,
+  // User Support Phases
+  [UserSupportPhase.PLANNING]: UserSupportProcess,
+  [UserSupportPhase.EXECUTION]: UserSupportProcess,
+  [UserSupportPhase.MONITORING]: UserSupportProcess,
+  [UserSupportPhase.CLOSURE]: UserSupportProcess,
 };
 
 const UserJourneyManager: React.FC = () => {
@@ -201,34 +219,30 @@ const UserJourneyManager: React.FC = () => {
     setCurrentPhase(phase);
   };
 
-  const handleIdeaSubmission = (ideaData: any) => { 
+  const handleIdeaSubmission = (ideaData: any) => {
     // Logic for handling idea submission
     console.log("Idea submission data:", ideaData);
     // Example: Send idea data to the server using Axios
     // Replace this with your actual API endpoint and data
-    axios.post("/api/idea-submission", ideaData)
-      .then((response) => {
-        // Handle successful submission
-        console.log("Idea submitted successfully:", response.data);
-        // Transition to the next phase
-        PhaseActions.setCurrentPhase(ProjectPhaseTypeEnum.Ideation);
-        //  Transition to the next phase after idea submission
-        PhaseActions.setNextPhase(ProjectPhaseTypeEnum.TeamFormation);
-      });
-  }
-  
+    axios.post("/api/idea-submission", ideaData).then((response) => {
+      // Handle successful submission
+      console.log("Idea submitted successfully:", response.data);
+      // Transition to the next phase
+      PhaseActions.setCurrentPhase(ProjectPhaseTypeEnum.Ideation);
+      //  Transition to the next phase after idea submission
+      PhaseActions.setNextPhase(ProjectPhaseTypeEnum.TeamFormation);
+    });
+  };
 
   const handleQuestionnaireSubmitWrapper = async (userResponses: any) => {
     await handleQuestionnaireSubmit(userResponses);
   };
 
-
   const PhaseComponent = phaseComponents[Number(currentPhase.phase)];
-
 
   return (
     <div>
-            <PhaseComponent
+      <PhaseComponent
         phaseName={currentPhase.phase}
         onSubmit={handleQuestionnaireSubmitWrapper}
         onComplete={handleQuestionnaireSubmit}
@@ -250,7 +264,9 @@ const UserJourneyManager: React.FC = () => {
           onComplete={handleQuestionnaireSubmit}
           onSubmitProfile={handleProfileSetup}
           onIdeaSubmission={() => {
-            setCurrentPhase({ phase: DevelopmentPhaseEnum.IDEA_SUBMISSION.toString() });
+            setCurrentPhase({
+              phase: DevelopmentPhaseEnum.IDEA_SUBMISSION.toString(),
+            });
           }}
         />
       )}
@@ -263,14 +279,17 @@ const UserJourneyManager: React.FC = () => {
       )}
       {currentPhase.phase === PlanningPhase.phase && (
         <IdeationPhase
-        phaseName="Ideation"
-        onTransition={handlePhaseTransition} />
+          phaseName="Ideation"
+          onTransition={handlePhaseTransition}
+        />
       )}
       {currentPhase.phase ===
         DevelopmentPhaseEnum[DevelopmentPhaseEnum.Deployment] && (
         <IdeaCreationPhase
+          duration={0}
           onSubmit={handleIdeaSubmission}
-          onTransition={handlePhaseTransition} />
+          onTransition={handlePhaseTransition}
+        />
       )}
 
       {/* Add more phases as needed */}

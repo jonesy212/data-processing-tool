@@ -4,15 +4,15 @@ import { Task } from "../models/tasks/Task";
 import LaunchPhase from "../phases/onboarding/LaunchPhase";
  import DataAnalysisPhase from "./DataAnalysisPhase/DataAnalysisPhase";
 import TaskManagerComponent from '../tasks/TaskManagerComponent';
-import { PlanningPhase } from "@/app/pages/development/DevelopmentPhase";
+import  PlanningPhase from "@/app/pages/development/DevelopmentPhase";
 
 export enum TaskManagementPhase {
-  LAUNCH,
-  DATA_ANALYSIS,
-  PLANNING,
-  EXECUTION,
-  TESTING,
-  COMPLETION,
+  LAUNCH= "LAUNCH",
+  DATA_ANALYSIS= "DATA_ANALYSIS",
+  PLANNING= "PLANNING",
+  EXECUTION ="EXECUTION",
+  TESTING="TESTING",
+  COMPLETION="",
 }
 
 const TaskManagementManager: React.FC = () => {

@@ -1,5 +1,5 @@
 import fs from 'fs';
-// Uogger.ts
+// Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";

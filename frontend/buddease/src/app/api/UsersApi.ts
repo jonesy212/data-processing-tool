@@ -114,6 +114,7 @@ export const fetchUserData = async (req: any, res: any) => {
 
 
 
+
 // Helper function to save user profile to database (example)
 const saveToDatabase = async (userProfile: any) => {
   try {

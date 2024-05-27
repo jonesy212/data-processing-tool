@@ -1,15 +1,26 @@
 // BlogAndContentEditor.tsx
-import React, { useState } from 'react';
-import { EditorState } from 'draft-js';
-import Toolbar from '../../documents/Toolbar';
-import ContentType from '../../typings/ContentType';
-import { ToolbarOptions } from '../../documents/ToolbarOptions';
+import { DetailsItemCommon } from "@/app/generators/ListGenerator";
+import { EditorState } from "draft-js";
+import React, { useState } from "react";
+import Toolbar from "../../documents/Toolbar";
+import { ToolbarOptions } from "../../documents/ToolbarOptions";
+import ContentType from "../../typings/ContentType";
+import { Data } from "../data/Data";
 
-
-
-export type ActiveDashboardType = "tasks" | "settings" | "communication" | "documents" | "crypto" | "editorState" | "community" | "analytics" | "ui" | "onEditorStateChange"
+export type ActiveDashboardType =
+  | "tasks"
+  | "settings"
+  | "communication"
+  | "documents"
+  | "crypto"
+  | "editorState"
+  | "community"
+  | "analytics"
+  | "ui"
+  | "onEditorStateChange"
+  | "content";
 interface BlogAndContentEditorProps {
-  contentItemId: string;
+  contentItemId: string | DetailsItemCommon<Data> ;
   editorState: EditorState;
   initialContent: string;
   activeDashboard: ActiveDashboardType;
@@ -17,8 +28,7 @@ interface BlogAndContentEditorProps {
   contentType: {
     label: string;
     value: string;
-  }
-  
+  };
 }
 
 const BlogAndContentEditor: React.FC<BlogAndContentEditorProps> = ({
@@ -50,6 +60,17 @@ const BlogAndContentEditor: React.FC<BlogAndContentEditorProps> = ({
     ui: [],
     onEditorStateChange: [],
     editorState: [],
+    content: [],
+    userManagement: [],
+    notifications: [],
+    integrations: [],
+    mediaManagement: [],
+    projectManagement: [],
+    ecommerce: [],
+    reporting: [],
+    contentCreation: [],
+    customerSupport: [],
+    marketing: [],
   };
 
   return (

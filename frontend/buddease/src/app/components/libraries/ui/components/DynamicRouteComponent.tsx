@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface DynamicRouteComponentProps {
-  dynamicData: string;
+  dynamicData: string | null;
 }
 
 const DynamicRouteComponent: React.FC<DynamicRouteComponentProps> = ({ dynamicData }) => {

@@ -1,10 +1,9 @@
-import { FileLogger } from '@/app/components/logging/Logger';
-import ErrorHandler from '@/app/shared/ErrorHandler';
-import { ErrorInfo, useState } from 'react';
-import safeParseData from '../crypto/SafeParseData';
-import { ParsedData } from '../crypto/parseData';
-import { YourResponseType } from '../typings/types';
-import { Data } from '../models/data/Data';
+import { FileLogger } from "@/app/components/logging/Logger";
+import ErrorHandler from "@/app/shared/ErrorHandler";
+import { ErrorInfo, useState } from "react";
+import safeParseData from "../crypto/SafeParseData";
+import { ParsedData } from "../crypto/parseData";
+import { YourResponseType } from "../typings/types";
 
 const useErrorHandling = () => {
   const [error, setError] = useState<string | null>(null);
@@ -24,20 +23,22 @@ const useErrorHandling = () => {
     setError(null);
   };
 
-
   // Function to safely parse data with error handling
-  const parseDataWithErrorHandling = (data: YourResponseType[], threshold: number): ParsedData<Data>[] => {
+
+  const parseDataWithErrorHandling = (
+    data: YourResponseType[],
+    threshold: number
+  ): ParsedData<YourResponseType>[] => {
     try {
-      // Call safeParseData function
-      return safeParseData(data, threshold);
+      // Call safeParseData function with YourResponseType as the type argument
+      return safeParseData<YourResponseType>(data, threshold);
     } catch (error: any) {
-      // Handle error if safeParseData throws an exception
-      const errorMessage = 'Error parsing data';
-      handleError(errorMessage, { componentStack: error.stack });
+      const errorMessage = "Error parsing data";
+      const errorInfo: ErrorInfo = { componentStack: error.stack };
+      ErrorHandler.logError(new Error(errorMessage), errorInfo);
       return [];
     }
   };
-
   return { error, handleError, clearError, parseDataWithErrorHandling };
 };
 

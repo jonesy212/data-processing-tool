@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 
-interface VerificationProcessProps{
+interface VerificationProcessProps {
   onComplete: () => void; // Define the onComplete function type
 }
 

@@ -1,8 +1,9 @@
-import { object } from 'prop-types';
-import useIdleTimeout from '../components/hooks/idleTimeoutHooks';
-import useAuthentication from '../components/hooks/useAuthentication';
-import { Settings } from '../components/state/stores/SettingsStore';
- 
+import { object } from "prop-types";
+import { CodingLanguageEnum, LanguageEnum } from "../components/communications/LanguageEnum";
+import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
+import useAuthentication from "../components/hooks/useAuthentication";
+import { Settings } from "../components/state/stores/SettingsStore";
+
 const logoutUser = useAuthentication().logout;
 
 const onTimeout = () => {
@@ -11,10 +12,12 @@ const onTimeout = () => {
 
   // Log the timeout event and perform necessary actions
   logoutUser();
-  showModal("Session Timeout", "Your session has expired due to inactivity. Please log in again.");
+  showModal(
+    "Session Timeout",
+    "Your session has expired due to inactivity. Please log in again."
+  );
   resetAppState();
 };
-
 
 // Show modal function
 const showModal = (title: any, message: any) => {
@@ -28,10 +31,37 @@ const resetAppState = () => {
   console.log("Resetting application state...");
 };
 
+type IdleTimeoutType = {
+  intervalId: undefined;
+  isActive: boolean;
+  animateIn: () => void;
+  startAnimation: () => void;
+  stopAnimation: () => void;
+  resetIdleTimeout: () => Promise<void>;
+  idleTimeoutId: NodeJS.Timeout | null;
+  startIdleTimeout: (
+    timeoutDuration: number,
+    onTimeout: () => void | undefined
+  ) => void | undefined;
+  toggleActivation: () => Promise<boolean>;
+};
 
 export interface UserSettings extends Settings {
-  [x: string]: string | number | Timeout | undefined;
-  [x: string]: any;
+  [x: string]:
+    | string
+    | number
+    | NodeJS.Timeout
+    | boolean
+    | string[]
+    | IdleTimeoutType
+    | Record<string, string>
+    | undefined
+    | NodeJS.Timeout
+    | null
+    | ((key: keyof Settings) => void)
+    | ((timeoutDuration: number, onTimeout: () => void) => void)
+    | undefined;
+
   userId: number;
   userSettings: NodeJS.Timeout;
   communicationMode: string;
@@ -40,8 +70,8 @@ export interface UserSettings extends Settings {
   allowedFileTypes: string[];
   enableGroupManagement: boolean;
   enableTeamManagement: boolean;
-  idleTimeout: ReturnType<typeof useIdleTimeout>; 
-  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; // Update function signature
+  idleTimeout: IdleTimeoutType | undefined;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   idleTimeoutDuration: number;
   activePhase: string;
   realTimeChatEnabled: boolean;
@@ -60,7 +90,7 @@ export interface UserSettings extends Settings {
   collaborationPreference1?: any;
   collaborationPreference2?: any;
   theme: string;
-  language: string;
+  language: LanguageEnum | CodingLanguageEnum;
   fontSize: number;
   darkMode: boolean;
   enableEmojis: boolean;
@@ -119,13 +149,11 @@ export interface UserSettings extends Settings {
   enableDatabaseEncryption: boolean;
 }
 
-
 const userSettings: UserSettings = {
   userId: 1,
-  userSettings: new NodeJS.Timeout,
+  userSettings: new NodeJS.Timeout(),
   communicationMode: "text",
   enableRealTimeUpdates: true,
-
 
   defaultFileType: "document",
   allowedFileTypes: ["document"],
@@ -134,11 +162,18 @@ const userSettings: UserSettings = {
 
   idleTimeout: useIdleTimeout("idleTimeout"),
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
-    userSettings.idleTimeout.idleTimeoutId = setTimeout(() => {
-      onTimeout();
-    }, timeoutDuration);
+    if (
+      typeof userSettings.idleTimeout === "object" &&
+      userSettings.idleTimeout !== null
+    ) {
+      (
+        userSettings.idleTimeout as { idleTimeoutId?: NodeJS.Timeout }
+      ).idleTimeoutId = setTimeout(() => {
+        onTimeout();
+      }, timeoutDuration);
+    }
   },
-  
+
   idleTimeoutDuration: 0,
   activePhase: "current phase",
   realTimeChatEnabled: false,
@@ -157,7 +192,7 @@ const userSettings: UserSettings = {
   collaborationPreference1: undefined,
   collaborationPreference2: undefined,
   theme: "",
-  language: "",
+  language: LanguageEnum.English,
   fontSize: 0,
   darkMode: false,
   enableEmojis: false,
@@ -211,19 +246,19 @@ const userSettings: UserSettings = {
   enableFileSharing: false,
   enableBlockchainCommunication: false,
   enableDecentralizedStorage: false,
-  id: '',
+  id: "",
   filter: function (key: keyof Settings): void {
     // filter settings
     object;
   },
-  appName: '',
-  selectDatabaseVersion: '',
-  selectAppVersion: '',
+  appName: "",
+  selectDatabaseVersion: "",
+  selectAppVersion: "",
 
-  enableDatabaseEncryption: false
-}
-
-
+  enableDatabaseEncryption: false,
+  idleTimeoutId: null,
+};
 
 export default userSettings;
 
+export type { IdleTimeoutType };

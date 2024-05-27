@@ -10,12 +10,10 @@ import DynamicRouteComponent from '../components/libraries/ui/components/Dynamic
 
 // Define a mapping between JSX elements and route strings
 const routeMappings: Record<string, JSX.Element> = {
-    "/conditional-route": <ConditionalRouteComponent />,
-    "/dynamic-route": <DynamicRouteComponent
-        dynamicData={dynamicData} />
-    
-    // Add more mappings as needed
-  };
+  "/conditional-route": <ConditionalRouteComponent />,
+  "/dynamic-route": <DynamicRouteComponent
+      dynamicData={null} />
+};
 
 const generateNewRoute = (
   condition: boolean,
@@ -41,6 +39,10 @@ const generateNewRoute = (
         parsedDynamicData && parsedDynamicData.length > 0
           ? `/${parsedDynamicData[0].data}`
           : "";
+
+      // Update the routeMappings with the DynamicRouteComponent including dynamicData
+      routeMappings["/dynamic-route"] = <DynamicRouteComponent dynamicData={dynamicData} />;
+
       return `/dynamic-route${routeSuffix}`;
     }
   } catch (error: any) {
@@ -59,5 +61,4 @@ const generateNewRoute = (
   }
 };
   
-  export default generateNewRoute;
-  
+export default generateNewRoute;

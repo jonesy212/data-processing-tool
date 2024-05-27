@@ -1,5 +1,6 @@
 // CollaborationSettings
 // CollaborationSettings.tsx
+import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import React, { useState } from 'react';
 
 interface CollaborationSettingsProps {
@@ -9,7 +10,7 @@ interface CollaborationSettingsProps {
 interface CollaborationSettingsState {
   notificationsEnabled: boolean;
   theme: string;
-  language: string;
+  language: LanguageEnum;
   // Add more settings properties here
 }
 
@@ -17,7 +18,7 @@ const CollaborationSettings: React.FC<CollaborationSettingsProps> = ({ onSave })
   const [settings, setSettings] = useState<CollaborationSettingsState>({
     notificationsEnabled: true,
     theme: 'light',
-    language: 'English',
+    language: LanguageEnum.English,
     // Initialize other settings properties here
   });
 
@@ -44,7 +45,7 @@ const CollaborationSettings: React.FC<CollaborationSettingsProps> = ({ onSave })
     const newLanguage = event.target.value;
     setSettings((prevState) => ({
       ...prevState,
-      language: newLanguage,
+      language: newLanguage as LanguageEnum,
     }));
   };
 
@@ -83,7 +84,7 @@ const CollaborationSettings: React.FC<CollaborationSettingsProps> = ({ onSave })
 
 export default CollaborationSettings;
 export type {
-    CollaborationSettingsProps,
-    CollaborationSettingsState
+  CollaborationSettingsProps,
+  CollaborationSettingsState
 };
 

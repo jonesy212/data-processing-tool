@@ -42,3 +42,4 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onComplete }) => {
 
 export default RiskAssessment;
 
+export type { RiskAssessmentProps };

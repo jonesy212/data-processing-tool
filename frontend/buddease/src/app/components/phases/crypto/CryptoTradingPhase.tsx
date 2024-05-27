@@ -7,6 +7,8 @@ import ProfessionalTraderDashboard from '@/app/pages/personas/ProfessionalTrader
 import ProfessionalTraderDocuments from '@/app/pages/personas/ProfessionalTraderDocuments';
 import ProfessionalTraderProfile from '@/app/pages/personas/ProfessionalTraderProfile';
 import { useState } from 'react';
+import { TraderCallsProps } from '../../trading/Trades';
+import { tradingPhases } from '../../trading/TradingPhaseConfig';
 import RiskAssessment from './RiskAssessment';
 import TraderTypesSelection from './TraderTypesSelection';
 import VerificationProcess from './VerificationProcess';
@@ -19,12 +21,20 @@ enum TradingPhase {
   PROFESSIONAL_TRADER_DASHBOARD = 'Professional Trader Dashboard',
   PROFESSIONAL_TRADER_CALLS = 'Professional Trader Calls',
   PROFESSIONAL_TRADER_CONTENT_MANAGEMENT = 'Professional Trader Content Management',
+  
+  BASIC_INFO = "BASIC_INFO",
+  ASSETS= "ASSETS",
+  PREFERENCES= "PREFERENCES",
+  REVIEW= "REVIEW",
+  SUMMARY= "SUMMARY",
+  CONFIRMATION= "CONFIRMATION",
   // Add additional phases as needed
 }
 
-const CryptoTradingPhase = () => {
+const CryptoTradingPhase: React.FC<TraderCallsProps> = ({onSelectPlatform, selectedPlatform}) => {
   const [currentPhase, setCurrentPhase] = useState<TradingPhase>(TradingPhase.VERIFICATION);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -57,6 +67,9 @@ const CryptoTradingPhase = () => {
         break;
     }
   };
+
+
+
 
   // Function to handle transition to the next phase
   const transitionToNextPhase = () => {
@@ -101,6 +114,19 @@ const CryptoTradingPhase = () => {
     setSelectedTraderType(type);
   };
 
+
+
+  const renderCurrentPhase = () => {
+    const currentPhase = tradingPhases[currentPhaseIndex];
+    if (currentPhase) {
+      const PhaseComponent = currentPhase.component;
+      return <PhaseComponent onComplete={handlePhaseCompletion} />;
+    }
+    // Handle case where current phase is not found
+    return null;
+  };
+
+
   // Render sub-phases based on the current phase and completion status
   const renderSubPhases = () => {
     if (!verificationDone) {
@@ -122,7 +148,10 @@ const CryptoTradingPhase = () => {
         case TradingPhase.PROFESSIONAL_TRADER_DASHBOARD:
           return <ProfessionalTraderDashboard />;
         case TradingPhase.PROFESSIONAL_TRADER_CALLS:
-          return <ProfessionalTraderCalls />;
+          return <ProfessionalTraderCalls
+            onSelectPlatform={onSelectPlatform}
+            selectedPlatform={selectedPlatform}
+           />;
         case TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT:
           return <ProfessionalTraderContentManagement />;
         // Add cases for rendering other sub-phases or components
@@ -131,12 +160,16 @@ const CryptoTradingPhase = () => {
             <div>
               <ProfessionalTraderProfile />
               <ProfessionalTraderDashboard />
-              <ProfessionalTraderCalls />
+              <ProfessionalTraderCalls
+                onSelectPlatform={onSelectPlatform}
+                selectedPlatform={selectedPlatform}
+              />
               <ProfessionalTraderContentManagement />
               <ProfessionalTraderAlerts />
               <ProfessionalTraderCollaboration />
               <ProfessionalTraderCalendar />
               <ProfessionalTraderDocuments />
+             
               {/* Render additional sub-phases/components */}
             </div>
           );
@@ -159,3 +192,4 @@ const CryptoTradingPhase = () => {
 };
 
 export default CryptoTradingPhase;
+export { TradingPhase };

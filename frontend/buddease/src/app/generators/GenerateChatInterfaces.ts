@@ -18,6 +18,7 @@ import { User, UserData } from "../components/users/User";
     isUserMessage?: boolean
     receiver: User | undefined;
     
+    description?: string
   }
 
 

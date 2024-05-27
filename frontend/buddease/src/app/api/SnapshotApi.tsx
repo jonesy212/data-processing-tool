@@ -7,48 +7,68 @@ import configData from "../configs/configData";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
-import { AuthenticationHeaders, createAuthenticationHeaders } from "./headers/authenticationHeaders";
+import {
+  AuthenticationHeaders,
+  createAuthenticationHeaders,
+} from "./headers/authenticationHeaders";
 import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
+import { Target, constructTarget } from "./EndpointConstructor";
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
-
 
 const appConfig: AppConfig = getAppConfig();
 
 // Updated handleSpecificApplicationLogic and handleOtherApplicationLogic functions
-const handleSpecificApplicationLogic = (appConfig: AppConfig, statusCode: number) => {
+const handleSpecificApplicationLogic = (
+  appConfig: AppConfig,
+  statusCode: number
+) => {
   switch (statusCode) {
     case 200:
-      console.log(`Handling specific application logic for status code 200 in ${appConfig.appName}`);
+      console.log(
+        `Handling specific application logic for status code 200 in ${appConfig.appName}`
+      );
       // Additional application logic specific to status code 200
       break;
     case 404:
-      console.log(`Handling specific application logic for status code 404 in ${appConfig.appName}`);
+      console.log(
+        `Handling specific application logic for status code 404 in ${appConfig.appName}`
+      );
       // Additional application logic specific to status code 404
       break;
     // Add more cases for other specific status codes as needed
     default:
-      console.log(`No specific application logic for status code ${statusCode} in ${appConfig.appName}`);
+      console.log(
+        `No specific application logic for status code ${statusCode} in ${appConfig.appName}`
+      );
       break;
   }
 };
 
-const handleOtherApplicationLogic = (appConfig: AppConfig, statusCode: number) => {
+const handleOtherApplicationLogic = (
+  appConfig: AppConfig,
+  statusCode: number
+) => {
   if (statusCode >= 400 && statusCode < 500) {
-    console.log(`Handling client-related application logic for status code ${statusCode} in ${appConfig.appName}`);
+    console.log(
+      `Handling client-related application logic for status code ${statusCode} in ${appConfig.appName}`
+    );
     // Additional application logic for client-related errors (4xx)
   } else if (statusCode >= 500 && statusCode < 600) {
-    console.log(`Handling server-related application logic for status code ${statusCode} in ${appConfig.appName}`);
+    console.log(
+      `Handling server-related application logic for status code ${statusCode} in ${appConfig.appName}`
+    );
     // Additional application logic for server-related errors (5xx)
   } else {
-    console.log(`No specific application logic for status code ${statusCode} in ${appConfig.appName}`);
+    console.log(
+      `No specific application logic for status code ${statusCode} in ${appConfig.appName}`
+    );
     // Additional application logic for other status codes if needed
   }
 };
-
 
 const handleSpecificStatusCode = (appConfig: AppConfig, statusCode: number) => {
   switch (statusCode) {
@@ -80,24 +100,21 @@ const handleOtherStatusCodes = (appConfig: AppConfig, statusCode: number) => {
   }
 };
 
-export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, 'id'>) => {
+export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
-    const userId = localStorage.getItem('userId');
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
     const currentAppVersion = configData.currentAppVersion;
 
-    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
-      accessToken, 
-      userId,
-      currentAppVersion
-    );
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
 
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
       createContentHeaders(),
       generateCustomHeaders({}),
-      createRequestHeaders(accessToken || ''),
+      createRequestHeaders(accessToken || ""),
       // Add other header objects as needed
     ];
 
@@ -109,14 +126,17 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, 'id'>) => {
 
     if (response.status === 200) {
       // Handle successful response
-      if (typeof response.data === 'string' && response.headers['content-type'] === 'application/json') {
+      if (
+        typeof response.data === "string" &&
+        response.headers["content-type"] === "application/json"
+      ) {
         const numericData = parseInt(response.data, 10); // Convert string to number
         if (!isNaN(numericData)) {
           // Pass additional argument for statusCode
           handleSpecificApplicationLogic(appConfig, numericData);
         } else {
           // Handle the case where response.data is not a valid number
-          console.error('Response data is not a valid number:', response.data);
+          console.error("Response data is not a valid number:", response.data);
         }
       } else {
         // Code for other types of applications
@@ -138,32 +158,34 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, 'id'>) => {
   }
 };
 
-export const fetchSnapshotById = async (snapshotId: number): Promise<Snapshot<Data>> => {
+export const fetchSnapshotById = async (
+  snapshotId: number
+): Promise<Snapshot<Data>> => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
-    const userId = localStorage.getItem('userId');
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
     const currentAppVersion = configData.currentAppVersion;
 
-    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
-      accessToken,
-      userId,
-      currentAppVersion
-    );
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
 
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
       createContentHeaders(),
       generateCustomHeaders({}),
-      createRequestHeaders(accessToken || ''),
+      createRequestHeaders(accessToken || ""),
       // Add other header objects as needed
     ];
 
     const headers = Object.assign({}, ...headersArray);
 
-    const response = await axiosInstance.get<Snapshot<Data>>(`${API_BASE_URL}/${snapshotId}`, {
-      headers: headers as Record<string, string>,
-    });
+    const response = await axiosInstance.get<Snapshot<Data>>(
+      `${API_BASE_URL}/${snapshotId}`,
+      {
+        headers: headers as Record<string, string>,
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -172,70 +194,83 @@ export const fetchSnapshotById = async (snapshotId: number): Promise<Snapshot<Da
     throw error;
   }
 };
-export const fetchAllSnapshots = async (target: string): Promise<SnapshotList> => {
+export const fetchAllSnapshots = async (
+  target: string
+): Promise<SnapshotList> => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
-    const userId = localStorage.getItem('userId');
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
     const currentAppVersion = configData.currentAppVersion;
 
-    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
-      accessToken,
-      userId,
-      currentAppVersion
-    );
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
 
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
       createContentHeaders(),
       generateCustomHeaders({}),
-      createRequestHeaders(accessToken || ''),
+      createRequestHeaders(accessToken || ""),
       // Add other header objects as needed
     ];
     const headers = Object.assign({}, ...headersArray);
-    const response = await axiosInstance.get<SnapshotList>(`${API_BASE_URL}/${target}`, { // Use the target parameter here
-      headers: headers as Record<string, string>,
-    });
+    const response = await axiosInstance.get<SnapshotList>(
+      `${API_BASE_URL}/${target}`,
+      {
+        // Use the target parameter here
+        headers: headers as Record<string, string>,
+      }
+    );
     return response.data;
   } catch (error: any) {
-    handleApiError(error as AxiosError<unknown>, "Failed to fetch all snapshots");
+    handleApiError(
+      error as AxiosError<unknown>,
+      "Failed to fetch all snapshots"
+    );
     throw error;
   }
 };
 
-
-export const getSortedList = async (target: string): Promise<SnapshotList> => {
+// Update the getSortedList function to accept the Target type
+export const getSortedList = async (target: Target): Promise<SnapshotList> => {
   try {
-    const snapshotsList = await fetchAllSnapshots(target); // Pass the target parameter to fetchAllSnapshots
-    snapshotsList.sortSnapshotItems(); // Optional: Sort snapshots within the SnapshotList object
+    // Destructure the target object to extract the endpoint and params
+    const { endpoint, params } = target;
+
+    // Construct the target URL using the endpoint and params
+    const constructedTarget = constructTarget("apiWebBase", endpoint, params);
+
+    // Fetch snapshots using the constructed target
+    const snapshotsList = await fetchAllSnapshots(constructedTarget);
+
+    // Optional: Sort snapshots within the SnapshotList object
+    snapshotsList.sortSnapshotItems();
+
+    // Return the sorted snapshot list
     return snapshotsList;
   } catch (error) {
+    // Handle errors
     const errorMessage = "Failed to get sorted list of snapshots";
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw new Error(errorMessage);
   }
 };
 
-
-
 export const removeSnapshot = async (snapshotId: number): Promise<void> => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
-    const userId = localStorage.getItem('userId');
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
     const currentAppVersion = configData.currentAppVersion;
 
-    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
-      accessToken,
-      userId,
-      currentAppVersion
-    );
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
 
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
       createContentHeaders(),
       generateCustomHeaders({}),
-      createRequestHeaders(accessToken || ''),
+      createRequestHeaders(accessToken || ""),
       // Add other header objects as needed
     ];
 
@@ -249,4 +284,4 @@ export const removeSnapshot = async (snapshotId: number): Promise<void> => {
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
   }
-}
+};

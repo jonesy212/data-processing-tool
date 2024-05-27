@@ -1,7 +1,6 @@
 //Tracker.ts
 import path from "path";
 import { useAuth } from "../../auth/AuthContext";
-import { DocumentData } from "../../documents/DocumentBuilder";
 import { Phase } from "../../phases/Phase";
 import { User } from "../../users/User";
 import {
@@ -22,7 +21,7 @@ export interface Tracker {
   getName?: (trackerName: string) => string;
   updateUserProfile?: (userData: User) => void; // New method to update user profile
   sendNotification?: (notification: string, userData: User) => void; // New method to send notification
-
+  payments?: Payment[] 
   
   // Add more properties as needed
 }

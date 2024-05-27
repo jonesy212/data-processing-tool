@@ -1,36 +1,18 @@
 // TeamPreferencesStep.tsx
-import React, { useState } from 'react';
+import React from 'react';
+import PreferencesStep from './PreferencesStep';
 
 const TeamPreferencesStep: React.FC<{ onSubmit: (preferences: any) => void }> = ({ onSubmit }) => {
-  const [preferences, setPreferences] = useState<string>('');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPreferences(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onSubmit(preferences);
-  };
-
   return (
-    <div>
-      <h2>Team Preferences</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="preferences">Enter team preferences:</label>
-          <input
-            type="text"
-            id="preferences"
-            value={preferences}
-            onChange={handleInputChange}
-            placeholder="Enter preferences"
-          />
-        </div>
-        <button type="submit">Next</button>
-      </form>
-    </div>
+    <PreferencesStep
+      title="Team Preferences"
+      label="Enter team preferences"
+      inputType="text"
+      initialValue=""
+      onSubmit={onSubmit}
+    />
   );
 };
 
 export default TeamPreferencesStep;
+

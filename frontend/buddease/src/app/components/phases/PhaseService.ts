@@ -24,7 +24,7 @@ class PhaseService {
   }
 
   updatePhase(phaseId: number, updatedPhase: Phase): void { 
-    const phaseIndex = this.phases.findIndex(phase => phase.data.id === phaseId);
+    const phaseIndex = this.phases.findIndex(phase => (phase.data as any).id === phaseId);
     this.phases[phaseIndex] = updatedPhase;
   }
 

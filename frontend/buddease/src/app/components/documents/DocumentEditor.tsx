@@ -1,36 +1,34 @@
-import React, { SetStateAction, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Editor, EditorState } from "draft-js";
-import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
-import useEditorState from "../state/useEditorState";
-import useErrorHandling from "../hooks/useErrorHandling";
-import { ComponentActions } from "../libraries/ui/components/ComponentActions";
-import userSettings, { UserSettings } from "@/app/configs/UserSettings";
-import { options } from "sanitize-html";
-import AppVersionImpl, {
-  AppVersion,
-  selectAppVersion,
-  selectDatabaseVersion,
-} from "../versions/AppVersion";
-import { setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
 import {
   BorderStyle,
   DocumentSize,
   ProjectPhaseTypeEnum,
 } from "@/app/components/models/data/StatusType";
-import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
-import { DocumentTypeEnum } from "./DocumentGenerator";
-import Version from "../versions/Version";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { IHydrateResult } from "mobx-persist";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { UserSettings } from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import { Phase } from "../phases/Phase";
-import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
-import axiosInstance from "../security/csrfToken";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
-import { DocumentBuilderProps } from "./SharedDocumentProps";
-import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
+import { Editor } from "draft-js";
+import { IHydrateResult } from "mobx-persist";
+import React, { SetStateAction, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { options } from "sanitize-html";
+import { CodingLanguageEnum, LanguageEnum } from "../communications/LanguageEnum";
+import { setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
+import useErrorHandling from "../hooks/useErrorHandling";
+import { ComponentActions } from "../libraries/ui/components/ComponentActions";
+import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
+import useEditorState from "../state/useEditorState";
+import AppVersionImpl, {
+  AppVersion,
+  selectAppVersion,
+  selectDatabaseVersion,
+} from "../versions/AppVersion";
+import Version from "../versions/Version";
+import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
+import { DocumentTypeEnum } from "./DocumentGenerator";
+import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
+import axiosInstance from "../security/csrfToken";
 
 const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
   const dispatch = useDispatch();
@@ -158,28 +156,24 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           spellCheck: false,
           grammarCheck: false,
           bookmarks: false,
+          color: "#1a1a1a",
           documentSize: DocumentSize.A4,
           crossReferences: false,
           footnotes: false,
           endnotes: false,
-          revisions: false,
+          revisions: {
+            enabled: false,
+            author: "",
+            dataFormat: ""
+          },
           tableStyles: [],
           highlightColor: "",
           defaultZoomLevel: 100,
           uniqueIdentifier: "",
+          language:LanguageEnum.English,
+          limit: 0,
+          page: 0,
           documentPhase: getDocumentPhase(ProjectPhaseTypeEnum.Draft) || "",
-          //  options: {
-          //         ...options,
-          //         documentId: documentId
-          //       },
-          //       onOptionsChange: (options:
-
-          //       ) => {
-          //         dispatch(setCurrentPhase(options.documentPhase));
-          //       },
-          //       onConfigChange: (config) => {
-          //         dispatch(setCurrentPhase(config.documentPhase));
-          //       },
           documentType: DocumentTypeEnum.Document,
           additionalOptions: [],
           isDynamic: true,
@@ -193,14 +187,16 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             enabled: false,
             opacity: 0.2,
             borderStyle: BorderStyle.None,
+            fontSize: 0
           },
           headerFooterOptions: {
             showHeader: false,
             showFooter: false,
-            header: "",
-            footer: "",
+            headerContent: "",
+            footerContent: "",
             differentFirstPage: false,
             differentOddEven: false,
+            enabled: false,
             headerOptions: {
               height: {
                 type: "custom",
@@ -256,8 +252,39 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             data: [],
             url: "",
             versionHistory: {
-              versions:[]
-            }
+              versions: []
+            },
+            limit: 0,
+            description: "",
+            checksum: "",
+            draft: false,
+            userId: "",
+            documentId: "",
+            parentId: "",
+            parentType: "",
+            parentVersion: "",
+            parentTitle: "",
+            parentContent: "",
+            parentName: "",
+            parentUrl: "",
+            parentChecksum: "",
+            parentMetadata: undefined,
+            parentAppVersion: "",
+            parentVersionNumber: "",
+            isLatest: false,
+            isPublished: false,
+            publishedAt: null,
+            source: "",
+            status: "",
+            workspaceId: "",
+            workspaceName: "",
+            workspaceType: "",
+            workspaceUrl: "",
+            workspaceViewers: [],
+            workspaceAdmins: [],
+            workspaceMembers: [],
+            createdAt: new Date(),
+            updatedAt: undefined
           }),
           metadata: {} as StructuredMetadata, // Pass metadata
           userIdea: "",
@@ -302,7 +329,7 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           content: "content",
           css: "css",
           html: "html",
-          colorCoding: false,
+          colorCoding: {} as Record<string, string> ,
           customSettings: {},
           documents: [] as DocumentData[],
           includeType: "all",
@@ -322,13 +349,14 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           footer: "footer",
           toc: false,
           textStyles: {},
-          links: false || { enabled: true },
-          embeddedContent: false || { enabled: true },
-          comments: false || { enabled: true },
-          embeddedMedia: false || { enabled: true },
+          links: { enabled: true, color: "#0000FF", underline: false },
+          embeddedContent: false || { enabled: true, allow: false, language: LanguageEnum.English }, 
+          comments: false || { enabled: true, author:"", dateFormat: "" },
+          embeddedMedia: false || { enabled: true, allow: true },
           embeddedCode: false || {
             enabled: true,
-            language: "js",
+            allow: true,
+            language: CodingLanguageEnum.JavaScript,
           },
           styles: {},
           tableCells: {
@@ -349,7 +377,7 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           },
           footnote: false || { enabled: false },
           customProperties: {},
-          value: 1, // Placeholder value, update as needed
+          value: 1,
         }}
       />
 

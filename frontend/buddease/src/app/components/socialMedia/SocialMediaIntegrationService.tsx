@@ -1,6 +1,8 @@
 // SocialMediaIntegrationService.ts
 
 // Import necessary modules and types
+import { useSecureAccountId } from '../utils/useSecureAccountId';
+import { useSecureUserId } from '../utils/useSecureUserId';
 import { FacebookIntegration } from './FacebookIntegration';
 import { InstagramIntegration } from './InstagramIntegration';
 import { TikTokIntegration } from './TikTokIntegration';
@@ -16,17 +18,21 @@ interface SocialMediaIntegrationService {
   postMessage(platform: SocialMediaPlatform, message: string): Promise<void>;
 }
 
+ 
 // Implement the Social Media Integration Service
+const userId = useSecureUserId()
+const accountId = useSecureAccountId()
 class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService {
+
   // Method to fetch messages from a specific social media platform
   async fetchMessages(platform: SocialMediaPlatform): Promise<any[]> {
     switch (platform) {
       case 'Facebook':
-        return FacebookIntegration.fetchMessages();
+        return FacebookIntegration.fetchMessages(String(userId));
       case 'Instagram':
-        return InstagramIntegration.fetchMessages();
+        return InstagramIntegration.fetchMessages(String(userId));
       case 'Twitter':
-        return TwitterIntegration.fetchMessages();
+        return TwitterIntegration.fetchTweets(String(accountId));
       case 'YouTube':
         return YouTubeIntegration.fetchMessages();
       case 'TikTok':

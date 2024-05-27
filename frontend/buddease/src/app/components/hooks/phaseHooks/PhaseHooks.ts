@@ -9,22 +9,22 @@ import { useAuth } from "../../auth/AuthContext";
 import { BrainstormingSettings } from "../../interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
+import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
 import { Progress } from "../../models/tracker/ProgressBar";
+import IdeationPhaseComponent from "../../phases/IdeationPhaseComponent";
 import { CustomPhaseHooks, Phase } from "../../phases/Phase";
 import {
   ExtendedDAppAdapter,
   ExtendedDappProps
 } from "../../web3/dAppAdapter/IPFS";
 import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
-import IdeationPhaseComponent from "../../phases/IdeationPhaseComponent";
-import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
 
  export interface PhaseHookConfig {
   name: string;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
   canTransitionTo?: (nextPhase: Phase) => boolean;
   handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
-  duration: string;
+   duration: string | undefined;
   isActive?: boolean;
   initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
   resetIdleTimeout?: () => Promise<void>;
@@ -32,8 +32,10 @@ import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
   clearIdleTimeout?: () => void;
   onPhaseStart?: () => void;
   onPhaseEnd?: () => void;
-  startIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
-  cleanup?: (() => void) | undefined;
+  startIdleTimeout: (
+    timeoutDuration: number,
+    onTimeout: () => void | undefined
+  ) => void | undefined;  cleanup?: (() => void) | undefined;
   startAnimation?: () => void;
   stopAnimation?: () => void;
   animateIn?: () => void;
@@ -134,12 +136,14 @@ export const createPhaseHook =
       idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
     },
     resetIdleTimeout: async () => {
-      if (userSettings.idleTimeout.idleTimeoutId) {
+      if (userSettings.idleTimeout?.idleTimeoutId) {
         clearTimeout(userSettings.idleTimeout.idleTimeoutId);
       }
-      userSettings.idleTimeout.idleTimeoutId = setTimeout(() => {
-        // handle idle timeout
-      }, userSettings.idleTimeoutDuration);
+      if (userSettings.idleTimeout) {
+        userSettings.idleTimeout.idleTimeoutId = setTimeout(() => {
+          // handle idle timeout
+        }, userSettings.idleTimeoutDuration);
+      }
     },
     isActive: false,
     intervalId: 0, // Initialize with null or assign a valid value

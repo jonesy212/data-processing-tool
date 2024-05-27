@@ -27,6 +27,8 @@ const UserRoles: { [key: string]: UserRole } = {
     ,
     includes: []
   },
+  
+
   Developer: {
     role: 'Developer',
     responsibilities: [
@@ -137,12 +139,52 @@ const UserRoles: { [key: string]: UserRole } = {
     includes: []
   },
   TeamLeader: {
-    role: 'TeamLeader',
-    responsibilities: ['Team Management', 'Data Analysis'],
-    permissions: ['Manage team members access', 'Access sales analytics data'],
+    role: 'Team Leader',
+    responsibilities: [
+      'Lead and supervise team members',
+      'Coordinate team activities',
+      'Ensure project goals are met',
+      'Provide guidance and support to team members',
+      'Communicate with stakeholders',
+    ],
+    permissions: [
+      'Manage team tasks and assignments',
+      'Review and approve team deliverables',
+      'Participate in project planning and strategy meetings',
+      'Represent the team in cross-functional collaborations',
+    ],
     positions: [],
-    salary: 7000,
-    includes: []
+    salary: 90000, // Example salary for Team Leader
+    includes: [
+      'Health Insurance',
+      'Paid Time Off',
+      'Remote Work Options',
+      'Professional Development Opportunities',
+    ],
+  },
+  Coordinator: {
+    role: 'Coordinator',
+    responsibilities: [
+      'Organize and schedule team meetings',
+      'Manage team calendars and schedules',
+      'Assist with project coordination tasks',
+      'Facilitate communication between team members',
+      'Maintain project documentation and records',
+    ],
+    permissions: [
+      'Schedule and coordinate team events and activities',
+      'Manage team communication channels',
+      'Track project progress and milestones',
+      'Assist in resolving project-related issues',
+    ],
+    positions: [],
+    salary: 75000, // Example salary for Coordinator
+    includes: [
+      'Health Insurance',
+      'Paid Time Off',
+      'Remote Work Options',
+      'Professional Development Opportunities',
+    ],
   },
   PaidPosition: {
     role: 'PaidPosition',

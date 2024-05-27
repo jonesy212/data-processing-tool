@@ -15,7 +15,7 @@ import { ProjectFeedback } from "../support/ProjectFeedback";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
 import { Address, Education, Employment, SocialLinks, User, UserData } from "./User";
-import { CustomTransaction } from "../crypto/SmartContractInteraction";
+import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
 
 
 interface ActivityLogEntry {
@@ -310,7 +310,7 @@ export const userManagerSlice = createSlice({
       action: PayloadAction<{
         userId: string;
         projectId: string;
-        tasks: Task[];
+        tasks: WritableDraft<Task>[];
       }>
     ) => {
       const { userId, projectId, tasks } = action.payload;
@@ -321,9 +321,7 @@ export const userManagerSlice = createSlice({
           ? user.projects.findIndex((project) => project.id === projectId)
           : -1;
         if (projectIndex !== -1 && user.projects) {
-          user.projects[projectIndex].tasks = tasks.map((task) => ({
-            ...task,
-          }));
+          user.projects[projectIndex].tasks = tasks;
         }
       }
     },
@@ -723,7 +721,10 @@ export const userManagerSlice = createSlice({
     // Action to update user's smart contract interactions
     updateUserSmartContractInteractions: (
       state,
-      action: PayloadAction<{ userId: string; interaction: WritableDraft<CustomTransaction> }>
+      action: PayloadAction<{
+        userId: string;
+        interaction: WritableDraft<SmartContractInteraction>;
+      }>
     ) => {
       const { userId, interaction } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);

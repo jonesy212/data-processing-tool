@@ -7,7 +7,7 @@ import CalendarDetails from "../models/data/CalendarDetails";
 import { Data, DataDetails } from "../models/data/Data";
 import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
-import { Member } from "../models/teams/TeamMembers";
+import { Member, TeamMember } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project, ProjectType } from "../projects/Project";
@@ -15,6 +15,8 @@ import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import UserRoles from "../users/UserRoles";
+import { User } from "../users/User";
+import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -52,6 +54,7 @@ const updateProgress = (team: Team) => {
     max: 100,
     label: `${progressPercentage}%`,
     value: team.progress?.value ?? 0,
+    percentage: team.percentage,
   };
 };
 
@@ -72,6 +75,7 @@ const analysisType = (project: Project) => {
     );
   }
 };
+const { fetchData } = useDataStore();
 
 const CalendarApp = () => {
   const calendarEvent: CalendarEvent = {
@@ -115,6 +119,9 @@ const CalendarApp = () => {
     _id: "",
     analysisResults: [],
     snapshots: [],
+    getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+      throw new Error("Function not implemented.");
+    }
   };
 
   return (
@@ -179,11 +186,13 @@ const CalendarApp = () => {
           _id: "team-1",
           id: "1",
           teamName: "Team Alpha",
+          percentage: 0,
           description:
             "Team Alpha is responsible for the development and maintenance of the core application.",
           members: [
             {
-              username: "Alice Johnson", role: UserRoles.Developer,
+              username: "Alice Johnson",
+              role: UserRoles.Developer,
               teamId: "",
               roleInTeam: "",
               memberName: "",
@@ -221,9 +230,8 @@ const CalendarApp = () => {
               profileVisibility: "",
               profileAccessControl: undefined,
               activityStatus: "",
-              isAuthorized: false
+              isAuthorized: false,
             },
-            { name: "Bob Smith", role: "Project Manager" },
           ],
           projects: [
             {
@@ -235,15 +243,18 @@ const CalendarApp = () => {
               description: "",
               members: [],
               tasks: [],
-              startDate: new Date,
-              endDate: new Date,
+              startDate: new Date(),
+              endDate: new Date(),
               isActive: false,
               leader: null,
               budget: null,
               phase: null,
               phases: [],
               type: ProjectType.Internal,
-              currentPhase: null
+              currentPhase: null,
+              getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+                throw new Error("Function not implemented.");
+              }
             },
             {
               projectId: "proj-2",
@@ -261,16 +272,29 @@ const CalendarApp = () => {
               budget: null,
               phase: null,
               phases: [],
-              type: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/projects/Project".Internal,
-              currentPhase: null
+              type: ProjectType.Internal,
+              currentPhase: null,
+              getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+                throw new Error("Function not implemented.");
+              }
             },
           ],
           isActive: true,
-          leader: { name: "Charlie Brown", role: "Team Leader" },
-          pointOfContact: { name: "Dana White", role: "Coordinator" },
+          leader: {
+            username: "Charlie Brown",
+            role: UserRoles.TeamLeader,
+          } as User,
+          pointOfContact: {
+            username: "Dana White",
+            role: UserRoles.Coordinator,
+          } as TeamMember,
           progress: {
-            currentProgress: 70,
-            targetProgress: 100,
+            id: "",
+            value: 70,
+            label: "Progress",
+            current: 0,
+            max: 100,
+            percentage: 70,
           },
           creationDate: new Date("2022-01-15"),
           assignedProjects: [
@@ -283,22 +307,65 @@ const CalendarApp = () => {
               description: "",
               members: [],
               tasks: [],
-              startDate: new Date,
-              endDate: new Date,
+              startDate: new Date(),
+              endDate: new Date(),
               isActive: false,
               leader: null,
               budget: null,
               phase: null,
               phases: [],
               type: ProjectType.Internal,
-              currentPhase: null
+              currentPhase: null,
+              getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+                throw new Error("Function not implemented.");
+              }
             },
           ],
           reassignedProjects: [
             {
+              reassignmentDate: new Date(),
               projectId: "proj-4",
               projectName: "Project A",
-              previousTeam: Team["Team Beta"],
+              previousTeam: {
+                team: {
+                  id: "",
+                  current: 0,
+                  max: 0,
+                  label: "",
+                  value: 0,
+                },
+                _id: "",
+                id: "",
+                teamName: "",
+                projects: [],
+                creationDate: new Date(),
+                isActive: false,
+                leader: null,
+                progress: null,
+                percentage: 0,
+                assignedProjects: [],
+                reassignedProjects: [],
+                assignProject: function (team: Team, project: Project): void {
+                  throw new Error("Function not implemented.");
+                },
+                reassignProject: function (
+                  team: Team,
+                  project: Project,
+                  previousTeam: Team,
+                  reassignmentDate: Date
+                ): void {
+                  throw new Error("Function not implemented.");
+                },
+                unassignProject: function (team: Team, project: Project): void {
+                  throw new Error("Function not implemented.");
+                },
+                updateProgress: function (team: Team, project: Project): void {
+                  throw new Error("Function not implemented.");
+                },
+                getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+                  throw new Error("Function not implemented.");
+                }
+              },
             },
           ],
           status: "active",
@@ -311,9 +378,69 @@ const CalendarApp = () => {
             console.log("Project unassigned:", project),
           analysisType: "quantitative" as AnalysisTypeEnum | undefined,
           analysisResults: [
-            { metric: "Efficiency", result: 85 },
-            { metric: "Completion Rate", result: 95 },
-          ] as DataAnalysisResult[],
+            {
+              id: 1,
+              title: "Efficiency",
+              insights: [],
+              analysisType: "quantitative",
+              analysisDate: new Date(), // Add analysisDate
+              results: [], // Add results
+              result: 85,
+              description: "",
+              status: "completed",
+              createdAt: new Date(),
+              updatedAt: undefined,
+              recommendations: [], // Add recommendations
+              metrics: { // Add metrics
+                accuracy: 0,
+                precision: 0,
+                recall: 0,
+                f1Score: 0,
+              },
+              visualizations: { // Add visualizations
+                charts: [],
+                diagrams: [],
+              },
+              communityImpact: false, // Add communityImpact
+              globalCollaboration: false, // Add globalCollaboration
+              solutionQuality: false, // Add solutionQuality
+              unityPromotion: false, // Add unityPromotion
+              humanityBenefit: false, // Add humanityBenefit
+              conclusions: "", // Add conclusions
+              futureSteps: [], // Add futureSteps
+            },
+            {
+              id: 2,
+              title: "Completion Rate",
+              insights: [],
+              analysisType: "quantitative",
+              analysisDate: new Date(), // Add analysisDate
+              results: [], // Add results
+              result: 95,
+              description: "",
+              status: "completed",
+              createdAt: new Date(),
+              updatedAt: undefined,
+              recommendations: [], // Add recommendations
+              metrics: { // Add metrics
+                accuracy: 0,
+                precision: 0,
+                recall: 0,
+                f1Score: 0,
+              },
+              visualizations: { // Add visualizations
+                charts: [],
+                diagrams: [],
+              },
+              communityImpact: false, // Add communityImpact
+              globalCollaboration: false, // Add globalCollaboration
+              solutionQuality: false, // Add solutionQuality
+              unityPromotion: false, // Add unityPromotion
+              humanityBenefit: false, // Add humanityBenefit
+              conclusions: "", // Add conclusions
+              futureSteps: [], // Add futureSteps
+            },
+          ],          
           videoData: {
             url: "http://example.com/video.mp4",
             duration: 120,
@@ -331,7 +458,15 @@ const CalendarApp = () => {
               timestamp: new Date("2022-03-01"),
             },
           ] as SnapshotStore<Snapshot<Data>>[],
-          team: { id: "team-1", current: 5, max: 10, label: "Alpha Team" },
+          team: {
+            id: "team-1",
+            current: 5,
+            max: 10,
+            label: "Alpha Team",
+            value: 0,
+          },
+          // todo
+          getData: fetchData
         }}
       />
     </div>

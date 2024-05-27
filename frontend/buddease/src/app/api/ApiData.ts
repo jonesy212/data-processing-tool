@@ -12,9 +12,11 @@ import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
+import { handleNoteApiErrorAndNotify } from './ApiNote';
 
 // Define the API base URL
 const API_BASE_URL = dotProp.getProperty(endpoints, 'data');
+export let setDynamicData: React.Dispatch<React.SetStateAction<any>>; // Define setDynamicData globally
 
 interface DataNotificationMessages {
   FETCH_DATA_DETAILS_SUCCESS: string;
@@ -55,41 +57,43 @@ export const handleApiErrorAndNotify = (
 
 
 // Modify the fetchData function to accept the endpoint for fetching highlights
-export async function fetchData(endpoint: string): Promise<YourResponseType> {
+
+export const fetchData = async (endpoint: string): Promise<{ data: YourResponseType } | null> => {
   try {
-    const fetchDataEndpoint = `${API_BASE_URL}${endpoint}`;
-    const response = await axiosInstance.get<YourResponseType>(fetchDataEndpoint, {
-      headers: headersConfig,
-    });
-    return response.data;
+    const response = await fetch(endpoint);
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+
+    // Return the data wrapped in an object with a 'data' property
+    return { data };
   } catch (error) {
-    console.error('Error fetching data:', error);
-    const errorMessage = 'Failed to fetch data';
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      errorMessage,
-      'FetchDataErrorId' as keyof DataNotificationMessages
-    );
-    throw error;
+    // Handle any errors that occur during the fetch operation
+    console.error("Failed to fetch data:", error);
+    return null;
   }
-}
+};
 
 
-// Use fetchData to fetch highlights
 
 // Use fetchData to fetch highlights
 export const fetchHighlights = async (): Promise<HighlightEvent[]> => {
   try {
-    // Use dotProp to retrieve the endpoint string
-    const endpoint = dotProp.getProperty(endpoints, 'highlights.list');
-    
-    if (typeof endpoint !== 'string') {
-      throw new Error('Endpoint is not a string');
+    // Access the endpoint directly from the endpoints object
+    const endpoint = endpoints.highlights.list;
+
+    if (typeof endpoint !== "string") {
+      throw new Error("Endpoint is not a string");
     }
 
-    const response: YourResponseType = await fetchData(endpoint);
-    // Assuming highlights are nested within YourResponseType, adjust this accordingly
-    const highlights = response.highlights as HighlightEvent[];
+    const response = await fetchData(endpoint);
+    if (!response || !response.data) {
+      throw new Error("Response or response.data is null");
+    }
+    const highlights = response.data.highlights as HighlightEvent[];
     return highlights;
   } catch (error: any) {
     handleApiError(
@@ -99,6 +103,7 @@ export const fetchHighlights = async (): Promise<HighlightEvent[]> => {
     throw error;
   }
 };
+
 
 export const addData = async (newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent, 'id'>): Promise<void> => {
   try {
@@ -281,6 +286,28 @@ export const getBackendVersion = async (): Promise<string> => {
   }
   return "unknown";
 };
+
+
+
+
+// Function to fetch updated dynamic data from API
+export const fetchUpdatedDynamicData = async () => {
+  try {
+    const updatedDynamicDataEndpoint = `${API_BASE_URL}/your-api-endpoint`; // Update with your API endpoint
+    const response = await axiosInstance.get(updatedDynamicDataEndpoint);
+    const updatedData = response.data;
+    setDynamicData(updatedData);
+  } catch (error: any) {
+    console.error('Error fetching updated dynamic data:', error);
+    // Handle error using the provided pattern
+    handleApiErrorAndNotify(error,
+      "Failed to fetch updated dynamic data",
+      "FetchUpdatedDynamicDataErrorId" as keyof DataNotificationMessages
+    );
+  }
+};
+
+
 
 export const getFrontendVersion = async (): Promise<string> => {
   try {

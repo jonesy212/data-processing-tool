@@ -1,16 +1,15 @@
-import { Router, useRouter } from "next/router";
+import { endpoints } from "@/app/api/ApiEndpoints";
 import { searchAPI } from "@/app/api/ApiSearch";
 import { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
+import { RetryConfig } from "@/app/configs/ConfigurationService";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
-import { AxiosResponse } from "axios";
-import { ProgressData } from "../models/data/ProgressData";
-import { endpoints } from "@/app/api/ApiEndpoints";
-import { RetryConfig } from "@/app/configs/ConfigurationService";
-import generateNewRoute from "@/app/generators/generateNewRoute";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { useAppSelector } from "@/app/utils/useAppSelector";
+import { AxiosResponse } from "axios";
+import { Router, useRouter } from "next/router";
 import React, {
   BaseSyntheticEvent,
   MouseEventHandler,
@@ -31,6 +30,7 @@ import { ContextMenuActions } from "../actions/ContextMenuActions";
 import { DragActions } from "../actions/DragActions";
 import { DrawingActions } from "../actions/DrawingActions";
 import { EventHandlerActions } from "../actions/EventHanderActions";
+import { ListActions } from "../actions/ListActions";
 import { ProjectActions } from "../actions/ProjectActions";
 import { SearchActions } from "../actions/SearchActions";
 import { SelectActions } from "../actions/SelectActions";
@@ -41,9 +41,8 @@ import { EventDetails } from "../calendar/CalendarEventViewingDetails";
 import getSocketConnection from "../communications/getSocketConnection";
 import { saveCryptoPortfolioData } from "../documents/editing/autosave";
 import updateUI, {
-  addToClipboardHistory,
   updateUIWithCopiedText,
-  updateUIWithSearchResults,
+  updateUIWithSearchResults
 } from "../documents/editing/updateUI";
 import { HighlightActions } from "../documents/screenFunctionality/HighlightActions";
 import { currentAppType } from "../getCurrentAppType";
@@ -51,6 +50,8 @@ import useErrorHandling from "../hooks/useErrorHandling";
 import useWebSocket from "../hooks/useWebSocket";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { BlogActions } from "../models/blogs/BlogAction";
+import { ProgressData } from "../models/data/ProgressData";
+import { SortingType } from "../models/data/StatusType";
 import {
   initiateBitcoinPayment,
   initiateEthereumPayment,
@@ -59,10 +60,11 @@ import { PhaseActions } from "../phases/PhaseActions";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisActions } from "../projects/DataAnalysisPhase/DataAnalysisActions";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
-import router from "../projects/projectManagement/ProjectManagementSimulator";
 import { ContentActions } from "../security/ContentActions";
 import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
 import SnapshotList from "../snapshots/SnapshotList";
+import { WritableDraft } from "../state/redux/ReducerGenerator";
+import { addMessage } from "../state/redux/slices/ChatSlice";
 import { RootState } from "../state/redux/slices/RootSlice";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { historyManagerStore } from "../state/stores/HistoryStore";
@@ -70,14 +72,7 @@ import { Subscription } from "../subscriptions/Subscription";
 import { MeetingActions } from "../tasks/MeetingActions";
 import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
-import { BaseCustomEvent, CustomClipboardEvent } from "./BaseCustomEvent";
-import { ListActions } from "../actions/ListActions";
-import { SortingType } from "../models/data/StatusType";
-import { WritableDraft } from "../state/redux/ReducerGenerator";
-import { addMessage } from "../state/redux/slices/ChatSlice";
-import { BaseRouter } from "next/dist/shared/lib/router/router";
-import { Route } from "react-router-dom";
-import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import { BaseCustomEvent } from "./BaseCustomEvent";
 import { CustomMouseEvent } from "./EventService";
 
 const dispatch = useDispatch();
@@ -497,7 +492,7 @@ const processCopiedText = async (
   }
 };
 
-const handleSorting = (
+export const handleSorting = (
   event: React.MouseEvent<HTMLButtonElement>,
   sortingType: SortingType
 ) => {
@@ -780,6 +775,9 @@ const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
   }
 };
 
+
+
+
 // Touch End Event Handler
 const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
   // Logic for touch end event
@@ -803,6 +801,20 @@ const handleTouchCancel = (event: React.TouchEvent<HTMLDivElement>) => {
   // Example: Reset any state or action related to touch operation
   UIActions.setLoading(false); // Set loading state to false in case of touch cancel
   UIActions.setError("Touch operation canceled"); // Set an error message indicating touch operation was canceled
+};
+
+
+
+
+const generateNextPhaseRoute = (condition: boolean, dynamicData: any): string => {
+  // Logic to generate the next phase route based on condition and dynamic data
+  if (condition) {
+    // For example, if condition is true, append dynamic data to the route
+    return `/next-phase/${dynamicData}`;
+  } else {
+    // Otherwise, return a default route
+    return '/default-next-phase-route';
+  }
 };
 
 const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -835,12 +847,17 @@ const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
   const dynamicData: any = "exampleDynamicData"; // Assign any appropriate value
 
   // Example 4: Trigger a navigation or route change
-  const newRoute = generateNewRoute(condition, dynamicData); // Call a function to generate the new route dynamically
-  history(Number(newRoute)); // Navigate to the new route using history
+  const newRoute = generateNextPhaseRoute(condition, dynamicData);
+  history(newRoute); // Navigate to the new route using history
 
   // Example 5: Dispatch a Redux action
   dispatch({ type: "POINTER_DOWN", payload: { event } });
 };
+
+
+
+
+
 
 // Define state using useState hook
 const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -864,6 +881,11 @@ const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
   // Additional logic for pointer move event
 };
 
+
+
+
+
+
 const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
   // Logic for pointer up event
   console.log("Pointer up");
@@ -882,6 +904,10 @@ const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
   TooltipActions.hideTooltip();
 };
 
+
+
+
+
 const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
   // Logic for pointer cancel event
   console.log("Pointer canceled");
@@ -894,6 +920,10 @@ const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
   TooltipActions.hideTooltip();
 };
 
+
+
+
+
 const handlePointerEnter = (event: React.PointerEvent<HTMLDivElement>) => {
   // Logic for pointer enter event
   console.log("Pointer entered");
@@ -904,6 +934,9 @@ const handlePointerEnter = (event: React.PointerEvent<HTMLDivElement>) => {
   // Additional real-world logic: Show a tooltip when pointer enters the element
   TooltipActions.showTooltip("Hover over me for more information");
 };
+
+
+
 
 const handlePointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
   // Logic for pointer leave event
@@ -919,6 +952,9 @@ const handlePointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
   // Example: Update state to indicate pointer is no longer within bounds
   UIActions.setIsPointerInside(false);
 };
+
+
+
 
 const handlePointerOver = (event: React.PointerEvent<HTMLDivElement>) => {
   // Logic for pointer over event
@@ -938,6 +974,9 @@ const handlePointerOver = (event: React.PointerEvent<HTMLDivElement>) => {
   });
 };
 
+
+
+
 const handlePointerOut = (event: React.PointerEvent<HTMLDivElement>) => {
   // Logic for pointer out event
   console.log("Pointer out");
@@ -949,6 +988,11 @@ const handlePointerOut = (event: React.PointerEvent<HTMLDivElement>) => {
   // Reset pointer position
   UIActions.setPointerPosition({ x: 0, y: 0 });
 };
+
+
+
+
+
 
 const handleAuxClick = (event: React.MouseEvent<HTMLDivElement>) => {
   // Declare isAuxClicked variable or access it from the appropriate state management system
@@ -1040,6 +1084,9 @@ const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     ],
   });
 };
+
+
+
 
 const handleDynamicEvent = (
   eventType: DynamicEventType<OriginalEventType>,
@@ -1140,10 +1187,6 @@ const DynamicEventHandlerService = ({
     setMessages((prevMessages: string[]) => [...prevMessages, message]);
   };
 
-  // // Helper function to add messages
-  // const addMessage = (message: Message) => {
-  //   setMessages((prevMessages: Message[]) => [...prevMessages, message as Message]);
-  // };
 
   const handleKeyboardShortcuts = createEventHandler(
     "handleKeyboardShortcuts",
@@ -2162,6 +2205,7 @@ const DynamicEventHandlerService = ({
           label: "",
           current: 0,
           max: 100,
+          percentage: 0
         })
       );
 
@@ -2331,6 +2375,7 @@ const DynamicEventHandlerService = ({
     handleClickOutside,
     scrollEventListener,
     handleDragStart,
+    handleSorting,
     handleDragEnd,
     handleDragEnter,
     handleDragOver,
@@ -2558,12 +2603,15 @@ const DynamicEventHandlerService = ({
 
 export default DynamicEventHandlerService;
 export type { CustomEventListener };
+export {generateNextPhaseRoute}
 
 function stopImmediatePropagation(
-  event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
+  event: React.MouseEvent<HTMLCanvasElement, MouseEvent>
 ): void {
-  throw new Error("Function not implemented.");
+  event.stopPropagation(); // Stop the propagation of the event
+  event.nativeEvent.stopImmediatePropagation(); // Stop the immediate propagation of the event
 }
+
 // Example usage:
 // Pass settings data when calling handleSettingsPanel
 // handleSettingsPanel(event, { isOpen: true });

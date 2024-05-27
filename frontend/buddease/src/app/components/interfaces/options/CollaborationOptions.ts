@@ -33,6 +33,8 @@ interface ProjectManagementFeature {
 interface DataAnalysisTool {
   name: string;
   description: string;
+  isActive: boolean;
+
 }
 
 interface CommunityEngagementFeature {
@@ -44,6 +46,20 @@ interface MonetizationAndIncentiveOption {
   name: string;
   description: string;
 }
+
+
+interface VisualizationResult {
+  id: string;
+  type: string;
+  data: any;
+}
+
+interface Decision {
+  id: string;
+  decision: string;
+  rationale: string;
+}
+
 
 // Generate collaboration options based on the provided content
 function generateCollaborationOptions(): CollaborationOptions[] {
@@ -207,6 +223,12 @@ function generateCollaborationOptions(): CollaborationOptions[] {
       "Integration of cryptocurrency payment methods and transactions",
     id: "",
   });
+  options.push({
+    name: "Visualization Result",
+    description:
+      "Visualizations display content results.",
+    id: "",
+  });
 
   return options;
 }
@@ -224,4 +246,5 @@ const collaborationOptions: CollaborationOptions[] =
   generateCollaborationOptions();
 console.log(collaborationOptions);
 
-export type { CollaborationOptions };
+export type { CollaborationOptions, CommunityEngagementFeature, DataAnalysisTool, Decision, MonetizationAndIncentiveOption, VisualizationResult, CommunicationOption, RealTimeCollaborationTool };
+

@@ -6,11 +6,13 @@ import { PhaseHookConfig } from "@/app/components/hooks/phaseHooks/PhaseHooks";
 import { sanitizeInput } from "@/app/components/security/SanitizationFunctions"; // Import sanitizeInput function
 import { UserData } from "@/app/components/users/User";
 import axios from "axios";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/components/state/redux/slices/RootSlice";
 import { setError, setLoading } from "@/app/components/state/stores/UISlice";
+import { ProjectPhaseTypeEnum } from "@/app/components/models/data/StatusType";
+import useIdleTimeout from "@/app/components/hooks/idleTimeoutHooks";
 
 interface RegistrationPhaseProps {
   onSuccess: (userData: UserData) => void;
@@ -41,7 +43,8 @@ const RegistrationPhase: React.FC<RegistrationPhaseProps> = ({ onSuccess }) => {
       },
       name: "NextPhase", // Name of the next phase
       duration: "0", // Duration of the next phase if needed
-      phaseType: "Registration" // Type of the next phase
+      startIdleTimeout: useIdleTimeout({}).startIdleTimeout,
+      phaseType: ProjectPhaseTypeEnum.Register // Type of the next phase
     };
 
     // Check if transition to next phase is allowed
@@ -60,9 +63,11 @@ const RegistrationPhase: React.FC<RegistrationPhaseProps> = ({ onSuccess }) => {
       asyncEffect: async () => {
         return () => Promise.resolve(); // Return a function that resolves the Promise
       },
+      startIdleTimeout: useIdleTimeout({}).startIdleTimeout,
       name: "PreviousPhase", // Name of the previous phase
       duration: "0", // Duration of the previous phase if needed
-      phaseType: "previous", // Specify that this is a previous phase
+      phaseType: ProjectPhaseTypeEnum.Previous ,
+      // Specify that this is a previous phase
     };
 
     // Check if transition to previous phase is allowed

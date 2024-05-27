@@ -6,6 +6,7 @@ type LoginResult = {
 
 
 export type UserStatus = {
+  then(arg0: (userStatus: any) => boolean): Promise<boolean>;
   isLoggedIn: boolean;
   dashboardConfig?: any; // Replace 'any' with the actual type of your dashboard configuration
 };

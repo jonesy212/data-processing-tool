@@ -1,12 +1,12 @@
 // ContentManagementPhase.tsx
+import { ListGeneratorProps } from "@/app/generators/ListGenerator";
+import { EditorState } from "draft-js";
 import React from "react";
-import useContentManagementStore from "../state/stores/ContentStore";
 import BlogAndContentEditor from "../models/content/BlogAndContentEditor";
 import ContentList from "../models/content/ContentList";
-import ContentType from "../typings/ContentType";
-import { EditorState } from "draft-js";
 import { Data } from "../models/data/Data";
-import { ListGeneratorProps } from "@/app/generators/ListGenerator";
+import useContentManagementStore from "../state/stores/ContentStore";
+import ContentType from "../typings/ContentType";
 
 
 
@@ -17,15 +17,18 @@ export enum ContentManagementPhaseEnum {
   CONTENT_ORGANIZATION = "CONTENT_ORGANIZATION",
   CONTENT_PUBLISHING = "CONTENT_PUBLISHING",
   PROFILE_SETUP = "PROFILE_SETUP",
-  IDEA_CREATION = "IDEA_CREATION",
+  IDEA_CREATION = "CM_IDEA_CREATION", 
 }
 
 
 
 const ContentManagementPhase: React.FC = () => {
-  const { contentItems, selectedContentItemId, setSelectedContentItemId } = useContentManagementStore();
+  const { contentItems, selectedContentItemId, setSelectedContentItemId } =
+    useContentManagementStore();
 
-  const handleContentItemClick = (contentItemId: ListGeneratorProps<Data>['items'][0] | null) => {
+  const handleContentItemClick = (
+    contentItemId: ListGeneratorProps<Data>["items"][0] | null
+  ) => {
     setSelectedContentItemId(contentItemId);
   };
 
@@ -36,20 +39,21 @@ const ContentManagementPhase: React.FC = () => {
         contentItems={contentItems}
         onContentItemClick={handleContentItemClick}
       />
-      {selectedContentItemId && <BlogAndContentEditor
-        
-        contentItemId={selectedContentItemId} editorState={new EditorState}
-        initialContent={""}
-        activeDashboard={""}
-        onContentChange={function (
-          newContent: ContentType): void {
-          // update content in store
-          
-                  } } contentType={{
-          label: "",
-          value: ""
-        }}
-      />}
+      {selectedContentItemId && (
+        <BlogAndContentEditor
+          contentItemId={selectedContentItemId}
+          editorState={new EditorState()}
+          initialContent={""}
+          activeDashboard={"content"}
+          onContentChange={function (newContent: ContentType): void {
+            // update content in store
+          }}
+          contentType={{
+            label: "",
+            value: "",
+          }}
+        />
+      )}
     </div>
   );
 };

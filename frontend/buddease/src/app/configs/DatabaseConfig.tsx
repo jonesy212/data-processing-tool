@@ -472,6 +472,8 @@ export class MysqlDatabaseService extends BaseDatabaseService {
   }
 }
 
+
+//todo maek dynamic and use 
 // Example usage (replace with your actual database logic)
 const databaseConfig: DatabaseConfig = {
   url: "your_database_url",

@@ -12,7 +12,10 @@ interface AuthState {
   authToken: string | null; // Add authToken property
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+  integrateAuthenticationProviders: (
+    provider: AuthenticationProvider
+  ) => void;
+  authenticationProviders: AuthenticationProvider[] | undefined; // Add authenticationProviders property
 }
 
 interface AuthContextProps {
@@ -32,12 +35,14 @@ interface AuthContextProps {
 }
 
 interface AuthAction {
-  type: "LOGIN" | "LOGOUT" | "LOGIN_WITH_ROLES"; // New action type
+  type: "LOGIN" | "LOGOUT" | "LOGIN_WITH_ROLES" | "INTEGRATE_AUTHENTICATION_PROVIDERS"; // New action type
   payload?: {
     user: User;
     roles?: string[];
     nfts?: string[];
     authToken: string;
+    provider?: AuthenticationProvider; // Add provider payload
+
   }; // Updated payload
 }
 
@@ -51,7 +56,11 @@ const initialState: AuthState = {
   timestamp: 0,
   userNFTs: [],
   authToken: null,
-  isLoading: false
+  isLoading: false,
+  integrateAuthenticationProviders: function (provider: AuthenticationProvider): void {
+    throw new Error("Function not implemented.");
+  },
+  authenticationProviders: undefined
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
@@ -74,10 +83,19 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         userRoles: action.payload?.roles || [],
         userNFTs: action.payload?.nfts || [],
       };
+      case "INTEGRATE_AUTHENTICATION_PROVIDERS":
+        const provider = action.payload;
+        return {
+          ...state,
+          ...(state.authenticationProviders || []), // Ensure that state.authenticationProviders is an array
+        };
     default:
       return state;
   }
 };
+
+
+
 
 const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
   children,

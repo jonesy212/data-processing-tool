@@ -10,6 +10,7 @@ import { CollaborationOptions } from "../../interfaces/options/CollaborationOpti
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
@@ -30,6 +31,7 @@ interface DataDetails {
   title?: string;
   description?: string | null
   details?: DetailsItem<SupportedData>;
+  completed?: boolean | undefined
   startDate?: Date;
   endDate?: Date;
   createdAt?: Date | undefined;
@@ -137,11 +139,13 @@ interface Data {
   members?: Member[];
   // tasks?: Todo[];
   leader?: User | null;
-  // actions?: SnapshotStoreConfig<Snapshot<Data>[]>[];
+  actions?: SnapshotStoreConfig<Snapshot<Data>[]>[];
   snapshots?: SnapshotStore<Snapshot<Data>>[];
   // Incorporating the data structure from YourResponseType
   text?: string;
   category?: string;
+  getData?: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Define the getData method
+  // handleSnapshot: 
 }
 
 // Define the UserDetails component
@@ -151,6 +155,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       title: "Data Details",
       description: "Data descriptions",
       details: data.details,
+      completed: !!data.completed,
     }}
     details={{
       _id: data._id,
@@ -323,7 +328,6 @@ const data: Data = {
       announcement: false,
       reminder: false,
       project: false,
-   
     }, // Added missing property
 
     activityLog: [
@@ -437,10 +441,8 @@ const data: Data = {
           }
           // Add other logic to infer additional types
           // Example:
-          if (
-            this.maxFeePerGas !== null &&
-            this.maxPriorityFeePerGas !== null
-          ) {
+          if (this.maxFeePerGas !== null &&
+            this.maxPriorityFeePerGas !== null) {
             types.push(2); // Example for London type transaction
           }
           if (types.length === 0) {
@@ -593,6 +595,9 @@ const data: Data = {
     },
   },
   snapshots: [],
+  getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+    throw new Error("Function not implemented.");
+  }
 };
 
 export type { Data, DataDetails, DataDetailsComponent, DataDetailsProps };

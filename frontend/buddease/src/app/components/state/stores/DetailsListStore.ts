@@ -203,15 +203,15 @@ class DetailsListStoreClass implements DetailsListStore {
         id: detailsId,
         description: this.detailsDescription,
         title: this.detailsTitle,
-        status: this.detailsStatus as
-        | TaskStatus.Pending
-        | TaskStatus.InProgress
-        | TaskStatus.Completed,
+        status: this.detailsStatus as TaskStatus.Pending |
+          TaskStatus.InProgress |
+          TaskStatus.Completed,
         phase: {} as DetailsItem<Data>["phase"],
         data: {} as DetailsItem<Data>["data"],
         isActive: false,
         type: "details",
         analysisResults: {} as DetailsItem<Data>["analysisResults"],
+        updatedAt: undefined
       });
     }
 
@@ -315,7 +315,8 @@ class DetailsListStoreClass implements DetailsListStore {
       isActive: false,
       type: "details",
       _id: "",
-      analysisResults: []
+      analysisResults: [],
+      updatedAt: undefined
     };
 
     this.addDetailsItem(newDetailsItem);
@@ -377,7 +378,8 @@ class DetailsListStoreClass implements DetailsListStore {
         phase: phase,
         type: "detail",
         isActive: false,
-        analysisResults: {} as DetailsItem<Data>["analysisResults"]
+        analysisResults: {} as DetailsItem<Data>["analysisResults"],
+        updatedAt: undefined
       });
     }
     // Update the details object with the new status array

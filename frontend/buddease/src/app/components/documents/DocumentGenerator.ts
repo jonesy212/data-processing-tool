@@ -14,11 +14,11 @@ import {
 } from "@/app/configs/database/updateDocumentInDatabase";
 import { generateDiagram } from "@/app/generators/diagramGenerationLibrary";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
-import { } from "@faker-js/faker";
+import {} from "@faker-js/faker";
 import Docxtemplater from "docxtemplater";
 import { DrawingFunctions, DrawingOptions } from "drawingLibrary";
 import fs from "fs";
-import Papa from 'papaparse';
+import Papa from "papaparse";
 import * as path from "path";
 import { PDFDocument, PDFPage } from "pdf-lib";
 import { loadCryptoWatchlistFromDatabase } from "../crypto/CryptoWatchlist";
@@ -45,8 +45,10 @@ import { parseXML } from "./parseXML";
 
 import generateDevConfigurationSummaryContent from "@/app/generators/generateDevConfigurationSummaryContent";
 import { VersionData } from "../versions/VersionData";
-import { YourPDFType } from "./DocType";
+import { ModifiedDate, YourPDFType } from "./DocType";
 import { parseDocx } from "./parseDocx";
+import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
+
 var xl = require("excel4node");
 
 const { handleError } = useErrorHandling();
@@ -123,8 +125,9 @@ const documents: Document[] = [
     },
     lastModifiedDate: { value: new Date(), isModified: false }, // Initialize as not modified
     version: {} as Version,
-    versionData {} as VersionData,
-    visibility: undefined
+    permissions: {} as DocumentPermissions,
+    versionData: {} as VersionData,
+    visibility: undefined,
   },
   // Add more documents as needed
 ];
@@ -134,6 +137,12 @@ const documents: Document[] = [
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { UserSettings } from "@/app/configs/UserSettings";
 import Version from "../versions/Version";
+import { DocumentSize, Layout } from "../models/data/StatusType";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import {
+  CodingLanguageEnum,
+  LanguageEnum,
+} from "../communications/LanguageEnum";
 
 //   // todo
 //   // Define your types here...
@@ -339,8 +348,31 @@ async function loadDocumentContentFromDatabase(
     const document = await fetchDocumentByIdAPI(documentId, dataCallback);
 
     // Validate format
-    const allowedFormats = ["pdf", "docx", "xlsx", "json", "txt", "csv", "md", "html", "jpeg", "png", "gif", "mp3", "wav", "mp4", "avi", "xml", "yaml", "pptx", "dwg", "dxf", "shp", "geojson", "sql"];
-
+    const allowedFormats = [
+      "pdf",
+      "docx",
+      "xlsx",
+      "json",
+      "txt",
+      "csv",
+      "md",
+      "html",
+      "jpeg",
+      "png",
+      "gif",
+      "mp3",
+      "wav",
+      "mp4",
+      "avi",
+      "xml",
+      "yaml",
+      "pptx",
+      "dwg",
+      "dxf",
+      "shp",
+      "geojson",
+      "sql",
+    ];
 
     if (!allowedFormats.includes(format)) {
       throw new Error(`Unsupported format: ${format}`);
@@ -368,7 +400,7 @@ async function loadDocumentContentFromDatabase(
         break;
       case "csv":
         // Logic to parse CSV content
-        const csvContent = Papa.parse(document.content, {header: true});
+        const csvContent = Papa.parse(document.content, { header: true });
         break;
       case "md":
         // Logic to parse Markdown content
@@ -386,7 +418,7 @@ async function loadDocumentContentFromDatabase(
         // Logic to parse audio content
         break;
       case "mp4":
-        // Logic to parse video content
+      // Logic to parse video content
       case "avi":
         // Logic to parse video content
         break;
@@ -423,7 +455,8 @@ async function loadDocumentContentFromDatabase(
   return "";
 }
 
-async function loadOtherDocumentContent(this: any, 
+async function loadOtherDocumentContent(
+  this: any,
   documentId: number,
   format: string,
   dataCallback: (data: WritableDraft<DocumentData>) => void
@@ -469,12 +502,39 @@ async function loadOtherDocumentContent(this: any,
       keywords: [],
       folders: [],
       options: {
-        additionalOptions: [] as string[],
+        tableCells: {
+          enabled: false,
+          padding: 0,
+          fontSize: 0,
+          alignment: "left",
+          borders: undefined,
+        },
+        tableStyles: {
+          backgroundColor: "white",
+          borderColor: "black",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          fontFamily: "",
+          fontSize: "",
+          color: "",
+          border: "solid 1px black", // Added border property
+        },
+        color: "#000000",
+        highlight: true,
+        highlightColor: "yellow",
+        footnote: { enabled: true, format: "standard" },
+        defaultZoomLevel: 100,
+        customProperties: { property1: "value1", property2: "value2" },
+        value: "example value",
+        metadata: {},
+        additionalOptions: [],
         uniqueIdentifier: "",
-        documentType: this.pdfDataType, // Use pdfDataType instead of an empty string
+        documentType: DocumentTypeEnum.Draft,
+
+        //{ enabled: true, format: this.pdfDataType },
         userIdea: "",
         isDynamic: false,
-        size: "letter",
+        size: DocumentSize.Letter,
         animations: {
           type: "none",
           transition: "none",
@@ -488,7 +548,7 @@ async function loadOtherDocumentContent(this: any,
         backgroundColor: "",
         fontFamily: "",
         lineSpacing: 0,
-        alignment: "left",
+        alignment: AlignmentOptions.CENTER,
         indentSize: 0,
         bulletList: false,
         numberedList: false,
@@ -511,29 +571,210 @@ async function loadOtherDocumentContent(this: any,
         todoList: false,
         orderedTodoList: false,
         unorderedTodoList: false,
-        colorCoding: false,
-        customSettings: {} as WritableDraft<Record<string, any>>,
+        colorCoding: {},
+        customSettings: {},
         documents: [],
         includeType: "all",
         includeTitle: false,
         includeContent: false,
         includeStatus: false,
         includeAdditionalInfo: false,
-        userSettings: {} as WritableDraft<UserSettings>,
-        dataVersions: {} as WritableDraft<DataVersions>,
+        userSettings: {} as UserSettings,
+        dataVersions: {} as DataVersions,
         documentPhase: "",
+        documentSize: DocumentSize.Letter,
+        limit: 0,
+        page: 0,
+        language: LanguageEnum.English,
         version: {
-          id: "",
-          number: 0,
-          date: new Date(),
-        }
+          id: 0,
+          name: "",
+          url: "",
+          versionNumber: "",
+          appVersion: "",
+          description: "",
+          createdAt: undefined,
+          updatedAt: undefined,
+          content: "",
+          userId: "",
+          documentId: "",
+          parentId: "",
+          parentType: "",
+          parentVersion: "",
+          parentTitle: "",
+          parentContent: "",
+          parentName: "",
+          parentUrl: "",
+          parentChecksum: "",
+          parentMetadata: undefined,
+          parentAppVersion: "",
+          parentVersionNumber: "",
+          checksum: "",
+          isLatest: false,
+          isPublished: false,
+          publishedAt: null,
+          source: "",
+          status: "",
+          workspaceId: "",
+          workspaceName: "",
+          workspaceType: "",
+          workspaceUrl: "",
+          workspaceViewers: [],
+          workspaceAdmins: [],
+          workspaceMembers: [],
+          frontendStructure: undefined,
+          backendStructure: undefined,
+          data: [],
+          metadata: undefined,
+          draft: false,
+          versionHistory: {
+            versions: [],
+          },
+          setFrontendAndBackendStructure: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          getStructure: function (): Record<string, AppStructureItem[]> {
+            throw new Error("Function not implemented.");
+          },
+        },
+        layout: Layout.Default,
+        panels: ["panel1", "panel2"],
+        pageNumbers: {
+          enabled: true, // or false, depending on your requirement
+          format: "numeric", // or whatever format you want to use
+        },
+        footer: "Page Footer",
+        watermark: {
+          enabled: false,
+          text: "",
+          fontSize: 12,
+          opacity: 0.5,
+          color: "",
+          size: "",
+          x: 0,
+          y: 0,
+          rotation: 0,
+          borderStyle: "",
+        },
+        headerFooterOptions: {
+          enabled: false,
+          headerContent: "",
+          footerContent: "",
+          showHeader: false,
+          showFooter: false,
+          differentFirstPage: false,
+          differentOddEven: false,
+          headerOptions: undefined,
+          footerOptions: undefined,
+        },
+        zoom: 100,
+        showRuler: false,
+        showDocumentOutline: false,
+        showComments: false,
+        showRevisions: false,
+        spellCheck: false,
+        grammarCheck: false,
+        toc: { enabled: false, levels: 3, format: "" },
+        textStyles: {},
+        links: { enabled: false, color: "", underline: false },
+        embeddedContent: {
+          enabled: false,
+          allow: true,
+          language: LanguageEnum.English,
+        },
+        bookmarks: { enabled: false },
+        crossReferences: { enabled: false, format: "Page Number" },
+        footnotes: { enabled: false, format: "numeric" },
+        endnotes: { enabled: false, format: "numeric" },
+        comments: { enabled: false, author: "", dateFormat: "DD-MM-YYYY" },
+        revisions: { enabled: false, author: "", dataFormat: "DD-MM-YYYY" },
+        embeddedMedia: { enabled: false, allow: true },
+        embeddedCode: {
+          enabled: false,
+          allow: true,
+          language: CodingLanguageEnum.JavaScript,
+        },
+        styles: {
+          default: {
+            name: "Default Style",
+            style: {
+              fontFamily: "Arial",
+              fontSize: 12,
+              fontWeight: "normal",
+              fontStyle: "normal",
+              textDecoration: "none",
+              color: "#000000",
+            },
+            custom: {
+              name: "Custom Style",
+              style: {
+                fontFamily: "Times New Roman",
+                fontSize: 14,
+                fontWeight: "bold",
+                fontStyle: "italic",
+                textDecoration: "underline",
+                color: "#333333",
+              },
+            },
+            tableCells: {
+              enabled: false,
+              padding: 0,
+              fontSize: 0,
+              alignment: "left",
+              borders: undefined,
+            },
+            tableStyles: {
+              backgroundColor: "",
+              borderColor: "",
+              borderWidth: "",
+              borderStyle: "",
+              fontFamily: "",
+              fontSize: "",
+              color: "",
+            },
+            highlight: { enabled: false, color: "" },
+            highlightColor: {
+              enabled: false,
+              color: "",
+            },
+            footnote: { enabled: false, format: "numeric" },
+            defaultZoomLevel: 100,
+            customProperties: {},
+            value: "",
+            metadata: {},
+          },
+          folderPath: {
+            name: "",
+            style: undefined,
+            custom: undefined,
+            tableCells: undefined,
+            tableStyles: undefined,
+            highlight: undefined,
+            highlightColor: undefined,
+            footnote: undefined,
+            defaultZoomLevel: 0,
+            customProperties: undefined,
+            value: "",
+            metadata: undefined,
+          },
+        },
+        previousMetadata: {},
+        currentMetadata: {},
+        accessHistory: [],
+        lastModifiedDate: {
+          value: new Date(),
+          isModified: false,
+        } as ModifiedDate,
       },
+      permissions: undefined,
       folderPath: "",
-      previousMetadata: {} as StructuredMetadata,
-      currentMetadata: {} as StructuredMetadata,
+      previousMetadata: undefined,
+      currentMetadata: undefined,
       accessHistory: [],
-      lastModifiedDate: { value: new Date(), isModified: false },
-      version: {} as VersionData,
+      lastModifiedDate: undefined,
+      versionData: undefined,
+      version: undefined,
+      visibility: undefined
     });
   }
 
@@ -1017,7 +1258,8 @@ class DocumentGenerator {
 
   createExecutiveSummary(options: DocumentOptions): string {
     // Logic to generate executive summary
-    const executiveSummaryContent = generateDevConfigurationSummaryContent(options);
+    const executiveSummaryContent =
+      generateDevConfigurationSummaryContent(options);
     // Write the executive summary content to a file
     fs.writeFileSync("executive_summary.docx", executiveSummaryContent);
     return "Executive summary created successfully.";
@@ -1028,4 +1270,3 @@ class DocumentGenerator {
 export default DocumentGenerator;
 export { DocumentStatusEnum, DocumentTypeEnum, extractTextFromPDF };
 export type { CustomDocxtemplater, DocumentPath };
-

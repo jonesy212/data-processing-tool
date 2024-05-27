@@ -130,6 +130,7 @@ const contentItem: DetailsItem<Data> = {
   title: "Sample Content",
   description: "This is a sample content item.",
   analysisResults: [],
+  updatedAt: new Date()
   /* Add other relevant details here */
 };
 
@@ -584,7 +585,8 @@ const initialOptions: ToolbarOptions = {
                             value: progress,
                             label: "Progress",
                             current: progress,
-                            max: 100
+                            max: 100,
+                            percentage: 0
                           }}
                           toolbarOptions={toolbarOptions}
                         />

@@ -12,6 +12,9 @@ interface TraderProps {
   onComplete: () => void; // Define the onComplete function type
 }
 
+
+
+
 const FollowTraders: React.FC<TraderProps> = ({ onComplete }) => {
   const [traders, setTraders] = useState<Trader[]>([]);
 
