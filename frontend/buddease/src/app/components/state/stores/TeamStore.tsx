@@ -76,7 +76,7 @@ export interface TeamManagerStore {
   ) => number;
   // Add more methods or properties as needed
 }
-
+const config = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
 const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   const { notify } = useNotification();
 
@@ -96,12 +96,14 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
-  const initialSnapshot = {} as SnapshotStoreConfig<
+  const initSnapshot = {} as SnapshotStoreConfig<
     SnapshotStore<Snapshot<Data>>
   >;
-  const snapshotStore = new SnapshotStore(initialSnapshot, () => {
+  const snapshotStore = new SnapshotStore(initSnapshot,
+    config,
+    () => {
     notify(
-      "initialSnapshot",
+      "initSnapshot",
       "Initial Snapshot has been taken.",
       NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
       new Date(),

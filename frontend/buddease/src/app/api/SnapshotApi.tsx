@@ -195,7 +195,7 @@ export const fetchSnapshotById = async (
   }
 };
 export const fetchAllSnapshots = async (
-  target: string
+  target: SnapshotList
 ): Promise<SnapshotList> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
@@ -215,7 +215,7 @@ export const fetchAllSnapshots = async (
     ];
     const headers = Object.assign({}, ...headersArray);
     const response = await axiosInstance.get<SnapshotList>(
-      `${API_BASE_URL}/${target}`,
+      `${API_BASE_URL}/${target}`, // Assuming target is a valid URL string
       {
         // Use the target parameter here
         headers: headers as Record<string, string>,
@@ -231,6 +231,7 @@ export const fetchAllSnapshots = async (
   }
 };
 
+
 // Update the getSortedList function to accept the Target type
 export const getSortedList = async (target: Target): Promise<SnapshotList> => {
   try {
@@ -241,7 +242,7 @@ export const getSortedList = async (target: Target): Promise<SnapshotList> => {
     const constructedTarget = constructTarget("apiWebBase", endpoint, params);
 
     // Fetch snapshots using the constructed target
-    const snapshotsList = await fetchAllSnapshots(constructedTarget);
+    const snapshotsList = await fetchAllSnapshots(constructedTarget.toArray()); 
 
     // Optional: Sort snapshots within the SnapshotList object
     snapshotsList.sortSnapshotItems();

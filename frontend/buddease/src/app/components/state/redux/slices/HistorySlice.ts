@@ -11,7 +11,7 @@ const initialState: HistoryState = {
   history: [],
 };
 
-const historySlice = createSlice({
+export const useHistorySlice = createSlice({
   name: 'history',
   initialState,
   reducers: {
@@ -19,5 +19,5 @@ const historySlice = createSlice({
   },
 });
 
-export const { /* Reducers */ } = historySlice.actions;
-export default historySlice.reducer;
+export const { /* Reducers */ } = useHistorySlice.actions;
+export default useHistorySlice.reducer;

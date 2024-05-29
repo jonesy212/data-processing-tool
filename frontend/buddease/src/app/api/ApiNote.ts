@@ -5,6 +5,7 @@ import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
 import { ModifiedDate } from '../components/documents/DocType';
 import { NoteData } from '../components/documents/NoteData';
+import { Tag } from '../components/intelligence/Tag';
 import FolderData from '../components/models/data/FolderData';
 import { Encryption } from '../components/security/Encryption';
 import { YourResponseType } from '../components/typings/types';
@@ -47,7 +48,7 @@ const apiNotificationMessages: NoteNotificationMessages = {
 
 
 // Extend SearchNotesResponse with attributes from YourResponseType
-type SearchNotesResponse = YourResponseType & {
+type SearchNotesResponse =  {
   // Add specific attributes related to search notes if needed
   results: Note[]; // Assuming an array of Note objects in the response
   totalCount: number; // Total count of search results
@@ -348,11 +349,20 @@ export const listAllNotesAPI = async (): Promise<any[]> => {
 // Search notes API
 
 // Updated function with type annotations and centralized error handling
-export const searchNotesAPI = async (searchQuery: string): Promise<SearchNotesResponse> => {
+export const searchNotesAPI = async (searchQuery: string): Promise<SearchNotesResponse | undefined> => {
   try {
     const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(searchQuery)}`;
-    const response = await axiosInstance.get<SearchNotesResponse>(searchNotesEndpoint);
-    return response.data;
+    const response = await axiosInstance.get<YourResponseType>(searchNotesEndpoint);
+    
+    // Ensure that response data matches SearchNotesResponse type
+    const responseData: SearchNotesResponse = response.data;
+
+    // Access the properties directly from responseData
+    return {
+      results: responseData.results || [], // Access 'results' property
+      totalCount: responseData.totalCount || 0, // Access 'totalCount' property
+      searchData: responseData.searchData || {} // Access 'searchData' property
+    };
   } catch (error) {
     console.error('Error searching notes:', error);
     const errorMessage = 'Failed to search notes';
@@ -364,6 +374,7 @@ export const searchNotesAPI = async (searchQuery: string): Promise<SearchNotesRe
     throw error;
   }
 };
+
 
 // Filter notes API
 export const filterNotesAPI = async (filters: Record<string, any>): Promise<any> => {
@@ -409,4 +420,4 @@ export const searchNotes = async (keyword: string): Promise<Note[]> => {
   }
 };
 
-export type { Note };
+export type { Note, SearchNotesResponse };

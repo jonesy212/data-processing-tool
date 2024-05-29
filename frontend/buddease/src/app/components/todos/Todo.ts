@@ -9,11 +9,13 @@ import { Progress } from "../models/tracker/ProgressBar";
 import { Phase } from "../phases/Phase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Snapshot } from "../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-export interface Todo {
+import SnapshotStoreConfig from "../snapshots/SnapshotConfig";
+import { Tag } from "../models/tracker/Tag";
+export interface Todo extends Snapshot<Data>  {
   _id: string;
   id: string;
   done: boolean;
@@ -55,7 +57,7 @@ export interface Todo {
   createdAt?: Date;
   updatedAt?: Date;
   isActive?: boolean;
-  tags?: string[];
+  tags?: Tag[];
   isDeleted?: boolean;
   isArchived?: boolean;
   isCompleted?: boolean;
@@ -81,7 +83,7 @@ export interface Todo {
   analysisResults?: DataAnalysisResult[];
   videoData?: VideoData;
   
-  data?: Data;
+  data?: Data | undefined;
 }
 
 export interface TodoManagerState {
@@ -92,9 +94,12 @@ export const todoInitialState: TodoManagerState = {
   entities: {},
 };
 
-class TodoImpl implements Todo {
+class TodoImpl implements Todo{
   _id: string = "";
   id: string = "";
+  category: string = ""
+  timestamp: Date = new Date()
+  content: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
   status?: StatusType | undefined;
   payload?: any;
   type?: string | undefined;
@@ -153,7 +158,7 @@ class TodoImpl implements Todo {
   recurringMonthsOfYear: number[] = [];
 
   ideas: Idea[] = [];
-  tags: string[] = [];
+  tags: Tag[] = [];
   phase: Phase | null = null;
   then: (callback: (newData: Snapshot<Data>) => void) => void = () => {};
   analysisType: AnalysisTypeEnum = AnalysisTypeEnum.TODO as AnalysisTypeEnum;
@@ -174,6 +179,7 @@ class TodoImpl implements Todo {
     category: "todo",
     timestamp: new Date(),
     data: {} as Data,
+    content: undefined
   };
 
   data?: Data;

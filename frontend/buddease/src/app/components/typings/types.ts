@@ -1,23 +1,24 @@
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { Exchange } from "../crypto/Exchange";
+import { DataWithComment } from "../crypto/SafeParseData";
 import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { Phase } from "../phases/Phase";
+import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project } from "../projects/Project";
 import BrowserCheckStore from "../state/stores/BrowserCheckStore";
 import { CalendarEvent, CalendarManagerStore } from "../state/stores/CalendarEvent";
 import { IconStore } from "../state/stores/IconStore";
+import { TaskManagerStore } from "../state/stores/TaskStore ";
 import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
-import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
-import { DataWithComment } from "../crypto/SafeParseData";
-import { TaskManagerStore } from "../state/stores/TaskStore ";
+import { SearchNotesResponse } from "@/app/api/ApiNote";
 
 // Define the structure of YourResponseType based on the actual response from the backend
-interface YourResponseType extends DataWithComment {
+interface YourResponseType extends DataWithComment,SearchNotesResponse {
   forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void) => void;
   length?: number;
 

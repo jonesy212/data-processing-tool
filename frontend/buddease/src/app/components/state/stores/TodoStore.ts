@@ -12,7 +12,7 @@ import { todoService } from "../../todos/TodoService";
 
 
 const {notify} = useNotification()
-export interface TodoManagerStore {
+export interface TodoManagerStore<T> {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
@@ -37,12 +37,12 @@ export interface TodoManagerStore {
   setDynamicNotificationMessage: (message: string) => void;
   subscribeToSnapshot: (
     snapshotId: string,
-    callback: (snapshot: Todo) => void
+    callback: (snapshot: Snapshot<T>) => void
   ) => void;
   batchFetchSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
 }
 
-const useTodoManagerStore = (): TodoManagerStore => {
+const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
@@ -77,10 +77,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
   // Inside useTodoManagerStore function
   const snapshotStore = useSnapshotManager();
   // Initialize SnapshotStore
-  const onSnapshotCallbacks: ((
-    snapshotData: Record<string, Todo[]>
-  ) => void)[] = [];
-
+  const onSnapshotCallbacks: ((snapshot: Snapshot<T>) => void)[] = [];
 
   
 
@@ -159,7 +156,7 @@ const useTodoManagerStore = (): TodoManagerStore => {
 
   const subscribeToSnapshot = (
     snapshotId: string,
-    callback: (snapshot: Todo) => void
+    callback: (snapshot: Snapshot<T>) => void
   ) => {
     onSnapshotCallbacks.push();
     snapshotStore.subscribeToSnapshot(snapshotId, (snapshot) => {

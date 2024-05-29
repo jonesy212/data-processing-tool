@@ -1,28 +1,27 @@
 //TaskManagerStore.tsx
+import { saveAs } from '@/app/components/documents/editing/autosave';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
+import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
+import useApiManager from "../../hooks/dynamicHooks/useApiManager";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
+import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { TaskActions } from "../../tasks/TaskActions";
 import { taskService } from "../../tasks/TaskService";
+import { Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-import { Todo } from "../../todos/Todo";
-import useApiManager from "../../hooks/dynamicHooks/useApiManager";
-import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
-import { saveToLocalStorage } from "../../hooks/useLocalStorage";
-import { saveAs } from '@/app/components/documents/editing/autosave';
-import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -109,7 +108,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
 
-  const initialSnapshot = {} as Snapshot<Data>;
+  const initSnapshot = {} as Snapshot<Data>;
 
   const dispatch = (action: any) => {
     const { type, payload } = action;

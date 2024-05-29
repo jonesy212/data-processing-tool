@@ -2,14 +2,18 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { Data } from '../models/data/Data';
-import { SnapshotStoreConfig } from './SnapshotStore';
+import SnapshotStoreConfig from './SnapshotConfig';
+import SnapshotStore, { Snapshot } from './SnapshotStore';
 
 export const SnapshotActions = {
     add: createAction<SnapshotStoreConfig<Data>>('addSnapshot'),
     removeSnapshot: createAction<string>("removeSnapshot"),
     updateSnapshot: createAction<{ id: string, newData: any }>("updateSnapshot"),
-  
-    // Batch actions for fetching snapshots
+    batchTakeSnapshots: createAction<{
+        snapshots: {
+             snapshots: SnapshotStore<Snapshot<Data>>[]
+        }        
+    }>('batchTakeSnapshots'),    // Batch actions for fetching snapshots
     batchFetchSnapshotsRequest: createAction("batchFetchSnapshotsRequest"),
     batchFetchSnapshotsSuccess: createAction<{ snapshots: SnapshotStoreConfig<Data>[] }>("batchFetchSnapshotsSuccess"),
     batchFetchSnapshotsFailure: createAction<{ error: string }>("batchFetchSnapshotsFailure"),

@@ -26,16 +26,16 @@ class SnapshotList {
   sortSnapshotByDate() {
     this.snapshots.sort((a, b) => {
       return (
-        (a.value.timestamp.getTime() as number) -
-        (b.value.timestamp.getTime() as number)
+        (a.value?.timestamp?.getTime() ?? 0) -
+        (b.value?.timestamp?.getTime() ?? 0)
       );
     });
   }
   sort() {
     this.snapshots.sort((a, b) => {
       return (
-        (a.value.timestamp.getTime() as number) -
-        (b.value.timestamp.getTime() as number)
+        (a.value?.timestamp?.getTime() as number) -
+        (b.value?.timestamp?.getTime() as number)
       );
     });
   }
@@ -59,8 +59,8 @@ class SnapshotList {
   sortSnapshotItems() {
     this.snapshots.sort((a, b) => {
       return (
-        (a.value.timestamp.getTime() as number) -
-        (b.value.timestamp.getTime() as number)
+        (a.value?.timestamp?.getTime() as number) -
+        (b.value?.timestamp?.getTime() as number)
       );
     });
   }

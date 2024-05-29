@@ -10,9 +10,6 @@ import { useSecureUserId } from "../../utils/useSecureUserId";
 import { UndoRedoStore } from "./UndoRedoStore";
 import { TaskHistoryEntry } from "../../interfaces/history/TaskHistoryEntry";
 
-
-
-
 interface BaseHistoryStore {
   clearHistory: () => void;
   limitHistoryEntries: (limit: number) => void;
@@ -56,16 +53,10 @@ interface HistoryStore {
   collapseHistorySections: (section: any) => void;
   searchHistory: (query: string) => void;
   integrateWithUserProfiles: () => void;
-  addToClipboardHistory: (copiedText: any) => void
+  addToClipboardHistory: (copiedText: any) => void;
   getTaskHistory: (taskId: number) => Promise<TaskHistoryEntry[]>;
   addTaskHistoryEntry: (taskId: number, action: string) => void;
-  
 }
-
-
-
-
-
 
 export const baseStore = (): BaseHistoryStore => {
   const clearHistory = () => {
@@ -102,19 +93,15 @@ export const baseStore = (): BaseHistoryStore => {
     }
   };
 
-
-  
-
   const persistHistory = () => {
     // Implement persistHistory logic here to save history to localStorage/indexedDB
-    localStorage.setItem('history', JSON.stringify(history));
+    localStorage.setItem("history", JSON.stringify(history));
   };
-
 
   const undoHistory = () => {
     UndoRedoStore.undo();
   };
-  
+
   const redoHistory = () => {
     // Implement redoHistory logic here
   };
@@ -130,16 +117,13 @@ export const baseStore = (): BaseHistoryStore => {
     persistHistory,
     undoHistory,
     redoHistory,
-    customizeHistoryDisplay: () => { },
-    collapseHistorySections: () => { },
-    searchHistory: () => { },
-    integrateWithUserProfiles: () => { },
-    addToClipboardHistory: () => { },
+    customizeHistoryDisplay: () => {},
+    collapseHistorySections: () => {},
+    searchHistory: () => {},
+    integrateWithUserProfiles: () => {},
+    addToClipboardHistory: () => {},
   };
 };
-
-
-
 
 const historyManagerStore = (): HistoryStore => {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -286,50 +270,71 @@ const historyManagerStore = (): HistoryStore => {
     try {
       // Implement logic to integrate data with user profiles
       // Set user id
-      const userId = useSecureUserId.toString()
+      const userId = useSecureUserId.toString();
       const userIds: string[] = [];
-  
+
       // For example, fetch user profiles and update them with relevant data
       const userProfilesPromise = getUsersData(userIds);
-  
+
       // Fetch new data for the user
       const newData = await UserService.fetchUser(userId, authToken);
-  
+
       // Wait for user profiles and new data to resolve
       const [userProfiles] = await Promise.all([userProfilesPromise]);
-  
+
       if (userProfiles) {
         // Update user profiles with new data
-        const updatedUserProfiles = userProfiles.map(profile => ({
+        const updatedUserProfiles = userProfiles.map((profile) => ({
           userId: profile.userId,
           username: profile.username,
           email: profile.email,
           tier: profile.tier,
           token: profile.token,
           uploadQuota: profile.uploadQuota,
-           avatarUrl: profile.avatarUrl,
-           createdAt: profile.createdAt,
-           updatedAt: profile.updatedAt,
-           fullName: profile.fullName,
-           isVerified: profile.isVerified,
-           isAdmin: profile.isAdmin,
-           isActive: profile.isActive,
-            bio: profile.bio,
-           userType: profile.userType,
-           hasQuota: profile.hasQuota,
-           profilePicture: profile.profilePicture,
-           processingTasks: profile.processingTasks,
-           role: profile.role,
+          avatarUrl: profile.avatarUrl,
+          createdAt: profile.createdAt,
+          updatedAt: profile.updatedAt,
+          fullName: profile.fullName,
+          isVerified: profile.isVerified,
+          isAdmin: profile.isAdmin,
+          isActive: profile.isActive,
+          bio: profile.bio,
+          userType: profile.userType,
+          hasQuota: profile.hasQuota,
+          profilePicture: profile.profilePicture,
+          processingTasks: profile.processingTasks,
+          role: profile.role,
           persona: profile.persona,
-           data: profile.data,
+          data: profile.data,
+          blockedUsers: profile.blockedUsers,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          friends: profile.friends,
+          settings: profile.settings,
+
+          interests: profile.interests,
+          privacySettings: profile.privacySettings,
+          notifications: profile.notifications,
+          activityLog: profile.activityLog,
+
+          socialLinks: profile.socialLinks,
+          relationshipStatus: profile.relationshipStatus,
+          hobbies: profile.hobbies,
+          skills: profile.skills,
+
+          achievements: profile.achievements,
+          profileVisibility: profile.profileVisibility,
+          profileAccessControl: profile.profileAccessControl,
+          activityStatus: profile.activityStatus,
+          isAuthorized: profile.isAuthorized,
           // Add more properties as needed
         }));
-  
-        updatedUserProfiles.forEach(profile => {
+
+        updatedUserProfiles.forEach((profile) => {
           profile.data = newData;
           // Additional logic for updating profiles as needed
         });
-  
+
         // Save updated user profiles
         await saveUserProfiles(updatedUserProfiles); // Example function to save user profiles
       }
@@ -338,22 +343,19 @@ const historyManagerStore = (): HistoryStore => {
       // Handle error as needed
     }
   };
-  
+
   const addToClipboardHistory = async () => {
     try {
       // Add current history to clipboard
-      await navigator.clipboard.writeText(
-        JSON.stringify(history)
-      );
+      await navigator.clipboard.writeText(JSON.stringify(history));
       // Copy history JSON to clipboard successfully
       console.log("History copied to clipboard");
       // Handle any errors that occur during clipboard operation
-    } catch (error: any) { 
+    } catch (error: any) {
       console.error("Error adding history to clipboard:", error);
-      throw error
+      throw error;
     }
-
-  }
+  };
 
   const historyStore: HistoryStore = makeAutoObservable({
     history: [],
@@ -380,11 +382,5 @@ const historyManagerStore = (): HistoryStore => {
   return historyStore;
 };
 
-
-
-
-
-
 export { historyManagerStore };
 export type { HistoryEntry, HistoryStore };
-

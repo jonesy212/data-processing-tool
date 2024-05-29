@@ -127,6 +127,7 @@ const idleTimeoutDuration = 10000;
 
 const asyncHook: AsyncHook<RootState> = {
   isActive: false,
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void | undefined) => {},
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
     // Start the idle timeout with the specified duration
     const timeoutId = setTimeout(onTimeout, timeoutDuration);

@@ -1,18 +1,18 @@
 // UndoRedoSagas.ts
 import { showErrorMessage, showToast } from "@/app/components/models/display/ShowToast";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { call, put, takeEvery, takeLatest, select } from "redux-saga/effects";
+import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import { addToHistory, redo, undo } from "../slices/UndoRedoSlice";
 
 // Import the Message type from your application
+import { UndoRedoActions } from "@/app/components/actions/UndoRedoActions";
+import { authToken } from "@/app/components/auth/authToken";
 import Logger from "@/app/components/logging/Logger";
 import userService from "@/app/components/users/ApiUser";
+import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Partial } from "react-spring";
-import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
-import { authToken } from "@/app/components/auth/authToken";
-import { UndoRedoActions } from "@/app/components/actions/UndoRedoActions";
 import { RootState } from "../slices/RootSlice";
 
 
@@ -40,19 +40,20 @@ const LIMIT_HISTORY_SIZE_REQUEST = 'LIMIT_HISTORY_SIZE_REQUEST';
 const LIMIT_HISTORY_SIZE_SUCCESS = 'LIMIT_HISTORY_SIZE_SUCCESS';
 const LIMIT_HISTORY_SIZE_FAILURE = 'LIMIT_HISTORY_SIZE_FAILURE';
 
-// Action creators
-const limitHistorySizeRequest = () => ({ type: LIMIT_HISTORY_SIZE_REQUEST });
-const limitHistorySizeSuccess = () => ({ type: LIMIT_HISTORY_SIZE_SUCCESS });
-const limitHistorySizeFailure = (error: string) => ({ type: LIMIT_HISTORY_SIZE_FAILURE, payload: error });
-
 
 // Action Creators
 export const redoRequest = () => ({ type: REDO_REQUEST });
 export const redoSuccess = () => ({ type: REDO_SUCCESS });
 export const redoFailure = (error: any) => ({ type: REDO_FAILURE, payload: error });
 
-export const selectHistory = (state: RootState) => state.historySlice.history;
+export const selectHistory = (state: RootState): HistoryItem[] => state.historyManager.history;
 
+
+export function* select<T>(
+  selector: (state: RootState) => T
+): Generator<any, void, unknown> {
+  yield select(selector);
+}
 
 
 async function handleUndoRedo(action: PayloadAction<any>): Promise<void> {
@@ -231,6 +232,8 @@ export function* handleLimitHistorySize(action: PayloadAction<number>): Generato
   }
 }
 
+
+
 // Worker Saga: Handle the save history to local action
 export function* handleSaveHistoryToLocal(action: PayloadAction<HistoryItem[]>): Generator {
   try {
@@ -257,31 +260,44 @@ export function* handleSaveHistoryToLocal(action: PayloadAction<HistoryItem[]>):
   }
 }
 
-  // Handle the branching history action
+  
+
 
 // Update the handleBranchingHistory function
-export function* handleBranchingHistory(action: PayloadAction<BranchingHistoryPayload>): Generator {
+export function* handleBranchingHistory(
+  action: PayloadAction<BranchingHistoryPayload>
+): Generator<any, void, HistoryItem[]> {
   try {
     const { branchName, startPoint } = action.payload;
 
-    // Fetch the current history from the state
+    // Fetch the current history from the state using the selector function
     const currentHistory: HistoryItem[] = yield select(selectHistory);
 
     // Find the starting point in the current history
-    const startPointIndex: number = currentHistory.findIndex(item => item.id === startPoint);
+    const startPointIndex: number = currentHistory.findIndex(
+      (item: HistoryItem) => item.id === startPoint
+    );
 
     if (startPointIndex !== -1) {
       // Create a new branch by copying the history from the starting point
-      const newBranch: HistoryItem[] = currentHistory.slice(startPointIndex);
+      const newBranch: HistoryItem[] = [
+        ...currentHistory.slice(startPointIndex),
+      ];
 
       // Dispatch an action to save the new branch to the state
-      yield put(UndoRedoActions.saveBranch({ branchName, branchHistory: newBranch }));
-      
+      yield put(
+        UndoRedoActions.saveBranch({ branchName, branchHistory: newBranch })
+      );
+
       // Dispatch an action to indicate successful branching
       yield put(UndoRedoActions.branchingHistorySuccess(branchName));
     } else {
       // If the starting point is not found in the history, indicate failure
-      yield put(UndoRedoActions.branchingHistoryFailure("Starting point not found in history"));
+      yield put(
+        UndoRedoActions.branchingHistoryFailure(
+          "Starting point not found in history"
+        )
+      );
     }
   } catch (error: any) {
     // Handle errors if necessary
@@ -298,13 +314,21 @@ export function* handleDisableUndoRedo(action: PayloadAction<boolean>): Generato
 
     // Dispatch an action to update the undo redo slice state
     yield put(UndoRedoActions.updateUndoRedoStatus(disableUndoRedo));
-  } catch (error) {
+  } catch (error: any) {
     // Handle errors if necessary
     console.error("Error occurred while handling disable undo redo:", error);
     // Dispatch an action to indicate failure
     yield put(UndoRedoActions.disableUndoRedoFailure(error.message));
   }
 }
+
+
+
+
+
+
+
+
 
   
 export function* undoRedoSagas() {
@@ -331,4 +355,4 @@ export function* watchClearHistoryAction() {
 
 export default handleUndoRedo;
 
-export type {HistoryItem}
+export type { HistoryItem };

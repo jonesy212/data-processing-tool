@@ -12,9 +12,11 @@ import { Data } from "@/app/components/models/data/Data";
 import { useRealtimeDataSlice } from "@/app/components/state/redux/slices/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 
-import { PriorityStatus, StatusType } from "@/app/components/models/data/StatusType";
+import {
+  PriorityStatus,
+  StatusType,
+} from "@/app/components/models/data/StatusType";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
-import { User } from "@/app/components/users/User";
 import { VideoData } from "@/app/components/video/Video";
 import { createDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
@@ -33,6 +35,7 @@ import { useEntityManagerSlice } from "./EntitySlice";
 import { useEventManagerSlice } from "./EventSlice";
 import { useFilteredEventsSlice } from "./FilteredEventsSlice";
 import { filterReducer } from "./FilterSlice";
+import { useHistorySlice } from "./HistorySlice";
 import { useNotificationManagerSlice } from "./NotificationSlice";
 import { usePagingManagerSlice } from "./pagingSlice";
 import { usePhaseManagerSlice } from "./phaseSlice";
@@ -44,6 +47,7 @@ import { useTeamManagerSlice } from "./TeamSlice";
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVersionManagerSlice } from "./VersionSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
+import { HistoryItem } from "../sagas/UndoRedoSaga";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -60,11 +64,12 @@ interface EntityState<T, Id extends string> {
 // Define your EntityId type if not already defined
 export type EntityId = string;
 export interface RootState {
+  history: HistoryItem[],
   // User Interface
   appManager: ReturnType<typeof useAppManagerSlice.reducer>;
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
   uiManager: ReturnType<typeof useUIManagerSlice.reducer>;
-   // Project Management
+  // Project Management
   projectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
   taskManager: ReturnType<typeof useTaskManagerSlice.reducer>;
   trackerManager: ReturnType<typeof trackerManagerSlice.reducer>;
@@ -104,6 +109,7 @@ export interface RootState {
   drawingManager: ReturnType<typeof useDrawingManagerSlice.reducer>;
   versionManager: ReturnType<typeof useVersionManagerSlice.reducer>;
   filterManager: ReturnType<typeof useFilteredEventsSlice.reducer>;
+  historyManager: ReturnType<typeof useHistorySlice.reducer>;
 }
 
 const initialState: RootState = {
@@ -147,6 +153,7 @@ const initialState: RootState = {
   uiManager: useUIManagerSlice.reducer(undefined, { type: "init" }),
   phaseManager: usePhaseManagerSlice.reducer(undefined, { type: "init" }),
   filterManager: useFilteredEventsSlice.reducer(undefined, { type: "init" }),
+  historyManager: useHistorySlice.reducer(undefined, { type: "init" }),
 };
 
 const rootReducerSlice = createSlice({
@@ -182,10 +189,7 @@ const rootReducerSlice = createSlice({
       );
     builder.addCase(
       useTaskManagerSlice.actions.updateTaskStatus,
-      (
-        state,
-        action: PayloadAction<{ id: string; status: string; }>
-      ) => {
+      (state, action: PayloadAction<{ id: string; status: string }>) => {
         const { id, status } = action.payload;
         const taskToUpdate = state.taskManager.tasks.find(
           (task: WritableDraft<Task>) => task.id === id
@@ -193,7 +197,6 @@ const rootReducerSlice = createSlice({
         if (taskToUpdate) {
           taskToUpdate.status = status;
         }
-        
       }
     );
     builder.addCase(
@@ -201,17 +204,19 @@ const rootReducerSlice = createSlice({
       (
         state,
         action: PayloadAction<{
-          id: string,
+          id: string;
           updates: {
-            title?: string,
-            description?: string
-          }
+            title?: string;
+            description?: string;
+          };
         }>
       ) => {
         // Handle the action for updating task details
         const { id, updates } = action.payload;
-        const taskToUpdate = state.taskManager.tasks.find((task) => task.id === id);
-    
+        const taskToUpdate = state.taskManager.tasks.find(
+          (task) => task.id === id
+        );
+
         if (taskToUpdate) {
           // Update the task details
           if (updates.title) {
@@ -223,10 +228,8 @@ const rootReducerSlice = createSlice({
         }
       }
     );
-    
-    builder.addCase(
-      useTaskManagerSlice.actions.addTask, (
-        state) => {
+
+    builder.addCase(useTaskManagerSlice.actions.addTask, (state) => {
       // Handle the action for adding a task
       const newTask: Task = {
         _id: "newTaskId2",
@@ -311,8 +314,7 @@ const rootReducerSlice = createSlice({
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
     });
-    builder.addCase(
-      useTaskManagerSlice.actions.addTask, (state) => {
+    builder.addCase(useTaskManagerSlice.actions.addTask, (state) => {
       // Handle the action for adding a task
       const newTaskId = uuidv4();
       const newTask: Task = {
@@ -320,7 +322,7 @@ const rootReducerSlice = createSlice({
         title: state.taskManager.taskTitle,
         description: state.taskManager.taskDescription,
         status: state.taskManager.taskStatus,
-        assignedTo:[],
+        assignedTo: [],
         dueDate: new Date(),
         priority: "medium",
         isActive: false,
@@ -342,15 +344,17 @@ const rootReducerSlice = createSlice({
         videoUrl: "",
         ideas: [],
         payload: undefined,
-        some: function (callbackfn: (value: Task, index: number, array: Task[]) => unknown, thisArg?: any): boolean {
+        some: function (
+          callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+          thisArg?: any
+        ): boolean {
           if (Array.isArray(this)) {
             for (let i = 0; i < this.length; i++) {
               if (callbackfn(this[i], i, this)) {
                 return true;
               }
             }
-          }
-          else {
+          } else {
             throw new Error("'some' method can only be used on arrays.");
           }
           return false;
@@ -358,7 +362,7 @@ const rootReducerSlice = createSlice({
         then: implementThen,
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
-        }
+        },
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";

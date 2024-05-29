@@ -1,13 +1,20 @@
+import  snapshot from './SnapshotStore';
 // snapshotHandlers.ts
 
+import useSnapshotManager from "../hooks/useSnapshotManager";
 import { Data } from "../models/data/Data";
-import { NotificationTypeEnum, useNotification } from "../support/NotificationContext";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
+import { Subscriber } from "../users/Subscriber";
 import { generateSnapshotId } from "../utils/snapshotUtils";
-import SnapshotStoreConfig from "./SnapshotConfig";
+import SnapshotStoreConfig, { snapshotConfig } from "./SnapshotConfig";
 import SnapshotStore, { Snapshot } from "./SnapshotStore";
 
-const {notify} = useNotification();
+const { notify } = useNotification();
 
 // Handler for creating a snapshot
 export const createSnapshot = (additionalData: any): void => {
@@ -21,6 +28,15 @@ export const createSnapshot = (additionalData: any): void => {
     ...newSnapshot.data,
     ...additionalData,
   };
+};
+
+export const initSnapshot: Snapshot<Data> = {
+  length: 0,
+  id: "initial-id",
+  category: "initial-category",
+  timestamp: new Date(),
+  content: undefined,
+  data: {},
 };
 
 // Handler for updating a snapshot
@@ -37,6 +53,8 @@ export const updateSnapshot = async (
       },
       timestamp: new Date(),
       category: "update",
+      length: 0,
+      content: undefined,
     });
 
     return {
@@ -46,29 +64,17 @@ export const updateSnapshot = async (
     throw error;
   }
 };
-
-
-// Handler for fetching all snapshots
 export const getAllSnapshots = async (
-  snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>[]>
+  snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
 ): Promise<SnapshotStore<Snapshot<Data>>[]> => {
   try {
     return Promise.resolve(
-      snapshotConfig.snapshots.map((snapshotData) => {
-        // Ensure snapshotData is of type SnapshotStoreConfig<Snapshot<Data>>
+      snapshotConfig.snapshots.map((snapshotData: SnapshotStore<Snapshot<Data>>) => {
         const snapshotStore = new SnapshotStore<Snapshot<Data>>(
-          snapshotData as SnapshotStore<Snapshot<Data>>[] & SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,         
-          (message, content, date, type) => {
-            notify(
-              "getAllSnapshotsSuccss",
-              NOTIFICATION_MESSAGES.Snapshot.FETCHING_SNAPSHOT_SUCCESS,
-              "Getting snapshots",
-              new Date(),
-              NotificationTypeEnum.OperationSuccess
-            );
-            }
-        )
-            ;
+          notify,
+          initSnapshot, // Pass your initial snapshot object here
+          snapshotConfig
+        );
         return snapshotStore;
       })
     );
@@ -76,7 +82,6 @@ export const getAllSnapshots = async (
     throw error;
   }
 };
-
 
 // Handler for batch taking snapshots
 export const batchTakeSnapshot = async (
@@ -93,7 +98,7 @@ export const batchTakeSnapshot = async (
 
 // Handler for batch updating snapshots
 export const batchUpdateSnapshots = async (
-  subscribers: SnapshotStore<Snapshot<Data>>[],
+  subscribers: Subscriber<Snapshot<Data>>[],
   snapshots: SnapshotStore<Snapshot<Data>>[]
 ): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }[]> => {
   try {
@@ -105,7 +110,7 @@ export const batchUpdateSnapshots = async (
 
 // Handler for batch updating snapshots success
 export const batchUpdateSnapshotsSuccess = (
-  subscribers: SnapshotStore<Snapshot<Data>>[],
+  subscribers: Subscriber<Snapshot<Data>>[],
   snapshots: SnapshotStore<Snapshot<Data>>[]
 ): { snapshots: SnapshotStore<Snapshot<Data>>[] }[] => {
   return [{ snapshots: [] }];
@@ -114,7 +119,7 @@ export const batchUpdateSnapshotsSuccess = (
 // Handler for batch taking snapshots request
 export const batchTakeSnapshotsRequest = async (
   snapshotData: (
-    subscribers: SnapshotStore<Snapshot<Data>>[],
+    subscribers: Subscriber<Snapshot<Data>>[],
     snapshots: SnapshotStore<Snapshot<Data>>[]
   ) => Promise<SnapshotStore<Snapshot<Data>>[]>
 ): Promise<{ snapshots: SnapshotStore<Snapshot<Data>>[] }> => {
@@ -125,17 +130,17 @@ export const batchTakeSnapshotsRequest = async (
 // Handler for batch fetching snapshots request
 export const batchFetchSnapshotsRequest = (
   snapshotData: (
-    subscribers: SnapshotStore<Snapshot<Data>>[],
+    subscribers: Subscriber<Snapshot<Data>>[],
     snapshots: SnapshotStore<Snapshot<Data>>[]
   ) => {
-    subscribers: SnapshotStore<Snapshot<Data>>[];
+    subscribers: Subscriber<Snapshot<Data>>[];
     snapshots: SnapshotStore<Snapshot<Data>>[];
   }
 ): ((
-  subscribers: SnapshotStore<Snapshot<Data>>[],
+  subscribers: Subscriber<Snapshot<Data>>[],
   snapshots: SnapshotStore<Snapshot<Data>>[]
 ) => {
-  subscribers: SnapshotStore<Snapshot<Data>>[];
+  subscribers: Subscriber<Snapshot<Data>>[];
   snapshots: SnapshotStore<Snapshot<Data>>[];
 }) => {
   return (subscribers, snapshots) => {
@@ -145,10 +150,17 @@ export const batchFetchSnapshotsRequest = (
 
 // Handler for batch fetching snapshots success
 export const batchFetchSnapshotsSuccess = (
-  subscribers: SnapshotStore<Snapshot<Data>>[],
+  subscribers: Subscriber<Snapshot<Data>>[],
   snapshots: SnapshotStore<Snapshot<Data>>[]
 ): SnapshotStore<Snapshot<Data>>[] => {
-  return [...subscribers, ...snapshots];
+  // Transform each Subscriber into a SnapshotStore
+  const subscriberSnapshots = subscribers.map(subscriber => {
+    // Assuming there's a method to convert Subscriber to SnapshotStore
+    return subscriber.toSnapshotStore(initSnapshot,snapshotConfig); // Modify this according to your implementation
+  });
+
+  // Concatenate the transformed arrays with the original snapshots
+  return [...subscriberSnapshots, ...snapshots];
 };
 
 // Handler for batch fetching snapshots failure
@@ -162,12 +174,26 @@ export const batchUpdateSnapshotsFailure = (payload: { error: Error }) => {
 };
 
 // Handler for notifying subscribers
-export const notifySubscribers = (
-  subscribers: SnapshotStore<Snapshot<Data>>[]
-): SnapshotStore<Snapshot<Data>>[] => {
-  subscribers.forEach((subscriber) => {
-    subscriber.onSnapshot ? subscriber.snapshot : null;
-  });
+
+
+export const notifySubscribers = async <T extends Data>(
+  snapshotId: string,
+  subscribers: Subscriber<Snapshot<T>>[],
+  T: Data
+): Promise<Subscriber<Snapshot<T>>[]> => {
+  const snapshotManager = useSnapshotManager<T>();
+
+  await Promise.all(
+    subscribers.map(async (subscriber) => {
+      const shouldSubscribe = true; // Adjust this condition as needed
+      if (shouldSubscribe) {
+        snapshotManager.onSnapshot(snapshotId, async (snapshot: Snapshot<T>) => {
+          console.log("Received snapshot:", snapshot);
+          await subscriber.onSnapshot(snapshot);
+        });
+      }
+    })
+  );
 
   return subscribers;
 };

@@ -1,10 +1,11 @@
 // Tag.ts
 interface TagOptions {
+  id: string;
   name: string; // Name of the tag
   color: string; // Color of the tag
 }
 
-class Tag {
+export class Tag {
   private options: TagOptions;
 
   constructor(options: TagOptions) {
