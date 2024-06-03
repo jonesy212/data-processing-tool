@@ -1,5 +1,12 @@
 import { useState } from 'react';
 
+
+
+export const sendEmail = (recipient: string, subject: string, message: string) => {
+  // Replace this with your actual logic for sending emails
+  alert(`Email sent to ${recipient} with subject: "${subject}"`);
+  // Additional logic such as API calls can be added here
+};
 // Send Email Component
 const SendEmail = () => {
   // State to track email details
@@ -8,11 +15,11 @@ const SendEmail = () => {
   const [message, setMessage] = useState('');
 
   // Function to send the email
-  const sendEmail = () => {
-    // Replace this with your actual logic for sending emails
-    alert(`Email sent to ${recipient} with subject: "${subject}"`);
-    // Additional logic such as API calls can be added here
+  const handleSendEmail = () => {
+    // Call the globally defined sendEmail function
+    sendEmail(recipient, subject, message);
   };
+
 
   return (
     <div>
@@ -38,9 +45,11 @@ const SendEmail = () => {
       </label>
 
       {/* Send Button */}
-      <button onClick={sendEmail}>Send Email</button>
+      <button onClick={handleSendEmail}>Send Email</button>
     </div>
   );
 };
+
+
 
 export default SendEmail;

@@ -7,6 +7,15 @@ import { NotificationProps } from '../typings/PropTypes';
 
 interface NotificationStyleProps extends ThemeConfigProps, NotificationProps {}
 
+
+enum NotificationPreferenceEnum {
+  Email = "email",
+  PushNotification = "push_notification",
+  SMS = "sms",
+  InAppNotification = "in_app_notification",
+  None = "none",
+}
+
 const Notification: React.FC<NotificationStyleProps> = ({
   message,
   backgroundColor,
@@ -52,10 +61,9 @@ const Notification: React.FC<NotificationStyleProps> = ({
     <div className="notification" style={notificationStyle}>
       <span>{message}</span>
       <button onClick={() => handleDismiss(addNotification.toString())}>Dismiss</button>
-
-
     </div>
   );
 };
 
 export default Notification;
+export { NotificationPreferenceEnum };

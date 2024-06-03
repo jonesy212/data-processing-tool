@@ -12,6 +12,7 @@ interface SnapshotDataResponse {
   // Adjust it according to your actual data structure
   id: number;
   timestamp: string;
+  category: string
   // Other properties...
 }
 
@@ -28,6 +29,7 @@ export const retrieveSnapshotData =
       const snapshotData: Snapshot<SnapshotDataResponse> = {
         id: response.data.id.toString(),
         timestamp: new Date(response.data.timestamp),
+        category: response.data.category,
         // Map other properties from the response as needed
         data: response.data,
       }

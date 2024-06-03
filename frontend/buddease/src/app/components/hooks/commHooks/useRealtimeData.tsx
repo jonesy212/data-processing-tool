@@ -14,9 +14,9 @@ import { CalendarEvent } from "../../state/stores/CalendarEvent";
 export const ENDPOINT = endpoints.backend
 
 export type RealtimeUpdateCallback<T extends RealtimeData> = (
-  data: SnapshotStore<Snapshot<Data>>,
+  data: SnapshotStore<Data, Snapshot<Data>>,
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<Snapshot<Data>>,
+  snapshotStore: SnapshotStore<Data, Snapshot<Data>>,
   dataItems: T[]
 ) => void;
 
@@ -50,9 +50,9 @@ const useRealtimeData = (
     socket.on(
       "updateData",
       (
-        data: SnapshotStore<Snapshot<Data>>,
+        data: SnapshotStore<Data, Snapshot<Data>>,
         events: Record<string, CalendarEvent[]>,
-        snapshotStore: SnapshotStore<Snapshot<Data>>,
+        snapshotStore: SnapshotStore<Data, Snapshot<Data>>,
         dataItems: RealtimeDataItem[]
       ) => {
         updateCallback(data, events, snapshotStore, dataItems);

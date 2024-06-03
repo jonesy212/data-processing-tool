@@ -1534,6 +1534,90 @@ class SecurityLogger extends Logger {
   // Add more methods for other bug-related events as needed
 }
 
+
+
+class SnapshotLogger extends Logger {
+  static async logSnapshotCreation(snapshotId: string, snapshotData: any): Promise<void> {
+    try {
+      await this.logEvent("createSnapshot", "Creating snapshot", snapshotId, snapshotData);
+    } catch (error) {
+      console.error("Error logging snapshot creation:", error);
+      throw error;
+    }
+  }
+
+  static async logSnapshotUpdate(snapshotId: string, updatedData: any): Promise<void> {
+    try {
+      await this.logEvent("updateSnapshot", "Updating snapshot", snapshotId, updatedData);
+    } catch (error) {
+      console.error("Error logging snapshot update:", error);
+      throw error;
+    }
+  }
+
+  static async logSnapshotDeletion(snapshotId: string): Promise<void> {
+    try {
+      await this.logEvent("deleteSnapshot", "Deleting snapshot", snapshotId);
+    } catch (error) {
+      console.error("Error logging snapshot deletion:", error);
+      throw error;
+    }
+  }
+
+  private static async logEvent(action: string, message: string, snapshotId: string, data?: any): Promise<void> {
+    try {
+      const logUrl = this.getLogUrl(action);
+      await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ action, message, snapshotId, data }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error(`Error logging ${action} event:`, error);
+      throw error;
+    }
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    if (typeof endpoints.logs.logEvent === "string") {
+      logUrl = endpoints.logs.logEvent;
+    } else if (typeof endpoints.logs.logEvent === "function") {
+      logUrl = endpoints.logs.logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
+      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
+    }
+
+    return logUrl;
+  }
+
+  static async logErrorToService(error: Error): Promise<void> {
+    try {
+      // Example: Send error details to a remote logging service
+      const response = await fetch("https://example.com/logError", {
+        method: "POST",
+        body: JSON.stringify({ error: error.message, stack: error.stack }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log error to service");
+      }
+    } catch (error) {
+      console.error("Error logging error to service:", error);
+      throw error;
+    }
+  }
+}
+
+
 export default Logger;
 
 export {
@@ -1559,8 +1643,7 @@ export {
   IntegrationLogger,
   PaymentLogger,
   SearchLogger,
-  SecurityLogger,
-  TaskLogger,
+  SecurityLogger, SnapshotLogger, TaskLogger,
   TeamLogger,
   TenantLogger, UILogger, VideoLogger,
   WebLogger

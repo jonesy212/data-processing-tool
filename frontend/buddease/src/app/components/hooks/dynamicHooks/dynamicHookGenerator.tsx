@@ -28,7 +28,7 @@ export type DynamicHookParams<T> = {
 export type DynamicHookResult = {
   isActive: boolean;
   animateIn: (selector: string) => void;
-  accessToken?: string | undefined;
+  accessToken?: string | number;
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout?: () => void;

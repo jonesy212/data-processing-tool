@@ -11,6 +11,7 @@ export const FileActions = {
   updateFile: createAction<{ id: number, newTitle: string }>("updateFileTitle"),
   validateFile: createAction<CustomFile>("validateFile"),
   setSelectedFile: createAction<CustomFile[] | null>("setSelectedFile"),
+  setInputValue: createAction<string>("setInputValue"),
 
   fetchFileData: createAction<number>("fetchFileData"),
   fetchFileRequest: createAction<CustomFile>("fetchFileRequest"),

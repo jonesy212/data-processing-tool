@@ -32,7 +32,7 @@ import {
   Layout,
   Orientation,
   ProjectPhaseTypeEnum,
-  Visibility,
+  PrivacySettingEnum,
 } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
@@ -45,6 +45,7 @@ import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
+import { ModifiedDate } from "./DocType";
 import {
   createPdfDocument,
   getFormattedOptions,
@@ -57,12 +58,9 @@ import {
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { ModifiedDate } from "./DocType";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
-
-
-
+ 
 // Example function to compute checksum
 function computeChecksum(data: string): string {
   return crypto.createHash('sha256').update(data, 'utf8').digest('hex');
@@ -76,11 +74,11 @@ export interface DocumentData extends CommonData<Data> {
   id: number;
   title: string;
   content: string;
-  topics: string[];
-  highlights: string[];
-  keywords: string[];
-  load?(content: any): void;
   permissions: DocumentPermissions | undefined;
+  topics?: string[] | undefined;
+  highlights?: string[] | undefined;
+  keywords?: string[] | undefined;
+  load?(content: any): void;
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document
   folder?: FolderData;
@@ -89,7 +87,9 @@ export interface DocumentData extends CommonData<Data> {
   status?: AllStatus;
   type?: DocumentTypeEnum;
   locked?: boolean;
+  category?: string;
   changes?: string[];
+  timestamp?: Date;
   options: DocumentOptions | undefined;
   documentPhase?: Phase;
   folderPath: string;
@@ -254,7 +254,7 @@ const documentBuilderProps: DocumentBuilderProps = {
       frontendStructure:
         newConfig.frontendStructure || new FrontendStructure(projectPath),
       documentPhase: newConfig.documentPhase || "",
-      visibility: newConfig.visibility || Visibility.Private,
+      visibility: newConfig.visibility || PrivacySettingEnum.Private,
       version:
         newConfig.version ||
         Version.create({
@@ -779,7 +779,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
         {/* Other DocumentBuilder components go here */}
         <label>
-          Document Visibility:
+          Document PrivacySettings:
           <input
             type="checkbox"
             checked={isPublic}

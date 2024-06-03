@@ -1,1566 +1,1430 @@
+//snapshotstore.ts
 import {
+  NotificationContextType,
   NotificationType,
   NotificationTypeEnum,
   useNotification,
 } from "@/app/components/support/NotificationContext";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { retrieveSnapshotData } from "@/app/utils/retrieveSnapshotData";
-import { isEqual } from "lodash";
-import { MutableRefObject, useRef } from "react";
-import { useAuth } from "../auth/AuthContext";
-import { handleSorting } from "../event/DynamicEventHandlerExample";
+import { useState } from "react";
+import * as snapshotApi from "../../api/SnapshotApi";
+import useFileUpload from "../hooks/commHooks/useFileUpload";
+import useSnapshotManager from "../hooks/useSnapshotManager";
 import { Data } from "../models/data/Data";
-import { SortingType } from "../models/data/StatusType";
-import { showErrorMessage, showToast } from "../models/display/ShowToast";
-import { Task } from "../models/tasks/Task";
-import { Member } from "../models/teams/TeamMembers";
-import {
-  SnapshotState,
-  batchFetchSnapshotsFailure,
-} from "../state/redux/slices/SnapshotSlice";
-import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
-import { notificationStore } from "../support/NotificationProvider";
-import { Subscriber } from "../users/Subscriber";
-import SnapshotStoreConfig, { snapshotConfig } from "./SnapshotConfig";
 import { Tag } from "../models/tracker/Tag";
-import { initSnapshot } from "./snapshotHandlers";
-import { Subscription } from "../subscriptions/Subscription";
+import { handleButtonClick } from "../utils/handleFileChangesUtils";
+import SnapshotStoreConfig from "./SnapshotConfig";
+import {
+  batchFetchSnapshotsFailure,
+  batchFetchSnapshotsRequest,
+  batchFetchSnapshotsSuccess,
+  batchTakeSnapshotsRequest,
+} from "./snapshotHandlers";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { SnapshotLogger } from "../logging/Logger";
+import {
+  displayToast,
+  showErrorMessage,
+  showToast,
+} from "../models/display/ShowToast";
+import { fetchData } from "@/app/api/ApiData";
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { Phase } from "../phases/Phase";
+import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
+import { User } from "../users/User";
+import UserRoles from "../users/UserRoles";
+import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
+import { Persona } from "@/app/pages/personas/Persona";
+import { UserSettings } from "@/app/configs/UserSettings";
+import { createCustomTransaction } from "../hooks/dynamicHooks/createCustomTransaction";
+import { CustomTransaction } from "../crypto/SmartContractInteraction";
+import { CryptoActions } from "../actions/CryptoActions";
+import { ProjectManagementActions } from "../actions/ProjectManagementActions";
+import { TaskActions } from "../tasks/TaskActions";
+import { PromptActions } from "../prompts/PromptActions";
+import { useDispatch } from "react-redux";
+import { SnapshotActions } from "./SnapshotActions";
+import { Subscriber } from "../users/Subscriber";
+import { Member } from "../models/teams/TeamMembers";
+import { NotificationData } from "../support/NofiticationsSlice";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "../utils/applicationUtils";
+import { Content } from "../models/content/AddContent";
 
 const { notify } = useNotification();
-
-// Define a helper function to create a typed snapshot object
+const dispatch = useDispatch();
+const notificationContext = useNotification();
 interface Payload {
   error: string;
 }
 
-type Snapshots = Snapshot<Data>[];
-
-interface Snapshot<T> {
-  length?: number;
-  category: any;
-  id?: string;
-  timestamp: Date | undefined;
-  content: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> | undefined;
-  tags?: Tag[];
-  data?: T | undefined;
+export type Snapshots<Data> = Array<Snapshot<Data>>;
+interface UpdateSnapshotPayload<Data> {
+  snapshotId: string;
+  newData: Data;
 }
 
 
-const createTypedSnapshot = (
-  taskId: string,
-  tasks: Task[],
-  notify: (
+// Define the interface CustomSnapshotData
+interface CustomSnapshotData extends Data {
+  timestamp: Date | string | undefined;
+  value: number;
+  // Add any other properties as needed
+}
+
+
+
+// Define an array to store snapshots
+let snapshots: Snapshot<Data>[] = [];
+
+const SNAPSHOT_URL = endpoints.snapshots;
+// Define interface for snapshot object
+
+
+interface Snapshot<T> {
+  id?: string | number | undefined;
+  data?: T; // Data stored in the snapshot
+  timestamp: Date | string; // Timestamp of when the snapshot was created
+  createdBy?: string; // Optional: User or entity that created the snapshot
+  description?: string; // Optional: Description or notes about the snapshot
+  tags?: Tag[] | string[]; // Optional: Tags or labels for categorizing the snapshot
+  subscriberId?: string;
+  length?: number;
+  category: any;
+  
+  content?: T | string | Content | undefined;
+  message?: string;
+  type?: string;
+}
+
+// Function to initialize data
+const initializeData = (): Data => {
+  return {
+    id: "initial-id",
+    name: "Initial Name",
+    value: "Initial Value",
+    timestamp: new Date(),
+    category: "Initial Category",
+  };
+};
+
+const defaultCategory = "defaultCategory";
+const initialState = {
+  id: "",
+  category: defaultCategory,
+  timestamp: new Date(),
+  length: 0,
+  content: undefined,
+  data: undefined,
+};
+// Define the snapshot store subset
+type SnapshotStoreSubset = {
+  addSnapshot: (snapshot: Snapshot<Data>) => void;
+  updateSnapshot: (
+    snapshotId: string,
+    newData: Data,
+    payload: UpdateSnapshotPayload<Data>
+  ) => void;
+  removeSnapshot: (snapshotId: string) => void;
+  clearSnapshots: () => void;
+
+  // Snapshot Creation and Management
+  createSnapshot: () => void;
+  createSnapshotSuccess: (snapshot: Snapshot<Data>) => void;
+  createSnapshotFailure: (error: Payload) => void;
+  updateSnapshots: () => void;
+  updateSnapshotSuccess: () => void;
+  updateSnapshotFailure: (error: Payload) => void;
+  updateSnapshotsSuccess: () => void;
+  updateSnapshotsFailure: (error: Payload) => void;
+  initSnapshot: () => void;
+  takeSnapshot: () => void;
+  takeSnapshotSuccess: (snapshot: Snapshot<Data>) => void;
+  takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => void;
+
+  // Configuration
+  configureSnapshotStore: () => void;
+
+  // Data and State Handling
+  getData: () => Data | null;
+  setData: (data: Data) => void;
+  getState: () => any;
+  setState: (state: any) => void;
+  validateSnapshot: (snapshot: Snapshot<Data>) => boolean;
+  handleSnapshot: (snapshot: Snapshot<Data> | null, snapshotId: string) => void;
+  handleActions: () => void;
+
+  // Snapshot Operations
+  setSnapshot: (snapshot: Snapshot<Data>) => void;
+  setSnapshots: (snapshots: Snapshot<Data>[]) => void;
+  clearSnapshot: (snapshotId: string) => void;
+  mergeSnapshots: (snapshots: Snapshot<Data>[]) => void;
+  reduceSnapshots: () => void;
+  sortSnapshots: () => void;
+  filterSnapshots: () => void;
+  mapSnapshots: () => void;
+  findSnapshot: () => void;
+
+  // Subscribers and Notifications
+  getSubscribers: () => void;
+  notify: () => void;
+  notifySubscribers: () => void;
+  subscribe: () => void;
+  unsubscribe: () => void;
+
+  // Fetching Snapshots
+  fetchSnapshot: () => void;
+  fetchSnapshotSuccess: () => void;
+  fetchSnapshotFailure: () => void;
+  getSnapshot: () => void;
+  getSnapshots: () => void;
+  getAllSnapshots: () => void;
+
+  // Utility Methods
+  generateId: () => void;
+
+  // Batch Operations
+  batchFetchSnapshots: () => void;
+  batchTakeSnapshotsRequest: () => void;
+  batchUpdateSnapshotsRequest: () => void;
+  batchFetchSnapshotsSuccess: () => void;
+  batchFetchSnapshotsFailure: () => void;
+  batchUpdateSnapshotsSuccess: () => void;
+  batchUpdateSnapshotsFailure: () => void;
+  batchTakeSnapshot: () => void;
+};
+
+// Define the snapshot store interface
+type SnapshotStore = SnapshotStoreSubset & {
+  snapshots: Snapshot<Data>[];
+  config: SnapshotStoreConfig<unknown, Data>;
+};
+
+// Create the snapshot store
+const createSnapshotStore = async (
+  addToSnapshotList: (snapshot: Snapshot<Data>) => void
+): Promise<SnapshotStore> => {
+  // Initialize state and methods
+  const [snapshots, setSnapshots] = useState<Snapshot<Data>[]>([]);
+  const id = "unique_notification_id";
+  const message = "New snapshot created successfully!";
+  const content = "Details of the new snapshot";
+  const date = new Date(); // Current date and time
+  const type: NotificationType = NotificationTypeEnum.Success;
+  let currentState: any = null;
+
+  // Define or initialize newData (placeholder)
+  const newData: Data = {
+    id: "new-id",
+    name: "New Name",
+    value: "New Value",
+    timestamp: new Date(),
+    category: "New Category",
+  };
+
+  // Example usage:
+  const newSnapshot: Snapshot<Data> = {
+    id: "123",
+    data: newData,
+    timestamp: new Date(),
+    category: "New Category",
+    type: "",
+  };
+
+  // Define methods to be exposed by the snapshot store
+  const addSnapshot = (snapshot: Snapshot<Data>) => {
+    setSnapshots([...snapshots, snapshot]);
+  };
+
+  addSnapshot(newSnapshot);
+
+  // Function to update an existing snapshot
+  const updateSnapshot = async (snapshotIdToUpdate: string, newData: Data) => {
+    // Fetch the snapshot from the database asynchronously using the provided ID
+    const snapshotToUpdate = await snapshotApi.fetchSnapshotById(
+      snapshotIdToUpdate
+    );
+
+    // Check if the snapshot exists
+    if (snapshotToUpdate) {
+      // Update the snapshot's data with the new data
+      snapshotToUpdate.data = newData;
+      snapshotToUpdate.timestamp = new Date(); // Update timestamp
+      console.log(`Snapshot ${snapshotIdToUpdate} updated successfully.`);
+    } else {
+      console.warn(`Snapshot ${snapshotIdToUpdate} not found.`);
+    }
+  };
+
+  // Function to remove a snapshot
+  const removeSnapshot = (snapshotId: string) => {
+    const index = snapshots.findIndex((snapshot) => snapshot.id === snapshotId);
+    if (index !== -1) {
+      snapshots.splice(index, 1);
+      console.log(`Snapshot ${snapshotId} removed successfully.`);
+    } else {
+      console.warn(`Snapshot ${snapshotId} not found.`);
+    }
+  };
+
+  const clearSnapshots = () => {
+    setSnapshots([]);
+  };// Function to notify subscribers
+  const notifySubscribers = async (
+    subscribers: Subscriber<Data | CustomSnapshotData>[], // Accept both Data and CustomSnapshotData
+    notify: NotificationContextType["notify"],
+    notification: NotificationData,
+  ): Promise<void> => {
+    // Iterate over each subscriber
+    for (const subscriber of subscribers) {
+      // Customize notification message if needed
+      const personalizedMessage = `${notification.message} - Sent to: ${subscriber.name} (${subscriber.email})`;
+      
+      // Check if the subscriber data type is CustomSnapshotData
+      if (subscriber.data && 'category' in subscriber.data) {
+        // Convert CustomSnapshotData to Data
+        const data: Data = {
+          email: subscriber.data.email,
+          timestamp: subscriber.data.timestamp,
+          value: subscriber.data.value,
+          // Map other properties as needed
+        };
+        
+        // Send notification to the subscriber
+        await notify(
+          subscriber.subscriberId.toString(),
+          personalizedMessage,
+          data,
+          new Date(),
+          notification.type!
+        );
+      } else if (subscriber.data) {
+        // Send notification to the subscriber using existing data
+        await notify(
+          subscriber.subscriberId.toString(),
+          personalizedMessage,
+          subscriber.data as Data, // Assert type to Data
+          new Date(),
+          notification.type!
+        );
+      }
+    }
+  };
+  
+  // Function to get subscribers
+  const getSubscribers = (): Subscriber<Data | CustomSnapshotData>[] => {
+    // Implement logic to fetch subscribers from a database or an API
+    // For demonstration purposes, returning a mock list of subscribers
+    const subscribers: Subscriber<Data | CustomSnapshotData>[] = [];
+  
+    // Create subscriber instances and push them into the array
+    const subscriber1 = new Subscriber<Data | CustomSnapshotData>(
+      '1',
+      {
+        portfolioUpdates: () => {},
+        tradeExecutions: () => {},
+        marketUpdates: () => {},
+        communityEngagement: () => {},
+        unsubscribe: () => {},
+      },
+      notifyEventSystem,
+      updateProjectState,
+      logActivity,
+      triggerIncentives,
+      {
+        email: "john@example.com",
+        timestamp: new Date(),
+        value: 42, // Assuming 'value' is part of CustomSnapshotData,
+        category: "",
+      }
+    );
+  
+    const subscriber2 = new Subscriber<Data | CustomSnapshotData>(
+      '2',
+      {
+        portfolioUpdates: () => {},
+        tradeExecutions: () => {},
+        marketUpdates: () => {},
+        communityEngagement: () => {},
+        unsubscribe: () => {},
+      },
+      notifyEventSystem,
+      updateProjectState,
+      logActivity,
+      triggerIncentives,
+      {
+        email: "jane@example.com",
+        timestamp: new Date(),
+        value: 42, // Assuming 'value' is part of CustomSnapshotData
+        category: "example-category"
+      }
+    );
+  
+    subscribers.push(subscriber1, subscriber2);
+  
+    return subscribers;
+  };
+  
+// Usage example
+const subscribers = getSubscribers()
+const notification: NotificationData = {
+  id: "notification-id", // Provide a unique identifier
+  message: "Notification message",
+  content: "Notification content",
+  type: NotificationTypeEnum.Info,
+  sendStatus: false, // Assuming sendStatus indicates whether the notification was sent
+  completionMessageLog: "Log of the notification completion"
+};
+await notifySubscribers(subscribers, notify, notification);
+
+  const snapshotId = UniqueIDGenerator.generateSnapshotID();
+  const createSnapshot = (
     id: string,
     message: string,
     content: any,
     date: Date,
     type: NotificationType
-  ) => Promise<void>
-): SnapshotStore<Snapshot<Data>> => {
-  const initialState: Snapshot<Data> = {
-    data: {},
-    length: 0,
-    category: undefined,
-    timestamp: undefined,
-    content: undefined,
-  };
-  
-  const snapshotStore = new SnapshotStore<Snapshot<Data>>(notify, initSnapshot, {
-    key: "example_key",
-    id: "initial-id",
-    initialState: initSnapshot,
-     // Adding the missing properties
-     timestamp: new Date(),
-     category: "initial-category",
-     clearSnapshots: () => { console.log('Snapshots cleared'); },
-     set: (type: string, event: Event) => { console.log(`Set type: ${type}, event: ${event}`); },
-     store: {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> | null,
-     state: initSnapshot,
-     updateSnapshot: (newSnapshot) => {
-       console.log('Snapshot updated:', newSnapshot);
-       return Promise.resolve({ snapshot: [newSnapshot] });
-     },
-    onSnapshot: (snapshot) => { console.log('Snapshot:', snapshot); },
-    snapshotData: (snapshot) => ({ snapshot: [snapshot] }),
-    takeSnapshotsSuccess: (snapshots) => { console.log('Snapshots taken:', snapshots); },
-    createSnapshotFailure: (error) => { console.error('Create snapshot failed:', error); },
-    updateSnapshotsSuccess: (snapshotData) => { console.log('Snapshots updated:', snapshotData); },
-    updateSnapshotFailure: (payload) => { console.error('Update snapshot failed:', payload.error); },
-    fetchSnapshotSuccess: (snapshotData) => { console.log('Fetch snapshot success:', snapshotData); },
-    createSnapshotSuccess: () => { console.log('Create snapshot success'); },
-    takeSnapshotSuccess: () => { console.log('Take snapshot success'); },
-    configureSnapshotStore: (config) => { console.log('Configure snapshot store', config); },
-  
-   
-    getSnapshots: () => {
-      console.log('Getting snapshots...');
-      return Promise.resolve([]);
-    },
-    getSnapshot: async (snapshot: () => Promise<{ category: any; timestamp: any; id: any; snapshot: SnapshotStore<Snapshot<Data>>; data: Data; }> | undefined) => {
-      console.log('Getting snapshot...');
-      if (snapshot) {
-        const data = await snapshot();
-        if (data) {
-          return data.snapshot;
-        } else {
-          throw new Error('Snapshot data is undefined');
-        }
-      } else {
-        throw new Error('Snapshot function is undefined');
-      }
-    },
-    
-    takeSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>) => {
-      try {
-        // Logic to process the snapshot and take necessary actions
-        console.log('Taking snapshot:', snapshot);
-        
-        // Assuming some async operation is performed to take the snapshot
-        // For example, waiting for some time before resolving the promise
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-        // Returning the updated snapshot or a confirmation message
-        return { snapshot: [snapshot] };
-      } catch (error) {
-        // Handle any errors that occur during the snapshot process
-        console.error('Error taking snapshot:', error);
-        throw error;
-      }
-    },
+  ) => {
+    // Generate a new snapshot object with the required data
+    const newSnapshot: Snapshot<Data> = {
+      id: snapshotId, // Generate a unique ID for the snapshot
+      data: newData, // Set the data for the snapshot
+      timestamp: new Date(), // Set the timestamp for when the snapshot is created
+      category: "New Category",
+      type: "",
+    };
 
-    addSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => { 
-      console.log('Snapshot added:', snapshot); 
-      // Add the provided snapshot to the list of snapshots or perform any other necessary actions
-    },
-    removeSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => {
-      console.log('Snapshot removed:', snapshot);
-    },
-    getSubscribers: () => { return []; },
-    addSubscriber: (subscriber: Subscriber<Member>) => { console.log('Subscriber added:', subscriber); },
-    notifySubscribers(subscribers: Subscriber<Snapshot<Data>>[]): SnapshotStore<Snapshot<Data>>[] {
-      subscribers.forEach(subscriber => {
-          // Assuming notify function sends notifications to each subscriber
-        subscriber.notify(data);
-      })
-  
-      // Returning the list of subscribers after notification
-      return subscribers;
-    },
-    snapshots: [],
-    clearSnapshot: function (): void {
-      this.snapshots = [];
-    },
-    getAllSnapshots: async function (
-      data: (
-        subscribers: Subscriber<Snapshot<Data>>[],
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ) => Promise<SnapshotStore<Snapshot<Data>>[]>
-    ): Promise<SnapshotStore<Snapshot<Data>>[]> {
-      return data([], this.snapshots);
-    },
-    fetchSnapshot: async function (): Promise<void> {
-      console.log("Fetch snapshot called");
-    },
-    updateSnapshotSuccess: function (): void {
-      console.log("Update snapshot succeeded");
-    },
-    batchUpdateSnapshots: async function (
-      subscribers: Subscriber<Member>[],
-      snapshot: SnapshotStore<Snapshot<Data>>
-    ): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }> {
-      return { snapshot: [snapshot] };
-    },
-    batchTakeSnapshotsRequest: async function (
-      snapshotData: Subscriber<Member>[]
-    ): Promise<{ snapshots: SnapshotStore<Snapshot<Data>>[] }> {
-      return { snapshots: this.snapshots };
-    },
-    batchUpdateSnapshotsSuccess(
-      subscribers: Subscriber<Snapshot<Data>>[],
-      snapshots: SnapshotStore<Snapshot<Data>>[]
-    ): { snapshots: SnapshotStore<Snapshot<Data>>[] } {
-      subscribers.forEach(subscriber => snapshots.forEach(snapshot => subscriber.notify(snapshot)));
-      return { snapshots };
-    },
-    batchFetchSnapshotsRequest: function (
-      snapshotData: any
-    ): { subscribers: any; snapshots: SnapshotStore<Snapshot<Data>>[] } {
-      return { subscribers: [], snapshots: this.snapshots };
-    },
-    batchUpdateSnapshotsRequest: async function (
-      snapshotData: any
-    ): Promise<{ subscribers: any; snapshots: SnapshotStore<Snapshot<Data>>[] }> {
-      return { subscribers: [], snapshots: this.snapshots };
-    },
-    batchFetchSnapshots: async function (
-      subscribers: any,
-      snapshots: SnapshotStore<Snapshot<Data>>[]
-    ): Promise<void> {
-      console.log("Batch fetch snapshots called");
-    },
-    batchFetchSnapshotsSuccess: function (
-      subscribers: any,
-      snapshots: SnapshotStore<Snapshot<Data>>[]
-    ): SnapshotStore<Snapshot<Data>>[] {
-      return snapshots;
-    },
-    batchFetchSnapshotsFailure: function (payload: { error: string }): void {
-      console.error(payload.error);
-    },
-    batchUpdateSnapshotsFailure: function (payload: { error: string }): void {
-      console.error(payload.error);
-    },
-    setSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
-      this.snapshots.push(snapshot);
-    },
-    createSnapshot: function (data: Snapshot<Data>): SnapshotStore<Snapshot<Data>> {
-      const newSnapshot = new SnapshotStore<Snapshot<Data>>(this.notify, this.initSnapshot, this.config, data);
-      this.snapshots.push(newSnapshot);
-      return newSnapshot;
-    },
-    batchTakeSnapshot: async function (
-      snapshot: Snapshot<Data>
-    ): Promise<{ snapshots: SnapshotStore<Snapshot<Data>>[] }> {
-      this.createSnapshot(snapshot);
-      return { snapshots: this.snapshots };
-    },
-    [Symbol.iterator]: function* (): Iterator<SnapshotStore<Snapshot<Data>>> {
-      let index = 0;
-      while (index < this.snapshots.length) {
-        yield this.snapshots[index++];
-      }
-    },
-    [Symbol.asyncIterator]: async function* (): AsyncIterator<SnapshotStore<Snapshot<Data>>> {
-      for (const snapshot of this.snapshots) {
-        yield snapshot;
-      }
-    },
-    validateSnapshot: (data: Snapshot<Data>) => { return true; },
-    getData: () => Promise.resolve([initSnapshot as SnapshotStore<Snapshot<Data>>]),
-    takeSnapshot: async (data) => { console.log('Snapshot taken:', data); return { snapshot: [data] }; },
-    handleSnapshot: (snapshotData) => { console.log('Handled snapshot:', snapshotData); }
-  });
-  
+    // Add the new snapshot to the snapshots array
+    addSnapshot(newSnapshot);
 
-  export const snapshot: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
-    Snapshot<Data>
-  >(
-    notify,
-    {
-      id: "",
-      timestamp: new Date(),
-      set: {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
-      data: {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
-      store: {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
-      state: {} as SnapshotState,
-      key: "example_key",
-      update: "",
-      setSnapshot: (snapshot: { snapshot: SnapshotStore<Snapshot<Data>> }) => ({
-        snapshot: [snapshot.snapshot],
-      }),
-      initialState: initialState,
-      snapshotData: () => ({ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }),
-      createSnapshot: () => {},
-      [taskId]: tasks,
-      clearSnapshots: () => {},
-      snapshots: [],
-      subscribers: [],
-      notify: (
-        message: string,
-        content: any,
-        date: Date,
-        type: NotificationType
-      ) => {},
-      configureSnapshotStore: (
-        config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
-      ) => {},
-      createSnapshotSuccess: () => {},
-      createSnapshotFailure: (error: any) => {},
-      onSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>[]) => {},
-      snapshot: () =>
-        Promise.resolve({ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }),
-      initSnapshot: () => {},
-      clearSnapshot: () => {},
-      updateSnapshot: () =>
-        Promise.resolve({ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }),
-      getSnapshots: () =>
-        Promise.resolve([{ snapshot: [] as SnapshotStore<Snapshot<Data>>[] }]),
-      takeSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>[]) => ({
-        snapshot: [snapshot],
-      }),
-      getSnapshot: async () => Promise.resolve(snapshot),
-      getAllSnapshots: async (
-        data: (
-          subscribers: Subscriber<Snapshot<Data>>[],
-          snapshots: SnapshotStore<Snapshot<Data>>[]
-        ) => Promise<SnapshotStore<Snapshot<Data>>[]>
-      ) => {
-        return new Promise<SnapshotStore<Snapshot<Data>>[]>(
-          (resolve, reject) => {
-            Promise.resolve(snapshotConfig.snapshots);
-          }
-        );
-      },
-
-      takeSnapshotSuccess: () => {},
-      updateSnapshotFailure: (payload: Payload) => {},
-      takeSnapshotsSuccess: (snapshots: Snapshots) => {},
-      async batchTakeSnapshot(
-        snapshot: SnapshotStore<Snapshot<Data>>,
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ): Promise<{ snapshots: SnapshotStore<Snapshot<Data>>[] }> {
-        const allSnapshotsTaken: SnapshotStore<Snapshot<Data>>[] = [];
-        for (const snapshotToTake of snapshots) {
-          const newSnapshot = await this.takeSnapshot(snapshotToTake);
-          allSnapshotsTaken.push(newSnapshot.snapshot[0]);
-        }
-        return { snapshots: allSnapshotsTaken };
-      },
-
-      updateSnapshotSuccess: () => {},
-      updateSnapshotsSuccess: (
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ) => {},
-      fetchSnapshotSuccess: (
-        snapshotData: SnapshotStore<Snapshot<Data>>[]
-      ) => {},
-      batchUpdateSnapshots: async (subscribers, snapshot) => [
-        { snapshot: [] as SnapshotStore<Snapshot<Data>>[] },
-      ],
-      batchTakeSnapshotsRequest: (snapshotData: any) =>
-        Promise.resolve({ snapshots: [] as SnapshotStore<Snapshot<Data>>[] }),
-      batchUpdateSnapshotsSuccess: (subscribers, snapshots) => [{ snapshots }],
-      batchUpdateSnapshotsRequest: (snapshotData: any) => ({
-        subscribers: [],
-        snapshots: [],
-      }),
-      batchFetchSnapshotsRequest: (subscribers) => subscribers,
-      batchFetchSnapshots: async (
-        subscribers: Subscriber<Snapshot<Data>>[],
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ) => Promise.resolve({ subscribers, snapshots }),
-      getData: async () => <SnapshotStore<Snapshot<Data>>[]>{},
-
-      batchFetchSnapshotsSuccess: (subscribers, snapshot) => snapshot,
-      batchFetchSnapshotsFailure: (payload) => {},
-      batchUpdateSnapshotsFailure: (payload) => {},
-      category: "",
-      notifySubscribers: () => ({} as SnapshotStore<Snapshot<Data>>[]),
-      [taskId]: tasks,
-      [Symbol.iterator]: function* () {},
-      [Symbol.asyncIterator]: async function* () {},
-    },
-    config
-  );
-
-  return snapshot;
-};
-
-const snapshotFunction = (
-  subscribers: Subscriber<Snapshot<Data>>[],
-  snapshot: SnapshotStore<Snapshot<Data>>[]
-) => {
-  snapshot.forEach((s) => {
-    subscribers.forEach((sub) => {
-      // Assuming you have a method or property called `getData()` on the `SnapshotStore` class
-      const data = sub.getData(); // Adjust this line according to the actual method or property
-      // Now you can use `data` as needed
-    });
-  });
-};
-
-
-
-type SubscriberFunction = SnapshotStore<Snapshot<Data>>;
-
-//todo update Implementation
-const setNotificationMessage = (message: string) => {
-  // Implementation of setNotificationMessage
-  // Check if the notification context is available
-  if (notificationStore && notificationStore.notify) {
-    // Notify with the provided message
-    notificationStore.notify(
-      "privateSetNotificationMessageSuccess",
+    // Notify subscribers or perform any other necessary actions
+    notifySubscribers(
+      notify, // Pass the notify function
+      id,
       message,
-      new Date(),
-      NotificationTypeEnum.OperationSuccess
+      content,
+      date,
+      type
     );
+
+    // Call the success callback with the newly created snapshot
+    createSnapshotSuccess(newSnapshot);
+  };
+
+  // This function takes an existing snapshot and updates its data
+  const updateExistingSnapshot = (
+    existingSnapshot: Snapshot<Data>,
+    newData: Data
+  ): Snapshot<Data> => {
+    // Assuming newData is an object with updated data
+    const updatedSnapshot: Snapshot<Data> = {
+      ...existingSnapshot, // Copy existing snapshot properties
+      data: newData, // Update data with new data
+      timestamp: new Date(), // Update timestamp to indicate modification time
+    };
+    return updatedSnapshot;
+  };
+
+  // Define the updatedData
+  const updatedData: Data = {
+    id: "updated-id",
+    name: "Updated Name",
+    value: "Updated Value",
+    timestamp: new Date(),
+    category: "Updated Category",
+    // Add other properties if needed
+  };
+
+  // Assuming you have the ID of the snapshot you want to update
+  const snapshotIdToUpdate = "123";
+
+  // Fetch the existing snapshot from the database
+  const existingSnapshot = snapshotApi.fetchSnapshotById(snapshotIdToUpdate);
+
+  if (existingSnapshot) {
+    // Assuming you have some updated data
+    const updatedData: Data = {
+      id: "updated-id",
+      name: "Updated Name",
+      value: "Updated Value",
+      timestamp: new Date(),
+      category: "Updated Category",
+      // Add other properties if needed
+    };
+
+    // Update the existing snapshot with the new data
+    const updatedSnapshot = updateExistingSnapshot(
+      await existingSnapshot,
+      updatedData
+    );
+
+    // Now you can use the updatedSnapshot as needed
+    console.log("Updated Snapshot:", updatedSnapshot);
+  } else {
+    console.warn("Snapshot not found.");
   }
-};
 
-// Define the SnapshotStore class
-class SnapshotStore<T extends Snapshot<Data>> {
-  private snapshots: SnapshotStore<Snapshot<Data>>[] = [];
-  private subscription: Subscription = Subscription
-  private subscribers: Subscriber<Snapshot<Data>> = new Subscriber(subscription);
-  public state: SnapshotStore<Snapshot<Data>> | Snapshot<Data> | undefined;
-  public data: any;
-  public key: string | undefined;
-  public id: string | undefined;
-  public timestamp: Date | undefined;
-  public category: string | undefined;
-  content?: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+  const createSnapshotSuccess = (snapshot: Snapshot<Data>) => {
+    // Perform any actions or UI updates required after successful snapshot creation
+    console.log("Snapshot created successfully:", snapshot);
+    // For example, update UI to reflect the newly created snapshot
+    updateUIWithNewSnapshot(snapshot);
+  };
 
-  constructor(
-    public notify: (
+  const createSnapshotFailure = (error: Payload) => {
+    // Handle error logging or display error messages after failed snapshot creation
+    console.error("Snapshot creation failed:", error);
+    // For example, display an error message to the user or log the error for debugging
+
+    // Notify the user about failed snapshot creation
+    useNotification().showErrorNotification(
+      "SNAPSHOT_CREATION_FAILED",
+      "Failed to create snapshot. Please try again later.",
+      null
+    );
+  };
+  const updateUIWithNewSnapshot = (snapshot: Snapshot<Data>) => {
+    // Assuming you have a state variable to store snapshots
+    // const [snapshots, setSnapshots] = useState<Snapshot<Data>[]>([]);
+
+    // Update the state with the newly created snapshot
+    setSnapshots([...snapshots, snapshot]);
+
+    // Show a success notification to the user
+    useNotification().showSuccessNotification(
+      "Snapshot Created", // Provide an ID for the notification
+      {
+        text: "Snapshot created successfully!",
+        description: "Snapshot Created",
+      } as Message, // Provide a message object
+      "Details of the new snapshot", // Provide content
+      new Date(), // Provide the current date
+      NotificationTypeEnum.Success // Provide the notification type
+    );
+  };
+  const updateSnapshots = () => {
+    // Logic to update multiple snapshots
+    // This function can iterate over the existing snapshots and update them accordingly
+    snapshots.forEach((snapshot) => {
+      // Logic to update each snapshot
+      // For example, update the data or timestamp of each snapshot
+      snapshot.data = updatedData;
+      snapshot.timestamp = new Date();
+    });
+
+    // After updating all snapshots, perform any necessary actions
+    // Function to notify subscribers
+    const notifySubscribers = async (
+      notify: NotificationContextType["notify"],
       id: string,
       message: string,
       content: any,
       date: Date,
       type: NotificationType
-    ) => Promise<void>,
-    private snapshot: T,
+    ) => {
+      // Assuming `notify` is a function provided by the notification context
+      await notify(id, message, content, date, type); // Call the notify function with the provided parameters
+    };
 
-    public config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
-  ) {
-    this.key = config.key;
-    this.state = config.initialState;
-    this.subscription = config.subscription;
-    this.timestamp = config.timestamp;
-    this.notify = notify;
-    this.onSnapshot = config.onSnapshot;
-    this.snapshotData = config.snapshotData;
-    this.takeSnapshotsSuccess = config.takeSnapshotsSuccess;
-    this.createSnapshotFailure = config.createSnapshotFailure;
-    this.updateSnapshotsSuccess = config.updateSnapshotsSuccess;
-    this.updateSnapshotFailure = config.updateSnapshotFailure;
-    this.fetchSnapshotSuccess = config.fetchSnapshotSuccess;
-    this.createSnapshotSuccess = config.createSnapshotSuccess;
-    this.takeSnapshotSuccess = config.takeSnapshotSuccess;
-    this.configureSnapshotStore = config.configureSnapshotStore;
-  }
+    // Updated call to notifySubscribers with example arguments
+    notifySubscribers(
+      notify, // Pass the notify function
+      id,
+      message,
+      content,
+      date,
+      type
+    );
 
-    // Add missing properties
-    onSnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
-    onSnapshots: (snapshots: SnapshotStore<Snapshot<Data>>[]) => void;
-    snapshotData: (snapshot: SnapshotStore<Snapshot<Data>>) => {
-      snapshot: SnapshotStore<Snapshot<Data>>[];
-    }
-    takeSnapshotsSuccess: (snapshots: SnapshotStore<Snapshot<Data>>[]) => void;
-    createSnapshotFailure: (error: Error) => void;
-    updateSnapshotsSuccess: (
-      snapshotData: (
-        subscribers: Subscriber<Snapshot<Data>>[],
-        snapshot: SnapshotStore<Snapshot<Data>>[]
-      ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
-    ) => void;
-    updateSnapshotFailure?: (payload: { error: string }) => void;
-    fetchSnapshotSuccess?: (
-      snapshotData: (
-        subscribers: Subscriber<Snapshot<Data>>[],
-        snapshot: SnapshotStore<Snapshot<Data>>[]
-      ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
-    ) => void;
-    createSnapshotSuccess?: () => void;
-    takeSnapshotSuccess?: () => void;
-    configureSnapshotStore?: (
-      config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
-    ) => void;
-  
-    // Public method to get snapshots
-    public getSnapshots(): SnapshotStore<Snapshot<Data>>[] {
-      return this.snapshots;
-    }
-  
-    public getSnapshot(): Snapshot<Data> {
-      return this.snapshot;
-    }
-  
-    // Public method to add a snapshot
-    public addSnapshot(snapshot: SnapshotStore<Snapshot<Data>>): void {
-      this.snapshots.push(snapshot);
-    }
-  
-    // Public method to get subscribers
-    public getSubscribers(): SnapshotStore<Snapshot<Data>>[] {
-      return this.subscribers;
-    }
-  
-    // Public method to add a subscriber
-    public addSubscriber(subscriber: SnapshotStore<Snapshot<Data>>): void {
-      this.subscribers.push(subscriber);
-    }
-  
-    public clearSnapshots(): void {
-      this.snapshots = [];
-    }
-  
+    // Call the success callback to indicate successful snapshot updates
+    updateSnapshotsSuccess();
+    dispatch(SnapshotActions.batchTakeSnapshots({ snapshots: { snapshots } }));
+  };
 
-    async notifySubscribers(
-      notify: (
-        id: string,
-        message: string,
-        content: any,
-        date: Date,
-        type: NotificationType
-      ) => Promise<void>
-    ): Promise<SnapshotStore<Snapshot<Data>>[]> {
+  // Function to handle actions or UI updates after successful snapshot update
+  const updateSnapshotSuccess = () => {
+    // Example: Reload the page to reflect the updated snapshot
+    window.location.reload();
+    // Additional actions or UI updates can be added here
+    // For example, you can navigate the user to a different page or show a success modal
+  };
+
+  const showErrorModal = (title: string, message: string) => {
+    // Assuming you have a modal component that displays the title and message
+    console.error(`Error: ${title}`, message);
+    // You can customize this function to display a modal in your UI framework
+  };
+
+  // Function to handle error logging or display error messages after failed snapshot update
+  const updateSnapshotFailure = (error: Error) => {
+    // Example: Display an error modal with the error message to the user
+    showErrorModal(
+      "Snapshot Update Failed",
+      `Failed to update snapshot: ${error.message}`
+    );
+    // Example: Log the error message to a remote logging service for further investigation
+    SnapshotLogger.logErrorToService(error);
+  };
+
+  // Function to handle actions or UI updates after successful batch snapshot updates
+  const updateSnapshotsSuccess = () => {
+    // Example: Show a success message indicating that batch updates were successful
+
+    showToast({ content: "Batch Updates Successful" });
+    showToast({ content: "Snapshots were successfully updated in batch." }); // Additional actions or UI updates can be added here
+    // For example, you can update the UI to reflect the changes made by batch updates
+  };
+  const updateSnapshotsFailure = (error: Error | { message: string }) => {
+    // Log the error to a logging service
+    console.error("Failed to update snapshots:", error);
+
+    // Display an error modal with the error message to the user
+    showErrorModal(
+      "Snapshot Update Failed",
+      `Failed to update snapshots: ${
+        error instanceof Error ? error.message : error
+      }`
+    );
+
+    // Log the error message to a remote logging service for further investigation
+    if (error instanceof Error) {
+      SnapshotLogger.logErrorToService(error);
+    } else {
+      const errorMessage = error.message;
+      SnapshotLogger.logErrorToService(new Error(errorMessage));
+    }
+
+    // Optionally, display an error message to the user
+    if (typeof showErrorMessage === "function") {
+      showErrorMessage("Failed to update snapshots. Please try again later.");
+    }
+  };
+
+  const snapshotStore: SnapshotStore = {
+    // Initialize the snapshot data
+    snapshots: [],
+    config: { initialConfig: null }, // Initialize the config object with appropriate initialConfig
+
+    // Function to initialize the snapshot
+    initSnapshot: async () => {
       try {
-        const allSnapshots = await this.getAllSnapshots(
-          (subscribers, snapshots) => {
-            return new Promise<SnapshotStore<Snapshot<Data>>[]>(
-              (resolve, reject) => {
-                const processedSnapshots = snapshots.map(({ data }) => data);
-                const convertedSnapshots: SnapshotStore<Snapshot<Data>>[] =
-                  processedSnapshots
-                    .filter(
-                      (snapshot): snapshot is SnapshotStore<Snapshot<Data>> =>
-                        snapshot !== undefined
-                    )
-                    .map(
-                      (snapshot) =>
-                        new SnapshotStore<Snapshot<Data>>(
-                          notify, // Use the provided notify function
-                          snapshot, 
-                          this.config
-                        )
-                    );
-                resolve(convertedSnapshots);
-              }
-            );
-          },
-          this.snapshots
-        );
-        return allSnapshots;
+        // Perform initialization logic here, such as fetching initial snapshot data
+        // For example:
+        const initialSnapshotData = await fetchInitialSnapshotData();
+
+        // Update the snapshotData in the store
+        snapshotStore.snapshots = initialSnapshotData;
+
+        // Optionally, perform any additional logic after initialization
       } catch (error) {
-        console.error("Error occurred while notifying subscribers:", error);
-        throw error;
+        // Handle initialization error
+        console.error("Error initializing snapshot:", error);
       }
-    }
-  
-    validateSnapshot(data: Data) {
-      return !!data.timestamp;
-    }
-  
-    getData(): T {
-      return this.data;
-    }
-  
-    updateSnapshot(newSnapshot: SnapshotStore<Snapshot<Data>>) {
-      this.state = newSnapshot;
-      if (this.onSnapshot) {
-        this.onSnapshot(this.state);
+    },
+
+    // Function to take a single snapshot
+    takeSnapshot: async () => {
+      try {
+        // Perform logic to capture a snapshot, such as fetching current data
+        // For example:
+        const currentData = await fetchCurrentData();
+
+        // Create a new snapshot object
+        const snapshot: Snapshot<Data> = {
+          timestamp: new Date(),
+          data: currentData,
+          category: undefined,
+          type: "",
+        };
+
+        // Optionally, perform any additional logic before returning the snapshot
+        return snapshot;
+      } catch (error) {
+        // Handle snapshot capture error
+        console.error("Error capturing snapshot:", error);
+        return null;
       }
-    }
-  
-    getAllSnapshots: (
-      data: (
-        subscribers: Subscriber<Snapshot<Data>>[],
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ) => Promise<SnapshotStore<Snapshot<Data>>[]>,
-      snapshots: SnapshotStore<Snapshot<Data>>[]
-    ) => Promise<SnapshotStore<Snapshot<Data>>[]> = async (data, snapshots) => {
-      const processedSnapshots = await data(this.subscribers, snapshots);
-      return processedSnapshots;
-    };
-  
-    
+    },
 
+    // Function to handle actions or UI updates after successful single snapshot capture
+    takeSnapshotSuccess: (snapshot: Snapshot<Data>) => {
+      // Example: Display a success message indicating that the snapshot was captured successfully
+      showToast({ content: "Snapshot captured successfully!" });
 
-  clearSnapshot() {
-    throw new Error("Method not implemented.");
-  }
-  getLatestSnapshot() {
-    throw new Error("Method not implemented.");
-  }
-  set(type: string, event: Event) {
-    throw new Error("Method not implemented.");
-  }
-   message: Snapshot<Data> = {
-     category: this.category,
-    timestamp: this.timestamp,
-    content: this.content,
-    data,
+      // Additional actions or UI updates can be added here
+      // For example, update the UI to reflect the newly captured snapshot
+      updateSnapshotList(snapshot);
+    },
+
+    // Function to handle actions or UI updates after successful batch snapshot captures
+    takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => {
+      // Example: Display a success message indicating that batch snapshots were captured successfully
+      showToast({ content: "Batch snapshots captured successfully!" });
+
+      // Additional actions or UI updates can be added here
+      // For example, update the UI to reflect the batch of captured snapshots
+      snapshots.forEach((snapshot) => {
+        updateSnapshotList(snapshot);
+      });
+    },
   };
-   onSnapshot?: (snapshot: SnapshotStore<Snapshot<Data>>) => void;
-  onSnapshots?: (snapshots: SnapshotStore<Snapshot<Data>>[]) => void;
-  snapshotData?: (snapshot: SnapshotStore<Snapshot<Data>>) => {
-    snapshot: SnapshotStore<Snapshot<Data>>[];
+
+  // Example function to update the UI with the newly captured snapshot
+  const updateSnapshotList = (snapshot: Snapshot<Data>) => {
+    // Assuming you have a function to add the snapshot to a list in your UI
+    addToSnapshotList(snapshot);
   };
- 
-  takeSnapshotsSuccess: (
-    snapshots: SnapshotStore<Snapshot<Data>>[]
-  ) => void | undefined;
-  createSnapshotFailure: (error: Error) => void;
-  updateSnapshotsSuccess: (
-    snapshotData: (
-      subscribers: Subscriber<Snapshot<Data>>[],
-      snapshot: SnapshotStore<Snapshot<Data>>[]
-    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
-  ) => void;
-  updateSnapshotFailure: (payload: { error: string }) => void;
-  fetchSnapshotSuccess: (
-    snapshotData: (
-      subscribers: Subscriber<Snapshot<Data>>[],
-      snapshot: SnapshotStore<Snapshot<Data>>[]
-    ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
-  ) => void;
-  createSnapshotSuccess: () => void;
-  takeSnapshotSuccess: () => void;
+  // Assuming you have a function to display toast messages in your UI
+  displayToast(message);
 
-  // Public method to get snapshots
-  public getSnapshots(): SnapshotStore<Snapshot<Data>>[] {
-    return this.snapshots;
-  }
+  // Example functions for fetching initial snapshot data and current data
+  const fetchInitialSnapshotData = async (): Promise<Snapshot<Data>[]> => {
+    // Simulate fetching initial snapshot data from an API
+    // For example, you can fetch data from a database or external service
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
 
-  public getSnapshot(): Snapshot<Data> {
-    return this.snapshot;
-  }
-  // Public method to add a snapshot
-  public addSnapshot(snapshot: SnapshotStore<Snapshot<Data>>): void {
-    this.snapshots.push(snapshot);
-  }
-
-  // Public method to get subscribers
-  public getSubscribers(): SnapshotStore<Snapshot<Data>>[] {
-    return this.subscribers;
-  }
-
-  fetchSnapshot(snapshot: SnapshotStore<Snapshot<Data>>): void {
-    this.snapshot;
-  }
-
-  configureSnapshotStore(
-    config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
-  ) {
-    this.config = config;
-  }
-
-  private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
-
-  // private notifySubscribers(snapshot: Snapshot<T>) {
-  //   this.subscribers.forEach((subscriber) => subscriber(snapshot));
-  // }
-
-  handleSnapshot(snapshotData: SnapshotStore<Snapshot<Data>>) {
-    this.state = snapshotData;
-    if (this.onSnapshot) {
-      this.onSnapshot(this.state);
-    }
-  }
-
-  update(snapshotData: T): void {
-    this.data = { ...this.data, ...snapshotData };
-  }
-
-  creatSnapshot: (additionalData: any) => void = () => {};
-
-  setSnapshot(newSnapshot: SnapshotStore<Snapshot<Data>>) {
-    this.state = newSnapshot;
-  }
-
-  setSnapshots(
-    category: any,
-    timestamp: any,
-    id: any,
-    newSnapshots: SnapshotStore<Snapshot<Data>>[]
-  ) {
-    for (let snapshot of newSnapshots) {
-      this.addSnapshot(category);
-    }
-    if (this.onSnapshots) {
-      this.onSnapshots(this.snapshots);
-    }
-  }
-
-  removeSnapshot(snapshotToRemove: SnapshotStore<Snapshot<Data>>) {
-    this.snapshots = this.snapshots.filter(
-      (snapshot) => snapshot !== snapshotToRemove
-    );
-  }
-
-  
-  async takeSnapshot(
-    data: SnapshotStore<Snapshot<Data>>
-  ): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }> {
-    const timestamp = new Date();
-    const existingSnapshotIndex = this.snapshots.findIndex((snapshotObj) =>
-      snapshotObj.snapshots.some(
-        (existingSnapshot) => existingSnapshot.timestamp === data.timestamp
-      )
-    );
-  
-    if (existingSnapshotIndex !== -1) {
-      this.updateSnapshot(data);
-      return { snapshot: [data] };
-    }
-  
-    const newSnapshot: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
-      Snapshot<Data>
-    >(
-      this.notify,
+    // Return initial snapshot data as an array of Snapshot<Data> objects
+    return [
       {
-        length: data.snapshot.length,
-        category: data.snapshot.category,
-        id: data.snapshot.id,
-        timestamp: data.snapshot.timestamp,
-        content: data.snapshot.content,
-        tags: data.snapshot.tags,
-        data: data.snapshot.data
+        id: "1",
+        data: {
+          exampleData: "Initial snapshot data 1",
+          timestamp: undefined,
+          category: "",
+        },
+        timestamp: new Date(),
+        category: "Initial Category 1",
+        type: "",
       },
-      this.config
-    );
-    this.addSnapshot(newSnapshot);
-    return { snapshot: [newSnapshot] };
-  }
-  
- 
+      {
+        id: "2",
+        data: {
+          exampleData: "Initial snapshot data 2",
+          timestamp: undefined,
+          category: "",
+        },
+        timestamp: new Date(),
+        category: "Initial Category 2",
+        type: "",
+      },
+      // Add more initial snapshot data objects as needed
+    ];
+  };
 
-  initSnapshot(snapshot: SnapshotStore<Snapshot<Data>>) {
-    this.takeSnapshot(snapshot);
-  }
+  const fetchCurrentData = async (): Promise<{
+    exampleData: string;
+    timestamp: Date;
+    category: string;
+  }> => {
+    // Simulate fetching current data from an API
+    // For example, you can fetch data from a database or external service
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
 
-  updateSnapshots() {}
-  createSnapshot(
-    data: SnapshotStore<Snapshot<Data>>,
-    snapshot: {
-      category: any;
-      timestamp: any;
-      snapshot: SnapshotStore<Snapshot<Data>>[];
-    }
-  ) {
-    const newSnapshot: SnapshotStore<Snapshot<Data>> = {
-      category: snapshot.category,
-      timestamp: snapshot.timestamp,
-      snapshot: snapshot.snapshot,
-      snapshots: snapshot.snapshot,
-      setSnapshots: (
-        category: any,
-        timestamp: any,
-        id: any,
-        newSnapshots: SnapshotStore<Snapshot<Data>>[]
-      ) => {
-        // Implement setSnapshots logic here
-      },
-      clearSnapshot: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      getLatestSnapshot: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      set: function (type: string, event: Event): void {
-        throw new Error("Function not implemented.");
-      },
-      id: undefined,
-      key: "",
-      state: undefined,
-      snapshotData: function (snapshot: SnapshotStore<Snapshot<Data>>): {
-        snapshot: SnapshotStore<Snapshot<Data>>[];
-      } {
-        throw new Error("Function not implemented.");
-      },
-      data: undefined,
-      store: undefined,
-      subscribers: [],
-      notify: function (
-        message: string,
-        content: any,
-        date: Date,
-        type: NotificationType
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      takeSnapshotsSuccess: function (
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      createSnapshotFailure: function (error: Error): void {
-        throw new Error("Function not implemented.");
-      },
-      updateSnapshotsSuccess: function (
-        snapshotData: (
-          subscribers: Subscriber<Snapshot<Data>>[],
-          snapshot: SnapshotStore<Snapshot<Data>>[]
-        ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      updateSnapshotFailure: function (payload: { error: string }): void {
-        throw new Error("Function not implemented.");
-      },
-      fetchSnapshotSuccess: function (
-        snapshotData: (
-          subscribers: Subscriber<Snapshot<Data>>[],
-          snapshot: SnapshotStore<Snapshot<Data>>[]
-        ) => { snapshot: SnapshotStore<Snapshot<Data>>[] }
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      createSnapshotSuccess: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      takeSnapshotSuccess: function (): void {
-        throw new Error("Function not implemented.");
-      },
-      config: {},
-      // snapshot: [],
-      configureSnapshotStore: function (
-        config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      generateId: function (): string {
-        throw new Error("Function not implemented.");
-      },
-      handleSnapshot: function (
-        snapshotData: SnapshotStore<Snapshot<Data>>
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      update: function (snapshotData: Snapshot<Data>): void {
-        throw new Error("Function not implemented.");
-      },
-      creatSnapshot: function (additionalData: any): void {
-        throw new Error("Function not implemented.");
-      },
-      setSnapshot: function (newSnapshot: SnapshotStore<Snapshot<Data>>): void {
-        throw new Error("Function not implemented.");
-      },
-      addSnapshot: function (
-        category: any,
-        timestamp: any,
-        snapshot: SnapshotStore<Snapshot<Data>>,
-        id: any,
-        data: Snapshot<Data>
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      removeSnapshot: function (
-        snapshotToRemove: SnapshotStore<Snapshot<Data>>
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      notifySubscribers: function (
-        subscribers: Subscriber<Snapshot<Data>>[]
-      ): Promise<SnapshotStore<Snapshot<Data>>[]> {
-        throw new Error("Function not implemented.");
-      },
-      validateSnapshot: function (data: Data): boolean {
-        throw new Error("Function not implemented.");
-      },
-      getData: function (): Snapshot<Data> {
-        throw new Error("Function not implemented.");
-      },
-      getSubscribers: function (): SnapshotStore<Snapshot<Data>>[] {
-        throw new Error("Function not implemented.");
-      },
-      getSnapshots: function (): Promise<{
-        data: () => Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }>;
-        snapshot: SnapshotStore<Snapshot<Data>>[];
-      }> {
-        throw new Error("Function not implemented.");
-      },
-      updateSnapshot: function (
-        newSnapshot: SnapshotStore<Snapshot<Data>>
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      getAllSnapshots: function (
-        data: (
-          subscribers: Subscriber<Snapshot<Data>>[],
-          snapshots: SnapshotStore<Snapshot<Data>>[]
-        ) => Promise<SnapshotStore<Snapshot<Data>>[]>,
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ): Promise<SnapshotStore<Snapshot<Data>>[]> {
-        throw new Error("Function not implemented.");
-      },
-      takeSnapshot: function (
-        data: SnapshotStore<Snapshot<Data>>
-      ): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }> {
-        throw new Error("Function not implemented.");
-      },
-      initSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
-        throw new Error("Function not implemented.");
-      },
-      createSnapshot: function (
-        data: SnapshotStore<Snapshot<Data>>,
-        snapshot: {
-          category: any;
-          timestamp: any;
-          snapshot: SnapshotStore<Snapshot<Data>>[];
-        }
-      ): void {
-        throw new Error("Function not implemented.");
-      },
-      applySnapshot: function (
-        snapshot: SnapshotStore<Snapshot<Data>>
-      ): SnapshotStore<Snapshot<Data>> {
-        throw new Error("Function not implemented.");
-      },
-      sortSnapshots: function (
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ): SnapshotStore<Snapshot<Data>>[] {
-        throw new Error("Function not implemented.");
-      },
-      filterSnapshots: function (
-        snapshots: SnapshotStore<Snapshot<Data>>[]
-      ): SnapshotStore<Snapshot<Data>>[] {
-        throw new Error("Function not implemented.");
-      },
-      mapSnapshots: function (
-        snapshots: SnapshotStore<Snapshot<Data>>[],
-        callback: (
-          snapshot: SnapshotStore<Snapshot<Data>>
-        ) => SnapshotStore<Snapshot<Data>>
-      ): SnapshotStore<Snapshot<Data>>[] {
-        throw new Error("Function not implemented.");
-      },
-      findSnapshot: function (
-        snapshot: SnapshotStore<Snapshot<Data>>
-      ): SnapshotStore<Snapshot<Data>> | undefined {
-        throw new Error("Function not implemented.");
-      },
-      reduceSnapshots: function (): SnapshotStore<Snapshot<Data>>[] {
-        throw new Error("Function not implemented.");
-      },
-      mergeSnapshots: function (
-        snapshot1: SnapshotStore<Snapshot<Data>>,
-        snapshot2: SnapshotStore<Snapshot<Data>>
-      ): SnapshotStore<Snapshot<Data>> {
-        throw new Error("Function not implemented.");
-      },
-      getSnapshot: undefined,
-      updateSnapshots: function (): void {
-        throw new Error("Function not implemented.");
-      },
+    // Return current data object
+    return {
+      exampleData: "Current data",
+      timestamp: new Date(),
+      category: "Current Category",
     };
+  };
 
-    this.snapshots.push(newSnapshot);
+  const configureSnapshotStore = () => {
+    // Perform any configuration needed for the snapshot store
+    // This function can be empty for now
+    // Example: Initializing any required variables or setting up connections
+    console.log("Snapshot store configured successfully.");
+  };
 
-    if (this.onSnapshot) {
-      this.onSnapshot(data);
+  const getData = async () => {
+    try {
+      // Call the fetchData function to fetch data from the API
+      const data = await fetchData(`${SNAPSHOT_URL}`); // Replace '<your-api-endpoint>' with the actual endpoint
+      return data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
     }
-  }
+  };
 
-  applySnapshot(snapshot: SnapshotStore<Snapshot<Data>>) {
-    this.state = snapshot;
-    if (this.onSnapshot) {
-      this.onSnapshot(snapshot);
+  const setData = (data: Data) => {
+    snapshotApi.saveSnapshotToDatabase(data);
+  };
+
+  // Function to get the current state
+  const getState = () => {
+    return currentState;
+  };
+
+  // Function to set the state
+  const setState = (state: any) => {
+    currentState = state;
+  };
+
+  // Function to validate a snapshot
+  const validateSnapshot = (snapshot: Snapshot<Data>): boolean => {
+    // Implement your validation logic here
+    // For example, you can check if the snapshot data meets certain criteria
+    if (snapshot.data && snapshot.data.name !== "") {
+      // Valid snapshot based on specific criteria
+      return true;
     }
-    return snapshot;
-  }
-  sortSnapshots(snapshots: SnapshotStore<Snapshot<Data>>[]) {
-    return snapshots.sort((a, b) => {
-      const aTimestamp =
-        Array.isArray(a.snapshots) && a.snapshots.length > 0
-          ? new Date(a.snapshots[0]?.timestamp ?? 0).getTime()
-          : 0;
-      const bTimestamp =
-        Array.isArray(b.snapshots) && b.snapshots.length > 0
-          ? new Date(b.snapshots[0]?.timestamp ?? 0).getTime()
-          : 0;
-      return bTimestamp - aTimestamp;
-    });
-  }
 
-  filterSnapshots(
-    snapshots: SnapshotStore<Snapshot<Data>>[]
-  ): SnapshotStore<Snapshot<Data>>[] {
-    return snapshots.map(({ data }) => data); // Adjusted to use 'data' instead of 'snapshot'
-  }
+    // Add your demonstration validation logic here
+    // For demonstration, let's assume the snapshot is valid if it has a timestamp
+    return snapshot.timestamp !== undefined;
+  };
 
-  mapSnapshots(
-    snapshots: SnapshotStore<Snapshot<Data>>[],
-    callback: (
-      snapshot: SnapshotStore<Snapshot<Data>>
-    ) => SnapshotStore<Snapshot<Data>>
-  ): SnapshotStore<Snapshot<Data>>[] {
-    return snapshots.map(callback);
-  }
+  // Function to handle a snapshot
+  const handleSnapshot = (
+    snapshot: Snapshot<Data> | null,
+    snapshotId: string
+  ) => {
+    if (snapshot) {
+      // Implement actions based on the snapshot
+      // For example, you can log the snapshot details
+      console.log(`Handling snapshot with ID ${snapshotId}:`, snapshot);
+    } else {
+      // Handle the case when snapshot is null
+      console.warn(`Snapshot with ID ${snapshotId} is null.`);
+    }
+  };
 
-  findSnapshot(
-    snapshot: SnapshotStore<Snapshot<Data>>
-  ): SnapshotStore<Snapshot<Data>> | undefined {
-    return this.snapshots.find(
-      (snap) => JSON.stringify(snap.data) === JSON.stringify(snapshot.data)
+  // Function to handle actions
+  const handleActions = async () => {
+    try {
+      // Example actions related to project management
+      // These actions can interact with project-related data and functionalities
+
+      // Action: Start a new project
+      dispatch(ProjectManagementActions.startNewProject());
+
+      // Action: Add a team member to a project
+      dispatch(
+        ProjectManagementActions.addTeamMember({
+          projectId: "project123",
+          memberId: "user456",
+        })
+      );
+
+      // Action: Update project status
+      dispatch(
+        ProjectManagementActions.updateProjectStatus({
+          projectId: "project123",
+          status: "In Progress",
+        })
+      );
+
+      // Action: Create a new task within a project phase
+      dispatch(
+        TaskActions.createTask({
+          projectId: "project123",
+          phaseId: "phase456",
+          task: {
+            name: "Task 1",
+            description: "Description of Task 1",
+            id: "",
+            title: "",
+            assignedTo: null,
+            assigneeId: undefined,
+            dueDate: undefined,
+            payload: undefined,
+            priority: "low",
+            previouslyAssignedTo: [],
+            done: false,
+            data: undefined,
+            source: "user",
+            startDate: undefined,
+            endDate: undefined,
+            isActive: false,
+            tags: [],
+            [Symbol.iterator]: function (): Iterator<any, any, undefined> {
+              throw new Error("Function not implemented.");
+            },
+            timestamp: undefined,
+            category: "",
+          },
+        })
+      );
+
+      // Action: Assign a task to a team member
+      dispatch(
+        TaskActions.assignTask({
+          projectId: "project123",
+          taskId: "task789",
+          assigneeId: "user456",
+        })
+      );
+
+      // Example actions related to crypto functionalities
+      // These actions can interact with cryptocurrency-related data and functionalities
+      // Action: Buy cryptocurrency
+      dispatch(CryptoActions.buyCrypto({ currency: "BTC", amount: 1 }));
+
+      // Action: Sell cryptocurrency
+      dispatch(CryptoActions.sellCrypto({ currency: "ETH", amount: 2 }));
+
+      // Action: Monitor crypto market trends
+      dispatch(CryptoActions.monitorMarketTrends());
+
+      // Action: Join a crypto community forum
+      dispatch(
+        CryptoActions.joinCryptoCommunity({ communityId: "crypto123" })
+      );
+      console.log("Actions handled successfully.");
+    } catch (error) {
+      console.error("Error handling actions:", error);
+    }
+  };
+  // Function to set a single snapshot
+  const setSnapshot = (snapshot: Snapshot<Data>) => {
+    const dispatch = useDispatch();
+    // Dispatch the add snapshot action with the provided snapshot
+    dispatch(SnapshotActions.add(snapshot));
+  };
+
+  // Function to clear a snapshot from the store
+  const clearSnapshot = (snapshotId: string) => {
+    // Filter out the snapshot with the specified ID
+    const updatedSnapshots = snapshots.filter(
+      (snapshot) => snapshot.id !== snapshotId
     );
-  }
+    // Update the snapshot list
+    setSnapshots(updatedSnapshots);
+  };
 
-  reduceSnapshots(): SnapshotStore<Snapshot<Data>>[] {
-    const reducedSnapshots: SnapshotStore<Snapshot<Data>>[] = [];
-    for (const snapshotObj of this.snapshots) {
-      const snapshot = snapshotObj.data; // Change 'snapshotObj.snapshot[0]' to 'snapshotObj.data'
-      const existingSnapshotIndex = reducedSnapshots.findIndex(
-        (existingSnapshot) => existingSnapshot.timestamp === snapshot.timestamp
-      );
-      if (existingSnapshotIndex !== -1) {
-        reducedSnapshots[existingSnapshotIndex] = this.mergeSnapshots(
-          reducedSnapshots[existingSnapshotIndex],
-          snapshot
-        );
-      } else {
-        reducedSnapshots.push(snapshot);
-      }
-    }
-    return reducedSnapshots;
-  }
+  // Function to merge new snapshots into the store
+  const mergeSnapshots = (newSnapshots: Snapshot<Data>[]) => {
+    // Merge the new snapshots with the existing ones
+    setSnapshots([...snapshots, ...newSnapshots]);
+  };
 
-  mergeSnapshots(
-    snapshot1: SnapshotStore<Snapshot<Data>>,
-    snapshot2: SnapshotStore<Snapshot<Data>>
-  ): SnapshotStore<Snapshot<Data>> {
-    if (snapshot1 && snapshot2) {
-      // Remove '.snapshot' from 'snapshot1' and 'snapshot2'
-      const mergedSnapshotData = {
-        ...(snapshot1.data ?? {}),
-        ...(snapshot2.data ?? {}),
-      };
-      const timestamp1 = snapshot1.timestamp ?? new Date(); // Remove '.snapshot' from 'snapshot1'
-      const timestamp2 = snapshot2.timestamp ?? new Date(); // Remove '.snapshot' from 'snapshot2'
-      const latestTimestamp = new Date(
-        Math.max(timestamp1.getTime(), timestamp2.getTime())
-      );
+  const reduceSnapshots = () => {
+    const uniqueSnapshots = Array.from(
+      new Set(snapshots.map((snapshot) => snapshot.id))
+    )
+      .map((id) => snapshots.find((snapshot) => snapshot.id === id))
+      .filter((snapshot) => snapshot !== undefined) as Snapshot<Data>[];
+    setSnapshots(uniqueSnapshots);
+  };
 
-      return {
-        ...snapshot1,
-        data: mergedSnapshotData,
-        timestamp: latestTimestamp,
-      } as SnapshotStore<Snapshot<Data>>;
-    }
-    return snapshot1;
-  }
-}
+  const sortSnapshots = () => {
+    const sortedSnapshots = [...snapshots].sort((a, b) => {
+      const aTimestamp = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const bTimestamp = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return aTimestamp - bTimestamp;
+    });
+    setSnapshots(sortedSnapshots);
+  };
 
+  const filterSnapshots = () => {
+    const filteredSnapshots = snapshots.filter(
+      (snapshot) => snapshot.type === "important"
+    );
+    setSnapshots(filteredSnapshots);
+  };
 
+  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Define the handleSnapshot function
-const handleSnapshot = (snapshot: SnapshotStore<Snapshot<Data>>) => {
-  // Handle the snapshot event
-  console.log("Snapshot event handled:", snapshot);
+  // Function to map snapshots based on a specific criterion
+const mapSnapshots = (callback: (snapshot: Snapshot<Data>) => any) => {
+  // Apply the callback function to each snapshot and return the results
+  return snapshots.map(callback);
 };
 
-const getDefaultState = (): SnapshotStore<Snapshot<Data>> => {
+// Function to find a specific snapshot by ID
+const findSnapshot = (snapshotId: string) => {
+  // Find the snapshot with the matching ID
+  return snapshots.find(snapshot => snapshot.id === snapshotId);
+};
+
+  
+// // Function to send a notification
+// const notify = (notification: NotificationData): void => {
+//   // Implement logic to send the notification (e.g., via email, push notification, etc.)
+//   console.log(`Notification sent: ${notification.message}`);
+// };
+
+
+
+  
+  // Return the snapshot store object
   return {
-    key: "",
-    state: {} as SnapshotStore<Snapshot<Data>>,
-    snapshot: {
-      category:
-        timestamp:,
-      content:,
-      data
-    },
-    snapshotData: (
-      snapshot: SnapshotStore<Snapshot<Data>>
-    ): { snapshot: SnapshotStore<Snapshot<Data>>[] } => {
-      return {
-        snapshot: [snapshot],
-      };
-    },
+    snapshots,
+    addSnapshot,
+    updateSnapshot,
+    removeSnapshot,
+    clearSnapshots,
 
-
+    // Snapshot Creation and Management
     createSnapshot: () => {},
+    createSnapshotSuccess: (snapshot: Snapshot<Data>) => {},
+    createSnapshotFailure: (error: Payload) => {},
     updateSnapshots: () => {},
-    fetchSnapshot: () => {},
-    createSnapshotSuccess: () => {},
-    createSnapshotFailure: () => {},
+    updateSnapshotSuccess: () => {},
+    updateSnapshotFailure: (error: Payload) => {},
     updateSnapshotsSuccess: () => {},
-    fetchSnapshotSuccess: () => {},
-    fetchSnapshotFailure: () => {},
-    notify: async () => {},
-    notifySubscribers: (
-      subscribers: Subscriber<Snapshot<Data>>[]
-    ): Promise<SnapshotStore<Snapshot<Data>>[]> => {
-      return Promise.resolve([]);
-    },
+    updateSnapshotsFailure: (error: Payload) => {},
+    initSnapshot: () => {},
+    takeSnapshot: () => {},
+    takeSnapshotSuccess: (snapshot: Snapshot<Data>) => {},
+    takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => {},
+
+    // Configuration
+    configureSnapshotStore: () => {},
+
+    // Data and State Handling
+    getData: () => null,
+    setData: (data: Data) => {},
+    getState: () => null,
+    setState: (state: any) => {},
+    validateSnapshot: (snapshot: Snapshot<Data>) => false,
+    handleSnapshot: (snapshot: Snapshot<Data> | null, snapshotId: string) => {},
+    handleActions: () => {},
+
+    // Snapshot Operations
+    setSnapshot: (snapshot: Snapshot<Data>) => {},
+    setSnapshots: (snapshots: Snapshot<Data>[]) => {},
+    clearSnapshot: (snapshotId: string) => {},
+    mergeSnapshots: (snapshots: Snapshot<Data>[]) => {},
+    reduceSnapshots: () => {},
+    sortSnapshots: () => {},
+    filterSnapshots: () => {},
+    mapSnapshots: () => {},
+    findSnapshot: () => {},
+
+    // Subscribers and Notifications
+    getSubscribers: () => {},
+    notify: () => {},
+    notifySubscribers: () => {},
     subscribe: () => {},
     unsubscribe: () => {},
-    getState(): SnapshotStore<Snapshot<Data>> {
-      return this.state;
-    },
-    setState(state: SnapshotStore<Snapshot<Data>>) {
-      if (state) {
-        this.state = state;
-      }
-    },
-    handleActions: () => {},
-    clearSnapshots: () => {},
-    clearSnapshot: () => {},
-    getSnapshot: (
-      snapshot: (snapshot: {
-        category: any;
-        timestamp: any;
-        id: any;
-        snapshot: SnapshotStore<Snapshot<Data>>;
-        data: Data;
-      }) => Promise<{
-        category: any;
-        timestamp: any;
-        id: any;
-        snapshot: SnapshotStore<Snapshot<Data>>;
-        data: Data;
-      }>
-    ) => Promise<SnapshotStore<Snapshot<Data>>>,
-    getSnapshots: () => {
-      if (!this.state) {
-        return [];
-      }
-      return this.state.snapshots || [];
-    },
 
-    setSnapshot: () => {},
-    setSnapshots: () => {},
-    addSnapshot: () => {},
-    removeSnapshot: () => {},
-    updateSnapshot: () => {},
-    filterSnapshots: (snapshots: SnapshotStore<Snapshot<Data>>[]) => {
-      return snapshots;
-    },
+    // Fetching Snapshots
+    fetchSnapshot: () => {},
+    fetchSnapshotSuccess: () => {},
+    fetchSnapshotFailure: () => {},
+    getSnapshot: () => {},
+    getSnapshots: () => {},
+    getAllSnapshots: () => {},
 
-    sortSnapshots(snapshots: SnapshotStore<Snapshot<Data>>[]) {
-      return snapshots.sort((a, b) => {
-        const aSnapshot = a.snapshots || [];
-        const bSnapshot = b.snapshots || [];
-        const aTimestamp = aSnapshot.length > 0 ? aSnapshot[0].timestamp : 0;
-        const bTimestamp = bSnapshot.length > 0 ? bSnapshot[0].timestamp : 0;
-        return aTimestamp - bTimestamp;
-      });
-    },
-    mapSnapshots: (
-      snapshots: SnapshotStore<Snapshot<Data>>[],
-      callback: (
-        snapshot: SnapshotStore<Snapshot<Data>>
-      ) => SnapshotStore<Snapshot<Data>>
-    ) => {
-      return snapshots.map((snapshot) => {
-        return callback(snapshot);
-      });
-    },
-    reduceSnapshots: () => {
-      const snapshots: SnapshotStore<Snapshot<Data>>[] = [];
-      const reducedSnapshots: SnapshotStore<Snapshot<Data>>[] = [];
+    // Utility Methods
+    generateId: () => {},
 
-      for (const snapshotObj of snapshots) {
-        if (snapshotObj) {
-          const snapshot = snapshotObj.snapshots;
-          if (snapshot && snapshot.length > 0) {
-            const existingSnapshotIndex = reducedSnapshots.findIndex(
-              (existingSnapshot) => {
-                return existingSnapshot?.snapshots[0]?.timestamp === snapshot[0].timestamp;
-              }
-            );
-            if (existingSnapshotIndex !== -1) {
-              reducedSnapshots[existingSnapshotIndex] = this.mergeSnapshots(
-                reducedSnapshots[existingSnapshotIndex],
-                snapshotObj
-              );
-            } else {
-              reducedSnapshots.push(snapshotObj);
-            }
-          }
-        }
-      }
-      return reducedSnapshots;
-    },
-    findSnapshot: (snapshot: SnapshotStore<Snapshot<Data>> | undefined) => {
-      return this.getSnapshots().find(
-        (storedSnapshot: SnapshotStore<Snapshot<Data>>) => {
-          return (
-            storedSnapshot?.key === snapshot?.key &&
-            isEqual(storedSnapshot?.snapshots, snapshot?.snapshots)
-          );
-        }
-      );
-    },
+    // Batch Operations
+    batchFetchSnapshots: () => {},
+    batchTakeSnapshotsRequest: () => {},
+    batchUpdateSnapshotsRequest: () => {},
+    batchFetchSnapshotsSuccess: () => {},
+    batchFetchSnapshotsFailure: () => {},
+    batchUpdateSnapshotsSuccess: () => {},
+    batchUpdateSnapshotsFailure: () => {},
+    batchTakeSnapshot: () => {},
+
+    // Additional properties
+    config: {} as SnapshotStoreConfig<unknown, Data>, // Placeholder, replace with actual configuration object
   };
 };
 
-// Function to set a dynamic notification message
-const setDynamicNotificationMessage = (message: string) => {
-  setNotificationMessage(message);
-};
-
-const { state: authState } = useAuth();
-
-const updateSnapshot = async (
-  snapshot: SnapshotStore<Snapshot<Data>>[]
-): Promise<{ snapshot: SnapshotStore<Snapshot<Data>>[] }> => {
-  snapshotConfig.getSnapshot(snapshot);
-  // Assuming you want to return an array of snapshots after updating
-  const updatedSnapshots: SnapshotStore<Snapshot<Data>>[] = [snapshot]; // Adjust this line based on your actual implementation
-  return { snapshot: updatedSnapshots };
-};
-
-const convertToSnapshotStore = (
-  snapshotData: (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
-    snapshot: SnapshotStore<Snapshot<Data>>[];
-  }
-): SnapshotStore<Snapshot<Data>> => {
-  return {
-    data: snapshotData,
-    store: snapshotConfig,
-    key: "",
-    state: getDefaultState(),
-    snapshotData: snapshotData,
-    createSnapshot: () => {},
-    applySnapshot: (snapshot: SnapshotStore<Snapshot<Data>>) =>
-      SnapshotStore<Snapshot<Data>>,
-    // Add remaining missing properties
-  };
-};
-
-const takeSnapshot = async (): Promise<{
-  snapshot: SnapshotStore<Snapshot<Data>>[];
-}> => {
-  // Logic to retrieve snapshot
-  const id = authState.user?.id; // Add optional chaining
-
-  const retrievedSnapshot = await retrieveSnapshotData(String(id)); // Example function to retrieve snapshot data
-
-  if (retrievedSnapshot) {
-    const snapshotStore = convertToSnapshotStore(retrievedSnapshot);
-    return { snapshot: [snapshotStore] }; // Return an array with the retrieved snapshot
-  } else {
-    return { snapshot: [] }; // Return an empty array if no snapshot is available
-  }
-};
-
-const getSnapshot = async (
-  snapshot: SnapshotStore<Snapshot<Data>>
-): Promise<SnapshotStore<Snapshot<Data>>[]> => {
-  // Implementation logic here
-  const snapshotArray: SnapshotStore<Snapshot<Data>>[] = [snapshot];
-  return snapshotArray;
-};
-
-const getSnapshots = () => snapshotStoreInstance.getSnapshots();
-const getAllSnapshots = () =>
-  snapshotStoreInstance.getAllSnapshots(data, snapshots);
-
-const clearSnapshot = (): void => {
-  // Implementation logic here
-  snapshotStoreInstance.clearSnapshot();
-};
-
-// Adjust the method signature to accept a SnapshotStoreConfig parameter
-const configureSnapshotStore = (
-  config: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
-  snapshot: Snapshot<Data>
-): void => {
-  // Implementation logic here
-
-  snapshotStoreInstance.configureSnapshotStore(config);
-};
-
-const takeSnapshotSuccess = (snapshot: SnapshotStore<Snapshot<Data>>): void => {
-  // Assuming you have access to the snapshot store instance
-  // You can perform actions based on the successful snapshot here
-  console.log("Snapshot taken successfully:", snapshot);
-
-  // Display a toast message
-  const message: Message = {
-    id: "snapshot-taken" as string,
-    content: "Snapshot taken successfully:",
-    timestamp: new Date(),
-  } as Message;
-
-  showToast(message);
-
-  // Notify with a message
-  notify(
-    "takeSnapshotSucces",
-    "Snapshot taken successfully",
-    NOTIFICATION_MESSAGES.Snapshot.SNAPSHOT_TAKEN,
-    new Date(),
-    NotificationTypeEnum.CreationSuccess
-  );
-};
-
-const updateSnapshotFailure = (payload: { error: string }): void => {
-  // Log the error message or handle it in any way necessary
-  console.error("Update snapshot failed:", payload.error);
-
-  // You can also display a notification to the user or perform any other actions
-  // For example:
-  showErrorMessage(payload.error);
-};
-
-const takeSnapshotsSuccess = (
-  snapshots: SnapshotStore<Snapshot<Data>>[]
-): void => {
-  // Implementation logic here
-};
-
-const fetchSnapshot = (snapshotId: SnapshotStore<Snapshot<Data>>): void => {
-  // Implementation logic here
-};
-
-const updateSnapshotSuccess = (
-  snapshot: SnapshotStore<Snapshot<Data>>[]
-): void => {
-  // Implementation logic here
-};
-
-const updateSnapshotsSuccess = (snapshots: SnapshotStore<Snapshot<Data>>[]) => {
-  snapshots.forEach(async (snapshot) => {
-    // Assuming snapshot.data is of type SnapshotStore<Snapshot<Data>>
-    const snapshotData = await snapshot.data; // Wait for snapshot.data to resolve
-    // Check if snapshotData is of type SnapshotStore<Snapshot<Data>>
-    if (snapshotData.data.timestamp) {
-      // Assuming snapshotData.data is of type Snapshot<Data>
-      snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-    } else {
-      // Assuming snapshotData.data is of type Data
-      snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-    }
-    // Check if snapshotData.data is of type Snapshot<Data>
-    snapshotStoreInstance.updateSnapshot(await snapshotData.data);
-  });
-};
-
-const fetchSnapshotSuccess = (snapshots: Snapshot<Data>[]): void => {
-  if (snapshots.length === 0) {
-    console.log("No snapshots fetched.");
-    return;
-  }
-
-  console.log("Snapshots fetched successfully:");
-  snapshots.forEach((snapshot, index) => {
-    console.log(`Snapshot ${index + 1}:`);
-    console.log("Timestamp:", snapshot.timestamp);
-    console.log("Data:", snapshot.data);
-    console.log("----------------------");
-  });
-};
-
-const createSnapshotSuccess = (snapshot: Snapshot<Data>[]): void => {
-  // Implementation logic here
-};
-
-const createSnapshotFailure = (error: string): void => {
-  // Implementation logic here
-};
-
-const prevTasks = useRef<MutableRefObject<{ [key: string]: Task[] }>>({
-  // Initial tasks state
-  current: {},
-});
-const setTasks = (
-  updateFunction: (
-    prevTasks: MutableRefObject<{ [key: string]: Task[] }>
-  ) => any
-) => {
-  // Update tasks using the provided update function
-  const updatedTasks = updateFunction(prevTasks.current);
-
-  // Further logic to handle the updated tasks
-};
-
-const batchFetchSnapshotsRequest = (
-  snapshotData: SnapshotStore<Snapshot<Data>>[]
-): void => {
-  const snapshots = Object.values(snapshotData);
-
-  snapshots.forEach(async (snapshot) => {
-    const taskId = Object.keys(snapshot)[0] as string;
-    const tasks = Object.values(snapshot)[0];
-
-    setTasks((prevTasks: MutableRefObject<{ [key: string]: Task[] }>) => {
-      return {
-        ...prevTasks.current, // Access the 'current' property of the MutableRefObject
-        [taskId]: [...(prevTasks.current[taskId] || []), ...tasks],
-      };
-    });
-  });
-};
-
-const batchUpdateSnapshotsSuccess = (
-  snapshotData: SnapshotStore<Snapshot<Data>>[]
-): void => {
-  // Check if snapshotData array is not empty
-  if (snapshotData.length === 0) {
-    console.error("Snapshot data array is empty.");
-    return;
-  }
-  // Iterate over each snapshot data in the array
-  snapshotData.forEach((snapshot) => {
-    // Extract necessary information from the snapshot data
-    const { timestamp, data } = snapshot;
-
-    // Perform any necessary processing with the snapshot data
-    console.log(`Processing snapshot taken at ${timestamp}:`, data);
-  });
-
-  // Notify subscribers or perform any other action as needed
-  console.log(
-    "Batch update snapshots success: Notifying subscribers or performing other actions."
-  );
-};
-
-const batchFetchSnapshotsSuccess = (
-  snapshotData: SnapshotStore<Snapshot<Data>>[]
-): void => {
-  // Initialize an array to store all fetched snapshots
-  const fetchedSnapshots: SnapshotStore<Snapshot<Data>>[] = [];
-
-  // Iterate over each snapshot data in the provided array
-  snapshotData.forEach((snapshot) => {
-    // Extract the snapshot's task ID and tasks
-    const taskId = Object.keys(snapshot)[0] as string;
-    const tasks = Object.values(snapshot)[0];
-
-    // Create a new typed snapshot object with the fetched tasks
-    const fetchedSnapshot = createTypedSnapshot(taskId, tasks, notifyFunction);
-
-    // Push the fetched snapshot into the array
-    fetchedSnapshots.push(fetchedSnapshot);
-  });
-
-  // Further processing logic with the fetched snapshots
-};
-
-const batchUpdateSnapshotsFailure = (payload: { error: string }): void => {
-  // Implementation logic here
-};
-
-const notifySubscribers = (
-  subscribers: Subscriber<Snapshot<Data>>[]
-): void => {
-  // Implementation logic here
-};
-
-const notifyFunction = (
-  message: string,
-  content: any,
-  date: Date | undefined,
-  type: NotificationType
-) => {
-  // Implementation logic for sending notifications
-};
-
-const snapshotStoreConfig: SnapshotStoreConfig<Snapshot<Data>> = {
-  key: "your_key",
-  clearSnapshots: undefined,
-  category: "snapshots",
-  initialState: getDefaultState(),
-  initSnapshot: () => {},
-  updateSnapshot,
-  takeSnapshot,
-  getSnapshot,
-  getSnapshots,
-  getAllSnapshots,
-  clearSnapshot,
-  configureSnapshotStore,
-  takeSnapshotSuccess,
-  updateSnapshotFailure,
-  takeSnapshotsSuccess,
-  fetchSnapshot,
-  updateSnapshotSuccess,
-  updateSnapshotsSuccess,
-  fetchSnapshotSuccess,
-  createSnapshotSuccess,
-  createSnapshotFailure,
-  batchUpdateSnapshotsSuccess,
-  batchFetchSnapshotsRequest,
-  batchFetchSnapshotsSuccess,
-  batchFetchSnapshotsFailure,
-  batchUpdateSnapshotsFailure,
-  notifySubscribers,
-  [Symbol.iterator]: function* () {
-    return snapshotStoreInstance.getSnapshots();
-  },
-};
-
-const config = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
-
-const snapshotStoreInstance = new SnapshotStore<Snapshot<Data>>(
-  id,
-  notifyFunction,
-  config
-);
-const sortingType = {} as SortingType;
-
-export const snapshotStore = {
-  ...snapshotStoreInstance,
-
-  async getSnapshot(): Promise<Snapshot<Data> | undefined> {
-    const latestSnapshot = snapshotStoreInstance.getLatestSnapshot();
-    const snapshotData = latestSnapshot.data;
-    if (!snapshotData) return undefined;
-
-    return {
-      timestamp: latestSnapshot.timestamp,
-      data: snapshotData.data || [],
-      category: snapshotData.category,
-      // length: (snapshotData.data || []).length,
-      content: snapshotData.content
-    };
-  },
-
-  addSnapshot(
-    category: any,
-    timestamp: any,
-    snapshot: SnapshotStore<Snapshot<Data>>,
-    id: any,
-    data: any
-  ) {
-    // Logic to add the snapshot to the snapshots array
-    const newSnapshot: Snapshot<Snapshot<Data>> = {
-      data: data,
-      length: snapshot.snapshots.length,
-      category: category,
-      timestamp: timestamp,
-    };
-
-    this.snapshots.push(snapshot);
-  },
-
-  setSnapshots(
-    category: any,
-    timestamp: any,
-    id: any,
-    newSnapshots: SnapshotStore<Snapshot<Data>>[]
-  ) {
-    for (let snapshot of newSnapshots) {
-      this.addSnapshot(category, timestamp, snapshot, id, snapshot.data);
-    }
-
-    if (this.onSnapshots) {
-      this.onSnapshots(this.snapshots);
-    }
-  },
-
-  snapshots() {},
-
-  updateSnapshotData(id: string, newData: any) {
-    const snapshot = this.snapshots.find((snapshot) => snapshot.id === id);
-    if (snapshot) {
-      snapshot.data = newData;
-      snapshot.timestamp = new Date(); // Update timestamp to reflect modification time
-    } else {
-      throw new Error(`Snapshot with id ${id} not found`);
-    }
-  },
-
-  set(snapshot: SnapshotStore<Snapshot<Data>>, event: Event) {
-    snapshot.set(event.type, event);
-    handleSorting(
-      event as unknown as React.MouseEvent<HTMLButtonElement, MouseEvent>,
-      sortingType
-    );
-    return snapshot;
-  },
-};
-
-export default SnapshotStore;
+// Export the snapshot store creation function
+export { createSnapshotStore };
 export type { Snapshot };
-// export const snapshotStore = {} as SnapshotStore
+
+// // Example usage of the Snapshot interface
+// const exampleSnapshot: Snapshot<Data> = {
+//   id: "snapshot1",
+//   category: "example category",
+//   data: {
+//     _id: "1",
+//     id: "data1",
+//     title: "Sample Data",
+//     description: "Sample description",
+//     timestamp: new Date(),
+//     category: "Sample category",
+//     startDate: new Date(),
+//     endDate: new Date(),
+//     scheduled: true,
+//     status: "Pending",
+//     isActive: true,
+//     tags: ["Important"],
+//     phase: {} as Phase,
+//     phaseType: ProjectPhaseTypeEnum.Ideation,
+//     dueDate: new Date(),
+//     priority: "High",
+//     assignee: {
+//       id: "assignee1",
+//       username: "Assignee Name",
+//     } as User,
+//     collaborators: ["collab1", "collab2"],
+//     comments: [],
+//     attachments: [],
+//     subtasks: [],
+//     createdAt: new Date(),
+//     updatedAt: new Date(),
+//     createdBy: "creator1",
+//     updatedBy: "updater1",
+//     analysisResults: [],
+//     audioUrl: "sample-audio-url",
+//     videoUrl: "sample-video-url",
+//     videoThumbnail: "sample-thumbnail-url",
+//     videoDuration: 60,
+//     collaborationOptions: [],
+//     videoData: {
+//       id: "video1",
+//       campaignId: 123,
+//       resolution: "1080p",
+//       size: "100MB",
+//       aspectRatio: "16:9",
+//       language: "en",
+//       subtitles: [],
+//       duration: 60,
+//       codec: "H.264",
+//       frameRate: 30,
+//       url: "",
+//       thumbnailUrl: "",
+//       uploadedBy: "",
+//       viewsCount: 0,
+//       likesCount: 0,
+//       dislikesCount: 0,
+//       commentsCount: 0,
+//       title: "",
+//       description: "",
+//       tags: [],
+//       createdAt: new Date(),
+//       uploadedAt: new Date(),
+//       updatedAt: new Date(),
+//       videoDislikes: 0,
+//       videoAuthor: "",
+//       videoDurationInSeconds: 60,
+//       uploadDate: new Date(),
+//       videoLikes: 0,
+//       videoViews: 0,
+//       videoComments: 0,
+//       videoThumbnail: "",
+//       videoUrl: "",
+//       videoTitle: "",
+//       videoDescription: "",
+//       videoTags: [],
+//       videoSubtitles: [],
+//       category: "",
+//       closedCaptions: [],
+//       license: "",
+//       isLive: false,
+//       isPrivate: false,
+//       isUnlisted: false,
+//       isProcessingCompleted: false,
+//       isProcessingFailed: false,
+//       isProcessingStarted: false,
+//       channel: "",
+//       channelId: "",
+//       isLicensedContent: false,
+//       isFamilyFriendly: false,
+//       isEmbeddable: false,
+//       isDownloadable: false,
+//       playlists: [],
+//     },
+//     additionalData: {},
+//     ideas: [],
+//     members: [],
+//     leader: {
+//       activity: "",
+//       id: "leader1",
+//       username: "Leader Name",
+//       email: "leader@example.com",
+//       fullName: "Leader Full Name",
+//       bio: "Leader Bio",
+//       userType: "Admin",
+//       hasQuota: true,
+//       tier: "0",
+//       token: "leader-token",
+//       uploadQuota: 100,
+//       usedQuota: 50,
+//       avatarUrl: "avatar-url",
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//       isVerified: false,
+//       isAdmin: false,
+//       isActive: true,
+//       profilePicture: null,
+//       processingTasks: [],
+//       role: UserRoles.Leader,
+//       firstName: "",
+//       lastName: "",
+//       friends: [],
+//       blockedUsers: [],
+//       persona: new Persona(PersonaTypeEnum.Default),
+//       settings: {
+//         notificationPreferences: {
+//           email: true,
+//           mobile: false,
+//           desktop: true,
+//         },
+//       } as UserSettings,
+//       interests: [],
+//       privacySettings: {
+//         hidePersonalInfo: true,
+//         enablePrivacyMode: false,
+//         enableTwoFactorAuth: true,
+//         restrictVisibilityToContacts: false,
+//         restrictFriendRequests: false,
+//         hideOnlineStatus: false,
+//         showLastSeenTimestamp: true,
+//         allowTaggingInPosts: true,
+//         enableLocationPrivacy: true,
+//         hideVisitedProfiles: true,
+//         restrictContentSharing: true,
+//         enableIncognitoMode: false,
+//       },
+//       notifications: {
+//         email: true,
+//         push: true,
+//         sms: false,
+//         chat: false,
+//         calendar: false,
+//         task: false,
+//         file: false,
+//         meeting: false,
+//         announcement: false,
+//         reminder: false,
+//         project: false,
+//         enabled: true,
+//         notificationType: "push",
+//       },
+//       activityLog: [
+//         {
+//                   id: "",
+//                   activity: "",
+//           action: "Logged in",
+//           timestamp: new Date(),
+//         },
+//         {
+//           action: "Updated profile",
+//           timestamp: new Date(),
+//         },
+//       ],
+//       socialLinks: {
+//         facebook: "https://facebook.com/leader",
+//         twitter: "https://twitter.com/leader",
+//         website: "https://website.com/leader",
+//         linkedin: "https://linkedin.com/leader",
+//         instagram: "https://finstagram.com/leader",
+//       },
+//       relationshipStatus: "Single",
+//       hobbies: ["Reading", "Traveling"],
+//       skills: ["Project Management", "Software Development"],
+//       achievements: ["Completed 100 projects", "Employee of the Month"],
+//       profileVisibility: "Public",
+//       profileAccessControl: {
+//         friendsOnly: true,
+//         allowTagging: true,
+//         blockList: [],
+//         allowMessagesFromNonContacts: true,
+//         shareProfileWithSearchEngines: false,
+//       },
+//       activityStatus: "Online",
+//       isAuthorized: true,
+//       notificationPreferences: {
+//         emailNotifications: true,
+//         pushNotifications: true,
+//         enableNotifications: true,
+//         notificationSound: "birds",
+//         notificationVolume: 50,
+//         sms: false,
+//       },
+//       securitySettings: {
+//         securityQuestions: ["What is your pet's name?"],
+//         twoFactorAuthentication: false,
+//         passwordPolicy: "StandardPolicy",
+//         passwordExpirationDays: 90,
+//         passwordStrength: "Strong",
+//         passwordComplexityRequirements: {
+//           minLength: 8,
+//           requireUppercase: true,
+//           requireLowercase: true,
+//           requireDigits: true,
+//           requireSpecialCharacters: false,
+//         },
+//         accountLockoutPolicy: {
+//           enabled: true,
+//           maxFailedAttempts: 5,
+//           lockoutDurationMinutes: 15,
+//         },
+//       },
+//       emailVerificationStatus: true,
+//       phoneVerificationStatus: true,
+//       walletAddress: "0x123456789abcdef",
+//       transactionHistory: [
+//         createCustomTransaction({
+//           id: "tx1",
+//           amount: 100,
+//           date: new Date(),
+//           description: "Sample transaction",
+//           type: null,
+//           typeName: null,
+//           to: null,
+//           nonce: 0,
+//           gasLimit: BigInt(0),
+//           gasPrice: null,
+//           maxPriorityFeePerGas: null,
+//           maxFeePerGas: null,
+//           data: "",
+//           value: BigInt(0),
+//           chainId: BigInt(0),
+//           signature: null,
+//           accessList: [],
+//           maxFeePerBlobGas: null,
+//           blobVersionedHashes: null,
+//           hash: null,
+//           unsignedHash: "",
+//           from: null,
+//           fromPublicKey: null,
+//           isSigned(): boolean {
+//             return !!(this.type && this.typeName && this.from && this.signature);
+//           },
+//           serialized: "",
+//           unsignedSerialized: "",
+//           inferType(): number {
+//             if (this.type !== null && this.type !== undefined) {
+//               return this.type;
+//             }
+//             return 0;
+//           },
+//           inferTypes(): number[] {
+//             const types: number[] = [];
+//             if (this.type !== null && this.type !== undefined) {
+//               types.push(this.type);
+//             }
+//             if (
+//               this.maxFeePerGas !== null &&
+//               this.maxPriorityFeePerGas !== null
+//             ) {
+//               types.push(2);
+//             }
+//             if (types.length === 0) {
+//               types.push(0);
+//             }
+//             return types;
+//           },
+//           isLegacy() {
+//             return this.type === 0 && this.gasPrice !== null;
+//           },
+//           isBerlin() {
+//             return this.type === 1 && this.gasPrice !== null && this.accessList !== null;
+//           },
+//           isLondon() {
+//             return this.type === 2 && this.accessList !== null && this.maxFeePerGas !== null && this.maxPriorityFeePerGas !== null;
+//           },
+//           isCancun() {
+//             return this.type === 3 && this.to !== null && this.accessList !== null && this.maxFeePerGas !== null && this.maxPriorityFeePerGas !== null && this.maxFeePerBlobGas !== null && this.blobVersionedHashes !== null;
+//           },
+//           clone(): CustomTransaction {
+//             const clonedData: CustomTransaction = {
+//               _id: this._id,
+//               id: this.id,
+//               amount: this.amount,
+//               date: this.date,
+//               description: this.description || "",
+//               startDate: this.startDate ? new Date(this.startDate) : undefined,
+//               endDate: this.endDate ? new Date(this.endDate) : undefined,
+//               isSigned:
+//                 typeof this.isSigned === "function"
+//                   ? this.isSigned.bind(this)
+//                   : this.isSigned,
+//               serialized: this.serialized,
+//               unsignedSerialized: this.unsignedSerialized,
+//               nonce: this.nonce,
+//               gasLimit: this.gasLimit,
+//               chainId: this.chainId,
+//               hash: this.hash,
+//               unsignedHash: this.unsignedHash,
+//               type: this.type,
+//               typeName: this.typeName,
+//               to: this.to,
+//               data: this.data,
+//               gasPrice: this.gasPrice,
+//               maxFeePerGas: this.maxFeePerGas,
+//               maxPriorityFeePerGas: this.maxPriorityFeePerGas,
+//               signature: this.signature,
+//               accessList: this.accessList,
+//               maxFeePerBlobGas: this.maxFeePerBlobGas,
+//               blobVersionedHashes: this.blobVersionedHashes,
+//               from: this.from,
+//               fromPublicKey: this.fromPublicKey,
+//               isLegacy:
+//                 typeof this.isLegacy === "function"
+//                   ? this.isLegacy.bind(this)
+//                   : this.isLegacy,
+//               isBerlin:
+//                 typeof this.isBerlin === "function"
+//                   ? this.isBerlin.bind(this)
+//                   : this.isBerlin,
+//               isLondon:
+//                 typeof this.isLondon === "function"
+//                   ? this.isLondon.bind(this)
+//                   : this.isLondon,
+//               isCancun:
+//                 typeof this.isCancun === "function"
+//                   ? this.isCancun.bind(this)
+//                   : this.isCancun,
+//               inferType:
+//                 typeof this.inferType === "function"
+//                   ? this.inferType.bind(this)
+//                   : this.inferType,
+//               inferTypes:
+//                 typeof this.inferTypes === "function"
+//                   ? this.inferTypes.bind(this)
+//                   : this.inferTypes,
+//               clone: typeof this.clone === "function" ? this.clone : this.clone,
+//             };
+//             return clonedData;
+//           },
+//           equals(data: CustomTransaction) {
+//             return (
+//               this.id === data.id &&
+//               this.amount === data.amount &&
+//               this.date.getTime() === data.date.getTime() &&
+//               this.description === data.description &&
+//               this.nonce === data.nonce &&
+//               this.gasLimit === data.gasLimit &&
+//               this.gasPrice === data.gasPrice &&
+//               this.maxPriorityFeePerGas === data.maxPriorityFeePerGas &&
+//               this.maxFeePerGas === data.maxFeePerGas &&
+//               this.data === data.data &&
+//               this.value === data.value &&
+//               this.chainId === data.chainId &&
+//               this.from === data.from &&
+//               this.fromPublicKey === data.fromPublicKey &&
+//               this.to === data.to &&
+//               this.type === data.type &&
+//               this.typeName === data.typeName &&
+//               this.serialized === data.serialized &&
+//               this.unsignedSerialized === data.unsignedSerialized &&
+//               this.accessList?.length === data.accessList?.length &&
+//               this.maxFeePerBlobGas === data.maxFeePerBlobGas &&
+//               this.blobVersionedHashes === data.blobVersionedHashes &&
+//               this.isSigned() === data.isSigned() &&
+//               this.isLegacy() === data.isLegacy() &&
+//               this.isBerlin() === data.isBerlin() &&
+//               this.isLondon() === data.isLondon() &&
+//               this.isCancun() === data.isCancun()
+//             );
+//           },
+//         }),
+//       ],
+//       subscriptionLevel: "Pro",
+//       recentActivity: [
+//         {
+//           action: "Logged in",
+//           timestamp: new Date(),
+//         },
+//         {
+//           action: "Updated profile",
+//           timestamp: new Date(),
+//         },
+//       ],
+//     } as User,
+//     notificationsEnabled: true,
+//   },
+//   timestamp: new Date(),
+//   createdBy: "creator1",
+//   description: "Sample snapshot description",
+//   tags: ["sample", "snapshot"],
+// };

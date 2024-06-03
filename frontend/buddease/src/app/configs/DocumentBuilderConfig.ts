@@ -10,7 +10,7 @@ import { Section } from "../components/documents/Section";
 import {
   BorderStyle,
   DocumentSize,
-  Visibility,
+  PrivacySettingEnum,
 } from "../components/models/data/StatusType";
 import { AlignmentOptions } from "../components/state/redux/slices/toolbarSlice";
 import { Settings } from "../components/state/stores/SettingsStore";
@@ -144,7 +144,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     additionalOptions: "",
     language: LanguageEnum.English,
     documents: [],
-    visibility: Visibility.Private,
+    visibility: PrivacySettingEnum.Private,
     fontSize: 12,
     textColor: "#000000",
     backgroundColor: "#FFFFFF",

@@ -16,6 +16,8 @@ import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../state/redux/slices/RootSlice";
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
   initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
@@ -243,6 +245,9 @@ export const createCustomEvent = (
 // Service to manage events
 class EventService {
   private events: CustomEventExtension[];
+  private dispatch = useDispatch();
+
+  private securityEvents = useSelector((state: RootState) => state.securityManager.events);
 
   constructor() {
     this.events = [];
@@ -275,6 +280,19 @@ class EventService {
   dispatchEvent(event: CustomEventExtension): void {
     this.events.push(event);
   }
+
+
+   // Function to collect events
+   collectEvents = () => {
+    // Dispatch action to fetch security events
+    this.dispatch(fetchEvents());
+  };
+
+  // Function to analyze events
+   analyzeEvents = () => {
+    // Dispatch action to analyze events
+    this.dispatch(analyzeEvents(this.securityEvents));
+  };
 
   addEventListener(
     type: string,
@@ -323,6 +341,7 @@ class EventService {
       rsvpStatus: "notResponded", // Example RSVP status value, adjust as needed
       priority: "low", // Example priority value, adjust as needed
 
+
       // Initialize other properties with default values
       participants: [], // Example empty array, adjust as needed
       options: getDefaultDocumentOptions(),
@@ -337,6 +356,7 @@ class EventService {
       analysisType: {} as AnalysisTypeEnum,
       analysisResults: {} as DataAnalysisResult[],
       videoData: {} as VideoData,
+      timestamp: undefined
     };
 
     return customEvent;
@@ -431,11 +451,12 @@ class EventService {
 
   private calculateProgressPercentage(event: Event & SyntheticEvent): Progress {
     let progress: Progress = {
-      id: "", 
-      value: 0, 
-      label: "", 
-      current: 0, 
-      max: 100, 
+      id: "",
+      value: 0,
+      label: "",
+      current: 0,
+      max: 100,
+      percentage: 0
     };
   
     // Check if the event has 'loaded' and 'total' properties

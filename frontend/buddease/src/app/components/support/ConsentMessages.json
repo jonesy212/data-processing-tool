@@ -168,8 +168,8 @@
         },
         {
           "id": 34,
-          "phase": "User Profile Visibility",
-          "message": "I consent to manage the visibility of my user profile within the project."
+          "phase": "User Profile Privacy",
+          "message": "I consent to manage the privacy of my user profile within the project."
         },
         {
           "id": 35,

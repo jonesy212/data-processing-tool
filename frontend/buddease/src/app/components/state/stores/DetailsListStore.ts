@@ -21,6 +21,7 @@ import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Attachment } from "../../documents/Attachment/attachment";
+import { Tag } from "../../models/tracker/Tag";
 const { notify } = useNotification();
 
 
@@ -61,7 +62,7 @@ interface DetailsItem<T> extends DataDetails {
   endDate?: Date;
   phase?: Phase | null;
   isActive?: boolean;
-  tags?: string[];
+  tags?: string[] | Tag[]
   subtitle?: string,
   date?: Date,
   author?: string;

@@ -1,3 +1,4 @@
+import { generateSnapshotId } from './../../utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { makeAutoObservable } from "mobx";
@@ -5,26 +6,30 @@ import { useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
-import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
 
-
-const {notify} = useNotification()
+const { notify } = useNotification();
 export interface TodoManagerStore<T> {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
   toggleTodo: (id: string) => void;
   addTodo: (todo: Todo) => void;
-  addTodos: (newTodos: Todo[], data: SnapshotStore<Snapshot<Data>>) => void;
+  addTodos: (
+    newTodos: Todo[],
+    data: SnapshotStore<Snapshot<Todo>, Todo>
+  ) => void;
   removeTodo: (id: string) => void;
   assignTodoToUser: (todoId: string, userId: string) => void;
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
   fetchTodosSuccess: (payload: { todos: Todo[] }) => void;
   fetchTodosFailure: (payload: { error: string }) => void;
-  
   openTodoSettingsPage: (todoId: number, teamId: number) => void;
   getTodoId: (todo: Todo) => string | null;
   getTeamId: (todo: Todo) => string | null;
@@ -35,21 +40,27 @@ export interface TodoManagerStore<T> {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
+
   subscribeToSnapshot: (
-    snapshotId: string,
-    callback: (snapshot: Snapshot<T>) => void
+    id: string,
+    callback: (snapshot: Snapshot<Todo>) => void,
+    snapshot: Snapshot<Todo>
   ) => void;
-  batchFetchSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
+  
+  batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
 }
 
-const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
+const useTodoManagerStore = (): TodoManagerStore<Todo> => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
-    >({});
-    const [uiState, setUIState] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
-  
-  const assignTodoToUser = async (todoId: string, userId: string) => { 
+  >({});
+  const [uiState, setUIState] = useState<{
+    loading: boolean;
+    error: string | null;
+  }>({ loading: false, error: null });
+
+  const assignTodoToUser = async (todoId: string, userId: string) => {
     setUIState({ loading: true, error: null });
     try {
       await todoService.assignTodoToUser(todoId, userId);
@@ -57,7 +68,7 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
         "assignTodoToUser",
         "Todo assigned successfully!",
         NOTIFICATION_MESSAGES.Todos.TODO_ASSIGNED_SUCCESSFULLY,
-        new Date,
+        new Date(),
         NotificationTypeEnum.Success
       );
     } catch (error: any) {
@@ -66,20 +77,18 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
         "assignTodoToUserFailure",
         error.message,
         NOTIFICATION_MESSAGES.Todos.TODO_ASSIGN_ERROR,
-        new Date,
-        NotificationTypeEnum.Error,
+        new Date(),
+        NotificationTypeEnum.Error
       );
     }
-  }
+  };
 
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
 
   // Inside useTodoManagerStore function
   const snapshotStore = useSnapshotManager();
   // Initialize SnapshotStore
-  const onSnapshotCallbacks: ((snapshot: Snapshot<T>) => void)[] = [];
-
-  
+  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo>) => void)[] = [];
 
   const dispatch = (action: any) => {
     switch (action.type) {
@@ -102,12 +111,13 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
         completeAllTodosFailure(action.payload);
         break;
       case "BATCH_FETCH_SNAPSHOTS_REQUEST":
-        batchFetchSnapshotsRequest();
+        batchFetchTodoSnapshotsRequest();
         break;
       case "BATCH_FETCH_SNAPSHOTS_SUCCESS":
-        batchFetchSnapshotsSuccess(action.payload);        break;
+        batchFetchSnapshotsSuccess(action.payload);
+        break;
     }
-  }
+  };
 
   const toggleTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -123,12 +133,11 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
     setTodos((prevTodos) => ({ ...prevTodos, [todo.id]: todo }));
   };
 
-
   const loading = useRef(false);
 
   const addTodos = (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<Data>>
+    data: SnapshotStore<Snapshot<Todo>, Todo>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
@@ -139,10 +148,13 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
         // Take snapshot for each todo
         if (data) {
           // Use lodash omit to exclude 'id' property
-          const updatedSnapshots: SnapshotStore<Snapshot<Data>> = {
-            timestamp: new Date,
+          const updatedSnapshots: SnapshotStore<
+            Snapshot<Todo>,
+            Todo
+          > = data.createSnapshot({
+            timestamp: new Date(),
             data: {} as Data,
-          } as SnapshotStore<Snapshot<Data>>
+          });
           data.takeSnapshot(updatedSnapshots);
         }
       });
@@ -153,16 +165,233 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
   };
 
   const todoList = Object.values(todos);
-
   const subscribeToSnapshot = (
-    snapshotId: string,
-    callback: (snapshot: Snapshot<T>) => void
+    id: string,
+    callback: (snapshot: Snapshot<Todo>) => void,
+    snapshot: Snapshot<Todo> // Add 'snapshot' as an argument
   ) => {
-    onSnapshotCallbacks.push();
-    snapshotStore.subscribeToSnapshot(snapshotId, (snapshot) => {
-      callback(snapshot);
-    });
+    // Define the conversion functions
+    const todoToData = (todo: Todo): Data => {
+      // Implement the conversion logic here for Todo to Data
+      const data: Data = {
+        timestamp: undefined,
+        category: ""
+      };
+      return data;
+    };
+  
+    const dataToTodo = (data: Data): Todo => {
+      // Implement the conversion logic here for Data to Todo
+      const todo: Todo = {
+        _id: "",
+        id: "",
+        done: false,
+        todos: [],
+        title: "",
+        description: "",
+        dueDate: null,
+        priority: undefined,
+        assignedTo: null,
+        assigneeId: "",
+        assignee: null,
+        assignedUsers: [],
+        collaborators: [],
+        labels: [],
+        subtasks: [],
+        save: function (): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        snapshot: {
+          timestamp: "",
+          category: undefined
+        },
+        timestamp: "",
+        category: undefined
+      };
+      return todo;
+    };
+  
+    // Simulate creating a Todo
+    const todo: Todo = {
+      // Todo properties
+    } as Todo;
+  
+    // Convert Todo to Data
+    const data: Data = todoToData(todo);
+  
+    // Convert Data to Todo
+    const convertedTodo: Todo = dataToTodo(data);
+  
+    // Check the type of 'data' and 'convertedTodo' to determine the correct conversion
+    if ('id' in data && 'id' in convertedTodo) {
+      // Perform conversion logic specific to Todo
+      const convertedSnapshot: Snapshot<Todo> = {
+        ...snapshot, // Spread the 'snapshot' passed as an argument
+        id,
+        data: {
+          ...snapshot.data,
+          id: convertedTodo.id,
+          _id: convertedTodo._id,
+          title: convertedTodo.title,
+          status: convertedTodo.status,
+          todos: convertedTodo.todos,
+          dueDate: convertedTodo.dueDate,
+          description: convertedTodo.description,
+          category: convertedTodo.category,
+          assignedTo: convertedTodo.assignedTo,
+          assigneeId: convertedTodo.assigneeId,
+          startDate: convertedTodo.startDate,
+          elapsedTime: convertedTodo.elapsedTime,
+          timeEstimate: convertedTodo.timeEstimate,
+          timeSpent: convertedTodo.timeSpent,
+          assignedUsers: convertedTodo.assignedUsers,
+          collaborators: convertedTodo.collaborators,
+          done: convertedTodo.done,
+          labels: convertedTodo.labels,
+          assignee: convertedTodo.assignee,
+          priority: convertedTodo.priority,
+          dependencies: convertedTodo.dependencies,
+          recurring: convertedTodo.recurring,
+          subtasks: convertedTodo.subtasks,
+          entities: convertedTodo.entities,
+          projectId: convertedTodo.projectId,
+          milestoneId: convertedTodo.milestoneId,
+          phaseId: convertedTodo.phaseId,
+          taskId: convertedTodo.taskId,
+          teamId: convertedTodo.teamId,
+          creatorId: convertedTodo.creatorId,
+          order: convertedTodo.order,
+          parentId: convertedTodo.parentId,
+          createdAt: convertedTodo.createdAt,
+          updatedAt: convertedTodo.updatedAt,
+          isActive: convertedTodo.isActive,
+          tags: convertedTodo.tags,
+          isDeleted: convertedTodo.isDeleted,
+          isArchived: convertedTodo.isArchived,
+          isCompleted: convertedTodo.isCompleted,
+          isRecurring: convertedTodo.isRecurring,
+          isBeingDeleted: convertedTodo.isBeingDeleted,
+          isBeingEdited: convertedTodo.isBeingEdited,
+          isBeingCompleted: convertedTodo.isBeingCompleted,
+          isBeingReassigned: convertedTodo.isBeingReassigned,
+          recurringRule: convertedTodo.recurringRule,
+          recurringEndDate: convertedTodo.recurringEndDate,
+          recurringFrequency: convertedTodo.recurringFrequency,
+          recurringCount: convertedTodo.recurringCount,
+          recurringDaysOfWeek: convertedTodo.recurringDaysOfWeek,
+          recurringDaysOfMonth: convertedTodo.recurringDaysOfMonth,
+          recurringMonthsOfYear: convertedTodo.recurringMonthsOfYear,
+          save: convertedTodo.save,
+          snapshot: convertedTodo.snapshot,
+          analysisType: convertedTodo.analysisType,
+          analysisResults: convertedTodo.analysisResults,
+          videoData: convertedTodo.videoData,
+          timestamp: convertedTodo.timestamp,
+          suggestedDay: convertedTodo.suggestedDay,
+          suggestedWeeks: convertedTodo.suggestedWeeks,
+          suggestedMonths: convertedTodo.suggestedMonths,
+          suggestedSeasons: convertedTodo.suggestedSeasons,
+          eventId: convertedTodo.eventId,
+          suggestedStartTime: convertedTodo.suggestedStartTime,
+          suggestedEndTime: convertedTodo.suggestedEndTime,
+          suggestedDuration: convertedTodo.suggestedDuration,
+          data: convertedTodo.data,
+          // Include other Todo-specific properties
+        }
+      };
+      // Call the callback with the converted snapshot
+      callback(convertedSnapshot);
+    } else {
+
+      
+      // Perform conversion logic specific to Data
+      const convertedSnapshot: Snapshot<Todo> = {
+        ...snapshot, // Spread the 'snapshot' passed as an argument
+        data: {
+          ...snapshot.data,
+          _id: convertedTodo._id || '', // Ensure _id is assigned a value or a default value
+          id: convertedTodo.id || '', // Ensure id is assigned a value or a default value
+          content: convertedTodo.content || '', // Ensure content is assigned a value or a default value
+          done: convertedTodo.done || false, // Ensure done is assigned a value or a default value
+          status: convertedTodo.status || undefined, // Ensure status is assigned a value or a default value
+          todos: convertedTodo.todos || [],
+          title: convertedTodo.title || '',
+          selectedTodo: convertedTodo.selectedTodo || undefined,
+          progress: convertedTodo.progress || undefined,
+          description: convertedTodo.description || '',
+          dueDate: convertedTodo.dueDate || null,
+          payload: convertedTodo.payload || undefined,
+          type: convertedTodo.type || undefined,
+          priority: convertedTodo.priority || undefined,
+          assignedTo: convertedTodo.assignedTo || null,
+          assigneeId: convertedTodo.assigneeId || '',
+          assignee: convertedTodo.assignee || null,
+          assignedUsers: convertedTodo.assignedUsers || [],
+          collaborators: convertedTodo.collaborators || [],
+          labels: convertedTodo.labels || [],
+          comments: convertedTodo.comments || [],
+          attachments: convertedTodo.attachments || [],
+          checklists: convertedTodo.checklists || [],
+          startDate: convertedTodo.startDate || undefined,
+          elapsedTime: convertedTodo.elapsedTime || undefined,
+          timeEstimate: convertedTodo.timeEstimate || undefined,
+          timeSpent: convertedTodo.timeSpent || undefined,
+          dependencies: convertedTodo.dependencies || [],
+          recurring: convertedTodo.recurring || null,
+          subtasks: convertedTodo.subtasks || [],
+          entities: convertedTodo.entities || [],
+          projectId: convertedTodo.projectId || '',
+          milestoneId: convertedTodo.milestoneId || '',
+          phaseId: convertedTodo.phaseId || '',
+          taskId: convertedTodo.taskId || '',
+          teamId: convertedTodo.teamId || '',
+          creatorId: convertedTodo.creatorId || '',
+          order: convertedTodo.order || undefined,
+          parentId: convertedTodo.parentId || null,
+          createdAt: convertedTodo.createdAt || undefined,
+          updatedAt: convertedTodo.updatedAt || undefined,
+          isActive: convertedTodo.isActive || false,
+          tags: convertedTodo.tags || [],
+          isDeleted: convertedTodo.isDeleted || false,
+          isArchived: convertedTodo.isArchived || false,
+          isCompleted: convertedTodo.isCompleted || false,
+          isRecurring: convertedTodo.isRecurring || false,
+          isBeingDeleted: convertedTodo.isBeingDeleted || false,
+          isBeingEdited: convertedTodo.isBeingEdited || false,
+          isBeingCompleted: convertedTodo.isBeingCompleted || false,
+          isBeingReassigned: convertedTodo.isBeingReassigned || false,
+          recurringRule: convertedTodo.recurringRule || '',
+          recurringEndDate: convertedTodo.recurringEndDate || undefined,
+          recurringFrequency: convertedTodo.recurringFrequency || '',
+          recurringCount: convertedTodo.recurringCount || undefined,
+          recurringDaysOfWeek: convertedTodo.recurringDaysOfWeek || [],
+          recurringDaysOfMonth: convertedTodo.recurringDaysOfMonth || [],
+          recurringMonthsOfYear: convertedTodo.recurringMonthsOfYear || [],
+          save: convertedTodo.save || (() => Promise.resolve()), // Default save function
+          snapshot: convertedTodo.snapshot || {}, // Default snapshot
+          analysisType: convertedTodo.analysisType || undefined,
+          analysisResults: convertedTodo.analysisResults || [],
+          videoData: convertedTodo.videoData || undefined,
+          timestamp: convertedTodo.timestamp || '',
+          suggestedDay: convertedTodo.suggestedDay || null,
+          suggestedWeeks: convertedTodo.suggestedWeeks || null,
+          suggestedMonths: convertedTodo.suggestedMonths || null,
+          suggestedSeasons: convertedTodo.suggestedSeasons || null,
+          eventId: convertedTodo.eventId || '',
+          suggestedStartTime: convertedTodo.suggestedStartTime || '',
+          suggestedEndTime: convertedTodo.suggestedEndTime || '',
+          suggestedDuration: convertedTodo.suggestedDuration || '',
+          data: convertedTodo.data !== undefined ? convertedTodo.data : undefined,
+          category: convertedTodo.category || '',
+
+          // Map properties from Data to Snapshot
+        }
+      };
+      // Call the callback with the converted snapshot
+      callback(convertedSnapshot);
+    }
   };
+  
 
   const removeTodo = (id: string) => {
     setTodos((prevTodos) => {
@@ -172,13 +401,12 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
     });
   };
 
-
-  const getTodoId = (todo: Todo): string | null => { 
+  const getTodoId = (todo: Todo): string | null => {
     return todo.id as string;
-  }
+  };
   const getTeamId = (todo: Todo): string | null => {
-    return todo.teamId as string
-  }
+    return todo.teamId as string;
+  };
 
   const fetchTodo = async (): Promise<void> => {
     if (loading.current) {
@@ -211,7 +439,6 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
     });
   };
 
-
   const fetchTodosSuccess = (payload: { todos: Todo[] }) => {
     const { todos: newTodos } = payload;
     setTodos((prevTodos) => {
@@ -240,16 +467,13 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
     );
   };
 
-
-
-
   const completeAllTodosSuccess = () => {
     console.log("All Todos completed successfully!");
     // You can add additional logic or trigger notifications as needed
-    
-    if (typeof NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT === 'string') {
-    setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+
+    if (typeof NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT === "string") {
+      setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
       );
     }
   };
@@ -280,7 +504,6 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
       NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA
     );
   };
-
 
   const fetchTodosRequest = () => {
     console.log("Fetching Todos...");
@@ -313,7 +536,7 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
         : "";
   };
 
-  const batchFetchSnapshotsRequest = () => {
+  const batchFetchTodoSnapshotsRequest = () => {
     console.log("Fetching snapshots...");
     // You can add loading indicators or other UI updates here
     setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
@@ -330,7 +553,7 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
     );
   };
-  
+
   // For example, if the user has previous subscriptions stored in localStorage
   const prevSubscriptions = localStorage.getItem("subscriptions");
   if (prevSubscriptions) {
@@ -371,7 +594,7 @@ const useTodoManagerStore = <T>(): TodoManagerStore<Todo> => {
       openTodoSettingsPage,
 
       // batch actions
-      batchFetchSnapshotsRequest,
+      batchFetchTodoSnapshotsRequest,
 
       // snapshot subscriptions
       subscribeToSnapshot,

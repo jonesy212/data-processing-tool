@@ -225,3 +225,4 @@ const darkModeToggleHook = darkModeTogglePhaseHook;
 
 export default AnimatedDashboard;
 useLayoutGenerator({} as LayoutGeneratorProps);
+export type {ClickableListItem}

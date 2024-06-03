@@ -4,6 +4,7 @@ import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { Data } from "../models/data/Data";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
 
 type Subscription = {
   unsubscribe: () => void;
@@ -14,18 +15,17 @@ type Subscription = {
 };
 
 const SubscriptionComponent = (
-  initialData: Data,
-  updateCallback: (
-    snapshotStore: SnapshotStore<Snapshot<Data>>,
-    events: Record<string, CalendarEvent[]>
-  ) => void
+  initialData: RealtimeDataItem[],
+  updateCallback: (data: RealtimeDataItem[]) => void
 ) => {
-  const [subscriptionData, setSubscriptionData] = useState<Subscription | null>(null);
+  const [subscriptionData, setSubscriptionData] = useState<Subscription | null>(
+    null
+  );
   const data = useRealtimeData(initialData, updateCallback);
 
   useEffect(() => {
     // Subscribe to the data service
-    const subscription = subscriptionService
+    const subscription = subscriptionService;
     const subscriptionUsage: Subscription = subscription.subscribe(
       "yourHookName",
       () => {
@@ -41,10 +41,10 @@ const SubscriptionComponent = (
     ) as Subscription;
 
     // Cleanup: Unsubscribe when the component unmounts
-      return () => {
-        if (typeof subscriptionUsage !== "string") {
-          subscriptionUsage.unsubscribe();
-        }
+    return () => {
+      if (typeof subscriptionUsage !== "string") {
+        subscriptionUsage.unsubscribe();
+      }
     };
   }, [data]);
 

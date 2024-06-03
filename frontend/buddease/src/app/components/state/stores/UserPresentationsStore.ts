@@ -1,14 +1,19 @@
 // UserPresentationsStore.ts
 
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
-import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
+import CalendarEventTimingOptimization, {
+  ExtendedCalendarEvent,
+} from "../../calendar/CalendarEventTimingOptimization";
 import { Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import { useAssignEventStore } from "./AssignEventStore";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { NotificationType } from "../../support/NotificationContext";
 
-
-export type PresentationEventAssignment = BaseCustomEvent | Todo | ExtendedCalendarEvent
-
+export type PresentationEventAssignment =
+  | BaseCustomEvent
+  | Todo
+  | ExtendedCalendarEvent;
 
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
@@ -31,10 +36,6 @@ type EventStoreSubset = Pick<
   | "assignUserFailure"
 >;
 
-
-
-
-
 const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
 export interface UserPresentation {
@@ -45,7 +46,7 @@ export interface UserPresentation {
     newUserId: PresentationEventAssignment,
     eventOrTodo: BaseCustomEvent | Todo
   ) => void;
-  
+
   reassignUserForSingle: (
     user: string,
     newUser: ExtendedCalendarEvent,
@@ -56,10 +57,13 @@ export interface UserPresentation {
     eventIds: string[],
     oldUserId: CalendarEventTimingOptimization,
     newUserId: PresentationEventAssignment
-  ) => void
+  ) => void;
   assignEvent: (eventId: string, userId: User) => void;
   assignedUsers: Record<string, string[]>;
-  assignedEvents: Record<string, (ExtendedCalendarEvent | CalendarEventTimingOptimization)[]>;
+  assignedEvents: Record<
+    string,
+    (ExtendedCalendarEvent | CalendarEventTimingOptimization)[]
+  >;
   assignedTodos: Record<string, string[]>;
   assignUsersToEvents: (
     users: string[],
@@ -72,8 +76,8 @@ export interface UserPresentation {
     eventOrTodoId: string
   ) => void;
   setDynamicNotificationMessage: (
-    type: string,
-    notification: string
+    message: Message,
+    type: NotificationType
   ) => void;
   reassignUsersInTodos: (
     todoIds: string[],
@@ -93,7 +97,9 @@ export interface UserPresentation {
   assignUserFailure: (error: string) => void;
 }
 
-const transformExtendedCalendarEventToOptimization = (extendedEvent: ExtendedCalendarEvent): CalendarEventTimingOptimization => {
+const transformExtendedCalendarEventToOptimization = (
+  extendedEvent: ExtendedCalendarEvent
+): CalendarEventTimingOptimization => {
   return {
     eventId: extendedEvent.eventId,
     suggestedStartTime: extendedEvent.suggestedStartTime,
@@ -105,8 +111,6 @@ const transformExtendedCalendarEventToOptimization = (extendedEvent: ExtendedCal
     suggestedSeasons: extendedEvent.suggestedSeasons,
   };
 };
-
-
 
 export const useUserPresentation = (): UserPresentation => {
   const {

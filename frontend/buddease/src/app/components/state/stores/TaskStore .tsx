@@ -152,15 +152,16 @@ const useTaskManagerStore = (): TaskManagerStore => {
     // Assuming assignedTaskStore is an object
     const reassignedTasks = ["task1", "task2", "task3"];
 
-    const snapshotStore: SnapshotStore<Snapshot<Task>> = useSnapshotStore();
+    const taskSnapshotStore: SnapshotStore<
+      Snapshot<Task>,
+      Task
+    > = useSnapshotStore();
     // Assign reassignedTasks to assignedTaskStore using taskId as key
     // Assuming taskStore is an instance of a class or an object that has a method named setAssignedTaskStore
     taskStore.setAssignedTaskStore({
       ...assignedTaskStore,
       [taskId]: reassignedTasks,
-    } 
-      
-    );
+    });
 
     // Method to reassign a task to a new user
     const reassignTask = (
@@ -180,7 +181,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         ...assignedTaskStore,
         [taskId]: reassignedTasks,
         task: undefined,
-        assignee: ""
+        assignee: "",
       });
 
       setDynamicNotificationMessage(
@@ -200,12 +201,14 @@ const useTaskManagerStore = (): TaskManagerStore => {
         return task;
       });
 
-      setAssignedTaskStore({
-        ...assignedTaskStore,
-        [taskId]: reassignedTasks,
-        task: undefined,
-        assignee: "",
-      });
+      if (reassignedTasks) {
+        setAssignedTaskStore({
+          ...assignedTaskStore,
+          [taskId]: reassignedTasks,
+          task: undefined,
+          assignee: "",
+        });
+      }
     };
 
     const updateTaskTitle = (title: string) => {
@@ -518,72 +521,93 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
 
   const markTaskAsInProgress =
-    (taskId: string, requestData: string) => async (dispatch: any) => {
-      const taskToUpdate = tasks[taskId];
-      try {
-        // Update task status to in progress
-        // Assuming setTasks is a local state updater
-        setTasks((prevTasks) => {
-          const updatedTasks = { ...prevTasks };
-          const taskToUpdate = updatedTasks[taskId];
-          if (taskToUpdate) {
-            taskToUpdate.status = "inProgress";
-          }
-          return updatedTasks;
-        });
-      } catch (err) {
-        console.error(`Error marking task ${taskId} as in progress`, err);
-      }
-      dispatch(
-        TaskActions.markTaskAsInProgressSuccess({
-          taskId: {
-            taskId: taskId,
-            requestData: requestData,
-            ...tasks
-          },
-          requestData,
-        })
-      );
-      const { markTaskAsInProgress } = useTaskManagerSlice.actions;
-      markTaskAsInProgress(String(taskToUpdate));
-      // Simulating asynchronous operation
-      setTimeout(() => {
-        notify(
-          "markTaskAsInProgressFailure",
-          `Error marking task ${taskToUpdate} as in progress`,
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OperationSuccess
-        );
-      }, 1000);
-    };
+
+(taskId: string, requestData: string) => async (dispatch: any) => {
+  const taskToUpdate = tasks[taskId];
+  try {
+    // Update task status to in progress
+    // Assuming setTasks is a local state updater
+    setTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks };
+      const taskToUpdate = { ...updatedTasks[taskId], status: TaskStatus.InProgress };
+      updatedTasks[taskId] = taskToUpdate;
+      return updatedTasks;
+    });
+  } catch (err) {
+    console.error(`Error marking task ${taskId} as in progress`, err);
+  }
+  dispatch(
+    TaskActions.markTaskAsInProgressSuccess({
+      taskId: {
+        taskId: taskId,
+        requestData: requestData,
+        ...tasks,
+        id: '',
+        title: '',
+        description: '',
+        assignedTo: null,
+        assigneeId: undefined,
+        dueDate: undefined,
+        payload: undefined,
+        priority: 'low',
+        previouslyAssignedTo: [],
+        done: false,
+        data: undefined,
+        source: 'user',
+        startDate: undefined,
+        endDate: undefined,
+        isActive: false,
+        tags: [],
+        [Symbol.iterator]: function (): Iterator<any, any, undefined> {
+          throw new Error('Function not implemented.');
+        },
+        timestamp: undefined,
+        category: ''
+      },
+      requestData,
+    })
+  );
+  const { markTaskAsInProgress } = useTaskManagerSlice.actions;
+  markTaskAsInProgress(String(taskToUpdate));
+  // Simulating asynchronous operation
+  setTimeout(() => {
+    notify(
+      "markTaskAsInProgressFailure",
+      `Error marking task ${taskToUpdate} as in progress`,
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+  }, 1000);
+};
 
 
 
   // Function to fetch a task by its ID
-  const getTaskById = async (taskId: string): Promise<Task | null> => {
-    // Simulate an asynchronous operation (e.g., fetching data from a server)
-    return new Promise((resolve, reject) => {
-      // Simulate delay
-      setTimeout(() => {
-        // Check if the task with the specified ID exists in the data source
-        const task = tasksDataSource[taskId];
-
-        if (task) {
-          // Resolve with the task if found
-          resolve(task);
-        } else {
-          // Resolve with null if task is not found
-          resolve(null);
-        }
-      }, 1000); // Simulate 1 second delay
+  
+  const getTaskById = (taskId: string): Promise<Task | null> => {
+    return new Promise<Task | null>( async(resolve, reject) => {
+      try {
+        setTimeout(() => {
+          const task: Task | undefined = tasksDataSource[taskId];
+  
+          if (task) {
+            resolve(task);
+          } else {
+            resolve(null);
+          }
+        }, 1000);
+      } catch (error) {
+        reject(error);
+      }
     });
   };
+  
 
   const sortByDueDate = (tasks: Task[]) => {
     return tasks.sort((a, b) => {
-      const dateA = new Date(a.dueDate);
-      const dateB = new Date(b.dueDate);
+      const dateA = new Date(a.dueDate ?? "");
+      const dateB = new Date(b.dueDate ?? "");
       return dateA.getTime() - dateB.getTime();
     });
   };
@@ -694,6 +718,9 @@ const useTaskManagerStore = (): TaskManagerStore => {
         );
       }, 1000);
     };
+
+
+  const getTaskCountByStatus = async (tasks: Task)
 
   const getTasksByAssignee = async (tasks: Task[], assignee: User) => {
     try {

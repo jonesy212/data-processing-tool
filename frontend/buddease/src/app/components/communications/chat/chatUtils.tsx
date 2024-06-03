@@ -314,10 +314,10 @@ export const openChatSettingsModal = async (): Promise<ChatSettingsModal> => {
     ): Promise<void> => {
       try {
         // Provide a dropdown or toggle buttons for users to select audio options
-        const selectedOptions = await openAudioOptionsMenu();
+        const selectedOptions = await openAudioOptionsMenu(roomId);
     
         // Save the selected audio options to localStorage
-        saveToLocalStorage<AudioOptions>("audioOptions", selectedOptions);
+        saveToLocalStorage<AudioOptions>("audioOptions", selectedOptions!);
     
         // Display a success message to indicate that the options have been saved
         showToast({ content: "Audio options saved successfully!" });

@@ -1,62 +1,79 @@
-import { UserSettings } from '@/app/configs/UserSettings';
-import { Persona } from '@/app/pages/personas/Persona';
-import { ProfileAccessControl } from '@/app/pages/profile/Profile';
-import React from 'react';
+import { UserSettings } from "@/app/configs/UserSettings";
+import { Persona } from "@/app/pages/personas/Persona";
+import { ProfileAccessControl } from "@/app/pages/profile/Profile";
+import React from "react";
 import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
-import { FileTypeEnum } from '../../documents/FileType';
-import useFiltering from '../../hooks/useFiltering';
+import { FileTypeEnum } from "../../documents/FileType";
+import useFiltering from "../../hooks/useFiltering";
 import { Phase } from "../../phases/Phase";
-import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project, ProjectType } from "../../projects/Project";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
-import { implementThen } from '../../state/stores/CommonEvent';
-import { Settings } from '../../state/stores/SettingsStore';
+import { implementThen } from "../../state/stores/CommonEvent";
+import { Settings } from "../../state/stores/SettingsStore";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
-import { Idea } from '../../users/Ideas';
+import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
-import { StatusType, TeamStatus } from '../data/StatusType';
+import { StatusType, TeamStatus } from "../data/StatusType";
 import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
-import { Member, TeamMember } from './TeamMembers';
+import { Member, TeamMember } from "./TeamMembers";
 
-import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
-import { CodingLanguageEnum, LanguageEnum } from '../../communications/LanguageEnum';
-
-
-
+import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
+import {
+  CodingLanguageEnum,
+  LanguageEnum,
+} from "../../communications/LanguageEnum";
+import { NotificationPreferenceEnum } from "../../notifications/Notification";
 
 // Assume 'options' is provided elsewhere
 const options: SearchOptions = {
-  communicationMode: 'email', // Example communication mode
+  communicationMode: "email", // Example communication mode
   size: "medium",
   animations: {
-      type: "slide",
-      duration: 300,
+    type: "slide",
+    duration: 300,
   },
   additionalOptions: {
     filters: [],
-},
+  },
   additionalOption2: undefined,
-  defaultFileType: FileTypeEnum.Document, // Choose the appropriate file type enum value
+  defaultFileType: FileTypeEnum.Document,
+  realTimeUpdates: false,
+  theme: "",
+  language: LanguageEnum.English,
+  notificationPreferences: NotificationPreferenceEnum.Email,
+  privacySettings: [],
+  taskManagement: false,
+  projectView: "",
+  calendarSettings: undefined,
+  dashboardPreferences: undefined,
+  securityFeatures: []
 };
 
 // Initialize the useFiltering hook with the provided options
 const { addFilter } = useFiltering(options);
 
 interface Team extends Data {
-  team: { id: string; current: number; max: number; label: string; value: number };
- 
+  team: {
+    id: string;
+    current: number;
+    max: number;
+    label: string;
+    value: number;
+  };
+
   _id: string;
   id: string;
   teamName: string;
-  description?: string | undefined;
+  description?: string;
   projects: Project[];
   creationDate: Date;
   isActive: boolean;
@@ -64,7 +81,7 @@ interface Team extends Data {
   progress: Progress | null;
   percentage: number;
   data?: TeamData;
-  members?: Member[]
+  members?: Member[];
   then?: (callback: (newData: Snapshot<Data>) => void) => void;
   pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
@@ -73,32 +90,38 @@ interface Team extends Data {
   globalCollaboration?: TeamData["globalCollaboration"];
   collaborationPreferences?: TeamData["collaborationPreferences"];
 
-
   assignedProjects: Project[];
-  reassignedProjects: { projectId: string, projectName: Project['name']; previousTeam: Team; reassignmentDate: Date }[];
-  assignProject(team: Team, project: Project): void
-  reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
+
+  reassignedProjects: {
+    projectId: string;
+    project: Project | undefined;
+    projectName: Project["name"];
+    previousTeam: Team;
+    reassignmentDate: Date;
+  }[];
+  assignProject(team: Team, project: Project): void;
+  reassignProject(
+    team: Team,
+    project: Project,
+    previousTeam: Team,
+    reassignmentDate: Date
+  ): void;
   unassignProject(team: Team, project: Project): void;
-  updateProgress(team: Team, project: Project): void
-   // Add other team-related fields as needed
+  updateProgress(team: Team, project: Project): void;
+  // Add other team-related fields as needed
 }
 
-
-
-
-
-
-const timeBasedCode = generateTimeBasedCode()
+const timeBasedCode = generateTimeBasedCode();
 // Example usage:
 const team: Team = {
-  id: '1',
+  id: "1",
   teamName: "Development Team",
   description: "A team focused on software development",
   team: {
-    id: 'team-1',
+    id: "team-1",
     current: 0,
     max: 0,
-    label: '',
+    label: "",
     value: 0,
   },
   members: [
@@ -149,9 +172,9 @@ const team: Team = {
         idleTimeout: {
           intervalId: undefined,
           isActive: false,
-          animateIn: () => { },
-          startAnimation: () => { },
-          stopAnimation: () => { },
+          animateIn: () => {},
+          startAnimation: () => {},
+          stopAnimation: () => {},
           resetIdleTimeout: function (): Promise<void> {
             return Promise.resolve();
           },
@@ -159,7 +182,7 @@ const team: Team = {
           startIdleTimeout: (
             timeoutDuration: number,
             onTimeout: () => void | undefined
-          ) => { },
+          ) => {},
           toggleActivation: async () => false,
         },
         startIdleTimeout: function (
@@ -245,17 +268,74 @@ const team: Team = {
 
         enableDatabaseEncryption: false,
         id: "",
-        filter(key: keyof Settings | "communicationMode" | "defaultFileType"): void {
-          // Example: Filtering based on the provided key
+        filter(
+          key:
+            | keyof Settings
+            | "communicationMode"
+            | "defaultFileType"
+            | "realTimeUpdates"
+            | "theme"
+            | "language"
+            | "notificationPreferences"
+            | "privacySettings"
+            | "taskManagement"
+            | "projectView"
+            | "calendarSettings"
+            | "dashboardPreferences"
+          |  "securityFeatures"
+        ): void {
+          // Filtering based on the provided key
           switch (key) {
             case "communicationMode":
-              addFilter("communicationMode", "equal", options.communicationMode);
+              addFilter(
+                "communicationMode",
+                "equal",
+                options.communicationMode
+              );
               break;
             case "defaultFileType":
-              // Add filter for default file type
               addFilter("defaultFileType", "equal", options.defaultFileType);
               break;
             // Add cases for other keys as needed
+            case "realTimeUpdates":
+              addFilter("realTimeUpdates", "equal", options.realTimeUpdates);
+              break;
+            case "theme":
+              addFilter("theme", "equal", options.theme);
+              break;
+            case "language":
+              addFilter("language", "equal", options.language);
+              break;
+            case "notificationPreferences":
+              addFilter(
+                "notificationPreferences",
+                "equal",
+                options.notificationPreferences
+              );
+              break;
+            case "privacySettings":
+              addFilter("privacySettings", "equal", options.privacySettings);
+              break;
+            case "taskManagement":
+              addFilter("taskManagement", "equal", options.taskManagement);
+              break;
+            case "projectView":
+              addFilter("projectView", "equal", options.projectView);
+              break;
+            case "calendarSettings":
+              addFilter("calendarSettings", "equal", options.calendarSettings);
+              break;
+            case  "dashboardPreferences":
+              addFilter(
+                "dashboardPreferences",
+                "equal",
+                options.dashboardPreferences
+              );
+              break;
+            case "securityFeatures":
+              addFilter("securityFeatures", "equal", options.securityFeatures);
+              break;
+            // Add more cases for other settings options as needed
             default:
               // Default case if the provided key doesn't match any expected value
               console.error(`Unhandled key "${key}" in settings filter.`);
@@ -336,7 +416,7 @@ const team: Team = {
         meeting: false,
         announcement: false,
         reminder: false,
-        project: false
+        project: false,
       },
       activityLog: [],
       projects: [],
@@ -351,10 +431,10 @@ const team: Team = {
         allowTagging: false,
         blockList: [],
         allowMessagesFromNonContacts: false,
-        shareProfileWithSearchEngines: false
+        shareProfileWithSearchEngines: false,
       },
       activityStatus: "",
-      isAuthorized: false
+      isAuthorized: false,
     },
   ],
   projects: [
@@ -385,6 +465,8 @@ const team: Team = {
       budget: 0,
       ideas: {} as Idea[],
       type: ProjectType.Default,
+      timestamp: undefined,
+      category: "",
     },
     {
       _id: "project-2",
@@ -501,7 +583,8 @@ const team: Team = {
           },
           videoData: {} as VideoData,
           ideas: {} as Idea[],
-          // Add more tasks as needed
+          timestamp: undefined,
+          category: "",
         },
       ],
       startDate: new Date(),
@@ -509,6 +592,8 @@ const team: Team = {
       isActive: true,
       leader: null,
       budget: 0,
+      timestamp: undefined,
+      category: "",
     },
   ],
   creationDate: new Date(),
@@ -547,9 +632,10 @@ const team: Team = {
       isActive: true,
       leader: null,
       budget: 0,
-      timestamp: new Date,
+      timestamp: new Date(),
       data: {} as TeamData & Team,
       category: "Technology",
+      content: undefined,
     };
     callback(newData);
   },
@@ -562,33 +648,42 @@ const team: Team = {
   },
   unassignProject: function (team: Team, project: Project) {
     // Implement the logic to unassign a project from the team
-    const index = team.assignedProjects.findIndex(p => p.id === project.id);
+    const index = team.assignedProjects.findIndex((p) => p.id === project.id);
     if (index !== -1) {
       team.assignedProjects.splice(index, 1); // Remove from current team's assigned projects
     }
   },
 
-
-  reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => {
+  reassignProject: (
+    team: Team,
+    project: Project,
+    previousTeam: Team,
+    reassignmentDate: Date
+  ) => {
     // Update the project's team reference
     project.team = team;
 
     // Remove the project from the previous team's projects
-    previousTeam.projects = previousTeam.projects.filter(proj => proj.id !== project.id);
+    previousTeam.projects = previousTeam.projects.filter(
+      (proj) => proj.id !== project.id
+    );
 
     // Add the project to the new team's projects
     team.projects.push(project);
   },
 
-
-
   updateProgress: function (team: Team, project: Project) {
     // Implement the logic to update the team's progress
     // Example: Calculate progress based on assigned projects
     const totalAssignedProjects = team.assignedProjects.length;
-    const completedProjects = team.assignedProjects.filter(project => project.status === 'completed').length;
+    const completedProjects = team.assignedProjects.filter(
+      (project) => project.status === "completed"
+    ).length;
 
-    const progressValue = totalAssignedProjects > 0 ? (completedProjects / totalAssignedProjects) * 100 : 0;
+    const progressValue =
+      totalAssignedProjects > 0
+        ? (completedProjects / totalAssignedProjects) * 100
+        : 0;
 
     // Update the progress object
     team.progress = {
@@ -597,25 +692,28 @@ const team: Team = {
       label: `${progressValue}% completed`, // Example label
       current: 0, // Update current progress value
       max: 100, // Set max progress value
-      percentage: 0
+      percentage: 0,
     };
   },
   currentProject: null,
-  _id: '',
-  title: '',
-  status: 'scheduled',
+  _id: "",
+  title: "",
+  status: "scheduled",
   tags: [],
   phase: null,
   analysisType: AnalysisTypeEnum.PROJECT,
   analysisResults: [],
   videoData: {} as VideoData,
-  percentage: 0
+  percentage: 0,
+  timestamp: undefined,
+  category: "",
 };
-
 
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   // Check if team is not undefined before passing it to CommonDetails
-  const data: CommonData<Team> | undefined = team ? { data: team } : undefined;
+  const data: CommonData<Team> | undefined = team
+    ? { data: team, completed: true }
+    : undefined;
 
   const setCurrentProject = (project: Project) => {
     // Set the current project for the team
@@ -634,7 +732,7 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
 
   return (
     <CommonDetails
-      data={{ team: team } as CommonData<never>}
+      data={{ team: team, completed: false } as CommonData<never>}
       details={{
         _id: team._id,
         id: team.id,
@@ -657,15 +755,13 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   );
 };
 
-
-
-
 const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
   <CommonDetails
     data={{
       title: data.title,
       description: data.description,
       status: data.status as StatusType | undefined,
+      completed: false,
     }}
     details={{
       _id: data._id,
@@ -674,14 +770,12 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       description: data.description,
       isActive: data.isActive,
       type: data.type,
-      updatedAt: data.updatedAt
+      updatedAt: data.updatedAt,
       // analysisResults: data.analysisResults,
       // Include other generic data properties here
     }}
   />
 );
 
-
 export { DataDetailsComponent, TeamDetails, team };
 export type { Team };
-

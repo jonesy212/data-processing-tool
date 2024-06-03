@@ -58,10 +58,11 @@ enum Orientation {
 
 
 
-enum Visibility {
+enum PrivacySettingEnum {
   Private = 'Private',
   Public = 'Public',
   Restricted = 'Restricted',
+  FriendsOnly = "friends_only",
 }
 
 enum Layout {
@@ -276,6 +277,6 @@ export {
   TaskStatus,
   TeamStatus,
   TodoStatus,
-  Visibility
+  PrivacySettingEnum
 };
 

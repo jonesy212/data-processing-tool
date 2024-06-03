@@ -8,6 +8,11 @@ export const ProjectManagementActions = {
   removeTenantFromProject: createAction<{ projectId: number, tenantId: number }>("removeTenantFromProject"),
   assignTenantManager: createAction<{ projectId: number, tenantId: number, managerId: number }>("assignTenantManager"),
 
+
+  startNewProject: createAction("startNewProject"),
+  addTeamMember: createAction<{ projectId: string, memberId: string }>("addTeamMember"),
+  updateProjectStatus: createAction<{ projectId: string, status: string }>("updateProjectStatus"),
+
     //nft actions
   // Development Services Actions
   fetchDevelopers: createAction("fetchDevelopers"),

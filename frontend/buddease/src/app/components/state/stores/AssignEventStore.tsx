@@ -1,11 +1,12 @@
 // AssignEventStore.tsx
 import { makeObservable } from "mobx";
 import  ExtendedCalendarEvent  from "../../calendar/CalendarEventTimingOptimization";
-import { useNotification } from "../../support/NotificationContext";
+import { NotificationType, useNotification } from "../../support/NotificationContext";
 import { User } from "../../users/User";
 import { useAssignBaseStore } from "../AssignBaseStore";
 import { PresentationEventAssignment } from "./UserPresentationsStore";
 import CalendarEventTimingOptimization from "../../calendar/CalendarEventTimingOptimization";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 
 
@@ -34,7 +35,7 @@ export interface AssignEventStore {
   assignEvent: (eventId: string, userId: User) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
-  setDynamicNotificationMessage: (message: string) => void;
+  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
   connectResponsesToTodos: (eventId: string) => void;
   reassignUsersToEvents: (
     eventIds: string[],
@@ -75,15 +76,13 @@ const useAssignEventStore = (): AssignEventStore => {
 
   const assignEvent = (eventId: string, assignedTo: User) => {
     // Add user to assigned events
-    const event = baseStore.events[eventId] 
+    const event = baseStore.events[eventId];
     if (event) {
-      const updatedEvent = event.map((e) => {
-        return {
-          ...e,
-          assignedTo: assignedTo,
-        };
-      });
-      baseStore.events[eventId] = updatedEvent;
+      const updatedEvent = event.map((e) => ({
+        ...e,
+        assignedTo: assignedTo,
+      }));
+      baseStore.events[eventId] = updatedEvent as ExtendedCalendarEvent[];
     } else {
       baseStore.events[eventId] = [
         {
@@ -136,9 +135,9 @@ const useAssignEventStore = (): AssignEventStore => {
     eventIds.forEach((eventId) => unassignUser(eventId, userId));
   };
 
-  const setDynamicNotificationMessage = (message: string) => {
+  const setDynamicNotificationMessage = (message: Message, type: NotificationType) => {
     // Implement the logic for setting dynamic notification message
-    useNotification().showMessageWithType(message); // Assuming useNotification() returns an object with a showMessage method
+    useNotification().showMessageWithType(message, type); // Assuming useNotification() returns an object with a showMessage method
   };
 
   const reassignUsersToEvents = (
@@ -149,38 +148,43 @@ const useAssignEventStore = (): AssignEventStore => {
     eventIds.forEach((eventId: string) => {
       const users = assignedEvents[eventId];
       if (users) {
-        const oldUserIdIndex = users.indexOf(oldUserId);
+        const oldUserIdIndex = users.findIndex(
+          (user) => user.eventId === oldUserId.eventId
+        );
         if (oldUserIdIndex !== -1) {
-          // Check if newUserId is an ExtendedCalendarEvent
-          if ("eventId" in newUserId && "suggestedStartTime" in newUserId) {
-            // If newUserId has the required properties, it's compatible with ExtendedCalendarEvent
-            if (oldUserId instanceof ExtendedCalendarEvent) {
-              // Ensure oldUserId is ExtendedCalendarEvent
-              users.splice(oldUserIdIndex, 1, newUserId);
-            } else {
-              // If oldUserId is not ExtendedCalendarEvent, we can't assign newUserId directly
-              // Handle this case according to your application's logic
-              console.error(
-                "Cannot assign newUserId directly because oldUserId is not an ExtendedCalendarEvent"
-              );
-            }
+          const convertedNewUser: CalendarEventTimingOptimization  = {
+            eventId: newUserId.eventId,
+            suggestedStartTime: newUserId.suggestedStartTime,
+            suggestedEndTime: newUserId.suggestedEndTime,
+            suggestedDuration: newUserId.suggestedDuration,
+            suggestedDay: newUserId.suggestedDay,
+            suggestedWeeks: newUserId.suggestedWeeks,
+            suggestedMonths: newUserId.suggestedMonths,
+            suggestedSeasons: newUserId.suggestedSeasons,
+          } 
+          if ("eventId" in oldUserId && "suggestedStartTime" in oldUserId) {
+            users.splice(oldUserIdIndex, 1, convertedNewUser);
+          } else if ("id" in oldUserId && "startTime" in oldUserId) {
+            const extendedOldUserId = oldUserId as ExtendedCalendarEvent;
+            const convertedOldUser: CalendarEventTimingOptimization = {
+              eventId: extendedOldUserId.id,
+              suggestedStartTime: extendedOldUserId.startTime,
+              suggestedEndTime: extendedOldUserId.endTime,
+              suggestedDuration: extendedOldUserId.duration,
+              suggestedDay: extendedOldUserId.suggestedDay,
+              suggestedWeeks: extendedOldUserId.suggestedWeeks,
+              suggestedMonths: extendedOldUserId.suggestedMonths,
+              suggestedSeasons: extendedOldUserId.suggestedSeasons,
+            };
+            users.splice(oldUserIdIndex, 1, convertedOldUser);
           } else {
-            // If newUserId is not ExtendedCalendarEvent, assume it's CalendarEventTimingOptimization
-            if (oldUserId instanceof CalendarEventTimingOptimization) {
-              // Ensure oldUserId is CalendarEventTimingOptimization
-              users.splice(oldUserIdIndex, 1, newUserId);
-            } else {
-              // If oldUserId is not CalendarEventTimingOptimization, we can't assign newUserId directly
-              // Handle this case according to your application's logic
-              console.error(
-                "Cannot assign newUserId directly because oldUserId is not a CalendarEventTimingOptimization"
-              );
-            }
+            console.error("Cannot reassign user: incompatible types");
           }
-        }          
+        }
       }
     });
   };
+  
   
   
 

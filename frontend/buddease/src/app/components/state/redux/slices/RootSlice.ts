@@ -12,6 +12,7 @@ import { Data } from "@/app/components/models/data/Data";
 import { useRealtimeDataSlice } from "@/app/components/state/redux/slices/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 
+import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
 import {
   PriorityStatus,
   StatusType,
@@ -41,13 +42,14 @@ import { usePagingManagerSlice } from "./pagingSlice";
 import { usePhaseManagerSlice } from "./phaseSlice";
 import { useProjectManagerSlice } from "./ProjectSlice";
 import { useRandomWalkManagerSlice } from "./RandomWalkManagerSlice";
+import { useSecurityEventSlice } from "./SecurityEventSlice";
 import { useSettingsManagerSlice } from "./SettingsSlice";
+import { useSnapshotSlice } from "./SnapshotSlice";
 import { useTaskManagerSlice } from "./TaskSlice";
 import { useTeamManagerSlice } from "./TeamSlice";
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVersionManagerSlice } from "./VersionSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
-import { HistoryItem } from "../sagas/UndoRedoSaga";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -64,7 +66,7 @@ interface EntityState<T, Id extends string> {
 // Define your EntityId type if not already defined
 export type EntityId = string;
 export interface RootState {
-  history: HistoryItem[],
+ 
   // User Interface
   appManager: ReturnType<typeof useAppManagerSlice.reducer>;
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
@@ -100,7 +102,7 @@ export interface RootState {
 
   // Settings & Utilities
   settingsManager: ReturnType<typeof useSettingsManagerSlice.reducer>;
-
+  securityManager: ReturnType<typeof useSecurityEventSlice.reducer>;
   // Miscellaneous
   videoManager: ReturnType<typeof useVideoManagerSlice.reducer>;
   randomWalkManager: ReturnType<typeof useRandomWalkManagerSlice.reducer>;
@@ -110,6 +112,8 @@ export interface RootState {
   versionManager: ReturnType<typeof useVersionManagerSlice.reducer>;
   filterManager: ReturnType<typeof useFilteredEventsSlice.reducer>;
   historyManager: ReturnType<typeof useHistorySlice.reducer>;
+  snapshotManager: ReturnType<typeof useSnapshotSlice.reducer>;
+
 }
 
 const initialState: RootState = {
@@ -154,6 +158,8 @@ const initialState: RootState = {
   phaseManager: usePhaseManagerSlice.reducer(undefined, { type: "init" }),
   filterManager: useFilteredEventsSlice.reducer(undefined, { type: "init" }),
   historyManager: useHistorySlice.reducer(undefined, { type: "init" }),
+  securityManager: useSecurityEventSlice.reducer(undefined, { type: "init" }),
+  snapshotManager: useSnapshotSlice.reducer(undefined, {type: "init"}),
 };
 
 const rootReducerSlice = createSlice({
@@ -311,6 +317,8 @@ const rootReducerSlice = createSlice({
         videoDuration: 0,
         videoUrl: "",
         ideas: [],
+        timestamp: undefined,
+        category: ""
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
     });
@@ -363,6 +371,8 @@ const rootReducerSlice = createSlice({
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
+        timestamp: undefined,
+        category: ""
       };
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";
@@ -465,6 +475,7 @@ const rootReducer = combineReducers({
   settingsManager: useSettingsManagerSlice.reducer,
   blogManager: useBlogManagerSlice.reducer,
   filterManager: filterReducer,
+  snapshotManager: useSnapshotManager.reducer
   // todo create code for
   // tagManager: useTagManagerSlice.reducer,
   // bookmarkManager: useBookmarkManagerSlice.reducer,

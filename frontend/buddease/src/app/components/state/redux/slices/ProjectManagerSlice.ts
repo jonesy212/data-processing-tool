@@ -4,7 +4,7 @@ import {Project} from "@/app/components/projects/Project";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import { useNotification } from "@/app/components/support/NotificationContext";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import ProjectState from "./ProjectSlice";
+import {ProjectState} from "./ProjectSlice";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 
 // Define and export the Notification type
@@ -17,8 +17,8 @@ interface ProjectManagerState extends ProjectState {
   progress: Progress;
 }
 
-const initialState: Partial<ProjectManagerState> = {
-  projects: {} as Project[],
+const initialState: ProjectManagerState = {
+  projects: [],
   tasks: {} as Record<string, Task>,
   milestones: {},
   notifications: {},
@@ -26,8 +26,16 @@ const initialState: Partial<ProjectManagerState> = {
   progress: {
     id: "default",
     value: 0,
-    label: ""
-  }
+    label: "",
+    current: 0,
+    max: 100,
+    percentage: 0,
+  },
+  project: null,
+  error: null,
+  currentProject: null,
+  selectedProject: null,
+  projectFeedback: null,
 };
 
 const { notify } = useNotification();

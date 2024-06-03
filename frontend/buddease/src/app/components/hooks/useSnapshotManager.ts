@@ -19,13 +19,13 @@ import { User } from "../users/User";
 const { notify } = useNotification();
 
 const useSnapshotManager = <T extends Data>() => {
-  const todoManagerStore = useTodoManagerStore<Todo>(); // Pass Todo as a type argument if required
+  const todoManagerStore = useTodoManagerStore(); // Pass Todo as a type argument if required
   const taskManagerStore = useTaskManagerStore();
   const userManagedStore = userManagerStore();
-  const undoRedoStore = useUndoRedoStoe()
+  const undoRedoStore = useUndoRedoStore()
   useEffect(() => {
     // Fetch snapshots or perform any initialization logic
-    todoManagerStore.batchFetchSnapshotsRequest({} as Record<string, Todo[]>);
+    todoManagerStore.batchFetchTodoSnapshotsRequest({} as Record<string, Todo[]>);
     taskManagerStore.batchFetchSnapshotsRequest({} as Record<string, Task[]>);
     userManagedStore.batchFetchSnapshotsRequest({} as Record<string, User[]>);
      
@@ -270,12 +270,12 @@ const useSnapshotManager = <T extends Data>() => {
   };
 
   const updateSnapshot = async (
-    snapshotId: string,
+    updatedSnapshotId: string,
     updatedSnapshot: Omit<Todo, "id">
   ) => {
     try {
       // Update snapshot logic
-      const response = await fetch(`/api/snapshots/${snapshotId}`, {
+      const response = await fetch(`/api/snapshots/${updatedSnapshotId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

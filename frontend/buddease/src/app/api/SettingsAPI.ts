@@ -11,7 +11,7 @@ export default class SettingsAPI {
         videoId: string,
         privacySettings: PrivacySettings,
         updatedSettings?: PrivacySettings,
-        roomId?: string | undefined,
+        roomId?: string | number,
     ): Promise<void> {
         try {
             await axiosInstance.patch(`${this.API_BASE_URL}/rooms/${roomId}/privacy-settings`, {

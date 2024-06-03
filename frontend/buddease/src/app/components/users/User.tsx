@@ -26,6 +26,7 @@ import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
 import { ActivityLogEntry } from "./UserSlice";
 import { TwitterData } from "../socialMedia/TwitterIntegration";
+import { Tag } from "sanitize-html";
 
 export interface User extends UserData {
   _id?: string; 
@@ -33,7 +34,10 @@ export interface User extends UserData {
   username: string;
   firstName: string;
   lastName: string;
+  type?: string
   email: string;
+  tags?: Tag[];
+  isUserMessage?: boolean;
   tier: string;
   token: string | null;
   uploadQuota: number;
@@ -153,7 +157,8 @@ export interface UserData {
   snapshots?: SnapshotStore<Snapshot<Data>>[] | undefined
   analysisResults?: DataAnalysisResult[];
   role: UserRole
-
+  timestamp?: Date | string;
+  category?: string
 }
 
 // Add a new type for visualization data
@@ -219,15 +224,16 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   const { id, analysisResults, snapshots, ...rest } = user;
 
   if (user && user.data && user.yourDocuments!) {
-      // Call handleDocumentEncryption with user's documents
-      handleDocumentEncryption(user.yourDocuments);
-    
+    // Call handleDocumentEncryption with user's documents
+    handleDocumentEncryption(user.yourDocuments);
+
     return (
       <CommonDetails
         details={{
           id: id ? id.toString() : "",
           analysisResults: [] as DataAnalysisResult[],
           data: user.data,
+          tags: user.tags?.map((tag) => tag.tagName) || [],
           ...rest,
         }}
       />

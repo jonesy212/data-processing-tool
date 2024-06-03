@@ -6,10 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 // Custom token representing roles or permissions
 contract AccessToken is ERC20, Ownable {
-    constructor() ERC20("Access Token", "AT") {
+    constructor() ERC20("Access Token", "AT") Ownable(msg.sender) {
         _mint(msg.sender, 1000000 * (10 ** decimals()));
     }
-    
+
     // Mint additional tokens (for example, as rewards for community participation)
     function mintTokens(address recipient, uint256 amount) external onlyOwner {
         _mint(recipient, amount);

@@ -11,7 +11,7 @@ export const SnapshotActions = {
     updateSnapshot: createAction<{ id: string, newData: any }>("updateSnapshot"),
     batchTakeSnapshots: createAction<{
         snapshots: {
-             snapshots: SnapshotStore<Snapshot<Data>>[]
+             snapshots: Snapshot<Data>[]
         }        
     }>('batchTakeSnapshots'),    // Batch actions for fetching snapshots
     batchFetchSnapshotsRequest: createAction("batchFetchSnapshotsRequest"),

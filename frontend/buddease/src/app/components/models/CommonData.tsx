@@ -8,7 +8,7 @@ import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { CryptoData } from "../crypto/parseData";
 import { DocumentData } from "../documents/DocumentBuilder";
-import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import { DocumentPath, DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { FakeData } from "../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
@@ -57,7 +57,7 @@ interface CommonData<T> {
   documentReporting?: string;
   documentBackup?: string;
   date?: Date | undefined;
-  completed: boolean
+  completed?: boolean
 }
 
 interface Customizations<T> {

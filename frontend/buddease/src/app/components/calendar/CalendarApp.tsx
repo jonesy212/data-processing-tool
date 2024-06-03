@@ -121,7 +121,8 @@ const CalendarApp = () => {
     snapshots: [],
     getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
       throw new Error("Function not implemented.");
-    }
+    },
+    timestamp: undefined
   };
 
   return (
@@ -254,7 +255,9 @@ const CalendarApp = () => {
               currentPhase: null,
               getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
                 throw new Error("Function not implemented.");
-              }
+              },
+              timestamp: undefined,
+              category: ""
             },
             {
               projectId: "proj-2",
@@ -276,7 +279,9 @@ const CalendarApp = () => {
               currentPhase: null,
               getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
                 throw new Error("Function not implemented.");
-              }
+              },
+              timestamp: undefined,
+              category: ""
             },
           ],
           isActive: true,
@@ -318,7 +323,9 @@ const CalendarApp = () => {
               currentPhase: null,
               getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
                 throw new Error("Function not implemented.");
-              }
+              },
+              timestamp: undefined,
+              category: ""
             },
           ],
           reassignedProjects: [
@@ -364,8 +371,11 @@ const CalendarApp = () => {
                 },
                 getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
                   throw new Error("Function not implemented.");
-                }
+                },
+                timestamp: undefined,
+                category: ""
               },
+              project: undefined
             },
           ],
           status: "active",

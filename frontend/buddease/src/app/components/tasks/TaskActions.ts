@@ -11,7 +11,9 @@ export const TaskActions = {
   toggle: createAction<number>("toggleTask"),
   updateTask: createAction<{ taskId: number, task: Task, newTitle?: string }>("updateTaskTitle"), // Adjusted
   validateTask: createAction<Task>("validateTask"),
-  
+  createTask: createAction<{ projectId: string; phaseId: string; task: Task }>("createTask"),
+  assignTask: createAction<{ projectId: string; taskId: string; assigneeId: string }>("assignTask"),
+
   fetchTasksRequest: createAction("fetchTasksRequest"),
   fetchTasksByTaskUserId: createAction<{
     assigneeId: string,

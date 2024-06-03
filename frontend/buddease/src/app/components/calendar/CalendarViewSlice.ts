@@ -325,7 +325,8 @@ export const calendarViewManagerSlice = createSlice({
         console.error(`Unsupported export format: ${format}`);
         return;
       }
-      
+      const calendarEvents: CalendarEventUnion[] = events as CalendarEventUnion[];
+
       // Format the calendar data based on the selected format
       let exportData;
       switch (format.toLowerCase()) {
@@ -344,7 +345,7 @@ export const calendarViewManagerSlice = createSlice({
           break;
           case 'docx':
           // Format calendar data as DOCX
-          exportData = formatCalendarAsDOCX(events, calendarDisplaySettings);
+          exportData = formatCalendarAsDOCX(calendarEvents, calendarDisplaySettings);
           break;
           default:
             console.error(`Unsupported export format: ${format}`);

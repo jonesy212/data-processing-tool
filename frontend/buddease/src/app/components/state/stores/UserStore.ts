@@ -82,17 +82,25 @@ const userManagerStore = (): UserStore => {
   const assignTask = (task: Task, user: User) => {
     // Assign task to user
     eventSubset.assignEvent(task.eventId, user); // Changed user._id to user
-    if (
-      user.tasks &&
-      task.assignedTo !== undefined &&
-      Array.isArray(user.tasks)
-    ) {
+  
+    if (user.tasks && Array.isArray(user.tasks)) {
       // Update user's assigned tasks
       user.tasks.push(task);
-      // Update task's assigned user
-      task.assignedTo = user; // Changed user._id to user
+  
+      // Update task's assigned user(s)
+      if (task.assignedTo === null) {
+        // If no users are assigned yet, assign the user directly
+        task.assignedTo = user;
+      } else if (Array.isArray(task.assignedTo)) {
+        // If already assigned to multiple users, add the user to the array
+        task.assignedTo.push(user);
+      } else {
+        // If already assigned to a single user, convert it to an array of users
+        task.assignedTo = [task.assignedTo, user];
+      }
     }
   };
+  
 
   const assignUser = {} as Record<string, string[]>;
 
@@ -111,14 +119,35 @@ const userManagerStore = (): UserStore => {
       eventOrTodo);
   };
 
-  const reassignUserForSingle = (
+  
+const reassignUserForSingle = (
     user: string,
     newUser: CalendarEventTimingOptimization | ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
   ) => {
-    reassignUsersToEvents([user], newUser, eventOrTodo);
-  };
+    let convertedNewUser: CalendarEventTimingOptimization;
 
+    if ("eventId" in newUser) {
+      // newUser is already of type CalendarEventTimingOptimization
+      convertedNewUser = newUser as CalendarEventTimingOptimization;
+    } else {
+      // newUser is of type ExtendedCalendarEvent, convert it to CalendarEventTimingOptimization
+      const extendedEvent = newUser as ExtendedCalendarEvent;
+      convertedNewUser = {
+        eventId: extendedEvent.id,
+        suggestedStartTime: extendedEvent.startTime,
+        suggestedEndTime: extendedEvent.endTime,
+        suggestedDuration: extendedEvent.duration,
+        suggestedDay: null,
+        suggestedWeeks: null,
+        suggestedMonths: null,
+        suggestedSeasons: null,
+        // Map other properties as necessary
+      };
+    }
+
+    reassignUsersToEvents([user], convertedNewUser, eventOrTodo);
+  };
   const {
     reassignUsersToEvents
   } = eventSubset;
@@ -152,7 +181,7 @@ const userManagerStore = (): UserStore => {
     assignedTasks: useAssignTeamMemberStore().assignedTasks,
     assignedItems: useAssignTeamMemberStore().assignedItems,
     assignedTeams: useAssignTeamMemberStore().assignedTeams,
-    assignItem: useAssignTeamMemberStore().events,
+    assignItem: useAssignTeamMemberStore().assignItem,
     assignTodoToTeam: useAssignTeamMemberStore().assignTodoToTeam,
     assignTodosToUsersOrTeams: useAssignTeamMemberStore().assignTodosToUsersOrTeams,
     assignTeamMemberToTeam: useAssignTeamMemberStore().assignTeamMemberToTeam,

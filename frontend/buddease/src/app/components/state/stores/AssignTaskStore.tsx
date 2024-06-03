@@ -10,7 +10,7 @@ export interface AssignTaskStore extends AssignBaseStore {
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Snapshot<Data>>;
+  snapshotStore: SnapshotStore<Snapshot<Data>, Data>;
 
   reassignUsersToTasks: (
     taskIds: string[],

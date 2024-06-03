@@ -1,13 +1,18 @@
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { BytesLike } from "ethers";
 import React from "react";
 import { LogData } from "../models/LogData";
 import { NotificationType, NotificationTypeEnum } from "./NotificationContext";
 
 interface NotificationManagerProps {
   notifications: NotificationData[];
-  notify: (message: string, randomBytes: BytesLike) => void; // Corrected spelling of notify
+  notify: (
+    id: string,
+    message: string,
+    data: any,
+    date: Date,
+    type: NotificationType
+  ) => void;
   setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
   onConfirm: (message: string, randomBytes: any) => void; // Corrected spelling of onConfirm
   onCancel: (message: string, randomBytes: any) => void; // Corrected spelling of onCancel

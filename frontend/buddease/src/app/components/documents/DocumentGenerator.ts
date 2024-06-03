@@ -1,3 +1,4 @@
+import Draft from "immer";
 // DocumentGenerator.ts
 
 import calendarApiService from "@/app/api/ApiCalendar";
@@ -73,6 +74,9 @@ enum DocumentTypeEnum {
   CryptoWatch = "cryptowatch",
   Draft = "draft",
   Document = "document",
+  PDFDocument = "PDFDocument",
+  MarkdownDocument = "MarkdownDocument",
+  SQLDocument = "SQLDocument",
   Other = "other",
   FinancialReport = "financialReport",
   MarketAnalysis = "marketAnalysis",
@@ -128,6 +132,7 @@ const documents: Document[] = [
     permissions: {} as DocumentPermissions,
     versionData: {} as VersionData,
     visibility: undefined,
+    completed: false,
   },
   // Add more documents as needed
 ];
@@ -207,6 +212,179 @@ async function loadDiagramDocumentContent(
   } catch (error) {
     console.error("Error loading diagram document content:", error);
     // Handle error
+    throw error;
+  }
+}
+
+async function loadFinancialReportDocumentContent(
+  documentId: number,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+): Promise<string> {
+  try {
+    // Fetch the document data using the document ID
+    const document = await fetchDocumentByIdAPI(documentId, dataCallback);
+
+    // Check if the document type is FinancialReport
+    if (document.type !== DocumentTypeEnum.FinancialReport) {
+      throw new Error("Document is not of type FinancialReport");
+    }
+
+    // Extract the financial report content
+    const financialReportContent =
+      document.documentData.financialReport?.financialReportContent;
+
+    // Check if financial report content is available
+    if (!financialReportContent) {
+      throw new Error("No financial report content available");
+    }
+
+    // Return the financial report content as a string
+    return financialReportContent;
+  } catch (error) {
+    console.error("Error loading financial report document content:", error);
+    // Handle error appropriately
+    return "";
+  }
+}
+
+async function loadMarketAnalysisDocumentContent(
+  document: DocumentData,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+): Promise<string> {
+  try {
+    // Logic to load content for a market analysis document
+    // This could involve fetching data from a database, API, or file system
+    // For demonstration purposes, let's assume the content is stored in the document's `content` property
+    const marketAnalysisContent = document.content;
+
+    // Return the loaded content
+    return marketAnalysisContent;
+  } catch (error) {
+    console.error("Error loading market analysis document content:", error);
+    // Handle error appropriately
+    throw error;
+  }
+}
+
+async function loadClientPortfolioDocumentContent(
+  document: DocumentData,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+): Promise<string> {
+  try {
+    // Logic to load content for a client portfolio document
+    // This could involve fetching data from a database, API, or file system
+    // For demonstration purposes, let's assume the content is stored in the document's `content` property
+    const clientPortfolioContent = document.content;
+
+    // Return the loaded content
+    return clientPortfolioContent;
+  } catch (error) {
+    console.error("Error loading client portfolio document content:", error);
+    // Handle error appropriately
+    throw error;
+  }
+}
+
+async function loadSQLDocumentContent(
+  document: DocumentPath,
+  dataCallback: (data: WritableDraft<DocumentData>) => void
+): Promise<string> {
+  try {
+    // Assuming the SQL script is stored in the document's content property
+    if ("content" in document) {
+      // Access the content property safely
+      const sqlScript = document.content;
+
+      // Wrap sqlScript in a WritableDraft<DocumentData> object
+      const draft: WritableDraft<DocumentData> = {
+        id: 0,
+        title: "draft title",
+        content: sqlScript,
+        permissions: undefined,
+        timestamp: new Date(),
+        category: "Document Category",
+        folders: [],
+        options: undefined,
+        folderPath: "Folder Path",
+        previousMetadata: undefined,
+        currentMetadata: undefined,
+        accessHistory: [],
+        lastModifiedDate: {
+          value: new Date(),
+          isModified: false,
+        },
+        versionData: undefined,
+        version: null,
+        visibility: "public",
+      };
+      // Notify any data listeners about the loaded content
+      dataCallback(draft);
+
+      // Return the loaded SQL script
+      return sqlScript;
+    } else {
+      throw new Error("Invalid document type");
+    }
+  } catch (error) {
+    console.error("Error loading SQL document content:", error);
+    throw error;
+  }
+}
+
+async function loadPDFDocumentContent(
+  document: DocumentData,
+  dataCallback: (data: WritableDraft<DocumentPath>) => void
+): Promise<string> {
+  try {
+    // Assuming the PDF content is stored in the document's content property as a string or Uint8Array
+    const pdfBytes =
+      typeof document.content === "string"
+        ? Uint8Array.from(atob(document.content), (c) => c.charCodeAt(0))
+        : document.content;
+
+    // Load the PDF document
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+
+    // Extract text from each page of the PDF
+    let text = "";
+    const numPages = pdfDoc.getPageCount();
+    for (let i = 0; i < numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const pageText = await page.getText();
+      text += pageText;
+    }
+
+    // Call dataCallback with the modified document
+    const updatedDocument = { ...document, content: text };
+    dataCallback(updatedDocument);
+
+    // Return the extracted text
+    return text;
+  } catch (error) {
+    console.error("Error loading PDF document content:", error);
+    throw error;
+  }
+}
+
+async function loadMarkdownDocumentContent(
+  document: DocumentPath,
+  dataCallback: (data: WritableDraft<DocumentPath>) => void
+): Promise<string> {
+  try {
+    // Assuming the Markdown file path is stored in the document's filePathOrUrl property
+    const filePath = document.filePathOrUrl;
+
+    // Read the Markdown file
+    const markdownContent = await fs.promises.readFile(filePath, "utf-8");
+
+    // Call dataCallback with the modified document
+    const updatedDocument = { ...document, content: markdownContent };
+    dataCallback(updatedDocument);
+
+    // Return the Markdown content
+    return markdownContent;
+  } catch (error) {
+    console.error("Error loading Markdown document content:", error);
     throw error;
   }
 }
@@ -501,6 +679,7 @@ async function loadOtherDocumentContent(
       highlights: [],
       keywords: [],
       folders: [],
+      completed: false,
       options: {
         tableCells: {
           enabled: false,
@@ -774,7 +953,7 @@ async function loadOtherDocumentContent(
       lastModifiedDate: undefined,
       versionData: undefined,
       version: undefined,
-      visibility: undefined
+      visibility: undefined,
     });
   }
 
@@ -877,6 +1056,33 @@ class DocumentGenerator {
     }
   }
 
+  async createMarketAnalysis(
+    type: DocumentTypeEnum,
+    options: DocumentOptions,
+    fileContent: Buffer
+  ): Promise<string> {
+    try {
+      // Implement the logic to create a market analysis document
+      const analysisContent =
+        options.content || "Default Market Analysis Content";
+      const analysisData = { content: analysisContent };
+
+      // Assuming the use of a library similar to Docxtemplater for document creation
+      const zip = new PizZip(fileContent);
+      const docx = new Docxtemplater(zip);
+
+      docx.setData(analysisData);
+
+      docx.render();
+      const result = await docx.getZip().generateAsync({ type: "nodebuffer" });
+
+      return "Market Analysis created successfully.";
+    } catch (error: any) {
+      console.error("Error creating market analysis document:", error);
+      return "Error creating market analysis document: " + error.message;
+    }
+  }
+
   async loadDocumentContent(
     draftId: string | undefined,
     document: DocumentPath,
@@ -935,39 +1141,30 @@ class DocumentGenerator {
             format,
             dataCallback
           );
-        // case DocumentTypeEnum.FinancialReport:
-        //   // Logic to load content for a financial report document
-        //   return loadFinancialReportDocumentContent(document);
-        // case DocumentTypeEnum.MarketAnalysis:
-        //   // Logic to load content for a market analysis document
-        //   return loadMarketAnalysisDocumentContent(document);
-        // case DocumentTypeEnum.ClientPortfolio:
-        //   // Logic to load content for a client portfolio document
-        //   return loadClientPortfolioDocumentContent(document);
+        case DocumentTypeEnum.FinancialReport:
+          // Logic to load content for a financial report document
+          return loadFinancialReportDocumentContent(document.id, dataCallback);
+        case DocumentTypeEnum.MarketAnalysis:
+          // Logic to load content for a market analysis document
+          return loadMarketAnalysisDocumentContent(document, dataCallback);
+        case DocumentTypeEnum.ClientPortfolio:
+          // Logic to load content for a client portfolio document
+          return loadClientPortfolioDocumentContent(document, dataCallback);
+        case DocumentTypeEnum.SQLDocument:
+          // Logic to load content for an SQL document
+          return loadSQLDocumentContent(document, dataCallback);
+        case DocumentTypeEnum.PDFDocument:
+          // Logic to load content for a PDF document
+          return loadPDFDocumentContent(document, dataCallback);
+        case DocumentTypeEnum.MarkdownDocument:
+          // Logic to load content for a Markdown document
+          return loadMarkdownDocumentContent(document, dataCallback);
+
         default:
           console.error(`Unsupported document type: ${document.type}`);
           return undefined; // Return undefined for unsupported document types
       }
     }
-  }
-
-  async createMarketAnalysis(
-    type: DocumentTypeEnum,
-    options: DocumentOptions,
-    fileContent: Buffer
-  ): Promise<string> {
-    // Logic to generate market analysis document
-    const content = options.content || "Default Market Analysis Content";
-    const contentData = { content };
-
-    const docx = new Docxtemplater();
-    docx.loadZip(fileContent);
-    docx.setData(contentData);
-    return await docx.getZip().generate({ type: "nodebuffer" });
-  }
-  catch(error: any) {
-    console.error(error);
-    return "Error generating document: " + error.message;
   }
 
   async createCalendarEvents(options: DocumentOptions): Promise<string> {

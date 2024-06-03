@@ -7,9 +7,10 @@ import { BlogPost } from './BlogPost';
 interface BlogGeneratorProps {
   posts: BlogPost[];
   generateBlogPosts: () => BlogPost[]; // Function signature for generateBlogPosts
+  articles: []
 }
 
-const BlogGenerator: React.FC<BlogGeneratorProps> = ({ posts, generateBlogPosts }) => {
+const BlogGenerator: React.FC<BlogGeneratorProps> = ({ posts, generateBlogPosts, articles }) => {
   return (
     <div>
       <h1>Blog Posts</h1>

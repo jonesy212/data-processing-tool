@@ -1,8 +1,8 @@
 // ChatEventService.ts
 import { AxiosResponse } from 'axios';
 import axiosInstance from '../api/axiosInstance';
-import { ChatMessage } from '../components/communications';
 import ChatEvent from '../components/state/stores/ChatEvent';
+import ChatMessage from '../components/communications/chat/ChatMessage';
 
 class ChatEventService {
   private static API_BASE_URL = 'https://example.com/api/chat';

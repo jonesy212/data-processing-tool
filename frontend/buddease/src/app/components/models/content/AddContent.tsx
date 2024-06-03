@@ -17,12 +17,6 @@ interface ContentProps {
   onComplete: () => void; // Define the onComplete function type
 }
 
-interface Content {
-  id: number;
-  title: string;
-  description: string;
-}
-
 interface ContentProps {
   onComplete: () => void;
 }
@@ -381,6 +375,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
           title: "Sample Title",
           description: "Sample Description",
           status: "Sample Status",
+          updatedAt: new Date(),
           participants: [
             {
               teamId: "1",
@@ -404,12 +399,32 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               token: null
               // other properties
               ,
+
+
               avatarUrl: null,
               createdAt: new Date,
               updatedAt: undefined,
               isVerified: false,
               isAdmin: false,
-              isActive: false
+              isActive: false,
+              firstName: "",
+              lastName: "",
+              friends: [],
+              blockedUsers: [],
+              settings: undefined,
+              interests: [],
+              privacySettings: undefined,
+              notifications: undefined,
+              activityLog: [],
+              socialLinks: undefined,
+              relationshipStatus: null,
+              hobbies: [],
+              skills: [],
+              achievements: [],
+              profileVisibility: "",
+              profileAccessControl: undefined,
+              activityStatus: "",
+              isAuthorized: false
             },
           ],
           analysisResults: [],
@@ -427,6 +442,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
           title: "Sample Title",
           description: "Sample Description",
           status: "Sample Status",
+          updatedAt: new Date(),
           participants: [
             {
               _id: "123",
@@ -450,12 +466,32 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               token: null
               // other properties
               ,
+
+
               avatarUrl: null,
               createdAt: new Date,
               updatedAt: undefined,
               isVerified: false,
               isAdmin: false,
-              isActive: false
+              isActive: false,
+              firstName: "",
+              lastName: "",
+              friends: [],
+              blockedUsers: [],
+              settings: undefined,
+              interests: [],
+              privacySettings: undefined,
+              notifications: undefined,
+              activityLog: [],
+              socialLinks: undefined,
+              relationshipStatus: null,
+              hobbies: [],
+              skills: [],
+              achievements: [],
+              profileVisibility: "",
+              profileAccessControl: undefined,
+              activityStatus: "",
+              isAuthorized: false
             },
           ],
           analysisResults: [],
@@ -491,4 +527,4 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 };
 
 export default AddContent;
-export type { ContentProps };
+export type { ContentProps, Content };

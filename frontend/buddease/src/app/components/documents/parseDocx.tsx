@@ -20,7 +20,7 @@ const loadDocx = async (
   const parsedData: ParsedData<object>[] = [];
   $("w|p").each((i, el) => {
     const text = $(el).text();
-    if (text) {
+    if (text) { 
       parsedData.push({
         text,
         data: {},

@@ -2,12 +2,29 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const CryptoActions = {
   // General Crypto Actions
-    fetchCryptoData: createAction<{ cryptoId: string }>("fetchCryptoData"),
-    cryptoChangeAction: createAction<{cryptoData: string[]}>("cryptoChangeAction"),
+  fetchCryptoData: createAction<{ cryptoId: string }>("fetchCryptoData"),
+  cryptoChangeAction: createAction<{ cryptoData: string[] }>(
+    "cryptoChangeAction"
+  ),
   fetchCryptoDetails: createAction<{ cryptoId: string }>("fetchCryptoDetails"),
   addCrypto: createAction("addCrypto"),
   removeCrypto: createAction<{ cryptoId: string }>("removeCrypto"),
   updateCrypto: createAction<{ cryptoId: string }>("updateCrypto"),
+
+  // Action: Buy cryptocurrency
+  buyCrypto: createAction<{ currency: string; amount: number }>("buyCrypto"),
+
+  // Action: Sell cryptocurrency
+  sellCrypto: createAction<{ currency: string; amount: number }>("sellCrypto"),
+
+  // Action: Monitor crypto market trends
+  monitorMarketTrends: createAction("monitorMarketTrends"),
+
+  // Action: Join a crypto community forum
+  joinCryptoCommunity: createAction<{ communityId: string }>(
+    "joinCryptoCommunity"
+  ),
+
   getHistoricalData: createAction<{ cryptoId: string }>("getHistoricalData"),
   getNews: createAction<{ cryptoId: string }>("getNews"),
   getPricePrediction: createAction<{ cryptoId: string }>("getPricePrediction"),
@@ -39,11 +56,14 @@ export const CryptoActions = {
     "getUserContributionRewards"
   ),
   getCommunityProjects: createAction("getCommunityProjects"),
- // Additional actions based on the type of app
- getCommunityEngagementMetrics: createAction<{ cryptoId: string }>("getCommunityEngagementMetrics"),
- getDeveloperSupportChannels: createAction("getDeveloperSupportChannels"),
- getFeedbackFromUsers: createAction<{ cryptoId: string }>("getFeedbackFromUsers"),
-
+  // Additional actions based on the type of app
+  getCommunityEngagementMetrics: createAction<{ cryptoId: string }>(
+    "getCommunityEngagementMetrics"
+  ),
+  getDeveloperSupportChannels: createAction("getDeveloperSupportChannels"),
+  getFeedbackFromUsers: createAction<{ cryptoId: string }>(
+    "getFeedbackFromUsers"
+  ),
 
   // Developer-related actions
   getDeveloperCompensation: createAction("getDeveloperCompensation"),

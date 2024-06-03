@@ -28,7 +28,7 @@ interface ProjectState {
   error: string | null;
   currentProject: WritableDraft<Project> | null;
   selectedProject: WritableDraft<Project> | null
-  projectFeedback: ProjectFeedback[]
+  projectFeedback: ProjectFeedback[] | null
 }
 
 interface Deadline {
@@ -47,7 +47,7 @@ const initialState: ProjectState = {
   error: null,
   currentProject: null,
   selectedProject: null,
-
+  projectFeedback: null,
 };
 
 interface YourStateType {
@@ -70,6 +70,8 @@ function createUpdatedProject(
     _id: payload._id,
     id: payload.taskId,
     name: payload.name,
+    timestamp: payload.timestamp,
+    category: payload.category, 
     description: payload.description,
     members: payload.members,
     tasks: payload.tasks,

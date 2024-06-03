@@ -17,6 +17,8 @@ interface CustomEvent extends Event {
 }
 
 class UIStore {
+  displayToast: (message: string) => void;
+
   theme = {
     // Define initial theme properties
     primaryColor: "#007bff",
@@ -71,8 +73,11 @@ calculateProgressPercentage(event: CustomEvent): number {
 }
 
  
-   constructor() {
+  constructor(
+    displayToast: (message: string) => void
+  ) {
      makeAutoObservable(this);
+     this.displayToast = displayToast
    }
  
    // New UI-related state and methods
@@ -208,6 +213,20 @@ calculateProgressPercentage(event: CustomEvent): number {
   // Add more UI-related methods as needed
 }
 
-export const uiStore = new UIStore();
+export const uiStore = new UIStore(displayToast);
 
 export default UIStore
+function displayToast(message) {
+  // Create a new toast element
+  const toast = document.createElement('div');
+  toast.classList.add('toast');
+  toast.textContent = message;
+
+  // Append the toast element to the document body
+  document.body.appendChild(toast);
+
+  // Automatically remove the toast after a certain duration
+  setTimeout(() => {
+    document.body.removeChild(toast);
+  }, 3000); // Remove the toast after 3 seconds (adjust the duration as needed)
+}

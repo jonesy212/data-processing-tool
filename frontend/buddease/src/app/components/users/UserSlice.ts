@@ -1,8 +1,8 @@
 import { UserSettings } from "@/app/configs/UserSettings";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Transaction } from "ethers";
 import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
+import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
 import { Task } from "../models/tasks/Task";
 import { NFT } from "../nft/NFT";
 import { Project } from "../projects/Project";
@@ -15,7 +15,6 @@ import { ProjectFeedback } from "../support/ProjectFeedback";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
 import { Address, Education, Employment, SocialLinks, User, UserData } from "./User";
-import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
 
 
 interface ActivityLogEntry {
@@ -310,7 +309,7 @@ export const userManagerSlice = createSlice({
       action: PayloadAction<{
         userId: string;
         projectId: string;
-        tasks: WritableDraft<Task>[];
+        tasks: Task[];
       }>
     ) => {
       const { userId, projectId, tasks } = action.payload;
@@ -321,7 +320,9 @@ export const userManagerSlice = createSlice({
           ? user.projects.findIndex((project) => project.id === projectId)
           : -1;
         if (projectIndex !== -1 && user.projects) {
-          user.projects[projectIndex].tasks = tasks;
+          user.projects[projectIndex].tasks = tasks.map((task) => ({
+            ...task,
+          }));
         }
       }
     },
@@ -721,10 +722,7 @@ export const userManagerSlice = createSlice({
     // Action to update user's smart contract interactions
     updateUserSmartContractInteractions: (
       state,
-      action: PayloadAction<{
-        userId: string;
-        interaction: WritableDraft<SmartContractInteraction>;
-      }>
+      action: PayloadAction<{ userId: string; interaction: WritableDraft<SmartContractInteraction> }>
     ) => {
       const { userId, interaction } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);

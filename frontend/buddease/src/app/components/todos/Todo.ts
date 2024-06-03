@@ -1,23 +1,25 @@
 import { Data } from "@/app/components/models/data/Data";
 import { FC } from "react";
 import { Attachment } from "../documents/Attachment/attachment";
-import ChecklistItem, {
-  ChecklistItemProps,
-} from "../models/data/ChecklistItem";
+import { Content } from "../models/content/AddContent";
+import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
 import { PriorityStatus, StatusType } from "../models/data/StatusType";
 import { Progress } from "../models/tracker/ProgressBar";
+import { Tag } from "../models/tracker/Tag";
 import { Phase } from "../phases/Phase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
+import { Snapshot } from "../snapshots/SnapshotStore";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import SnapshotStoreConfig from "../snapshots/SnapshotConfig";
-import { Tag } from "../models/tracker/Tag";
-export interface Todo extends Snapshot<Data>  {
+import { CustomComment } from "../state/redux/slices/BlogSlice";
+import { DayOfWeekProps } from "../calendar/DayOfWeek";
+
+export interface Todo extends Snapshot<Data> {
   _id: string;
   id: string;
+  content?: Data | string |  Content | undefined; // Adjust the content property to accept Content type
   done: boolean;
   status?: StatusType;
   todos: Todo[];
@@ -35,7 +37,7 @@ export interface Todo extends Snapshot<Data>  {
   assignedUsers: string[];
   collaborators: string[];
   labels: string[];
-  comments: Comment[];
+  comments?: (Comment | CustomComment)[];
   attachments?: Attachment[];
   checklists?: (typeof ChecklistItem)[];
   startDate?: Date;
@@ -82,8 +84,16 @@ export interface Todo extends Snapshot<Data>  {
   analysisType?: AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult[];
   videoData?: VideoData;
-  
-  data?: Data | undefined;
+  timestamp: Date | string;
+  suggestedDay?: DayOfWeekProps["day"] | null;
+  suggestedWeeks?: number[] | null;
+  suggestedMonths?: Month[] | null;
+  suggestedSeasons?: Season[] | null;
+  eventId?: string;
+  suggestedStartTime?: string;
+  suggestedEndTime?: string;
+  suggestedDuration?: string;
+  data?: Data;
 }
 
 export interface TodoManagerState {
@@ -99,11 +109,12 @@ class TodoImpl implements Todo{
   id: string = "";
   category: string = ""
   timestamp: Date = new Date()
-  content: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
-  status?: StatusType | undefined;
+  subscriberId: string = ""
+  content?: Content;
+  status?: StatusType;
   payload?: any;
-  type?: string | undefined;
-  checklists?: FC<ChecklistItemProps>[] | undefined;
+  type?: string;
+  checklists?: FC<ChecklistItemProps>[];
   startDate?: Date | undefined;
   elapsedTime?: number | undefined;
   timeEstimate?: number | undefined;
@@ -178,8 +189,12 @@ class TodoImpl implements Todo{
   snapshot: Snapshot<Data> = {
     category: "todo",
     timestamp: new Date(),
-    data: {} as Data,
-    content: undefined
+    data: {
+      timestamp: new Date(),
+      category: "todo",
+    },
+    content: undefined,
+    type: "",
   };
 
   data?: Data;

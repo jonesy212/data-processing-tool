@@ -4,7 +4,7 @@ import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import teamApiService from "../../api/TeamApi";
-import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
+import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
@@ -40,7 +40,7 @@ export interface AssignBaseStore {
   assignedTodos: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTasks: Record<string, string[]>; // Use ID as key and array of todo IDs as value
   assignedTeams: Record<string, string[]>; // Use ID as key and array of todo IDs as value
-  events: Record<string, ExtendedCalendarEvent[]>; // Correct the type of events
+  events: Record<string, CalendarEventTimingOptimization[] | ExtendedCalendarEvent[]>
 
   assignItem: Record<string, string[] | ExtendedCalendarEvent[]>;
   assignUser: Record<string, string[]>;

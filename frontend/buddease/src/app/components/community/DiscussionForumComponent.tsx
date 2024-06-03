@@ -104,6 +104,7 @@ const DiscussionForumComponent: React.FC = () => {
       text: newComment.content ?? "",
       data: newComment.data, // Assign the data property directly
       author: author, // Assign the determined author value
+      customProperty: "", // Add a default value for customProperty
     };
 
     setComments([...comments, comment]);

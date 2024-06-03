@@ -56,7 +56,6 @@ export const handleApiErrorAndNotify = (
 };
 
 
-// Modify the fetchData function to accept the endpoint for fetching highlights
 
 export const fetchData = async (endpoint: string): Promise<{ data: YourResponseType } | null> => {
   try {

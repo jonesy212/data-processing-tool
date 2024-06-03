@@ -9,6 +9,7 @@ import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
 import { UndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
+import { Todo } from '../../todos/Todo';
 
 
 export interface Dispatchable {
@@ -18,7 +19,7 @@ export interface Dispatchable {
 export class RootStores {
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore;
+  todoStore: TodoManagerStore<Todo>;
   taskManagerStore: TaskManagerStore
   iconStore:  IconStore;
   calendarStore: CalendarManagerStore;

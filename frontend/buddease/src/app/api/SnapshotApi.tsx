@@ -16,11 +16,26 @@ import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
 import { Target, constructTarget } from "./EndpointConstructor";
+import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext";
+import headersConfig from "./headers/HeadersConfig";
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 
 const appConfig: AppConfig = getAppConfig();
 
+
+// Define API notification messages for snapshot operations
+interface SnapshotNotificationMessages {
+  CREATE_SNAPSHOT_SUCCESS: string;
+  CREATE_SNAPSHOT_ERROR: string;
+  // Add more keys as needed
+}
+
+const snapshotNotificationMessages: SnapshotNotificationMessages = {
+  CREATE_SNAPSHOT_SUCCESS: "Snapshot created successfully",
+  CREATE_SNAPSHOT_ERROR: "Failed to create snapshot",
+  // Add more messages as needed
+};
 // Updated handleSpecificApplicationLogic and handleOtherApplicationLogic functions
 const handleSpecificApplicationLogic = (
   appConfig: AppConfig,
@@ -159,7 +174,7 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
 };
 
 export const fetchSnapshotById = async (
-  snapshotId: number
+  snapshotId: string
 ): Promise<Snapshot<Data>> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
@@ -231,6 +246,33 @@ export const fetchAllSnapshots = async (
   }
 };
 
+
+export const saveSnapshotToDatabase = async (snapshotData: any): Promise<boolean> => {
+  try {
+      const saveSnapshotEndpoint = `${API_BASE_URL}/save`; // Assuming the save endpoint is properly defined
+      await axiosInstance.post(saveSnapshotEndpoint, snapshotData, {
+          headers: headersConfig, // Assuming headersConfig is properly defined
+      });
+
+      // Assuming you have a notification system to notify about successful save
+      useNotification().notify(
+          "SaveSnapshotSuccessId",
+          snapshotNotificationMessages.CREATE_SNAPSHOT_SUCCESS,
+          null,
+          new Date(),
+          NotificationTypeEnum.Success
+      );
+
+      // Return true to indicate successful saving
+      return true;
+  } catch (error: any) {
+      console.error("Error saving snapshot to database:", error);
+      // Assuming there's a function to handle API errors and notify the user
+      // handleSnapshotApiError(error as AxiosError<unknown>, "Failed to save snapshot to database");
+      // Return false to indicate failure
+      return false;
+  }
+};
 
 // Update the getSortedList function to accept the Target type
 export const getSortedList = async (target: Target): Promise<SnapshotList> => {

@@ -29,6 +29,7 @@ export class Tag {
 
 // Example usage:
 const tagOptions: TagOptions = {
+  id: "",
   name: "Important",
   color: "red",
 };

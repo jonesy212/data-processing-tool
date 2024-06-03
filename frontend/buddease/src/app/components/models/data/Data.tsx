@@ -23,22 +23,23 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Member } from "../teams/TeamMembers";
 import { ProjectPhaseTypeEnum } from "./StatusType";
-
+import { Content } from "../content/AddContent";
+import { Tag } from "../tracker/Tag";
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
   id: string;
   title?: string;
-  description?: string | null
+  description?: string | null;
   details?: DetailsItem<SupportedData>;
-  completed?: boolean | undefined
+  completed?: boolean | undefined;
   startDate?: Date;
   endDate?: Date;
   createdAt?: Date | undefined;
   updatedAt: Date | undefined;
   uploadedAt?: Date;
   type?: AllTypes;
-  tags?: string[];
+  tags?: string[] | Tag[]
   isActive?: boolean;
   status?: AllStatus;
 
@@ -48,12 +49,12 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: SnapshotStore<Snapshot<Data>>[];
+    snapshots?: SnapshotStore<Snapshot<Data>, Data>[];
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
   analysisType?: AnalysisTypeEnum;
-  analysisResults?: string | DataAnalysisResult[] | undefined
+  analysisResults?: string | DataAnalysisResult[] | undefined;
   todo?: Todo;
   // Add other properties as needed
 }
@@ -77,13 +78,15 @@ export interface Comment {
   highlights?: string[];
   // Consolidating commentBy and author into one field
   author?: string | number | readonly string[] | undefined;
-  upvotes?: number | undefined;
-  content?: string | undefined;
+  upvotes?: number;
+  content?: string | Content;
   resolved?: boolean;
   pinned?: boolean;
   // Consolidating upvotes into likes if they serve the same purpose
   postId?: string | number;
   data?: Data | undefined;
+  customProperty: string;
+
   // Add other properties as needed
 }
 
@@ -96,10 +99,9 @@ interface Data {
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  timestamp?: Date;
-
+  timestamp?: Date | string ;
   isActive?: boolean;
-  tags?: string[];
+  tags?: Tag[] | string[] | undefined;
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
   then?: (callback: (newData: Snapshot<Data>) => void) => void;
@@ -107,12 +109,11 @@ interface Data {
   // Properties specific to Todo
   dueDate?: Date | null;
   priority?: AllStatus;
-  assignee?: User;
+  assignee?: User | null;
   collaborators?: string[];
-  comments?: (Comment | CustomComment)[] | undefined;
+  comments?: (Comment | CustomComment)[];
   attachments?: Attachment[];
   subtasks?: Todo[];
-
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: string;
@@ -139,13 +140,13 @@ interface Data {
   members?: Member[];
   // tasks?: Todo[];
   leader?: User | null;
-  actions?: SnapshotStoreConfig<Snapshot<Data>[]>[];
-  snapshots?: SnapshotStore<Snapshot<Data>>[];
+  actions?: SnapshotStoreConfig<Snapshot<Data>, Data>[];
+  snapshots?: SnapshotStore<Snapshot<Data>, Data>[];
   // Incorporating the data structure from YourResponseType
   text?: string;
   category?: string;
-  getData?: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Define the getData method
-  // handleSnapshot: 
+  getData?: () => Promise<SnapshotStore<Snapshot<Data>, Data>[]>; // Define the getData method
+  // handleSnapshot:
 }
 
 // Define the UserDetails component
@@ -164,7 +165,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       description: data.description,
       phase: data.details?.phase,
       isActive: data.isActive,
-      tags: data.tags,
+      tags: data.tags?.map((tag) => (tag as Tag).getOptions().name) || [],
       status: data.status,
       type: data.type,
       analysisType: data.analysisType,
@@ -181,12 +182,14 @@ const data: Data = {
   id: "data1",
   title: "Sample Data",
   description: "Sample description",
+  timestamp: new Date(),
+  category: "Sample category",
   startDate: new Date(),
   endDate: new Date(),
   scheduled: true,
   status: "Pending",
   isActive: true,
-  tags: ["tag1", "tag2"],
+  tags: [new Tag({ id: "1", name: "Important", color: "red" })],
   phase: {} as Phase,
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -314,7 +317,7 @@ const data: Data = {
       enableLocationPrivacy: true,
       hideVisitedProfiles: true,
       restrictContentSharing: true,
-      enableIncognitoMode: false
+      enableIncognitoMode: false,
     }, // Added missing properties
     notifications: {
       email: true,
@@ -328,6 +331,19 @@ const data: Data = {
       announcement: false,
       reminder: false,
       project: false,
+      enabled: true,
+      notificationType: "push",
+      audioCall: false,
+      videoCall: false,
+      screenShare: false,
+      mention: false,
+      reaction: false,
+      follow: false,
+      poke: false,
+      activity: false,
+      thread: false,
+      inviteAccepted: false,
+      directMessage: false,
     }, // Added missing property
 
     activityLog: [
@@ -441,8 +457,10 @@ const data: Data = {
           }
           // Add other logic to infer additional types
           // Example:
-          if (this.maxFeePerGas !== null &&
-            this.maxPriorityFeePerGas !== null) {
+          if (
+            this.maxFeePerGas !== null &&
+            this.maxPriorityFeePerGas !== null
+          ) {
             types.push(2); // Example for London type transaction
           }
           if (types.length === 0) {
@@ -494,9 +512,10 @@ const data: Data = {
             description: this.description || "", // Provide a default value of empty string
             startDate: this.startDate ? new Date(this.startDate) : undefined,
             endDate: this.endDate ? new Date(this.endDate) : undefined,
-            isSigned: typeof this.isSigned === "function"
-              ? this.isSigned.bind(this)
-              : this.isSigned, // Handle both boolean and function cases
+            isSigned:
+              typeof this.isSigned === "function"
+                ? this.isSigned.bind(this)
+                : this.isSigned, // Handle both boolean and function cases
             serialized: this.serialized || "", // Provide a default value or handle undefined
             unsignedSerialized: this.unsignedSerialized || "", // Provide a default value or handle undefined
             inferType: this.inferType?.bind(this),
@@ -526,7 +545,7 @@ const data: Data = {
             blobVersionedHashes: null,
             hash: null,
             unsignedHash: "",
-            fromPublicKey: null
+            fromPublicKey: null,
           };
           return clonedData;
         },
@@ -595,9 +614,9 @@ const data: Data = {
     },
   },
   snapshots: [],
-  getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+  getData: function (): Promise<SnapshotStore<Snapshot<Data>, Data>[]> {
     throw new Error("Function not implemented.");
-  }
+  },
 };
 
 export type { Data, DataDetails, DataDetailsComponent, DataDetailsProps };
