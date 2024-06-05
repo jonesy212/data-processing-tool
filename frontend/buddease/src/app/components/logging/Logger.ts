@@ -1397,6 +1397,18 @@ class ExchangeLogger extends Logger {
       userId
     );
   }
+
+  static logExchangeEvent(
+    conversationId: string,
+    event: string,
+    userId: string
+  ) {
+    super.logWithOptions(
+      "Exchange",
+      `Event received (Conversation ID: ${conversationId}, Event: ${event}, User ID: ${userId})`,
+      userId
+    );
+  }
 }
 
 class CommunityLogger extends Logger {

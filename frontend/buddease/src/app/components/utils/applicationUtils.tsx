@@ -2,7 +2,10 @@
 
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Article } from "@/app/pages/blog/Blog";
+import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
+import * as articleApi from '../../../app/api/articleApi';
 import { sendEmail } from "../communications/email/SendEmail";
 import { sendSMS } from "../communications/sendSMS";
 import { StatusType } from "../models/data/StatusType";
@@ -11,13 +14,10 @@ import { Project, ProjectDetails } from "../projects/Project";
 import { updateProject } from "../state/redux/slices/ProjectManagerSlice";
 import { NotificationData } from "../support/NofiticationsSlice";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "../support/NotificationContext";
 import NotificationManager from "../support/NotificationManager";
-import { Article } from "@/app/pages/blog/Blog";
-import * as articleApi from '../../../app/api/articleApi'
-import { AxiosResponse } from "axios";
 const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -129,9 +129,6 @@ const updateProjectState = (
     // Validate the new state before updating
     validateProjectState(newState);
 
-    // Perform the state update
-    // Your implementation here...
-
     // Dispatch the updateProject action with the new state
     dispatch(updateProject(newState));
 
@@ -141,10 +138,11 @@ const updateProjectState = (
     // Handle validation errors or any other errors during state update
     console.error(`Error updating state of project '${projectId}':`, error);
 
+    const errorMessage = error.message || "Unknown error";
     // Notify user or system about the error
     notify(
         "error",
-        `Failed to update state of project '${projectId}': ${error.message}`,
+        `Failed to update state of project '${projectId}': ${errorMessage}`,
         null,
         new Date(),
         NotificationTypeEnum.Error
@@ -355,6 +353,10 @@ const isValidParameters = (params: any): boolean => {
       });
   };
   
+
+
+  
   export {
-    logActivity, notifyEventSystem, triggerIncentives, updateProjectState
+  logActivity, notifyEventSystem, triggerIncentives, updateProjectState
 };
+

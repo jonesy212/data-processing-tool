@@ -4,6 +4,8 @@ import { handleApiError } from "@/app/api/ApiLogs";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
+import { useState } from "react";
+import { Article } from "@/app/pages/blog/Blog";
 
 const API_BASE_URL = "https://api.yourservice.com"; // Replace with your actual API base URL
 const axiosInstance = axios.create({ baseURL: API_BASE_URL });
@@ -18,16 +20,20 @@ export interface ArticleStore {
   fetchArticle: (articleId?: string) => Promise<void>;
   updateArticle: (articleId: string, updatedArticleData: any) => Promise<void>;
   deleteArticle: (articleId: string) => Promise<void>;
+  setArticles: (articles: any[]) => void;
 }
 
 export const useArticleStore = (): ArticleStore => {
   const notificationContext = useNotification();
-
   const store = observable({
     articles: [] as any[],
     isLoading: false,
     error: null as string | null,
 
+    setArticles(articles: any[]) {
+      this.articles = articles;
+    },
+    
     displayArticles: async (): Promise<void> => {
       store.isLoading = true;
       store.error = null;

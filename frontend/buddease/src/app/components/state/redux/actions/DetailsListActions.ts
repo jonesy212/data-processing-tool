@@ -17,7 +17,7 @@ export const DetailsListActions = {
   updateDetailsItemSuccess: createAction<{ detailsItemId: string, detailsItem: DetailsItem<Data> }>(`${PREFIX}/updateDetailsItemSuccess`),
   updateDetailsItemFailure: createAction<{ error: string }>(`${PREFIX}/updateDetailsItemFailure`),
 
-  // Action to delete details item
+  // Action to delete details item  
   deleteDetailsItemRequest: createAction<{ detailsItemId: string }>(`${PREFIX}/deleteDetailsItemRequest`),
   deleteDetailsItemSuccess: createAction<{ detailsItemId: string }>(`${PREFIX}/deleteDetailsItemSuccess`),
   deleteDetailsItemFailure: createAction<{ error: string }>(`${PREFIX}/deleteDetailsItemFailure`),

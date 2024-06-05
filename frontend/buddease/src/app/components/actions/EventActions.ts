@@ -12,6 +12,9 @@ export const EventActions = {
   dataProcessingSucceeded: createAction("dataProcessingSucceeded"),
   dataProcessingFailed: createAction<{ error: string }>("dataProcessingFailed"),
 
+
+  fetchEvents: createAction('fetchEvents'),
+  analyzeEvents: createAction<any>('analyzeEvents'),
   // Events related to data management
   dataFetchingRequested: createAction("dataFetchingRequested"),
   dataFetchingSucceeded: createAction<{ data: any[] }>("dataFetchingSucceeded"),

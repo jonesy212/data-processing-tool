@@ -11,7 +11,7 @@ import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot, Snapshots } from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import Todo from "../../todos/Todo";
@@ -49,7 +49,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: SnapshotStore<Snapshot<Data>, Data>[];
+    snapshots?: Snapshots<Data>
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -92,7 +92,7 @@ export interface Comment {
 
 interface Data {
   _id?: string;
-  id?: string | number | undefined;
+  id?: string | number;
   title?: string;
   description?: string | null;
   startDate?: Date;
@@ -101,10 +101,9 @@ interface Data {
   status?: AllStatus;
   timestamp?: Date | string ;
   isActive?: boolean;
-  tags?: Tag[] | string[] | undefined;
+  tags?:  string[] | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
-  then?: (callback: (newData: Snapshot<Data>) => void) => void;
 
   // Properties specific to Todo
   dueDate?: Date | null;
@@ -140,13 +139,14 @@ interface Data {
   members?: Member[];
   // tasks?: Todo[];
   leader?: User | null;
-  actions?: SnapshotStoreConfig<Snapshot<Data>, Data>[];
-  snapshots?: SnapshotStore<Snapshot<Data>, Data>[];
+  snapshots?: SnapshotStore<Snapshot<Data>>[];
   // Incorporating the data structure from YourResponseType
   text?: string;
   category?: string;
-  getData?: () => Promise<SnapshotStore<Snapshot<Data>, Data>[]>; // Define the getData method
-  // handleSnapshot:
+  getData?: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Define the getData method
+  then?: (callback: (newData: Snapshot<Data>) => void) => void;
+  actions?: typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>[]; // Update actions type
+
 }
 
 // Define the UserDetails component

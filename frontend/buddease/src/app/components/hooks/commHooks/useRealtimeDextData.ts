@@ -7,7 +7,8 @@ import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
 const useRealtimeDextData = <T>(
   initialData: any,
-  updateCallback: RealtimeUpdateCallback<RealtimeData>
+  updateCallback: RealtimeUpdateCallback<RealtimeData>,
+  processExchangeData: (dexData: any[]) => any[] // Add processExchangeData as a parameter
 ) => {
   const { fetchData } = useRealtimeData(initialData, updateCallback);
   const fetchDexData = async (

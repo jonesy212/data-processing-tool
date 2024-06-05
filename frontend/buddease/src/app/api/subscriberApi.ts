@@ -15,7 +15,7 @@ export const getSubscribersAPI = async (): Promise<Subscriber<Data>[]> => {
 
 const fetchSubscribers = async () => {
   try {
-    const subscribers = await getSubscribers();
+    const subscribers = await getSubscribersAPI();
     console.log('Subscribers:', subscribers);
   } catch (error) {
     console.error('Failed to fetch subscribers:', error);

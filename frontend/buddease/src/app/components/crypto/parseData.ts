@@ -9,10 +9,10 @@ export interface CryptoData {
   cryptocurrencyPair: string;
   price: number;
   tradingVolume: number;
-  prices?: {
+  prices: {
     date: Date;
     price: number;
-  }[]
+  }[];
   priceDisparity: number;
   pricesDisparityPercentage?: number;
 }

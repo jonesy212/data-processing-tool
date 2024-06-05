@@ -1,3 +1,4 @@
+import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
 import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 import { DexLogger, ExchangeLogger } from "../../logging/Logger";
 import { processDEXData } from "../../utils/processDEXDataUtils";
@@ -35,21 +36,45 @@ export const fetchExchange = async (
   try {
     // Process the provided exchange data
     const processedExchangeData = processExchangeData(exchangeData);
-
+    const userId = exchangeData[0].user_id as typeof useSecureUserId;
     // Dispatch an action to update Redux store state with exchange data
     dispatch({ type: "UPDATE_EXCHANGE_DATA", payload: processedExchangeData });
-
     // Log exchange event
-    ExchangeLogger.logExchangeEvent("Exchange data fetched", "your_exchange_id_here");
+    ExchangeLogger.logExchangeEvent(
+      "Exchange data fetched",
+      "your_exchange_id_here",
+      userId.toString()
+    );
   } catch (error) {
     console.error("Error processing exchange data:", error);
   }
 };
 
 // Function to process exchange data
-const processExchangeData = (exchangeData: any[]): any[] => {
-  // Implement your logic to process exchange data here
-  return exchangeData;
+export const processExchangeData = (exchangeData: any[]): any[] => {
+  return exchangeData.map((data) => {
+    const {
+      id,
+      name,
+      pair,
+      price,
+      volume,
+      type,
+      data: additionalData,
+    } = data;
+
+    // Example processing: Normalize data fields
+    return {
+      id: id.toString(),
+      name: name.trim(),
+      pair: pair.toUpperCase(),
+      price: parseFloat(price),
+      volume: parseFloat(volume),
+      type,
+      data: additionalData,
+    };
+  });
 };
+
 
 

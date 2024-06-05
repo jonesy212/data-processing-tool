@@ -5,11 +5,11 @@ import TaskDetails, { Task } from "../models/tasks/Task";
 
 interface TaskListProps {
   tasks?: Task[];
-  onRemoveTask?: (task: Task) => void;
-  onCompleteTask?: (task: Task) => void;
-  onUpdateTaskTitle?: (taskId: string, updatedTitle: Task) => void;
-  onUpdateTaskDescription?: (task: Task) => void;
-  onUpdateTaskStatus?: (task: Task) => void;
+  onRemoveTask?: (task: string) => void;
+  onCompleteTask?: (task: string) => void;
+  onUpdateTaskTitle?: (taskId: string, updatedTitle: string) => void;
+  onUpdateTaskDescription?: (task: string, updatedDescription: string) => void;
+  onUpdateTaskStatus?: (task: string, updatedStatus: string) => void;
 }
 
 const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
@@ -22,11 +22,11 @@ const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
         {tasks.map((task: Task) => (
           <li key={task.id}>
             <Link to={`/task-project-details/${task.id}`}>
-              {/* Render TaskDetails component for each task if needed */}
               {task.title} - {task.status}
             </Link>
-            {task.details && <TaskDetails task={task} />}{" "}
-            {/* Only render TaskDetails if details exists */}
+            {task.details && (
+              <TaskDetails task={task} completed={task.completed} />
+            )}
           </li>
         ))}
       </ul>

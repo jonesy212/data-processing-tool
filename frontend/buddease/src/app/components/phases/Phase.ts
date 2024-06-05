@@ -11,26 +11,33 @@ import { DetailsItem } from "../state/stores/DetailsListStore";
 
 // Define a type for a phase
 export interface Phase extends CommonData<Data> {
+  index?: number;
   name: string;
-  startDate:  Date;
-  endDate:  Date;
-  subPhases: string[];
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+  subPhases: Phase[];
   component: FC<any>; // Adjust to accept any props
   hooks: CustomPhaseHooks;
   lessons?: Lesson[];
   duration: number;
   tasks?: Task[];
   members?: Member[];
-  
+  color?: string;
+  status?: string;
+  type?: string;
+  createdAt?: undefined;
+  updatedAt?: undefined;
+  __typename?: "Phase";
 }
 
 export class PhaseImpl implements Phase {
-  name: string="";
-  startDate:  Date= new Date();
-  endDate:  Date= new Date();
-  subPhases: string[]=[];
+  name: string = "";
+  startDate: Date = new Date();
+  endDate: Date = new Date();
+  subPhases: Phase[] = [];
   // component: React.FC = () => <div>Phase Component</div>,
-  hooks: CustomPhaseHooks = { // Initialize hooks object
+  hooks: CustomPhaseHooks = {
+    // Initialize hooks object
     resetIdleTimeout: async () => {}, // Example implementation, you can adjust as needed
     isActive: false,
     progress: null,
@@ -44,9 +51,9 @@ export class PhaseImpl implements Phase {
 
   constructor(
     name: string,
-    startDate:  Date,
-    endDate:  Date,
-    subPhases: string[],
+    startDate: Date,
+    endDate: Date,
+    subPhases: Phase[],
     component: React.FC,
     hooks: CustomPhaseHooks,
     data: any,
@@ -54,13 +61,13 @@ export class PhaseImpl implements Phase {
     title: string
   ) {
     this.name = name;
-    this.title = title
-    this.startDate = startDate
-    this.endDate = endDate
+    this.title = title;
+    this.startDate = startDate;
+    this.endDate = endDate;
     this.subPhases = subPhases;
-    this.hooks = hooks
-    this.data = data
-    this.description = description
+    this.hooks = hooks;
+    this.data = data;
+    this.description = description;
     this.component = component;
   }
   component: FC<{}>;
@@ -85,20 +92,16 @@ export class PhaseImpl implements Phase {
   documentBackup?: string | undefined;
 }
 
-
-
-
 export interface CustomPhaseHooks {
   [x: string]: any;
   canTransitionTo?: (nextPhase: Phase) => boolean;
   handleTransitionTo?: (nextPhase: Phase) => void;
   resetIdleTimeout: () => Promise<void>;
   isActive: boolean;
-  progress: Progress | null
-  condition: (idleTimeoutDuration: number) => Promise<boolean>
+  progress: Progress | null;
+  condition: (idleTimeoutDuration: number) => Promise<boolean>;
   // Add other methods if needed
 }
-
 
 export const customPhaseHooks = {
   canTransitionTo: (nextPhase: Phase) => {
@@ -112,5 +115,5 @@ export const customPhaseHooks = {
   resetIdleTimeout: async () => {
     // reset idle timeout
     await Promise.resolve();
-  }
-}
+  },
+};

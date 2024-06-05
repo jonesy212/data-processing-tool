@@ -5,9 +5,11 @@ import { PrivacySettingEnum } from "@/app/components/models/data/StatusType";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
 import { CalendarSettingsEnum } from "@/app/components/settings/CalendarSettingsEnum";
+import { FilterOptions } from "@/app/components/models/data/DataFilterForm";
 
-interface SearchOptions {
-    size: SearchSize;
+
+interface SearchOptions extends FilterOptions {
+  size: SearchSize;
     animations: SearchAnimationOptions;
     additionalOptions: AdditionalOptions;
   additionalOption2: string | undefined;
@@ -58,32 +60,45 @@ interface SearchOptions {
     page: number;
     pageSize: number;
   }
-  
-  export type { SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
-  
     
     
 // example implementation of search options
    
 // Inside your component
-const searchOptions: SearchOptions = {
-  size: "medium",
-  animations: {
-    type: "slide",
-    duration: 300,
-  },
-  additionalOptions: {} as AdditionalOptions,
-  additionalOption2: undefined,
-  communicationMode: "email",
-  defaultFileType: FileTypeEnum.UnknownType,
-  realTimeUpdates: false,
-  theme: "",
-  language: LanguageEnum.English,
-  notificationPreferences: NotificationPreferenceEnum.Email,
-  privacySettings: [],
-  taskManagement: false,
-  projectView: "",
-  calendarSettings: undefined,
-  dashboardPreferences: undefined,
-  securityFeatures: []
-};
+
+  // Define searchOptions object
+  const searchOptions: SearchOptions = {
+    size: "medium",
+    animations: {
+      type: "slide",
+      duration: 300,
+    },
+    additionalOptions: {
+      filters: [],
+      sorting: {
+        field: "title",
+        order: "asc",
+      },
+      pagination: {
+        page: 1,
+        pageSize: 10,
+      }
+    },
+    additionalOption2: undefined,
+    communicationMode: "email",
+    defaultFileType: FileTypeEnum.UnknownType,
+    realTimeUpdates: false,
+    theme: "",
+    language: LanguageEnum.English,
+    notificationPreferences: NotificationPreferenceEnum.Email,
+    privacySettings: [],
+    taskManagement: false,
+    projectView: "",
+    calendarSettings: undefined,
+    dashboardPreferences: undefined,
+    securityFeatures: [],
+  };
+
+export type { AdditionalOptions, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
+  
+export {searchOptions}

@@ -12,7 +12,8 @@ import { RealtimeUpdateCallback } from '@/app/components/hooks/commHooks/useReal
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStore';
 import { Data } from '../models/data/Data';
-import RealtimeData, { RealtimeDataItem } from '../../../../models/realtime/RealtimeData';
+import  {RealtimeData, RealtimeDataItem } from '../../../../models/realtime/RealtimeData';
+import { processExchangeData } from '../models/data/fetchExchangeData';
 
 // Define the price comparison component or function
 const RealTimePriceComparison: React.FC = () => {
@@ -36,20 +37,42 @@ const RealTimePriceComparison: React.FC = () => {
     dataItems: RealtimeDataItem[]
   ) => {
     // Your update logic here
+  
+    // Example: Log received data
+    console.log("Received data:", data);
+  
+    // Example: Process events
+    Object.keys(events).forEach((key) => {
+      console.log(`Received events for ${key}:`, events[key]);
+    });
+  
+    // Example: Update snapshot store
+    snapshotStore.update(data);
+  
+    // Example: Process data items
+    dataItems.forEach((item) => {
+      console.log("Received data item:", item);
+      // Additional processing logic for each data item
+    });
+  
+    // Additional update logic as needed
   };
+  
 
   // Fetch data from exchanges and DEXs using custom hooks
   useEffect(() => {
     // Fetch data from exchanges using the custom hook for exchange data
     const { fetchExchangeData } = useRealtimeExchangeData<ExchangeData>(
       [], // Pass an empty initialData array
-      updateCallback // Pass the custom update callback
+      updateCallback, // Pass the custom update callback
+      processExchangeData
     );
 
     // Fetch data from DEXs using the custom hook for DEX data
     const { fetchDexData } = useRealtimeDextData<DEXData>(
       [], // Pass an empty initialData array
-      updateCallback // Pass the custom update callback
+      updateCallback,
+      processExchangeData
     );
 
     // Fetch data from exchanges and DEXs on component mount

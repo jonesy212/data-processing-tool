@@ -1,17 +1,18 @@
+import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+//UserStore.ts
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
+import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { Task } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
-import { makeAutoObservable } from "mobx";
 import { Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
-import { WritableDraft } from "../redux/ReducerGenerator";
 import { AssignEventStore, ReassignEventResponse, useAssignEventStore } from "./AssignEventStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-
+import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
   | "assignedUsers"
@@ -59,10 +60,15 @@ export interface UserStore extends AssignEventStore, AssignBaseStore, UserStoreS
   events:Record<string, CalendarEventTimingOptimization[]| ExtendedCalendarEvent[]>
   // Other properties and methods...
   reassignUser: Record<string, ReassignEventResponse[]>;
+  batchFetchUserSnapshotsSuccess: (userId:  Record<string, User[]>) => void;
+  fetchUsersByTaskId: (userId: string) => Promise<string>;
+  setDynamicNotificationMessage: (message: string) => void;
 
 }
 
 const userManagerStore = (): UserStore => {
+  const { notify } = useNotification();
+  const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
   const [users, setUsers] = useState<Record<string, User[]>>({
     // Initialize with the required structure
   });
@@ -102,6 +108,27 @@ const userManagerStore = (): UserStore => {
   };
   
 
+
+  // Function to fetch a task by its ID
+  const getUserById = (taskId: string): Promise<Task | null> => {
+    return new Promise<Task | null>( async(resolve, reject) => {
+      try {
+        setTimeout(() => {
+          const task: Task | undefined = usersDataSource[taskId];
+  
+          if (task) {
+            resolve(task);
+          } else {
+            resolve(null);
+          }
+        }, 1000);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+  
+
   const assignUser = {} as Record<string, string[]>;
 
   const reassignUser = {} as Record<string, ReassignEventResponse[]>
@@ -119,6 +146,85 @@ const userManagerStore = (): UserStore => {
       eventOrTodo);
   };
 
+
+
+
+  const fetchUsersByUserId = async (userId: string): Promise<string> => {
+    try {
+      // Perform the actual fetching of the task using the userId
+      const user = await getUserById(userId);
+
+      // Check if the user was successfully fetched
+      if (user) {
+        // Update the users state with the fetched user
+        setUsers((prevUsers) => {
+          const updatedUsers = { ...prevUsers };
+          updatedUsers[user.id] = [user]; // Assuming user.id is unique
+          return updatedUsers;
+        });
+
+        // Notify user of successful user fetching
+        setDynamicNotificationMessage(
+          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+        );
+
+        return "Tasks fetched successfully."; // Return success message
+      } else {
+        console.error(`Task with ID ${userId} not found.`);
+        // Notify user that task was not found
+        setDynamicNotificationMessage(
+          NOTIFICATION_MESSAGES.Error.TASK_NOT_FOUND
+        );
+        return "Task not found."; // Return error message
+      }
+    } catch (error) {
+      console.error(`Error fetching task with ID ${userId}:`, error);
+      // Notify user of error while fetching task
+      setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_TASK
+      );
+      throw new Error("Error fetching task."); // Throw error
+    }
+  };
+
+  const batchFetchUserSnapshotsSuccess =
+    async (userId: Promise<string>) => async (dispatch: any) => {
+      console.log(`Task ${userId} fetched`);
+      notify(
+        "batchFetchTaskSnapshotsFailure",
+        `Task ${userId} fetched`,
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      );
+
+      // Assuming you have a method to fetch tasks by userId from your data source
+      const users = fetchUsersByUserId(await userId); // Implement this method
+
+      // Check if users is not null or undefined
+      if (users) {
+        // Dispatch the fetched users to the store or perform any necessary logic
+        dispatch(batchFetchUserSnapshotsSuccess(users));
+
+        // Simulating asynchronous operation
+        setTimeout((error: Error) => {
+          notify(
+            "batchFetchTaskSnapshotsFailure",
+            `Error fetching task ${userId}`,
+            NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+            new Date(),
+            NotificationTypeEnum.OperationSuccess
+          );
+        }, 1000);
+      } else {
+        console.error(`Tasks not found for userId ${userId}`);
+      }
+    };
+
+  
+    const setDynamicNotificationMessage = (message: string) => {
+      setNotificationMessage(message);
+    };
   
 const reassignUserForSingle = (
     user: string,

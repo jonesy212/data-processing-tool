@@ -8,27 +8,79 @@ import {
 import { useEffect } from "react";
 import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
-import SnapshotStore, { Snapshot, snapshotStore } from "../snapshots/SnapshotStore";
+import SnapshotStore, {
+  Snapshot,
+  Snapshots,
+  snapshotStore,
+} from "../snapshots/SnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTodoManagerStore from "../state/stores/TodoStore";
+import { useUndoRedoStore } from "../state/stores/UndoRedoStore";
 import { userManagerStore } from "../state/stores/UserStore";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
+import useAsyncHookLinker, { AsyncHook } from "./useAsyncHookLinker";
 
 const { notify } = useNotification();
+// Define the async hook configuration
+const asyncHook: AsyncHook<Data> = {
+  enable: () => { }, // Define enable method if required
+  disable: () => {}, // Define disable method if required
+  condition: () => Promise.resolve(true), // Define condition method if required
+  asyncEffect: async () => {
+    // Implementation logic for async effect
+    console.log("Async effect ran!");
+
+    // Return a cleanup function
+    return () => {
+      console.log("Async effect cleaned up!");
+    };
+  },
+  idleTimeoutId: null, // Initialize idleTimeoutId
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+    // Implementation logic for starting idle timeout
+    const timeoutId = setTimeout(onTimeout, timeoutDuration);
+    if (timeoutId !== null) {
+      asyncHook.idleTimeoutId = timeoutId;
+    }
+  },
+  isActive: false,
+  initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout method
+  resetIdleTimeout: async () => {}, // Add resetIdleTimeout method
+  startAnimation: () => {}, // Add startAnimation method
+  stopAnimation: () => {}, // Add stopAnimation method
+  animateIn: () => {}, // Add animateIn method
+  toggleActivation: () => {}, // Add toggleActivation method
+  cleanup: undefined,
+  progress: null,
+  name: "",
+  duration: undefined,
+};
 
 const useSnapshotManager = <T extends Data>() => {
   const todoManagerStore = useTodoManagerStore(); // Pass Todo as a type argument if required
   const taskManagerStore = useTaskManagerStore();
   const userManagedStore = userManagerStore();
-  const undoRedoStore = useUndoRedoStore()
+  const undoRedoStore = useUndoRedoStore();
+
+  // Use the useAsyncHookLinker hook with the async hook
+  useAsyncHookLinker({ hooks: [asyncHook] });
+
   useEffect(() => {
     // Fetch snapshots or perform any initialization logic
-    todoManagerStore.batchFetchTodoSnapshotsRequest({} as Record<string, Todo[]>);
-    taskManagerStore.batchFetchSnapshotsRequest({} as Record<string, Task[]>);
-    userManagedStore.batchFetchSnapshotsRequest({} as Record<string, User[]>);
-     
+    todoManagerStore.batchFetchTodoSnapshotsRequest(
+      {} as Record<string, Todo[]>
+    );
+    taskManagerStore.batchFetchTaskSnapshotsSuccess(
+      {} as Record<string, Task[]>
+    );
+    userManagedStore.batchFetchUserSnapshotsRequest(
+      {} as Record<string, User[]>
+    );
+    undoRedoStore.batchFetchUndoRedoSnapshotsRequest(
+      {} as Record<string, Todo[]>
+    );
 
     fetchSnapshots();
     createSnapshot();
@@ -47,7 +99,7 @@ const useSnapshotManager = <T extends Data>() => {
         }),
       });
       const snapshot = await response.json();
-      todoManagerStore.createSnapshotSuccess({ snapshot });
+      snapshotStore.createSnapshotSuccess({ snapshot });
       // Notify success
       notify(
         "createSnapshotManagerSuccess",
@@ -58,9 +110,7 @@ const useSnapshotManager = <T extends Data>() => {
       );
     } catch (error) {
       // Notify failure
-      todoManagerStore.createSnapshotFailure(
-        "error creating snapshot: " + error
-      );
+      snapshotStore.createSnapshotFailure("error creating snapshot: " + error);
       // Using a custom error message
       notify(
         "snapshotCreationSuccess",
@@ -76,7 +126,7 @@ const useSnapshotManager = <T extends Data>() => {
     try {
       const response = await fetch(`/api/snapshots/${id}`);
       const snapshot = await response.json();
-      todoManagerStore.fetchSnapshotSuccess({ snapshot } as unknown as Todo[]);
+      snapshotStore.fetchSnapshotSuccess({ snapshot } as unknown as Todo[]);
       return snapshot; // Return the fetched snapshot
     } catch (error) {
       console.error(NOTIFICATION_MESSAGES.Snapshot.FETCHING_SNAPSHOTS_ERROR); // Log error using notification message
@@ -122,14 +172,14 @@ const useSnapshotManager = <T extends Data>() => {
       if (response.ok) {
         // Adjust the response handling based on your project
         const updatedSnapshot: Todo[] = await response.json();
-        todoManagerStore.updateSnapshotSuccess({ snapshot: updatedSnapshot });
+        snapshotStore.updateSnapshotSuccess({ snapshot: updatedSnapshot });
         // Notify success
         notify(
           "updateSnapshotSuccess",
           "Snapshot updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
-          
-          new Date,
+
+          new Date(),
           NotificationTypeEnum.OperationSuccess
         );
       } else {
@@ -145,11 +195,12 @@ const useSnapshotManager = <T extends Data>() => {
       }
     } catch (error) {
       console.error("Error updating snapshot:", error);
-      todoManagerStore.updateSnapshotFailure({
+      snapshotStore.updateSnapshotFailure({
         error: "Error updating snapshot: " + error,
       });
       // Notify failure
       notify(
+        "snapshotUpdateError",
         "Snapshot update failed",
         NOTIFICATION_MESSAGES.Generic.ERROR,
         new Date(),
@@ -171,16 +222,16 @@ const useSnapshotManager = <T extends Data>() => {
       console.error("Error updating snapshots:", error);
       throw error;
     }
-  }
+  };
 
   const takeSnapshotSuccess = (snapshot: Todo) => {
-    todoManagerStore.takeSnapshotSuccess({ snapshot });
+    snapshotStore.takeSnapshotSuccess({ snapshot });
   };
 
   const takeSnapshotsSuccess = (snapshots: Todo[]) => {
-    todoManagerStore.takeSnapshotsSuccess({ snapshots });
+    snapshotStore.takeSnapshotsSuccess({ snapshots });
   };
-  
+
   const addSnapshot = async (newSnapshot: Omit<T, "id">) => {
     try {
       // Adjust the API endpoint and request details based on your project
@@ -217,7 +268,7 @@ const useSnapshotManager = <T extends Data>() => {
 
       if (response.ok) {
         const createdSnapshot = await response.json();
-        todoManagerStore.takeSnapshotSuccess({ snapshot: createdSnapshot });
+        snapshotStore.takeSnapshotSuccess({ snapshot: createdSnapshot });
       } else {
         console.error("Failed to take snapshot:", response.statusText);
       }
@@ -226,21 +277,22 @@ const useSnapshotManager = <T extends Data>() => {
     }
   };
 
-  const getSnapshots = async (snapshot: SnapshotStore<Snapshot<Data>>) => {
-    try {
-      const response = await fetch("/api/snapshots");
-      const snapshots = await response.json();
-      return snapshots;
-    } catch (error) {
-      console.error("Error fetching snapshots:", error);
-    }
-  };
+    const getSnapshots = async (snapshots: Snapshots<Data>) => {
+      try {
+        const response = await fetch("/api/snapshots");
+        const snapshots = await response.json();
+        return snapshots;
+      } catch (error) {
+        console.error("Error fetching snapshots:", error);
+      }
+    };
 
   const onSnapshot = (
     snapshotId: string,
-    callback: (snapshot: Snapshot<Data>) => void
+    callback: (snapshot: Snapshot<Data>) => void,
+    snapshot: Snapshot<Todo>
   ) => {
-    todoManagerStore.subscribeToSnapshot(snapshotId, callback);
+    snapshotStore.subscribeToSnapshot(snapshotId, callback, snapshot);
   };
 
   const initSnapshot = async (
@@ -288,7 +340,7 @@ const useSnapshotManager = <T extends Data>() => {
         snapshotStore.updateSnapshotsSuccess({ snapshot: updated });
         // Notify success
         notify(
-          "updatedSnapshot" + snapshotId,
+          "updatedSnapshot",
           "Snapshot updated successfully",
           NOTIFICATION_MESSAGES.Generic.DEFAULT,
           new Date(),
@@ -308,7 +360,7 @@ const useSnapshotManager = <T extends Data>() => {
     } catch (error) {
       console.error("Error updating snapshot:", error);
       if (typeof error === "object" && error !== null && "message" in error) {
-        todoManagerStore.updateSnapshotFailure({
+        snapshotStore.updateSnapshotFailure({
           error: (error as Error).message,
         });
       } else {
@@ -338,7 +390,7 @@ const useSnapshotManager = <T extends Data>() => {
 
       if (response.ok) {
         const updated = await response.json();
-        todoManagerStore.batchUpdateSnapshotsSuccess({ snapshots: updated });
+        snapshotStore.batchUpdateSnapshotsSuccess({ snapshots: updated });
         // Notify success
         notify(
           "updateSnapshotsSuccess",
@@ -361,7 +413,7 @@ const useSnapshotManager = <T extends Data>() => {
     } catch (error) {
       console.error("Error updating snapshots:", error);
       if (typeof error === "object" && error !== null && "message" in error) {
-        todoManagerStore.batchUpdateSnapshotsFailure({
+        snapshotStore.batchUpdateSnapshotsFailure({
           error: (error as Error).message,
         });
       } else {
@@ -376,7 +428,7 @@ const useSnapshotManager = <T extends Data>() => {
       // Adjust the API endpoint based on your project
       const response = await fetch("/api/snapshots");
       const snapshotsData = await response.json();
-      todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+      snapshotStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
       // Notify success
       notify(
         "fetchSnapshotsSuccess",
@@ -388,12 +440,12 @@ const useSnapshotManager = <T extends Data>() => {
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {
         console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({
+        snapshotStore.batchFetchSnapshotsFailure({
           error: (error as Error).message,
         });
       } else {
         console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({ error: String(error) });
+        snapshotStore.batchFetchSnapshotsFailure({ error: String(error) });
       }
       // Notify failure
       notify(
@@ -411,7 +463,7 @@ const useSnapshotManager = <T extends Data>() => {
       // Adjust the API endpoint based on your project
       const response = await fetch("/api/snapshots");
       const snapshotsData = await response.json();
-      todoManagerStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+      snapshotStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
       // Notify success
       notify(
         "batchSnapshotSuccess",
@@ -423,12 +475,12 @@ const useSnapshotManager = <T extends Data>() => {
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {
         console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({
+        snapshotStore.batchFetchSnapshotsFailure({
           error: (error as Error).message,
         });
       } else {
         console.error("Error fetching snapshots:", error);
-        todoManagerStore.batchFetchSnapshotsFailure({ error: String(error) });
+        snapshotStore.batchFetchSnapshotsFailure({ error: String(error) });
       }
       // Notify failure
       notify(
@@ -444,11 +496,11 @@ const useSnapshotManager = <T extends Data>() => {
   const { notify } = useNotification();
   const subscribeToSnapshot = (
     snapshotId: string,
-    callback: (snapshot: Snapshot<T>) => void
+    callback: (snapshot: Snapshot<T>) => void,
+    snapshot: Snapshot<Todo>
   ) => {
-    todoManagerStore.subscribeToSnapshot(snapshotId, callback);
+    snapshotStore.subscribeToSnapshot(snapshotId, callback, snapshot);
   };
-
 
   // Add more methods as needed
   return {
@@ -468,7 +520,7 @@ const useSnapshotManager = <T extends Data>() => {
     takeSnapshotsSuccess,
     batchFetchSnapshotsFailure,
     subscribeToSnapshot,
-    setSnapshots
+    setSnapshots,
     //todo add these do manager
     // loading: todoManagerStore.loading,
     // error: todoManagerStore.error,

@@ -62,7 +62,9 @@ export const useSnapshotSlice = createSlice({
           message: `New snapshot received: ${snapshot.id}`,
           recipient: subscriber.name,
           snapshot: "", // Provide a default value for snapshot if needed
-        });
+        }
+        
+        );
       }
     },
     batchFetchSnapshotsRequest: (state) => {

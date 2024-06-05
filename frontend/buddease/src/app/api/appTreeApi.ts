@@ -83,7 +83,7 @@ class AppTreeApiService {
         "Refreshing app tree from API",
         {},
         new Date(),
-        NotificationTypeEnum.INFO
+        NotificationTypeEnum.Info
       );
   
       // Fetch updated app tree data from the API

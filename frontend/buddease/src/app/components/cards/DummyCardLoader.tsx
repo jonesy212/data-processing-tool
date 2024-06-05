@@ -40,31 +40,33 @@ const fileFolderItems: {
   content: ContentItem;
 }[] = [
   {
-    type: 'file',
-    name: 'IdeaDocument.pdf',
+    type: "file",
+    name: "IdeaDocument.pdf",
     content: {
-      heading: 'Idea Document',
-      description: 'Details of the new feature idea',
+      heading: "Idea Document",
+      description: "Details of the new feature idea",
       id: "",
       title: "",
       body: "",
       status: undefined,
       type: "image",
-      userId: undefined
+      userId: undefined,
+      updatedAt: new Date(),
     },
   },
   {
-    type: 'folder',
-    name: 'Sketches',
+    type: "folder",
+    name: "Sketches",
     content: {
-      heading: 'Sketches',
-      description: 'Visual representations of ideas',
+      heading: "Sketches",
+      description: "Visual representations of ideas",
       id: "",
       title: "",
       body: "",
       status: undefined,
       type: "image",
-      userId: undefined
+      userId: undefined,
+      updatedAt: new Date(),
     },
   },
 ];
@@ -85,7 +87,9 @@ const productFeedbackItems: {
       body: "",
       status: undefined,
       type: "image",
-      userId: undefined
+      userId: undefined,
+      updatedAt: new Date(), // Added updatedAt property
+
     },
   },
   {
@@ -98,11 +102,9 @@ const productFeedbackItems: {
       title: "",
       body: "",
       status: undefined,
-      then: function (arg0: (newContent: any) => void): unknown {
-        throw new Error("Function not implemented.");
-      },
       type: "image",
-      userId: undefined
+      userId: undefined,
+      updatedAt: new Date()
     },
   },
 ];

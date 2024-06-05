@@ -9,7 +9,7 @@ import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot, useSnapshotStore } from "../../snapshots/SnapshotStore";
 import {
     NotificationTypeEnum,
     useNotification,
@@ -26,7 +26,7 @@ import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
   taskTitle: string;
-  taskId: string;
+  taskId?: string;
 
   taskDescription: string;
   taskStatus: "pending" | "inProgress" | "completed";
@@ -40,7 +40,7 @@ export interface TaskManagerStore {
   ) => void;
   updateTaskDueDate: (taskId: string, dueDate: Date) => void;
 
-  updateTaskPriority: (taskId: string, priority: string) => void;
+  updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => void;
   filterTasksByStatus: (
     status: "pending" | "inProgress" | "completed"
   ) => Task[];
@@ -84,7 +84,8 @@ export interface TaskManagerStore {
   batchFetchTaskSnapshotsRequest: (
     snapshotData: Record<string, Task[]>
   ) => void;
-  batchFetchTaskSnapshotsSuccess: (taskId: Promise<string>) => void;
+  batchFetchTaskSnapshotsSuccess: (taskId:  Record<string, Task[]>) => void;
+
 }
 
 const useTaskManagerStore = (): TaskManagerStore => {
@@ -155,7 +156,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     const taskSnapshotStore: SnapshotStore<
       Snapshot<Task>,
       Task
-    > = useSnapshotStore();
+    > = useSnapshotStore(addToSnapshotList);
     // Assign reassignedTasks to assignedTaskStore using taskId as key
     // Assuming taskStore is an instance of a class or an object that has a method named setAssignedTaskStore
     taskStore.setAssignedTaskStore({
@@ -584,7 +585,6 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
 
   // Function to fetch a task by its ID
-  
   const getTaskById = (taskId: string): Promise<Task | null> => {
     return new Promise<Task | null>( async(resolve, reject) => {
       try {
@@ -991,3 +991,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 };
 
 export { useTaskManagerStore };
+  function addToSnapshotList(snapshot: Snapshot<Data>): void {
+    throw new Error('Function not implemented.');
+  }
+

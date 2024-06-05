@@ -8,9 +8,10 @@ export const ComponentActions = {
   fetchComponentRequest: createAction<{ id: number }>("fetchComponentRequest"),
   fetchComponentSuccess: createAction<{ component: typeof Component }>("fetchComponentSuccess"),
   fetchComponentFailure: createAction<{ error: string }>("fetchComponentFailure"),
+  updateComponentSuccessAdditionalLogic: createAction<{ id: number; updatedComponent: typeof Component }>("updateComponentSuccessAdditionalLogic"),
   updateComponentSuccess: createAction<{ id: number; updatedComponent: typeof Component }>("updateComponentSuccess"),
   updateComponentFailure: createAction<{ error: string }>("updateComponentFailure"),
 
-  
+  fetchComponent: createAction<{ id: number }>("fetchComponent"),
   // Add more actions as needed
 };

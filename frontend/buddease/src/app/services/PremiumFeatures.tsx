@@ -1,7 +1,52 @@
-import React from 'react';
-import DraggableAnimation from '../components/libraries/animations/DraggableAnimation';
+import React, { useEffect, useState } from "react";
+import DraggableAnimation from "../components/libraries/animations/DraggableAnimation";
 
 const PremiumFeatures: React.FC = () => {
+  const [kpm, setKpm] = useState<number>(0);
+  const [subscriptionPlan, setSubscriptionPlan] = useState<string>("");
+
+  useEffect(() => {
+    // Function to calculate KPM
+    function calculateKPM(startTime: number) {
+      const elapsedTime = (Date.now() - startTime) / 60000; // Convert milliseconds to minutes
+      const calculatedKpm = keystrokes / elapsedTime;
+      setKpm(calculatedKpm);
+    }
+
+    // Function to define subscription plan based on KPM
+    function defineSubscriptionPlan(kpm: number) {
+      if (kpm >= 100) {
+        return "Premium Plan";
+      } else if (kpm >= 50) {
+        return "Standard Plan";
+      } else {
+        return "Basic Plan";
+      }
+    }
+
+    // Start tracking keystrokes
+    let keystrokes = 0;
+    const startTime = Date.now();
+
+    // Event listener to track keystrokes
+    document.addEventListener("keypress", () => {
+      keystrokes++;
+    });
+
+    // Calculate KPM after 1 minute
+    setTimeout(() => {
+      calculateKPM(startTime);
+      setSubscriptionPlan(defineSubscriptionPlan(kpm));
+    }, 60000);
+
+    // Cleanup event listener
+    return () => {
+      document.removeEventListener("keypress", () => {
+        keystrokes++;
+      });
+    };
+  }, []);
+
   return (
     <div>
       <h2>Premium Features</h2>
@@ -14,8 +59,8 @@ const PremiumFeatures: React.FC = () => {
       <DraggableAnimation
         draggableId="unique-id-1"
         index={0}
-        onDragStart={() => console.log('Drag started')}
-        onDragEnd={() => console.log('Drag ended')}
+        onDragStart={() => console.log("Drag started")}
+        onDragEnd={() => console.log("Drag ended")}
       >
         <div style={draggableDivStyle}>
           <h4>Drag me!</h4>
@@ -27,8 +72,8 @@ const PremiumFeatures: React.FC = () => {
       <DraggableAnimation
         draggableId="unique-id-2"
         index={1}
-        onDragStart={() => console.log('Drag started')}
-        onDragEnd={() => console.log('Drag ended')}
+        onDragStart={() => console.log("Drag started")}
+        onDragEnd={() => console.log("Drag ended")}
       >
         <div style={draggableDivStyle}>
           <h4>Another draggable div</h4>
@@ -59,17 +104,21 @@ const PremiumFeatures: React.FC = () => {
         <li>Advanced animation effects</li>
         <li>Access to premium design assets</li>
       </ul>
+
+      {/* Display transcription speed and recommended subscription plan */}
+      <p>Your current transcription speed: {kpm.toFixed(2)} KPM</p>
+      <p>Recommended Subscription Plan: {subscriptionPlan}</p>
     </div>
   );
 };
 
 // Style for draggable divs
 const draggableDivStyle: React.CSSProperties = {
-  border: '2px dashed #aaa',
-  padding: '10px',
-  width: '200px',
-  cursor: 'move',
-  backgroundColor: '#f9f9f9',
+  border: "2px dashed #aaa",
+  padding: "10px",
+  width: "200px",
+  cursor: "move",
+  backgroundColor: "#f9f9f9",
 };
 
 export default PremiumFeatures;

@@ -2,18 +2,17 @@
 
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
-import NFTService from './NFTService';
-
-const NFTConversionComponent: React.FC = observer(() => {
-  const [nftData, setNFTData] = useState<string>('');
+import  NFTService from '@/app/components/nft/NFTService';
+const NFTConversionComponent: React.FC = () => {
+  const [nftData, setNFTData] = useState<string>("");
 
   const convertNFT = async () => {
     try {
       const convertedData = await NFTService.convertNFT(nftData);
-      console.log('Converted NFT data:', convertedData);
+      console.log("Converted NFT data:", convertedData);
       // Handle converted data as needed
     } catch (error) {
-      console.error('Error converting NFT:', error);
+      console.error("Error converting NFT:", error);
       // Handle error
     }
   };
@@ -32,6 +31,6 @@ const NFTConversionComponent: React.FC = observer(() => {
       <button onClick={convertNFT}>Convert NFT</button>
     </div>
   );
-});
+};
 
 export default NFTConversionComponent;

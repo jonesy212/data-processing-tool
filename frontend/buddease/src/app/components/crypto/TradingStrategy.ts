@@ -4,6 +4,9 @@ export interface MarketData {
   price: number;
   volume: number;
   target: number | null; // Target value to predict
+  symbol: string; // Add symbol property
+  type: string; // Add type property
+  quantity: number; // Add quantity property
 }
 
 export interface TradingStrategyOptions {
@@ -130,9 +133,24 @@ const tradingStrategy = new TradingStrategy(strategyOptions, initialCapital);
 
 // Example market data
 const marketData: MarketData[] = [
-  { timestamp: new Date("2024-03-01"), price: 95, volume: 1000, target: null },
-  { timestamp: new Date("2024-03-02"), price: 105, volume: 1200, target: null },
-  { timestamp: new Date("2024-03-03"), price: 110, volume: 1500, target: null },
+  {
+    timestamp: new Date("2024-03-01"), price: 95, volume: 1000, target: null,
+    symbol: "",
+    type: "",
+    quantity: 0
+  },
+  {
+    timestamp: new Date("2024-03-02"), price: 105, volume: 1200, target: null,
+    symbol: "",
+    type: "",
+    quantity: 0
+  },
+  {
+    timestamp: new Date("2024-03-03"), price: 110, volume: 1500, target: null,
+    symbol: "",
+    type: "",
+    quantity: 0
+  },
   // Additional market data
 ];
 
@@ -143,3 +161,4 @@ console.log("Current Position:", position);
 
 
 export default TradingStrategy;
+export type { Trade };

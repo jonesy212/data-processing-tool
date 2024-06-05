@@ -1,11 +1,10 @@
 // StatusType.ts
 // Define the type for the status property
 
-export type CustomNotificationType = 
-  | 'custom_notification_type_1'
-  | 'custom_notification_type_2'
-  | 'custom_notification_type_3';
-
+export type CustomNotificationType =
+  | "custom_notification_type_1"
+  | "custom_notification_type_2"
+  | "custom_notification_type_3";
 
 export type MessageNotificationStatusType =
   | "sent"
@@ -18,16 +17,13 @@ export type MessageNotificationStatusType =
   | "pending"
   | "canceled"
   | "success"
-  | "confirmed"
-  ;
-
+  | "confirmed";
 
 // Define an enum for sorting types
 enum SortingType {
   ASCENDING = "ASCENDING",
   DESCENDING = "DESCENDING",
 }
-
 
 enum StatusType {
   Pending = "pending",
@@ -38,54 +34,54 @@ enum StatusType {
   Scheduled = "scheduled",
   Completed = "completed",
   Upcoming = "upcoming",
-  Status = "status"
+  Status = "status",
 }
 
 // Define the DocumentSize enum
 enum DocumentSize {
-  A4 = 'A4',
-  Letter = 'Letter',
-  Legal = 'Legal',
-  Custom = 'Custom'
+  A4 = "A4",
+  Letter = "Letter",
+  Legal = "Legal",
+  Custom = "Custom",
   // Add more sizes as needed
 }
 
 // Define the Orientation enum
 enum Orientation {
-  Portrait = 'Portrait',
-  Landscape = 'Landscape',
+  Portrait = "Portrait",
+  Landscape = "Landscape",
 }
 
-
-
 enum PrivacySettingEnum {
-  Private = 'Private',
-  Public = 'Public',
-  Restricted = 'Restricted',
+  Private = "Private",
+  Public = "Public",
+  Restricted = "Restricted",
   FriendsOnly = "friends_only",
 }
 
 enum Layout {
-  SingleColumn = 'SingleColumn',
-  Dynamic = 'Dynamic',
-  MultipleColumns = 'MultipleColumns',
-  Default = "Default"
+  SingleColumn = "SingleColumn",
+  Dynamic = "Dynamic",
+  MultipleColumns = "MultipleColumns",
+  Default = "Default",
 }
-
 
 // Define the ChatType enum
 enum ChatType {
-  Public = 'public',
-  Private = 'private',
-  Group = 'group'
+  Public = "public",
+  Private = "private",
+  Group = "group",
 }
-
 
 // Define specific enums for different types of status
 enum TaskStatus {
   Pending = StatusType.Pending,
   InProgress = StatusType.InProgress,
   Completed = StatusType.Completed,
+  Tentative = StatusType.Tentative,
+  Confirmed = StatusType.Confirmed,
+  Cancelled = StatusType.Cancelled,
+  Scheduled = StatusType.Scheduled,
 }
 
 enum TodoStatus {
@@ -93,7 +89,6 @@ enum TodoStatus {
   InProgress = StatusType.InProgress,
   Completed = StatusType.Completed,
 }
-
 
 enum TeamStatus {
   Pending = StatusType.Pending,
@@ -129,7 +124,6 @@ enum CalendarStatus {
   Scheduled = StatusType.Scheduled,
   Tentative = StatusType.Tentative,
 
-
   // Add more status options as needed
 }
 
@@ -161,7 +155,7 @@ enum ProductStatus {
   InDevelopment = StatusType.InProgress,
   Testing = StatusType.InProgress,
   ReadyForLaunch = StatusType.Confirmed,
-  Launched = StatusType.Completed
+  Launched = StatusType.Completed,
 }
 
 export enum PriorityTypeEnum {
@@ -172,23 +166,20 @@ export enum PriorityTypeEnum {
   PendingReview = StatusType.Pending,
 }
 
-
 export enum ProjectPhaseTypeEnum {
-  Ideation = 'ideation',
-  Draft = 'drafting',
-  TeamFormation = 'team_formation',
-  ProductBrainstorming = 'product_brainstorming',
-  Launch = 'launch',
-  DataAnalysis = 'data_analysis',
-  Review = 'review',
-  Final = 'final',
-  Test = 'test',
-  CreatePhase = 'createPhase',
-  Previous = 'previous',
-  Register = 'register'
+  Ideation = "ideation",
+  Draft = "drafting",
+  TeamFormation = "team_formation",
+  ProductBrainstorming = "product_brainstorming",
+  Launch = "launch",
+  DataAnalysis = "data_analysis",
+  Review = "review",
+  Final = "final",
+  Test = "test",
+  CreatePhase = "createPhase",
+  Previous = "previous",
+  Register = "register",
 }
-
-
 
 export enum DevelopmentPhaseEnum {
   PLANNING = "PLANNING",
@@ -200,35 +191,31 @@ export enum DevelopmentPhaseEnum {
   IDEA_SUBMISSION = "IDEA_SUBMISSION",
 }
 
-
 export enum CommunicationMediaType {
-  Audio = 'audio',
-  Video = 'video',
-  Text = 'text',
+  Audio = "audio",
+  Video = "video",
+  Text = "text",
 }
-
 
 // Define the IncludeType enum
 enum IncludeType {
-  Embed = 'Embed',
+  Embed = "Embed",
   // Add other include options if needed
 }
 
 enum CollaborationOptionType {
-  ScreenSharing = 'screen_sharing',
-  DocumentSharing = 'document_sharing',
-  Whiteboarding = 'whiteboarding',
+  ScreenSharing = "screen_sharing",
+  DocumentSharing = "document_sharing",
+  Whiteboarding = "whiteboarding",
   // Add more options as needed
 }
 
-
 enum OutcomeType {
-  ProjectCompletion = 'project_completion',
-  ProductLaunch = 'product_launch',
-  DataInsights = 'data_insights',
+  ProjectCompletion = "project_completion",
+  ProductLaunch = "product_launch",
+  DataInsights = "data_insights",
   // Add more outcomes as needed
 }
-
 
 enum BookmarkStatus {
   Saved = "saved",
@@ -249,34 +236,41 @@ enum BookmarkStatus {
   Idle = CalendarStatus.IDLE,
 }
 
-
 enum BorderStyle {
-  NONE = 'none',
-  SOLID = 'solid',
-  DASHED = 'dashed',
-  DOTTED = 'dotted',
-  DOUBLE = 'double',
-  GROOVE = 'groove',
-  RIDGE = 'ridge',
-  INSET = 'inset',
-  OUTSET = 'outset',
-  None = 'none',
+  NONE = "none",
+  SOLID = "solid",
+  DASHED = "dashed",
+  DOTTED = "dotted",
+  DOUBLE = "double",
+  GROOVE = "groove",
+  RIDGE = "ridge",
+  INSET = "inset",
+  OUTSET = "outset",
+  None = "none",
 }
 
 export default BookmarkStatus;
 
-
 export {
-  BookmarkStatus, BorderStyle, CalendarStatus,
-  ChatType, CollaborationOptionType, ComponentStatus,
+  BookmarkStatus,
+  BorderStyle,
+  CalendarStatus,
+  ChatType,
+  CollaborationOptionType,
+  ComponentStatus,
   DataStatus,
-  DocumentSize, IncludeType, Layout,
+  DocumentSize,
+  IncludeType,
+  Layout,
   NotificationStatus,
-  Orientation, OutcomeType, PriorityStatus,
-  ProductStatus, SortingType, StatusType,
+  Orientation,
+  OutcomeType,
+  PriorityStatus,
+  ProductStatus,
+  SortingType,
+  StatusType,
   TaskStatus,
   TeamStatus,
   TodoStatus,
-  PrivacySettingEnum
+  PrivacySettingEnum,
 };
-

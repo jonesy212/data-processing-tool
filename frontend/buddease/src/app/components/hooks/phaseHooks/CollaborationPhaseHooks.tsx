@@ -43,7 +43,7 @@ export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
       throw error;
     }
   } ,
-} as DynamicPromptPhaseHookConfig & DynamicHookParams);
+} as DynamicPromptPhaseHookConfig &  DynamicHookParams<void>);
 
 
 
@@ -64,24 +64,24 @@ export const useBrainstormingPhase = createDynamicPromptPhaseHook({
   asyncEffect: async () => {
     try {
       // Add dynamic logic for the Brainstorming Phase
-      console.log('useEffect triggered for Brainstorming Phase');
-      
+      console.log("useEffect triggered for Brainstorming Phase");
+
       // Your logic specific to the Brainstorming Phase
 
       return () => {
         // Cleanup logic for Brainstorming Phase
-        console.log('Cleanup for Brainstorming Phase');
+        console.log("Cleanup for Brainstorming Phase");
       };
     } catch (error) {
-      console.error('Error during Brainstorming Phase:', error);
+      console.error("Error during Brainstorming Phase:", error);
       // Handle errors or log them as needed
       return () => {
         // Cleanup logic in case of error
-        console.log('Cleanup for Brainstorming Phase (Error)');
+        console.log("Cleanup for Brainstorming Phase (Error)");
       };
     }
   },
-}as DynamicPromptPhaseHookConfig & DynamicHookParams);
+} as DynamicPromptPhaseHookConfig & DynamicHookParams<void>);
 
 
 
@@ -120,7 +120,7 @@ export const useProjectManagementPhase = createDynamicPromptPhaseHook({
       };
     }
   },
-}as DynamicPromptPhaseHookConfig & DynamicHookParams);
+}as DynamicPromptPhaseHookConfig &  DynamicHookParams<void>);
 
 
 
@@ -160,7 +160,7 @@ export const useMeetingsPhase = createDynamicPromptPhaseHook({
       };
     }
   },
-}as DynamicPromptPhaseHookConfig & DynamicHookParams);
+}as DynamicPromptPhaseHookConfig &  DynamicHookParams<void>);
 
 
 
@@ -198,4 +198,4 @@ export const useCollaborationPhase = createDynamicPromptPhaseHook({
       };
     }
   },
-} as DynamicPromptPhaseHookConfig & DynamicHookParams);
+} as DynamicPromptPhaseHookConfig &  DynamicHookParams<void>);

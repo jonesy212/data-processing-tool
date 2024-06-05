@@ -21,16 +21,19 @@ const useSorting = () => {
   const sortMessages = (messages: Message[]) => {
     return messages.slice().sort((a, b) => {
       if (sortCriteria === "sender") {
-        return (a.sender.username || "").localeCompare(b.sender.username || "");
+        return (a.sender?.username || "").localeCompare(
+          b.sender?.username || ""
+        );
       }
       if (sortCriteria === "receiver") {
-        return (a.receiver.username || "").localeCompare(
-          b.receiver.username || ""
+        return (a.receiver?.username || "").localeCompare(
+          b.receiver?.username || ""
         );
       }
       if (sortCriteria === "timestamp") {
         return (
-          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          new Date(a.timestamp || "").getTime() -
+          new Date(b.timestamp || "").getTime()
         );
       }
       if (sortCriteria === "message") {

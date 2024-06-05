@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot, useSnapshotStore } from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
   useNotification,
@@ -40,7 +40,7 @@ export interface TodoManagerStore<T> {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-
+  
   subscribeToSnapshot: (
     id: string,
     callback: (snapshot: Snapshot<Todo>) => void,
@@ -593,6 +593,8 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
       snapshotStore,
       openTodoSettingsPage,
 
+      // snapshot actions
+      createSnapshotSuccess: createSnapshotSuccess,
       // batch actions
       batchFetchTodoSnapshotsRequest,
 

@@ -11,6 +11,7 @@ import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
+import useErrorHandling from "../components/hooks/useErrorHandling";
 
 // Define the API base URL
 const API_BASE_URL = dotProp.getProperty(endpoints, "drawing");
@@ -63,49 +64,53 @@ export const handleDrawingApiErrorAndNotify = (
 };
 
 // Fetch drawing data
-export async function fetchDrawing(): Promise<YourResponseType> {
-  try {
-    const fetchDrawingEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
-    const response = await axiosInstance.get<YourResponseType>(
-      fetchDrawingEndpoint,
-      {
-        headers: headersConfig,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching drawing:", error);
-    const errorMessage = "Failed to fetch drawing";
-    handleDrawingApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      errorMessage,
-      "FetchDrawingErrorId"
-    );
-    throw error;
-  }
-}
+export const fetchDrawing = (): Promise<YourResponseType> => {
+  // Initialize the useErrorHandling hook
+  const { handleError } = useErrorHandling();
 
+  return new Promise<YourResponseType>(async (resolve, reject) => {
+    try {
+      const fetchDrawingEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
+      const response = await axiosInstance.get<YourResponseType>(
+        fetchDrawingEndpoint,
+        {
+          headers: headersConfig,
+        }
+      );
+      resolve(response.data);
+    } catch (error: any) {
+      console.error("Error fetching drawing:", error);
+      const errorMessage = "Failed to fetch drawing";
+      handleError(errorMessage, { componentStack: error.stack });
+      reject(error);
+    }
+  });
+};
 
-export const fetchDrawingById = async (drawingId: number): Promise<YourResponseType> => { 
-  try {
-    const fetchDrawingByIdEndpoint = `${API_BASE_URL}/fetch/${drawingId}`;
-    const response = await axiosInstance.get<YourResponseType>(
-      fetchDrawingByIdEndpoint,
-      {
-        headers: headersConfig
-      }
-    );
-    return response.data;
-  } catch (error) {
-    handleDrawingApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      "Failed to fetch drawing by ID",
-      "FetchDrawingByIdErrorId"
-    );
-    throw error;
-  }
+// Fetch drawing data by ID
+export const fetchDrawingById = (drawingId: number): Promise<YourResponseType> => {
+  // Initialize the useErrorHandling hook
+  const { handleError } = useErrorHandling();
 
-}
+  return new Promise<YourResponseType>(async (resolve, reject) => {
+    try {
+      const fetchDrawingByIdEndpoint = `${API_BASE_URL}/fetch/${drawingId}`;
+      const response = await axiosInstance.get<YourResponseType>(
+        fetchDrawingByIdEndpoint,
+        {
+          headers: headersConfig
+        }
+      );
+      resolve(response.data);
+    } catch (error: any) {
+      console.error("Error fetching drawing by ID:", error);
+      const errorMessage = "Failed to fetch drawing by ID";
+      handleError(errorMessage, { componentStack: error.stack });
+      reject(error);
+    }
+  });
+};
+
 // Create a new drawing
 export const createDrawing = async (newDrawingData: any): Promise<void> => {
   try {

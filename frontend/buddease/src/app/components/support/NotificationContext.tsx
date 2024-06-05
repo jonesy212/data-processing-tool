@@ -13,6 +13,7 @@ export enum NotificationTypeEnum {
   AnalyticsID = "AnalyticsID",
   Announcement = "Announcement",
   AssignmentOperation = "AssignmentOperation",
+  AssignmentOperationSuccess = "AssignmentOperationSuccess",
   BlogPostID = "BlogPostID",
   BrainstormingSessionID = "BrainstormingSessionID",
   ButtonClick = "ButtonClick",
@@ -38,6 +39,7 @@ export enum NotificationTypeEnum {
   Dismiss = "Dismiss",
   DocumentEditID = "DocumentEditID",
   Error = "Error",
+  ApiError = "ApiError",
 
   EventID = "EventID",
   EventOccurred = "EventOccurred",
@@ -65,6 +67,8 @@ export enum NotificationTypeEnum {
   OperationStart = "OperationStart",
   OperationError = "OperationError",
   OperationSuccess = "OperationSuccess",
+  APISuccess = "APISuccess",
+  APIError ="APIError",
   PageLoading = "PageLoading",
   PasswordChanged = "PasswordChanged",
   PaymentReceived = "PaymentReceived",
@@ -73,6 +77,7 @@ export enum NotificationTypeEnum {
   ProductID = "ProductID",
   PushNotification = "PushNotification",
   SnapshotDetails = "SnapshotDetails",
+  Snapshot = "Snapshot",
   Success = "Success",
   DisplaySuccess ="DisplaySuccess",
   SurveyID = "SurveyID",
@@ -106,7 +111,8 @@ export interface NotificationContextProps {
     message: string,
     content: any,
     date: Date,
-    type: NotificationType
+    type: NotificationType,
+    // title?: string
   ) => Promise<void>;
 
   notifications: NotificationData[];

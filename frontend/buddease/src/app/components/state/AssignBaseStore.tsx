@@ -8,7 +8,7 @@ import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../calen
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
-import { useNotification } from "../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
@@ -16,6 +16,7 @@ import { User } from "../users/User";
 import { ReassignEventResponse } from "./stores/AssignEventStore";
 import { useAssignTeamMemberStore } from "./stores/AssignTeamMemberStore";
 import { PresentationStore, presentationStore } from "./stores/presentationStore";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 const { notify } = useNotification();
 export interface AssignBaseStore {
@@ -62,7 +63,7 @@ export interface AssignBaseStore {
   assignTeamMemberToTeam: (teamId: string, userId: string) => void;
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
 
-  setDynamicNotificationMessage: (message: string) => void;
+  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
   snapshotStore: SnapshotStore<Snapshot<Data>>;
 
   reassignUsersToItems: Record<string, string[]>;
@@ -270,7 +271,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
     console.log("Assign user success!");
     // You can add additional logic or trigger notifications as needed
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+      NotificationTypeEnum.AssignmentOperationSuccess
     );
   };
 
@@ -278,13 +280,16 @@ const useAssignBaseStore = (): AssignBaseStore => {
     console.error("Assign user failure:", error);
     // You can add additional error handling or trigger notifications as needed
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.User.ASSIGN_USER_FAILURE
+      NOTIFICATION_MESSAGES.User.ASSIGN_USER_FAILURE,
+      NotificationTypeEnum.Error
     );
   };
 
+
+
   // Function to set a dynamic notification message
-  const setDynamicNotificationMessage = (message: string) => {
-    setDynamicNotificationMessage(message);
+  const setDynamicNotificationMessage = (message: string | Message, type: NotificationType) => {
+    setDynamicNotificationMessage(message, type);
   };
 
   const assignTaskToTeam = async (taskId: string, teamId: string) => {

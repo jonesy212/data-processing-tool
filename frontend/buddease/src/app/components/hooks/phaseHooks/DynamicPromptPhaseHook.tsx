@@ -9,7 +9,7 @@ export type DynamicPromptPhaseHookConfig = {
 };
 
 export const createDynamicPromptPhaseHook = (
-  config: DynamicPromptPhaseHookConfig & DynamicHookParams
+  config: DynamicPromptPhaseHookConfig & DynamicHookParams<string>
 ) => {
   return createDynamicHook({
     ...config,
@@ -59,7 +59,7 @@ const useDynamicPromptPhaseHook = createDynamicPromptPhaseHook({
       return () => {};
     }
   },
-} as DynamicPromptPhaseHookConfig & DynamicHookParams);
+} as DynamicPromptPhaseHookConfig & DynamicHookParams<string>);
 
 
 

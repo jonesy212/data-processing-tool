@@ -1,9 +1,12 @@
-import { handleApiError } from "@/app/api/ApiLogs";
 import ProjectService from "@/app/api/ProjectService";
 import { addNotification } from "@/app/components/calendar/CalendarSlice";
+import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { LogData } from "@/app/components/models/LogData";
+import { ComponentStatus, StatusType } from "@/app/components/models/data/StatusType";
 import useNotificationManagerService from "@/app/components/notifications/NotificationService";
+import { Project } from "@/app/components/projects/Project";
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
+import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
   NotificationTypeEnum,
@@ -13,12 +16,8 @@ import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import io from "socket.io-client";
 import { ComponentActions } from "./ComponentActions";
-import { ComponentStatus } from "@/app/components/models/data/StatusType";
-import { Project } from "@/app/components/projects/Project";
- import io from "socket.io-client";
-import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
 
 const dispatch = useDispatch();
 const { notify } = useNotification();
@@ -69,12 +68,16 @@ export const handleRemoveComponent = () => {
       updatedAt: new Date(),
       content: "",
       status: ComponentStatus.Tentative,
-      completionMessageLog: {} as NotificationData & LogData,
+      completionMessageLog: {
+        timestamp: new Date(),
+        level: "info",
+        message: "Component removed successfully",
+      },
       sendStatus: "Sent",
       options: {
-        additionalOptions: undefined
-      }
-    }
+        additionalOptions: undefined,
+      },
+    };
     addNotification(notification); // Updated argument to pass notification object
   } catch (error: any) {
     const errorNotification: WritableDraft<NotificationData> = {
@@ -83,9 +86,13 @@ export const handleRemoveComponent = () => {
       createdAt: new Date(),
       type: NotificationTypeEnum.Error,
       content: "",
-      status: "tentative",
+      status: ComponentStatus.Tentative,
       updatedAt: new Date(),
-      completionMessageLog: {} as NotificationData & LogData,
+      completionMessageLog: {
+        timestamp: new Date(),
+        level: "error",
+        message: "Failed to remove component: " + error.message,
+      },
       sendStatus: "Sent",
     };
     console.error("Error removing component:", error);
@@ -112,7 +119,11 @@ export const handleUpdateComponent = () => {
       updatedAt: new Date(),
       content: "",
       status: "tentative",
-      completionMessageLog: {} as NotificationData & LogData,
+      completionMessageLog: {
+        timestamp: new Date(),
+        level: "info",
+        message: "Component updated successfully",
+      },
       sendStatus: "Sent",
     };
     addNotification(notification);
@@ -126,13 +137,17 @@ export const handleUpdateComponent = () => {
       type: NotificationTypeEnum.Error,
       content: "",
       status: "tentative",
-      completionMessageLog: {} as NotificationData & LogData,
+      completionMessageLog: {
+        timestamp: new Date(),
+        level: "error",
+        message: "Failed to update component: " + error.message,
+      },
       sendStatus: "Sent",
     };
     addNotification(errorNotification);
   }
 };
-const Component = async () => {
+const Component = () => {
   const router = useRouter();
   const { error, handleError, clearError } = useErrorHandling();
 
@@ -190,13 +205,13 @@ const Component = async () => {
     };
 
     fetchCurrentProject();
-  
+
     if (socket) {
       socket.emit("join", {
         projectId: currentProject?.id,
       });
     }
-  
+
     return () => {
       socket.disconnect();
     };
@@ -205,17 +220,21 @@ const Component = async () => {
   return (
     <div>
       <h1>Component Management</h1>
-      {error && <div>Error: {error}</div>}{" "}
-      {/* Display error message if error exists */}
+      {error && <div>Error: {error}</div>}
       <button onClick={handleAddComponent}>Add Component</button>
       <button onClick={handleRemoveComponent}>Remove Component</button>
       <button onClick={handleUpdateComponent}>Update Component</button>
-      {/* Render UpdatedProjectDetails only when currentProject is available */}
       {currentProject && (
-        <UpdatedProjectDetails projectDetails={currentProject} />
+        <UpdatedProjectDetails
+          projectId={currentProject.id}
+          projectDetails={{
+            ...currentProject,
+            status: currentProject.status as StatusType | undefined,
+          }}
+        />
       )}
     </div>
-);
+  );
 };
 
 export default Component;

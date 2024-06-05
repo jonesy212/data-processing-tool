@@ -9,9 +9,10 @@ describe('CommonDetails', () => {
       title: 'Test Title',
       description: 'Test Description',
       details: {  // Add the 'details' property
-        id: 1,
+        id: "1",
         title: 'Test Title',
         description: 'Test Description',
+        updatedAt: new Date()
         // Add more data properties as needed
       },
     };
@@ -28,9 +29,10 @@ describe('CommonDetails', () => {
       description: 'Test Description',
       // Ensure 'data' property is defined with appropriate types
       details: {  // Add the 'details' property
-        id: 1,
+        id: "1",
         title: 'Test Title',
         description: 'Test Description',
+        updatedAt: new Date()
         // Add more data properties as needed
       },
     };

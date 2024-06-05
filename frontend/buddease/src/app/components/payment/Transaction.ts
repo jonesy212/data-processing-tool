@@ -3,6 +3,8 @@
 import { AccessList, Signature } from "ethers";
 
 interface Transaction {
+  _id?: string | undefined;
+  id: string | null;
   type: number | null;
   typeName: string | null;
   from: string | null;
@@ -14,9 +16,11 @@ interface Transaction {
   gasPrice: bigint | null;
   date: Date | undefined;
   description: string | null;
+  
 }
 
 class TransactionProcessor implements Transaction {
+  _id: string | undefined = undefined;
   id: string| null = null;
   amount: number | null = null;
   description: string | null = null;
@@ -83,6 +87,7 @@ class TransactionProcessor implements Transaction {
   clone(this: TransactionProcessor): Transaction {
     // Implement logic to clone the transaction
     const clonedTransaction: Transaction = {
+      id: null,
       type: null,
       typeName: null,
       from: null,

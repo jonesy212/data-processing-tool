@@ -2,11 +2,10 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { Data } from '../models/data/Data';
-import SnapshotStoreConfig from './SnapshotConfig';
-import SnapshotStore, { Snapshot } from './SnapshotStore';
+import { Snapshot } from './SnapshotStore';
 
 export const SnapshotActions = {
-    add: createAction<SnapshotStoreConfig<Data>>('addSnapshot'),
+    add: createAction<Snapshot<Data>>('addSnapshot'),
     removeSnapshot: createAction<string>("removeSnapshot"),
     updateSnapshot: createAction<{ id: string, newData: any }>("updateSnapshot"),
     batchTakeSnapshots: createAction<{

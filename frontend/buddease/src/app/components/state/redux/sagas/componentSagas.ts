@@ -1,16 +1,21 @@
+import { ComponentActions } from '@/app/components/libraries/ui/components/ComponentActions';
+import { apiComponent } from '@/app/components/libraries/api/apiComponent';
+import ApiConfigComponent from '@/app/configs/ApiConfigComponent';
 //componentSagas.ts
 
 import { call, put } from "redux-saga/effects";
 
 // Saga function to handle fetching a component
-function* fetchComponentSaga(action) {
+const apiComponent: ApiConfigComponent = {
+  props: {
+    // Provide the required props here
+  },
+};
+function* fetchComponent(action: ReturnType<typeof ComponentActions.fetchComponentRequest>) {
   try {
-    // Call your API function to fetch the component
-    const response = yield call(api.fetchComponent, action.payload);
-    // Dispatch success action if the request is successful
+    const response = yield call(apiComponent.fetchComponent, action.payload);
     yield put(ComponentActions.fetchComponentSuccess(response.data));
-  } catch (error) {
-    // Dispatch failure action if there's an error
+  } catch (error: any) {
     yield put(ComponentActions.fetchComponentFailure(error.message));
   }
 }
@@ -20,7 +25,7 @@ function* updateComponentSuccessSaga(action) {
   try {
     // Perform any additional logic needed for update success
     yield put(ComponentActions.updateComponentSuccessAdditionalLogic(action.payload));
-  } catch (error) {
+  } catch (error: any) {
     // Handle error if additional logic fails
     yield put(ComponentActions.updateComponentFailure(error.message));
   }
@@ -31,7 +36,7 @@ function* updateComponentFailureSaga(action) {
   try {
     // Perform any additional logic needed for update failure
     yield put(ComponentActions.updateComponentFailureAdditionalLogic(action.payload));
-  } catch (error) {
+  } catch (error: any) {
     // Handle error if additional logic fails
     yield put(ComponentActions.updateComponentFailure(error.message));
   }

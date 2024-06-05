@@ -1,17 +1,21 @@
 import { getConfigsData } from "@/app/api/getConfigsApi";
 import { ConfigLogger } from "../logging/Logger";
+import { Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { Snapshot } from "../snapshots/SnapshotStore";
-import DatabaseClient from "../todos/tasks/DataSetModel";
+import { Subscription } from "../subscriptions/Subscription";
+import DatabaseClient from "../todos/tasks/DatabaseClient";
 import { Subscriber } from "../users/Subscriber";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "../utils/applicationUtils";
 import OrderBookUpdater from "./OrderBookUpdater";
 import TickerUpdater from "./TickerUpdater";
 
 // Define enum for exchange data types
-enum ExchangeDataType {
+enum ExchangeDataTypeEnum {
     TRADES = "trades",
     ORDER_BOOK = "order_book",
-    TICKER = "ticker",
+  TICKER = "ticker",
+    SPOT =  'spot'
 }
 
 
@@ -31,15 +35,15 @@ const integrateExchange = async (exchangeData: ExchangeData): Promise<void> => {
       // Proceed with database operations using the retrieved config
 
       switch (exchangeData.type) {
-        case ExchangeDataType.TRADES:
+        case ExchangeDataTypeEnum.TRADES:
           // If the exchange data type is trades, process and store the trade data
           processTrades(exchangeData.data);
           break;
-        case ExchangeDataType.ORDER_BOOK:
+        case ExchangeDataTypeEnum.ORDER_BOOK:
           // If the exchange data type is order book, update the order book with new data
           updateOrderBook(exchangeData.data);
           break;
-        case ExchangeDataType.TICKER:
+        case ExchangeDataTypeEnum.TICKER:
           // If the exchange data type is ticker, update the ticker information
           updateTicker(exchangeData.data);
           break;
@@ -183,6 +187,11 @@ const updateInternalOrderBook = (orderBookData: any[]): void => {
 
   // After processing all new orders, you might perform additional tasks such as:
   // - Removing canceled orders from the order book
+  const canceledOrders: Record<number, number> = {}; // Key: price, Value: quantity
+
+  // - Updating existing orders in the order book
+  
+  // - Adding new orders to the order book
   // - Reordering the order book based on price or other criteria
   // - Updating any derived data or statistics related to the order book
 
@@ -217,7 +226,7 @@ const updateOrderBook = (orderBookData: any[]): void => {
 };
 
 // Handler function for order book updates
-const orderBookUpdateHandler = (snapshot: Snapshot<void>): void => {
+const orderBookUpdateHandler = (snapshot: Snapshot<Data | undefined>): void => {
   // Perform actions in response to order book updates, if needed
   console.log('Received order book update:', snapshot);
 };
@@ -275,18 +284,32 @@ mergeOrderBookData(newOrderBookData, existingOrderBook);
 
 
 // Create an instance of the Subscriber class for order book updates
-
+const subscription: Subscription = {
+  unsubscribe: () => {}, // Placeholder function
+  portfolioUpdates: () => {}, // Placeholder function
+  tradeExecutions: () => {}, // Placeholder function
+  marketUpdates: () => {}, // Placeholder function
+  communityEngagement: () => {}, // Placeholder function
+};
 
 // Create an instance of the Subscriber class for order book updates
-const orderBookSubscriber = new Subscriber<void>();
+const orderBookSubscriber = new Subscriber<Data | undefined>(
+  "orderBookSubscriber",
+  subscription, 
+  notifyEventSystem,
+  updateProjectState,
+  logActivity,
+  triggerIncentives
+);
+
 
 // Function to subscribe to order book updates
-const subscribeToOrderBookUpdates = (subscriber: (data: Snapshot<void>) => void): void => {
+const subscribeToOrderBookUpdates = (subscriber: (data: Snapshot<Data | undefined>) => void): void => {
   orderBookSubscriber.subscribe(subscriber);
 };
 
 // Function to unsubscribe from order book updates
-const unsubscribeFromOrderBookUpdates = (subscriber: (data: Snapshot<void>) => void): void => {
+const unsubscribeFromOrderBookUpdates = (subscriber: (data: Snapshot<Data | undefined>) => void): void => {
   orderBookSubscriber.unsubscribe(subscriber);
 };
 
@@ -295,7 +318,7 @@ const unsubscribeFromOrderBookUpdates = (subscriber: (data: Snapshot<void>) => v
 // Function to notify subscribers about order book updates
 const notifyOrderBookUpdate = (): void => {
   // Create an empty snapshot to pass to subscribers
-  const data: Snapshot<void> = {
+  const data: Snapshot<Data | undefined> = {
     timestamp: new Date(),
     data: undefined,
     category: undefined
@@ -355,4 +378,4 @@ const isValidTickerData = (tickerData: any): boolean => {
 
 
 export default integrateExchange;
-export { ExchangeDataType, subscribeToOrderBookUpdates, unsubscribeFromOrderBookUpdates };
+export { ExchangeDataTypeEnum, subscribeToOrderBookUpdates, unsubscribeFromOrderBookUpdates };

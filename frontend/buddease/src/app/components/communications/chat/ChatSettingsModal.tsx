@@ -34,6 +34,8 @@ type ChatSettingsModal = {
 
 // Define related types
 type NotificationPreferences = {
+  mobile: boolean,
+  desktop: boolean,
   emailNotifications: boolean;
   pushNotifications: boolean;
   enableNotifications: boolean;

@@ -25,7 +25,7 @@ interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
   updatedAt?: Date;
   content: any;
   // type: NotificationType;
-  sendStatus: SendStatus; // Add sendStatus property
+  sendStatus?: SendStatus | boolean; // Add sendStatus property
   completionMessageLog: LogData | undefined;
   date?: Date | undefined;
   email?: string;

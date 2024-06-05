@@ -3,6 +3,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import dotProp from "dot-prop";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
+import { useArticleStore } from "../components/state/stores/ArticleStore";
 import { useNotification } from "../components/support/NotificationContext";
 import { User } from "../components/users/User";
 import { Message } from "../generators/GenerateChatInterfaces";
@@ -12,6 +13,16 @@ import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.apiConfig;
+
+interface ArticleApiService {
+  notificationContext: {
+    notify: (title: string, message: string | Message, type: string, content?: any) => void;
+  };
+  createArticle: (articleData: any) => Promise<AxiosResponse<any, any>>;
+  fetchRecentArticles: () => Promise<AxiosResponse>;
+  // Add the displayArticles method here
+  displayArticles: (articles: any[]) => void;
+}
 
 // Example values for the Message object
 const generateUniqueID = UniqueIDGenerator.generateMessageID();
@@ -34,7 +45,8 @@ const createMessage = (type: string, content: string): Partial<Message> => ({
   timestamp: new Date().toISOString(),
   content,
 });
-export const articleApiService = observable({
+
+export const articleApiService: ArticleApiService = observable({
   notificationContext: {
     notify: (
       title: string,
@@ -234,8 +246,14 @@ export const articleApiService = observable({
       );
       throw error;
     }
-    },
+  },
   
+  displayArticles: (articles: any[]): void => {
+    const store = useArticleStore();
+    store.setArticles(articles);
+    console.log("Displaying articles:", articles);
+    // Add any additional logic to update the UI if necessary
+  }
 });
 
 // Add more functions for updating, deleting, or any other article-related API requests as needed

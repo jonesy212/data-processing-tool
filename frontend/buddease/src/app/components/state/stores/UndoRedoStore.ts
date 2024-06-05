@@ -1,33 +1,41 @@
-// UndoRedoStore.ts
-import { action, observable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
+import { useState } from 'react';
 
-export class UndoRedoStore {
-  @observable actions: any[] = [];
-  @observable currentIndex: number = -1;
-  static undo: any;
-  static redo: any
+const useUndoRedoStore = () => {
+  const [actions, setActions] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
-  @action
-  public performAction(action: any) {
-    // Perform action
-    this.actions.splice(this.currentIndex + 1);
-    this.actions.push(action);
-    this.currentIndex++;
-  }
+  const performAction = (action: any) => {
+    setActions((prevActions) => {
+      const newActions = [...prevActions.slice(0, currentIndex + 1), action];
+      setCurrentIndex(newActions.length - 1);
+      return newActions;
+    });
+  };
 
-  @action
-  public undo() {
-    if (this.currentIndex > -1) {
-      this.actions[this.currentIndex].undo();
-      this.currentIndex--;
+  const undo = () => {
+    if (currentIndex > -1) {
+      actions[currentIndex].undo();
+      setCurrentIndex(currentIndex - 1);
     }
-  }
+  };
 
-  @action
-  public redo() {
-    if (this.currentIndex < this.actions.length - 1) {
-      this.currentIndex++;
-      this.actions[this.currentIndex].redo();
+  const redo = () => {
+    if (currentIndex < actions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      actions[currentIndex + 1].redo();
     }
-  }
-}
+  };
+
+  const store = makeAutoObservable({
+    actions,
+    currentIndex,
+    performAction,
+    undo,
+    redo,
+  });
+
+  return store;
+};
+
+export { useUndoRedoStore };

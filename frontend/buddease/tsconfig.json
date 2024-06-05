@@ -2,8 +2,7 @@
   "compilerOptions": {
         "target": "es2017",
 
-    // "target": "es2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext", "es2015"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -26,6 +25,7 @@
         "name": "next"
       }
     ],
+    // "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       
@@ -57,6 +57,7 @@
       "@/configs/appStructure/pages/forms/*": ["./src/app/configs/appStructure/pages/forms/*"],
       "@/configs/appStructure/pages/layouts/*": ["./src/app/configs/appStructure/pages/layouts/*"],
 
+      "@/components/*": ["./src/app/components/support/NotificationContext.tsx"],
       // contexts
       "@/contexts/*": ["./src/app/contexts/*"],
  

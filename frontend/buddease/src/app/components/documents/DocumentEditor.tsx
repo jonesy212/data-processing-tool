@@ -17,6 +17,7 @@ import { CodingLanguageEnum, LanguageEnum } from "../communications/LanguageEnum
 import { setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { ComponentActions } from "../libraries/ui/components/ComponentActions";
+import axiosInstance from "../security/csrfToken";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import useEditorState from "../state/useEditorState";
 import AppVersionImpl, {
@@ -28,7 +29,7 @@ import Version from "../versions/Version";
 import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
-import axiosInstance from "../security/csrfToken";
+import { ModifiedDate } from "./DocType";
 
 const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
   const dispatch = useDispatch();
@@ -105,16 +106,12 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
         onOptionsChange={(options: DocumentOptions) => {
           if (typeof options.documentPhase === "string") {
             setCurrentPhase({
-              phaseType:
-                ProjectPhaseTypeEnum[
-                  options.documentPhase as keyof typeof ProjectPhaseTypeEnum
-                ],
+              phaseType: ProjectPhaseTypeEnum[options.documentPhase as keyof typeof ProjectPhaseTypeEnum],
               name: "",
               condition: () => Promise.resolve(true),
               duration: "",
               asyncEffect: async ({
-                idleTimeoutId,
-                startIdleTimeout,
+                idleTimeoutId, startIdleTimeout,
               }: {
                 idleTimeoutId: NodeJS.Timeout | null;
                 startIdleTimeout: (
@@ -122,10 +119,13 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
                   onTimeout: () => void
                 ) => void;
               }) => {
-                return () => {};
+                return () => { };
               },
               customProp1: "",
               customProp2: 0,
+              startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void | undefined): void | undefined {
+                throw new Error("Function not implemented.");
+              }
             });
           } else {
             setCurrentPhase({
@@ -134,10 +134,13 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
               condition: async () => true, // Example condition
               duration: '0', // Example duration
               asyncEffect: async ({ idleTimeoutId, startIdleTimeout }: { idleTimeoutId: NodeJS.Timeout | null; startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void; }) => {
-                return () => {};
+                return () => { };
               },
               customProp1: "",
               customProp2: 0,
+              startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void | undefined): void | undefined {
+                throw new Error("Function not implemented.");
+              }
             });          }
 
           options.documentSize = DocumentSize.A4;
@@ -166,7 +169,47 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             author: "",
             dataFormat: ""
           },
-          tableStyles: [],
+          previousMetadata: {
+            tags: {
+              originalPath: "/path/to/file.txt",
+              alternatePaths: ["/alternate/path1.txt", "/alternate/path2.txt"],
+              fileType: "txt",
+              title: "",
+              description: "",
+              keywords: [],
+              authors: [],
+              contributors: [],
+              publisher: "",
+              copyright: "",
+              license: "",
+              links: [],
+              tags: []
+            },
+          },
+          currentMetadata: {
+            tags: {
+              originalPath: "/path/to/file.txt",
+              alternatePaths: ["/alternate/path1.txt", "/alternate/path2.txt"],
+              fileType: "txt",
+              title: "",
+              description: "",
+              keywords: [],
+              authors: [],
+              contributors: [],
+              publisher: "",
+              copyright: "",
+              license: "",
+              links: [],
+              tags: []
+            },
+          },
+           accessHistory: [],
+          lastModifiedDate: {
+            value: new Date(),
+            isModified: false,
+           } as ModifiedDate,
+
+          tableStyles: {},
           highlightColor: "",
           defaultZoomLevel: 100,
           uniqueIdentifier: "",
@@ -284,7 +327,8 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             workspaceAdmins: [],
             workspaceMembers: [],
             createdAt: new Date(),
-            updatedAt: undefined
+            updatedAt: undefined,
+            buildNumber: "",
           }),
           metadata: {} as StructuredMetadata, // Pass metadata
           userIdea: "",
@@ -375,7 +419,7 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             enabled: false,
             colors: {},
           },
-          footnote: false || { enabled: false },
+          footnote: false || { enabled: false, format: "numeric" },
           customProperties: {},
           value: 1,
         }}

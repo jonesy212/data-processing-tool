@@ -3,21 +3,27 @@ import { FileType } from "../../documents/Attachment/attachment";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { Data } from "../data/Data";
 import { StatusType } from "../data/StatusType";
+import { Tag } from "../tracker/Tag";
+
+// Check if the tag is an instance of Tag
+function isTagObject(tag: string | Tag): tag is Tag {
+  return (tag as Tag).getOptions().id !== undefined;
+}
 
 // Define the type for the content item
 interface ContentItem {
   then?(arg0: (newContent: any) => void): unknown;
   id: string;
   _id?: string;
-  updatedAt: Date | undefined
+  updatedAt: Date | undefined;
   title: string;
   body: string | undefined;
   heading: React.ReactNode;
   subheading?: React.ReactNode;
-  description?: string | null | undefined
-  type: FileType
+  description?: string | null | undefined;
+  type: FileType;
   footer?: React.ReactNode;
-  status: StatusType | undefined
+  status: StatusType | undefined;
   userId: string | undefined;
   // Add more properties as needed
 }
@@ -38,7 +44,9 @@ const ContentItemComponent: React.FC<ContentItemProps> = ({
   content,
   item,
 }) => {
-  const [duckDuckGoIcon, setDuckDuckGoIcon] = useState<React.ReactNode | null>(null);
+  const [duckDuckGoIcon, setDuckDuckGoIcon] = useState<React.ReactNode | null>(
+    null
+  );
 
   // Render based on the presence of item props
   if (item) {
@@ -62,9 +70,13 @@ const ContentItemComponent: React.FC<ContentItemProps> = ({
         {author && <p>Author: {author}</p>}
         {tags && (
           <ul>
-            {tags.map((tag) => (
-              <li key={tag}>{tag}</li>
-            ))}
+            {tags.map((tag) =>
+              typeof tag === "string" ? (
+                <li key={tag}>{tag}</li>
+              ) : (
+                <li key={tag.getOptions().id}>{tag.getOptions().name}</li>
+              )
+            )}
           </ul>
         )}
       </div>

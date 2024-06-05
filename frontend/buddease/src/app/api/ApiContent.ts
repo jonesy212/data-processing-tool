@@ -7,6 +7,7 @@ import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
+import useErrorHandling from "../components/hooks/useErrorHandling";
 
 // Define the API base URL
 const API_BASE_URL = dotProp.getProperty(endpoints, "content");
@@ -59,27 +60,74 @@ export const handleContentApiErrorAndNotify = (
 };
 
 // Fetch content data
-export async function fetchContent(): Promise<YourResponseType> {
-  try {
-    const fetchContentEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
-    const response = await axiosInstance.get<YourResponseType>(
-      fetchContentEndpoint,
-      {
+export const fetchContent = (): Promise<YourResponseType> => {
+  // Initialize the useErrorHandling hook
+  const { handleError } = useErrorHandling();
+
+  return new Promise<YourResponseType>((resolve, reject) => {
+    try {
+      const fetchContentEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
+      axiosInstance.get<YourResponseType>(fetchContentEndpoint, {
         headers: headersConfig,
-      }
+      })
+      .then(response => {
+        // Resolve with the response data
+        resolve(response.data);
+      })
+      .catch(error => {
+        // Handle any errors that occur during the fetch
+        console.error("Error fetching content:", error);
+
+        // Call the handleError function to handle and log the error
+        const errorMessage = "Failed to fetch content";
+        handleError(errorMessage, { componentStack: error.stack });
+
+        // Reject with the error
+        reject(error);
+      });
+    } catch (error: any) {
+      // Handle synchronous errors
+      console.error("Error fetching content:", error);
+
+      // Call the handleError function to handle and log the error
+      const errorMessage = "Failed to fetch content";
+      handleError(errorMessage, { componentStack: error.stack });
+
+      // Reject with the error
+      reject(error);
+    }
+  });
+};
+
+// Update an existing content
+export const updateContent = async (
+  contentId: number,
+  updatedContentData: any
+): Promise<void> => {
+  try {
+    const updateContentEndpoint = `${API_BASE_URL}/update/${contentId}`; // Adjust the endpoint as needed
+    await axiosInstance.put(updateContentEndpoint, updatedContentData, {
+      headers: headersConfig,
+    });
+    // Notify success message
+    useNotification().notify(
+      "UpdateContentSuccessId",
+      contentNotificationMessages.UPDATE_CONTENT_SUCCESS,
+      { contentId },
+      new Date(),
+      NotificationTypeEnum.Success
     );
-    return response.data;
   } catch (error) {
-    console.error("Error fetching content:", error);
-    const errorMessage = "Failed to fetch content";
+    console.error("Error updating content:", error);
     handleContentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
-      "FetchContentErrorId"
+      "Failed to update content",
+      "UpdateContentErrorId"
     );
     throw error;
   }
-}
+};
+
 
 // Create a new content
 export const createContent = async (newContentData: any): Promise<void> => {
@@ -102,35 +150,6 @@ export const createContent = async (newContentData: any): Promise<void> => {
       error as AxiosError<unknown>,
       "Failed to create content",
       "CreateContentErrorId"
-    );
-    throw error;
-  }
-};
-
-// Update an existing content
-export const updateContent = async (
-  contentId: number,
-  updatedContentData: any
-): Promise<void> => {
-  try {
-    const updateContentEndpoint = `${API_BASE_URL}/update/${contentId}`; // Adjust the endpoint as needed
-    await axiosInstance.put(updateContentEndpoint, updatedContentData, {
-      headers: headersConfig,
-    });
-    // Notify success message
-    useNotification().notify(
-      "UpdateContentSuccessId",
-      contentNotificationMessages.UPDATE_CONTENT_SUCCESS,
-      { contentId },
-      new Date(),
-      NotificationTypeEnum.Success
-    );
-  } catch (error: any) {
-    console.error("Error updating content:", error);
-    handleContentApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      "Failed to update content",
-      "UpdateContentErrorId"
     );
     throw error;
   }

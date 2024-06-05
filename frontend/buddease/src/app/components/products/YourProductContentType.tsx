@@ -1,5 +1,5 @@
 import { TeamMember } from "../models/teams/TeamMembers";
-import Project from "../projects/Project";
+import {Project} from "../projects/Project";
 import FeedbackService from "../support/FeedbackService";
 
 // YourProductContentType definition

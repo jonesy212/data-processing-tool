@@ -14,6 +14,7 @@ class Version {
   description: string;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
+  buildNumber: string | undefined;
 
   id: number; // Add id property
   content: string; // Add content property
@@ -120,6 +121,7 @@ class Version {
     publishedAt: Date | null;
     source: string;
     status: string;
+    buildNumber: string;
     workspaceId: string;
     workspaceName: string;
     workspaceType: string;
@@ -247,6 +249,7 @@ class Version {
   static create(versionInfo: {
     id: number;
     versionNumber: string;
+    buildNumber: string;
     appVersion: string;
     limit: number;
     description: string;

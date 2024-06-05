@@ -23,7 +23,7 @@ const generateDynamicDummyHook = (hookName: string) => {
       };
 
   return {
-    hook: () => useDynamicHook({} as DynamicHookParams),
+    hook: () => useDynamicHook({} as DynamicHookParams<{}>),
   };
 };
 

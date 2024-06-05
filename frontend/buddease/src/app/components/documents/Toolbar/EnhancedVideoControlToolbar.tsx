@@ -23,19 +23,44 @@ const EnhancedVideoControlToolbar = () => {
 
   // Function to handle video recording
   // Function to handle video recording
-const handleVideoRecording = () => {
-  if (isVideoRecordingEnabled) {
-    // Dispatch actions to disable video recording
-    dispatch(ToolbarActions.disableVideoRecording());
-    dispatch(ToolbarActions.toggleFeature({ feature: 'videoRecording', isEnabled: false, userId: {} as User }));
-    notify("Video recording disabled successfully", NOTIFICATION_MESSAGES.Video.DISABLE_VIDEO_SUCCESS, new Date(), NotificationTypeEnum.OperationSuccess);
-  } else {
-    // Dispatch actions to enable video recording
-    dispatch(ToolbarActions.enableVideoRecording());
-    dispatch(ToolbarActions.toggleFeature({ feature: 'videoRecording', isEnabled: true, userId: {} as User}));
-    notify("Video recording enabled successfully", NOTIFICATION_MESSAGES.Video.ENABLE_VIDEO_SUCCESS, new Date(), NotificationTypeEnum.OperationError);
-  }
-};
+  const handleVideoRecording = () => {
+    if (isVideoRecordingEnabled) {
+      // Dispatch actions to disable video recording
+      dispatch(ToolbarActions.disableVideoRecording());
+      dispatch(
+        ToolbarActions.toggleFeature({
+          feature: "videoRecording",
+          isEnabled: false,
+          userId: {} as User,
+        })
+      );
+      notify(
+        "features enabled",
+        "Video recording disabled successfully",
+        NOTIFICATION_MESSAGES.Video.DISABLE_VIDEO_SUCCESS,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess,
+        // NotificationType.Success
+      );
+    } else {
+      // Dispatch actions to enable video recording
+      dispatch(ToolbarActions.enableVideoRecording());
+      dispatch(
+        ToolbarActions.toggleFeature({
+          feature: "videoRecording",
+          isEnabled: true,
+          userId: {} as User,
+        })
+      );
+      notify(
+        "features enabled",
+        "Video recording enabled successfully",
+        NOTIFICATION_MESSAGES.Video.ENABLE_VIDEO_SUCCESS,
+        new Date(),
+        NotificationTypeEnum.OperationError,
+      );
+    }
+  };
 
 // Function to handle video streaming
 const handleVideoStreaming = () => {
@@ -127,6 +152,7 @@ const handleParticipantManagement = async () => {
     handleApiError(error as AxiosError<unknown>, 'Error handling participant management:');
     // Optionally, dispatch an action to display an error message to the user
     notify(
+      "Participants could not be managed",
       'Error handling participant management:',
       NOTIFICATION_MESSAGES.Video.PARTICIPANT_MANAGEMENT_ERROR,
       new Date(),

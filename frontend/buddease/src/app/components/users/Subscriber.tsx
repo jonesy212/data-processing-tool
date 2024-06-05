@@ -7,7 +7,6 @@ import {
   NotificationTypeEnum,
 } from "../support/NotificationContext";
 import { sendNotification } from "./UserSlice";
-
 interface CustomSnapshotData extends Data{
   timestamp: Date | string | undefined;
   value: number;
@@ -16,20 +15,25 @@ interface CustomSnapshotData extends Data{
 
 // Define Subscriber class
 class Subscriber<T extends Data | undefined> {
-  subscriberId(subscriberId: any, personalizedMessage: string, content: any, arg3: Date, type: string | undefined) {
-    throw new Error("Method not implemented.");
-  }
+    snapshots: any;
+
+  private id: string = '';
+  private subscriberId: string = '';
   private subscribers: ((data: Snapshot<T>) => void)[] = [];
   private subscription: Subscription;
   private onSnapshotCallbacks: ((snapshot: Snapshot<T>) => void)[] = [];
   private onErrorCallbacks: ((error: Error) => void)[] = [];
   private onUnsubscribeCallbacks: ((callback: (data: Snapshot<T>) => void) => void)[] = [];
   private state: T | null = null;
-  private id: string;
-  private notifyEventSystem: Function;
-  private updateProjectState: Function;
-  private logActivity: Function;
-  private triggerIncentives: Function;
+  private triggerError: Function = () => {}; // Default value is an empty function
+  private notifyEventSystem: Function = () => {};
+  private updateProjectState: Function = () => {};
+  private logActivity: Function = () => {};
+  private triggerIncentives: Function = () => {};
+  
+
+
+  
   name: string | undefined;
   data: T | null;
   email: any;
@@ -37,6 +41,7 @@ class Subscriber<T extends Data | undefined> {
   constructor(
     id: string,
     subscription: Subscription,
+    subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
     logActivity: Function,
@@ -46,6 +51,7 @@ class Subscriber<T extends Data | undefined> {
   ) {
     this.id = id;
     this.subscription = subscription;
+    this.subscriberId = subscriberId;
     this.notifyEventSystem = notifyEventSystem;
     this.updateProjectState = updateProjectState;
     this.logActivity = logActivity;
@@ -65,9 +71,10 @@ class Subscriber<T extends Data | undefined> {
     }
   }
 
-  toSnapshotStore(
+
+toSnapshotStore(
     initSnapshot: T,
-    snapshotConfig: SnapshotStoreConfig<Snapshot<T>, T>[],
+    snapshotConfig: typeof SnapshotStoreConfig<Snapshot<T>, T>[],
     content: T
   ) {
     return new SnapshotStore(
@@ -78,21 +85,25 @@ class Subscriber<T extends Data | undefined> {
         date: Date,
         type: NotificationType
       ) => {
-        const snapshotData = {
+        const snapshotData: Snapshot<T> = {
           id,
           timestamp: date,
           category: "subscriberCategory",
           content: snapshotContent,
-          taskId: "", // Add missing properties
-          taskName: "",
-          data: content,
+          data: snapshotContent,
           type,
         };
         try {
-          this.notify(snapshotData);
-          sendNotification(NotificationTypeEnum.DataLoading);
+          if (this.notify) {
+            this.notify(snapshotData);
+          }
+          if (sendNotification) {
+            sendNotification(NotificationTypeEnum.DataLoading);
+          }
         } catch (error: any) {
-          this.triggerError(error);
+          if (this.triggerError) {
+            this.triggerError(error);
+          }
         }
       },
       initSnapshot,
@@ -123,9 +134,9 @@ class Subscriber<T extends Data | undefined> {
     this.onErrorCallbacks.push(callback);
   }
 
-  triggerError(error: Error) {
-    this.onErrorCallbacks.forEach((callback) => callback(error));
-  }
+  // triggerError?(error: Error) {
+  //   this.onErrorCallbacks.forEach((callback) => callback(error));
+  // }
 
   onUnsubscribe(callback: (callback: (data: Snapshot<T>) => void) => void) {
     this.onUnsubscribeCallbacks.push(callback);
@@ -135,11 +146,11 @@ class Subscriber<T extends Data | undefined> {
     this.onSnapshotCallbacks.push(callback);
   }
 
-  triggerOnSnapshot(snapshot: Snapshot<T>) {
+  triggerOnSnapshot?(snapshot: Snapshot<T>) {
     this.onSnapshotCallbacks.forEach((callback) => callback(snapshot));
   }
 
-  notify(data: Snapshot<T>) {
+  notify?(data: Snapshot<T>) {
     this.subscribers.forEach((callback) => callback(data));
     sendNotification(NotificationTypeEnum.DataLoading);
   }
@@ -173,7 +184,7 @@ function triggerIncentives(subscriberId: string, snapshot: any) {
 
 // Usage example
 const subscriber = new Subscriber<CustomSnapshotData>(
-  'subscriber1',
+  'userId',
   {
     portfolioUpdates: () => {},
     tradeExecutions: () => {},
@@ -181,6 +192,7 @@ const subscriber = new Subscriber<CustomSnapshotData>(
     communityEngagement: () => {},
     unsubscribe: () => {},
   },
+  'subscriberId',
   notifyEventSystem,
   updateProjectState,
   logActivity,

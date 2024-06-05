@@ -1,16 +1,18 @@
 // CryptoEnthusiastDashboard.tsx
-import React, { useState, useEffect } from 'react';
-import { getRecentTrades } from './api'; // Import API function to fetch recent trades
-
+import { tradeApi } from '@/app/api/ApiTrade';
+import { useEffect, useState } from 'react';
+import { MarketData } from '../../crypto/TradingStrategy';
+import { CryptoActions } from '../../actions/CryptoActions';
 const CryptoEnthusiastDashboard = () => {
-  const [recentTrades, setRecentTrades] = useState([]);
+  const [recentTrades, setRecentTrades] = useState<MarketData[]>([]);
 
   useEffect(() => {
     // Fetch recent trades data when the component mounts
     const fetchRecentTrades = async () => {
       try {
-        const trades = await getRecentTrades();
-        setRecentTrades(trades);
+        const response = await tradeApi.getRecentTrades();
+        const tradesData = response.data; // Extract data from Axios response
+        setRecentTrades(tradesData);
       } catch (error) {
         console.error('Error fetching recent trades:', error);
         // Handle error fetching recent trades
@@ -19,11 +21,12 @@ const CryptoEnthusiastDashboard = () => {
 
     fetchRecentTrades();
 
-    // Cleanup function to clear any ongoing processes or subscriptions
-    return () => {
-      // Perform cleanup if needed
-    };
-  }, []); // Empty dependency array ensures the effect runs only once on mount
+   // Cleanup function to clear any ongoing processes or subscriptions
+   return () => {
+    // Call the cleanup action from CryptoActions
+    CryptoActions.cleanup();
+  };
+}, []); // Empty dependency array ensures the effect runs only once on mount
 
   return (
     <div>
@@ -36,7 +39,7 @@ const CryptoEnthusiastDashboard = () => {
               <p>{trade.symbol}</p>
               <p>{trade.type}</p>
               <p>{trade.quantity}</p>
-              <p>{trade.timestamp}</p>
+              <p>{trade.timestamp.toLocaleString()}</p>
             </li>
           ))}
         </ul>

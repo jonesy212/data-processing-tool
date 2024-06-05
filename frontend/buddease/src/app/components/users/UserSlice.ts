@@ -30,11 +30,12 @@ export interface UserManagerState {
   fullName: string;
   bio: string;
   profilePicture: string;
-  notification: string;
+  notification: { message: string; recipient: string; snapshot: string; } | string;
   data: UserData;
   uploadQuota: number;
   nftCollection: NFT[];
   userSupportFeedbackPreferences: ProjectFeedback[];
+
 }
 
 const initialState: UserManagerState = {
@@ -50,7 +51,30 @@ const initialState: UserManagerState = {
       permissions: [],
       positions: [],
       includes: [],
-    }
+    },
+    deletedAt: null,
+    lastLogin: undefined,
+    lastLogout: undefined,
+    lastPasswordChange: undefined,
+    lastEmailChange: undefined,
+    lastNameChange: undefined,
+    lastProfileChange: undefined,
+    lastAvatarChange: undefined,
+    lastBannerChange: undefined,
+    lastStatusChange: undefined,
+    lastRoleChange: undefined,
+    lastTierChange: undefined,
+    lastPaymentChange: undefined,
+    lastSubscriptionChange: undefined,
+    lastEmailVerification: undefined,
+    lastPasswordReset: undefined,
+    lastLoginAttempt: undefined,
+    loginAttempts: 0,
+    lockoutEnd: null,
+    twoFactorEnabled: false,
+    phoneNumberConfirmed: false,
+    securityStamp: null,
+    accessFailedCount: null
   },
   uploadQuota: 0,
   nftCollection: [],
@@ -63,31 +87,73 @@ export const userManagerSlice = createSlice({
   reducers: {
     updateFullName: (state, action: PayloadAction<string>) => {
       state.fullName = action.payload;
+      return state;
     },
 
     updateBio: (state, action: PayloadAction<string>) => {
       state.bio = action.payload;
+      return state;
     },
 
     updateProfilePicture: (state, action: PayloadAction<string>) => {
       state.profilePicture = action.payload;
+      return state;
     },
 
-    sendNotification: (state, action: PayloadAction<string>) => {
-      state.notification = action.payload;
+  
+// Update the sendNotification logic
+    sendNotification: (
+      state: WritableDraft<UserManagerState>,
+      action: PayloadAction<
+        | string
+        | {
+            message: string;
+            recipient: string;
+            snapshot: string;
+          }
+      >
+    ) => {
+      // Check if the notification property is already a string
+      if (typeof state.notification === "string") {
+        // If it's a string, create a new object with the notification details
+        state.notification = {
+          message:
+            typeof action.payload === "string"
+              ? action.payload
+              : action.payload.message,
+          recipient:
+            typeof action.payload === "string" ? "" : action.payload.recipient,
+          snapshot:
+            typeof action.payload === "string" ? "" : action.payload.snapshot,
+        };
+      } else {
+        // If it's already an object, update its properties
+        state.notification.message =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.payload.message;
+        state.notification.recipient =
+          typeof action.payload === "string" ? "" : action.payload.recipient;
+        state.notification.snapshot =
+          typeof action.payload === "string" ? "" : action.payload.snapshot;
+      }
     },
 
     updateData: (state, action: PayloadAction<User>) => {
-      state.data = action.payload as WritableDraft<User>;
+      state.data = {
+        ...state.data,
+        ...action.payload,
+        securityStamp: action.payload.securityStamp || null,
+      } 
     },
-
-    updateQuota: (state, action: PayloadAction<number>) => {
+    updateQuota: (state: WritableDraft<UserManagerState>, action: PayloadAction<number>) => {
       state.uploadQuota = action.payload;
     },
-
-    fetchUsersSuccess: (state, action: PayloadAction<{ users: User[] }>) => {
-      state.users = action.payload.users as WritableDraft<User[]>;
+    
+    fetchUsersSuccess: (state: WritableDraft<UserManagerState>, action: PayloadAction<{ users: User[] }>) => {
+      state.users = action.payload.users.map((user) => ({ ...user })) as WritableDraft<User[]>;
     },
+    
 
     updateUserFirstName: (
       state,
@@ -460,13 +526,6 @@ export const userManagerSlice = createSlice({
       }
     },
  
-
-
-
-
-
-
-
 
 
     // Action to update user's phone number

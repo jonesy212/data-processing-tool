@@ -14,7 +14,8 @@ import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import  { RealtimeData, RealtimeDataItem } from "./RealtimeData";
-import { ExchangeDataType } from "@/app/components/crypto/exchangeIntegration";
+import { ExchangeDataTypeEnum } from "@/app/components/crypto/exchangeIntegration";
+import { processExchangeData } from '@/app/components/models/data/fetchExchangeData';
 
 const RealTimeDataCollection: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -36,7 +37,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -45,7 +46,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -54,7 +55,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -63,7 +64,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -72,7 +73,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -81,7 +82,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -90,7 +91,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -99,7 +100,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -108,7 +109,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -117,7 +118,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -126,7 +127,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -135,7 +136,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -144,7 +145,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -153,7 +154,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -162,7 +163,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -171,7 +172,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -180,7 +181,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -189,7 +190,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     {
@@ -198,7 +199,7 @@ const RealTimeDataCollection: React.FC = () => {
       pair: "",
       price: 0,
       volume: 0,
-      type: ExchangeDataType.TRADES,
+      type: ExchangeDataTypeEnum.TRADES,
       data: undefined
     },
     // Add more exchanges as needed
@@ -231,9 +232,10 @@ const RealTimeDataCollection: React.FC = () => {
   const convertSnapshotToDataType = <T>(
     snapshotStore: SnapshotStore<Snapshot<Data>>
   ): T[] => {
-    // Implement conversion logic here
-    // For example, you can extract the data from the snapshotStore and return it as an array of type T
-    return snapshotStore.data.map((snapshot: any) => snapshot.data) as T[];
+    return snapshotStore
+      .getData()
+      .flatMap((snapshot) => (snapshot.data ? [snapshot.data] : []))
+      .filter((data): data is T => data !== null);
   };
 
   // Custom update callback function to process fetched data
@@ -265,13 +267,15 @@ const RealTimeDataCollection: React.FC = () => {
     // Fetch data from exchanges using the custom hook for exchange data
     const { fetchExchangeData } = useRealtimeExchangeData<ExchangeData>(
       [], // Pass an empty initialData array
-      updateCallback // Pass the custom update callback
+      updateCallback, // Pass the custom update callback
+      processExchangeData
     );
 
     // Fetch data from DEXs using the custom hook for DEX data
     const { fetchDexData } = useRealtimeDextData<DEXData>(
       [], // Pass an empty initialData array
-      updateCallback // Pass the custom update callback
+      updateCallback ,// Pass the custom update callback
+      processExchangeData
     );
 
     // Fetch data from exchanges and DEXs on component mount

@@ -223,8 +223,8 @@ describe("CalendarManagerStoreClass", () => {
     getSnapshots: {} as () => Snapshot<Snapshot<Data>>[],
     getAllSnapshots: {} as (
       data: (data: Data) => void,
-      snapshot: Snapshot<Snapshot<Data>>[]
-    ) => Snapshot<Snapshot<Data>>[],
+      snapshot: Snapshot<Data>,
+    ) => Snapshot<Data>[],
     clearSnapshot: {} as () => void,
     configureSnapshotStore: {} as (snapshot: Snapshot<Data>) => void,
     takeSnapshotSuccess: {} as (snapshot: Snapshot<Data>) => void,

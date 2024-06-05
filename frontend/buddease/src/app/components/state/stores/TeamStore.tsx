@@ -11,7 +11,7 @@ import { Data } from "../../models/data/Data";
 import TeamData from "../../models/teams/TeamData";
 import { Phase } from "../../phases/Phase";
 import { Project } from "../../projects/Project";
-import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
+import SnapshotStoreConfig, { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,

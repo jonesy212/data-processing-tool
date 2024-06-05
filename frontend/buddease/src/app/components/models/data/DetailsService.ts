@@ -1,30 +1,37 @@
-// ApiDetails.ts
+// api/ApiDetails.ts
 import { handleApiError } from '@/app/api/ApiLogs';
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
-import { observable, runInAction } from 'mobx';
 import axiosInstance from '../../security/csrfToken';
-import { DetailsListActions } from '../../state/redux/actions/DetailsListActions';
-import { DetailsItem } from '../../state/stores/DetailsListStore';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import { DetailsItem } from '../../state/stores/DetailsListStore';
 import { Data } from './Data';
 
 const API_BASE_URL = "/api/details";
 
 const { notify } = useNotification();  // Destructure notify from useNotification
 
-export const detailsApiService = observable({
+export const detailsApiService = {
   fetchDetailsItem: async (detailsItemId: string): Promise<{ detailsItem: DetailsItem<Data> }> => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}/${detailsItemId}`);
-      runInAction(() => {
-        // Update state or perform other MobX-related actions
-      });
-      notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_SUCCESS, "Fetch Details Item Success", new Date(), {} as NotificationType);
+      notify(
+        "detailsSuccess",
+        "Fetch Details Item Success",
+        NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_SUCCESS,
+        new Date(),
+        NotificationTypeEnum.OperationStart
+      );
       return { detailsItem: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to fetch details item');
-      notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_ERROR, "Fetch Details Item Error", new Date(), {} as NotificationType);
+      notify(
+        "fetchDetailsItemError",
+        "Fetch Details Item Error",
+        NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_ERROR,
+        new Date(),
+        NotificationTypeEnum.APIError
+      );
       throw error;
     }
   },
@@ -32,26 +39,26 @@ export const detailsApiService = observable({
   updateDetailsItem: async (detailsItemId: string, updatedDetailsItemData: any): Promise<{ detailsItemId: string, detailsItem: DetailsItem<Data> }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${detailsItemId}`, updatedDetailsItemData);
-      runInAction(() => {
-        // Update state or perform other MobX-related actions
-      });
-      notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS, "Update Details Item Success", new Date(), {} as NotificationType);
+      notify(
+        "updateDetailsItemSuccess", 
+        "Update Details Item Success",
+        NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
+        new Date(), 
+        NotificationTypeEnum.APISuccess
+      );
       return {
         detailsItemId: response.data.id,
         detailsItem: response.data
       };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to update details item');
-      notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_ERROR, "Update Details Item Error", new Date(), {} as NotificationType);
-      throw error;
-    }
-  },
-
-  updateDetailsItemFailure: async (): Promise<void> => {
-    try {
-      await axiosInstance.get(API_BASE_URL);
-    } catch (error) {
-      console.error("Error updating details item:", error);
+      notify(
+        "updateDetailsItemError", 
+        "Update Details Item Error",
+        NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_ERROR,
+        new Date(), 
+        NotificationTypeEnum.APIError
+      );
       throw error;
     }
   },
@@ -59,14 +66,23 @@ export const detailsApiService = observable({
   fetchDetailsItems: async (): Promise<{ detailsItems: DetailsItem<Data>[] }> => {
     try {
       const response = await axiosInstance.get(API_BASE_URL);
-      runInAction(() => {
-        // Update state or perform other MobX-related actions
-      });
-      notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_SUCCESS, "Fetch Details Items Success", new Date(), {} as NotificationType);
+      notify(
+        "fetchDetailsItemsSuccess", 
+        "Fetch Details Items Success",
+        NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_SUCCESS,
+        new Date(), 
+        NotificationTypeEnum.APISuccess
+      );
       return { detailsItems: response.data as DetailsItem<Data>[] };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to fetch details items');
-      notify(NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_ERROR, "Fetch Details Items Error", new Date(), {} as NotificationType);
+      notify(
+        "fetchDetailsItemsError", 
+        "Fetch Details Items Error",
+        NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_ERROR,
+        new Date(), 
+        NotificationTypeEnum.APIError
+      );
       throw error;
     }
   },
@@ -74,31 +90,52 @@ export const detailsApiService = observable({
   updateDetailsItems: async (updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<Data>[] }> => {
     try {
       const response = await axiosInstance.put(API_BASE_URL, updatedDetailsItemsData);
-      runInAction(() => {
-        // Update state or perform other MobX-related actions
-      });
-      notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_SUCCESS, "Update Details Items Success", new Date(), {} as NotificationType);
+      notify(
+        "updateDetailsItemsSuccess", 
+        "Update Details Items Success",
+        NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_SUCCESS,
+        new Date(), 
+        NotificationTypeEnum.APISuccess
+      );
       return { detailsItems: response.data as DetailsItem<Data>[] };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to update details items');
-      notify(NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_ERROR, "Update Details Items Error", new Date(), {} as NotificationType);
+      notify(
+        "updateDetailsItemsError", 
+        "Update Details Items Error",
+        NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_ERROR,
+        new Date(), 
+        NotificationTypeEnum.APIError
+      );
       throw error;
     }
   },
 
   deleteDetailsItems: async (detailsItemIds: string[]): Promise<void> => {
     try {
-      const response = await axiosInstance.delete(`${API_BASE_URL}`, {
+      await axiosInstance.delete(`${API_BASE_URL}`, {
         data: { detailsItemIds },
       });
-      runInAction(() => {
-        DetailsListActions.deleteDetailsItemsSuccess(detailsItemIds);
-      });
-      notify(NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_SUCCESS, "Delete Details Items Success", new Date(), {} as NotificationType);
+      notify(
+        "deleteDetailsItemsSuccess",
+        "Delete Details Items Success",
+        NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_SUCCESS,
+        new Date(),
+        NotificationTypeEnum.APISuccess
+      );
     } catch (error) {
-      handleApiError(error as AxiosError<unknown>, 'Failed to delete details items');
-      notify(NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_ERROR, "Delete Details Items Error", new Date(), {} as NotificationType);
+      handleApiError(
+        error as AxiosError<unknown>,
+        "Failed to delete details items"
+      );
+      notify(
+        "deleteDetailsItemsError",
+        "Delete Details Items Error",
+        NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_ERROR,
+        new Date(),
+        NotificationTypeEnum.APIError
+      );
       throw error;
     }
   },
-});
+};

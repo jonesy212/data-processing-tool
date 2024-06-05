@@ -1,11 +1,15 @@
+import { HookActions } from './../actions/HookActions';
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
 import { UIActions } from '../actions/UIActions';
-import { Progress } from '../models/tracker/ProgressBar';
 import { RootState } from '../state/redux/slices/RootSlice';
 import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
+import { Progress } from '../models/tracker/ProgressBar';
+import { useDispatch } from 'react-redux';
 export interface AsyncHook<T> extends PhaseHookConfig {
-  isActive: boolean;
+  enable: () => void; // Change enable method to not be optional
+  disable: () => void; // Change disable method to not be optional
+ isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   resetIdleTimeout: () => Promise<void>;
   idleTimeoutId: NodeJS.Timeout | null;
@@ -127,7 +131,7 @@ const idleTimeoutDuration = 10000;
 
 const asyncHook: AsyncHook<RootState> = {
   isActive: false,
-  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void | undefined) => {},
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void | undefined) => { },
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
     // Start the idle timeout with the specified duration
     const timeoutId = setTimeout(onTimeout, timeoutDuration);
@@ -140,10 +144,8 @@ const asyncHook: AsyncHook<RootState> = {
     // Implementation logic for resetIdleTimeout
     // Here you would reset the idle timeout
     // For example:
-    if (
-      asyncHook.idleTimeoutId !== null &&
-      asyncHook.idleTimeoutId !== undefined
-    ) {
+    if (asyncHook.idleTimeoutId !== null &&
+      asyncHook.idleTimeoutId !== undefined) {
       clearTimeout(asyncHook.idleTimeoutId);
       asyncHook.idleTimeoutId = null;
     }
@@ -228,10 +230,9 @@ const asyncHook: AsyncHook<RootState> = {
     return Promise.resolve(true);
   },
 
-  
+
   asyncEffect: async ({
-    idleTimeoutId,
-    startIdleTimeout,
+    idleTimeoutId, startIdleTimeout,
   }: {
     idleTimeoutId: NodeJS.Timeout | null;
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
@@ -249,6 +250,20 @@ const asyncHook: AsyncHook<RootState> = {
     };
   },
   duration: "",
+  enable: function (): void {
+    // Dispatch the enable action
+    useDispatch()(HookActions.enable());
+    console.log('Async hook enabled');
+    // If necessary, update the state to reflect that the hook is enabled
+    HookActions.setActive(true);
+  },
+  disable: function (): void {
+    // Dispatch the disable action
+    useDispatch()(HookActions.disable());
+    console.log('Async hook disabled');
+    // If necessary, update the state to reflect that the hook is disabled
+    HookActions.setActive(false);
+  },
 };
 
 

@@ -1,8 +1,10 @@
+import { FC } from 'react';
+import { Progress } from '@/app/components/models/tracker/ProgressBar';
 // DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
-import { Phase } from "../../phases/Phase";
+import { CustomPhaseHooks, Phase } from "../../phases/Phase";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
@@ -13,9 +15,16 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
-import { DataStatus, PriorityStatus, ProductStatus, StatusType, TaskStatus, TeamStatus, TodoStatus } from "../../models/data/StatusType";
+import {
+  DataStatus,
+  PriorityStatus,
+  ProductStatus,
+  StatusType,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
+} from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
-import { Progress } from "../../models/tracker/ProgressBar";
 import { Project } from "../../projects/Project";
 import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
@@ -24,18 +33,16 @@ import { Attachment } from "../../documents/Attachment/attachment";
 import { Tag } from "../../models/tracker/Tag";
 const { notify } = useNotification();
 
-
-
-
 // Union type of all status enums
-export type AllStatus = StatusType
+export type AllStatus =
+  | StatusType
   | TaskStatus
   | TodoStatus
   | DataStatus
   | TeamStatus
   | DocumentStatus
   | PriorityStatus
-  | ProductStatus
+  | ProductStatus;
 // Define a generic interface for details
 interface DetailsItem<T> extends DataDetails {
   _id?: string;
@@ -44,7 +51,7 @@ interface DetailsItem<T> extends DataDetails {
   name?: string;
   isRecurring?: boolean;
   type?: AllTypes; //todo verif we match types
-  status?: AllStatus // Use enums for status property
+  status?: AllStatus; // Use enums for status property
   participants?: Member[];
   description?: string | null | undefined;
   assignedProjects?: Project[];
@@ -57,14 +64,14 @@ interface DetailsItem<T> extends DataDetails {
   }[];
   progress?: Progress | null;
   startDate?: Date;
-  dueDate?: Date | null | undefined,
-  
+  dueDate?: Date | null | undefined;
+
   endDate?: Date;
   phase?: Phase | null;
   isActive?: boolean;
-  tags?: string[] | Tag[]
-  subtitle?: string,
-  date?: Date,
+  tags?: string[] | Tag[];
+  subtitle?: string;
+  date?: Date;
   author?: string;
   // data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
@@ -90,6 +97,10 @@ export interface DetailsListStore {
     | TaskStatus.Pending
     | TaskStatus.InProgress
     | TaskStatus.Completed
+    | TaskStatus.Tentative
+    | TaskStatus.Confirmed
+    | TaskStatus.Cancelled
+    | TaskStatus.Scheduled
     | undefined;
   snapshotStore: SnapshotStore<Snapshot<Data>>;
   NOTIFICATION_MESSAGE: string;
@@ -130,10 +141,14 @@ class DetailsListStoreClass implements DetailsListStore {
     | TaskStatus.Pending
     | TaskStatus.InProgress
     | TaskStatus.Completed
+    | TaskStatus.Tentative
+    | TaskStatus.Confirmed
+    | TaskStatus.Cancelled
+    | TaskStatus.Scheduled
     | undefined = undefined;
-  snapshotStore!: SnapshotStore<Snapshot<Data>>; // Definite assignment assertion
+  snapshotStore!: SnapshotStore<Snapshot<Data>>;
 
-  subscribe = (callback: (snapshot: Snapshot<Data>) => void) => { };
+  subscribe = (callback: (snapshot: Snapshot<Data>) => void) => {};
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
@@ -204,15 +219,44 @@ class DetailsListStoreClass implements DetailsListStore {
         id: detailsId,
         description: this.detailsDescription,
         title: this.detailsTitle,
-        status: this.detailsStatus as TaskStatus.Pending |
-          TaskStatus.InProgress |
-          TaskStatus.Completed,
-        phase: {} as DetailsItem<Data>["phase"],
+        status: this.detailsStatus as
+          | TaskStatus.Pending
+          | TaskStatus.InProgress
+          | TaskStatus.Completed,
+        phase: {
+          index: 0,
+          name: "Phase Name",
+          color: "#000000",
+          status: "",
+          createdAt: undefined,
+          updatedAt: undefined,
+          startDate: undefined,
+          endDate: undefined,
+          subPhases: [] as Phase[],
+          component: {} as FC<any>,
+          hooks: {
+            onPhaseStart: [],
+            onPhaseEnd: [],
+            onPhaseUpdate: [],
+            resetIdleTimeout: async () => {},
+            isActive: false,
+            progress: {
+              id: "",
+              value: 0,
+              label: "",
+              current: 0,
+              max: 0,
+              percentage: 0,
+            },
+            condition: async () => false,
+          },
+          duration: 0,
+        },
         data: {} as DetailsItem<Data>["data"],
         isActive: false,
         type: "details",
         analysisResults: {} as DetailsItem<Data>["analysisResults"],
-        updatedAt: undefined
+        updatedAt: undefined,
       });
     }
 
@@ -244,16 +288,7 @@ class DetailsListStoreClass implements DetailsListStore {
     this.setDetails(details);
   }
 
-  updateDetailsStatus(
-    status:
-      | StatusType.Pending
-      | StatusType.InProgress
-      | StatusType.Completed
-      | StatusType.Tentative
-      | StatusType.Confirmed
-      | StatusType.Cancelled
-      | StatusType.Scheduled
-  ): void {
+  updateDetailsStatus(status: AllStatus): void {
     // Map StatusType values to TaskStatus values
     switch (status) {
       case StatusType.Pending:
@@ -267,32 +302,32 @@ class DetailsListStoreClass implements DetailsListStore {
         break;
       case StatusType.Tentative:
         // Handle Tentative status if needed
+        this.detailsStatus = TaskStatus.Tentative;
         break;
       case StatusType.Confirmed:
+        this.detailsStatus = TaskStatus.Confirmed;
         // Handle Confirmed status if needed
         break;
       case StatusType.Cancelled:
-        // Handle Cancelled status if needed
+        this.detailsStatus = TaskStatus.Cancelled;
         break;
       case StatusType.Scheduled:
-        // Handle Scheduled status if needed
+        this.detailsStatus = TaskStatus.Scheduled;
         break;
       default:
         this.detailsStatus = undefined;
         break;
     }
-    
   }
-  
 
   addDetailsItem(detailsItem: DetailsItem<Data>): void {
     let status: AllStatus = detailsItem.status || TaskStatus.Pending;
-  
+
     this.details = {
       ...this.details,
       [status]: [...(this.details[status] || []), detailsItem],
     };
-  
+
     // Optionally, you can trigger notifications or perform other actions on success
     this.setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
@@ -317,7 +352,7 @@ class DetailsListStoreClass implements DetailsListStore {
       type: "details",
       _id: "",
       analysisResults: [],
-      updatedAt: undefined
+      updatedAt: undefined,
     };
 
     this.addDetailsItem(newDetailsItem);
@@ -354,20 +389,20 @@ class DetailsListStoreClass implements DetailsListStore {
   addDetail(detail: Data): void {
     // Assuming 'detail' is a valid Data object to be added
     let status: AllStatus = detail.status || TaskStatus.Pending;
-  
+
     // Ensure detail.id is not null or undefined before assigning
     const id: string = String(detail.id) ?? "";
-  
+
     // Ensure detail.description is always a string or undefined
     const description: string = detail.description || ""; // Provide a default empty string if description is null or undefined
     const phase: Phase = detail.phase || ({} as Phase); // Provide a default empty object if phase is null or undefined
-  
+
     // Create a copy of the current state of details
     const updatedDetails = { ...this.details };
-  
+
     // Get the array associated with the current status or create a new empty array
     const statusArray = updatedDetails[status] || [];
-  
+
     if (detail.title !== undefined) {
       // Add the new detail to the status array
       statusArray.push({
@@ -379,17 +414,17 @@ class DetailsListStoreClass implements DetailsListStore {
         phase: phase,
         type: "detail",
         isActive: false,
-        analysisResults: {} as DetailsItem<Data>["analysisResults"],
-        updatedAt: undefined
+        analysisResults: [],
+        updatedAt: undefined,
       });
     }
     // Update the details object with the new status array
     updatedDetails[status] = statusArray;
-  
+
     // Set the updated details object to the class property
     this.details = updatedDetails;
   }
-}  
+}
 
 const useDetailsListStore = (): DetailsListStore => {
   return new DetailsListStoreClass();
@@ -397,4 +432,3 @@ const useDetailsListStore = (): DetailsListStore => {
 
 export { useDetailsListStore };
 export type { DetailsItem };
-

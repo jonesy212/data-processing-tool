@@ -18,6 +18,7 @@ import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state/redux/slices/RootSlice";
+import { EventActions } from "../actions/EventActions";
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
   initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
@@ -285,13 +286,13 @@ class EventService {
    // Function to collect events
    collectEvents = () => {
     // Dispatch action to fetch security events
-    this.dispatch(fetchEvents());
+    this.dispatch(EventActions.fetchEvents());
   };
 
   // Function to analyze events
    analyzeEvents = () => {
     // Dispatch action to analyze events
-    this.dispatch(analyzeEvents(this.securityEvents));
+    this.dispatch(EventActions.analyzeEvents(this.securityEvents));
   };
 
   addEventListener(

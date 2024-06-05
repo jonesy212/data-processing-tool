@@ -1,13 +1,18 @@
 import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
 
 interface SnapshotItem {
+  message: any;
+  content?: string | Data | Content; // Adjust optional properties as needed
+  data: any;
   user: any;
   id: string;
   value: Snapshot<Data>;
   label: string;
   category: string;
+  timestamp: Date | string;
   categories?: string[];
   updatedAt: Date | undefined
   // Define properties of a snapshot item
@@ -26,16 +31,16 @@ class SnapshotList {
   sortSnapshotByDate() {
     this.snapshots.sort((a, b) => {
       return (
-        (a.value?.timestamp?.getTime() ?? 0) -
-        (b.value?.timestamp?.getTime() ?? 0)
+        (a.value?.timestamp instanceof Date ? a.value.timestamp.getTime() : 0) -
+        (b.value?.timestamp instanceof Date ? b.value.timestamp.getTime() : 0)
       );
     });
   }
   sort() {
     this.snapshots.sort((a, b) => {
       return (
-        (a.value?.timestamp?.getTime() as number) -
-        (b.value?.timestamp?.getTime() as number)
+        (a.value?.timestamp instanceof Date ? a.value.timestamp.getTime() : 0) -
+        (b.value?.timestamp instanceof Date ? b.value.timestamp.getTime() : 0)
       );
     });
   }
@@ -56,11 +61,15 @@ class SnapshotList {
     return snapshots;
   }
 
+  getSnapshots(): SnapshotItem[] {
+    return this.snapshots;
+  }
+
   sortSnapshotItems() {
     this.snapshots.sort((a, b) => {
       return (
-        (a.value?.timestamp?.getTime() as number) -
-        (b.value?.timestamp?.getTime() as number)
+        (a.value?.timestamp instanceof Date ? a.value.timestamp.getTime() : 0) -
+        (b.value?.timestamp instanceof Date ? b.value.timestamp.getTime() : 0)
       );
     });
   }
