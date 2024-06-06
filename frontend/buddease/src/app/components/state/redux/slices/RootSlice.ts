@@ -50,6 +50,8 @@ import { useTeamManagerSlice } from "./TeamSlice";
 import { useToolbarManagerSlice } from "./toolbarSlice";
 import { useVersionManagerSlice } from "./VersionSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
+import { useAuthSlice } from "./AuthSlice";
+import { useAuthorizationSlice } from "./AuthorizationSlice";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -71,6 +73,8 @@ export interface RootState {
   appManager: ReturnType<typeof useAppManagerSlice.reducer>;
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
   uiManager: ReturnType<typeof useUIManagerSlice.reducer>;
+  authManager: ReturnType<typeof useAuthSlice.reducer>;
+  authorizationManager: ReturnType<typeof useAuthorizationSlice.reducer>;
   // Project Management
   projectManager: ReturnType<typeof useProjectManagerSlice.reducer>;
   taskManager: ReturnType<typeof useTaskManagerSlice.reducer>;
@@ -120,6 +124,10 @@ const initialState: RootState = {
   appManager: useAppManagerSlice.reducer(undefined, { type: "init" }),
   toolbarManager: useToolbarManagerSlice.reducer(undefined, { type: "init" }),
   projectManager: useProjectManagerSlice.reducer(undefined, {
+    type: "init",
+  }),
+  authManager: useAuthSlice.reducer(undefined, { type: "init" }),
+  authorizationManager: useAuthorizationSlice.reducer(undefined, {
     type: "init",
   }),
   dataManager: useDataManagerSlice.reducer(undefined, { type: "init" }),
@@ -255,7 +263,7 @@ const rootReducerSlice = createSlice({
         isActive: false,
         tags: [],
         dependencies: [],
-        then: function (onFulfill: (newTask: Task) => void): unknown {
+        then: function (onFulfill: (newTask: Data) => void): unknown {
           // Example implementation: Call onFulfill with the new task after some asynchronous operation
           setTimeout(() => {
             return onFulfill(newTask);
@@ -475,7 +483,9 @@ const rootReducer = combineReducers({
   settingsManager: useSettingsManagerSlice.reducer,
   blogManager: useBlogManagerSlice.reducer,
   filterManager: filterReducer,
-  snapshotManager: useSnapshotManager.reducer
+  snapshotManager: useSnapshotSlice.reducer,
+  authManager: useAuthSlice.reducer,
+  authenticationManager: useAuthorizationSlice.reducer,
   // todo create code for
   // tagManager: useTagManagerSlice.reducer,
   // bookmarkManager: useBookmarkManagerSlice.reducer,

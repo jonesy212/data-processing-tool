@@ -6,6 +6,8 @@ import { Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
 import { Snapshot } from "../../snapshots/SnapshotStore";
 import { VideoData } from "../../video/Video";
+import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
+import { Tag } from '../../models/tracker/Tag';
 
 interface CommonEvent extends Data {
   title: string;
@@ -16,6 +18,7 @@ interface CommonEvent extends Data {
   // Shared time properties
   startTime?: string;
   endTime?: string;
+  tags?: string[] | Tag[];
 
   // Recurrence properties
   recurring?: boolean;
@@ -35,6 +38,7 @@ interface CommonEvent extends Data {
 export function implementThen(callback: (newData: Snapshot<Data>) => void): Snapshot<Data> {
     return {
       timestamp: new Date(),
+      category: "",
       data: {
         _id: "",
         id: "",
@@ -48,7 +52,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
         analysisType: {} as AnalysisTypeEnum.CUSTOM,
         analysisResults: [],
         videoData: {} as VideoData,
-      },
+        },
     };
   }
   
@@ -92,6 +96,16 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
         originalPath: "originalPath",
         fileType: "fileType",
         alternatePaths: [],
+        title: '',
+        description: '',
+        keywords: [],
+        authors: [],
+        contributors: [],
+        publisher: '',
+        copyright: '',
+        license: '',
+        links: [],
+        tags: []
       },
     },
   

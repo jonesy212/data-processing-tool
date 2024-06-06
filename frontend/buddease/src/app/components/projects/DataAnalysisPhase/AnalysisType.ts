@@ -15,7 +15,7 @@ enum AnalysisTypeEnum {
     DIAGNOSTIC = "Diagnostic Analysis",
     CORRELATIONAL = "Correlational Analysis",
     CAUSAL = "Causal Analysis",
-    
+    STATISTICAL = "statistical",
     // Predictive Analysis
     PREDICTIVE = "Predictive Analysis",
     
@@ -65,4 +65,4 @@ enum AnalysisTypeEnum {
     IMPACT = "Impact Analysis",
 }
 
-export {AnalysisTypeEnum};
+export { AnalysisTypeEnum };

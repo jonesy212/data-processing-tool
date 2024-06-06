@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
+import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
 import useRealtimeData from "../hooks/commHooks/useRealtimeData";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
-import { Data } from "../models/data/Data";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
+import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 
 type Subscription = {
   unsubscribe: () => void;
@@ -12,6 +10,12 @@ type Subscription = {
   tradeExecutions: () => void;
   marketUpdates: () => void;
   communityEngagement: () => void;
+  subscriberId?: string;
+  subscriptionId?: string
+  subscriberType?: SubscriberTypeEnum
+  subscriptionType?: SubscriptionTypeEnum;
+  getPlanName?: () => SubscriberTypeEnum; // Add getPlanName method
+  portfolioUpdatesLastUpdated
 };
 
 const SubscriptionComponent = (

@@ -5,6 +5,7 @@ import performDatabaseOperation from "../database/DatabaseOperations";
 import { User } from "../users/User";
 import isValidAuthToken from "./AuthValidation";
 import { decryptedData } from "./decryptedData";
+import { Encryption } from "./Encryption";
 
 const app = express();
 
@@ -21,9 +22,12 @@ export const validatePassword = (password: string): string[] => {
   return errors;
 };
 
-export const decryptData = (encryptedData: string): string => {
+export const decryptData = (
+  encryptedData: string,
+  encryptionParams: Encryption
+): string => {
   // Implement decryption logic using decryption algorithms
-  return decryptedData(encryptedData);
+  return decryptedData(encryptedData, encryptionParams);
 };
 
 // Function to sanitize comments

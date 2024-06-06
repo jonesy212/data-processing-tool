@@ -11,7 +11,10 @@ import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
-import SnapshotStore, { Snapshot, Snapshots } from "../../snapshots/SnapshotStore";
+import SnapshotStore, {
+  Snapshot,
+  Snapshots,
+} from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import Todo from "../../todos/Todo";
@@ -21,10 +24,10 @@ import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
-import { Member } from "../teams/TeamMembers";
-import { ProjectPhaseTypeEnum } from "./StatusType";
 import { Content } from "../content/AddContent";
+import { Member } from "../teams/TeamMembers";
 import { Tag } from "../tracker/Tag";
+import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
@@ -39,7 +42,7 @@ interface DataDetails {
   updatedAt: Date | undefined;
   uploadedAt?: Date;
   type?: AllTypes;
-  tags?: string[] | Tag[]
+  tags?: string[] | Tag[];
   isActive?: boolean;
   status?: AllStatus;
 
@@ -49,7 +52,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: Snapshots<Data>
+    snapshots?: Snapshots<Data>;
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -99,9 +102,9 @@ interface Data {
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  timestamp?: Date | string ;
+  timestamp?: Date | string;
   isActive?: boolean;
-  tags?:  string[] | Tag[];
+  tags?: string[] | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
 
@@ -145,8 +148,7 @@ interface Data {
   category?: string;
   getData?: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Define the getData method
   then?: (callback: (newData: Snapshot<Data>) => void) => void;
-  actions?: typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>[]; // Update actions type
-
+  actions?: (typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>)[]; // Update actions type
 }
 
 // Define the UserDetails component
@@ -388,6 +390,8 @@ const data: Data = {
       notificationSound: "birds",
       notificationVolume: 50,
       sms: false,
+      mobile: false,
+      desktop: true,
     },
     securitySettings: {
       securityQuestions: ["What is your pet's name?"],
@@ -504,11 +508,12 @@ const data: Data = {
 
         clone(): CustomTransaction {
           // Implement logic to clone the data object
+
           const clonedData: CustomTransaction = {
             _id: this._id,
-            id: this.id,
+            id: this.id || "", // Provide a default value of empty string
             amount: this.amount,
-            date: this.date,
+            date: this.date ? new Date(this.date.getTime()) : undefined,
             description: this.description || "", // Provide a default value of empty string
             startDate: this.startDate ? new Date(this.startDate) : undefined,
             endDate: this.endDate ? new Date(this.endDate) : undefined,
@@ -546,15 +551,88 @@ const data: Data = {
             hash: null,
             unsignedHash: "",
             fromPublicKey: null,
+
+            equals(transaction: CustomTransaction): boolean {
+              // Compare each property of the transactions
+              return (
+                this.id === transaction.id &&
+                this.amount === transaction.amount &&
+                this.date?.getTime() === transaction.date?.getTime() &&
+                this.title === transaction.title
+                // Add more comparisons for other properties as needed
+              );
+            },
+
+            getSubscriptionLevel(): string {
+              if (this.subscriptionType) {
+                switch (this.subscriptionType) {
+                  case SubscriptionTypeEnum.FREE:
+                    return "Free";
+                  case SubscriptionTypeEnum.STANDARD:
+                    return "Standard";
+                  case SubscriptionTypeEnum.PREMIUM:
+                    return "Enterprise";
+                  case SubscriptionTypeEnum.ENTERPRISE:
+                    return "Premium";
+                  case SubscriptionTypeEnum.TRIAL:
+                    return "Premium";
+                  default:
+                    return "Unknown";
+                }
+              } else {
+                return "Unknown";
+              }
+            },
+            getRecentActivity: () => {
+              if (this.recentActivity && this.recentActivity.length === 2) {
+                return this.recentActivity;
+              } else {
+                // If recentActivity is undefined or has incorrect length, return default values
+                return [
+                  { action: "", timestamp: new Date() },
+                  { action: "", timestamp: new Date() },
+                ];
+              }
+            },
+            notificationsEnabled: this.notificationsEnabled ?? false,
+            recentActivity: [
+              { action: "Action 1", timestamp: new Date() },
+              { action: "Action 2", timestamp: new Date() },
+            ],
           };
           return clonedData;
         },
-        toJSON() {
-          // Implement logic to convert the data object to JSON format
-          const dataJSON: string = JSON.stringify({
-            // Convert properties to JSON format
-          });
-          return dataJSON;
+        toJSON(): CustomTransaction {
+          const customTransaction: CustomTransaction = {
+            id: this.id ?? null,
+            type: this.type ?? null,
+            typeName: this.typeName ?? null,
+            from: this.from ?? null,
+            signature: this.signature ?? null,
+            maxFeePerGas: this.maxFeePerGas ?? null,
+            maxFeePerBlobGas: this.maxFeePerBlobGas ?? null,
+            blobVersionedHashes: this.blobVersionedHashes ?? null,
+            maxPriorityFeePerGas: this.maxPriorityFeePerGas ?? null,
+            gasPrice: this.gasPrice ?? null,
+            date: this.date,
+            data: this.data || "",
+            description: this.description ?? null,
+            value: this.value ?? null,
+            unsignedHash: this.unsignedHash ?? null,
+            notificationsEnabled: this.notificationsEnabled ?? false,
+            amount: this.amount,
+            title: this.title ?? null,
+            startDate: this.startDate,
+            endDate: this.endDate,
+            serialized: this.serialized,
+            unsignedSerialized: this.unsignedSerialized,
+            recentActivity: this.recentActivity ?? [{
+              action: "Action 1", timestamp: new Date()
+            }, {
+              action: "Action 2", timestamp: new Date()
+            }],
+          };
+          return customTransaction;
         },
       }),
     ],
@@ -614,8 +692,9 @@ const data: Data = {
     },
   },
   snapshots: [],
-  getData: function (): Promise<SnapshotStore<Snapshot<Data>, Data>[]> {
-    throw new Error("Function not implemented.");
+  getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+    // Implement logic to get the data
+    return Promise.resolve([]);
   },
 };
 

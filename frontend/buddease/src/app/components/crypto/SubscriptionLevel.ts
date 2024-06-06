@@ -1,3 +1,5 @@
+import { SubscriberTypeEnum } from "../models/data/StatusType";
+
 // SubscriptionLevel
 interface SubscriptionLevel {
     name: string;
@@ -5,6 +7,19 @@ interface SubscriptionLevel {
     price: number;
     features: string[];
 }
+
+
+// Function to determine the subscriber type based on subscription level
+function determineSubscriberType(subscriptionLevel: SubscriptionLevel): SubscriberTypeEnum {
+    if (subscriptionLevel.name === "Basic") {
+        return SubscriberTypeEnum.Free;
+    } else if (subscriptionLevel.name === "Premium") {
+        return SubscriberTypeEnum.Premium;
+    } else {
+        return SubscriberTypeEnum.Trial;
+    }
+}
+
 
 // Define your subscription levels
 const subscriptionLevels: SubscriptionLevel[] = [
@@ -28,15 +43,18 @@ const subscriptionLevels: SubscriptionLevel[] = [
     },
 ];
 
+
+
+
 // Function to determine the subscription level based on price
 function getSubscriptionLevel(price: number): SubscriptionLevel | undefined {
-  return subscriptionLevels.find(
-    (level: SubscriptionLevel) => level.price === price
-  );
+    return subscriptionLevels.find((level: SubscriptionLevel) => level.price === price);
 }
 
 // Example usage
+const price = 20; // Adjust the price as needed
 const subscriptionLevel = getSubscriptionLevel(price);
+
 if (subscriptionLevel) {
     console.log(`You have subscribed to ${subscriptionLevel.name} level.`);
     console.log(`Description: ${subscriptionLevel.description}`);

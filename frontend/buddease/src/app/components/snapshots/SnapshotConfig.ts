@@ -19,6 +19,7 @@ import { target } from "@/app/api/EndpointConstructor";
 import { batchFetchSnapshotsRequest } from "./snapshotHandlers";
 import SnapshotComponent from "../libraries/ui/components/SnapshotComponent";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { SubscriptionTypeEnum } from '../models/data/StatusType';
 
 type T = Snapshot<any>; // Define T as Snapshot<any>
 
@@ -477,66 +478,77 @@ removeSnapshot: function (
     getSubscribers: async function (
         subscribers: Subscriber<Snapshot<Snapshot<Data>>>[],
         snapshots: Snapshots<T>
-      ): Promise<{
+    ): Promise<{
         subscribers: Subscriber<Snapshot<Snapshot<Data>>>[];
         snapshots: Snapshots<Snapshot<T>>;
-      }> {
-        const generateUniqueId =  UniqueIDGenerator.generateID('snap', 'subscriber', NotificationTypeEnum.Snapshot);
+    }> {
+        const generateUniqueId = UniqueIDGenerator.generateID('snap', 'subscriber', NotificationTypeEnum.Snapshot);
+        const generateSubscriptionId = UniqueIDGenerator.generateID('snap', 'subscription', NotificationTypeEnum.Snapshot);
         // Assuming this.subscribers contains the correct data
         // You may need to adjust this depending on your implementation
         return {
-          subscribers: subscribers.map(subscriber => {
-            const updatedSnapshots = subscriber.snapshots.map((snapshot: Snapshot<Data>) => ({
+            subscribers: subscribers.map(subscriber => {
+                const updatedSnapshots = subscriber.snapshots.map((snapshot: Snapshot<Data>) => ({
+                    ...snapshot,
+                    data: {
+                        ...snapshot.data,
+                    },
+                }));
+          
+                // Create a new object that matches the Subscriber<Snapshot<Snapshot<Data>>> type
+                const subscriberObj: Subscriber<Snapshot<Snapshot<Data>>> = {
+                    ...subscriber,
+                    snapshots: updatedSnapshots,
+                    subscriberId: subscriber.getSubscriberId(),
+                    subscribers: [],
+                    subscription: {
+                        // subscriptionId: generateSubscriptionId,                        
+                        subscriberId: subscriber.getSubscriberId(),
+                        subscriberType: subscriber.getSubscriberType(),
+                        subscriptionId: generateSubscriptionId,
+                        subscriptionType: SubscriptionTypeEnum.CommunityEngagement,
+                        portfolioUpdates: () => subscriber,
+                        // portfolioUpdatesCount:() => subscriber.getPortfolioUpdatesCount(),
+                      portfolioUpdatesLastUpdated: null,
+                      unsubscribe: () => subscriber,
+                      portfolioUpdates: () => subscriber,
+                      tradeExecutions: () => subscriber.getTradeExecutions(),
+                      marketUpdates: () => subscriber.getMarketUpdates(),
+                      communityEngagement: () => subscriber.getCommunityEngagement(),
+                    },
+                    getId: () => subscriber.getId(),
+                    subscribe: () => { },
+                    unsubscribe: () => { },
+                    onSnapshotCallbacks: [],
+                    onErrorCallbacks: [],
+                    onUnsubscribeCallbacks: [],
+                    state: null,
+                    getSubscriberId: () => subscriber.getSubscriberId(),
+                    notifyEventSystem: () => { },
+                    updateProjectState: () => { },
+                    logActivity: () => { },
+                    triggerIncentives: () => { },
+                    toSnapshotStore: () => { },
+                    receiveSnapshot: () => { },
+                    getState: () => null,
+                    onError: () => { },
+                    triggerError: () => { },
+                    onUnsubscribe: () => { },
+                    onSnapshot: () => { },
+                    onSnapshotError: () => { },
+                    onSnapshotUnsubscribe: () => { },
+                };
+          
+                return subscriberObj;
+            }),
+            snapshots: snapshots.map(snapshot => ({
                 ...snapshot,
                 data: {
-                  ...snapshot.data,
+                    ...snapshot.data,
                 },
-              }));
-            // Ensure the subscriber object contains all properties expected by the type
-            return {
-              ...subscriber,
-              snapshots: updatedSnapshots,
-              subscriberId: generateUniqueId,  // Add any missing properties here
-              subscribers: [], // Add any missing properties here
-              subscription: generateSubscriptionId(), // Add any missing properties here
-              getId: () => "", // Example of making getId optional
-              subscribe: () => {}, // Example of making subscribe optional
-              unsubscribe: () => {}, // Example of making unsubscribe optional
-            
-                onSnapshotCallbacks: [], // Add any missing properties here
-                onErrorCallbacks: [], // Example of empty array for error callbacks
-                onUnsubscribeCallbacks: [], // Example of empty array for unsubscribe callbacks
-                state: null, // Example of null state
-                id: "", // Example of empty string ID
-                notifyEventSystem: () => {}, // Example of empty function for notifyEventSystem
-                updateProjectState: () => {}, // Example of empty function for updateProjectState
-                logActivity: () => {}, // Example of empty function for logActivity
-                triggerIncentives: () => {}, // Example of empty function for triggerIncentives
-                subscribe: () => {}, // Example of empty function for subscribe
-                unsubscribe: () => {}, // Example of empty function for unsubscribe
-                toSnapshotStore: () => {}, // Example of empty function for toSnapshotStore
-                getId: () => "", // Example of empty function for getId
-                receiveSnapshot: () => {}, // Example of empty function for receiveSnapshot
-                getState: () => null, // Example of function returning null for getState
-                onError: () => {}, // Example of empty function for onError
-                triggerError: () => {}, // Example of empty function for triggerError
-                onUnsubscribe: () => {}, // Example of empty function for onUnsubscribe
-                onSnapshot: () => {}, // Example of empty function for onSnapshot
-                onSnapshotError: () => {}, // Example of empty function for onSnapshotError
-                onSnapshotUnsubscribe: () => {}, // Example of empty function for onSnapshotUnsubscribe
-                    
-              // Add any other missing properties here
-            };
-          }),
-          snapshots: snapshots.map(snapshot => ({
-            ...snapshot,
-            data: {
-              ...snapshot.data,
-            },
-          })),
+            })),
         };
-      },
-    
+    },
     
       
       

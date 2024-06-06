@@ -24,7 +24,7 @@ import { Member } from "../../models/teams/TeamMembers";
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import axiosInstance from "../../security/csrfToken";
-import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
+import SnapshotStoreConfig, { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
@@ -38,6 +38,7 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 import { WritableDraft } from "../redux/ReducerGenerator";
+import { Tag } from "../../models/tracker/Tag";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -87,7 +88,8 @@ interface CalendarEvent extends CommonEvent, CommonData<Data> {
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
-
+  date: Date;
+  tags?: string[] | Tag[];
 
   options?: {
     // ...

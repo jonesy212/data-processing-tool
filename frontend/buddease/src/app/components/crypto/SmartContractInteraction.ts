@@ -1,27 +1,26 @@
 import { Signature } from "ethers";
+import { SubscriptionTypeEnum } from "../models/data/StatusType";
 import { Transaction } from "../payment/Transaction";
 
-
-
 interface SmartContractInteraction {
-  id: string |null ;
+  id: string | null;
   amount: number | undefined;
-  date: Date;
+  date: Date | undefined;
   description: string | null;
 }
 
-interface CustomTransactionProps extends SmartContractInteraction{
+interface CustomTransactionProps extends SmartContractInteraction {
   _id: string | undefined;
-  date: Date;
+  date: Date | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   serialized: string | undefined;
   unsignedSerialized: string | undefined;
   accessList: [] | undefined;
-  to: string | null | undefined;
-  nonce: number | null;
-  gasLimit: bigint | null;
-  gasPrice: bigint | null;
+  to?: string | null | undefined;
+  nonce?: number | null;
+  gasLimit?: bigint | null;
+  gasPrice?: bigint | null;
   maxPriorityFeePerGas: bigint | null;
   maxFeePerGas: bigint | null;
   type: number | null;
@@ -53,8 +52,8 @@ interface CustomTransactionProps extends SmartContractInteraction{
       timestamp: Date;
     }
   ];
-  getSubscriptionLevel: () => string;
-  getRecentActivity: () => [
+  getSubscriptionLevel?: () => string;
+  getRecentActivity?: () => [
     {
       action: string;
       timestamp: Date;
@@ -66,29 +65,29 @@ interface CustomTransactionProps extends SmartContractInteraction{
   ];
   notificationsEnabled: boolean;
 }
-
 type CustomTransaction = Transaction & {
-  isLegacy: (() => boolean) | undefined;
-  isBerlin: (() => boolean) | undefined;
-  isLondon: (() => boolean) | undefined;
-  isCancun: (() => boolean) | undefined;
-  clone: (() => CustomTransaction) | undefined;
-  equals: (other: CustomTransaction) => boolean;
-  accessList: [] | undefined;
-  to: string | null | undefined;
-  nonce: number | null;
-  gasLimit: bigint | null;
+  isLegacy?: (() => boolean) | undefined;
+  isBerlin?: (() => boolean) | undefined;
+  isLondon?: (() => boolean) | undefined;
+  isCancun?: (() => boolean) | undefined;
+  clone?: (() => CustomTransaction) | undefined;
+  toJSON?: (() => CustomTransaction) | undefined;
+  equals?: (other: CustomTransaction) => boolean;
+  accessList?: [] | undefined;
+  to?: string | null | undefined;
+  nonce?: number | null;
+  gasLimit?: bigint | null;
   data: ""; // Added data here
-  value: bigint;
-  chainId?: bigint;
-  hash: null | undefined; // Added hash here
-  unsignedHash: ""; // Added unsignedHash here
-  fromPublicKey: null | undefined;
-  isSigned: boolean | (() => boolean) | undefined;
+  value: bigint | null;
+  chainId?: bigint | null;
+  hash?: null | undefined; // Added hash here
+  unsignedHash: "" | null; // Added unsignedHash here
+  fromPublicKey?: null | undefined;
+  isSigned?: boolean | (() => boolean) | undefined;
   inferType?: () => number | undefined;
   inferTypes?: () => number[] | undefined;
-  getSubscriptionLevel: () => string; // Added getSubscriptionLevel here
-  getRecentActivity: () => [
+  getSubscriptionLevel?: () => string; // Added getSubscriptionLevel here
+  getRecentActivity?: () => [
     {
       action: string;
       timestamp: Date;
@@ -100,7 +99,7 @@ type CustomTransaction = Transaction & {
   ]; // Added getRecentActivity here
   notificationsEnabled: boolean;
   amount: number | undefined;
-  date: Date;
+  date: Date | undefined;
   title: string | null;
   startDate: Date | undefined;
   endDate: Date | undefined;
@@ -108,18 +107,21 @@ type CustomTransaction = Transaction & {
   unsignedSerialized: string | undefined;
   recentActivity: [
     {
-      action: string,
-      timestamp: Date,
+      action: string;
+      timestamp: Date;
     },
     {
-      action: string,
-      timestamp: Date,
-    },
-  ],
-}
+      action: string;
+      timestamp: Date;
+    }
+  ];
+  subscriptionType?: SubscriptionTypeEnum;
+};
 
-
-function createCustomTransaction(transaction: Transaction, props: CustomTransactionProps): CustomTransaction {
+function createCustomTransaction(
+  transaction: Transaction,
+  props: CustomTransactionProps
+): CustomTransaction {
   return {
     ...(transaction as CustomTransaction),
     ...props,
@@ -127,18 +129,33 @@ function createCustomTransaction(transaction: Transaction, props: CustomTransact
       return this.type === 0 && this.gasPrice !== null;
     },
     isBerlin() {
-      return this.type === 1 && this.gasPrice !== null && this.accessList !== null;
+      return (
+        this.type === 1 && this.gasPrice !== null && this.accessList !== null
+      );
     },
     isLondon() {
-      return this.type === 2 && this.accessList !== null && this.maxFeePerGas !== null && this.maxPriorityFeePerGas !== null;
+      return (
+        this.type === 2 &&
+        this.accessList !== null &&
+        this.maxFeePerGas !== null &&
+        this.maxPriorityFeePerGas !== null
+      );
     },
     isCancun() {
-      return this.type === 3 && this.to !== null && this.accessList !== null && this.maxFeePerGas !== null && this.maxPriorityFeePerGas !== null && this.maxFeePerBlobGas !== null && this.blobVersionedHashes !== null;
+      return (
+        this.type === 3 &&
+        this.to !== null &&
+        this.accessList !== null &&
+        this.maxFeePerGas !== null &&
+        this.maxPriorityFeePerGas !== null &&
+        this.maxFeePerBlobGas !== null &&
+        this.blobVersionedHashes !== null
+      );
     },
     clone() {
       return createCustomTransaction(transaction, {
         ...this,
-        date: new Date(this.date.getTime()),
+        date: this.date ? new Date(this.date.getTime()) : undefined,
         _id: undefined,
         subscriptionLevel: "",
         recentActivity: [
@@ -149,8 +166,15 @@ function createCustomTransaction(transaction: Transaction, props: CustomTransact
         hash: this.hash ?? null,
         fromPublicKey: this.fromPublicKey ?? null,
         isSigned: this.isSigned ?? false,
-        inferType: () => 0, // Provide a default implementation that returns an array with 0
-        inferTypes: () => [0], // Provide a default implementation that returns an array with 0
+        inferType: () => 0,
+        inferTypes: () => [0],
+        accessList: this.accessList, 
+        value: this.value !== null && this.value !== undefined ? BigInt(this.value) : BigInt(0),
+        chainId: this.chainId !== null && this.chainId !== undefined ? BigInt(this.chainId) : BigInt(0),
+        getSubscriptionLevel: () => "",
+        unsignedHash: this.unsignedHash ?? "",
+
+
       });
     },
     equals(other) {

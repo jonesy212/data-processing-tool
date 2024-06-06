@@ -35,6 +35,7 @@ enum StatusType {
   Completed = "completed",
   Upcoming = "upcoming",
   Status = "status",
+  Urgent = "urgent",
 }
 
 // Define the DocumentSize enum
@@ -100,6 +101,7 @@ enum DataStatus {
   Pending = StatusType.Pending,
   InProgress = StatusType.InProgress,
   Completed = StatusType.Completed,
+  Processed = "processed",
 }
 
 enum TeamStatus {
@@ -123,6 +125,7 @@ enum CalendarStatus {
   Completed = StatusType.Completed,
   Scheduled = StatusType.Scheduled,
   Tentative = StatusType.Tentative,
+  Approved = StatusType.Confirmed,
 
   // Add more status options as needed
 }
@@ -148,6 +151,7 @@ enum PriorityStatus {
   High = "high",
   Normal = "normal",
   PendingReview = StatusType.Pending,
+  
 }
 
 enum ProductStatus {
@@ -164,6 +168,7 @@ export enum PriorityTypeEnum {
   High = PriorityStatus.High,
   Normal = PriorityStatus.Normal,
   PendingReview = StatusType.Pending,
+  Urgent = StatusType.Urgent,
 }
 
 export enum ProjectPhaseTypeEnum {
@@ -179,6 +184,7 @@ export enum ProjectPhaseTypeEnum {
   CreatePhase = "createPhase",
   Previous = "previous",
   Register = "register",
+  Planning = "planning",
 }
 
 export enum DevelopmentPhaseEnum {
@@ -189,7 +195,9 @@ export enum DevelopmentPhaseEnum {
   DEPLOYMENT = "DEPLOYMENT",
   IDEA_CREATION = "DEV_IDEA_CREATION", // Add prefix to distinguish
   IDEA_SUBMISSION = "IDEA_SUBMISSION",
+  CODING = "CODING",
 }
+
 
 export enum CommunicationMediaType {
   Audio = "audio",
@@ -248,7 +256,37 @@ enum BorderStyle {
   OUTSET = "outset",
   None = "none",
 }
+enum SubscriptionTypeEnum {
+  PortfolioUpdates = "portfolioUpdates",
+  TradeExecutions = "tradeExecutions",
+  MarketUpdates = "marketUpdates",
+  CommunityEngagement = "communityEngagement",
+  Unsubscribe = "unsubscribe",
+  ResearchInsights = "researchInsights",
+  AdvancedCollaboration = "advancedCollaboration",
+  CryptoAnalytics = "cryptoAnalytics",
+  ExclusiveContent = "exclusiveContent",
+  IntegrationHub = "integrationHub",
+  Snapshot = "snapshot",
+  Monthly = "monthly",
+  FREE = "free",
+  STANDARD = "standard",
+  PREMIUM = "premium",
+  ENTERPRISE = "enterprise",
+  TRIAL = "trial",
 
+}
+
+
+
+enum SubscriberTypeEnum {
+  FREE = "free",
+  STANDARD = "standard",
+  PREMIUM = "premium",
+  ENTERPRISE = "enterprise",
+  TRIAL = "trial",
+  // Add more types as needed
+}
 export default BookmarkStatus;
 
 export {
@@ -265,12 +303,10 @@ export {
   NotificationStatus,
   Orientation,
   OutcomeType,
-  PriorityStatus,
-  ProductStatus,
+  PriorityStatus, PrivacySettingEnum, ProductStatus,
   SortingType,
-  StatusType,
-  TaskStatus,
+  StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus,
   TeamStatus,
-  TodoStatus,
-  PrivacySettingEnum,
+  TodoStatus
 };
+

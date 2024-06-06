@@ -18,6 +18,7 @@ interface BugDetailsProps {
         title: string;
         type: string;
         required: boolean;
+        updatedAt: Date;
       }[];
     };
   };
@@ -114,6 +115,7 @@ const BugDetails: React.FC<BugDetailsProps> = ({ bugDetails }) => {
             id: field.id,
             label: field.title,
             value: bugData[field.name as keyof typeof bugData], // Add type assertion
+            updatedAt: field.updatedAt,
             onChange: handleChange, // Pass the handleChange function
           }))}
         />

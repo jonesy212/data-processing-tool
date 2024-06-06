@@ -1,8 +1,8 @@
 // SubscriptionActions.ts
 // SubscriptionActions.tsx
 import { createAction } from "@reduxjs/toolkit";
-import { Subscriber } from "../users/Subscriber";
 import { CustomSnapshotData } from "../snapshots/SnapshotStore";
+import { Subscriber } from "../users/Subscriber";
 
 // Define the payload interface for subscription-related actions
 interface SubscriptionPayload {
@@ -46,6 +46,7 @@ interface SubscriptionPayload {
   unsubscribe: any;
   toSnapshotStore: any;
   getId: any;
+  getUserId: any
   receiveSnapshot: any;
   getState: any;
   onError: any;

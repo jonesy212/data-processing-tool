@@ -31,7 +31,6 @@ import { Tag } from "../models/tracker/Tag";
 
 export interface User extends UserData {
   _id?: string; 
-  id?: string | number | undefined;
   username: string;
   firstName: string;
   lastName: string;
@@ -64,31 +63,6 @@ export interface User extends UserData {
   analysisResults?: DataAnalysisResult[];
   isLoggedIn?: boolean;
   isDeleted?: boolean;
-  deletedAt?: Date | null;
-  lastLogin?: Date;
-  lastLogout?: Date;
-  lastPasswordChange?: Date;
-  lastEmailChange?: Date;
-  lastNameChange?: Date;
-  lastProfileChange?: Date;
-  lastAvatarChange?: Date;
-  lastBannerChange?: Date;
-  lastStatusChange?: Date;
-  lastRoleChange?: Date;
-  lastTierChange?: Date;
-  lastPaymentChange?: Date;
-  lastSubscriptionChange?: Date;
-  lastEmailVerification?: Date;
-  lastPasswordReset?: Date;
-  lastLoginAttempt?: Date;
-  loginAttempts?: number;
-  lockoutEnd?: Date | null;
-  twoFactorEnabled?: boolean;
-  phoneNumberConfirmed?: boolean;
-  securityStamp?: string;
-  concurrencyStamp?: string;
-  accessFailedCount?: number;
-
   localeCompare?: (other: Message) => number;
   blockedUsers: User[];
   settings: UserSettings | undefined;
@@ -130,9 +104,7 @@ export interface User extends UserData {
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
   twitterData?: TwitterData
-
 }
-
 interface Address {
   street: string;
   city: string;
@@ -211,9 +183,9 @@ export interface UserData {
   twoFactorEnabled?: boolean;
   phoneNumberConfirmed?: boolean;
   phoneNumber?: string;
-  securityStamp: string | null;
+  securityStamp?: string | null;
   concurrencyStamp?: string | null;
-  accessFailedCount: number | null,
+  accessFailedCount?: number | null,
   subscriptionType?: string | null;
   subscriptionEndDate?: Date | null;
   paymentMethod?: string | null;
@@ -488,7 +460,7 @@ const usersDataSource: Record<string, User> = {
     fullName: "",
     isAdmin: false,
     isVerified: false,
-    isDeleted: false,
+    // isDeleted: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     blockedUsers: [],

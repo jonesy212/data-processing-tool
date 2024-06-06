@@ -26,7 +26,7 @@ import useSubscription from "../hooks/useSubscription";
 import { SnapshotLogger } from "../logging/Logger";
 import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
-import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
+import { ProjectPhaseTypeEnum, SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 import {
   displayToast,
   showErrorMessage,
@@ -48,6 +48,7 @@ import {
 } from "../utils/applicationUtils";
 import { SnapshotActions } from "./SnapshotActions";
 import SnapshotStoreConfig from "./SnapshotConfig";
+import { useSecureUserId } from '../utils/useSecureUserId';
 
 const { notify } = useNotification();
 const dispatch = useDispatch();
@@ -73,7 +74,7 @@ const SNAPSHOT_URL = endpoints.snapshots;
 // Define interface for snapshot object
 
 interface Snapshot<T> {
-  id?: string | number | undefined;
+  id?: string | number;
   data: T; // Data stored in the snapshot
   timestamp: Date | string; // Timestamp of when the snapshot was created
   createdBy?: string; // Optional: User or entity that created the snapshot
@@ -197,14 +198,19 @@ const convertSubscriptionPayloadToSubscriber = (
   payload: SubscriptionPayload
 ): Subscriber<CustomSnapshotData | Data> => {
   return new Subscriber<CustomSnapshotData | Data>(
-    payload.subscriberId,
+    payload.id,
     {
+      subscriberId: payload.subscriberId,
+      subscriberType: SubscriberTypeEnum.FREE, // or appropriate value
+      subscriptionType: SubscriptionTypeEnum.Snapshot, // or appropriate value
+      getPlanName: () => SubscriberTypeEnum.FREE, // or appropriate function
       portfolioUpdates: () => {},
       tradeExecutions: () => {},
       marketUpdates: () => {},
       communityEngagement: () => {},
       unsubscribe: () => {},
     },
+    payload.subscriberId,
     notifyEventSystem, // Replace with your actual function
     updateProjectState, // Replace with your actual function
     logActivity, // Replace with your actual function
@@ -316,7 +322,7 @@ const useSnapshotStore = async (
 
         // Send notification to the subscriber
         await notify(
-          subscriber.subscriberId.toString(),
+          subscriber.getSubscriberId(),
           personalizedMessage,
           data,
           new Date(),
@@ -325,7 +331,7 @@ const useSnapshotStore = async (
       } else if (subscriber.data) {
         // Send notification to the subscriber using existing data
         await notify(
-          subscriber.subscriberId.toString(),
+          subscriber.getSubscriberId(),
           personalizedMessage,
           subscriber.data as Data, // Assert type to Data
           new Date(),
@@ -336,21 +342,27 @@ const useSnapshotStore = async (
   };
 
   // Function to get subscribers
-  const getSubscribers = (): Subscriber<CustomSnapshotData | Data>[] => {
+  const getSubscribers = (subscriber: SubscriptionPayload): Subscriber<CustomSnapshotData | Data>[] => {
     // Implement logic to fetch subscribers from a database or an API
     // For demonstration purposes, returning a mock list of subscribers
     const subscribers: Subscriber<CustomSnapshotData | Data>[] = [];
-
+    const subscriberId = subscriber.getId();
+    const userId = useSecureUserId(); // Retrieve the user ID using the hook
     // Create subscriber instances and push them into the array
     const subscriber1 = new Subscriber<CustomSnapshotData | Data>(
-      "1",
+      userId!.toString(),
       {
+        subscriberId: subscriberId,
+        subscriberType: SubscriberTypeEnum.STANDARD,
+        subscriptionType: SubscriptionTypeEnum.PortfolioUpdates,
+        getPlanName: () => SubscriberTypeEnum.STANDARD,
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
         marketUpdates: () => {},
         communityEngagement: () => {},
         unsubscribe: () => {},
       },
+      subscriberId,
       notifyEventSystem,
       updateProjectState,
       logActivity,
@@ -364,14 +376,19 @@ const useSnapshotStore = async (
     );
 
     const subscriber2 = new Subscriber<CustomSnapshotData | Data>(
-      "2",
+      userId!.toString(),
       {
+        subscriberId: subscriberId,
+        subscriberType: SubscriberTypeEnum.STANDARD,
+        subscriptionType: SubscriptionTypeEnum.PortfolioUpdates,
+        getPlanName: () => SubscriberTypeEnum.STANDARD,    
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
         marketUpdates: () => {},
         communityEngagement: () => {},
         unsubscribe: () => {},
       },
+      subscriberId,
       notifyEventSystem,
       updateProjectState,
       logActivity,

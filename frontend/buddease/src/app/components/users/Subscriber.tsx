@@ -1,4 +1,5 @@
 import { Data } from "../models/data/Data";
+import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 import SnapshotStoreConfig from "../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
@@ -7,7 +8,7 @@ import {
   NotificationTypeEnum,
 } from "../support/NotificationContext";
 import { sendNotification } from "./UserSlice";
-interface CustomSnapshotData extends Data{
+interface CustomSnapshotData extends Data {
   timestamp: Date | string | undefined;
   value: number;
   // Add any other properties as needed
@@ -15,25 +16,24 @@ interface CustomSnapshotData extends Data{
 
 // Define Subscriber class
 class Subscriber<T extends Data | undefined> {
-    snapshots: any;
+  snapshots: any;
 
-  private id: string = '';
-  private subscriberId: string = '';
+  private readonly id: string = "";
+  private subscription: Subscription; // Represents the subscription plan
+  private subscriberId: string = ""; // Unique ID for the subscriber within the subscription
   private subscribers: ((data: Snapshot<T>) => void)[] = [];
-  private subscription: Subscription;
   private onSnapshotCallbacks: ((snapshot: Snapshot<T>) => void)[] = [];
   private onErrorCallbacks: ((error: Error) => void)[] = [];
-  private onUnsubscribeCallbacks: ((callback: (data: Snapshot<T>) => void) => void)[] = [];
+  private onUnsubscribeCallbacks: ((
+    callback: (data: Snapshot<T>) => void
+  ) => void)[] = [];
   private state: T | null = null;
   private triggerError: Function = () => {}; // Default value is an empty function
   private notifyEventSystem: Function = () => {};
   private updateProjectState: Function = () => {};
   private logActivity: Function = () => {};
   private triggerIncentives: Function = () => {};
-  
 
-
-  
   name: string | undefined;
   data: T | null;
   email: any;
@@ -47,7 +47,6 @@ class Subscriber<T extends Data | undefined> {
     logActivity: Function,
     triggerIncentives: Function,
     data: T | null = null
-
   ) {
     this.id = id;
     this.subscription = subscription;
@@ -67,14 +66,13 @@ class Subscriber<T extends Data | undefined> {
     const index = this.subscribers.indexOf(callback);
     if (index !== -1) {
       this.subscribers.splice(index, 1);
-      this.onUnsubscribeCallbacks.forEach(cb => cb(callback));
+      this.onUnsubscribeCallbacks.forEach((cb) => cb(callback));
     }
   }
 
-
-toSnapshotStore(
+  toSnapshotStore(
     initSnapshot: T,
-    snapshotConfig: typeof SnapshotStoreConfig<Snapshot<T>, T>[],
+    snapshotConfig: (typeof SnapshotStoreConfig<Snapshot<T>, T>)[],
     content: T
   ) {
     return new SnapshotStore(
@@ -119,9 +117,17 @@ toSnapshotStore(
   receiveSnapshot(snapshot: T): void {
     this.state = snapshot;
     console.log(`Subscriber ${this.id} received snapshot:`, snapshot);
-    this.notifyEventSystem({ type: 'SNAPSHOT_RECEIVED', subscriberId: this.id, snapshot });
+    this.notifyEventSystem({
+      type: "SNAPSHOT_RECEIVED",
+      subscriberId: this.id,
+      snapshot,
+    });
     this.updateProjectState(this.id, snapshot);
-    this.logActivity({ subscriberId: this.id, action: 'RECEIVED_SNAPSHOT', details: snapshot });
+    this.logActivity({
+      subscriberId: this.id,
+      action: "RECEIVED_SNAPSHOT",
+      details: snapshot,
+    });
     this.triggerIncentives(this.id, snapshot);
   }
 
@@ -133,10 +139,17 @@ toSnapshotStore(
   onError(callback: (error: Error) => void) {
     this.onErrorCallbacks.push(callback);
   }
+  getSubscriberId(): string {
+    return this.id;
+  }
 
-  // triggerError?(error: Error) {
-  //   this.onErrorCallbacks.forEach((callback) => callback(error));
-  // }
+  
+
+  getSubscriberType(): SubscriberTypeEnum {
+    return this.subscription.getPlanName();
+  }
+
+
 
   onUnsubscribe(callback: (callback: (data: Snapshot<T>) => void) => void) {
     this.onUnsubscribeCallbacks.push(callback);
@@ -156,11 +169,15 @@ toSnapshotStore(
   }
 }
 
-
-
-function notifyEventSystem(event: { type: string; subscriberId: string; snapshot: any }) {
+function notifyEventSystem(event: {
+  type: string;
+  subscriberId: string;
+  snapshot: any;
+}) {
   // Implement the logic to notify other parts of the application
-  console.log(`Event system notified: ${event.type} for subscriber ${event.subscriberId}`);
+  console.log(
+    `Event system notified: ${event.type} for subscriber ${event.subscriberId}`
+  );
   // Additional implementation to integrate with your event system
 }
 
@@ -170,9 +187,15 @@ function updateProjectState(subscriberId: string, snapshot: any) {
   // Additional implementation to update the state in your project management system
 }
 
-function logActivity(activity: { subscriberId: string; action: string; details: any }) {
+function logActivity(activity: {
+  subscriberId: string;
+  action: string;
+  details: any;
+}) {
   // Implement the logic to log activity for data analysis
-  console.log(`Activity logged: ${activity.action} by subscriber ${activity.subscriberId}`);
+  console.log(
+    `Activity logged: ${activity.action} by subscriber ${activity.subscriberId}`
+  );
   // Additional implementation to store the activity logs for analysis
 }
 
@@ -184,15 +207,19 @@ function triggerIncentives(subscriberId: string, snapshot: any) {
 
 // Usage example
 const subscriber = new Subscriber<CustomSnapshotData>(
-  'userId',
+    "1",
   {
+    subscriberId: "1",
+    subscriberType: SubscriberTypeEnum.STANDARD,
+    subscriptionType: SubscriptionTypeEnum.PortfolioUpdates,
+    getPlanName: () => SubscriberTypeEnum.STANDARD,
     portfolioUpdates: () => {},
     tradeExecutions: () => {},
     marketUpdates: () => {},
     communityEngagement: () => {},
     unsubscribe: () => {},
   },
-  'subscriberId',
+  "subscriberId",
   notifyEventSystem,
   updateProjectState,
   logActivity,
@@ -202,7 +229,7 @@ const subscriber = new Subscriber<CustomSnapshotData>(
 const sampleSnapshot: CustomSnapshotData = {
   timestamp: new Date().toISOString(),
   value: 42,
-  category: "sample snapshot"
+  category: "sample snapshot",
 };
 
 subscriber.receiveSnapshot(sampleSnapshot);

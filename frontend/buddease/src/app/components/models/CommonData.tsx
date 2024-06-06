@@ -42,7 +42,7 @@ interface CommonData<T> {
   details?: DetailsItem<T>;
   data?: T extends CommonData<infer R> ? R : never;
   projectId?: string;
-  tags?: string[];
+  tags?: string[] | Tag[];
   categories?: string[];
   documentType?: string;
   documentStatus?: string;

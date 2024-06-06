@@ -1191,6 +1191,10 @@ export const endpoints: Endpoints = {
     updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
   },
 
+  security: {
+    fetchEvents: `${BASE_URL}/api/security/events`,
+    // You can add more endpoints related to security here if needed
+  },  
   trading: {
     
   }
