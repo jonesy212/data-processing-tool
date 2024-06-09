@@ -24,6 +24,19 @@ const LiveStream: React.FC<LiveStreamProps> = ({ isOwner }) => {
     toggleOrderFormModal();
   };
 
+
+  const handleCloseModal = () => {
+    // Implement the logic to close the modal here
+    setOrderFormVisible(false);
+  };
+
+
+  const handleFileUpload = (files: FileList) => {
+    //
+    // Implement the logic to handle file upload here
+    console.log("Files uploaded:", files);
+  }
+  
   return (
     <div>
       {/* Display for users */}
@@ -58,7 +71,7 @@ const LiveStream: React.FC<LiveStreamProps> = ({ isOwner }) => {
             closeModal={() => {
               console.log("Modal closed");
               // Change from onCloseFileUploadModal(); to handleCloseModal();
-              handleCloseModa();
+              handleCloseModal();
             } }
             modalComponent={FileUploadModal}
             onFileUpload={(files: FileList) => {

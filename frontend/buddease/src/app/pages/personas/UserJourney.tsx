@@ -1,6 +1,6 @@
 // UserJourneyManager.tsx
 import React, { useState } from "react";
-import OnboardingPhaseComponent from "../onboarding/OnboardingPhase";
+import UserJourneyManager from "../onboarding/OnboardingPhase";
 import { OnboardingPhase } from "./UserJourneyManager";
 
 const UserJourneyManager: React.FC = () => {
@@ -9,7 +9,7 @@ const UserJourneyManager: React.FC = () => {
   );
 
   return (
-    <OnboardingPhaseComponent
+    <UserJourneyManager
       currentPhase={currentPhase}
       setCurrentPhase={setCurrentPhase}
     />

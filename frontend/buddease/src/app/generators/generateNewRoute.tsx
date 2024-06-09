@@ -7,6 +7,7 @@ import { Data } from '../components/models/data/Data';
 import { YourResponseType } from '../components/typings/types';
 import ConditionalRouteComponent from '../components/libraries/ui/components/ConditionalRouteComponent';
 import DynamicRouteComponent from '../components/libraries/ui/components/DynamicRouteComponent';
+import React from 'react';
 
 // Define a mapping between JSX elements and route strings
 const routeMappings: Record<string, JSX.Element> = {

@@ -1,5 +1,5 @@
 // watchTeamCreationPhase.ts
-import { TeamActions } from "@/app/components/teams/TeamActions";
+import { TeamActions } from "@/app/components/actions/TeamActions";
 import { all, takeLatest } from "redux-saga/effects";
 
 // Worker saga for handling actions related to Team Creation Phase

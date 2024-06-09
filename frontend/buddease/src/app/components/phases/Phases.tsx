@@ -6,6 +6,8 @@ import { Lesson } from "../documents/CourseBuilder";
 import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker, { AsyncHookLinkerConfig, LibraryAsyncHook } from "../hooks/useAsyncHookLinker";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import React from "react";
+
 export const additionalPhase1: Phase = {
   name: 'Additional Phase 1',
   startDate: new Date(),

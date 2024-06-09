@@ -15,7 +15,17 @@ export enum TaskManagementPhase {
   COMPLETION="",
 }
 
-const TaskManagementManager: React.FC = () => {
+interface TaskManagementManagerProps {
+  taskId: () => string;
+  newTitle: () => string;
+  task: Task;
+}
+
+const TaskManagementManager: React.FC<TaskManagementManagerProps> = ({
+  taskId,
+  newTitle,
+  task,
+}) => {
   const [currentPhase, setCurrentPhase] = useState<TaskManagementPhase>(
     TaskManagementPhase.LAUNCH
   );
@@ -41,6 +51,7 @@ const TaskManagementManager: React.FC = () => {
       )}
       {currentPhase === TaskManagementPhase.PLANNING && (
         <PlanningPhase
+          onSuccess={(): void => handlePhaseTransition(TaskManagementPhase.EXECUTION)}
           onSubmit={() => handlePhaseTransition(TaskManagementPhase.EXECUTION)}
         />
       )}
@@ -64,3 +75,4 @@ const TaskManagementManager: React.FC = () => {
 };
 
 export default TaskManagementManager;
+export type {TaskManagementManagerProps}

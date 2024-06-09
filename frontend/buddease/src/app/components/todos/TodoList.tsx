@@ -4,10 +4,10 @@ import React, { useEffect } from "react";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { PriorityStatus, StatusType } from "../models/data/StatusType";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
-import { VideoData } from "../video/Video";
 import { Todo } from "./Todo";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
@@ -58,16 +58,6 @@ const TodoList: React.FC = observer(() => {
     }, 1000);
   };
 
-  const videoData: VideoData = {
-    resolution: "",
-    aspectRatio: "",
-    language: "",
-    subtitles: false,
-    duration: 0,
-    campaignId: 0,
-    id: "",
-  };
-
   const handleAdd = () => {
     const newTodoId = "todo_" + Math.random().toString(36).substr(2, 9);
     const addRecurringTodo = () => {
@@ -105,7 +95,24 @@ const TodoList: React.FC = observer(() => {
         analysisType: {} as AnalysisTypeEnum,
         analysisResults: {} as DataAnalysisResult[],
         // phase: {} as Phase,
-        videoData: {} as VideoData,
+        videoData: {
+          url: "",
+          title: "",
+          description: "",
+          duration: 0,
+          isPrivate: false,
+          thumbnail: "",
+          isProcessing: false,
+          isCompleted: false,
+          isUploading: false,
+          isDownloading: false,
+          isDeleting: false,
+          isPrivate: false,
+          isProcessing: false,
+          isCompleted: false,
+          isUploading: false,
+          isDownloading: false,
+        },
         isDeleted: false,
         isRecurring: false,
         recurringRule: "",
@@ -117,6 +124,8 @@ const TodoList: React.FC = observer(() => {
         recurringMonthsOfYear: [],
         snapshot: {} as Snapshot<Data>,
         entities: [],
+        timestamp: "",
+        category: undefined
       };
       // Remove the unnecessary cast
       todoStore.addTodo(newTodo);
@@ -143,6 +152,7 @@ const TodoList: React.FC = observer(() => {
                   importance: todo.priority,
                   startDate: todo.startDate,
                   dueDate: todo.dueDate || undefined,
+                  updatedAt: todo.updatedAt,
                 }}
               />
             </li>

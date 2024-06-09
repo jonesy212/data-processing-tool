@@ -15,6 +15,7 @@ import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
 import {
   PriorityStatus,
+  PriorityTypeEnum,
   StatusType,
 } from "@/app/components/models/data/StatusType";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
@@ -35,7 +36,7 @@ import { useDrawingManagerSlice } from "./DrawingSlice";
 import { useEntityManagerSlice } from "./EntitySlice";
 import { useEventManagerSlice } from "./EventSlice";
 import { useFilteredEventsSlice } from "./FilteredEventsSlice";
-import { filterReducer } from "./FilterSlice";
+import  filterReducer  from "./FilterSlice";
 import { useHistorySlice } from "./HistorySlice";
 import { useNotificationManagerSlice } from "./NotificationSlice";
 import { usePagingManagerSlice } from "./pagingSlice";
@@ -52,6 +53,7 @@ import { useVersionManagerSlice } from "./VersionSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
 import { useAuthSlice } from "./AuthSlice";
 import { useAuthorizationSlice } from "./AuthorizationSlice";
+import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -181,7 +183,7 @@ const rootReducerSlice = createSlice({
       useTaskManagerSlice.actions.updateTaskTitle,
       (state, action: PayloadAction<{ id: string; title: string }>) => {
         const taskToUpdate = state.taskManager.tasks.find(
-          (task) => task.id === action.payload.id
+          (task: Task) => task.id === action.payload.id
         );
         if (taskToUpdate) {
           taskToUpdate.title = action.payload.title;
@@ -228,7 +230,7 @@ const rootReducerSlice = createSlice({
         // Handle the action for updating task details
         const { id, updates } = action.payload;
         const taskToUpdate = state.taskManager.tasks.find(
-          (task) => task.id === id
+          (task: Task) => task.id === id
         );
 
         if (taskToUpdate) {
@@ -254,7 +256,7 @@ const rootReducerSlice = createSlice({
         assignedTo: [], // Assign an empty array to fix the error
         dueDate: new Date(), // Changed to Date object
         status: StatusType.Pending,
-        priority: "medium",
+        priority: PriorityTypeEnum.Medium,
         estimatedHours: 0,
         actualHours: 0,
         startDate: new Date(),
@@ -263,12 +265,11 @@ const rootReducerSlice = createSlice({
         isActive: false,
         tags: [],
         dependencies: [],
-        then: function (onFulfill: (newTask: Data) => void): unknown {
-          // Example implementation: Call onFulfill with the new task after some asynchronous operation
+        then: function (onFulfill: (newData: Snapshot<Data>) => void): unknown {
           setTimeout(() => {
-            return onFulfill(newTask);
+            onFulfill({ data: this as Data }); // assuming this is compatible with Data
           }, 1000);
-          return this; // Return the current object for chaining if needed
+          return this;
         },
         previouslyAssignedTo: [],
         done: false,
@@ -340,7 +341,7 @@ const rootReducerSlice = createSlice({
         status: state.taskManager.taskStatus,
         assignedTo: [],
         dueDate: new Date(),
-        priority: "medium",
+        priority: PriorityTypeEnum.Medium,
         isActive: false,
         tags: [],
         previouslyAssignedTo: [],

@@ -1,5 +1,6 @@
 import ProjectCard from "../../cards/ProjectCard";
 import { Project } from "../Project";
+import React from "react";
 
 const ProjectTimeline = () => {
   // Assume projectData is an array with project details

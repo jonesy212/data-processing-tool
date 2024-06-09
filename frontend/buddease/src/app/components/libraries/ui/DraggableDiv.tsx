@@ -1,4 +1,5 @@
 // DraggableDiv.tsx
+import React from "react";
 
 import { useState, useRef } from 'react';
 import { useDrag } from 'react-dnd';

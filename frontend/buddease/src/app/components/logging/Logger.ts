@@ -150,7 +150,6 @@ class Logger {
 }
 
 // Extend Logger for audio logs
-
 class AudioLogger extends Logger {
   static logAudio(
     message: string,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from "react";
 
 // Function to send the SMS
 export const sendSMS = (phoneNumber: string, message: string) => {

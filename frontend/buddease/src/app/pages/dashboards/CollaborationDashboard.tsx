@@ -18,7 +18,7 @@ import { useState } from "react";
 import { SearchProvider, useSearch } from "../searchs/SearchContext";
 import ChatDashboard from "./ChatDashboard";
 import CollaborationPanel from "./CollaborationPanel";
-
+import React from "react";
 const CollaborationDashboard = () => {
   const { searchQuery, updateSearchQuery } = useSearch();
   const { isDarkMode, primaryColor, fontSize } = useThemeConfig();

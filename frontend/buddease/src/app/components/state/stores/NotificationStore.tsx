@@ -7,6 +7,7 @@ import { NotificationContextProps, NotificationTypeEnum } from '../../support/No
 interface NotificationMessages {
   [key: string]: string | ((userName: string) => string);
 }
+
 // Define the messages for different notification types
 const NOTIFICATION_MESSAGES: NotificationMessages = {
   [NotificationTypeEnum.AccountCreated]: (userName: string) => `Account created for ${userName}`,
@@ -36,15 +37,19 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   // Add more notification types as needed
 };
 
-
 class NotificationStore {
   @observable notifications: NotificationData[] = [];
+  @observable setNotifications: NotificationContextProps['setNotifications'] = () => {};
+  constructor() {
+    makeObservable(this);
+  }
 
   @action
   addNotification = (notification: NotificationData) => {
     this.notifications.push(notification);
   };
 
+  
   @action
   removeNotification = (notificationId: string) => {
     this.notifications = this.notifications.filter((notification) => notification.id !== notificationId);
@@ -92,18 +97,17 @@ class NotificationStore {
   @action
   dismissNotification = (notificationId: string) => {
     this.removeNotification(notificationId);
-  }
+  };
 
   @action
   useContainer = (container: React.Context<NotificationContextProps>) => {
-    
-    createContext(container);
-  }
+    return createContext(container);
+  };
 
   @action
-    useSetState = (state: any) => {
-      createContext(state);
-    }
+  useSetState = (state: any) => {
+    return createContext(state);
+  };
 
   // Generate the notification message based on the notification type
   private generateNotificationMessage = (
@@ -119,30 +123,13 @@ class NotificationStore {
       return 'Unknown Notification Type';
     }
   };
-
-
 }
 
-const useNotificationStore = makeObservable({
-  notifications: observable,
-  addNotification: action,
-  removeNotification: action,
-  clearNotifications: action,
-  notify: action,
-  generateNotificationMessage: action,
-  dismissNotification: action,
-  useContainer: action,
-  useSetLocale: action,
-  useSetState: action
-})
-
-
-export { useNotificationStore };
-
-
-// Create an instance of the combined NotificationStore
-export const notificationStoreInstance = new NotificationStore();
+// Create an instance of the NotificationStore
+const notificationStoreInstance = new NotificationStore();
 
 // Create a context for accessing the notification store
-export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
-export default NotificationStore
+const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
+
+export { notificationStoreInstance, NotificationContext };
+export default NotificationStore;

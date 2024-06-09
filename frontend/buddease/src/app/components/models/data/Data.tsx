@@ -15,6 +15,8 @@ import SnapshotStore, {
   Snapshot,
   Snapshots,
 } from "../../snapshots/SnapshotStore";
+import React from "react";
+
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import Todo from "../../todos/Todo";
@@ -63,8 +65,8 @@ interface DataDetails {
 }
 
 // Define the props for the DataDetails component
-interface DataDetailsProps {
-  data: DataDetails;
+interface DataDetailsProps<T> {
+  data: T;
 }
 
 export interface Comment {
@@ -77,7 +79,7 @@ export interface Comment {
   likes?: number;
   watchLater?: boolean;
   highlightColor?: ColorPalettes;
-  tags?: string[];
+  tags?: string[] | Tag[];
   highlights?: string[];
   // Consolidating commentBy and author into one field
   author?: string | number | readonly string[] | undefined;
@@ -88,7 +90,7 @@ export interface Comment {
   // Consolidating upvotes into likes if they serve the same purpose
   postId?: string | number;
   data?: Data | undefined;
-  customProperty: string;
+  customProperty?: string;
 
   // Add other properties as needed
 }
@@ -152,9 +154,10 @@ interface Data {
 }
 
 // Define the UserDetails component
-const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
+const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => (
   <CommonDetails
     data={{
+      id: data.id as string,
       title: "Data Details",
       description: "Data descriptions",
       details: data.details,
@@ -165,7 +168,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       id: data.id as string,
       title: data.title,
       description: data.description,
-      phase: data.details?.phase,
+      phase: data.phase,
       isActive: data.isActive,
       tags: data.tags?.map((tag) => (tag as Tag).getOptions().name) || [],
       status: data.status,
@@ -267,8 +270,15 @@ const data: Data = {
     isEmbeddable: false,
     // isSubscribed: false,
     isDownloadable: false,
-
     playlists: [],
+    thumbnail: "",
+    isProcessing: false,
+
+    isCompleted: false,
+     isUploading: false,
+     isDownloading: false,
+     isDeleting: false,
+
   },
   additionalData: {},
   ideas: [],

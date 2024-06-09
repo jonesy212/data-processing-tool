@@ -4,14 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useRealTimeDataStore } from './RealTimeDataStore';
 import { RealtimeDataItem } from './RealtimeData';
 
-interface RealTimeVisualizationProps {
-}
-
-
+interface RealTimeVisualizationProps {}
 
 const RealTimeVisualization: React.FC<RealTimeVisualizationProps> = ({/** */}) => {
     const [visualizationData, setVisualizationData] = useState<RealtimeDataItem[]>([]);
 
+  
   // Function to update visualization data in real-time
   const updateVisualizationData = () => {
     // Implement logic to fetch or generate real-time data for visualization

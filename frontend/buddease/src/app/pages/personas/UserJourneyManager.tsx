@@ -12,9 +12,8 @@ import IdeaCreationPhase from "@/app/components/users/userJourney/IdeaCreationPh
 import IdeationPhase from "@/app/components/users/userJourney/IdeationPhase";
 import axios from "axios";
 import React, { useState } from "react";
-import {
-  DevelopmentPhase,
-  PlanningPhase,
+import  PlanningPhase, {
+  DevelopmentPhase
 } from "../development/DevelopmentPhase";
 import OfferPage from "../onboarding/OfferPage";
 import onboardingQuestionnaireData from "../onboarding/OnboardingQuestionnaireData";
@@ -38,6 +37,9 @@ import {
   ContentPublishing,
 } from "@/app/components/phases/ContentMaintenance";
 import TeamCreationProcess from "@/app/components/phases/actions/TeamCreationManager";
+import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";
+import TradingProcess from "@/app/components/phases/TradingProcess";
+import { IdeaLifecyclePhase } from "@/app/components/phases/ideaPhase/IdeaLifecyclePhase";
 
 export enum OnboardingPhase {
   REGISTER,
@@ -109,7 +111,7 @@ const phaseComponents: Record<string, React.FC<any>> = {
   [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
 
   // Idea Lifecycle Phases
-  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
+  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcese,
   [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
   [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
 
@@ -143,7 +145,7 @@ const phaseComponents: Record<string, React.FC<any>> = {
   [ProgressPhase.DataAnalysis]: ProgressPhaseProcess,
 
   // User Support Phases
-  [UserSupportPhase.PLANNING]: UserSupportProcess,
+  [UserSupportPhase.USER_PHASE_PLANNING]: UserSupportProcess,
   [UserSupportPhase.EXECUTION]: UserSupportProcess,
   [UserSupportPhase.MONITORING]: UserSupportProcess,
   [UserSupportPhase.CLOSURE]: UserSupportProcess,
@@ -265,7 +267,9 @@ const UserJourneyManager: React.FC = () => {
           onSubmitProfile={handleProfileSetup}
           onIdeaSubmission={() => {
             setCurrentPhase({
-              phase: DevelopmentPhaseEnum.IDEA_SUBMISSION.toString(),
+              title: "Idea Submission",
+              render: () => <div>Idea Submission</div>,
+              phase: DevelopmentPhaseEnum.IDEA_SUBMISSION,
             });
           }}
         />
@@ -283,8 +287,7 @@ const UserJourneyManager: React.FC = () => {
           onTransition={handlePhaseTransition}
         />
       )}
-      {currentPhase.phase ===
-        DevelopmentPhaseEnum[DevelopmentPhaseEnum.Deployment] && (
+      {currentPhase.phase === DevelopmentPhaseEnum.Deployment && (
         <IdeaCreationPhase
           duration={0}
           onSubmit={handleIdeaSubmission}

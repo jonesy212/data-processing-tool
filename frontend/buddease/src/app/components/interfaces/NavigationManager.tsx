@@ -1,5 +1,6 @@
 // NavigationManager.tsx
-// NavigationManager.tsx
+import React from "react";
+
 import { useState } from 'react';
 
 // Define the NavigationManager component

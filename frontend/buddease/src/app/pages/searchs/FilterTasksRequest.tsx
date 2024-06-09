@@ -30,23 +30,28 @@ const FilterTasksRequest: React.FC<FilterTasksRequestProps> = async ({ onSubmit,
 
   const handleFilterChange = (
     column: FilterType,
-    selectedOption: SearchOptions['additionalOptions'][FilterType]
+    selectedOption: SearchOptions["additionalOptions"][FilterType]
   ) => {
     // Check if the selected column is for sorting
-    if (column === 'sorting') {
+    if (column === "sorting") {
       // Cast the column to the correct type
-      const sortingFilters = filters[column as keyof typeof filters];
+      const sortingFilters = filters?.[0] as SearchOptions["additionalOptions"]["sorting"];
       // Ensure sortingFilters is not undefined
-      if (sortingFilters && 'field' in sortingFilters) { // Check if 'field' exists in sortingFilters
+      if (sortingFilters && "field" in sortingFilters) {
+        // Check if 'field' exists in sortingFilters
         // Call addFilter with the field property of sortingFilters
-        addFilter(sortingFilters.field as keyof SearchOptions, 'equal', !selectedOption);
+        addFilter(
+          sortingFilters.field as keyof SearchOptions,
+          "equal",
+          !selectedOption
+        );
       }
-    } else if (column === 'filters' || column === 'pagination') {
+    } else if (column === "filters" || column === "pagination") {
       // Handle other special types of filters
       // Here, you can add logic for other special types of filters
     } else {
       // Handle regular filters
-      addFilter(column, 'equal', !selectedOption);
+      addFilter(column, "equal", !selectedOption);
     }
   };
   
@@ -86,3 +91,4 @@ const FilterTasksRequest: React.FC<FilterTasksRequestProps> = async ({ onSubmit,
 };
 
 export default FilterTasksRequest;
+export type { FilterTasksRequestProps };

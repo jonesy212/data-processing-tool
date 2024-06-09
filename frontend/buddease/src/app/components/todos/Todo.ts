@@ -1,5 +1,6 @@
 import { Data } from "@/app/components/models/data/Data";
 import { FC } from "react";
+import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Attachment } from "../documents/Attachment/attachment";
 import { Content } from "../models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
@@ -10,11 +11,10 @@ import { Phase } from "../phases/Phase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../snapshots/SnapshotStore";
+import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import { CustomComment } from "../state/redux/slices/BlogSlice";
-import { DayOfWeekProps } from "../calendar/DayOfWeek";
 
 export interface Todo extends Snapshot<Data> {
   _id: string;
@@ -59,7 +59,7 @@ export interface Todo extends Snapshot<Data> {
   createdAt?: Date;
   updatedAt?: Date;
   isActive?: boolean;
-  tags?: Tag[];
+  tags?: string[] | Tag[];
   isDeleted?: boolean;
   isArchived?: boolean;
   isCompleted?: boolean;
@@ -93,7 +93,7 @@ export interface Todo extends Snapshot<Data> {
   suggestedStartTime?: string;
   suggestedEndTime?: string;
   suggestedDuration?: string;
-  data?: Data;
+  data?: Data | undefined;
 }
 
 export interface TodoManagerState {
@@ -114,6 +114,7 @@ class TodoImpl implements Todo{
   status?: StatusType;
   payload?: any;
   type?: string;
+  name?: string;
   checklists?: FC<ChecklistItemProps>[];
   startDate?: Date | undefined;
   elapsedTime?: number | undefined;
@@ -133,7 +134,7 @@ class TodoImpl implements Todo{
   isActive?: boolean = false;
   done: boolean = false;
   priorityStatus: PriorityStatus | undefined;
-
+  text?: string
   todos: Todo[] = [];
   description: string = "";
   dueDate: Date | null = null;

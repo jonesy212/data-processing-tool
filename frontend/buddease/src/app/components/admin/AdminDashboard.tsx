@@ -1,3 +1,4 @@
+import React from "react";
 import { AppConfig } from "@/app/configs/AppConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";

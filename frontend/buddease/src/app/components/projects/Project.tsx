@@ -21,6 +21,7 @@ import { VideoData } from "../video/Video";
 import { AnalysisTypeEnum } from "./DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
+import { Tag } from "../models/tracker/Tag";
  
 
 export enum ProjectType {
@@ -52,7 +53,10 @@ interface Project extends Data {
   comments?: (Comment | CustomComment)[] | undefined  // Add other project-related fields as needed
   commnetBy?: User | Member;
   then?: typeof implementThen;
-  data?: ProjectData
+  data?: ProjectData;
+  customProperty?: string;
+  // tags?: string[] | Tag[];
+
 }
 
 
@@ -104,7 +108,7 @@ class ProjectImpl implements Project {
   collaborators?: string[] | undefined;
   comments?: (Comment | CustomComment)[] | undefined
   attachments?: Attachment[] | undefined;
-
+  customProperty?: string;
   subtasks?: TodoImpl[] | undefined;
   createdAt?: Date | undefined;
   updatedAt?: Date | undefined;
@@ -134,7 +138,7 @@ class ProjectImpl implements Project {
   description: string = "";
   title: string = "project_title";
   status: StatusType.Pending | StatusType.InProgress | StatusType.Completed = StatusType.Pending;
-  tags: string[] = [];
+  tags:  string[] = [];
   then: typeof implementThen = implementThen;
   analysisType?: AnalysisTypeEnum | undefined;
   analysisResults: DataAnalysisResult[] = [];
@@ -178,6 +182,7 @@ class ProjectImpl implements Project {
 
 const currentProject = new ProjectImpl();
 const currentPhase: Phase = {
+  id: "0",
   name: "name",
   startDate: new Date(),
   endDate: new Date(),
@@ -233,6 +238,7 @@ export interface ProjectData extends Project {
 
 currentProject.phases = [
   {
+    id: currentPhase.id,
     name: currentPhase.name,
     startDate: (currentPhase.startDate),
     endDate: (currentPhase.endDate),
@@ -305,7 +311,7 @@ const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({
   return details ? (
     <>
       <CommonDetails
-        data={{} as CommonData<SupportedData>}
+        data={{} as CommonData}
         details={{
           _id: details.project._id || "",
           id: details.project.id || "",

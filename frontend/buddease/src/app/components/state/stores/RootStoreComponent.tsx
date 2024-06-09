@@ -1,13 +1,13 @@
 import { create } from "mobx-persist";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import BrowserCheck from "../../BrowserCheck";
 import BrowserCheckStore from "./BrowserCheckStore";
-import { IconStore } from "./IconStore";
 import { RootStores } from "./RootStores";
 import generateStoreKey from "./StoreKeyGenerator";
 import useTodoManagerStore from "./TodoStore";
 import TrackerStore from "./TrackerStore";
+import useIconStore from "./IconStore";
 export const RootStoreComponent = observer(() => {
   const [rootStore, setRootStore] = useState<RootStores | null>(null);
 
@@ -26,7 +26,7 @@ export const RootStoreComponent = observer(() => {
 
     newRootStore.trackerStore = TrackerStore(newRootStore);
 
-    newRootStore.iconStore = IconStore;
+    newRootStore.iconStore = useIconStore(newRootStore);
 
     newRootStore.todoStore = useTodoManagerStore();
 

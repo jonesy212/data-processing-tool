@@ -1,6 +1,7 @@
 // ActionScheduler.ts
 import { useEffect } from 'react';
 import useAsyncHookLinker, { LibraryAsyncHook } from '../hooks/useAsyncHookLinker';
+import React from "react";
 
 interface SchedulerProps {
   actionsToSchedule: LibraryAsyncHook[];

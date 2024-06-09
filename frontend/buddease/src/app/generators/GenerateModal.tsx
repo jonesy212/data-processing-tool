@@ -35,7 +35,7 @@ const OtherModal: React.FC<OtherModalProps> = ({ /* Add props */ }) => {
 
 interface ModalProps {
   children: React.ReactNode;
-  isOpen?: boolean;
+  isOpen?: { isModalOpen: boolean; }
   closeModal: () => void;
   title: string;
   modalComponent: React.FC<any>; // Accept any React functional component as modalComponent

@@ -1,3 +1,5 @@
+import React from "react";
+
 import userSettings from '@/app/configs/UserSettings';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';

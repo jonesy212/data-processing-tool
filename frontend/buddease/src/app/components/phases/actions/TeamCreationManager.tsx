@@ -1,6 +1,7 @@
 // TeamCreationManager.tsx
 import axiosInstance from "@/app/api/axiosInstance";
 import { useState } from "react";
+import React from "react";
 
 import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
 import * as TeamAPI from "../../../../app/api/ApiTeam";

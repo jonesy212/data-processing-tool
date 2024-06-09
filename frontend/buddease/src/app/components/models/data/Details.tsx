@@ -1,9 +1,10 @@
 // components/Details.tsx
-import ListGenerator from "@/app/generators/ListGenerator";
-import { observer } from "mobx-react-lite";
+
 import React from "react";
+import ListGenerator from "./../../../../app/generators/ListGenerator";
+import { observer } from "mobx-react-lite";
 import CommonEvent from "../../state/stores/CommonEvent";
-import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { DetailsItem, DetailsItemExtended } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
 import { Data } from "./Data";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
@@ -11,8 +12,8 @@ import { CollaborationOptions } from "../../interfaces/options/CollaborationOpti
 export type DataAndEventDetails = Data | CommonEvent;
 
 interface DetailsProps<T> {
-  data?: CommonData<T>; // Make data prop optional
-  details: DetailsItem<T>;
+  data?: CommonData; // Accept both CommonData and specific data type
+  details: DetailsItemExtended<T>;
   customizations?: Customizations<T>;
   collaborationOptions?: CollaborationOptions;
 }

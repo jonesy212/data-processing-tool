@@ -31,8 +31,8 @@ import {
   IncludeType,
   Layout,
   Orientation,
-  ProjectPhaseTypeEnum,
   PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
@@ -70,8 +70,9 @@ const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
 // DocumentData.tsx
-export interface DocumentData extends CommonData<Data> {
-  id: number;
+export interface DocumentData extends CommonData{
+  id: string;
+  _id: string;
   title: string;
   content: string;
   permissions: DocumentPermissions | undefined;
@@ -285,6 +286,7 @@ const documentBuilderProps: DocumentBuilderProps = {
           parentMetadata: undefined,
           parentAppVersion: "",
           parentVersionNumber: "",
+          buildNumber: "",
           isLatest: false,
           isPublished: false,
           publishedAt: null,

@@ -1,4 +1,6 @@
 // ExchangeComponent.tsx
+import React from "react";
+
 import { Snapshot } from "../../../../components/snapshots/SnapshotStore";
 import { RealtimeDataItem } from "../../../../../../models/realtime/RealtimeData";
 import { ExchangeDataTypeEnum } from "./../../../../components/crypto/exchangeIntegration";

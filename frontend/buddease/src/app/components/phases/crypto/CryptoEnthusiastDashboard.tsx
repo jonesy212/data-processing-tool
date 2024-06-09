@@ -3,6 +3,8 @@ import { tradeApi } from '@/app/api/ApiTrade';
 import { useEffect, useState } from 'react';
 import { MarketData } from '../../crypto/TradingStrategy';
 import { CryptoActions } from '../../actions/CryptoActions';
+import React from "react";
+
 const CryptoEnthusiastDashboard = () => {
   const [recentTrades, setRecentTrades] = useState<MarketData[]>([]);
 

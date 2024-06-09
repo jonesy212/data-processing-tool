@@ -1,28 +1,29 @@
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  addTask,
-  completeTask,
-  filterTasks,
-  removeTask,
-  selectTasks,
-  sortTasks,
-  updateTaskStatus,
-  updateTaskTitle,
-  updateTaskDescription,
-} from '@/app/components/state/redux/slices/TaskSlice';
+import React from "react";
+
+import { FilterActions } from '@/app/components/actions/FilterActions';
+import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
+import { FileTypeEnum } from '@/app/components/documents/FileType';
 import TaskList from '@/app/components/lists/TaskList';
 import DataFilterForm from '@/app/components/models/data/DataFilterForm';
 import { Task } from '@/app/components/models/tasks/Task';
 import TaskForm from '@/app/components/models/tasks/TaskForm';
-import { PaginationOptions, SearchOptions, SortingOption } from '@/app/pages/searchs/SearchOptions';
-import { FileTypeEnum } from '@/app/components/documents/FileType';
 import { NotificationPreferenceEnum } from '@/app/components/notifications/Notification';
-import { CodingLanguageEnum, LanguageEnum } from '@/app/components/communications/LanguageEnum';
+import {
+  addTask,
+  completeTask,
+  removeTask,
+  selectTasks,
+  sortTasks,
+  updateTaskDescription,
+  updateTaskStatus,
+  updateTaskTitle,
+} from '@/app/components/state/redux/slices/TaskSlice';
 import { Filter } from '@/app/pages/searchs/Filter';
+import { PaginationOptions, SearchOptions, SortingOption } from '@/app/pages/searchs/SearchOptions';
+import { useDispatch, useSelector } from 'react-redux';
 
 
-
-interface AdditionalOptions {
+interface AdditionalOptions { 
   filters?: Filter[];
   sorting?: SortingOption;
   pagination?: PaginationOptions;
@@ -97,13 +98,26 @@ const TaskComponent = () => {
     filters: Record<string, { operation: string; value: string | number }>,
     transform: string
   ) => {
-    const { userId, query } = filters;
-    const filtersObj = { userId, query };
-    dispatch(filterTasks(filtersObj));
-  };
+    return new Promise<void>((resolve, reject) => {
+      const { userId, query } = filters;
+      const filtersObj = { userId, query };
 
-  const handleSortTasks = (sortType: "asc" | "desc") => {
-    dispatch(sortTasks(sortType));
+      // Dispatch the filterTasks action with the appropriate payload
+      dispatch(
+        FilterActions.filterTasks({
+          userId: filtersObj.userId,
+          query: filtersObj.query,
+        })
+      );
+
+      // Resolve the promise after dispatching the action
+      resolve();
+    });
+  };
+  
+
+  const handleSortTasks = (field: string, order: "asc" | "desc") => {
+    dispatch(sortTasks({ field, order }));
   };
 
   return (
@@ -116,12 +130,14 @@ const TaskComponent = () => {
         onSearch={handleFilterTasks}
       />
       <TaskList
-        tasks={tasks}
+        tasks={tasks.payload}
         onRemoveTask={handleRemoveTask}
         onCompleteTask={handleCompleteTask}
         onUpdateTaskTitle={handleUpdateTaskTitle}
         onUpdateTaskDescription={handleUpdateTaskDescription}
         onUpdateTaskStatus={handleUpdateTaskStatus}
+        onSortTasks={handleSortTasks}  
+
       />
     </div>
   );

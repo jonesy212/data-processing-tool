@@ -6,10 +6,10 @@ if (typeof window === 'undefined') {
 }
 import * as path from 'path';
 import { useState } from 'react';
+import { LanguageEnum } from '../components/communications/LanguageEnum';
 import useErrorHandling from '../components/hooks/useErrorHandling';
 import { Data } from '../components/models/data/Data';
 import determineFileType from './DetermineFileType';
-import { LanguageEnum } from '../components/communications/LanguageEnum';
 
 // Define interfaces for metadata structures
 interface StructuredMetadata {
@@ -17,11 +17,6 @@ interface StructuredMetadata {
     originalPath: string;
     alternatePaths: string[];
     fileType: string;
-
-
-
-
-
     title: "",
       description: "",
       keywords: [],
@@ -60,6 +55,28 @@ interface ProjectMetadata {
   milestones: string[];
   videos: VideoMetadata[];
 }
+
+
+
+function transformProjectToStructured(projectMetadata: ProjectMetadata): StructuredMetadata {
+  // Perform transformation here
+  return {} as StructuredMetadata;
+}
+
+
+const projectMetadata: ProjectMetadata= {
+  startDate: new Date(),
+  endDate: new Date(),
+  budget: 0,
+  status: "",
+  description: "",
+  teamMembers: [],
+  tasks: [],
+  milestones: [],
+  videos: []
+};
+
+
 
 // Define function to get structure metadata path
 const getStructureMetadataPath = (filename: string): string => {
@@ -126,12 +143,6 @@ const { state, setState, undo, redo } = useUndoRedo(initialState);
 
 // Add undo and redo handlers to the metadata structure
 (state as any).undo = undo;
-
-
-
-
-
-
 
 
 
@@ -223,4 +234,5 @@ trackStructureChanges(basePath, metadataFilePath, {}); // Pass an empty object a
 export type { ProjectMetadata, StructuredMetadata, VideoMetadata };
 
 export default ProjectMetadata;
-export {state};
+export { projectMetadata, state, transformProjectToStructured };
+

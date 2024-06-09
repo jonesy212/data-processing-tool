@@ -2,6 +2,7 @@
 import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from Ant Design icons
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";
+import apiNotificationsService from "../api/NotificationsService";
 import { CustomEventExtension } from "../components/event/BaseCustomEvent";
 import { createCustomEvent } from "../components/event/EventService";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
@@ -9,6 +10,10 @@ import AnimationDial from "../components/libraries/animations/AnimationDial";
 import FadeInAnimation from "../components/libraries/animations/FadeInAnimation";
 import RotateAnimation from "../components/libraries/animations/RotateAnimation";
 import SlideUpAnimation from "../components/libraries/animations/SlideUpAnimation";
+import useNotificationManagerService, {
+  default as NotificationContainer,
+  default as useNotificationStore,
+} from "../components/state/stores/NotificationStore";
 import CustomizableTimersComponent from "../components/stopwatches/CustomizableTimersComponent";
 import responsiveDesignStore from "../components/styling/ResponsiveDesign";
 import {
@@ -21,38 +26,35 @@ import {
   ButtonGenerator,
   buttonGeneratorProps,
 } from "../generators/GenerateButtons";
-import { themeConfig } from "../pages/_app";
-import apiNotificationsService from "../api/NotificationsService";
-import { notificationStoreInstance, useNotificationStore } from "../components/state/stores/NotificationStore";
-import { action } from "mobx";
 import { usePresetPercentages } from "../generators/presetPercentages";
+import { themeConfig } from "../pages/_app";
 
+
+
+
+
+  
 interface ControlPanelProps {
-  speed: number; // Current speed of the automated processes
-  onChangeSpeed: (newSpeed: number) => void; // Callback function to handle speed changes
-  container: NotificationContextProps; // Update the type
+  speed: number;
+  onChangeSpeed: (newSpeed: number) => void;
+  container: NotificationContextProps;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   speed,
   onChangeSpeed,
-  container
+  container,
 }) => {
   const [newSpeed, setNewSpeed] = useState(speed);
   const [animationSpeed, setAnimationSpeed] = useState(speed);
   const { sendNotification } = useNotification();
+  // Inside ControlPanel component
+  const notificationStoreContainer = new useNotificationStore();
+  // Check if notificationStoreContainer is not null before accessing its properties
+  const notifications = notificationStoreContainer.notifications || [];
+  const setNotifications =
+    notificationStoreContainer.setNotifications || (() => {});
 
-
-
-
-// Inside ControlPanel component
-
-const notificationStoreContainer: NotificationService = notificationStore.useContainer(container.toString());
-// Check if notificationStoreContainer is not null before accessing its properties
-const notifications = notificationStoreContainer.notifications || [];
-const setNotifications = notificationStoreContainer.setNotifications || (() => {});
-
-  
   const handleSpeedChange = (
     event: React.ChangeEvent<HTMLInputElement> | number
   ) => {
@@ -116,6 +118,8 @@ const setNotifications = notificationStoreContainer.setNotifications || (() => {
     responsiveDesignStore.updateBreakpoint(breakpoint, value);
   };
 
+  const notificationState: any = { setNotifications };
+
   return (
     <div>
       <h2>Control Panel</h2>
@@ -170,18 +174,16 @@ const setNotifications = notificationStoreContainer.setNotifications || (() => {
       <ThemeCustomization
         themeState={themeConfig}
         setThemeState={() => {}}
-        notificationState={{
-          notifications: notifications || [],
-          setNotifications: setNotifications,
-          notify: (id: string, message: string, content: any, date: Date = new Date(), type: NotificationType = NotificationTypeEnum.INFO) => Promise.resolve(apiNotificationsService.notify(id, message, content, date, type)),
-          sendPushNotification: sendPushNotification,
-
-          sendAnnouncement: /* function to send announcements */,
-          handleButtonClick: /* function to handle button clicks */,
-          dismissNotification,
-          addNotification,
-          removeNotification,
-          clearNotifications,
+        notificationState={notificationState}
+        infoColor={"#000000"}
+        tableStyle={{
+          backgroundColor: "#000000",
+          textColor: "#ffffff",
+          borderColor: "#cccccc",
+          borderWidth: 1,
+          borderStyle: "solid",
+          padding: "10px",
+          margin: "20px",
         }}
       />
       <h2>Custom Event</h2>
@@ -203,5 +205,5 @@ const setNotifications = notificationStoreContainer.setNotifications || (() => {
   );
 };
 
-export default ControlPanel
+export default ControlPanel;
 export type { ControlPanelProps };

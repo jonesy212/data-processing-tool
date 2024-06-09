@@ -7,11 +7,12 @@ import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
 import { VideoData } from "../../video/Video";
-import CommonDetails, { CommonData } from "../CommonData";
+import CommonDetails from "../CommonData";
 import { Data } from "../data/Data";
-import { TaskStatus } from "../data/StatusType";
+import { PriorityTypeEnum, TaskStatus } from "../data/StatusType";
 import { Team, TeamDetails } from "../teams/Team";
 
+import React from "react";
 
 
 
@@ -26,8 +27,8 @@ interface Task extends Data {
   assigneeId: User["id"];
   dueDate: Date | undefined;
   payload: any;
-  priority: "low" | "medium" | "high" | "normal" | "pending";
-  type?: AllTypes;
+  priority: PriorityTypeEnum
+  type?: AllTypes | string;
   status?: AllStatus;
   estimatedHours?: number | null;
   actualHours?: number | null;
@@ -52,14 +53,19 @@ interface Task extends Data {
   videoThumbnail?: string;
   videoDuration?: number;
   videoUrl?: string;
+  userId?: number; // Assuming each task has a userId
+  query?: string; // Assuming each task has a query field
+
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
-const TaskDetails: React.FC<{ task: Task, completed: boolean }> = ({ task, completed }) => (
+const TaskDetails: React.FC<{ task: Task; completed: boolean }> = ({
+  task,
+  completed,
+}) => (
   <CommonDetails
-    data={{ task: task, completed: completed } as CommonData<never>}
-  details={
-    {
+    data={{ id: task.id, completed }}
+    details={{
       _id: task.id,
       id: task.id as string,
       title: task.title,
@@ -77,11 +83,8 @@ const TaskDetails: React.FC<{ task: Task, completed: boolean }> = ({ task, compl
       fakeData: task.fakeData,
       comments: task.comments,
       analysisResults: task.analysisResults,
-      completed: task.isCompleted
-      // Add more properties as needed
-    }
-
-} 
+      completed: task.isCompleted,
+    }}
   />
 );
 
@@ -104,7 +107,7 @@ const tasksDataSource: Record<string, Task> = {
     payload: {},
     type: "addTask",
     status: "pending", 
-    priority: "low",
+    priority: PriorityTypeEnum.Low,
     estimatedHours: null,
     actualHours: null,
     completionDate: null,
@@ -150,7 +153,7 @@ const tasksDataSource: Record<string, Task> = {
     payload: {}, 
     type: "bug", 
     status: TaskStatus.InProgress, 
-    priority: "medium", 
+    priority: PriorityTypeEnum.Medium, 
     estimatedHours: 5, 
     actualHours: 3, 
     completionDate: new Date(), 

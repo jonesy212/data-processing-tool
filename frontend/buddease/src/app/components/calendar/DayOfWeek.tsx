@@ -1,14 +1,15 @@
 import React from 'react';
 import { Task } from '../models/tasks/Task';
 import { CalendarEvent } from '../state/stores/CalendarEvent';
+import { CommonCalendarProps } from './Calendar';
 
-interface DayOfWeekProps {
+interface DayOfWeekProps extends CommonCalendarProps {
   day: string;
   events: CalendarEvent[];
   tasks: Task[]; // Assuming each task has a 'name' property
 }
 
-const DayOfWeek: React.FC<DayOfWeekProps> = ({ day, events, tasks }) => {
+const DayOfWeek: React.FC<DayOfWeekProps> = ({ day, events, tasks,  ...taskHandlers  }) => {
   // Validate props
   if (!day) {
     return <div>Error: Day name not provided</div>;

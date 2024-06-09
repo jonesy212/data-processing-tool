@@ -54,7 +54,7 @@ export interface SnapshotStoreConfig<Data> {
   subscribers: Subscriber<Snapshot<Data>>[];
 
   setSnapshot?: (snapshot: SnapshotStore<Data>) => void;
-  createSnapshot: (additionalData: any) => void;
+  createSnapshot: (id: string, snapshotData: SnapshotStoreConfig<any>, category: string) => void;
   configureSnapshotStore: (snapshot: SnapshotStore<Data>) => void;
   createSnapshotSuccess: () => void;
   createSnapshotFailure: (error: Error) => void;
@@ -240,20 +240,21 @@ const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>> = {
     },
     data: null,
     store: null,
-    handleSnapshot: () => {},
+    handleSnapshot: () => { },
     state: null,
     snapshots: [],
     snapshot: async (id, snapshotData, category) => {
-        try {
-          // Create a new snapshot using SnapshotComponent
-          const snapshot = await SnapshotComponent.createSnapshot(id, snapshotData, category);
-          return { snapshot };
-        } catch (error) {
-          console.error('Error creating snapshot:', error);
-          throw error; // Rethrow the error
-        }
+      try {
+        // Create a new snapshot using the createSnapshot function from snapshotConfig
+        await snapshotConfig.createSnapshot(id, snapshotData, category);
+        const { snapshot: newSnapshot } = await snapshotConfig.snapshot(id, snapshotData, category);
+        return { snapshot: newSnapshot };
+      } catch (error) {
+        console.error('Error creating snapshot:', error);
+        throw error; // Rethrow the error
       }
     },
+  },
     subscribers: [],
     setSnapshot: (snapshot) => {
       return { snapshot: [] };
@@ -459,33 +460,40 @@ removeSnapshot: function (
 
 
 
-    addSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
-        // Ensure that the snapshot parameter has the necessary properties
-        if ('data' in snapshot && 'timestamp' in snapshot && 'category' in snapshot) {
-            // Cast the timestamp property to Date
-            const snapshotWithValidTimestamp = {
-                ...snapshot,
-                timestamp: new Date(snapshot.timestamp as string),
-            };
-            this.snapshots.push(snapshotWithValidTimestamp);
-        } else {
-            console.error('Invalid snapshot format');
-        }
-    },
+  addSnapshot: function (snapshot: SnapshotStore<Snapshot<Data>>): void {
+    // Ensure that the snapshot parameter has the necessary properties
+    if (
+      "data" in snapshot &&
+      "timestamp" in snapshot &&
+      "category" in snapshot &&
+      typeof snapshot.category === "string"
+    ) {
+      // Cast the timestamp property to Date
+      const snapshotWithValidTimestamp = {
+        ...snapshot,
+        timestamp: new Date(snapshot.timestamp as string),
+      };
+      this.snapshots.push(snapshotWithValidTimestamp);
+    } else {
+      console.error("Invalid snapshot format");
+    }
+  },
     
       
 
     getSubscribers: async function (
         subscribers: Subscriber<Snapshot<Snapshot<Data>>>[],
-        snapshots: Snapshots<T>
+        snapshots: Snapshots<Snapshot<Data>>
     ): Promise<{
         subscribers: Subscriber<Snapshot<Snapshot<Data>>>[];
-        snapshots: Snapshots<Snapshot<T>>;
+        snapshots: Snapshots<Snapshot<Data>>;
     }> {
         const generateUniqueId = UniqueIDGenerator.generateID('snap', 'subscriber', NotificationTypeEnum.Snapshot);
         const generateSubscriptionId = UniqueIDGenerator.generateID('snap', 'subscription', NotificationTypeEnum.Snapshot);
-        // Assuming this.subscribers contains the correct data
-        // You may need to adjust this depending on your implementation
+  
+
+
+      
         return {
             subscribers: subscribers.map(subscriber => {
                 const updatedSnapshots = subscriber.snapshots.map((snapshot: Snapshot<Data>) => ({
@@ -511,10 +519,9 @@ removeSnapshot: function (
                         // portfolioUpdatesCount:() => subscriber.getPortfolioUpdatesCount(),
                       portfolioUpdatesLastUpdated: null,
                       unsubscribe: () => subscriber,
-                      portfolioUpdates: () => subscriber,
-                      tradeExecutions: () => subscriber.getTradeExecutions(),
-                      marketUpdates: () => subscriber.getMarketUpdates(),
-                      communityEngagement: () => subscriber.getCommunityEngagement(),
+                      tradeExecutions: () => getTradeExecutions(),
+                      marketUpdates: () => getMarketUpdates(),
+                      communityEngagement: () => getCommunityEngagement(),
                     },
                     getId: () => subscriber.getId(),
                     subscribe: () => { },
@@ -637,7 +644,7 @@ removeSnapshot: function (
 
     [Symbol.iterator]: function* () {},
     [Symbol.asyncIterator]: async function* () {},
-  },
+  
 };
 
 // Function to get the project ID from an environment variable or use a default value

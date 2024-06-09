@@ -6,7 +6,7 @@ import ProfessionalTraderContentManagement from '@/app/pages/personas/Profession
 import ProfessionalTraderDashboard from '@/app/pages/personas/ProfessionalTraderDashboard';
 import ProfessionalTraderDocuments from '@/app/pages/personas/ProfessionalTraderDocuments';
 import ProfessionalTraderProfile from '@/app/pages/personas/ProfessionalTraderProfile';
-import { useState } from 'react';
+import React, { useState } from "react";
 import { TraderCallsProps } from '../../trading/Trades';
 import { tradingPhases } from '../../trading/TradingPhaseConfig';
 import RiskAssessment from './RiskAssessment';

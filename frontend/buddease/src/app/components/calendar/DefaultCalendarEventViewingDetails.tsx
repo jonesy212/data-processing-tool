@@ -1,17 +1,16 @@
 // DefaultCalendarEventViewingDetails.tsx
 import { handleApiError } from '@/app/api/ApiLogs';
 import ProjectService from "@/app/api/ProjectService";
-import {Project} from "@/app/components/projects/Project"; // Import ProjectDetails component
+import { Project } from "@/app/components/projects/Project"; // Import ProjectDetails component
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
 import {
-    useNotification
+  useNotification
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { ButtonGenerator } from '@/app/generators/GenerateButtons';
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import CalendarEventViewingDetailsProps from './CalendarEventViewingDetails';
 import { handleAddComponent, handleRemoveComponent, handleUpdateComponent } from '../libraries/ui/components/Component';
 
 // Import handleApiError and other dependencies here...

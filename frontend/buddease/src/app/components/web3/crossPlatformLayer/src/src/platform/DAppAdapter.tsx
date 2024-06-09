@@ -3,6 +3,7 @@ import { DAppPlugin } from '@/app/components/web3/pluginSystem/plugins/PluginInt
 import loadPlugins from '@/app/components/web3/pluginSystem/plugins/loader';
 import { useEffect, useState } from 'react';
 
+import React from "react";
 
 export interface DAppAdapterProps {
   // General Props

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { PhaseHookConfig, createPhaseHook, idleTimeoutDuration } from "../hooks/phaseHooks/PhaseHooks";
+import React, { useEffect, useState } from "react";
+import { createPhaseHook, idleTimeoutDuration } from "../hooks/phaseHooks/PhaseHooks";
 import { navigateToCalendarPage } from "../navigation/navigateToCalendar";
 import { CustomPhaseHooks, Phase } from "../phases/Phase";
 import axiosInstance from "../security/csrfToken";

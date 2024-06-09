@@ -45,13 +45,17 @@ interface ThemeConfig {
   fontSize?: string;
   fontFamily?: string;
   infoColor: string;
+  successColor?:  string, 
+  warningColor?:  string, 
+  dangerColor?:  string, 
+  infoTextColor?:  string, 
   brandIcon?: string;
   brandName?: string;
   headerColor?: string;
   footerColor?: string;
   bodyColor?: string;
   borderColor?: string;
-  borderWidth?: string;
+  borderWidth?: number;
   borderStyle?: string;
   padding?: string;
   margin?: string;

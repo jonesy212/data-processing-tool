@@ -1,4 +1,5 @@
 import TeamProgressBar from './TeamProgressBar';
+import React from "react";
 
 const TeamProgress = () => {
   // Assume teamData is an array with team details

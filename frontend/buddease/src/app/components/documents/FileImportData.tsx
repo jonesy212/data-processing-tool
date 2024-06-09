@@ -2,6 +2,7 @@
 import { useState } from "react";
 import CustomFile from "./File";
 import FileSelect from './FileSelect';
+import React from "react";
 
 function FileImportData() {
   const [selectedFile, setSelectedFile] = useState<CustomFile>();

@@ -1,4 +1,5 @@
 // ArticlesList.tsx
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { articleStore } from "./path/to/your/store";
 

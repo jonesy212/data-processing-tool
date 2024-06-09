@@ -2,11 +2,14 @@ interface TableStyle {
   backgroundColor: string;
   textColor: string;
   borderColor: string;
-  borderWidth: string;
+  borderWidth: number;
   borderStyle: string;
-  padding: string;
-  margin: string;
-  // Add more properties as needed
+
+    // Padding around the table
+    padding: string,
+    // Margin around the table
+    margin: string,
+
 }
 
 interface TableStylesProps {

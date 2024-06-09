@@ -1,20 +1,21 @@
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { SupportedData } from "../models/CommonData";
 import { CalendarStatus } from "../models/data/StatusType";
 import { SetCustomEventNotificationsPayload } from "../notifications/SetEventNotification";
+import axiosInstance from "../security/csrfToken";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
+import { RootState } from "../state/redux/slices/RootSlice";
+import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { SendStatus } from "../support/NofiticationsSlice";
 import { NotificationTypeEnum } from "../support/NotificationContext";
-import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
 import { SimpleCalendarEvent } from "./CalendarContext";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
 import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
 import { formatCalendarAsXLSX } from "./formatCalendarAsXLSX";
-import { useDispatch } from "react-redux";
-import axiosInstance from "../security/csrfToken";
  
 
 // Define a union type for calendar events
@@ -686,3 +687,4 @@ export const {
   setCalendarHighlightColor,
  
 } = calendarViewManagerSlice.actions;
+export const selectCalendarView = (state: RootState) => state.calendarManager;

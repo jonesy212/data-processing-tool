@@ -2,9 +2,9 @@
 import { taskService } from "@/app/components/tasks/TaskService";
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
+import { TaskActions } from "../../../actions/TaskActions";
 import { Task } from "../../../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
-import { TaskActions } from "../../../tasks/TaskActions";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTasksAPI = () => axios.get('/api/tasks');

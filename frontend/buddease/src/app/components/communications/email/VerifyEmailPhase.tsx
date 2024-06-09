@@ -1,5 +1,6 @@
 // VerifyEmailPhase.tsx
 import { useState } from 'react';
+import React from "react";
 
 // Define enum for email verification phases
 enum VerifyEmailPhaseEnum {

@@ -1,22 +1,26 @@
 // BugTrackingDashboard.tsx
 
 import { useEffect } from 'react';
-
+import React from'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBugData } from '../../api/api'; // Function to fetch bug data from API
 import BugFilter from './BugFilter';
 import BugSort from './BugSort';
 import BugTable from './BugTable';
-import useErrorHandling from './useErrorHandling'; // Import useErrorHandling hook
-import usePagination from './usePagination'; // Import usePagination hook
-import useSearchPagination from './useSearchPagination'; // Import useSearchPagination hook
+import useErrorHandling from '@/app/components/hooks/useErrorHandling';
+import { usePagination } from '@/app/components/hooks/userInterface/usePagination';
+import useSearchPagination from '@/app/components/hooks/commHooks/useSearchPagination';
+import { RootState } from '@/app/components/state/redux/slices/RootSlice';
+
+
+
 const BugTrackingDashboard = () => {
   const { data, currentPage, totalPages, totalItems, goToPage, setItemsPerPage, applyFilter } = usePagination(fetchBugData);
   const { currentPage: searchCurrentPage, pageSize, goToPage: searchGoToPage, changePageSize } = useSearchPagination();
   const { error, handleError, clearError } = useErrorHandling();
 
   const dispatch = useDispatch();
-  const filteredEvents = useSelector((state) => state.filteredEvents.filteredEvents); // Get filtered events from Redux store
+  const filteredEvents = useSelector((state: RootState) => state.filterManager.filteredEvents); // Get filtered events from Redux store
 
   // Fetch bug data when component mounts
   useEffect(() => {
@@ -29,7 +33,7 @@ const BugTrackingDashboard = () => {
       const bugData = await fetchBugData(page);
       // Update bug data
       setBugs(bugData);
-    } catch (error) {
+    } catch (error: any) {
       handleError('Error fetching bug data: ' + error.message);
     }
   };
@@ -95,9 +99,18 @@ const handleSortChange = (newSortOptions) => {
     <div>
       <h1>Bug Tracking Dashboard</h1>
       {renderError()}
-      <BugFilter filters={filters} onChange={handleFilterChange} />
-      <BugSort sortOptions={sortOptions} onChange={handleSortChange} />
-      <BugTable bugs={bugs} />
+      <BugFilter
+        filters={filters}
+        onChange={handleFilterChange}
+      />
+      <BugSort
+        sortOptions={sortOptions}
+        onChange={handleSortChange} 
+        />
+      <BugTable
+        bugs={bugs}
+        onBugClick={handleBugClick}
+      />
     </div>
   );
 };

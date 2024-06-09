@@ -1,6 +1,15 @@
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
 
+export interface UndoRedoStore {
+  actions: any[];
+  currentIndex: number;
+  performAction: (action: any) => void;
+  undo: () => void;
+  redo: () => void;
+}
+
+
 const useUndoRedoStore = () => {
   const [actions, setActions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);

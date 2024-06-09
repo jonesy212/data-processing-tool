@@ -1,6 +1,7 @@
 import { ButtonGenerator, buttonGeneratorProps } from "@/app/generators/GenerateButtons";
 import { Button } from "antd";
 import { FC, useEffect, useState } from "react";
+import React from "react";
 
 
 interface ButonProps {

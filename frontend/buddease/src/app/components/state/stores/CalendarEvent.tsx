@@ -1,4 +1,6 @@
 // CalendarEvent.tsx
+import React from "react";
+
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
@@ -21,10 +23,11 @@ import {
 } from "../../models/data/StatusType";
 import { Team } from "../../models/teams/Team";
 import { Member } from "../../models/teams/TeamMembers";
+import { Tag } from "../../models/tracker/Tag";
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import axiosInstance from "../../security/csrfToken";
-import SnapshotStoreConfig, { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
@@ -33,12 +36,12 @@ import {
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
+import { WritableDraft } from "../redux/ReducerGenerator";
 import { AssignEventStore, ReassignEventResponse, useAssignEventStore } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
-import { WritableDraft } from "../redux/ReducerGenerator";
-import { Tag } from "../../models/tracker/Tag";
+import { RootState } from "../redux/slices/RootSlice";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -77,7 +80,7 @@ interface CalendarEntities {
   // Add more entities as needed
 }
 
-interface CalendarEvent extends CommonEvent, CommonData<Data> {
+interface CalendarEvent extends CommonEvent, CommonData {
   id: string;
   title: string;
   content: string;
@@ -124,6 +127,7 @@ export interface CalendarManagerStore {
   openScheduleEventModal: (content: JSX.Element) => void;
   openCalendarSettingsPage: () => void;
   updateDocumentReleaseStatus: (eventId: string, released: boolean) => void;
+  getState: () => RootState; // Add getState method
 
   events: Record<string, CalendarEvent[]>;
   eventTitle: string;

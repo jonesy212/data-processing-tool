@@ -1,4 +1,5 @@
 //CollaborationBoardStore.tsx
+import React from "react";
 import { createContext, useContext, useState } from 'react';
 
 // Define the type for the context value

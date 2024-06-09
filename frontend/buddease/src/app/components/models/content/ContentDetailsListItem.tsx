@@ -1,11 +1,11 @@
 // ContentDetailsListItem.tsx
 import React from 'react';
-import { DetailsItem } from '../../state/stores/DetailsListStore';
+import { DetailsItemExtended } from '../../state/stores/DetailsListStore';
 import { Data } from '../data/Data';
 import { Member } from '../teams/TeamMembers';
 
 interface ContentDetailsListItemProps {
-  item: DetailsItem<Data>;
+  item: DetailsItemExtended<Data>;
 }
 
 const ContentDetailsListItem: React.FC<ContentDetailsListItemProps> = ({ item }) => {

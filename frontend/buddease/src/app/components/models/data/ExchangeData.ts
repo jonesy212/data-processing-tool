@@ -1,4 +1,4 @@
-import { ExchangeDataType } from "../../crypto/exchangeIntegration";
+import { ExchangeDataTypeEnum } from "../../crypto/exchangeIntegration";
 
 // ExchangeData.ts
 export interface ExchangeData {
@@ -7,7 +7,7 @@ export interface ExchangeData {
   pair: string;
   price: number;
   volume: number;
-  type: ExchangeDataType; // Type of exchange data
+  type: ExchangeDataTypeEnum; // Type of exchange data
   data: any
   }
   

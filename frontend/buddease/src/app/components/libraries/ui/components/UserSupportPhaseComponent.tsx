@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 export enum UserSupportPhase {
-  PLANNING,
+  USER_PHASE_PLANNING,
   EXECUTION,
   MONITORING,
   CLOSURE,
@@ -22,7 +22,7 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({ initialPha
 
   return (
     <div>
-      {currentPhase === UserSupportPhase.PLANNING && (
+      {currentPhase === UserSupportPhase.USER_PHASE_PLANNING && (
         // Render components or content for the planning phase
         <div>
           <h2>Planning Phase</h2>

@@ -7,6 +7,7 @@ import { Member } from "../models/teams/TeamMembers";
 export const TeamActions = {
   // Standard actions
   addTeam: createAction<Team>("addTeam"),
+  addTeamSuccess: createAction<{ team: Team }>("addTeamSuccess"),
   removeTeam: createAction<number>("removeTeam"),
   updateTeam: createAction<{ teamId: number, team: Team, newName?: string }>("updateTeam"), // Adjusted
   validateTeam: createAction<Team>("validateTeam"),

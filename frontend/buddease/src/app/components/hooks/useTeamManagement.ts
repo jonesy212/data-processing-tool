@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import Team from '../models/teams/Team';
+import {Team} from '../models/teams/Team';
 import { useTeamManagerStore } from '../state/stores/TeamStore';
 import { useDispatch } from 'react-redux';
 import { AxiosError } from 'axios'; // Assuming Axios is used for API calls
 import { handleApiError } from '@/app/api/ApiLogs';
-import { TeamActions } from '../teams/TeamActions';
+import { TeamActions } from "@/app/components/actions/TeamActions";
 
 const useTeamManagement = () => {
   const dispatch = useDispatch();

@@ -69,7 +69,7 @@ import { RootState } from "../state/redux/slices/RootSlice";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { historyManagerStore } from "../state/stores/HistoryStore";
 import { Subscription } from "../subscriptions/Subscription";
-import { MeetingActions } from "../tasks/MeetingActions";
+import { MeetingActions } from "../actions/MeetingActions";
 import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";

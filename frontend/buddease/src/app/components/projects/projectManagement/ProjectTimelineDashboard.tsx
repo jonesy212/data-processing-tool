@@ -1,3 +1,4 @@
+import React from "react";
 import ProjectTimeline from './ProjectTimeline';
 import TeamProgress from './TeamProgress';
 

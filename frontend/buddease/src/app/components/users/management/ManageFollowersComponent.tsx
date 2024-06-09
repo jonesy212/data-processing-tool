@@ -1,5 +1,7 @@
 // ManageFollowersComponent.tsx
 
+import React from "react";
+
 const ManageFollowersComponent: React.FC = () => {
   // Logic for managing followers
   return (

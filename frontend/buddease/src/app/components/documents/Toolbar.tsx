@@ -2,6 +2,7 @@ import { EditorState } from "draft-js";
 import { useState } from "react";
 import { Progress } from "../models/tracker/ProgressBar";
 import ToolbarItem from "./ToolbarItem";
+import React from "react";
 
 // Define a new type for the toolbar options
 type ToolbarOptions = {
@@ -102,6 +103,7 @@ export const toolbarOptions = {
   mediaManagement: ["Image Gallery", "Video Library", "Audio Files", "Document Library"],
   projectManagement: ["Project Overview", "Milestones", "Resource Allocation", "Time Tracking"],
   ecommerce: ["Product Listings", "Orders", "Customers", "Discounts", "Shipping"],
+  
   reporting: ["Sales Reports", "User Activity", "Engagement Metrics", "Conversion Rates"],
   contentCreation: ["Blogs", "News", "Tutorials", "FAQs"],
   customerSupport: ["Support Tickets", "Live Chat", "Knowledge Base", "Feedback"],

@@ -23,7 +23,7 @@ export interface TodoManagerStore<T> {
   addTodo: (todo: Todo) => void;
   addTodos: (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<Todo>, Todo>
+    data: SnapshotStore<Snapshot<Todo>>
   ) => void;
   removeTodo: (id: string) => void;
   assignTodoToUser: (todoId: string, userId: string) => void;
@@ -137,24 +137,22 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
 
   const addTodos = (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<Todo>, Todo>
+    data: SnapshotStore<Snapshot<Todo>>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
 
-      newTodos.forEach(async (todo) => {
+      newTodos.forEach((todo) => {
         updatedTodos[todo.id as string] = todo;
 
         // Take snapshot for each todo
         if (data) {
           // Use lodash omit to exclude 'id' property
-          const updatedSnapshots: SnapshotStore<
-            Snapshot<Todo>,
-            Todo
-          > = data.createSnapshot({
-            timestamp: new Date(),
-            data: {} as Data,
-          });
+          const updatedSnapshots: SnapshotStore<Snapshot<Todo>> =
+            data.createSnapshot({
+              timestamp: new Date(),
+              data: {} as Data,
+            });
           data.takeSnapshot(updatedSnapshots);
         }
       });

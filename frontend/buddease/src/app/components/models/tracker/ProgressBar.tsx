@@ -10,9 +10,14 @@ import { NotificationType } from "../../support/NotificationContext";
 
   interface Progress {
     id: string;
+    
+    name:string,
+    color:string,
+    description:string,
     value: number;
     label: string;
     current: number,
+    min: number,
     max: number,
     percentage: number
     // additional properties as needed

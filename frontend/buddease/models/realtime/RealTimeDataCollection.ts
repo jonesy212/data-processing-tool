@@ -227,16 +227,34 @@ const RealTimeDataCollection: React.FC = () => {
   ];
 
 
-    
-  // Define a conversion function to convert SnapshotStore<Snapshot<Data>> to the expected data type T
-  const convertSnapshotToDataType = <T>(
-    snapshotStore: SnapshotStore<Snapshot<Data>>
-  ): T[] => {
-    return snapshotStore
-      .getData()
-      .flatMap((snapshot) => (snapshot.data ? [snapshot.data] : []))
-      .filter((data): data is T => data !== null);
+  const convertSnapshotToDataType = async <T>(
+    snapshotStore: SnapshotStore<Snapshot<Data>> | null | undefined
+  ): Promise<T[]> => {
+    return new Promise<T[]>((resolve, reject) => {
+      if (!snapshotStore) {
+        // Handle the case where snapshotStore is null or undefined
+        resolve([]);
+        return;
+      }
+  
+      snapshotStore.getData().then(data => {
+        if (!data) {
+          resolve([]);
+          return;
+        }
+  
+        const result = data
+          .flatMap((snapshot: any) => (snapshot?.data ? [snapshot.data] : []))
+          .filter((data: T): data is NonNullable<T> => data !== null && data !== undefined);
+  
+        resolve(result);
+      }).catch(error => {
+        console.error('Error fetching data:', error);
+        reject(error);
+      });
+    });
   };
+  
 
   // Custom update callback function to process fetched data
   const updateCallback: RealtimeUpdateCallback<RealtimeData> = (

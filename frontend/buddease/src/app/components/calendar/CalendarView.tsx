@@ -5,14 +5,18 @@ import { Task } from "../models/tasks/Task";
 import { Project } from "../projects/Project";
 import { Todo } from "../todos/Todo";
 import DayView from "./CalendarDay";
-import MonthView from "./CalendarMonth";
+import MonthView from "./CalendarMonthView";
 import WeekView from "./CalendarWeek";
 import YearView from "./CalendarYearView";
 import QuarterView from "./QuarterView";
+import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { selectSelectedProject } from "../state/redux/slices/CollaborationSlice";
+import { RootState } from "../state/redux/slices/RootSlice";
+import { CommonCalendarProps } from "./Calendar";
 
-interface CalendarViewProps {
+interface CalendarViewProps extends CommonCalendarProps {
   year: number;
-  events: Event[];
+  events: CalendarEvent[];
   projects: Project[];
   month: number;
   weekStartDate: Date;
@@ -30,12 +34,26 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   date,
   tasks,
   todos,
+  milestones,
+  ...taskHandlers
+
 }) => {
   return (
     <div>
       <h1>Calendar View - {year}</h1>
       {/* Display year view */}
-      <YearView year={year} projects={projects} />
+      <YearView
+        year={year}
+        projects={projects}
+        selectedProject={selectSelectedProject(state, projectId)}
+        month={month}
+        events={events}
+        tasks={tasks}
+        milestones={milestones}
+        {...taskHandlers}
+
+        // Add other required props here
+      />
 
       {/* Display quarter views for the year */}
       {[1, 2, 3, 4].map((quarter) => (
@@ -44,17 +62,44 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           year={year}
           quarter={quarter}
           events={events}
+          {...taskHandlers}
         />
       ))}
 
       {/* Display month view */}
-      <MonthView year={year} month={month} events={events} />
+      <MonthView
+        year={year}
+        month={month}
+        events={events}
+        selectedProject={selectSelectedProject}
+        tasks={tasks}
+        milestones={milestones}
+        onTaskClick={handleOnTaskClick}
+        {...taskHandlers}
+        // Add other required props here
+      />
 
       {/* Display week view */}
-      <WeekView weekStartDate={weekStartDate} events={events} />
+      <WeekView
+        weekStartDate={weekStartDate}
+        events={events}
+        year={year}
+        month={month}
+        tasks={tasks}
+        milestones={milestones}
+        {...taskHandlers}
+        // Add other required props here
+      />
 
       {/* Display day view */}
-      <DayView date={date} events={events} tasks={tasks} projects={projects} todos={todos} />
+      <DayView
+        date={date}
+        events={events}
+        tasks={tasks}
+        projects={projects}
+        todos={todos}
+        {...taskHandlers}
+      />
     </div>
   );
 };

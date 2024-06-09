@@ -363,15 +363,14 @@ const filterCriteria: FilterCriteria = {
   developmentPhase: DevelopmentPhaseEnum.CODING, // Updated to enum value
   subscriberType: SubscriberTypeEnum.PREMIUM, // Updated to enum value
   subscriptionType: SubscriptionTypeEnum.Monthly, // Updated to enum value
-  priorityType: PriorityTypeEnum.Emergency, // Updated to enum value
-  analysisType: AnalysisTypeEnum.Statistical, // Updated to enum value
+  analysisType: AnalysisTypeEnum.STATISTICAL, // Updated to enum value
   documentType: DocumentTypeEnum.PDF, // Updated to enum value
   fileType: FileTypeEnum.Document, // Updated to enum value
   tenantType: TenantManagementPhaseEnum.TenantA, // Updated to enum value
-  ideaCreateionPhaseType: IdeaCreationPhaseEnum.Ideation, // Updated to enum value
+  ideaCreateionPhaseType: IdeaCreationPhaseEnum.IDEATION, // Updated to enum value
   securityFeatureType: SecurityFeatureEnum.Encryption, // Updated to enum value
-  feedbackPhaseType: FeedbackPhaseEnum.Review, // Updated to enum value
-  contentManagementType: ContentManagementPhaseEnum.Content, // Updated to enum value
+  feedbackPhaseType: FeedbackPhaseEnum.FEEDBACK_REVIEW, // Updated to enum value
+  contentManagementType: ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION, // Updated to enum value
   taskPhaseType: TaskPhaseEnum.Execution, // Updated to enum value
   animationType: AnimationTypeEnum.TwoD, // Updated to enum value
   languageType: LanguageEnum.English, // Updated to enum value
@@ -386,3 +385,4 @@ const filterCriteria: FilterCriteria = {
 const filteredEvents = applyFilters(events, filterCriteria);
 
 console.log(filteredEvents);
+export type {FilterCriteria} 

@@ -1,4 +1,5 @@
 import { DataDetails } from "../models/data/Data";
+import { Tag } from "./../models/tracker/Tag";
 
 interface VideoProperties {
   // Define essential video properties
@@ -13,6 +14,16 @@ interface VideoProperties {
   videoTitle: string
   videoDescription: string;
   videoTags: string[];
+  isCompleted: boolean,
+  isUploading: boolean,
+  isDownloading: boolean,
+  isDeleting: boolean,
+  thumbnail: "",
+  isProcessing: boolean,
+  isPrivate: boolean,
+  isProcessingFailed: boolean,
+  isProcessingStarted: boolean,
+  isLive: boolean,
 }
 
 interface Video extends VideoProperties {
@@ -28,7 +39,7 @@ interface Video extends VideoProperties {
   commentsCount: number;
   videoAuthor: string;
   videoDurationInSeconds: number;
-  tags?: string[];
+  tags?: string[] | Tag[];
   uploadDate: Date;
   category: string;
   resolution: string;
@@ -61,11 +72,12 @@ interface VideoData extends DataDetails, Video {
   size:string; // Size of the video file in bytes
   aspectRatio: string;
   language: string;
-  subtitles: string[];
+  subtitles: string[] | boolean;
   codec: string;
   frameRate: number;
   duration: number; // Duration of the video in seconds
   campaignId: number; // ID of the associated campaign
+
   // Add more properties as needed
 }
 
@@ -126,13 +138,78 @@ class BasicVideoGenerator {
       isUnlisted: false,
       isProcessingCompleted: false,
       isProcessingFailed: false,
-      isProcessingStarted: false
+      isProcessingStarted: false,
+      isCompleted: false,
+      isUploading: false,
+      isDownloading: false,
+      isDeleting: false,
+      thumbnail: "",
+      isProcessing: false
     };
 
     return video;
   }
 }
 
+
+const videoData: VideoData = {
+  resolution: "",
+  aspectRatio: "",
+  language: "",
+  subtitles: [],
+  duration: 0,
+  campaignId: 0,
+  id: "",
+  size: "",
+  codec: "",
+  frameRate: 0,
+  updatedAt: undefined,
+  url: "",
+  thumbnailUrl: "",
+  uploadedBy: "",
+  viewsCount: 0,
+  likesCount: 0,
+  videoDislikes: 0,
+  dislikesCount: 0,
+  commentsCount: 0,
+  videoAuthor: "",
+  videoDurationInSeconds: 0,
+  uploadDate: new Date(),
+  category: "",
+  closedCaptions: [],
+  license: "",
+  isLive: false,
+  isPrivate: false,
+  isUnlisted: false,
+  isProcessingCompleted: false,
+  isProcessingFailed: false,
+  isProcessingStarted: false,
+  channel: "",
+  channelId: "",
+  isLicensedContent: false,
+  isFamilyFriendly: false,
+  isEmbeddable: false,
+  isDownloadable: false,
+  playlists: [],
+  videoSubtitles: [],
+  videoLikes: 0,
+  videoViews: 0,
+  videoComments: 0,
+  videoThumbnail: "",
+  videoUrl: "",
+  videoTitle: "",
+  videoDescription: "",
+  videoTags: [],
+  isCompleted: false,
+  isUploading: false,
+  isDownloading: false,
+  isDeleting: false,
+  thumbnail: "",
+  isProcessing: false
+};
+
+
 export default BasicVideoGenerator;
+export { videoData };
 export type { VideoData };
 

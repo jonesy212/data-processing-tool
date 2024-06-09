@@ -1,7 +1,8 @@
+import React from "react";
+
 import ProjectService from "@/app/api/ProjectService";
 import { addNotification } from "@/app/components/calendar/CalendarSlice";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { LogData } from "@/app/components/models/LogData";
 import { ComponentStatus, StatusType } from "@/app/components/models/data/StatusType";
 import useNotificationManagerService from "@/app/components/notifications/NotificationService";
 import { Project } from "@/app/components/projects/Project";

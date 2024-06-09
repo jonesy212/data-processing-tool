@@ -3,6 +3,7 @@ import { Line, Bar } from "react-chartjs-2";
 import { VisualizationData } from "../users/User";
 import { ChartData } from "chart.js";
 import { VisualizationType } from "./chat/CommonInterfaces";
+import React from "react";
 
 
 

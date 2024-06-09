@@ -1,4 +1,6 @@
 // DynamicDashboard.tsx
+import React from "react";
+
 interface DynamicDashboardProps {
     title: string;
     content: React.ReactNode;

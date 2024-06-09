@@ -1,12 +1,11 @@
-import { fetchSnapshotById } from './../../api/SnapshotApi';
 //snapshotstore.ts
 import { fetchData } from "@/app/api/ApiData";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import {
-  NotificationContextType,
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationContextType,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -19,36 +18,41 @@ import * as snapshotApi from "../../api/SnapshotApi";
 import { CryptoActions } from "../actions/CryptoActions";
 import { ProjectManagementActions } from "../actions/ProjectManagementActions";
 import { SubscriptionPayload } from "../actions/SubscriptionActions";
+import { TaskActions } from "../actions/TaskActions";
 import { LanguageEnum } from "../communications/LanguageEnum";
 import { CustomTransaction } from "../crypto/SmartContractInteraction";
+import { ModifiedDate } from "../documents/DocType";
 import { createCustomTransaction } from "../hooks/dynamicHooks/createCustomTransaction";
 import useSubscription from "../hooks/useSubscription";
 import { SnapshotLogger } from "../logging/Logger";
 import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
-import { ProjectPhaseTypeEnum, SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 import {
-  displayToast,
-  showErrorMessage,
-  showToast,
+    PriorityTypeEnum,
+    ProjectPhaseTypeEnum,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum
+} from "../models/data/StatusType";
+import {
+    displayToast,
+    showErrorMessage,
+    showToast,
 } from "../models/display/ShowToast";
 import { Tag } from "../models/tracker/Tag";
-import { Phase } from "../phases/Phase";
 import { Settings } from "../state/stores/SettingsStore";
 import { NotificationData } from "../support/NofiticationsSlice";
-import { TaskActions } from "../tasks/TaskActions";
 import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
+    logActivity,
+    notifyEventSystem,
+    triggerIncentives,
+    updateProjectState,
 } from "../utils/applicationUtils";
+import { useSecureUserId } from "../utils/useSecureUserId";
 import { SnapshotActions } from "./SnapshotActions";
 import SnapshotStoreConfig from "./SnapshotConfig";
-import { useSecureUserId } from '../utils/useSecureUserId';
 
 const { notify } = useNotification();
 const dispatch = useDispatch();
@@ -75,14 +79,14 @@ const SNAPSHOT_URL = endpoints.snapshots;
 
 interface Snapshot<T> {
   id?: string | number;
-  data: T; // Data stored in the snapshot
-  timestamp: Date | string; // Timestamp of when the snapshot was created
+  data?: T | undefined; // Data stored in the snapshot
+  timestamp?: Date | string; // Timestamp of when the snapshot was created
   createdBy?: string; // Optional: User or entity that created the snapshot
   description?: string; // Optional: Description or notes about the snapshot
   tags?: Tag[] | string[]; // Optional: Tags or labels for categorizing the snapshot
   subscriberId?: string;
   length?: number;
-  category: any;
+  category?: string;
 
   content?: T | string | Content | undefined;
   message?: string;
@@ -109,9 +113,10 @@ const initialState = {
   content: undefined,
   data: undefined,
 };
+
 // Define the snapshot store subset
 type SnapshotStoreSubset = {
-   snapshotId: string;
+  snapshotId: string;
   addSnapshot: (snapshot: Snapshot<Data>) => void;
   updateSnapshot: (
     snapshotId: string,
@@ -140,7 +145,8 @@ type SnapshotStoreSubset = {
   configureSnapshotStore: () => void;
 
   // Data and State Handling
-  getData: () => Data | null;
+  getData: () => Promise<Data>;
+  flatMap: () => void;
   setData: (data: Data) => void;
   getState: () => any;
   setState: (state: any) => void;
@@ -189,7 +195,7 @@ type SnapshotStoreSubset = {
 };
 
 // Define the snapshot store interface
-type SnapshotStore<Data> = SnapshotStoreSubset & {
+type SnapshotStore<T> = SnapshotStoreSubset & {
   snapshots: Snapshot<Data>[];
   config: any;
 };
@@ -209,6 +215,7 @@ const convertSubscriptionPayloadToSubscriber = (
       marketUpdates: () => {},
       communityEngagement: () => {},
       unsubscribe: () => {},
+      portfolioUpdatesLastUpdated: { value: new Date(), isModified: false }as ModifiedDate,
     },
     payload.subscriberId,
     notifyEventSystem, // Replace with your actual function
@@ -257,10 +264,27 @@ const useSnapshotStore = async (
     type: "",
   };
 
+  const flatMap = () => {
+    const flatMap = (
+      snapshots: Snapshot<Data>[],
+      callback: (snapshot: Snapshot<Data>) => void
+    ) => {
+      snapshots.forEach((snapshot) => {
+        callback(snapshot);
+      });
+    };
+    flatMap(snapshots, (snapshot) => {
+      console.log(snapshot);
+    });
+    console.log("Flat map complete");
+    return;
+  }
   // Define methods to be exposed by the snapshot store
   const addSnapshot = (snapshot: Snapshot<Data>) => {
     setSnapshots([...snapshots, snapshot]);
   };
+
+  
 
   addSnapshot(newSnapshot);
 
@@ -342,7 +366,9 @@ const useSnapshotStore = async (
   };
 
   // Function to get subscribers
-  const getSubscribers = (subscriber: SubscriptionPayload): Subscriber<CustomSnapshotData | Data>[] => {
+  const getSubscribers = (
+    subscriber: SubscriptionPayload
+  ): Subscriber<CustomSnapshotData | Data>[] => {
     // Implement logic to fetch subscribers from a database or an API
     // For demonstration purposes, returning a mock list of subscribers
     const subscribers: Subscriber<CustomSnapshotData | Data>[] = [];
@@ -361,6 +387,7 @@ const useSnapshotStore = async (
         marketUpdates: () => {},
         communityEngagement: () => {},
         unsubscribe: () => {},
+        portfolioUpdatesLastUpdated: { value: new Date(), isModified: false }as ModifiedDate,
       },
       subscriberId,
       notifyEventSystem,
@@ -381,12 +408,13 @@ const useSnapshotStore = async (
         subscriberId: subscriberId,
         subscriberType: SubscriberTypeEnum.STANDARD,
         subscriptionType: SubscriptionTypeEnum.PortfolioUpdates,
-        getPlanName: () => SubscriberTypeEnum.STANDARD,    
+        getPlanName: () => SubscriberTypeEnum.STANDARD,
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
         marketUpdates: () => {},
         communityEngagement: () => {},
         unsubscribe: () => {},
+        portfolioUpdatesLastUpdated: { value: new Date(), isModified: false }as ModifiedDate,
       },
       subscriberId,
       notifyEventSystem,
@@ -732,8 +760,7 @@ const useSnapshotStore = async (
         updateSnapshotList(snapshot);
       });
     },
-    
-    
+
     // fetchSnapshotById: async (id: string) => {
     //   try {
     //     // Perform logic to fetch a snapshot by id, such as fetching data from a database
@@ -746,20 +773,7 @@ const useSnapshotStore = async (
     //     return null;
     //   }
     // },
-
-  }
-
-  
-
-
-
-
-
-
-
-
-
-
+  };
 
   // Example function to update the UI with the newly captured snapshot
   const updateSnapshotList = (snapshot: Snapshot<Data>) => {
@@ -920,7 +934,7 @@ const useSnapshotStore = async (
             assigneeId: undefined,
             dueDate: undefined,
             payload: undefined,
-            priority: "low",
+            priority: PriorityTypeEnum.Low,
             previouslyAssignedTo: [],
             done: false,
             data: undefined,
@@ -1035,11 +1049,11 @@ const useSnapshotStore = async (
   return {
     snapshotId,
     snapshots,
+    flatMap,
     addSnapshot,
     updateSnapshot,
     removeSnapshot,
     clearSnapshots,
-
     // Snapshot Creation and Management
     createSnapshot: () => {},
     createSnapshotSuccess: (snapshot: Snapshot<Data>) => {},
@@ -1053,12 +1067,14 @@ const useSnapshotStore = async (
     takeSnapshot: () => {},
     takeSnapshotSuccess: (snapshot: Snapshot<Data>) => {},
     takeSnapshotsSuccess: (snapshots: Snapshot<Data>[]) => {},
-
+    
     // Configuration
     configureSnapshotStore: () => {},
-
+    
     // Data and State Handling
-    getData: () => null,
+    getData:  () => {
+      return {} as Promise<Data>
+    },
     setData: (data: Data) => {},
     getState: () => null,
     setState: (state: any) => {},
@@ -1118,6 +1134,11 @@ export type { CustomSnapshotData, Payload, Snapshot };
 const snapshot: Snapshot<Data> = {
   id: "snapshot1",
   category: "example category",
+  timestamp: new Date(),
+  createdBy: "creator1",
+  description: "Sample snapshot description",
+  tags: ["sample", "snapshot"],
+
   data: {
     _id: "1",
     id: "data1",
@@ -1125,13 +1146,54 @@ const snapshot: Snapshot<Data> = {
     description: "Sample description",
     timestamp: new Date(),
     category: "Sample category",
-    startDate: new Date(),
-    endDate: new Date(),
     scheduled: true,
     status: "Pending",
+    notificationsEnabled: true,
     isActive: true,
     tags: ["Important"],
-    phase: {} as Phase,
+    phase: {
+      id: "phase1",
+      name: "Sample Phase",
+      description: "Sample description",
+      type: "Ideation",
+      status: "Pending",
+      tags: ["Important"],
+
+      startDate: new Date(),
+      endDate: new Date(),
+      subPhases: [],
+      component: {} as React.FC<any>,
+      duration: 0,
+      hooks: {
+        onInit: () => {},
+        onMount: () => {},
+        onUnmount: () => {},
+        onPhaseChange: () => {},
+        onPhaseCompletion: () => {},
+        onPhaseCreation: () => {},
+        onPhaseDeletion: () => {},
+        onPhaseUpdate: () => {},
+        onPhaseMove: () => {},
+        onPhaseDueDateChange: () => {},
+        onPhasePriorityChange: () => {},
+        onPhaseAssigneeChange: () => {},
+
+        resetIdleTimeout: async () => {},
+        isActive: false,
+        progress: {
+          id: "",
+          value: 0,
+          label: "",
+          current: 0,
+          max: 0,
+          min: 0,
+          percentage: 0,
+        },
+        condition: async (idleTimeoutDuration: number) => {
+          return true;
+        },
+      },
+    },
     phaseType: ProjectPhaseTypeEnum.Ideation,
     dueDate: new Date(),
     priority: "High",
@@ -1187,6 +1249,7 @@ const snapshot: Snapshot<Data> = {
       videoThumbnail: "",
       videoUrl: "",
       videoTitle: "",
+      thumbnail: "",
       videoDescription: "",
       videoTags: [],
       videoSubtitles: [],
@@ -1206,12 +1269,17 @@ const snapshot: Snapshot<Data> = {
       isEmbeddable: false,
       isDownloadable: false,
       playlists: [],
+      isDeleting: false,
+      isCompleted: false,
+      isUploading: false,
+      isDownloading: false,
+      isProcessing: false,
     },
     additionalData: {},
     ideas: [],
     members: [],
     leader: {
-       id: "leader1",
+      id: "leader1",
       username: "Leader Name",
       email: "leader@example.com",
       fullName: "Leader Full Name",
@@ -1598,7 +1666,7 @@ const snapshot: Snapshot<Data> = {
                   this._id === data._id &&
                   this.title === data.title &&
                   this.amount === data.amount &&
-                  this.date.getTime() === data.date.getTime() &&
+                  this.date?.getTime() === data.date?.getTime() &&
                   this.description === data.description &&
                   this.startDate?.getTime() === data.startDate?.getTime() &&
                   this.endDate?.getTime() === data.endDate?.getTime() &&
@@ -1640,7 +1708,7 @@ const snapshot: Snapshot<Data> = {
               recentActivity: [
                 { action: "Created snapshot", timestamp: new Date() },
                 { action: "Edited snapshot", timestamp: new Date() },
-              ]
+              ],
             };
             return clonedData;
           },
@@ -1689,7 +1757,7 @@ const snapshot: Snapshot<Data> = {
             return (
               this.id === data.id &&
               this.amount === data.amount &&
-              this.date?.getTime() === data.date.getTime() &&
+              this.date?.getTime() === data.date?.getTime() &&
               this.description === data.description &&
               this.nonce === data.nonce &&
               this.gasLimit === data.gasLimit &&
@@ -1729,11 +1797,7 @@ const snapshot: Snapshot<Data> = {
         }),
       ],
     },
-    notificationsEnabled: true,
   },
-  timestamp: new Date(),
-  createdBy: "creator1",
-  description: "Sample snapshot description",
-  tags: ["sample", "snapshot"],
 };
-export default SnapshotStore
+export default SnapshotStore;
+export type { SnapshotStoreSubset, UpdateSnapshotPayload };

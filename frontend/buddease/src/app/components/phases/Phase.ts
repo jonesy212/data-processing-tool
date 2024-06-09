@@ -10,7 +10,8 @@ import { Progress } from "../models/tracker/ProgressBar";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 
 // Define a type for a phase
-export interface Phase extends CommonData<Data> {
+export interface Phase extends CommonData {
+  id: string;
   index?: number;
   name: string;
   startDate: Date | undefined;
@@ -18,6 +19,7 @@ export interface Phase extends CommonData<Data> {
   subPhases: Phase[];
   component: FC<any>; // Adjust to accept any props
   hooks: CustomPhaseHooks;
+  data?: any;
   lessons?: Lesson[];
   duration: number;
   tasks?: Task[];
@@ -31,6 +33,7 @@ export interface Phase extends CommonData<Data> {
 }
 
 export class PhaseImpl implements Phase {
+  id: string = "";
   name: string = "";
   startDate: Date = new Date();
   endDate: Date = new Date();

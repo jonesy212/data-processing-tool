@@ -1,5 +1,5 @@
 // RealtimeTranscriptionComponent.tsx
-
+import React from "react";
 import { useCallback, useEffect } from "react";
 import useRealtimeData from "./hooks/commHooks/useRealtimeData";
 import useRealtimeEditing from "./hooks/useRealtimeEditing";

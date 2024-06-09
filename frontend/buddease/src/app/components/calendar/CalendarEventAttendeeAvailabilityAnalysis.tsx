@@ -1,8 +1,9 @@
-import AttendeeAvailabilityAnalysis from "./Attendee";
+import {AttendeeAvailabilityAnalysis} from "./Attendee";
 
 // CalendarEventAttendeeAvailabilityAnalysis.tsx
 interface CalendarEventAttendeeAvailabilityAnalysis
   extends Partial<AttendeeAvailabilityAnalysis> {
+  
   eventId: string;
   attendeeAvailability: Record<
     string,

@@ -1,9 +1,9 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
+import useIdleTimeout from "../hooks/idleTimeoutHooks";
 import { AnimatedComponentRef } from "../libraries/animations/AnimationComponent";
 import { useUIElement } from "../libraries/ui/useUIElement";
-import {Project} from "../projects/Project";
+import { Project } from "../projects/Project";
 import { AnimationsAndTransitions } from "../styling/AnimationsAndTansitions";
-import useIdleTimeout from "../hooks/idleTimeoutHooks";
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const animatedComponentRef = useRef<AnimatedComponentRef | null>({

@@ -1,4 +1,5 @@
 // CalendarApp.tsx
+import React from "react";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { VideoData } from "@/app/components/video/Video";
 import { DocumentOptions } from "../documents/DocumentOptions";
@@ -11,12 +12,16 @@ import { Member, TeamMember } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project, ProjectType } from "../projects/Project";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
+import SnapshotStore, { Payload, Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import UserRoles from "../users/UserRoles";
 import { User } from "../users/User";
 import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SnapshotStoreSubset } from "../snapshots/SnapshotStore";
+import { useSnapshotStore } from "../snapshots/SnapshotStore";
+import useSnapshotManager from '@/app/components/hooks/useSnapshotManager';
+import { Todo } from "@/app/components/todos/Todo";
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -78,6 +83,18 @@ const analysisType = (project: Project) => {
 const { fetchData } = useDataStore();
 
 const CalendarApp = () => {
+  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = useSnapshotStore((snapshot) => {
+    // This callback function can be used to add a snapshot to the snapshot list
+    // You can implement the logic to add the snapshot to the component's state or perform any other actions
+    // For example:
+    // setSnapshots([...snapshots, snapshot]);
+  });
+
+
+  const snapshotManager = useSnapshotManager<Todo>(); // Initialize the snapshot manager
+
+
+
   const calendarEvent: CalendarEvent = {
     id: "1",
     title: "Meeting",
@@ -122,7 +139,7 @@ const CalendarApp = () => {
     getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
       throw new Error("Function not implemented.");
     },
-    timestamp: undefined
+    timestamp: undefined,
   };
 
   return (
@@ -130,12 +147,13 @@ const CalendarApp = () => {
       <h1>Calendar App</h1>
       <CalendarDetails
         data={{
+          id: "1",
           tags: ["work", "meeting"],
           metadata: {},
         }}
         details={{
-          _id: calendarEvent.id,
           id: "1",
+          // _id: calendarEvent.id,
           title: "Meeting",
           description: "Discuss project plans",
           startDate: new Date(),
@@ -147,8 +165,9 @@ const CalendarApp = () => {
       <CommonDetails
         data={
           {
+            id: "1",
             calendarEvent: calendarEvent,
-          } as CommonData<never>
+          } as CommonData
         }
         details={{
           _id: calendarEvent.id,
@@ -257,7 +276,7 @@ const CalendarApp = () => {
                 throw new Error("Function not implemented.");
               },
               timestamp: undefined,
-              category: ""
+              category: "",
             },
             {
               projectId: "proj-2",
@@ -281,7 +300,7 @@ const CalendarApp = () => {
                 throw new Error("Function not implemented.");
               },
               timestamp: undefined,
-              category: ""
+              category: "",
             },
           ],
           isActive: true,
@@ -325,7 +344,7 @@ const CalendarApp = () => {
                 throw new Error("Function not implemented.");
               },
               timestamp: undefined,
-              category: ""
+              category: "",
             },
           ],
           reassignedProjects: [
@@ -373,9 +392,9 @@ const CalendarApp = () => {
                   throw new Error("Function not implemented.");
                 },
                 timestamp: undefined,
-                category: ""
+                category: "",
               },
-              project: undefined
+              project: undefined,
             },
           ],
           status: "active",
@@ -387,87 +406,153 @@ const CalendarApp = () => {
           unassignProject: (project) =>
             console.log("Project unassigned:", project),
           analysisType: "quantitative" as AnalysisTypeEnum | undefined,
-          analysisResults: [
-            {
-              id: 1,
-              title: "Efficiency",
-              insights: [],
-              analysisType: "quantitative",
-              analysisDate: new Date(), // Add analysisDate
-              results: [], // Add results
-              result: 85,
-              description: "",
-              status: "completed",
-              createdAt: new Date(),
-              updatedAt: undefined,
-              recommendations: [], // Add recommendations
-              metrics: { // Add metrics
-                accuracy: 0,
-                precision: 0,
-                recall: 0,
-                f1Score: 0,
+            snapshots: [
+              {
+                
+                initSnapshot: useSnapshotManager().initSnapshot,
+                takeSnapshot: ,
+                takeSnapshotSuccess: ,
+                takeSnapshotsSuccess: ,
+
+                configureSnapshotStore: ,
+                getData: ,
+                setData: ,
+                getState: ,
+
+                setState: ,
+                validateSnapshot: ,
+                handleSnapshot: ,
+                handleActions: ,
+
+                setSnapshot: ,
+                setSnapshots: ,
+                clearSnapshot: ,
+                mergeSnapshots: ,
+                reduceSnapshots:,
+                sortSnapshots:,
+                filterSnapshots:,
+
+                mapSnapshots:,
+                findSnapshot:,
+                getSubscribers:,
+                notify:,
+
+                notifySubscribers:,
+                subscribe:,
+                unsubscribe:,
+                fetchSnapshot:,
+
+                fetchSnapshotSuccess:,
+                fetchSnapshotFailure:,
+                getSnapshot:,
+
+                getSnapshots:,
+                getAllSnapshots:,
+                generateId:,
+                batchFetchSnapshots:,
+
+                batchTakeSnapshotsRequest:,
+                batchUpdateSnapshotsRequest:,
+                batchFetchSnapshotsSuccess:,
+                batchFetchSnapshotsFailure:,
+
+                batchUpdateSnapshotsSuccess:,
+                batchUpdateSnapshotsFailure:,
+                batchTakeSnapshot: ,
+                snapshots:, config:,
+                // mergeSnapshot:,
+                // mergeSnapshotSuccess, mergeSnapshotsSuccess,
+                snapshotId: "snap-1",
+                addSnapshot: (snapshot: Snapshot<Data>) => {
+                  // Add snapshot logic
+                },
+                updateSnapshot: (
+                  snapshotId: string,
+                  newData: Data,
+                  payload: UpdateSnapshotPayload<Data>
+                ) => {
+                  // Update snapshot logic
+                },
+                removeSnapshot: (snapshotId: string) => {
+                  // Remove snapshot logic
+                },
+                clearSnapshots: () => {
+                  // Clear snapshots logic
+                },
+                // Add other functions and properties required by SnapshotStoreSubset
+                createSnapshot: () => {
+                  // Create snapshot logic
+                },
+                createSnapshotSuccess: (snapshot: Snapshot<Data>) => {
+                  // Create snapshot success logic
+                },
+                createSnapshotFailure: (error: Payload) => {
+                  // Create snapshot failure logic
+                },
+                updateSnapshots: () => {
+                  // Update snapshots logic
+                },
+                updateSnapshotSuccess: () => {
+                  // Update snapshot success logic
+                },
+                updateSnapshotFailure: (error: Payload) => {
+                  // Update snapshot failure logic
+                },
+                updateSnapshotsSuccess: () => {
+                  // Update snapshots success logic
+                },
+                updateSnapshotsFailure: (error: Payload) => {
+                  // Update snapshots failure logic
+                },
+                // Add more properties...
               },
-              visualizations: { // Add visualizations
-                charts: [],
-                diagrams: [],
-              },
-              communityImpact: false, // Add communityImpact
-              globalCollaboration: false, // Add globalCollaboration
-              solutionQuality: false, // Add solutionQuality
-              unityPromotion: false, // Add unityPromotion
-              humanityBenefit: false, // Add humanityBenefit
-              conclusions: "", // Add conclusions
-              futureSteps: [], // Add futureSteps
-            },
             {
-              id: 2,
-              title: "Completion Rate",
-              insights: [],
-              analysisType: "quantitative",
-              analysisDate: new Date(), // Add analysisDate
-              results: [], // Add results
-              result: 95,
-              description: "",
-              status: "completed",
-              createdAt: new Date(),
-              updatedAt: undefined,
-              recommendations: [], // Add recommendations
-              metrics: { // Add metrics
-                accuracy: 0,
-                precision: 0,
-                recall: 0,
-                f1Score: 0,
+              snapshotId: "snap-2",
+              addSnapshot: (snapshot: Snapshot<Data>) => {
+                // Add snapshot logic
               },
-              visualizations: { // Add visualizations
-                charts: [],
-                diagrams: [],
+              updateSnapshot: (
+                snapshotId: string,
+                newData: Data,
+                payload: UpdateSnapshotPayload<Data>
+              ) => {
+                // Update snapshot logic
               },
-              communityImpact: false, // Add communityImpact
-              globalCollaboration: false, // Add globalCollaboration
-              solutionQuality: false, // Add solutionQuality
-              unityPromotion: false, // Add unityPromotion
-              humanityBenefit: false, // Add humanityBenefit
-              conclusions: "", // Add conclusions
-              futureSteps: [], // Add futureSteps
+              removeSnapshot: (snapshotId: string) => {
+                // Remove snapshot logic
+              },
+              clearSnapshots: () => {
+                // Clear snapshots logic
+              },
+              // Add other functions and properties required by SnapshotStoreSubset
+              createSnapshot: () => {
+                // Create snapshot logic
+              },
+              createSnapshotSuccess: (snapshot: Snapshot<Data>) => {
+                // Create snapshot success logic
+              },
+              createSnapshotFailure: (error: Payload) => {
+                // Create snapshot failure logic
+              },
+              updateSnapshots: () => {
+                // Update snapshots logic
+              },
+              updateSnapshotSuccess: () => {
+                // Update snapshot success logic
+              },
+              updateSnapshotFailure: (error: Payload) => {
+                // Update snapshot failure logic
+              },
+              updateSnapshotsSuccess: () => {
+                // Update snapshots success logic
+              },
+              updateSnapshotsFailure: (error: Payload) => {
+                // Update snapshots failure logic
+              },
+              // Add more properties...
             },
-          ],          
-          videoData: {
-            url: "http://example.com/video.mp4",
-            duration: 120,
-            resolution: "1080p",
-          } as VideoData,
-          snapshots: [
-            {
-              id: "snap-1",
-              data: { someKey: "someValue" },
-              timestamp: new Date("2022-02-01"),
-            },
-            {
-              id: "snap-2",
-              data: { someKey: "anotherValue" },
-              timestamp: new Date("2022-03-01"),
-            },
-          ] as SnapshotStore<Snapshot<Data>>[],
+          ],
+          
           team: {
             id: "team-1",
             current: 5,
@@ -476,7 +561,7 @@ const CalendarApp = () => {
             value: 0,
           },
           // todo
-          getData: fetchData
+          getData: fetchData,
         }}
       />
     </div>

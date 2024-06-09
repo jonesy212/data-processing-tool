@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import FeedbackService from "../support/FeedbackService";
-import { Feedback } from "../support/Feedback";
-import FeedbackForm from "@/app/pages/forms/FeedbackForm";
 import FeedbackReportGenerator, { FeedbackReport } from "@/app/generators/FeedbackReportGenerator";
+import FeedbackForm from "@/app/pages/forms/FeedbackForm";
+import React, { useState } from "react";
 import FeedbackLoop from "../FeedbackLoop";
+import { Feedback } from "../support/Feedback";
+import FeedbackService from "../support/FeedbackService";
 
 enum FeedbackPhaseEnum {
     FEEDBACK_SELECTION = "FEEDBACK_SELECTION",
@@ -11,7 +11,7 @@ enum FeedbackPhaseEnum {
     FEEDBACK_PROCESSING = "FEEDBACK_PROCESSING",
     FEEDBACK_ANALYSIS = "FEEDBACK_ANALYSIS",
     FEEDBACK_REPORTING = "FEEDBACK_REPORTING",
-
+    FEEDBACK_REVIEW = "FEEDBACK_REVIEW",
     FEEDBACK_COLLECTION = 'FEEDBACK_COLLECTION',
 }
 

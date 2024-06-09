@@ -3,6 +3,7 @@ import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGene
 import { DetailsProps, SupportedData } from '../models/CommonData';
 import { User, UserDetails } from './User';
 import UserRoles from './UserRoles';
+import React from 'react';
 
 const UserDataComponent = () => {
   const timeBasedCode = generateTimeBasedCode()

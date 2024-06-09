@@ -1,3 +1,5 @@
+import React from "react";
+
 import RandomWalkSuggestions from '@/app/components/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/components/models/data/Data';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';

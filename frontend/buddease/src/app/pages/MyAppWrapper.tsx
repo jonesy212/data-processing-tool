@@ -17,6 +17,7 @@ import { ContentItem } from "../components/cards/DummyCardLoader";
 import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
 import { Phase } from "../components/phases/Phase";
 import { useThemeCustomization } from "../components/hooks/useThemeCustomization";
+import React from "react";
 
 // Extend NextRouter with additional properties
 type ExtendedRouter = NextRouter & {

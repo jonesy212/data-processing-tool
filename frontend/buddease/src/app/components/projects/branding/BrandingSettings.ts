@@ -1,3 +1,5 @@
+import { Progress } from "../../models/tracker/ProgressBar";
+import { Resource } from "../../state/redux/slices/CollaborationSlice";
 
 // BrandingSettings.ts
 interface BrandingSettings {
@@ -5,10 +7,10 @@ interface BrandingSettings {
   logoUrl: string;
   logoAltText?: string;
   fontSize?: string;
-  
+
   // Custom styles
   customStyles?: Record<string, string>;
-  
+
   // Animation settings
   animationDuration?: number;
   animationDelay?: number;
@@ -30,7 +32,7 @@ interface BrandingSettings {
   animationFillModeEnd?: string;
   animationPlayStateStart?: string;
   animationPlayStateEnd?: string;
-  
+
   // Theme colors
   /**
    * Theme color for branding.
@@ -49,15 +51,15 @@ interface BrandingSettings {
    * @since 1.0.0
    * @example
    * var color = '#3366cc';
-  */
-   borderColorFocus?: string;
+   */
+  borderColorFocus?: string;
   /**
    * Secondary theme color for branding (optional).
    * Should be a valid CSS color code.
    * Example: '#ff9900'
    */
   secondaryThemeColor?: string;
-  
+
   // Background settings
   /**
    * Background color for branding (optional).
@@ -71,7 +73,7 @@ interface BrandingSettings {
    * Example: 'https://example.com/background.jpg'
    */
   backgroundImageUrl?: string;
-  
+
   // Text settings
   /**
    * Text color for branding (optional).
@@ -79,7 +81,7 @@ interface BrandingSettings {
    * Example: '#3366cc'
    */
   textColor?: string;
-  
+
   // Font settings
   /**
    * Font family for branding (optional).
@@ -91,7 +93,7 @@ interface BrandingSettings {
    * Example: 16
    */
   primaryColor?: string;
-  
+
   // Default settings
   /**
    * Default color to use if themeColor or primaryColor is not provided.
@@ -105,16 +107,16 @@ interface Label {
   text: string;
   color: string;
 }
-  
+
 // Define a default branding settings object
-  const defaultBrandingSettings: BrandingSettings = {
-    logoUrl: "default-logo-url",
-    themeColor: "default-theme-color",
-    secondaryThemeColor: "default-secondary-theme-color",
-    backgroundColor: "default-background-color",
-    textColor: "default-text-color",
-  };
-  
+const defaultBrandingSettings: BrandingSettings = {
+  logoUrl: "default-logo-url",
+  themeColor: "default-theme-color",
+  secondaryThemeColor: "default-secondary-theme-color",
+  backgroundColor: "default-background-color",
+  textColor: "default-text-color",
+};
+
 // Create a function to override default values with custom values
 const createBrandingSettings = (
   customSettings: Partial<BrandingSettings> = {}
@@ -125,11 +127,21 @@ const createBrandingSettings = (
   };
 };
 
-
 export const label: { text: string; color: string } = {
   text: "Custom Label",
   color: "#333",
 };
+
+export const labels: Label[] = [
+  {
+    text: "Custom Label",
+    color: "#333",
+  },
+  {
+    text: "Custom Label 2",
+    color: "#333",
+  },
+];
 
 
 export const brandingSettings: BrandingSettings = createBrandingSettings({
@@ -140,5 +152,4 @@ export const brandingSettings: BrandingSettings = createBrandingSettings({
   textColor: "custom-text-color",
 });
 
-
-export type { BrandingSettings };
+export type { BrandingSettings, Label };

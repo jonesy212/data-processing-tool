@@ -31,6 +31,7 @@ import { showErrorMessage, showToast } from "../models/display/ShowToast";
 import { LogData } from "../models/LogData";
 import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
+import { Tag } from "../models/tracker/Tag";
 import { ChatActions } from "../projects/DataAnalysisPhase/ChatActions";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
@@ -47,8 +48,8 @@ import {
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { User } from "../users/User";
-import AttendancePrediction from "./AttendancePrediction";
-import AttendeeAvailabilityAnalysis from "./Attendee";
+import { AttendancePrediction } from "./AttendancePrediction";
+import { event, ExtendedAttendeeAvailability, useAttendeeAvailabilityAnalysis } from "./Attendee";
 import CalendarEventAgendaItem from "./CalendarEventAgendaItem";
 import CalendarEventCategory from "./CalendarEventCategory";
 import CalendarEventConflictDetectionResult from "./CalendarEventConflictDetectionResult";
@@ -73,11 +74,13 @@ import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
+import React from "react";
 interface Milestone {
   id: string;
   title: string;
   date: Date;
   dueDate: Date | null;
+  startDate: Date | null;
 }
 
 // Define the type for ScheduleOptimizationResults
@@ -132,26 +135,26 @@ type CalendarViewType =
 
 
 interface CalendarManagerState {
-  entities: Record<string, CalendarEvent>;
-  events: Record<string, CalendarEvent[]>;
-  milestones: Record<string, Milestone>;
-  notifications: Record<string, NotificationData>;
+  entities: Record<string, CalendarEvent> | undefined;
+  events: Record<string, CalendarEvent[]> | undefined;
+  milestones: Record<string, Milestone> | undefined;
+  notifications: Record<string, NotificationData> | undefined;
   loading: boolean;
   filteredEvents: CalendarEvent[];
   searchedEvents: CalendarEvent[];
   sortedEvents: CalendarEvent[];
   viewingEventDetails: React.FC<CalendarEventViewingDetailsProps> | null;
-  sharedEvents: Record<string, CalendarEvent>;
+  sharedEvents: Record<string, CalendarEvent> | undefined;
   sharedEvent: CalendarEvent | undefined;
   pendingAction: string | null;
   isLoading: boolean;
   error: string | undefined;
   calendarEvent: CalendarEvent | undefined;
   calendarEventEditing: CalendarEvent | null;
-  currentView: CalendarViewType;
-  exportedEvents: Record<string, CalendarEvent[]>;
+  currentView: CalendarViewType | null;
+  exportedEvents: Record<string, CalendarEvent[]> | undefined;
   externalCalendarsOverlays: ExternalCalendarOverlay[];
-  chatRooms: Record<string, ChatRoom>; // Updated to remove the array
+  chatRooms: Record<string, ChatRoom> | undefined; // Updated to remove the array
   chatRoom: ChatRoom | undefined;
   user: User | null;
   suggestedLocation: string | null;
@@ -190,14 +193,19 @@ interface CalendarManagerState {
   eventRoiAnalysis: EventRoiAnalysis | null;
   outcomeVariabilityPrediction: OutcomeVariabilityPrediction | null;
   eventRiskAssessment: EventRiskAssessment | null;
-  attendeeAvailabilityAnalysis: AttendeeAvailabilityAnalysis;
-  generatedEventContent: EventContent;
+  generatedEventContent: EventContent | undefined;
   personalizedInvitations: PersonalizedInvitation[];
   engagementMetrics: EngagementMetrics[];
-  impactPrediction: ImpactPrediction;
+  
+  impactPrediction: ImpactPrediction | undefined;
   suggestedFollowUpActions: FollowUpAction[];
   recommendedOptimizations: RecommendedOptimization[];
-  attendancePrediction: AttendancePrediction;
+  attendancePrediction: AttendancePrediction | undefined;
+  attendeeAvailabilityAnalysis: ExtendedAttendeeAvailability & {
+    event: CalendarEvent | null;
+    analyze: () => void
+  };
+
   
 }
 
@@ -582,7 +590,7 @@ const initialState: CalendarManagerState = {
   budgetOptimization: null,
   teamCollaborationAnalysis: null,
   suggestedAgenda: [],
-  attendeeAvailabilityAnalysis: {} as AttendeeAvailabilityAnalysis,
+  attendeeAvailabilityAnalysis: useAttendeeAvailabilityAnalysis(event),
   attendancePrediction: {} as AttendancePrediction,
   eventConflictDetectionResult: null,
   eventPriorityClassification: null,
@@ -720,7 +728,9 @@ export const useCalendarManagerSlice = createSlice({
     ) => {
       const updatedEvent = action.payload;
 
-      state.entities[updatedEvent.id] = updatedEvent;
+      if (state.entities) {
+        state.entities[updatedEvent.id] = updatedEvent;
+      }
 
       dispatchNotification(
         "calendarEvent",
@@ -735,7 +745,7 @@ export const useCalendarManagerSlice = createSlice({
         updatedEvent.phase.name === ProjectPhaseTypeEnum.DataAnalysis &&
         updatedEvent.status === StatusType.Completed
       ) {
-        initiateDataAnalysis(updatedEvent as CalendarEvent); // Cast updatedEvent as CalendarEvent
+        initiateDataAnalysis(updatedEvent as CalendarEvent);
       }
     },
 
@@ -744,7 +754,9 @@ export const useCalendarManagerSlice = createSlice({
       state,
       action: PayloadAction<WritableDraft<CalendarEvent>>
     ) => {
-      state.entities[action.payload.id] = action.payload;
+      if (state.entities) {
+        state.entities[action.payload.id] = action.payload;
+      }
       dispatchNotification(
         "addCalendarEvent",
         "Calendar event added successfully",
@@ -757,7 +769,9 @@ export const useCalendarManagerSlice = createSlice({
     // For "removeCalendarEvent" action:
     removeCalendarEvent: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      delete state.entities[eventId];
+      if (state.entities) {
+        delete state.entities?.[eventId];
+      }
       dispatchNotification(
         "removeCalendarEvent",
         "Calendar event removed successfully",
@@ -769,7 +783,7 @@ export const useCalendarManagerSlice = createSlice({
 
     // For "updateCalendarEvent" action:
     updateCalendarEvent: (state, action: PayloadAction<CalendarEvent>) => {
-      const event = state.entities[action.payload.id];
+      const event = state.entities?.[action.payload.id];
       if (event) {
         event.title = action.payload.title;
         event.startTime = action.payload.startTime;
@@ -789,7 +803,7 @@ export const useCalendarManagerSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; newTitle: string }>
     ) => {
-      const event = state.entities[action.payload.id];
+      const event = state.entities?.[action.payload.id];
       if (event) {
         event.title = action.payload.newTitle;
         dispatchNotification(
@@ -804,7 +818,8 @@ export const useCalendarManagerSlice = createSlice({
 
     // For "addMilestone" action:
     addMilestone: (state, action: PayloadAction<Milestone>) => {
-      state.milestones[action.payload.id] = action.payload;
+      const milestones = state.milestones || {};
+      milestones[action.payload.id] = action.payload;
       dispatchNotification(
         "addMilestone",
         "Milestone added successfully",
@@ -816,9 +831,10 @@ export const useCalendarManagerSlice = createSlice({
 
     // For "removeMilestone" action:
     removeMilestone: (state, action: PayloadAction<Milestone>) => {
-      const milestone = state.milestones[action.payload.id];
+      const milestones = state.milestones || {};
+      const milestone = milestones[action.payload.id];
       if (milestone) {
-        delete state.milestones[action.payload.id];
+        delete milestones[action.payload.id];
         dispatchNotification(
           "removeMilestone",
           "Milestone removed successfully",
@@ -833,7 +849,9 @@ export const useCalendarManagerSlice = createSlice({
       state,
       action: PayloadAction<WritableDraft<NotificationData>>
     ) => {
-      state.notifications[action.payload.id] = action.payload;
+      const notifications = state.notifications || {};
+      notifications[action.payload.id] = action.payload;
+      state.notifications = notifications;
       dispatchNotification(
         "addNotification",
         "Notification added successfully",
@@ -845,7 +863,8 @@ export const useCalendarManagerSlice = createSlice({
 
     // For "removeNotification" action:
     removeNotification: (state, action: PayloadAction<string>) => {
-      delete state.notifications[action.payload];
+      const notifications = state.notifications || {};
+      delete notifications[action.payload];
       dispatchNotification(
         "removeNotification",
         "Notification removed successfully",
@@ -859,7 +878,8 @@ export const useCalendarManagerSlice = createSlice({
       state,
       action: PayloadAction<{ notificationId: string; newMessage: string }>
     ) => {
-      const notification = state.notifications[action.payload.notificationId];
+      const notifications = state.notifications || {};
+      const notification = notifications[action.payload.notificationId];
       if (notification) {
         notification.message = action.payload.newMessage;
         dispatchNotification(
@@ -870,9 +890,6 @@ export const useCalendarManagerSlice = createSlice({
           action.payload
         );
       }
-      // Update the notification message
-      notification.message = action.payload.newMessage;
-      // Return updated state
       return state;
     },
 
@@ -1002,11 +1019,12 @@ export const useCalendarManagerSlice = createSlice({
       return state;
     
     },
-
-
+ 
     analyzeAttendeeAvailability: (
       state,
-      action: PayloadAction<WritableDraft<AttendeeAvailabilityAnalysis>>
+      action: PayloadAction<
+        WritableDraft<ExtendedAttendeeAvailability & {  event: CalendarEvent | null; analyze: () => void }>
+      >
     ) => {
       const draftState = state as WritableDraft<CalendarManagerState>;
       draftState.attendeeAvailabilityAnalysis = action.payload;
@@ -1472,7 +1490,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<WritableDraft<CalendarEvent>>
     ) => {
       const eventId = action.payload.id;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.rsvpStatus = "notResponded"; // Update RSVP status to 'Attending'
         // Perform additional actions such as updating the RSVP status in the state
@@ -1488,54 +1506,53 @@ export const useCalendarManagerSlice = createSlice({
 
     // Action to filter calendar events
     filterCalendarEvents: (
-      state,
-      action: PayloadAction<{
-        filter: string;
-        category: CalendarEventCategory;
-      }>
-    ) => {
-      const filterCriteria = action.payload;
-      
-      // Filter events based on the provided category
-      const filteredEvents = Object.values(state.entities).filter(
-        (event) => event.category === filterCriteria.category
-      );
-      
-      // Update the state with the filtered events
-      state.filteredEvents = filteredEvents;
+  state,
+  action: PayloadAction<{
+    filter: string;
+    category: CalendarEventCategory;
+  }>
+) => {
+  const filterCriteria = action.payload;
+
+  // Filter events based on the provided category
+  const filteredEvents = Object.values(state.entities || {}).filter(
+    (event) => event && event.category === filterCriteria.category
+  );
+
+  // Update the state with the filtered events
+  state.filteredEvents = filteredEvents;
+
+  // Assuming dispatchNotification is a function defined elsewhere
+  dispatchNotification(
+    "filterCalendarEvents",
+    "Calendar events filtered successfully",
+    "Error filtering calendar events",
+    dispatch
+  );
+},
     
-      // Assuming dispatchNotification is a function defined elsewhere
-      dispatchNotification(
-        "filterCalendarEvents",
-        "Calendar events filtered successfully",
-        "Error filtering calendar events",
-        dispatch
-      );
-    },
-    
+
     searchCalendarEvents: (state, action: PayloadAction<string>) => {
       const searchCriteria = action.payload;
-      // Add logic to search calendar events here
-      // For example, you can search events based on the provided criteria and update the state accordingly
-    
-      // Cast state.entities to WritableDraft<CalendarEvent>[]
-      const entitiesArray: WritableDraft<CalendarEvent>[] = Object.values(state.entities);
-    
-      // Use the casted array to filter events
-      const searchedEvents = entitiesArray.filter(
-        (event) => event.title.includes(searchCriteria)
+      const entitiesArray: WritableDraft<CalendarEvent>[] = Object.values(
+        state.entities || {}
       );
-    
-      // Update the state with the searched events
+
+      const searchedEvents = entitiesArray.filter(
+        (event) => event && event.title.includes(searchCriteria)
+      );
+
       state.searchedEvents = searchedEvents;
-    },
+},
     
 
     sortCalendarEvents: (state, action: PayloadAction<string>) => {
       const sortCriteria = action.payload;
-      // Add logic to sort calendar events here
-      // For example, you can sort events based on the provided criteria and update the state accordingly
-      const sortedEvents = Object.values(state.entities).sort(
+      const entitiesArray: WritableDraft<CalendarEvent>[] = Object.values(
+        state.entities || {}
+      );
+
+      const sortedEvents = entitiesArray.sort(
         (a: WritableDraft<CalendarEvent>, b: WritableDraft<CalendarEvent>) => {
           if (a.title < b.title) {
             return -1;
@@ -1552,7 +1569,7 @@ export const useCalendarManagerSlice = createSlice({
 
     markCalendarEventAsImportant: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.isImportant = true;
         dispatchNotification(
@@ -1568,7 +1585,7 @@ export const useCalendarManagerSlice = createSlice({
 
     assignCalendarEventToTeamMember: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.teamMemberId = "123456789";
         dispatchNotification(
@@ -1584,7 +1601,7 @@ export const useCalendarManagerSlice = createSlice({
 
     markCalendarEventAsNotImportant: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.isImportant = false;
         dispatchNotification(
@@ -1604,7 +1621,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; color: Theme | string }>
     ) => {
       const { eventId, color } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         // Define selectColor function before it's used
         const selectColor = (color: Theme): string => {
@@ -1662,6 +1679,7 @@ export const useCalendarManagerSlice = createSlice({
         // Return the updated state
         return state;
       }
+      return state;
     },
 
     // Update the syncCalendarWithExternalCalendars reducer to dispatch the asyncThunk action
@@ -1801,16 +1819,20 @@ export const useCalendarManagerSlice = createSlice({
       try {
         // Get updated event from action payload
         // Update event in state
-        state.entities[updatedEvent.id] = {
-          ...updatedEvent,
-          host: updatedEvent.host ? updatedEvent.host : {} as WritableDraft<Member>, // Ensure host is a WritableDraft<Member>
-          options: {
-            ...updatedEvent.options,
-            additionalOptions: updatedEvent.options?.additionalOptions
-              ? [...(updatedEvent.options.additionalOptions as any[])]
-              : [],
-          },
-        };
+        if (state.entities) {
+          state.entities[updatedEvent.id] = {
+            ...updatedEvent,
+            host: updatedEvent.host
+              ? produce(updatedEvent.host, (draft) => {})
+              : ({} as WritableDraft<Member>), // Ensure host is a WritableDraft<Member>
+            options: {
+              ...updatedEvent.options,
+              additionalOptions: updatedEvent.options?.additionalOptions
+                ? [...(updatedEvent.options.additionalOptions as any[])]
+                : [],
+            },
+          };
+        }
         // Notify users about the update in real-time
         const socket = socketIOClient(CALENDAR_API_URL);
         socket.emit("calendarEventUpdated", updatedEvent);
@@ -1832,7 +1854,7 @@ export const useCalendarManagerSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; newTitle: string }>
     ) => {
-      const milestone = state.milestones[action.payload.id];
+      const milestone = state.milestones?.[action.payload.id];
       if (milestone) {
         milestone.title = action.payload.newTitle;
         // Perform additional actions such as notifying about the title update
@@ -1864,13 +1886,13 @@ export const useCalendarManagerSlice = createSlice({
       let error: any;
 
       try {
-        const chatRoom = state.chatRooms[room_id];
+        const chatRoom = state.chatRooms?.[room_id];
         if (!chatRoom) {
           console.error("Chat room not found:", room_id);
           return state;
         }
 
-        const event = state.entities[eventId];
+        const event = state.entities?.[eventId];
         if (!event) {
           console.error("Calendar event not found:", eventId);
           return state;
@@ -1908,7 +1930,7 @@ export const useCalendarManagerSlice = createSlice({
             chatRoomId,
             payload: {
               type: "calendarEventDetails",
-              calendarEvent: state.entities[calendarEventId],
+              calendarEvent: state.entities?.[calendarEventId],
             },
           });
 
@@ -1943,10 +1965,10 @@ export const useCalendarManagerSlice = createSlice({
         if (user.id !== undefined) {
           chatRoomPayload.users.push(user as Member);
         }
-        const calendarEvent = state.entities[action.payload.calendarEventId];
+        const calendarEvent = state.entities?.[action.payload.calendarEventId];
 
         chatRoomPayload.messages.push({
-          message: `Discussing event: ${calendarEvent.title}`,
+          message: `Discussing event: ${calendarEvent?.title}`,
           user: { id: chatRoomPayload.creatorId, name: "Bot" },
           id: "",
           sender: "",
@@ -2029,7 +2051,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; reminder: string }>
     ) => {
       const { eventId, reminder } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.reminder = reminder;
         dispatchNotification(
@@ -2045,21 +2067,21 @@ export const useCalendarManagerSlice = createSlice({
     },
     pinEvent: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.pinned = true;
       }
     },
     unpinEvent: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.pinned = false;
       }
     },
     markEventAsComplete: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.status = StatusType.Completed;
       }
@@ -2067,7 +2089,7 @@ export const useCalendarManagerSlice = createSlice({
 
     markEventAsIncomplete: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.status = StatusType.Tentative;
       }
@@ -2075,14 +2097,14 @@ export const useCalendarManagerSlice = createSlice({
 
     archiveEvent: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.archived = true;
       }
     },
     unarchiveEvent: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.archived = false;
       }
@@ -2094,7 +2116,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; priority: string }>
     ) => {
       const { eventId, priority } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.priority = priority as PriorityStatus; // Update the priority field of the event object
         dispatchNotification(
@@ -2112,7 +2134,7 @@ export const useCalendarManagerSlice = createSlice({
     // For "clearEventPriority" action:
     clearEventPriority: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event && event !== undefined) {
         event.priority = CalendarStatus.IMPORTING;
         dispatchNotification(
@@ -2133,7 +2155,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; location: string }>
     ) => {
       const { eventId, location } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.location = location;
       }
@@ -2142,7 +2164,7 @@ export const useCalendarManagerSlice = createSlice({
     // For "clearEventLocation" action:
     clearEventLocation: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.location = ""; // Assuming location is a string, clear it
       }
@@ -2154,7 +2176,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; attachment: Attachment }>
     ) => {
       const { eventId, attachment } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.attachments?.push(attachment);
       }
@@ -2166,7 +2188,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; attachmentId: string }>
     ) => {
       const { eventId, attachmentId } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.attachments = event.attachments?.filter(
           (attachment) => attachment.id !== attachmentId
@@ -2180,7 +2202,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; description: string }>
     ) => {
       const { eventId, description } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.description = description;
       }
@@ -2189,7 +2211,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to clear event description
     clearEventDescription: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.description = ""; // Clear the event description
         dispatchNotification(
@@ -2208,7 +2230,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; category: string }>
     ) => {
       const { eventId, category } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.category = category; // Set the event category
         dispatchNotification(
@@ -2224,7 +2246,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to clear event category
     clearEventCategory: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.category = ""; // Clear the event category
         dispatchNotification(
@@ -2243,7 +2265,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; tags: string[] }>
     ) => {
       const { eventId, tags } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.tags = tags; // Set the event tags
         dispatchNotification(
@@ -2259,7 +2281,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to clear event tags
     clearEventTags: (state, action: PayloadAction<string>) => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.tags = []; // Clear the event tags
         dispatchNotification(
@@ -2278,7 +2300,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; privacy: string }>
     ): void => {
       const { eventId, privacy } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         event.privacy = privacy;
         dispatchNotification(
@@ -2293,7 +2315,7 @@ export const useCalendarManagerSlice = createSlice({
 
     clearEventPrivacy: (state, action: PayloadAction<string>): void => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event && event !== undefined) {
         event.privacy = ""; // Clear the event privacy
         dispatchNotification(
@@ -2312,7 +2334,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; access: string }>
     ): void => {
       const { eventId, access } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         // Update the event's access property
         event.access = access;
@@ -2329,7 +2351,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to clear event access
     clearEventAccess: (state, action: PayloadAction<string>): void => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         // Clear the event's access property
         event.access = "";
@@ -2349,7 +2371,7 @@ export const useCalendarManagerSlice = createSlice({
       action: PayloadAction<{ eventId: string; recurring: boolean }>
     ): void => {
       const { eventId, recurring } = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event) {
         // Update the event's recurring property
         event.recurring = recurring;
@@ -2366,7 +2388,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to clear event recurring
     clearEventRecurring: (state, action: PayloadAction<string>): void => {
       const eventId = action.payload;
-      const event = state.entities[eventId];
+      const event = state.entities?.[eventId];
       if (event && event !== undefined) {
         event.recurring = false; // Clear the event recurring
         dispatchNotification(

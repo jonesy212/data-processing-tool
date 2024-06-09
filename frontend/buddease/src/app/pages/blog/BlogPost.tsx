@@ -1,5 +1,5 @@
 // BlogPost.tsx
- 
+import React from'react';
 export type BlogPost = {
   id: number;
   title: string;

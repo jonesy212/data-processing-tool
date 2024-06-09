@@ -6,6 +6,7 @@ import errorHandlingStore from '../../state/stores/ErrorHandlingStore';
 import { NotificationType, useNotification } from '../../support/NotificationContext';
 import RandomWalkSuggestions from './RandomWalkSuggestions';
 
+import React from "react";
 
 
 

@@ -6,18 +6,18 @@ import CommonEvent from "../../state/stores/CommonEvent";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
 import { Data } from "./Data";
+import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 
 type CalendarDataAndEventDetails = Data | CommonEvent;
 
 interface CalendarDetailsProps<T> {
-  data?: CommonData<T>; // Make data prop optional
+  data?: CommonData // Make data prop optional
   details: DetailsItem<T>;
   customizations?: Customizations<T>;
   collaborationOptions?: CollaborationOptions;
 }
 
-const CalendarDetails: React.FC<
-  CalendarDetailsProps<CalendarDataAndEventDetails>
+const CalendarDetails: React.FC<CalendarDetailsProps<CalendarDataAndEventDetails>
 > = observer(({ details, data, collaborationOptions }) => {
   return (
     <div>

@@ -20,7 +20,7 @@ import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
-import { StatusType, TeamStatus } from "../data/StatusType";
+import { PriorityTypeEnum, StatusType, TeamStatus } from "../data/StatusType";
 import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
@@ -314,7 +314,7 @@ const team: Team = {
               );
               break;
             case "privacySettings":
-              addFilter("privacySettings", "equal", options.privacySettings);
+              addFilter("privacySettings", "equal", options.privacySettings[0]);
               break;
             case "taskManagement":
               addFilter("taskManagement", "equal", options.taskManagement);
@@ -323,17 +323,17 @@ const team: Team = {
               addFilter("projectView", "equal", options.projectView);
               break;
             case "calendarSettings":
-              addFilter("calendarSettings", "equal", options.calendarSettings);
+              addFilter("calendarSettings", "equal", options.calendarSettings || "");
               break;
             case  "dashboardPreferences":
               addFilter(
                 "dashboardPreferences",
                 "equal",
-                options.dashboardPreferences
+                options.dashboardPreferences || ""
               );
               break;
             case "securityFeatures":
-              addFilter("securityFeatures", "equal", options.securityFeatures);
+              addFilter("securityFeatures", "equal", options.securityFeatures[0]);
               break;
             // Add more cases for other settings options as needed
             default:
@@ -357,7 +357,20 @@ const team: Team = {
         announcement: false,
         reminder: false,
         project: false,
-      },
+        audioCall: false,
+        videoCall: false,
+        screenShare: false,
+        mention: false,
+        reaction: false,
+        follow: false,
+        poke: false,
+        activity: false,
+        thread: false,
+        inviteAccepted: true,
+        directMessage: false,
+        enabled: false,
+        notificationType: "sms",
+              },
       activityLog: [],
       projects: [],
       socialLinks: undefined,
@@ -417,6 +430,19 @@ const team: Team = {
         announcement: false,
         reminder: false,
         project: false,
+        audioCall: false,
+        videoCall: false,
+        screenShare: false,
+        mention: false,
+        reaction: false,
+        follow: false,
+        poke: false,
+        activity: false,
+        thread: false,
+        inviteAccepted: true,
+        directMessage: false,
+        enabled: false,
+        notificationType: "push",
       },
       activityLog: [],
       projects: [],
@@ -525,7 +551,7 @@ const team: Team = {
           done: false,
           dueDate: new Date(),
           status: TeamStatus.Pending,
-          priority: "low",
+          priority: PriorityTypeEnum.Low,
           estimatedHours: null,
           actualHours: null,
           startDate: new Date(),
@@ -711,8 +737,8 @@ const team: Team = {
 
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   // Check if team is not undefined before passing it to CommonDetails
-  const data: CommonData<Team> | undefined = team
-    ? { data: team, completed: true }
+  const data: CommonData | undefined = team
+    ? { ...team, completed: true }
     : undefined;
 
   const setCurrentProject = (project: Project) => {
@@ -732,7 +758,7 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
 
   return (
     <CommonDetails
-      data={{ team: team, completed: false } as CommonData<never>}
+      data={data}
       details={{
         _id: team._id,
         id: team.id,
@@ -744,7 +770,13 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
         description: team.description,
         analysisResults: team.analysisResults,
         assignedProjects: team.assignedProjects,
-        reassignedProjects: team.reassignedProjects,
+        reassignedProjects: team.reassignedProjects
+        .filter((reassignment) => reassignment.project !== undefined)
+        .map(({ projectId, project, projectName, previousTeam, reassignmentDate }) => ({
+          project: project!,
+          previousTeam,
+          reassignmentDate,
+        })),
         updatedAt: team.updatedAt ? team.updatedAt : new Date(),
         setCurrentTeam: setCurrentTeam,
         setCurrentProject: setCurrentProject,
@@ -755,9 +787,10 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   );
 };
 
-const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
+const DataDetailsComponent: React.FC<DataDetailsProps<any>> = ({ data }) => (
   <CommonDetails
     data={{
+      id: data.id,
       title: data.title,
       description: data.description,
       status: data.status as StatusType | undefined,
@@ -771,7 +804,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
       isActive: data.isActive,
       type: data.type,
       updatedAt: data.updatedAt,
-      // analysisResults: data.analysisResults,
+      analysisResults: data.analysisResults,
       // Include other generic data properties here
     }}
   />
@@ -779,3 +812,4 @@ const DataDetailsComponent: React.FC<DataDetailsProps> = ({ data }) => (
 
 export { DataDetailsComponent, TeamDetails, team };
 export type { Team };
+

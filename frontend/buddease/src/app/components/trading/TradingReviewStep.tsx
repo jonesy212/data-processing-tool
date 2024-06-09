@@ -1,13 +1,24 @@
 // TradingReviewStep.tsx
+import React from "react";
 
 import ReviewStep from "../phases/steps/ReviewSteps";
+import { StepProps } from "../phases/steps/steps";
+import { TradeData } from "./TradeData";
+interface TradingReviewStep extends StepProps{
+    onSubmit: (event: React.MouseEvent<HTMLButtonElement>) => void;
+
+  tradeData: TradeData
+}
+
 
 // Specific Review Step Components
-const TradingReviewStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
+const TradingReviewStep: React.FC<TradingReviewStep> = ({ onSubmit, tradeData }) => {
   const tradingContent = (
     <div>
       {/* Display trading-related information */}
+
       {/* Example: Trading assets, strategies, preferences, etc. */}
+
     </div>
   );
 
@@ -16,6 +27,7 @@ const TradingReviewStep: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => 
       title="Trading Review"
       content={tradingContent}
       onSubmit={onSubmit}
+      tradeData={tradeData}
     />
   );
 };

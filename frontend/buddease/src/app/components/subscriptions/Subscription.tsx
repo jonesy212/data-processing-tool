@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
-import useRealtimeData from "../hooks/commHooks/useRealtimeData";
+import { ModifiedDate } from "../documents/DocType";
+import useRealtimeData, { RealtimeUpdateCallback } from "../hooks/commHooks/useRealtimeData";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 
@@ -14,13 +15,14 @@ type Subscription = {
   subscriptionId?: string
   subscriberType?: SubscriberTypeEnum
   subscriptionType?: SubscriptionTypeEnum;
-  getPlanName?: () => SubscriberTypeEnum; // Add getPlanName method
-  portfolioUpdatesLastUpdated
+  getPlanName?: () => SubscriberTypeEnum; 
+  portfolioUpdatesLastUpdated: ModifiedDate | null;
 };
 
 const SubscriptionComponent = (
   initialData: RealtimeDataItem[],
-  updateCallback: (data: RealtimeDataItem[]) => void
+  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>, 
+  hookName: string 
 ) => {
   const [subscriptionData, setSubscriptionData] = useState<Subscription | null>(
     null
@@ -31,7 +33,7 @@ const SubscriptionComponent = (
     // Subscribe to the data service
     const subscription = subscriptionService;
     const subscriptionUsage: Subscription = subscription.subscribe(
-      "yourHookName",
+      hookName, // Use the dynamic hook name here
       () => {
         // Construct and return the Subscription object
         return {
@@ -50,7 +52,7 @@ const SubscriptionComponent = (
         subscriptionUsage.unsubscribe();
       }
     };
-  }, [data]);
+  }, [data, hookName]); // Include hookName in the dependencies array
 
   return (
     <div>

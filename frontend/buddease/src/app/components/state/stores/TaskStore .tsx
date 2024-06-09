@@ -2,6 +2,7 @@
 import { saveAs } from '@/app/components/documents/editing/autosave';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { makeAutoObservable } from "mobx";
+import { title } from 'process';
 import { useState } from "react";
 import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
 import useApiManager from "../../hooks/dynamicHooks/useApiManager";
@@ -9,19 +10,19 @@ import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
-import SnapshotStore, { Snapshot, useSnapshotStore } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Payload, Snapshot, UpdateSnapshotPayload, useSnapshotStore } from "../../snapshots/SnapshotStore";
 import {
     NotificationTypeEnum,
     useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import { TaskActions } from "../../tasks/TaskActions";
 import { taskService } from "../../tasks/TaskService";
 import { Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
 import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
+import { TaskActions } from '../../actions/TaskActions';
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -80,11 +81,16 @@ export interface TaskManagerStore {
   takeTaskSnapshot: (taskId: string) => void;
   markTaskAsComplete: (taskId: string) => void;
 
+  updateTaskPositionSuccess: (payload: { task: Task }) => void;
   // Add more methods or properties as needed
   batchFetchTaskSnapshotsRequest: (
     snapshotData: Record<string, Task[]>
   ) => void;
   batchFetchTaskSnapshotsSuccess: (taskId:  Record<string, Task[]>) => void;
+  batchFetchUserSnapshotsRequest: (
+    snapshotData: Record<string, User[]>
+  ) => void
+
 
 }
 
@@ -143,35 +149,192 @@ const useTaskManagerStore = (): TaskManagerStore => {
         break;
       case TaskActions.markTaskAsCompleteSuccess.type:
         markTaskAsCompleteSuccess(payload);
+        break;
       case TaskActions.setAssignedTaskStore.type:
         setAssignedTaskStore(payload);
+        break;
+      default:
+        break;
     }
 
-    // Ensure taskId is defined
-    const taskId: string = "someTaskId"; // or get it from somewhere dynamically
-
-    // Assuming assignedTaskStore is an object
     const reassignedTasks = ["task1", "task2", "task3"];
 
-    const taskSnapshotStore: SnapshotStore<
-      Snapshot<Task>,
-      Task
-    > = useSnapshotStore(addToSnapshotList);
-    // Assign reassignedTasks to assignedTaskStore using taskId as key
-    // Assuming taskStore is an instance of a class or an object that has a method named setAssignedTaskStore
+    const taskSnapshotStore: Promise<SnapshotStore<Snapshot<Task>>> = useSnapshotStore(addToSnapshotList);
+    const taskIdToAssign = "someTaskId";
     taskStore.setAssignedTaskStore({
       ...assignedTaskStore,
-      [taskId]: reassignedTasks,
+      [taskIdToAssign]: reassignedTasks,
+      snapshotId: '',
+      addSnapshot: function (snapshot: Snapshot<Data>): void {
+        throw new Error('Function not implemented.');
+      },
+      updateSnapshot: function (snapshotId: string, newData: Data, payload: UpdateSnapshotPayload<Data>): void {
+        throw new Error('Function not implemented.');
+      },
+      removeSnapshot: function (snapshotId: string): void {
+        throw new Error('Function not implemented.');
+      },
+      clearSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      createSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      createSnapshotSuccess: function (snapshot: Snapshot<Data>): void {
+        throw new Error('Function not implemented.');
+      },
+      createSnapshotFailure: function (error: Payload): void {
+        throw new Error('Function not implemented.');
+      },
+      updateSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      updateSnapshotSuccess: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      updateSnapshotFailure: function (error: Payload): void {
+        throw new Error('Function not implemented.');
+      },
+      updateSnapshotsSuccess: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      updateSnapshotsFailure: function (error: Payload): void {
+        throw new Error('Function not implemented.');
+      },
+      initSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      takeSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      takeSnapshotSuccess: function (snapshot: Snapshot<Data>): void {
+        throw new Error('Function not implemented.');
+      },
+      takeSnapshotsSuccess: function (snapshots: Snapshot<Data>[]): void {
+        throw new Error('Function not implemented.');
+      },
+      configureSnapshotStore: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      getData: (): Promise<Data> => {
+        throw new Error('Function not implemented.');
+      },
+      setData: function (data: Data): void {
+        throw new Error('Function not implemented.');
+      },
+      getState: function () {
+        throw new Error('Function not implemented.');
+      },
+      setState: function (state: any): void {
+        throw new Error('Function not implemented.');
+      },
+      validateSnapshot: function (snapshot: Snapshot<Data>): boolean {
+        throw new Error('Function not implemented.');
+      },
+      handleSnapshot: function (snapshot: Snapshot<Data> | null, snapshotId: string): void {
+        throw new Error('Function not implemented.');
+      },
+      handleActions: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      setSnapshot: function (snapshot: Snapshot<Data>): void {
+        throw new Error('Function not implemented.');
+      },
+      setSnapshots: function (snapshots: Snapshot<Data>[]): void {
+        throw new Error('Function not implemented.');
+      },
+      clearSnapshot: function (snapshotId: string): void {
+        throw new Error('Function not implemented.');
+      },
+      mergeSnapshots: function (snapshots: Snapshot<Data>[]): void {
+        throw new Error('Function not implemented.');
+      },
+      reduceSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      sortSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      filterSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      mapSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      findSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      getSubscribers: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      notify: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      notifySubscribers: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      subscribe: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      unsubscribe: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      fetchSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      fetchSnapshotSuccess: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      fetchSnapshotFailure: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      getSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      getSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      getAllSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      generateId: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchFetchSnapshots: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchTakeSnapshotsRequest: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchUpdateSnapshotsRequest: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchFetchSnapshotsSuccess: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchFetchSnapshotsFailure: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchUpdateSnapshotsSuccess: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchUpdateSnapshotsFailure: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      batchTakeSnapshot: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      snapshots: [],
+      config: undefined
     });
 
-    // Method to reassign a task to a new user
     const reassignTask = (
       taskId: string,
       oldUserId: string,
       newUserId: string
     ) => {
       const reassignedTasks =
-        assignedTaskStore[taskId]?.map((task: { userId: string }) => {
+        (assignedTaskStore[taskId] as Task[])?.map((task) => {
           if (task.userId === oldUserId) {
             return { ...task, userId: newUserId };
           }
@@ -196,11 +359,14 @@ const useTaskManagerStore = (): TaskManagerStore => {
       newUserId: string
     ) => {
       const reassignedTasks = assignedTaskStore[taskId]?.map((task: Task) => {
-        if (task.userId === oldUserId) {
+        // Ensure oldUserId is of type string
+        const oldUserIdString: string = oldUserId.toString();
+        if (task.userId === oldUserIdString) {
           return { ...task, userId: newUserId };
         }
         return task;
       });
+      
 
       if (reassignedTasks) {
         setAssignedTaskStore({
@@ -550,7 +716,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         assigneeId: undefined,
         dueDate: undefined,
         payload: undefined,
-        priority: 'low',
+        priority: PriorityTypeEnum.Low,
         previouslyAssignedTo: [],
         done: false,
         data: undefined,
@@ -632,54 +798,54 @@ const useTaskManagerStore = (): TaskManagerStore => {
     };
   };
 
-  const updateTaskPriority =
-    (taskId: string, priority: PriorityTypeEnum) => async (dispatch: any) => {
-      try {
-        // Update task priority
-        // Assuming setTasks is a local state updater
-        setTasks((prevTasks) => {
-          const updatedTasks = { ...prevTasks };
-          const taskToUpdate = updatedTasks[taskId];
-          if (taskToUpdate) {
-            taskToUpdate[0].priority = priority as "medium" | "low" | "high";
-          }
-          return updatedTasks;
-        });
-        // Dispatch the synchronous action immediately
-        dispatch(TaskActions.updateTaskPrioritySuccess({
-          taskId: taskId,
+  const updateTaskPriority = (taskId: string, priority: PriorityTypeEnum) => async (dispatch: any) => {
+  try {
+    // Update task priority
+    // Assuming setTasks is a local state updater
+    setTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks }; // Make a copy of the object
+      const taskToUpdate = updatedTasks[taskId];
+      if (taskToUpdate) {
+        updatedTasks[taskId] = {
+          ...taskToUpdate,
           priority: priority
-        }));
-        // Dispatch the asynchronous action (no need to await)
-        updateTaskPriority(taskId, priority);
-        // Simulating asynchronous operation
-        setTimeout((error: Error) => {
-          notify(
-            "updateTaskPriorityFailure",
-            `Error updating priority for task ${taskId}`,
-            NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-            new Date(),
-            NotificationTypeEnum.OperationSuccess
-          );
-        }, 1000);
-      } catch (error) {
-        console.error(`Error updating priority for task ${taskId}`, error);
-
-        dispatch(
-          TaskActions.updateTaskPriorityFailure({
-            taskId: "taskId",
-            error: "error",
-          })
-        ),
-          notify(
-            "updateTaskPriorityFailure",
-            `Error updating priority for task ${taskId}`,
-            NOTIFICATION_MESSAGES.Error.DEFAULT,
-            new Date(new Date().getTime()),
-            NotificationTypeEnum.OperationError
-          );
+        };
       }
-    };
+      return updatedTasks;
+    });
+    // Dispatch the synchronous action immediately
+    dispatch(TaskActions.updateTaskPrioritySuccess({
+      taskId,
+      priority
+    }));
+    // Simulating asynchronous operation
+    setTimeout(() => {
+      notify(
+        "updateTaskPriorityFailure",
+        `Error updating priority for task ${taskId}`,
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      );
+    }, 1000);
+  } catch (error) {
+    console.error(`Error updating priority for task ${taskId}`, error);
+
+    dispatch(
+      TaskActions.updateTaskPriorityFailure({
+        taskId,
+        error: error.message,
+      })
+    ),
+      notify(
+        "updateTaskPriorityFailure",
+        `Error updating priority for task ${taskId}`,
+        NOTIFICATION_MESSAGES.Error.DEFAULT,
+        new Date(),
+        NotificationTypeEnum.OperationError
+      );
+  }
+};
 
 
 
@@ -719,8 +885,60 @@ const useTaskManagerStore = (): TaskManagerStore => {
       }, 1000);
     };
 
+// Define an index signature for taskCountByStatus
+const taskCountByStatus: { [key: string]: number } = {};
 
-  const getTaskCountByStatus = async (tasks: Task)
+const getTaskCountByStatus = async (tasks: Task[]) => {
+  try {
+    const statuses = Object.keys(TaskStatus);
+    for (const status of statuses) {
+      taskCountByStatus[status] = tasks.filter(
+        (task: Task) => task.status === status
+      ).length;
+    }
+    // Simulating asynchronous operation
+    setTimeout(() => {
+      notify(
+        "getTaskCountByStatusFailure",
+        `Error getting task count by status`,
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      );
+    }, 1000);
+
+    return taskCountByStatus;
+  } catch (error) {
+    console.error(`Error getting task count by status`, error);
+    notify(
+      "getTaskCountByStatusFailure",
+      `Error getting task count by status`,
+      NOTIFICATION_MESSAGES.Error.DEFAULT,
+      new Date(),
+      NotificationTypeEnum.OperationError
+    );
+  }
+};
+
+  const updateTaskPositionSuccess = async (payload: { taskId: string }) => { 
+    const { taskId } = payload;
+    // Assuming getTaskById is asynchronous and returns a promise
+    const task = await getTaskById(taskId);
+    if (task) {
+      const { status } = task; // Access status property directly
+      const taskList = tasks[status];
+      const taskIndex = taskList.findIndex((t) => t.id === taskId);
+      const updatedTaskList = [
+        ...taskList.slice(0, taskIndex),
+        task,
+        ...taskList.slice(taskIndex + 1),
+      ];
+      setTasks({
+        ...tasks,
+        [status]: updatedTaskList 
+      })
+    }
+  }
 
   const getTasksByAssignee = async (tasks: Task[], assignee: User) => {
     try {
@@ -814,6 +1032,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           const snapshot: Snapshot<Omit<T, "id">> = {
             data: task,
             timestamp: new Date(),
+            category: "task",
           };
 
           // Add the snapshot to the SnapshotManager
@@ -859,7 +1078,34 @@ const useTaskManagerStore = (): TaskManagerStore => {
         console.error(`Tasks not found for taskId ${taskId}`);
       }
     };
+  
+  
+ 
+    const batchFetchUserSnapshotsRequest =
+    <T extends { id: string }>(
+    snapshotData: Record<string, T[]>
+    ) => {
+        return new Promise<string>((resolve, reject) => {
+          Object.values(snapshotData).forEach((users: T[], index: number) => {
+            users.forEach((user: T) => {
+              // Create a snapshot for each user
+              const snapshot: Snapshot<Omit<T, "id">> = {
+                data: user,
+                timestamp: new Date(),
+                category: "user" // Add the missing 'category' property
+              };
 
+              // Add the snapshot to the SnapshotManager
+              useSnapshotManager().addSnapshot(snapshot);
+            });
+          });
+
+          // Resolve with a message indicating success
+          resolve("Batch fetch user snapshots completed successfully.");
+        });
+      };
+
+ 
   const markTaskAsInProgressSuccess =
     (taskId: string, requestData: string) => (dispatch: any) => {
       console.log(`Task ${taskId} marked as in progress`);
@@ -934,7 +1180,6 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
   const useTaskManagerStore = makeAutoObservable({
     tasks,
-    ...tasks,
     taskTitle,
     taskDescription,
     taskStatus,
@@ -966,6 +1211,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     takeTaskSnapshot,
     batchFetchTaskSnapshotsRequest,
     batchFetchTaskSnapshotsSuccess,
+    batchFetchUserSnapshotsRequest,
     fetchTasksByTask,
     fetchTasksByTaskIdFailure,
     markTaskPending,
@@ -983,9 +1229,12 @@ const useTaskManagerStore = (): TaskManagerStore => {
     updateTaskPriority,
     filterTasksByStatus,
     getTaskCountByStatus,
+    updateTaskPositionSuccess,
     clearAllTasks,
     archiveCompletedTasks,
   });
+
+export { useTaskManagerStore };
 
   return useTaskManagerStore;
 };
@@ -994,4 +1243,20 @@ export { useTaskManagerStore };
   function addToSnapshotList(snapshot: Snapshot<Data>): void {
     throw new Error('Function not implemented.');
   }
+
+function tasksDataSourceToCSV(tasksDataSource: Record<string, Task>) {
+  throw new Error('Function not implemented.');
+}
+
+function notify(arg0: string, arg1: string, DEFAULT: string, arg3: Date, OperationSuccess: NotificationTypeEnum) {
+  throw new Error('Function not implemented.');
+}
+
+function setTasks(arg0: (prevTasks: any) => any) {
+  throw new Error('Function not implemented.');
+}
+
+function setNotificationMessage(message: string) {
+  throw new Error('Function not implemented.');
+}
 

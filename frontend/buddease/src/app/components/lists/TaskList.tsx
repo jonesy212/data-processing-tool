@@ -10,6 +10,7 @@ interface TaskListProps {
   onUpdateTaskTitle?: (taskId: string, updatedTitle: string) => void;
   onUpdateTaskDescription?: (task: string, updatedDescription: string) => void;
   onUpdateTaskStatus?: (task: string, updatedStatus: string) => void;
+  onSortTasks?: (field: string, order: "asc" | "desc") => void;
 }
 
 const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {

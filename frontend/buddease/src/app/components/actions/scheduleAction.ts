@@ -1,5 +1,18 @@
 // Define a generic type for actions
+import { ApiActions } from '@/app/api/ApiActions';
+import { UserListActions } from '@/app/api/UserListActions';
+import { AuthActions } from '@/app/components/actions/AuthActions';
+import { DataFrameActions } from '@/app/components/actions/DataFrameActions';
+import { ExchangeActions } from '@/app/components/actions/ExchangeActions';
+import { ProjectActions } from '@/app/components/actions/ProjectActions';
+import { TenantActions } from '@/app/components/hooks/userInterface/TenantActions';
+import { UserActions } from '@/app/components/users/UserActions';
+import { UserPreferencesActions } from '@/app/configs/UserPreferencesActions';
+import { ClientActions } from '@/app/pages/personas/ClientActions';
+import { DocumentActions } from '@/app/tokens/DocumentActions';
+import { CommonPersonaActions } from '../../pages/personas/PersonaActions';
 import { CommunicationActions } from '../community/CommunicationActions';
+import { BlogActions } from '../models/blogs/BlogAction';
 import { AppDevelopmentActions } from '../phases/AppDevelopmentActions';
 import { PhaseActions } from '../phases/PhaseActions';
 import { IdeationPhaseActions } from '../phases/actions/IdeationPhaseActions';
@@ -13,32 +26,19 @@ import { SnapshotActions } from '../snapshots/SnapshotActions';
 import { DetailsListActions } from '../state/redux/actions/DetailsListActions';
 import { MarkerActions } from '../state/redux/actions/MarkerActions';
 import { NotificationActions } from '../support/NotificationActions';
-import { TaskActions } from '../tasks/TaskActions';
-import { TeamActions } from '../teams/TeamActions';
 import { TodoActions } from '../todos/TodoActions';
 import { UserRoleActions } from '../users/UserRoleActions';
-import {ProjectManagementActions} from './ProjectManagementActions';
-import { UserPreferencesActions } from '@/app/configs/UserPreferencesActions';
-import { NFTActions } from './NFTActions';
-import { HeaderActions } from './HeaderActions';
-import { FileActions } from './FileActions';
-import { TenantActions } from '@/app/components/hooks/userInterface/TenantActions';
-import { ProjectActions } from '@/app/components/actions/ProjectActions';
-import { DocumentActions } from '@/app/tokens/DocumentActions';
-import { UserActions } from '@/app/components/users/UserActions';
-import { AuthActions } from '@/app/components/actions/AuthActions';
-import { ApiActions } from '@/app/api/ApiActions';
-import { BlogActions } from '../models/blogs/BlogAction';
-import { CommonPersonaActions } from '../../pages/personas/PersonaActions';
-import { CryptoActions } from './CryptoActions';
-import { ClientActions } from '@/app/pages/personas/ClientActions';
-import { ToolbarActions } from './ToolbarActions';
-import { CollaborationActions } from './CollaborationActions';
-import { UserListActions } from '@/app/api/UserListActions';
-import { DataFrameActions } from '@/app/components/actions/DataFrameActions';
-import { ExchangeActions } from '@/app/components/actions/ExchangeActions';
-import { DEXActions } from './DEXActions';
 import { CalendarActions } from './CalendarEventActions';
+import { CollaborationActions } from './CollaborationActions';
+import { CryptoActions } from './CryptoActions';
+import { DEXActions } from './DEXActions';
+import { FileActions } from './FileActions';
+import { HeaderActions } from './HeaderActions';
+import { NFTActions } from './NFTActions';
+import { ProjectManagementActions } from './ProjectManagementActions';
+import { TaskActions } from './TaskActions';
+import { ToolbarActions } from './ToolbarActions';
+import { TeamActions } from './TeamActions';
 
 type ActionType = 
   | typeof ProjectManagementActions
@@ -89,7 +89,6 @@ type ActionType =
     switch (action) {
       case ProjectManagementActions:
         // Logic for scheduling project management actions
-        
         break;
       case UserPreferencesActions:
         // Logic for scheduling user preferences actions

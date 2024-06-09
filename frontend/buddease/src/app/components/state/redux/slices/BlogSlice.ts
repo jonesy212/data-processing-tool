@@ -22,6 +22,7 @@ interface BlogComment {
   text: string;
   pinned: boolean;
   postedId: string;
+
 }
 
 

@@ -6,6 +6,7 @@ import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ProjectActions } from "../actions/ProjectActions";
+import TaskAssignmentSnapshot from "../actions/TaskAssignmentSnapshot";
 import { UIActions } from "../actions/UIActions";
 import updateUI from "../documents/editing/updateUI";
 import ContentRenderer from "../libraries/ui/ContentRenderer";
@@ -30,7 +31,6 @@ import useTrackerStore from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
 import { VideoData } from "../video/Video";
-import TaskAssignmentSnapshot from "./TaskAssignmentSnapshot";
 
 interface TaskAssignmentProps {
   taskId: () => string;

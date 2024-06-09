@@ -1,6 +1,7 @@
 // TradingProcess.tsx
 import axiosInstance from "@/app/api/axiosInstance";
 import { useState } from "react";
+import React from "react";
 
 import VerificationPage from "@/app/pages/profile/VerificationPage";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
@@ -21,7 +22,7 @@ import ProfessionalTraderContentManagement from "@/app/pages/personas/Profession
 import TradeData from "../trading/TradeData";
 
 
-// 
+
 
 const TradingProcess: React.FC = () => {
   const { notify } = useNotification();
@@ -152,7 +153,10 @@ const TradingProcess: React.FC = () => {
         <TradingPreferencesStep onSubmit={handlePreferencesSubmit} />
       )}
       {currentStep === TradingPhase.REVIEW && (
-        <TradingReviewStep onSubmit={handleReviewSubmit} />
+        <TradingReviewStep
+          tradeData={tradeData}
+          onSubmit={handleReviewSubmit}
+        />
       )}
       {currentStep === TradingPhase.SUMMARY && (
         <TradingSummaryStep tradeData={tradeData} />
@@ -161,6 +165,10 @@ const TradingProcess: React.FC = () => {
         <TradingConfirmationPage
           tradeData={tradeData}
           onConfirm={() => handleConfirmation(tradeData)}
+          tradeDetails={"tradeDetails"}
+           title={"Trade Confirmation"}
+           message={"trade has been confirmed"}
+
         />
       )}
     </div>

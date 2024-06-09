@@ -1,7 +1,7 @@
 // GenerateChatInterfaces.ts
 
-import { Tag } from "sanitize-html";
 import { ChatRoom } from "../components/calendar/CalendarSlice";
+import { Tag } from "../components/models/tracker/Tag";
 import { User, UserData } from "../components/users/User";
 
   interface Message extends User, UserData {
@@ -12,7 +12,7 @@ import { User, UserData } from "../components/users/User";
     channelId: string | undefined;
     content: string;
     additionalData?: string;
-    tags: Tag[];
+    tags: string[] | Tag[] ;
     userId?: number
     timestamp?:Date | string;
     text: string;
@@ -25,6 +25,7 @@ import { User, UserData } from "../components/users/User";
     updatedAt:  Date,
     deletedAt: null,
     imageUrl: string,
+    
     bio: string,
     website: string,
     location: string,

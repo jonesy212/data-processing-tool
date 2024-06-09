@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render, screen } from '@testing-library/react';
 import CommonDetails from './CommonDetails'; // Corrected import path
+import React from "react";
 
 describe('CommonDetails', () => {
   it('renders without crashing', () => {

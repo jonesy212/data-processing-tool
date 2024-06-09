@@ -1,14 +1,16 @@
 // CommonDetails.tsx
+import React from "react";
+
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CacheData } from "@/app/generators/GenerateCache";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { RealtimeDataComponent } from "../../../../models/realtime/RealtimeData";
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { CryptoData } from "../crypto/parseData";
 import { DocumentData } from "../documents/DocumentBuilder";
-import { DocumentPath, DocumentTypeEnum } from "../documents/DocumentGenerator";
+import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { FakeData } from "../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
@@ -16,6 +18,7 @@ import { ProjectData } from "../projects/Project";
 import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Todo } from "../todos/Todo";
+import { TradeData } from "../trading/TradeData";
 import { AllTypes } from "../typings/PropTypes";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
@@ -25,11 +28,14 @@ import DetailsProps from "./data/Details";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
+import { Tag } from "./tracker/Tag";
 // Define a generic type for data
-interface CommonData<T> {
+interface CommonData{
+  id: string;
   _id?: string;
   title?: string;
   type?: AllTypes;
+
   email?: string;
   username?: string;
   description?: string | null | undefined;
@@ -39,8 +45,8 @@ interface CommonData<T> {
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   metadata?: StructuredMetadata;
-  details?: DetailsItem<T>;
-  data?: T extends CommonData<infer R> ? R : never;
+  details?: DetailsItem<DataDetails>
+  // data?: T extends CommonData<infer R> ? R : never;
   projectId?: string;
   tags?: string[] | Tag[];
   categories?: string[];
@@ -84,6 +90,8 @@ type SupportedData = UserData &
   LogData &
   DataDetails &
   DataType &
+  TradeData &
+  CommonData &
   // BugType & 
   FakeData & {
   [key: string]: any
@@ -140,9 +148,12 @@ const CommonDetails = <T extends SupportedData>({
                 <div>
                   <p>Tags:</p>
                   <ul>
-                    {data.tags.map((tag, index) => (
-                      <li key={index}>{tag}</li>
-                    ))}
+                    {data.tags &&
+                      data.tags.map((tag, index) => (
+                        <li key={index}>
+                          {typeof tag === "string" ? tag : tag.getOptions.name}
+                        </li>
+                      ))}
                   </ul>
                 </div>
               )}

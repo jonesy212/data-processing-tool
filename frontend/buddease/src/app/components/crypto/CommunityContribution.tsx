@@ -1,3 +1,5 @@
+import React from "react";
+
 // ContributionItem.tsx
 interface ContributionItem {
   contributorId: string;

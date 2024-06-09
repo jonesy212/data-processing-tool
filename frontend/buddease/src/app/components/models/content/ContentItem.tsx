@@ -70,7 +70,7 @@ const ContentItemComponent: React.FC<ContentItemProps> = ({
         {author && <p>Author: {author}</p>}
         {tags && (
           <ul>
-            {tags.map((tag) =>
+            {tags.map((tag: any) =>
               typeof tag === "string" ? (
                 <li key={tag}>{tag}</li>
               ) : (

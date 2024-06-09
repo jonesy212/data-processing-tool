@@ -2,7 +2,7 @@ import React, { SetStateAction } from "react";
 import { ThemeConfig } from "../../libraries/ui/theme/ThemeConfig";
 import { ThemeState } from "../../state/redux/slices/ThemeSlice";
 import { NotificationData } from "../../support/NofiticationsSlice";
- import { TableStyle } from "./TableStyle";
+import { TableStyle } from "./TableStyle";
 interface ThemeCustomizationProps {
   themeState: ThemeConfig;
   infoColor: string;
@@ -311,6 +311,36 @@ const handleBrandNameChange = (name: string) => {
     </div>
   );
 }  
+
+
+
+const defaultThemeConfig: ThemeConfig = {
+  infoColor: "#17a2b8", // Blue
+  primaryColor: "#007bff", // Blue
+  secondaryColor: "#6c757d", // Gray
+  fontSize: "16px", // Default font size
+  fontFamily: "Arial, sans-serif", // Default font family
+  headerColor: "#ffffff", // White
+  footerColor: "#f8f9fa", // Light Gray
+  bodyColor: "#f8f9fa", // Light Gray
+  borderColor: "#ced4da", // Light Gray
+  borderWidth: 1, // Default border width
+  borderStyle: "solid", // Default border style
+  padding: "10px", // Default padding
+  margin: "20px", // Default margin
+  brandIcon: "", // Default empty string for brand icon
+  brandName: "My Brand", // Default brand name
+  successColor: "#28a745", // Green
+  warningColor: "#ffc107", // Yellow
+  dangerColor: "#dc3545", // Red
+  infoTextColor: "#ffffff", // White
+  themeConfig: {
+    infoColor: "#007bff", // Blue
+ 
+  }, // Default empty object for theme configuration
+};
+
 export default ThemeCustomization;
 export type { ThemeCustomizationProps };
 
+export {defaultThemeConfig}

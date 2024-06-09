@@ -60,7 +60,9 @@ export interface UserStore extends AssignEventStore, AssignBaseStore, UserStoreS
   events:Record<string, CalendarEventTimingOptimization[]| ExtendedCalendarEvent[]>
   // Other properties and methods...
   reassignUser: Record<string, ReassignEventResponse[]>;
-  batchFetchUserSnapshotsSuccess: (userId:  Record<string, User[]>) => void;
+  batchFetchUserSnapshotsSuccess: (userId: Record<string, User[]>) => void;
+  batchFetchUserSnapshotsRequest: (userId: string) => void;
+  batchFetchUndoRedoSnapshotsRequest: (userId: string) => void;
   fetchUsersByTaskId: (userId: string) => Promise<string>;
   setDynamicNotificationMessage: (message: string) => void;
 

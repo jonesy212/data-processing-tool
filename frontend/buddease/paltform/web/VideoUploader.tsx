@@ -1,19 +1,19 @@
-// VideoUploader.tsx
-import { useState } from 'react';
+import { ChangeEvent, useState } from "react";
+import React from "react";
+import { UploaderProps } from "./ImageUploader";
 
-const VideoUploader = ({ onUpload }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+const VideoUploader: React.FC<UploaderProps> = ({ onUpload }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedFile(event.target.files[0]);
+    }
   };
 
   const handleUpload = () => {
     if (selectedFile) {
-      // Perform upload logic here, e.g., using fetch or axios
-      // Assume `onUpload` is a function passed from the parent component to handle the uploaded file
       onUpload(selectedFile);
-      // Optionally, you can clear the selected file after uploading
       setSelectedFile(null);
     }
   };

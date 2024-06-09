@@ -1,3 +1,5 @@
+import React from "react";
+
 import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';

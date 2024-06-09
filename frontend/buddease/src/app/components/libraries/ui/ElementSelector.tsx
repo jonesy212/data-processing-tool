@@ -1,5 +1,6 @@
 // ElementSelector.tsx
 import { useState } from 'react';
+import React from "react";
 
 const ElementSelector = ({ onSelect }) => {
   const [selectedElement, setSelectedElement] = useState('');

@@ -1,6 +1,6 @@
 // EnthusiastProfile.tsx
 
-import { useState } from "react";
+import React, { useState } from "react";
 import useTwoFactorAuthentication from "../../hooks/authentication/useTwoFactorAuthentication";
 
 interface EnthusiastProfileProps {

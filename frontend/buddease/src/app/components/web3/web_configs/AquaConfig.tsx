@@ -1,6 +1,7 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useEffect, useState } from "react";
+import React from "react";
 
 // Expanded AquaConfig with additional options
 export interface AquaConfig {

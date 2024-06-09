@@ -8,6 +8,7 @@ export enum IdeaCreationPhaseEnum {
   CREATE_IDEA,
   REVIEW_IDEA,
   SUGGESTIONS,
+  IDEATION 
 }
 
 interface IdeaFormProps {

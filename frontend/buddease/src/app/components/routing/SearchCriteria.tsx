@@ -1,13 +1,67 @@
 import { debounce } from "@/app/pages/searchs/Debounce";
+import { MessageType } from "antd/es/message/interface";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { CodingLanguageEnum, LanguageEnum } from "../communications/LanguageEnum";
+import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import { FileTypeEnum } from "../documents/FileType";
+import FormatEnum from "../form/FormatEnum";
+import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { SearchLogger } from "../logging/Logger";
+import BookmarkStatus, { CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
+import { ContentManagementPhaseEnum } from "../phases/ContentManagementPhase";
+import { FeedbackPhaseEnum } from "../phases/FeedbackPhase";
+import { TaskPhaseEnum } from "../phases/TaskProcess";
+import { TenantManagementPhaseEnum } from "../phases/TenantManagementPhase";
+import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
+import { SecurityFeatureEnum } from "../security/SecurityFeatureEnum";
 import { RootState } from "../state/redux/slices/RootSlice";
-import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
+import { NotificationTypeEnum } from "../support/NotificationContext";
 import { userService } from "../users/ApiUser";
+import { IdeaCreationPhaseEnum } from "../users/userJourney/IdeaCreationPhase";
+import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
 
-const SearchCriteria: React.FC<{
+
+
+
+interface SearchCriteria {
+  startDate?: Date;
+  endDate?: Date;
+  status?: StatusType | null;
+  priority?: PriorityStatus | null;
+  assignedUser?: string | null;
+  notificationType?: NotificationTypeEnum | null;
+  todoStatus?: TodoStatus | null;
+  taskStatus?: TaskStatus | null;
+  teamStatus?: TeamStatus | null;
+  dataStatus?: DataStatus | null;
+  calendarStatus?: CalendarStatus | null;
+  notificationStatus?: NotificationStatus | null;
+  bookmarkStatus?: BookmarkStatus | null;
+  priorityType?: PriorityTypeEnum | null;
+  projectPhase?: ProjectPhaseTypeEnum | null;
+  developmentPhase?: DevelopmentPhaseEnum | null;
+  subscriberType?: SubscriberTypeEnum | null;
+  subscriptionType?: SubscriptionTypeEnum | null;
+  analysisType?: AnalysisTypeEnum | null;
+  documentType?: DocumentTypeEnum | null;
+  fileType?: FileTypeEnum | null;
+  tenantType?: TenantManagementPhaseEnum | null;
+  ideaCreationPhaseType?: IdeaCreationPhaseEnum | null;
+  securityFeatureType?: SecurityFeatureEnum | null;
+  feedbackPhaseType?: FeedbackPhaseEnum | null;
+  contentManagementType?: ContentManagementPhaseEnum | null;
+  taskPhaseType?: TaskPhaseEnum | null;
+  animationType?: AnimationTypeEnum | null;
+  languageType?: LanguageEnum | null;
+  codingLanguageType?: CodingLanguageEnum | null;
+  formatType?: FormatEnum | null;
+  privacySettingsType?: PrivacySettingEnum | null;
+  messageType?: MessageType | null;
+}
+
+const SearchCriteriaComponent: React.FC<{
   onUpdateCriteria: (criteria: string) => void;
 }> = ({ onUpdateCriteria }) => {
   const [criteria, setCriteria] = useState("");
@@ -144,4 +198,5 @@ const SearchCriteria: React.FC<{
   );
 };
 
-export default SearchCriteria;
+export default SearchCriteriaComponent;
+export type {SearchCriteria}

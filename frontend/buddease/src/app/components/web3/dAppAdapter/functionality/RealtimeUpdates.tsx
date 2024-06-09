@@ -14,7 +14,7 @@ import ToggleSwitch from "@/app/components/libraries/menu/ToggleSwitch";
 import router from "@/app/components/projects/projectManagement/ProjectManagementSimulator";
 import { brandingSettings, label } from "@/app/components/projects/branding/BrandingSettings";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
-
+import React from "react";
 import { Router } from "next/router";
 import { BaseRouter } from "next/dist/shared/lib/router/router";
 import headersConfig from "@/app/api/headers/HeadersConfig";

@@ -1,8 +1,12 @@
 // SummaryStep.tsx
 // Generic Summary Step Component
+import React from "react";
 
 
-const SummaryStep: React.FC<{ title: string; data: any}> = ({ title, data }) => {
+const SummaryStep: React.FC<{
+  onSubmit: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  title: string; data: any
+}> = ({ title, data }) => {
   return (
     <div>
       <h2>{title}</h2>

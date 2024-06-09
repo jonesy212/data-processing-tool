@@ -1,3 +1,4 @@
+import React from "react";
 import { Data } from "../components/models/data/Data";
 import DetailsListItem, { AllProperties } from "../components/models/data/DetailsListItem";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";

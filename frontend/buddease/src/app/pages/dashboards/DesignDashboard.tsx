@@ -1,7 +1,8 @@
 import FeedbackLoop from "@/app/components/FeedbackLoop";
+import TaskAssignmentSnapshot from "@/app/components/actions/TaskAssignmentSnapshot";
 import {
-  AdminDashboard,
-  AdminDashboardProps,
+    AdminDashboard,
+    AdminDashboardProps,
 } from "@/app/components/admin/AdminDashboard";
 import GoogleAnalyticsScript from "@/app/components/analytics/GoogleAnalyticsScript";
 import CalendarComponent from "@/app/components/calendar/CalendarComponent";
@@ -29,11 +30,10 @@ import DynamicComponents from "@/app/components/styling/DynamicComponents";
 import DynamicIconsAndImages from "@/app/components/styling/DynamicIconsAndImages";
 import DynamicSpacingAndLayout from "@/app/components/styling/DynamicSpacingAndLayout";
 import DynamicTypography, {
-  BodyTextProps,
-  DynamicTypographyProps,
-  HeadingProps,
+    BodyTextProps,
+    DynamicTypographyProps,
+    HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
-import TaskAssignmentSnapshot from "@/app/components/tasks/TaskAssignmentSnapshot";
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
 import TodoList from "@/app/components/todos/TodoList";
 import ConceptDevelopment from "@/app/components/users/userJourney/ConceptDevelopment";
@@ -137,7 +137,7 @@ import getAppPath from "../../../../appPath";
 import ChatRoom from "../../components/communications/chat/ChatRoom";
 import YourParentComponent from "../../components/prompts/YourParentComponent";
 import DataPreview, {
-  DataPreviewProps,
+    DataPreviewProps,
 } from "../../components/users/DataPreview";
 import SearchComponent from "../searchs/SearchComponent";
 import useModalFunctions from "./ModalFunctions";

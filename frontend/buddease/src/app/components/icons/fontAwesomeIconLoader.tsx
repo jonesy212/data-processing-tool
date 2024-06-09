@@ -1,6 +1,7 @@
 import { IconName, Library, library } from '@fortawesome/fontawesome-svg-core';
 import { IconDefinition, faCircle, faCoffee, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon as FAIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
 
 // Add more icons as needed
 library.add(faCoffee, faStar, faCircle);

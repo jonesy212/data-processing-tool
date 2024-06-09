@@ -7,6 +7,7 @@ export enum TenantManagementPhaseEnum {
   MANAGE_ACCESS,
   MANAGE_DATA,
   UPDATE_SETTINGS,
+  TenantA,
 }
 
     

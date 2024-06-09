@@ -36,6 +36,8 @@ enum StatusType {
   Upcoming = "upcoming",
   Status = "status",
   Urgent = "urgent",
+  Emergency = "emergency",
+  
 }
 
 // Define the DocumentSize enum
@@ -145,13 +147,13 @@ enum NotificationStatus {
   COMPLETED = "completed",
 }
 
+
+// Assuming PriorityStatus and StatusType enums are defined elsewhere
 enum PriorityStatus {
   Low = "low",
   Medium = "medium",
   High = "high",
-  Normal = "normal",
-  PendingReview = StatusType.Pending,
-  
+  PendingReview = "pendingReview",
 }
 
 enum ProductStatus {
@@ -163,12 +165,13 @@ enum ProductStatus {
 }
 
 export enum PriorityTypeEnum {
-  Low = PriorityStatus.Low,
-  Medium = PriorityStatus.Medium,
-  High = PriorityStatus.High,
-  Normal = PriorityStatus.Normal,
-  PendingReview = StatusType.Pending,
-  Urgent = StatusType.Urgent,
+  Low = "low",
+  Medium = "medium",
+  High = "high",
+  Normal = "normal",
+  PendingReview = "pendingReview",
+  Urgent = "urgent",
+  Emergency = "emergency",
 }
 
 export enum ProjectPhaseTypeEnum {
@@ -181,7 +184,7 @@ export enum ProjectPhaseTypeEnum {
   Review = "review",
   Final = "final",
   Test = "test",
-  CreatePhase = "createPhase",
+  CreatePhase = "create_Phase",
   Previous = "previous",
   Register = "register",
   Planning = "planning",
@@ -196,6 +199,7 @@ export enum DevelopmentPhaseEnum {
   IDEA_CREATION = "DEV_IDEA_CREATION", // Add prefix to distinguish
   IDEA_SUBMISSION = "IDEA_SUBMISSION",
   CODING = "CODING",
+  Deployment = "DEPLOYMENT",
 }
 
 
@@ -209,6 +213,16 @@ export enum CommunicationMediaType {
 enum IncludeType {
   Embed = "Embed",
   // Add other include options if needed
+}
+
+enum CalendarViewType {
+  Day = 'day',
+  Week = 'week',
+  Month = 'month',
+  Year = 'year',
+  Agenda = 'agenda',
+  Custom = 'custom',
+  Default = 'default',
 }
 
 enum CollaborationOptionType {
@@ -292,8 +306,7 @@ export default BookmarkStatus;
 export {
   BookmarkStatus,
   BorderStyle,
-  CalendarStatus,
-  ChatType,
+  CalendarStatus, CalendarViewType, ChatType,
   CollaborationOptionType,
   ComponentStatus,
   DataStatus,

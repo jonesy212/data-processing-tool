@@ -1,4 +1,4 @@
-
+import React from'react';
 const SupportResponse = ({ message }: { message: string }) => {
   return (
     <html lang="en">

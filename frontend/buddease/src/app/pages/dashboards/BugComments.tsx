@@ -1,4 +1,5 @@
 // BugComments.tsx
+import React from 'react';
 import { useState } from 'react';
 
 const BugComments = ({ comments, onAddComment }) => {

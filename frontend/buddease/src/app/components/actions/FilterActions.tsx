@@ -31,5 +31,9 @@ export const FilterActions = {
   // Other filter-related actions
   applyFilter: createAction<{ filterId: number }>("applyFilter"),
   clearFilter: createAction("clearFilter"),
+  filterTasks: createAction<{
+    userId: { operation: string; value: string | number };
+    query: { operation: string; value: string | number }
+  }>("filterTasks")
   // Add more actions as needed
 };

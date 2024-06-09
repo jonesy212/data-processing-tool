@@ -6,6 +6,7 @@ import { DataProcessingResult } from "@/app/components/projects/DataAnalysisPhas
 import { dataset } from "@/app/components/todos/tasks/DataSetModel";
 import { validateReport } from "@/app/utils/reportUtils";
 import { addReport, fetchReports, removeReport } from "../../../../api/ApiReport";
+import React from 'react';
 
 // Import necessary functions and components
 

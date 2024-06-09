@@ -3,7 +3,6 @@
 import { DevelopmentPhaseEnum } from "@/app/components/models/data/StatusType";
 import RegistrationPhaseComponent from "../onboarding/RegistrationPhaseComponent";
 import { OnboardingPhase } from "../personas/UserJourneyManager";
-import EmailConfirmationPhaseComponent from "./EmailConfirmationPhaseComponent";
 
 // Union type of all possible phase values from DevelopmentPhaseEnum and OnboardingPhase
 export type PhaseUnion = DevelopmentPhaseEnum | OnboardingPhase;
@@ -17,7 +16,11 @@ export interface DevelopmentPhase {
 
 
 // Implement the registration phase
-const RegistrationPhase: React.FC<{ onSuccess: any }> = ({ onSuccess }) => {
+const RegistrationPhase: React.FC<{
+  onSuccess: any,
+  onSubmit: any
+  
+ }> = ({ onSuccess }) => {
   const title = "Registration";
   const phase = OnboardingPhase.REGISTER;
   return (

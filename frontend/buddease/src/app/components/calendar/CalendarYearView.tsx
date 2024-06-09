@@ -1,8 +1,18 @@
 import React from "react";
+import { CommonCalendarProps } from "./Calendar";
+import { Project } from "../projects/Project";
+import { YearInfo } from "./CalendarYear";
 
-const YearView = ({ year, projects }) => {
+interface YearWiewProps extends CommonCalendarProps {
+  year: YearInfo[];
+  projects: Project[];
+  
+}
+
+
+
+const YearView: React.FC<YearWiewProps> = ({ year, tasks, events, milestones, projects, selectedProject, ...taskHandlers }) => {
   // Assume you have a selectedProject state that represents the currently selected project
-  const selectedProject = null; // Set this based on user interaction or other logic
 
   return (
     <div>

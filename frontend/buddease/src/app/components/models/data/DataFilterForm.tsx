@@ -29,7 +29,10 @@ interface DataFilterFormProps {
   ) => void;
   options: FilterOptions;
 
-  onSearch: (userId:  string, query:  string) => Promise<void>
+  onSearch: (
+    filters: Record<string, { operation: string; value: string | number }>,
+    transform: string
+  ) => Promise<void>
 }
 
 interface FilterOptions {

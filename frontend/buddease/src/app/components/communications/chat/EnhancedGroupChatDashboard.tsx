@@ -1,3 +1,5 @@
+import React from "react";
+
 import ChatCard from "@/app/components/cards/ChatCard";
 import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";

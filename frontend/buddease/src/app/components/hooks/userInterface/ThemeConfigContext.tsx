@@ -21,7 +21,7 @@ interface ThemeConfigProps {
   setFontColor?: React.Dispatch<React.SetStateAction<string>>; // Add setter for fontColor
 
   children?: React.ReactNode;
-  themeConfig?: ThemeConfig;
+  themeConfig: ThemeConfig;
   applyThemeConfig?: (themeConfig: ThemeConfig) => void;
   
   // Add more theme-related options as needed

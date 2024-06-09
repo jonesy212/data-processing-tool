@@ -1,4 +1,5 @@
 // TwoFactorSetupPhase component
+import React from "react";
 import { useState } from "react";
 import axiosInstance from "../security/csrfToken";
 

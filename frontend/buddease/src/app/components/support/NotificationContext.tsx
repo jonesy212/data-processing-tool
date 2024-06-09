@@ -1,6 +1,6 @@
 // NotificationContext.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { createContext, useContext } from "react";
+import React, { createContext, useContext } from "react";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { PriorityTypeEnum } from "../models/data/StatusType";
 import { NotificationData } from "./NofiticationsSlice";
@@ -100,6 +100,7 @@ export enum NotificationTypeEnum {
 type NotificationContextType = Pick<NotificationContextProps, "notify">;
 
 export interface NotificationContextProps {
+  setNotifications: (notifications: NotificationData[]) => void;
   sendNotification: (
     type: NotificationType,
     userName?: string | number,
@@ -185,6 +186,7 @@ export interface NotificationContextProps {
 }
 
 const DefaultNotificationContext: NotificationContextProps = {
+  setNotifications: () => {},
   sendNotification: () => {},
   addNotification: () => {},
   notify: async () => {},

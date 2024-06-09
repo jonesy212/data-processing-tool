@@ -28,12 +28,13 @@ import {
   ThemeConfigProvider,
   useThemeConfig,
 } from "../components/hooks/userInterface/ThemeConfigContext";
-import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
+import { default as ThemeCustomization, default as defaultThemeConfig } from "../components/hooks/userInterface/ThemeCustomization";
 import { LogData } from "../components/models/LogData";
+import ContentItemComponent from "../components/models/content/ContentItem";
 import { Data } from "../components/models/data/Data";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
-import undoLastAction from "../components/projects/projectManagement/ProjectManager";
+ import undoLastAction from "../components/projects/projectManagement/ProjectManager";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
@@ -45,7 +46,9 @@ import {
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { ButtonGenerator } from "../generators/GenerateButtons";
+import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "../generators/generateAppTree";
+import BrandingSettings from "../libraries/theme/BrandingService";
 import DynamicErrorBoundary from "../shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "../shared/ErrorBoundaryProvider";
 import ErrorHandler from "../shared/ErrorHandler";
@@ -59,28 +62,23 @@ import UserSettingsForm from "./forms/UserSettingsForm";
 import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
-import ContentItemComponent from "../components/models/content/ContentItem";
-import BrandingSettings from "../libraries/theme/BrandingService";
-import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
-import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
-import { Dispatch } from "@reduxjs/toolkit";
 
-import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
-import useNotificationManagerService from "../components/notifications/NotificationService";
-import apiNotificationsService from "../api/NotificationsService";
 import { NotificationType } from "@/app/components/support/NotificationContext";
-import useEditorState from "../components/state/useEditorState";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import ToolbarItemsContext from "../components/libraries/toolbar/ToolbarItemsProvider";
-import FormBuilder from "./forms/formBuilder/FormBuilder";
-import ProtectedRoute from "../components/routing/ProtectedRoute";
-import LogViewer from "./logs/LogViewer";
-import { ChatSidebarProvider } from "../api/ChatSidebarProvider";
-import { ThemeState } from "../components/state/redux/slices/ThemeSlice";
 import { EditorState } from "draft-js";
-import useToolbarOptions from "../components/documents/useToolbarOptions";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ChatSidebarProvider } from "../api/ChatSidebarProvider";
 import { ToolbarOptions } from "../components/documents/ToolbarOptions";
+import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
+import ToolbarItemsContext from "../components/libraries/toolbar/ToolbarItemsProvider";
+import useNotificationManagerService from "../components/notifications/NotificationService";
+import StepComponent from "../components/phases/steps/StepComponent";
+import ProtectedRoute from "../components/routing/ProtectedRoute";
+import { ThemeState } from "../components/state/redux/slices/ThemeSlice";
+import StepProvider from "../context/StepContext";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
+import FormBuilder from "./forms/formBuilder/FormBuilder";
+import LogViewer from "./logs/LogViewer";
+import steps from "../components/phases/steps/steps";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
@@ -178,7 +176,6 @@ async function MyApp({
   
 // Define your initial options here
 const initialOptions: ToolbarOptions = {
-  communication: ["Chat", "Call", "Video"],
   documents: [
     "Documents",
     "Surveys",
@@ -192,7 +189,28 @@ const initialOptions: ToolbarOptions = {
   community: [],
   ui: [],
   onEditorStateChange: [],
-  editorState: []
+  editorState: [],
+  communication: ["Chat", "Call", "Video"],
+  calendar: ["Date", "Time", "Location"],
+   contacts: ["Contact", "Group"],
+   notes: ["Sticky", "Notes"],
+   reminders: ["Reminder", "Calendar"],
+
+  search: ["Search"],
+   help: ["Search", "Help"],
+   content: ["Content", "Content"],
+   userManagement: ["User", "Group"],
+
+  notifications: ["Notifications"],
+   integrations: ["Integrations"],
+   mediaManagement: ["Media", "Media"],
+   projectManagement: ["Project", "Project"],
+
+    ecommerce: ["commerce"],
+   reporting: ["Reporting"],
+   contentCreation: ["Content Creation"],
+   customerSupport: ["Customer Support"],
+   marketing: ["Marketing"],
 };
   
   const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
@@ -358,6 +376,11 @@ const initialOptions: ToolbarOptions = {
     clearNotifications,
   } = useNotificationManagerService();
 
+
+
+
+  const CurrentStepComponent = steps[currentStep];
+
   return (
     <ErrorBoundaryProvider ErrorHandler={ErrorHandler}>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -379,7 +402,7 @@ const initialOptions: ToolbarOptions = {
                   AuthProvider: AuthProvider,
                 }}
                 routerProvider={{
-                  basename: "",
+                  // basename: "",
                   Link: React.Component<{
                     to: string;
                     children?: React.ReactNode;
@@ -405,14 +428,26 @@ const initialOptions: ToolbarOptions = {
                   },
                 ]}
               >
+                <StepProvider initialStep={0} steps={steps}>
+                  <StepComponent />
+                </StepProvider>
                 <SearchComponent {...pageProps}>
                   {({ children, componentSpecificData }: Props) => (
                     <ThemeConfigProvider>
                       <ThemeCustomization
                         infoColor=""
-                        themeState={themeConfig}
+                        themeState={themeConfig ?? defaultThemeConfig}
                         setThemeState={setThemeState}
                         notificationState={notificationState}
+                        tableStyle={{
+                          backgroundColor: "#000000",
+                          textColor: "#ffffff",
+                          borderColor: "#cccccc",
+                          borderWidth: 1,
+                          borderStyle: "solid",
+                          padding: "10px",
+                          margin: "20px",
+                        }}
                       />
                       <CollaborationDashboard />
                       <NotificationProvider>

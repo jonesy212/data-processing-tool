@@ -1,3 +1,4 @@
+import  collaborationApiService from '@/app/api/ApiCollaboration';
 import { FC } from 'react';
 import { Progress } from '@/app/components/models/tracker/ProgressBar';
 // DetailsListStore.ts
@@ -44,7 +45,27 @@ export type AllStatus =
   | PriorityStatus
   | ProductStatus;
 // Define a generic interface for details
-interface DetailsItem<T> extends DataDetails {
+// isActive
+
+interface DetailsItem<T> {
+  id: string;
+  title?: string;
+  type?: AllTypes;
+  status?: AllStatus;
+  description?: string | null | undefined;
+  startDate?: Date,
+  endDate?: Date,
+  updatedAt?: Date,
+  Phase?: Phase | null;
+  subtitle: string;
+  author?: string;
+  date?: Date;
+  collaborators?: Member[];
+  tags?: Tag[] | string[];
+  // Core properties...
+}
+
+interface DetailsItemExtended<T> extends DataDetails {
   _id?: string;
   id: string;
   title?: string;
@@ -55,6 +76,7 @@ interface DetailsItem<T> extends DataDetails {
   participants?: Member[];
   description?: string | null | undefined;
   assignedProjects?: Project[];
+  
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
@@ -90,7 +112,7 @@ interface DetailsItem<T> extends DataDetails {
 }
 
 export interface DetailsListStore {
-  details: Record<string, DetailsItem<Data>[]>;
+  details: Record<string, DetailsItemExtended<Data>[]>;
   detailsTitle: string;
   detailsDescription: string;
   detailsStatus:
@@ -122,15 +144,15 @@ export interface DetailsListStore {
   ) => void;
   addDetails: (id: string, description: string) => void;
   addDetail: (newDetail: Data) => void;
-  addDetailsItem: (detailsItem: DetailsItem<Data>) => void;
-  setDetails: (details: Record<string, DetailsItem<Data>[]>) => void;
+  addDetailsItem: (detailsItem: DetailsItemExtended<Data>) => void;
+  setDetails: (details: Record<string, DetailsItemExtended<Data>[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
   setDynamicNotificationMessage: (message: string) => void;
 }
 
 class DetailsListStoreClass implements DetailsListStore {
-  details: Record<string, DetailsItem<Data>[]> = {
+  details: Record<string, DetailsItemExtended<Data>[]> = {
     pending: [],
     inProgress: [],
     completed: [],
@@ -167,7 +189,7 @@ class DetailsListStoreClass implements DetailsListStore {
     );
 
     this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
-      {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
+      {} as typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
       (message: string, content: any, date: Date, type: NotificationType) => {
         notify("", message, content, date, type);
       }
@@ -224,6 +246,7 @@ class DetailsListStoreClass implements DetailsListStore {
           | TaskStatus.InProgress
           | TaskStatus.Completed,
         phase: {
+          id: "",
           index: 0,
           name: "Phase Name",
           color: "#000000",
@@ -246,16 +269,17 @@ class DetailsListStoreClass implements DetailsListStore {
               label: "",
               current: 0,
               max: 0,
+              min: 0,
               percentage: 0,
             },
             condition: async () => false,
           },
           duration: 0,
         },
-        data: {} as DetailsItem<Data>["data"],
+        data: {} as DetailsItemExtended<Data>["data"],
         isActive: false,
         type: "details",
-        analysisResults: {} as DetailsItem<Data>["analysisResults"],
+        analysisResults: {} as DetailsItemExtended<Data>["analysisResults"],
         updatedAt: undefined,
       });
     }
@@ -320,7 +344,7 @@ class DetailsListStoreClass implements DetailsListStore {
     }
   }
 
-  addDetailsItem(detailsItem: DetailsItem<Data>): void {
+  addDetailsItem(detailsItem: DetailsItemExtended<Data>): void {
     let status: AllStatus = detailsItem.status || TaskStatus.Pending;
 
     this.details = {
@@ -341,13 +365,13 @@ class DetailsListStoreClass implements DetailsListStore {
       return;
     }
 
-    const newDetailsItem: DetailsItem<Data> = {
+    const newDetailsItem: DetailsItemExtended<Data> = {
       id: Date.now().toString(),
       title: this.detailsTitle,
       status: TaskStatus.Pending,
       description: this.detailsDescription,
       // data: {} as Data,
-      phase: {} as DetailsItem<Data>["phase"],
+      phase: {} as DetailsItemExtended<Data>["phase"],
       isActive: false,
       type: "details",
       _id: "",
@@ -363,7 +387,7 @@ class DetailsListStoreClass implements DetailsListStore {
     this.detailsStatus = TaskStatus.Pending;
   }
 
-  setDetails(details: Record<string, DetailsItem<Data>[]>): void {
+  setDetails(details: Record<string, DetailsItemExtended<Data>[]>): void {
     this.details = details;
   }
 
@@ -431,4 +455,4 @@ const useDetailsListStore = (): DetailsListStore => {
 };
 
 export { useDetailsListStore };
-export type { DetailsItem };
+export type { DetailsItemExtended ,DetailsItem};

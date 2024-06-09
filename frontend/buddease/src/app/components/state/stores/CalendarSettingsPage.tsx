@@ -1,4 +1,5 @@
 import RootLayout from "@/app/RootLayout";
+import React from "react";
 
 const CalendarSettingsPage = () => {
   // Add logic for calendar settings here

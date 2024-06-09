@@ -4,6 +4,7 @@ import { ReactNode, useState } from "react";
 import DocumentBuilder from "./DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 import RootLayout from "@/app/RootLayout";
+import React from "react";
 
 interface DynamicHooks {
   [key: string]: {

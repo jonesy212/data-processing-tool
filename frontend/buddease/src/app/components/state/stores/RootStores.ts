@@ -1,15 +1,15 @@
 // RootStores.ts
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
+import { Todo } from '../../todos/Todo';
 import { CalendarManagerStore, useCalendarManagerStore } from './CalendarEvent';
 import useIconStore, { IconStore } from './IconStore';
 import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from './TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
-import { UndoRedoStore } from './UndoRedoStore';
+import { UndoRedoStore, useUndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
-import { Todo } from '../../todos/Todo';
 
 
 export interface Dispatchable {
@@ -19,12 +19,13 @@ export interface Dispatchable {
 export class RootStores {
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore<Todo>;
   taskManagerStore: TaskManagerStore
   iconStore:  IconStore;
   calendarStore: CalendarManagerStore;
   undoRedoStore: UndoRedoStore;
+  todoStore: TodoManagerStore<Todo>;
   teamStore: Promise<TeamManagerStore>
+  
   userStore: UserStore;
   prototype: any  
   browsers: any
@@ -35,7 +36,7 @@ export class RootStores {
     this.trackerStore = useTrackerStore(rootStores)
     this.taskManagerStore = useTaskManagerStore()
     this.calendarStore = useCalendarManagerStore()
-    this.undoRedoStore = new UndoRedoStore();
+    this.undoRedoStore = useUndoRedoStore();
     this.userStore =  userManagerStore();
     this.iconStore = useIconStore(rootStores)
     this.teamStore = useTeamManagerStore()

@@ -2,7 +2,6 @@
 
 import React from "react";
 
-
 interface ToggleSwitchProps {
   label: string;
   checked: boolean;
@@ -28,3 +27,4 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, checked, onChange })
 };
 
 export default ToggleSwitch;
+export type { ToggleSwitchProps };

@@ -1,5 +1,6 @@
 //iconloader.tsx
 import Image from "next/image";
+import React from "react";
 
 export type IconLoader = () => Promise<React.ReactNode>;
 

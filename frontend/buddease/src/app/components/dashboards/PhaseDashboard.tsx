@@ -1,4 +1,6 @@
 // PhaseDashboard.tsx
+import React from "react";
+
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { useRef, useState } from "react";
 import { DndProvider, useDrag } from "react-dnd";

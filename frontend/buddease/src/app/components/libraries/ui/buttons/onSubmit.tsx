@@ -2,16 +2,25 @@
 import React from 'react';
 
 interface ButtonProps {
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
+
+// Example of a button component using ButtonProps
+const SubmitButton: React.FC<ButtonProps> = ({ onClick }) => {
+  return <button onClick={onClick}>Submit</button>;
+};
+
+
 const onSubmit: React.FC<ButtonProps> = ({ onClick }) => {
-  const handleOnClick = () => {
+  const handleOnClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     // Additional logic before onSubmit action if needed
     console.log("Submit button clicked!");
     // Call the provided onClick function
-    onClick();
-  }
+    onClick(event);
+  };
 
   return (
     <button onClick={handleOnClick}>
@@ -21,3 +30,4 @@ const onSubmit: React.FC<ButtonProps> = ({ onClick }) => {
 }
 
 export default onSubmit;
+export type {ButtonProps}

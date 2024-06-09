@@ -21,7 +21,6 @@ export class Tag {
     return this.options;
   }
 
-
   localeCompare(a: Tag, b: Tag) {
     return a.options.name.localeCompare(b.options.name);
   }

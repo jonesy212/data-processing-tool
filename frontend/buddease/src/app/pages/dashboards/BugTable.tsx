@@ -1,5 +1,7 @@
 // BugTable.tsx
 
+import React from "react";
+
 const BugTable = ({ bugs, onBugClick }) => {
   return (
     <table>

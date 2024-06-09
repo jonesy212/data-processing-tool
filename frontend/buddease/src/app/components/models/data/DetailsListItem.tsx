@@ -1,5 +1,6 @@
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { Data } from "./Data";
+import React from "react";
 
 // Define a mapped type to include all properties of Data
 export type AllProperties = {

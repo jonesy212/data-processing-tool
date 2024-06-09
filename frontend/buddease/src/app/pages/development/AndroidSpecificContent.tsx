@@ -3,6 +3,7 @@ import { useThemeConfig } from '@/app/components/hooks/userInterface/ThemeConfig
 import AddContent, { ContentProps } from '@/app/components/models/content/AddContent';
 import ProgressBar, { Progress, ProgressBarProps, ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
 import { Feature } from '@/app/components/state/stores/FeatureStore';
+import React from 'react';
 
 interface AndroidSpecificContentProps {
   additionalFeatures?: Feature[]; // Define optional props

@@ -99,6 +99,34 @@ interface SearchOptions extends FilterOptions {
     securityFeatures: [],
   };
 
+
+
+
+
+// Assume 'options' is provided elsewhere
+const options: SearchOptions = {
+  communicationMode: "email", // Example communication mode
+  size: "medium",
+  animations: {
+    type: "slide",
+    duration: 300,
+  },
+  additionalOptions: {
+    filters: [],
+  },
+  additionalOption2: undefined,
+  defaultFileType: FileTypeEnum.Document,
+  realTimeUpdates: false,
+  theme: "",
+  language: LanguageEnum.English,
+  notificationPreferences: NotificationPreferenceEnum.Email,
+  privacySettings: [],
+  taskManagement: false,
+  projectView: "",
+  calendarSettings: undefined,
+  dashboardPreferences: undefined,
+  securityFeatures: []
+};
 export type { AdditionalOptions, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
   
 export {searchOptions}

@@ -1,4 +1,5 @@
 // TradingPreferencesStep.tsx
+import React from "react";
 
 import PreferencesStep from "./actions/PreferencesStep";
 

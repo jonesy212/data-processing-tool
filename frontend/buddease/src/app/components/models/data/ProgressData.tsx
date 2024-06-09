@@ -38,4 +38,4 @@ const ProgressDataComponent: React.FC<ProgressDataProps> = ({ progress }) => {
 };
 
 export default ProgressDataComponent;
-export type { ProgressData };
+export type { ProgressDataProps };

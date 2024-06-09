@@ -102,6 +102,32 @@ export const fetchTasks = async (): Promise<Task[]> => {
   }
 };
 
+export const updateTaskPosition = async (task: Task, position: number): Promise<void> => {
+  try {
+    const updateTaskEndpoint = `${API_BASE_URL}.updatePosition`;
+    const response = await axiosInstance.post(updateTaskEndpoint, { task, position });
+    const taskManagerStore = useTaskManagerStore();
+    taskManagerStore.updateTaskPositionSuccess({ task: response.data });
+    // Notify the success message
+    useNotification().notify(
+      'UPDATE_TASK_SUCCESS',
+      taskApiNotificationMessages.UPDATE_TASK_SUCCESS,
+      null,
+      new Date(),
+      "ApiClientSuccess" as NotificationType
+    );
+  }
+  catch (error) {
+    console.error('Error updating task position:', error);
+    handleTaskApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      'Failed to update task position',
+      'UPDATE_TASK_ERROR'
+    );
+    throw error;
+  }
+}
+
 export const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
   try {
     const addTaskEndpoint = `${API_BASE_URL}.add`;

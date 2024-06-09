@@ -4,11 +4,19 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import InvitationData from "./InvitationData";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import SortCriteria from "@/app/pages/searchs/SortCriteria";
+import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
+import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
 
 interface CalendarEventCollaboratorsState {
   collaborators: CalendarEventCollaborator[];
   loading: boolean;
   error: string | null;
+}
+
+interface AssignmentData {
+  collaboratorId: string;
+  role: string;
 }
 
 const initialState: CalendarEventCollaboratorsState = {
@@ -77,7 +85,7 @@ const calendarEventCollaboratorsSlice = createSlice({
               dispatch(CollaborationActions.inviteCollaboratorSuccess(
                 "Collaborator invitation sent successfully!"
             ));
-          } catch (error) {
+          } catch (error: any) {
             dispatch(CollaborationActions.inviteCollaboratorFailure(error));
           }
           // dispatch success/failure actions based on response
@@ -144,6 +152,7 @@ const calendarEventCollaboratorsSlice = createSlice({
       ) => {
         const { collaboratorId, message } = action.payload;
         // Implement logic to send notification to collaborator
+
         // dispatch success action
       },
       trackCollaboratorActivity: (
