@@ -5,6 +5,7 @@ import { OnboardingPhase } from "../personas/UserJourneyManager";
 import { DevelopmentPhase } from "./DevelopmentPhase";
 import EmailConfirmationPhaseComponent from "./EmailConfirmationPhaseComponent";
 import { generateNextPhaseRoute } from '@/app/components/event/DynamicEventHandlerExample';
+import React from 'react';
 
 
 const handleRegistrationSuccess = (condition: boolean, dynamicData: any) => {

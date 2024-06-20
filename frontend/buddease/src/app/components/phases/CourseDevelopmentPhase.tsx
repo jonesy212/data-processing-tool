@@ -2,8 +2,8 @@
 
 import { useNotification } from '@/app/components/support/NotificationContext';
 import React, { useState } from 'react';
-import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
 import { useAuth } from '../auth/AuthContext';
+import generateTimeBasedCode from '../models/realtime/TimeBasedCodeGenerator';
 import { notifyUser } from './notificationService'; // Import a notification service for error handling
 
 // Import sub-phase components as needed

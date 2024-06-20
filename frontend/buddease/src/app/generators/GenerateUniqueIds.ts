@@ -24,6 +24,9 @@ export function generateUserID(userName: string) {
 }
 
 class UniqueIDGenerator {
+  static generateSnapshoItemID(arg0: string): string {
+    throw new Error("Method not implemented.");
+  }
   static notifyFormatted(
     id: string,
     message: string,
@@ -32,6 +35,14 @@ class UniqueIDGenerator {
     type: NotificationType
   ) {
     notify(id, message, content, timestamp, type);
+  }
+
+  static generateSnapshotID(): string {
+    return UniqueIDGenerator.generateID(
+      "SNP", 
+      "snapshot_id",
+      NotificationTypeEnum.GeneratedID
+    );
   }
 
   static generateNotificationID(
@@ -51,164 +62,122 @@ class UniqueIDGenerator {
       date: date,
       type: notificationType,
       completionMessageLog: completionMessageLog,
-      // Add more properties as needed
     };
     notify(notificationID, message, content, new Date(), notificationType);
     return notificationID;
   }
 
-  static generateCalendarID(calendarName: string): string {
-    const calendarId = UniqueIDGenerator.generateRoomID();
-    const message = `Generated calendar ID: ${calendarId} for calendar ${calendarName}`;
-    UniqueIDGenerator.notifyFormatted(
-      calendarId,
-      message,
-      {},
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return calendarId;
+  static generateUserID(name: string): string {
+    return `user_${name}`;
   }
 
-  static generateChatID(): string {
-    return UniqueIDGenerator.generateRoomID();
+  static generateTeamID(name: string): string {
+    return `team_${name}`;
   }
 
-  static generateRoomID(): string {
-    const roomIdLength = 8;
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let roomId = "";
-    for (let i = 0; i < roomIdLength; i++) {
-      roomId += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    return roomId;
+  static generateTaskID(
+    name: string,
+    title: string,
+    type: NotificationTypeEnum): string {
+    return `task_${name}_${type}`;
   }
 
-  static generateTaskID(taskId: string | undefined, taskName: string): string {
-    if (!taskId) {
-      taskId = UniqueIDGenerator.generateRoomID();
-      const message = `Generated task ID for task ${taskId}: ${taskName}`;
-      notify(taskId, message, {}, new Date(), NotificationTypeEnum.GeneratedID);
-    }
-    return taskId;
+  static generateCustomID(name: string, type: NotificationTypeEnum): string {
+    return `custom_${name}_${type}`;
   }
 
-  static generateTodoID(
-    todoId: string,
-    todoName: string,
-    type: NotificationType
-  ): string {
-    const message = `Generated todo ID for todo ${todoId}: ${todoName}`;
-    const content = {
-      todoId: todoId,
-      todoName: todoName,
-      type: type,
-    };
-
-    UniqueIDGenerator.notifyFormatted(
-      todoId || "",
-      message,
-      content,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    const todoDetails: DataDetails = {
-      id: todoId,
-      title: todoName,
-      description: type,
-      startDate: new Date(),
-      endDate: new Date(),
-      status: "pending",
-      isActive: true,
-      tags: [],
-      type: "",
-      _id: "",
-      analysisResults: [],
-      updatedAt: undefined
-    };
-    const todoDetailsString = JSON.stringify(todoDetails);
-    return this.generateID(
-      todoDetailsString,
-      todoId || "",
-      "todoName" as NotificationType
-    );
+  static generateCalendarID(name: string): string {
+    return `calendar_${name}`;
   }
 
-  static generateDocumentID(
-    documentName: string,
-    type: NotificationType
-  ): string {
-    const generatedID = `${documentName}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    const message = `Generated document ID for ${documentName}: ${generatedID}`;
-    const content = {
-      documentName: documentName,
-      generatedID: generatedID,
-      timestamp: Date.now(),
-      type: type,
-    };
-    this.notifyFormatted(
-      generatedID,
-      message,
-      content,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return generatedID;
+  static generateProjectID(name: string): string {
+    return `project_${name}`;
   }
 
-
-  static generateVideoID(videoName: string, type: NotificationType): string { 
-    const videoId = `${videoName}_${Date.now()}` 
-    const message = `Generated video ID for ${videoName}: ${videoId}`
-    let content = {
-      videoName: videoName,
-      generatedID: videoId,
-      timestamp: Date.now(),
-      type: type
-    }
-    this.notifyFormatted(
-      videoId,
-      message,
-      content,
-      new Date(),
-      NotificationTypeEnum.GeneratedID
-    );
-    return videoId
-  }
-  static generateVersionNumber(): string {
-    const versionNumberLength = 3;
-    const characters = "0123456789";
-    let versionNumber = "";
-    for (let i = 0; i < versionNumberLength; i++) {
-      versionNumber += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    return versionNumber;
+  static generateElementID(name: string): string {
+    return `element_${name}`;
   }
 
-  static generateAppVersion(): string {
-    const appVersionLength = 5;
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let appVersion = "";
-    for (let i = 0; i < appVersionLength; i++) {
-      appVersion += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    return appVersion;
+  static generatePhaseID(name: string): string {
+    return `phase_${name}`;
+  }
+
+  static generateDocumentEditID(name: string): string {
+    return `document_${name}`;
+  }
+
+  static generateTaskBoardID(): string {
+    return `taskboard_${Date.now()}`;
+  }
+
+  static generateBrainstormingSessionID(): string {
+    return `brainstorm_${Date.now()}`;
+  }
+
+  static generateCommentID(id: string, title: string): string {
+    return `comment_${id}_${title}`;
+  }
+
+  static generateContentID(id: string, title: string): string {
+    return `content_${id}_${title}`;
+  }
+
+  static generateMeetingID(name: string): string {
+    return `meeting_${name}`;
+  }
+
+  static generateProductID(): string {
+    return `product_${Date.now()}`;
+  }
+
+  static generateEventID(): string {
+    return `event_${Date.now()}`;
+  }
+
+  static generateMessageID(): string {
+    return `message_${Date.now()}`;
+  }
+
+  static generateFileID(): string {
+    return `file_${Date.now()}`;
+  }
+
+  static generateLocationID(): string {
+    return `location_${Date.now()}`;
+  }
+
+  static generateCouponCode(): string {
+    return `coupon_${Date.now()}`;
+  }
+
+  static generateVideoID(name: string, type: NotificationTypeEnum): string {
+    return `video_${name}_${type}`;
+  }
+
+  static generateSurveyID(): string {
+    return `survey_${Date.now()}`;
+  }
+
+  static generateAnalyticsID(): string {
+    return `analytics_${Date.now()}`;
+  }
+
+  static generateAppStructureID(): string {
+    return `app_${Date.now()}`;
+  }
+
+  static generateChatMessageID(chatThreadId: string): string {
+    return `chatMessage_${chatThreadId}`;
+  }
+
+  static generateChatThreadID(chatThreadName: string): string {
+    return `chatThread_${chatThreadName}`;
   }
 
   static generateID(
     prefix: string,
     name: string,
-    type: NotificationType,
+    type: NotificationTypeEnum,
     id?: string,
     title?: string,
     chatThreadName?: string,
@@ -275,276 +244,12 @@ class UniqueIDGenerator {
       case NotificationTypeEnum.ChatThreadID:
         return UniqueIDGenerator.generateChatThreadID(String(chatThreadName));
       default:
-        // Use default generator logic
-        const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random()
+        return `${prefix}_${name}_${Date.now()}_${Math.random()
           .toString(36)
           .substring(2, 10)}`;
-        return generatedID;
     }
   }
-
-  static generateCustomID(name: string, type: NotificationType): string {
-    return this.generateID(name, type, "custom" as NotificationType);
-  }
-
-  static generateCaelndarID(calendardId: string): string {
-    return this.generateID(
-      calendardId,
-      NotificationTypeEnum.CalendarID,
-      "cal" as NotificationType
-    );
-  }
-
-
-  static generateChatMessageID(
-
-    chatThreadId: string
-  ): string {
-    return this.generateID(
-      "chatMessageId",
-      NotificationTypeEnum.MessageID,
-      chatThreadId as NotificationType
-    );
-  }
-
-  static generateChatThreadID(chatThreadName: string): string {
-    return this.generateID(
-      chatThreadName,
-      NotificationTypeEnum.MessageID,
-      "chat_thread" as NotificationType
-    );
-  }
-
-  static generateCommentID(id: string, title: string) {
-    // Generate a unique ID using the provided parameters
-    return UniqueIDGenerator.generateID(
-      "comment",
-      `${id}_${title}`, // Concatenate the id and title to ensure uniqueness
-      "comment" as NotificationType
-    );
-  }
-  static generateContentID(id: string, title: string) {
-    return UniqueIDGenerator.generateID(
-      id,
-      NotificationTypeEnum.ContentID,
-      title as NotificationType // Assuming title is of type NotificationType
-    );
-  }
-
-  static generateDocumentEditID(documentName: string): string {
-    return this.generateID(
-      documentName,
-      NotificationTypeEnum.DocumentEditID,
-      "document_edit" as NotificationType
-    );
-  }
-
-  static generateBrainstormingSessionID(): string {
-    return this.generateID(
-      "brainstorming_session",
-      NotificationTypeEnum.BrainstormingSessionID,
-      "brainstorming_session" as NotificationType
-    );
-  }
-
-  static generateElementID(elementName: string): string {
-    return this.generateID(
-      elementName,
-      NotificationTypeEnum.GeneratedID,
-      "element" as NotificationType
-    );
-  }
-
-  static generatePresentationID(presentationName: string): string {
-    return this.generateID(
-      presentationName,
-      NotificationTypeEnum.PresentationID,
-      "presentation" as NotificationType
-    );
-  }
-
-  static generateProjectID(projectName: string): string {
-    return this.generateID(
-      projectName,
-      NotificationTypeEnum.ProjectRevenueID,
-      "proj" as NotificationType
-    );
-  }
-
-  static generateTeamID(teamName: string): string {
-    return this.generateID(
-      teamName,
-      NotificationTypeEnum.TeamJoinRequest,
-      "team" as NotificationType
-    );
-  }
-
-  static generateUserID(userName: string): string {
-    return this.generateID(
-      userName,
-      NotificationTypeEnum.UserID,
-      "user" as NotificationType
-    );
-  }
-
-  // Add more specific ID generation methods as needed
-
-  static generatePhaseID(phaseName: string): string {
-    return this.generateID(
-      phaseName,
-      NotificationTypeEnum.PhaseID,
-      "phase" as NotificationType
-    );
-  }
-  static animationID(
-    prefix: string,
-    name: string,
-    type: NotificationType
-  ): string {
-    const generatedID = `${prefix}_${name}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
-    return generatedID;
-  }
-
-  static generateDashboardID(): string {
-    return UniqueIDGenerator.generateID(
-      "dashboard",
-      NotificationTypeEnum.GeneratedID,
-      "dashboard" as NotificationType
-    );
-  }
-
-  static generateAppStructureID(): string {
-    return this.generateID(
-      "app_structure",
-      NotificationTypeEnum.AppStructureID,
-      "app_structure" as NotificationType
-    );
-  }
-
-  static generateSnapshotID(): string {
-    // Generate a unique ID without requiring any arguments
-    return this.generateID(
-      "Snapshot", // Assuming "Snapshot" is a prefix for the generated ID
-      NotificationTypeEnum.GeneratedID,
-      "snapshot" as NotificationType
-    );
-  }
-
-  static generateSnapshoItemID(id: string): string {
-    return this.generateID(
-      id,
-      "SnapshotItem",
-      NotificationTypeEnum.GeneratedID,
-      "snapshot_item" as NotificationType
-    );
-  }
-
-  static generateSessionID(): string {
-    return this.generateID(
-      "SessionID",
-      "Session",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateOrderID(): string {
-    return this.generateID(
-      "OrderID",
-      "Order",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateMeetingID(meetingName: string): string {
-    return this.generateID(
-      meetingName,
-      NotificationTypeEnum.MeetingID,
-      "meeting" as NotificationType
-    );
-  }
-
-  static generateBlogPostID(blogName: string): string {
-    // Generate a unique ID using a suitable strategy (e.g., UUID)
-    // Here, we'll use a timestamp-based ID for simplicity
-    return this.generateID(
-      blogName,
-      NotificationTypeEnum.BlogPostID,
-      "blog" as NotificationType
-    );
-  }
-
-  static generateProductID(): string {
-    return this.generateID(
-      "ProductID",
-      "Product",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateEventID(): string {
-    return this.generateID(
-      "EventID",
-      "Event",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateMessageID(): string {
-    return this.generateID(
-      "MessageID",
-      "Message",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateFileID(): string {
-    return this.generateID("FileID", "File", NotificationTypeEnum.GeneratedID);
-  }
-
-  static generateTaskBoardID(): string {
-    return this.generateID(
-      "TaskBoardID",
-      "TaskBoard",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateLocationID(): string {
-    return this.generateID(
-      "LocationID",
-      "Location",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateCouponCode(): string {
-    return this.generateID(
-      "CouponCode",
-      "Coupon",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateSurveyID(): string {
-    return this.generateID(
-      "SurveyID",
-      "Survey",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
-  static generateAnalyticsID(): string {
-    return this.generateID(
-      "AnalyticsID",
-      "Analytics",
-      NotificationTypeEnum.GeneratedID
-    );
-  }
-
 }
-
 
 
 const videoDataDetails: DataDetails = {

@@ -1,24 +1,33 @@
 // AssignBaseStore.tsx
 import { Config } from "@/app/api/ApiConfig";
 import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import teamApiService from "../../api/TeamApi";
 import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
+import { AssignBaseStoreLogger } from "../logging/Logger";
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { NotificationType, NotificationTypeEnum, useNotification } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
-import { Todo } from "../todos/Todo";
+import { Todo, UserAssignee } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
 import { User } from "../users/User";
 import { ReassignEventResponse } from "./stores/AssignEventStore";
 import { useAssignTeamMemberStore } from "./stores/AssignTeamMemberStore";
+import { AuthStore } from "./stores/AuthStore";
 import { PresentationStore, presentationStore } from "./stores/presentationStore";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 const { notify } = useNotification();
+
+interface ExtendedTodo extends Todo {
+  // Add additional properties specific to ExtendedTodo if needed
+  additionalField: string;
+  // ...
+}
+
 export interface AssignBaseStore {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
   assignedItems: Record<string, ExtendedCalendarEvent[]>; // Use ID as key and array of item IDs as value
@@ -31,6 +40,15 @@ export interface AssignBaseStore {
     projectId: string,
     teamId: string
   ) => Promise<AxiosResponse>;
+
+  connectResponsesToTodos: (
+    todoIds: string[],
+    assignees: string[],
+    todos: ExtendedTodo[], 
+    eventId: string,
+    responses: ReassignEventResponse[] 
+    ) => void;
+
 
   reassignTeamsInTodos: (
     todoIds: string[],
@@ -83,6 +101,9 @@ export interface AssignBaseStore {
     oldUserId: string,
     newUserId: string
   ) => void;
+
+
+  getAuthStore: () => AuthStore;
 
   assignTeamToTodo: (todoId: string, teamId: string) => void;
   unassignTeamToTodo: (todoId: string, teamId: string) => void;
@@ -201,18 +222,71 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignFileToTeam = {} as Record<string, string[]>
 
 
-  const assignUserToTodo = (todoId: string, userId: string) => {
-    // Check if the todoId already exists in the assignedUsers
-    if (!assignedUsers[todoId]) {
-      assignedUsers[todoId] = [userId];
-    } else {
-      // Check if the user is not already assigned to the todo
-      if (!assignedUsers[todoId].includes(userId)) {
-        assignedUsers[todoId].push(userId);
+  const connectResponsesToTodos = (
+    todoIds: string[],
+    assignees: string[],
+    todos: ExtendedTodo[],
+    eventId: string,
+    responses: ReassignEventResponse[]
+  ) => {
+    const responseMap: Record<string, ReassignEventResponse> = {};
+    for (const response of responses) {
+      responseMap[response.eventId] = response;
+    }
+    for (const todo of todos) {
+      if (responseMap[todo.id]) {
+        todo.assignee = responseMap[todo.id].assignee as unknown as User;
       }
     }
-    // TODO: Implement any additional logic needed when assigning a user to a todo
   };
+
+
+  const todosStore: { [key: string]: Todo } = {};
+  const usersStore: { [key: string]: UserAssignee } = {}; // Example user store
+  
+  const assignUserToTodo = (todoId: string, userId: string) => {
+    // Check if the todo exists in the todosStore
+    const todo = todosStore[todoId];
+    if (!todo) {
+      throw new Error("Todo not found");
+    }
+  
+    // Check if the user exists in the usersStore
+    const user = usersStore[userId];
+    if (!user) {
+      throw new Error("User not found");
+    }
+  
+    // Check if the user is not already assigned to the todo
+    if (!todo.assignedUsers.includes(userId)) {
+      todo.assignedUsers.push(userId);
+      
+      // Update assigneeId and assignee if there's only one assignee
+      if (todo.assignedUsers.length === 1) {
+        todo.assigneeId = userId;
+        todo.assignee = user;
+      }
+    }
+  
+    // Additional logic when assigning a user to a todo
+  
+    // Send Notification
+    AssignBaseStoreLogger.sendAssignmentNotification(String(user), String(todo));
+  
+    // Log Activity
+    AssignBaseStoreLogger.logAssignmentActivity(String(user), String(todo));
+  
+    // Update Todo Store
+    todosStore[todoId] = todo;
+  
+    // Save changes (if applicable)
+    todo.save().then(() => {
+      console.log(`User ${userId} assigned to Todo ${todoId}`);
+    }).catch(error => {
+      console.error(`Error saving Todo ${todoId}:`, error);
+    });
+  };
+  
 
   const unassignUserFromTodo = (todoId: string, userId: string) => {
     // Check if the todoId exists in the assignedUsers
@@ -352,6 +426,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
 
     // TODO: Implement any additional logic needed when assigning a team member to an item
   };
+
+
 
   const unassignTeamMemberFromItem = (itemId: string, userId: string) => {
     // Check if the itemId exists in the assignedTeams
@@ -630,6 +706,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
   const assignPresentationStore: PresentationStore = {} as PresentationStore
   const store: AssignBaseStore = makeAutoObservable({
     ...assignPresentationStore,
+    events,
     assignPresentationStore: assignPresentationStore,
     assignNote,
     assignedNotes: presentationStore().assignedNotes,
@@ -677,6 +754,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignUsersToItems,
     unassignUsersFromItems,
     reassignUsersToItems,
+    connectResponsesToTodos,
     assignUserToTodo,
     unassignUserFromTodo,
     reassignUserInTodo,
@@ -695,13 +773,15 @@ const useAssignBaseStore = (): AssignBaseStore => {
     unassignTeamsFromTodos,
     snapshotStore: snapshotStore,
     assignedItems,
-    assignNoteToTeam: useAssignTeamMemberStore().assignNoteToTeam,
     assignFileToTeam,
-    assignedProjects
-
+    assignedProjects,
+    assignNoteToTeam: useAssignTeamMemberStore().assignNoteToTeam,
+ 
     // Add more properties or methods as needed
   });
   return store;
 };
 
 export { useAssignBaseStore };
+export type { ExtendedTodo };
+

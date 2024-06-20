@@ -15,6 +15,7 @@ export enum MessageType {
   CommunitySupport = "community_support",
   PromotionalMessage = "promotional_message",
   Text = "text",
+  Email = "email",
   MessageType = "text",
 }
 

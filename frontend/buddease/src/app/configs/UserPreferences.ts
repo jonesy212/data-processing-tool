@@ -1,8 +1,9 @@
 import { LanguageEnum } from "../components/communications/LanguageEnum";
 import { NotificationPreferences } from "../components/communications/chat/ChatSettingsModal";
 
-interface UserPreferences {
+interface c {
   theme: string;
+  language: LanguageEnum;
   ideationPhase: boolean;
   brainstormingPhase: boolean;
   launchPhase: boolean;
@@ -11,7 +12,6 @@ interface UserPreferences {
   videoCommunicationEnabled: boolean;
   textCommunicationEnabled: boolean;
   realTimeCollaborationEnabled: boolean;
-  language: LanguageEnum;
   notificationPreferences: NotificationPreferences; // Define the structure for notification preferences as needed
   emailNotifications: boolean;
   pushNotifications: boolean;
@@ -98,12 +98,14 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
       // Example user preferences
       const userPreferences: UserPreferences = {
         notificationPreferences: {
+          sms: false,
+          mobile: false,
+          desktop: false,
+          notificationSound: "",
+          notificationVolume: 0,
           emailNotifications: true,
           pushNotifications: false,
           enableNotifications: false,
-          notificationSound: "",
-          notificationVolume: 0,
-          sms: false
         },
         theme: "",
         ideationPhase: false,

@@ -2,6 +2,7 @@
 // Assuming the calendar system is managed locally within the application state
 
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import React from "react";
 
 // Function to inject simulated events into the calendar system
 const injectSimulatedEvents =  (events:CalendarEvent) => {

@@ -1,6 +1,7 @@
 import { Data } from "@/app/components/models/data/Data";
 import { FC } from "react";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
+import { Month } from "../calendar/Month";
 import { Attachment } from "../documents/Attachment/attachment";
 import { Content } from "../models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
@@ -15,6 +16,8 @@ import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
+
+export type UserAssignee = Pick<User, 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
 export interface Todo extends Snapshot<Data> {
   _id: string;
@@ -31,13 +34,13 @@ export interface Todo extends Snapshot<Data> {
   payload?: any;
   type?: string;
   priority: PriorityStatus | undefined;
-  assignedTo: User | null;
+  assignedTo: UserAssignee | null;
   assigneeId: string;
-  assignee: User | null;
+  assignee: UserAssignee | null;
   assignedUsers: string[];
   collaborators: string[];
   labels: string[];
-  comments?: (Comment | CustomComment)[];
+  comments?: (Comment | CustomComment)[] | undefined;
   attachments?: Attachment[];
   checklists?: (typeof ChecklistItem)[];
   startDate?: Date;
@@ -142,7 +145,7 @@ class TodoImpl implements Todo{
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
   assignedTo: User | null = null;
-  assignee: User | null = null;
+  assignee: UserAssignee | null = null;
   assigneeId: string = "";
   assignedUsers: string[] = [];
   collaborators: string[] = [];

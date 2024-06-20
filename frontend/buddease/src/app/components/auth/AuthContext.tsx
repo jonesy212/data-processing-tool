@@ -1,21 +1,32 @@
 // AuthContext.tsx
+import { UserPreferences } from "@/app/configs/UserPreferences";
 import React, { createContext, useContext, useReducer } from "react";
+import { NFT } from "../nft/NFT";
+import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "../state/stores/AuthStore";
 import { User } from "../users/User";
-
+//todo update roles to use UserRole type
 // Define the types for the context and state
 interface AuthState {
   id: string;
   user: User | null;
+  token: string | null;
+  store: AuthStore;
+  resetAuthState: () => void;
+  loginWithRoles: (
+    user: User,
+    roles: string[],
+    nfts: NFT[],
+    authToken: string
+  ) => void;
   userRoles: string[]; // New property for user roles
   timestamp: number;
-  userNFTs: string[]; // New property for user NFTs
+  userNFTs: NFT[]; // New property for user NFTs
   authToken: string | null; // Add authToken property
   isAuthenticated: boolean;
   isLoading: boolean;
-  integrateAuthenticationProviders: (
-    provider: AuthenticationProvider
-  ) => void;
+  integrateAuthenticationProviders: (provider: AuthenticationProvider) => void;
   authenticationProviders: AuthenticationProvider[] | undefined; // Add authenticationProviders property
+  getUserPreferences: () => UserPreferences | null;
 }
 
 interface AuthContextProps {
@@ -25,24 +36,44 @@ interface AuthContextProps {
   loginWithRoles: (
     user: User,
     roles: string[],
-    nfts: string[],
+    nfts: NFT[],
     authToken: string
   ) => void; // Update loginWithRoles method
   isAuthenticated: boolean; // Add isAuthenticated property
   isLoading: boolean; // Add isLoading property
   token: string | null;
   user?: User | null;
+
+
+  accessToken: string | null;
+  userId: string | number | null;
+  roles: string[];
+  nfts: NFT[];
+  userPreferences: UserPreferences | null;
+  userProfilePicture: string | null;
+  userEmail: string | null;
+  userContactInfo: UserContactInfo | null;
+  userNotificationPreferences: UserNotificationPreferences | null;
+  authenticationProviders: AuthenticationProvider[] | undefined;
+  userSecuritySettings: any | null;
+  userSessions: UserSession[];
+  userSubscriptionPlan: SubscriptionPlan | null;
+
+
 }
 
 interface AuthAction {
-  type: "LOGIN" | "LOGOUT" | "LOGIN_WITH_ROLES" | "INTEGRATE_AUTHENTICATION_PROVIDERS"; // New action type
+  type:
+    | "LOGIN"
+    | "LOGOUT"
+    | "LOGIN_WITH_ROLES"
+    | "INTEGRATE_AUTHENTICATION_PROVIDERS"; // New action type
   payload?: {
     user: User;
     roles?: string[];
-    nfts?: string[];
+    nfts?: NFT[];
     authToken: string;
     provider?: AuthenticationProvider; // Add provider payload
-
   }; // Updated payload
 }
 
@@ -57,10 +88,29 @@ const initialState: AuthState = {
   userNFTs: [],
   authToken: null,
   isLoading: false,
-  integrateAuthenticationProviders: function (provider: AuthenticationProvider): void {
+  integrateAuthenticationProviders: function (
+    provider: AuthenticationProvider
+  ): void {
     throw new Error("Function not implemented.");
   },
-  authenticationProviders: undefined
+  authenticationProviders: undefined,
+  token: null,
+  store: new AuthStore(),
+  resetAuthState: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  loginWithRoles: function (
+    user: User,
+    roles: string[],
+    nfts: NFT[],
+    authToken: string
+  ): void {
+    throw new Error("Function not implemented.");
+  },
+
+  getUserPreferences: function (): UserPreferences | null {
+    throw new Error("Function not implemented.");
+  }
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
@@ -83,42 +133,78 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         userRoles: action.payload?.roles || [],
         userNFTs: action.payload?.nfts || [],
       };
-      case "INTEGRATE_AUTHENTICATION_PROVIDERS":
-        const provider = action.payload;
-        return {
-          ...state,
-          ...(state.authenticationProviders || []), // Ensure that state.authenticationProviders is an array
-        };
+    case "INTEGRATE_AUTHENTICATION_PROVIDERS":
+      const provider = action.payload;
+      return {
+        ...state,
+        ...(state.authenticationProviders || []), // Ensure that state.authenticationProviders is an array
+      };
     default:
       return state;
   }
 };
 
-
-
-
 const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  // todo update 
-  const token = "your-token-value"; // Sample token
-  // Function to reset the auth state
+  const token = state.token;
+  const user = state.user;
+  const store = useAuthStore();
+
   const resetAuthState = () => {
-    dispatch({ type: "LOGOUT" });
+    store.logout();
   };
 
-  // Function to login with roles
   const loginWithRoles = (
     user: User,
     roles: string[],
-    nfts: string[],
+    nfts: NFT[],
     authToken: string
   ) => {
     // Verify user's NFTs and add corresponding roles
-    const verifiedRoles = roles.filter((role) => {
-      // Logic to check if user has the required NFT for each role
-      return nfts.includes(role);
+    const verifiedRoles = roles.filter((role) =>
+      nfts.some((nft) => nft.role === role)
+    );
+
+    store.loginSuccess(authToken, user.id ? user.id.toString() : "");
+    // Assume you store the user and roles in the store as needed
+
+    store.setUser(user);
+    store.setRoles(verifiedRoles);
+    store.setNFTs(nfts);
+    store.setUserPreferences({ theme: "dark", language: "en-US" });
+    store.setUserProfilePicture("https://example.com/profile-picture-url");
+    store.setUserEmail("newemail@example.com");
+    store.setUserContactInfo({
+      phone: "+123456789",
+      address: "1234 Main St, Anytown, USA",
+    });
+    store.setUserNotificationPreferences({
+      emailNotifications: true,
+      smsNotifications: false,
+    });
+    store.setAuthenticationProviders([
+      { name: "Google", connected: true },
+      { name: "Facebook", connected: false },
+    ]);
+    store.setUserSecuritySettings({
+      twoFactorEnabled: true,
+      lastPasswordChange: "2024-01-01",
+    });
+    store.addUserSession({
+      sessionId: "abc123",
+      device: "iPhone",
+      location: "New York, USA",
+      lastAccessed: "2024-06-01T12:34:56Z",
+    });
+    store.removeUserSession("abc123");
+    store.setUserSubscriptionPlan({
+      id: "",
+      planName: "Premium",
+      expiryDate: "2025-06-01",
+      price: 0,
+      features: []
     });
 
     dispatch({
@@ -135,9 +221,21 @@ const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
         resetAuthState,
         loginWithRoles,
         token,
-        isAuthenticated: state.isAuthenticated, // Provide value from state
-        isLoading: state.isLoading, // Provide value from state
-      
+        isAuthenticated: state.isAuthenticated,
+        isLoading: state.isLoading,
+        accessToken: token,
+        userId: user?.id || "",
+        roles: state.userRoles,
+        nfts: state.userNFTs,
+        authenticationProviders: state.authenticationProviders,
+        userPreferences: store.getUserPreferences(),
+        userProfilePicture: store.getUserProfilePicture(),
+        userEmail: store.getUserEmail(),
+        userContactInfo: store.getUserContactInfo(),
+        userNotificationPreferences: store.getUserNotificationPreferences(),
+        userSecuritySettings: store.getUserSecuritySettings(),
+        userSessions: store.getUserSessions(),
+        userSubscriptionPlan: store.getUserSubscriptionPlan(),
       }}
     >
       {children}

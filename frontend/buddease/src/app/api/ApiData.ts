@@ -1,7 +1,6 @@
 // ApiData.ts
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
-import dotProp from 'dot-prop';
 import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
 import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { addLog } from '../components/state/redux/slices/LogSlice';
@@ -12,10 +11,9 @@ import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
-import { handleNoteApiErrorAndNotify } from './ApiNote';
 
 // Define the API base URL
-const API_BASE_URL = dotProp.getProperty(endpoints, 'data');
+const { data: API_BASE_URL } = endpoints;
 export let setDynamicData: React.Dispatch<React.SetStateAction<any>>; // Define setDynamicData globally
 
 interface DataNotificationMessages {
@@ -24,16 +22,20 @@ interface DataNotificationMessages {
   UPDATE_DATA_DETAILS_SUCCESS: string;
   UPDATE_DATA_DETAILS_ERROR: string;
   ERROR_WRITING_TO_CACHE: string;
+  FETCH_DEX_DATA_ERROR: string;
+  FETCH_EXCHANGE_DATA_ERROR: string;
   // Add more keys as needed
 }
 
 // Define API notification messages
-const apiNotificationMessages: DataNotificationMessages = {
+export const apiNotificationMessages: DataNotificationMessages = {
   FETCH_DATA_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_SUCCESS,
   FETCH_DATA_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
   UPDATE_DATA_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
   UPDATE_DATA_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
-  ERROR_WRITING_TO_CACHE: NOTIFICATION_MESSAGES.Cache.ERROR_WRITING_TO_CACHE
+  ERROR_WRITING_TO_CACHE: NOTIFICATION_MESSAGES.Cache.ERROR_WRITING_TO_CACHE,
+  FETCH_DEX_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_DEX_DATA_ERROR,
+  FETCH_EXCHANGE_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_DEX_DATA_ERROR,
   // Add more properties as needed
 };
 // Function to handle API errors and notify
@@ -170,24 +172,26 @@ export const getDataVersions = async (
   }
 };
 
+
+// Function to update data
 export const updateData = async (dataId: number, newData: any): Promise<any> => {
   try {
     const dataUpdateUrl = `${API_BASE_URL}.updateData.${dataId}`;
     if (!dataUpdateUrl) {
       throw new Error(`Update data endpoint not found for data ID: ${dataId}`);
     }
-  
+
     // Integrate header management
-    const response: AxiosResponse = await axiosInstance.put(
+    const response = await axiosInstance.put(
       dataUpdateUrl,
       newData,
       { headers: headersConfig } 
     );
-  
+
     const updatedData = response.data;
-  
+
     // Notify success message
-    const successMessage = dotProp.deepKeys(apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR) as unknown as string
+    const successMessage = apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR;
     if (!successMessage) {
       throw new Error('Success message not found for update data operation');
     }
@@ -198,16 +202,15 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
       new Date(),
       NotificationTypeEnum.Success
     );
-  
-      
+
     addLog(`Data updated: ${JSON.stringify(updatedData)}`); // Log successful data update
-  
+
     return updatedData;
   } catch (error: any) {
     // Handle error and notify failure message
     const errorMessage = 'Failed to update data';
     handleApiError(error, errorMessage);
-    const errorMessageId = dotProp.deepKeys(apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR) as unknown as string;
+    const errorMessageId = apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR;
     if (!errorMessageId) {
       throw new Error('Error message ID not found for update data operation');
     }
@@ -218,7 +221,7 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
       new Date(),
       NotificationTypeEnum.Error
     );
-  
+
     throw error;
   }
 };
@@ -316,3 +319,4 @@ export const getFrontendVersion = async (): Promise<string> => {
     return "unknown";
   }
 };
+

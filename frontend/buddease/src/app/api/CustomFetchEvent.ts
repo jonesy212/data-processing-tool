@@ -1,9 +1,13 @@
-import { Promise } from 'es6-promise';
+import { Promise } from "es6-promise";
 
 // CustomFetchEvent.ts
 // Logic for FetchEvent interface
+interface ExtendableEvent extends Event {
+  waitUntil?(fn: Promise<any>): void;
+  data?: any;
+}
 
-interface FetchEvent extends Event {
+interface FetchEvent extends ExtendableEvent {
   request: Request;
   respondWith(response: Response | Promise<Response>): void;
 }
@@ -21,8 +25,8 @@ class CustomFetchEvent extends Event implements FetchEvent {
   constructor(type: string, eventInitDict: CustomFetchEventInit) {
     super(type, eventInitDict);
     this.request = eventInitDict.request;
-    this.clientId = null; // You can set clientId here or provide it as an argument
-    this.isReload = false; // You can set isReload here or provide it as an argument
+    this.clientId = null; 
+    this.isReload = false; 
     this._respondWith = null;
   }
 
@@ -50,13 +54,26 @@ class CustomFetchEvent extends Event implements FetchEvent {
     return this._respondWith as Promise<Response>;
   }
 
+
+  // Implement waitUntil method from ExtendableEvent
+  waitUntil(promise: Promise<any>): void {
+    // Implement waitUntil logic here
+    // For example:
+    promise.then(() => {
+      // Handle completion of the promise
+    }).catch((error) => {
+      // Handle errors
+      console.error("Error occurred while waiting:", error);
+    });
+  }
+
   // Static method to handle fetch events
   static handleFetchEvent(event: CustomFetchEvent): void {
     fetch(event.request)
-      .then(response => {
+      .then((response) => {
         event.respondWith(response); // Pass the response directly to respondWith
       })
-      .catch(error => {
+      .catch((error) => {
         // Handle errors here
         console.error("Error occurred while processing fetch request:", error);
         // Optionally, provide a default response or rethrow the error
@@ -64,15 +81,21 @@ class CustomFetchEvent extends Event implements FetchEvent {
         throw error;
       });
   }
-
 }
 
 // Example usage:
 const fetchRequest = new Request("/api/data");
-const fetchEvent = new CustomFetchEvent("customFetchEventType", { request: fetchRequest });
+const fetchEvent = new CustomFetchEvent("customFetchEventType", {
+  request: fetchRequest,
+});
 
 // Add an event listener for fetch events
-self.addEventListener("fetch", (event: FetchEvent) => {
-  const customEvent = event as CustomFetchEvent;
+self.addEventListener("fetch", (event) => {
+  const customEvent = fetchEvent;
   CustomFetchEvent.handleFetchEvent(customEvent);
 });
+
+
+
+export type { ExtendableEvent, FetchEvent };
+

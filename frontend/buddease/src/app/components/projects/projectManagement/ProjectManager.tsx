@@ -1,11 +1,21 @@
+import { UserConfigExport } from "vite";
 import { PayloadAction } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
-import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
- 
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import SnapshotStore, {
+  CustomSnapshotData,
+  Snapshot,
+} from "../../snapshots/SnapshotStore";
+import { snapshot } from "../../snapshots/snapshot";
+import { addSnapshot, mergeSnapshots, takeSnapshot } from "@/app/api/SnapshotApi";
+import {
+  deleteSnapshot,
+  updateSnapshot,
+} from "../../snapshots/snapshotHandlers";
+
 // Define project phases
 enum ProjectPhase {
   PHASE_1 = "Phase 1",
@@ -47,43 +57,60 @@ const ProjectManager: React.FC = () => {
     // and perform any other necessary actions
   };
 
-  const getActionHistory = (
+  const getActionHistory = async (
     snapshot: SnapshotStore<Snapshot<Data>>
-  ): Promise<SnapshotStoreConfig<Data>> => {
+  ): Promise<SnapshotStoreConfig<Snapshot<Data>, Data>> => {
     const entityActions = useSnapshotManager();
-    const snapshotStoreSnapshots: Promise<SnapshotStoreConfig<Snapshot<Data>>> =
-      entityActions.getSnapshots(snapshot);
+    const snapshotStoreSnapshots = await (
+      await entityActions
+    ).getSnapshots(snapshot);
 
-    return snapshotStoreSnapshots.then(
-      (snapshotActions: SnapshotStoreConfig<Snapshot<Data>>) => {
-        const otherActions: PayloadAction[] = [];
-        const actionHistory: SnapshotStoreConfig<Snapshot<Data>> = {
-          ...snapshotActions,
-          actions: [...snapshotActions.actions, ...otherActions],
-        };
+    // Assuming snapshotStoreSnapshots is of type SnapshotStoreConfig<Snapshot<Data>, Data>
+    const otherActions: PayloadAction[] = []; // Example other actions
 
-        return actionHistory;
-      }
-    );
+    // Constructing the actions object as per the SnapshotStoreConfig interface
+    const actions = {
+      takeSnapshot: takeSnapshot,
+      updateSnapshot: updateSnapshot,
+      deleteSnapshot: deleteSnapshot,
+      addSnapshot: addSnapshot,
+      mergeSnapshots: mergeSnapshots,
+    };
+
+    const actionHistory: SnapshotStoreConfig<Snapshot<Data>, Data> = {
+      ...snapshotStoreSnapshots,
+      actions: actions,
+    };
+
+    return actionHistory;
   };
 
   // Function to undo the last action
   const undoLastAction = () => {
-    const actionHistory: PayloadAction[] = getActionHistory();
-
-    console.log("Undoing the last action...");
-
-    if (actionHistory.length > 0) {
-      // Get the last action
-      const lastAction = actionHistory.pop();
-
-      // Log that the last action was undone
-      console.log("Last action undone:", lastAction);
+    if (snapshot.store) {
+      getActionHistory(snapshot.store).then(
+        (value: SnapshotStoreConfig<Snapshot<Data>, Data>) => {
+          console.log('Undoing the last action...');
+  
+          // Access action history from value
+          const actionHistory = value.actions || [];
+  
+          if (Array.isArray(actionHistory) && actionHistory.length > 0) {
+            // Get the last action
+            const lastAction = actionHistory.pop();
+  
+            // Log that the last action was undone
+            console.log('Last action undone:', lastAction);
+          } else {
+            console.log('No actions to undo.');
+          }
+        }
+      );
     } else {
-      console.log("No actions to undo.");
+      console.log('No snapshot store available.');
     }
   };
-
+  
   return (
     <div>
       <h2>Project Manager</h2>
@@ -98,7 +125,7 @@ const ProjectManager: React.FC = () => {
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            {task.description} - {task.status ? "Completed" : "Incomplete"}
+            {task.description} - {task.completed ? "Completed" : "Incomplete"}
             <button onClick={() => markTaskAsComplete(task.id as string)}>
               Mark as Complete
             </button>

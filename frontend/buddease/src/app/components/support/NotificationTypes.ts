@@ -12,6 +12,8 @@ export const NOTIFICATION_TYPES = {
 
   INVALID_CREDENTIALS: "InvalidCredentials",
 
+  // Task-related
+  TASK_UPDATED: "TaskUpdated",
   // Team-related
   TEAM_LOADING: "TeamLoading",
   TEAM_JOIN_REQUEST: "TeamJoinRequest",

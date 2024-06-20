@@ -1,7 +1,8 @@
 // CalendarApp.tsx
-import React from "react";
+import useSnapshotManager from '@/app/components/hooks/useSnapshotManager';
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import { VideoData } from "@/app/components/video/Video";
+import { Todo } from "@/app/components/todos/Todo";
+import React from "react";
 import { DocumentOptions } from "../documents/DocumentOptions";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import CalendarDetails from "../models/data/CalendarDetails";
@@ -10,18 +11,15 @@ import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Member, TeamMember } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project, ProjectType } from "../projects/Project";
-import SnapshotStore, { Payload, Snapshot } from "../snapshots/SnapshotStore";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { DetailsItem } from "../state/stores/DetailsListStore";
-import UserRoles from "../users/UserRoles";
-import { User } from "../users/User";
 import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotStoreSubset } from "../snapshots/SnapshotStore";
-import { useSnapshotStore } from "../snapshots/SnapshotStore";
-import useSnapshotManager from '@/app/components/hooks/useSnapshotManager';
-import { Todo } from "@/app/components/todos/Todo";
+import { Project, ProjectType } from "../projects/Project";
+import { Payload, Snapshot, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+import { default as SnapshotStore, default as useSnapshotStore } from "../snapshots/SnapshotStore";
+import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { implementThen } from "../state/stores/CommonEvent";
+import { DetailsItem } from "../state/stores/DetailsListStore";
+import { User } from "../users/User";
+import UserRoles from "../users/UserRoles";
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -56,10 +54,15 @@ const updateProgress = (team: Team) => {
   team.progress = {
     id: team.progress?.id ?? "",
     current: progressPercentage,
+    name: team.progress?.name ?? "",
+    color: team.progress?.color ?? "",
     max: 100,
+    min: 0,
     label: `${progressPercentage}%`,
-    value: team.progress?.value ?? 0,
     percentage: team.percentage,
+    value: team.progress?.value ?? 0,
+    description: team.progress?.description ?? "",
+    done: team.progress?.done ?? false,
   };
 };
 
@@ -83,17 +86,14 @@ const analysisType = (project: Project) => {
 const { fetchData } = useDataStore();
 
 const CalendarApp = () => {
-  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = useSnapshotStore((snapshot) => {
+  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore((snapshot) => {
     // This callback function can be used to add a snapshot to the snapshot list
     // You can implement the logic to add the snapshot to the component's state or perform any other actions
     // For example:
     // setSnapshots([...snapshots, snapshot]);
   });
 
-
   const snapshotManager = useSnapshotManager<Todo>(); // Initialize the snapshot manager
-
-
 
   const calendarEvent: CalendarEvent = {
     id: "1",
@@ -130,9 +130,7 @@ const CalendarApp = () => {
     host: {} as Member,
     teamMemberId: "",
     participants: [],
-    then: function (callback: (newData: Snapshot<Data>) => void): void {
-      throw new Error("Function not implemented.");
-    },
+    then: implementThen,
     _id: "",
     analysisResults: [],
     snapshots: [],
@@ -154,6 +152,8 @@ const CalendarApp = () => {
         details={{
           id: "1",
           // _id: calendarEvent.id,
+          subtitle: "Discuss project plans",
+          value: "10:00 AM",
           title: "Meeting",
           description: "Discuss project plans",
           startDate: new Date(),
@@ -314,11 +314,16 @@ const CalendarApp = () => {
           } as TeamMember,
           progress: {
             id: "",
+            name: "Project Alpha",
+            color: "#000000",
+            description: "project alpha description",
             value: 70,
             label: "Progress",
             current: 0,
             max: 100,
+            min: 0,
             percentage: 70,
+            done: false,
           },
           creationDate: new Date("2022-01-15"),
           assignedProjects: [
@@ -359,6 +364,12 @@ const CalendarApp = () => {
                   max: 0,
                   label: "",
                   value: 0,
+                  percentage: 0,
+                  done: false,
+                  name: '',
+                  color: '',
+                  min: 0,
+                  description: ''
                 },
                 _id: "",
                 id: "",
@@ -409,19 +420,19 @@ const CalendarApp = () => {
             snapshots: [
               {
                 
-                initSnapshot: useSnapshotManager().initSnapshot,
-                takeSnapshot: ,
-                takeSnapshotSuccess: ,
-                takeSnapshotsSuccess: ,
+                initSnapshot: snapshotManager().initSnapshot,
+                takeSnapshot: useSnapshotManager().takeSnapshot,
+                takeSnapshotSuccess: useSnapshotManager().takeSnapshotSuccess,
+                takeSnapshotsSuccess: useSnapshotManager().takeSnapshotsSuccess,
 
-                configureSnapshotStore: ,
-                getData: ,
-                setData: ,
-                getState: ,
+                configureSnapshotStore: useSnapshotManager().configureSnapshotStore,
+                getData: useSnapshotManager().getData,
+                setData: useSnapshotManager().setData,
+                getState: useSnapshotManager().getState,
 
-                setState: ,
-                validateSnapshot: ,
-                handleSnapshot: ,
+                setState: useSnapshotManager().setState,
+                validateSnapshot: useSnapshotManager().validateSnapshot,
+                handleSnapshot: useSnapshotManager().handleSnapshot,
                 handleActions: ,
 
                 setSnapshot: ,
@@ -459,7 +470,8 @@ const CalendarApp = () => {
                 batchUpdateSnapshotsSuccess:,
                 batchUpdateSnapshotsFailure:,
                 batchTakeSnapshot: ,
-                snapshots:, config:,
+                snapshots:,
+                config:,
                 // mergeSnapshot:,
                 // mergeSnapshotSuccess, mergeSnapshotsSuccess,
                 snapshotId: "snap-1",
@@ -559,6 +571,8 @@ const CalendarApp = () => {
             max: 10,
             label: "Alpha Team",
             value: 0,
+            percentage: 0,
+            done: false
           },
           // todo
           getData: fetchData,

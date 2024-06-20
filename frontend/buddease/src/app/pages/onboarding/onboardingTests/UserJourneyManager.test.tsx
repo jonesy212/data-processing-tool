@@ -1,7 +1,8 @@
 // UserJourneyManager.test.tsx
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
-import UserJourneyManager from './UserJourneyManager';
+import React from 'react';
+import UserJourneyManager from '../../personas/UserJourneyManager';
 
 jest.mock('axios');
 

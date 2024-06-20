@@ -1286,26 +1286,29 @@ export const exportToExternalSystem = async (exportData: any): Promise<any> => {
   }
 };
 
-export const generateDocument = async (
+
+export const generateDocument = (
   documentData: any,
   options: DocumentOptions
 ): Promise<DocumentData> => {
-  try {
-    const response = await axiosInstance.post(`${API_BASE_URL}/api/documents/generate`, { documentData, options }, {
-      headers: headersConfig,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error generating document:', error);
-    const errorMessage = 'Failed to generate document';
-    handleDocumentApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      errorMessage,
-      'GENERATE_DOCUMENT_ERROR'
-    );
-    throw error;
-  }
-}
+  return new Promise<DocumentData>(async (resolve, reject) => {
+    try {
+      const response = await axiosInstance.post(`${API_BASE_URL}/api/documents/generate`, { documentData, options }, {
+        headers: headersConfig,
+      });
+      resolve(response.data);
+    } catch (error) {
+      console.error('Error generating document:', error);
+      const errorMessage = 'Failed to generate document';
+      handleDocumentApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        errorMessage,
+        'GENERATE_DOCUMENT_ERROR'
+      );
+      reject(error);
+    }
+  });
+};
 
 export const generateDocumentReport = async (reportData: any): Promise<any> => {
   try {

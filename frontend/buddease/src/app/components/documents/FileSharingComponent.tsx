@@ -1,11 +1,13 @@
 // FileSharingComponent.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
+import MenuDivider from "antd/es/menu/MenuDivider";
+import { Router, useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
-import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
 import CustomBox from "../containers/CustomBox";
 import useFileUpload from "../hooks/commHooks/useFileUpload";
 import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
@@ -13,14 +15,12 @@ import InputLabel, { Input } from "../hooks/userInterface/InputFields";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { SupportedData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataDetailsComponent } from "../models/teams/Team";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import DynamicTypography from "../styling/DynamicTypography";
-import { Router, useRouter } from "next/router";
-import MenuDivider from "antd/es/menu/MenuDivider";
-import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component

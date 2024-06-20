@@ -1,3 +1,5 @@
+import SnapshotList, { SnapshotItem } from "../components/snapshots/SnapshotList";
+
 // SnapshotListGenerator.tsx
 class SnapshotListGenerator {
     generateSnapshotList(rawData: any): SnapshotList {
@@ -7,7 +9,15 @@ class SnapshotListGenerator {
       // Example:
       rawData.forEach((data: any) => {
         const snapshotItem: SnapshotItem = {
-          // Populate snapshot item properties
+          message: undefined,
+          data: undefined,
+          user: undefined,
+          id: "",
+          value: undefined,
+          label: "",
+          category: "",
+          timestamp: "",
+          updatedAt: undefined
         };
         snapshotList.addSnapshot(snapshotItem);
       });
@@ -15,4 +25,4 @@ class SnapshotListGenerator {
       return snapshotList;
     }
   }
-  
+  export default SnapshotListGenerator;

@@ -3,19 +3,19 @@ import { create } from "mobx-persist";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-import generateTimeBasedCode from "../../../models/realtime/TimeBasedCodeGenerator";
+import RootLayout from "../RootLayout";
 import { useAuth } from "../components/auth/AuthContext";
+import { authToken } from "../components/auth/authToken";
 import useMessagingSystem from "../components/communications/chat/useMessagingSystem";
 import generateDynamicContent from '../components/documents/DynamicContentGenerator';
+import generateTimeBasedCode from "../components/models/realtime/TimeBasedCodeGenerator";
 import PaymentForm from "../components/payment/PaymentForm";
 import { rootStores } from "../components/state/stores/RootStores";
 import { User } from "../components/users/User";
 import { UserRole } from "../components/users/UserRole";
 import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
-import RootLayout from "../RootLayout";
 import { Persona } from "./personas/Persona";
-import { authToken } from "../components/auth/authToken";
 
  // pages/index.tsx
 

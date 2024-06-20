@@ -1,12 +1,12 @@
 import { CollaborationActions } from "@/app/components/actions/CollaborationActions";
 import CalendarEventCollaborator from "@/app/components/calendar/CalendarEventCollaborator";
+import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
+import SortCriteria from "@/app/components/settings/SortCriteria";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import InvitationData from "./InvitationData";
-import { NotificationData } from "@/app/components/support/NofiticationsSlice";
-import SortCriteria from "@/app/pages/searchs/SortCriteria";
-import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
-import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
 
 interface CalendarEventCollaboratorsState {
   collaborators: CalendarEventCollaborator[];

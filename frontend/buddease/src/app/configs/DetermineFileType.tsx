@@ -1,7 +1,9 @@
 import React from "react";
 import { FileTypeEnum } from "../components/documents/FileType";
 
-
+interface DetermineFileTypeProps {
+  filePath: string;
+}
 
 // Function to determine the file type based on the file path
 const determineFileType = (filePath: string): FileTypeEnum => {
@@ -15,11 +17,7 @@ const determineFileType = (filePath: string): FileTypeEnum => {
 }
 
 
-
-const DetermineFileType: React.FC = () => {
-  // Example file path for demonstration
-  const filePath = "/path/to/file/DataVersionsConfig";
-
+const DetermineFileType: React.FC<DetermineFileTypeProps> = ({ filePath }) => {
   // Determine the file type
   const fileType = determineFileType(filePath);
 
@@ -30,4 +28,5 @@ const DetermineFileType: React.FC = () => {
   );
 };
 
-export default DetermineFileType; determineFileType;
+export default DetermineFileType;
+export { determineFileType };

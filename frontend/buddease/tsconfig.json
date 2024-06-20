@@ -18,7 +18,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     // "jsx": "react-jsx",
-    "jsx": "react",EventDetailsEnhancement
+    "jsx": "react",
     "incremental": true,
     "plugins": [
       {
@@ -31,6 +31,7 @@
       "@/app/shared/shared_error_handling": [
         "./src/app/configs/declarations/global.d.ts"
       ],
+      "@/pages/*": ["./src/app/pages/*"],
       "@/drawingLibrary": ["./src/app/configs/declarations/global.d.ts"],
       "@/api/*": ["./src/app/api/*"],
       "@/backendStructure/*": ["./src/app/configs/appStructure/*"],
@@ -47,6 +48,9 @@
       "@/users/*": ["./src/app/components/users/*"],
       "@/versions/*": ["./src/app/components/versions/*"],
       "@/configs/*": ["./src/app/configs/*"],
+      "@/snapshot/*": ["./src/app/configs/snapshot/*"],
+      "@/models/*": ["./src/app/components/hooks/*"],
+      
       "@/configs/appStructure/*": ["./src/app/configs/appStructure/*"],
       "@/configs/appStructure/components/*": [
         "./src/app/configs/appStructure/components/*"
@@ -69,6 +73,7 @@
       "@/components/*": [
         "./src/app/components/support/NotificationContext.tsx"
       ],
+      "@/management/*": ["./src/app/components/management/*"],
       "@/context/*": ["./src/app/context/*"],
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
       "@/dashboards/*": ["./src/app/pages/dashboards/*"],
@@ -109,7 +114,8 @@
     "src/app/configs/declarations/**/*.d.ts",
     "src/app/components/libraries/toolbar/Sidebar.tsx",
     "src/app/context/DashboardContext.tsx",
-    "src/app/components/calendar/CalendarWeek.tsx"
+    "src/app/components/calendar/CalendarWeek.tsx",
+    // "src/app/components/models/realtime/RealTimeDataCollection.tsx"
   ],
   "exclude": [
     "node_modules",

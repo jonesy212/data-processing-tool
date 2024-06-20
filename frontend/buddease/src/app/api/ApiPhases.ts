@@ -1,151 +1,115 @@
-import { createHeaders } from './ApiClient';
-import { endpoints } from './ApiEndpoints';
-import { handleApiError } from './ApiLogs';
-import axiosInstance from './axiosInstance';
-import headersConfig from './headers/HeadersConfig';
+import axios from 'axios';
+import { AxiosError } from 'axios';
 import { Phase } from '../components/phases/Phase';
+import { apiNotificationMessages, fetchData, handleApiErrorAndNotify } from './ApiData';
+import { AxiosResponse } from 'axios';
+import { endpoints } from './ApiEndpoints';
+import { NotificationType } from '../components/support/NotificationContext';
 
-const API_BASE_URL = endpoints?.phases?.base ?? '';
+// Base URL for your API
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = endpoints.phases;
+// Define your notification messages interface
+interface DataNotificationMessages {
+  // Define your notification IDs as needed
+  FetchPhaseErrorId: keyof typeof apiNotificationMessages;
+  AddPhaseErrorId: keyof typeof apiNotificationMessages;
+  UpdatePhaseErrorId: keyof typeof apiNotificationMessages;
+  RemovePhaseErrorId: keyof typeof apiNotificationMessages;
+  PhaseError: keyof typeof apiNotificationMessages;
+  // Add more as necessary
+}
 
-const url = endpoints?.phases?.add ?? '';
-const urlString: string = typeof url === 'string' ? url : '';
+// Function to handle Axios errors and notify
+const handlePhaseApiError = (error: AxiosError<unknown>, errorMessage: string, notificationId: keyof DataNotificationMessages): void => {
+  console.error(`Error in Phase API: ${errorMessage}`, error);
+  handleApiErrorAndNotify(error, errorMessage, "PhaseError" as keyof DataNotificationMessages);
+};
 
-class PhaseApiService {
-  private headers: typeof headersConfig;
 
-  constructor() {
-    this.headers = createHeaders();
+const fetchPhases = async (): Promise<Phase[]> => {
+  try {
+    const response = await axios.get<Phase[]>(`${API_BASE_URL}`, { headers: this.headers });
+    return response.data;
+  } catch (error) {
+    const errorMessage = 'Error fetching phases';
+    handlePhaseApiError(error as AxiosError<unknown>, errorMessage, 'FetchPhaseErrorId');
+    throw error;
+  }
+}
+
+
+
+
+const bulkAssignPhases= async (phaseIds: number[], teamId: number): Promise<void> {
+  const url = endpoints?.phases?.bulkAssign; // Assuming endpoints are imported and structured properly
+  if (!url) {
+    const errorMessage = "URL for bulk assigning phases not found";
+    throw new Error(errorMessage);
   }
 
-  private async requestHandler<T extends Phase>(
-    request: () => Promise<T>,
-    errorMessage: string
-  ): Promise<T> {
-    try {
-      return await request();
-    } catch (error) {
-      handleApiError(error as Error, errorMessage);
+  try {
+    await axios.post(url, { phaseIds, teamId }, { headers: this.headers });
+  } catch (error) {
+    const errorMessage = 'Error bulk assigning phases';
+    console.error(errorMessage, error);
+    throw new Error(errorMessage);
+  }
+}
+
+// Function to add a new phase
+export const addPhase = async (newPhase: Phase): Promise<void> => {
+  try {
+    const endpoint = `${BASE_URL}/phases`; // Replace with your actual endpoint
+    const response = await axios.post(endpoint, newPhase);
+    console.log('Added phase successfully:', response.data);
+    // Optionally handle response if needed
+  } catch (error) {
+    handlePhaseApiError(error as AxiosError<unknown>, 'Failed to add phase', 'AddPhaseErrorId');
+    throw error;
+  }
+};
+
+// Function to get a phase by name
+export const getPhaseByName = async (phaseName: string): Promise<Phase | null> => {
+  try {
+    const endpoint = `${BASE_URL}/phases/${phaseName}`; // Replace with your actual endpoint
+    const response = await axios.get<Phase>(endpoint);
+    console.log(`Fetched phase ${phaseName} successfully:`, response.data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      console.log(`Phase ${phaseName} not found.`);
+      return null;
+    } else {
+      handlePhaseApiError(error as AxiosError<unknown>, `Failed to fetch phase ${phaseName}`, 'FetchPhaseErrorId');
       throw error;
     }
   }
+  
+};
 
-  async fetchPhases(): Promise<Phase[]> {
-    try {
-      const response = await axiosInstance.get<Phase[]>(`${API_BASE_URL}`, { headers: this.headers });
-      return response.data;
-    } catch (error) {
-      const errorMessage = 'Error fetching phases';
-      return this.requestHandler<Phase[] & Phase>(() => Promise.reject(errorMessage), errorMessage);
-    }
+// Function to remove a phase
+export const removePhase = async (phaseId: string): Promise<void> => {
+  try {
+    const endpoint = `${BASE_URL}/phases/${phaseId}`; // Replace with your actual endpoint
+    await axios.delete(endpoint);
+    console.log(`Removed phase with ID ${phaseId} successfully.`);
+  } catch (error) {
+    handlePhaseApiError(error as AxiosError<unknown>, `Failed to remove phase with ID ${phaseId}`, 'RemovePhaseErrorId');
+    throw error;
   }
-  
-  async addPhase(newPhase: Omit<Phase, 'id'>): Promise<Phase> {
-    try {
-      const response = await axiosInstance.post<Phase>(urlString, newPhase, { headers: this.headers });
-      return response.data;
-    } catch (error) {
-      const errorMessage = 'Error adding phase';
-      return this.requestHandler<Phase>(() => Promise.reject(errorMessage), errorMessage);
-    }
+};
+
+// Function to update a phase
+export const updatePhase = async (phaseId: string, updatedPhase: Phase): Promise<void> => {
+  try {
+    const endpoint = `${BASE_URL}/phases/${phaseId}`; // Replace with your actual endpoint
+    const response = await axios.put(endpoint, updatedPhase);
+    console.log(`Updated phase with ID ${phaseId} successfully:`, response.data);
+    // Optionally handle response if needed
+  } catch (error) {
+    handlePhaseApiError(error as AxiosError<unknown>, `Failed to update phase with ID ${phaseId}`, 'UpdatePhaseErrorId');
+    throw error;
   }
-  async removePhase(phaseId: number): Promise<Phase> {
-    const url =
-      typeof endpoints?.phases?.single === "function"
-        ? endpoints.phases.single(phaseId)
-        : "";
-  
-    if (!url) {
-      const errorMessage = "URL for removing phase not found";
-      throw new Error(errorMessage);
-    }
-  
-    const errorMessage = "Error removing phase";
-    try {
-      await axiosInstance.delete(url, { headers: this.headers });
-      throw new Error(errorMessage);
-    } catch (error) {
-      return this.requestHandler<Phase>(
-        () => Promise.reject(errorMessage),
-        errorMessage
-      );
-    }
-  }
-
-
-  async getPhaseName(phaseName: string): Promise<Phase> {
-    try {
-      // Construct the URL for fetching phase data by name
-      const url = `${API_BASE_URL}/phases?name=${encodeURIComponent(phaseName)}`;
-  
-      // Make a GET request to fetch phase data
-      const response = await axiosInstance.get<Phase>(url, { headers: this.headers });
-  
-      // Return the phase data from the response
-      return response.data;
-    } catch (error) {
-      // Handle any errors that occur during the request
-      const errorMessage = 'Error fetching phase by name';
-      return this.requestHandler<Phase>(() => Promise.reject(errorMessage), errorMessage);
-    }
-  }
-  
-  async updatePhase(
-    phaseId: number,
-    updatedPhase: Partial<Phase>
-  ): Promise<Phase> {
-    const url =
-      (endpoints?.phases?.single as Record<number, string>)?.[phaseId] ?? "";
-    const errorMessage = "Error updating phase";
-
-    if (!url) {
-      throw new Error("URL for updating phase not found");
-    }
-
-    try {
-      const response = await axiosInstance.put<Phase>(url, updatedPhase, {
-        headers: this.headers,
-      });
-      return response.data as Phase;
-    } catch (error) {
-      return this.requestHandler<Phase>(
-        () => Promise.reject(errorMessage),
-        errorMessage
-      );
-    }
-  }
-  
-  async bulkAssignPhases(phaseIds: number[], teamId: number): Promise<Phase> {
-    const url =
-      typeof endpoints?.phases?.bulkAssign === "string"
-        ? endpoints.phases.bulkAssign
-        : "";
-
-    const errorMessage = "Error bulk assigning phases";
-
-    if (!url) {
-      throw new Error("URL for bulk assigning phases not found");
-    }
-
-    try {
-      await axiosInstance.post(
-        url,
-        { phaseIds, teamId },
-        { headers: this.headers }
-      );
-    } catch (error) {
-      return this.requestHandler<Phase>(
-        () => Promise.reject(errorMessage),
-        errorMessage
-      );
-    }
-    return this.requestHandler<Phase>(
-      () => Promise.reject(errorMessage),
-      errorMessage
-    );
-  }
-  
-  // Additional phase API methods can be added here...
-}
-
-const phaseApiService = new PhaseApiService();
-export default phaseApiService;
+};

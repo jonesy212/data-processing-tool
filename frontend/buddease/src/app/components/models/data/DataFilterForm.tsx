@@ -9,7 +9,7 @@ import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
-import { Snapshot, snapshotStore } from "../../snapshots/SnapshotStore";
+import snapshotStore from "../../snapshots/SnapshotStore";
 import { updateCallback } from "../../state/stores/CalendarEvent";
 import userService, { userId } from "../../users/ApiUser";
 import { Data } from "./Data";
@@ -21,6 +21,8 @@ import { shuffleArray } from "@/app/utils/shuffleArray";
 import { authToken } from "../../auth/authToken";
 import SnapshotList from "../../snapshots/SnapshotList";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -66,23 +68,24 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   
   
   const snapshotDetails: DetailsItem<Data> = {
-    label: "",
-    value: "",
     id: "",
     title: "",
+    label: "",
+    value: "",
     status: "pending",
     description: "",
-    phase: {} as Phase
+    subtitle: "",
+    phase: {} as Phase,
     // Add other properties as needed
-    ,
     updatedAt: undefined
   }
 
   const snapshotListArray: DetailsItem<Data>[] = Array.from(snapshotList).map(
-    (snapshot: Snapshot<Data>) => ({
+    (snapshot: Snapshot<Data> | null) => ({
       ...snapshotDetails,
       label: snapshot.data?.label || "",
       value: snapshot.data?.value || "",
+      status: snapshot.status,
       // Add other properties as needed
     })
   );

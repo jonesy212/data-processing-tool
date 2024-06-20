@@ -11,5 +11,6 @@ export interface Meeting extends UserData {
   participants: string[]; // This can be an array of user IDs or names
   eventId?: CalendarEvent['id']
   assignedTo?: Todo['assignedTo']
+  
   // Add any other properties relevant to a meeting
 }

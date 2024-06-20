@@ -31,11 +31,36 @@ const analyzeMarketTrends = (marketData: MarketData[]): void => {
 const fetchRecentMarketData = (): MarketData[] => {
   // Simulated market data
   return [
-    { timestamp: new Date(), price: 100, volume: 200, target: null },
-    { timestamp: new Date(), price: 105, volume: 180, target: null },
-    { timestamp: new Date(), price: 102, volume: 250, target: null },
-    { timestamp: new Date(), price: 98, volume: 220, target: null },
-    { timestamp: new Date(), price: 104, volume: 210, target: null },
+    {
+      timestamp: new Date(), price: 100, volume: 200, target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
+    },
+    {
+      timestamp: new Date(), price: 105, volume: 180, target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
+    },
+    {
+      timestamp: new Date(), price: 102, volume: 250, target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
+    },
+    {
+      timestamp: new Date(), price: 98, volume: 220, target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
+    },
+    {
+      timestamp: new Date(), price: 104, volume: 210, target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
+    },
   ];
 };
 
@@ -67,25 +92,42 @@ const fetchHistoricalMarketData = (): MarketData[] => {
       price: 100,
       volume: 200,
       target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
     },
     {
       timestamp: new Date("2023-01-02"),
       price: 105,
       volume: 180,
       target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
     },
     {
       timestamp: new Date("2023-01-03"),
       price: 102,
       volume: 250,
       target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
     },
-    { timestamp: new Date("2023-01-04"), price: 98, volume: 220, target: null },
+    {
+      timestamp: new Date("2023-01-04"), price: 98, volume: 220, target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
+    },
     {
       timestamp: new Date("2023-01-05"),
       price: 104,
       volume: 210,
       target: null,
+      symbol: "",
+      type: "",
+      quantity: 0
     },
   ];
 };

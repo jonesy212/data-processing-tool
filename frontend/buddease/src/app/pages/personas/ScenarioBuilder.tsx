@@ -1,19 +1,25 @@
 import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
-import { DocumentOptions, getDefaultDocumentOptions, getDocumentPhase } from "@/app/components/documents/DocumentOptions";
+import {
+  getDefaultDocumentOptions,
+  getDocumentPhase,
+} from "@/app/components/documents/DocumentOptions";
+import FileData from "@/app/components/models/data/FileData";
 import PhaseManager from "@/app/components/phases/PhaseManager";
 import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
 import fs from "fs";
-import { useState } from "react";
+import React, { useState } from "react";
 import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
-import { User } from "@/app/components/users/User";
-import FileData from "@/app/components/models/data/FileData";
+import { categorizeNews } from "@/app/components/community/newsFeedIntegration";
 
 // Define categories and their associated properties
 interface CategoryProperties {
   UserInterface: string[];
   DataVisualization: string[];
   Forms: FormData[];
-  
+  Analysis: string[];
+  Communication: string[];
+  TaskManagement: string[];
+  Crypto: string[];
 
   // Add more categories and properties as needed
 }
@@ -21,11 +27,22 @@ interface CategoryProperties {
 const categoryProperties: CategoryProperties = {
   UserInterface: ["componentName", "componentDescription"],
   DataVisualization: ["dataProperties", "chartType"],
-  Forms: {
-
-  } as FormData[],
-  
+  Forms: {} as FormData[],
+  Analysis: ["categorizeNews"],
+  Communication: ["audio", "video", "text"],
+  TaskManagement: ["phases", "tasks", "dataAnalysis"],
+  Crypto: [
+    "portfolioManagement",
+    "trading",
+    "marketAnalysis",
+    "communityEngagement",
+  ],
 };
+
+
+
+
+
 
 // Define function to create user scenarios and map out user journey
 async function createUserScenarios(props: any) {
@@ -42,7 +59,7 @@ async function createUserScenarios(props: any) {
     props
   );
   // Check if phaseManager is not null or undefined before accessing its properties
-  const phases = phaseManager.phases ? phaseManager.phases[0] : undefined;
+  const phases = phaseManager?.phases?.[0];
   // Generate user scenarios and map out user journey
   if (phases) {
     phases.scenarios = userPersonaBuilder.buildScenarios(userPersona);
@@ -338,3 +355,19 @@ const validationRules = {}; // Include your validation rules here
 generateComponent(componentName, category, properties, validationRules);
 
 export type { CategoryProperties };
+
+
+
+
+
+
+// Example usage of categories
+const newsFeedData = { /* Provide your news feed data here */ };
+const categories = categorizeNews(newsFeedData);
+console.log('News categories:', categories);
+
+// Accessing categories from categoryProperties
+console.log('Communication categories:', categoryProperties.Communication);
+console.log('Task management categories:', categoryProperties.TaskManagement);
+console.log('Crypto categories:', categoryProperties.Crypto);
+

@@ -3,9 +3,10 @@ import { CrossCulturalCommunication, Language, TimeZone } from "@/app/components
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/components/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/app/components/interfaces/provider/CloudStorageProvider";
 import { Data } from "@/app/components/models/data/Data";
+import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import { Snapshot, SnapshotStore } from "@/app/components/snapshots/SnapshotStore";
 import { EncryptionSetting, Permission } from "@/app/components/users/Permission";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
@@ -13,8 +14,6 @@ import { useDispatch } from "react-redux";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { addTask } from "./TaskSlice";
-
-
 
 interface CommunityEvent {
   id: string;
@@ -200,7 +199,7 @@ export const useApiManagerSlice = createSlice({
         assigneeId: undefined,
         dueDate: undefined,
         payload: undefined,
-        priority: "low",
+        priority: PriorityTypeEnum.Low,
         previouslyAssignedTo: [],
         done: false,
         data: undefined,
@@ -665,15 +664,17 @@ export const {
 } = useApiManagerSlice.actions;
 
 // Extend the method to mark tasks as complete
-export const markTaskAsComplete = (taskId: string) => async (dispatch: any) => {
+// Extend the method to mark tasks as complete
+export const markTaskAsComplete = (taskId: string, title: string) => async (dispatch: any) => {
   dispatch(addTask({
-    id: taskId, title: "task",
+    id: taskId,
+    title: title,
     description: "",
     assignedTo: null,
     assigneeId: undefined,
     dueDate: undefined,
     payload: undefined,
-    priority: "low",
+    priority: PriorityTypeEnum.Low,
     previouslyAssignedTo: [],
     done: false,
     data: undefined,
@@ -682,25 +683,21 @@ export const markTaskAsComplete = (taskId: string) => async (dispatch: any) => {
     endDate: undefined,
     isActive: false,
     tags: [],
-    [Symbol.iterator]: function (): Iterator<any, any, undefined> {
-      throw new Error("Function not implemented.");
-    },
-    getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-      throw new Error("Function not implemented.");
-    }
   }));
 };
 
+
 // Extend the method to mark todos as complete
-export const markTodoAsComplete = (todoId: string) => async (dispatch: any) => {
+export const markTodoAsComplete = (todoId: string, title: string) => async (dispatch: any) => {
   dispatch(addTask({
-    id: todoId, title: "todo",
+    id: todoId,
+    title: title,
     description: "",
     assignedTo: null,
     assigneeId: undefined,
     dueDate: undefined,
     payload: undefined,
-    priority: "low",
+    priority: PriorityTypeEnum.Low,
     previouslyAssignedTo: [],
     done: false,
     data: undefined,
@@ -709,12 +706,6 @@ export const markTodoAsComplete = (todoId: string) => async (dispatch: any) => {
     endDate: undefined,
     isActive: false,
     tags: [],
-    [Symbol.iterator]: function (): Iterator<any, any, undefined> {
-      throw new Error("Function not implemented.");
-    },
-    getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-      throw new Error("Function not implemented.");
-    }
   }));
 };
 

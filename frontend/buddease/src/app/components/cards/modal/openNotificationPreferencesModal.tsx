@@ -25,7 +25,7 @@ const openNotificationPreferencesModal = async () => {
 
     return (
       <ModalGenerator
-        isOpen={isModalOpen}
+        isOpen={{isModalOpen}}
         closeModal={handleCloseModal}
         modalComponent={ChatSettingsModal} // Use the ChatSettingsModal component
         title="Notification Preferences"

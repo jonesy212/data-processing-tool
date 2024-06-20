@@ -316,6 +316,10 @@ export const CalendarActions = {
 
 
 
+  updateTaskPosition: createAction<{
+    taskId: string;
+    newPosition: { [key: string]: number };
+  }>('tasks/updateTaskPosition'),
   dispatchNotification: createAction<NotificationData>('communication/dispatchNotification'),
   updateChatRoomTopics: createAction<{
     chatRoomId: string;

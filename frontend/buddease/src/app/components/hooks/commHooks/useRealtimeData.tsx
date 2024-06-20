@@ -3,8 +3,8 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
-import { RealtimeData, RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
 import { Data } from "../../models/data/Data";
+import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
@@ -14,6 +14,7 @@ import { CalendarEvent } from "../../state/stores/CalendarEvent";
 export const ENDPOINT = endpoints.backend
 
 export type RealtimeUpdateCallback<T extends RealtimeData> = (
+
   data: SnapshotStore<Snapshot<Data>>,
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<Snapshot<Data>>,

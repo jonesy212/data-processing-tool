@@ -14,7 +14,7 @@ interface EventData {
   // Add other properties if needed based on your event structure
 }
 
-// web3
+// web3 is a global variable that is initialized in the index.html file
 export const initializeWeb3 = (): Web3 => {
   // Implement Web3 initialization logic
   const web3 = new Web3("your-provider-url");

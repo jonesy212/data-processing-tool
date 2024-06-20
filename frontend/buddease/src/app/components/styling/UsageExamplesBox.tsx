@@ -15,6 +15,7 @@ import { AnimatedComponentRef } from "../libraries/animations/AnimationComponent
 import AnimationControls from "../libraries/animations/AnimationControls";
 import DynamicSelectionControls from "../libraries/animations/DynamicSelectionControls";
 import responsiveDesignStore from "./ResponsiveDesign";
+import { Data } from "../models/data/Data";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox
@@ -43,17 +44,26 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
     },
   ];
   // Usage example for Notification Bar Phase Hook
-  const notificationBarExample: AsyncHook & Partial<AnimatedComponentRef> = {
+  const notificationBarExample: AsyncHook<Data> & Partial<AnimatedComponentRef> = {
     condition: async (idleTimeoutDuration: number) => {
       // Your condition logic here
       return true; // Placeholder condition
     },
-    asyncEffect: async () => {
+    asyncEffect: async ({
+      idleTimeoutId, startIdleTimeout,
+    }: {
+      idleTimeoutId: NodeJS.Timeout | null;
+        startIdleTimeout: (timeoutDuration: number,
+          onTimeout: () => void) => void;
+    }) => {
       // Your async effect logic here
+      return () => {
+        // Your cleanup logic here
+      };
     },
     isActive: false, // Initial value for isActive
     initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Placeholder implementation
-    resetIdleTimeout: () => {}, // Placeholder implementation
+    resetIdleTimeout: async () => {}, // Placeholder implementation
     idleTimeoutId: null, // Placeholder value
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {}, // Placeholder implementation
     cleanup: undefined, // Placeholder value
@@ -61,7 +71,26 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
     startAnimation: () => {}, // Placeholder implementation
     stopAnimation: () => {}, // Placeholder implementation
     animateIn: () => {}, // Placeholder implementation
-  
+    enable: () => { }, // Placeholder implementation
+    disable: () => { }, // Placeholder implementation
+    progress: {
+      id: "NotificationBarExample", // Placeholder value
+      name: "NotificationBarExample", // Placeholder value
+      color: "#ff5733", // Placeholder value
+      description: "This is a notification bar example", // Placeholder value
+      // icon: "bell", // Placeholder value
+      value: 0, // Placeholder value
+      label: "Notification Bar Example", // Placeholder value
+      current: 0, // Placeholder value
+      min: 0,
+      max: 100, // Placeholder value
+      percentage: 0, // Placeholder value
+      done: false, // Placeholder value
+    }, // Placeholder value
+    // progressCallbacks: [], // Placeholder value
+    name: "NotificationBarExample", // Placeholder value
+    duration: "0", // Placeholder value
+      
   };
   
 
@@ -226,7 +255,11 @@ const darkModeToggleExample: AsyncHook = {
 
       {/* Animated Dashboard Example */}
       <h2>Animated Dashboard Example</h2>
-      <AnimatedDashboard />
+      <AnimatedDashboard
+        id={id}
+        label={label}
+        onClick={onClick}
+      />
 
       {/* Dynamic Input Fields Example */}
       <h2>Dynamic Input Fields Example</h2>

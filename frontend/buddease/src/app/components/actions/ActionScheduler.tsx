@@ -19,11 +19,11 @@ const ActionScheduler = ({ actionsToSchedule }: SchedulerProps) => {
 
 const actionsToSchedule: LibraryAsyncHook[] = [
   {
-    enable: () => {}, // Define enable function if needed
-    disable: () => {}, // Define disable function if needed
-    condition: () => true, // Define condition function to always execute
-    idleTimeoutId: null, // Initialize idleTimeoutId as null
-    startIdleTimeout: (timeoutDuration: any, onTimeout: any) => {}, // Define startIdleTimeout function if needed
+    enable: () => {}, 
+    disable: () => {}, 
+    condition: async () => true, 
+    idleTimeoutId: null, 
+    startIdleTimeout: (timeoutDuration: any, onTimeout: any) => {}, 
     asyncEffect:
       async ({
         idleTimeoutId,

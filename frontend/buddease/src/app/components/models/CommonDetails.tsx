@@ -11,7 +11,7 @@ interface Customizations<T> {
 
 // Define the CommonDetailsProps interface with the generic CommonData type
 interface CommonDetailsProps<T> {
-  data?: CommonData<T>; // Make data prop optional
+  data?: CommonData
   customizations?: Customizations<T>;
 }
 

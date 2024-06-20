@@ -1,28 +1,27 @@
 // TradingProcess.tsx
 import axiosInstance from "@/app/api/axiosInstance";
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
 
-import VerificationPage from "@/app/pages/profile/VerificationPage";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
-import * as TradingAPI from './../../api/ApiTrading'
-import TradingBasicInfoStep from "./steps/TradingBasicInfoStep";
-import TradingReviewStep from "../trading/TradingReviewStep";
-import TradingPreferencesStep from "./TradingPreferencesStep";
-import TradingSummaryStep from "./steps/TradingSummaryStep";
-import { TradingPhase } from "./crypto/CryptoTradingPhase";
-import TradingAssetsStep from "./steps/TradingAssetsStep";
-import { NotificationTypeEnum, useNotification } from "../support/NotificationContext";
 import RiskAssessmentPage from "@/app/pages/crypto/RiskAssessmentPage";
-import TraderTypesSelection from "./crypto/TraderTypesSelection";
-import ProfessionalTraderProfile from "@/app/pages/personas/ProfessionalTraderProfile";
-import ProfessionalTraderDashboard from "@/app/pages/personas/ProfessionalTraderDashboard";
 import ProfessionalTraderCalls from "@/app/pages/personas/ProfessionalTraderCalls";
 import ProfessionalTraderContentManagement from "@/app/pages/personas/ProfessionalTraderContentManagement";
-import TradeData from "../trading/TradeData";
-
-
-
+import ProfessionalTraderDashboard from "@/app/pages/personas/ProfessionalTraderDashboard";
+import ProfessionalTraderProfile from "@/app/pages/personas/ProfessionalTraderProfile";
+import VerificationPage from "@/app/pages/profile/VerificationPage";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "../support/NotificationContext";
+import TradingReviewStep from "../trading/TradingReviewStep";
+import * as TradingAPI from "./../../api/ApiTrading";
+import TradingPreferencesStep from "./TradingPreferencesStep";
+import { TradingPhase } from "./crypto/CryptoTradingPhase";
+import TraderTypesSelection from "./crypto/TraderTypesSelection";
+import TradingAssetsStep from "./steps/TradingAssetsStep";
+import TradingBasicInfoStep from "./steps/TradingBasicInfoStep";
+import TradingSummaryStep from "./steps/TradingSummaryStep";
+import { useStepContext } from "@/app/context/StepContext";
 
 const TradingProcess: React.FC = () => {
   const { notify } = useNotification();
@@ -34,24 +33,42 @@ const TradingProcess: React.FC = () => {
     // Initialize with default values or empty objects as needed
   });
 
-    
-    
-    
-      // Mapping of step components to their respective phases
+
+  const handleSubmit = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    const { currentStep, handleNext } = useStepContext();
+    const handleStepSubmit = (data: any) => {
+      setTradeData({ ...tradeData, ...data });
+      handleNext();
+    };
+    console.log("Form submitted");
+    // Do something with the trade data here
+    setTradeData(tradeData);
+    // If the form is valid, navigate to the next step
+    // else, stay on the current step
+    // Note: This is just an example, you can navigate to the next step
+    // without validating the form data
+    handleStepSubmit(tradeData);
+  }
+
+
+  // Mapping of step components to their respective phases
   const stepComponents: Record<TradingPhase, React.ComponentType<any>> = {
-      [TradingPhase.BASIC_INFO]: TradingBasicInfoStep,
-      [TradingPhase.ASSETS]: TradingAssetsStep,
-      [TradingPhase.PREFERENCES]: TradingPreferencesStep,
-      [TradingPhase.REVIEW]: TradingReviewStep,
-      [TradingPhase.SUMMARY]: TradingSummaryStep,
-      [TradingPhase.CONFIRMATION]: TradingConfirmationPage,
-      [TradingPhase.VERIFICATION]: VerificationPage,
-      [TradingPhase.RISK_ASSESSMENT]: RiskAssessmentPage,
-      [TradingPhase.TRADER_TYPE_SELECTION]: TraderTypesSelection,
-      [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: ProfessionalTraderProfile,
-      [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: ProfessionalTraderDashboard,
-      [TradingPhase.PROFESSIONAL_TRADER_CALLS]: ProfessionalTraderCalls,
-      [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: ProfessionalTraderContentManagement
+    [TradingPhase.BASIC_INFO]: TradingBasicInfoStep,
+    [TradingPhase.ASSETS]: TradingAssetsStep,
+    [TradingPhase.PREFERENCES]: TradingPreferencesStep,
+    [TradingPhase.REVIEW]: TradingReviewStep,
+    [TradingPhase.SUMMARY]: TradingSummaryStep,
+    [TradingPhase.CONFIRMATION]: TradingConfirmationPage,
+    [TradingPhase.VERIFICATION]: VerificationPage,
+    [TradingPhase.RISK_ASSESSMENT]: RiskAssessmentPage,
+    [TradingPhase.TRADER_TYPE_SELECTION]: TraderTypesSelection,
+    [TradingPhase.PROFESSIONAL_TRADER_PROFILE]: ProfessionalTraderProfile,
+    [TradingPhase.PROFESSIONAL_TRADER_DASHBOARD]: ProfessionalTraderDashboard,
+    [TradingPhase.PROFESSIONAL_TRADER_CALLS]: ProfessionalTraderCalls,
+    [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]:
+      ProfessionalTraderContentManagement,
   };
 
   // Function to handle submission of each step
@@ -77,7 +94,10 @@ const TradingProcess: React.FC = () => {
 
   const handleReviewSubmit = async () => {
     try {
-      const response = await axiosInstance.post("/api/trading-process", tradeData);
+      const response = await axiosInstance.post(
+        "/api/trading-process",
+        tradeData
+      );
       console.log("Server response:", response.data);
       setCurrentStep(TradingPhase.CONFIRMATION);
       notify(
@@ -130,18 +150,15 @@ const TradingProcess: React.FC = () => {
     }
   };
 
-    
   const StepComponent = stepComponents[currentStep];
 
   return (
-      <div>
-          
-          <StepComponent
+    <div>
+      <StepComponent
         onSubmit={(data: any) => handleStepSubmit(data, currentStep)}
         tradeData={tradeData}
         onConfirm={() => handleConfirmation(tradeData)}
-          />
-          
+      />
 
       {currentStep === TradingPhase.BASIC_INFO && (
         <TradingBasicInfoStep onSubmit={handleBasicInfoSubmit} />
@@ -154,21 +171,28 @@ const TradingProcess: React.FC = () => {
       )}
       {currentStep === TradingPhase.REVIEW && (
         <TradingReviewStep
+          title="Review"
           tradeData={tradeData}
           onSubmit={handleReviewSubmit}
+          onConfirm={() => handleConfirmation(tradeData)}
+          content={"content"}
         />
       )}
       {currentStep === TradingPhase.SUMMARY && (
-        <TradingSummaryStep tradeData={tradeData} />
+        <TradingSummaryStep
+          title={"Summary"}
+          tradeDetails={"tradeDetails"}
+          tradeData={tradeData}
+          onConfirm={() => handleConfirmation(tradeData)}
+          message={"trade has been created"} onSubmit={handleSubmit}        />
       )}
       {currentStep === TradingPhase.CONFIRMATION && (
         <TradingConfirmationPage
           tradeData={tradeData}
-          onConfirm={() => handleConfirmation(tradeData)}
           tradeDetails={"tradeDetails"}
-           title={"Trade Confirmation"}
-           message={"trade has been confirmed"}
-
+          title={"Trade Confirmation"}
+          onConfirm={() => handleConfirmation(tradeData)}
+          message={"trade has been confirmed"}
         />
       )}
     </div>

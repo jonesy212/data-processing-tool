@@ -145,6 +145,7 @@ enum NotificationStatus {
   CANCELLED = "cancelled",
   SCHEDULED = "scheduled",
   COMPLETED = "completed",
+  
 }
 
 
@@ -188,6 +189,24 @@ export enum ProjectPhaseTypeEnum {
   Previous = "previous",
   Register = "register",
   Planning = "planning",
+}
+
+
+enum ProjectStateEnum {
+  Snapshots = "Snapshots",
+  // Add other project states as needed
+}
+
+enum ActivityTypeEnum {
+  Snapshot = "Snapshot",
+  // Add other activity types as needed
+}
+
+enum ActivityActionEnum {
+  Create = "Create",
+  Update = "Update",
+  Delete = "Delete",
+  // Add other activity actions as needed
 }
 
 export enum DevelopmentPhaseEnum {
@@ -291,20 +310,30 @@ enum SubscriptionTypeEnum {
 
 }
 
-
-
 enum SubscriberTypeEnum {
   FREE = "free",
   STANDARD = "standard",
   PREMIUM = "premium",
   ENTERPRISE = "enterprise",
   TRIAL = "trial",
+  PortfolioUpdates = "portfolioUpdates",
   // Add more types as needed
 }
+
+
+enum NotificationPosition {
+  TopRight = "top-right",
+  TopLeft = "top-left",
+  BottomRight = "bottom-right",
+  BottomLeft = "bottom-left",
+}
+
+
 export default BookmarkStatus;
 
 export {
-  BookmarkStatus,
+  ActivityActionEnum,
+  ActivityTypeEnum, BookmarkStatus,
   BorderStyle,
   CalendarStatus, CalendarViewType, ChatType,
   CollaborationOptionType,
@@ -312,14 +341,11 @@ export {
   DataStatus,
   DocumentSize,
   IncludeType,
-  Layout,
-  NotificationStatus,
+  Layout, NotificationPosition, NotificationStatus,
   Orientation,
   OutcomeType,
-  PriorityStatus, PrivacySettingEnum, ProductStatus,
-  SortingType,
-  StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus,
-  TeamStatus,
+  PriorityStatus, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
+  StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
   TodoStatus
 };
 

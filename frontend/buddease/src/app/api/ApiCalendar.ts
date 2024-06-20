@@ -1,3 +1,4 @@
+import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 // ApiCalendar.ts
 import {
   NotificationType,
@@ -14,6 +15,7 @@ import clientApiService from "./ApiClient";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
+import { PriorityTypeEnum } from "../components/models/data/StatusType";
 
 
 
@@ -134,6 +136,7 @@ class CalendarApiService {
         id: UniqueIDGenerator.generateID(
           "newCalendarEventSuccess",
           "calendar-event",
+          NotificationTypeEnum.Event,
           "EventCreation" as NotificationType
         ),
       };

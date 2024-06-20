@@ -1,5 +1,7 @@
 // ManageContentComponent.tsx
 
+import React from "react";
+
 const ManageContentComponent: React.FC = () => {
     // Logic for managing content
     return (

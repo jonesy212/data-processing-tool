@@ -1,29 +1,23 @@
-// configureSecuritySettings.ts
-
-import SecurityAPI from "@/apwp/api/SecurityAPI";
+import SecurityAPI from "@/app/api/SecurityAPI";
 import { isEqual } from "lodash";
 import { openSecuritySettingsModal } from "../cards/modal/openSecuritySettingsModal";
- 
+
 const configureSecuritySettings = async (securitySettings: SecuritySettings): Promise<
   SecuritySettings | undefined
 > => {
   try {
-    // Get current security settings
-    const currentSettings = await SecurityAPI.getSecuritySettings();
-
-      const updatedSettings = {...currentSettings};
-    // Open security settings modal
-    const newSettings = await openSecuritySettingsModal(currentSettings,updatedSettings);
+    // Open security settings modal with the passed securitySettings
+    const newSettings = await openSecuritySettingsModal(securitySettings, securitySettings);
 
     // Check if newSettings is of type SecuritySettings or undefined
     if (newSettings === undefined || isSecuritySettings(newSettings)) {
       // Update security settings if changed
-      if (!isEqual(currentSettings, updatedSettings)) {
-        await SecurityAPI.updateSecuritySettings(updatedSettings);
+      if (!isEqual(securitySettings, newSettings)) {
+        await SecurityAPI.updateSecuritySettings(newSettings!);
       }
-      return updatedSettings;
+      return newSettings;
     } else {
-      console.error("Invalid security settings data:", updatedSettings);
+      console.error("Invalid security settings data:", newSettings);
       return undefined;
     }
   } catch (error) {
@@ -32,15 +26,16 @@ const configureSecuritySettings = async (securitySettings: SecuritySettings): Pr
   }
 };
 
-
 // Helper function to check if the value is of type SecuritySettings
 function isSecuritySettings(value: any): value is SecuritySettings {
   return (
     typeof value === "object" &&
     value !== null &&
     "enableTwoFactorAuth" in value &&
-    "passwordPolicy" in value
+    "passwordPolicy" in value &&
     // Check for other properties of SecuritySettings
+    "accountLockoutThreshold" in value &&
+    "sessionTimeout" in value
   );
 }
 

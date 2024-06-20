@@ -76,7 +76,7 @@ export interface TeamManagerStore {
   ) => number;
   // Add more methods or properties as needed
 }
-const config = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+const config = {} as typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
 const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   const { notify } = useNotification();
 
@@ -101,6 +101,7 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   >;
   const snapshotStore = new SnapshotStore(initSnapshot,
     config,
+    null,
     () => {
     notify(
       "initSnapshot",
@@ -140,7 +141,14 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   const getTeamData = (teamId: string, data: TeamData) => {
     const teamData: Team = {
       id: teamId,
-      team: { value: 0, label: data.teamName }, // Assuming 'teamName' maps to 'label' property in 'Team' type
+      team: {
+        value: 0, label: data.teamName,
+        id: "",
+        current: 0,
+        max: 0,
+        percentage: 0,
+        done: false
+      }, // Assuming 'teamName' maps to 'label' property in 'Team' type
       description: data.description,
       members: data.members || [],
       projects: data.projects,
@@ -158,14 +166,15 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
       },
       reassignProject: function (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void {
         team.assignedProjects.push(project);
-            },
+      },
       unassignProject: function (team: Team, project: Project): void {
         team.assignedProjects = team.assignedProjects.filter(p => p !== project);
-            },
+      },
       updateProgress: function (team: Team, project: Project): void {
         team.progress = project.progress;
 
-            }
+      },
+      percentage: 0
     };
     return teamData;
   };
@@ -211,17 +220,24 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-    const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>
+    const snapshotConfig: SnapshotStoreConfig<
+      SnapshotStore<Snapshot<Data>>,
+      Data
+    > = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>, Data>;
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot = new SnapshotStore<Snapshot<Data>>(snapshotConfig, () =>
-      notify(
-        "Snapshot taken for team " + teamId,
-        "teamSnapshot",
-        "Team Snapshot has been taken.",
-        new Date(),
-        "TeamSnapshot" as NotificationType
-      )
+    const teamSnapshot = new SnapshotStore<Snapshot<Data>>(
+      snapshotConfig,
+      null,
+      () =>
+        notify(
+          "Snapshot taken for team " + teamId,
+          "teamSnapshot",
+          "Team Snapshot has been taken.",
+          new Date(),
+          "TeamSnapshot" as NotificationType
+        ),
+      []
     );
 
     // Store the snapshot in the SnapshotStore
@@ -233,31 +249,30 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
       const videosDataPromise: Promise<Record<string, VideoData>> =
         useVideoStore().getVideosData(userIds, videos);
       userIds.forEach(async (userId) => {
-        const videoPromise = new Promise<VideoData>(
-          async (resolve, reject) => {
-            const videoStore = useVideoStore();
-            const user = await userService.fetchUserById(userId);
-            const video = await videoService.fetchVideoByUserId(userId);
-            if (video && video.length > 0) {
-              const videoDataForUser = videoStore.getVideoData(userId, video[0]);
-              if (videoDataForUser) {
-                resolve(videoDataForUser);
-              } else {
-                reject(new Error("No video data found for user"));
-              }
+        const videoPromise = new Promise<VideoData>(async (resolve, reject) => {
+          const videoStore = useVideoStore();
+          const user = await userService.fetchUserById(userId);
+          const video = await videoService.fetchVideoByUserId(userId);
+          if (video && video.length > 0) {
+            const videoDataForUser = videoStore.getVideoData(userId, video[0]);
+            if (videoDataForUser) {
+              resolve(videoDataForUser);
             } else {
-              reject(new Error("No video found for user"));
+              reject(new Error("No video data found for user"));
             }
+          } else {
+            reject(new Error("No video found for user"));
           }
-        );
+        });
         videos.push(await videoPromise);
       });
 
       videoData = await videosDataPromise;
-      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<Data>> = {} as SnapshotStore<Snapshot<Data>>
+      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<Data>> =
+        new SnapshotStore<Snapshot<Data>>(snapshotConfig, null, undefined, []);
       snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
     }
-  }
+  };
 
   const addTeam = async () => {
     // Ensure the name is not empty before adding a team

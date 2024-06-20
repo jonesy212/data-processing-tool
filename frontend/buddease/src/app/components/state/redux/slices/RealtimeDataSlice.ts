@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RealtimeData } from '../../../../../../models/realtime/RealtimeData';
+import { RealtimeData } from '../../../models/realtime/RealtimeData';
 
 // Define interface for the state
 export interface RealtimeDataState {

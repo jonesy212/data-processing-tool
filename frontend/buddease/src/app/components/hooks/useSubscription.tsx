@@ -1,25 +1,44 @@
-// useSubscription.tsx
-import { useEffect, useState } from 'react';
-import { SubscriptionActions, SubscriptionPayload } from '../actions/SubscriptionActions';
+import { LiveEvent } from "@refinedev/core";
+import { useEffect, useState } from "react";
+import {
+  SubscriptionActions
+} from "../actions/SubscriptionActions";
+import { Data } from "../models/data/Data";
+import { CustomSnapshotData } from "../snapshots/SnapshotStore";
+import { Subscriber } from "../users/Subscriber";
 
-const useSubscription = () => {
-  const [subscribers, setSubscribers] = useState<SubscriptionPayload[]>([]);
+interface UseSubscriptionOptions {
+  channel: string;
+  onLiveEvent: (event: LiveEvent) => void;
+  enabled?: boolean;
+}
+
+const useSubscription = ({
+  channel,
+  onLiveEvent,
+  enabled = true,
+}: UseSubscriptionOptions) => {
+  const [subscribers, setSubscribers] = useState<
+    Subscriber<Data | CustomSnapshotData>[]
+  >([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
 
-  const subscribe = (subscriber: SubscriptionPayload) => {
+  const subscribe = () => {
     // Add the new subscriber to the subscribers array
-    setSubscribers([...subscribers, subscriber]);
+    setIsSubscribed(true);
     // Dispatch an action to handle subscription on the backend
-    SubscriptionActions.subscribe(subscriber);
   };
 
   const unsubscribe = (subscriberId: string) => {
     // Filter out the subscriber with the given subscriberId
     const updatedSubscribers = subscribers.filter(
-      (subscriber) => subscriber.subscriberId !== subscriberId
+      (subscriber) => subscriber.getSubscriberId() !== subscriberId
     );
+
     // Update the subscribers state with the filtered list
-    setSubscribers(updatedSubscribers);
+    setIsSubscribed(false);
+     
+    updatedSubscribers && setSubscribers(updatedSubscribers);
     // Dispatch an action to handle unsubscription on the backend
     SubscriptionActions.unsubscribe(subscriberId);
   };
@@ -33,7 +52,7 @@ const useSubscription = () => {
     subscribers,
     subscribe,
     unsubscribe,
-    isSubscribed
+    isSubscribed,
   };
 };
 

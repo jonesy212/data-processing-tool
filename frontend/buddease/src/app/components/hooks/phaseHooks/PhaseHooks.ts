@@ -20,7 +20,8 @@ import {
 import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
 
  export interface PhaseHookConfig {
-  name: string;
+   name: string;
+   progressCallbacks?: (progress: Progress) => void;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
   canTransitionTo?: (nextPhase: Phase) => boolean;
   handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
@@ -35,7 +36,9 @@ import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
   startIdleTimeout: (
     timeoutDuration: number,
     onTimeout: () => void | undefined
-  ) => void | undefined;  cleanup?: (() => void) | undefined;
+   ) => void | undefined;
+   
+   cleanup?: (() => void) | undefined;
   startAnimation?: () => void;
   stopAnimation?: () => void;
   animateIn?: () => void;

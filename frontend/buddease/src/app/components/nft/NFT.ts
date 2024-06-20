@@ -4,6 +4,7 @@ import { generateNFT } from "@/app/generators/NFTGenerator";
 
 
 export interface NFT {
+  role: string;
   id: string;
   name: string;
   imageUrl: string;

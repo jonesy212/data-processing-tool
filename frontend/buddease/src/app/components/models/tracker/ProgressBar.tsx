@@ -13,13 +13,14 @@ import { NotificationType } from "../../support/NotificationContext";
     
     name:string,
     color:string,
-    description:string,
+    description: string,
     value: number;
     label: string;
     current: number,
     min: number,
     max: number,
     percentage: number
+    done: boolean
     // additional properties as needed
   }
 

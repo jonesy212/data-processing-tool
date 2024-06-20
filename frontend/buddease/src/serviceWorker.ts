@@ -1,3 +1,5 @@
+import { ExtendableEvent, FetchEvent } from "./app/api/CustomFetchEvent";
+
 // service-worker.ts
 const CACHE_NAME = 'my-cache-v1';
 const urlsToCache: string[] = [
@@ -10,27 +12,42 @@ const urlsToCache: string[] = [
   '/audio/audio1.mp3',  // Replace with the actual URLs for audio files
 ];
 
-self.addEventListener('install', (event: ExtendableEvent) => {
-  event.waitUntil(
+self.addEventListener("install", (event: ExtendableEvent) => {
+  event.waitUntil ? (
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache
+        ? cache.addAll(urlsToCache)
+        : Promise.reject("Cache is undefined");
+    })
+  ) : (
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);
     })
   );
 });
 
-self.addEventListener('fetch', (event: FetchEvent) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+
+self.addEventListener('fetch', async (event: Event) => {
+  const fetchEvent = event as FetchEvent;
+  fetchEvent.respondWith(
+    await caches.match(fetchEvent.request).then((response) => {
+      return response || fetch(fetchEvent.request);
     })
   );
 });
 
+
 // Additional logic for caching dynamic content (e.g., chat messages)
-self.addEventListener('message', (event: MessageEvent) => {
-  if (event.data.action === 'cacheChatMessage') {
+self.addEventListener("message", (event: ExtendableEvent) => {
+  if (event.data.action === "cacheChatMessage") {
     const chatMessageUrl: string = event.data.url;
-    event.waitUntil(
+    event.waitUntil?(
+      caches.open(CACHE_NAME).then((cache) => {
+        return fetch(chatMessageUrl).then((response) => {
+          return cache.put(chatMessageUrl, response);
+        });
+      })
+    ) : (
       caches.open(CACHE_NAME).then((cache) => {
         return fetch(chatMessageUrl).then((response) => {
           return cache.put(chatMessageUrl, response);
@@ -41,12 +58,18 @@ self.addEventListener('message', (event: MessageEvent) => {
 });
 
 // Additional logic for clearing the cache (if needed)
-self.addEventListener('message', (event: MessageEvent) => {
-  if (event.data === 'clearCache') {
-    event.waitUntil(
-      caches.delete(CACHE_NAME).then(() => {
-        console.log('Cache cleared by user.');
-      })
-    );
+self.addEventListener('message', (event) => {
+  if (event.data.action === 'cacheChatMessage') {
+    const chatMessageUrl: string = event.data.url;
+    caches.open(CACHE_NAME).then((cache) => {
+      fetch(chatMessageUrl).then((response) => {
+        cache.put(chatMessageUrl, response);
+      });
+    });
+  } else if (event.data === 'clearCache') {
+    caches.delete(CACHE_NAME).then(() => {
+      console.log('Cache cleared by user.');
+    });
   }
 });
+

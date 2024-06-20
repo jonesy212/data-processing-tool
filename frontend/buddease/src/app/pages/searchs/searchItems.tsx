@@ -6,6 +6,7 @@ import SearchResultItem from "@/app/components/models/data/SearchResultItem";
 import { useEffect, useState } from "react";
 import { SearchLogger } from "../../components/logging/Logger";
 import { debounce } from "./Debounce";
+import React from "react";
 
 export interface SearchItemProps {
   userId: string;

@@ -1,3 +1,7 @@
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import { Data } from "../models/data/Data";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+
 interface VersionHistory {
   // Define the structure of the version history
   // Each element represents a version of the data
@@ -13,6 +17,11 @@ interface VersionData {
     revisionNotes?: string; // Optional notes or comments about the revision
     // Add any other metadata fields as needed
   };
+  versions: {
+    data: Data; // Version of the data
+    backend: BackendStructure; // Version of the backend
+    frontend: FrontendStructure; // Version of the frontend
+  }
   draft?: boolean; // Indicate if this is a draft/unpublished version
   published?: boolean; // Indicate if this version is published
   checksum: string; // Checksum or hash value of the content for data integrity
@@ -23,7 +32,39 @@ const updatedContent = "Updated file content here...";
 const author = "John Doe";
 const timestamp = new Date();
 const revisionNotes = "Added new section and fixed typos.";
+const versions = {
+  data: {
+    frontend: {
+      versionNumber: "1.0",
+    },
+    backend: {
+      versionNumber: "1.0",
+    },
+  },
+  backend: {
+    structure: {},
+    traverseDirectory: async () => [],
+    getStructure: async () => ({
+      sections: [
+        {
+          name: "Section 1",
+          fields: [
+            {
+              name: "Field 1",
+              type: "text",
+              value: "Field 1 value",
+            },
+          ],
+        },
+      ],
+    }),
+  } as unknown as BackendStructure, // Cast to BackendStructure
+    
+  frontend: {
+    getStructure: () => ({})
+  } as unknown as FrontendStructure, // Adjust frontend structure if needed
 
+};
 const versionData: VersionData = {
   content: updatedContent,
   metadata: {
@@ -31,6 +72,7 @@ const versionData: VersionData = {
     timestamp: timestamp,
     revisionNotes: revisionNotes
   },
+  versions: versions,
   checksum: calculateChecksum(updatedContent) // Function to calculate checksum
 };
 

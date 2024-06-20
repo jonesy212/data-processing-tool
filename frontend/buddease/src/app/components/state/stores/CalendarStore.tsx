@@ -1,7 +1,6 @@
-import { makeAutoObservable } from 'mobx';
-import { useState } from 'react';
-import { CalendarEvent } from './CalendarEvent';
-
+import { makeAutoObservable } from "mobx";
+import { useState } from "react";
+import { CalendarEvent } from "./CalendarEvent";
 
 export interface CalendarStore {
   events: Record<string, CalendarEvent>;
@@ -36,20 +35,13 @@ const useCalendarStore = (): CalendarStore => {
     });
   };
 
-  makeAutoObservable({
+  const useCalendarStore = makeAutoObservable({
     events,
     addEvent,
     removeEvent,
     updateEventTitle,
   });
-
-  return {
-    events,
-    addEvent,
-    removeEvent,
-    updateEventTitle,
-  };
+  return useCalendarStore;
 };
 
 export { useCalendarStore };
-

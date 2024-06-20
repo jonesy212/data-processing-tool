@@ -1,18 +1,28 @@
-import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
 //UserStore.ts
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
-import { Task } from "../../models/tasks/Task";
+import CalendarEventTimingOptimization, {
+  ExtendedCalendarEvent,
+} from "../../calendar/CalendarEventTimingOptimization";
+import { Task, tasksDataSource } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
 import { Todo } from "../../todos/Todo";
-import { User } from "../../users/User";
+import { User, usersDataSource } from "../../users/User";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
-import { AssignEventStore, ReassignEventResponse, useAssignEventStore } from "./AssignEventStore";
+import {
+  AssignEventStore,
+  ReassignEventResponse,
+  useAssignEventStore,
+} from "./AssignEventStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { useSecureUserId } from "../../utils/useSecureUserId";
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
   | "assignedUsers"
@@ -32,40 +42,43 @@ type EventStoreSubset = Pick<
   | "reassignUsersInTodos"
   | "assignUserSuccess"
   | "assignUserFailure"
+  | "convertResponsesToTodos"
+  | "getResponsesByEventId"
 >;
 
 const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
-
 // todo incorporate
 // Define the necessary types and interfaces
-type UserStoreSubset = Pick<
-  AssignBaseStore,
-  | "snapshotStore"
-  | "events"
->;
+type UserStoreSubset = Pick<AssignBaseStore, "snapshotStore" | "events">;
 
-export interface UserStore extends AssignEventStore, AssignBaseStore, UserStoreSubset {
-// Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
+export interface UserStore
+  extends AssignEventStore,
+    AssignBaseStore,
+    UserStoreSubset {
+  // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
   // Add additional properties specific to UserStore if needed
   users: Record<string, User[]>;
   currentUser: User | null;
+  authStore: ReturnType<typeof useAuth>;
   // setAssignedTaskStore: (task: Task, user: User) => void;
   updateUserState: (newUsers: Record<string, User[]>) => void;
   assignTask: (task: Task, user: User) => void;
-    assignFileToTeam: Record<string, string[]>; // Add this property
+  assignFileToTeam: Record<string, string[]>; // Add this property
   assignContactToTeam: Record<string, string[]>; // Add this property
   assignEventToTeam: Record<string, string[]>; // Add this property
   assignGoalToTeam: Record<string, string[]>; // Add this property
-  events:Record<string, CalendarEventTimingOptimization[]| ExtendedCalendarEvent[]>
+  events: Record<
+    string,
+    CalendarEventTimingOptimization[] | ExtendedCalendarEvent[]
+  >;
   // Other properties and methods...
   reassignUser: Record<string, ReassignEventResponse[]>;
   batchFetchUserSnapshotsSuccess: (userId: Record<string, User[]>) => void;
-  batchFetchUserSnapshotsRequest: (userId: string) => void;
+  batchFetchUserSnapshotsRequest: (userId: Record<string, User[]>) => void;
   batchFetchUndoRedoSnapshotsRequest: (userId: string) => void;
   fetchUsersByTaskId: (userId: string) => Promise<string>;
   setDynamicNotificationMessage: (message: string) => void;
-
 }
 
 const userManagerStore = (): UserStore => {
@@ -90,11 +103,11 @@ const userManagerStore = (): UserStore => {
   const assignTask = (task: Task, user: User) => {
     // Assign task to user
     eventSubset.assignEvent(task.eventId, user); // Changed user._id to user
-  
+
     if (user.tasks && Array.isArray(user.tasks)) {
       // Update user's assigned tasks
       user.tasks.push(task);
-  
+
       // Update task's assigned user(s)
       if (task.assignedTo === null) {
         // If no users are assigned yet, assign the user directly
@@ -108,16 +121,14 @@ const userManagerStore = (): UserStore => {
       }
     }
   };
-  
-
 
   // Function to fetch a task by its ID
   const getUserById = (taskId: string): Promise<Task | null> => {
-    return new Promise<Task | null>( async(resolve, reject) => {
+    return new Promise<Task | null>(async (resolve, reject) => {
       try {
         setTimeout(() => {
-          const task: Task | undefined = usersDataSource[taskId];
-  
+          const task: Task | undefined = tasksDataSource[taskId];
+
           if (task) {
             resolve(task);
           } else {
@@ -129,11 +140,10 @@ const userManagerStore = (): UserStore => {
       }
     });
   };
-  
 
   const assignUser = {} as Record<string, string[]>;
 
-  const reassignUser = {} as Record<string, ReassignEventResponse[]>
+  const reassignUser = {} as Record<string, ReassignEventResponse[]>;
 
   const unassignUser = {} as Record<string, string[]>;
 
@@ -142,50 +152,83 @@ const userManagerStore = (): UserStore => {
     newUser: ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
   ) => {
-    reassignUserForSingle(
-      user,
-      newUser,
-      eventOrTodo);
+    reassignUserForSingle(user, newUser, eventOrTodo);
   };
 
+  // Define type guards for User and Task
+  function isUser(data: any): data is User {
+    return (
+      data && typeof data === "object" && "id" in data && "username" in data
+    );
+  }
 
+  function isTask(data: any): data is Task {
+    return (
+      data && typeof data === "object" && "taskId" in data && "taskName" in data
+    );
+  }
 
-
-  const fetchUsersByUserId = async (userId: string): Promise<string> => {
+  // Define a generic function to fetch users by ID
+  const fetchUsersByUserId = async <T>(userId: string): Promise<string> => {
     try {
-      // Perform the actual fetching of the task using the userId
-      const user = await getUserById(userId);
+      // Wrap the getUserById call in a promise
+      const result: T | null = await new Promise<T | null>(
+        (resolve, reject) => {
+          getUserById(userId)
+            .then((data: any) => resolve(data as T))
+            .catch((error) => reject(error));
+        }
+      );
 
-      // Check if the user was successfully fetched
-      if (user) {
-        // Update the users state with the fetched user
-        setUsers((prevUsers) => {
-          const updatedUsers = { ...prevUsers };
-          updatedUsers[user.id] = [user]; // Assuming user.id is unique
-          return updatedUsers;
-        });
+      // Check if the result was successfully fetched
+      if (result) {
+        // Check and handle as User type
+        if (isUser(result)) {
+          const user = result as User;
+          const tasks: Task[] = await getTasksByUserId(userId);
 
-        // Notify user of successful user fetching
-        setDynamicNotificationMessage(
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
-        );
+          // Update state or perform other operations specific to User
+          setUsers((prevUsers) => ({
+            ...prevUsers,
+            [user.id]: {
+              ...user,
+              tasks: tasks,
+            },
+          }));
 
-        return "Tasks fetched successfully."; // Return success message
+          // Notify user of successful user fetching
+          setDynamicNotificationMessage(
+            NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+          );
+
+          return "User fetched successfully.";
+        }
+
+        // Add additional type checks if needed
+        // For example:
+        // if (isTask(result)) {
+        //   const task = result as Task;
+        //   // Handle Task-specific logic
+        //   return "Task fetched successfully.";
+        // }
+
+        // Handle other types if needed
+        return "Result fetched successfully."; // Adjust return message as needed
       } else {
-        console.error(`Task with ID ${userId} not found.`);
-        // Notify user that task was not found
+        console.error(`Data for ID ${userId} not found.`);
+        // Notify user that the data was not found
         setDynamicNotificationMessage(
-          NOTIFICATION_MESSAGES.Error.TASK_NOT_FOUND
+          NOTIFICATION_MESSAGES.Error.DATA_NOT_FOUND
         );
-        return "Task not found."; // Return error message
+        return "Data not found."; // Return error message
       }
     } catch (error) {
-      console.error(`Error fetching task with ID ${userId}:`, error);
-      // Notify user of error while fetching task
+      console.error(`Error fetching data for ID ${userId}:`, error);
+      // Notify user of error while fetching data
       setDynamicNotificationMessage(
-        NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_TASK
+        NOTIFICATION_MESSAGES.Error.ERROR_FETCHING_DATA
       );
-      throw new Error("Error fetching task."); // Throw error
+      throw new Error("Error fetching data."); // Throw error
     }
   };
 
@@ -223,12 +266,22 @@ const userManagerStore = (): UserStore => {
       }
     };
 
-  
-    const setDynamicNotificationMessage = (message: string) => {
-      setNotificationMessage(message);
-    };
-  
-const reassignUserForSingle = (
+  const setDynamicNotificationMessage = (message: string) => {
+    setNotificationMessage(message);
+  };
+
+  const batchFetchUserSnapshotsRequest = (userId: string) => {
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(async () => {
+        let userId = useSecureUserId()?.toString();
+        console.log(`Task ${userId} fetched`);
+        (await batchFetchUserSnapshotsSuccess(Promise.resolve(userId!)))(
+          resolve
+        );
+      }, 1000);
+    });
+  };
+  const reassignUserForSingle = (
     user: string,
     newUser: CalendarEventTimingOptimization | ExtendedCalendarEvent,
     eventOrTodo: BaseCustomEvent | Todo
@@ -250,19 +303,20 @@ const reassignUserForSingle = (
         suggestedWeeks: null,
         suggestedMonths: null,
         suggestedSeasons: null,
+        assignedTo: extendedEvent.assignedTo,
         // Map other properties as necessary
       };
     }
 
     reassignUsersToEvents([user], convertedNewUser, eventOrTodo);
   };
-  const {
-    reassignUsersToEvents
-  } = eventSubset;
+  const { reassignUsersToEvents } = eventSubset;
   const userStore = makeAutoObservable({
     // User-related properties and methods
     users,
     currentUser,
+
+    authStore: useAssignEventStore().authStore,
     updateUserState,
     assignTask,
     assignUser,
@@ -271,7 +325,7 @@ const reassignUserForSingle = (
     reassignUsersForArray,
     assignUserSuccess: useAssignBaseStore().assignUserSuccess,
     assignUserFailure: useAssignBaseStore().assignUserFailure,
-  
+
     // Event-related properties and methods
     events: eventSubset.assignedEvents, // Adjusted to match the type,
     assignedUsers: useAssignEventStore().assignedUsers,
@@ -280,20 +334,23 @@ const reassignUserForSingle = (
     assignEvent: useAssignEventStore().assignEvent,
     assignUsersToEvents: useAssignEventStore().assignUsersToEvents,
     unassignUsersFromEvents: useAssignEventStore().unassignUsersFromEvents,
-    setDynamicNotificationMessage: useAssignEventStore().setDynamicNotificationMessage,
+    setDynamicNotificationMessage:
+      useAssignEventStore().setDynamicNotificationMessage,
     reassignUsersToEvents: useAssignEventStore().reassignUsersToEvents,
     updateEventStatus: useAssignEventStore().updateEventStatus,
     connectResponsesToTodos: useAssignEventStore().connectResponsesToTodos,
-  
+
     // Task-related properties and methods
     assignedTasks: useAssignTeamMemberStore().assignedTasks,
     assignedItems: useAssignTeamMemberStore().assignedItems,
     assignedTeams: useAssignTeamMemberStore().assignedTeams,
     assignItem: useAssignTeamMemberStore().assignItem,
     assignTodoToTeam: useAssignTeamMemberStore().assignTodoToTeam,
-    assignTodosToUsersOrTeams: useAssignTeamMemberStore().assignTodosToUsersOrTeams,
+    assignTodosToUsersOrTeams:
+      useAssignTeamMemberStore().assignTodosToUsersOrTeams,
     assignTeamMemberToTeam: useAssignTeamMemberStore().assignTeamMemberToTeam,
-    unassignTeamMemberFromItem: useAssignTeamMemberStore().unassignTeamMemberFromItem,
+    unassignTeamMemberFromItem:
+      useAssignTeamMemberStore().unassignTeamMemberFromItem,
     assignTaskToTeam: useAssignTeamMemberStore().assignTaskToTeam,
     assignTeam: useAssignTeamMemberStore().assignTeam,
     assignUsersToItems: useAssignTeamMemberStore().assignUsersToItems,
@@ -303,7 +360,7 @@ const reassignUserForSingle = (
     assignTeamToTodo: useAssignTeamMemberStore().assignTeamToTodo,
     unassignTeamToTodo: useAssignTeamMemberStore().unassignTeamToTodo,
     reassignTeamToTodo: useAssignTeamMemberStore().reassignTeamToTodo,
-  
+
     // Team-related properties and methods
     assignTeamsToTodos: useAssignTeamMemberStore().assignTeamsToTodos,
     assignTeamToTodos: useAssignTeamMemberStore().assignTeamToTodos,
@@ -312,7 +369,6 @@ const reassignUserForSingle = (
     reassignTeamsInTodos: useAssignTeamMemberStore().reassignTeamsInTodos,
     assignMeetingToTeam: useAssignTeamMemberStore().assignMeetingToTeam,
     assignProjectToTeam: useAssignTeamMemberStore().assignProjectToTeam,
-  
 
     // todo-releated methods
     assignUserToTodo: useAssignEventStore().assignUserToTodo,
@@ -343,14 +399,19 @@ const reassignUserForSingle = (
     assignBoardCardToTeam: useAssignBaseStore().assignBoardCardToTeam,
     assignBoardMemberToTeam: useAssignBaseStore().assignBoardMemberToTeam,
     assignBoardSettingToTeam: useAssignBaseStore().assignBoardSettingToTeam,
-    assignBoardPermissionToTeam: useAssignBaseStore().assignBoardPermissionToTeam,
-    assignBoardNotificationToTeam: useAssignBaseStore().assignBoardNotificationToTeam,
-    assignBoardIntegrationToTeam: useAssignBaseStore().assignBoardIntegrationToTeam,
-    assignBoardAutomationToTeam: useAssignBaseStore().assignBoardAutomationToTeam,
-    assignBoardCustomFieldToTeam: useAssignBaseStore().assignBoardCustomFieldToTeam,
+    assignBoardPermissionToTeam:
+      useAssignBaseStore().assignBoardPermissionToTeam,
+    assignBoardNotificationToTeam:
+      useAssignBaseStore().assignBoardNotificationToTeam,
+    assignBoardIntegrationToTeam:
+      useAssignBaseStore().assignBoardIntegrationToTeam,
+    assignBoardAutomationToTeam:
+      useAssignBaseStore().assignBoardAutomationToTeam,
+    assignBoardCustomFieldToTeam:
+      useAssignBaseStore().assignBoardCustomFieldToTeam,
   });
-  
+
   return userStore;
-}  
+};
 
 export { userManagerStore };

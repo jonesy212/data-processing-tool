@@ -2,18 +2,18 @@
 import { Router, useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
-import RealtimeData from "../../../models/realtime/RealtimeData";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import {
-    startVoiceRecognition,
-    stopVoiceRecognition,
+  startVoiceRecognition,
+  stopVoiceRecognition,
 } from "../components/intelligence/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
+import RealtimeData from "../components/models/realtime/RealtimeData";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import { Phase } from "../components/phases/Phase";
 import {
-    nextPhase,
-    previousPhase,
+  nextPhase,
+  previousPhase,
 } from "../components/phases/PhaseTransitions";
 import { AllTypes } from "../components/typings/PropTypes";
 import userService from "../components/users/ApiUser";
@@ -92,10 +92,12 @@ interface ButtonGeneratorProps {
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
     currentPhase: Phase
   ) => void;
+
   onTransitionToNextPhase?: (
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
     currentPhase: Phase
   ) => void;
+
   // generateButtonDispatch?: React.Dispatch<React.SetStateAction<any>>;
   // ... (other props)
 }

@@ -2,6 +2,7 @@ import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { ColorPalettes } from "antd/es/theme/interface";
+import React from "react";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
@@ -10,13 +11,8 @@ import { CollaborationOptions } from "../../interfaces/options/CollaborationOpti
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
-import SnapshotStore, {
-  Snapshot,
-  Snapshots,
-} from "../../snapshots/SnapshotStore";
-import React from "react";
-
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import Todo from "../../todos/Todo";
@@ -30,6 +26,9 @@ import { Content } from "../content/AddContent";
 import { Member } from "../teams/TeamMembers";
 import { Tag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
+import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
+
+
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
@@ -54,7 +53,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: Snapshots<Data>;
+    snapshots?: Snapshots
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -71,7 +70,7 @@ interface DataDetailsProps<T> {
 
 export interface Comment {
   id: string;
-  text?: string;
+  text?: string | Content;
   editedAt?: Date;
   editedBy?: string;
   attachments?: Attachment[];
@@ -95,7 +94,7 @@ export interface Comment {
   // Add other properties as needed
 }
 
-interface Data {
+interface BaseData {
   _id?: string;
   id?: string | number;
   title?: string;
@@ -123,6 +122,7 @@ interface Data {
   createdBy?: string;
   updatedBy?: string;
 
+  updatedDetails?: DetailsItem<SupportedData>;
   isArchived?: boolean;
   isCompleted?: boolean;
   isBeingEdited?: boolean;
@@ -139,18 +139,26 @@ interface Data {
   collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
   videoData?: VideoData;
   additionalData?: any;
-  [key: string]: any;
   ideas?: Idea[];
   members?: Member[];
-  // tasks?: Todo[];
   leader?: User | null;
-  snapshots?: SnapshotStore<Snapshot<Data>>[];
-  // Incorporating the data structure from YourResponseType
+  snapshots?: SnapshotStore<Snapshot<BaseData>>[];
   text?: string;
   category?: string;
-  getData?: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Define the getData method
-  then?: (callback: (newData: Snapshot<Data>) => void) => void;
-  actions?: (typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>)[]; // Update actions type
+  [key: string]: any;
+  getData?: () => Promise<SnapshotStore<Snapshot<BaseData>>[]>; // Define the getData method
+
+  // Implement the `then` function using the reusable function
+  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
+}
+
+interface Data extends BaseData {
+  category?: string;
+  actions?: SnapshotStoreConfig<Data, Data>[];
+  [key: string]: any;
+
+  // Implement the `then` function using the reusable function
+  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
 }
 
 // Define the UserDetails component
@@ -213,8 +221,8 @@ const data: Data = {
   updatedBy: "updater1",
   analysisResults: [],
   audioUrl: "sample-audio-url",
-  videoUrl: "sample-video-url",
-  videoThumbnail: "sample-thumbnail-url",
+  videoUrl: "https://example.com/sample-video-url",
+  videoThumbnail: "https://example.com/sample-thumbnail-url",
   videoDuration: 60,
   collaborationOptions: [],
   videoData: {
@@ -228,57 +236,54 @@ const data: Data = {
     duration: 60,
     codec: "H.264",
     frameRate: 30,
-    url: "",
-    thumbnailUrl: "",
-    uploadedBy: "",
-    viewsCount: 0,
-    likesCount: 0,
-    dislikesCount: 0,
-    commentsCount: 0,
-    title: "",
-    description: "",
-    tags: [],
+    url: "https://example.com/sample-video-url",
+    thumbnailUrl: "https://example.com/sample-thumbnail-url",
+    uploadedBy: "uploader1",
+    viewsCount: 1000,
+    likesCount: 100,
+    dislikesCount: 10,
+    commentsCount: 20,
+    title: "Sample Video Title",
+    description: "Sample video description",
+    tags: ["sample", "video"],
     createdAt: new Date(),
     uploadedAt: new Date(),
     updatedAt: new Date(),
-    videoDislikes: 0,
-    videoAuthor: "",
+    videoDislikes: 10,
+    videoAuthor: "Author Name",
     videoDurationInSeconds: 60,
     uploadDate: new Date(),
-    videoLikes: 0,
-    videoViews: 0,
-    videoComments: 0,
-    videoThumbnail: "",
-    videoUrl: "",
-    videoTitle: "",
-    videoDescription: "",
-    videoTags: [],
+    videoLikes: 100,
+    videoViews: 1000,
+    videoComments: 20,
+    videoThumbnail: "https://example.com/sample-thumbnail-url",
+    videoUrl: "https://example.com/sample-video-url",
+    videoTitle: "Sample Video Title",
+    videoDescription: "Sample video description",
+    videoTags: ["sample", "video"],
     videoSubtitles: [],
-    category: "",
+    category: "Sample Category",
     closedCaptions: [],
-    license: "",
+    license: "Sample License",
     isLive: false,
     isPrivate: false,
     isUnlisted: false,
-    isProcessingCompleted: false,
+    isProcessingCompleted: true,
     isProcessingFailed: false,
     isProcessingStarted: false,
-    channel: "",
-    channelId: "",
-    isLicensedContent: false,
-    isFamilyFriendly: false,
-    isEmbeddable: false,
-    // isSubscribed: false,
-    isDownloadable: false,
-    playlists: [],
-    thumbnail: "",
+    channel: "Sample Channel",
+    channelId: "channel123",
+    isLicensedContent: true,
+    isFamilyFriendly: true,
+    isEmbeddable: true,
+    isDownloadable: true,
+    playlists: ["playlist1", "playlist2"],
+    thumbnail: "https://example.com/sample-thumbnail-url",
     isProcessing: false,
-
-    isCompleted: false,
-     isUploading: false,
-     isDownloading: false,
-     isDeleting: false,
-
+    isCompleted: true,
+    isUploading: false,
+    isDownloading: false,
+    isDeleting: false,
   },
   additionalData: {},
   ideas: [],
@@ -316,7 +321,7 @@ const data: Data = {
       //   desktop: true
       // }
     } as UserSettings,
-    interests: [], // Added missing property
+    interests: [],
     privacySettings: {
       hidePersonalInfo: true,
       enablePrivacyMode: false,
@@ -421,6 +426,7 @@ const data: Data = {
         maxFailedAttempts: 5,
         lockoutDurationMinutes: 15,
       },
+      accountLockoutThreshold: 5,
     },
     emailVerificationStatus: true,
     phoneVerificationStatus: true,
@@ -682,6 +688,7 @@ const data: Data = {
         name: "NFT 1",
         imageUrl: "https://example.com/nft1.png",
         description: "",
+        role: "Owner",
       },
     ],
     daoMemberships: [{ id: "dao1", name: "DAO 1", role: "Member" }],
@@ -708,4 +715,5 @@ const data: Data = {
   },
 };
 
-export type { Data, DataDetails, DataDetailsComponent, DataDetailsProps };
+export type { BaseData, Data, DataDetails, DataDetailsComponent, DataDetailsProps };
+

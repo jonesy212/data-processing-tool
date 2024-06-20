@@ -4,34 +4,39 @@ import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { Data } from "@/app/components/models/data/Data";
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
-import SnapshotStore, {
-  Snapshot,
-} from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import { EventData } from "@/app/components/state/stores/AssignEventStore";
+
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+
 interface BaseRealtimeData {
   id: string;
   name: string;
   value: string;
+  type: string;
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
-interface RealtimeDataItem extends BaseRealtimeData {
-  timestamp?: number;
+interface RealtimeDataItem extends BaseRealtimeData,EventData {
   title?: string;
-  date: string | Date;
+  date:  Date | string;
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   userId: string;
   dispatch: (action: any) => void;
   value: string;
-
+  name: string;
+  timestamp: Date | string
 
   // Add other properties specific to RealtimeDataItem here
 }
 
 interface RealtimeData extends BaseRealtimeData {
-  date:  Date | string;
+  date: Date | string;
+  timestamp: string | Date | undefined;
+  eventId: string;
+  type: string;
   // Define other properties specific to RealtimeData here
 }
 
@@ -39,6 +44,7 @@ interface RealtimeData {
   userId: string;
   dispatch: (action: any) => void;
   value: string;
+  // type: ExchangeDataTypeEnum;
 }
 
 const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
@@ -48,7 +54,7 @@ const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
     const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<Data>>;
     const snapshotData = snapshotStore[typedSnapshotId];
     console.log(
-      `Processing snapshot with ID ${typedSnapshotId}:`,
+      `Processing snapshot with ID ${String(typedSnapshotId)}:`,
       snapshotData
     );
 

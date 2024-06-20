@@ -54,6 +54,8 @@ import { useVideoManagerSlice } from "./VideoSlice";
 import { useAuthSlice } from "./AuthSlice";
 import { useAuthorizationSlice } from "./AuthorizationSlice";
 import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import { useParticipantSlice } from "./participantSlice";
+import {useTagManagerSlice} from "./useTagManagerSlice";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -93,7 +95,8 @@ export interface RootState {
   documentManager: ReturnType<typeof useDocumentManagerSlice.reducer>;
   userTodoManager: ReturnType<typeof userManagerSlice.reducer>;
   phaseManager: ReturnType<typeof usePhaseManagerSlice.reducer>;
-
+  participantManager: ReturnType<typeof useParticipantSlice.reducer>;
+  tagManager: ReturnType<typeof useTagManagerSlice.reducer>;
   // API & Networking
   apiManager: ReturnType<typeof useApiManagerSlice.reducer>;
   realtimeManager: ReturnType<typeof useRealtimeDataSlice.reducer>;
@@ -132,6 +135,7 @@ const initialState: RootState = {
   authorizationManager: useAuthorizationSlice.reducer(undefined, {
     type: "init",
   }),
+  participantManager: useParticipantSlice.reducer(undefined, { type: "init" }),
   dataManager: useDataManagerSlice.reducer(undefined, { type: "init" }),
   taskManager: useTaskManagerSlice.reducer(undefined, { type: "init" }),
   trackerManager: trackerManagerSlice.reducer(undefined, { type: "init" }),
@@ -157,6 +161,7 @@ const initialState: RootState = {
   collaborationManager: useCollaborationSlice.reducer(undefined, {
     type: "init",
   }),
+  tagManager: useTagManagerSlice.reducer(undefined, { type: "init" }),
   entityManager: useEntityManagerSlice.reducer(undefined, { type: "init" }),
   notificationManager: useNotificationManagerSlice.reducer(undefined, {
     type: "init",
@@ -182,9 +187,7 @@ const rootReducerSlice = createSlice({
     builder.addCase(
       useTaskManagerSlice.actions.updateTaskTitle,
       (state, action: PayloadAction<{ id: string; title: string }>) => {
-        const taskToUpdate = state.taskManager.tasks.find(
-          (task: Task) => task.id === action.payload.id
-        );
+        const taskToUpdate = state.taskManager.entitiesLoaded[action.payload.id];
         if (taskToUpdate) {
           taskToUpdate.title = action.payload.title;
         }
@@ -230,7 +233,7 @@ const rootReducerSlice = createSlice({
         // Handle the action for updating task details
         const { id, updates } = action.payload;
         const taskToUpdate = state.taskManager.tasks.find(
-          (task: Task) => task.id === id
+          (task: WritableDraft<Task>) => task.id === id
         );
 
         if (taskToUpdate) {
@@ -267,7 +270,10 @@ const rootReducerSlice = createSlice({
         dependencies: [],
         then: function (onFulfill: (newData: Snapshot<Data>) => void): unknown {
           setTimeout(() => {
-            onFulfill({ data: this as Data }); // assuming this is compatible with Data
+            onFulfill({
+              data: this as Data,
+              store: window.localStorage,
+            }); // using window.localStorage instead of 'store'
           }, 1000);
           return this;
         },
@@ -487,9 +493,8 @@ const rootReducer = combineReducers({
   snapshotManager: useSnapshotSlice.reducer,
   authManager: useAuthSlice.reducer,
   authenticationManager: useAuthorizationSlice.reducer,
-  // todo create code for
-  // tagManager: useTagManagerSlice.reducer,
-  // bookmarkManager: useBookmarkManagerSlice.reducer,
+  tagManager: useTagManagerSlice.reducer,
+  bookmarkManager: useBookmarkManagerSlice.reducer,
 
   // Add other slices as needed
 });

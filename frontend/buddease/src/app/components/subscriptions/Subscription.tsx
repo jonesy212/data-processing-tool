@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { RealtimeDataItem } from "../../../../models/realtime/RealtimeData";
 import { ModifiedDate } from "../documents/DocType";
 import useRealtimeData, { RealtimeUpdateCallback } from "../hooks/commHooks/useRealtimeData";
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import { Snapshot } from "../snapshots/SnapshotStore";
 
 type Subscription = {
   unsubscribe: () => void;
   portfolioUpdates: () => void;
   tradeExecutions: () => void;
   marketUpdates: () => void;
+  triggerIncentives: () => void;
   communityEngagement: () => void;
   subscriberId?: string;
   subscriptionId?: string
@@ -17,6 +19,9 @@ type Subscription = {
   subscriptionType?: SubscriptionTypeEnum;
   getPlanName?: () => SubscriberTypeEnum; 
   portfolioUpdatesLastUpdated: ModifiedDate | null;
+  getId?: () => string;
+  determineCategory: (data: any) => Snapshot<any>
+  category?: string;
 };
 
 const SubscriptionComponent = (

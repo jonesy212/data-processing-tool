@@ -9,14 +9,6 @@ import { PriorityTypeEnum } from '../models/data/StatusType';
 import { RootState } from '../state/redux/slices/RootSlice';
 
 
-
-
-
-
-
-
-
-
 // Reusable filtering logic
 function useFiltering(options: SearchOptions) {
   const [filters, setFilters] = useState<SearchOptions['additionalOptions']['filters']>([]);

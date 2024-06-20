@@ -5,29 +5,29 @@ import { Effect, call, put, takeLatest } from "redux-saga/effects";
 import { TaskActions } from "../../../actions/TaskActions";
 import { Task } from "../../../models/tasks/Task";
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
-
+import * as taskApi from '@/app/api/TasksApi'
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTasksAPI = () => axios.get('/api/tasks');
 
-
-
-function* addTaskSaga(action: ReturnType<typeof TaskActions.add>): Generator {
+function* addTaskSaga(
+  action: ReturnType<typeof TaskActions.add>
+): Generator<Effect, void, any> {
   try {
     const { payload: newTask } = action;
-    const response = yield call(taskService.addTask, newTask as Task);
-    yield put(TaskActions.updateTasksSuccess({ tasks: [response as Task] }));
+    const response: AxiosResponse<Task> = yield call(
+      taskService.addTask,
+      newTask,
+      "requestData"
+    );
+    yield put(TaskActions.addTaskSuccess({ task: response.data }));
   } catch (error) {
     yield put(
-      TaskActions.updateTaskFailure({
+      TaskActions.addTaskFailure({
         error: NOTIFICATION_MESSAGES.Tasks.TASK_ADD_ERROR,
       })
     );
   }
 }
-
-
-
-
 
 function* fetchTaskSaga(): Generator<Effect, void, any> {
   try {
@@ -44,22 +44,21 @@ function* fetchTaskSaga(): Generator<Effect, void, any> {
 }
 
 
-function* removeTaskSaga(action: ReturnType<typeof TaskActions.remove>): Generator {
+function* removeTaskSaga(
+  action: ReturnType<typeof TaskActions.remove>
+): Generator {
   try {
     const { payload: taskId } = action;
-    yield call(taskService.removeTask, taskId);
-    // Update the state or handle success if needed
+    yield call(taskService.removeTask, taskId, "requestData");
     yield put(TaskActions.removeTaskSuccess(taskId));
   } catch (error) {
     yield put(
-      TaskActions.updateTaskFailure({
+      TaskActions.removeTaskFailure({
         error: NOTIFICATION_MESSAGES.Tasks.TASK_REMOVE_ERROR,
       })
     );
   }
 }
-
-
 
 function* updateTaskSuccessSaga(
   action: ReturnType<typeof TaskActions.updateTaskSuccess>
@@ -72,10 +71,9 @@ function* updateTaskSuccessSaga(
   }
 }
 
-
 function* completeAllTasksSaga(): Generator {
   try {
-    yield call(taskService.completeAllTasks);
+    yield call(taskService.completeAllTasks, "requestData");
     // Update the state or handle success if needed
     yield put(TaskActions.completeAllTasksSuccess());
   } catch (error) {
@@ -83,7 +81,23 @@ function* completeAllTasksSaga(): Generator {
   }
 }
 
-
+function* fetchDataSaga(
+  action: ReturnType<typeof TaskActions.fetchTasksRequest>
+): Generator<Effect, void, any> {
+  try {
+    const response: AxiosResponse<Task[]> = yield call(
+      taskService.fetchTasks,
+      "requestData"
+    );
+    yield put(TaskActions.fetchTasksSuccess({ tasks: response.data }));
+  } catch (error) {
+    yield put(
+      TaskActions.fetchTasksFailure({
+        error: NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
+      })
+    );
+  }
+}
 
 function* toggleTaskSaga(
   action: ReturnType<typeof TaskActions.toggle>
@@ -102,11 +116,10 @@ function* toggleTaskSaga(
   }
 }
 
-
 function* updateTaskSaga(action: ReturnType<typeof TaskActions.updateTask>): Generator {
   try {
-    const { payload: { id, newTitle } } = action;
-    const response = yield call(taskService.updateTask, id, newTitle);
+    const { payload: { taskId, newTitle } } = action;
+    const response = yield call(taskService.updateTask, taskId, newTitle);
     yield put(TaskActions.updateTasksSuccess({ tasks: [response] as Task[] }));
   } catch (error) {
     yield put(
@@ -120,7 +133,7 @@ function* updateTaskSaga(action: ReturnType<typeof TaskActions.updateTask>): Gen
 function* fetchTasksSaga(): Generator {
   try {
     yield put(TaskActions.fetchTasksRequest());
-    const response = yield call(taskService.fetchTasks);
+    const response = yield call(taskService.fetchTasks, "requestData");
     yield put(TaskActions.fetchTasksSuccess({ tasks: response as Task[] }));
   } catch (error) {
     yield put(
@@ -131,14 +144,13 @@ function* fetchTasksSaga(): Generator {
   }
 }
 
-
 // Implementation for fetchTasksRequestSaga
 function* fetchTasksRequestSaga(): Generator<Effect, void, any> {
   try {
     yield put(TaskActions.fetchTasksRequest());
 
     // Use taskService to fetch tasks
-    const tasks: Task[] = yield call(taskService.fetchTasks);
+    const tasks: Task[] = yield call(taskService.fetchTasks, "requestData");
 
     yield put(TaskActions.fetchTasksSuccess({ tasks }));
   } catch (error) {
@@ -150,7 +162,7 @@ function* fetchTasksRequestSaga(): Generator<Effect, void, any> {
 function* completeAllTasksRequestSaga(): Generator<Effect, void, any> {
   try {
     // Use taskService to mark all tasks as complete
-    yield call(taskService.completeAllTasks);
+    yield call(taskService.completeAllTasks, "requestData");
 
     yield put(TaskActions.completeAllTasksSuccess());
   } catch (error) {
@@ -180,23 +192,17 @@ function* fetchTasksSuccessSaga(
   }
 }
 
-
-
-
-
-
-function* completeAllTasksSuccessSaga(): Generator<Effect, void, any> {
+function* completeAllTasksSuccessSaga(): Generator {
   try {
-    // Implement the logic to handle the completeAllTasksSuccess action
+    // Reset some state variables
+    yield put(resetStateVariables());
 
-    // For example, you might want to perform some post-success actions
-    // or update the state based on the success of completing all tasks
-    yield put({
-      type: "COMPLETE_ALL_TASKS_SUCCESS_ACTION_TYPE", // Replace with your actual action type
-    });
+    // Fetch updated data
+    const taskId = 123; // Assuming taskId is known or retrieved from somewhere
+    yield call(fetchUpdatedData, taskId);
 
-    // For now, let's just log the success
-    console.log("Complete All Tasks Success");
+    // Log the success
+    console.log("All tasks completed successfully.");
   } catch (error) {
     // Handle errors if necessary
     console.error("Error in completeAllTasksSuccessSaga:", error);
@@ -204,10 +210,32 @@ function* completeAllTasksSuccessSaga(): Generator<Effect, void, any> {
 }
 
 
+// Define your resetStateVariables action creator
+function resetStateVariables() {
+  return { type: "RESET_STATE_VARIABLES_ACTION_TYPE" }; // Replace with your actual action type
+}
 
+// Define your fetchUpdatedData function
+function* fetchUpdatedData(taskId: number): Generator {
+  try {
+    yield put(TaskActions.fetchTasksRequest());
+    const response = yield call(taskService.fetchTaskData, taskId); // Assuming taskId is defined elsewhere
+    yield put(updateData(response));
+    yield put(resetCompleteAllTasksState());
+  } catch (error) {
+    console.error("Error in fetchUpdatedData:", error);
+  }
+}
 
+// Define your updateData action creator
+function updateData<T>(data: T) {
+  return { type: "UPDATE_DATA_ACTION_TYPE", payload: data };
+}
 
-
+// Define your resetCompleteAllTasksState action creator
+function resetCompleteAllTasksState() {
+  return { type: "RESET_COMPLETE_ALL_TASKS_STATE_ACTION_TYPE" }; // Replace with your actual action type
+}
 
 
 // Implementation for updateTasksSuccessSaga
@@ -224,13 +252,6 @@ function* updateTasksSuccessSaga(
 }
 
 
-
-
-
-
-
-
-
 // Implementation for fetchTasksFailureSaga
 function* fetchTasksFailureSaga(
   action: ReturnType<typeof TaskActions.fetchTasksFailure>
@@ -243,15 +264,6 @@ function* fetchTasksFailureSaga(
     // Handle errors if necessary
   }
 }
-
-
-
-
-
-
-
-
-
 
 
 // Implementation for completeAllTasksFailureSaga
@@ -277,18 +289,14 @@ function* completeAllTasksFailureSaga(action: ReturnType<typeof TaskActions.comp
   }
 }
 
-    
-
-
-
-
-
+  
 
 export function* watchTaskSagas() {
   
   yield takeLatest(TaskActions.add.type, addTaskSaga),
   yield takeLatest(TaskActions.remove.type, removeTaskSaga),
-  yield takeLatest(TaskActions.toggle.type, toggleTaskSaga),
+    yield takeLatest(TaskActions.toggle.type, toggleTaskSaga),
+    yield takeLatest(TaskActions.fetchTaskData.type, fetchDataSaga),
   yield takeLatest(TaskActions.updateTask.type, updateTaskSaga),
   yield takeLatest(TaskActions.updateTaskSuccess.type, updateTaskSuccessSaga),
   yield takeLatest(TaskActions.updateTasksSuccess.type, updateTasksSuccessSaga),

@@ -1,6 +1,7 @@
 // BlogPost.tsx
-import React from'react';
-export type BlogPost = {
+import React from 'react';
+
+export interface  BlogPost {
   id: number;
   title: string;
   content: string;

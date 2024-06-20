@@ -23,6 +23,9 @@ import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 import { TaskActions } from '../../actions/TaskActions';
+import { addSnapshot } from '@/app/api/SnapshotApi';
+import { createSnapshot, updateSnapshot } from '../../snapshots/snapshotHandlers';
+import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -163,167 +166,63 @@ const useTaskManagerStore = (): TaskManagerStore => {
     const taskIdToAssign = "someTaskId";
     taskStore.setAssignedTaskStore({
       ...assignedTaskStore,
-      [taskIdToAssign]: reassignedTasks,
+      flatMap: () => {},
       snapshotId: '',
-      addSnapshot: function (snapshot: Snapshot<Data>): void {
-        throw new Error('Function not implemented.');
-      },
-      updateSnapshot: function (snapshotId: string, newData: Data, payload: UpdateSnapshotPayload<Data>): void {
-        throw new Error('Function not implemented.');
-      },
-      removeSnapshot: function (snapshotId: string): void {
-        throw new Error('Function not implemented.');
-      },
-      clearSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      createSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      createSnapshotSuccess: function (snapshot: Snapshot<Data>): void {
-        throw new Error('Function not implemented.');
-      },
-      createSnapshotFailure: function (error: Payload): void {
-        throw new Error('Function not implemented.');
-      },
-      updateSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      updateSnapshotSuccess: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      updateSnapshotFailure: function (error: Payload): void {
-        throw new Error('Function not implemented.');
-      },
-      updateSnapshotsSuccess: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      updateSnapshotsFailure: function (error: Payload): void {
-        throw new Error('Function not implemented.');
-      },
-      initSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      takeSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      takeSnapshotSuccess: function (snapshot: Snapshot<Data>): void {
-        throw new Error('Function not implemented.');
-      },
-      takeSnapshotsSuccess: function (snapshots: Snapshot<Data>[]): void {
-        throw new Error('Function not implemented.');
-      },
-      configureSnapshotStore: function (): void {
-        throw new Error('Function not implemented.');
-      },
+      taskIdToAssign: taskIdToAssign,
+      addSnapshot: addSnapshot,
+      updateSnapshot: updateSnapshot,
+      removeSnapshot: removeSnapshot,
+      clearSnapshots: clearSnapshots,
+      createSnapshot: createSnapshot,
+      createSnapshotSuccess: createSnapshotSuccess,
+      createSnapshotFailure: createSnapshotFailure,
+      updateSnapshots: updateSnapshots,
+      updateSnapshotSuccess: updateSnapshotSuccess,
+      updateSnapshotFailure: updateSnapshotFailure,
+      updateSnapshotsSuccess: updateSnapshotsSuccess,
+      updateSnapshotsFailure: updateSnapshotsFailure,
+      initSnapshot: initSnapshot,
+      takeSnapshot: takeSnapshot,
+      takeSnapshotSuccess: takeSnapshotSuccess,
+      takeSnapshotsSuccess: takeSnapshotsSuccess,
+      configureSnapshotStore: configureSnapshotStore,
       getData: (): Promise<Data> => {
         throw new Error('Function not implemented.');
       },
-      setData: function (data: Data): void {
-        throw new Error('Function not implemented.');
-      },
-      getState: function () {
-        throw new Error('Function not implemented.');
-      },
-      setState: function (state: any): void {
-        throw new Error('Function not implemented.');
-      },
-      validateSnapshot: function (snapshot: Snapshot<Data>): boolean {
-        throw new Error('Function not implemented.');
-      },
-      handleSnapshot: function (snapshot: Snapshot<Data> | null, snapshotId: string): void {
-        throw new Error('Function not implemented.');
-      },
-      handleActions: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      setSnapshot: function (snapshot: Snapshot<Data>): void {
-        throw new Error('Function not implemented.');
-      },
-      setSnapshots: function (snapshots: Snapshot<Data>[]): void {
-        throw new Error('Function not implemented.');
-      },
-      clearSnapshot: function (snapshotId: string): void {
-        throw new Error('Function not implemented.');
-      },
-      mergeSnapshots: function (snapshots: Snapshot<Data>[]): void {
-        throw new Error('Function not implemented.');
-      },
-      reduceSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      sortSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      filterSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      mapSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      findSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      getSubscribers: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      notify: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      notifySubscribers: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      subscribe: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      unsubscribe: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      fetchSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      fetchSnapshotSuccess: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      fetchSnapshotFailure: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      getSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      getSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      getAllSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      generateId: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchFetchSnapshots: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchTakeSnapshotsRequest: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchUpdateSnapshotsRequest: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchFetchSnapshotsSuccess: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchFetchSnapshotsFailure: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchUpdateSnapshotsSuccess: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchUpdateSnapshotsFailure: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      batchTakeSnapshot: function (): void {
-        throw new Error('Function not implemented.');
-      },
+      setData: setData,
+      getState: getState,
+      validateSnapshot: validateSnapshot,
+      handleSnapshot: handleSnapshot,
+      handleActions: handleActions,
+      setSnapshot: setSnapshot,
+      setSnapshots: setSnapshots,
+      clearSnapshot: clearSnapshot,
+      mergeSnapshots: mergeSnapshots,
+      reduceSnapshots: reduceSnapshots,
+      sortSnapshots: sortSnapshots,
+      filterSnapshots: filterSnapshots,
+      mapSnapshots: mapSnapshots,
+      findSnapshot: findSnapshot,
+      getSubscribers: getSubscribers,
+      notify: notify,
+      notifySubscribers: notifySubscribers,
+      subscribe: subscribe,
+      unsubscribe: unsubscribe,
+      fetchSnapshot: fetchSnapshot,
+      fetchSnapshotSuccess: fetchSnapshotSuccess,
+      fetchSnapshotFailure: fetchSnapshotFailure,
+      getSnapshot: getSnapshot,
+      getSnapshots: getSnapshots,
+      getAllSnapshots: getAllSnapshots,
+      generateId: generateId,
+      batchFetchSnapshots: batchFetchSnapshots,
+      batchTakeSnapshotsRequest: batchTakeSnapshotsRequest,
+      batchUpdateSnapshotsRequest: batchUpdateSnapshotsRequest,
+      batchFetchSnapshotsSuccess: batchFetchSnapshotsSuccess,
+      batchFetchSnapshotsFailure: batchFetchSnapshotsFailure,
+      batchUpdateSnapshotsSuccess: batchUpdateSnapshotsSuccess,
+      batchUpdateSnapshotsFailure: batchUpdateSnapshotsFailure,
+      batchTakeSnapshot: batchTakeSnapshot,
       snapshots: [],
       config: undefined
     });
@@ -1240,9 +1139,18 @@ export { useTaskManagerStore };
 };
 
 export { useTaskManagerStore };
-  function addToSnapshotList(snapshot: Snapshot<Data>): void {
-    throw new Error('Function not implemented.');
-  }
+  
+  
+
+  
+  
+
+  
+  
+  
+function addToSnapshotList(snapshot: Snapshot<Data>): void {
+    
+    }
 
 function tasksDataSourceToCSV(tasksDataSource: Record<string, Task>) {
   throw new Error('Function not implemented.');

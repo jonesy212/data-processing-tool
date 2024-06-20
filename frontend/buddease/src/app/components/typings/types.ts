@@ -1,4 +1,5 @@
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { SearchNotesResponse } from "@/app/api/ApiNote";
 import { Exchange } from "../crypto/Exchange";
 import { DataWithComment } from "../crypto/SafeParseData";
 import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
@@ -15,7 +16,6 @@ import { TaskManagerStore } from "../state/stores/TaskStore ";
 import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
-import { SearchNotesResponse } from "@/app/api/ApiNote";
 
 // Define the structure of YourResponseType based on the actual response from the backend
 interface YourResponseType extends DataWithComment,SearchNotesResponse {
@@ -31,7 +31,7 @@ interface YourResponseType extends DataWithComment,SearchNotesResponse {
   // Add field from RootStores
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore;
+  todoStore: TodoManagerStore<Todo>;
   taskManagerStore: TaskManagerStore;
   iconStore: IconStore;
   calendarStore: CalendarManagerStore;

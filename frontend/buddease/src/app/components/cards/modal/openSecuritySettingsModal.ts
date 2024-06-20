@@ -1,15 +1,12 @@
-import { FormData } from "@/app/pages/forms/PreviewForm";
 
 const openSecuritySettingsModal = async (
     currentSettings: SecuritySettings,
     updatedSettings: SecuritySettings): Promise<SecuritySettings | undefined> => {
-
-    {
-        // Open modal dialog to edit security settings
-        const updateSettings = await showSecuritySettingsModal(currentSettings, updatedSettings);
-        return updateSettings;
-    };
+    // Open modal dialog to edit security settings
+    const updateSettings = await showSecuritySettingsModal(currentSettings, updatedSettings);
+    return updateSettings;
 }
+
 
 async function showSecuritySettingsModal(currentSettings: SecuritySettings, updatedSettings: SecuritySettings): Promise<SecuritySettings | undefined> {
     // Display modal UI to edit settings
@@ -18,12 +15,26 @@ async function showSecuritySettingsModal(currentSettings: SecuritySettings, upda
     // Populate fields with current settings
     populateSecuritySettingsFields(modal, currentSettings);
 
-      // Handle form submission
-      modal.onSubmit(async (data: FormData) => { // Use FormData interface
-        return data;
-      });
-    return updatedSettings;
+    // Handle form submission
+    return new Promise<SecuritySettings | undefined>((resolve) => {
+        modal.onSubmit(async (data: FormData) => {
+            const updatedSettings: SecuritySettings = {
+                twoFactorAuthentication: data.get("twoFactorAuthentication") === 'true',
+                securityQuestions: JSON.parse(data.get("securityQuestions") as string),
+                passwordPolicy: data.get("passwordPolicy") as string,
+                passwordExpirationDays: Number(data.get("passwordExpirationDays")),
+                passwordStrength: data.get("passwordStrength") as string,
+                passwordComplexityRequirements: JSON.parse(data.get("passwordComplexityRequirements") as string),
+                accountLockoutPolicy: JSON.parse(data.get("accountLockoutPolicy") as string),
+                accountLockoutThreshold: Number(data.get("accountLockoutThreshold")),
+                // Add other properties from SecuritySettings here
+            };
+            resolve(updatedSettings);
+        });
+    });
 }
+
+
 
 async function createModal(): Promise<any> {
     return new Promise((resolve) => {
@@ -32,16 +43,23 @@ async function createModal(): Promise<any> {
             onSubmit: (callback: any) => {
                 // Simulate modal submission
                 setTimeout(() => {
-                    const updatedSettings = { /* Updated settings from modal */ };
-                    callback(updatedSettings); // Pass back the updated settings
-                    resolve(updatedSettings); // Resolve the Promise with the updated settings
+                    const formData = new FormData();
+                    formData.append("twoFactorAuthentication", "true");
+                    formData.append("securityQuestions", JSON.stringify(["What is your pet's name?", "What is your mother's maiden name?"]));
+                    formData.append("passwordPolicy", "Strong");
+                    formData.append("passwordExpirationDays", "90");
+                    formData.append("passwordStrength", "High");
+                    formData.append("passwordComplexityRequirements", "Complex");
+                    formData.append("accountLockoutPolicy", "Strict");
+                    // formData.append("accountLockoutThreshold", "5");
+                    callback(formData); // Pass back the updated settings
+                    resolve(modal); // Resolve the Promise with the modal
                 }, 1000); // Simulated delay
             },
         };
         resolve(modal);
     });
 }
-
 
 function populateSecuritySettingsFields(modal: any, currentSettings: SecuritySettings): void {
     // Example: Assuming the modal library provides a method named `populateFields`
@@ -53,5 +71,5 @@ function populateSecuritySettingsFields(modal: any, currentSettings: SecuritySet
         console.error("Modal or populateFields method not available.");
     }
 }
-export { openSecuritySettingsModal, populateSecuritySettingsFields };
 
+export { openSecuritySettingsModal, populateSecuritySettingsFields };

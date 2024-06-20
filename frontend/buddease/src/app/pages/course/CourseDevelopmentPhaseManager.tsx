@@ -4,7 +4,7 @@ import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStor
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { fetchDataWithToken } from '@/app/components/users/ExternalApiAuth';
 import React, { useState } from 'react';
-import generateTimeBasedCode from '../../../../models/realtime/TimeBasedCodeGenerator';
+import generateTimeBasedCode from '../../components/models/realtime/TimeBasedCodeGenerator';
 import CourseLearningPhase from './CourseLearningPhase';
 import CoursePlanningPhase from './CoursePlanningPhase';
 import CourseSetupPhase from './CourseSetupPhase';

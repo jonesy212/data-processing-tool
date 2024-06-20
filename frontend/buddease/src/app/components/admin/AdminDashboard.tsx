@@ -91,17 +91,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       const dynamicContent = dynamicConfig;
       sendPushNotification("yourmessage", "sendersname");
       resetIdleTimeout?.();
+      console.log(dynamicContent);
     }
     subscriptionService.subscriptions.forEach((callback) =>
       callback(updateApiConfig)
     );
-  }, [isActive, resetIdleTimeout, config]);
+  }, [isActive, resetIdleTimeout, config, dynamicConfig]);
+  
 
   if (!theme || !dynamicConfig) {
     return null;
   }
 
-  document.body.style.backgroundColor = theme.backgroundColor;
+  document.body.style.backgroundColor = theme.backgroundColor || "#000000";
 
   subscriptionService.subscriptions.forEach((callback) => callback(onmessage));
 
@@ -114,6 +116,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   return <YourComponent apiConfig={apiConfig}>{children}</YourComponent>;
 };
+
 
 const AdminDashboardWithDynamicNaming: React.FC<AdminDashboardWithDynamicNamingProps> = () => {
   const { dynamicConfig } = useDynamicComponents();

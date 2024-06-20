@@ -1,6 +1,7 @@
 // FrontendCacheInteraction.js
 import { useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
+import React from 'react';
 
 const FrontendCacheInteraction = () => {
   const [key, setKey] = useState('');

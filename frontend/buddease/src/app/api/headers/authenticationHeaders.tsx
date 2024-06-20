@@ -3,44 +3,45 @@ import configData from "@/app/configs/configData";
 
 type Token = string | null;
 
-// Define the type for authentication headers
 type AuthenticationHeaders = {
   Authorization?: string;
   'Content-Type': string;
-  'X-User-ID'?: User['id'] | null;
+  'X-User-ID'?: string;
   'X-App-Version': string;
 };
 
-const currentAppVersion =  configData.currentAppVersion
-export const createAuthenticationHeaders = (token: Token, userId: User['id'] | null, appVersion: typeof currentAppVersion): AuthenticationHeaders => {
+const currentAppVersion = configData.currentAppVersion;
+
+export  const createAuthenticationHeaders = (
+  token: string | null,
+  userId: string | null,
+  appVersion: string
+): AuthenticationHeaders => {
   const headers: AuthenticationHeaders = {
     'Content-Type': 'application/json',
-    'X-App-Version': appVersion.toString(), // Convert appVersion to string
+    'X-App-Version': appVersion,
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   if (userId) {
-    headers['X-User-ID'] = userId.toString(); // Convert userId to string
+    headers['X-User-ID'] = userId;
   }
 
   return headers;
 };
-
-
-
 
 // Get tokens from localStorage
 const accessToken: Token = localStorage.getItem('accessToken');
 const userId: User['id'] | null = localStorage.getItem('userId');
 
 // Check if userId is not null before creating authentication headers
-const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(
+const authenticationHeaders: Record<string, string> = createAuthenticationHeaders(
   accessToken,
   userId,
-  currentAppVersion
+  currentAppVersion.toString()
 );
 
 export default authenticationHeaders;

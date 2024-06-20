@@ -1,32 +1,48 @@
-// AssignEventStore.tsx
-import { makeObservable } from "mobx";
-import  ExtendedCalendarEvent  from "../../calendar/CalendarEventTimingOptimization";
-import { NotificationType, useNotification } from "../../support/NotificationContext";
-import { User } from "../../users/User";
-import { useAssignBaseStore } from "../AssignBaseStore";
-import { PresentationEventAssignment } from "./UserPresentationsStore";
-import CalendarEventTimingOptimization from "../../calendar/CalendarEventTimingOptimization";
+// Import necessary types and interfaces
+import { fetchEventData } from "@/app/api/ApiEvent";
+import appTreeApiService from "@/app/api/appTreeApi";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { isDataRecentEnough } from "@/app/utils/isDataRecentEnough";
+import { makeObservable } from "mobx";
+import { default as CalendarEventTimingOptimization, default as ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "../../support/NotificationContext";
+import { User } from "../../users/User";
+import { ExtendedTodo, useAssignBaseStore } from "../AssignBaseStore";
+import { AuthStore } from "./AuthStore";
+import { PresentationEventAssignment } from "./UserPresentationsStore";
 
+const RESPONSES_STORAGE_KEY = 'responses';
 
+interface EventData {
+  eventId: string;
+  timestamp?: string | Date;  
+}
 
 interface ReassignData {
-  eventId: string;       // Unique identifier for the event being reassigned
-  oldUserId: string;     // User ID of the original assignee
-  newUserId: string;     // User ID of the new assignee
+  eventId: string; 
+  oldUserId: string; 
+  newUserId: string; 
 }
 
-interface ReassignEventResponse extends ExtendedCalendarEvent{
-  eventId: string;       // Unique identifier for the event
-  responseId: string;    // Unique identifier for the response
-  userId: string;        // User ID of the responder
-  comment: string;       // Comment or feedback provided by the responder
-  timestamp: Date;       // Timestamp indicating when the response was submitted
-  reassignData: ReassignData[]
-
+interface ReassignEventResponse extends ExtendedCalendarEvent,EventData {
+  eventId: string; // Unique identifier for the event
+  assignee: string; // User ID of the assignee
+  todoId: string; // Unique identifier for the todo
+  assigneeId: string; // User ID of the assignee
+  oldUserId?: string; // User ID of the original assignee (optional)
+  newUserId?: string; // User ID of the new assignee (optional)
+  responseId: string; // Unique identifier for the response
+  userId: string; // User ID of the responder
+  comment: string; // Comment or feedback provided by the responder
+  timestamp: Date | undefined; // Timestamp indicating when the response was submitted
+  reassignData: ReassignData[]; // Additional reassignment data
 }
 
-export interface AssignEventStore {
+interface AssignEventStore {
   assignedUsers: Record<string, string[]>; // Use eventId as key and array of user IDs as value
   updateEventStatus: (eventId: string, status: string) => void;
   assignedEvents: Record<string, ExtendedCalendarEvent[]>; // Use eventId as key and array of event IDs as value
@@ -35,14 +51,24 @@ export interface AssignEventStore {
   assignEvent: (eventId: string, userId: User) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
-  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  connectResponsesToTodos: (eventId: string) => void;
+  setDynamicNotificationMessage: (
+    message: Message,
+    type: NotificationType
+  ) => void;
+  getAuthStore: () => AuthStore;
+  connectResponsesToTodos: (
+    todoIds: string[],
+    assignees: string[],
+    todos: ExtendedTodo[],
+    eventId: string,
+    responses: ReassignEventResponse[]
+  ) => void;
+
   reassignUsersToEvents: (
     eventIds: string[],
-    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent, // Update parameter type
-    newUserId: PresentationEventAssignment,
+    oldUserId: ExtendedCalendarEvent | CalendarEventTimingOptimization,
+    newUserId: PresentationEventAssignment
   ) => void;
-  
 
   assignUserToTodo: (todoId: string, userId: string) => void;
   unassignUserFromTodo: (todoId: string, userId: string) => void;
@@ -51,7 +77,6 @@ export interface AssignEventStore {
     oldUserId: string,
     newUserId: string
   ) => void;
-
   assignUsersToTodos: (todoIds: string[], userId: string) => void;
   unassignUsersFromTodos: (todoIds: string[], userId: string) => void;
   reassignUsersInTodos: (
@@ -59,221 +84,210 @@ export interface AssignEventStore {
     oldUserId: string,
     newUserId: string
   ) => void;
-  // Success and Failure methods
-  assignUserSuccess: () => void;
-  assignUserFailure: (error: string) => void;
-
-  // Add more methods or properties as needed
 }
 
 const useAssignEventStore = (): AssignEventStore => {
   const assignedUsers: Record<string, string[]> = {};
-  const assignedEvents: Record<string, ExtendedCalendarEvent[]>= {};
+  const assignedEvents: Record<string, ExtendedCalendarEvent[]> = {};
   const assignedTodos: Record<string, string[]> = {};
-  const reassignUser: Record<string, ReassignEventResponse[]> = {}
-
-    const baseStore = useAssignBaseStore();
-
-  const assignEvent = (eventId: string, assignedTo: User) => {
-    // Add user to assigned events
-    const event = baseStore.events[eventId];
-    if (event) {
-      const updatedEvent = event.map((e) => ({
-        ...e,
-        assignedTo: assignedTo,
-      }));
-      baseStore.events[eventId] = updatedEvent as ExtendedCalendarEvent[];
-    } else {
-      baseStore.events[eventId] = [
-        {
-          id: eventId,
-          title: "",
-          startTime: new Date(),
-          endTime: new Date(),
-          description: "",
-          assignedTo: assignedTo,
-          attendees: [],
-          location: "",
-          reminder: "",
-          pinned: false,
-          archived: false,
-        },
-      ];
-    }
-    useNotification();
-    return assignUserSuccess();
-  };
-  
+  const reassignUser: Record<string, ReassignEventResponse[]> = {};
+  const baseStore = useAssignBaseStore();
 
   const updateEventStatus = (eventId: string, status: string) => {
     const event = baseStore.events[eventId];
-   }
+    if (event && Array.isArray(event)) {
+      event.forEach((e) => {
+        if (e.status !== undefined) {
+          e.status = status;
+        }
+      });
+    } else {
+      console.error(`Event with ID ${eventId} not found.`);
+    }
+  };
 
-  const assignUser = (eventId: string, userId: string) => {
-    const users = assignedUsers[eventId];
-    if (!users || !users.includes(userId)) {
-      assignedUsers[eventId] = users ? [...users, userId] : [userId];
+  const assignEvent = (eventId: string, userId: User) => {
+    const event = baseStore.events[eventId];
+    if (event && Array.isArray(event)) {
+      event.forEach((e) => {
+        if (e.assignedTo !== undefined) {
+          e.assignedTo = userId;
+        }
+      });
+    } else {
+      console.error(`Event with ID ${eventId} not found.`);
     }
     useNotification();
-    return assignUserSuccess();
+    assignUserSuccess();
   };
-
-  const unassignUser = (eventId: string, userId: string) => {
-    const users = assignedUsers[eventId];
-    if (users) {
-      assignedUsers[eventId] = users.filter((id) => id !== userId);
-    }
-  };
-
-  
 
   const assignUsersToEvents = (eventIds: string[], userId: string) => {
-    eventIds.forEach((eventId) => assignUser(eventId, userId));
+    eventIds.forEach(eventId => {
+      const event = baseStore.events[eventId];
+      if (event && Array.isArray(event)) {
+        event.forEach((e) => {
+          if (e.assignedTo !== undefined) {
+            e.assignedTo = userId;
+          }
+        });
+      } else {
+        console.error(`Event with ID ${eventId} not found.`);
+      }
+    });
+    useNotification();
+    assignUserSuccess();
   };
 
   const unassignUsersFromEvents = (eventIds: string[], userId: string) => {
-    eventIds.forEach((eventId) => unassignUser(eventId, userId));
+    eventIds.forEach(eventId => {
+      const event = baseStore.events[eventId];
+      if (event && Array.isArray(event)) {
+        event.forEach((e) => {
+          if (e.assignedTo === userId) {
+            delete e.assignedTo;
+          }
+        });
+      } else {
+        console.error(`Event with ID ${eventId} not found or user not assigned.`);
+      }
+    });
+    useNotification();
   };
 
   const setDynamicNotificationMessage = (message: Message, type: NotificationType) => {
-    // Implement the logic for setting dynamic notification message
-    useNotification().showMessageWithType(message, type); // Assuming useNotification() returns an object with a showMessage method
+    useNotification().showMessageWithType(message, type);
+  };
+
+  const connectResponsesToTodos = (
+    todoIds: string[], assignees: string[],
+    todos: ExtendedTodo[], eventId: string,
+    responses?: ReassignEventResponse[]) => {
+    baseStore.connectResponsesToTodos(todoIds, assignees, todos,  eventId, responses!);
+  };
+
+
+// Updated getResponsesByEventId function
+const getResponsesByEventId = async (eventId: string): Promise<ReassignEventResponse[]> => {
+  try {
+    // Attempt to fetch from local storage first
+    const cachedData: ReassignEventResponse[] = await appTreeApiService.fetchEventResponsesFromLocalStorage(eventId);
+
+    // Check if data is recent enough
+    const threshold = 0; // Define your threshold logic here
+    if (cachedData && isDataRecentEnough(cachedData, threshold)) {
+      return cachedData;
+    }
+
+    // Notify user about data refresh
+    appTreeApiService.notify(
+      "Event Responses Refresh",
+      `Fetching event responses for event ${eventId} from API`,
+      {},
+      new Date(),
+      NotificationTypeEnum.Info
+    );
+
+    // Fetch from API if not found or not recent enough
+    const apiData: ReassignEventResponse[] = await fetchEventData(eventId);
+
+    // Save the fetched data to local storage
+    await appTreeApiService.saveEventResponsesToLocalStorage(eventId, apiData);
+
+    return apiData;
+  } catch (error) {
+    console.error(`Error fetching responses for event ${eventId}:`, error);
+    throw error;
+  }
+};
+
+  
+  
+  const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] => {
+    const todoIds = responses.map(response => response.todoId);
+    return Array.from(new Set(todoIds)); // Ensure unique todoIds
+  };
+  
+  const assignUserSuccess = () => {
+    console.log("User assigned successfully.");
   };
 
   const reassignUsersToEvents = (
     eventIds: string[],
-    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent,
-    newUserId: PresentationEventAssignment,
+    oldUserId: ExtendedCalendarEvent | CalendarEventTimingOptimization,
+    newUserId: PresentationEventAssignment
   ) => {
-    eventIds.forEach((eventId: string) => {
-      const users = assignedEvents[eventId];
-      if (users) {
-        const oldUserIdIndex = users.findIndex(
-          (user) => user.eventId === oldUserId.eventId
+    eventIds.forEach((eventId) => {
+      const events = baseStore.events[eventId];
+      if (events && Array.isArray(events)) {
+        const index = events.findIndex(
+          (event) => event.id === (oldUserId as ExtendedCalendarEvent).eventId
         );
-        if (oldUserIdIndex !== -1) {
-          const convertedNewUser: CalendarEventTimingOptimization  = {
-            eventId: newUserId.eventId,
-            suggestedStartTime: newUserId.suggestedStartTime,
-            suggestedEndTime: newUserId.suggestedEndTime,
-            suggestedDuration: newUserId.suggestedDuration,
-            suggestedDay: newUserId.suggestedDay,
-            suggestedWeeks: newUserId.suggestedWeeks,
-            suggestedMonths: newUserId.suggestedMonths,
-            suggestedSeasons: newUserId.suggestedSeasons,
-          } 
-          if ("eventId" in oldUserId && "suggestedStartTime" in oldUserId) {
-            users.splice(oldUserIdIndex, 1, convertedNewUser);
-          } else if ("id" in oldUserId && "startTime" in oldUserId) {
-            const extendedOldUserId = oldUserId as ExtendedCalendarEvent;
-            const convertedOldUser: CalendarEventTimingOptimization = {
-              eventId: extendedOldUserId.id,
-              suggestedStartTime: extendedOldUserId.startTime,
-              suggestedEndTime: extendedOldUserId.endTime,
-              suggestedDuration: extendedOldUserId.duration,
-              suggestedDay: extendedOldUserId.suggestedDay,
-              suggestedWeeks: extendedOldUserId.suggestedWeeks,
-              suggestedMonths: extendedOldUserId.suggestedMonths,
-              suggestedSeasons: extendedOldUserId.suggestedSeasons,
-            };
-            users.splice(oldUserIdIndex, 1, convertedOldUser);
-          } else {
-            console.error("Cannot reassign user: incompatible types");
-          }
+        if (index !== -1) {
+          const updatedEvent: ExtendedCalendarEvent = {
+            ...events[index],
+            assignedTo: newUserId as unknown as string,
+          };
+          events[index] = updatedEvent;
+        } else {
+          console.error(
+            `Event with ID ${eventId} and old user ID ${
+              (oldUserId as ExtendedCalendarEvent).eventId
+            } not found.`
+          );
         }
+      } else {
+        console.error(`Event with ID ${eventId} not found.`);
       }
     });
+    useNotification();
+    assignUserSuccess();
   };
-  
-  
-  
 
   const assignUserToTodo = (todoId: string, userId: string) => {
-    const users = assignedTodos[todoId];
-    if (!users || !users.includes(userId)) {
-      assignedTodos[todoId] = users ? [...users, userId] : [userId];
+    const todos = assignedTodos[todoId];
+    if (!todos || !todos.includes(userId)) {
+      assignedTodos[todoId] = todos ? [...todos, userId] : [userId];
     }
+    useNotification();
+    assignUserSuccess();
   };
 
   const unassignUserFromTodo = (todoId: string, userId: string) => {
-    const users = assignedTodos[todoId];
-    if (users) {
-      assignedTodos[todoId] = users.filter((id) => id !== userId);
+    const todos = assignedTodos[todoId];
+    if (todos) {
+      assignedTodos[todoId] = todos.filter(id => id !== userId);
     }
+    useNotification();
   };
 
-  const reassignUserInTodo = (
-    todoId: string,
-    oldUserId: string,
-    newUserId: string
-  ) => {
+  const reassignUserInTodo = (todoId: string, oldUserId: string, newUserId: string) => {
     unassignUserFromTodo(todoId, oldUserId);
     assignUserToTodo(todoId, newUserId);
     useNotification();
+    assignUserSuccess();
   };
 
   const assignUsersToTodos = (todoIds: string[], userId: string) => {
-    todoIds.forEach((todoId) => assignUserToTodo(todoId, userId));
+    todoIds.forEach(todoId => assignUserToTodo(todoId, userId));
+    useNotification();
+    assignUserSuccess();
   };
 
   const unassignUsersFromTodos = (todoIds: string[], userId: string) => {
-    todoIds.forEach((todoId) => unassignUserFromTodo(todoId, userId));
-  };
-
-  const reassignUsersInTodos = (
-    todoIds: string[],
-    oldUserId: string,
-    newUserId: string
-  ) => {
-    todoIds.forEach((todoId) =>
-      reassignUserInTodo(todoId, oldUserId, newUserId)
-    );
-  };
-
-  // Helper function to get responses based on eventId (replace with actual implementation)
-  const getResponsesByEventId = (eventId: string) => {
-    // Simulated method, replace with actual implementation
-   const responses= [
-     {
-        eventId: "event1",
-        responseId: "response1",
-        userId: "user1",
-        comment: "Great work!",
-        timestamp: new Date(),
-      } as ReassignEventResponse
-      // Add more responses
-    ];
-
-  // Filter responses based on the eventId
-  return responses.filter(response => response.eventId === eventId);
-  };
-
-  // Helper function to convert responses to todos
-const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] => {
-  // Map over the responses and extract the responseId property
-  return responses.map((response) => response.responseId);
-};
-
-  const connectResponsesToTodos = (eventId: string) => {
-    // Assuming there is a method to get responses based on eventId
-    const responses: ReassignEventResponse[] = getResponsesByEventId(eventId);
-  
-    // Assuming there is a method to convert responses to todo IDs (strings)
-    const todoIds: string[] = convertResponsesToTodos(responses);
-  
-    // Assuming there is a method to assign todo IDs to users or teams
-    baseStore.assignTodosToUsersOrTeams(todoIds, ["assignees"]);
-  };
-
-  const assignUserSuccess = () => {
+    todoIds.forEach(todoId => unassignUserFromTodo(todoId, userId));
     useNotification();
+  };
+
+  const reassignUsersInTodos = (todoIds: string[], oldUserId: string, newUserId: string) => {
+    todoIds.forEach(todoId => reassignUserInTodo(todoId, oldUserId, newUserId));
+    useNotification();
+    assignUserSuccess();
   };
 
   const assignUserFailure = (error: string) => {
-    useNotification();
+    console.error("User assignment failed:", error);
   };
 
-  
   const useAssignEventStore = makeObservable({
     assignedUsers,
     assignedEvents,
@@ -282,23 +296,26 @@ const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] =
     updateEventStatus,
     assignEvent,
     assignUsersToEvents,
-    setDynamicNotificationMessage,
-    reassignUsersToEvents,
     unassignUsersFromEvents,
-    assignUserToTodo,
+    setDynamicNotificationMessage,
+    connectResponsesToTodos,
+    reassignUsersToEvents,
+    assignUserToTodo: baseStore.assignUserToTodo,
     unassignUserFromTodo,
     reassignUserInTodo,
     assignUsersToTodos,
     unassignUsersFromTodos,
-    reassignUsersInTodos,
+    reassignUsersInTodos: baseStore.reassignUsersInTodos,
     assignUserSuccess,
     assignUserFailure,
-    connectResponsesToTodos,
-  })
+    convertResponsesToTodos,
+    getResponsesByEventId,
+    getAuthStore: baseStore.getAuthStore,
+  });
 
-  return useAssignEventStore
+  return useAssignEventStore;
 };
 
 export { useAssignEventStore };
-export type { ReassignEventResponse };
+export type { AssignEventStore, EventData, ExtendedTodo, ReassignEventResponse };
 

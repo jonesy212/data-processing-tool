@@ -44,7 +44,7 @@ const FileUploadModalLauncher: React.FC<FileUploadModalLauncherProps> = ({
       {/* Include the modal generator where needed */}
       <ModalGenerator
         title="File Upload Modal"
-        isOpen={isModalOpen}
+        isOpen={{isModalOpen}}
         closeModal={closeFileUploadModal}
         modalComponent={FileUploadModal}
         onFileUpload={handleFileUpload}

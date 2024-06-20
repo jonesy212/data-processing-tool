@@ -2,7 +2,7 @@
 
 import { DatePicker, Form, Table } from 'antd'; // Import UI components from Ant Design or your preferred library
 import React from 'react';
-import Candidate from '../../../../../models/realtime/Candidate';
+import Candidate from '../../models/realtime/Candidate';
 
 interface RecruitingPhaseStepProps {
   candidates: Candidate[];

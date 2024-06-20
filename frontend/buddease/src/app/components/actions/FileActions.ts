@@ -8,6 +8,7 @@ export const FileActions = {
   // Standard file actions
   addFile: createAction<CustomFile>("addFile"),
   removeFile: createAction<number>("removeFile"),
+  removeFileSuccess: createAction<CustomFile>("removeFileSuccess"),
   updateFile: createAction<{ id: number, newTitle: string }>("updateFileTitle"),
   validateFile: createAction<CustomFile>("validateFile"),
   setSelectedFile: createAction<CustomFile[] | null>("setSelectedFile"),

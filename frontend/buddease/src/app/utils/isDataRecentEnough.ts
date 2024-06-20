@@ -1,8 +1,8 @@
-import { RealtimeDataItem } from "../../../models/realtime/RealtimeData";
+import { EventData } from "../components/state/stores/AssignEventStore";
 
 // isDataRecentEnough.ts
 const isDataRecentEnough = (
-  dataItems: RealtimeDataItem[],
+  dataItems: EventData[],
   threshold: number
 ): boolean => {
   // Check if there are no data items or if the threshold is not provided
@@ -16,7 +16,7 @@ const isDataRecentEnough = (
   // Iterate through each data item to compare its timestamp with the current time
   for (const item of dataItems) {
     // Calculate the time difference between the current time and the item's timestamp
-    if (item.timestamp) {
+    if (typeof item.timestamp === 'number') {
       const timeDifference = currentTime - item.timestamp;
       // Check if the time difference is within the threshold
       if (timeDifference <= threshold) {

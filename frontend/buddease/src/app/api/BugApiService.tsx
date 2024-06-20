@@ -1,10 +1,12 @@
-BugApiService
+// BugApiService
 
+import { AxiosError, AxiosResponse } from 'axios';
+import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance'; // Assuming you have an axios instance configured
-import { endpoints } from './endpoints'; // Assuming you have defined endpoints
-import { handleApiError } from './errorHandler'; // Assuming you have an error handler function
-import { ClientNotificationMessages, NOTIFICATION_MESSAGES } from './notificationMessages'; // Assuming you have notification messages defined
-import { NotificationType } from './types'; // Assuming you have defined NotificationType
+import { ClientNotificationMessages, clientNotificationMessages } from './ApiClient';
+import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { handleApiError } from './ApiLogs';
+import { NotificationType } from '../components/support/NotificationContext';
 
 const API_BASE_URL = endpoints.client;
 

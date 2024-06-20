@@ -4,7 +4,6 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import React from "react";
-import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "../community/ActivityFeedComponent";
@@ -12,6 +11,8 @@ import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartCont
 import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
 import CommonDetails from "../models/CommonData";
 import { Data } from "../models/data/Data";
+import generateTimeBasedCode from "../models/realtime/TimeBasedCodeGenerator";
+import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
 import { Tag } from "../models/tracker/Tag";
@@ -57,7 +58,7 @@ export interface User extends UserData {
   profilePicture: string | null;
   processingTasks: DataProcessingTask[];
   data?: UserData;
-  role: UserRole;
+  role: UserRole | undefined;
   persona: Persona | undefined;
   friends: User[];
   analysisResults?: DataAnalysisResult[];
@@ -136,7 +137,7 @@ export interface UserData {
   _id?: string;
   id?: string | number | undefined;
   datasets?: string;
-  tasks?: string;
+  tasks?: Task[];
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;
   projects?: Project[];
@@ -158,7 +159,7 @@ export interface UserData {
   unreadNotificationCount?: number;
   snapshots?: SnapshotStore<Snapshot<Data>>[] | undefined
   analysisResults?: DataAnalysisResult[];
-  role: UserRole
+  role: UserRole | undefined;
   timestamp?: Date | string;
   category?: string
   deletedAt?: Date | null;
@@ -507,7 +508,7 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
 };
 
 
-const usersDataSource: Record<string, User> = {
+export const usersDataSource: Record<string, User> = {
   1: {
     // User Data
     id: 1,

@@ -7,7 +7,7 @@ import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 import React, { useEffect } from "react";
-import { RealtimeData, RealtimeDataItem } from "../../../../../models/realtime/RealtimeData"; // Adjust path as needed
+import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData"; // Adjust path as needed
 import { RealtimeUpdateCallback } from "./useUIRealtimeData";
 
 interface RealtimeDataProps extends RealtimeDataItem  {

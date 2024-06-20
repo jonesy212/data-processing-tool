@@ -1,19 +1,17 @@
-// realTimerealTimePriceComparison.ts
-
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Exchange } from '@/app/components/crypto/Exchange';
 import { DEX } from '@/app/components/crypto/DEX';
-import useRealtimeExchangeData from '@/app/components/hooks/commHooks/useRealtimeExchangeData';
-import useRealtimeDextData from '@/app/components/hooks/commHooks/useRealtimeDextData';
-import { ExchangeData } from '@/app/components/models/data/ExchangeData';
-import  DEXData  from '@/app/components/models/data/DEXData';
+import { Exchange } from '@/app/components/crypto/Exchange';
 import { RealtimeUpdateCallback } from '@/app/components/hooks/commHooks/useRealtimeData';
-import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
+import useRealtimeDextData from '@/app/components/hooks/commHooks/useRealtimeDextData';
+import useRealtimeExchangeData from '@/app/components/hooks/commHooks/useRealtimeExchangeData';
+import DEXData from '@/app/components/models/data/DEXData';
+import { ExchangeData } from '@/app/components/models/data/ExchangeData';
 import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStore';
+import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Data } from '../models/data/Data';
-import  {RealtimeData, RealtimeDataItem } from '../../../../models/realtime/RealtimeData';
 import { processExchangeData } from '../models/data/fetchExchangeData';
+import { RealtimeData, RealtimeDataItem } from '../models/realtime/RealtimeData';
 
 // Define the price comparison component or function
 const RealTimePriceComparison: React.FC = () => {
@@ -34,30 +32,43 @@ const RealTimePriceComparison: React.FC = () => {
     data: SnapshotStore<Snapshot<Data>>,
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<Snapshot<Data>>,
-    dataItems: RealtimeDataItem[]
+    dataItems: RealtimeData[]
   ) => {
-    // Your update logic here
-  
     // Example: Log received data
     console.log("Received data:", data);
-  
+
     // Example: Process events
     Object.keys(events).forEach((key) => {
       console.log(`Received events for ${key}:`, events[key]);
     });
-  
+
+    // newData is the new data that has been received since the last update
+    const newData = data.getSnapshot("snapshotId").data;
+    
+    // Example: Define payload as needed
+    const payload = {
+      // Define payload properties here
+    };
+
     // Example: Update snapshot store
-    snapshotStore.update(data);
-  
+    updateSnapshot(
+      "snapshotId", // Provide your snapshot ID here
+      data,
+      events,
+      snapshotStore,
+      dataItems as RealtimeDataItem[], // Assuming RealtimeData can be safely cast to RealtimeDataItem
+      newData, // Ensure to provide newData here
+      payload // Ensure to provide payload here
+    );
+
     // Example: Process data items
     dataItems.forEach((item) => {
       console.log("Received data item:", item);
       // Additional processing logic for each data item
     });
-  
+
     // Additional update logic as needed
   };
-  
 
   // Fetch data from exchanges and DEXs using custom hooks
   useEffect(() => {

@@ -1,6 +1,3 @@
-
-
-
 // SortCriteria.tsx
 enum SortCriteria {
   Title = "title",
@@ -8,6 +5,10 @@ enum SortCriteria {
   Priority = "priority",
   Status = "status",
   Duration = "duration",
+  Revelance = "relevance",
+  Newest = "newest",
+  Oldest = "oldest",
+
 
   //todos/tasks/projects
   EstimatedHours = "estimatedHours",
@@ -29,14 +30,13 @@ enum SortCriteria {
   AccessLevel = "accessLevel",
 
   // messages
-  Sender = 'sender',
-  Receiver = 'receiver',
-  Timestamp = 'timestamp',
-  Message = 'message',
-  Tags = 'tags',
-  WordSearch = 'wordSearch',
+  Sender = "sender",
+  Receiver = "receiver",
+  Timestamp = "timestamp",
+  Message = "message",
+  Tags = "tags",
+  WordSearch = "wordSearch",
 
   // Add more sorting criteria as needed
 }
-
-export default SortCriteria;
+export { SortCriteria };

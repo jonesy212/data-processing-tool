@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import * as articleApi from '../../../app/api/articleApi';
 import { sendEmail } from "../communications/email/SendEmail";
 import { sendSMS } from "../communications/sendSMS";
-import { StatusType } from "../models/data/StatusType";
+import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
 import { Project, ProjectDetails } from "../projects/Project";
 import { updateProject } from "../state/redux/slices/ProjectManagerSlice";
@@ -21,6 +21,22 @@ import NotificationManager from "../support/NotificationManager";
 const dispatch = useDispatch()
 const { notify } = useNotification()
 
+
+interface LogActivityParams {
+  activityType: ActivityTypeEnum;
+  action: ActivityActionEnum;
+  userId: string;
+  date: Date;
+  snapshotId: string;
+  description?: string; // Optional description field
+  data?: any; // Optional additional data
+}
+
+interface TriggerIncentivesParams {
+  userId: string;
+  incentiveType: string;
+  params?: any;
+}
 
 // Define the NotificationManager instance and ApiNotificationsService instance if needed
 const notificationManager = new NotificationManager({
@@ -81,6 +97,7 @@ const notifyEventSystem = (
       timestamp: new Date(),
       level: "info",
       message: "",
+      data: eventData,
     },
     sendStatus: "Sent",
   };
@@ -117,6 +134,7 @@ const notifyEventSystem = (
 
 
 const updateProjectState = (
+  stateType: ProjectStateEnum,
   projectId: string,
   newState: Project,
   content: any
@@ -256,22 +274,36 @@ const isValidStatus = (status: StatusType): boolean => {
   
   
 
-const logActivity = ({ activityType, description, data }: { activityType: string; description: string; data?: any }) => {
+  
+  const logActivity = ({
+    activityType,
+    action,
+    userId,
+    date,
+    snapshotId,
+    description = '',
+    data,
+  }: LogActivityParams) => {
     // Logic to log the activity
     console.log(`Activity '${activityType}': ${description}`);
+    console.log(`Action: '${action}' by User: '${userId}' on ${date}`);
+    console.log(`Snapshot ID: '${snapshotId}'`);
+    
     if (data) {
       console.log("Additional data:", data);
     }
+    
     // Additional logic to handle the logged activity
   };
-  const triggerIncentives = (
-    userId: string,
-    incentiveType: string,
-    params?: any
-  ) => {
+  
+  const triggerIncentives = ({
+    userId,
+    incentiveType,
+    params,
+  }: TriggerIncentivesParams) => {
     // Logic to trigger incentives for the user with the provided ID
     console.log(`Triggering '${incentiveType}' incentive for user '${userId}'`);
-    
+  
     // Check if additional parameters are provided
     if (params) {
       console.log("Additional parameters:", params);
@@ -283,7 +315,6 @@ const logActivity = ({ activityType, description, data }: { activityType: string
     }
   };
   
-
 
   
   // Additional logic to handle the triggered incentive with parameters

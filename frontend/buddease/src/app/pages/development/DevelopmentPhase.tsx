@@ -1,5 +1,5 @@
 // DevelopmentPhase.tsx
-
+import React from "react";
 import { DevelopmentPhaseEnum } from "@/app/components/models/data/StatusType";
 import RegistrationPhaseComponent from "../onboarding/RegistrationPhaseComponent";
 import { OnboardingPhase } from "../personas/UserJourneyManager";

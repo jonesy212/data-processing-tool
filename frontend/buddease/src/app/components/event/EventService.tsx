@@ -6,19 +6,21 @@ import {
   MouseEvent,
   SyntheticEvent,
 } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { EventActions } from "../actions/EventActions";
 import { UIActions } from "../actions/UIActions";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+import { RootState } from "../state/redux/slices/RootSlice";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../state/redux/slices/RootSlice";
-import { EventActions } from "../actions/EventActions";
+
+
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
   initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
@@ -453,11 +455,16 @@ class EventService {
   private calculateProgressPercentage(event: Event & SyntheticEvent): Progress {
     let progress: Progress = {
       id: "",
-      value: 0,
+      name: "",
+      color: "",
       label: "",
+      description: "",
       current: 0,
       max: 100,
-      percentage: 0
+      min: 0,
+      value: 0,
+      percentage: 0,
+      done: false
     };
   
     // Check if the event has 'loaded' and 'total' properties

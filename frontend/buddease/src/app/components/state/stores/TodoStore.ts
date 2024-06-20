@@ -2,10 +2,11 @@ import { generateSnapshotId } from './../../utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { makeAutoObservable } from "mobx";
-import { useRef, useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
-import SnapshotStore, { Snapshot, useSnapshotStore } from "../../snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import useSnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
   useNotification,
@@ -21,6 +22,8 @@ export interface TodoManagerStore<T> {
   todoList: Todo[];
   toggleTodo: (id: string) => void;
   addTodo: (todo: Todo) => void;
+  loading: MutableRefObject<boolean>;
+  error: MutableRefObject<string>;
   addTodos: (
     newTodos: Todo[],
     data: SnapshotStore<Snapshot<Todo>>
@@ -54,7 +57,9 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
-  >({});
+    >({});
+  const loading = useRef(false);
+  const error = useRef("");
   const [uiState, setUIState] = useState<{
     loading: boolean;
     error: string | null;
@@ -133,7 +138,6 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
     setTodos((prevTodos) => ({ ...prevTodos, [todo.id]: todo }));
   };
 
-  const loading = useRef(false);
 
   const addTodos = (
     newTodos: Todo[],
@@ -141,26 +145,31 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
-
+  
       newTodos.forEach((todo) => {
         updatedTodos[todo.id as string] = todo;
-
+  
         // Take snapshot for each todo
         if (data) {
-          // Use lodash omit to exclude 'id' property
-          const updatedSnapshots: SnapshotStore<Snapshot<Todo>> =
-            data.createSnapshot({
-              timestamp: new Date(),
-              data: {} as Data,
-            });
-          data.takeSnapshot(updatedSnapshots);
+          // Convert todo to snapshot format
+          const snapshot: Snapshot<Todo> = {
+            todoSnapshotId: generateSnapshotId,
+            initialState: todo,
+            category: "todo",
+            timestamp: new Date(),
+            // Other properties specific to Snapshot<Todo> if needed
+          };
+  
+          // Take the snapshot
+          data.takeSnapshot(snapshot);
         }
       });
-
-      // Update state
+  
+      // Update state with new todos
       return updatedTodos;
     });
   };
+  
 
   const todoList = Object.values(todos);
   const subscribeToSnapshot = (
@@ -563,6 +572,8 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
       // Todos
       dispatch,
       todos,
+      loading,
+      error,
       toggleTodo,
       addTodo,
       addTodos,
@@ -609,3 +620,4 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
   return useTodoManagerStore;
 };
 export default useTodoManagerStore;
+

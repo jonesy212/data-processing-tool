@@ -48,9 +48,6 @@ interface NotificationMessages {
   [category: string]: MessageCategory<string>;
 }
 
-
-
-
 const NOTIFICATION_MESSAGES: NotificationMessages = {
   Fetch_Notification_Defaults: {
     success: "Notifications fetched successfully",
@@ -252,6 +249,9 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
       "Error setting data analysis phase. Please try again",
     SET_DATA_ANALYSIS_PHASE_ERROR_INVALID_PHASE:
       "Invalid data analysis phase. Please try again",
+    ANALYZE_DATA_SUCCESS: "Data analysis started successfully",
+    ANALYZE_DATA_ERROR: "Error starting data analysis. Please try again",
+      FETCH_ANALYSIS_RESULTS_ERROR: "Error fetching data analysis results. Please try again",
     // Add more messages for the DataAnalysis type
     // You can customize the messages based on your application's needs
   },
@@ -314,7 +314,6 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   },
 
   // Error and Authentication
-
   Error: {
     DEFAULT: `"Error marking task as complete"`,
     INVALID_CREDENTIALS: "Invalid credentials. Please try again",
@@ -338,7 +337,6 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   EventReminder: {
     DEFAULT: "Event reminder",
     EVENT_OCCURRED: "An event has occurred",
-
     // Add more messages for the EventReminder type
   },
 
@@ -870,6 +868,10 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     DEFAULT: `Error in Welcome`,
     ACCOUNT_CREATED: "Your account has been successfully created",
     // Add more messages for the Welcome type
+  },
+
+  Task: {
+    TASK_POSITION_UPDATED: "Task position updated successfully",
   },
   Token: {
     DEFAULT: `Error in Tokens`,

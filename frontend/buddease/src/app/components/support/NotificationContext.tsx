@@ -2,7 +2,7 @@
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import React, { createContext, useContext } from "react";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
-import { PriorityTypeEnum } from "../models/data/StatusType";
+import { NotificationPosition, PriorityTypeEnum } from "../models/data/StatusType";
 import { NotificationData } from "./NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "./NotificationMessages";
 
@@ -32,6 +32,7 @@ export enum NotificationTypeEnum {
   ContentItem = "ContentItem",
   CouponCode = "CouponCode",
   CreationSuccess = "CreationSuccess",
+
   CustomNotification1 = "CustomNotification1",
   CustomNotification2 = "CustomNotification2",
   DataLimitApproaching = "DataLimitApproaching",
@@ -39,8 +40,9 @@ export enum NotificationTypeEnum {
   Dismiss = "Dismiss",
   DocumentEditID = "DocumentEditID",
   Error = "Error",
+  Event = "Event",
   ApiError = "ApiError",
-
+  ADD_PARTICIPANT = "ADD_PARTICIPANT",
   EventID = "EventID",
   EventOccurred = "EventOccurred",
   EventReminder = "EventReminder",
@@ -76,6 +78,7 @@ export enum NotificationTypeEnum {
   ArticleUpdated = "ArticleUpdated",
   ProductID = "ProductID",
   PushNotification = "PushNotification",
+  SnapshotCreationSuccess = "SnapshotCreationSuccess",
   SnapshotDetails = "SnapshotDetails",
   Snapshot = "Snapshot",
   Success = "Success",
@@ -113,13 +116,10 @@ export interface NotificationContextProps {
     content: any,
     date: Date,
     type: NotificationType,
-    // title?: string
+    notificationPosition?: NotificationPosition
   ) => Promise<void>;
-
   notifications: NotificationData[];
-
   showMessage: (message: Message, type: NotificationType) => void;
-
   showMessageWithType: (message: Message, type: NotificationType) => void;
   showSuccessNotification: (
     id: string,
@@ -128,7 +128,6 @@ export interface NotificationContextProps {
     date?: Date | undefined,
     type?: NotificationType
   ) => void | Promise<void>;
-
   showErrorNotification: (
     id: string,
     message: string | Message,
@@ -163,8 +162,11 @@ export interface NotificationContextProps {
       message: string | Message,
       content: any,
       date?: Date | undefined,
-      type?: NotificationType | undefined
-    ) => void;
+      type?: NotificationType | undefined,
+      setDuration?: (duration: number) => void
+    ) => {
+      setDuration: (duration: number) => void; // Ensure setDuration is defined correctly
+    };
     dismiss?: (id: string) => void;
     dismissAll?: () => void;
   };
@@ -175,28 +177,37 @@ export interface NotificationContextProps {
     date?: Date | undefined,
     type?: NotificationType | undefined
   ) => void;
-
   showNotification: (
     id: string,
     message: string | Message,
     content: any,
     date?: Date | undefined,
-    type?: NotificationType | undefined
+    type?: NotificationType | undefined,
+    setDuration?: (duration: number) => void  // Ensure setDuration is defined here
+
   ) => void;
+  setDuration: (duration: number) => void; // Add setDuration here
 }
 
 const DefaultNotificationContext: NotificationContextProps = {
   setNotifications: () => {},
   sendNotification: () => {},
   addNotification: () => {},
-  notify: async () => {},
+  notify: async (id, message, content, date, type, notificationPosition) => {
+    // Implement your notification logic here
+    console.log("Notification sent:", message);
+  },
   notifications: [],
   showMessageWithType: () => {},
   showSuccessNotification: async () => {},
   showErrorNotification: async () => {},
   showMessage: (message: Message, type: NotificationType) => {},
   showInfoNotification: async () => {},
-  showNotification: async () => {},
+  showNotification: async () => { },
+  setDuration: (duration) => {
+    // Implement your duration setting logic here
+    console.log("Notification duration set:", duration);
+  },
 };
 
 // Modify NotificationContextProps interface
@@ -213,7 +224,8 @@ export interface NotificationContextProps {
     content: any,
     // randomBytes?: BytesLike,
     date: Date,
-    type: NotificationType
+    type: NotificationType,
+    notificationPosition?: NotificationPosition
   ) => Promise<void>;
   notifications: NotificationData[];
   // Add more notification functions as needed
@@ -233,6 +245,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     notificationStore?.addNotification(notification);
   };
 
+
+  const setDuration = (duration: number) => {
+    if (notificationStore && notificationStore.setDuration) {
+      notificationStore.setDuration(duration);
+    } else {
+      console.error("Failed to set notification duration.");
+    }
+  };
   const notify = (
     type: NotificationType,
     userName?: string | number,
@@ -291,13 +311,16 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <NotificationContext.Provider
-      value={notificationStore || DefaultNotificationContext}
+      value={{
+        ...notificationStore,
+        addNotification,
+        setDuration,  // Include setDuration in the context value
+      }}
     >
       {children}
     </NotificationContext.Provider>
   );
 };
-
 
 export const useNotification = (): NotificationContextProps => {
   const context = useContext(NotificationContext);
@@ -312,6 +335,7 @@ export const useNotification = (): NotificationContextProps => {
     
   };
 };
+
 export type NotificationType =
   | NotificationTypeEnum
   | DocumentTypeEnum

@@ -14,6 +14,7 @@ import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import DataPreview from "../../../components/users/DataPreview";
 import { PersonaData, PersonaTypeEnum } from "../PersonaBuilder";
 import PersonaPanel from "./PersonaPanel";
+import React from "react";
 
 
 // Define initial personas

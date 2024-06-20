@@ -26,6 +26,7 @@ class CourseBuilder {
   }
   addPhase(phaseTitle: string): void {
     this.course.phases.push({
+      id: "",
       title: phaseTitle,
       lessons: [],
       name: "",
@@ -33,7 +34,7 @@ class CourseBuilder {
       endDate: new Date(),
       subPhases: [],
       component: {} as React.FC, // Use React.FC as the type
-      hooks: {} as CustomPhaseHooks[],
+      hooks: {} as CustomPhaseHooks,
       duration: 0,
     });
   }

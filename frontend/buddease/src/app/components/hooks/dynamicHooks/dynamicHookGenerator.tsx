@@ -1,6 +1,6 @@
-import { RealtimeDataItem } from "../../../../../models/realtime/RealtimeData";
 import { ClipboardData, CustomEventExtensionConstructor } from "../../event/BaseCustomEvent";
 import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
+import { RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import { RootState } from "../../state/redux/slices/RootSlice";
 import { updateCallback } from "../../state/stores/CalendarEvent";
 import useRealtimeData from "../commHooks/useRealtimeData";
@@ -73,10 +73,16 @@ const createDynamicHook = ({
       id: "",
       value: 0,
       label: "Progress",
+      name: "Progress",
+      color: "#ff5733",
+      description: "This is a progress bar",
       current: 0,
       max: 100,
+      min: 0,
       percentage: 0,
+      done: false,
     },
+
     phaseType: ProjectPhaseTypeEnum.Test,
     toggleActivation: async () => {},
     startAnimation: () => {},

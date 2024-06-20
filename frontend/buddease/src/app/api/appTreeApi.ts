@@ -1,4 +1,5 @@
 // AppTreeApi.ts
+
 import { handleApiError } from "@/app/api/ApiLogs";
 import {
   NotificationType,
@@ -11,12 +12,15 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "../components/hooks/useLocalStorage";
+import { ReassignEventResponse } from "../components/state/stores/AssignEventStore";
 import AppTreeService from "../services/AppTreeService";
 import { isDataRecentEnough } from "../utils/isDataRecentEnough";
+ 
+const RESPONSES_STORAGE_KEY = 'responses';
 
 const appTreeData = AppTreeService.getTree();
+const eventId = Object.keys(appTreeData)[0];
 const defaultValue = appTreeData;
-
 class AppTreeApiService {
   notify: (
     id: string,
@@ -63,20 +67,21 @@ class AppTreeApiService {
       console.error("Error fetching app tree from local storage:", error);
     }
   }
+
   async refreshAppTreeFromApi(): Promise<any> {
     try {
       // Fetch app tree data from local storage
       const cachedData = await this.fetchAppTreeFromLocalStorage();
-  
+
       // Calculate the threshold based on the cached data
       const threshold = setThreshold(cachedData, 0); // Adjust the threshold value as needed
-  
+
       // Check if cachedData exists and if it's recent enough to avoid unnecessary API calls
       if (cachedData && isDataRecentEnough(cachedData, Number(threshold))) {
         // If the cached data is recent enough, return it without making an API call
         return cachedData;
       }
-  
+
       // Notify user about app tree refresh
       this.notify(
         "App tree refresh",
@@ -85,13 +90,13 @@ class AppTreeApiService {
         new Date(),
         NotificationTypeEnum.Info
       );
-  
+
       // Fetch updated app tree data from the API
       const responseData = await this.callApi("getTree");
-  
+
       // Save the updated app tree data to local storage
       await this.saveAppTreeToLocalStorage(responseData);
-  
+
       // Return the updated app tree data
       return responseData;
     } catch (error) {
@@ -100,8 +105,7 @@ class AppTreeApiService {
       throw error;
     }
   }
-  
-  
+
   private async callApi(endpoint: string): Promise<any> {
     try {
       const responseData = await AppTreeService.getTree(); // Assuming getTree function returns the desired data
@@ -121,9 +125,82 @@ class AppTreeApiService {
     }
   }
 
-  // Add more methods for other app tree endpoints as needed
+  // Public method to fetch event responses from local storage
+  public async fetchEventResponsesFromLocalStorage(eventId: string): Promise<ReassignEventResponse[]> {
+    const cachedData = getFromLocalStorage(`${RESPONSES_STORAGE_KEY}_${eventId}`, []);
+    return cachedData;
+  }
+
+  // Public method to save event responses to local storage
+  public async saveEventResponsesToLocalStorage(eventId: string, data: ReassignEventResponse[]): Promise<void> {
+    try {
+      saveToLocalStorage(`${RESPONSES_STORAGE_KEY}_${eventId}`, data);
+    } catch (error) {
+      console.error(`Error saving event responses for event ${eventId} to local storage:`, error);
+      throw error;
+    }
+  }
 }
 
 const appTreeApiService = new AppTreeApiService(useNotification);
+
+
+
+
+// Fetch event responses
+appTreeApiService.fetchEventResponsesFromLocalStorage(eventId)
+  .then((responses) => {
+    console.log('Fetched responses:', responses);
+  })
+  .catch((error) => {
+    console.error('Error fetching responses:', error);
+  });
+
+// Save event responses
+// Define responses array
+const responses: ReassignEventResponse[] = [
+  {
+    eventId: "event1",
+    assignee: "user1",
+    todoId: "todo1",
+    assigneeId: "",
+    responseId: "",
+    userId: "",
+    comment: "",
+    timestamp: undefined,
+    reassignData: [],
+    assignedTo: ""
+  },
+  
+  {
+    eventId: "event2",
+    assignee: "user2",
+    todoId: "todo2",
+    assigneeId: "",
+    responseId: "",
+    userId: "",
+    comment: "",
+    timestamp: undefined,
+    reassignData: [],
+    assignedTo: ""
+  },
+  // Add more objects as necessary
+];
+
+// Iterate over responses array
+for (const response of responses) {
+  console.log(`Event ID: ${response.eventId}, Assignee: ${response.assignee}, Todo ID: ${response.todoId}`);
+  // Process each response object here
+}
+
+appTreeApiService.saveEventResponsesToLocalStorage(eventId, responses)
+  .then(() => {
+    console.log('Responses saved successfully.');
+  })
+  .catch((error) => {
+    console.error('Error saving responses:', error);
+  });
+
+
 
 export default appTreeApiService;

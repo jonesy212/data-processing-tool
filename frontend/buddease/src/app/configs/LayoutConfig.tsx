@@ -1,5 +1,6 @@
 //LayoutConfig.ts
 
+import React from "react";
 import responsiveDesignStore from "../components/styling/ResponsiveDesign";
 import { User } from "../components/users/User";
 import { DocxGenerator, DocxGeneratorOptions } from "../generators/docxGenerator";

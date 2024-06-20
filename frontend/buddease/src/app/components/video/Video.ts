@@ -18,7 +18,7 @@ interface VideoProperties {
   isUploading: boolean,
   isDownloading: boolean,
   isDeleting: boolean,
-  thumbnail: "",
+  thumbnail: string,
   isProcessing: boolean,
   isPrivate: boolean,
   isProcessingFailed: boolean,
@@ -60,7 +60,7 @@ interface Video extends VideoProperties {
   isFamilyFriendly: boolean;
   isEmbeddable: boolean;
   isDownloadable: boolean;
-  playlists: [],
+  playlists: string[],
   videoSubtitles: string[]
 }
 

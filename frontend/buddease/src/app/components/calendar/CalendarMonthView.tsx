@@ -11,14 +11,26 @@ import { RootState } from "../state/redux/slices/RootSlice";
 import { rootStores } from "../state/stores/RootStores";
 import { TaskActions } from "../actions/TaskActions";
 import { useDispatch } from "react-redux";
-import { dropTask, resizeTask } from "../state/redux/slices/TaskSlice";
+import {
+  dropTask,
+  resizeTask,
+  updateTaskDetails,
+  updateTaskPositionAsync,
+} from "../state/redux/slices/TaskSlice";
 import { updateTask } from "../state/redux/slices/CollaborationSlice";
-import { Dispatch } from "@reduxjs/toolkit";
+import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
 // import CalendarMonth from './CalendarMonthView';
-import {updateTaskPosition} from "../state/redux/slices/TaskSlice";
-import {  MonthInfo } from "./Month";
+import { updateTaskPosition } from "../state/redux/slices/TaskSlice";
+import { MonthInfo } from "./Month";
 import { YearInfo } from "./CalendarYear";
+import * as taskApi from "@/app/api/TasksApi";
+import { NOTIFICATION_TYPES } from "../support/NotificationTypes";
+import { TaskState } from "../state/redux/slices/TaskSlice";
+import { PriorityStatus } from "../models/data/StatusType";
 
+import useNotification from "../support/NotificationContext";
+
+const {notify} = useNotification();
 interface MonthViewProps extends CommonCalendarProps {
   selectedProject: (state: RootState, projectId: string) => Project | null;
   month: MonthInfo[]; // Add month prop
@@ -38,6 +50,10 @@ const MonthView: React.FC<MonthViewProps> = ({
   milestones,
   selectedProject,
   projectId,
+  onAudioCallStart,
+  onAudioCallEnd,
+  onVideoCallStart,
+  onVideoCallEnd,
   ...taskHandlers
 }) => {
   // Assuming you have access to the root state of your application and projectId is defined
@@ -59,7 +75,6 @@ const MonthView: React.FC<MonthViewProps> = ({
     console.log("Task double-clicked:", task);
   };
 
-
   const handleonTaskContextMenu = (task: Task, event: React.MouseEvent) => {
     // Handle task context menu
     event.preventDefault(); // Prevent the default context menu
@@ -74,73 +89,68 @@ const MonthView: React.FC<MonthViewProps> = ({
     console.log("Task context menu:", task);
   };
 
-
   const handleTaskDragStart = (task: Task) => {
     // Handle task drag start
     console.log(task);
   };
 
+  // Define the updateTaskPosition action
 
-
-  // Example of updating task position in Redux state
-const updateTaskPosition = (taskId: string, newPosition: number) => {
-  return async (dispatch: Dispatch) => {
+// Define the Thunk action
+const updateTaskPosition = (
+  taskId: string,
+  newPosition: number
+): ThunkAction<ReturnType, RootState, unknown, Action<string>> => {
+  return async (dispatch: Dispatch<Action<string>>, getState: () => RootState) => {
     try {
       // Make an API call to update the task's position in the database
-      await taskApi.updateTaskPosition(taskId, newPosition);
+      await taskApi.updateTaskPosition(taskId, newPosition, dispatch, notify());
 
       // Dispatch an action to update the task's position in the Redux state
       dispatch(updateTaskPositionSuccess(taskId, newPosition));
     } catch (error) {
       // Handle error, if any
-      console.error("Error updating task position:", error);
+      console.error('Error updating task position:', error);
     }
   };
 };
 
-const updateTaskPositionSuccess = (taskId: string, newPosition: number) => ({
-  type: UPDATE_TASK_POSITION_SUCCESS,
-  payload: { taskId, newPosition },
-});
+
+  const updateTaskPositionSuccess = (taskId: string, newPosition: number) => ({
+    type: NOTIFICATION_TYPES.TASK_UPDATED,
+    payload: { taskId, newPosition },
+  });
 
   const onTaskResize = (task: Task, newSize: number) => {
     // Handle task resize
     console.log(task, newSize);
-    dispatch(resizeTask(task, newSize));
+    dispatch(resizeTask({ task, newSize }));
+  };
+
+  // handleOnTaskChange function logic
+  const handleOnTaskChange = (task: Task, updatedDetails: Task) => {
+    // Implement logic for handling task change
+    console.log("Task changed:", task);
+    console.log("Updated details:", updatedDetails);
+    // Add your custom logic here
+    // For example, you might want to update the task's details in the database
+    // Or trigger a Redux action to update the task's details in the state
+
+    // Example of updating task details in Redux state
+    dispatch(updateTaskDetails({ id: task.id, updates: updatedDetails }));
   };
 
 
 
-
-
-
-  // handleOnTaskChange function logic
-const handleOnTaskChange = (task: Task) => {
-  // Implement logic for handling task change
-  console.log("Task changed:", task);
+  const handleOnTaskDrop = (task: Task, newPosition: { [key: string]: number }) => {
+    const dispatch = useDispatch();
   
-  // Add your custom logic here
-  // For example, you might want to update the task's details in the database
-  // Or trigger a Redux action to update the task's details in the state
+    // Implement logic for handling task drop
+    console.log('Task dropped:', task);
   
-  // Example of updating task details in Redux state
-  dispatch(updateTaskDetails(task.id, task.updatedDetails));
-};
-
-
-  // handleOnTaskDrop function logic
-const handleOnTaskDrop = (task: Task) => {
-  // Implement logic for handling task drop
-  console.log("Task dropped:", task);
-  
-  // Add your custom logic here
-  // For example, you might want to update the task's position in the database
-  // Or trigger a Redux action to update the task's position in the state
-  
-  // Example of updating task position in Redux state
-  dispatch(updateTaskPosition(task.id, task.newPosition));
-};
-
+    // Example of updating task position in Redux state
+    dispatch(updateTaskPositionAsync(task.id, newPosition));
+  };
 
 
   const handleEventClick = (event: any) => {
@@ -166,18 +176,79 @@ const handleOnTaskDrop = (task: Task) => {
 
   const handleTaskResize = (
     task: Task,
-    newSize: { startDate: Date; endDate: Date }
+    newSize: number,
+    startDate: Date,
+    endDate: Date
   ) => {
     console.log(`Task Resized: ${task.title}`, newSize);
+    // Dispatch the size update
     dispatch(
       resizeTask({
-        ...task,
-        startDate: newSize.startDate,
-        endDate: newSize.endDate,
+        task,
+        newSize
+      })
+    );
+    
+    // Dispatch a separate action for date updates if needed
+    dispatch(
+      updateTaskDates({
+        task,
+        startDate,
+        endDate
       })
     );
   };
+  
+  // Example of updateTaskDates action creator and reducer
+  const updateTaskDates = (payload: { task: Task; startDate: Date; endDate: Date }) => ({
+    type: 'UPDATE_TASK_DATES',
+    payload
+  });
 
+
+
+
+const initialState: TaskState = {
+  id: '', // Initialize with appropriate values
+  tasks: [],
+  loading: false,
+  error: null,
+  updateTaskTitle: (title) => {}, // Define your updateTaskTitle function
+  deleteTask: (id) => {}, // Define your deleteTask function
+  taskTitle: '',
+  taskDescription: '',
+  status: 'pending', // Example initialization for status
+  dueDate: null,
+  priority: PriorityStatus.Low, // Example initialization for priority
+  taskStatus: 'active', // Example initialization for taskStatus
+  entitiesLoaded: {},
+  tags: [],
+};
+  
+  
+const tasksReducer = (state: TaskState = initialState, action: { type: string; payload: any }): TaskState => {
+  switch(action.type) {
+    case 'UPDATE_TASK_DATES':
+      const { task, startDate, endDate } = action.payload;
+      const index = state.tasks.findIndex((t) => t.id === task.id);
+      if (index !== -1) {
+        // Create a new array to ensure immutability
+        const updatedTasks = [
+          ...state.tasks.slice(0, index), // Copy tasks before the updated one
+          { ...task, startDate, endDate }, // Updated task
+          ...state.tasks.slice(index + 1), // Copy tasks after the updated one
+        ];
+        return {
+          ...state,
+          tasks: updatedTasks,
+        };
+      }
+      return state; // Return original state if task not found
+    default:
+      return state; // Return original state for unrecognized action types
+  }
+};
+  
   const handleTaskDrop = (
     task: Task,
     newPosition: { startDate: Date; endDate: Date }
@@ -252,6 +323,18 @@ const handleOnTaskDrop = (task: Task) => {
   return (
     <div>
       <CalendarMonth
+        onAudioCallStart={function (participantIds: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
+        onAudioCallEnd={function (participantIds: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
+        onVideoCallStart={function (participantIds: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
+        onVideoCallEnd={function (participantIds: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
         projectId={projectId}
         month={month}
         year={year}
@@ -315,8 +398,8 @@ const handleOnTaskDrop = (task: Task) => {
         onTaskProgressRemove={handleOnTaskProgressRemove}
         onTaskLabelAdd={handleOnTaskLabelAdd}
         milestones={milestones}
-        onAudioCallStart={}
-        onVideoCallStart={}
+        onAudioCallStart={onAudioCallStart}
+        onVideoCallStart={onVideoCallStart}
         onMessageSend={function (
           message: string,
           participantIds: string[]
@@ -325,11 +408,9 @@ const handleOnTaskDrop = (task: Task) => {
         }}
         onMilestoneClick={handleMilestoneClick}
         cryptoHoldings={[]}
-        onCryptoTransaction={
-          function (transaction: CryptoTransaction): void {
+        onCryptoTransaction={function (transaction: CryptoTransaction): void {
           throw new Error("Function not implemented.");
-        }
-        }
+        }}
         isDarkMode={false}
         onThemeToggle={function (): void {
           throw new Error("Function not implemented.");
@@ -354,6 +435,13 @@ const handleOnTaskDrop = (task: Task) => {
           throw new Error("Function not implemented.");
         }}
         onContentPostPerformanceTrack={function (post: ContentPost): void {
+          throw new Error("Function not implemented.");
+        }}
+        projects={[]}
+        onAudioCallEnd={function (participantIds: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
+        onVideoCallEnd={function (participantIds: string[]): void {
           throw new Error("Function not implemented.");
         }}
       />

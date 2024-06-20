@@ -1,20 +1,17 @@
 // BackendStructure.ts
 import Logger from "@/app/components/logging/Logger";
-import { NotificationType } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
 import getAppPath from "../../../../appPath";
 import { AppStructureItem } from "./AppStructure";
-
 export default class BackendStructure {
-  [key: string]: any
   structure: Record<string, AppStructureItem> = {};
 
   constructor(projectPath: string) {
     this.traverseDirectory(projectPath);
-
   }
 
   async traverseDirectory(dir: string): Promise<AppStructureItem[]> {
@@ -31,16 +28,14 @@ export default class BackendStructure {
           const subDirectoryItems = await this.traverseDirectory(filePath);
           result.push(...subDirectoryItems);
         } else if (stat.isFile()) {
-          // Logic to parse file and update structure accordingly
           if (file.endsWith(".py")) {
             const uniqueID = UniqueIDGenerator.generateID(
               file,
               filePath,
-              "generateBackendStructureID" as NotificationType
+              NotificationTypeEnum.FileID,
             );
             const fileContent = await fs.readFile(filePath, "utf-8");
             this.structure[uniqueID] = {
-
               id: uniqueID,
               name: file,
               type: "file",
@@ -61,7 +56,7 @@ export default class BackendStructure {
       return result;
     } catch (error) {
       console.error("Error during directory traversal:", error);
-      throw error; // Rethrow the error for higher-level error handling
+      throw error;
     }
   }
 
@@ -72,6 +67,4 @@ export default class BackendStructure {
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
-export const backendStructure: BackendStructure = new BackendStructure(
-  projectPath
-);
+export const backendStructure: BackendStructure = new BackendStructure(projectPath);

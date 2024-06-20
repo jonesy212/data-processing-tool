@@ -13,11 +13,14 @@ import { NOTIFICATION_TYPES } from "../../support/NotificationTypes";
 import useNotificationBar from "../commHooks/useNotificationBar";
 import { createPhaseHook } from "../phaseHooks/PhaseHooks";
 import useDarkModeToggle from "./useDarkModeToggle";
+import { logData } from "../../notifications/NotificationService";
+
+
 
 const usePhaseUI = () => {
   const dispatch = useNotificationBar();
   const { isDarkMode } = useDarkModeToggle();
-
+  
   const createDarkModeTogglePhaseHook = () => {
     // Define the condition for when the phase hook should be active
     const condition = () => true;
@@ -87,6 +90,7 @@ const usePhaseUI = () => {
 
 
   const logData: LogData = {
+    date: new Date(),
     endpoint: endpoints.notifications,
     method: "GET",
     status: "200",
@@ -134,6 +138,13 @@ const usePhaseUI = () => {
               completionMessageLog: logData,
               date: new Date(),
               notificationType: "",
+              topics: [],
+              highlights: [],
+              files: [],
+              rsvpStatus: "yes",
+              participants: [],
+              teamMemberId: "",
+              taskIdToAssign: undefined,
             },
             addNotification
           );
@@ -332,7 +343,7 @@ const createDarkModeTogglePhaseHook = () => {
   });
 };
 
-export { usePhaseUI };
+export { usePhaseUI, createDarkModeTogglePhaseHook};
 export const darkModeTogglePhaseHook = createDarkModeTogglePhaseHook();
 export const notificationBarPhaseHook = createNotificationBarPhaseHook();
 

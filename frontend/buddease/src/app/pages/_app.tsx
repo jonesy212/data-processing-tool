@@ -28,13 +28,16 @@ import {
   ThemeConfigProvider,
   useThemeConfig,
 } from "../components/hooks/userInterface/ThemeConfigContext";
-import { default as ThemeCustomization, default as defaultThemeConfig } from "../components/hooks/userInterface/ThemeCustomization";
+import {
+  default as ThemeCustomization,
+  default as defaultThemeConfig,
+} from "../components/hooks/userInterface/ThemeCustomization";
 import { LogData } from "../components/models/LogData";
 import ContentItemComponent from "../components/models/content/ContentItem";
 import { Data } from "../components/models/data/Data";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
- import undoLastAction from "../components/projects/projectManagement/ProjectManager";
+import undoLastAction from "../components/projects/projectManagement/ProjectManager";
 import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
@@ -79,6 +82,8 @@ import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import FormBuilder from "./forms/formBuilder/FormBuilder";
 import LogViewer from "./logs/LogViewer";
 import steps from "../components/phases/steps/steps";
+import DetermineFileType from "../configs/DetermineFileType";
+import FilePreview from "../components/documents/FilePreview";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
@@ -103,9 +108,8 @@ export const {
   setFontFamily,
 } = useThemeConfig();
 
-
-const phaseName = await 
-const phaseId = UniqueIDGenerator.generatePhaseID(phaseName)
+const phaseName = "Calendar Phase";
+const phaseId = UniqueIDGenerator.generatePhaseID(phaseName);
 const phases: Phase[] = [
   {
     _id: phaseId,
@@ -128,7 +132,9 @@ const contentItem: DetailsItem<Data> = {
   title: "Sample Content",
   description: "This is a sample content item.",
   analysisResults: [],
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  subtitle: "This is a sample subtitle",
+  value: "This is a sample value",
   /* Add other relevant details here */
 };
 
@@ -139,16 +145,24 @@ async function MyApp({
   brandingSettings,
   setThemeState,
   notificationState,
-  toolbarOptions
+  toolbarOptions,
 }: ExtendedAppProps) {
   const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
   const [progress, setProgress] = useState(0);
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   // const editorState = useEditorState();
+  const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
+  const [username, setUsername] = useState<string>("defaultUsername");
+  const [password, setPassword] = useState<string>("<PASSWORD>");
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(true); // Example state for user login status
+  const [filePath, setFilePath] = useState<string>("");
+  const [file, setFile] = useState<File>();
+  const idleTimeout = useIdleTimeout({
+    /* pass any required props here */
+  });
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
-);
-
+  );
 
   const [activeDashboard, setActiveDashboard] = useState<
     | "communication"
@@ -170,56 +184,47 @@ async function MyApp({
     | "community"
     | "onEditorStateChange"
     | "editorState"
-    >("communication");
+  >("communication");
 
+  // Define your initial options here
+  const initialOptions: ToolbarOptions = {
+    documents: [
+      "Documents",
+      "Surveys",
+      "Reports",
+      // Add more document options as needed
+    ],
+    tasks: [],
+    settings: [],
+    crypto: [],
+    analytics: [],
+    community: [],
+    ui: [],
+    onEditorStateChange: [],
+    editorState: [],
+    communication: ["Chat", "Call", "Video"],
+    calendar: ["Date", "Time", "Location"],
+    contacts: ["Contact", "Group"],
+    notes: ["Sticky", "Notes"],
+    reminders: ["Reminder", "Calendar"],
 
-  
-// Define your initial options here
-const initialOptions: ToolbarOptions = {
-  documents: [
-    "Documents",
-    "Surveys",
-    "Reports",
-    // Add more document options as needed
-  ],
-  tasks: [],
-  settings: [],
-  crypto: [],
-  analytics: [],
-  community: [],
-  ui: [],
-  onEditorStateChange: [],
-  editorState: [],
-  communication: ["Chat", "Call", "Video"],
-  calendar: ["Date", "Time", "Location"],
-   contacts: ["Contact", "Group"],
-   notes: ["Sticky", "Notes"],
-   reminders: ["Reminder", "Calendar"],
+    search: ["Search"],
+    help: ["Search", "Help"],
+    content: ["Content", "Content"],
+    userManagement: ["User", "Group"],
 
-  search: ["Search"],
-   help: ["Search", "Help"],
-   content: ["Content", "Content"],
-   userManagement: ["User", "Group"],
-
-  notifications: ["Notifications"],
-   integrations: ["Integrations"],
-   mediaManagement: ["Media", "Media"],
-   projectManagement: ["Project", "Project"],
+    notifications: ["Notifications"],
+    integrations: ["Integrations"],
+    mediaManagement: ["Media", "Media"],
+    projectManagement: ["Project", "Project"],
 
     ecommerce: ["commerce"],
-   reporting: ["Reporting"],
-   contentCreation: ["Content Creation"],
-   customerSupport: ["Customer Support"],
-   marketing: ["Marketing"],
-};
-  
-  const token = "your-token-value"; // Initialize the token here or get it from wherever it's stored
-  const [username, setUsername] = useState<string>("defaultUsername");
-  const [password, setPassword] = useState<string>("<PASSWORD>");
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(true); // Example state for user login status
-  const idleTimeout = useIdleTimeout({
-    /* pass any required props here */
-  });
+    reporting: ["Reporting"],
+    contentCreation: ["Content Creation"],
+    customerSupport: ["Customer Support"],
+    marketing: ["Marketing"],
+  };
+
 
   // Define the 'addNotifications' function to add new notifications
   const addNotifications = (message: string, randomBytes: BytesLike) => {
@@ -238,6 +243,12 @@ const initialOptions: ToolbarOptions = {
       status: undefined,
       sendStatus: "Sent",
       notificationType: NotificationTypeEnum.NewNotification,
+      topics: [],
+      highlights: [],
+      files: [],
+      rsvpStatus: "yes",
+      participants: [],
+      teamMemberId: ""
     };
 
     // Update notifications state by appending the new notification
@@ -375,9 +386,6 @@ const initialOptions: ToolbarOptions = {
     removeNotification,
     clearNotifications,
   } = useNotificationManagerService();
-
-
-
 
   const CurrentStepComponent = steps[currentStep];
 
@@ -547,7 +555,11 @@ const initialOptions: ToolbarOptions = {
                                     </Layout>
                                   </Route>
                                   <Route path="/blog">
-                                    <BlogComponent title="" content="" />
+                                    <BlogComponent
+                                      title=""
+                                      content=""
+                                      subscriberId=""
+                                    />
                                   </Route>
                                 </Routes>
                                 <OnboardingComponent />
@@ -616,12 +628,17 @@ const initialOptions: ToolbarOptions = {
                           onEditorStateChange={setEditorState}
                           activeDashboard={activeDashboard}
                           progress={{
-                            id: "progress",
+                            id: "toolbar",
+                            name: "Progress",
+                            color: "blue",
                             value: progress,
                             label: "Progress",
                             current: progress,
                             max: 100,
-                            percentage: 0
+                            min: 0,
+                            percentage: 0,
+                            description: "Progress",
+                            done: false,
                           }}
                           toolbarOptions={toolbarOptions}
                         />
@@ -641,6 +658,18 @@ const initialOptions: ToolbarOptions = {
                             brandingSettings={brandingSettings}
                           />
                         </div>
+                        <div>
+                          <input
+                            type="text"
+                            value={filePath}
+                            onChange={(e) => setFilePath(e.target.value)}
+                            placeholder="Enter file path"
+                          />
+                          {filePath && (
+                            <DetermineFileType filePath={filePath} />
+                          )}
+                        </div>
+                        <FilePreview />
                       </NotificationProvider>
                     </ThemeConfigProvider>
                   )}

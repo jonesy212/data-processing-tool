@@ -3,15 +3,16 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import apiNotificationsService from "@/app/api/NotificationsService";
 import NOTIFICATION_MESSAGES from '@/app/components/support/NotificationMessages';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import axios from "axios";
-import dotProp from "dot-prop";
+import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";
 import Logger from "../logging/Logger";
 import { Task } from "../models/tasks/Task";
 import { Progress } from "../models/tracker/ProgressBar";
+import axiosInstance from "../security/csrfToken";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 
 const API_BASE_URL = endpoints.tasks;
+
 class TaskService {
 
   static instance: TaskService;
@@ -23,18 +24,20 @@ class TaskService {
     return this.instance;
   }
 
-
   @observable tasks: Task[] = [];
   @observable loading = false;
   @observable error: string | null = null;
 
   @action
-  createTask = async (task: Task,  taskId: string, requestData: string) => { 
+  createTask = async (task: Task, taskId: string, requestData: string) => {
     try {
-      task.id =  UniqueIDGenerator.generateTaskID(taskId, await task);
+      task.id = UniqueIDGenerator.generateTaskID(taskId, String(task));
 
-      const endpoint = dotProp.getProperty(API_BASE_URL, 'tasks.create');
-      await axios.post(await apiService.callApi(`${endpoint}`, requestData), task);
+      const endpoint = API_BASE_URL.create;
+      await axiosInstance.post(
+        await apiService.callApi(`${endpoint}`, requestData),
+        task
+      );
 
       apiNotificationsService.notify(
         task.id,
@@ -49,16 +52,16 @@ class TaskService {
     } catch (error) {
       throw new Error("Failed to create task");
     }
-  }
+  };
 
   @action
   fetchTasks = async (requestData: string): Promise<void> => {
     try {
       this.loading = true;
-  
-      const endpoint = dotProp.getProperty(API_BASE_URL, 'tasks.list()');
-      const response = await axios.get(await apiService.callApi(`${endpoint}`, requestData));
-  
+
+      const endpoint = API_BASE_URL.list;
+      const response = await axiosInstance.get(await apiService.callApi(`${endpoint}`, requestData));
+
       runInAction(() => {
         this.tasks = response.data;
         this.error = null;
@@ -74,48 +77,84 @@ class TaskService {
     }
   };
 
-  
+  @action
+  fetchTask = (taskId: number, requestData: string): Promise<AxiosResponse<Task, any>> => {
+    const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
+    return apiService.callApi(endpoint, requestData)
+      .then(apiEndpoint => axiosInstance.get<AxiosResponse<Task, any>>(apiEndpoint))
+      .then(response => response.data)
+      .catch(error => {
+        throw new Error(`Failed to fetch task with ID ${taskId}`);
+      });
+  };
+
 
   @action
-  fetchTask = async (taskId: number, requestData: string): Promise<Task> => {
+  fetchUpdatedData = async (
+    progress: Progress,
+    requestData: string
+  ): Promise<void> => {
     try {
-      const response = await axios.get(
-        await apiService.callApi(dotProp.getProperty(API_BASE_URL, `tasks.single(${taskId})`), requestData)
+      this.loading = true;
+      const endpoint = API_BASE_URL.update;
+      const response = await axiosInstance.post(
+        await apiService.callApi(`${endpoint}`, requestData),
+        progress
       );
-      return response.data;
+      runInAction(() => {
+        this.tasks = response.data;
+        this.error = null;
+      });
+      apiNotificationsService.notify(
+        progress.id,
+        NOTIFICATION_MESSAGES.Tasks.TASK_UPDATED,
+        progress,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      );
+      Logger.info(`Updated task: ${progress.id}`);
+      Logger.info(response.data);
+      Logger.info(response.status.toString());
+      Logger.info(response.statusText);
+      Logger.info(JSON.stringify(response.headers));
+      Logger.info(JSON.stringify(response.config));
     } catch (error) {
-      throw new Error(`Failed to fetch task with ID ${taskId}`);
+      runInAction(() => {
+        this.error = "Failed to fetch updated data";
+      });
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
     }
   };
 
   @action
-  addTask = async (newTask: Task, requestData: string): Promise<Task> => {
-    try {
-      const response = await axios.post(
-        await apiService.callApi(dotProp.getProperty(API_BASE_URL, "tasks.add"), requestData),
-        newTask,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      runInAction(() => {
-        this.tasks.push(response.data);
-        this.error = null;
+  addTask = (newTask: Task, requestData: string): Promise<AxiosResponse<Task, any>> => {
+    const endpoint = API_BASE_URL.add;
+    return apiService.callApi(`${endpoint}`, requestData)
+      .then(apiEndpoint => axiosInstance.post<AxiosResponse<Task, any>>(apiEndpoint, newTask, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }))
+      .then(response => {
+        runInAction(() => {
+          this.tasks.push(response.data.data);
+          this.error = null;
+        });
+        return response.data;
+      })
+      .catch(error => {
+        throw new Error("Failed to add task");
       });
-
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to add task");
-    }
   };
 
   @action
   removeTask = async (taskId: number, requestData: string): Promise<void> => {
     try {
-      await axios.delete(await apiService.callApi(dotProp.getProperty(API_BASE_URL, `tasks.remove(${taskId})`), requestData));
+      const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
+      await axiosInstance.delete(await apiService.callApi(endpoint, requestData));
     } catch (error) {
       throw new Error("Failed to remove task");
     }
@@ -132,9 +171,9 @@ class TaskService {
 
       this.loading = true;
 
-      const endpoint = dotProp.getProperty(API_BASE_URL, "tasks.process");
+      const endpoint = API_BASE_URL.process;
 
-      await axios.post(await apiService.callApi(`${endpoint}`, requestData), {
+      await axiosInstance.post(await apiService.callApi(`${endpoint}`, requestData), {
         taskIds: updatedTasks.map((task) => task.id),
         taskType: taskType,
       });
@@ -144,52 +183,39 @@ class TaskService {
   };
 
   @action
-  updateTask = async (
-    taskId: number,
-    newTitle?: string,
-    requestData?: any
-  ): Promise<Task> => {
-    try {
-      const endpointPath = `tasks.update(${taskId})`;
-      const endpoint = dotProp.getProperty(API_BASE_URL, endpointPath) as
-        | string
-        | undefined;
+  updateTask = (taskId: number, requestData: any): Promise<AxiosResponse<Task, any>> => {
+    const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
 
-      if (!endpoint) {
-        throw new Error(`${endpointPath} endpoint not found`);
-      }
+    return axiosInstance.put<AxiosResponse<Task, any>>(endpoint, requestData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(response => {
+        runInAction(() => {
+          const updatedTask = response.data.data;
+          const index = this.tasks.findIndex(task => task.id === updatedTask.id);
 
-      const response = await axios.put(endpoint, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+          if (index !== -1) {
+            this.tasks[index] = updatedTask;
+          }
+          this.error = null;
+        });
+
+        return response.data;
+      })
+      .catch(error => {
+        throw new Error("Failed to update task");
       });
-
-      runInAction(() => {
-        const updatedTask = response.data;
-        const index = this.tasks.findIndex(
-          (task) => task.id === updatedTask.id
-        );
-
-        if (index !== -1) {
-          this.tasks[index] = updatedTask;
-        }
-        this.error = null;
-      });
-
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to update task");
-    }
   };
 
 
   @action
   getTasks = async (requestData: string): Promise<Task[]> => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         await apiService.callApi(
-          dotProp.getProperty(API_BASE_URL, "tasks.list"),
+          `${API_BASE_URL.list}`,
           requestData
         )
       );
@@ -205,7 +231,9 @@ class TaskService {
   @action
   completeAllTasks = async (requestData: string): Promise<void> => {
     try {
-      await axios.post(await apiService.callApi(dotProp.getProperty(API_BASE_URL, "tasks.completeAll"), requestData));
+      await axiosInstance.post(
+        await apiService.callApi(`${API_BASE_URL.completeAll}`, requestData)
+      );
     } catch (error) {
       throw new Error("Failed to complete all tasks");
     }
@@ -214,8 +242,9 @@ class TaskService {
   @action
   toggleTask = async (taskId: number, requestData?: any): Promise<void> => {
     try {
-      await axios.put(
-        await apiService.callApi(dotProp.getProperty(API_BASE_URL, `tasks.toggle(${taskId})`), requestData),
+      const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
+      await axiosInstance.put(
+        await apiService.callApi(endpoint, requestData),
         requestData
       );
     } catch (error) {
@@ -223,28 +252,30 @@ class TaskService {
     }
   };
 
+
   @action
   removeTasks = async (taskIds: number[], requestData: string): Promise<void> => {
     try {
-      await axios.post(await apiService.callApi(dotProp.getProperty(API_BASE_URL, "tasks.removeMultiple"), requestData), {
+      await axiosInstance.post(await apiService.callApi(`${API_BASE_URL.removeMultiple}`, requestData), {
         taskIds,
       });
     } catch (error) {
       throw new Error("Failed to remove tasks");
     }
   };
+
   @action
   toggleTasks = async (taskIds: number[], requestData: string): Promise<void> => {
     try {
-      const endpoint = dotProp.getProperty(API_BASE_URL, 'tasks.toggleMultiple');
-      await axios.post(await apiService.callApi(`${endpoint}`, requestData), {
+      const endpoint = API_BASE_URL.toggleMultiple;
+      await axiosInstance.post(await apiService.callApi(`${endpoint}`, requestData), {
         taskIds,
       });
     } catch (error) {
       throw new Error("Failed to toggle tasks");
     }
   };
-  
+
   @action
   getTaskById(id: string): Task | null {
     const task = this.tasks.find((task) => task.id === id);
@@ -253,17 +284,32 @@ class TaskService {
     }
     return null;
   }
+
+  @action
+  fetchTaskData(taskId: number): Promise<Task> {
+    return new Promise(async (resolve, reject) => {
+      axiosInstance.get(await apiService.callApi(`${API_BASE_URL}/${taskId}`, ""))
+        .then(response => {
+          resolve(response.data as Task);
+        })
+        .catch(error => {
+          reject(new Error("Failed to fetch task data"));
+        });
+    });
+  }
   
+
   @action
   async markTaskInProgress(taskId: number, requestdata: string): Promise<void> {
     try {
-      const endpoint = dotProp.getProperty(API_BASE_URL, `tasks.markInProgress(${taskId})`);
-      await axios.put(await apiService.callApi(`${endpoint}`, requestdata));
+      const endpoint = `${API_BASE_URL}/${taskId}/markInProgress`; 
+      await axiosInstance.put(await apiService.callApi(endpoint, requestdata));
     } catch (error) {
       throw new Error("Failed to mark task as in progress");
     }
   }
-  
+
+
   @action
   updateTaskProgress(id: string, progress: Progress): void {
     const task = this.getTaskById(id);
@@ -271,13 +317,13 @@ class TaskService {
       task.updateProgress(progress);
     }
   }
-  
+
   @action
   markTaskAsInProgress = async (taskId: string, requestData: string) => {
     try {
-      const endpoint = dotProp.getProperty(API_BASE_URL, `tasks.markInProgress(${taskId})`);
-      await axios.put(await apiService.callApi(`${endpoint}`, requestData));
-  
+      const endpoint = `${API_BASE_URL}/${taskId}/markInProgress`; 
+      await axiosInstance.put(await apiService.callApi(endpoint, requestData));
+
       const task = this.getTaskById(taskId);
       if (task) {
         task.status = "In Progress";
@@ -288,8 +334,7 @@ class TaskService {
         NOTIFICATION_MESSAGES.Task.TASK_MARKED_IN_PROGRESS_FAILED
       );
     }
-  };
-}  
-
+  }
+}
 export const taskService = new TaskService();
-export default TaskService
+export default TaskService;

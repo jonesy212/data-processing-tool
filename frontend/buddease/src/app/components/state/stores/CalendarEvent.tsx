@@ -27,7 +27,7 @@ import { Tag } from "../../models/tracker/Tag";
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import axiosInstance from "../../security/csrfToken";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import { SnapshotStoreConfig, snapshotConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
@@ -42,6 +42,7 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 import { RootState } from "../redux/slices/RootSlice";
+import { useStore } from "./StoreProvider";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -91,7 +92,7 @@ interface CalendarEvent extends CommonEvent, CommonData {
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
-  date: Date;
+  date: Date
   tags?: string[] | Tag[];
 
   options?: {
@@ -104,9 +105,9 @@ interface CalendarEvent extends CommonEvent, CommonData {
   // Add more properties if needed
   status?: AllStatus
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
-  priority: AllStatus;
+  priority?: AllStatus;
   location?: string;
-  host: Member;
+  host?: boolean | Member;
   guestSpeakers?: Member[];
   participants: Member[];
   hosts?: Member[];
@@ -114,12 +115,13 @@ interface CalendarEvent extends CommonEvent, CommonData {
   color?: string;
   isImportant?: boolean;
   teamMemberId: Team["id"];
+
   reminder?: string;
   pinned?: boolean;
   archived?: boolean;
   documentReleased?: boolean;
   metadata?: StructuredMetadata;
-  
+  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
 }
 
 export interface CalendarManagerStore {
@@ -172,6 +174,7 @@ export interface CalendarManagerStore {
 }
 
 class CalendarManagerStoreClass implements CalendarManagerStore {
+  getState: () => RootState; // Add getState method
   dispatch: (action: PayloadAction<any, string, any, any>) => void;
   events: Record<string, CalendarEvent[]> = {
     scheduled: [],
@@ -185,9 +188,12 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   assignedEventStore: AssignEventStore;
   snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
     Snapshot<Data>
-  >(
-    {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
-    notifyCallback // Use the synchronous callback function here
+    >(
+      {} as SnapshotStoreConfig<T, K>,
+      notifyCallback,
+      initialSnapshot,
+      snapshotConfig,
+      delegate
   );
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
@@ -202,15 +208,17 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   entities: CalendarEntities; 
 
   constructor() {
-     // Initialize entities in the constructor
-     this.entities = {
+    // Initialize entities in the constructor
+    this.entities = {
       events: [],
       participants: [],
       hosts: [],
       guestSpeakers: [],
       // Add more entities as needed
     };
-    this.dispatch = useDispatch();
+    const store = useStore();
+    this.getState = store.getState.bind(store);
+    this.dispatch = store.dispatch.bind(store);
     this.assignedEventStore = useAssignEventStore();
     this.setDocumentReleaseStatus = this.setDocumentReleaseStatus.bind(this);
     this.updateDocumentReleaseStatus =

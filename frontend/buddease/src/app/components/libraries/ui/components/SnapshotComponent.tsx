@@ -7,12 +7,11 @@ import { useEffect, useState } from "react";
 
 // Define props interface
 interface SnapshotProps {
-  snapshotConfig: SnapshotStoreConfig<Snapshot<Data>>;
+  snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>;
   id: any; // Define the type of id
-  snapshotData: SnapshotStoreConfig<any>; // Define the type of snapshotData
+  snapshotData: SnapshotStoreConfig<any, Data>; // Define the type of snapshotData
   category: string; // Define the type of category
   createSnapshot: (additionalData: any) => void; // Define the type of createSnapshot
-  
 }
 
 // Define the Snapshot component
@@ -66,7 +65,7 @@ const SnapshotComponent: React.FC<SnapshotProps> = ({ snapshotConfig, id, snapsh
           {snapshots.map((snapshot, index) => (
             <div key={index}>
               <h4>Snapshot {index + 1}</h4>
-              <p>Timestamp: {snapshot.timestamp.toString()}</p>
+              <p>Timestamp: {snapshot.timestamp?.toString() || "N/A"}</p>
               <pre>{JSON.stringify(snapshot.data, null, 2)}</pre>
             </div>
           ))}

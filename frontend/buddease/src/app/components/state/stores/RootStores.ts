@@ -10,39 +10,55 @@ import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
 import { UndoRedoStore, useUndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
-
+import { AuthStore, useAuthStore } from './AuthStore';
 
 export interface Dispatchable {
   dispatch(action: any): void;
 }
 
-export class RootStores {
+export interface RootState {
+  // Define the structure of your root state here
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  taskManagerStore: TaskManagerStore
-  iconStore:  IconStore;
+  taskManagerStore: TaskManagerStore;
+  iconStore: IconStore;
   calendarStore: CalendarManagerStore;
   undoRedoStore: UndoRedoStore;
   todoStore: TodoManagerStore<Todo>;
-  teamStore: Promise<TeamManagerStore>
-  
+  teamStore: Promise<TeamManagerStore>;
   userStore: UserStore;
-  prototype: any  
-  browsers: any
+  authStore: AuthStore;
+
+}
+
+export class RootStores {
+
+  browserCheckStore: BrowserCheckStore;
+  trackerStore: TrackerStore;
+  taskManagerStore: TaskManagerStore;
+  iconStore: IconStore;
+  calendarStore: CalendarManagerStore;
+  undoRedoStore: UndoRedoStore;
+  todoStore: TodoManagerStore<Todo>;
+  teamStore: Promise<TeamManagerStore>;
+  userStore: UserStore;
+  authStore: AuthStore;
+  prototype: any;
+  browsers: any;
 
   constructor() {
     this.browserCheckStore = new BrowserCheckStore(this);
-    this.todoStore = useTodoManagerStore()
-    this.trackerStore = useTrackerStore(rootStores)
-    this.taskManagerStore = useTaskManagerStore()
-    this.calendarStore = useCalendarManagerStore()
+    this.todoStore = useTodoManagerStore();
+    this.trackerStore = useTrackerStore(this);
+    this.taskManagerStore = useTaskManagerStore();
+    this.calendarStore = useCalendarManagerStore();
     this.undoRedoStore = useUndoRedoStore();
-    this.userStore =  userManagerStore();
-    this.iconStore = useIconStore(rootStores)
-    this.teamStore = useTeamManagerStore()
+    this.userStore = userManagerStore();
+    this.iconStore = useIconStore(this);
+    this.teamStore = useTeamManagerStore();
+    this.authStore = useAuthStore();
     makeAutoObservable(this);
   }
-
 
   @action
   public dispatch(action: any) {
@@ -54,6 +70,22 @@ export class RootStores {
     this.taskManagerStore.dispatch(action);
     this.calendarStore.dispatch(action);
     this.iconStore.dispatch(action);
+    this.authStore.dispatch(action);
+  }
+
+  public getState(): RootState {
+    return {
+      browserCheckStore: this.browserCheckStore,
+      trackerStore: this.trackerStore,
+      taskManagerStore: this.taskManagerStore,
+      iconStore: this.iconStore,
+      calendarStore: this.calendarStore,
+      undoRedoStore: this.undoRedoStore,
+      todoStore: this.todoStore,
+      teamStore: this.teamStore,
+      userStore: this.userStore,
+      authStore: this.authStore,
+    };
   }
 }
 
@@ -83,7 +115,6 @@ class BrowserCheckStore {
     }
   }
 }
-
 
 // Initialize mobx-persist
 const hydrate = create();

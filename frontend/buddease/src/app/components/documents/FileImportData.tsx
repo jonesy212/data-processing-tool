@@ -5,11 +5,15 @@ import FileSelect from './FileSelect';
 import React from "react";
 
 function FileImportData() {
-  const [selectedFile, setSelectedFile] = useState<CustomFile>();
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [uploadStatus, setUploadStatus] = useState("idle"); // 'idle', 'uploading', 'success', 'error'
 
-  const handleFileChange = (file: CustomFile | undefined) => {
-    setSelectedFile(file);
+  const handleFileChange = (files: FileList | null) => {
+    if (files && files.length > 0) {
+      setSelectedFile(files[0]);
+    } else {
+      setSelectedFile(undefined);
+    }
   };
 
   const handleFileUpload = async () => {

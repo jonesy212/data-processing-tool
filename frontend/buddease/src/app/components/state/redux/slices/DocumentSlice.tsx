@@ -19,6 +19,8 @@ import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
 import Version from "@/app/components/versions/Version";
 import { produce } from 'immer';
+import BackendStructure from '@/app/configs/appStructure/BackendStructure';
+import FrontendStructure from '@/app/configs/appStructure/FrontendStructure';
 
 const notify = useNotification
 // Define the initial state for the document slice
@@ -468,11 +470,11 @@ const toObject = (document: Document): object => {
 
 
 const createNewDocument: (
-  documentId: number
+  documentId: string
 ) => DocumentData = (documentId) => {
   const initialState: DocumentData = {
     _id: uuidv4(),
-    id: documentId as number,
+    id: documentId,
     title: "New Document",
     content: "",
     topics: [],
@@ -558,6 +560,22 @@ const createNewDocument: (
             timestamp: new Date(),
           },
           checksum: "abc123",
+          versions: {
+            data: {
+              frontend: {
+                versionNumber: "1.0",
+              },
+              backend: {
+                versionNumber: "1.0",
+              },
+            },
+            backend: {
+              
+            }, // Version of the backend
+            frontend: {} as FrontendStructure, // Version of the frontend
+            },
+
+          }
         };
       },
       updateVersionHistory: () => {
@@ -704,7 +722,7 @@ export const useDocumentManagerSlice = createSlice({
 
     setDocumentStatus: (
       state,
-      action: PayloadAction<{ id: number; status: DocumentStatus }>
+      action: PayloadAction<{ id: string; status: DocumentStatus }>
     ) => {
       const { id, status } = action.payload;
       const documentIndex = state.documents.findIndex(

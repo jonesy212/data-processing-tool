@@ -2,6 +2,10 @@ import * as crypto from 'crypto';
 import { useCallback, useState } from 'react';
 import { CryptoHolding } from './CryptoHolding';
 import CryptoTransaction from './CryptoTransaction';
+import updateAnalyticsUI from './../../components/libraries/ui/updateAnalyticsUI'
+import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
+import calculateMetrics from '../projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
+
 
 const useCryptoManager = () => {
   const [holdings, setHoldings] = useState<CryptoHolding[]>([]);
@@ -34,6 +38,7 @@ const useCryptoManager = () => {
           name: transaction.currency,
           amount: transaction.amount,
           valuePerUnit: transaction.valuePerUnit,
+          category: '',
           currency: '',
           value: 0,
           ticker: '',
@@ -128,11 +133,12 @@ const useCryptoManager = () => {
     // You can send analytics data to external services, update UI with analytics insights, or perform other actions as needed
   
     // For example, send analytics data to an external service
-    sendAnalyticsData(analyticsData);
+    sendAnalyticsDataToBackend(analyticsData);
   
     // Or update the UI with analytics insights
     updateAnalyticsUI(analyticsData);
   
+    
     // Additional actions:
     // 1. Calculate metrics based on analytics data
     calculateMetrics(analyticsData);

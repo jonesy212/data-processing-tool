@@ -2,29 +2,25 @@
 import axiosInstance from "@/app/api/axiosInstance";
 import { useAuth } from "@/app/components/auth/AuthContext";
 import CommonDetails, {
-  
   SupportedData,
 } from "@/app/components/models/CommonData";
-import PaymentProcess from "@/app/components/payment/PaymentProcess";
+import DetailsProps from "@/app/components/models/data/Details";
+import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
+import TwoFactorSetupPhase from "@/app/components/phases/TwoFactorSetupPhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
+import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { UserData } from "@/app/components/users/User";
-import React, { ReactNode, useState } from "react";
-import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
-import UserQuestionnaire from "../personas/UserQuestionnaire";
-import OfferPage from "./OfferPage";
-import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
-import WelcomePage from "./WelcomePage";
-import RegistrationPhase from "./RegistrationPhase";
+import React, { useState } from "react";
+import generateTimeBasedCode from "../../components/models/realtime/TimeBasedCodeGenerator";
 import { OnboardingPhase } from "../personas/UserJourneyManager";
-import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
-import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
-import DetailsProps from "@/app/components/models/data/Details";
-import TwoFactorSetupPhase from "@/app/components/phases/TwoFactorSetupPhase";
+import UserQuestionnaire from "../personas/UserQuestionnaire";
+import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
+import RegistrationPhase from "./RegistrationPhase";
 
 
 

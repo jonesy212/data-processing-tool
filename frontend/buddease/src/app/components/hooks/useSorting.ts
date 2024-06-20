@@ -1,7 +1,7 @@
 // useSorting.tsx
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { useState } from 'react';
-import SortCriteria from '../../pages/searchs/SortCriteria';
+import SortCriteria from '../settings/SortCriteria';
 import { CalendarEvent } from '../state/stores/CalendarEvent';
 const useSorting = () => {
   const [sortCriteria, setSortCriteria] = useState<SortCriteria>(SortCriteria.Date);

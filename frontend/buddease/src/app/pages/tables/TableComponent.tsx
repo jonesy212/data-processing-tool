@@ -1,6 +1,7 @@
 // Import necessary components and styles
 import { Table } from 'antd';
 import 'antd/dist/antd.css';
+import React from 'react';
 
 
 // Your component

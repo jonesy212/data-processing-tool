@@ -1,8 +1,9 @@
 interface SubscriptionPlan {
   id: string;
-  name: string;
   price: number;
   features: string[];
+  planName: string;
+  expiryDate: string | null;
 }
 
 interface Payment {

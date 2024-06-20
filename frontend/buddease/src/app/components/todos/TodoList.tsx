@@ -9,6 +9,7 @@ import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisRe
 import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { Todo } from "./Todo";
+import { User } from "../users/User";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;
@@ -67,16 +68,42 @@ const TodoList: React.FC = observer(() => {
         done: false,
         status: StatusType.Pending,
         todos: [],
-        description: "",
-        dueDate: null,
+        description: "This is a description of the new todo item.",
+        dueDate: new Date(), // Set a specific due date if needed
         priority: PriorityStatus.Low,
-        assignedTo: null,
-        assignee: null,
-        assigneeId: "",
-        assignedUsers: [],
+        assignedTo: {
+          id: "User123",
+          username: "john_doe",
+          firstName: "John",
+          lastName: "Doe",
+          email: "john.doe@example.com",
+          fullName: "<NAME>",
+          avatarUrl: "http://example.com/avatar.jpg"
+        },
+        assignee: {
+          id: "User123",
+          username: "john_doe",
+          firstName: "John",
+          lastName: "Doe",
+          email: "john.doe@example.com",
+          fullName: "John Doe",
+          avatarUrl: "http://example.com/avatar.jpg"
+        },
+        assigneeId: "User123",
+        assignedUsers: ["User123"],
         collaborators: [],
-        labels: [],
-        comments: [],
+        labels: ["urgent", "work"],
+        comments: [
+          {
+            id: "Comment1",
+            text: "This is a comment",
+            author: "Jane Doe",
+            timestamp: new Date().toISOString(),
+            postId: "newTodoId",
+            pinned: false,
+            postedId: "User123",
+          },
+        ],
         attachments: [],
         subtasks: [],
         isArchived: false,
@@ -88,45 +115,82 @@ const TodoList: React.FC = observer(() => {
         save: function (): Promise<void> {
           return Promise.resolve();
         },
-        _id: "",
-        isActive: false,
-        tags: [],
-        // then: (callback: (newData: Snapshot<Data>) => void) => callback,
-        analysisType: {} as AnalysisTypeEnum,
-        analysisResults: {} as DataAnalysisResult[],
-        // phase: {} as Phase,
+        _id: "newTodoId",
+        isActive: true,
+        tags: ["task", "example"],
+        analysisType: AnalysisTypeEnum.DEFAULT,
+        analysisResults: [],
         videoData: {
-          url: "",
-          title: "",
-          description: "",
-          duration: 0,
+          url: "http://example.com/video.mp4",
+          title: "Example Video",
+          description: "This is an example video description.",
+          duration: 120,
           isPrivate: false,
-          thumbnail: "",
+          thumbnail: "http://example.com/thumbnail.jpg",
+          thumbnailUrl: "http://example.com/thumbnail.jpg",
           isProcessing: false,
-          isCompleted: false,
+          isCompleted: true,
           isUploading: false,
           isDownloading: false,
           isDeleting: false,
-          isPrivate: false,
-          isProcessing: false,
-          isCompleted: false,
-          isUploading: false,
-          isDownloading: false,
+          resolution: "1080p",
+          size: "500MB",
+          aspectRatio: "16:9",
+          language: "English",
+          subtitles: ["English", "Spanish"],
+          codec: "H.264",
+          frameRate: 30,
+          campaignId: 123,
+          id: "video123",
+          updatedAt: new Date(),
+          uploadedBy: "Uploader",
+          viewsCount: 1000,
+          likesCount: 150,
+          videoDislikes: 10,
+          dislikesCount: 10,
+          commentsCount: 50,
+          videoAuthor: "Author Name",
+          videoDurationInSeconds: 120,
+          uploadDate: new Date(),
+          category: "Tutorial",
+          closedCaptions: [],
+          license: "Standard YouTube License",
+          isLive: false,
+          isUnlisted: false,
+          isProcessingCompleted: true,
+          isProcessingFailed: false,
+          isProcessingStarted: true,
+          channel: "Example Channel",
+          channelId: "channel123",
+          isLicensedContent: false,
+          isFamilyFriendly: true,
+          isEmbeddable: true,
+          isDownloadable: true,
+          playlists: ["Playlist1", "Playlist2"],
+          videoSubtitles: ["English", "Spanish"],
+          videoLikes: 150,
+          videoViews: 1000,
+          videoComments: 50,
+          videoThumbnail: "http://example.com/thumbnail.jpg",
+          videoUrl: "http://example.com/video.mp4",
+          videoTitle: "Example Video",
+          videoDescription: "This is an example video description.",
+          videoTags: ["example", "tutorial"],
         },
         isDeleted: false,
         isRecurring: false,
         recurringRule: "",
-        recurringEndDate: new Date(),
-        recurringFrequency: "",
+        recurringEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+        recurringFrequency: "Weekly",
         recurringCount: 0,
-        recurringDaysOfWeek: [],
+        recurringDaysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
         recurringDaysOfMonth: [],
         recurringMonthsOfYear: [],
         snapshot: {} as Snapshot<Data>,
         entities: [],
-        timestamp: "",
-        category: undefined
-      };
+        timestamp: new Date().toISOString(),
+        category: "Task",
+      };      
       // Remove the unnecessary cast
       todoStore.addTodo(newTodo);
     };
@@ -137,23 +201,26 @@ const TodoList: React.FC = observer(() => {
     <div>
       <ul>
         {Object.values(todoStore.todos).map(
-          (todo: MappedAndTodo & CommonData<Data>) => (
+          (todo: MappedAndTodo & CommonData) => (
             <li key={todo.id}>
               {todo.title} - {todo.done ? "Done" : "Not Done"}
               <button onClick={() => handleToggle(todo.id as string)}>
                 Toggle
               </button>
               <CommonDetails
-                data={{}}
-                details={{
+                data={{
                   id: todo.id as string,
                   title: todo.title,
+                  description: todo.description,
+                }}
+                details={{
+                  id: todo.id as string,
                   status: todo.status,
                   importance: todo.priority,
                   startDate: todo.startDate,
                   dueDate: todo.dueDate || undefined,
                   updatedAt: todo.updatedAt,
-                }}
+                 }}
               />
             </li>
           )

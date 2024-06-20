@@ -19,7 +19,7 @@ export const TeamActions = {
   }>("fetchTeamsByMemberId"),
   fetchTeamsSuccess: createAction<{ teams: Team[] }>("fetchTeamsSuccess"),
   fetchTeamsFailure: createAction<{ error: string }>("fetchTeamsFailure"),
-  
+  fetchApiDataSuccess: createAction<{ data: Team[] }>("fetchApiDataSuccess"),
   // Additional actions for updating teams
   updateTeamSuccess: createAction<{ team: Team }>("updateTeamSuccess"),
   updateTeamsSuccess: createAction<{ teams: Team[] }>("updateTeamsSuccess"),

@@ -20,12 +20,15 @@ import {
 } from "../models/tracker/ProgressBar";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { SendStatus } from "../support/NofiticationsSlice";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+} from "../support/NotificationContext";
 
-type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";;
+type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";
 type NotificationCategory = "general" | "urgent" | "important";
 type ButtonType = "submit" | "reset" | "button" | undefined;
-type VisibilityType = "public" | "private" | "restricted" | "shared" |  boolean;
+type VisibilityType = "public" | "private" | "restricted" | "shared" | boolean;
 
 // Union type of all types enums
 type AllTypes =
@@ -44,7 +47,8 @@ type AllTypes =
   | AnimationType // Add AnimationType to AllTypes
   | NotificationCategory // Add NotificationCategory to AllTypes
   | TextType
-  | VisibilityType; // Add TextType to AllTypes
+  | VisibilityType // Add TextType to AllTypes
+  | TextType
 
 interface BaseProps {
   id: string;
@@ -60,15 +64,15 @@ interface NotificationProps extends BaseProps {
   message: string;
   content: any;
   date?: Date | undefined;
-  status?: AllStatus
+  status?: AllStatus;
 
   backgroundColor?: string;
   // color?: string;
   fontSize: string;
-  fontColor: string
-  sendStatus: SendStatus
-  completionMessageLog: LogData | undefined
-  type: NotificationType
+  fontColor: string;
+  sendStatus: SendStatus;
+  completionMessageLog: LogData | undefined;
+  type: NotificationType;
 }
 
 interface ProgressProps {
@@ -104,23 +108,29 @@ const notificationProps: NotificationProps = {
   content: { data: "Notification content" },
   date: new Date(),
   status: StatusType.Pending, // Example of using StatusType
-  backgroundColor: 'blue',
+  backgroundColor: "blue",
   sendStatus: "Sent",
   completionMessageLog: undefined,
   fontSize: "",
   fontColor: "",
-  type: NotificationTypeEnum.AccountCreated
+  type: NotificationTypeEnum.AccountCreated,
 };
 
 const progressBarProps: ProgressBarProps = {
   progress: {
     id: "unique-progress-id",
+    name: "Progress Name",
+    color: "#000000",
+    description: "Progress Description",
     value: 75,
     label: "Progress Label",
     current: 0,
     max: 100,
+    min: 0,
     percentage: 0,
+    done: false,
   },
+
   duration: 1000,
   barStyle: { backgroundColor: "blue" },
   containerStyle: { width: "80%", border: "1px solid black" },
@@ -136,5 +146,11 @@ const progressBarProps: ProgressBarProps = {
 };
 
 export { chatCardProps, notificationProps, progressBarProps };
-export type { AllTypes, BaseProps, ChatCardProps, NotificationProps, ProgressProps, TextType };
-
+export type {
+  AllTypes,
+  BaseProps,
+  ChatCardProps,
+  NotificationProps,
+  ProgressProps,
+  TextType,
+};

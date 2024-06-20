@@ -1,29 +1,49 @@
 // ApiDataAnalysis.ts
-// ApiDataAnalysis.ts
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
-import { AxiosError, AxiosResponse } from 'axios';
-import dotProp from 'dot-prop';
-import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { addLog } from '../components/state/redux/slices/LogSlice';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
-import { YourResponseType } from '../components/typings/types';
-import { endpoints} from './ApiEndpoints';
-import { handleApiError } from './ApiLogs';
-import axiosInstance from './axiosInstance';
-import headersConfig from './headers/HeadersConfig';
-import { dataAnalysisSagas } from './fetchDataAnalysisAPI';
-import { useDispatch } from 'react-redux';
-import { DataAnalysisActions } from '../components/projects/DataAnalysisPhase/DataAnalysisActions';
-const dispatch = useDispatch()
+import {
+  NotificationType,
+  useNotification
+} from "@/app/components/support/NotificationContext";
+import { AxiosError } from "axios";
+import { useDispatch } from "react-redux";
+import { Data } from "../components/models/data/Data";
+import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
+import { YourResponseType } from "../components/typings/types";
+import { endpoints } from "./ApiEndpoints";
+import { handleApiError } from "./ApiLogs";
+import axiosInstance from "./axiosInstance";
+import headersConfig from "./headers/HeadersConfig";
+const dispatch = useDispatch();
 // Define the API base URL for data analysis
 
-const DATA_ANALYSIS_BASE_URL = dotProp.getProperty(endpoints.dataAnalysis, 'dataAnalysis');
+const DATA_ANALYSIS_BASE_URL = endpoints.dataAnalysis;
+
+
+// Validate and extract the endpoint
+
+const getEndpoint = (): string => {
+  if (typeof DATA_ANALYSIS_BASE_URL !== "object" || !DATA_ANALYSIS_BASE_URL) {
+    throw new Error("DATA_ANALYSIS_BASE_URL is not an object or is null/undefined");
+  }
+
+  const sentimentAnalysisEndpoint = DATA_ANALYSIS_BASE_URL.getSentimentAnalysisResults;
+
+  if (typeof sentimentAnalysisEndpoint !== "string") {
+    throw new Error("Endpoint getSentimentAnalysisResults is not a string");
+  }
+
+  return sentimentAnalysisEndpoint;
+};
+
+
+
 
 interface DataAnalysisNotificationMessages {
   ANALYZE_DATA_SUCCESS: string;
   ANALYZE_DATA_ERROR: string;
-  GET_ANALYSIS_RESULTS_SUCCESS: string;
-  GET_ANALYSIS_RESULTS_ERROR: string;
+  // GET_ANALYSIS_RESULTS_SUCCESS: string;
+  // GET_ANALYSIS_RESULTS_ERROR: string;
+  FETCH_ANALYSIS_RESULTS_ERROR: string;
   // Add more keys as needed
 }
 
@@ -31,8 +51,7 @@ interface DataAnalysisNotificationMessages {
 const dataAnalysisNotificationMessages: DataAnalysisNotificationMessages = {
   ANALYZE_DATA_SUCCESS: NOTIFICATION_MESSAGES.DataAnalysis.ANALYZE_DATA_SUCCESS,
   ANALYZE_DATA_ERROR: NOTIFICATION_MESSAGES.DataAnalysis.ANALYZE_DATA_ERROR,
-  GET_ANALYSIS_RESULTS_SUCCESS: NOTIFICATION_MESSAGES.DataAnalysis.GET_ANALYSIS_RESULTS_SUCCESS,
-  GET_ANALYSIS_RESULTS_ERROR: NOTIFICATION_MESSAGES.DataAnalysis.GET_ANALYSIS_RESULTS_ERROR,
+  FETCH_ANALYSIS_RESULTS_ERROR: NOTIFICATION_MESSAGES.DataAnalysis.FETCH_ANALYSIS_RESULTS_ERROR,
   // Add more properties as needed
 };
 
@@ -40,98 +59,118 @@ const dataAnalysisNotificationMessages: DataAnalysisNotificationMessages = {
 export const handleDataAnalysisApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof DataAnalysisNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {
-    const errorMessageText = dotProp.getProperty(dataAnalysisNotificationMessages, errorMessageId);
+    const errorMessageText = dataAnalysisNotificationMessages[errorMessageId];
     useNotification().notify(
       errorMessageId,
-      errorMessageText as unknown as string,
+      errorMessageText,
       null,
       new Date(),
-      'DataAnalysisApiClientError' as NotificationType
+      "DATA_ANALYSIS_API_CLIENT_ERROR" as NotificationType
     );
   }
 };
 
-// Modify the fetchData function to accept the endpoint for data analysis
-export async function fetchDataAnalysis(endpoint: string): Promise<YourResponseType> {
-  try {
-    const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
-    const response = await axiosInstance.get<YourResponseType>(fetchDataAnalysisEndpoint, {
-      headers: headersConfig,
+// Function to fetch data analysis
+export function fetchDataAnalysis(
+  endpoint: string,
+  text?: string
+): Promise<YourResponseType | Snapshot<Data>> {
+  const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
+  const config = {
+    headers: headersConfig,
+    params: text ? { text } : undefined, // Add text as params if provided
+  };
+
+  return axiosInstance
+    .get<YourResponseType | Snapshot<Data>>(fetchDataAnalysisEndpoint, config)
+    .then((response) => response.data as Snapshot<Data>)
+    .catch((error) => {
+      console.error("Error fetching data analysis:", error);
+      const errorMessage = "Failed to fetch data analysis";
+      handleDataAnalysisApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        errorMessage,
+        "FETCH_ANALYSIS_RESULTS_ERROR"
+      );
+      return Promise.reject(error);
     });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching data analysis:', error);
-    const errorMessage = 'Failed to fetch data analysis';
-    handleDataAnalysisApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      errorMessage,
-      'FetchDataAnalysisErrorId'
-    );
-    throw error;
-  }
 }
-export const fetchSentimentAnalysis = async (text: string) => {
-  try {
-    const endpoint = dotProp.getProperty(
-      DATA_ANALYSIS_BASE_URL,
-      "sentimentAnalysis"
-    );
-    if (typeof endpoint !== "string") {
-      throw new Error("Endpoint is not a string");
-    }
-    const response = await fetchDataAnalysis(endpoint);
-    // Process sentiment analysis results
-    const sentiment = response.data;
-    const id = "someUniqueId"; // Provide the appropriate id value
-    const state = {
-      /* Provide the current state object */
-    };
-    useDataStore().updateData(Number(id), {
-      ...state,
-      sentimentAnalysis: sentiment,
-      newData: text,
+
+// Function to fetch analysis results
+export const fetchAnalysisResults = (): Promise<any> => {
+  const endpoint = DATA_ANALYSIS_BASE_URL.getAnalysisResults;
+
+  if (typeof endpoint !== "string") {
+    return Promise.reject(new Error("Endpoint is not a string"));
+  }
+
+  return fetchDataAnalysis(endpoint)
+    .then((response) => {
+      const analysisResults = response.data as Data;
+      const { description, phase, ...rest } = analysisResults;
+      return {
+        ...rest,
+        description: description ?? undefined,
+        phase: phase ?? undefined,
+      };
+    })
+    .catch((error) => {
+      handleDataAnalysisApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        NOTIFICATION_MESSAGES.errorMessage.FETCH_ANALYSIS_RESULTS_ERROR,
+        "FETCH_ANALYSIS_RESULTS_ERROR"
+      );
+      return Promise.reject(error);
     });
-    dispatch(
-      DataAnalysisActions.addAnalysisLog({
-        type: "info",
-        message: "Sentiment analysis fetched successfully",
-        timestamp: Date.now(),
-      })
-    );
-  } catch (error: any) {
-    handleDataAnalysisApiErrorAndNotify(
-      error,
-      NOTIFICATION_MESSAGES.errorMessage.FETCH_SENTIMENT_ANALYSIS_ERROR,
-      "FetchSentimentAnalysisErrorId"
-    );
-  }
+}
+
+export const fetchSentimentAnalysisResults = (text: string): Promise<string> => {
+  const endpoint = getEndpoint();
+
+  return fetchDataAnalysis(endpoint, text) // Pass text directly
+    .then((result: any) => result.sentiment)
+    .catch((error: any) => {
+      console.error("Error performing sentiment analysis:", error);
+      return "Unknown"; // Return 'Unknown' sentiment in case of error
+    });
 };
 
-// Use fetchDataAnalysis to fetch analysis results
 
-export const fetchAnalysisResults = async (): Promise<any> => {
+
+export const storeAnalyticsData = async (analyticsData: any): Promise<void> => {
   try {
-    const endpoint = dotProp.getProperty(DATA_ANALYSIS_BASE_URL, 'getAnalysisResults');
-    if (typeof endpoint !== 'string') {
-      throw new Error('Endpoint is not a string');
-    }
+    // Attempt to store analytics data in local storage
+    localStorage.setItem('analyticsData', JSON.stringify(analyticsData));
+    console.log('Analytics data stored in local storage:', analyticsData);
+  } catch (localStorageError) {
+    console.error('Failed to store analytics data in local storage:', localStorageError);
 
-    const response: YourResponseType = await fetchDataAnalysis(endpoint);
-    // Adjust according to the structure of your analysis results
-    const analysisResults = response.analysisResults;
-    return analysisResults;
-  } catch (error: any) {
-    handleDataAnalysisApiErrorAndNotify(
-      error,
-      NOTIFICATION_MESSAGES.errorMessage.FETCH_ANALYSIS_RESULTS_ERROR,
-      'FetchAnalysisResultsErrorId'
-    );
-    throw error;
+    try {
+      // If storing in local storage fails or if it's not available, send to backend
+      await sendAnalyticsDataToBackend(analyticsData);
+    } catch (backendError) {
+      console.error('Failed to send analytics data to backend:', backendError);
+      // Handle the error using the API error handler and notify
+      handleDataAnalysisApiErrorAndNotify(
+        backendError as AxiosError<unknown>,
+        'Failed to store analytics data',
+        'FETCH_ANALYSIS_RESULTS_ERROR' // Example error message key from dataAnalysisNotificationMessages
+      );
+      throw new Error('Failed to store analytics data');
+    }
   }
 };
 
-// Add more functions as needed for data analysis API operations
+export const sendAnalyticsDataToBackend = async (analyticsData: any): Promise<void> => {
+  try {
+    const response = await axiosInstance.post('/analytics', analyticsData);
+    console.log('Analytics data sent to backend successfully:', response.data);
+  } catch (error) {
+    console.error('Failed to send analytics data to backend:', error);
+    throw new Error('Failed to send analytics data to backend');
+  }
+};

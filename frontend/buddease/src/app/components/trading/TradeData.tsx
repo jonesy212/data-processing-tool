@@ -15,12 +15,13 @@ interface TradeData extends CommonData, DataDetailsProps<Data> {
   tradeId: string;
   tradeType: string;
   tradeAmount: number;
-  tradeDate: Date;
+  tradeDate?: Date;
   phase?: Phase;
   isActive?: boolean;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult[];
   updatedAt?: Date;
+  data?: Data;
   
   // Add more properties as needed
 }

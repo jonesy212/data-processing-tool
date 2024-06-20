@@ -2,6 +2,10 @@ import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = "/api/data-frame";
 
+
+
+
+
 export const fetchDataFrame = async (): Promise<any[]> => {
   try {
     const response = await axiosInstance.get(API_BASE_URL);
@@ -28,6 +32,16 @@ export const updateDataFrame = async (updatedData: any): Promise<void> => {
     await axiosInstance.put(API_BASE_URL, updatedData);
   } catch (error) {
     console.error("Error updating data frame:", error);
+    throw error;
+  }
+};
+
+
+export const removeFile = async (id: string): Promise<void> => {
+  try {
+    await axiosInstance.delete(`${API_BASE_URL}/${id}`);
+  } catch (error) {
+    console.error("Error deleting file:", error);
     throw error;
   }
 };
@@ -61,6 +75,7 @@ const appendDataToBackend = async (data: any) => {
 const DataFrameAPI = {
   fetchDataFrame,
   setDataFrame,
+  removeFile,
   updateDataFrame,
   deleteDataFrame,
   fetchDataFromBackend,

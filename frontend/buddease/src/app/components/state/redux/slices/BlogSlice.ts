@@ -1,5 +1,5 @@
 // BlogSlice.ts
-import { BlogPost } from '@/app/components/community/DiscussionForumComponent';
+import { BlogPost } from '@/app/pages/blog/BlogPost';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
@@ -22,7 +22,8 @@ interface BlogComment {
   text: string;
   pinned: boolean;
   postedId: string;
-
+  author: string;
+  timestamp: string | Date;
 }
 
 

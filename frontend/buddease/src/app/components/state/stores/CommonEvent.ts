@@ -2,12 +2,12 @@
 
 import { StatusType } from '@/app/components/models/data/StatusType';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Data } from "../../models/data/Data";
+import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
+import { Tag } from '../../models/tracker/Tag';
+import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
 import { Snapshot } from "../../snapshots/SnapshotStore";
 import { VideoData } from "../../video/Video";
-import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { Tag } from '../../models/tracker/Tag';
 
 interface CommonEvent extends Data {
   title: string;
@@ -32,10 +32,12 @@ interface CommonEvent extends Data {
   agenda?: string;
   collaborationTool?: string;
   metadata?: StructuredMetadata;
+  // Implement the `then` function using the reusable function
+  then: (callback: (newData: Snapshot<Data>) => void) => void;
 }
 
 // Define the function to implement the `then` functionality
-export function implementThen(callback: (newData: Snapshot<Data>) => void): Snapshot<Data> {
+export function implementThen(callback: (newData: Snapshot<BaseData>) => void): Snapshot<Data> {
     return {
       timestamp: new Date(),
       category: "",
@@ -48,7 +50,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
         isCompleted: false,
         tags: [],
         phase: null,
-        then: implementThen, // Reuse the `then` function
+        then: implementThen, 
         analysisType: {} as AnalysisTypeEnum.CUSTOM,
         analysisResults: [],
         videoData: {} as VideoData,
@@ -72,7 +74,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
     collaborationTool?: string;
     metadata?: StructuredMetadata;
     // Implement the `then` function using the reusable function
-    then: (callback: (newData: Snapshot<Data>) => void) => void;
+    then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
   }
   
   // Define the `commonEvent` object using the `CommonEvent` interface
@@ -114,10 +116,7 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
     tags: [],
     phase: null,
     // Implement the `then` function using the reusable function
-    then: function (callback: (newData: Snapshot<Data>) => void): void {
-      const newData = implementThen.bind(this)(callback);
-      callback(newData);
-    },
+    then: implementThen,
     analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
     analysisResults: [],
     videoData: {} as VideoData,
@@ -125,4 +124,3 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
   
   export default CommonEvent;
   export { commonEvent };
-  

@@ -1,6 +1,8 @@
 import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { AllStatus } from "../state/stores/DetailsListStore";
 import { Attendee } from "./Attendee";
 import { DayOfWeekProps } from "./DayOfWeek";
+import { Month } from "./Month";
 
 interface ExtendedCalendarEvent extends Omit<CalendarEvent, "options"> {
   attendees: Attendee[];
@@ -24,6 +26,8 @@ interface CalendarEventTimingOptimization {
   startTime?: Date;
   endTime?: Date;
   duration?: number;
+  status?: AllStatus;
+  assignedTo: string;
   suggestedDay?: DayOfWeekProps['day'] | null
   suggestedWeeks?: number[] | null
   suggestedMonths?: Month[] | null

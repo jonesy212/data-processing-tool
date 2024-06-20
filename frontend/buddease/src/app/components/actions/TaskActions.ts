@@ -13,11 +13,12 @@ export const TaskActions = {
   validateTask: createAction<Task>("validateTask"),
   createTask: createAction<{ projectId: string; phaseId: string; task: Task }>("createTask"),
   assignTask: createAction<{ projectId: string; taskId: string; assigneeId: string }>("assignTask"),
+  fetchTaskData: createAction<Task>("fetchDataSaga"),
 
   fetchTasksRequest: createAction("fetchTasksRequest"),
   fetchTasksByTaskUserId: createAction<{
     assigneeId: string,
-    tasks: string[],
+    tasks: Task[],
   }>("fetchTasksByTaskUserId"),
   fetchTasksSuccess: createAction<{ tasks: Task[] }>("fetchTasksSuccess"),
   fetchTasksFailure: createAction<{ error: string }>("fetchTasksFailure"),
@@ -85,6 +86,6 @@ export const TaskActions = {
   markTaskAsCompleteFailure: createAction<{ taskId: string, error: string }>("markTaskAsCompleteFailure"),
 
 
-  setAssignedTaskStore: createAction<{ task: Task | undefined , assignee: string, assignees?: string[], tasks?: string[] }>("setAssignedTaskStore"),
+  setAssignedTaskStore: createAction<{ task: Task | undefined , assignee: string, assignees?: string[], tasks?: Task[] }>("setAssignedTaskStore"),
   
 };

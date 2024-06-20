@@ -1,6 +1,6 @@
-import { RealtimeData } from "../../../models/realtime/RealtimeData";
 import { authToken } from "../components/auth/authToken";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
+import { RealtimeData } from "../components/models/realtime/RealtimeData";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 import { CalendarEvent } from "../components/state/stores/CalendarEvent";

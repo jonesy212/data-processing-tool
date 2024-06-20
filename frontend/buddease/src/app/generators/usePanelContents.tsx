@@ -1,5 +1,6 @@
 // usePanelContents.tsx
 
+import React from "react";
 import { useState } from "react";
 
 // Define the function to generate panel contents

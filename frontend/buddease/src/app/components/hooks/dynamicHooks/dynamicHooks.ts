@@ -18,12 +18,13 @@ interface AsyncHook {
     idleTimeoutId: any;
     startIdleTimeout: any;
   }) => Promise<() => void>;
+  toggleActivation?: (active: boolean) => void;
 }
 
 const adaptAsyncHook = (asyncHook: AsyncHook): LibraryAsyncHook => ({
   enable: () => {}, // Placeholder function
   disable: () => {}, // Placeholder function
-  condition:  asyncHook.condition,
+  condition: asyncHook.condition,
   asyncEffect: asyncHook.asyncEffect,
   idleTimeoutId: null,
   startIdleTimeout: function (
@@ -175,7 +176,7 @@ const aquaHook = useAqua;
 const dynamicHooks: Record<string, { hook: AsyncHook }> = {
   authentication: { hook: authenticationHook as unknown as AsyncHook },
 
-  jobSearch: { hook: jobSearchHook },
+  jobSearch: { hook: jobSearchHook as unknown as AsyncHook },
   recruiterDashboard: { hook: recruiterDashboardHook as unknown as AsyncHook },
   chatDashboard: { hook: chatDashboardHook as unknown as AsyncHook },
   userProfile: { hook: userProfileHook as unknown as AsyncHook },
@@ -208,10 +209,12 @@ storeHookNamesInCache(hookNames);
 const specificHook = jobSearchHook;
 
 // Find the corresponding hook name dynamically
-   const foundHookName = Object.keys(dynamicHooks).find(
-   (name) => dynamicHooks[name as keyof typeof dynamicHooks].hook === specificHook
+const foundHookName = Object.keys(dynamicHooks).find(
+  (name) =>
+    dynamicHooks[name as keyof typeof dynamicHooks].hook ===
+    (specificHook as unknown as AsyncHook)
 );
- 
+
 const hookName = foundHookName || "authentication"; // Default to 'authentication' if no matching hook name is found
 const dynamicHookAdapter = adaptAsyncHook(useDynamicHookByName(hookName));
 
@@ -311,7 +314,6 @@ const subscriptionService = {
     if (subscriptionService.subscriptions.has(hookName)) {
       subscriptionService.subscriptions.delete(hookName);
     }
-
   },
 
   unsubscribeAll: () => {

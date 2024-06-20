@@ -1,4 +1,5 @@
 import { Table, TableProps } from 'antd';
+import React from 'react';
 
 interface TableGeneratorProps<T> {
   dataSource: T[]; // Define type for dataSource

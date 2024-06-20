@@ -1,7 +1,7 @@
 // TradingConfirmationPage.tsx
 import React from "react";
 import ConfirmationPage, { ConfirmationPageProps } from "./ConfirmationPage";
-import TradeData from "@/app/components/trading/TradeData";
+import {TradeData} from "@/app/components/trading/TradeData";
 
 interface TradingConfirmationPageProps extends ConfirmationPageProps {
   tradeDetails: string;

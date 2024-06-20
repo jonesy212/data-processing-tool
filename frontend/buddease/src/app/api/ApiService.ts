@@ -8,10 +8,12 @@ import useErrorHandling from "../components/hooks/useErrorHandling";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
 import { SupportedData } from "../components/models/CommonData";
 import { headersConfig } from "../components/shared/SharedHeaders";
+import { useNotification } from '../components/support/NotificationContext';
 import { versionHistory } from "../components/versions/VersionData";
 import VersionGenerator from "../components/versions/VersionGenerator";
 import { backendConfig } from "../configs/BackendConfig";
 import { dataVersions } from '../configs/DataVersionsConfig';
+import { determineFileType } from '../configs/DetermineFileType';
 import { frontendConfig } from "../configs/FrontendConfig";
 import userSettings from "../configs/UserSettings";
 import { backendStructure } from "../configs/appStructure/BackendStructure";
@@ -22,26 +24,51 @@ import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
  
 const API_BASE_URL = dotProp.getProperty(endpoints, "data");
-
+const { notify} = useNotification()
 // Define the structure of the response data
 interface CacheResponse {
   // Define the structure of CacheResponse
+  id?: string | number | undefined
+  data: SupportedData
 }
 
-export const readCache = async (): Promise<SupportedData> => {
+// Function to read cache data
+export const readCache = async (
+  filePath: string
+): Promise<SupportedData | undefined> => {
   try {
-    // Fetch cache data
-    const cacheResponse: CacheResponse = await fetchCacheData();
+    // Fetch cache data using the file path
+    const cacheResponse: CacheResponse | undefined = await fetchCacheData(
+      filePath
+    );
 
-    // Populate data from cacheResponse
-    const supportedData: SupportedData = {} as never;
+    if (cacheResponse) {
+      // Example: Extract relevant data from cacheResponse
+      const supportedData: SupportedData = {
+        id: cacheResponse.id,
+        data: cacheResponse.data,
+        // Populate other properties as needed
+      };
 
-    return supportedData;
+      return supportedData;
+    }
   } catch (error) {
     console.error("Error reading cache:", error);
     throw error;
   }
 };
+
+
+
+// Usage example:
+const filePath = './path/to/cache/data'; // Replace with actual file path
+readCache(filePath)
+  .then((data) => {
+    console.log("Cache data:", data);
+  })
+  .catch((error) => {
+    console.error("Failed to read cache:", error);
+  });
 
  // Function to write cache data to the server
 export const writeCache = async (data: CacheResponse): Promise<void> => {
@@ -94,7 +121,7 @@ export const writeCache = async (data: CacheResponse): Promise<void> => {
 };
 
 // Function to fetch cache data (mock implementation)
-const fetchCacheData = async (): Promise<CacheResponse> => {
+const fetchCacheData = async (notify: string): Promise<CacheResponse> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
@@ -102,37 +129,40 @@ const fetchCacheData = async (): Promise<CacheResponse> => {
     // Simulate fetching data from a server by delaying execution for a certain period (e.g., 1 second)
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
+    const fileType = determineFileType(notify);
+
     // Mock cache data object using the CacheData interface
     const mockCacheData: CacheData = {
       _id: "",
       id: "",
-      lastUpdated:  versionHistory,
-      userSettings: userSettings, // Example user settings object
-      dataVersions: dataVersions, // Example data versions object
-      frontendStructure: frontendStructure?.[0], // Example frontend structure object
-      backendStructure: backendStructure, // Example backend structure object
-      backendConfig: backendConfig, // Example backend configuration object
-      frontendConfig: frontendConfig, // Example frontend configuration object
-      realtimeData: realtimeData, // Example realtime data object
-       // Example realtime data object
-      notificationBarPhaseHook: notificationBarPhaseHook, // Example notification bar phase hook
-      darkModeTogglePhaseHook: darkModeTogglePhaseHook, // Example dark mode toggle phase hook
-      authenticationPhaseHook: authenticationPhaseHook, // Example authentication phase hook
-      jobSearchPhaseHook: jobSearchPhaseHook, // Example job search phase hook
-      recruiterDashboardPhaseHook: recruiterDashboardPhaseHook, // Example recruiter dashboard phase hook
-      teamBuildingPhaseHook: useTeamBuildingPhase, // Example team building phase hook
-      brainstormingPhaseHook: useBrainstormingPhase, // Example brainstorming phase hook
-      projectManagementPhaseHook: useProjectManagementPhase, // Example project management phase hook
-      meetingsPhaseHook: useMeetingsPhase, // Example meetings phase hook
-      ideationPhaseHook: ideationPhaseHook, // Example ideation phase hook
-      teamCreationPhaseHook: teamCreationPhaseHook, // Example team creation phase hook
-      productBrainstormingPhaseHook: productBrainstormingPhaseHook, // Example product brainstorming phase hook
-      productLaunchPhaseHook: productLaunchPhaseHook, // Example product launch phase hook
-      dataAnalysisPhaseHook: dataAnalysisPhaseHook, // Example data analysis phase hook
-      generalCommunicationFeaturesPhaseHook: generalCommunicationFeaturesPhaseHook, // Example general communication features phase hook
-      fileType: "csv", // Example file type
+      lastUpdated: versionHistory,
+      userSettings: userSettings,
+      dataVersions: dataVersions,
+      frontendStructure: frontendStructure?.[0],
+      backendStructure: backendStructure,
+      backendConfig: backendConfig,
+      frontendConfig: frontendConfig,
+      realtimeData: realtimeData,
+      notificationBarPhaseHook: notificationBarPhaseHook,
+      darkModeTogglePhaseHook: darkModeTogglePhaseHook,
+      authenticationPhaseHook: authenticationPhaseHook,
+      jobSearchPhaseHook: jobSearchPhaseHook,
+      recruiterDashboardPhaseHook: recruiterDashboardPhaseHook,
+      teamBuildingPhaseHook: useTeamBuildingPhase,
+      brainstormingPhaseHook: useBrainstormingPhase,
+      projectManagementPhaseHook: useProjectManagementPhase,
+      meetingsPhaseHook: useMeetingsPhase,
+      ideationPhaseHook: ideationPhaseHook,
+      teamCreationPhaseHook: teamCreationPhaseHook,
+      productBrainstormingPhaseHook: productBrainstormingPhaseHook,
+      productLaunchPhaseHook: productLaunchPhaseHook,
+      dataAnalysisPhaseHook: dataAnalysisPhaseHook,
+      generalCommunicationFeaturesPhaseHook:
+        generalCommunicationFeaturesPhaseHook,
       calendarEvent: calendarEvent,
+      fileType: fileType,
       analysisResults: [],
+      data: [],
     };
 
     // Return a Promise that resolves to the mock cache data

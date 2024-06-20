@@ -1,19 +1,31 @@
 import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
-import { userId } from "@/app/components/users/ApiUser";
 // ContentSlice.ts
+import { endpoints } from "@/app/api/ApiEndpoints";
+import * as ApiTask from "@/app/api/TasksApi";
+import axiosInstance from "@/app/api/axiosInstance";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import { FileType } from "@/app/components/documents/Attachment/attachment";
+import ContentDetails from "@/app/components/models/content/ContentDetails";
+import {
+  PriorityTypeEnum,
+  StatusType,
+  TaskStatus,
+} from "@/app/components/models/data/StatusType";
+import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
+import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
+import { Task } from "@/app/components/models/tasks/Task";
+import { Phase } from "@/app/components/phases/Phase";
+import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
+import SortCriteria from "@/app/components/settings/SortCriteria";
+import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import { TaskSort } from "@/app/components/sort/TaskSort";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import FileSaver from "file-saver";
-import * as Papa from "papaparse";
-import { NamingConventionsError } from "shared_error_handling";
-import * as XLSX from "xlsx";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { AxiosResponse } from "axios";
 import useWebNotifications from "../../../hooks/commHooks/useWebNotifications";
-import { TaskFilter } from "@/app/pages/searchs/TaskFilter";
 import { ContentLogger } from "../../../logging/Logger";
 import { ContentItem } from "../../../models/content/ContentItem";
 import { Data } from "../../../models/data/Data";
-import { Progress } from "../../../models/tracker/ProgressBar";
-import { Project } from "../../../projects/Project";
 import { sanitizeInput } from "../../../security/SanitizationFunctions";
 import {
   NotificationType,
@@ -24,32 +36,7 @@ import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
 import { Idea, IdeationSession } from "../../../users/Ideas";
 import { User } from "../../../users/User";
 import { VideoData } from "../../../video/Video";
-import { implementThen } from "../../stores/CommonEvent";
 import { ProjectManagerStore } from "../../stores/ProjectStore";
-import { CustomComment } from "./BlogSlice";
-import ContentDetails from "@/app/components/models/content/ContentDetails";
-import {
-  PriorityTypeEnum,
-  StatusType,
-  TaskStatus,
-} from "@/app/components/models/data/StatusType";
-import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
-import { Task } from "@/app/components/models/tasks/Task";
-import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
-import { setAssignedUserFilter } from "./FilterSlice";
-import { FileType } from "@/app/components/documents/Attachment/attachment";
-import { TaskSort } from "@/app/components/sort/TaskSort";
-import SortCriteria from "@/app/pages/searchs/SortCriteria";
-import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
-import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
-import { Phase } from "@/app/components/phases/Phase";
-import * as ApiContent from "@/app/api/ApiContent";
-import { endpoints } from "@/app/api/ApiEndpoints";
-import axiosInstance from "@/app/api/axiosInstance";
-import headersConfig from "@/app/api/headers/HeadersConfig";
-import * as ApiTask from "@/app/api/TasksApi";
-import { AxiosResponse } from "axios";
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
 interface ContentManagerState {
@@ -215,7 +202,7 @@ const getTaskHistoryFromDatabaseAsync = async (
   }
 };
 
-export const contentSlice = createSlice({
+export const useContentSlice = createSlice({
   name: "contentManager",
   initialState,
   reducers: {
@@ -271,6 +258,42 @@ export const contentSlice = createSlice({
         };
 
         state.contentItems[contentToUpdateIndex] = updatedContent;
+      }
+    },
+
+    updateTaskAssignee: (
+      state,
+      action: PayloadAction<{ taskId: string; assigneeId: string }>
+    ) => {
+      const { taskId, assigneeId } = action.payload;
+
+      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
+
+      if (taskIndex !== -1) {
+        const task = state.tasks[taskIndex];
+        const assignee = state.users.find((user) => user.id === assigneeId);
+
+        if (task && assignee) {
+          // Normalize assignedTo to an array for manipulation
+          let assignedToArray: WritableDraft<User>[];
+
+          if (Array.isArray(task.assignedTo)) {
+            assignedToArray = task.assignedTo;
+          } else if (task.assignedTo) {
+            assignedToArray = [task.assignedTo];
+          } else {
+            assignedToArray = [];
+          }
+
+          // Check if the assignee is already in the array
+          if (!assignedToArray.some((user) => user.id === assigneeId)) {
+            assignedToArray.push(assignee);
+          }
+
+          // Assign the updated array back to assignedTo
+          task.assignedTo =
+            assignedToArray.length === 1 ? assignedToArray[0] : assignedToArray;
+        }
       }
     },
 
@@ -441,11 +464,12 @@ export const contentSlice = createSlice({
         description: string;
         dueDate: Date;
         status: TaskStatus;
+        type: NotificationTypeEnum;
       }>
     ) => {
-      const { taskId, title, description, dueDate, status } = action.payload;
+      const { taskId, title, description, dueDate, status, type } = action.payload;
       // Generate a unique ID for the new task
-      const generatedTaskID = UniqueIDGenerator.generateTaskID(taskId, title);
+      const generatedTaskID = UniqueIDGenerator.generateTaskID(taskId, title, type);
       // Add the new task
       state.tasks.push({
         id: generatedTaskID,
@@ -456,7 +480,7 @@ export const contentSlice = createSlice({
         assignedTo: [],
         assigneeId: undefined,
         payload: undefined,
-        priority: "low",
+        priority: PriorityTypeEnum.Low,
         previouslyAssignedTo: [],
         done: false,
         data: {} as WritableDraft<Data>,
@@ -484,11 +508,14 @@ export const contentSlice = createSlice({
         },
         getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
           throw new Error("Function not implemented.");
-        }
+        },
       });
-    
+
       // Log task creation with the ID of the first user in assignedTo array if it exists
-      const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : "";
+      const userId =
+        state.assignedTo && state.assignedTo.length > 0
+          ? state.assignedTo[0]._id
+          : "";
       if (userId) {
         ContentLogger.logTaskCreation(
           generatedTaskID,
@@ -754,28 +781,15 @@ export const contentSlice = createSlice({
       state,
       action: PayloadAction<{
         taskId: string;
-        priority: PriorityTypeEnum; // Change the type to PriorityTypeEnum
+        priority: PriorityTypeEnum;
       }>
     ) => {
       const { taskId, priority } = action.payload;
 
-      // Define a mapping between PriorityTypeEnum and string values
-      const priorityMap: Record<
-        PriorityTypeEnum,
-        "low" | "medium" | "high" | "normal" | "pending"
-      > = {
-        [PriorityTypeEnum.Low]: "low",
-        [PriorityTypeEnum.Medium]: "medium",
-        [PriorityTypeEnum.High]: "high",
-        [PriorityTypeEnum.Normal]: "normal",
-        [PriorityTypeEnum.PendingReview]: "pending", // Assuming PendingReview maps to "pending"
-      };
-
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
 
       if (taskIndex !== -1) {
-        // Use the priorityMap to assign the corresponding string value
-        state.tasks[taskIndex].priority = priorityMap[priority];
+        state.tasks[taskIndex].priority = priority;
       }
     },
 
@@ -914,37 +928,40 @@ export const contentSlice = createSlice({
       }
     },
 
-    updateTaskAssignee: (
+   markTaskAsCompleted: (
       state,
-      action: PayloadAction<{ taskId: string; assigneeId: string }>
+      action: PayloadAction<{
+        taskId: string;
+      }>
     ) => {
-      const { taskId, assigneeId } = action.payload;
-    
-      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-    
-      if (taskIndex !== -1) {
-        // Find the task by taskId
-        const task = state.tasks[taskIndex];
-    
-        // Find the assignee by assigneeId
-        const assignee = state.users.find((user) => user.id === assigneeId);
-    
-        // If the task and assignee exist, update the assignedTo property
-        if (task && assignee) {
-          // Check if assignee already exists in assignedTo array
-          if (!task.assignedTo) {
-            // If assignedTo is null, initialize it as an empty array
-            task.assignedTo = [];
-          }
-          // Check if the assignee is already assigned
-          if (!task.assignedTo.some(user => user.id === assigneeId)) {
-            // If not assigned, push the assignee to assignedTo array
-            task.assignedTo.push(assignee);
-          }
-        }
-      }
+     const { taskId } = action.payload;
+     const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
+     if (taskIndex !== -1) {
+       // Update task status to "completed"
+       state.tasks[taskIndex].status = "completed";
+       // Save the current task state to history
+       const previousState = { ...state.tasks[taskIndex] };
+       // Call the function to fetch task history from the database
+       getTaskHistoryFromDatabaseAsync(taskId, previousState)
+         .then(() => {
+         // Check if user has granted notification permission
+         if (Notification.permission === "granted") {
+           // Display success notification
+           notify(
+             "taskCompleted",
+             `Task marked as completed.`,
+             NOTIFICATION_MESSAGES.Notifications.DEFAULT,
+             new Date(),
+             "Success" as NotificationType
+           );
+         }
+         })
+         .catch((error) => {
+           // Handle error if needed
+           console.error("Error fetching task history:", error);
+         });
+     }
     },
-    
 
     batchFetchTaskSnapshots: (
       state,
@@ -1086,12 +1103,12 @@ export const {
   captureIdeas,
   startIdeationSession,
   // Other exported actions...
-} = contentSlice.actions;
+} = useContentSlice.actions;
 
 // Export selector for accessing the content items from the state
 export const selectContentItems = (state: { content: ContentManagerState }) =>
   state.content.contentItems;
 
 // Export reducer for the content entity slice
-export default contentSlice.reducer;
+export default useContentSlice.reducer;
 export type { ContentManagerState };

@@ -45,8 +45,11 @@ export enum FileTypeEnum {
   Configs = "Configs",
   DataVersionsConfig = "DataVersionsConfig",
   FrontendStructure = "FrontendStructure",
+  UserSettings = "UserSettings",
   UnknownType = "UnknownType",
-  PDF = 'pdf'
+  PDF = "pdf",
+  MD = "md",
+  Image = "image",
 }
 
 // Define the list of features and their associated file categories
@@ -83,7 +86,10 @@ function generateFileCategories(categories: FileCategory[]): FileCategory[] {
 const taskFileCategories: FileCategory[] = generateFileCategories([
   FileCategory.Utility,
 ]);
-
+// Define file categories for the Todo feature
+const todoFileCategories: FileCategory[] = generateFileCategories([
+  FileCategory.Utility,
+]);
 // Define file categories for the Project feature
 const projectFileCategories: FileCategory[] = generateFileCategories([]);
 
@@ -93,40 +99,46 @@ const productFileCategories: FileCategory[] = generateFileCategories([]);
 // Define file categories for the User feature
 const userFileCategories: FileCategory[] = generateFileCategories([]);
 
+// Define file categories for the Calendar feature
+const calendarFileCategories: FileCategory[] = generateFileCategories([]);
 // Define the list of features and their associated file categories
 const featureFiles: FeatureFiles = {
   User: userFileCategories,
   Task: taskFileCategories,
+  Todo: taskFileCategories,
   Project: projectFileCategories,
   Product: productFileCategories,
+  Calendar: calendarFileCategories,
 };
-  // Utility function to check if all required files are present for a feature
-  async function checkFeatureFiles(feature: string, fileExists: (path: string) => Promise<boolean>): Promise<boolean> {
-    const requiredCategories = featureFiles[feature];
-    if (!requiredCategories) return false;
+// Utility function to check if all required files are present for a feature
+async function checkFeatureFiles(
+  feature: string,
+  fileExists: (path: string) => Promise<boolean>
+): Promise<boolean> {
+  const requiredCategories = featureFiles[feature];
+  if (!requiredCategories) return false;
 
-    for (const category of requiredCategories) {
-      const extensions = fileExtensions[category];
-      if (!extensions) return false;
+  for (const category of requiredCategories) {
+    const extensions = fileExtensions[category];
+    if (!extensions) return false;
 
-      const filesFound = await Promise.all(extensions.map(async (ext) =>
-        await fileExists(`path/to/${feature}.${ext}`)
-      ));
-      if (!filesFound.some(found => found)) return false;
-    }
-
-    return true;
+    const filesFound = await Promise.all(
+      extensions.map(
+        async (ext) => await fileExists(`path/to/${feature}.${ext}`)
+      )
+    );
+    if (!filesFound.some((found) => found)) return false;
   }
 
-
-// Define a function to check if a file exists
+  return true;
+}
 
 // Define a function to check if a file exists
 const fileExists = async (path: string): Promise<boolean> => {
   const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
   try {
     // Make a fetch request to the file URL
-    const response = await fetch(path, { method: 'HEAD' });
+    const response = await fetch(path, { method: "HEAD" });
 
     // Check if the response status is OK (200)
     if (response.ok) {
@@ -134,7 +146,11 @@ const fileExists = async (path: string): Promise<boolean> => {
       CalendarLogger.logCalendarEvent("File exists", "uniqueID", "eventID");
     } else {
       // Log the failure event using CalendarLogger
-      CalendarLogger.logCalendarEvent("File does not exist", "uniqueID", "eventID");
+      CalendarLogger.logCalendarEvent(
+        "File does not exist",
+        "uniqueID",
+        "eventID"
+      );
     }
 
     return response.ok;
@@ -147,7 +163,6 @@ const fileExists = async (path: string): Promise<boolean> => {
     return false;
   }
 };
-
 
 // Example usage:
 const feature = "User";
@@ -168,14 +183,20 @@ const fileMapping: {
   UserService: { category: FileCategory.MobX, type: FileTypeEnum.Service },
   UserForm: { category: FileCategory.Component, type: FileTypeEnum.UI },
   UserProfile: { category: FileCategory.Component, type: FileTypeEnum.UI },
-  ProjectDetails: {category: FileCategory.Component, type: FileTypeEnum.UI},
+  ProjectDetails: { category: FileCategory.Component, type: FileTypeEnum.UI },
   UserDetails: { category: FileCategory.Component, type: FileTypeEnum.UI },
   UserCard: { category: FileCategory.Component, type: FileTypeEnum.UI },
-  UserListActions: { category: FileCategory.Component, type: FileTypeEnum.Actions },
+  UserListActions: {
+    category: FileCategory.Component,
+    type: FileTypeEnum.Actions,
+  },
   RootSagas: { category: FileCategory.Redux, type: FileTypeEnum.Saga },
   RootStores: { category: FileCategory.Redux, type: FileTypeEnum.Slice },
   RootLayout: { category: FileCategory.Component, type: FileTypeEnum.UI },
-  RootStoreComponent: { category: FileCategory.Component, type: FileTypeEnum.UI },
+  RootStoreComponent: {
+    category: FileCategory.Component,
+    type: FileTypeEnum.UI,
+  },
   UserStore: { category: FileCategory.MobX, type: FileTypeEnum.Service },
 };
 

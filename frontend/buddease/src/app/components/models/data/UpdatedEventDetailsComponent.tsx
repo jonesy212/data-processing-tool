@@ -1,7 +1,7 @@
 // UpdatedEventDetailsComponent.tsx
-import React, { useState, useEffect } from 'react';
-import {CalendarEventViewingDetailsProps} from '../../calendar/CalendarEventViewingDetails';
-import { RealtimeDataItem } from '../../../../../models/realtime/RealtimeData';
+import React, { useEffect, useState } from 'react';
+import { CalendarEventViewingDetailsProps } from '../../calendar/CalendarEventViewingDetails';
+import { RealtimeDataItem } from '../realtime/RealtimeData';
 
 interface UpdatedEventDetailsProps extends CalendarEventViewingDetailsProps {
   realtimeData: RealtimeDataItem[]; // Pass the real-time data as props

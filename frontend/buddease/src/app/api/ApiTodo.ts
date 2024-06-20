@@ -7,6 +7,8 @@ import { Todo } from '../components/todos/Todo';
 import { handleApiErrorAndNotify } from './ApiData';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
+import { NotificationTypeEnum, useNotification } from '../components/support/NotificationContext';
+import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 
 // Define the API base URL for todos
 const API_BASE_URL = dotProp.getProperty(endpoints, 'todos.list');
@@ -21,6 +23,9 @@ interface TodoNotificationMessages {
   REMOVE_TODO_ERROR: string;
   UPDATE_TODO_SUCCESS: string;
   UPDATE_TODO_ERROR: string;
+  CHECK_TODO_COMPLETION_ERROR: string;
+  COMPLETE_ALL_TODOS_ERROR: string;
+  ASSIGN_TODO_TO_TEAM_ERROR: string;
   // Add more keys as needed
 }
 
@@ -34,20 +39,30 @@ const todoApiNotificationMessages: TodoNotificationMessages = {
   REMOVE_TODO_ERROR: 'Failed to remove todo.',
   UPDATE_TODO_SUCCESS: 'Todo updated successfully.',
   UPDATE_TODO_ERROR: 'Failed to update todo.',
+  CHECK_TODO_COMPLETION_ERROR: 'Failed to check todo completion.',
+  COMPLETE_ALL_TODOS_ERROR: 'Failed to complete all todos.',
+  ASSIGN_TODO_TO_TEAM_ERROR: 'Failed to assign todo to team.',
   // Add more properties as needed
 };
 
 // Function to handle API errors and notify for todos
+// Function to handle API errors and notify for todos
 const handleTodoApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof TodoNotificationMessages
 ) => {
-  handleApiErrorAndNotify(error, errorMessage, errorMessageId);
+  console.error("Error:", error);
+
+  const errorMessage = todoApiNotificationMessages[errorMessageId];
+  useNotification().notify(
+    errorMessageId,
+    errorMessage,
+    NOTIFICATION_MESSAGES.Todo.Error,
+    new Date(),
+    NotificationTypeEnum.Error
+  );
+  throw error;
 };
-
-
-
 
 
 
@@ -124,13 +139,11 @@ export const addTodo = async (newTodo: Omit<Todo, 'id'>): Promise<void> => {
     console.error('Error adding todo:', error);
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      'Failed to add todo',
-      'AddTodoErrorId'
+      "ADD_TODO_ERROR"
     );
     throw error;
   }
 };
-
 // Remove todo
 export const removeTodo = async (todoId: number): Promise<void> => {
   try {
@@ -140,30 +153,42 @@ export const removeTodo = async (todoId: number): Promise<void> => {
     console.error('Error removing todo:', error);
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      'Failed to remove todo',
-      'RemoveTodoErrorId'
+      'REMOVE_TODO_ERROR'
     );
     throw error;
   }
 };
+
 
 // Update todo
 export const updateTodo = async (todoId: number, updatedFields: Partial<Todo>): Promise<void> => {
   try {
     const updateTodoEndpoint = `${API_BASE_URL}.update.${todoId}`;
     await axiosInstance.put(updateTodoEndpoint, updatedFields);
+
+    // Notify success
+    const successMessage = todoApiNotificationMessages.UPDATE_TODO_SUCCESS;
+    useNotification().notify(
+      'UPDATE_TODO_SUCCESS',
+      successMessage,
+      null,
+      new Date(),
+      NotificationTypeEnum.Success
+    );
   } catch (error) {
     console.error('Error updating todo:', error);
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      'Failed to update todo',
-      'UpdateTodoErrorId'
+      "UPDATE_TODO_ERROR"
     );
     throw error;
   }
 };
 
 
+
+
+// Check todo completion
 export const checkTodoCompletion = async (todoId: string): Promise<void> => { 
   try {
     // Include todoId in the endpoint URL
@@ -172,11 +197,10 @@ export const checkTodoCompletion = async (todoId: string): Promise<void> => {
   } catch (error) {
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      'Failed to check todo completion',
-      'CheckTodoCompletionErrorId',
+      "CHECK_TODO_COMPLETION_ERROR"
     );
   }
-}
+};
 
 // Complete all todos
 export const completeAllTodos = async (): Promise<void> => {
@@ -187,8 +211,7 @@ export const completeAllTodos = async (): Promise<void> => {
     console.error('Error completing all todos:', error);
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      'Failed to complete all todos',
-      'CompleteAllTodosErrorId'
+      "COMPLETE_ALL_TODOS_ERROR"
     );
     throw error;
   }
@@ -203,8 +226,7 @@ export const assignTodoToTeam = async (todoId: number, teamId: number): Promise<
     console.error('Error assigning todo to team:', error);
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      'Failed to assign todo to team',
-      'AssignTodoToTeamErrorId'
+      "ASSIGN_TODO_TO_TEAM_ERROR"
     );
     throw error;
   }

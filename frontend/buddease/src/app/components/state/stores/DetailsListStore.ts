@@ -1,19 +1,19 @@
-import  collaborationApiService from '@/app/api/ApiCollaboration';
-import { FC } from 'react';
 import { Progress } from '@/app/components/models/tracker/ProgressBar';
+import { FC } from 'react';
 // DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
-import { CustomPhaseHooks, Phase } from "../../phases/Phase";
+import { Phase } from "../../phases/Phase";
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import {
-  NotificationType,
   NotificationTypeEnum,
-  useNotification,
+  useNotification
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
+import { CommunicationActionTypes } from "../../community/CommunicationActions";
+import { Attachment } from "../../documents/Attachment/attachment";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import {
@@ -26,12 +26,11 @@ import {
   TodoStatus,
 } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
-import { Project } from "../../projects/Project";
-import SnapshotStoreConfig from "../../snapshots/SnapshotConfig";
-import { AllTypes } from "../../typings/PropTypes";
-import { CommunicationActionTypes } from "../../community/CommunicationActions";
-import { Attachment } from "../../documents/Attachment/attachment";
 import { Tag } from "../../models/tracker/Tag";
+import { Project } from "../../projects/Project";
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import { AllTypes } from "../../typings/PropTypes";
+import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -48,6 +47,7 @@ export type AllStatus =
 // isActive
 
 interface DetailsItem<T> {
+  _id?: string;
   id: string;
   title?: string;
   type?: AllTypes;
@@ -60,8 +60,12 @@ interface DetailsItem<T> {
   subtitle: string;
   author?: string;
   date?: Date;
+  label?: string;
+  value: string,
+  phase?: Phase,
   collaborators?: Member[];
   tags?: Tag[] | string[];
+  analysisResults?: DataAnalysisResult[];
   // Core properties...
 }
 
@@ -180,6 +184,10 @@ class DetailsListStoreClass implements DetailsListStore {
   }
 
   private async initSnapshotStore() {
+    const initialState = null; // or undefined, depending on your default handling
+const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[] = []; // Example empty array
+    const delegate = this.snapshotStore.getDelegate()
+    const category = this.snapshotStore.determineCategory(delegate);
     await notify(
       "interna snapshot notifications",
       "Setting up snapshot details",
@@ -188,11 +196,14 @@ class DetailsListStoreClass implements DetailsListStore {
       NotificationTypeEnum.InvalidCredentials
     );
 
+
+
     this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
-      {} as typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>,
-      (message: string, content: any, date: Date, type: NotificationType) => {
-        notify("", message, content, date, type);
-      }
+      null, // Assuming you're passing null for `snapshot`, adjust as per your actual data structure
+      category,
+      initialState,
+      snapshotConfig,
+      delegate
     );
   }
 
@@ -265,12 +276,16 @@ class DetailsListStoreClass implements DetailsListStore {
             isActive: false,
             progress: {
               id: "",
-              value: 0,
+              name: "",
               label: "",
-              current: 0,
+              color: "",
               max: 0,
               min: 0,
+              value: 0,
+              current: 0,
               percentage: 0,
+              description: "",
+              done: false,
             },
             condition: async () => false,
           },
@@ -455,4 +470,5 @@ const useDetailsListStore = (): DetailsListStore => {
 };
 
 export { useDetailsListStore };
-export type { DetailsItemExtended ,DetailsItem};
+export type { DetailsItem, DetailsItemExtended };
+

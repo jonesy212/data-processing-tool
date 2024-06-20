@@ -1,21 +1,22 @@
-import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
 
 interface SnapshotItem {
   message: any;
-  content?: string | Data | Content; // Adjust optional properties as needed
+  content?: string | Data | Content; 
   data: any;
   user: any;
   id: string;
-  value: Snapshot<Data>;
+  value: Snapshot<Data> | undefined;
   label: string;
   category: string;
   timestamp: Date | string;
   categories?: string[];
-  updatedAt: Date | undefined
-  // Define properties of a snapshot item
+  updatedAt: Date | undefined;
+  store: SnapshotStore<Data> | null;
+  
 }
 
 class SnapshotList {
@@ -88,8 +89,8 @@ class SnapshotList {
 
   sortSnapshotsByTags() {
     this.snapshots.sort((a, b) => {
-      const aTags = a.value.tags || [];
-      const bTags = b.value.tags || [];
+      const aTags = a.value?.tags || [];
+      const bTags = b.value?.tags || [];
       return aTags.join(",").localeCompare(bTags.join(","));
     });
   }
@@ -104,10 +105,10 @@ class SnapshotList {
     return this.snapshots.find((snapshot) => snapshot.id === id);
   }
 
-  removeSnapshot(snapshotId: string) {
+  removeSnapshot(snapshotToRemove: string) {
     // Find the index of the snapshot with the specified ID
     const index = this.snapshots.findIndex(
-      (snapshot) => snapshot.value.id === snapshotId
+      (snapshot) => snapshot.id === snapshotToRemove
     );
 
     // If the snapshot is found, remove it from the array
@@ -122,11 +123,10 @@ class SnapshotList {
     const snapshots = this.snapshots;
 
     return {
-      next(): IteratorResult<Snapshot<Data>> {
+      next(): IteratorResult<SnapshotItem> {
         if (index < snapshots.length) {
           const value = snapshots[index++];
-          // Assuming `value` contains a `Snapshot<Data>` object
-          return { value: value.value, done: false }; // Return `value.value` instead of `value`
+          return { value, done: false };
         } else {
           return { value: undefined, done: true };
         }

@@ -1,12 +1,19 @@
 import { AxiosError } from "axios";
+import { authToken } from "../components/auth/authToken";
+import { Content } from "../components/models/content/AddContent";
 import { Data } from "../components/models/data/Data";
+import { PriorityTypeEnum, ProjectStateEnum } from "../components/models/data/StatusType";
+import { Member } from "../components/models/teams/TeamMembers";
+import { ProjectType } from "../components/projects/Project";
 import SnapshotList from "../components/snapshots/SnapshotList";
-import { Snapshot } from "../components/snapshots/SnapshotStore";
+import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext";
 import { AppConfig, getAppConfig } from "../configs/AppConfig";
 import configData from "../configs/configData";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
+import { Target, constructTarget } from "./EndpointConstructor";
 import axiosInstance from "./axiosInstance";
+import headersConfig from "./headers/HeadersConfig";
 import {
   AuthenticationHeaders,
   createAuthenticationHeaders,
@@ -15,9 +22,8 @@ import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
-import { Target, constructTarget } from "./EndpointConstructor";
-import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext";
-import headersConfig from "./headers/HeadersConfig";
+import useErrorHandling from "../components/hooks/useErrorHandling";
+import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 
@@ -36,6 +42,26 @@ const snapshotNotificationMessages: SnapshotNotificationMessages = {
   CREATE_SNAPSHOT_ERROR: "Failed to create snapshot",
   // Add more messages as needed
 };
+
+
+
+const handleSnapshotApiError = (error: AxiosError<unknown>, customMessage: string) => {
+  const { handleError } = useErrorHandling();
+  
+  let errorMessage = customMessage;
+
+  if (error.response) {
+    errorMessage += `: ${error.response.data}`;
+  } else if (error.request) {
+    errorMessage += ": No response received from the server.";
+  } else {
+    errorMessage += `: ${error.message}`;
+  }
+
+  handleError(errorMessage);
+};
+
+
 // Updated handleSpecificApplicationLogic and handleOtherApplicationLogic functions
 const handleSpecificApplicationLogic = (
   appConfig: AppConfig,
@@ -62,6 +88,47 @@ const handleSpecificApplicationLogic = (
       break;
   }
 };
+
+export const findSubscriberById = async (
+  subscriberId: string,
+  category: string
+): Promise<Member> => {
+  const target: Target = constructTarget(
+    category,
+    `${endpoints.members.list}?subscriberId=${subscriberId}`
+  );
+  const headers: Record<string, any> = createRequestHeaders(String(target.url));
+
+  if (!target.url) {
+    throw new Error("Target URL is undefined");
+  }
+  
+  const response = await axiosInstance.get(target.url, {
+    headers: headers as Record<string, string>,
+  });  return response.data;
+};
+
+
+export const createSnapshot = (
+  snapshot: Snapshot<Data>
+) => {
+  const headersArray: Array<Record<string, string>> = [];
+  const token = localStorage.getItem("accessToken");
+  const userId = localStorage.getItem("userId");
+  const appVersion = configData.currentAppVersion;
+  const authenticationHeaders: AuthenticationHeaders = {
+    'Content-Type': 'application/json',
+    'X-App-Version': appVersion,
+    ...createAuthenticationHeaders(token, userId, appVersion) as Record<string, string>
+  };
+  headersArray.push(authenticationHeaders);
+  const cacheHeaders: Record<string, any> = createCacheHeaders();
+  headersArray.push(cacheHeaders);
+  const contentHeaders: Record<string, any> = createContentHeaders();
+  headersArray.push(contentHeaders);
+  const requestHeaders: Record<string, any> = createRequestHeaders(authToken);
+  headersArray.push(requestHeaders);
+}
 
 const handleOtherApplicationLogic = (
   appConfig: AppConfig,
@@ -114,6 +181,7 @@ const handleOtherStatusCodes = (appConfig: AppConfig, statusCode: number) => {
     // Additional logic for handling other status codes if needed
   }
 };
+
 
 export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
   try {
@@ -171,19 +239,16 @@ export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
   }
-};
+}
 
-export const fetchSnapshotById = async (
-  snapshotId: string
-): Promise<Snapshot<Data>> => {
+
+export const addSnapshotSuccess = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
-    const currentAppVersion = configData.currentAppVersion;
-
+    const currentAppVersion = configData.currentAppVersion; 
     const authenticationHeaders: AuthenticationHeaders =
       createAuthenticationHeaders(accessToken, userId, currentAppVersion);
-
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
@@ -192,23 +257,183 @@ export const fetchSnapshotById = async (
       createRequestHeaders(accessToken || ""),
       // Add other header objects as needed
     ];
-
     const headers = Object.assign({}, ...headersArray);
+    const response = await axiosInstance.post(`${API_BASE_URL}`, newSnapshot, {
+      headers: headers as Record<string, string>,
+    });
+    if (response.status === 200) {
+      // Handle successful response
+      if (
+        typeof response.data === "string" &&
+        response.headers["content-type"] === "application/json"
+      ) {
+        const numericData = parseInt(response.data, 10); // Convert string to number
+        if (!isNaN(numericData)) {
+          // Pass additional argument for statusCode
+          handleSpecificApplicationLogic(appConfig, numericData);
+        } else {
+          // Handle the case where response.data is not a valid number
+          console.error("Response data is not a valid number:", response.data);
+        }
+        // Handle other status codes
+        if (response.status === 200 && response.data) {
+          // Pass additional argument for statusCode
+          handleSpecificStatusCode(appConfig, response.status);
+        } else {
+          // Code for handling other status codes
+          handleOtherStatusCodes(appConfig, response.status);
+        }
+      }
+      return response.data;
+    }
+  }catch (error) {
+    const errorMessage = "Failed to add snapshot";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+}
 
-    const response = await axiosInstance.get<Snapshot<Data>>(
-      `${API_BASE_URL}/${snapshotId}`,
+
+export const getSnapshots = async (category: string) => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const currentAppVersion = configData.currentAppVersion;
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ""),
+      // Add other header objects as needed
+    ];
+    const headers = Object.assign({}, ...headersArray);
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}?category=${category}`,
       {
         headers: headers as Record<string, string>,
       }
     );
-
-    return response.data;
+    if (response.status === 200) {
+      // Handle successful response
+      if (
+        typeof response.data === "string" &&
+        response.headers["content-type"] === "application/json"
+      ) {
+        const numericData = parseInt(response.data, 10); // Convert string to number
+        if (!isNaN(numericData)) {
+          // Pass additional argument for statusCode
+          handleSpecificApplicationLogic(appConfig, numericData);
+        } else {
+          // Handle the case where response.data is not a valid number
+          console.error("Response data is not a valid number:", response.data);
+          // Handle other status codes
+          handleOtherStatusCodes(appConfig, response.status);
+        }
+      }
+      return response.data;
+    }
   } catch (error) {
-    const errorMessage = "Failed to fetch snapshot by ID";
+    const errorMessage = "Failed to get snapshots";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+}
+
+
+export const mergeSnapshots = async (
+  snapshots: Snapshot<Data>[],
+  category: string
+): Promise<void> => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
+    const currentAppVersion = configData.currentAppVersion;
+
+    // Create authentication headers
+    const authenticationHeaders = createAuthenticationHeaders(
+      accessToken,
+      userId,
+      currentAppVersion
+    );
+
+    // Other headers
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ''),
+      // Add other header objects as needed
+    ];
+
+    const headers = Object.assign({}, ...headersArray);
+
+    const payload = {
+      snapshots,
+      category,
+    };
+
+    const response = await axiosInstance.post(`${API_BASE_URL}/merge`, payload, {
+      headers: headers as Record<string, string>,
+    });
+
+    if (response.status === 200) {
+      console.log('Snapshots merged successfully:', response.data);
+      // Handle successful merge if needed
+    } else {
+      console.error('Failed to merge snapshots. Status:', response.status);
+      // Handle error cases
+    }
+  } catch (error) {
+    const errorMessage = 'Failed to merge snapshots';
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
   }
 };
+
+export const fetchSnapshotById = (snapshotId: string): Promise<Snapshot<Data>> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const userId = localStorage.getItem("userId");
+      const currentAppVersion = configData.currentAppVersion;
+
+      const authenticationHeaders: AuthenticationHeaders =
+        createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+
+      const headersArray = [
+        authenticationHeaders,
+        createCacheHeaders(),
+        createContentHeaders(),
+        generateCustomHeaders({}),
+        createRequestHeaders(accessToken || ""),
+        // Add other header objects as needed
+      ];
+
+      const headers = Object.assign({}, ...headersArray);
+
+      const response = await axiosInstance.get<Snapshot<Data>>(
+        `${API_BASE_URL}/${snapshotId}`,
+        {
+          headers: headers as Record<string, string>,
+        }
+      );
+
+      resolve(response.data);
+    } catch (error) {
+      const errorMessage = "Failed to fetch snapshot by ID";
+      handleApiError(error as AxiosError<unknown>, errorMessage);
+      reject(error);
+    }
+  });
+};
+
+
+
+
 export const fetchAllSnapshots = async (
   target: SnapshotList
 ): Promise<SnapshotList> => {
@@ -232,8 +457,7 @@ export const fetchAllSnapshots = async (
     const response = await axiosInstance.get<SnapshotList>(
       `${API_BASE_URL}/${target}`, // Assuming target is a valid URL string
       {
-        // Use the target parameter here
-        headers: headers as Record<string, string>,
+        headers: headers,
       }
     );
     return response.data;
@@ -243,6 +467,62 @@ export const fetchAllSnapshots = async (
       "Failed to fetch all snapshots"
     );
     throw error;
+  }
+};
+
+export const takeSnapshot = async (
+  target: SnapshotList | Content,
+  date?: Date,
+  projectType?: ProjectType,
+  projectId?: string,
+  projectState?: ProjectStateEnum,
+  projectPriority?: PriorityTypeEnum,
+  projectMembers?: Member[]
+) => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const currentAppVersion = configData.currentAppVersion;
+    const authenticationHeaders = createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ""),
+      // Add other header objects as needed
+    ];
+    const headers = Object.assign({}, ...headersArray);
+
+    let url = '';
+    let data: any = {};
+
+    if ('projectType' in target) {
+      url = `${API_BASE_URL}/snapshotListEndpoint`; 
+      data = {
+        date,
+        projectType,
+        projectId,
+        projectState,
+        projectPriority,
+        projectMembers
+      };
+    } else if ('title' in target) {
+      url = `${API_BASE_URL}/contentEndpoint`; // Replace with your actual endpoint
+      data = {
+        content: target
+      };
+    } else {
+      throw new Error('Invalid target');
+    }
+
+    const response = await axiosInstance.post(url, data, { headers });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error: any) {
+    handleApiError(error as AxiosError<unknown>, "Failed to take snapshot");
+    throw error; 
   }
 };
 
@@ -268,7 +548,7 @@ export const saveSnapshotToDatabase = async (snapshotData: any): Promise<boolean
   } catch (error: any) {
       console.error("Error saving snapshot to database:", error);
       // Assuming there's a function to handle API errors and notify the user
-      // handleSnapshotApiError(error as AxiosError<unknown>, "Failed to save snapshot to database");
+      handleSnapshotApiError(error as AxiosError<unknown>, "Failed to save snapshot to database");
       // Return false to indicate failure
       return false;
   }

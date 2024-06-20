@@ -17,7 +17,7 @@ export type DataStatus = "processing" | "completed" | "failed"; // Define DataSt
 
 
 
-interface NotificationData extends Partial<Data>, Partial<CalendarEvent> {
+interface NotificationData extends Data, CalendarEvent {
   id: string;
   message: string;
 
@@ -72,7 +72,13 @@ export const dispatchNotification = (
         inApp: true,
         options: {
           additionalOptions: undefined
-        }
+        },
+        topics: [],
+        highlights: [],
+        files: [],
+        rsvpStatus: 'yes',
+        participants: [],
+        teamMemberId: ''
       })
     );
   } catch (error) {
@@ -95,6 +101,12 @@ export const dispatchNotification = (
         },
         data: payload,
         date: new Date(),
+        topics: [],
+        highlights: [],
+        files: [],
+        rsvpStatus: 'yes',
+        participants: [],
+        teamMemberId: ''
       },
       )
     );

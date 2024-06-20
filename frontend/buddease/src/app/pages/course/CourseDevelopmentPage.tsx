@@ -1,16 +1,15 @@
 // CourseDevelopmentPage.tsx
-import React, { useEffect, useState } from "react";
-import CoursePlanningPhase from "./CoursePlanningPhase";
-import CourseSetupPhase from "./CourseSetupPhase";
-import CourseLearningPhase from "./CourseLearningPhase";
-import generateTimeBasedCode from "../../../../models/realtime/TimeBasedCodeGenerator";
 import { fetchDataWithToken, useAuth } from "@/app/components/auth/AuthContext";
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { Data } from "@/app/components/models/data/Data";
 import SnapshotStore, {
   Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
-import { Data } from "@/app/components/models/data/Data";
-import { authToken } from "@/app/components/auth/authToken";
+import { useNotification } from "@/app/components/support/NotificationContext";
+import React, { useEffect, useState } from "react";
+import generateTimeBasedCode from "../../components/models/realtime/TimeBasedCodeGenerator";
+import CourseLearningPhase from "./CourseLearningPhase";
+import CoursePlanningPhase from "./CoursePlanningPhase";
+import CourseSetupPhase from "./CourseSetupPhase";
 
 const { notify } = useNotification();
 // Define course development phases

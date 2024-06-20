@@ -6,13 +6,16 @@ import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
+import { Data } from "@/app/components/models/data/Data";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
+import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
 import {
@@ -33,9 +36,6 @@ import {
   TodoStatus,
 } from "./../../components/models/data/StatusType";
 import { CalendarEvent } from "./../../components/state/stores/CalendarEvent";
-import { Data } from "@/app/components/models/data/Data";
-import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
-import UserRoles from "@/app/components/users/UserRoles";
 
 // .ts
 interface FilterCriteria {
@@ -279,6 +279,7 @@ const applyFilters = (
 // Sample CalendarEvent data
 const events: CalendarEvent[] = [
   {
+    description: "This is a sample event",
     startDate: new Date("2024-06-01"),
     endDate: new Date("2024-06-05"),
     status: "scheduled",
@@ -324,21 +325,67 @@ const events: CalendarEvent[] = [
       memberName: "",
       avatarUrl: "",
       email: "",
-      phone: "",
       role: UserRoles.Developer,
-      status: "",
       location: "",
-      date: undefined,
-      then: function (callback: (newData: Snapshot<Data>) => void): void {
-        throw new Error("Function not implemented.");
-      }
+      bio: "",
+      skills: [],
+      interests: [],
+      socialLinks: {
+        github: "",
+        linkedin: "",
+        twitter: "",
+        website: "",
+        devpost: "",
+        youtube: "",
+        medium: "",
+        facebook: "",
+        twitch: "",
+        instagram: "",
+        discord: "",
+        dribble: "",
+        behance: "",
+        tiktok: "",
+        telegram: "",
+        reddit: "",
+        quora: "",
+        stackoverflow: "",
+        gitlab: ""
+      },
+      teamId: "",
+      roleInTeam: "",
+      firstName: "",
+      lastName: "",
+      tier: "",
+      token: null,
+      uploadQuota: 0,
+      createdAt: undefined,
+      updatedAt: undefined,
+      fullName: null,
+      userType: "",
+      hasQuota: false,
+      profilePicture: null,
+      processingTasks: [],
+      persona: undefined,
+      friends: [],
+      blockedUsers: [],
+      settings: undefined,
+      privacySettings: undefined,
+      notifications: undefined,
+      activityLog: [],
+      relationshipStatus: null,
+      hobbies: [],
+      achievements: [],
+      profileVisibility: "",
+      profileAccessControl: undefined,
+      activityStatus: "",
+      isAuthorized: false
     },
     participants: [],
     teamMemberId: "",
-    date: undefined,
-    then: function (callback: (newData: Snapshot<Data>) => void): void {
-      throw new Error("Function not implemented.");
-    }
+    date: new Date(),
+    then: async function (callback: (newData: Snapshot<Data>) => void): Promise<void> {
+      callback(await this);
+        }
   },
   // Add more CalendarEvent data as needed
 ];
@@ -371,7 +418,7 @@ const filterCriteria: FilterCriteria = {
   securityFeatureType: SecurityFeatureEnum.Encryption, // Updated to enum value
   feedbackPhaseType: FeedbackPhaseEnum.FEEDBACK_REVIEW, // Updated to enum value
   contentManagementType: ContentManagementPhaseEnum.CONTENT_ITEM_SELECTION, // Updated to enum value
-  taskPhaseType: TaskPhaseEnum.Execution, // Updated to enum value
+  taskPhaseType: TaskPhaseEnum.EXECUTION, // Updated to enum value
   animationType: AnimationTypeEnum.TwoD, // Updated to enum value
   languageType: LanguageEnum.English, // Updated to enum value
   codingLanguageType: CodingLanguageEnum.JavaScript, // Updated to enum value
@@ -385,4 +432,4 @@ const filterCriteria: FilterCriteria = {
 const filteredEvents = applyFilters(events, filterCriteria);
 
 console.log(filteredEvents);
-export type {FilterCriteria} 
+export type { FilterCriteria };

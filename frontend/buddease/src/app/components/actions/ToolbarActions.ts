@@ -1,9 +1,6 @@
-
-// todo move 
 // toolbar/ToolbarActions.ts
 import { createAction } from "@reduxjs/toolkit";
-// import ParticipantData from "../hooks/dataHooks/RealtimeUpdatesComponent";
-import ParticipantData from '@/app/components/hooks/dataHooks/RealtimeUpdatesComponent';
+import { ParticipantData } from "@/app/pages/management/ParticipantManagementPage";
 import { Theme } from "../libraries/ui/theme/Theme";
 import { User } from "../users/User";
 
@@ -52,10 +49,12 @@ export const ToolbarActions = {
 
 
 
-  fetchParticipantData: createAction<{ userId: User, participantData: typeof ParticipantData }>("fetchParticipantData"),
+  fetchParticipantData: createAction<{ userId: User, participantData: ParticipantData[] }>("fetchParticipantData"),
 
   showParticipantManagementModal: createAction<boolean>("showParticipantManagementModal"),
   // Add more toolbar actions as needed
+  addParticipant: createAction<{ userId: User, participant: ParticipantData }>("addParticipant"),
+  removeParticipant: createAction<{ userId: User, participantId: string }>("removeParticipant"),
 };
 
 

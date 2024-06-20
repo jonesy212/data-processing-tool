@@ -1,13 +1,12 @@
 import triggerAutosave from "@/app/components/documents/editing/triggerAutosave";
+import { AsyncHook } from "@/app/components/hooks/useAsyncHookLinker";
 import { useCalendarManagerStore } from "@/app/components/state/stores/CalendarEvent";
 import { historyManagerStore } from "@/app/components/state/stores/HistoryStore";
 import { useTaskManagerStore } from '@/app/components/state/stores/TaskStore ';
 import { ResponsiveDesign } from "@/app/components/styling/ResponsiveDesign";
-import { default as ControlPanel, ControlPanelProps} from "@/app/utils/ControlPanel"; // Import ControlPanel and ControlPanelProps
+import { default as ControlPanel, ControlPanelProps } from "@/app/utils/ControlPanel"; // Import ControlPanel and ControlPanelProps
 import React, { useEffect } from "react";
-import RealTimeVisualization from "../../../../models/realtime/RealTimeVisualization";
-import integrateComponents from "../../../../models/realtime/IntegrationLogic";
-import { AsyncHook } from "@/app/components/hooks/useAsyncHookLinker";
+import RealTimeVisualization from "../../components/models/realtime/RealTimeVisualization";
 
 // Define interface extending ControlPanelProps
 interface CollaborationPageProps extends ControlPanelProps {

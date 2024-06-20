@@ -2,7 +2,7 @@
 // data/DataFrameActions.ts
 
 import { createAction } from "@reduxjs/toolkit";
-import { DataFrame } from "../models/data/DataFrame";
+import { DataFrame } from "data-forge";
 
 export const DataFrameActions = {
   // Standard actions
@@ -13,6 +13,7 @@ export const DataFrameActions = {
   
   // Fetch data frame actions
   fetchDataFrame: createAction("fetchDataFrame"),
+  updateDataFrameSuccess: createAction<{ dataFrame: DataFrame[] }>("updateDataFrameSuccess"),
   fetchDataFrameSuccess: createAction<{ dataFrame: DataFrame[] }>("fetchDataFrameSuccess"),
   fetchDataFrameFailure: createAction<{ error: string }>("fetchDataFrameFailure"),
   

@@ -8,6 +8,8 @@ export interface Attachment extends File {
   fileName?: string;
 }
 
+
+
 export type FileType =
   | "image"
   | "document"

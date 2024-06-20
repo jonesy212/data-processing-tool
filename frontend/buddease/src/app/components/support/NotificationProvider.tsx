@@ -1,13 +1,9 @@
-import React, { ReactNode, createContext } from 'react';
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from './NotificationContext';
-import { NotificationData } from './NofiticationsSlice';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { notificationStoreInstance } from '../state/stores/NotificationStore';
+import React, { ReactNode, createContext, useState } from 'react';
 import { logData } from '../notifications/NotificationService';
-import { LogData } from '@/app/components/models/LogData';
-
-
- 
+import { notificationStoreInstance } from '../state/stores/NotificationStore';
+import { NotificationData } from './NofiticationsSlice';
+import { NotificationContextProps, NotificationType, NotificationTypeEnum } from './NotificationContext';
 
 export const notificationStore = notificationStoreInstance
 export const notificationData: NotificationData[] = [];
@@ -30,6 +26,10 @@ const generateNotificationMessage = (type: string, userName?: string | number): 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+
+  const [notifications, setNotifications] = useState <NotificationData[]>([]);
+  const [duration, setDuration] = useState<number>(3000);  // Default duration
+
   const sendNotification = (
     type: string,
     userName: string | number | undefined
@@ -44,15 +44,20 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       type: NotificationTypeEnum.AccountCreated,
       sendStatus: "Sent",
       completionMessageLog: {
-        id: Date.now().toString(),
+        date: new Date(),
         message: `Notification of type ${NotificationTypeEnum.OperationSuccess} sent`,
         createdAt: new Date(),
-        type: NotificationTypeEnum.OperationSuccess,
         content: message,
-        completionMessageLog: "",
         timestamp: new Date(),
         level: "info",
       },
+      topics: [],
+      highlights: [],
+      files: [],
+      rsvpStatus: "yes",
+      host: true, 
+      participants: [],
+      teamMemberId: "",
     });
   };
 
@@ -66,7 +71,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
         sendNotification,
         addNotification: (notification: NotificationData) => {
           notificationStore.addNotification(notification);
-        },
+          },
         notify: (
           id,
           message,
@@ -83,6 +88,13 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
             type: NotificationTypeEnum.AccountCreated,
             sendStatus: "Sent",
             completionMessageLog: logData,
+            topics: [],
+            highlights: [],
+            files: [],
+            rsvpStatus: 'yes',
+            host: undefined,
+            participants: [],
+            teamMemberId: ''
           });
           console.log(`Notification: ${message}`);
           return Promise.resolve();
@@ -92,6 +104,9 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
         showMessage: (message: Message) => {
           sendNotification("Custom", `${message.sender}: ${message.text}`);
           console.log(`Notification: ${message}`);
+        },
+        setNotifications: (notifications: NotificationData[]) => {
+          setNotifications(notifications);
         },
         showMessageWithType: (message: Message, type: NotificationType) => {
           sendNotification("Custom", `${message.sender}: ${message.text}`);
@@ -103,7 +118,17 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
         showErrorNotification: (message: string) => {
           sendNotification("Error", message);
         },
+        setDuration: (duration: number) => {
+          setDuration(duration);
+        },
+        showInfoNotification: (message: string) => { 
+          sendNotification("Info", message);
+        },
+        showNotification: (message: string) => {
+          sendNotification("Custom", message);
+        }
       }}
+
     >
       {children}
     </NotificationContext.Provider>

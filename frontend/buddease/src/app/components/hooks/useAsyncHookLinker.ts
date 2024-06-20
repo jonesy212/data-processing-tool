@@ -7,8 +7,8 @@ import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
 import { Progress } from '../models/tracker/ProgressBar';
 import { useDispatch } from 'react-redux';
 export interface AsyncHook<T> extends PhaseHookConfig {
-  enable: () => void; // Change enable method to not be optional
-  disable: () => void; // Change disable method to not be optional
+  enable?: () => void; // Change enable method to not be optional
+  disable?: () => void; // Change disable method to not be optional
  isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   resetIdleTimeout: () => Promise<void>;

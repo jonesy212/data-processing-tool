@@ -291,6 +291,10 @@ export const useCollaborationSlice = createSlice({
       }
     },
 
+    participantData(state, action: PayloadAction<WritableDraft<Participant>>) {
+      state.participants.push(action.payload);
+    },
+
     shareMeeting(state, action: PayloadAction<WritableDraft<Meeting>>) {
       state.sharedMeetings.push(action.payload);
     },

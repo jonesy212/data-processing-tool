@@ -1,15 +1,14 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useCryptoManager } from "../crypto/CryptoManager";
 import { Task } from "../models/tasks/Task";
-import { Project } from "../projects/Project";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { CommonCalendarProps } from "./Calendar";
-import { useCryptoManager } from "../crypto/CryptoManager";
+import { YearInfo } from "./CalendarYear";
 import { Month, MonthInfo } from "./Month";
 
 interface CalendarMonthProps extends CommonCalendarProps {
-  year: number;
-  month: number;
+  year?: YearInfo[] | number;
+  month?: MonthInfo[] | number;
   events: CalendarEvent[];
   tasks: Task[];
 }
@@ -78,6 +77,7 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
       currency: "",
       value: 0,
       ticker: "",
+      category: "",
     });
     cryptoManager.addHolding({
       id: "2",
@@ -87,13 +87,14 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
       currency: "",
       value: 0,
       ticker: "",
+      category: "",
     });
   }, [cryptoManager]);
 
   return (
     <div className={isDarkMode ? "dark-mode" : "light-mode"}>
       <h4>
-        {month}/{year}
+        {typeof month === 'number' ? month : ''}/{typeof year === 'number' ? year : ''}
       </h4>
       <ul>
         {tasks.map((task) => (
@@ -101,9 +102,9 @@ const CalendarMonth: React.FC<CalendarMonthProps> = ({
             key={task.id}
             onClick={() => onTaskClick(task)}
             onDoubleClick={() => onTaskDoubleClick(task)}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              onTaskContextMenu(task);
+            onContextMenu={(event) => {
+              event.preventDefault();
+              onTaskContextMenu(task, event);
             }}
             draggable
             onDragStart={() => onTaskDragStart(task)}
@@ -202,15 +203,16 @@ export const month: MonthInfo[] = [
     name: "January",
     color: "#333",
     description: "First month of the year",
+    index: 0,
   },
   {
-    id: Month.February.toString(),
+    id: Month.February,
     name: "February",
     color: "#333",
     description: "Second month of the year",
+    index: 1,
   },
   // Add other months as needed
 ];
 
-export { month };
 export default CalendarMonth;

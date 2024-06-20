@@ -65,17 +65,19 @@ const IdeaCreationPhaseManager: React.FC<IdeaFormProps> = ({ onSubmit, onTransit
     // Assuming `nextPhase` is defined somewhere
     const nextPhase: PhaseHookConfig = {
       name: "Review Idea",
-      condition: async (idleTimeoutDuration: number) => true,
+      condition: async (idleTimeoutDuration: Duration) => true,
       duration: '10',
       canTransitionTo: (nextPhase: Phase) => true,
-      handleTransitionTo: async (nextPhase: Phase) =>
-        console.log("Handling transition to:", nextPhase),
+      handleTransitionTo: async (nextPhase: Phase) => console.log("Handling transition to:", nextPhase),
       isActive: false,
       asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
         return () => {
           console.log("Clean up effect");
         };
       },
+      startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void | undefined): void | undefined {
+        throw new Error('Function not implemented.');
+      }
     };
     handlePhaseTransition(nextPhase as PhaseConfig);
   };

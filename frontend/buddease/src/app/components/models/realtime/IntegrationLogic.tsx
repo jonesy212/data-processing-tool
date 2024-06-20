@@ -1,7 +1,9 @@
-import React from "react";
+import { month } from "@/app/components/calendar/CalendarMonth";
 import Milestone, {
   CalendarManagerState,
 } from "@/app/components/calendar/CalendarSlice";
+import year, { YearInfo } from "@/app/components/calendar/CalendarYear";
+import { Month, MonthInfo } from "@/app/components/calendar/Month";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import { ContentPost } from "@/app/components/models/content/ContentPost";
 import { AttendancePredictionResult } from "@/app/components/models/data/CalendarEventAttendancePrediction";
@@ -12,19 +14,14 @@ import {
   Label,
   label,
   labels,
-  // resources,
 } from "@/app/components/projects/branding/BrandingSettings";
 import { Resource, selectSelectedProject } from "@/app/components/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/components/state/redux/slices/RootSlice";
 import { rootStores } from "@/app/components/state/stores/RootStores";
 import { NotificationContextProps } from "@/app/components/support/NotificationContext";
 import ControlPanel from "@/app/utils/ControlPanel";
-import events from "events";
-import { useEffect, useState } from "react";
-import Calendar, { CommonCalendarProps } from "../../src/app/components/calendar/Calendar";
-import { month } from "@/app/components/calendar/CalendarMonth";
-import year, { YearInfo } from "@/app/components/calendar/CalendarYear";
-import { Month, MonthInfo } from "@/app/components/calendar/Month";
+import React, { useEffect, useState } from "react";
+import Calendar, { CommonCalendarProps } from "../../calendar/Calendar";
 
 interface Dependency {
   // Define the properties of the Dependency type

@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import dotProp from 'dot-prop';
 import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
 import { Task } from '../components/models/tasks/Task';
@@ -7,6 +7,7 @@ import { useTaskManagerStore } from '../components/state/stores/TaskStore ';
 import { NotificationType, useNotification } from '../components/support/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
+import { Dispatch } from '@reduxjs/toolkit';
 
 // Define the API base URL
 const API_BASE_URL = dotProp.getProperty(endpoints, 'tasks.list');
@@ -37,6 +38,7 @@ interface TaskNotificationMessages {
   BULK_ASSIGN_TODOS_ERROR: string;
   BULK_UNASSIGN_TODOS_ERROR: string;
   FETCH_TASK_HISTORY_ERROR: string;
+  FETCH_TASKS_BY_USER_ERROR: string;
   // Add more keys as needed
 }
 
@@ -65,7 +67,8 @@ const taskApiNotificationMessages: TaskNotificationMessages = {
   BULK_ASSIGN_TASKS_ERROR: 'Failed to bulk assign tasks.',
   BULK_ASSIGN_TODOS_ERROR: 'Failed to bulk assign todos',
   BULK_UNASSIGN_TODOS_ERROR: 'Failed to bulk unassign todos',
-  FETCH_TASK_HISTORY_ERROR: 'Failed to fetch task history'
+  FETCH_TASK_HISTORY_ERROR: 'Failed to fetch task history',
+  FETCH_TASKS_BY_USER_ERROR: 'Failed to fetch tasks by user',
   // Add more properties as needed
 };
 // Function to handle API errors and notify for tasks
@@ -102,12 +105,31 @@ export const fetchTasks = async (): Promise<Task[]> => {
   }
 };
 
-export const updateTaskPosition = async (task: Task, position: number): Promise<void> => {
+
+export const updateTaskPositionSuccess = (task: Task) => {
+  return {
+    type: 'UPDATE_TASK_POSITION_SUCCESS',
+    payload: {
+      task,
+    },
+  };
+};
+
+
+export const updateTaskPosition = async (taskId: string, newPosition: number, dispatch: Dispatch, notify: () => void): Promise<void> => {
   try {
-    const updateTaskEndpoint = `${API_BASE_URL}.updatePosition`;
-    const response = await axiosInstance.post(updateTaskEndpoint, { task, position });
-    const taskManagerStore = useTaskManagerStore();
-    taskManagerStore.updateTaskPositionSuccess({ task: response.data });
+    const updateTaskEndpoint = `${API_BASE_URL}/updatePosition`; // Adjust the API endpoint according to your project's API structure
+    const response: AxiosResponse<Task> = await axiosInstance.post(updateTaskEndpoint, { task: taskId, position: newPosition });
+
+    const updatedTask: Task = response.data;
+
+    // Update task in task manager store (if applicable)
+    const taskManagerStore = useTaskManagerStore(); // Ensure this hook is correctly used
+    taskManagerStore.updateTaskPositionSuccess({ task: updatedTask });
+
+    // Dispatch an action to update the task's position in the Redux state
+    dispatch(updateTaskPositionSuccess(updatedTask));
+
     // Notify the success message
     useNotification().notify(
       'UPDATE_TASK_SUCCESS',
@@ -116,17 +138,19 @@ export const updateTaskPosition = async (task: Task, position: number): Promise<
       new Date(),
       "ApiClientSuccess" as NotificationType
     );
-  }
-  catch (error) {
+
+    // Notify the caller (if needed)
+    notify();
+  } catch (error) {
     console.error('Error updating task position:', error);
     handleTaskApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to update task position',
       'UPDATE_TASK_ERROR'
     );
-    throw error;
+    throw error; // Rethrow the error for further handling
   }
-}
+};
 
 export const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
   try {
@@ -278,7 +302,7 @@ export const unassignTask = async (taskId: number): Promise<void> => {
 };
 
 
-export const fetchTask = (taskId: number): Promise<Task | void> => {
+export const fetchTaskData = (taskId: number): Promise<Task | void> => {
   return new Promise<Task | void>(async (resolve, reject) => {
     try {
       const fetchTaskEndpoint = `${API_BASE_URL}.get.${taskId}`;
@@ -401,7 +425,21 @@ export const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
   }
 };
 
-
+export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
+  try {
+    const getTasksByUserIdEndpoint = `${API_BASE_URL}.getByUser.${userId}`;
+    const response = await axiosInstance.get<Task[]>(getTasksByUserIdEndpoint);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tasks by user:', error);
+    handleTaskApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      'Failed to fetch tasks by user',
+      'FETCH_TASKS_BY_USER_ERROR'
+    );
+    throw error;
+  }
+}
 
 export const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]> => {
   try {

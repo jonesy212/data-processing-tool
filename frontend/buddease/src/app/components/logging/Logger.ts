@@ -1038,6 +1038,7 @@ class TaskLogger extends Logger {
       message: completionMessage, // Use the completionMessage provided as the log message
       user: null, // Optional: Include user information if available, set to null for now
       createdAt: new Date(), // Ensure createdAt is always defined as a Date
+      date: new Date(), // Ensure date is always defined as a Date
       // Add additional fields as needed based on the LogData interface
     };
 
@@ -1068,10 +1069,11 @@ class TaskLogger extends Logger {
   static logTaskCompleted(
     existingTaskId: string,
     taskName: string,
+    type: NotificationTypeEnum,
     notify: (message: string, type: string, date: Date, id: string) => void
   ) {
     // Generate or retrieve the task ID
-    const taskID = UniqueIDGenerator.generateTaskID(existingTaskId, taskName);
+    const taskID = UniqueIDGenerator.generateTaskID(existingTaskId, taskName, type);
 
     // Additional logic specific to logging task completion
     const completionMessage = `Task ${taskID} has been completed.`;
@@ -1546,6 +1548,80 @@ class SecurityLogger extends Logger {
 }
 
 
+class AssignBaseStoreLogger extends Logger {
+  static async sendAssignmentNotification(userId: string, todoId: string): Promise<void> {
+    try {
+      const message = `User ${userId} has been assigned to Todo ${todoId}`;
+      await this.logEvent("sendNotification", message, todoId, { userId });
+    } catch (error) {
+      console.error("Error sending assignment notification:", error);
+      throw error;
+    }
+  }
+
+  static async logAssignmentActivity(userId: string, todoId: string): Promise<void> {
+    try {
+      const message = `User ${userId} assigned to Todo ${todoId}`;
+      await this.logEvent("logActivity", message, todoId, { userId });
+    } catch (error) {
+      console.error("Error logging assignment activity:", error);
+      throw error;
+    }
+  }
+
+  private static async logEvent(action: string, message: string, todoId: string, data?: any): Promise<void> {
+    try {
+      const logUrl = this.getLogUrl(action);
+      await fetch(logUrl, {
+        method: "POST",
+        body: JSON.stringify({ action, message, todoId, data }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error(`Error logging ${action} event:`, error);
+      throw error;
+    }
+  }
+
+  private static getLogUrl(action: string): string {
+    let logUrl = ""; // Initialize with an empty string
+
+    if (typeof endpoints.logs.logEvent === "string") {
+      logUrl = endpoints.logs.logEvent;
+    } else if (typeof endpoints.logs.logEvent === "function") {
+      logUrl = endpoints.logs.logEvent();
+    } else {
+      // Handle the case when logEvent is a nested object
+      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
+      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
+    }
+
+    return logUrl;
+  }
+
+  static async logErrorToService(error: Error): Promise<void> {
+    try {
+      // Example: Send error details to a remote logging service
+      const response = await fetch("https://example.com/logError", {
+        method: "POST",
+        body: JSON.stringify({ error: error.message, stack: error.stack }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log error to service");
+      }
+    } catch (error) {
+      console.error("Error logging error to service:", error);
+      throw error;
+    }
+  }
+}
+
 
 class SnapshotLogger extends Logger {
   static async logSnapshotCreation(snapshotId: string, snapshotData: any): Promise<void> {
@@ -1553,6 +1629,15 @@ class SnapshotLogger extends Logger {
       await this.logEvent("createSnapshot", "Creating snapshot", snapshotId, snapshotData);
     } catch (error) {
       console.error("Error logging snapshot creation:", error);
+      throw error;
+    }
+  }
+
+  static async logSnapshotOperation(snapshotId: string, operation: string, data: any): Promise<void> { 
+    try {
+      await this.logEvent("performOperation", `Performing operation ${operation}`, snapshotId, data);
+    } catch (error) {
+      console.error("Error logging snapshot operation:", error);
       throw error;
     }
   }
@@ -1657,6 +1742,6 @@ export {
   SecurityLogger, SnapshotLogger, TaskLogger,
   TeamLogger,
   TenantLogger, UILogger, VideoLogger,
-  WebLogger
+  WebLogger, AssignBaseStoreLogger
 };
 

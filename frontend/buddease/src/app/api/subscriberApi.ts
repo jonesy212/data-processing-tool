@@ -1,14 +1,28 @@
 // subscriberApi.ts
-import { Data } from '../components/models/data/Data';
-import { Subscriber } from '../components/users/Subscriber';
-import axiosInstance from './axiosInstance';
+import { Data } from "../components/models/data/Data";
+import { CustomSnapshotData } from "../components/snapshots/SnapshotStore";
+import { Subscriber } from "../components/users/Subscriber";
+import axiosInstance from "./axiosInstance";
+
+export const getSubscriberId = (subscriber: Subscriber<CustomSnapshotData | Data>) => subscriber.getId();
 
 export const getSubscribersAPI = async (): Promise<Subscriber<Data>[]> => {
   try {
-    const response = await axiosInstance.get('/subscribers');
+    const response = await axiosInstance.get("/subscribers");
     return response.data;
   } catch (error) {
-    console.error('Error fetching subscribers:', error);
+    console.error("Error fetching subscribers:", error);
+    throw error;
+  }
+};
+
+
+export const getSubscriberById = async (subscriberId: string): Promise<Subscriber<Data>> => {
+  try {
+    const response = await axiosInstance.get("/subscribers/" + subscriberId);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching subscriber by id:", error);
     throw error;
   }
 };
@@ -16,10 +30,13 @@ export const getSubscribersAPI = async (): Promise<Subscriber<Data>[]> => {
 const fetchSubscribers = async () => {
   try {
     const subscribers = await getSubscribersAPI();
-    console.log('Subscribers:', subscribers);
+    console.log("Subscribers:", subscribers);
   } catch (error) {
-    console.error('Failed to fetch subscribers:', error);
+    console.error("Failed to fetch subscribers:", error);
   }
 };
 
+
+
 fetchSubscribers();
+

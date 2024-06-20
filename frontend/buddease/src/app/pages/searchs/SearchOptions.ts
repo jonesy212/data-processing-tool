@@ -1,11 +1,37 @@
 import { CodingLanguageEnum, LanguageEnum } from "@/app/components/communications/LanguageEnum";
 import { DashboardPreferenceEnum } from "@/app/components/dashboards/DashboardSettings";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FilterOptions } from "@/app/components/models/data/DataFilterForm";
 import { PrivacySettingEnum } from "@/app/components/models/data/StatusType";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
 import { CalendarSettingsEnum } from "@/app/components/settings/CalendarSettingsEnum";
-import { FilterOptions } from "@/app/components/models/data/DataFilterForm";
+import { SortCriteria } from "@/app/components/settings/SortCriteria";
+
+
+interface NewsOptions {
+  newsCategory: string; // Example: 'technology', 'business', etc.
+  newsLanguage: string; // Example: 'english', 'spanish', etc.
+  sortBy: SortCriteria; // Sorting criteria for news articles
+  searchKeywords: string[]; // Keywords to search within news content
+  excludeKeywords: string[]; // Keywords to exclude from news content
+  fromDateTime?: Date; // Filter news from a specific date/time
+  toDateTime?: Date; // Filter news until a specific date/time
+  maxResults?: number; // Maximum number of news articles to fetch
+  country?: string; // Country filter for news sources (e.g., 'us', 'uk')
+  sources?: string[]; // Specific news sources to include
+  excludeSources?: string[]; // Specific news sources to exclude
+  isBreakingNews?: boolean; // Filter for breaking news articles
+  isOpinionPiece?: boolean; // Filter for opinion/editorial articles
+  isExclusive?: boolean; // Filter for exclusive news content
+  isLocalNews?: boolean; // Filter for local news articles
+  topicsOfInterest?: string[]; // User-defined topics of interest for personalized news
+  minReadTimeMinutes?: number; // Minimum required reading time for news articles
+  maxReadTimeMinutes?: number; // Maximum allowed reading time for news articles
+  isHighlight?: boolean; // Filter for highlighted or featured news
+  isPaidContent?: boolean; // Filter for paid subscription content
+  // Add more specific properties related to news if needed
+}
 
 
 interface SearchOptions extends FilterOptions {
@@ -25,6 +51,7 @@ interface SearchOptions extends FilterOptions {
   calendarSettings: CalendarSettingsEnum | undefined;
   dashboardPreferences: DashboardPreferenceEnum | undefined;
   securityFeatures: SecurityFeatureEnum[];
+  newsOptions: NewsOptions;
   }
   
   type SearchSize = "small" | "medium" | "large" | "custom";
@@ -97,6 +124,13 @@ interface SearchOptions extends FilterOptions {
     calendarSettings: undefined,
     dashboardPreferences: undefined,
     securityFeatures: [],
+    newsOptions: {
+      newsCategory: "",
+      newsLanguage: "",
+      sortBy: SortCriteria.Newest,
+      searchKeywords: [],
+      excludeKeywords: []
+    }
   };
 
 
@@ -125,8 +159,15 @@ const options: SearchOptions = {
   projectView: "",
   calendarSettings: undefined,
   dashboardPreferences: undefined,
-  securityFeatures: []
+  securityFeatures: [],
+  newsOptions: {
+    newsCategory: "",
+    newsLanguage: "",
+    sortBy: SortCriteria.Date,
+    searchKeywords: [],
+    excludeKeywords: []
+  }
 };
 export type { AdditionalOptions, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
   
-export {searchOptions}
+  export { searchOptions };

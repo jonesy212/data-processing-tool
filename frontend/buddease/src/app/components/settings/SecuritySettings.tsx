@@ -18,6 +18,7 @@ interface SecuritySettings {
       maxFailedAttempts: number;
       lockoutDurationMinutes: number;
     };
+    accountLockoutThreshold: number;
   }
   
   const defaultSecuritySettings: SecuritySettings = {
@@ -39,5 +40,6 @@ interface SecuritySettings {
       maxFailedAttempts: 5,
       lockoutDurationMinutes: 15,
     },
+    accountLockoutThreshold: 5, // TODO: Implement account lockout threshold
   };
   

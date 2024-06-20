@@ -18,7 +18,7 @@ export interface Phase extends CommonData {
   endDate: Date | undefined;
   subPhases: Phase[];
   component: FC<any>; // Adjust to accept any props
-  hooks: CustomPhaseHooks;
+  hooks?: CustomPhaseHooks;
   data?: any;
   lessons?: Lesson[];
   duration: number;

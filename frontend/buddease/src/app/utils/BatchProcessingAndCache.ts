@@ -15,6 +15,8 @@ interface BatchProcessingResult {
   data?: any;
 }
 
+
+
 // Function to process a batch on the server
 export const processBatchOnServer = async (batchData: any[]): Promise<BatchProcessingResult> => {
   try {
@@ -42,22 +44,39 @@ export const processBatchOnServer = async (batchData: any[]): Promise<BatchProce
     return { success: false, message: 'Error processing batch' };
   }
 };
+
+
 // Function to synchronize cache from the frontend
-export const synchronizeCacheFromFrontend = async (initialData: any, updateCallback: any) => {
+export const synchronizeCacheFromFrontend = async (
+  initialData: any,
+  updateCallback: any
+) => {
   try {
+    
     // Get the latest data from the useRealtimeData hook
     const updatedData = useRealtimeData(initialData, updateCallback);
 
     // Ensure updatedData matches CacheData interface
     const updatedCacheData: CacheData = {
-      lastUpdated: "lastUpdated",
+      lastUpdated: {
+        versions: {
+          data: updatedData.fetchData.data,
+          backend: updatedData.dataVersions.backend,
+          frontend: updatedData.dataVersions.frontend,
+        }
+      },
       userSettings: {} as typeof UserSettings,
       dataVersions: {} as DataVersions,
       frontendStructure: {} as FrontendStructure,
-      // Add other properties as needed to match the CacheData interface
       realtimeData: updatedData.realtimeData,
       fetchData: updatedData.fetchData,
-    } as CacheData;
+      // Add other properties as needed to match the CacheData interface
+      backendStructure: {} as any,
+      backendConfig: {} as any,
+      frontendConfig: {} as any,
+      notificationBarPhaseHook: {} as any,
+      // Add other missing properties here
+    };
 
     // Call writeCache with updatedCacheData
     await writeCache(updatedCacheData);

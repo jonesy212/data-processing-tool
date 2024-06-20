@@ -1,4 +1,5 @@
 import TableGenerator from '@/app/generators/GenerateTable';
+import React from 'react';
 
 const PaymentsTable = () => {
   // Sample data for the Payments table

@@ -71,10 +71,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         year={year}
         month={month}
         events={events}
-        selectedProject={selectSelectedProject}
         tasks={tasks}
         milestones={milestones}
-        onTaskClick={handleOnTaskClick}
+        // onTaskClick={handleOnTaskClick}
         {...taskHandlers}
         // Add other required props here
       />
@@ -86,6 +85,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         year={year}
         month={month}
         tasks={tasks}
+        projects={projects}
         milestones={milestones}
         {...taskHandlers}
         // Add other required props here

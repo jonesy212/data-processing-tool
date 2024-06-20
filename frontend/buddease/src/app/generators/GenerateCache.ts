@@ -1,5 +1,5 @@
 // generateCache.ts
-import { RealtimeData } from "../../../models/realtime/RealtimeData";
+import FileApiService from "../api/ApiFiles";
 import {
   useBrainstormingPhase,
   useMeetingsPhase,
@@ -22,14 +22,16 @@ import {
   notificationBarPhaseHook,
 } from "../components/hooks/userInterface/UIPhaseHooks";
 import { Data } from "../components/models/data/Data";
+import { RealtimeData } from "../components/models/realtime/RealtimeData";
 import { CalendarEvent } from "../components/state/stores/CalendarEvent";
 import { VersionHistory } from "../components/versions/VersionData";
 import { backendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";
 import { frontendConfig } from "../configs/FrontendConfig";
-import userSettings, { UserSettings } from "../configs/UserSettings";
+import userSettings from "../configs/UserSettings";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
+import { FileType } from "@/app/components/documents/Attachment/attachment";
 
 const initialData: any = {}; 
 
@@ -69,8 +71,9 @@ export interface CacheData extends Data {
   generalCommunicationFeaturesPhaseHook: typeof generalCommunicationFeaturesPhaseHook;
   
   // Add more top-level cache properties as needed
-  fileType: string;
+  fileType: FileApiService;
   calendarEvent: CalendarEvent; 
+  data: any;
 }
 
 // Rest of the code remains unchanged...

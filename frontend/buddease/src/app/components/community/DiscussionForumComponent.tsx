@@ -118,6 +118,7 @@ const DiscussionForumComponent: React.FC = () => {
     label: "Post",
     value: JSON.stringify(post),
     updatedAt: post.updatedAt,
+    subtitle: post.author,
   }));
 
   return (
@@ -133,7 +134,7 @@ const DiscussionForumComponent: React.FC = () => {
         />
         <textarea
           placeholder="Content"
-          value={newPost.content || ""}
+          value={newPost.content ? newPost.content : ""}
           onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
         />
         <input
@@ -150,14 +151,14 @@ const DiscussionForumComponent: React.FC = () => {
         <input
           type="text"
           placeholder="Your Name"
-          value={newComment.author}
+          value={newComment.author || ""}
           onChange={(e) =>
             setNewComment({ ...newComment, author: e.target.value })
           }
         />
         <textarea
           placeholder="Your Comment"
-          value={newComment.content || ""}
+          value={newComment.content ? newComment.content : ""}
           onChange={(e) =>
             setNewComment({ ...newComment, content: e.target.value })
           }

@@ -1,5 +1,6 @@
 // TikTokIntegration.ts
-
+import {UserDetails} from '@/app/components/users/User';
+import { Video } from '../state/stores/VideoStore';
 interface TikTokUserDetails {
   userId: string;
   username: string;
@@ -29,6 +30,7 @@ export const TikTokIntegration = {
 
   fetchVideos: async (accountId: string): Promise<Video[]> => {
     // Logic to fetch videos from a TikTok account using accountId
+    return [];
   },
 
   likeVideo: async (videoId: string): Promise<void> => {

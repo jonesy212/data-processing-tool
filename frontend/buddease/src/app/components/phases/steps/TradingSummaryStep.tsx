@@ -1,12 +1,14 @@
 // TradingSummaryStep.tsx
 import React from "react";
-import  { TradeData } from "../../trading/TradeData";
+import { TradeData } from "../../trading/TradeData";
 import SummaryStep from "./SummaryStep";
+import { StepProps } from "./steps";
 
 
-interface TradingSummaryStep {
+interface TradingSummaryStep extends StepProps {
   onSubmit: (event: React.MouseEvent<HTMLButtonElement>) => void;
   tradeData: TradeData;
+  tradeDetails: TradeDetai;
 }
 
 // Specific Summary Step Components

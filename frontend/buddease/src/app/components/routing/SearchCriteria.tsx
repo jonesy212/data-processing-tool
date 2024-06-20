@@ -22,9 +22,6 @@ import { userService } from "../users/ApiUser";
 import { IdeaCreationPhaseEnum } from "../users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
 
-
-
-
 interface SearchCriteria {
   startDate?: Date;
   endDate?: Date;
@@ -199,4 +196,4 @@ const SearchCriteriaComponent: React.FC<{
 };
 
 export default SearchCriteriaComponent;
-export type {SearchCriteria}
+export type { SearchCriteria };

@@ -13,7 +13,7 @@ enum AnimationTypeEnum {
   Bounce = "bounce", // Additional animation type
   Flip = "flip", // Additional animation type
   FadeScale = "fadeScale", // Additional animation type
-
+  TwoD = "twoD", // Two-dimensional animation
   Scale = "scale", // Scale animation
   Spin = "spin", // Spin animation
   ColorChange = "colorChange", // Color change animation

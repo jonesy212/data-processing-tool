@@ -3,6 +3,7 @@ import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import { Team } from './Team';
+import { Task } from '../tasks/Task';
 
 export interface Collaborator extends Member {
   collaborations: number; // Number of collaborations
@@ -14,7 +15,7 @@ export interface Member extends User {
   roleInTeam: string;
   memberName: string;
   teams?: Team[];
-  // host?: boolean;
+  host?: boolean;
   // Add other member-specific properties here
 }
 
@@ -27,7 +28,7 @@ interface Contributor extends Member {
 // Define the MemberData interface extending Member
 interface MemberData extends Member {
   datasets?: string;
-  tasks?: string;
+  tasks?: Task[];
   questionnaireResponses?: any;
   // Add other fields specific to MemberData
 }

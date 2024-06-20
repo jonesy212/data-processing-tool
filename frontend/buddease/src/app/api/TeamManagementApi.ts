@@ -1,20 +1,20 @@
 // TeamManagementService.ts
 import { handleApiError } from "@/app/api/ApiLogs";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
+import { TeamActions } from "../components/actions/TeamActions";
 import { useTeamContext } from "../components/context/TeamContext";
 import { Team } from "../components/models/teams/Team";
 import {
-    markTaskAsComplete,
-    markTodoAsComplete,
+  markTaskAsComplete,
+  markTodoAsComplete,
 } from "../components/state/redux/slices/ApiSlice";
 import { useTeamManagerStore } from "../components/state/stores/TeamStore";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { TeamActions } from "../components/teams/TeamActions";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
 import { getEndpoint } from "./getEndpoint";
@@ -25,7 +25,7 @@ const { notify } = useNotification();
 
 export const teamManagementService = observable({
 
-    fetchTeam: async (teamId: string): Promise<void> => {
+    fetchTeam: async (teamId: number): Promise<void> => {
         try {
             const fetchTeamEndpoint = getEndpoint("users.fetchTeam", endpoints); // Get the fetchTeam endpoint
             if (!fetchTeamEndpoint) {
@@ -39,7 +39,7 @@ export const teamManagementService = observable({
             // Process the response and update state or perform other actions as needed
             // For example:
             const teamData = response.data;
-            useTeamManagerStore().updateTeamData(teamData);
+            (await useTeamManagerStore()).updateTeamData(teamId,teamData);
         } catch (error) { 
             handleApiError(error as AxiosError<unknown>, "Failed to fetch team");
             notify(
@@ -62,16 +62,16 @@ export const teamManagementService = observable({
       }
 
       const response = await axiosInstance.get(fetchTeamsEndpoint); // Make the request using the retrieved endpoint
-      runInAction(() => {
+      runInAction(async () => {
         const fetchedTeams: Team[] = response.data;
         // Update state or perform other MobX-related actions using the manager
-        useTeamManagerStore().fetchTeamsSuccess({ teams: fetchedTeams });
+        (await useTeamManagerStore()).fetchTeamsSuccess({ teams: fetchedTeams });
       });
     } catch (error) {
       if (error instanceof Error) {
         handleApiError(error as AxiosError<unknown>, "Failed to fetch teams");
         // Dispatch fetchTeamsFailure action with the error message
-        useTeamManagerStore().fetchTeamsFailure({ error: error.message });
+        (await useTeamManagerStore()).fetchTeamsFailure({ error: error.message });
         throw error;
       }
     }
@@ -84,12 +84,11 @@ export const teamManagementService = observable({
         console.error("Create team endpoint not found.");
         return; // Exit the function if the endpoint is not found
       }
-
       const response = await axiosInstance.post(createTeamEndpoint, teamData); // Make the request using the retrieved endpoint URL
-      runInAction(() => {
+      runInAction(async() => {
         const createdTeam: Team = response.data;
         // Update state or perform other MobX-related actions using the manager
-        useTeamManagerStore().addTeamSuccess({ team: createdTeam });
+        (await useTeamManagerStore()).addTeamSuccess({ team: createdTeam });
       });
       notify(
         "Team Creation", // Content (can be empty in this case)

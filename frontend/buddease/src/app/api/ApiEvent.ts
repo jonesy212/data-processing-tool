@@ -1,13 +1,14 @@
 // EventApi.ts
+import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
 import { addLog } from '../components/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
+import { ReassignEventResponse } from '../components/state/stores/AssignEventStore';
 
 const API_BASE_URL = dotProp.getProperty(endpoints, 'events');
 
@@ -45,27 +46,31 @@ export const handleEventApiErrorAndNotify = (
   }
 };
 
-export const fetchEventData = async (eventId: string): Promise<any[]> => {
-    try {
-      const fetchEventEndpoint = `${API_BASE_URL}.fetchEvents`;
-      const response = await axiosInstance.get(fetchEventEndpoint, {
-        headers: headersConfig,
-        params: {
-          eventId: eventId // Pass eventId as a query parameter
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching event data:', error);
-      const errorMessage = 'Failed to fetch event data';
-      handleEventApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FetchEventDataErrorId'
-      );
-      throw error;
-    }
-  };
+// EventApi.ts
+export const fetchEventData = async (eventId: string): Promise<ReassignEventResponse[]> => {
+  try {
+    const fetchEventEndpoint = `${API_BASE_URL}.fetchEvents`;
+    const response = await axiosInstance.get(fetchEventEndpoint, {
+      headers: headersConfig,
+      params: {
+        eventId: eventId // Pass eventId as a query parameter
+      }
+    });
+    return response.data as ReassignEventResponse[];
+  } catch (error) {
+    console.error('Error fetching event data:', error);
+    const errorMessage = 'Failed to fetch event data';
+    handleEventApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FetchEventDataErrorId'
+    );
+    throw error;
+  }
+};
+
+  
+
 export const createEvent = async (newEventData: any): Promise<void> => {
   try {
     const createEventEndpoint = `${API_BASE_URL}.createEvent`;
@@ -81,3 +86,5 @@ export const createEvent = async (newEventData: any): Promise<void> => {
     handleEventApiErrorAndNotify(error as AxiosError<unknown>, 'Failed to create event', 'CreateEventDataErrorId');
   }
 };
+
+

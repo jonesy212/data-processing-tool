@@ -5,7 +5,6 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CacheData } from "@/app/generators/GenerateCache";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { RealtimeDataComponent } from "../../../../models/realtime/RealtimeData";
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { CryptoData } from "../crypto/parseData";
@@ -25,10 +24,12 @@ import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
 import { Data, DataDetails } from "./data/Data";
 import DetailsProps from "./data/Details";
+import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
 import { Tag } from "./tracker/Tag";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 // Define a generic type for data
 interface CommonData{
   id: string;
@@ -63,15 +64,20 @@ interface CommonData{
   documentReporting?: string;
   documentBackup?: string;
   date?: Date | undefined;
-  completed?: boolean
+  completed?: boolean;
+  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
+
 }
 
 interface Customizations<T> {
   [key: string]: (value: any) => React.ReactNode;
 }
 
+
+
+
 export type DataType = NotificationType | string | DocumentTypeEnum | AnimationTypeEnum;
-export type TaskType = "addTask" | "removeTask" | "bug" | "feature";
+export type TaskType = "addTask" | "removeTask" | "bug" | "feature" | "epic" | "story" | "task";
 
 // Define a union type for the supported data types
 type SupportedData = UserData &
@@ -108,6 +114,7 @@ const CommonDetails = <T extends SupportedData>({
 }: DetailsProps<T>) => {
   const [showDetails, setShowDetails] = useState(false);
   const userId = localStorage.getItem("id") || "";
+  const timestamp = new Date().toISOString();
   const dispatch = useDispatch();
 
   const toggleDetails = () => {
@@ -199,6 +206,9 @@ const CommonDetails = <T extends SupportedData>({
         userId={userId}
         dispatch={dispatch}
         value={""}
+        eventId={"realtimeId"}
+        type={"realtimeType"}
+        timestamp={timestamp}
       />
     </div>
   );

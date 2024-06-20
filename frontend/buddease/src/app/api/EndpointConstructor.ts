@@ -1,17 +1,22 @@
 import { Endpoints, endpoints } from "./ApiEndpoints";
 
 interface Target {
-    toArray?: any;
-    endpoint: string;
-    params: {
-      sortBy: string;
-      limit: number;
-      // Add more parameters as needed
-    };
-}const constructTarget = (
+  endpoint: string;
+  params: {
+    sortBy: string;
+    limit: number;
+    // Add more parameters as needed
+  };
+  toArray?: any;
+  url?: string;
+}
+const constructTarget = (
   category: keyof Endpoints,
   endpointKey: string,
-  params: { sortBy: string; limit: number; [key: string]: string | number } = { sortBy: "", limit: 0 }
+  params: { sortBy: string; limit: number; [key: string]: string | number } = {
+    sortBy: "",
+    limit: 0,
+  }
 ): Target => {
   const endpoint = endpoints[category][endpointKey];
   if (typeof endpoint === "string") {
@@ -30,6 +35,12 @@ interface Target {
   }
 };
 
-export const target = constructTarget("apiWebBase", "login", { sortBy: "", limit: 0, username: "user", password: "pass" });
+export const target = constructTarget("apiWebBase", "login", {
+  sortBy: "",
+  limit: 0,
+  username: "user",
+  password: "pass",
+});
 export { constructTarget };
 export type { Target };
+

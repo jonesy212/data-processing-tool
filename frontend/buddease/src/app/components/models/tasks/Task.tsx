@@ -37,7 +37,7 @@ interface Task extends Data {
   previouslyAssignedTo: User[];
   done: boolean;
   data: Data | undefined;
-  [Symbol.iterator](): Iterator<any, any, undefined>;
+  [Symbol.iterator]?(): Iterator<any, any, undefined>;
   source: "user" | "system";
   some?: (
     callbackfn: (value: Task, index: number, array: Task[]) => unknown,

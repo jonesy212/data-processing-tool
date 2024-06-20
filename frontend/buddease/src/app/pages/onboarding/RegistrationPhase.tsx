@@ -1,3 +1,4 @@
+import React from 'react'
 import { endpoints } from "@/app/api/ApiEndpoints";
 import authService from "@/app/components/auth/AuthService";
 import EmailSetupForm from "@/app/components/communications/email/EmailSetUpForm";

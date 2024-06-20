@@ -1,35 +1,57 @@
-// useRealtimeExchangeData.ts
-
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import { RealtimeData } from "../../../../../models/realtime/RealtimeData";
+import { useEffect } from "react";
+import { ExchangeEnum } from "../../crypto/exchangeIntegration";
+import { RealtimeData } from "../../models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
-import { processExchangeData } from "../../models/data/fetchExchangeData";
 
-const useRealtimeExchangeData = <T>(
+const useRealtimeExchangeData = (
   initialData: any,
   updateCallback: RealtimeUpdateCallback<RealtimeData>,
-  processExchangeData: (exchangeData: any[]) => any[] // Add processExchangeData as a parameter
-
+  processExchangeData: (exchangeData: any[]) => any[],
+  exchangeList: ExchangeEnum[] // Adjust parameter to accept an array of Exchange enums
 ) => {
-  const { fetchData } = useRealtimeData(initialData, updateCallback);
+  const { fetchData: fetchDataFromRealtimeData } = useRealtimeData(initialData, updateCallback);
+
   const fetchExchangeData = async (
-    exchangeData: any[],
+    exchange: ExchangeEnum,
     dispatch: Dispatch<UnknownAction>
   ) => {
     try {
-      // Process the provided exchange data
-      // Implement your exchange data processing logic here
+      // Example fetchData usage, replace with your actual implementation
+      const exchangeData = await fetchDataForExchange(exchange); // Fetch data for the specific exchange
 
-      // Process the provided exchange data using the injected processExchangeData function
+      // Process the fetched exchange data
       const processedExchangeData = processExchangeData(exchangeData);
 
-      // For demonstration, let's assume we dispatch an action to update Redux store state with exchange data
-      dispatch({ type: "UPDATE_EXCHANGE_DATA", payload: processedExchangeData});
+      // Dispatch an action to update Redux store state with processed exchange data
+      dispatch({ type: "UPDATE_EXCHANGE_DATA", payload: processedExchangeData });
     } catch (error) {
       console.error("Error processing exchange data:", error);
     }
   };
-  return { fetchData, fetchExchangeData }; // Return the fetchExchangeData function along with fetchData
+
+  // useEffect to fetch data for each exchange in exchangeList
+  useEffect(() => {
+    exchangeList.forEach((exchange) => {
+      fetchDataFromRealtimeData(exchange.toString(), (action: any) => {
+        // Handle realtime data updates if needed
+        console.log("Realtime data updated:", action);
+      });
+    });
+  }, [exchangeList, fetchDataFromRealtimeData]);
+
+  return { fetchExchangeData };
 };
 
 export default useRealtimeExchangeData;
+
+// Example function to fetch exchange data for a specific exchange
+const fetchDataForExchange = async (exchange: ExchangeEnum): Promise<any[]> => {
+  // Replace with actual fetch logic based on the ExchangeEnum
+  // Example:
+  const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/exchangeData/${exchange}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch exchange data for ${exchange}`);
+  }
+  return response.json();
+};

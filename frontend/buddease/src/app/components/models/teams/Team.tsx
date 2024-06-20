@@ -2,14 +2,13 @@ import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import React from "react";
-import generateTimeBasedCode from "../../../../../models/realtime/TimeBasedCodeGenerator";
 import { FileTypeEnum } from "../../documents/FileType";
 import useFiltering from "../../hooks/useFiltering";
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project, ProjectType } from "../../projects/Project";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import { implementThen } from "../../state/stores/CommonEvent";
 import { Settings } from "../../state/stores/SettingsStore";
 import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
@@ -21,6 +20,7 @@ import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
 import { PriorityTypeEnum, StatusType, TeamStatus } from "../data/StatusType";
+import generateTimeBasedCode from "../realtime/TimeBasedCodeGenerator";
 import { Task } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
@@ -28,10 +28,11 @@ import { Member, TeamMember } from "./TeamMembers";
 
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "../../communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "../../notifications/Notification";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 
 // Assume 'options' is provided elsewhere
 const options: SearchOptions = {
@@ -65,11 +66,16 @@ interface Team extends Data {
   team: {
     id: string;
     current: number;
+    name: string;
+    color: string;
     max: number;
+    min: number;
     label: string;
+    percentage: number;
     value: number;
+    description: string;
+    done: boolean;
   };
-
   _id: string;
   id: string;
   teamName: string;
@@ -123,6 +129,12 @@ const team: Team = {
     max: 0,
     label: "",
     value: 0,
+    percentage: 0,
+    done: false,
+    name: "",
+    color: "",
+    min: 0,
+    description: ""
   },
   members: [
     {
@@ -714,11 +726,16 @@ const team: Team = {
     // Update the progress object
     team.progress = {
       id: team._id,
+      name: team.name,
       value: progressValue,
       label: `${progressValue}% completed`, // Example label
       current: 0, // Update current progress value
       max: 100, // Set max progress value
       percentage: 0,
+      min: 0,
+      description: "team progress",
+      color: "primary",
+      done: progressValue === 100,
     };
   },
   currentProject: null,

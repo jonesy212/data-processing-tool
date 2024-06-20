@@ -1,17 +1,16 @@
-// BrowserCheckStore.ts
 import { makeAutoObservable } from "mobx";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { RootStores } from "./RootStores";
+
 class BrowserCheckStore {
   rootStores?: RootStores;
   browserKey: string | null = null;
+
   constructor(rootStores: RootStores) {
     this.rootStores = rootStores;
     makeAutoObservable(this);
   }
 
-  //For exmaple, set the browserKey property with the provided key
-  // For example, set the browserKey property with the provided key
   init(key: string) {
     if (this.browserKey === null) {
       console.log(`Initializing BrowserCheckStore with key: ${key}`);
@@ -21,10 +20,9 @@ class BrowserCheckStore {
         `There was an issue initializing BrowserCheckStore with key: ${key}`
       );
 
-      // Add notification for error
-      const errorMessage = NOTIFICATION_MESSAGES.Error.DEFAULT(
-        "Initialization Error"
-      );
+      // Correctly access the error message function
+      const errorMessage = NOTIFICATION_MESSAGES.Error.DEFAULT;
+
       // Use your notification mechanism to display the error message
       console.error(errorMessage);
     }

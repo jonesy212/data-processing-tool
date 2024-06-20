@@ -1,5 +1,5 @@
-import React from "react";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import React from "react";
 import DatePickerComponent from "react-datepicker";
 import { CryptoHolding } from "../crypto/CryptoHolding";
 import CryptoTransaction from "../crypto/CryptoTransaction";
@@ -20,13 +20,14 @@ import { MonthInfo } from "./Month";
 import YourCalendarLibrary from "./YourCalendarLibrary";
 
 interface CommonCalendarProps {
-  year?: YearInfo[];
-  month?: MonthInfo[];
+  year?: YearInfo[] | number;
+  month?: MonthInfo[] | number;
   events: CalendarEvent[];
   tasks: Task[];
   milestones: Milestone[];
   projectId: string; // Add projectId prop
   projects: Project[];
+  
   selectedProject: (state: RootState, projectId: string) => Project | null
 
   onTaskClick: (task: Task) => void;
@@ -58,7 +59,9 @@ interface CommonCalendarProps {
   onTaskLabelAdd: (task: Task) => void;
 
   onAudioCallStart: (participantIds: string[]) => void;
+  onAudioCallEnd: (participantIds: string[]) => void;
   onVideoCallStart: (participantIds: string[]) => void;
+  onVideoCallEnd: (participantIds: string[]) => void;
   onMessageSend: (message: string, participantIds: string[]) => void;
 
   onMilestoneClick: (milestone: Milestone) => void;
@@ -93,6 +96,7 @@ interface CalendarProps extends CommonCalendarProps {
   label: Label;
   labels: Label[];
   resources: Resource[];
+  onDateSelect: (date: Date) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -107,6 +111,7 @@ const Calendar: React.FC<CalendarProps> = ({
   projects,
   events,
   milestones,
+  onDateSelect,
   ...taskHandlers
 }) => {
   return (
