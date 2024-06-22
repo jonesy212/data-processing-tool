@@ -1,9 +1,11 @@
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
-import { DocumentOptions, DocumentSize } from "../../documents/DocumentOptions";
+import { DocumentOptions } from "../../documents/DocumentOptions";
 import { Task } from "../../models/tasks/Task";
 import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import { Project } from "../../projects/Project";
+import { ClientConfig } from "../../database/Client";
+import { DocumentSize } from "../../models/data/StatusType";
 
 
 
@@ -139,6 +141,7 @@ export interface DAppAdapterConfig<T extends DappProps> {
   dynamicComponentsConfig?: DocumentBuilderConfig;
   documentBuilderConfig?: DocumentBuilderConfig;
   // Add more feature-specific configurations as needed
+  postgresConfig: ClientConfig;
 
   // Additional properties related to DappProps
   dappProps: T;

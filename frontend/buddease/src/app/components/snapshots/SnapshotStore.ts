@@ -1,3 +1,4 @@
+import { data } from '@/app/components/versions/Version';
 // import { Snapshots } from '@/app/components/snapshots/SnapshotStore';
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import {
@@ -44,7 +45,7 @@ const initializeData = (): Data => {
   };
 };
 
-const defaultCategory = "defaultCategory";
+export const defaultCategory = "defaultCategory";
 const initialState = {
   id: "",
   category: defaultCategory,
@@ -125,7 +126,12 @@ interface SnapshotStoreSubset<T extends Data | undefined> {
   findSnapshot: () => void;
   getSubscribers: () => void;
   notify: () => void;
-  notifySubscribers: () => void;
+  notifySubscribers: (
+    subscribers: Subscriber<CustomSnapshotData | Snapshot<Snapshot<Snapshot<Snapshot<any>>>>>[],
+    data: CustomSnapshotData | Snapshot<Snapshot<Snapshot<Snapshot<any>>>>
+  ) => Promise<Subscriber<Snapshot<Snapshot<Snapshot<Snapshot<Snapshot<any>>>>>>>;
+
+
   subscribe: () => void;
   unsubscribe: () => void;
   fetchSnapshot: () => void;
@@ -229,8 +235,8 @@ class SnapshotStore<T extends Data | undefined>
     this.dataStore.delete(key);
   }
 
-  getItem(key: string): T | null {
-    return this.dataStore.get(key) || null;
+  getItem(key: string): Promise<T | null> {
+    return Promise.resolve(this.dataStore.get(key) || null);
   }
 
   setItem(key: string, value: T): void {
@@ -844,8 +850,12 @@ class SnapshotStore<T extends Data | undefined>
           notify: function () {
             defaultImplementation();
           },
-          notifySubscribers: function () {
-            defaultImplementation();
+          notifySubscribers: function (
+            subscribers: Subscriber<CustomSnapshotData
+              | Snapshot<Snapshot<Snapshot<Snapshot<any>>>>>[],
+            data: CustomSnapshotData | Snapshot<Snapshot<Snapshot<Snapshot<any>>>>
+          ): Subscriber<Snapshot<Snapshot<Snapshot<Snapshot<Snapshot<any>>>>>>[]  {
+            return Promise.resolve(Subscriber<Snapshot<T>>);
           },
           subscribe: function () {
             defaultImplementation();
@@ -853,7 +863,9 @@ class SnapshotStore<T extends Data | undefined>
           unsubscribe: function () {
             defaultImplementation();
           },
-          fetchSnapshot: function () {
+          fetchSnapshot: function (
+          snapshot: Snapshot<Data> | null,
+          ) {
             defaultImplementation();
           },
           fetchSnapshotSuccess: function (
@@ -901,8 +913,8 @@ class SnapshotStore<T extends Data | undefined>
           },
           batchTakeSnapshot: function (
             snapshot: SnapshotStore<Snapshot<Snapshot<Snapshot<Snapshot<any>>>>>,
-            snapshots: Snapshots<Snapshot<Snapshot<Snapshot<Snapshot<any>>>>>
-          ): Promise<{ snapshots: Snapshots<Snapshot<Snapshot<Snapshot<Snapshot<any>>>>}> {
+            snapshots: Snapshots
+          ): Promise<{ snapshots: Snapshots}> {
             defaultImplementation();
             return Promise.reject(new Error("Function not implemented."));
           },
@@ -1107,55 +1119,61 @@ class SnapshotStore<T extends Data | undefined>
     return this.delegate[0].validateSnapshot(snapshot);
   }
 
-  private handleSnapshot(
+  handleSnapshot(
     snapshot: Snapshot<Data> | null,
     snapshotId: string
   ): void {
-    this.delegate.handleSnapshot(snapshot, snapshotId);
+    this.delegate[0].handleSnapshot(snapshot, snapshotId);
   }
 
   handleActions(): void {
-    this.delegate.handleActions();
+    this.delegate[0].handleActions();
   }
 
   setSnapshot(snapshot: SnapshotStore<Snapshot<T>>): void {
-    this.delegate.setSnapshot(snapshot);
+    this.delegate[0].setSnapshot(snapshot);
   }
 
   setSnapshots(snapshots: Snapshot<T>[]): void {
-    this.delegate.setSnapshots(snapshots);
+    this.delegate[0].setSnapshots(snapshots);
   }
 
   clearSnapshot(snapshotId: string): void {
-    this.delegate.clearSnapshot(snapshotId);
+    this.delegate[0].clearSnapshot(snapshotId);
   }
 
   mergeSnapshots(snapshots: Snapshot<T>[]): void {
-    this.delegate.mergeSnapshots(snapshots);
+    this.delegate[0].mergeSnapshots(snapshots);
   }
 
   reduceSnapshots(): void {
-    this.delegate.reduceSnapshots();
+    this.delegate[0].reduceSnapshots();
   }
 
   sortSnapshots(): void {
-    this.delegate.sortSnapshots();
+    this.delegate[0].sortSnapshots();
   }
 
   filterSnapshots(): void {
-    this.delegate.filterSnapshots();
+    this.delegate[0].filterSnapshots();
   }
 
   mapSnapshots(): void {
-    this.delegate.mapSnapshots();
+    this.delegate[0].mapSnapshots();
   }
 
   findSnapshot(): void {
-    this.delegate.findSnapshot();
+    this.delegate[0].findSnapshot();
   }
 
-  getSubscribers(): void {
-    this.delegate.getSubscribers();
+  getSubscribers(
+    subscribers: Subscriber<Snapshot<T>>[],
+    snapshots: Snapshots
+  ): Promise<{
+    subscribers: Subscriber<Snapshot<Snapshot<T>>>[];
+    snapshots: Snapshots
+  }> {
+   return this.delegate[0].getSubscribers(subscribers, snapshots);
   }
 
   notify(): // id: string,
@@ -1165,23 +1183,39 @@ class SnapshotStore<T extends Data | undefined>
   // type: NotificationType,
   // notificationPosition?: NotificationPosition | undefined
   void {
-    this.delegate.notify();
+    this.delegate[0].notify(
+      message,
+      content,
+      new Date(),
+      type
+    );
   }
 
-  notifySubscribers(): void {
-    this.delegate.notifySubscribers();
+  notifySubscribers(
+    subscribers: Subscriber<CustomSnapshotData | Snapshot<T>>[],
+    data: Snapshot<Snapshot<T>>
+  ): Subscriber<Snapshot<Snapshot<T>>>[] {
+    return this.delegate[0].notifySubscribers(subscribers, data);
   }
 
   subscribe(): void {
-    this.delegate.subscribe();
+    this.delegate[0].subscribe();
   }
 
   unsubscribe(): void {
-    this.delegate.unsubscribe();
+    this.delegate[0].unsubscribe();
   }
 
-  fetchSnapshot(): void {
-    this.delegate.fetchSnapshot();
+  fetchSnapshot(
+    snapshot: SnapshotStore<T> | undefined
+  ): Promise<{
+    id: any;
+    category: any;
+    timestamp: any;
+    snapshot: SnapshotStore<T>;
+    data: Snapshot<T>;
+  }>  {
+    return this.delegate[0].fetchSnapshot(snapshot);
   }
 
   fetchSnapshotSuccess(
@@ -1201,12 +1235,19 @@ class SnapshotStore<T extends Data | undefined>
     this.delegate[0].getSnapshot(snapshot);
   }
 
-  getSnapshots(): void {
-    this.delegate.getSnapshots();
+  getSnapshots(
+    data: Snapshots
+  ): void {
+    this.delegate[0].getSnapshots(data);
   }
 
-  getAllSnapshots(): void {
-    this.delegate.getAllSnapshots();
+  getAllSnapshots(
+    data: (
+      subscribers: Subscriber<Snapshot<Snapshot<T>>>[],
+      snapshots: Snapshots
+    ) => Promise<Snapshots>
+  ): void {
+    this.delegate[0].getAllSnapshots(data);
   }
   generateId(): string {
     const delegateWithGenerateId = this.delegate.find((d) => d.generateId);

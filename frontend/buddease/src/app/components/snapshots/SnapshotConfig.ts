@@ -7,36 +7,36 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { useParams } from "next/navigation";
 import {
-    UserConfigExport,
-    UserConfig as ViteUserConfig,
-    defineConfig,
+  UserConfigExport,
+  UserConfig as ViteUserConfig,
+  defineConfig,
 } from "vite";
 import { ModifiedDate } from "../documents/DocType";
 import { Data } from "../models/data/Data";
 import {
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { Tag, tag1, tag2 } from "../models/tracker/Tag";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { Subscription } from "../subscriptions/Subscription";
 import {
-    NotificationType,
-    NotificationTypeEnum,
+  NotificationType,
+  NotificationTypeEnum,
 } from "../support/NotificationContext";
-import { Subscriber } from "../users/Subscriber";
+import { Subscriber, payload } from "../users/Subscriber";
 import {
-    logActivity,
-    notifyEventSystem,
-    triggerIncentives,
-    updateProjectState,
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
 } from "../utils/applicationUtils";
 import * as snapshotApi from "./../../api/SnapshotApi";
 import {
-    getCommunityEngagement,
-    getMarketUpdates,
-    getTradeExecutions,
+  getCommunityEngagement,
+  getMarketUpdates,
+  getTradeExecutions,
 } from "./../../components/trading/TradingUtils";
 import { sendNotification } from "./../../components/users/UserSlice";
 import { CustomSnapshotData, Payload, Snapshot, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
@@ -317,7 +317,7 @@ export interface SnapshotStoreConfig<
   batchFetchSnapshotsFailure: (payload: { error: Error }) => void;
   batchUpdateSnapshotsFailure: (payload: { error: Error }) => void;
   notifySubscribers: (
-    subscribers: Subscriber<Snapshot<T>>[],
+    subscribers: Subscriber<CustomSnapshotData | T>[],
     data: Snapshot<T>
   ) => Subscriber<Snapshot<T>>[];
 
@@ -1325,7 +1325,9 @@ export default defineConfig({
 } as UserConfigExport);
 // Example usage
 const johnSubscriber = new Subscriber<CustomSnapshotData>(
-  "1234567890",
+  payload.meta.id,
+  // Assuming payload.name is a string, replace with your actual data structure
+  payload.meta.name,
 
   {
     subscriberId: "1",
@@ -1339,14 +1341,14 @@ const johnSubscriber = new Subscriber<CustomSnapshotData>(
     unsubscribe: () => {},
     portfolioUpdatesLastUpdated: {} as ModifiedDate,
     getId: () => "1",
-    triggerIncentives: () => {},
+    triggerIncentives: () => { },
+    determineCategory: (data: any) => data.category,
   },
   "subscriberId",
   notifyEventSystem,
   updateProjectState,
   logActivity,
   triggerIncentives,
-  triggerIncentives
 );
 
 // Accessing subscriberId and subscriptionId

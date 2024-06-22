@@ -1,8 +1,9 @@
 import axios from "axios";
 import { Data } from "../components/models/data/Data";
-import SnapshotStore, { Snapshot } from "../components/snapshots/SnapshotStore";
+import SnapshotStore from "../components/snapshots/SnapshotStore";
 import { VideoData } from "../components/video/Video";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
+import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 
 // Define the API endpoint for retrieving snapshot data
 const SNAPSHOT_DATA_API_URL = "https://example.com/api/snapshot";
@@ -30,12 +31,14 @@ const convertToSnapshotStore = (
 ): SnapshotStore<Snapshot<Data>> => {
   // Perform the conversion here
   const snapshotStore: SnapshotStore<Snapshot<Data>> = {
-    key: "example_key",
-    state: {} as SnapshotStore<Snapshot<Data>>,
+    key: retrievedSnapshot.id,
+    state: {
+      data: retrievedSnapshot.data,
+      timestamp: retrievedSnapshot.timestamp,
+      category: retrievedSnapshot.category,
+    },
     snapshotData: () => ({ snapshot: [] }),
     createSnapshot: () => {}, // Implement as needed
-    ...retrievedSnapshot, // Copy properties from retrievedSnapshot
-    // Additional properties and methods
   };
   return snapshotStore;
 };

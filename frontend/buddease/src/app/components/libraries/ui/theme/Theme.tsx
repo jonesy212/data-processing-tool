@@ -4,7 +4,10 @@ import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import React, { SetStateAction } from "react";
 
 // Define the Theme interface
-
+enum ThemeEnum{
+  LIGHT = "light",
+  DARK = "dark",
+}
 interface Theme extends BrandingSettings {
   primaryColor: string;
   secondaryColor: string;
@@ -45,6 +48,6 @@ export const ThemeProvider: React.FC<{ theme: Theme; children: any }> = ({
   );
 };
 
-export { ThemeContext };
+export { ThemeContext, ThemeEnum };
 export type { Theme };
 

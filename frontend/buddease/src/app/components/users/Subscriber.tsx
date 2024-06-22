@@ -462,7 +462,7 @@ function triggerIncentives(subscriberId: string, snapshot: any) {
   console.log(`Incentives triggered for subscriber ${subscriberId}`);
 }
 
-const payload: Payload = {
+export const payload: Payload = {
   error: "Error occurred",
   meta: {
     id: "1",

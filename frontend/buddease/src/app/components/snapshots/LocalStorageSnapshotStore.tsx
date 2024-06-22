@@ -13,9 +13,10 @@ import { Subscription } from "../subscriptions/Subscription";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { AuditRecord, SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
-import SnapshotStore, { initialState } from "./SnapshotStore";
+import SnapshotStore, { defaultCategory, initialState } from "./SnapshotStore";
 import { snapshot } from "./snapshot";
 import { delegate, subscribeToSnapshots } from "./snapshotHandlers";
+import { generateSnapshotId } from "../utils/snapshotUtils";
 
 
 interface Payload {
@@ -50,7 +51,7 @@ interface Payload {
   }
   
   interface CustomSnapshotData extends Data {
-    timestamp?: string | Date | undefined;
+    timestamp: string | Date | undefined;
     value: number;
   }
   
@@ -61,7 +62,7 @@ interface Payload {
   interface Snapshot<T extends Data | undefined> {
     _id?: string;
     id?: string | number;
-    data?: T | undefined;
+    data?: T | null |undefined;
     name?: string;
     timestamp?: string | Date;
     title?: string;
@@ -103,10 +104,41 @@ interface Payload {
 
   }
 // Example implementation of LocalStorageSnapshotStore
+const snapshotType = (snapshot: Snapshot<Data>) => {
+  const newSnapshot = snapshot;
+  newSnapshot.id = snapshot.id || generateSnapshotId;
+  newSnapshot.title = snapshot.title || "";
+  newSnapshot.timestamp = snapshot.timestamp || new Date();
+  newSnapshot.subscriberId = snapshot.subscriberId || "";
+  newSnapshot.category = snapshot.category || defaultCategory;
+  newSnapshot.length = snapshot.length || 0;
+  newSnapshot.content = snapshot.content || "";
+  newSnapshot.data = snapshot.data || undefined;
+  newSnapshot.value = snapshot.value || 0;
+  newSnapshot.key = snapshot.key || "";
+  newSnapshot.subscription = snapshot.subscription || null;
+  newSnapshot.config = snapshot.config || null;
+  newSnapshot.status = snapshot.status || "";
+  newSnapshot.metadata = snapshot.metadata || {};
+  newSnapshot.delegate = snapshot.delegate || [];
+  newSnapshot.store = snapshot.store || new SnapshotStore<Data>(
+    newSnapshot.data,
+    newSnapshot.category,
+    newSnapshot.date,
+    newSnapshot.type,
+    newSnapshot.initialState,
+    newSnapshot.snapshotConfig,
+    newSnapshot.subscribeToSnapshots,
+    newSnapshot.delegate
+  );
+  newSnapshot.state = snapshot.state || null;
+  newSnapshot.todoSnapshotId = snapshot.todoSnapshotId || "";
+  newSnapshot.initialState = snapshot.initialState || null;
+  return newSnapshot;
+}
 class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStore<T> {
     
-    private storage: Storage;
-  
+  private storage: Storage;
   constructor(storage: Storage, category: CategoryProperties = {
     name: "LocalStorageSnapshotStore",
     description: "LocalStorageSnapshotStore",
@@ -135,6 +167,7 @@ class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStor
       snapshot,
       category,
       new Date(),
+      snapshotType,
       initialState,
       snapshotConfig,
       subscribeToSnapshots,

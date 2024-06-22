@@ -1,5 +1,5 @@
-import { Theme } from "@/app/components/libraries/ui/theme/Theme";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 
 interface Toolbar {
@@ -14,7 +14,7 @@ interface ToolbarState {
   selectedTool: string | null;
   selectedToolBar: string | null;
   isDraggable: boolean;
-  themeType: Theme;
+  themeType: ThemeEnum;
   isFloating: boolean;
   order: number;
   fontSize: number;
@@ -87,7 +87,7 @@ const initialState: ToolbarState = {
   participantManagementEnabled: false,
   selectedToolbar: null,
   toolbars: [],
-  themeType: Theme.LIGHT,
+  themeType: ThemeEnum.LIGHT,
   x: 0,
   y: 0,
 };
