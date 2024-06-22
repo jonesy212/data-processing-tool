@@ -33,7 +33,7 @@ interface CommonEvent extends Data {
   collaborationTool?: string;
   metadata?: StructuredMetadata;
   // Implement the `then` function using the reusable function
-  then: (callback: (newData: Snapshot<Data>) => void) => void;
+  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
 }
 
 // Define the function to implement the `then` functionality
@@ -74,7 +74,7 @@ export function implementThen(callback: (newData: Snapshot<BaseData>) => void): 
     collaborationTool?: string;
     metadata?: StructuredMetadata;
     // Implement the `then` function using the reusable function
-    then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
+    then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
   }
   
   // Define the `commonEvent` object using the `CommonEvent` interface

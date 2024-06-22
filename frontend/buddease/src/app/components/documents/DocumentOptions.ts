@@ -1,8 +1,9 @@
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserSettings } from "@/app/configs/UserSettings";
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import BackendStructure, { backend } from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure, { frontend } from "@/app/configs/appStructure/FrontendStructure";
 import docx from "docx";
 import { IHydrateResult } from "mobx-persist";
 import {
@@ -95,17 +96,16 @@ interface Style {
   customProperties: CustomProperties | undefined;
   value: string;
   metadata: StructuredMetadata | undefined;
-  tableStyles?:
-  | {
-      backgroundColor?: string;
-      borderColor?: string;
-      borderWidth?: string;
-      borderStyle?: string;
-      fontFamily?: string;
-      fontSize?: string;
-      color?: string;
-      border?: string; // Added border property
-    };
+  tableStyles?: {
+    backgroundColor?: string;
+    borderColor?: string;
+    borderWidth?: string;
+    borderStyle?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    color?: string;
+    border?: string; // Added border property
+  };
 }
 
 // Define the interface for DocumentBuilderOptions extending DocumentOptions
@@ -155,17 +155,22 @@ export interface DocumentOptions {
         originalPath: string;
         alternatePaths: string[];
         fileType: string;
-        title: "";
-        description: "";
-        keywords: [];
-        authors: [];
-        contributors: [];
-        publisher: "";
-        copyright: "";
-        license: "";
-        links: [];
-        tags: [];
-      };
+        title: string;
+        description: string;
+        keywords: string[];
+        authors: string[];
+        contributors: string[];
+        publisher: string;
+        copyright: string;
+        license: string;
+        links: string[];
+        tags: string[];
+        phaseType: ProjectPhaseTypeEnum;
+        customProp1: string;
+        customProp2: number;
+        onChange: (phase: ProjectPhaseTypeEnum) => void;
+  };
+  
   version: Version;
   isDynamic: boolean | undefined;
   size: DocumentSize;
@@ -416,7 +421,7 @@ export interface DocumentOptions {
   previousMetadata: StructuredMetadata;
   currentMetadata: StructuredMetadata;
   accessHistory: AccessRecord[];
-  lastModifiedDate: ModifiedDate
+  lastModifiedDate: ModifiedDate;
   tableCells: {
     enabled: boolean;
     padding: number;
@@ -440,17 +445,17 @@ export interface DocumentOptions {
   tableRows: number | [];
   tableColumns: number | [];
   codeBlock: boolean | [] | { enabled: boolean };
-  tableStyles?:
-    | {
-        backgroundColor?: string;
-        borderColor?: string;
-        borderWidth?: string;
-        borderStyle?: string;
-        fontFamily?: string;
-        fontSize?: string;
-        color?: string;
-        border?: string; // Added border property
-      };  blockquote:
+  tableStyles?: {
+    backgroundColor?: string;
+    borderColor?: string;
+    borderWidth?: string;
+    borderStyle?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    color?: string;
+    border?: string; // Added border property
+  };
+  blockquote:
     | boolean
     | {
         enabled: boolean;
@@ -488,8 +493,8 @@ export interface DocumentOptions {
   footnote:
     | boolean
     | {
-    enabled: boolean;
-    format: string;
+        enabled: boolean;
+        format: string;
       };
 
   defaultZoomLevel: number;
@@ -519,7 +524,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     lastModifiedDate: {
       value: undefined,
       isModified: false,
-     } as ModifiedDate,
+    } as ModifiedDate,
     documentSize: DocumentSize.Letter,
     uniqueIdentifier: "",
     documentType: DocumentTypeEnum.Default,
@@ -535,6 +540,60 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       appVersion: "1.0",
       limit: 10,
       versionNumber: "1.0",
+      buildNumber: "1",
+      versions: {
+        data: {
+          id: 0,
+          parentId: "0",
+          parentType: "",
+          parentVersion: "",
+          parentTitle: "",
+          parentContent: "",
+          parentName: "",
+          parentUrl: "",
+          parentChecksum: "",
+          parentAppVersion: "",
+          parentVersionNumber: "",
+          isLatest: false,
+          isPublished: false,
+          publishedAt: null,
+          source: "",
+          status: "",
+          workspaceId: "",
+          workspaceName: "",
+          workspaceType: "",
+          workspaceUrl: "",
+          workspaceViewers: [],
+          workspaceAdmins: [],
+          workspaceMembers: [],
+          data: [],
+          name: "",
+          url: "",
+          versionNumber: "",
+          documentId: "",
+          draft: false,
+          userId: "",
+          content: "",
+          metadata: {
+            author: "",
+            timestamp: undefined,
+            revisionNotes: undefined,
+          },
+          versions: {
+            data: undefined,
+            backend: undefined,
+            frontend: undefined,
+          },
+          checksum: "",
+        },
+        backend: backend,
+        frontend: frontend,
+      },
+      metadata: {
+        author: "",
+        timestamp: undefined,
+      },
+
       data: [],
       url: "",
       checksum: "",

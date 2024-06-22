@@ -21,9 +21,11 @@ class FeatureStore {
     this.featureData = null;
   }
 
-  
-
-
+  setCurrentFeature(featureId: string) {
+    this.featureData = this.featureData.find(
+      (feature: any) => feature.id === featureId
+    );
+  }
 
   // Define actions to modify state
   updateFeatureData(newData: any) {

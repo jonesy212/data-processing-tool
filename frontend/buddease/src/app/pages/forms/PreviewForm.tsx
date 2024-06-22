@@ -1,25 +1,29 @@
-import { saveDrawingToDatabase } from '@/app/api/ApiDrawing';
-import React, { useState } from 'react';
-import './PreviewForm.css'; // Import CSS for styling
+import { saveDrawingToDatabase } from "@/app/api/ApiDrawing";
+import React, { useState } from "react";
+import "./PreviewForm.css"; // Import CSS for styling
 
-
-interface FormData {
-    [key: string]: string;
-  }
-  
-interface PreviewFormProps {
-    initialContent: string; // Initial content of the document
-    formData: FormData;
-
+interface ValidationRule {
+  rule: string;
+  message: string;
 }
 
+interface FormData {
+  [key: string]: {
+    value: string;
+    validationRules?: ValidationRule[];
+  };
+}
+
+interface PreviewFormProps {
+  initialContent: string; // Initial content of the document
+  formData: FormData;
+}
 
 const PreviewForm: React.FC<PreviewFormProps> = ({
   initialContent,
   formData,
 }) => {
   const [editedFormData, setEditedFormData] = useState<FormData>(formData);
-
   const [content, setContent] = useState(initialContent);
   const [isEditing, setIsEditing] = useState(true);
   const [previewMode, setPreviewMode] = useState<"full" | "split" | "preview">(
@@ -42,19 +46,21 @@ const PreviewForm: React.FC<PreviewFormProps> = ({
     const { name, value } = e.target;
     setEditedFormData({
       ...editedFormData,
-      [name]: value,
+      [name]: {
+        ...editedFormData[name],
+        value,
+      },
     });
   };
-
 
   const handleSaveClick = async () => {
     try {
       // Save the edited form data to the database
       await saveDrawingToDatabase(editedFormData);
-  
+
       // Log the edited form data
       console.log("Edited form data saved:", editedFormData);
-  
+
       // Update the state to indicate that editing mode is finished
       setIsEditing(false);
     } catch (error) {
@@ -62,10 +68,7 @@ const PreviewForm: React.FC<PreviewFormProps> = ({
       console.error("Error saving edited form data:", error);
     }
   };
-    
-    
-    
-    
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -92,26 +95,42 @@ const PreviewForm: React.FC<PreviewFormProps> = ({
       </div>
       {isEditing ? (
         <>
-          {Object.entries(editedFormData).map(([key, value]) => (
-            <div key={key} className="form-field">
-              <label htmlFor={key}>{key}</label>
-              <input
-                type="text"
-                id={key}
-                name={key}
-                value={value}
-                onChange={handleInputChange}
-              />
-            </div>
-          ))}
+          {Object.entries(editedFormData).map(
+            ([key, { value, validationRules }]) => (
+              <div key={key} className="form-field">
+                <label htmlFor={key}>{key}</label>
+                <input
+                  type="text"
+                  id={key}
+                  name={key}
+                  value={value}
+                  onChange={handleInputChange}
+                />
+                {validationRules && (
+                  <ul>
+                    {validationRules.map((rule, index) => (
+                      <li key={index}>{rule.message}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )
+          )}
           <button onClick={handleSaveClick}>Save</button>
         </>
       ) : (
         <>
-          {Object.entries(formData).map(([key, value]) => (
+          {Object.entries(formData).map(([key, { value, validationRules }]) => (
             <div key={key} className="form-field">
               <label htmlFor={key}>{key}</label>
               <span>{value}</span>
+              {validationRules && (
+                <ul>
+                  {validationRules.map((rule, index) => (
+                    <li key={index}>{rule.message}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
           <button onClick={handleEditClick}>Edit</button>
@@ -122,4 +141,4 @@ const PreviewForm: React.FC<PreviewFormProps> = ({
 };
 
 export default PreviewForm;
-export type {FormData}
+export type { FormData };

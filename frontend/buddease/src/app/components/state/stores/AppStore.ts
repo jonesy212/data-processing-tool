@@ -39,4 +39,4 @@ class AppStore {
 const appStore = new AppStore(initialState);
 
 export default appStore;
-p
+export { AppStore}

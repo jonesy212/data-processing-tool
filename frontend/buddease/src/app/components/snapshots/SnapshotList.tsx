@@ -12,7 +12,7 @@ interface SnapshotItem {
   value: Snapshot<Data> | undefined;
   label: string;
   category: string;
-  timestamp: Date | string;
+  timestamp: string | Date;
   categories?: string[];
   updatedAt: Date | undefined;
   store: SnapshotStore<Data> | null;

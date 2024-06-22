@@ -50,3 +50,4 @@ const DraggableAnimation: React.FC<DraggableAnimationProps> = ({
 };
 
 export default DraggableAnimation;
+export type { DraggableAnimationProps };

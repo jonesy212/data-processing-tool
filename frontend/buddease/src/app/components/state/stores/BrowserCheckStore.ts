@@ -5,9 +5,10 @@ import { RootStores } from "./RootStores";
 class BrowserCheckStore {
   rootStores?: RootStores;
   browserKey: string | null = null;
-
-  constructor(rootStores: RootStores) {
+  dispatch: (action: any) => void = () => {};
+  constructor(rootStores: RootStores, dispatch: any) {
     this.rootStores = rootStores;
+    this.dispatch = dispatch;
     makeAutoObservable(this);
   }
 
@@ -26,6 +27,10 @@ class BrowserCheckStore {
       // Use your notification mechanism to display the error message
       console.error(errorMessage);
     }
+  }
+  testDispatch(action: any) {
+    console.log('Dispatching action:', action);
+    this.dispatch(action);
   }
   // Add other methods or properties as needed
 }

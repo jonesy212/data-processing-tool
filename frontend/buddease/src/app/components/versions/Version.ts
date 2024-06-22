@@ -1,25 +1,53 @@
+import { getStructureAsArray } from '@/app/configs/declarations/traverseBackend';
 // Version.ts
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { AppStructureItem, appStructure } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import { traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import crypto from "crypto";
 import getAppPath from "../../../../appPath";
+import { options } from "../documents/DocumentBuilder";
 import { Data } from "../models/data/Data";
 import { VersionData, VersionHistory } from "./VersionData";
+import { traverseFrontendDirectory } from "@/app/configs/declarations/traverseFrontend";
+import { frontendConfig } from '@/app/configs/FrontendConfig';
+
+interface ExtendedVersion extends Version {
+  name: string;
+  url: string;
+  versionNumber: string;
+  documentId: string;
+  draft: boolean;
+  userId: string;
+}
+
 class Version {
   name: string;
   url: string;
   versionNumber: string;
-  appVersion: string;
-  description: string;
-  createdAt: Date | undefined;
-  updatedAt: Date | undefined;
-  buildNumber: string | undefined;
-
-  id: number; // Add id property
-  content: string; // Add content property
-  userId: string;
   documentId: string;
+  draft: boolean;
+  userId: string;
+  content: string;
+  description: string;
+  buildNumber: string;
+  metadata: {
+    author: string;
+    timestamp: string | Date | undefined;
+    revisionNotes?: string;
+  };
+  versions: {
+    data: VersionData;
+    backend: BackendStructure;
+    frontend: FrontendStructure;
+  };
+  appVersion: string;
+  published?: boolean;
+  checksum: string;
+
+  // Add other properties as needed
+  id: number;
   parentId: string;
   parentType: string;
   parentVersion: string;
@@ -28,10 +56,9 @@ class Version {
   parentName: string;
   parentUrl: string;
   parentChecksum: string;
-  parentMetadata: {} | undefined;
+  parentMetadata?: {};
   parentAppVersion: string;
   parentVersionNumber: string;
-  checksum: string;
   isLatest: boolean;
   isPublished: boolean;
   publishedAt: Date | null;
@@ -44,18 +71,15 @@ class Version {
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  frontendStructure: Promise<AppStructureItem[]> | undefined;
-  backendStructure: Promise<AppStructureItem[]> | undefined;
+  createdAt?: Date | undefined;
+  updatedAt?: Date | undefined;
+  frontendStructure?: Promise<AppStructureItem[]>;
+  backendStructure?: Promise<AppStructureItem[]>;
   data: Data[];
-  metadata!: {
-    author: string;
-    timestamp: Date | undefined;
-  } | undefined;
-  draft: boolean;
 
-  getVersion?: () => {};
+  getVersion?: () => Promise<string | null>;
 
-  private _structure: Record<string, AppStructureItem[]> = {}; // Define private property _structure
+  _structure: Record<string, AppStructureItem[]> = {}; // Define private property _structure
   versionHistory: VersionHistory; // Add version history property
 
   // Method to set structure (private)
@@ -94,11 +118,23 @@ class Version {
     versionNumber: string;
     appVersion: string;
     description: string;
+
     content: string;
     checksum: string;
     data: Data[];
     name: string;
     url: string;
+    metadata: {
+      author: string;
+      timestamp: string | Date | undefined;
+      revisionNotes?: string;
+    };
+    versions: {
+      data: VersionData;
+      backend: BackendStructure;
+      frontend: FrontendStructure;
+    };
+
     versionHistory: VersionHistory;
     userId: string;
     documentId: string;
@@ -113,7 +149,7 @@ class Version {
     parentMetadata: {} | undefined;
     parentAppVersion: string;
     parentVersionNumber: string;
-    createdAt: Date;
+    createdAt: Date | undefined;
     updatedAt: Date | undefined;
     draft: boolean;
     isLatest: boolean;
@@ -133,8 +169,10 @@ class Version {
     this.id = versionInfo.id;
     this.versionNumber = versionInfo.versionNumber;
     this.appVersion = versionInfo.appVersion;
-
+    this.versions = versionInfo.versions;
+    this.metadata = versionInfo.metadata;
     this.description = versionInfo.description;
+    this.buildNumber = versionInfo.buildNumber;
     this.content = versionInfo.content;
     this.checksum = versionInfo.checksum;
     this.data = versionInfo.data;
@@ -170,34 +208,33 @@ class Version {
     this.workspaceAdmins = versionInfo.workspaceAdmins;
     this.workspaceMembers = versionInfo.workspaceMembers;
 
-    
-  this.getVersion = async (): Promise<string | null> => {
-    // Access getStructure using optional chaining
-    const mergedStructure = this.getStructure?.();
+    this.getVersion = async (): Promise<string | null> => {
+      // Access getStructure using optional chaining
+      const mergedStructure = this.getStructure?.();
 
-    // Check if mergedStructure is not undefined or null
-    if (mergedStructure) {
-      // Generate hash of the merged structure
-      const hash = crypto
-        .createHash("sha256")
-        .update(JSON.stringify(mergedStructure))
-        .digest("hex");
+      // Check if mergedStructure is not undefined or null
+      if (mergedStructure) {
+        // Generate hash of the merged structure
+        const hash = crypto
+          .createHash("sha256")
+          .update(JSON.stringify(mergedStructure))
+          .digest("hex");
 
-      return hash;
-    }
+        return hash;
+      }
 
-    return null;
-  };
+      return null;
+    };
 
-    // Assuming FrontendStructure provides a method to get the structure as an array
     const frontendStructureInstance = new FrontendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.frontendStructure = frontendStructureInstance.getStructureAsArray() ?? []; // Use nullish coalescing operator
+    this.frontendStructure = frontendStructureInstance.getStructureAsArray();
+
     const backendStructureInstance = new BackendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.backendStructure = backendStructureInstance.getStructureAsArray() ?? []; // Use nullish coalescing operator
+    this.backendStructure = backendStructureInstance.getStructureAsArray();
   }
 
   private async generateStructureHash?(): Promise<string> {
@@ -210,17 +247,17 @@ class Version {
       .digest("hex");
   }
 
-
   public async setFrontendAndBackendStructure?(): Promise<void> {
-    const mergedStructure = this.getStructure ? this.getStructure() : this._structure;
-  
+    const mergedStructure = this.getStructure
+      ? this.getStructure()
+      : this._structure;
+
     if (mergedStructure && this.setStructure) {
       this.setStructure({
         merged: Object.values(mergedStructure).flat() as AppStructureItem[],
       });
     }
   }
-  
 
   // Inside the Version class
   public mergeAndHashStructures?(
@@ -257,6 +294,15 @@ class Version {
     checksum: string;
     data: Data[];
     name: string;
+    versions: {
+      data: VersionData;
+      backend: BackendStructure;
+      frontend: FrontendStructure;
+    };
+    metadata: {
+      author: string;
+      timestamp: string | Date | undefined;
+    };
     url: string;
     versionHistory: VersionHistory;
     draft: boolean;
@@ -290,20 +336,128 @@ class Version {
   }): Version {
     return new Version(versionInfo);
   }
-
+  // Method to get version data
   // Method to get version data
   getVersionData?(): VersionData | undefined {
     const { content, name, url, versionNumber } = this;
     if (!content || !name || !versionNumber) {
       return undefined;
     }
+
     const checksum = this.generateChecksum!(content);
-    const metadata = {
-      author: name,
-      timestamp: new Date(),
-      // Add other metadata if needed
+    // Assuming you have a fileOrFolderId variable
+    const fileOrFolderId = "fileOrFolderId";
+    const metadata: StructuredMetadata = {
+      [fileOrFolderId]: {
+        originalPath: "",
+        alternatePaths: [],
+        author: name,
+        timestamp: new Date(),
+        fileType: "",
+        title: "",
+        description: "",
+        keywords: [],
+        authors: [],
+        contributors: [],
+        publisher: "",
+        copyright: "",
+        license: "",
+        links: [],
+        tags: [],
+      },
     };
-    return { content, metadata, checksum };
+
+    // Function to create a Version object from ExtendedVersion data
+    const createVersion = (versionData: ExtendedVersion): Version => {
+      const {
+        content,
+        metadata,
+        checksum,
+        appVersion,
+        description,
+        buildNumber,
+        versions,
+        id,
+        parentId,
+        parentType,
+        parentVersion,
+        parentTitle,
+        parentContent,
+        parentName,
+        parentUrl,
+        parentChecksum,
+        parentMetadata,
+        parentAppVersion,
+        parentVersionNumber,
+        isLatest,
+        isPublished,
+        publishedAt,
+        source,
+        status,
+        workspaceId,
+        workspaceName,
+        workspaceType,
+        workspaceUrl,
+        workspaceViewers,
+        workspaceAdmins,
+        workspaceMembers,
+        createdAt,
+        updatedAt,
+        versionHistory,
+        data,
+        _structure,
+        // Ensure all properties are destructured from versionData
+      } = versionData;
+
+      const version: Version = new Version({
+        content,
+        metadata,
+        checksum,
+        appVersion,
+        description,
+        buildNumber,
+        versions,
+        id,
+        parentId,
+        parentType,
+        parentVersion,
+        parentTitle,
+        parentContent,
+        parentName,
+        parentUrl,
+        parentChecksum,
+        parentMetadata,
+        parentAppVersion,
+        parentVersionNumber,
+        isLatest,
+        isPublished,
+        publishedAt,
+        source,
+        status,
+        workspaceId,
+        workspaceName,
+        workspaceType,
+        workspaceUrl,
+        workspaceViewers,
+        workspaceAdmins,
+        workspaceMembers,
+        createdAt,
+        updatedAt,
+        versionHistory,
+        data,
+        name: "", // Set appropriately based on your application logic
+        url: "", // Set appropriately based on your application logic
+        versionNumber: "", // Set appropriately based on your application logic
+        documentId: "", // Set appropriately based on your application logic
+        draft: false, // Set appropriately based on your application logic
+        userId: "", // Set appropriately based on your application logic
+      });
+
+      return version;
+    };
+
+    // Return or use 'data' as needed
+    return data;
   }
 
   // Method to update version history
@@ -366,7 +520,7 @@ class Version {
 
   // Method to get structure hash
   async getStructureHash?(): Promise<string> {
-    return this.generateStructureHash && await this.generateStructureHash()
+    return this.generateStructureHash && (await this.generateStructureHash())
       ? this.generateStructureHash()
       : Promise.resolve("");
   }
@@ -381,7 +535,72 @@ class Version {
     this.content = content;
   }
   getStructure?: () => Record<string, AppStructureItem[]>;
-
 }
 
 export default Version;
+
+
+
+
+
+const data: VersionData = {
+  id: 0,
+  name: "",
+  url: "",
+  versionNumber: "",
+  documentId: "",
+  draft: false,
+  userId: "",
+  parentId: "", // Provide appropriate values based on your application logic
+  parentType: "", // Provide appropriate values based on your application logic
+  parentVersion: "", // Provide appropriate values based on your application logic
+  parentTitle: "", // Provide appropriate values based on your application logic
+  parentContent: "", // Provide appropriate values based on your application logic
+  parentName: "", // Provide appropriate values based on your application logic
+  parentUrl: "", // Provide appropriate values based on your application logic
+  parentChecksum: "", // Provide appropriate values based on your application logic
+  parentAppVersion: "", // Provide appropriate values based on your application logic
+  parentVersionNumber: "", // Provide appropriate values based on your application logic
+  isLatest: false, // Provide appropriate values based on your application logic
+  isPublished: false, // Provide appropriate values based on your application logic
+  publishedAt: null, // Provide appropriate values based on your application logic
+  source: "", // Provide appropriate values based on your application logic
+  status: "", // Provide appropriate values based on your application logic
+  workspaceId: "", // Provide appropriate values based on your application logic
+  workspaceName: "", // Provide appropriate values based on your application logic
+  workspaceType: "", // Provide appropriate values based on your application logic
+  workspaceUrl: "", // Provide appropriate values based on your application logic
+  workspaceViewers: [], // Provide appropriate values based on your application logic
+  workspaceAdmins: [], // Provide appropriate values based on your application logic
+  workspaceMembers: [], // Provide appropriate values based on your application logic
+  content: "Initial version content",
+  checksum: "abc123",
+  metadata: {
+    author: "Author Name",
+    timestamp: new Date(),
+    revisionNotes: undefined, // Adjust as per your application logic
+  },
+  versions: {
+    data: {
+      frontend: {
+        versionNumber: "1.0",
+      },
+      backend: {
+        versionNumber: "1.0",
+      },
+    },
+    backend: {
+      structure: {}, // You can define initial structure if needed
+      traverseDirectory: traverseBackendDirectory,
+      getStructure: () => {
+        return options?.backendStructure?.getStructure() || Promise.resolve({});
+      },
+      getStructureAsArray: getStructureAsArray,
+    },
+    frontend: frontend,
+      
+  },
+  data: [], // If data is required at this level, ensure it matches the type definition
+};
+
+export { data };

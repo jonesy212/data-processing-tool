@@ -1,6 +1,11 @@
 // newsFeedIntegration.tsx
 // Example function to update state with news feed data
 
+import { updateFilteredNewsUI } from "../libraries/ui/updateFilteredNewsUI";
+import axiosInstance from "../security/csrfToken";
+import { NotificationType, useNotification } from "../support/NotificationContext";
+import { categorizeNews, identifyTrendingTopics } from "./articleKeywords";
+
 import { useState } from "react";
 
 // Example state hook declaration
@@ -40,8 +45,6 @@ const setNewsFeed = (newsFeedData: any): void => {
     );
   }
 };
-
-
 
 
 
@@ -159,11 +162,6 @@ const calculateSentimentScore = async (text: string): Promise<number> => {
   };
 
   
-
-import { updateFilteredNewsUI } from "../libraries/ui/updateFilteredNewsUI";
-import axiosInstance from "../security/csrfToken";
-import { NotificationType, useNotification } from "../support/NotificationContext";
-import { categorizeNews } from "./articleKeywords";
 
 // Example function to fetch more news
 const fetchMoreNews = async (): Promise<void> => {

@@ -3,7 +3,6 @@ import { ModifiedDate } from "@/app/components/documents/DocType";
 import { ConfigLogger } from "../logging/Logger";
 import { Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
-import { CustomSnapshotData, Snapshot } from "../snapshots/SnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
 import DatabaseClient from "../todos/tasks/DatabaseClient";
 import { Subscriber } from "../users/Subscriber";
@@ -17,6 +16,7 @@ import * as subscriptionApi from "./../../api/subscriberApi";
 import initialOrderBookData, { OrderBookData } from "./OrderBookData";
 import OrderBookUpdater from "./OrderBookUpdater";
 import TickerUpdater from "./TickerUpdater";
+import { CustomSnapshotData, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
 // Define enum for exchange data types
 enum ExchangeDataTypeEnum {
@@ -346,7 +346,7 @@ const updateOrderBook = (orderBookData: any[]): void => {
 };
 
 // Define the orderBookUpdateHandler function
-const orderBookUpdateHandler = (snapshot: Snapshot<CustomSnapshotData | Data>): void => {
+const orderBookUpdateHandler = (snapshot: Snapshot<CustomSnapshotData | undefined>): void => {
   if (snapshot.data) {
     console.log("Received order book update:");
     console.log("Timestamp:", snapshot.timestamp);
@@ -441,45 +441,72 @@ const subscription: Subscription = {
   portfolioUpdatesLastUpdated: {} as ModifiedDate,
 };
 
-// Correct call to createSubscriber with all required arguments
+// Function to create a subscriber
+const createSubscriber = (): Subscriber<CustomSnapshotData | undefined> => {
+  const name = "ExampleName"; // Define the name
+  const notifyEventSystem = () => {}; // Define the notifyEventSystem function
+  const updateProjectState = () => {}; // Define the updateProjectState function
+  const logActivity = () => {}; // Define the logActivity function
+  const triggerIncentives = () => {}; // Define the triggerIncentives function
+  const initialData: CustomSnapshotData | undefined = undefined; // Define the initial data
+  
+  const tempSubscriber = new Subscriber<CustomSnapshotData | undefined>(
+    "tempSubscriber",
+    name,
+    subscription,
+    "",
+    notifyEventSystem,
+    updateProjectState,
+    logActivity,
+    triggerIncentives,
+    initialData
+  );
 
-const subscriber = Subscriber.createSubscriber<CustomSnapshotData | undefined>(
-  "1",
-  name,
-  subscription,
-  subscriberId,
-  notifyEventSystem,
-  updateProjectState,
-  logActivity,
-  triggerIncentives,
-  initialData
-);
+  const subscriberId = subscriptionApi.getSubscriberId(tempSubscriber);
 
-const subscriberId = subscriptionApi.getSubscriberId(subscriber);
+  return Subscriber.createSubscriber<CustomSnapshotData | undefined>(
+    "1",
+    name,
+    subscription,
+    subscriberId,
+    notifyEventSystem,
+    updateProjectState,
+    logActivity,
+    triggerIncentives,
+    initialData
+  );
+};
+
+// Create the subscriber instance
+const subscriber = createSubscriber();
 
 // Create an instance of the Subscriber class for order book updates
-const orderBookSubscriber = new Subscriber<CustomSnapshotData>(
+export const initialSnapshot: Snapshot<CustomSnapshotData | undefined> = {
+  data: initialData, // Replace with actual initial data
+  // Other properties as needed
+};
+// Create an instance of the Subscriber class for order book updates
+const orderBookSubscriber = new Subscriber<CustomSnapshotData | undefined>(
   "orderBookSubscriber",
-  name,
+  "orderBookSubscriberName", // Assuming you have a name for this subscriber
   subscription,
-  subscriberId,
-  notifyEventSystem,
-  updateProjectState,
-  logActivity,
-  triggerIncentives,
-  initialData
+  subscriptionApi.getSubscriberId(subscriber),
+  subscriber.getNotifyEventSystem(),
+  subscriber.getUpdateProjectState(),
+  subscriber.getLogActivity(),
+  subscriber.getTriggerIncentives(),
 );
 
 // Function to subscribe to order book updates
 const subscribeToOrderBookUpdates = (
-  subscriber: (data: Snapshot<CustomSnapshotData | Data>) => void
+  subscriber: (data: Snapshot<CustomSnapshotData | undefined>) => void
 ): void => {
   orderBookSubscriber.subscribe(subscriber);
 };
 
 // Function to unsubscribe from order book updates
 const unsubscribeFromOrderBookUpdates = (
-  subscriber: (data: Snapshot<CustomSnapshotData | Data>) => void
+  subscriber: (data: Snapshot<CustomSnapshotData | undefined>) => void
 ): void => {
   orderBookSubscriber.unsubscribe(subscriber);
 };
@@ -487,7 +514,7 @@ const unsubscribeFromOrderBookUpdates = (
 // Function to notify subscribers about order book updates
 const notifyOrderBookUpdate = (): void => {
   // Create an empty snapshot to pass to subscribers
-  const data: Snapshot<CustomSnapshotData | Data> = {
+  const data: Snapshot<CustomSnapshotData | undefined> = {
     timestamp: new Date(),
     data: undefined,
     category: undefined,

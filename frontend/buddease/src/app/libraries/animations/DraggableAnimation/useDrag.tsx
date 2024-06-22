@@ -1,7 +1,7 @@
 import { MovementAnimationActions, useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
 import { useEffect, useRef } from "react";
 
-export interface DragEventHandlers extends MovementAnimationActions {
+interface DragEventHandlers extends MovementAnimationActions {
   onDragStart: () => void;
   onDragMove: (dragX: number, dragY: number) => void;
   onDragEnd: (finalX: number, finalY: number) => void;
@@ -105,21 +105,23 @@ const useDragImpl = (
       id: id,
       type: type,
     },
-    isDragging: true, // Use true for isDragging since it's defined as boolean
-
+    isDragging: true,
     beginDrag: startDrag,
-    startDrawing: startDrag,
-    onDragStart: () => {}, // Use this as needed
-    onDragMove: () => {}, // Use this as needed
-    onDragEnd: onDragEnd,
-    setDragX: handleDragX, // Updated to use handleDragX
-    setDragY: handleDragY, // Updated to use handleDragY
-    canDrop: () => true, // Implement your logic for canDrop
-    isOver: false, // Initialize isOver state
+    onDragStart: () => {}, // Example empty functions; adjust as needed
+    onDragMove: () => {}, // Example empty functions; adjust as needed
+    onDragEnd: handleDragEnd,
+    setDragX: handleDragX,
+    setDragY: handleDragY,
+    canDrop: () => true,
+    isOver: false,
+    startDrawing: (e) => {
+      // Implement startDrawing logic if needed
+    },
   };
 
   return mergedActions;
 };
+
 
 const useDrag = (
   id: string,
@@ -132,3 +134,5 @@ const useDrag = (
 ) => useDragImpl(id, type, onDragStart, onDragMove, onDragEnd, setDragX, setDragY);
 
 export { useDrag };
+export type { DragEventHandlers };
+

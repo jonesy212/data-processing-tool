@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import useSnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
@@ -14,9 +14,10 @@ import {
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
+import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 
 const { notify } = useNotification();
-export interface TodoManagerStore<T> {
+export interface TodoManagerStore<T extends Data> {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
@@ -549,12 +550,12 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
     setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Data.PAGE_LOADING);
   };
 
-  const batchFetchSnapshotsSuccess = (payload: {
+  const batchFetchSnapshotsSuccess = async (payload: {
     snapshots: Snapshot<Data>[];
   }) => {
     console.log("Snapshots fetched successfully!");
     const { snapshots } = payload;
-    snapshotStore.setSnapshots(snapshots);
+    (await snapshotStore).setSnapshots(snapshots);
     // You can add additional logic or trigger notifications as needed
     setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT

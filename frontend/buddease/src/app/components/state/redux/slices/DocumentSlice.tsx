@@ -1,38 +1,48 @@
 // DocumentSlice.tsx
-import { v4 as uuidv4 } from 'uuid';
 import { fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
-import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
-import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
+import DocumentBuilder, {
+  DocumentData,
+  options,
+} from "@/app/components/documents/DocumentBuilder";
+import {
+  DocumentStatusEnum,
+  DocumentTypeEnum,
+} from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentStatus } from "@/app/components/documents/types";
 import useDataExport from "@/app/components/hooks/dataHooks/useDataExport";
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import Version, { data } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { AppThunk } from "@/app/configs/appThunk";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { getStructureAsArray, traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { produce } from "immer";
+import { v4 as uuidv4 } from "uuid";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import Version from "@/app/components/versions/Version";
-import { produce } from 'immer';
-import BackendStructure from '@/app/configs/appStructure/BackendStructure';
-import FrontendStructure from '@/app/configs/appStructure/FrontendStructure';
+import { backendStructure } from "@/app/configs/appStructure/BackendStructure";
 
-const notify = useNotification
-// Define the initial state for the document slice
+
+
+
 interface DocumentSliceState {
   documents: DocumentData[];
   selectedDocument: DocumentData | null;
   filteredDocuments: DocumentData[];
   searchResults: DocumentData[];
-  loading: boolean, // Add this line to include the initial state for loading
-  error: Error | null, // Add this line to include the initial state for error
+  loading: boolean; // Add this line to include the initial state for loading
+  error: Error | null; // Add this line to include the initial state for error
   changes: boolean;
-  documentBuilder?:  typeof DocumentBuilder
+  documentBuilder?: typeof DocumentBuilder;
 }
 
 const initialState: DocumentSliceState = {
@@ -44,19 +54,41 @@ const initialState: DocumentSliceState = {
   changes: false,
   searchResults: [],
   documentBuilder: undefined,
+};
+
+type DocumentObject = Document & DocumentData;
+
+
+
+interface ExtendedDocumentData extends DocumentData {
+  mergeStructures?: (
+    baseStructure: StructuredMetadata,
+    additionalStructure: StructuredMetadata
+  ) => StructuredMetadata;
 }
 
-type DocumentObject =  Document & DocumentData
-
+// Define mergeStructures function
+const mergeStructures = (
+  baseStructure: StructuredMetadata,
+  additionalStructure: StructuredMetadata
+): StructuredMetadata => {
+  // Implement mergeStructures logic here
+  // Return the merged structure
+  const mergedStructure: StructuredMetadata = {
+    ...baseStructure,
+    ...additionalStructure,
+  };
+  return mergedStructure;
+};
 // Create an async thunk for deleting a document
 export const deleteDocumentAsync = createAsyncThunk(
-  'document/deleteDocument',
+  "document/deleteDocument",
   async (documentId: number) => {
     try {
       // Implement document deletion functionality
       // Simulate deletion with a delay of 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Document deleted successfully');
+      console.log("Document deleted successfully");
       return documentId;
     } catch (error) {
       console.error(`Error deleting document with ID ${documentId}:`, error);
@@ -67,7 +99,7 @@ export const deleteDocumentAsync = createAsyncThunk(
 
 // Define an async thunk action creator to fetch document by ID
 export const fetchDocumentById = createAsyncThunk(
-  'documents/fetchDocumentById',
+  "documents/fetchDocumentById",
   async (documentId: number) => {
     try {
       // Perform asynchronous operation to fetch document data by ID
@@ -98,15 +130,13 @@ export const fetchDocumentsByIds = async (documentIds: number[]) => {
     return documentsData;
   } catch (error) {
     // Handle error
-    console.error('Error fetching documents by IDs:', error);
+    console.error("Error fetching documents by IDs:", error);
     throw error;
   }
 };
 
-
-
 export const downloadDocument = createAsyncThunk(
-  'document/downloadDocument',
+  "document/downloadDocument",
   async (documentId: number) => {
     // Your asynchronous operation logic here (e.g., fetching the document)
     const fetchedDocument = await fetchDocumentByIdAPI(
@@ -122,14 +152,17 @@ export const downloadDocument = createAsyncThunk(
 
 // Define thunk action creator for downloading document asynchronously
 export const downloadDocumentAsync = createAsyncThunk(
-  'document/downloadDocumentAsync',
+  "document/downloadDocumentAsync",
   async (documentId: number, { dispatch }) => {
     try {
       // Fetch document data based on the document ID
-      const fetchedDocument = await fetchDocumentByIdAPI(documentId, (data: WritableDraft<DocumentData>) => {
-        // Call the dispatch function to update the state with the fetched document data
-        dispatch(setDownloadedDocument(data));
-      });
+      const fetchedDocument = await fetchDocumentByIdAPI(
+        documentId,
+        (data: WritableDraft<DocumentData>) => {
+          // Call the dispatch function to update the state with the fetched document data
+          dispatch(setDownloadedDocument(data));
+        }
+      );
 
       // Dispatch the action to update the state with the fetched document data
       dispatch(setDownloadedDocument(fetchedDocument));
@@ -151,104 +184,112 @@ export const downloadDocumentAsync = createAsyncThunk(
   }
 );
 
+export const exportDocumentAsync =
+  async (document: number): Promise<AppThunk> =>
+  async (dispatch) => {
+    try {
+      // Implement document export functionality
 
-export const exportDocumentAsync = async (document: number): Promise<AppThunk> => async (dispatch) => { 
-  try {
-    // Implement document export functionality
+      // Simulate export with a delay of 1 second
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Dispatch the action to update the state with the exported document
+      dispatch(await exportDocument(document));
 
-    // Simulate export with a delay of 1 second
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Dispatch the action to update the state with the exported document
-    dispatch(await exportDocument(document));
-    
-    // Return the exported document as the result
-    console.log('Document exported successfully');
+      // Return the exported document as the result
+      console.log("Document exported successfully");
 
-    return document;
-  } catch (error) {
-    console.error("Error exporting document:", error);
-    // Handle error and notify
-    useNotification().notify(
-      "exportDocumentError",
-      "Error exporting document",
-      NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
-      new Date(),
-      NotificationTypeEnum.Error
-    );
-    
-    throw error;
-  }
-}
+      return document;
+    } catch (error) {
+      console.error("Error exporting document:", error);
+      // Handle error and notify
+      useNotification().notify(
+        "exportDocumentError",
+        "Error exporting document",
+        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
+        new Date(),
+        NotificationTypeEnum.Error
+      );
 
+      throw error;
+    }
+  };
 
+export const exportDocument =
+  async (document: number): Promise<AppThunk> =>
+  async (dispatch) => {
+    try {
+      // Implement document export functionality
+      // Simulate export with a delay of 1 second
+      await new Promise(async (resolve) => setTimeout(resolve, 1000));
+      // Dispatch the action to update the state with the exported document
+      dispatch(await exportDocument(document));
+    } catch (error) {
+      console.error("Error exporting document:", error);
+      // Handle error and notify
+      useNotification().notify(
+        "exportDocumentError",
+        "Error exporting document",
+        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
+        new Date(),
+        NotificationTypeEnum.Error
+      );
+      throw error; // Rethrow the error to be caught by the caller
+    }
+  };
 
+export const exportDocuments =
+  async (documents: {
+    payload: typeof documents;
+    type: "exportDocuments";
+  }): Promise<AppThunk> =>
+  async (dispatch) => {
+    try {
+      // Implement document export functionality
+      const { exportedData, exportData } = useDataExport(); // Initialize useDataExport hook
 
-export const exportDocument = async (document: number): Promise<AppThunk> => async (dispatch) => {
-  try {
-    // Implement document export functionality
-    // Simulate export with a delay of 1 second
-    await new Promise(async (resolve) => setTimeout(resolve, 1000));
-    // Dispatch the action to update the state with the exported document
-    dispatch(await exportDocument(document));
-
-  } catch (error) { 
-    console.error("Error exporting document:", error);
-    // Handle error and notify
-    useNotification().notify(
-      "exportDocumentError",
-      "Error exporting document",
-      NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
-      new Date(),
-      NotificationTypeEnum.Error
-    );
-    throw error; // Rethrow the error to be caught by the caller
-  }
-}
-
-export const exportDocuments = async (documents: {
-  payload: typeof documents,
-  type: "exportDocuments",
-}): Promise<AppThunk> => async (dispatch) => {
-  try {
-    // Implement document export functionality
-    const { exportedData, exportData } = useDataExport(); // Initialize useDataExport hook
-
-    // Simulate export with a delay of 1 second
-    setTimeout(async () => {
-      try {
-        const exportResult = await exportData(documents); // Export documents using the hook
-        console.log('Exported documents:', exportResult);
-        dispatch({ type: "exportDocuments", payload: exportedData });
-      } catch (error) {
-        console.error("Error exporting documents:", error);
-        throw error; // Rethrow the error to be caught by the caller
-      }
-    }, 1000);
-  } catch (error) {
-    console.error("Error exporting documents:", error);
-    // Handle error and notify
-    useNotification().notify(
-      "exportDocumentsError",
-      "Error exporting documents",
-      NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
-      new Date(),
-      NotificationTypeEnum.Error
-    );
-    throw error; // Rethrow the error to be caught by the caller
-  }
-};
+      // Simulate export with a delay of 1 second
+      setTimeout(async () => {
+        try {
+          const exportResult = await exportData(documents); // Export documents using the hook
+          console.log("Exported documents:", exportResult);
+          dispatch({ type: "exportDocuments", payload: exportedData });
+        } catch (error) {
+          console.error("Error exporting documents:", error);
+          throw error; // Rethrow the error to be caught by the caller
+        }
+      }, 1000);
+    } catch (error) {
+      console.error("Error exporting documents:", error);
+      // Handle error and notify
+      useNotification().notify(
+        "exportDocumentsError",
+        "Error exporting documents",
+        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
+        new Date(),
+        NotificationTypeEnum.Error
+      );
+      throw error; // Rethrow the error to be caught by the caller
+    }
+  };
 
 // Define the async thunk using createAsyncThunk
 // Define the async thunk using createAsyncThunk
 export const exportDocumentsAsync = createAsyncThunk(
-  'document/exportDocumentsAsync',
+  "document/exportDocumentsAsync",
   async (documentIds: number[], { dispatch }) => {
     try {
       // Fetch multiple documents based on their IDs
       const documents = await fetchDocumentsByIds(documentIds);
-      
+
       // Dispatch the action with the entire array of documents as the payload
-      dispatch(exportDocumentsAsync.fulfilled(documents, "exportDocuments", documentIds, undefined));
+      dispatch(
+        exportDocumentsAsync.fulfilled(
+          documents,
+          "exportDocuments",
+          documentIds,
+          undefined
+        )
+      );
 
       return documents; // Return the fetched documents as the result
     } catch (error) {
@@ -266,8 +307,6 @@ export const exportDocumentsAsync = createAsyncThunk(
   }
 );
 
-
-
 // Define the transformations object and applyTransformation function
 const applyTransformation = (
   document: WritableDraft<DocumentData>,
@@ -277,7 +316,6 @@ const applyTransformation = (
 ) => {
   transformation(document, value);
 };
-
 
 const transformations = {
   tag: (document: WritableDraft<DocumentData>, tag: string) => {
@@ -316,20 +354,30 @@ const transformations = {
     document.content = `${rejection} Rejected: ${document.content}`;
   },
 
-  provideFeedback: (document: WritableDraft<DocumentData>, feedback: string) => {
+  provideFeedback: (
+    document: WritableDraft<DocumentData>,
+    feedback: string
+  ) => {
     document.content = `${feedback} Provided: ${document.content}`;
+    // Add any additional customizations here
+    
   },
-  
 
   requestFeedback: (document: WritableDraft<DocumentData>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
-  
-  resolveFeedback: (document: WritableDraft<DocumentData>, feedback: string) => {
+
+  resolveFeedback: (
+    document: WritableDraft<DocumentData>,
+    feedback: string
+  ) => {
     document.content = `${feedback} Resolved: ${document.content}`;
   },
 
-  collaborate: (document: WritableDraft<DocumentData>, collaborator: string) => {
+  collaborate: (
+    document: WritableDraft<DocumentData>,
+    collaborator: string
+  ) => {
     document.content = `${collaborator} Collaborated: ${document.content}`;
   },
 
@@ -356,7 +404,7 @@ const transformations = {
   grantAccess: (document: WritableDraft<DocumentData>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
-  
+
   viewHistory: (document: WritableDraft<DocumentData>, view: string) => {
     document.content = `${view} Viewed: ${document.content}`;
   },
@@ -371,12 +419,16 @@ const transformations = {
 
   managePermissions: (
     document: WritableDraft<DocumentData>,
-    permissions: string) => {
+    permissions: string
+  ) => {
     // Add permission transformation logic
     document.content = `${permissions} Permissions Managed: ${document.content}`;
   },
 
-  initiateWorkflow: (document: WritableDraft<DocumentData>, workflow: string) => {
+  initiateWorkflow: (
+    document: WritableDraft<DocumentData>,
+    workflow: string
+  ) => {
     document.content = `${workflow} Initiated: ${document.content}`;
   },
 
@@ -388,27 +440,45 @@ const transformations = {
     document.content = `${events} Triggered: ${document.content}`;
   },
 
-  approvalWorkflow: (document: WritableDraft<DocumentData>, workflow: string) => {
+  approvalWorkflow: (
+    document: WritableDraft<DocumentData>,
+    workflow: string
+  ) => {
     document.content = `${workflow} Approved: ${document.content}`;
   },
 
-  lifecycleManagement: (document: WritableDraft<DocumentData>, lifecycle: string) => {
+  lifecycleManagement: (
+    document: WritableDraft<DocumentData>,
+    lifecycle: string
+  ) => {
     document.content = `${lifecycle} Lifecycle: ${document.content}`;
   },
 
-  connectWithExternalSystem: (document: WritableDraft<DocumentData>, externalSystem: string) => {
+  connectWithExternalSystem: (
+    document: WritableDraft<DocumentData>,
+    externalSystem: string
+  ) => {
     document.content = `${externalSystem} Connected: ${document.content}`;
   },
 
-  synchronizeWithCloudStorage: (document: WritableDraft<DocumentData>, cloudStorage: string) => {
+  synchronizeWithCloudStorage: (
+    document: WritableDraft<DocumentData>,
+    cloudStorage: string
+  ) => {
     document.content = `${cloudStorage} Synchronized: ${document.content}`;
   },
 
-  importFromExternalSource: (document: WritableDraft<DocumentData>, externalSource: string) => {
+  importFromExternalSource: (
+    document: WritableDraft<DocumentData>,
+    externalSource: string
+  ) => {
     document.content = `${externalSource} Imported: ${document.content}`;
   },
 
-  exportToExternalSystem: (document: WritableDraft<DocumentData>, externalSystem: string) => {
+  exportToExternalSystem: (
+    document: WritableDraft<DocumentData>,
+    externalSystem: string
+  ) => {
     document.content = `${externalSystem} Exported: ${document.content}`;
   },
 
@@ -416,51 +486,57 @@ const transformations = {
     document.content = `${report} Generated: ${document.content}`;
   },
 
-
   exportReport: (document: WritableDraft<DocumentData>, report: string) => {
     document.content = `${report} Exported: ${document.content}`;
   },
 
-
-
-  scheduleReportGeneration: (document: WritableDraft<DocumentData>, report: string) => {
+  scheduleReportGeneration: (
+    document: WritableDraft<DocumentData>,
+    report: string
+  ) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
-
-  customizeReportSettings: (document: WritableDraft<DocumentData>, report: string) => {
+  customizeReportSettings: (
+    document: WritableDraft<DocumentData>,
+    report: string
+  ) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: WritableDraft<DocumentData>, backup: string) => { 
+  backupDocuments: (document: WritableDraft<DocumentData>, backup: string) => {
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: WritableDraft<DocumentData>, backup: string) => { 
+  retrieveBackup: (document: WritableDraft<DocumentData>, backup: string) => {
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: WritableDraft<DocumentData>, redaction: string) => { 
+  redaction: (document: WritableDraft<DocumentData>, redaction: string) => {
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: WritableDraft<DocumentData>, access: string) => { 
+  accessControls: (document: WritableDraft<DocumentData>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: WritableDraft<DocumentData>, template: string) => { 
+  templates: (document: WritableDraft<DocumentData>, template: string) => {
     document.content = `${template} Templates: ${document.content}`;
   },
 
-  updateDocumentVersion: (document: WritableDraft<DocumentData>, version: string) => {
+  updateDocumentVersion: (
+    document: WritableDraft<DocumentData>,
+    version: string
+  ) => {
     document.content = `${version} Version updated: ${document.content}`;
   },
 
-  getDocumentVersion: (document: WritableDraft<DocumentData>, version: string) => { 
+  getDocumentVersion: (
+    document: WritableDraft<DocumentData>,
+    version: string
+  ) => {
     document.content = `${version} Version retrieved: ${document.content}`;
-  }
-
-
+  },
 };
 const toObject = (document: Document): object => {
   // Convert Document to plain object
@@ -468,10 +544,9 @@ const toObject = (document: Document): object => {
   return plainObject;
 };
 
-
-const createNewDocument: (
-  documentId: string
-) => DocumentData = (documentId) => {
+const createNewDocument: (documentId: string) => DocumentData = (
+  documentId
+) => {
   const initialState: DocumentData = {
     _id: uuidv4(),
     id: documentId,
@@ -482,6 +557,7 @@ const createNewDocument: (
     files: [],
     name: "New Document",
     description: "New document description",
+    visibility: "Public",
     documentType: DocumentTypeEnum.Other,
     documentStatus: DocumentStatusEnum.Draft,
     documentOwner: "",
@@ -496,13 +572,14 @@ const createNewDocument: (
     currentMetadata: {} as WritableDraft<StructuredMetadata>,
     accessHistory: [],
     folders: [],
-    lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean }>,
+    lastModifiedDate: {} as WritableDraft<ModifiedDate>,
     version: {
       id: 0,
       name: "Initial Version",
       url: "https://example.com/initial_version",
-      versionNumber: '1.0',
+      versionNumber: "1.0",
       appVersion: "v1.0",
+      buildNumber: "1",
       description: "Initial version description",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -537,13 +614,34 @@ const createNewDocument: (
       backendStructure: Promise.resolve([]),
       data: [],
       draft: false,
+      versions: {
+        data: data,
+        backend: {
+          data: data,
+          draft: false,
+          frontendStructure: Promise.resolve([]),
+          backendStructure: Promise.resolve([]),
+        },
+        frontend: {
+          data: data,
+          draft: false,
+          frontendStructure: Promise.resolve([]),
+          backendStructure: Promise.resolve([]),
+        },
+      },
+      _structure: {
+        // data: [],
+        // draft: false,
+        // frontendStructure: Promise.resolve([]),
+        // backendStructure: Promise.resolve([]),
+      },
       metadata: {
         author: "Author Name",
         timestamp: new Date(),
       },
-      getVersion: () => "1.0",
+      getVersion: async () => "1.0",
       versionHistory: {
-        versions: []
+        versions: [],
       },
       mergeAndHashStructures: async (baseStructure, additionalStructure) => {
         return "merged_structure_hash";
@@ -552,14 +650,46 @@ const createNewDocument: (
       updateVersionNumber: (newVersionNumber) => {
         console.log(`Updating version number to ${newVersionNumber}`);
       },
-      getVersionData: () => {
+      
+      getVersionData: (): VersionData => {
         return {
+          id: 0,
+          name: "Initial Version",
+          url: "https://example.com/initial_version",
+          userId: "user123",
+          documentId: "doc123",
+          draft: false,
+          data: [],
+          versionNumber: "1.0",
+          parentId: '', // Provide appropriate values based on your application logic
+          parentType: '', // Provide appropriate values based on your application logic
+          parentVersion: '', // Provide appropriate values based on your application logic
+          parentTitle: '', // Provide appropriate values based on your application logic
+          parentContent: '', // Provide appropriate values based on your application logic
+          parentName: '', // Provide appropriate values based on your application logic
+          parentUrl: '', // Provide appropriate values based on your application logic
+          parentChecksum: '', // Provide appropriate values based on your application logic
+          parentAppVersion: '', // Provide appropriate values based on your application logic
+          parentVersionNumber: '', // Provide appropriate values based on your application logic
+          isLatest: false, // Provide appropriate values based on your application logic
+          isPublished: false, // Provide appropriate values based on your application logic
+          publishedAt: null, // Provide appropriate values based on your application logic
+          source: '', // Provide appropriate values based on your application logic
+          status: '', // Provide appropriate values based on your application logic
+          workspaceId: '', // Provide appropriate values based on your application logic
+          workspaceName: '', // Provide appropriate values based on your application logic
+          workspaceType: '', // Provide appropriate values based on your application logic
+          workspaceUrl: '', // Provide appropriate values based on your application logic
+          workspaceViewers: [], // Provide appropriate values based on your application logic
+          workspaceAdmins: [], // Provide appropriate values based on your application logic
+          workspaceMembers: [], // Provide appropriate values based on your application logic
           content: "Initial version content",
+          checksum: "abc123",
           metadata: {
             author: "Author Name",
             timestamp: new Date(),
+            revisionNotes: undefined, // Adjust as per your application logic
           },
-          checksum: "abc123",
           versions: {
             data: {
               frontend: {
@@ -570,67 +700,153 @@ const createNewDocument: (
               },
             },
             backend: {
-              
+              structure: {},
+              traverseDirectory: traverseBackendDirectory,
+              getStructure: () => {
+                return (
+                  options?.backendStructure?.getStructure() ||
+                  Promise.resolve({})
+                );
+              },
+              getStructureAsArray: getStructureAsArray,
             }, // Version of the backend
             frontend: {} as FrontendStructure, // Version of the frontend
-            },
-
-          }
+          },
         };
       },
-      updateVersionHistory: () => {
-        console.log("Updating version history");
-      },
-      generateChecksum: () => {
-        return "abc123";
-      },
-      compare: () => 0,
-      parse: () => [],
-      isValid: () => true,
-      generateHash: (appVersion) => {
-        return "hash_value";
-      },
-      isNewer: () => false,
-      hashStructure: () => {
-        return "structure_hash";
-      },
-      getStructureHash: async () => {
-        return "structure_hash";
-      },
-      getContent: () => "Initial version content",
-      setContent: (content) => {
-        console.log(`Setting content to: ${content}`);
-      },
-
-      _structure: {}, 
-      mergeStructures: (baseStructure, additionalStructure) => {
-        // Implement mergeStructures logic here
-        // Return the merged structure
-        return baseStructure.concat(additionalStructure); // Example logic: concatenating structures
-      },
-      generateStructureHash: async () => {
-        // Implement generateStructureHash logic here
-        // Return the generated structure hash
-        return "generated_structure_hash"; // Example: returning a mock hash
-      },
     },
+    // updateVersionHistory: () => {
+    //   console.log("Updating version history");
+    // },
+    // generateChecksum: () => {
+    //   return "abc123";
+    // },
+    // compare: () => 0,
+    // parse: () => [],
+    // isValid: () => true,
+    // generateHash: (appVersion: AppVersion) => {
+    //   return "hash_value";
+    // },
+    // isNewer: () => false,
+    // hashStructure: () => {
+    //   return "structure_hash";
+    // },
+    // getStructureHash: async () => {
+    //   return "structure_hash";
+    // },
+    // getContent: () => "Initial version content",
+    // setContent: (content: Content) => {
+    //   console.log(`Setting content to: ${content}`);
+    // },
+
+   
+
+    // generateStructureHash: async () => {
+    //   // Implement generateStructureHash logic here
+    //   // Return the generated structure hash
+    //   return "generated_structure_hash"; // Example: returning a mock hash
+    // },
 
     permissions: new DocumentPermissions(true, false),
     versionData: {
+      id: 0,
+      name: "Initial Version",
+      url: "https://example.com/initial_version",
+      versionNumber: "1.0",
+      // appVersion: "v1.0",
+      documentId: "doc123",
+      draft: false,
+      userId: "user123",
+      data: [],
+      parentId: '', // Provide appropriate values based on your application logic
+      parentType: '', // Provide appropriate values based on your application logic
+      parentVersion: '', // Provide appropriate values based on your application logic
+      parentTitle: '', // Provide appropriate values based on your application logic
+      parentContent: '', // Provide appropriate values based on your application logic
+      parentName: '', // Provide appropriate values based on your application logic
+      parentUrl: '', // Provide appropriate values based on your application logic
+      parentChecksum: '', // Provide appropriate values based on your application logic
+      parentAppVersion: '', // Provide appropriate values based on your application logic
+      parentVersionNumber: '', // Provide appropriate values based on your application logic
+      isLatest: false, // Provide appropriate values based on your application logic
+      isPublished: false, // Provide appropriate values based on your application logic
+      publishedAt: null, // Provide appropriate values based on your application logic
+      source: '', // Provide appropriate values based on your application logic
+      status: '', // Provide appropriate values based on your application logic
+      workspaceId: '', // Provide appropriate values based on your application logic
+      workspaceName: '', // Provide appropriate values based on your application logic
+      workspaceType: '', // Provide appropriate values based on your application logic
+      workspaceUrl: '', // Provide appropriate values based on your application logic
+      workspaceViewers: [], // Provide appropriate values based on your application logic
+      workspaceAdmins: [], // Provide appropriate values based on your application logic
+      workspaceMembers: [], // Provide appropriate values based on your application logic
       content: "Initial version content",
+      checksum: "abc123",
       metadata: {
         author: "Author Name",
         timestamp: new Date(),
+        revisionNotes: undefined, // Adjust as per your application logic
       },
-      checksum: "abc123",
+      versions: {
+        data: {
+          frontend: {
+            versionNumber: "1.0",
+          },
+          backend: {
+            versionNumber: "1.0",
+          },
+        },
+        backend: {
+          structure: {
+            traverseDirectory: {
+              id: "traverseDirectory",
+              name: "Traverse Directory",
+              type: "folder",
+              path: "./",
+              content: "",
+              draft: false,
+              permissions: {
+                read: true,
+                write: true,
+                delete: true,
+                share: true,
+                execute: true,
+              },
+              items: {
+                "1": {
+                  id: "1",
+                  name: "Item 1",
+                  type: "file",
+                  path: "./item1.txt",
+                  content: "Item 1 content",
+                  draft: false,
+                  permissions: {
+                    read: true,
+                    write: true,
+                    delete: true,
+                    share: true,
+                    execute: true,
+                  },
+                },
+              },
+            },
+          },
+          getStructure: () => {
+            return (
+              options?.backendStructure?.getStructure() || Promise.resolve({})
+            );
+          },
+          traverseDirectory: traverseBackendDirectory,
+          getStructureAsArray: getStructureAsArray
+        }, // Version of the backend
+        frontend: {} as FrontendStructure, // Version of the frontend
+      },
     },
   };
-
   return produce(initialState, (draftState) => {
-  return { ...draftState };
-});
+    return { ...draftState };
+  });
 };
-
 
 // Create a slice for managing document-related data
 export const useDocumentManagerSlice = createSlice({
@@ -646,14 +862,12 @@ export const useDocumentManagerSlice = createSlice({
         // Generate a new document with default values
         const newDocument: WritableDraft<DocumentData> = {
           _id: "i989adn8dd",
-          id: Math.floor(Math.random() * 1000), // Generate a unique ID
+          id: Math.floor(Math.random() * 1000).toString(), // Generate a unique ID
           title: "New Document",
           content: "", // Add default content if needed
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
-
-
 
           // Add other properties as needed
           keywords: [],
@@ -663,16 +877,15 @@ export const useDocumentManagerSlice = createSlice({
           currentMetadata: {} as WritableDraft<StructuredMetadata>,
           accessHistory: [],
           folders: [],
-          lastModifiedDate: {} as WritableDraft<{ value: Date; isModified: boolean; }>,
+          lastModifiedDate: {} as WritableDraft<ModifiedDate>,
           version: undefined,
           versionData: undefined,
           permissions: undefined,
-          visibility: undefined
+          visibility: undefined,
         };
         return { payload: newDocument };
       },
     },
-    
 
     setDocuments: (
       state,
@@ -681,14 +894,12 @@ export const useDocumentManagerSlice = createSlice({
       state.documents = action.payload;
     },
 
-
     setDownloadedDocument: (
       state,
       action: PayloadAction<WritableDraft<DocumentData>>
     ) => {
       state.selectedDocument = action.payload;
     },
-    
 
     addDocument: (
       state,
@@ -699,7 +910,8 @@ export const useDocumentManagerSlice = createSlice({
 
     selectDocument: (state, action: PayloadAction<number>) => {
       state.selectedDocument =
-        state.documents.find((doc) => doc.id === action.payload) || null;
+        state.documents.find((doc) => doc.id === action.payload.toString()) ||
+        null;
     },
 
     clearSelectedDocument: (state) => {
@@ -725,9 +937,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ id: string; status: DocumentStatus }>
     ) => {
       const { id, status } = action.payload;
-      const documentIndex = state.documents.findIndex(
-        (doc) => doc.id === id
-      );
+      const documentIndex = state.documents.findIndex((doc) => doc.id === id);
       if (documentIndex !== -1) {
         state.documents[documentIndex].status = status;
       } else {
@@ -739,7 +949,7 @@ export const useDocumentManagerSlice = createSlice({
 
     updateDocument: (state, action: PayloadAction<Partial<DocumentData>>) => {
       const { id, ...updates } = action.payload;
-      const existingDocument = state.documents.find(doc => doc.id === id);
+      const existingDocument = state.documents.find((doc) => doc.id === id);
       if (existingDocument) {
         Object.assign(existingDocument, updates);
       } else {
@@ -749,19 +959,17 @@ export const useDocumentManagerSlice = createSlice({
       // Additional logic...
     },
 
-    deleteDocument: (state, action: PayloadAction<number>) => {
-      // Implement document deletion functionality
+    deleteDocument: (state, action: PayloadAction<string>) => {
       const documentIndex = state.documents.findIndex(
         (doc) => doc.id === action.payload
       );
       if (documentIndex !== -1) {
         state.documents.splice(documentIndex, 1);
         useNotification().notify(
-
           "deleteDocumentSuccess",
           "Document deleted successfully",
           NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
-          new Date,
+          new Date(),
           NotificationTypeEnum.OperationSuccess
         );
       } else {
@@ -779,11 +987,12 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document filtering functionality
         const filterKeyword = action.payload.toLowerCase();
-        state.filteredDocuments = state.documents.filter((doc) =>
-          (typeof doc.title === "string" &&
-            doc.title.toLowerCase().includes(filterKeyword)) ||
-          (typeof doc.description === "string" &&
-            doc.description.toLowerCase().includes(filterKeyword))
+        state.filteredDocuments = state.documents.filter(
+          (doc) =>
+            (typeof doc.title === "string" &&
+              doc.title.toLowerCase().includes(filterKeyword)) ||
+            (typeof doc.description === "string" &&
+              doc.description.toLowerCase().includes(filterKeyword))
         );
         useNotification().notify(
           "filterDocumentsSuccess",
@@ -803,7 +1012,6 @@ export const useDocumentManagerSlice = createSlice({
         );
       }
     },
-    
 
     sortDocuments: (state, action: PayloadAction<string>) => {
       try {
@@ -840,13 +1048,17 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document sharing functionality
         const { documentId, recipients } = action.payload;
-        const documentToShare = state.documents.find((doc) => doc.id === documentId);
+        const documentToShare = state.documents.find(
+          (doc) => doc.id === documentId.toString()
+        );
         if (documentToShare) {
           useNotification().notify(
             "shareDocumentSuccess",
             NOTIFICATION_MESSAGES.Document.SHARE_DOCUMENT_SUCCESS,
-            `Sharing document "${documentToShare.title}" with recipients: ${recipients.join(', ')}`,
-            new Date,
+            `Sharing document "${
+              documentToShare.title
+            }" with recipients: ${recipients.join(", ")}`,
+            new Date(),
             NotificationTypeEnum.DocumentEditID
           );
           // Additional logic for sharing document with recipients...
@@ -871,20 +1083,17 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
 
-
-    
-
     downloadDocument: (state, action: PayloadAction<number>) => {
       // Implement document download functionality
       const documentIndex = state.documents.findIndex(
-        (doc) => doc.id === action.payload
+        (doc) => doc.id === action.payload.toString()
       );
       if (documentIndex !== -1) {
         useNotification().notify(
           "downloadDocumentSuccess",
           "Document downloaded successfully",
           NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
-          new Date,
+          new Date(),
           NotificationTypeEnum.OperationSuccess
         );
         // Additional logic for downloading document...
@@ -900,18 +1109,17 @@ export const useDocumentManagerSlice = createSlice({
       return state;
     },
 
-
     exportDocument: (state, action: PayloadAction<number>) => {
       // Implement document export functionality
       const documentIndex = state.documents.findIndex(
-        (doc) => doc.id === action.payload
+        (doc) => doc.id === action.payload.toString()
       );
       if (documentIndex !== -1) {
         useNotification().notify(
           "exportDocumentSuccess",
           "Document exported successfully",
           NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_SUCCESS,
-          new Date,
+          new Date(),
           NotificationTypeEnum.OperationSuccess
         );
         // Additional logic for exporting document...
@@ -926,7 +1134,6 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
 
-
     exportDocuments: (
       state: WritableDraft<DocumentSliceState>,
       action: PayloadAction<{ payload: any; type: string }>
@@ -935,9 +1142,11 @@ export const useDocumentManagerSlice = createSlice({
         // Implement document export functionality
         const { documents, selectedDocument } = state;
         const { payload } = action; // Destructure payload from action
-    
-        if (typeof payload === 'number') {
-          const documentIndex = documents.findIndex((doc) => doc.id === payload);
+
+        if (typeof payload === "number") {
+          const documentIndex = documents.findIndex(
+            (doc) => doc.id === payload
+          );
 
           if (documentIndex !== -1) {
             useNotification().notify(
@@ -960,9 +1169,11 @@ export const useDocumentManagerSlice = createSlice({
           }
         }
         // If selectedDocument is a number, export the document with that ID
-        if (typeof selectedDocument === 'number') {
-          const documentIndex = documents.findIndex((doc) => doc.id === selectedDocument);
-    
+        if (typeof selectedDocument === "number") {
+          const documentIndex = documents.findIndex(
+            (doc) => doc.id === selectedDocument
+          );
+
           if (documentIndex !== -1) {
             useNotification().notify(
               "exportDocumentsSuccess",
@@ -984,7 +1195,7 @@ export const useDocumentManagerSlice = createSlice({
           }
           // Additional logic for exporting documents...
         }
-      
+
         // Assuming implementation here...
         useNotification().notify(
           "exportDocumentsSuccess",
@@ -1004,10 +1215,7 @@ export const useDocumentManagerSlice = createSlice({
         );
       }
     },
-    
-    
-    
-    
+
     importDocuments: (state, action: PayloadAction<File>) => {
       try {
         const importedFile = action.payload;
@@ -1031,7 +1239,7 @@ export const useDocumentManagerSlice = createSlice({
         );
       }
     },
-    
+
     archiveDocument: (state, action: PayloadAction<number>) => {
       try {
         const documentId = action.payload;
@@ -1055,8 +1263,6 @@ export const useDocumentManagerSlice = createSlice({
         );
       }
     },
-    
-
 
     fetchDocumentFromArchive: (state, action: PayloadAction<number>) => {
       try {
@@ -1064,7 +1270,7 @@ export const useDocumentManagerSlice = createSlice({
         // Update state with the fetched document
         state.documents.push({
           _id: "fetchedArchive",
-          id: documentId,
+          id: documentId.toString(),
           title: "",
           content: "",
           topics: [],
@@ -1084,9 +1290,9 @@ export const useDocumentManagerSlice = createSlice({
             getReadAccess: () => true,
             setReadAccess: () => true,
             getWriteAccess: () => false,
-            setWriteAccess: () => false
+            setWriteAccess: () => false,
           },
-          visibility: undefined
+          visibility: undefined,
         });
         // Assuming implementation here...
         useNotification().notify(
@@ -1111,10 +1317,12 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const documentId = action.payload;
         // Implement document restoring functionality
-        const newDocument = createNewDocument(documentId);
+        const newDocument = createNewDocument(String(documentId));
         const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
-        state.documents.push(newDocumentObject as  WritableDraft<DocumentObject>); // Add the new document object to the state array
-      
+        state.documents.push(
+          newDocumentObject as WritableDraft<DocumentObject>
+        ); // Add the new document object to the state array
+
         // Notify success
         useNotification().notify(
           "restoreDocumentSuccess",
@@ -1136,14 +1344,21 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
 
-    moveDocument: (state, action: PayloadAction<{ documentId: number; destinationId: number }>) => {
+    moveDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; destinationId: number }>
+    ) => {
       try {
         const { documentId, destinationId } = action.payload;
         // Implement document moving functionality
-        const documentIndex = state.documents.findIndex(doc => doc.id === documentId);
+        const documentIndex = state.documents.findIndex(
+          (doc) => doc.id === documentId.toString()
+        );
         if (documentIndex !== -1) {
           const movedDocument = state.documents.splice(documentIndex, 1)[0];
-          const destinationIndex = state.documents.findIndex(doc => doc.id === destinationId);
+          const destinationIndex = state.documents.findIndex(
+            (doc) => doc.id === destinationId.toString()
+          );
           if (destinationIndex !== -1) {
             state.documents.splice(destinationIndex, 0, movedDocument);
             // Notify success
@@ -1155,7 +1370,9 @@ export const useDocumentManagerSlice = createSlice({
               NotificationTypeEnum.OperationSuccess
             );
           } else {
-            throw new Error(`Destination document with ID ${destinationId} not found.`);
+            throw new Error(
+              `Destination document with ID ${destinationId} not found.`
+            );
           }
         } else {
           throw new Error(`Document with ID ${documentId} not found.`);
@@ -1172,7 +1389,7 @@ export const useDocumentManagerSlice = createSlice({
         );
       }
     },
-  
+
     copyDocument: (state, action: PayloadAction<number>) => {
       // Implement document copying functionality
       // Assuming implementation here...
@@ -1185,25 +1402,32 @@ export const useDocumentManagerSlice = createSlice({
       );
     },
 
-
-    mergeDocuments: (state, action: PayloadAction<{ sourceId: number; destinationId: number }>) => { 
+    mergeDocuments: (
+      state,
+      action: PayloadAction<{ sourceId: number; destinationId: number }>
+    ) => {
       try {
         const { sourceId, destinationId } = action.payload;
-        
+
         // Find the source document and destination document in the state
-        const sourceDocumentIndex = state.documents.findIndex(doc => doc.id === sourceId);
-        const destinationDocumentIndex = state.documents.findIndex(doc => doc.id === destinationId);
-    
+        const sourceDocumentIndex = state.documents.findIndex(
+          (doc) => doc.id === sourceId
+        );
+        const destinationDocumentIndex = state.documents.findIndex(
+          (doc) => doc.id === destinationId
+        );
+
         if (sourceDocumentIndex === -1 || destinationDocumentIndex === -1) {
           throw new Error("Source document or destination document not found.");
         }
-    
+
         // Merge the content of the source document into the destination document
-        state.documents[destinationDocumentIndex].content += state.documents[sourceDocumentIndex].content;
-    
+        state.documents[destinationDocumentIndex].content +=
+          state.documents[sourceDocumentIndex].content;
+
         // Remove the source document from the state
         state.documents.splice(sourceDocumentIndex, 1);
-    
+
         // Notify success
         useNotification().notify(
           "mergeDocumentsSuccess",
@@ -1225,11 +1449,10 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
 
-
     splitDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
       const documentToSplit = state.documents.find(
-        (doc) => doc.id === documentId
+        (doc) => doc.id === documentId.toString()
       );
       if (documentToSplit) {
         // Example: Split document content into two parts
@@ -1259,56 +1482,70 @@ export const useDocumentManagerSlice = createSlice({
           lastModifiedDate: {
             value: new Date(),
             isModified: false,
-          },
+          } as ModifiedDate,
           version: {} as WritableDraft<Version>,
           permissions: undefined,
           versionData: undefined,
           _id: "",
-          visibility: undefined
+          visibility: undefined,
         });
       }
     },
 
-
     validateDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToValidate = state.documents.find(doc => doc.id === documentId);
-    
+      const documentToValidate = state.documents.find(
+        (doc) => doc.id === documentId.toString()
+      );
+
       if (documentToValidate) {
         // Example: Perform validation on document content
         let validationErrors: string[] = [];
-    
+
         // Example validation rules
-        if (!documentToValidate.title || documentToValidate.title.trim() === '') {
-          validationErrors.push('Title is required.');
+        if (
+          !documentToValidate.title ||
+          documentToValidate.title.trim() === ""
+        ) {
+          validationErrors.push("Title is required.");
         }
-    
-        if (!documentToValidate.content || documentToValidate.content.trim() === '') {
-          validationErrors.push('Content is required.');
+
+        if (
+          !documentToValidate.content ||
+          documentToValidate.content.trim() === ""
+        ) {
+          validationErrors.push("Content is required.");
         }
-    
+
         // Additional validation rules...
-    
+
         if (validationErrors.length === 0) {
           console.log(`Document ${documentId} is valid.`);
         } else {
-          console.log(`Document ${documentId} is not valid. Validation errors:`, validationErrors);
+          console.log(
+            `Document ${documentId} is not valid. Validation errors:`,
+            validationErrors
+          );
         }
       }
     },
-    
 
-    encryptDocument: (state, action: PayloadAction<{ documentId: number; encryptionType: string }>) => {
+    encryptDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; encryptionType: string }>
+    ) => {
       const { documentId, encryptionType } = action.payload;
-      const documentToEncrypt = state.documents.find(doc => doc.id === documentId);
-      
+      const documentToEncrypt = state.documents.find(
+        (doc) => doc.id === documentId.toString()
+      );
+
       if (documentToEncrypt) {
         // Example: Implement different encryption techniques based on encryptionType
         switch (encryptionType) {
-          case 'AES':
+          case "AES":
             documentToEncrypt.content = `AES Encrypted: ${documentToEncrypt.content}`;
             break;
-          case 'RSA':
+          case "RSA":
             documentToEncrypt.content = `RSA Encrypted: ${documentToEncrypt.content}`;
             break;
           default:
@@ -1318,20 +1555,22 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
 
-
-
-
-    decryptDocument: (state, action: PayloadAction<{ documentId: number; encryptionType: string }>) => { 
+    decryptDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; encryptionType: string }>
+    ) => {
       const { documentId, encryptionType } = action.payload;
-      const documentToDecrypt = state.documents.find(doc => doc.id === documentId);
+      const documentToDecrypt = state.documents.find(
+        (doc) => doc.id === documentId.toString()
+      );
 
       if (documentToDecrypt) {
         // Example: Implement different decryption techniques based on encryptionType
         switch (encryptionType) {
-          case 'AES':
+          case "AES":
             documentToDecrypt.content = `AES Decrypted: ${documentToDecrypt.content}`;
             break;
-          case 'RSA':
+          case "RSA":
             documentToDecrypt.content = `RSA Decrypted: ${documentToDecrypt.content}`;
             break;
           default:
@@ -1341,77 +1580,102 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
 
-    lockDocument: (state, action: PayloadAction<number>) => { 
+    lockDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToLock = state.documents.find(doc => doc.id === documentId);
+      const documentToLock = state.documents.find(
+        (doc) => doc.id === documentId.toString()
+      );
       if (documentToLock) {
         documentToLock.locked = true;
       }
     },
 
-    unlockDocument: (state, action: PayloadAction<number>) => { 
+    unlockDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToUnlock = state.documents.find(doc => doc.id === documentId);
+      const documentToUnlock = state.documents.find(
+        (doc) => doc.id === documentId.toString()
+      );
       if (documentToUnlock) {
         documentToUnlock.locked = false;
       }
-
     },
 
-// Update the reducer to include the changes property in DocumentData
-trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; changes: string }>) => { 
-  const { documentId, changes } = action.payload;
-  const documentToTrack = state.documents.find(doc => doc.id === documentId);
-  if (documentToTrack) {
-    // Initialize the changes property if it's not already initialized
-    if (!documentToTrack.changes) {
-      documentToTrack.changes = [];
-    }
-    // Push the changes to the changes array
-    documentToTrack.changes.push(changes);
-  }
-    },
-
-    compareDocuments: (state, action: PayloadAction<{ documentId1: number; documentId2: number }>) => { 
-      const { documentId1, documentId2 } = action.payload;
-      const document1 = state.documents.find(doc => doc.id === documentId1);
-      const document2 = state.documents.find(doc => doc.id === documentId2);
-      if (document1 && document2) {
-        // Example: Compare the content of the two documents
-        const document1Content = document1.content.split(' ');
-        const document2Content = document2.content.split(' ');
-        const intersection = document1Content.filter(word => document2Content.includes(word));
-        const union = [...new Set([...document1Content, ...document2Content])];
-        const difference = [...new Set([...document1Content, ...document2Content])];
-        console.log(`Intersection: ${intersection.join(' ')}`);
-        console.log(`Union: ${union.join(' ')}`);
-        console.log(`Difference: ${difference.join(' ')}`);
+    // Update the reducer to include the changes property in DocumentData
+    trackDocumentChanges: (
+      state,
+      action: PayloadAction<{ documentId: number; changes: string }>
+    ) => {
+      const { documentId, changes } = action.payload;
+      const documentToTrack = state.documents.find(
+        (doc) => doc.id === documentId.toString()
+      );
+      if (documentToTrack) {
+        // Initialize the changes property if it's not already initialized
+        if (!documentToTrack.changes) {
+          documentToTrack.changes = [];
+        }
+        // Push the changes to the changes array
+        documentToTrack.changes.push(changes);
       }
     },
 
-    searchDocuments: (state, action: PayloadAction<string>) => { 
-      const searchTerm = action.payload;
-      const searchResults = state.documents.filter(doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()));
-      console.log(`Search results: ${searchResults.map(doc => doc.title).join(', ')}`);
+    compareDocuments: (
+      state,
+      action: PayloadAction<{ documentId1: number; documentId2: number }>
+    ) => {
+      const { documentId1, documentId2 } = action.payload;
+      const document1 = state.documents.find((doc) => doc.id === documentId1);
+      const document2 = state.documents.find((doc) => doc.id === documentId2);
+      if (document1 && document2) {
+        // Example: Compare the content of the two documents
+        const document1Content = document1.content.split(" ");
+        const document2Content = document2.content.split(" ");
+        const intersection = document1Content.filter((word) =>
+          document2Content.includes(word)
+        );
+        const union = [...new Set([...document1Content, ...document2Content])];
+        const difference = [
+          ...new Set([...document1Content, ...document2Content]),
+        ];
+        console.log(`Intersection: ${intersection.join(" ")}`);
+        console.log(`Union: ${union.join(" ")}`);
+        console.log(`Difference: ${difference.join(" ")}`);
+      }
     },
 
-    searchDocument: (state, action: PayloadAction<{ documentId: number; query: string }>) => {
+    searchDocuments: (state, action: PayloadAction<string>) => {
+      const searchTerm = action.payload;
+      const searchResults = state.documents.filter((doc) =>
+        doc.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      console.log(
+        `Search results: ${searchResults.map((doc) => doc.title).join(", ")}`
+      );
+    },
+
+    searchDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; query: string }>
+    ) => {
       const { documentId, query } = action.payload;
-      const documentToSearch = state.documents.find(doc => doc.id === documentId);
-    
+      const documentToSearch = state.documents.find(
+        (doc) => doc.id === documentId
+      );
+
       if (!documentToSearch) {
         // Handle case where document is not found
         console.error(`Document with ID ${documentId} not found.`);
         return;
       }
-    
+
       // Perform search within the document content or any other necessary logic
-      const searchResults = state.documents.filter(doc => performSearch(doc.content, query));
-      
+      const searchResults = state.documents.filter((doc) =>
+        performSearch(doc.content, query)
+      );
+
       // Update the state with the search results
       state.searchResults = searchResults;
     },
-    
 
     // Add reducers for tagging, categorizing, and customizing document views
     tagDocument: (
@@ -1420,19 +1684,14 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         document: WritableDraft<DocumentData>;
         documentId: number;
         tag: string;
-       }>
+      }>
     ) => {
-      const { document,documentId, tag } = action.payload;
+      const { document, documentId, tag } = action.payload;
       const documentToTag = state.documents.find(
         (doc) => doc.id === documentId
       );
       if (documentToTag) {
-        applyTransformation(
-          documentToTag,
-          tag, 
-          transformations.tag,
-          "tag"
-        );
+        applyTransformation(documentToTag, tag, transformations.tag, "tag");
       }
     },
 
@@ -1440,62 +1699,66 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       state,
       action: PayloadAction<{
         documentIds: number[];
-         tag: string
+        tag: string;
       }>
-    ) => { 
+    ) => {
       const { documentIds, tag } = action.payload;
-      documentIds.forEach(documentId => {
-        const documentToTag = state.documents.find(doc => doc.id === documentId);
-        if(documentToTag){
-          applyTransformation(
-            documentToTag,
-            tag,
-            transformations.tag,
-            "tags"
-            );
-
+      documentIds.forEach((documentId) => {
+        const documentToTag = state.documents.find(
+          (doc) => doc.id === documentId
+        );
+        if (documentToTag) {
+          applyTransformation(documentToTag, tag, transformations.tag, "tags");
         }
       });
     },
-    
 
-    categorizeDocument: (state,
-      action: PayloadAction<{ documentId: number; category: string }>) => {
+    categorizeDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; category: string }>
+    ) => {
       const { documentId, category } = action.payload;
-      const documentToCategorize = state.documents.find(doc => doc.id === documentId);
-      if(documentToCategorize){
+      const documentToCategorize = state.documents.find(
+        (doc) => doc.id === documentId
+      );
+      if (documentToCategorize) {
         applyTransformation(
           documentToCategorize,
           category,
           transformations.categorize,
           "categorize" + category
-        )
+        );
       }
     },
 
-
     categorizeDocuments: (
       state,
-      action: PayloadAction<{ documentIds: number[]; category: string }>) => { 
+      action: PayloadAction<{ documentIds: number[]; category: string }>
+    ) => {
       const { documentIds, category } = action.payload;
-      documentIds.forEach(documentId => {
-        const documentToCategorize = state.documents.find(doc => doc.id === documentId);
-        if(documentToCategorize){
+      documentIds.forEach((documentId) => {
+        const documentToCategorize = state.documents.find(
+          (doc) => doc.id === documentId
+        );
+        if (documentToCategorize) {
           applyTransformation(
             documentToCategorize,
             category,
             transformations.categorize,
             "category " + category
           );
-      }});
+        }
+      });
     },
 
-    
     customizeDocumentView: (
       state,
-      action: PayloadAction<{ documentId: number; view: string }>) => {
+      action: PayloadAction<{ documentId: number; view: string }>
+    ) => {
       const { documentId, view } = action.payload;
-      const documentToCustomize = state.documents.find(doc => doc.id === documentId);
+      const documentToCustomize = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToCustomize) {
         applyTransformation(
           documentToCustomize,
@@ -1505,10 +1768,15 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         );
       }
     },
-    
-    commentOnDocument: (state, action: PayloadAction<{ documentId: number; comment: string }>) => {
+
+    commentOnDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; comment: string }>
+    ) => {
       const { documentId, comment } = action.payload;
-      const documentToComment = state.documents.find(doc => doc.id === documentId);
+      const documentToComment = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToComment) {
         applyTransformation(
           documentToComment,
@@ -1518,10 +1786,15 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         );
       }
     },
-    
-    mentionUserInDocument: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    mentionUserInDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToMention = state.documents.find(doc => doc.id === documentId);
+      const documentToMention = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToMention) {
         applyTransformation(
           documentToMention,
@@ -1531,10 +1804,15 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         );
       }
     },
-    
-    assignTaskInDocument: (state, action: PayloadAction<{ documentId: number; task: string }>) => {
+
+    assignTaskInDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; task: string }>
+    ) => {
       const { documentId, task } = action.payload;
-      const documentToAssign = state.documents.find(doc => doc.id === documentId);
+      const documentToAssign = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToAssign) {
         applyTransformation(
           documentToAssign,
@@ -1544,10 +1822,15 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         );
       }
     },
-    
-    requestReviewOfDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
+
+    requestReviewOfDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; reviewer: string }>
+    ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(doc => doc.id === documentId);
+      const documentToReview = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToReview) {
         applyTransformation(
           documentToReview,
@@ -1557,24 +1840,36 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         );
       }
     },
-    
-    approveDocument: (state, action: PayloadAction<{ documentId: number; approver: string }>) => {
+
+    approveDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; approver: string }>
+    ) => {
       const { documentId, approver } = action.payload;
-      const documentToApprove = state.documents.find(doc => doc.id === documentId);
+      const documentToApprove = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToApprove) {
-        applyTransformation(documentToApprove,
+        applyTransformation(
+          documentToApprove,
           approver,
           transformations.approve,
           "Approved by " + approver
         );
       }
     },
-    
-    rejectDocument: (state, action: PayloadAction<{ documentId: number; rejector: string }>) => {
+
+    rejectDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; rejector: string }>
+    ) => {
       const { documentId, rejector } = action.payload;
-      const documentToReject = state.documents.find(doc => doc.id === documentId);
+      const documentToReject = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToReject) {
-        applyTransformation(documentToReject,
+        applyTransformation(
+          documentToReject,
           rejector,
           transformations.reject,
           "Rejected by " + rejector
@@ -1582,45 +1877,68 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
       }
     },
 
-    requestFeedbackOnDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
+    requestFeedbackOnDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; reviewer: string }>
+    ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(doc => doc.id === documentId);
+      const documentToReview = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToReview) {
-        applyTransformation(documentToReview,
+        applyTransformation(
+          documentToReview,
           reviewer,
           transformations.requestFeedback,
           "Requested feedback from " + reviewer
         );
       }
     },
-    
-    provideFeedbackOnDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
+
+    provideFeedbackOnDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; reviewer: string }>
+    ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(doc => doc.id === documentId);
+      const documentToReview = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToReview) {
-        applyTransformation(documentToReview,
+        applyTransformation(
+          documentToReview,
           reviewer,
           transformations.provideFeedback,
           "Feedback provided by " + reviewer
         );
       }
     },
-    
-    resolveFeedbackOnDocument: (state, action: PayloadAction<{ documentId: number; reviewer: string }>) => {
+
+    resolveFeedbackOnDocument: (
+      state,
+      action: PayloadAction<{ documentId: number; reviewer: string }>
+    ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(doc => doc.id === documentId);
+      const documentToReview = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToReview) {
-        applyTransformation(documentToReview,
+        applyTransformation(
+          documentToReview,
           reviewer,
           transformations.resolveFeedback,
           "Feedback resolved by " + reviewer
         );
       }
     },
-    
-    collaborativeEditing: (state, action: PayloadAction<{ documentId: number; collaborator: string }>) => {
+
+    collaborativeEditing: (
+      state,
+      action: PayloadAction<{ documentId: number; collaborator: string }>
+    ) => {
       const { documentId, collaborator } = action.payload;
-      const documentToCollaborate = state.documents.find(doc => doc.id === documentId);
+      const documentToCollaborate = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToCollaborate) {
         applyTransformation(
           documentToCollaborate,
@@ -1630,419 +1948,565 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
         );
       }
     },
-    
-    smartDocumentTagging: (state, action: PayloadAction<{ documentId: number; tag: string }>) => {
+
+    smartDocumentTagging: (
+      state,
+      action: PayloadAction<{ documentId: number; tag: string }>
+    ) => {
       const { documentId, tag } = action.payload;
-      const documentToTag = state.documents.find(doc => doc.id === documentId);
+      const documentToTag = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToTag) {
         applyTransformation(
-          documentToTag, 
+          documentToTag,
           tag,
           transformations.tag,
           "Document tagged with " + tag
-          );
+        );
       }
     },
-    
-    documentAnnotation: (state, action: PayloadAction<{ documentId: number; annotation: string }>) => {
+
+    documentAnnotation: (
+      state,
+      action: PayloadAction<{ documentId: number; annotation: string }>
+    ) => {
       const { documentId, annotation } = action.payload;
-      const documentToAnnotate = state.documents.find(doc => doc.id === documentId);
+      const documentToAnnotate = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToAnnotate) {
         applyTransformation(
-          documentToAnnotate, 
+          documentToAnnotate,
           annotation,
           transformations.annotate,
           "Document annotated with " + annotation
-          );
+        );
       }
     },
-    
-    documentActivityLogging: (state, action: PayloadAction<{ documentId: number; activity: string }>) => {
+
+    documentActivityLogging: (
+      state,
+      action: PayloadAction<{ documentId: number; activity: string }>
+    ) => {
       const { documentId, activity } = action.payload;
-      const documentToLog = state.documents.find(doc => doc.id === documentId);
+      const documentToLog = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToLog) {
         applyTransformation(
-          documentToLog, 
+          documentToLog,
           activity,
           transformations.logActivity,
           "Activity logged: " + activity
-          );
+        );
       }
     },
-    
-    intelligentDocumentSearch: (state, action: PayloadAction<{ documentId: number; search: string }>) => {
+
+    intelligentDocumentSearch: (
+      state,
+      action: PayloadAction<{ documentId: number; search: string }>
+    ) => {
       const { documentId, search } = action.payload;
-      const documentToSearch = state.documents.find(doc => doc.id === documentId);
+      const documentToSearch = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToSearch) {
         applyTransformation(
-          documentToSearch, 
+          documentToSearch,
           search,
           transformations.search,
           "Document searched with " + search
-          );
+        );
       }
     },
-    
-    createDocumentVersion: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
+
+    createDocumentVersion: (
+      state,
+      action: PayloadAction<{ documentId: number; version: string }>
+    ) => {
       const { documentId, version } = action.payload;
-      const documentToVersion = state.documents.find(doc => doc.id === documentId);
+      const documentToVersion = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToVersion) {
         applyTransformation(
-          documentToVersion, 
+          documentToVersion,
           version,
           transformations.version,
           "Document versioned to " + version
-          );
+        );
       }
     },
-    
-    revertToDocumentVersion: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
+
+    revertToDocumentVersion: (
+      state,
+      action: PayloadAction<{ documentId: number; version: string }>
+    ) => {
       const { documentId, version } = action.payload;
-      const documentToRevert = state.documents.find(doc => doc.id === documentId);
+      const documentToRevert = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToRevert) {
         applyTransformation(
-          documentToRevert, 
+          documentToRevert,
           version,
           transformations.revert,
           "Document reverted to version " + version
-          );
+        );
       }
     },
-    
 
-
-    viewDocumentHistory: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
+    viewDocumentHistory: (
+      state,
+      action: PayloadAction<{ documentId: number; version: string }>
+    ) => {
       const { documentId, version } = action.payload;
-      const documentToView = state.documents.find(doc => doc.id === documentId);
+      const documentToView = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToView) {
         applyTransformation(
-          documentToView, 
+          documentToView,
           version,
           transformations.viewHistory,
           "Document history viewed"
-          );
+        );
       }
     },
-    
-    documentVersionComparison: (state, action: PayloadAction<{ documentId: number; version: string }>) => {
+
+    documentVersionComparison: (
+      state,
+      action: PayloadAction<{ documentId: number; version: string }>
+    ) => {
       const { documentId, version } = action.payload;
-      const documentToCompare = state.documents.find(doc => doc.id === documentId);
+      const documentToCompare = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToCompare) {
         applyTransformation(
-          documentToCompare, 
+          documentToCompare,
           version,
           transformations.compare,
           "Document versions compared"
-          );
+        );
       }
     },
-    
-    grantDocumentAccess: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    grantDocumentAccess: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToGrant = state.documents.find(doc => doc.id === documentId);
+      const documentToGrant = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToGrant) {
         applyTransformation(
-          documentToGrant, 
+          documentToGrant,
           user,
           transformations.grantAccess,
           "Document access granted to " + user
-          );
+        );
       }
     },
-    
-    revokeDocumentAccess: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    revokeDocumentAccess: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToRevoke = state.documents.find(doc => doc.id === documentId);
+      const documentToRevoke = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToRevoke) {
         applyTransformation(
-          documentToRevoke, 
+          documentToRevoke,
           user,
           transformations.revokeAccess,
           "Document access revoked from " + user
-          );
+        );
       }
     },
-    
-    manageDocumentPermissions: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    manageDocumentPermissions: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToManage = state.documents.find(doc => doc.id === documentId);
+      const documentToManage = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToManage) {
         applyTransformation(
-          documentToManage, 
+          documentToManage,
           user,
           transformations.managePermissions,
           "Document permissions managed"
-          );
+        );
       }
     },
-    
-    initiateDocumentWorkflow: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    initiateDocumentWorkflow: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToInitiate = state.documents.find(doc => doc.id === documentId);
+      const documentToInitiate = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToInitiate) {
         applyTransformation(
-          documentToInitiate, 
+          documentToInitiate,
           user,
           transformations.initiateWorkflow,
           "Document workflow initiated"
-          );
+        );
       }
     },
-    
-    automateDocumentTasks: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    automateDocumentTasks: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToAutomate = state.documents.find(doc => doc.id === documentId);
+      const documentToAutomate = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToAutomate) {
         applyTransformation(
-          documentToAutomate, 
+          documentToAutomate,
           user,
           transformations.automateTasks,
           "Document tasks automated"
-          );
+        );
       }
     },
-    
-    triggerDocumentEvents: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    triggerDocumentEvents: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToTrigger = state.documents.find(doc => doc.id === documentId);
+      const documentToTrigger = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToTrigger) {
         applyTransformation(
-          documentToTrigger, 
+          documentToTrigger,
           user,
           transformations.triggerEvents,
           "Document events triggered"
-          );
+        );
       }
     },
-    
-    documentApprovalWorkflow: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    documentApprovalWorkflow: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToApprove = state.documents.find(doc => doc.id === documentId);
+      const documentToApprove = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToApprove) {
         applyTransformation(
-          documentToApprove, 
+          documentToApprove,
           user,
           transformations.approvalWorkflow,
           "Document approval workflow initiated"
-          );
+        );
       }
     },
-    
-    documentLifecycleManagement: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    documentLifecycleManagement: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToManage = state.documents.find(doc => doc.id === documentId);
+      const documentToManage = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToManage) {
         applyTransformation(
-          documentToManage, 
+          documentToManage,
           user,
           transformations.lifecycleManagement,
           "Document lifecycle managed"
-          );
+        );
       }
     },
-    
-    connectWithExternalSystem: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    connectWithExternalSystem: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToConnect = state.documents.find(doc => doc.id === documentId);
+      const documentToConnect = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToConnect) {
         applyTransformation(
-          documentToConnect, 
+          documentToConnect,
           user,
           transformations.connectWithExternalSystem,
           "Document connected to external system"
-          );
+        );
       }
     },
-    
-    synchronizeWithCloudStorage: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    synchronizeWithCloudStorage: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToSynchronize = state.documents.find(doc => doc.id === documentId);
+      const documentToSynchronize = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToSynchronize) {
         applyTransformation(
-          documentToSynchronize, 
-           user,
+          documentToSynchronize,
+          user,
           transformations.synchronizeWithCloudStorage,
           "Document synchronized with cloud storage"
-           );
+        );
       }
     },
-    
 
-    importFromExternalSource: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+    importFromExternalSource: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToImport = state.documents.find(doc => doc.id === documentId);
+      const documentToImport = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToImport) {
         applyTransformation(
-          documentToImport, 
-           user,
+          documentToImport,
+          user,
           transformations.importFromExternalSource,
           "Document imported from external source"
-           );
+        );
       }
     },
-    
-    exportToExternalSystem: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    exportToExternalSystem: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToExport = state.documents.find(doc => doc.id === documentId);
+      const documentToExport = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToExport) {
         applyTransformation(
-          documentToExport, 
-           user,
+          documentToExport,
+          user,
           transformations.exportToExternalSystem,
           "Document exported to external system"
-           );
+        );
       }
     },
-    
-    generateDocumentReport: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    generateDocumentReport: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToGenerate = state.documents.find(doc => doc.id === documentId);
+      const documentToGenerate = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToGenerate) {
         applyTransformation(
-          documentToGenerate, 
-           user,
+          documentToGenerate,
+          user,
           transformations.generateReport,
           "Document report generated"
-           );
+        );
       }
     },
-    
-    exportDocumentReport: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    exportDocumentReport: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToExport = state.documents.find(doc => doc.id === documentId);
+      const documentToExport = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToExport) {
         applyTransformation(
-          documentToExport, 
-           user,
+          documentToExport,
+          user,
           transformations.exportReport,
           "Document report exported"
-           );
+        );
       }
     },
-    
-    scheduleReportGeneration: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    scheduleReportGeneration: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToSchedule = state.documents.find(doc => doc.id === documentId);
+      const documentToSchedule = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToSchedule) {
         applyTransformation(
-          documentToSchedule, 
-           user,
+          documentToSchedule,
+          user,
           transformations.scheduleReportGeneration,
           "Document report scheduled"
-           );
+        );
       }
     },
-    
-    customizeReportSettings: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    customizeReportSettings: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToCustomize = state.documents.find(doc => doc.id === documentId);
+      const documentToCustomize = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToCustomize) {
         applyTransformation(
-          documentToCustomize, 
-           user,
+          documentToCustomize,
+          user,
           transformations.customizeReportSettings,
           "Document report customization initiated"
-           );
+        );
       }
     },
-    
-    backupDocuments: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    backupDocuments: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToBackup = state.documents.find(doc => doc.id === documentId);
+      const documentToBackup = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToBackup) {
         applyTransformation(
-          documentToBackup, 
-           user,
+          documentToBackup,
+          user,
           transformations.backupDocuments,
           "Document backed up"
-           );
+        );
       }
     },
-    
-    retrieveBackup: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    retrieveBackup: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToRetrieve = state.documents.find(doc => doc.id === documentId);
+      const documentToRetrieve = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToRetrieve) {
         applyTransformation(
-          documentToRetrieve, 
-           user,
+          documentToRetrieve,
+          user,
           transformations.retrieveBackup,
           "Document backup retrieved"
-           );
+        );
       }
     },
-    
-    documentRedaction: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    documentRedaction: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToRedact = state.documents.find(doc => doc.id === documentId);
+      const documentToRedact = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToRedact) {
         applyTransformation(
-          documentToRedact, 
-           user,
+          documentToRedact,
+          user,
           transformations.redaction,
           "Document redacted"
-           );
+        );
       }
     },
-    
-    documentAccessControls: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    documentAccessControls: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToControl = state.documents.find(doc => doc.id === documentId);
+      const documentToControl = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToControl) {
         applyTransformation(
-          documentToControl, 
-           user,
+          documentToControl,
+          user,
           transformations.accessControls,
           "Document access controls updated"
-           );
+        );
       }
     },
-    
-    documentTemplates: (state, action: PayloadAction<{ documentId: number; user: string }>) => {
+
+    documentTemplates: (
+      state,
+      action: PayloadAction<{ documentId: number; user: string }>
+    ) => {
       const { documentId, user } = action.payload;
-      const documentToTemplate = state.documents.find(doc => doc.id === documentId);
+      const documentToTemplate = state.documents.find(
+        (doc) => doc.id === documentId
+      );
       if (documentToTemplate) {
         applyTransformation(
-          documentToTemplate, 
-           user,
+          documentToTemplate,
+          user,
           transformations.templates,
           "Document templates updated"
-           );
+        );
       }
     },
-    
   },
-    
 
-
-
-
-
-
-
-
-  
   extraReducers: (builder) => {
     builder.addCase(deleteDocumentAsync.pending, (state) => {
       // Handle pending state if needed
       state.loading = true; // Set loading state to true while the deletion is pending
       state.error = null; // Clear any previous errors
     });
-    
+
     builder.addCase(deleteDocumentAsync.fulfilled, (state, action) => {
       // Handle fulfilled state
-      const documentIndex = state.documents.findIndex((doc) => doc.id === action.payload);
+      const documentIndex = state.documents.findIndex(
+        (doc) => doc.id === action.payload
+      );
       if (documentIndex !== -1) {
         state.documents.splice(documentIndex, 1);
-        notify();
+        useNotification().notify(
+          "deleteDocumentSuccess",
+          "Document deleted",
+          NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
+          new Date(),
+          NotificationTypeEnum.Success
+        );
       } else {
-        notify();
+        useNotification().notify(
+          "deleteDocumentError",
+          "Document not found",
+          NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
+          new Date(),
+          NotificationTypeEnum.Error
+        );
       }
     });
 
     builder.addCase(deleteDocumentAsync.rejected, (state, action) => {
       // Handle rejected state if needed
-      notify();
+      state.loading = false; // Set loading state to false if the deletion failed
       console.error("Error deleting document:", action.payload);
       useNotification().notify(
         "deleteDocumentError",
@@ -2054,32 +2518,32 @@ trackDocumentChanges: (state, action: PayloadAction<{ documentId: number; change
     });
 
     builder
-    .addCase(fetchDocumentById.pending, (state) => {
-      state.loading = true; // Ensure loading is set to true
-      state.error = null;
-    })
-  
-    .addCase(fetchDocumentById.fulfilled, (state, action) => {
-      state.loading = false;
-      state.selectedDocument = action.payload;
-    })
-    .addCase(fetchDocumentById.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as WritableDraft<Error>;
-    });
+      .addCase(fetchDocumentById.pending, (state) => {
+        state.loading = true; // Ensure loading is set to true
+        state.error = null;
+      })
 
-  
+      .addCase(fetchDocumentById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedDocument = action.payload;
+      })
+      .addCase(fetchDocumentById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as WritableDraft<Error>;
+      });
 
     // Add a case to handle the fulfilled action
     builder
-    .addCase(fetchDocumentById.fulfilled, (state, action) => {
-      // Handle successful document fetch
-      state.selectedDocument = action.payload;
-    })
-    .addCase(deleteDocumentAsync.fulfilled, (state, action) => {
-      // Handle successful document deletion
-      state.documents = state.documents.filter(doc => doc.id !== action.payload);
-    });
+      .addCase(fetchDocumentById.fulfilled, (state, action) => {
+        // Handle successful document fetch
+        state.selectedDocument = action.payload;
+      })
+      .addCase(deleteDocumentAsync.fulfilled, (state, action) => {
+        // Handle successful document deletion
+        state.documents = state.documents.filter(
+          (doc) => doc.id !== action.payload
+        );
+      });
 
     builder.addCase(downloadDocumentAsync.fulfilled, (state, action) => {
       // Update state with downloaded document (action.payload)
@@ -2196,7 +2660,7 @@ export const {
   synchronizeWithCloudStorage,
   importFromExternalSource,
   exportToExternalSystem,
-   // Reporting actions
+  // Reporting actions
   generateDocumentReport,
   exportDocumentReport,
   scheduleReportGeneration,
@@ -2213,7 +2677,6 @@ export const {
 
   // Document Management Actions:
   documentTemplates,
-
 } = useDocumentManagerSlice.actions;
 // Define selectors for accessing document-related state
 export const selectDocuments = (state: RootState) =>
@@ -2225,3 +2688,56 @@ export const selectSelectedDocument = (state: RootState) =>
 export default useDocumentManagerSlice.reducer;
 
 export type { DocumentSliceState };
+
+
+
+
+// Example usage
+const baseStructure: StructuredMetadata = {
+  document1: {
+    author: 'Author 1',
+    timestamp: new Date(),
+    originalPath: '/path/to/document1',
+    alternatePaths: [],
+    fileType: 'txt',
+    title: 'Document 1',
+    description: 'Description of Document 1',
+    keywords: ['keyword1', 'keyword2'],
+    authors: ['Author 1', 'Author 2'],
+    contributors: [],
+    publisher: 'Publisher',
+    copyright: 'Copyright',
+    license: 'License',
+    links: [],
+    tags: [],
+  },
+};
+
+const additionalStructure: StructuredMetadata = {
+  document2: {
+    author: 'Author 2',
+    timestamp: new Date(),
+    originalPath: '/path/to/document2',
+    alternatePaths: [],
+    fileType: 'pdf',
+    title: 'Document 2',
+    description: 'Description of Document 2',
+    keywords: ['keyword3', 'keyword4'],
+    authors: [],
+    contributors: ['Contributor 1'],
+    publisher: 'Publisher 2',
+    copyright: 'Copyright 2',
+    license: 'License 2',
+    links: [],
+    tags: [],
+  },
+};
+
+const merged = mergeStructures(baseStructure, additionalStructure);
+console.log(merged);
+
+// Output:
+// {
+//   document1: { originalPath: '/path/to/document1', ... },
+//   document2: { originalPath: '/path/to/document2', ... }
+// }

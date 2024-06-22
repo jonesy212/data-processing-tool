@@ -1,30 +1,70 @@
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import { Data } from "../models/data/Data";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { Data } from "../models/data/Data";
+import { getCurrentAppInfo } from "./VersionGenerator";
 
 interface VersionHistory {
   // Define the structure of the version history
   // Each element represents a version of the data
   versions: VersionData[];
 }
-
-interface VersionData {
-  
-  content: string; // Updated content of the file
+interface ExtendedVersionData {
+  name: string;
+  url: string;
+  versionNumber: string;
+  documentId: string;
+  draft: boolean;
+  userId: string;
+  content: string; // Include content here if needed
   metadata: {
-    author: string; // Author who made the changes
-    timestamp: Date; // Timestamp of the changes
-    revisionNotes?: string; // Optional notes or comments about the revision
-    // Add any other metadata fields as needed
+    author: string;
+    timestamp: Date | undefined;
+    revisionNotes?: string;
+    // Add other metadata fields as needed
   };
   versions: {
-    data: Data; // Version of the data
-    backend: BackendStructure; // Version of the backend
-    frontend: FrontendStructure; // Version of the frontend
-  }
-  draft?: boolean; // Indicate if this is a draft/unpublished version
-  published?: boolean; // Indicate if this version is published
-  checksum: string; // Checksum or hash value of the content for data integrity
+    data: Data | undefined;
+    backend: BackendStructure | undefined;
+    frontend: FrontendStructure | undefined;
+  };
+  published?: boolean;
+  checksum: string;
+}
+
+
+interface VersionData extends ExtendedVersionData {
+  // Add more specific properties if needed
+  id: number;
+  parentId: string;
+  parentType: string;
+  parentVersion: string;
+  parentTitle: string;
+  parentContent: string;
+  parentName: string;
+  parentUrl: string;
+  parentChecksum: string;
+  parentMetadata?: {}; // Adjust as per actual type
+  parentAppVersion: string;
+  parentVersionNumber: string;
+  isLatest: boolean;
+  isPublished: boolean;
+  publishedAt: Date | null;
+  source: string;
+  status: string;
+  workspaceId: string;
+  workspaceName: string;
+  workspaceType: string;
+  workspaceUrl: string;
+  workspaceViewers: string[];
+  workspaceAdmins: string[];
+  workspaceMembers: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+  _structure?: any; // Adjust as per actual type
+  frontendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
+  backendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
+  data: Data[]; // Adjust as per actual type
 }
 
 // Example usage:
@@ -65,7 +105,16 @@ const versions = {
   } as unknown as FrontendStructure, // Adjust frontend structure if needed
 
 };
+
+const { versionNumber } = getCurrentAppInfo();
 const versionData: VersionData = {
+  id: 0,
+  name: "Version 1",
+  url: "https://example.com/version1",
+  versionNumber: versionNumber,
+  documentId: "documentId",
+  draft: false,
+  userId: "userId",
   content: updatedContent,
   metadata: {
     author: author,
@@ -74,6 +123,30 @@ const versionData: VersionData = {
   },
   versions: versions,
   checksum: calculateChecksum(updatedContent) // Function to calculate checksum
+  ,
+  parentId: "",
+  parentType: "",
+  parentVersion: "",
+  parentTitle: "",
+  parentContent: "",
+  parentName: "",
+  parentUrl: "",
+  parentChecksum: "",
+  parentAppVersion: "",
+  parentVersionNumber: "",
+  isLatest: false,
+  isPublished: false,
+  publishedAt: null,
+  source: "",
+  status: "",
+  workspaceId: "",
+  workspaceName: "",
+  workspaceType: "",
+  workspaceUrl: "",
+  workspaceViewers: [],
+  workspaceAdmins: [],
+  workspaceMembers: [],
+  data: []
 };
 
 // Function to calculate checksum (example implementation)
@@ -96,4 +169,5 @@ export const versionHistory: VersionHistory = {
   versions: [versionData] // Add the VersionData to the versions array
 };
 
-export type { VersionData, VersionHistory };
+export type { ExtendedVersionData, VersionData, VersionHistory };
+

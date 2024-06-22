@@ -4,45 +4,46 @@ import { fetchData } from "@/app/api/ApiData";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { useParams } from "next/navigation";
 import {
-  UserConfigExport,
-  UserConfig as ViteUserConfig,
-  defineConfig,
+    UserConfigExport,
+    UserConfig as ViteUserConfig,
+    defineConfig,
 } from "vite";
 import { ModifiedDate } from "../documents/DocType";
 import { Data } from "../models/data/Data";
 import {
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { Tag, tag1, tag2 } from "../models/tracker/Tag";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { Subscription } from "../subscriptions/Subscription";
 import {
-  NotificationType,
-  NotificationTypeEnum,
+    NotificationType,
+    NotificationTypeEnum,
 } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
+    logActivity,
+    notifyEventSystem,
+    triggerIncentives,
+    updateProjectState,
 } from "../utils/applicationUtils";
 import * as snapshotApi from "./../../api/SnapshotApi";
 import {
-  getCommunityEngagement,
-  getMarketUpdates,
-  getTradeExecutions,
+    getCommunityEngagement,
+    getMarketUpdates,
+    getTradeExecutions,
 } from "./../../components/trading/TradingUtils";
 import { sendNotification } from "./../../components/users/UserSlice";
+import { CustomSnapshotData, Payload, Snapshot, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import SnapshotList from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
 import { snapshot } from "./snapshot";
-import { userId } from "../users/ApiUser";
-import { useParams } from "next/navigation";
-import { CustomSnapshotData, Payload, Snapshot, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { delegate, subscribeToSnapshots } from './snapshotHandlers';
 
 type T = Snapshot<any>;
 type K = any;
@@ -75,8 +76,8 @@ export interface SnapshotStoreConfig<
   key?: string;
   topic?: string;
   initialState:
-    | SnapshotStore<Snapshot<T>>
-    | Snapshot<Snapshot<T>>
+    | SnapshotStore<T>
+    | Snapshot<T>
     | null
     | undefined;
   configOption?: SnapshotStoreConfig<T, K> | null;
@@ -84,7 +85,7 @@ export interface SnapshotStoreConfig<
   initialConfig?: SnapshotStoreConfig<T, K> | null;
   config?: SnapshotStoreConfig<Snapshot<any>, any>[] | null;
   category: string;
-  timestamp: Date | undefined;
+  timestamp: string | Date | undefined;
   set?: (type: string, event: Event) => void | null;
   data?: T | SnapshotStoreConfig<T, K> | null;
   store?: SnapshotStoreConfig<T, K> | null;
@@ -96,7 +97,7 @@ export interface SnapshotStoreConfig<
   state: Snapshot<Snapshot<T>>[] | Snapshot<T>[] | null;
   snapshots: SnapshotStore<Snapshot<T>>[];
   onInitialize?: () => void;
-  subscribers: Subscriber<Snapshot<T>>[];
+  subscribers: Subscriber<T>[];
   onError?: (error: Payload) => void;
   snapshot: (
     id: string,
@@ -151,7 +152,8 @@ export interface SnapshotStoreConfig<
   handleSnapshotOperation: (
     snapshot: SnapshotStore<T>,
     data: SnapshotStoreConfig<T, K>
-  ) => Promise<Snapshot<T>>
+  ) => Promise<void>
+  
   updateSnapshot: (
     snapshotId: string,
     data: SnapshotStore<T>,
@@ -170,7 +172,7 @@ export interface SnapshotStoreConfig<
   }>;
 
   takeSnapshot: (snapshot: SnapshotStore<T>) => Promise<{
-    snapshot: Snapshot<T>;
+    snapshot: SnapshotStore<T>;
   }>; 
 
   addSnapshot: (
@@ -225,9 +227,9 @@ export interface SnapshotStoreConfig<
   fetchSnapshot: (
     snapshot: () =>
       | Promise<{
+        id: any;
           category: any;
           timestamp: any;
-          id: any;
           snapshot: SnapshotStore<Snapshot<T>>;
           data: T;
         }>
@@ -580,7 +582,20 @@ const snapshotConfig: SnapshotStoreConfig<T, Data>[] = [
     },
     initSnapshot: () => {},
     fetchSnapshot: async () => {
-      return { snapshot: [] };
+      const snapshotData = await snapshot(); // Assuming snapshot is a function returning a promise
+    
+      return {
+        id: snapshotData.id, // Assuming id is part of the snapshot data
+        key: snapshotData.key, // Example: Replace with actual properties
+        topic: snapshotData.topic,
+        date: new Date(), // Example: Replace with actual date logic
+        // Include other required properties here
+    
+        category: snapshotData.category,
+        timestamp: snapshotData.timestamp,
+        snapshot: snapshotData.snapshot,
+        data: snapshotData.data,
+      };
     },
     clearSnapshot: () => {},
     updateSnapshot: async (
@@ -601,7 +616,7 @@ const snapshotConfig: SnapshotStoreConfig<T, Data>[] = [
       return { snapshots };
     },
     takeSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>) => {
-      return { snapshot: [] };
+      return { snapshot: snapshot };
     },
 
     getAllSnapshots: async (
@@ -958,7 +973,6 @@ const snapshotConfig: SnapshotStoreConfig<T, Data>[] = [
             category,
             subscribers: subscribersForCategory,
             snapshots: categorySnapshots,
-            store: store
           };
         }
       );
@@ -1054,14 +1068,17 @@ const snapshotConfig: SnapshotStoreConfig<T, Data>[] = [
               }
 
               if (snapshotString !== undefined) {
+                const category = process.argv[3] as keyof CategoryProperties;
+
                 return new SnapshotStore<Snapshot<Snapshot<Snapshot<Data>>>>(
                   snapshot,
-                  initialState,
                   category,
-                  snapshotString,
+                  new Date(),
+                  type, 
+                  initialState,
                   snapshotConfig,
+                  subscribeToSnapshots,
                   delegate,
-                  subscribeToSnapshots
                 );
               }
 
@@ -1345,3 +1362,4 @@ createSnapshotExample("snapshot1", snapshotConfig[0], "category1").then(
 
 export { snapshotConfig };
 export type { AuditRecord, RetentionPolicy, Subscribers };
+

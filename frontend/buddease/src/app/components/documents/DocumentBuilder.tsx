@@ -3,8 +3,8 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import { traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
+import FrontendStructure, {frontend} from "@/app/configs/appStructure/FrontendStructure";
+import { getStructureAsArray, traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import Clipboard from "@/app/ts/clipboard";
 import crypto from 'crypto';
@@ -58,6 +58,10 @@ import {
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { saveDocumentToDatabase } from "@/app/configs/database/updateDocumentInDatabase";
+import useErrorHandling from "../hooks/useErrorHandling";
+import { useDispatch } from "react-redux";
+import { DatasetModel } from "../todos/tasks/DataSetModel";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
  
@@ -70,8 +74,8 @@ const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
 // DocumentData.tsx
-export interface DocumentData extends CommonData{
-  id: string;
+export interface DocumentData extends CommonData, DatasetModel{
+  id: string | number;
   _id: string;
   title: string;
   content: string;
@@ -86,24 +90,61 @@ export interface DocumentData extends CommonData{
   folders: FolderData[]; // Array of FolderData associated with the document
   filePath?: DocumentPath;
   status?: AllStatus;
-  type?: DocumentTypeEnum;
+  type?: AllTypes;
   locked?: boolean;
   category?: string;
   changes?: string[];
   timestamp?: Date;
   options: DocumentOptions | undefined;
-  documentPhase?: Phase;
+  documentPhase?: string |  Phase;
   folderPath: string;
   previousContent?: string;
   currentContent?: string;
   previousMetadata: StructuredMetadata | undefined;
   currentMetadata: StructuredMetadata | undefined;
   accessHistory: AccessHistory[];
-  lastModifiedDate: { value: Date; isModified: boolean } | undefined; // Initialize as not modified
+  lastModifiedDate: ModifiedDate;
   versionData: VersionData | undefined;
   version: Version | undefined | null; // Update the type to accept null values
   visibility: AllTypes
   updatedDocument?: DocumentData; // Add property to track updated document data
+  documentSize: DocumentSize;
+  lastModifiedBy: string; // New property
+  name: string; // New property
+  description: string; // New property
+  createdBy: string; // New property
+  createdDate: Date; // New property
+  documentType: string; // New property
+  documentData?: DocumentData;
+  _rev: string; // New property
+  _attachments: Record<string, any>; // New property
+  _links: Record<string, any>; // New property
+  _etag: string; // New property
+  _local: boolean; // New property
+  _revs: string[]; // New property
+  _source: Record<string, any>; // New property
+  _shards: Record<string, any>; // New property
+  _size: number; // New property
+  _version: number; // New property
+  _version_conflicts: number; // New property
+  _seq_no: number; // New property
+  _primary_term: number; // New property
+  _routing: string; // New property
+  _parent: string; // New property
+  _parent_as_child: boolean; // New property
+  _slices: any[]; // New property
+  _highlight: Record<string, any>; // New property
+  _highlight_inner_hits: Record<string, any>; // New property
+  _source_as_doc: boolean; // New property
+  _source_includes: string[]; // New property
+  _routing_keys: string[]; // New property
+  _routing_values: string[]; // New property
+  _routing_values_as_array: string[]; // New property
+  _routing_values_as_array_of_objects: Record<string, any>[]; // New property
+  _routing_values_as_array_of_objects_with_key: Record<string, any>[]; // New property
+  _routing_values_as_array_of_objects_with_key_and_value: Record<string, any>[]; // New property
+  _routing_values_as_array_of_objects_with_key_and_value_and_value: Record<string, any>[]; // New property
+
   // Add more properties if needed
 }
 
@@ -129,7 +170,8 @@ export interface CustomProjectPhaseType {
   customProp2: number;
   // Add more custom properties as needed
 }
-const [options, setOptions] =
+
+export const [options, setOptions] =
   useState<DocumentOptions>(/* initial options value */);
 const editorState = EditorState.createEmpty();
 
@@ -138,19 +180,115 @@ const contentState: ContentState = editorState.getCurrentContent();
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
+// type DocumentModel = DatasetModel & DocumentData;
 
 // Use the custom type/interface for the documentPhase option
-// Use the custom type/interface for the documentPhase option
 const documentBuilderProps: DocumentBuilderProps = {
+  isDynamic: true,
   documentPhase: {
+    name: "default",
+    originalPath: "",
+    alternatePaths: [],
+    fileType: "string",
+    title: "",
+    description: "",
+    keywords: [],
+    authors: [],
+    contributors: [],
+    publisher: "",
+    copyright: "",
+    license: "",
+    links: [],
+    tags: [],
     phaseType: ProjectPhaseTypeEnum.Draft,
-    customProp1: "value1", // Custom property values
+    customProp1: "value1",
     customProp2: 123,
     onChange: (phase: ProjectPhaseTypeEnum): void => {
-      // Implementation of onChange function
       console.log("New phase selected:", phase);
     },
   },
+  documents: [],
+  buildDocument: async (documentData: DocumentData):  Promise<void>  => {
+    // Implementation of buildDocument function
+    const dispatch = useDispatch(); // Assuming you're using useDispatch from react-redux
+    const handleError = useErrorHandling()
+    try {
+      console.log("Building document with data:", documentData);
+  
+      // Save the document data to the database
+      await saveDocumentToDatabase({
+        id: documentData.id,
+        name: documentData.name,
+        description: documentData.description,
+        filePathOrUrl: documentData.filePathOrUrl,
+        uploadedBy: documentData.uploadedBy,
+        uploadedAt: documentData.uploadedAt,
+        tagsOrCategories: documentData.tagsOrCategories,
+     
+        format: documentData.format,
+        visibility: documentData.visibility,
+        type: documentData.type,
+        uploadedByTeamId: documentData.uploadedByTeamId,
+        uploadedByTeam: documentData.uploadedByTeam,
+        lastModifiedDate: documentData.lastModifiedDate
+
+       // Populate other fields as needed from documentData
+      }, documentData.content);
+  
+      // Reset the editor state (assuming editorState is a state or ref from your editor library)
+      editorState.setContent(ContentState.createFromText(""));
+  
+      // Set document options
+      setOptions(defaultRevisionOptions);
+      setOptions({
+        enabled: true,
+        author: "default-author",
+        dataFormat: "DD-MM-YYYY",
+      });
+  
+      // Dispatch actions if needed
+      dispatch(addDocument(documentData)); // Example dispatch for adding document
+      dispatch(addDocumentSuccess({ id: documentData.id, title: documentData.title })); // Example dispatch for addDocumentSuccess
+  
+      // Optionally, perform additional operations or dispatch more actions
+  
+      console.log("Document built successfully.");
+    } catch (error: any) {
+      // Handle errors
+      handleError("Error building document", error);
+      // Dispatch failure action if needed
+      dispatch(addDocumentFailure("Failed to build document")); // Example dispatch for addDocumentFailure
+    }
+    return Promise.resolve();
+  },
+  editorState: editorState,
+  options: options,
+  setOptions: setOptions,
+  documentPhase: options?.documentPhase,
+  setDocumentPhase: options?.setDocumentPhase,
+  currentContent: contentState.toString(),
+  previousContent: previousContent,
+  currentMetadata: currentMetadata,
+  previousMetadata: previousMetadata,
+  accessHistory: accessHistory,
+  lastModifiedDate: lastModifiedDate,
+  versionData: versionData,
+  version: version,
+  visibility: visibility,
+  updatedDocument: updatedDocument,
+  documentSize: documentSize,
+  lastModifiedBy: lastModifiedBy,
+  name: name,
+  description: description,
+  createdBy: createdBy,
+  createdDate: createdDate,
+  documentType: documentType,
+  _rev: _rev,
+  _attachments: _attachments,
+  _links: _links,
+
+
+      
   isDynamic: true, 
   version: new AppVersionImpl({
     id: 0,
@@ -229,10 +367,6 @@ const documentBuilderProps: DocumentBuilderProps = {
     workspaceVersionHistory: ["1.0.0", "1.1.0"],
   }),
 
-  onOptionsChange: (options: DocumentOptions) => {
-    setOptions(options);
-  },
-
   onConfigChange: (newConfig: DocumentBuilderConfig) => {
     setOptions((prevOptions) => ({
       ...prevOptions,
@@ -301,6 +435,68 @@ const documentBuilderProps: DocumentBuilderProps = {
           workspaceMembers: [],
           createdAt: new Date(),
           updatedAt: undefined,
+          versions: {
+            data: {
+              id: 0,
+              parentId: "",
+              parentType: "",
+              parentVersion: "",
+              parentTitle: "",
+              parentContent: "",
+              parentName: "",
+              parentUrl: "",
+              parentChecksum: "",
+              parentAppVersion: "",
+              parentVersionNumber: "",
+              isLatest: false,
+              isPublished: false,
+              publishedAt: null,
+              source: "",
+              status: "",
+              workspaceId: "",
+              workspaceName: "",
+              workspaceType: "",
+              workspaceUrl: "",
+              workspaceViewers: [],
+              workspaceAdmins: [],
+              workspaceMembers: [],
+              data: [],
+              name: "",
+              url: "",
+              versionNumber: "",
+              documentId: "",
+              draft: false,
+              userId: "",
+              content: "",
+              metadata: {
+                author: "",
+                timestamp: undefined,
+                revisionNotes: undefined
+              },
+              versions: {
+                data: undefined,
+                backend: undefined,
+                frontend: undefined
+              },
+              checksum: ""
+            },
+            backend: {
+              structure: {},
+              getStructure: () => {
+                return (
+                  options?.backendStructure?.getStructure() || Promise.resolve({})
+                );
+              },
+              getStructureAsArray: getStructureAsArray,
+              traverseDirectory: traverseBackendDirectory,
+            },
+            frontend: frontend,
+          },
+          metadata: {
+            /* default metadata */
+            author: "",
+            timestamp: new Date(),
+          }
         }),
 
       backendStructure: newConfig.backendStructure || {
@@ -311,6 +507,9 @@ const documentBuilderProps: DocumentBuilderProps = {
             options?.backendStructure?.getStructure() || Promise.resolve({})
           );
         },
+        getStructureAsArray: getStructureAsArray,
+        //todo add this to backendStructure
+        // getStructureAsTree: getStructureAsTree, 
       },
       structure: newConfig.structure || {
         sections: [],
@@ -406,7 +605,7 @@ const documentBuilderProps: DocumentBuilderProps = {
         external: {
           enabled: true,
         },
-        },
+      },
 
       embeddedContent: newConfig.embeddedContent || {
         enabled: true,
@@ -552,20 +751,17 @@ const documentBuilderProps: DocumentBuilderProps = {
       bookmarks: newConfig.bookmarks || { enabled: true },
       crossReferences: newConfig.crossReferences || { enabled: true, format: "" },
       footnotes: newConfig.footnotes || { enabled: true, author: "string", format: "" },
-      endnotes: newConfig.endnotes || { enabled: true, author: "string",  format: "" },
+      endnotes: newConfig.endnotes || { enabled: true, author: "string", format: "" },
       revisions: newConfig.revisions || { enabled: true, author: "string", dateFormat: "string" },
       defaultZoomLevel: newConfig.defaultZoomLevel || 100,
       previousMetadata: newConfig.previousMetadata !== undefined ? newConfig.previousMetadata : {},
       currentMetadata: newConfig.currentMetadata !== undefined ? newConfig.currentMetadata : {},
       accessHistory: newConfig.accessHistory !== undefined ? newConfig.accessHistory : [],
-      lastModifiedDate: newConfig.lastModifiedDate !== undefined ? newConfig.lastModifiedDate: {} as ModifiedDate,
+      lastModifiedDate: newConfig.lastModifiedDate !== undefined ? newConfig.lastModifiedDate : {} as ModifiedDate,
       tableStyles: newConfig.tableStyles !== undefined ? newConfig.tableStyles : {},
       footnote: newConfig.footnote !== undefined ? newConfig.footnote : { enabled: true, format: "" }
     }));
   },
-  setOptions: {} as React.Dispatch<React.SetStateAction<DocumentOptions>>,
-  documents: [],
-  options: {} as DocumentOptions,
 };
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
@@ -574,6 +770,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   onOptionsChange,
   setOptions,
   documents,
+  buildDocument
 }) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
@@ -716,7 +913,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
         <div style={{ border: "1px solid #ccc", padding: "10px" }}>
           <Editor
             editorState={editorState}
-            onChange={(newState: any) => setEditorState(newState)}
+            onChange={(newState: EditorState) => setEditorState(newState)}
             handleKeyCommand={handleKeyCommand}
           />
         </div>

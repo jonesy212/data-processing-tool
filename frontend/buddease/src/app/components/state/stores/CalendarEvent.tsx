@@ -43,6 +43,8 @@ import CommonEvent, { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 import { RootState } from "../redux/slices/RootSlice";
 import { useStore } from "./StoreProvider";
+import { delegate, subscribeToSnapshots } from "../../snapshots/snapshotHandlers";
+import { initialSnapshot } from "../../crypto/exchangeIntegration";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -186,13 +188,15 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   eventStatus: AllStatus = StatusType.Pending;
 
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
-    Snapshot<Data>
-    >(
+  snapshotStore: SnapshotStore<Snapshot<Data>> =
+    new SnapshotStore<Snapshot<Data>>(
       {} as SnapshotStoreConfig<T, K>,
+      category,
+      new Date(),
       notifyCallback,
       initialSnapshot,
       snapshotConfig,
+      subscribeToSnapshots,
       delegate
   );
   NOTIFICATION_MESSAGE = "";

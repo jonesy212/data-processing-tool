@@ -13,6 +13,8 @@ import Version from '../../versions/Version';
 import docx from 'docx';
 import { frontendStructure } from '@/app/configs/appStructure/FrontendStructure';
 import { AppStructureItem } from '@/app/configs/appStructure/AppStructure';
+import { DocumentSize } from '../../models/data/StatusType';
+import { AlignmentOptions } from '../redux/slices/toolbarSlice';
 
 
 
@@ -23,14 +25,14 @@ class MobXEntityStore {
     userIdea: "",
     isDynamic: false,
     documents: [],
-    size: "letter",
+    size: DocumentSize.Letter,
     visibility: "public",
     fontSize: 0,
     textColor: "",
     backgroundColor: "",
     fontFamily: "",
     lineSpacing: 0,
-    alignment: "left",
+    alignment: AlignmentOptions.LEFT,
     indentSize: 0,
     bulletList: false,
     numberedList: false,
@@ -53,7 +55,7 @@ class MobXEntityStore {
     todoList: false,
     orderedTodoList: false,
     unorderedTodoList: false,
-    colorCoding: false,
+    colorCoding: {} as Record<string, string>,
     additionalOptions: [],
     includeStatus: true,
     includeAdditionalInfo: true,
@@ -97,9 +99,9 @@ class MobXEntityStore {
       appVersion: "",
       id: 0,
       content: "",
-      frontendStructure,
+      frontendStructure: {} as Promise<AppStructureItem[]>,
       data: [],
-      generateStructureHash: function (): string {
+      generateStructureHash: function (): Promise<string> {
         const hash = (crypto as any).createHash("sha256");
         hash.update(JSON.stringify(this.getContent()));
         return hash.digest("hex");

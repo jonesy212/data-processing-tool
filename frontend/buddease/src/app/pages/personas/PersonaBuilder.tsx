@@ -22,12 +22,20 @@ export enum PersonaTypeEnum {
   ContentCreator = "Content Creator",
   Blogger = "Blogger",
   CryptoTrader = "Crypto Trader",
+  CryptoEnthusiast = "Crypto Enthusiast",
   StockTrader = "Stock Trader",
   ForexTrader = "Forex Trader",
 
 }
 
 export class PersonaBuilder {
+   buildScenarios(props: any): any {
+    return {
+      // Create user scenarios based on the props
+    };
+   }
+  
+  
   static buildPersona(type: PersonaTypeEnum, props: any): any {
     switch (type) {
       case PersonaTypeEnum.ProjectManager:
@@ -43,6 +51,40 @@ export class PersonaBuilder {
       default:
         throw new Error("Invalid persona type.");
     }
+  }
+
+  mapUserJourney(type: PersonaTypeEnum, props: any): any {
+      // Map out user journey based on the props
+      switch(type) {
+      case PersonaTypeEnum.CasualUser:
+      return new CasualUserPersona(props);
+        case PersonaTypeEnum.CryptoEnthusiast:
+          return new CryptoPersona(props);
+        case PersonaTypeEnum.FitnessEnthusiast:
+          return new FitnessEnthusiastPersona(props);
+        case PersonaTypeEnum.FashionEnthusiast:
+          return new FashionEnthusiastPersona(props);
+        case PersonaTypeEnum.Influencer:
+          return new InfluencerPersona(props);
+        case PersonaTypeEnum.Researcher:
+          return new ResearcherPersona(props);
+        case PersonaTypeEnum.Strategist:
+          return new StrategistPersona(props);
+        case PersonaTypeEnum.UIDesigner:
+          return new UIDesignerPersona(props);
+        case PersonaTypeEnum.Gamer:
+          return new GamerPersona(props);
+        case PersonaTypeEnum.Blogger:
+          return new BloggerPersona(props);
+        case PersonaTypeEnum.CryptoTrader:
+          return new CryptoTraderPersona(props);
+        case PersonaTypeEnum.StockTrader:
+          return new StockTraderPersona(props);
+        case PersonaTypeEnum.ForexTrader: 
+          return new ForexTraderPersona(props);
+        default:
+          throw new Error("Invalid persona type.");
+    };
   }
 }
 

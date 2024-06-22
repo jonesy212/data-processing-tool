@@ -2,6 +2,16 @@ import axiosInstance from './axiosInstance';
 
 const API_BASE_URL = '/api/files'; // Adjust according to your API structure
 
+
+
+export const getFileType = async (file: string) => {
+  try {
+    const response = await axiosInstance.get(`${API_BASE_URL}/${file}/type`);
+    return response.data.fileType; // Adjust as needed based on your API response structure
+  } catch (error) {
+    throw new Error('Failed to get file type');
+  }
+};
 // Example function to fetch files
 export const fetchFiles = async () => {
   try {

@@ -1,53 +1,57 @@
-import clientApiService from '@/app/api/ApiClient';
 import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
-import { AxiosResponse } from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
 import getAppPath from '../../../../appPath';
 import { AppStructureItem } from '../appStructure/AppStructure';
 
-interface FrontendStructure {
-  // Define your existing structure interface
-}
 
-const frontendStructure: FrontendStructure = {};
+// Usage example (if using API client)
 
-export const traverseFrontendDirectory = async (
+// Define traverseFrontendDirectory with file system operations
+const traverseFrontendDirectory = async (
   dir: string
 ): Promise<AppStructureItem[]> => {
-  const filesResponse: AxiosResponse<string[], any> =
-    await clientApiService.listFiles(dir); // Use ApiClient to fetch files
-  const files: string[] = filesResponse.data;
+  const files = await fs.promises.readdir(dir);
   const result: AppStructureItem[] = [];
 
-  for (const filePath of files) {
-    const isDirectory = false; // Assuming the API doesn't differentiate between files and directories
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const stat = await fs.promises.stat(filePath);
 
-    if (isDirectory) {
+    if (stat.isDirectory()) {
       // Handle directory traversal if needed
-    } else {
-      // Logic to parse file and update frontendStructure accordingly
-      // Example: if (file.endsWith('.tsx')) { /* update frontendStructure */ }
-      const content: AxiosResponse<string, any> =
-        await clientApiService.getFileContent(filePath); // Use ApiClient to fetch file content
+    } else if (file.endsWith(".tsx")) {
+      const fileContent = await fs.promises.readFile(filePath, "utf-8");
       const appStructureItem: AppStructureItem = {
         path: filePath,
-        content: content.data,
-        id: '',
-        name: '',
-        type: 'file',
-        items: {}
+        content: fileContent,
+        id: file,
+        name: file,
+        type: "file",
+        items: {},
+        draft: false,
+        permissions: {
+          read: true,
+          write: true,
+          delete: true,
+          share: true,
+          execute: true,
+        },
       };
+      // Handle how you want to store or process the appStructureItem
       result.push(appStructureItem);
     }
   }
+
   return result;
 };
 
 
-
-// Update the file path with the correct project path
-
+// Usage example
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 const projectStructure = await traverseFrontendDirectory(projectPath);
 
 console.log(projectStructure);
+
+export { traverseFrontendDirectory };

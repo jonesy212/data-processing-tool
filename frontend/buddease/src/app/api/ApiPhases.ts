@@ -21,9 +21,12 @@ interface DataNotificationMessages {
 }
 
 // Function to handle Axios errors and notify
-const handlePhaseApiError = (error: AxiosError<unknown>, errorMessage: string, notificationId: keyof DataNotificationMessages): void => {
+const handlePhaseApiError = (error: AxiosError<unknown>,
+  errorMessage: string,
+  notificationId: DataNotificationMessages
+): void => {
   console.error(`Error in Phase API: ${errorMessage}`, error);
-  handleApiErrorAndNotify(error, errorMessage, "PhaseError" as keyof DataNotificationMessages);
+  handleApiErrorAndNotify(error, errorMessage, "FetchPhaseErrorId" );
 };
 
 
@@ -109,7 +112,7 @@ export const updatePhase = async (phaseId: string, updatedPhase: Phase): Promise
     console.log(`Updated phase with ID ${phaseId} successfully:`, response.data);
     // Optionally handle response if needed
   } catch (error) {
-    handlePhaseApiError(error as AxiosError<unknown>, `Failed to update phase with ID ${phaseId}`, 'UpdatePhaseErrorId');
+    handlePhaseApiError(error as AxiosError<unknown>, `Failed to update phase with ID ${phaseId}`);
     throw error;
   }
 };

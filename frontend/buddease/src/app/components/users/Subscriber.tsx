@@ -1,21 +1,36 @@
-import { addSnapshot, takeSnapshot } from "@/app/api/SnapshotApi";
+import { addSnapshot } from "@/app/api/SnapshotApi";
 import { ModifiedDate } from "../documents/DocType";
 import { Data } from "../models/data/Data";
-import { NotificationStatus, PriorityStatus, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
+
+import {
+    NotificationStatus,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum
+} from "../models/data/StatusType";
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import { Payload, Snapshot, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
-import SnapshotStore, {  SnapshotStoreSubset } from "../snapshots/SnapshotStore";
+import SnapshotStore, { SnapshotStoreSubset } from "../snapshots/SnapshotStore";
+import {
+    addSnapshotSuccess,
+    createSnapshot,
+    createSnapshotFailure,
+    createSnapshotSuccess,
+    subscribeToSnapshots,
+    updateSnapshot
+} from "../snapshots/snapshotHandlers";
+import {
+    clearSnapshots,
+    removeSnapshot,
+} from "../state/redux/slices/SnapshotSlice";
+import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { Subscription } from "../subscriptions/Subscription";
 import {
-  NotificationType,
-  NotificationTypeEnum
+    NotificationType,
+    NotificationTypeEnum,
 } from "../support/NotificationContext";
 import { YourSpecificSnapshotType } from "../typings/YourSpecificSnapshotType";
 import { sendNotification } from "./UserSlice";
-import { addSnapshotSuccess,  createSnapshotFailure, createSnapshot, createSnapshotSuccess, initSnapshot, updateSnapshot } from "../snapshots/snapshotHandlers";
-import { clearSnapshots, removeSnapshot } from "../state/redux/slices/SnapshotSlice";
-import { AllStatus } from "../state/stores/DetailsListStore";
-import { Payload, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-
 
 type SnapshotStoreDelegate<T extends Data | undefined> = (
   snapshot: Snapshot<T>,
@@ -34,7 +49,7 @@ const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData> = (
 };
 
 interface CustomSnapshotData extends Data {
-  timestamp: Date | string | undefined;
+  timestamp: string | Date | undefined;
   value: number;
 }
 
@@ -46,15 +61,17 @@ class Subscriber<T extends Data | undefined> {
   private subscribers: ((data: Snapshot<T>) => void)[] = [];
   private onSnapshotCallbacks: ((snapshot: Snapshot<T>) => void)[] = [];
   private onErrorCallbacks: ((error: Error) => void)[] = [];
-  private onUnsubscribeCallbacks: ((callback: (data: Snapshot<T>) => void) => void)[] = [];
-  private state: T | null = null;
+  private onUnsubscribeCallbacks: ((
+    callback: (data: Snapshot<T>) => void
+  ) => void)[] = [];
+  private state?: T | null = null;
   private notifyEventSystem: Function;
   private updateProjectState: Function;
   private logActivity: Function;
   private triggerIncentives: Function;
   private optionalData: CustomSnapshotData | null;
   private data: Data | null;
-  private email: string = ""
+  private email: string = "";
   private snapshotIds: string[] = [];
   private readonly payload: T;
   private async fetchSnapshotIds(): Promise<string[]> {
@@ -62,7 +79,7 @@ class Subscriber<T extends Data | undefined> {
     return new Promise<string[]>((resolve, reject) => {
       setTimeout(() => {
         // Example: Fetching snapshot IDs from an API or database
-        const fetchedSnapshotIds = ['snapshot1', 'snapshot2', 'snapshot3'];
+        const fetchedSnapshotIds = ["snapshot1", "snapshot2", "snapshot3"];
 
         // Resolve with fetched snapshot IDs
         resolve(fetchedSnapshotIds);
@@ -87,7 +104,7 @@ class Subscriber<T extends Data | undefined> {
     this.name = name;
     this.subscription = subscription;
     this.subscriberId = subscriberId;
-    this.notifyEventSystem = notifyEventSystem;
+    this.notifyEventSystem = () => {};
     this.updateProjectState = updateProjectState;
     this.logActivity = logActivity;
     this.triggerIncentives = triggerIncentives;
@@ -128,13 +145,35 @@ class Subscriber<T extends Data | undefined> {
     return this.data;
   }
 
+  getNotifyEventSystem(): Function {
+    return this.notifyEventSystem;
+  }
+
+  getUpdateProjectState(): Function {
+    return this.updateProjectState;
+  }
+
+  getLogActivity(): Function {
+    return this.logActivity;
+  }
+
+  getTriggerIncentives(): Function {
+    return this.triggerIncentives;
+  }
+
+  initialData(data: Snapshot<T>) {
+    this.state = data.state as T;
+    this.notifyEventSystem(NotificationTypeEnum.SUBSCRIBER_INITIAL_DATA, {
+      subscriberId: this.subscriberId,
+      data: data,
+    });
+  }
+
   getName(): string {
     return this.name;
   }
 
-  getDetermineCategory(
-    data: Snapshot<T>
-  ): Snapshot<T> {
+  getDetermineCategory(data: Snapshot<T>): Snapshot<T> {
     return this.subscription.determineCategory(data);
   }
 
@@ -144,19 +183,17 @@ class Subscriber<T extends Data | undefined> {
       const snapshotIds = await this.fetchSnapshotIds();
 
       // Convert array of snapshot IDs to a string representation
-      const snapshotIdsString = snapshotIds.join(', ');
+      const snapshotIdsString = snapshotIds.join(", ");
 
       return snapshotIdsString;
     } catch (error) {
-      console.error('Error fetching snapshot IDs:', error);
-      throw new Error('Failed to fetch snapshot IDs');
+      console.error("Error fetching snapshot IDs:", error);
+      throw new Error("Failed to fetch snapshot IDs");
     }
   }
 
-  
-
   toSnapshotStore(
-    initialState: Snapshot<T>,
+    initialState: Snapshot<T> | undefined,
     snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[],
     delegate: SnapshotStoreDelegate<T>
   ): SnapshotStore<Snapshot<T>> | undefined {
@@ -165,7 +202,8 @@ class Subscriber<T extends Data | undefined> {
       snapshotString = initialState.id?.toString();
     }
 
-    if (snapshotString !== undefined) {
+    if (initialState && snapshotString !== undefined) {
+      // Ensure initialState is defined
       const category = this.determineCategory(initialState);
 
       const delegateFunction: SnapshotStoreSubset<Snapshot<T>> = {
@@ -179,66 +217,77 @@ class Subscriber<T extends Data | undefined> {
         taskIdToAssign: undefined,
         addSnapshot: addSnapshot,
         addSnapshotSuccess: addSnapshotSuccess,
-        updateSnapshot: updateSnapshot,
+        updateSnapshot: updateSnapshot as (
+          snapshotId: string,
+          data: SnapshotStore<Snapshot<T>>,
+          events: Record<string, CalendarEvent[]>,
+          snapshotStore: SnapshotStore<Snapshot<T>>,
+          dataItems: RealtimeDataItem[],
+          newData: T | Data,
+          payload: UpdateSnapshotPayload<any>
+        ) => void,
         removeSnapshot: removeSnapshot,
         clearSnapshots: clearSnapshots,
         createSnapshot: createSnapshot,
         createSnapshotSuccess: createSnapshotSuccess,
         createSnapshotFailure: createSnapshotFailure,
-        updateSnapshots: updateSnapshots,
-        updateSnapshotSuccess: updateSnapshotSuccess,
-        updateSnapshotFailure: updateSnapshotFailure,
-        updateSnapshotsSuccess: updateSnapshotsSuccess,
-        updateSnapshotsFailure: updateSnapshotsFailure,
-        initSnapshot: initSnapshot,
-        takeSnapshot: takeSnapshot,
-        takeSnapshotSuccess: takeSnapshotSuccess,
-        takeSnapshotsSuccess: takeSnapshotsSuccess,
-        configureSnapshotStore: configureSnapshotStore,
-        getData: this.getData,
-        flatMap: flatMap,
-        setData: setData,
-        getState: getState,
-        setState: setState,
-        validateSnapshot: validateSnapshot,
-        handleSnapshot: handleSnapshot,
-        handleActions: handleActions,
-        setSnapshot: setSnapshot,
-        setSnapshots: setSnapshots,
-        clearSnapshot: clearSnapshot,
-        mergeSnapshots: mergeSnapshots,
-        reduceSnapshots: reduceSnapshots,
-        sortSnapshots: sortSnapshots,
-        filterSnapshots: filterSnapshots,
-        mapSnapshots: mapSnapshots,
-        findSnapshot: findSnapshot,
-        getSubscribers: getSubscribers,
-        notify: notify,
-        notifySubscribers: notifySubscribers,
-        subscribe: subscribe,
-        unsubscribe: unsubscribe,
-        fetchSnapshot: fetchSnapshot,
-        fetchSnapshotSuccess: fetchSnapshotSuccess,
-        fetchSnapshotFailure: fetchSnapshotFailure,
-        getSnapshot: getSnapshot,
-        getSnapshots: getSnapshots,
-        getAllSnapshots: getAllSnapshots,
-        generateId: generateId,
-        batchFetchSnapshots: batchFetchSnapshots,
-        batchTakeSnapshotsRequest: batchTakeSnapshotsRequest,
-        batchUpdateSnapshotsRequest: batchUpdateSnapshotsRequest,
-        batchFetchSnapshotsSuccess: batchFetchSnapshotsSuccess,
-        batchFetchSnapshotsFailure: batchFetchSnapshotsFailure,
-        batchUpdateSnapshotsSuccess: batchUpdateSnapshotsSuccess,
-        batchUpdateSnapshotsFailure: batchUpdateSnapshotsFailure,
-        batchTakeSnapshot: batchTakeSnapshot
+        // updateSnapshots: updateSnapshots,
+        // updateSnapshotSuccess: updateSnapshotSuccess,
+        // updateSnapshotFailure: updateSnapshotFailure,
+        // updateSnapshotsSuccess: updateSnapshotsSuccess,
+        // updateSnapshotsFailure: updateSnapshotsFailure,
+        // initSnapshot: initSnapshot,
+        // takeSnapshot: takeSnapshot,
+        // takeSnapshotSuccess: takeSnapshotSuccess,
+        // takeSnapshotsSuccess: takeSnapshotsSuccess,
+        // configureSnapshotStore: configureSnapshotStore,
+        // getData: this.getData,
+        // flatMap: flatMap,
+        // setData: setData,
+        // getState: getState,
+        // setState: setState,
+        // validateSnapshot: validateSnapshot,
+        // handleSnapshot: handleSnapshot,
+        // handleActions: handleActions,
+        // setSnapshot: setSnapshot,
+        // setSnapshots: setSnapshots,
+        // clearSnapshot: clearSnapshot,
+        // mergeSnapshots: mergeSnapshots,
+        // reduceSnapshots: reduceSnapshots,
+        // sortSnapshots: sortSnapshots,
+        // filterSnapshots: filterSnapshots,
+        // mapSnapshots: mapSnapshots,
+        // findSnapshot: findSnapshot,
+        // getSubscribers: getSubscribers,
+        // notify: notify,
+        // notifySubscribers: notifySubscribers,
+        // subscribe: subscribe,
+        // unsubscribe: unsubscribe,
+        // fetchSnapshot: fetchSnapshot,
+        // fetchSnapshotSuccess: fetchSnapshotSuccess,
+        // fetchSnapshotFailure: fetchSnapshotFailure,
+        // getSnapshot: getSnapshot,
+        // getSnapshots: getSnapshots,
+        // getAllSnapshots: getAllSnapshots,
+        // generateId: generateId,
+        // batchFetchSnapshots: batchFetchSnapshots,
+        // batchTakeSnapshotsRequest: batchTakeSnapshotsRequest,
+        // batchUpdateSnapshotsRequest: batchUpdateSnapshotsRequest,
+        // batchFetchSnapshotsSuccess: batchFetchSnapshotsSuccess,
+        // batchFetchSnapshotsFailure: batchFetchSnapshotsFailure,
+        // batchUpdateSnapshotsSuccess: batchUpdateSnapshotsSuccess,
+        // batchUpdateSnapshotsFailure: batchUpdateSnapshotsFailure,
+        // batchTakeSnapshot: batchTakeSnapshot
       };
 
       return new SnapshotStore<Snapshot<T>>(
-        initialState,
+        null,
         category,
-        snapshotString,
+        new Date(),
+        type,
+        initialState,
         snapshotConfig,
+        subscribeToSnapshots,
         delegateFunction
       );
     }
@@ -248,23 +297,19 @@ class Subscriber<T extends Data | undefined> {
 
   private determineCategory(initialState: Snapshot<T>): string {
     if (initialState instanceof YourSpecificSnapshotType) {
-      return 'SpecificCategory';
+      return "SpecificCategory";
     } else {
-      return 'DefaultCategory';
+      return "DefaultCategory";
     }
   }
 
-
-  getDeterminedCategory(
-    data: Snapshot<T>
-  ): Snapshot<T> {
+  getDeterminedCategory(data: Snapshot<T>): Snapshot<T> {
     return this.subscription.determineCategory(data);
   }
 
   getId(): string {
     return this.id;
   }
-
 
   async processNotification(
     id: string,
@@ -281,7 +326,7 @@ class Subscriber<T extends Data | undefined> {
         content: snapshotContent!.toString(),
         data: snapshotContent as T,
         type,
-        store: store
+        store: store,
       };
       try {
         if (this.notify) {
@@ -316,7 +361,7 @@ class Subscriber<T extends Data | undefined> {
   }
 
   getState(): T | null {
-    return this.state;
+    return this.state ?? null;
   }
 
   onError(callback: (error: Error) => void) {
@@ -328,11 +373,13 @@ class Subscriber<T extends Data | undefined> {
   }
 
   getSubscriptionId?(): string {
-    return this.subscription.getId ? this.subscription.getId() : '';
+    return this.subscription.getId ? this.subscription.getId() : "";
   }
 
   getSubscriberType?(): SubscriberTypeEnum | undefined {
-    return this.subscription?.getPlanName ? this.subscription.getPlanName() : undefined;
+    return this.subscription?.getPlanName
+      ? this.subscription.getPlanName()
+      : undefined;
   }
 
   onUnsubscribe(callback: (callback: (data: Snapshot<T>) => void) => void) {
@@ -347,7 +394,9 @@ class Subscriber<T extends Data | undefined> {
     this.onErrorCallbacks.push(callback);
   }
 
-  onSnapshotUnsubscribe(callback: (callback: (data: Snapshot<T>) => void) => void) {
+  onSnapshotUnsubscribe(
+    callback: (callback: (data: Snapshot<T>) => void) => void
+  ) {
     this.onUnsubscribeCallbacks.push(callback);
   }
 
@@ -390,7 +439,9 @@ function notifyEventSystem(event: {
   subscriberId: string;
   snapshot: any;
 }) {
-  console.log(`Event system notified: ${event.type} for subscriber ${event.subscriberId}`);
+  console.log(
+    `Event system notified: ${event.type} for subscriber ${event.subscriberId}`
+  );
 }
 
 function updateProjectState(subscriberId: string, snapshot: any) {
@@ -402,7 +453,9 @@ function logActivity(activity: {
   action: string;
   details: any;
 }) {
-  console.log(`Activity logged: ${activity.action} by subscriber ${activity.subscriberId}`);
+  console.log(
+    `Activity logged: ${activity.action} by subscriber ${activity.subscriberId}`
+  );
 }
 
 function triggerIncentives(subscriberId: string, snapshot: any) {
@@ -429,11 +482,10 @@ const payload: Payload = {
     isAutoDismissOnAction: false,
     isAutoDismissOnTimeout: false,
     isAutoDismissOnTap: false,
-  }
-}
+  },
+};
 
-
- const subscriber = new Subscriber<CustomSnapshotData>(
+const subscriber = new Subscriber<CustomSnapshotData>(
   payload.meta.id,
   // Assuming payload.name is a string, replace with your actual data structure
   payload.meta.name,
@@ -445,7 +497,7 @@ const payload: Payload = {
     portfolioUpdates: () => {},
     tradeExecutions: () => {},
     triggerIncentives: () => {},
-    marketUpdates: () => { },
+    marketUpdates: () => {},
     determineCategory: (data: any) => data.category,
     communityEngagement: () => {},
     unsubscribe: () => {},

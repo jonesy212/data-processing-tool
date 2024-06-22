@@ -394,6 +394,7 @@ const snapshot: Snapshot<Data> = {
           maxFailedAttempts: 5,
           lockoutDurationMinutes: 15,
         },
+        accountLockoutThreshold: 50 //todo create way reset threshod
       },
       emailVerificationStatus: true,
       phoneVerificationStatus: true,

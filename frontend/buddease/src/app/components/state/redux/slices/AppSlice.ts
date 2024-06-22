@@ -79,10 +79,12 @@ interface AppState {
   blogManager: BlogState,
   drawingManager: DrawingState,
   versionManager: VersionState,
+  progress: number
   // Add other state properties here if needed
 }
 
 const initialState: AppState = {
+  progress: 0,
   toolbarManager: {
     isFeatureEnabled: false,
     isToolbarOpen: false,

@@ -4,8 +4,8 @@ import {
   SubscriptionActions
 } from "../actions/SubscriptionActions";
 import { Data } from "../models/data/Data";
-import { CustomSnapshotData } from "../snapshots/SnapshotStore";
 import { Subscriber } from "../users/Subscriber";
+import { CustomSnapshotData } from "../snapshots/LocalStorageSnapshotStore";
 
 interface UseSubscriptionOptions {
   channel: string;

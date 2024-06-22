@@ -103,6 +103,23 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           customProp1: "",
           customProp2: 0,
         }}
+        buildDocument={async (
+          documentData: DocumentData,
+          document: DocumentTypeEnum
+        ) => {
+          try {
+            // Dispatch an action to create a new document
+            dispatch(
+              DocumentActions.createDocument({
+                documentData: documentData,
+                document: document,
+              })
+            );
+          } catch (error: any) {
+            // Handle the error using the useErrorHandling hook
+            handleError("Error creating document", error);
+          }
+        }}
         onOptionsChange={(options: DocumentOptions) => {
           if (typeof options.documentPhase === "string") {
             setCurrentPhase({
@@ -171,6 +188,8 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           },
           previousMetadata: {
             tags: {
+              author: "",
+              timestamp: new Date(),
               originalPath: "/path/to/file.txt",
               alternatePaths: ["/alternate/path1.txt", "/alternate/path2.txt"],
               fileType: "txt",
@@ -188,6 +207,8 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           },
           currentMetadata: {
             tags: {
+              author: "",
+              timestamp: new Date(),
               originalPath: "/path/to/file.txt",
               alternatePaths: ["/alternate/path1.txt", "/alternate/path2.txt"],
               fileType: "txt",

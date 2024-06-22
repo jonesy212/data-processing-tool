@@ -1,7 +1,7 @@
 import RootLayout from "@/app/RootLayout";
 import { ParticipantActions } from "@/app/components/actions/ParticipantActions";
 import { ToolbarActions } from "@/app/components/actions/ToolbarActions";
-import { RootState } from "@/app/components/state/stores/RootStores";
+import { MobXRootState} from "@/app/components/state/stores/RootStores";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import { User } from "@/app/components/users/User";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -69,7 +69,7 @@ const ParticipantManagementPage = () => {
   const dispatch = useDispatch();
   const { userId } = useParams<{ userId?: string }>() ?? {};
   const participantData: ParticipantData[] = useSelector(
-    (state: RootState) => state.useP.participantData
+    (state: MobXRootState) => state.collaborationManager.participantData
   );
 
   useEffect(() => {

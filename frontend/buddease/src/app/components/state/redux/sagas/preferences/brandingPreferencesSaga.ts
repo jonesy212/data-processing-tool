@@ -6,6 +6,7 @@ import { themeService } from '@/app/libraries/theme/ThemeService';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, put, takeLatest } from 'redux-saga/effects';
 import { fetchUserPreferencesSaga } from './userPreferencesSagaManager';
+import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';
 
 
 
@@ -22,7 +23,7 @@ function* handleSetColorScheme(action: PayloadAction<string>) {
   }
 }
 
-function* handleSetColors(action: PayloadAction<string>) { 
+function* handleSetColors(action: PayloadAction<ColorSwatchProps[]>) { 
   try {
     // Logic to handle setting colors
     themeService.applyColors(action.payload); // Use applyColors instead of setColors
@@ -181,66 +182,65 @@ function* watchUserPreferencesActions() {
     takeLatest("FETCH_USER_PREFERENCES", fetchUserPreferencesSaga), // Action type should be provided here
 
     takeLatest(UserBrandingPreferencesActions.setColors.type, handleSetColors),
-    "setShadows"
-    "setSpacing"
-    "setHeaderColor"
-    "setBorderColor"
-    "setBackgroundColor"
-    "setHoverColor"
-    "setHoverTextColor"
-    "setHoverBackgroundColor"
-    "setLinkColor"
-    "setLinkHoverColor"
-    "setLinkVisitedColor"
-    "setLinkActiveColor"
-    "setLinkVisitedHoverColor"
-    "setLinkActiveHoverColor"
-    "setLinkDisabledColor"
-    "setLinkDisabledHoverColor"
-    "setLinkDisabledVisitedColor"
-    "setLinkDisabledActiveColor"
-    "setLinkDisabledVisitedHoverColor"
-    "setLinkDisabledActiveHoverColor"
-    "setLinkDisabledBackgroundColor"
-    "setLinkDisabledHoverBackgroundColor"
-    "setLinkDisabledVisitedBackgroundColor"
-    "setLinkDisabledActiveBackgroundColor"
-    "setLinkDisabledVisitedHoverBackgroundColor"
-    "setButtonColor"
-    "setButtonTextColor"
-    "setButtonBackgroundColor"
-    "setButtonHoverColor"
-    "setButtonHoverTextColor"
-    "setButtonHoverBackgroundColor"
-    "setButtonActiveColor"
-    "setButtonActiveTextColor"
-    "setButtonActiveBackgroundColor"
-    "setButtonDisabledColor"
-    "setButtonDisabledTextColor"
-    "setButtonDisabledBackgroundColor"
-    "setButtonFocusColor"
-    "setButtonFocusTextColor"
-    "setButtonFocusBackgroundColor"
-    "setButtonBorderColor"
-    "setButtonBorderRadius"
-    "setButtonBorderWidth"
-    "setButtonShadow"
-    "setButtonPadding"
-    "setButtonTransition"
-    "setButtonFontFamily"
-    "setButtonFontSize"
-    "setButtonFontWeight"
-    "setButtonLineHeight"
-    "setButtonLetterSpacing"
-    "setButtonTextTransform"
-    "setButtonTextDecoration"
-    "setButtonTextShadow"
-    "setButtonOpacity"
-    "setButtonCursor"
-    "setButtonOutline")
-
+    "setShadows",
+    "setSpacing",
+    "setHeaderColor",
+    "setBorderColor",
+    "setBackgroundColor",
+    "setHoverColor",
+    "setHoverTextColor",
+    "setHoverBackgroundColor",
+    "setLinkColor",
+    "setLinkHoverColor",
+    "setLinkVisitedColor",
+    "setLinkActiveColor",
+    "setLinkVisitedHoverColor",
+    "setLinkActiveHoverColor",
+    "setLinkDisabledColor",
+    "setLinkDisabledHoverColor",
+    "setLinkDisabledVisitedColor",
+    "setLinkDisabledActiveColor",
+    "setLinkDisabledVisitedHoverColor",
+    "setLinkDisabledActiveHoverColor",
+    "setLinkDisabledBackgroundColor",
+    "setLinkDisabledHoverBackgroundColor",
+    "setLinkDisabledVisitedBackgroundColor",
+    "setLinkDisabledActiveBackgroundColor",
+    "setLinkDisabledVisitedHoverBackgroundColor",
+    "setButtonColor",
+    "setButtonTextColor",
+    "setButtonBackgroundColor",
+    "setButtonHoverColor",
+    "setButtonHoverTextColor",
+    "setButtonHoverBackgroundColor",
+    "setButtonActiveColor",
+    "setButtonActiveTextColor",
+    "setButtonActiveBackgroundColor",
+    "setButtonDisabledColor",
+    "setButtonDisabledTextColor",
+    "setButtonDisabledBackgroundColor",
+    "setButtonFocusColor",
+    "setButtonFocusTextColor",
+    "setButtonFocusBackgroundColor",
+    "setButtonBorderColor",
+    "setButtonBorderRadius",
+    "setButtonBorderWidth",
+    "setButtonShadow",
+    "setButtonPadding",
+    "setButtonTransition",
+    "setButtonFontFamily",
+    "setButtonFontSize",
+    "setButtonFontWeight",
+    "setButtonLineHeight",
+    "setButtonLetterSpacing",
+    "setButtonTextTransform",
+    "setButtonTextDecoration",
+    "setButtonTextShadow",
+    "setButtonOpacity",
+    "setButtonCursor",
+    "setButtonOutline"
+  ])
     // Add more watchers for other user preferences actions...
-  ]);
 }
 
 // Root Saga

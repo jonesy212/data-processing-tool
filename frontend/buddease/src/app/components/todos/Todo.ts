@@ -1,4 +1,4 @@
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from "@/app/components/models/data/Data";
 import { FC } from "react";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Month } from "../calendar/Month";
@@ -11,7 +11,7 @@ import { Tag } from "../models/tracker/Tag";
 import { Phase } from "../phases/Phase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Snapshot } from "../snapshots/SnapshotStore";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { Idea } from "../users/Ideas";
 import { User } from "../users/User";
@@ -19,12 +19,13 @@ import { VideoData } from "../video/Video";
 
 export type UserAssignee = Pick<User, 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
-export interface Todo extends Snapshot<Data> {
+export interface Todo extends BaseData {
   _id: string;
   id: string;
   content?: Data | string |  Content | undefined; // Adjust the content property to accept Content type
   done: boolean;
   status?: StatusType;
+  priorityStatus?: PriorityStatus | undefined;
   todos: Todo[];
   title: string;
   selectedTodo?: Todo;
@@ -49,7 +50,7 @@ export interface Todo extends Snapshot<Data> {
   timeSpent?: number;
   dependencies?: Todo[];
   recurring?: null | undefined;
-  subtasks: Todo[];
+  // subtasks?: Todo[];
   entities?: Todo[];
   projectId?: string;
   milestoneId?: string;
@@ -63,6 +64,14 @@ export interface Todo extends Snapshot<Data> {
   updatedAt?: Date;
   isActive?: boolean;
   tags?: string[] | Tag[];
+
+
+  ideas?: Idea[] 
+  videoUrl?: string
+  videoThumbnail?: string
+  videoDuration?: number 
+
+
   isDeleted?: boolean;
   isArchived?: boolean;
   isCompleted?: boolean;
@@ -87,7 +96,7 @@ export interface Todo extends Snapshot<Data> {
   analysisType?: AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult[];
   videoData?: VideoData;
-  timestamp: Date | string;
+  timestamp: string | Date;
   suggestedDay?: DayOfWeekProps["day"] | null;
   suggestedWeeks?: number[] | null;
   suggestedMonths?: Month[] | null;
@@ -97,6 +106,13 @@ export interface Todo extends Snapshot<Data> {
   suggestedEndTime?: string;
   suggestedDuration?: string;
   data?: Data | undefined;
+  category?: string | undefined;
+
+  // Method to update the order/index
+  updateOrder(newOrder: number): void;
+
+  // Method to update UI (could be handled by a React component or service)
+  updateUI(): void;
 }
 
 export interface TodoManagerState {
@@ -110,7 +126,7 @@ export const todoInitialState: TodoManagerState = {
 class TodoImpl implements Todo{
   _id: string = "";
   id: string = "";
-  category: string = ""
+  category?: string = ""
   timestamp: Date = new Date()
   subscriberId: string = ""
   content?: Content;
@@ -136,7 +152,7 @@ class TodoImpl implements Todo{
   title: string = "";
   isActive?: boolean = false;
   done: boolean = false;
-  priorityStatus: PriorityStatus | undefined;
+  priorityStatus?: PriorityStatus | undefined;
   text?: string
   todos: Todo[] = [];
   description: string = "";
@@ -152,7 +168,8 @@ class TodoImpl implements Todo{
   labels: string[] = [];
   comments: Comment[] = [];
   attachments: Attachment[] = [];
-  subtasks: Todo[] = [];
+  subtasks: TodoImpl[] = [];
+
   entities: Todo[] = [];
 
   isDeleted: boolean = false;
@@ -200,8 +217,21 @@ class TodoImpl implements Todo{
     content: undefined,
     type: "",
   };
+  updateOrder(newOrder: number): void {
+    this.order = newOrder;
+    // Optionally trigger UI update
+    this.updateUI();
+  }
+
+  updateUI(): void {
+    // Example: Update UI logic (could be React specific)
+    // Implement this according to your UI framework
+    console.log(`Updating UI for todo with id ${this.id}`);
+  }
 
   data?: Data;
+
+
 }
 
 export default TodoImpl;

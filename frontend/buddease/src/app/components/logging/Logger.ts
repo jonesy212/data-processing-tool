@@ -22,7 +22,8 @@ const API_BASE_URL = endpoints.logging;
   // Update the SecurityLogger class to use encryption and decryption functions
 
 // Import the encryptData function
-  import { encryptData } from "../security/encryptedData";
+  import { Theme } from '../libraries/ui/theme/Theme';
+import { encryptData } from "../security/encryptedData";
   
 const { notify } = useNotification();
 
@@ -1714,12 +1715,80 @@ class SnapshotLogger extends Logger {
 }
 
 
+class ThemeLogger extends Logger {
+  static logThemeUpdate(themeName: string, newTheme: Partial<Theme>) {
+    const message = `Theme updated: ${themeName}`;
+    super.log("Theme Update", message, newTheme);
+    this.logThemeEvent("update", themeName, newTheme);
+  }
+
+  static logThemeReset(themeName: string) {
+    const message = `Theme reset: ${themeName}`;
+    super.log("Theme Reset", message);
+    this.logThemeEvent("reset", themeName);
+  }
+
+  static logThemeSwitch(oldThemeName: string, newThemeName: string) {
+    const message = `Theme switched from ${oldThemeName} to ${newThemeName}`;
+    super.log("Theme Switch", message);
+    this.logThemeEvent("switch", oldThemeName, { newThemeName });
+  }
+
+  static logThemeError(errorMessage: string, themeName?: string, extraInfo?: any) {
+    const message = themeName
+      ? `Theme error in ${themeName}: ${errorMessage}`
+      : `Theme error: ${errorMessage}`;
+    super.error(message, extraInfo);
+  }
+
+  private static logThemeEvent(
+    eventType: string,
+    themeName: string,
+    details?: Partial<Theme>
+  ) {
+    let logThemeEventUrl: string = "";
+
+    if (typeof endpoints.logs.logThemeEvent === "string") {
+      logThemeEventUrl = endpoints.logs.logThemeEvent;
+    } else if (typeof endpoints.logs.logThemeEvent === "function") {
+      logThemeEventUrl = endpoints.logs.logThemeEvent();
+    } else {
+      // Handle the case when logThemeEvent is a nested object
+      // Example: logThemeEventUrl = endpoints.logs.logThemeEvent.someNestedEndpoint;
+      // or logThemeEventUrl = endpoints.logs.logThemeEvent.someNestedFunction();
+    }
+
+    fetch(logThemeEventUrl, {
+      method: "POST",
+      body: JSON.stringify({ eventType, themeName, details }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to log theme event");
+        }
+      })
+      .catch((error) => {
+        notify(
+          "Error logging theme event",
+          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+          createErrorNotificationContent,
+          new Date(),
+          error
+        );
+        console.error(error);
+      });
+  }
+}
+
+
 export default Logger;
 
 export {
   AnalyticsLogger,
-  AnimationLogger,
-  AudioLogger,
+  AnimationLogger, AssignBaseStoreLogger, AudioLogger,
   BugLogger,
   CalendarLogger,
   ChannelLogger,
@@ -1741,7 +1810,7 @@ export {
   SearchLogger,
   SecurityLogger, SnapshotLogger, TaskLogger,
   TeamLogger,
-  TenantLogger, UILogger, VideoLogger,
-  WebLogger, AssignBaseStoreLogger
+  TenantLogger, ThemeLogger, UILogger, VideoLogger,
+  WebLogger
 };
 

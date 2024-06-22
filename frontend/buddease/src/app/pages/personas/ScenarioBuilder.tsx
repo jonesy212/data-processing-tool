@@ -1,4 +1,4 @@
-import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
+import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import {
   getDefaultDocumentOptions,
   getDocumentPhase,
@@ -9,43 +9,71 @@ import { generateValidationRulesCode } from "@/app/components/security/validatio
 import fs from "fs";
 import React, { useState } from "react";
 import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
-import { categorizeNews } from "@/app/components/community/newsFeedIntegration";
+import { categorizeNews } from "@/app/components/community/articleKeywords";
+import useDocumentStore from "@/app/components/state/stores/DocumentStore";
+import { FormData } from "../forms/PreviewForm";
+import { VersionData } from "@/app/components/versions/VersionData";
+import Version from "@/app/components/versions/Version";
+import { ModifiedDate } from "@/app/components/documents/DocType";
+import { DocumentSize } from "@/app/components/models/data/StatusType";
 
 // Define categories and their associated properties
 interface CategoryProperties {
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  iconColor: string;
+  isActive: boolean;
+  isPublic: boolean;
+  isSystem: boolean;
+  isDefault: boolean;
+  isHidden: boolean;
+  isHiddenInList: boolean;
   UserInterface: string[];
   DataVisualization: string[];
-  Forms: FormData[];
+  Forms: Record<string, any> | undefined;
   Analysis: string[];
   Communication: string[];
   TaskManagement: string[];
   Crypto: string[];
-
-  // Add more categories and properties as needed
+  brandName: string;
+  brandLogo: string;
+  brandColor: string;
+  brandMessage: string;
 }
 
 const categoryProperties: CategoryProperties = {
+  name: "Data Visualization",
+  description: "Data visualization component",
+  icon: "fa-chart-bar",
+  color: "#007bff",
+  iconColor: "#fff",
+  isActive: true,
+  isPublic: true,
+  isSystem: false,
+  isDefault: false,
+  isHidden: false,
+  isHiddenInList: false,
   UserInterface: ["componentName", "componentDescription"],
   DataVisualization: ["dataProperties", "chartType"],
-  Forms: {} as FormData[],
+  Forms: {},
   Analysis: ["categorizeNews"],
   Communication: ["audio", "video", "text"],
   TaskManagement: ["phases", "tasks", "dataAnalysis"],
-  Crypto: [
-    "portfolioManagement",
-    "trading",
-    "marketAnalysis",
-    "communityEngagement",
-  ],
+  Crypto: ["portfolioManagement", "trading", "marketAnalysis", "communityEngagement"],
+  brandName: "MyBrand",
+  brandLogo: "path/to/logo.png",
+  brandColor: "#ff5733",
+  brandMessage: "Bringing insights to life",
 };
 
 
-
-
-
+const componentFilePath = apiFilePath;
+const reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
 
 // Define function to create user scenarios and map out user journey
-async function createUserScenarios(props: any) {
+async function createUserScenarios(props: any, type: PersonaTypeEnum) {
   const [options, setOptions] = useState(getDefaultDocumentOptions());
 
   // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
@@ -63,20 +91,20 @@ async function createUserScenarios(props: any) {
   // Generate user scenarios and map out user journey
   if (phases) {
     phases.scenarios = userPersonaBuilder.buildScenarios(userPersona);
-    phases.userJourney = userPersonaBuilder.mapUserJourney(phases.scenarios);
+    phases.userJourney = userPersonaBuilder.mapUserJourney(type, phases.scenarios);
   }
   // Output or utilize the created user scenarios and mapped user journey
   console.log("User scenarios and user journey mapped successfully.");
   // Generate validation rules code
   const validationRules = generateValidationRulesCode(
-    categoryProperties.Forms.validationRules
+    categoryProperties.Forms?.validationRules
   );
   // Generate component code
   generateComponent(
     "ValidationRules",
     "Forms",
     {
-      formFields: categoryProperties.Forms.validationRules,
+      formFields: categoryProperties.Forms?.validationRules,
     },
     validationRules
   );
@@ -90,105 +118,121 @@ async function createUserScenarios(props: any) {
     options
   );
   // Instead, include the DocumentBuilder component in your JSX markup with the required props:
-  const documents = (
-    <DocumentBuilder
-      documents={[
-        {
-          id: 1,
-          title: "Document 1",
-          content: "Content for Document 1",
-          highlights: ["highlighted phrase 1", "tagged item 2"],
-          topics: ["topic 1", "topic 2"],
-          files: [
-            {
-              name: "file 1",
-              content: "",
-              fileSize: 0,
-              fileType: "",
-              filePath: "",
-              uploader: {} as FileData["username"],
-              fileName: "",
-              uploadDate: new Date(),
-              id: "",
-              title: "",
-              description: "",
-              scheduledDate: new Date(),
-              createdBy: "",
-            },
-            {
-              name: "file 2",
-              content: "",
-              fileSize: 0,
-              fileType: "",
-              filePath: "",
-              uploader: undefined,
-              fileName: "",
-              uploadDate: undefined,
-              id: "",
-              title: "",
-              description: "",
-              scheduledDate: undefined,
-              createdBy: "",
-            },
-          ],
-          documentType: "document type 1",
-          options: getDefaultDocumentOptions(),
-          documentPhase: getDocumentPhase(document),
-          keywords: ["keyword 1", "keyword 2"],
-          folderPath: "",
-          previousMetadata: {},
-          currentMetadata: {},
-          accessHistory: [],
-        },
-        // Add more document data as needed
-      ]}
-      isDynamic={true}
-      options={getDefaultDocumentOptions()}
-      onOptionsChange={(newOptions) => {
-        // Update the DocumentOptions state
-        setOptions(newOptions);
-      }}
-      setOptions={setOptions} // Define setOptions prop
-      documentPhase={getDocumentPhase(documents)}
-      version={getDocumentVersion()}
-    />
-  );
+  const docPermissions = new DocumentPermissions(true, true);
 
+  const documents: DocumentData[] = [
+    {
+      id: "1",
+      documentSize: DocumentSize.A4,
+      versionData: {} as VersionData,
+      version: {} as Version,
+      visibility: "public",
+      _id: "1",
+      permissions: docPermissions,
+      folders: [],
+      lastModifiedDate: {
+        value: new Date(),
+        // todo add timezone
+        // utc: true,
+        isModified: true,
+      } as ModifiedDate,
+      lastModifiedBy: "user1",
+      name: "Document 1",
+      description: "Description for Document 1",
+      createdBy: "user1",
+      createdDate: new Date(),
+      status: "active",
+      type: "type1",
+      // user: "user1",
+      title: "Document 1",
+      content: "Content for Document 1",
+      highlights: ["highlighted phrase 1", "tagged item 2"],
+      topics: ["topic 1", "topic 2"],
+      files: [
+        {
+          name: "file 1",
+          content: "",
+          fileSize: 0,
+          fileType: "",
+          filePath: "",
+          uploader: "uploader1",
+          fileName: "",
+          uploadDate: new Date(),
+          id: "file1",
+          title: "",
+          description: "",
+          scheduledDate: new Date(),
+          createdBy: "user1",
+        },
+        {
+          name: "file 2",
+          content: "",
+          fileSize: 0,
+          fileType: "",
+          filePath: "",
+          uploader: "uploader2",
+          fileName: "",
+          uploadDate: new Date(),
+          id: "file2",
+          title: "",
+          description: "",
+          scheduledDate: new Date(),
+          createdBy: "user2",
+        },
+      ],
+      documentType: "document type 1",
+      options: getDefaultDocumentOptions(),
+      documentPhase: getDocumentPhase(document),
+      keywords: ["keyword 1", "keyword 2"],
+      folderPath: "",
+      previousMetadata: {},
+      currentMetadata: {},
+      accessHistory: [],
+      _rev: "1",
+      _attachments: {},
+      _links: {},
+      _etag: "etag1",
+      _local: false,
+      _revs: [],
+      _source: {},
+      _shards: {},
+      _size: 0,
+      _version: 1,
+      _version_conflicts: 0,
+      _seq_no: 0,
+      _primary_term: 1,
+      _routing: "route1",
+      _parent: "parent1",
+      _parent_as_child: false,
+      _slices: [],
+      _highlight: {},
+      _highlight_inner_hits: {},
+      _source_as_doc: false,
+      _source_includes: [],
+      _routing_keys: [],
+      _routing_values: [],
+      _routing_values_as_array: [],
+      _routing_values_as_array_of_objects: [],
+      _routing_values_as_array_of_objects_with_key: [],
+      _routing_values_as_array_of_objects_with_key_and_value: [],
+      _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+    },
+    // Add more document data as needed
+  ];
   // Output or utilize the created user scenarios and mapped user journey
   console.log("User scenarios and user journey mapped successfully.");
 }
 
-function generateComponent(
-  componentName: string,
-  category: keyof CategoryProperties,
-  properties: any,
-  validationRules: any // Include validationRules parameter
-) {
-  // Generate React component code based on the selected category and properties
+
+function generateComponent(componentName: string, category: keyof CategoryProperties, properties: any, brand: any) {
   let reactCode = "";
 
   switch (category) {
     case "UserInterface":
-      reactCode = generateUserInterfaceComponent(
-        componentName,
-        properties.componentDescription
-      );
+      reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
       break;
     case "DataVisualization":
-      // Pass validationRules as the last parameter
-      reactCode = generateDataVisualizationComponent(
-        componentName,
-        properties.dataProperties,
-        properties.chartType,
-        validationRules
-      );
-      break;
-    case "Forms":
-      reactCode = generateFormsComponent(
-        componentName,
-        properties.formFields,
-        validationRules // Pass validationRules
-      );
+      reactCode = generateDataVisualizationComponent(componentName, properties.dataProperties, properties.chartType, brand);
       break;
     // Add cases for other categories
     default:
@@ -211,69 +255,65 @@ function generateComponent(
   console.log(`${componentName} component generated successfully.`);
 }
 
+
+
 // Function to generate user interface component code
-function generateUserInterfaceComponent(
-  componentName: string,
-  componentDescription: string // Change to string type
-) {
+function generateUserInterfaceComponent(componentName: string, componentDescription: string, brand: any) {
   return `
     import React from 'react';
 
     interface ${componentName}Props {
-        // Add component props here
+      // Add component props here
     }
 
     const ${componentName}: React.FC<${componentName}Props> = (props) => {
-        // Component implementation
-        return <div>${componentName} Component - ${componentDescription}</div>;
+      // Component implementation
+      return (
+        <div style={{ borderColor: "${brand.brandColor}", borderStyle: "solid" }}>
+          <img src="${brand.brandLogo}" alt="${brand.brandName} Logo" />
+          <h1>${componentName} Component</h1>
+          <p>${componentDescription}</p>
+          <p>${brand.brandMessage}</p>
+        </div>
+      );
     };
 
     export default ${componentName};
-    `;
+  `;
 }
 
 // Function to generate data visualization component code
-function generateDataVisualizationComponent(
-  componentName: string,
-  dataProperties: string[],
-  chartType: string,
-  validationRules: any // Include validationRules parameter
-): string {
+function generateDataVisualizationComponent(componentName: string, dataProperties: string[], chartType: string, brand: any) {
   // Generate React component code for data visualization
+  const dataPropsCode = dataProperties.map((prop) => `    ${prop}: any;`).join("\n");
 
-  // Define data properties
-  const dataPropsCode = dataProperties
-    .map((prop) => `    ${prop}: any;`)
-    .join("\n");
+  return `
+    import React from 'react';
+    import { ChartOptions } from 'chart.js';
+    import ChartComponent from "../forms/ChartComponent"; // Import the ChartComponent
 
-  // Generate component code
-  const componentCode = `
-      import React from 'react';
-      import { ChartOptions } from 'chart.js';
-      import ChartComponent from "../forms/ChartComponent"; // Import the ChartComponent
-
-      interface ${componentName}Props {
+    interface ${componentName}Props {
   ${dataPropsCode}
-      }
+    }
 
-      const ${componentName}: React.FC<${componentName}Props> = ({ ${dataProperties.join(
-    ", "
-  )} }) => {
-          // Implement data visualization component logic here
-          return (
-              <div>
-                  <h2>${componentName} Component</h2>
-                  <p>Chart Type: ${chartType}</p>
-                  <ChartComponent type="${chartType}" data={{ /* Pass your data here */ }} />
-              </div>
-          );
-      };
+    const ${componentName}: React.FC<${componentName}Props> = ({ ${dataProperties.join(", ")} }) => {
+      // Implement data visualization component logic here
+      return (
+        <div style={{ borderColor: "${brand.brandColor}", borderStyle: "solid" }}>
+          <img src="${brand.brandLogo}" alt="${brand.brandName} Logo" />
+          <h2>${componentName} Component</h2>
+          <p>Chart Type: ${chartType}</p>
+          <ChartComponent type="${chartType}" data={{ /* Pass your data here */ }} />
+          <p>${brand.brandMessage}</p>
+        </div>
+      );
+    };
 
-      export default ${componentName};
-    `;
-
-  return componentCode;
+    export default ${componentName};
+  `;
 }
+
+
 
 // Function to generate forms component code
 function generateFormsComponent(
@@ -354,6 +394,19 @@ const validationRules = {}; // Include your validation rules here
 // Generate the component
 generateComponent(componentName, category, properties, validationRules);
 
+
+
+
+
+
+
+
+
+
+
+
+// Example usage
+generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, categoryProperties);
 export type { CategoryProperties };
 
 

@@ -16,18 +16,21 @@ interface StructuredMetadata {
   [fileOrFolderId: string]: {
     originalPath: string;
     alternatePaths: string[];
+    author: string;
+    timestamp: Date;
     fileType: string;
-    title: "",
-      description: "",
-      keywords: [],
-      authors: [],
-      contributors: [],
-      publisher: "",
-      copyright: "",
-      license: "",
-      links: [],
-      tags: []
+    title: string,
+    description: string,
+    keywords: string[],
+    authors: string[],
+    contributors: string[],
+    publisher: string,
+    copyright: string,
+    license: string,
+    links: string[],
+    tags: string[]
   };
+
 }
 
 interface VideoMetadata {
@@ -194,10 +197,13 @@ const traverseDirectory = (dir: string) => {
       const fileOrFolderId = Buffer.from(filePath).toString("base64");
 
       if (!metadata[fileOrFolderId]) {
-        const fileType = determineFileType(filePath);
+        const fileType = determineFileType({filePath});
         metadata[fileOrFolderId] = {
+          author: "",
+          timestamp: new Date(),
           originalPath: filePath,
           alternatePaths: [],
+
           fileType: (fileType as string) || "Unknown",
           title: "",
           description: "",

@@ -2,7 +2,6 @@ import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { ColorPalettes } from "antd/es/theme/interface";
-import React from "react";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
@@ -11,11 +10,12 @@ import { CollaborationOptions } from "../../interfaces/options/CollaborationOpti
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import Todo from "../../todos/Todo";
+import Todo, { UserAssignee } from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
@@ -26,7 +26,7 @@ import { Content } from "../content/AddContent";
 import { Member } from "../teams/TeamMembers";
 import { Tag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
-import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
+import React from "react";
 
 
 // Define the interface for DataDetails
@@ -69,7 +69,7 @@ interface DataDetailsProps<T> {
 }
 
 export interface Comment {
-  id: string;
+  id?: string;
   text?: string | Content;
   editedAt?: Date;
   editedBy?: string;
@@ -88,9 +88,8 @@ export interface Comment {
   pinned?: boolean;
   // Consolidating upvotes into likes if they serve the same purpose
   postId?: string | number;
-  data?: Data | undefined;
+  data?: string | Data | undefined;
   customProperty?: string;
-
   // Add other properties as needed
 }
 
@@ -103,7 +102,7 @@ interface BaseData {
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  timestamp?: Date | string;
+  timestamp?: string | Date;
   isActive?: boolean;
   tags?: string[] | Tag[];
   phase?: Phase | null;
@@ -112,9 +111,9 @@ interface BaseData {
   // Properties specific to Todo
   dueDate?: Date | null;
   priority?: AllStatus;
-  assignee?: User | null;
+  assignee?: UserAssignee | null;
   collaborators?: string[];
-  comments?: (Comment | CustomComment)[];
+  comments?: (Comment | CustomComment)[] | undefined;
   attachments?: Attachment[];
   subtasks?: Todo[];
   createdAt?: Date;
@@ -144,7 +143,7 @@ interface BaseData {
   leader?: User | null;
   snapshots?: SnapshotStore<Snapshot<BaseData>>[];
   text?: string;
-  category?: string;
+  category?: string | undefined;
   [key: string]: any;
   getData?: () => Promise<SnapshotStore<Snapshot<BaseData>>[]>; // Define the getData method
 
@@ -153,7 +152,8 @@ interface BaseData {
 }
 
 interface Data extends BaseData {
-  category?: string;
+  category?: string | undefined;
+  subtasks?: Todo[];
   actions?: SnapshotStoreConfig<Data, Data>[];
   [key: string]: any;
 

@@ -1,5 +1,7 @@
 import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
-import React from "react";
+import { ThemeState } from "@/app/components/state/redux/slices/ThemeSlice";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import React, { SetStateAction } from "react";
 
 // Define the Theme interface
 
@@ -21,6 +23,13 @@ interface Theme extends BrandingSettings {
   borderRadius: string;
   boxShadow: string;
   children?: React.ReactNode;
+  language?: string;
+  newThemeName?: string;
+  isDarkMode?: boolean;
+  infoColor?: string;
+  notificationState?: React.Dispatch<SetStateAction<NotificationData[]>>;
+  setThemeState?: React.Dispatch<SetStateAction<ThemeState>>
+  updateTheme?: (newTheme: Partial<Theme>) => void;
   // Add more theme properties as needed
 }
 // Define the ThemeContext

@@ -13,12 +13,19 @@ export const RootStoreComponent = observer(() => {
 
   useEffect(() => {
     const newRootStore = new RootStores() as RootStores;
+    
+    const dispatch = (action: any, state: any) => {
+      newRootStore.browsers.setState(state);
+    };
 
     // Use generateStoreKey to create a unique key for BrowserCheckStore
     const browserCheckStoreKey = generateStoreKey("browserCheckStore");
 
     // Initialize BrowserCheckStore with the generated key
-    const browserCheckStoreInstance = new BrowserCheckStore(newRootStore);
+    const browserCheckStoreInstance = new BrowserCheckStore(
+      newRootStore,
+      dispatch
+    );
     browserCheckStoreInstance.init(browserCheckStoreKey);
 
     // Assign the instance to newRootStore.browserCheckStore
@@ -34,6 +41,9 @@ export const RootStoreComponent = observer(() => {
     setRootStore(newRootStore);
 
     // Additional setup logic here
+    // Test dispatching an action
+    const testAction = { type: "TEST_ACTION", payload: "Test payload" };
+    browserCheckStoreInstance.testDispatch(testAction);
 
     // Hydrate the store
     const hydrate = create();

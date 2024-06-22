@@ -81,6 +81,7 @@ export enum NotificationTypeEnum {
   SnapshotCreationSuccess = "SnapshotCreationSuccess",
   SnapshotDetails = "SnapshotDetails",
   Snapshot = "Snapshot",
+  SUBSCRIBER_INITIAL_DATA = "SUBSCRIBER_INITIAL_DATA",
   Success = "Success",
   DisplaySuccess ="DisplaySuccess",
   SurveyID = "SurveyID",

@@ -1,5 +1,5 @@
+import { Theme } from "@/app/components/libraries/ui/theme/Theme";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 
 
 interface Toolbar {
@@ -14,6 +14,7 @@ interface ToolbarState {
   selectedTool: string | null;
   selectedToolBar: string | null;
   isDraggable: boolean;
+  themeType: Theme;
   isFloating: boolean;
   order: number;
   fontSize: number;
@@ -39,6 +40,9 @@ interface ToolbarState {
   participantManagementEnabled: boolean;
   selectedToolbar: AlignmentOptions | null;
   toolbars: Toolbar[];
+
+  x: number;
+  y: number;
 }
 
 
@@ -82,7 +86,10 @@ const initialState: ToolbarState = {
   screenSharingEnabled: false,
   participantManagementEnabled: false,
   selectedToolbar: null,
-  toolbars: []
+  toolbars: [],
+  themeType: Theme.LIGHT,
+  x: 0,
+  y: 0,
 };
 
 // Create the toolbar slice
@@ -191,4 +198,5 @@ export const {
 
 export default useToolbarManagerSlice.reducer;
 export type { ToolbarState };
+
 

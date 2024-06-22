@@ -29,7 +29,7 @@ interface VideoState {
   video: Video | null;
   videos: Video[];
   currentVideoId: string | null;
-  comments: (Comment | CustomComment)[];
+  comments: (Comment | CustomComment)[] | undefined;
   watchLater: string[];
   currentlyWatching: string[]; 
   watched: string[];

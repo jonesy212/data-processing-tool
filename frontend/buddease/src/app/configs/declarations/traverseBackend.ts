@@ -1,7 +1,7 @@
+import * as apiFile from '@/api/ApiFiles';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import * as path from 'path';
 import { AppStructureItem } from '../appStructure/AppStructure';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import * as apiFile from '@/api/ApiFiles'
 interface BackendStructure {
   // Define the structure for the backend
 }
@@ -30,7 +30,15 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
         id: structureId,
         path: filePath,
         content: content,
-        type: apiFile.fileApiService.getFileType(file),
+        draft: false,
+        permissions: {
+          read: true,
+          write: true,
+          delete: true,
+          share: true,
+          execute: true,
+        },
+        type: apiFile.getFileType(file),
         name: path.basename(file, path.extname(file)),
         items: {
           // Populate items for backend routes/models etc
@@ -43,6 +51,12 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
     }
   }
   return result;
+};
+
+
+// If you want to allow the method to be used outside the class as well, you can do the following:
+export const getStructureAsArray = async (structure?: Record<string, AppStructureItem>): Promise<AppStructureItem[]> => {
+  return structure ? Object.values(structure) : [];
 };
 
 // Function to fetch files in a directory

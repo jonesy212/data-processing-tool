@@ -106,6 +106,13 @@ class UniqueIDGenerator {
     return `document_${name}`;
   }
 
+  static generateDocumentID(
+    name: string,
+    type: NotificationTypeEnum,
+  ): string {
+    return `document_${name}_${type}`;
+  }
+
   static generateTaskBoardID(): string {
     return `taskboard_${Date.now()}`;
   }

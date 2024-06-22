@@ -53,9 +53,9 @@ import { useVersionManagerSlice } from "./VersionSlice";
 import { useVideoManagerSlice } from "./VideoSlice";
 import { useAuthSlice } from "./AuthSlice";
 import { useAuthorizationSlice } from "./AuthorizationSlice";
-import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 import { useParticipantSlice } from "./participantSlice";
 import {useTagManagerSlice} from "./useTagManagerSlice";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -71,8 +71,9 @@ interface EntityState<T, Id extends string> {
 
 // Define your EntityId type if not already defined
 export type EntityId = string;
+
+
 export interface RootState {
- 
   // User Interface
   appManager: ReturnType<typeof useAppManagerSlice.reducer>;
   toolbarManager: ReturnType<typeof useToolbarManagerSlice.reducer>;
@@ -494,7 +495,7 @@ const rootReducer = combineReducers({
   authManager: useAuthSlice.reducer,
   authenticationManager: useAuthorizationSlice.reducer,
   tagManager: useTagManagerSlice.reducer,
-  bookmarkManager: useBookmarkManagerSlice.reducer,
+  // bookmarkManager: useBookmarkManagerSlice.reducer,
 
   // Add other slices as needed
 });

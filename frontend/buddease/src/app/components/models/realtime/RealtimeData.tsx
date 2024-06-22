@@ -27,7 +27,7 @@ interface RealtimeDataItem extends BaseRealtimeData,EventData {
   dispatch: (action: any) => void;
   value: string;
   name: string;
-  timestamp: Date | string
+  timestamp: string | Date
 
   // Add other properties specific to RealtimeDataItem here
 }

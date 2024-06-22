@@ -1,10 +1,10 @@
 // DocumentActions.ts
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { createAction } from "@reduxjs/toolkit";
+import { DocumentEditingPermissions } from "../components/communications/chat/ChatSettingsModal";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { DocumentStatus } from "../components/documents/types";
 import { UserIdea } from "../components/users/Ideas";
-import { DocumentEditingPermissions } from "../components/communications/chat/ChatSettingsModal";
 
 export const DocumentActions = {
   // Single Document Actions
@@ -12,6 +12,7 @@ export const DocumentActions = {
   addDocumentSuccess: createAction<{id: number, title: string}>("addDocumentSuccess"),
   addDocumentFailure: createAction<string>("addDocumentFailure"),
   
+  createDocument: createAction<DocumentData>("createDocument"),
   updateDocument: createAction<Partial<DocumentData>>("updateDocument"),
   updateDocumentDetails: createAction<Partial<DocumentData>>("updateDocumentDetails"),
   updateDocumentDetailsSuccess: createAction<Partial<DocumentData>>("updateDocumentDetailsSuccess"),

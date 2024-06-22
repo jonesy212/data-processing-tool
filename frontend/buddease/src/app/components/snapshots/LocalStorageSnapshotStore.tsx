@@ -1,17 +1,21 @@
 // LocalStorageSnapshotStore.tsx
 
-import { Tag } from "../models/tracker/Tag";
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Content } from "../models/content/AddContent";
-import { Subscriber } from "../users/Subscriber";
 import { Data } from "../models/data/Data";
 import { PriorityTypeEnum, ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
+import { Tag } from "../models/tracker/Tag";
 import { Phase } from "../phases/Phase";
 import { AllStatus } from "../state/stores/DetailsListStore";
+import { Subscription } from "../subscriptions/Subscription";
 import { NotificationTypeEnum } from "../support/NotificationContext";
-import { AuditRecord } from "./SnapshotConfig";
-import SnapshotStore from "./SnapshotStore";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { Subscriber } from "../users/Subscriber";
+import { AuditRecord, SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
+import SnapshotStore, { initialState } from "./SnapshotStore";
+import { snapshot } from "./snapshot";
+import { delegate, subscribeToSnapshots } from "./snapshotHandlers";
 
 
 interface Payload {
@@ -46,7 +50,7 @@ interface Payload {
   }
   
   interface CustomSnapshotData extends Data {
-    timestamp: Date | string | undefined;
+    timestamp?: string | Date | undefined;
     value: number;
   }
   
@@ -59,7 +63,7 @@ interface Payload {
     id?: string | number;
     data?: T | undefined;
     name?: string;
-    timestamp?: Date | string;
+    timestamp?: string | Date;
     title?: string;
     
     createdBy?: string;
@@ -71,6 +75,8 @@ interface Payload {
     topic?: string;
     priority?: string;
     key?: string;
+    subscription?: Subscription | null;
+    config?: SnapshotStoreConfig<Snapshot<any>, any>[] | null
     status?: string;
     metadata?: any;
     content?: T | string | Content | undefined;
@@ -85,21 +91,55 @@ interface Payload {
     ownerId?: string;
     auditTrail?: AuditRecord[];
     subscribers?: Subscriber<CustomSnapshotData | Data>[];
+    delegate?:  SnapshotStoreConfig<Snapshot<T>, T>[]
     value?: number;
     store?: SnapshotStore<T>;
     state?: Snapshot<T> | null;
     todoSnapshotId?: string;
-    initialState?: Snapshot<Data> ;
+    initialState?: Snapshot<Data> | null;
     // Implement the `then` function using the reusable function
-    then?: (callback: (newData: Snapshot<Data>) => void) => void;
+    then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
     setSnapshotData?: (data: Data) => void;
-    
+
   }
 // Example implementation of LocalStorageSnapshotStore
-class LocalStorageSnapshotStore<T extends Data | undefined> implements SnapshotStore<T> {
+class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStore<T> {
+    
     private storage: Storage;
   
-    constructor(storage: Storage) {
+  constructor(storage: Storage, category: CategoryProperties = {
+    name: "LocalStorageSnapshotStore",
+    description: "LocalStorageSnapshotStore",
+    icon: "fa-solid fa-database",
+    color: "bg-blue-500",
+    iconColor: "text-white",
+    isActive: true,
+    isPublic: true,
+    isSystem: true,
+    isDefault: true,
+    isHidden: false,
+    isHiddenInList: false,
+    UserInterface: [],
+    DataVisualization: [],
+    Forms: undefined,
+    Analysis: [],
+    Communication: [],
+    TaskManagement: [],
+    Crypto: [],
+    brandName: "",
+    brandLogo: "",
+    brandColor: "",
+    brandMessage: ""
+  }) {
+    super(
+      snapshot,
+      category,
+      new Date(),
+      initialState,
+      snapshotConfig,
+      subscribeToSnapshots,
+      delegate
+      );
       this.storage = storage;
     }
   
@@ -115,6 +155,28 @@ class LocalStorageSnapshotStore<T extends Data | undefined> implements SnapshotS
     removeItem(key: string): void {
       this.storage.removeItem(key);
     }
+  
+  
+
+  getAllItems(): Snapshot<T>[] {
+    const items: Snapshot<T>[] = [];
+    for (let i = 0; i < this.storage.length; i++) {
+      const key = this.storage.key(i);
+      if (key) {
+        const value = this.storage.getItem(key);
+        if (value) {
+          items.push(JSON.parse(value));
+        }
+      }
+    }
+    return items;
+  }
+
+  
+
+
+
+  
   }
   
   // Example usage in a Redux slice or elsewhere
@@ -142,7 +204,7 @@ class LocalStorageSnapshotStore<T extends Data | undefined> implements SnapshotS
     source: "user",
     tags: [],
     dependencies: [],
-    then: function (onFulfill: (newData: Snapshot<Data>) => void): unknown {
+    then: function (onFulfill: (newData: Snapshot<Data>) => void): void {
       const store = new LocalStorageSnapshotStore<Data>(window.localStorage);
       setTimeout(() => {
         onFulfill({
@@ -150,10 +212,9 @@ class LocalStorageSnapshotStore<T extends Data | undefined> implements SnapshotS
           store: store,
         });
       }, 1000);
-      return this;
     },
   };
 
 
 
-  export type {UpdateSnapshotPayload, Payload, CustomSnapshotData, Snapshot, Snapshots}
+  export type { CustomSnapshotData, Payload, Snapshot, Snapshots, UpdateSnapshotPayload };

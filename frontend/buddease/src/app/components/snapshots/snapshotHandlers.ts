@@ -17,9 +17,8 @@ import {
   useNotification
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
-import { Subscriber } from "../users/Subscriber";
 import { generateSnapshotId } from "../utils/snapshotUtils";
-import { Snapshot } from './LocalStorageSnapshotStore';
+import { Snapshot, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 const { notify } = useNotification();
 const dispatch = useDispatch()
@@ -92,7 +91,6 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<Data>> => {
     timestamp: new Date(),
     category: "New Category",
     type: "",
-    store: null,
   };
 
   // Define methods to be exposed by the snapshot store
@@ -317,7 +315,7 @@ export const handleSnapshotSuccess = async <T>(snapshot: Snapshot<T>) => {
 
 
 export const addSnapshotSuccess = async <T>(snapshot: Snapshot<T>) => {
-  const snapshotStore = (await useSnapshotManager()).state;
+  const snapshotStore = (await useSnapshotManager()).error.state;
   if (snapshotStore && snapshotStore.length > 0) {
     const updatedSnapshotData = {
       id: generateSnapshotId,
@@ -366,28 +364,21 @@ export const updateSnapshot = async <T extends { data: any }>(
   snapshotId: string,
   data: SnapshotStore<Snapshot<T>>,
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<Data>,
+  snapshotStore: SnapshotStore<T>,
   dataItems: RealtimeDataItem[],
-  newData: Data,
+  newData: T | Data,
   payload: UpdateSnapshotPayload<T>
-): Promise<{ snapshot: SnapshotStore<Snapshot<T>>[] }> => {
+): Promise<{ snapshot: SnapshotStore<T>[] }> => {
   try {
     // Perform necessary operations with the provided arguments
     // For example, update the snapshot data and handle events, data items, etc.
 
     // Simulate updating the snapshot data
-    const updatedSnapshotData: Snapshot<T> = {
-      id: snapshotId,
-      data: {
-        ...snapshotStore.data,
-        ...newData,  // Merge new data with existing snapshot data
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      timestamp: new Date(),
-      category: "update",
-      length: 0,
-      content: undefined,
+    const updatedSnapshotData: T = {
+      ...snapshotStore.data,
+      ...newData,  // Merge new data with existing snapshot data
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     // Update the snapshot store with the new data
@@ -424,6 +415,7 @@ export const updateSnapshot = async <T extends { data: any }>(
     throw error;
   }
 };
+
 
 
 /**
@@ -484,10 +476,11 @@ export const getAllSnapshots = async <T, K>(
       snapshotConfig.snapshots.map(
         (snapshotData: SnapshotStore<Snapshot<T>>) => {
           const snapshotStore = new SnapshotStore<Snapshot<T>>(
-            "snapshot",
+            snapshot as Snapshot<T>,
             category,
+            new Date(),
             initSnapshot,
-            snapshotConfig,
+            null,
             subscribeToSnapshots,
             delegate,
             {

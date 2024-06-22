@@ -116,39 +116,42 @@ const useSnapshotStore = async (
   );
   const [subscribers, setSubscribers] = useState<
     Subscriber<Data | CustomSnapshotData>[]
-    >([]);
+  >([]);
   
   
-const addSnapshot = (snapshot: Snapshot<any>) => {
+  const addSnapshot = async (snapshot: Snapshot<any>) => {
+    const defaultImplementation = (): void => {
+      console.log("Default implementation - Method not provided.");
+    };
+  
+    const resolvedDelegate = await delegate(); // Resolve the promise
+  
+    const newSnapshot = new SnapshotStore<any>(
+      null,
+      'newSnapshot',
+      new Date(),
+      NotificationTypeEnum.CreationSuccess,
+      initialState,
+      snapshotConfig,
+      subscribeToSnapshots,
+      resolvedDelegate // Pass the resolved value
+    );
+  
+    const dataStore = newSnapshot.getDataStore();
+  
+    // Add the new snapshot to the list (example usage)
+    addToSnapshotList(newSnapshot, []);
+  
+    // Update the state synchronously
     setSnapshots((currentSnapshots) => {
-      const defaultImplementation = (): void => {
-        console.log("Default implementation - Method not provided.");
-      };
-
-      const newSnapshot = new SnapshotStore<any>(
-        null,
-        'newSnapshot',
-        new Date(),
-        NotificationTypeEnum.CreationSuccess,
-        initialState,
-        snapshotConfig,
-        subscribeToSnapshots,
-        delegate
-      );
-
-      const dataStore = newSnapshot.getDataStore();
-
-      // Add the new snapshot to the list (example usage)
-      addToSnapshotList(newSnapshot, []);
-
-      const updatedSnapshots: SnapshotStore<Snapshot<Data>> = currentSnapshots
+      const updatedSnapshots = currentSnapshots
         ? [...currentSnapshots, newSnapshot]
         : [newSnapshot];
-
-      addToSnapshotList(newSnapshot, subscribers);
       return updatedSnapshots;
     });
   };
+  
+  
   
   // Subscribe to live events using useSubscription hook
   const { subscribe, unsubscribe } = useSubscription({
@@ -1300,6 +1303,7 @@ const addSnapshot = (snapshot: Snapshot<any>) => {
   // };
 
   // Return the snapshot store object
+
   return {
     // flatMap,
     snapshots,

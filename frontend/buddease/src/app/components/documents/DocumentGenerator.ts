@@ -1,3 +1,4 @@
+import { FileActions } from '@/app/components/actions/FileActions';
 import Draft from "immer";
 // DocumentGenerator.ts
 
@@ -85,6 +86,8 @@ enum DocumentTypeEnum {
   Image = "image",
   PDF = "pdf",
   APP_VERSION = "appVersion",
+  File = "file",
+  URL = "url",
 }
 
 enum DocumentStatusEnum {

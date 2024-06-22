@@ -4,7 +4,7 @@ import { DocumentPath } from "../../documents/DocumentGenerator";
 import { AllTypes } from "../../typings/PropTypes";
 
 interface DatasetModel {
-  id: number;
+  id: string | number;
   name: string;
   description: string | null;
   filePathOrUrl: string;
@@ -14,7 +14,7 @@ interface DatasetModel {
   format: string;
   visibility: AllTypes
   // Add other fields as needed
-  type: "file" | "url";
+  type?: AllTypes;
   // Relationships
   uploadedByTeamId: number | null; // Assuming this is the team ID
   uploadedByTeam: Team | null; // Assuming you have a Team interface

@@ -4,7 +4,7 @@ import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/cr
 import useRealtimeDextData from "@/app/components/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/app/components/hooks/commHooks/useRealtimeExchangeData";
 import { Data } from "@/app/components/models/data/Data";
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { useDispatch } from "react-redux";
 import { RealtimeUpdateCallback } from "../../hooks/commHooks/useUIRealtimeData";
 import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
@@ -12,6 +12,7 @@ import { DEX } from "../../crypto/DEX";
 import { CalendarEvent } from '../../state/stores/CalendarEvent';
 import SnapshotList, { SnapshotItem } from '@/app/components/snapshots/SnapshotList';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 
 const RealTimeDataCollection: React.FC<{}> = () => {
   const dispatch = useDispatch();

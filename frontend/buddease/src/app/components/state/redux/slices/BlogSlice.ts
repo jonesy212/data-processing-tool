@@ -1,4 +1,5 @@
 // BlogSlice.ts
+import { Data } from '@/app/components/models/data/Data';
 import { BlogPost } from '@/app/pages/blog/BlogPost';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -7,6 +8,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface CustomComment extends BlogComment {
   // Define properties specific to your custom comment type
   // content: string;
+  data?: string | Data | undefined
 }
 
 interface BlogState {
@@ -23,7 +25,7 @@ interface BlogComment {
   pinned: boolean;
   postedId: string;
   author: string;
-  timestamp: string | Date;
+  timestamp:  Date | string 
 }
 
 

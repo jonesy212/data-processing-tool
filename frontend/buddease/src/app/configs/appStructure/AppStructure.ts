@@ -1,9 +1,9 @@
+import * as apiFile from '@/api/ApiFiles';
+import { FileType } from "@/app/components/documents/Attachment/attachment";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import * as fs from "fs";
 import * as path from "path";
 import getAppPath from "../../../../appPath";
-import * as apiFile from '@/api/ApiFiles'
-import { FileType } from "@/app/components/documents/Attachment/attachment";
 // Define the interface for AppStructureItem
 interface AppStructureItem {
   id: string;
@@ -11,8 +11,16 @@ interface AppStructureItem {
   type: string | Promise<FileType>;
   path: string;
   content: string;
-  items: {
-    [key: string]: AppStructureItem
+  draft: boolean;
+  permissions: {
+    read: boolean,
+    write: boolean,
+    delete: boolean,
+    share: boolean,
+    execute: boolean,
+  }
+  items?: {
+    [key: string]: AppStructureItem 
   }
   getStructure?(): Record<string, AppStructureItem>;
   
@@ -46,13 +54,21 @@ export default class AppStructure {
           (type === "backend" && file.endsWith(".py")) ||
           (type === "frontend" && file.endsWith(".tsx"))
         ) {
-          const fileType = await apiFile.fileApiService.getFileType(filePath); // Wait for getFileType to resolve
+          const fileType = await apiFile.getFileType(filePath); // Wait for getFileType to resolve
           this.structure[file] = {
             id: path.basename(filePath),
             name: file,
             items: {},
             path: filePath,
             content: fs.readFileSync(filePath, "utf-8"),
+            draft: false,
+            permissions: {
+              read: true,
+              write: true,
+              delete: true,
+              share: true,
+              execute: true,
+            },
             type: fileType // Assign the resolved fileType
           };
         }
@@ -64,6 +80,12 @@ export default class AppStructure {
   getStructure(): Record<string, AppStructureItem> {
     return { ...this.structure };
   }
+
+
+  async getStructureAsArray(): Promise<AppStructureItem[]> {
+    return this.structure ? Object.values(this.structure) : [];
+  }
+
 
   private async handleFileChange(event: string, filePath: string) {
     try {
@@ -77,6 +99,14 @@ export default class AppStructure {
         items: {},
         path: filePath,
         content: updatedContent,
+        draft: false,
+        permissions: {
+          read: true,
+          write: true,
+          delete: true,
+          share: true,
+          execute: true,
+        },
         type: fs.statSync(filePath).isDirectory() ? "directory" : "file"
       };
 
@@ -88,3 +118,4 @@ export default class AppStructure {
 
 // Remove the export of AppStructureItem since it's already exported as a type
 export type { AppStructureItem };
+export const appStructure: AppStructureItem = {} as AppStructureItem;

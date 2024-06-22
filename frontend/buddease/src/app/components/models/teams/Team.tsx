@@ -88,7 +88,7 @@ interface Team extends Data {
   percentage: number;
   data?: TeamData;
   members?: Member[];
-  then?: (callback: (newData: Snapshot<Data>) => void) => void;
+  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
   pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;

@@ -1,7 +1,9 @@
+import { initialState } from '@/app/components/state/redux/slices/FilteredEventsSlice';
 // RootStores.ts
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { Todo } from '../../todos/Todo';
+import { AuthStore, useAuthStore } from './AuthStore';
 import { CalendarManagerStore, useCalendarManagerStore } from './CalendarEvent';
 import useIconStore, { IconStore } from './IconStore';
 import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
@@ -10,53 +12,108 @@ import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
 import useTrackerStore, { TrackerStore } from './TrackerStore';
 import { UndoRedoStore, useUndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
-import { AuthStore, useAuthStore } from './AuthStore';
-
+import { AppStore } from './AppStore';
+import UIStore from './UIStore';
+ 
 export interface Dispatchable {
   dispatch(action: any): void;
 }
 
-export interface RootState {
-  // Define the structure of your root state here
-  browserCheckStore: BrowserCheckStore;
-  trackerStore: TrackerStore;
-  taskManagerStore: TaskManagerStore;
-  iconStore: IconStore;
-  calendarStore: CalendarManagerStore;
-  undoRedoStore: UndoRedoStore;
-  todoStore: TodoManagerStore<Todo>;
-  teamStore: Promise<TeamManagerStore>;
-  userStore: UserStore;
-  authStore: AuthStore;
 
+export interface MobXRootState {
+  appManager: AppStore;
+  toolbarManager: ToolbarStore;
+  uiManager: UIStore;
+  authManager: AuthStore;
+  authorizationManager: AuthorizationStore;
+  projectManager: ProjectManagerStore;
+  taskManager: TaskManagerStore;
+  trackerManager: TrackerManagerStore;
+  userManager: UserManagerStore;
+  teamManager: TeamManagerStore;
+  projectOwner: ProjectOwnerStore;
+  dataManager: DataManagerStore;
+  dataAnalysisManager: DataAnalysisManagerStore;
+  calendarManager: CalendarManagerStore;
+  todoManager: TodoManagerStore;
+  documentManager: DocumentManagerStore;
+  apiManager: ApiManagerStore;
+  realtimeManager: RealtimeManagerStore;
+  eventManager: EventManagerStore;
+  collaborationManager: CollaborationManagerStore;
+  entityManager: EntityManagerStore;
+  notificationManager: NotificationManagerStore;
+  settingsManager: SettingsManagerStore;
+  videoManager: VideoManagerStore;
+  randomWalkManager: RandomWalkManagerStore;
+  pagingManager: PagingManagerStore;
+  blogManager: BlogManagerStore;
+  drawingManager: DrawingManagerStore;
+  versionManager: VersionManagerStore;
 }
 
 export class RootStores {
-
-  browserCheckStore: BrowserCheckStore;
-  trackerStore: TrackerStore;
-  taskManagerStore: TaskManagerStore;
-  iconStore: IconStore;
-  calendarStore: CalendarManagerStore;
-  undoRedoStore: UndoRedoStore;
-  todoStore: TodoManagerStore<Todo>;
-  teamStore: Promise<TeamManagerStore>;
-  userStore: UserStore;
-  authStore: AuthStore;
-  prototype: any;
-  browsers: any;
+  appManager: AppStore;
+  toolbarManager: ToolbarStore;
+  uiManager: UIStore;
+  authManager: AuthStore;
+  authorizationManager: AuthorizationStore;
+  projectManager: ProjectManagerStore;
+  taskManager: TaskManagerStore;
+  trackerManager: TrackerManagerStore;
+  userManager: UserManagerStore;
+  teamManager: TeamManagerStore;
+  projectOwner: ProjectOwnerStore;
+  dataManager: DataManagerStore;
+  dataAnalysisManager: DataAnalysisManagerStore;
+  calendarManager: CalendarManagerStore;
+  todoManager: TodoManagerStore;
+  documentManager: DocumentManagerStore;
+  apiManager: ApiManagerStore;
+  realtimeManager: RealtimeManagerStore;
+  eventManager: EventManagerStore;
+  collaborationManager: CollaborationManagerStore;
+  entityManager: EntityManagerStore;
+  notificationManager: NotificationManagerStore;
+  settingsManager: SettingsManagerStore;
+  videoManager: VideoManagerStore;
+  randomWalkManager: RandomWalkManagerStore;
+  pagingManager: PagingManagerStore;
+  blogManager: BlogManagerStore;
+  drawingManager: DrawingManagerStore;
+  versionManager: VersionManagerStore;
 
   constructor() {
-    this.browserCheckStore = new BrowserCheckStore(this);
-    this.todoStore = useTodoManagerStore();
-    this.trackerStore = useTrackerStore(this);
-    this.taskManagerStore = useTaskManagerStore();
-    this.calendarStore = useCalendarManagerStore();
-    this.undoRedoStore = useUndoRedoStore();
-    this.userStore = userManagerStore();
-    this.iconStore = useIconStore(this);
-    this.teamStore = useTeamManagerStore();
-    this.authStore = useAuthStore();
+    this.appManager = useAppStore();
+    this.toolbarManager = useToolbarStore();
+    this.uiManager = useUIManagerStore();
+    this.authManager = useAuthStore();
+    this.authorizationManager = useAuthorizationStore();
+    this.projectManager = useProjectManagerStore();
+    this.taskManager = useTaskManagerStore();
+    this.trackerManager = useTrackerManagerStore();
+    this.userManager = useUserManagerStore();
+    this.teamManager = useTeamManagerStore();
+    this.projectOwner = useProjectOwnerStore();
+    this.dataManager = useDataManagerStore();
+    this.dataAnalysisManager = useDataAnalysisManagerStore();
+    this.calendarManager = useCalendarManagerStore();
+    this.todoManager = useTodoManagerStore();
+    this.documentManager = useDocumentManagerStore();
+    this.apiManager = useApiManagerStore();
+    this.realtimeManager = useRealtimeManagerStore();
+    this.eventManager = useEventManagerStore();
+    this.collaborationManager = useCollaborationManagerStore();
+    this.entityManager = useEntityManagerStore();
+    this.notificationManager = useNotificationManagerStore();
+    this.settingsManager = useSettingsManagerStore();
+    this.videoManager = useVideoManagerStore();
+    this.randomWalkManager = useRandomWalkManagerStore();
+    this.pagingManager = usePagingManagerStore();
+    this.blogManager = useBlogManagerStore();
+    this.drawingManager = useDrawingManagerStore();
+    this.versionManager = useVersionManagerStore();
+    
     makeAutoObservable(this);
   }
 
@@ -70,10 +127,11 @@ export class RootStores {
     this.taskManagerStore.dispatch(action);
     this.calendarStore.dispatch(action);
     this.iconStore.dispatch(action);
-    this.authStore.dispatch(action);
+    this.authManager.dispatch(action);
+    
   }
 
-  public getState(): RootState {
+  public getState(): MobXRootState {
     return {
       browserCheckStore: this.browserCheckStore,
       trackerStore: this.trackerStore,
@@ -84,7 +142,7 @@ export class RootStores {
       todoStore: this.todoStore,
       teamStore: this.teamStore,
       userStore: this.userStore,
-      authStore: this.authStore,
+      authManager: this.authManager,
     };
   }
 }
