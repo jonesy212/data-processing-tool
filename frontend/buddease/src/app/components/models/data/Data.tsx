@@ -1,7 +1,9 @@
 import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ColorPalettes } from "antd/es/theme/interface";
+import React from "react";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
@@ -26,7 +28,6 @@ import { Content } from "../content/AddContent";
 import { Member } from "../teams/TeamMembers";
 import { Tag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
-import React from "react";
 
 
 // Define the interface for DataDetails
@@ -53,7 +54,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: Snapshots
+    snapshots?: Snapshots<T>
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -110,7 +111,7 @@ interface BaseData {
 
   // Properties specific to Todo
   dueDate?: Date | null;
-  priority?: AllStatus;
+  priority?: string | AllStatus;
   assignee?: UserAssignee | null;
   collaborators?: string[];
   comments?: (Comment | CustomComment)[] | undefined;
@@ -139,11 +140,12 @@ interface BaseData {
   videoData?: VideoData;
   additionalData?: any;
   ideas?: Idea[];
-  members?: Member[];
+  members?: number | Member[];
+
   leader?: User | null;
   snapshots?: SnapshotStore<Snapshot<BaseData>>[];
   text?: string;
-  category?: string | undefined;
+  category?: string | CategoryProperties | undefined;
   [key: string]: any;
   getData?: () => Promise<SnapshotStore<Snapshot<BaseData>>[]>; // Define the getData method
 
@@ -152,7 +154,7 @@ interface BaseData {
 }
 
 interface Data extends BaseData {
-  category?: string | undefined;
+  category?: string | CategoryProperties | undefined;
   subtasks?: Todo[];
   actions?: SnapshotStoreConfig<Data, Data>[];
   [key: string]: any;

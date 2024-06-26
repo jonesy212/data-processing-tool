@@ -1,22 +1,15 @@
 import { getConfigsData } from "@/app/api/getConfigsApi";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import { ConfigLogger } from "../logging/Logger";
-import { Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
+import { CustomSnapshotData, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
 import DatabaseClient from "../todos/tasks/DatabaseClient";
 import { Subscriber } from "../users/Subscriber";
-import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
-} from "../utils/applicationUtils";
 import * as subscriptionApi from "./../../api/subscriberApi";
-import initialOrderBookData, { OrderBookData } from "./OrderBookData";
+import { OrderBookData } from "./OrderBookData";
 import OrderBookUpdater from "./OrderBookUpdater";
 import TickerUpdater from "./TickerUpdater";
-import { CustomSnapshotData, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
 // Define enum for exchange data types
 enum ExchangeDataTypeEnum {
@@ -468,7 +461,7 @@ const createSubscriber = (): Subscriber<CustomSnapshotData | undefined> => {
     "1",
     name,
     subscription,
-    subscriberId,
+    subscriberId!,
     notifyEventSystem,
     updateProjectState,
     logActivity,
@@ -490,11 +483,11 @@ const orderBookSubscriber = new Subscriber<CustomSnapshotData | undefined>(
   "orderBookSubscriber",
   "orderBookSubscriberName", // Assuming you have a name for this subscriber
   subscription,
-  subscriptionApi.getSubscriberId(subscriber),
-  subscriber.getNotifyEventSystem(),
-  subscriber.getUpdateProjectState(),
-  subscriber.getLogActivity(),
-  subscriber.getTriggerIncentives(),
+  subscriptionApi.getSubscriberId(subscriber) ?? "",
+  () => subscriber.getNotifyEventSystem?.(), // Wrap in an arrow function to ensure it's callable
+  () => subscriber.getUpdateProjectState?.()!, // Use a function to handle potential undefined
+  () => subscriber.getLogActivity?.()!, // Use a function to handle potential undefined
+  () => subscriber.getTriggerIncentives?.()!, // Use a function to handle potential undefined
 );
 
 // Function to subscribe to order book updates

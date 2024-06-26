@@ -92,6 +92,7 @@
     "papaparse": "^5.4.1",
     "patch-package": "^8.0.0",
     "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.3.136",
     "pg": "^8.11.5",
     "pizzip": "^3.1.7",
     "prop-types": "^15.8.1",

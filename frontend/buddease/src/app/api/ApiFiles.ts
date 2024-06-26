@@ -1,31 +1,36 @@
+import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
-const API_BASE_URL = '/api/files'; // Adjust according to your API structure
-
-
+const { files } = endpoints;
 
 export const getFileType = async (file: string) => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}/${file}/type`);
+    const endpoint = typeof files.getFileType === 'function' ? files.getFileType(file) : `${files.getFileType}/${file}`;
+    const response = await axiosInstance.get(endpoint);
     return response.data.fileType; // Adjust as needed based on your API response structure
   } catch (error) {
     throw new Error('Failed to get file type');
   }
 };
-// Example function to fetch files
+
 export const fetchFiles = async () => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}`);
-    return response.data; // Adjust as needed based on your API response structure
+    const endpoint =
+      typeof files.fetchFiles === "function"
+        ? files.fetchFiles() : `${files.fetchFiles}/${files}`;
+    const response = await axiosInstance.get(endpoint);
+    return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch files');
+    throw new Error("Failed to fetch files");
   }
 };
 
-// Define other file-related functions similarly
 export const fetchFileAPI = async (fileId: string) => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}/${fileId}`);
+    const endpoint = typeof files.fetchFileAPI === 'function'
+      ? files.fetchFileAPI(fileId)
+      : `${files.fetchFileAPI}/${fileId}`;
+    const response = await axiosInstance.get(endpoint);
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch file ${fileId}`);
@@ -34,19 +39,30 @@ export const fetchFileAPI = async (fileId: string) => {
 
 export const uploadFileAPI = async (file: any) => {
   try {
-    const response = await axiosInstance.post(`${API_BASE_URL}/upload`, file);
+    const endpoint =
+      typeof files.uploadFileAPI === "function"
+        ? files.uploadFileAPI(file)
+        : `${files.uploadFileAPI}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axiosInstance.post(endpoint, formData);
     return response.data;
   } catch (error) {
-    throw new Error('Failed to upload file');
+    throw new Error("Failed to upload file");
   }
 };
 
 export const determineFileTypeAPI = async (file: any) => {
   try {
-    const response = await axiosInstance.post(`${API_BASE_URL}/type`, file);
+    const endpoint =
+      typeof files.determineFileTypeAPI === "function"
+        ? files.determineFileTypeAPI(file)
+        : `${files.determineFileTypeAPI}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axiosInstance.post(endpoint, formData);
     return response.data;
   } catch (error) {
-    throw new Error('Failed to determine file type');
+    throw new Error("Failed to determine file type");
   }
 };
-// Define other file operations as needed

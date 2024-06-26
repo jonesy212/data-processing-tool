@@ -199,6 +199,16 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       data: [],
       limit: 0,
       description: "",
+      buildNumber: "",
+      versions: {
+        data: {},
+        backend: [],
+        frontend: [],
+      },
+      metadata: {
+        author: "",
+        timestamp: new Date(),
+      },
       checksum: "",
       versionHistory: {
         versions: [],

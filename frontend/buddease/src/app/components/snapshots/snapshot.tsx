@@ -14,7 +14,30 @@ import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { CustomSnapshotData, Snapshot } from "./LocalStorageSnapshotStore";
 
-// Example usage of the Snapshot interface
+
+
+
+// Define T as a generic type parameter
+function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
+  // Example usage of the Snapshot interface
+  const newSnapshot: Snapshot<T> = {
+    id: "snapshot1",
+    category: "example category",
+    timestamp: new Date(),
+    createdBy: "creator1",
+    description: "Sample snapshot description",
+    tags: ["sample", "snapshot"],
+    metadata: {},
+    data: {} as T
+    // Other properties as needed
+  };
+
+  // Usage example
+  console.log(newSnapshot);
+}
+
+
+
 const snapshot: Snapshot<Data> = {
   id: "snapshot1",
   category: "example category",
@@ -22,6 +45,7 @@ const snapshot: Snapshot<Data> = {
   createdBy: "creator1",
   description: "Sample snapshot description",
   tags: ["sample", "snapshot"],
+  metadata:{},
 
   data: {
     _id: "1",
@@ -394,7 +418,7 @@ const snapshot: Snapshot<Data> = {
           maxFailedAttempts: 5,
           lockoutDurationMinutes: 15,
         },
-        accountLockoutThreshold: 50 //todo create way reset threshod
+        accountLockoutThreshold: 50, //todo create way reset threshod
       },
       emailVerificationStatus: true,
       phoneVerificationStatus: true,
@@ -690,10 +714,14 @@ const snapshot: Snapshot<Data> = {
 };
 
 const sampleSnapshot: CustomSnapshotData = {
-  timestamp: new Date().toISOString(),
+  timestamp: new Date().toISOString() ?? "",
   value: 42,
   category: "sample snapshot",
 };
 
-subscriber.receiveSnapshot(sampleSnapshot);
+subscriber.receiveSnapshot({
+  ...sampleSnapshot,
+  timestamp: new Date().toISOString(),
+  value: sampleSnapshot.value ?? 0, // Ensure value is a number
+});
 export { snapshot };

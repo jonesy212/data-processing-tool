@@ -6,20 +6,22 @@ import React from "react";
 import { DocumentOptions } from "../documents/DocumentOptions";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import CalendarDetails from "../models/data/CalendarDetails";
-import { Data, DataDetails } from "../models/data/Data";
+import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Member, TeamMember } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectType } from "../projects/Project";
-import { Payload, Snapshot, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import { default as SnapshotStore, default as useSnapshotStore } from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { SnapshotStoreConfig } from '../snapshots/SnapshotConfig';
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -86,60 +88,113 @@ const analysisType = (project: Project) => {
 const { fetchData } = useDataStore();
 
 const CalendarApp = () => {
-  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore((snapshot) => {
-    // This callback function can be used to add a snapshot to the snapshot list
-    // You can implement the logic to add the snapshot to the component's state or perform any other actions
-    // For example:
-    // setSnapshots([...snapshots, snapshot]);
-  });
+  const snapshot = null; // Replace with actual snapshot data if available
+  const category: CategoryProperties = {
+    name: "",
+    description: "category description",
+    icon: "category_png",
+    color: "categorized_color",
+    name: '',
+    description: '',
+    iconColor: '',
+    isActive: false,
+    isPublic: false,
+    isSystem: false,
+    isDefault: false,
+    isHidden: false,
+    isHiddenInList: false,
+    UserInterface: [],
+    DataVisualization: [],
+    Forms: undefined,
+    Analysis: [],
+    Communication: [],
+    TaskManagement: [],
+    Crypto: [],
+    brandName: '',
+    brandLogo: '',
+    brandColor: '',
+    brandMessage: ''
+  };
+  const date = new Date();
+  const type = "exampleType";
+  const initialState: SnapshotStore<Snapshot<Data>> | Snapshot<Snapshot<Data>> | null | undefined = null;
+  const snapshotConfig: SnapshotStoreConfig<Snapshot<BaseData>, BaseData>[] = [];
+  const delegate: SnapshotStoreConfig<Snapshot<Data>, Data>[] = [];
+
+  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore(
+    snapshot,
+    category,
+    date,
+    type,
+    initialState,
+    snapshotConfig,
+    snapshotType,
+    delegate
+  );
 
   const snapshotManager = useSnapshotManager<Todo>(); // Initialize the snapshot manager
 
-  const calendarEvent: CalendarEvent = {
-    id: "1",
-    title: "Meeting",
-    description: "Discuss project plans",
-    startDate: new Date(),
-    endDate: new Date(),
-    location: "Office",
-    attendees: [],
-    reminder: "15 minutes before",
-    reminderOptions: {
-      recurring: true,
-      frequency: "weekly",
-      interval: 1, // Every week
-    },
-    date: new Date(),
-    isActive: false,
-    category: "",
-    shared: undefined,
-    details: {} as DetailsItem<DataDetails>,
-    bulkEdit: false,
-    recurring: false,
-    customEventNotifications: "customNotifications",
-    comment: "comment",
-    attachment: "attachment",
-    content: "",
-    topics: [],
-    highlights: [],
-    files: [],
-    options: {} as DocumentOptions,
-    status: StatusType.Upcoming,
-    rsvpStatus: "yes",
-    priority: "",
-    host: {} as Member,
-    teamMemberId: "",
-    participants: [],
-    then: implementThen,
-    _id: "",
-    analysisResults: [],
-    snapshots: [],
-    getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-      throw new Error("Function not implemented.");
-    },
-    timestamp: undefined,
-  };
+  // Define the CalendarEvent object
+const calendarEvent: CalendarEvent = {
+  id: "1",
+  title: "Meeting",
+  description: "Discuss project plans",
+  startDate: new Date(),
+  endDate: new Date(),
+  location: "Office",
+  attendees: [],
+  reminder: "15 minutes before",
+  reminderOptions: {
+    recurring: true,
+    frequency: "weekly",
+    interval: 1,
+  },
+  date: new Date(),
+  isActive: false,
+  category: "",
+  shared: undefined,
+  details: {} as DetailsItem<DataDetails>,
+  bulkEdit: false,
+  recurring: false,
+  customEventNotifications: "customNotifications",
+  comment: "comment",
+  attachment: "attachment",
+  content: "",
+  topics: [],
+  highlights: [],
+  files: [],
+  options: {} as DocumentOptions,
+  status: StatusType.Upcoming,
+  rsvpStatus: "yes",
+  priority: "",
+  host: {} as Member,
+  teamMemberId: "",
+  participants: [],
+  then: () => {
+    console.log("Then function called");
+  },
+  _id: "",
+  analysisResults: [],
+  snapshots: [],
+  getData: async function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+    throw new Error("Function not implemented.");
+  },
+  timestamp: undefined,
+};
 
+
+const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Snapshot<Data>) => void) => {
+  // This callback function can be used to add a snapshot to the snapshot list
+  // Implement logic to add the snapshot to the component's state or perform any other actions
+  // For example:
+  if (delegate && delegate.length > 0 && typeof delegate[0].setSnapshots === 'function') {
+    // Ensure the delegate[0].snapshots type matches the expected Snapshot<Data>[]
+    const currentSnapshots = delegate[0].snapshots as Snapshots<Data>;
+    delegate[0].setSnapshots([...currentSnapshots, snapshot]);
+  }
+};
+  
+  
   return (
     <div>
       <h1>Calendar App</h1>
@@ -234,10 +289,10 @@ const CalendarApp = () => {
               hasQuota: false,
               profilePicture: null,
               processingTasks: [],
-              persona: undefined,
+              persona: null,
               friends: [],
               blockedUsers: [],
-              settings: undefined,
+              settings: null,
               interests: [],
               privacySettings: undefined,
               notifications: undefined,
@@ -420,7 +475,7 @@ const CalendarApp = () => {
             snapshots: [
               {
                 
-                initSnapshot: snapshotManager().initSnapshot,
+                initSnapshot: (await useSnapshotManager()).initSnapshot,
                 takeSnapshot: useSnapshotManager().takeSnapshot,
                 takeSnapshotSuccess: useSnapshotManager().takeSnapshotSuccess,
                 takeSnapshotsSuccess: useSnapshotManager().takeSnapshotsSuccess,

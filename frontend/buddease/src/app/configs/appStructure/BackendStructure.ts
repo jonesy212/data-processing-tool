@@ -1,4 +1,3 @@
-import { getStructureAsArray } from '@/app/configs/declarations/traverseBackend';
 // BackendStructure.ts
 import Logger from "@/app/components/logging/Logger";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
@@ -8,19 +7,21 @@ import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
 import getAppPath from "../../../../appPath";
 import { AppStructureItem } from "./AppStructure";
+
 export default class BackendStructure {
-  getStructureAsArray(): Promise<AppStructureItem[]> | undefined {
-    const appVersion = getCurrentAppInfo().toString();
-    const appPath = getAppPath(versionNumber, appVersion);
-    return undefined;
-    }
-  structure: Record<string, AppStructureItem> | undefined= {};
+  private structure?: Record<string, AppStructureItem> = {};
 
   constructor(projectPath: string) {
-    this.traverseDirectory(projectPath);
+    this.traverseDirectory!(projectPath).then((items) => {
+      items.forEach((item) => {
+        if (this.structure) {
+          this.structure[item.id] = item;
+        }
+      });
+    });
   }
 
-  async traverseDirectory(dir: string): Promise<AppStructureItem[]> {
+  async traverseDirectory?(dir: string): Promise<AppStructureItem[]> {
     const result: AppStructureItem[] = [];
 
     try {
@@ -31,39 +32,40 @@ export default class BackendStructure {
         const stat = await fs.stat(filePath);
 
         if (stat.isDirectory()) {
-          const subDirectoryItems = await this.traverseDirectory(filePath);
+          const subDirectoryItems = await this.traverseDirectory!(filePath);
           result.push(...subDirectoryItems);
-        } else if (stat.isFile()) {
-          if (file.endsWith(".py")) {
-            const uniqueID = UniqueIDGenerator.generateID(
-              file,
-              filePath,
-              NotificationTypeEnum.FileID,
-            );
-            const fileContent = await fs.readFile(filePath, "utf-8");
-            this.structure?[uniqueID] = {
-              id: uniqueID,
-              name: file,
-              type: "file",
-              items: {},
-              path: filePath,
-              draft: true,
-              content: fileContent,
-              permissions: {
-                read: true,
-                write: true,
-                delete: true,
-                execute: true,
-                share: true,
-              }
-            };
-            Logger.logWithOptions(
-              "File Change",
-              `File ${file} changed.`,
-              uniqueID
-            );
-            result.push(this.structure[uniqueID]);
+        } else if (stat.isFile() && file.endsWith(".py")) {
+          const uniqueID = UniqueIDGenerator.generateID(
+            file,
+            filePath,
+            NotificationTypeEnum.FileID,
+          );
+          const fileContent = await fs.readFile(filePath, "utf-8");
+          const appStructureItem: AppStructureItem = {
+            id: uniqueID,
+            name: file,
+            type: "file",
+            items: {},
+            path: filePath,
+            draft: true,
+            content: fileContent,
+            permissions: {
+              read: true,
+              write: true,
+              delete: true,
+              execute: true,
+              share: true,
+            },
+          };
+          if (this.structure) {
+            this.structure[uniqueID] = appStructureItem;
           }
+          Logger.logWithOptions(
+            "File Change",
+            `File ${file} changed.`,
+            uniqueID
+          );
+          result.push(appStructureItem);
         }
       }
 
@@ -77,30 +79,31 @@ export default class BackendStructure {
   public async getStructure(): Promise<Record<string, AppStructureItem>> {
     return { ...this.structure };
   }
+
+  public getStructureAsArray(): AppStructureItem[] {
+    return Object.values(this.structure || {});
+  }
+
+  public async traverseDirectoryPublic(
+    dir: string,
+    fs: typeof import("fs")
+  ): Promise<AppStructureItem[]> {
+    return this.traverseDirectory ? this.traverseDirectory(dir) : [];
+  }
+
 }
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 const backendStructure: BackendStructure = new BackendStructure(projectPath);
 
-export { backendStructure }
+export { backendStructure };
 
 export const backend = {
-  id: "backend" + versionNumber,
-  name: "Backend",
-  type: "folder",
-  path: projectPath,
-  content: "",
-  draft: false,
-  permissions: {
-    read: true,
-    write: true,
-    delete: true,
-    share: true,
-    execute: true,
-  },
-  
-  // items: backendStructure.structure,
-  getStructureAsArray: getStructureAsArray,
-  getStructure: backendStructure.getStructure,
+  ...backendStructure,
+  items: await backendStructure.getStructure(),
+  getStructureAsArray: backendStructure.getStructureAsArray.bind(backendStructure),
+  traverseDirectoryPublic: backendStructure.traverseDirectoryPublic?.bind(backendStructure),
+  getStructure: () => backendStructure.getStructure(),
 }
+

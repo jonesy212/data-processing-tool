@@ -10,7 +10,9 @@ export interface PrivacySettings {
     enableLocationPrivacy: boolean; // Whether to enable location privacy
     hideVisitedProfiles: boolean; // Whether to hide visited profiles from others
     restrictContentSharing: boolean; // Whether to restrict content sharing
-    enableIncognitoMode: boolean; // Whether to enable incognito browsing mode
+  enableIncognitoMode: boolean; // Whether to enable incognito browsing mode
+  restrictContentSharingToContacts: boolean,
+  restrictContentSharingToGroups: boolean,
   // Add other privacy-related settings as needed
   }
   
@@ -28,7 +30,9 @@ const selectedSettings: PrivacySettings = {
   hideVisitedProfiles: false,
   restrictContentSharing: false,
   enableIncognitoMode: false,
+  restrictContentSharingToContacts: false,  
+  restrictContentSharingToGroups: false,
 };
 
 
-export {selectedSettings}
+export { selectedSettings };

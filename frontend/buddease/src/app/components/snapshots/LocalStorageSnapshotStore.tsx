@@ -1,22 +1,28 @@
 // LocalStorageSnapshotStore.tsx
 
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { getSubscriberId } from "@/app/api/subscriberApi";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { FC } from "react";
+import { ModifiedDate } from "../documents/DocType";
 import { Content } from "../models/content/AddContent";
-import { Data } from "../models/data/Data";
-import { PriorityTypeEnum, ProjectPhaseTypeEnum } from "../models/data/StatusType";
-import { Task } from "../models/tasks/Task";
+import { BaseData, Data } from "../models/data/Data";
+import { PriorityTypeEnum, ProjectPhaseTypeEnum, SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
+import { Task, TaskData } from "../models/tasks/Task";
 import { Tag } from "../models/tracker/Tag";
 import { Phase } from "../phases/Phase";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "../utils/applicationUtils";
+import { generateSnapshotId } from "../utils/snapshotUtils";
 import { AuditRecord, SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
 import SnapshotStore, { defaultCategory, initialState } from "./SnapshotStore";
 import { snapshot } from "./snapshot";
-import { delegate, subscribeToSnapshots } from "./snapshotHandlers";
-import { generateSnapshotId } from "../utils/snapshotUtils";
+import { subscribeToSnapshots } from "./snapshotHandlers";
+import { NonUndefined } from "node_modules/@reduxjs/toolkit/dist/tsHelpers";
 
 
 interface Payload {
@@ -44,76 +50,96 @@ interface Payload {
       isAutoDismissOnTimeout: boolean;
       isAutoDismissOnTap: boolean;
     };
-  }
-  interface UpdateSnapshotPayload<Data> {
+}
+  
+  interface UpdateSnapshotPayload<T> {
     snapshotId: string;
     newData: Data;
   }
   
   interface CustomSnapshotData extends Data {
     timestamp: string | Date | undefined;
-    value: number;
+    value: number | undefined;
   }
   
   const SNAPSHOT_URL = endpoints.snapshots;
 
-  type Snapshots = Snapshot<Data>[] | Snapshot<CustomSnapshotData>[];
-  
-  interface Snapshot<T extends Data | undefined> {
-    _id?: string;
+  type Snapshots<T> = Array<Snapshot<Data> | Snapshot<CustomSnapshotData>>;
+
+  interface CoreSnapshot<T extends BaseData> {
     id?: string | number;
-    data?: T | null |undefined;
+    data?: T | null | undefined;
     name?: string;
     timestamp?: string | Date;
-    title?: string;
-    
     createdBy?: string;
-    description?: string | null;
-    tags?: Tag[] | string[];
     subscriberId?: string;
     length?: number;
-    category?: string;
-    topic?: string;
-    priority?: string;
-    key?: string;
-    subscription?: Subscription | null;
-    config?: SnapshotStoreConfig<Snapshot<any>, any>[] | null
+    category?: string | CategoryProperties | undefined;
+    date?: string | Date
     status?: string;
-    metadata?: any;
     content?: T | string | Content | undefined;
     message?: string;
     type?: string;
     phases?: ProjectPhaseTypeEnum;
     phase?: Phase | null;
+    ownerId?: string;
+    store?: SnapshotStore<T>;
+    state?: Snapshot<T> | null;
+    dataStore?: DataStore<T>
+    initialState?: SnapshotStore<Snapshot<T>> | Snapshot<Snapshot<T>> | null | undefined
+    setSnapshotData?: (data: Data) => void;
+    snapshotConfig?: SnapshotStoreConfig<Snapshot<T>, T>[] | undefined;
+    subscribeToSnapshots?: (snapshotId: string, callback: (snapshot: Snapshot<Data>) => void) => void
+  }
+
+
+  interface SnapshotData<T extends BaseData> {
+    _id?: string;
+    title?: string;
+    description?: string | null;
+    tags?: Tag[] | string[];
+    key?: string;
+    topic?: string;
+    priority?: string | PriorityTypeEnum;
+    subscription?: Subscription | null;
+    config?: SnapshotStoreConfig<Snapshot<any>, any>[] | null;
+    metadata?: any;
+    isExpired?: boolean;
     isCompressed?: boolean;
     isEncrypted?: boolean;
     isSigned?: boolean;
     expirationDate?: Date | string;
-    ownerId?: string;
     auditTrail?: AuditRecord[];
     subscribers?: Subscriber<CustomSnapshotData | Data>[];
-    delegate?:  SnapshotStoreConfig<Snapshot<T>, T>[]
+    delegate?: SnapshotStoreConfig<Snapshot<any>, any>[];
     value?: number;
-    store?: SnapshotStore<T>;
-    state?: Snapshot<T> | null;
     todoSnapshotId?: string;
-    initialState?: Snapshot<Data> | null;
-    // Implement the `then` function using the reusable function
+    dataStoreMethods?: DataStore<T> | null;
     then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
-    setSnapshotData?: (data: Data) => void;
-
   }
+  
+  interface Snapshot<T extends BaseData> extends CoreSnapshot<T>, SnapshotData<T> {
+    // Additional specific properties
+  }
+
+  
 // Example implementation of LocalStorageSnapshotStore
-const snapshotType = (snapshot: Snapshot<Data>) => {
-  const newSnapshot = snapshot;
+const snapshotType = (snapshot: Snapshot<BaseData>): Snapshot<BaseData> => {
+  const newSnapshot = { ...snapshot }; // Shallow copy of the snapshot
+
   newSnapshot.id = snapshot.id || generateSnapshotId;
   newSnapshot.title = snapshot.title || "";
-  newSnapshot.timestamp = snapshot.timestamp || new Date();
+  newSnapshot.timestamp = snapshot.timestamp
+    ? new Date(snapshot.timestamp)
+    : new Date();
   newSnapshot.subscriberId = snapshot.subscriberId || "";
-  newSnapshot.category = snapshot.category || defaultCategory;
+  newSnapshot.category =
+    typeof snapshot.category === "string"
+      ? defaultCategory
+      : snapshot.category || defaultCategory;
   newSnapshot.length = snapshot.length || 0;
   newSnapshot.content = snapshot.content || "";
-  newSnapshot.data = snapshot.data || undefined;
+  newSnapshot.data = snapshot.data;
   newSnapshot.value = snapshot.value || 0;
   newSnapshot.key = snapshot.key || "";
   newSnapshot.subscription = snapshot.subscription || null;
@@ -121,22 +147,31 @@ const snapshotType = (snapshot: Snapshot<Data>) => {
   newSnapshot.status = snapshot.status || "";
   newSnapshot.metadata = snapshot.metadata || {};
   newSnapshot.delegate = snapshot.delegate || [];
-  newSnapshot.store = snapshot.store || new SnapshotStore<Data>(
-    newSnapshot.data,
-    newSnapshot.category,
-    newSnapshot.date,
-    newSnapshot.type,
-    newSnapshot.initialState,
-    newSnapshot.snapshotConfig,
-    newSnapshot.subscribeToSnapshots,
-    newSnapshot.delegate
-  );
+  newSnapshot.store =
+    snapshot.store ||
+    new SnapshotStore<BaseData>(
+      newSnapshot.data || null,
+      (newSnapshot.category as CategoryProperties) || defaultCategory,
+      newSnapshot.date ? new Date(newSnapshot.date) : new Date(),
+      newSnapshot.type ? newSnapshot.type : "new snapshot",
+      newSnapshot.initialState,
+      newSnapshot.snapshotConfig || [],
+      newSnapshot.subscribeToSnapshots
+        ? newSnapshot.subscribeToSnapshots
+        : () => {},
+      newSnapshot.delegate,
+      newSnapshot.dataStoreMethods || ({} as DataStore<BaseData>) // Cast to DataStore<BaseData> if null
+    );
+
+
   newSnapshot.state = snapshot.state || null;
   newSnapshot.todoSnapshotId = snapshot.todoSnapshotId || "";
   newSnapshot.initialState = snapshot.initialState || null;
+
   return newSnapshot;
-}
-class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStore<T> {
+};
+
+class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
     
   private storage: Storage;
   constructor(storage: Storage, category: CategoryProperties = {
@@ -162,31 +197,73 @@ class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStor
     brandLogo: "",
     brandColor: "",
     brandMessage: ""
-  }) {
+  },
+    dataStoreMethods: DataStore<T> = {
+      getItem: async (key: string): Promise<Snapshot<T> | undefined> => {
+        const item = await this.getItem(key);
+        return item ? snapshotType(item) : undefined;
+      },
+      setItem: async (key: string, value: T): Promise<void> => {
+        this.setItem(key, value);
+      },
+      removeItem: async (key: string): Promise<void> => {
+        this.removeItem(key);
+      },
+      getAllKeys: async (): Promise<(string | null)[]> => {
+        const keys = [];
+        for (let i = 0; i < this.storage.length; i++) {
+          keys.push(this.storage.key(i));
+        }
+        return keys;
+      },
+      getAllItems: async (): Promise<Snapshot<T>[]> => {
+        const keys = this.getAllKeys();
+        const items = await Promise.all(
+          keys.map(async (key) => {
+            const item = await this.getItem(key);
+            return item ? snapshotType(item) : null;
+          })
+        );
+        return items.filter((item): item is Snapshot<T> => item !== undefined);
+      },
+    }
+  ) {
     super(
-      snapshot,
+      snapshot as T,
       category,
       new Date(),
-      snapshotType,
+      snapshotType.toString(),
       initialState,
       snapshotConfig,
       subscribeToSnapshots,
-      delegate
-      );
-      this.storage = storage;
-    }
+      [], // Default empty delegate, to be populated asynchronously
+      dataStoreMethods
+    );
+    this.storage = storage;
+  }
   
     setItem(key: string, value: T): void {
       this.storage.setItem(key, JSON.stringify(value));
     }
   
-    getItem(key: string): T | null {
+    getItem(key: string): Promise<T | null> {
       const item = this.storage.getItem(key);
       return item ? JSON.parse(item) : null;
     }
   
     removeItem(key: string): void {
       this.storage.removeItem(key);
+    }
+  
+  getAllKeys(): string[] {
+      const keys: string[] = [];
+      for (let i = 0; i < this.storage.length; i++) {
+        const key = this.storage.key(i);
+        if (key) {
+          keys.push(key);
+        }
+      }
+      return keys;
     }
   
   
@@ -204,13 +281,7 @@ class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStor
     }
     return items;
   }
-
-  
-
-
-
-  
-  }
+}
   
   // Example usage in a Redux slice or elsewhere
   const newTask: Task = {
@@ -233,7 +304,7 @@ class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStor
     payload: {},
     previouslyAssignedTo: [],
     done: false,
-    data: [],
+    data: {} as TaskData,
     source: "user",
     tags: [],
     dependencies: [],
@@ -251,3 +322,155 @@ class LocalStorageSnapshotStore<T extends Data | undefined> extends SnapshotStor
 
 
   export type { CustomSnapshotData, Payload, Snapshot, Snapshots, UpdateSnapshotPayload };
+
+
+  
+
+
+
+// Create a subscription object
+const subscription: Subscription = {
+  unsubscribe: () => {},
+  portfolioUpdates: () => {},
+  tradeExecutions: () => {},
+  marketUpdates: () => {},
+  triggerIncentives: () => {},
+  communityEngagement: () => {},
+  subscriberId: "sub-123",
+  subscriptionId: "sub-123-id",
+  subscriberType: SubscriberTypeEnum.Individual,
+  subscriptionType: SubscriptionTypeEnum.STANDARD,
+  getPlanName: () => SubscriberTypeEnum.Individual,
+  portfolioUpdatesLastUpdated: null,
+  getId: () => "id-123",
+  determineCategory: (data: any) => ({}) as Snapshot<any>,
+  category: "category-123",
+};
+const subscriberId = getSubscriberId.toString()
+const subscriber = new Subscriber(
+  "_id",
+  "John Doe",
+  subscription,
+  subscriberId,
+  notifyEventSystem,
+  updateProjectState,
+  logActivity,
+  triggerIncentives,
+  undefined,
+  () => {}
+);
+subscriber.id = "new-id"; // Set the private property using the setter method
+  
+
+
+  const snapshots: Snapshots<Data> = [
+    {
+      id: "1",
+      data: { /* your data */ },
+      name: "Snapshot 1",
+      timestamp: new Date(),
+      createdBy: "User123",
+      subscriberId: "Sub123",
+      length: 100,
+      category: "update",
+      status: "active",
+      content: "Snapshot content",
+      message: "Snapshot message",
+      type: "type1",
+      phases: ProjectPhaseTypeEnum.Development,
+      phase: { 
+        id: "1",
+        name: "Phase 1",
+         startDate: new Date(),
+        endDate: new Date(),
+        // progress: 0,
+        status: "In Progress",
+        type: "type1",
+ 
+         // Additional metadata
+        _id: "abc123",
+        title: "Snapshot Title",
+        description: "Detailed description",
+        subPhases: [ {
+          id: "1",
+          name: "Subphase 1",
+          startDate: new Date(),
+          endDate: new Date(),
+          status: "In Progress",
+          type: "type1",
+          duration: 0,
+          subPhases: [],
+          component: {} as FC<{}>,
+
+        }],
+        tags: ["tag1", "tag2"],
+ 
+      },
+      ownerId: "Owner123",
+      store: undefined,
+      state: null,
+      initialState: null,
+      setSnapshotData: (data: Data) => { /* set data */ },
+      // Additional metadata
+      _id: "abc123",
+      title: "Snapshot Title",
+      description: "Detailed description",
+      tags: ["tag1", "tag2"],
+      topic: "Topic",
+      priority: PriorityTypeEnum.High,
+      key: "unique-key",
+      subscription: {
+        unsubscribe: () => { /* unsubscribe */ },
+        portfolioUpdates: () => { /* subscribe to portfolio updates */ },
+        tradeExecutions: () => { /* subscribe to trade executions */ },
+        marketUpdates: () => { /* subscribe to market updates */ },
+        triggerIncentives: () => { /* subscribe to trigger incentives */ },
+        communityEngagement: () => { /* subscribe to community engagement */ },
+        portfolioUpdatesLastUpdated: {
+          value: new Date(),
+          isModified: false,
+        } as ModifiedDate,
+        determineCategory: (data: any) => { 
+          return snapshot
+         },
+                // id: "sub123",
+        // name: "Subscriber 1",
+        // subscriberId: "sub123",
+        subscriberType: SubscriberTypeEnum.FREE,
+        // subscriberName: "User 1",
+        // subscriberEmail: "user1@example.com",
+        // subscriberPhone: "123-456-7890",
+        // subscriberStatus: "active",
+        // subscriberRole: "admin",
+        // subscriberCreatedAt: new Date(),
+        // subscriberUpdatedAt: new Date(),
+        // subscriberLastSeenAt: new Date(),
+        // subscriberLastActivityAt: new Date(),
+        // subscriberLastLoginAt: new Date(),
+        // subscriberLastLogoutAt: new Date(),
+        // subscriberLastPasswordChangeAt: new Date(),
+        // subscriberLastPasswordResetAt: new Date(),
+        // subscriberLastPasswordResetToken: "random-token",
+        // subscriberLastPasswordResetTokenExpiresAt: new Date(),
+        // subscriberLastPasswordResetTokenCreatedAt: new Date(),
+        // subscriberLastPasswordResetTokenCreatedBy: "user123",
+      },
+      config: null,
+      metadata: { /* additional metadata */ },
+      isCompressed: true,
+      isEncrypted: false,
+      isSigned: true,
+      expirationDate: new Date(),
+      auditTrail: [{ 
+        userId: "user123",
+        timestamp: new Date(),
+        action: "update",
+        details: "Snapshot updated",
+       }],
+      subscribers: [subscriber],
+      value: 50,
+      todoSnapshotId: "todo123",
+      then: (callback: (newData: Snapshot<Data>) => void) => { /* implementation */ }
+    }
+  ];
+  

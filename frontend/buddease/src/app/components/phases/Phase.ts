@@ -17,11 +17,11 @@ export interface Phase extends CommonData {
   startDate: Date | undefined;
   endDate: Date | undefined;
   subPhases: Phase[];
-  component: FC<any>; // Adjust to accept any props
+  component?: FC<any>; // Adjust to accept any props
   hooks?: CustomPhaseHooks;
   data?: any;
   lessons?: Lesson[];
-  duration: number;
+  duration?: number;
   tasks?: Task[];
   members?: Member[];
   color?: string;

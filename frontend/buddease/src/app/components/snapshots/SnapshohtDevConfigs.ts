@@ -1,8 +1,8 @@
 //SnapshohtDevConfigs.ts
 
 import { Data } from "../models/data/Data";
+import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotConfig";
-import { Snapshot } from "./SnapshotStore";
 
 // Configurations for different environments
 const devSnapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data> = {
@@ -61,14 +61,31 @@ const prodSnapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data> = {
     return { snapshot: {} as Snapshot<Snapshot<Data>> };
   },
   subscribers: [],
-  createSnapshot: (id, snapshotData, category) => {},
+  createSnapshot: (
+    id: string,
+    snapshotData: SnapshotStoreConfig<any, Data>,
+    category: string) => {
+    // Implementation for production environment
+    return {
+      snapshot: {
+        id: id,
+        snapshot: snapshotData,
+        category: category,
+      }
+    } as Snapshot<Data>;
+     
+  },
+  
   configureSnapshotStore: (snapshot) => {},
   createSnapshotSuccess: () => {},
-  createSnapshotFailure: (error) => {},
+  createSnapshotFailure: (snapshot: Snapshot<Snapshot<Data>>, error: any) => {
+    console.log(error);
+    return Promise.resolve();
+  },
   batchTakeSnapshot: async (snapshot, snapshots) => ({ snapshots: [] }),
   updateSnapshot: async (snapshot) => ({ snapshot: [] }),
   getSnapshots: async (category, snapshots) => ({ snapshots: [] }),
-  takeSnapshot: async (snapshot) => ({ snapshot: [] }),
+  takeSnapshot: async (snapshot) => ({ snapshot: {} as Snapshot<Snapshot<Data>> }),
   // Other methods and properties...
 };
 

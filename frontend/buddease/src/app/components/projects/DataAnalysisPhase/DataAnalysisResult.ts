@@ -1,11 +1,14 @@
+import { Data } from "../../models/data/Data";
+import { Phase } from "../../phases/Phase";
 import { AllStatus } from "../../state/stores/DetailsListStore";
+import { AnalysisTypeEnum } from "./AnalysisType";
 
 // DataAnalysisResult.ts
-export interface DataAnalysisResult {
+export interface DataAnalysisResult extends Data {
   id: number; // Unique identifier for the data analysis result
   title: string; // Title of the data analysis result
   insights: string[]; // Array of insights gained from the data analysis
-  analysisType: string;
+  analysisType: AnalysisTypeEnum | undefined;
   analysisDate: Date;
   results: string[];
   result: number
@@ -14,6 +17,7 @@ export interface DataAnalysisResult {
   createdAt: Date,
   updatedAt: Date | undefined,
   recommendations: string[]; // Array of recommendations based on the analysis
+  sentimentAnalysis: boolean;
   metrics: {
     // Object containing various metrics related to the analysis
     accuracy: number; // Accuracy metric

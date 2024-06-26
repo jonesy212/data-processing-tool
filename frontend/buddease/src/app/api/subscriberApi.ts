@@ -1,10 +1,10 @@
 // subscriberApi.ts
 import { Data } from "../components/models/data/Data";
-import { CustomSnapshotData } from "../components/snapshots/SnapshotStore";
+import { CustomSnapshotData } from "../components/snapshots/LocalStorageSnapshotStore";
 import { Subscriber } from "../components/users/Subscriber";
 import axiosInstance from "./axiosInstance";
 
-export const getSubscriberId = (subscriber: Subscriber<CustomSnapshotData | Data>) => subscriber.getId();
+export const getSubscriberId = (subscriber: Subscriber<CustomSnapshotData | undefined>) => subscriber.id
 
 export const getSubscribersAPI = async (): Promise<Subscriber<Data>[]> => {
   try {

@@ -12,6 +12,9 @@ class DocumentPermissions {
     this.isActive = true;
   }
 
+  get _readAccess(): boolean {
+    return this.readAccess;
+  }
   // Getter method for read access
   public getReadAccess(): boolean {
     return this.readAccess;
@@ -32,13 +35,16 @@ class DocumentPermissions {
     this.writeAccess = writeAccess;
   }
 
-  public setWriteAcces(isActive: boolean): void {
-    this.isActive = isActive;
-  }
+
 
   public getReadWriteAccess(): boolean {
     this.readWriteAccess = this.readAccess && this.writeAccess;
     return this.readWriteAccess;
+  }
+
+
+  public setReadWriteAccess(readWriteAccess: boolean): void {
+    this.readWriteAccess = readWriteAccess;
   }
 }
 
@@ -49,3 +55,7 @@ console.log(docPermissions.getWriteAccess()); // Output: false
 
 docPermissions.setWriteAccess(true);
 console.log(docPermissions.getWriteAccess()); // Output: true
+
+
+docPermissions.setReadAccess(false);
+docPermissions

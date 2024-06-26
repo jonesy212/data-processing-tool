@@ -6,6 +6,8 @@ import {
 import { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 import { Data } from "../components/models/data/Data";
+import { PriorityTypeEnum } from "../components/models/data/StatusType";
+import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { YourResponseType } from "../components/typings/types";
@@ -108,16 +110,25 @@ export const fetchAnalysisResults = (): Promise<any> => {
     return Promise.reject(new Error("Endpoint is not a string"));
   }
 
+  
   return fetchDataAnalysis(endpoint)
     .then((response) => {
-      const analysisResults = response.data as Data;
-      const { description, phase, ...rest } = analysisResults;
+      const analysisResults = response.data as DataAnalysisResult;
+      if (!analysisResults) {
+        return Promise.reject(new Error("Invalid response data"));
+      }
+      const { description, phase, priority, sentiment,sentimentAnalysis, ...rest } = analysisResults;
       return {
         ...rest,
         description: description ?? undefined,
         phase: phase ?? undefined,
+        priority: priority as PriorityTypeEnum | undefined,
+        data: analysisResults.data,
+        sentiment: analysisResults.sentiment,
+        sentimentAnalysis: analysisResults.sentimentAnalysis,
       };
     })
+
     .catch((error) => {
       handleDataAnalysisApiErrorAndNotify(
         error as AxiosError<unknown>,

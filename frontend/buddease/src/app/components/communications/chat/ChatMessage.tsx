@@ -141,7 +141,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     if (message.trim() === "") return;
     const userRole: UserRole | undefined = useAuth().user?.role;
 
-    if (userRole === UserRoles.ADMIN || userRole === UserRoles.MODERATOR) {
+    if (userRole === UserRoles.Administrator || userRole === UserRoles.Moderator) {
       sendChatMessage(roomId, message);
     } else {
       ChatMessageActions.sendMessage({ roomId, message });

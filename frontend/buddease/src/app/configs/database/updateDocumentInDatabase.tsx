@@ -176,6 +176,18 @@ const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   } catch (error) {
     handleApiError(error as AxiosError<unknown>, "Failed to save document to database");
   }
+ }
+
+
+ const addDocumentFailure = async (error: AxiosError<unknown>) => {
+  try {
+    const { data } = error.response as AxiosResponse;
+    const { message, status } = data;
+    console.log(`Error fetching document from archive: ${message}`);
+    console.log(`Status code: ${status}`);
+  } catch (error) {
+    console.error(`Error fetching document from archive: ${error}`);
+  }
 }
 
 // Function to save trade data to the database
@@ -207,5 +219,6 @@ export {
   saveTodoToDatabase,
   saveTradeToDatabase,
   updateDocumentInDatabase,
+  addDocumentFailure
 };
 

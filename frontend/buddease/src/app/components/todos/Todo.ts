@@ -109,10 +109,10 @@ export interface Todo extends BaseData {
   category?: string | undefined;
 
   // Method to update the order/index
-  updateOrder(newOrder: number): void;
+  updateOrder?(newOrder: number): void;
 
   // Method to update UI (could be handled by a React component or service)
-  updateUI(): void;
+  updateUI?(): void;
 }
 
 export interface TodoManagerState {

@@ -7,9 +7,23 @@ export interface JobRole extends UserRole {
   isAdvertised: boolean;
 }
 
-const UserRoles: { [key: string]: UserRole } = {
+enum UserRoleEnum {
+  Administrator = 'Administrator',
+  Developer = 'Developer',
+  TeamLeader = 'TeamLeader',
+  Coordinator = 'Coordinator',
+  PaidPosition = 'PaidPosition',
+  Moderator = 'Moderator',
+  Guest = 'Guest',
+  UXUIDesigner = 'UXUIDesigner',
+  Member = 'Member',
+  Verified_User = 'Verified_User',
+  Coodinator = 'Coordinator',
+}
+
+const UserRoles: { [key in UserRoleEnum]: UserRole } = {
   Administrator: {
-    role: 'Administrator',
+    role: UserRoleEnum.Administrator,
     responsibilities: [
       'Community Management',
       'Decision-Making Authority',
@@ -30,7 +44,7 @@ const UserRoles: { [key: string]: UserRole } = {
   
 
   Developer: {
-    role: 'Developer',
+    role: UserRoleEnum.Developer,
     responsibilities: [
       'Write and maintain codebase',
       'Implement new features',
@@ -61,7 +75,7 @@ const UserRoles: { [key: string]: UserRole } = {
     ]
   },
   UXUIDesigner: {
-    role: 'UX/UI Designer',
+    role: UserRoleEnum.UXUIDesigner,
     responsibilities: [
       'Conduct user research and create user personas',
       'Design wireframes, prototypes, and high-fidelity mockups',
@@ -92,7 +106,7 @@ const UserRoles: { [key: string]: UserRole } = {
     ]
   },
   Moderator: {
-    role: 'Moderator',
+    role: UserRoleEnum.Moderator,
     responsibilities: [
       'Community Engagement',
       'Content Moderation',
@@ -108,7 +122,7 @@ const UserRoles: { [key: string]: UserRole } = {
     includes: []
   },
   Member: {
-    role: 'Member',
+    role: UserRoleEnum.Member,
     responsibilities: [
       'Active Participation',
       'Collaboration',
@@ -123,8 +137,8 @@ const UserRoles: { [key: string]: UserRole } = {
     positions: [],
     includes: []
   },
-  'Verified User': {
-    role: 'Verified User',
+  Verified_User: {
+    role: UserRoleEnum.Verified_User,
     responsibilities: ['Same as regular member with verification status'],
     permissions: ['Same permissions as regular member'],
     positions: [],
@@ -132,14 +146,14 @@ const UserRoles: { [key: string]: UserRole } = {
 
   },
   Guest: {
-    role: 'Guest',
+    role: UserRoleEnum.Guest,
     responsibilities: ['Limited access to view public content'],
     permissions: ['View public content without registration'],
     positions: [],
     includes: []
   },
   TeamLeader: {
-    role: 'Team Leader',
+    role: UserRoleEnum.TeamLeader,
     responsibilities: [
       'Lead and supervise team members',
       'Coordinate team activities',
@@ -163,7 +177,7 @@ const UserRoles: { [key: string]: UserRole } = {
     ],
   },
   Coordinator: {
-    role: 'Coordinator',
+    role: UserRoleEnum.Coordinator,
     responsibilities: [
       'Organize and schedule team meetings',
       'Manage team calendars and schedules',
@@ -187,7 +201,7 @@ const UserRoles: { [key: string]: UserRole } = {
     ],
   },
   PaidPosition: {
-    role: 'PaidPosition',
+    role: UserRoleEnum.PaidPosition,
     responsibilities: ['Team Management', 'Data Analysis'],
     permissions: ['Manage team members access', 'Access sales analytics data'],
     positions: [],
@@ -211,8 +225,14 @@ type ModeratorRoleKey = CheckRoleExists<'Moderator'>; // This would resolve to '
 export default UserRoles;
 
 // Use the AdminRoleKey and ModeratorRoleKey types to define variables
-const adminRole:typeof UserRoles[AdminRoleKey] = UserRoles.Administrator;
-const moderatorRole:typeof UserRoles[ModeratorRoleKey] = UserRoles.Moderator;
-// Accessing responsibilities of the Administrator role
-const adminResponsibilities: string[] = UserRoles.Administrator.responsibilities;
 
+const adminRole = UserRoles[UserRoleEnum.Administrator];
+console.log(adminRole.responsibilities); // Output: ['Community Management', 'Decision-Making Authority', ...]
+console.log(adminRole.permissions); // Output: ['Approve product listings', 'Manage team members access', ...]
+
+const developerRole = UserRoles[UserRoleEnum.Developer];
+console.log(developerRole.positions); // Output: [{ title: 'Junior Developer', level: 1 }, { title: 'Mid-level Developer', level: 2 }, ...]
+console.log(developerRole.salary); // Output: 80000
+
+
+const adminResponsibilities = UserRoles.Administrator.responsibilities;

@@ -1,17 +1,12 @@
-import { getStructureAsArray } from '@/app/configs/declarations/traverseBackend';
 // Version.ts
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { AppStructureItem, appStructure } from "@/app/configs/appStructure/AppStructure";
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
-import { traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import BackendStructure, { backend } from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure, { frontend } from "@/app/configs/appStructure/FrontendStructure";
 import crypto from "crypto";
 import getAppPath from "../../../../appPath";
-import { options } from "../documents/DocumentBuilder";
 import { Data } from "../models/data/Data";
 import { VersionData, VersionHistory } from "./VersionData";
-import { traverseFrontendDirectory } from "@/app/configs/declarations/traverseFrontend";
-import { frontendConfig } from '@/app/configs/FrontendConfig';
 
 interface ExtendedVersion extends Version {
   name: string;
@@ -36,7 +31,7 @@ class Version {
     author: string;
     timestamp: string | Date | undefined;
     revisionNotes?: string;
-  };
+  } | undefined;
   versions: {
     data: VersionData;
     backend: BackendStructure;
@@ -128,7 +123,7 @@ class Version {
       author: string;
       timestamp: string | Date | undefined;
       revisionNotes?: string;
-    };
+    } | undefined;
     versions: {
       data: VersionData;
       backend: BackendStructure;
@@ -229,12 +224,12 @@ class Version {
     const frontendStructureInstance = new FrontendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.frontendStructure = frontendStructureInstance.getStructureAsArray();
+    this.frontendStructure = Promise.resolve(frontendStructureInstance.getStructureAsArray());
 
     const backendStructureInstance = new BackendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
-    this.backendStructure = backendStructureInstance.getStructureAsArray();
+    this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());
   }
 
   private async generateStructureHash?(): Promise<string> {
@@ -589,14 +584,7 @@ const data: VersionData = {
         versionNumber: "1.0",
       },
     },
-    backend: {
-      structure: {}, // You can define initial structure if needed
-      traverseDirectory: traverseBackendDirectory,
-      getStructure: () => {
-        return options?.backendStructure?.getStructure() || Promise.resolve({});
-      },
-      getStructureAsArray: getStructureAsArray,
-    },
+    backend: backend,
     frontend: frontend,
       
   },

@@ -20,7 +20,9 @@ import { NFT } from "../nft/NFT";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../projects/Project";
 import { PrivacySettings } from "../settings/PrivacySettings";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import { TwitterData } from "../socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
 import { BlockchainAsset } from "./BlockchainAsset";
@@ -59,17 +61,17 @@ export interface User extends UserData {
   processingTasks: DataProcessingTask[];
   data?: UserData;
   role: UserRole | undefined;
-  persona: Persona | undefined;
+  persona: Persona | null;
   friends: User[];
   analysisResults?: DataAnalysisResult[];
   isLoggedIn?: boolean;
   isDeleted?: boolean;
   localeCompare?: (other: Message) => number;
   blockedUsers: User[];
-  settings: UserSettings | undefined;
+  settings: UserSettings | null;
   interests: string[]
   privacySettings: PrivacySettings | undefined
-  notifications: NotificationSettings | undefined
+  notifications: NotificationSettings[] | undefined
   activityLog: ActivityLogEntry[]
   projects?: Project[]; // Define the type explicitly as an array of Project objects
   socialLinks: SocialLinks | undefined;
@@ -79,6 +81,7 @@ export interface User extends UserData {
   language?: string;
   education?: Education[];
   employment?: Employment[];
+  dependencies?: Task[];
   dateOfBirth?: Date;
   skills: string[];
   achievements: string[];
@@ -158,6 +161,7 @@ export interface UserData {
   incomeLevel?: string;
   unreadNotificationCount?: number;
   snapshots?: SnapshotStore<Snapshot<Data>>[] | undefined
+  snapshotConfiguration?: SnapshotStoreConfig<any, any>;
   analysisResults?: DataAnalysisResult[];
   role: UserRole | undefined;
   timestamp?: Date | string;
@@ -300,6 +304,8 @@ export interface UserData {
   isActive?: boolean;
   isAdmin?: boolean;
   isModerator?: boolean;
+  isStaff?: boolean;
+  isSuper?: boolean;
   isOwner?: boolean;
   isManager?: boolean;
   isLead?: boolean;
@@ -393,7 +399,6 @@ export interface UserData {
   isBlockedByPinterest?: boolean;
   isBlockedByTumblr?: boolean;
   isBlockedByFlickr?: boolean;
-
 }
 
 // Add a new type for visualization data
@@ -514,23 +519,23 @@ export const usersDataSource: Record<string, User> = {
     id: 1,
     username: "User 1",
     email: "<EMAIL>",
-    role: UserRoles.USER,
-    avatarUrl: "", // Provide the appropriate value
-    hasQuota: false, // Provide the appropriate value
-    processingTasks: [], // Assuming it's an array
-    persona: undefined, // Provide the appropriate value
-    friends: [], // Assuming it's an array
-    deletedAt: null, // Provide the appropriate value
-    lastNameChange: new Date(), // Provide the appropriate value
-    lockoutEnd: null, // Provide the appropriate value
-    twoFactorEnabled: false, // Provide the appropriate value
-    phoneNumberConfirmed: false, // Provide the appropriate value
-    securityStamp: "", // Provide the appropriate value
-    concurrencyStamp: "", // Provide the appropriate value
-    accessFailedCount: 0, // Provide the appropriate value
-    settings: undefined, // Provide the appropriate value
+    role: UserRoles.Guest,
+    avatarUrl: "", 
+    hasQuota: false, 
+    processingTasks: [], 
+    persona: null, 
+    friends: [], 
+    deletedAt: null, 
+    lastNameChange: new Date(), 
+    lockoutEnd: null, 
+    twoFactorEnabled: false, 
+    phoneNumberConfirmed: false, 
+    securityStamp: "", 
+    concurrencyStamp: "", 
+    accessFailedCount: 0, 
+    settings: null, 
     data: {
-      role: UserRoles.USER,
+      role: UserRoles.Guest,
       deletedAt: null,
       lastLogin: new Date(),
       lastLogout: new Date(),

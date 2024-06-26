@@ -28,6 +28,7 @@ interface Post {
   author: string;
   upvotes: number;
   date: Date | undefined;
+  timestamp: string | Date;
   createdAt: Date;
   updatedAt: Date;
 }

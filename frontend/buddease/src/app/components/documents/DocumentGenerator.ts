@@ -1,11 +1,12 @@
-import { FileActions } from '@/app/components/actions/FileActions';
+var PizZip = require("pizzip");
+import { FileActions } from "@/app/components/actions/FileActions";
 import Draft from "immer";
 // DocumentGenerator.ts
-
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
   fetchDocumentByIdAPI,
   generateDocument,
+  // getDocument,
   loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
@@ -42,8 +43,9 @@ import { generateFinancialReportContent } from "./documentation/report/generateF
 import { autosaveDrawing } from "./editing/autosaveDrawing";
 import { parseCSV } from "./parseCSV";
 import { parseExcel } from "./parseExcel";
-import { AppType, PDFData } from "./parsePDF";
+import { AppType, PDFData, extractPDFContent, pdfParser } from "./parsePDF";
 import { parseXML } from "./parseXML";
+import { getDocument, GlobalWorkerOptions, PDFPageProxy } from "pdfjs-dist";
 
 import generateDevConfigurationSummaryContent from "@/app/generators/generateDevConfigurationSummaryContent";
 import { VersionData } from "../versions/VersionData";
@@ -54,15 +56,17 @@ import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 var xl = require("excel4node");
 
 const { handleError } = useErrorHandling();
+
+interface CustomPDFPage extends PDFPage {
+  getText(): Promise<string>;
+  getTextContent(): Promise<string>;
+}
 interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip>, DocumentData {
   load(content: any): void;
 }
 
-// Extend the PDFPage type to include the getText method
-interface CustomPDFPage extends PDFPage {
-  getText(): Promise<string>;
-}
 type DocumentPath = DocumentData | DatasetModel;
+type CustomPDFProxyPage = CustomPDFPage & PDFPageProxy;
 
 enum DocumentTypeEnum {
   Default = "default",
@@ -130,12 +134,53 @@ const documents: Document[] = [
     load: function (content: any): void {
       this.documentData = content;
     },
-    lastModifiedDate: { value: new Date(), isModified: false }, // Initialize as not modified
+    lastModifiedDate: { value: new Date(), isModified: false } as ModifiedDate, // Initialize as not modified
     version: {} as Version,
     permissions: {} as DocumentPermissions,
     versionData: {} as VersionData,
     visibility: undefined,
     completed: false,
+    _id: "",
+    documentSize: DocumentSize.A4,
+    lastModifiedBy: "",
+    name: "",
+    createdDate: undefined,
+    documentType: "",
+    _rev: "",
+    _attachments: undefined,
+    _links: undefined,
+    _etag: "",
+    _local: false,
+    _revs: [],
+    _source: undefined,
+    _shards: undefined,
+    _size: 0,
+    _version: 0,
+    _version_conflicts: 0,
+    _seq_no: 0,
+    _primary_term: 0,
+    _routing: "",
+    _parent: "",
+    _parent_as_child: false,
+    _slices: [],
+    _highlight: undefined,
+    _highlight_inner_hits: undefined,
+    _source_as_doc: false,
+    _source_includes: [],
+    _routing_keys: [],
+    _routing_values: [],
+    _routing_values_as_array: [],
+    _routing_values_as_array_of_objects: [],
+    _routing_values_as_array_of_objects_with_key: [],
+    _routing_values_as_array_of_objects_with_key_and_value: [],
+    _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+    filePathOrUrl: "",
+    uploadedBy: 0,
+    uploadedAt: "",
+    tagsOrCategories: "",
+    format: "",
+    uploadedByTeamId: null,
+    uploadedByTeam: null,
   },
   // Add more documents as needed
 ];
@@ -145,33 +190,63 @@ const documents: Document[] = [
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { UserSettings } from "@/app/configs/UserSettings";
 import Version from "../versions/Version";
-import { DocumentSize, Layout } from "../models/data/StatusType";
+import {
+  DocumentSize,
+  Layout,
+  ProjectPhaseTypeEnum,
+} from "../models/data/StatusType";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "../communications/LanguageEnum";
+import { pages } from "next/dist/build/templates/app-page";
+import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
+import { DocumentObject } from "../state/redux/slices/DocumentSlice";
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { extractTextFromPage } from "./CustomPDFPage";
+import { Phase } from "../phases/Phase";
 
-//   // todo
-//   // Define your types here...
-// }
 
-function loadTextDocumentContent(document: DocumentData): string {
-  // Logic to load content for a text document
-  // Example: Load content from a database or a cloud storage service
+function loadTextDocumentContent(document: DocumentData): string  {
+  let textContent = '';
 
-  // Assuming the text content is stored in the document's `content` property
-  const textContent = document.content;
+  // Check if content exists in local storage
+  if (localStorage.getItem(`document_${document.id}`)) {
+    textContent = localStorage.getItem(`document_${document.id}`) || '';
+    console.log('Content loaded from local storage:', textContent);
+  } else {
+    // Example: If content is not directly stored but needs fetching
+    if (document.source === 'database') {
+      textContent = fetchTextContentFromDatabase(Number(document.id));
+      console.log('Content loaded from database:', textContent);
+    } else if (document.source === 'cloud') {
+      textContent = downloadTextContentFromCloud(String(document.url));
+      console.log('Content downloaded from cloud:', textContent);
+    } else {
+      console.warn('No document content found.');
+      textContent = 'No document content found.';
+    }
 
-  // todo You can replace the above line with logic to fetch the content from a database or a cloud storage service
-  // For example, if the content is stored in a database:
-  // const textContent = fetchTextContentFromDatabase(document.id);
-
-  // Or if the content is stored in a cloud storage service like AWS S3:
-  // const textContent = downloadTextContentFromS3(document.url);
+    // Store content in local storage for future use
+    localStorage.setItem(`document_${document.id}`, textContent);
+  }
 
   // Return the loaded text content
   return textContent;
+}
+
+// Example of a function to fetch text content from a database
+function fetchTextContentFromDatabase(documentId: number): string {
+  // Replace with actual database fetching logic
+  return `Text content from database for document ${documentId}`;
+}
+
+// Example of a function to download text content from cloud storage
+function downloadTextContentFromCloud(url: string): string {
+  // Replace with actual cloud storage download logic
+  return `Downloaded text content from ${url}`;
 }
 
 async function loadDiagramDocumentContent(
@@ -221,7 +296,7 @@ async function loadDiagramDocumentContent(
 
 async function loadFinancialReportDocumentContent(
   documentId: number,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   try {
     // Fetch the document data using the document ID
@@ -246,13 +321,14 @@ async function loadFinancialReportDocumentContent(
   } catch (error) {
     console.error("Error loading financial report document content:", error);
     // Handle error appropriately
-    return "";
+    throw error;
   }
 }
 
+
 async function loadMarketAnalysisDocumentContent(
   document: DocumentData,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   try {
     // Logic to load content for a market analysis document
@@ -271,7 +347,7 @@ async function loadMarketAnalysisDocumentContent(
 
 async function loadClientPortfolioDocumentContent(
   document: DocumentData,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   try {
     // Logic to load content for a client portfolio document
@@ -290,7 +366,7 @@ async function loadClientPortfolioDocumentContent(
 
 async function loadSQLDocumentContent(
   document: DocumentPath,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   try {
     // Assuming the SQL script is stored in the document's content property
@@ -299,7 +375,7 @@ async function loadSQLDocumentContent(
       const sqlScript = document.content;
 
       // Wrap sqlScript in a WritableDraft<DocumentData> object
-      const draft: WritableDraft<DocumentData> = {
+      const draft: WritableDraft<DocumentObject> = {
         id: 0,
         title: "draft title",
         content: sqlScript,
@@ -315,11 +391,105 @@ async function loadSQLDocumentContent(
         lastModifiedDate: {
           value: new Date(),
           isModified: false,
-        },
+        } as ModifiedDate,
         versionData: undefined,
         version: null,
         visibility: "public",
-      };
+        _id: "",
+        documentSize: DocumentSize.A4,
+        lastModifiedBy: "",
+        name: "",
+        description: "",
+        createdBy: "",
+        createdDate: undefined,
+        documentType: "",
+        filePathOrUrl: "",
+        uploadedBy: 0,
+        uploadedAt: "",
+        tagsOrCategories: "",
+        format: "",
+        uploadedByTeamId: null,
+        uploadedByTeam: null,
+        URL: "",
+        alinkColor: "",
+        // all: undefined,
+        // anchors: undefined,
+        // applets: undefined,
+        bgColor: "",
+        // body: undefined,
+        characterSet: "",
+        charset: "",
+        compatMode: "",
+        contentType: "",
+        cookie: "",
+        currentScript: null,
+        defaultView: null,
+        designMode: "",
+        dir: "",
+        doctype: null,
+        // documentElement: undefined,
+        documentURI: "",
+        domain: "",
+        // embeds: undefined,
+        fgColor: "",
+        // forms: undefined,
+        fullscreen: false,
+        fullscreenEnabled: false,
+        // head: undefined,
+        hidden: false,
+        // images: undefined,
+        // implementation: undefined,
+        inputEncoding: "",
+        lastModified: "",
+        linkColor: "",
+        // links: undefined,
+        // location: undefined,
+        onfullscreenchange: null,
+        onfullscreenerror: null,
+        onpointerlockchange: null,
+        onpointerlockerror: null,
+        onreadystatechange: null,
+        onvisibilitychange: null,
+        ownerDocument: null,
+        pictureInPictureEnabled: false,
+        // plugins: undefined,
+        readyState: "loading",
+        referrer: "",
+        rootElement: null,
+        // scripts: undefined,
+        scrollingElement: null,
+        timeline: undefined,
+        visibilityState: "hidden",
+        vlinkColor: "",
+        _rev: "",
+        _attachments: undefined,
+        _links: undefined,
+        _etag: "",
+        _local: false,
+        _revs: [],
+        _source: undefined,
+        _shards: undefined,
+        _size: 0,
+        _version: 0,
+        _version_conflicts: 0,
+        _seq_no: 0,
+        _primary_term: 0,
+        _routing: "",
+        _parent: "",
+        _parent_as_child: false,
+        _slices: [],
+        _highlight: undefined,
+        _highlight_inner_hits: undefined,
+        _source_as_doc: false,
+        _source_includes: [],
+        _routing_keys: [],
+        _routing_values: [],
+        _routing_values_as_array: [],
+        _routing_values_as_array_of_objects: [],
+        _routing_values_as_array_of_objects_with_key: [],
+        _routing_values_as_array_of_objects_with_key_and_value: [],
+        _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+      }
       // Notify any data listeners about the loaded content
       dataCallback(draft);
 
@@ -336,32 +506,29 @@ async function loadSQLDocumentContent(
 
 async function loadPDFDocumentContent(
   document: DocumentData,
-  dataCallback: (data: WritableDraft<DocumentPath>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   try {
-    // Assuming the PDF content is stored in the document's content property as a string or Uint8Array
     const pdfBytes =
       typeof document.content === "string"
         ? Uint8Array.from(atob(document.content), (c) => c.charCodeAt(0))
         : document.content;
 
-    // Load the PDF document
     const pdfDoc = await PDFDocument.load(pdfBytes);
+    const pdfDocProxy = await getDocument({ data: pdfBytes }).promise;
 
-    // Extract text from each page of the PDF
     let text = "";
+
     const numPages = pdfDoc.getPageCount();
     for (let i = 0; i < numPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const pageText = await page.getText();
+      const page = await pdfDocProxy.getPage(i + 1);
+      const pageText = await extractTextFromPage(page as CustomPDFProxyPage);
       text += pageText;
     }
 
-    // Call dataCallback with the modified document
     const updatedDocument = { ...document, content: text };
-    dataCallback(updatedDocument);
+    dataCallback(updatedDocument as WritableDraft<DocumentObject>);
 
-    // Return the extracted text
     return text;
   } catch (error) {
     console.error("Error loading PDF document content:", error);
@@ -371,7 +538,7 @@ async function loadPDFDocumentContent(
 
 async function loadMarkdownDocumentContent(
   document: DocumentPath,
-  dataCallback: (data: WritableDraft<DocumentPath>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   try {
     // Assuming the Markdown file path is stored in the document's filePathOrUrl property
@@ -382,7 +549,7 @@ async function loadMarkdownDocumentContent(
 
     // Call dataCallback with the modified document
     const updatedDocument = { ...document, content: markdownContent };
-    dataCallback(updatedDocument);
+    dataCallback(updatedDocument as WritableDraft<DocumentObject>);
 
     // Return the Markdown content
     return markdownContent;
@@ -419,7 +586,7 @@ async function loadDrawingDocumentContent(
 }
 
 async function loadPresentationDocumentContent(
-  presentationId: DocumentData
+  presentationId: DocumentObject
 ): Promise<string> {
   try {
     // Logic to load presentation content
@@ -457,9 +624,9 @@ async function loadDraftDocumentContent(
 }
 
 async function loadGenericDocumentContent(
-  documentId: DocumentData,
+  documentId: DocumentObject,
   format: string,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
 ): Promise<string> {
   let parsedContent: any;
 
@@ -508,6 +675,60 @@ async function extractTextFromPDF(
     console.error("Error extracting text from PDF:", error);
     throw error;
   }
+}
+
+async function parsePDFToText(pdfFilePath: string): Promise<PDFData> {
+  try {
+    const pdfContent = await pdfParser(pdfFilePath);
+    const parsedData: PDFData = { pdfContent };
+    return parsedData;
+  } catch (error) {
+    console.error("Error parsing PDF:", error);
+    throw error;
+  }
+}
+
+function loadPDFFile(pdfFilePath: string): YourPDFType[] {
+  const sanitizedPath = sanitizeInput(pdfFilePath);
+  const pdfData: YourPDFType[] = [];
+
+  const pdfText = parsePDFToText(sanitizedPath);
+
+  pdfData.push({
+    text: pdfText,
+    pageNumber: 0,
+    textContent: "",
+    parsedData: [],
+  });
+
+  return pdfData;
+}
+
+function loadPDF(pdfFilePath: string): YourPDFType[] {
+  const pdf = loadPDFFile(pdfFilePath);
+  return pdf;
+}
+
+function parsePDFData<T extends object>({
+  pdfDataType,
+  parsedData,
+  appType,
+}: {
+  pdfDataType: YourPDFType[];
+  parsedData: ParsedData<T>[];
+  appType?: AppType;
+}): void {
+  pdfDataType.forEach((pdf: YourPDFType) => {
+    const pdfContent: string = extractPDFContent(pdf);
+
+    const correspondingParsedData = parsedData.find((data) => {
+      return data.pageNumber === pdf.pageNumber;
+    });
+
+    if (correspondingParsedData) {
+      correspondingParsedData.pdfContent = pdfContent;
+    }
+  });
 }
 
 async function loadDocumentContentFromDatabase(
@@ -640,7 +861,7 @@ async function loadOtherDocumentContent(
   this: any,
   documentId: number,
   format: string,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentOptions>) => void
 ): Promise<string> {
   try {
     // Logic to load other document content
@@ -674,293 +895,131 @@ async function loadOtherDocumentContent(
     console.error("Error loading other document content:", error);
   } finally {
     // Ensure dataCallback is called even if error occurs
+    const defaultOptions = getDefaultDocumentOptions(); // Get default options
+    const updatedOptions: Partial<DocumentOptions> = {
+      levels: { ...defaultOptions.levels } // Use default levels structure
+    };
+
     dataCallback({
-      id: Number(documentId),
+      options: updatedOptions as WritableDraft<DocumentOptions>,
+      id: "",
+      _id: "",
       title: "",
       content: "",
-      topics: [],
-      highlights: [],
-      keywords: [],
-      folders: [],
-      completed: false,
-      options: {
-        tableCells: {
-          enabled: false,
-          padding: 0,
-          fontSize: 0,
-          alignment: "left",
-          borders: undefined,
-        },
-        tableStyles: {
-          backgroundColor: "white",
-          borderColor: "black",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          fontFamily: "",
-          fontSize: "",
-          color: "",
-          border: "solid 1px black", // Added border property
-        },
-        color: "#000000",
-        highlight: true,
-        highlightColor: "yellow",
-        footnote: { enabled: true, format: "standard" },
-        defaultZoomLevel: 100,
-        customProperties: { property1: "value1", property2: "value2" },
-        value: "example value",
-        metadata: {},
-        additionalOptions: [],
-        uniqueIdentifier: "",
-        documentType: DocumentTypeEnum.Draft,
-
-        //{ enabled: true, format: this.pdfDataType },
-        userIdea: "",
-        isDynamic: false,
-        size: DocumentSize.Letter,
-        animations: {
-          type: "none",
-          transition: "none",
-          duration: 0,
-          speed: 0,
-        },
-        visibility: "public",
-        fontSize: 0,
-        font: "",
-        textColor: "",
-        backgroundColor: "",
-        fontFamily: "",
-        lineSpacing: 0,
-        alignment: AlignmentOptions.CENTER,
-        indentSize: 0,
-        bulletList: false,
-        numberedList: false,
-        headingLevel: 0,
-        bold: false,
-        italic: false,
-        underline: false,
-        strikethrough: false,
-        subscript: false,
-        superscript: false,
-        hyperlink: "",
-        image: "",
-        table: false,
-        tableRows: 0,
-        tableColumns: 0,
-        codeBlock: false,
-        blockquote: false,
-        codeInline: false,
-        quote: "",
-        todoList: false,
-        orderedTodoList: false,
-        unorderedTodoList: false,
-        colorCoding: {},
-        customSettings: {},
-        documents: [],
-        includeType: "all",
-        includeTitle: false,
-        includeContent: false,
-        includeStatus: false,
-        includeAdditionalInfo: false,
-        userSettings: {} as UserSettings,
-        dataVersions: {} as DataVersions,
-        documentPhase: "",
-        documentSize: DocumentSize.Letter,
-        limit: 0,
-        page: 0,
-        language: LanguageEnum.English,
-        version: {
-          id: 0,
-          name: "",
-          url: "",
-          versionNumber: "",
-          appVersion: "",
-          description: "",
-          createdAt: undefined,
-          updatedAt: undefined,
-          content: "",
-          userId: "",
-          documentId: "",
-          parentId: "",
-          parentType: "",
-          parentVersion: "",
-          parentTitle: "",
-          parentContent: "",
-          parentName: "",
-          parentUrl: "",
-          parentChecksum: "",
-          parentMetadata: undefined,
-          parentAppVersion: "",
-          parentVersionNumber: "",
-          checksum: "",
-          isLatest: false,
-          isPublished: false,
-          publishedAt: null,
-          source: "",
-          status: "",
-          workspaceId: "",
-          workspaceName: "",
-          workspaceType: "",
-          workspaceUrl: "",
-          workspaceViewers: [],
-          workspaceAdmins: [],
-          workspaceMembers: [],
-          frontendStructure: undefined,
-          backendStructure: undefined,
-          data: [],
-          metadata: undefined,
-          draft: false,
-          versionHistory: {
-            versions: [],
-          },
-          setFrontendAndBackendStructure: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          getStructure: function (): Record<string, AppStructureItem[]> {
-            throw new Error("Function not implemented.");
-          },
-        },
-        layout: Layout.Default,
-        panels: ["panel1", "panel2"],
-        pageNumbers: {
-          enabled: true, // or false, depending on your requirement
-          format: "numeric", // or whatever format you want to use
-        },
-        footer: "Page Footer",
-        watermark: {
-          enabled: false,
-          text: "",
-          fontSize: 12,
-          opacity: 0.5,
-          color: "",
-          size: "",
-          x: 0,
-          y: 0,
-          rotation: 0,
-          borderStyle: "",
-        },
-        headerFooterOptions: {
-          enabled: false,
-          headerContent: "",
-          footerContent: "",
-          showHeader: false,
-          showFooter: false,
-          differentFirstPage: false,
-          differentOddEven: false,
-          headerOptions: undefined,
-          footerOptions: undefined,
-        },
-        zoom: 100,
-        showRuler: false,
-        showDocumentOutline: false,
-        showComments: false,
-        showRevisions: false,
-        spellCheck: false,
-        grammarCheck: false,
-        toc: { enabled: false, levels: 3, format: "" },
-        textStyles: {},
-        links: { enabled: false, color: "", underline: false },
-        embeddedContent: {
-          enabled: false,
-          allow: true,
-          language: LanguageEnum.English,
-        },
-        bookmarks: { enabled: false },
-        crossReferences: { enabled: false, format: "Page Number" },
-        footnotes: { enabled: false, format: "numeric" },
-        endnotes: { enabled: false, format: "numeric" },
-        comments: { enabled: false, author: "", dateFormat: "DD-MM-YYYY" },
-        revisions: { enabled: false, author: "", dataFormat: "DD-MM-YYYY" },
-        embeddedMedia: { enabled: false, allow: true },
-        embeddedCode: {
-          enabled: false,
-          allow: true,
-          language: CodingLanguageEnum.JavaScript,
-        },
-        styles: {
-          default: {
-            name: "Default Style",
-            style: {
-              fontFamily: "Arial",
-              fontSize: 12,
-              fontWeight: "normal",
-              fontStyle: "normal",
-              textDecoration: "none",
-              color: "#000000",
-            },
-            custom: {
-              name: "Custom Style",
-              style: {
-                fontFamily: "Times New Roman",
-                fontSize: 14,
-                fontWeight: "bold",
-                fontStyle: "italic",
-                textDecoration: "underline",
-                color: "#333333",
-              },
-            },
-            tableCells: {
-              enabled: false,
-              padding: 0,
-              fontSize: 0,
-              alignment: "left",
-              borders: undefined,
-            },
-            tableStyles: {
-              backgroundColor: "",
-              borderColor: "",
-              borderWidth: "",
-              borderStyle: "",
-              fontFamily: "",
-              fontSize: "",
-              color: "",
-            },
-            highlight: { enabled: false, color: "" },
-            highlightColor: {
-              enabled: false,
-              color: "",
-            },
-            footnote: { enabled: false, format: "numeric" },
-            defaultZoomLevel: 100,
-            customProperties: {},
-            value: "",
-            metadata: {},
-          },
-          folderPath: {
-            name: "",
-            style: undefined,
-            custom: undefined,
-            tableCells: undefined,
-            tableStyles: undefined,
-            highlight: undefined,
-            highlightColor: undefined,
-            footnote: undefined,
-            defaultZoomLevel: 0,
-            customProperties: undefined,
-            value: "",
-            metadata: undefined,
-          },
-        },
-        previousMetadata: {},
-        currentMetadata: {},
-        accessHistory: [],
-        lastModifiedDate: {
-          value: new Date(),
-          isModified: false,
-        } as ModifiedDate,
-      },
       permissions: undefined,
+      folders: [],
       folderPath: "",
       previousMetadata: undefined,
       currentMetadata: undefined,
       accessHistory: [],
-      lastModifiedDate: undefined,
       versionData: undefined,
       version: undefined,
       visibility: undefined,
+      documentSize: DocumentSize.A4,
+      lastModifiedDate: undefined,
+      lastModifiedBy: "",
+      name: "",
+      description: "",
+      createdBy: "",
+      createdDate: undefined,
+      documentType: "",
+      _rev: "",
+      _attachments: undefined,
+      _links: undefined,
+      _etag: "",
+      _local: false,
+      _revs: [],
+      _source: undefined,
+      _shards: undefined,
+      _size: 0,
+      _version: 0,
+      _version_conflicts: 0,
+      _seq_no: 0,
+      _primary_term: 0,
+      _routing: "",
+      _parent: "",
+      _parent_as_child: false,
+      _slices: [],
+      _highlight: undefined,
+      _highlight_inner_hits: undefined,
+      _source_as_doc: false,
+      _source_includes: [],
+      _routing_keys: [],
+      _routing_values: [],
+      _routing_values_as_array: [],
+      _routing_values_as_array_of_objects: [],
+      _routing_values_as_array_of_objects_with_key: [],
+      _routing_values_as_array_of_objects_with_key_and_value: [],
+      _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+      filePathOrUrl: "",
+      uploadedBy: 0,
+      uploadedAt: "",
+      tagsOrCategories: "",
+      format: "",
+      uploadedByTeamId: null,
+      uploadedByTeam: null,
+      URL: "",
+      alinkColor: "",
+      // all: undefined,
+      // anchors: undefined,
+      // applets: undefined,
+      bgColor: "",
+      // body: undefined,
+      characterSet: "",
+      charset: "",
+      compatMode: "",
+      contentType: "",
+      cookie: "",
+      currentScript: null,
+      defaultView: null,
+      designMode: "",
+      dir: "",
+      doctype: null,
+      // documentElement: undefined,
+      documentURI: "",
+      domain: "",
+      // embeds: undefined,
+      fgColor: "",
+      // forms: undefined,
+      fullscreen: false,
+      fullscreenEnabled: false,
+      // head: undefined,
+      hidden: false,
+      // images: undefined,
+      // implementation: undefined,
+      inputEncoding: "",
+      lastModified: "",
+      linkColor: "",
+      // links: undefined,
+      // location: undefined,
+      onfullscreenchange: null,
+      onfullscreenerror: null,
+      onpointerlockchange: null,
+      onpointerlockerror: null,
+      onreadystatechange: null,
+      onvisibilitychange: null,
+      ownerDocument: null,
+      pictureInPictureEnabled: false,
+      // plugins: undefined,
+      readyState: "loading",
+      referrer: "",
+      rootElement: null,
+      // scripts: undefined,
+      scrollingElement: null,
+      // timeline: undefined,
+      visibilityState: "hidden",
+      vlinkColor: "",
+      
+      documents: [],
+      selectedDocument: null,
+      filteredDocuments: [],
+      searchResults: [],
+      loading: false,
+      error: null
     });
-  }
 
-  return "";
+    return "documentContent";
+  }
 }
 
 async function loadCryptoWatchDocumentContent(
@@ -991,7 +1050,7 @@ async function loadCryptoWatchDocumentContent(
 // Update the return type in loadDocumentContent to handle Promise
 async function loadDocumentContent(
   documentId: number,
-  document: DocumentPath,
+  document: DocumentObject,
   dataCallback: (data: WritableDraft<DocumentData>) => void,
   docx: CustomDocxtemplater<any>
 ): Promise<string | undefined> {
@@ -1088,9 +1147,9 @@ class DocumentGenerator {
 
   async loadDocumentContent(
     draftId: string | undefined,
-    document: DocumentPath,
+    document: DocumentObject,
     newContent: CustomDocxtemplater<any>,
-    dataCallback: (data: WritableDraft<DocumentPath>) => void,
+    dataCallback: (data: WritableDraft<DocumentObject>) => void,
     format: string,
     docx?: CustomDocxtemplater<any>,
     config?: DatabaseConfig,
@@ -1142,11 +1201,11 @@ class DocumentGenerator {
           return loadOtherDocumentContent(
             Number(documentId),
             format,
-            dataCallback
+            dataCallback 
           );
         case DocumentTypeEnum.FinancialReport:
           // Logic to load content for a financial report document
-          return loadFinancialReportDocumentContent(document.id, dataCallback);
+          return loadFinancialReportDocumentContent(Number(document.id), dataCallback);
         case DocumentTypeEnum.MarketAnalysis:
           // Logic to load content for a market analysis document
           return loadMarketAnalysisDocumentContent(document, dataCallback);
@@ -1170,31 +1229,40 @@ class DocumentGenerator {
     }
   }
 
-  async createCalendarEvents(options: DocumentOptions): Promise<string> {
+  
+async createCalendarEvents(options: DocumentOptions): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     try {
       // Placeholder logic for document generation
       const documentContent = "Calendar Events Document Content";
 
       // Simulate document generation process
-      const document = await generateDocument(documentContent, options);
-
-      // Log successful document creation
-      FileLogger.logDocument(
-        "Calendar Events Document created successfully.",
-        String(document.id),
-        String(document.id)
-      );
-
-      // Return success message
-      return "Calendar Events Document created successfully.";
+      generateDocument(documentContent, options)
+        .then((document) => {
+          // Log successful document creation
+          FileLogger.logDocument(
+            "Calendar Events Document created successfully.",
+            String(document.id),
+            String(document.id)
+          );
+          
+          // Return success message
+          resolve("Calendar Events Document created successfully.");
+        })
+        .catch((error) => {
+          // Handle errors
+          const errorMessage = "Failed to create Calendar Events Document";
+          handleError(errorMessage, { componentStack: error.stack });
+          reject(errorMessage);
+        });
     } catch (error: any) {
-      // Handle errors
+      // Handle synchronous errors
       const errorMessage = "Failed to create Calendar Events Document";
       handleError(errorMessage, { componentStack: error.stack });
-      return errorMessage;
+      reject(errorMessage);
     }
-  }
-
+  });
+}
   // Define the function to save document content
   saveDocumentContent(
     document: DocumentPath,
@@ -1207,7 +1275,7 @@ class DocumentGenerator {
       // Optionally, you can perform additional actions here
 
       // Update last modified date
-      document.lastModifiedDate = new Date();
+      document.lastModifiedDate = { value: new Date(), isModified: true } as ModifiedDate;
 
       // Return success message
       return Promise.resolve("Document content saved successfully.");
@@ -1236,9 +1304,9 @@ class DocumentGenerator {
 
   manageDocument(
     draftId: string,
-    documentPath: DocumentPath,
+    documentPath: DocumentObject,
     newContent: CustomDocxtemplater<any>,
-    dataCallback: (data: WritableDraft<DocumentPath>) => void,
+    dataCallback: (data: WritableDraft<DocumentObject>) => void,
     format: FormatEnum
   ): string {
     // Real-world logic to manage existing documents
@@ -1279,7 +1347,7 @@ class DocumentGenerator {
         // Load the content of the document to export
         this.loadDocumentContent(
           documentId,
-          documentPath,
+          documentPath as DocumentObject,
           exportPath,
           dataCallback,
           format,

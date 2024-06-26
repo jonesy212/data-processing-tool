@@ -5,7 +5,6 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
-import dotProp from "dot-prop";
 import { YourResponseType } from "../components/typings/types";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
@@ -14,7 +13,7 @@ import headersConfig from "./headers/HeadersConfig";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 
 // Define the API base URL
-const API_BASE_URL = dotProp.getProperty(endpoints, "drawing");
+const API_BASE_URL = endpoints.drawing; // Accessing property directly
 
 // Define API notification messages for drawing operations
 interface DrawingNotificationMessages {
@@ -45,17 +44,14 @@ const drawingNotificationMessages: DrawingNotificationMessages = {
 export const handleDrawingApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof DrawingNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {
-    const errorMessageText = dotProp.getProperty(
-      drawingNotificationMessages,
-      errorMessageId
-    );
+    const errorMessageText = drawingNotificationMessages[errorMessageId];
     useNotification().notify(
       errorMessageId,
-      errorMessageText as unknown as string,
+      errorMessageText,
       null,
       new Date(),
       "ApiClientError" as NotificationType
@@ -131,7 +127,7 @@ export const createDrawing = async (newDrawingData: any): Promise<void> => {
     handleDrawingApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to create drawing",
-      "CreateDrawingErrorId"
+      "CreateDrawingErrorId" as keyof DrawingNotificationMessages
     );
     throw error;
   }
@@ -160,7 +156,7 @@ export const updateDrawing = async (
     handleDrawingApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to update drawing",
-      "UpdateDrawingErrorId"
+      "UpdateDrawingErrorId" as keyof DrawingNotificationMessages
     );
     throw error;
   }
@@ -190,7 +186,7 @@ export const saveDrawingToDatabase = async (
     handleDrawingApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to save drawing to database",
-      "SaveDrawingErrorId"
+      "SaveDrawingErrorId"  as keyof DrawingNotificationMessages
     );
     // Return false to indicate failure
     return false;
@@ -217,7 +213,7 @@ export const deleteDrawing = async (drawingId: number): Promise<void> => {
     handleDrawingApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to delete drawing",
-      "DeleteDrawingErrorId"
+      "DeleteDrawingErrorId"  as keyof DrawingNotificationMessages
     );
     throw error;
   }

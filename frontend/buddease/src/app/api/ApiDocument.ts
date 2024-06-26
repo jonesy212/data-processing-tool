@@ -1,18 +1,21 @@
 // ApiDocument.ts
-
+import { unwrapResult } from '@reduxjs/toolkit';
+import { createDraft, Draft } from 'immer';
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
-import { DocumentData } from '../components/documents/DocumentBuilder';
 import { DocumentOptions } from '../components/documents/DocumentOptions';
 import { Presentation } from '../components/documents/Presentation';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
+import { DocumentObject, fetchDocumentById } from '../components/state/redux/slices/DocumentSlice';
 import { DatabaseConfig } from '../configs/DatabaseConfig';
 import { DocumentActions } from '../tokens/DocumentActions';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { AsyncThunkConfig } from 'node_modules/@reduxjs/toolkit/dist/createAsyncThunk';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.documents;
@@ -68,22 +71,34 @@ const handleDocumentApiErrorAndNotify = (
   }
 };
 
-export const fetchDocumentByIdAPI = async (
+
+
+
+export const fetchDocumentByIdAPI = (
   documentId: number,
-  
-    dataCallback: (data: WritableDraft<DocumentData>) => void
-  ): Promise<any> => {
+  dataCallback: (data: WritableDraft<DocumentObject>) => void
+): Promise<DocumentObject> => {
+  return new Promise(async (resolve, reject) => {
     try {
-      const fetchDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}`;
-      const response = await axiosInstance.get(fetchDocumentEndpoint, {
-        headers: headersConfig,
-      });
-  
-      // Call the provided data callback with the fetched document data
-      dataCallback(response.data);
-  
-      // Return the fetched document data if needed
-      return response.data;
+      // Fetch document data asynchronously using the async thunk action
+      const asyncThunkAction = fetchDocumentById(documentId);
+      const resultAction =  asyncThunkAction; // Await for the async thunk action to complete
+
+      // Ensure resultAction has a payload field containing the document data
+      if ('payload' in resultAction) {
+        const document: DocumentObject = resultAction.payload as DocumentObject;
+
+        // Convert to writable draft if necessary
+        const writableDocument = createDraft(document);
+
+        // Call the provided data callback with the fetched document data
+        dataCallback(writableDocument);
+
+        // Resolve with the fetched document data
+        resolve(document);
+      } else {
+        throw new Error('Async thunk action did not return expected payload');
+      }
     } catch (error) {
       console.error('Error fetching document:', error);
       const errorMessage = 'Failed to fetch document';
@@ -92,10 +107,12 @@ export const fetchDocumentByIdAPI = async (
         errorMessage,
         'FETCH_DOCUMENT_ERROR'
       );
-      throw error;
+      reject(error);
     }
-  };
-  
+  });
+};
+
+
 
   export const fetchJsonDocumentByIdAPI = async (
     documentId: string,
@@ -166,7 +183,7 @@ export const addDocumentAPI = async (documentData: any): Promise<any> => {
 
 
 
-  export const loadPresentationFromDatabase= async (presentationId: DocumentData): Promise<Presentation> => { 
+  export const loadPresentationFromDatabase= async (presentationId: DocumentObject): Promise<Presentation> => { 
     try {
       // Make a GET request to the API endpoint
       const response = await axiosInstance.get<Presentation>(`${API_BASE_URL}/presentation/${presentationId}`);
@@ -1290,8 +1307,8 @@ export const exportToExternalSystem = async (exportData: any): Promise<any> => {
 export const generateDocument = (
   documentData: any,
   options: DocumentOptions
-): Promise<DocumentData> => {
-  return new Promise<DocumentData>(async (resolve, reject) => {
+): Promise<DocumentObject> => {
+  return new Promise<DocumentObject>(async (resolve, reject) => {
     try {
       const response = await axiosInstance.post(`${API_BASE_URL}/api/documents/generate`, { documentData, options }, {
         headers: headersConfig,
@@ -1465,6 +1482,25 @@ export const getDocumentUrl = async (url: string): Promise<any> => {
     // Handle any errors that occur during the request
     console.error('Error fetching document URL:', error);
     throw new Error('Failed to fetch document URL');
+  }
+};
+
+
+export const getDocument = async (documentId: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(`${API_BASE_URL}/api/documents/${documentId}`, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching document:', error);
+    const errorMessage = 'Failed to fetch document';
+    handleDocumentApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'GET_DOCUMENT_ERROR'
+    );
+    throw error;
   }
 };
 

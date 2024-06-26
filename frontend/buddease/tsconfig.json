@@ -17,7 +17,6 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    // "jsx": "react-jsx",
     "jsx": "react",
     "incremental": true,
     "plugins": [
@@ -28,9 +27,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/app/shared/shared_error_handling": [
-        "./src/app/configs/declarations/global.d.ts"
-      ],
+      // "@/app/shared/shared_error_handling": ["./src/app/configs/declarations/global.d.ts"], // Commented out
       "@/pages/*": ["./src/app/pages/*"],
       "@/drawingLibrary": ["./src/app/configs/declarations/global.d.ts"],
       "@/api/*": ["./src/app/api/*"],
@@ -39,9 +36,9 @@
       "@/calendar/*": ["./src/app/components/calendar/*"],
       "@/documents/*": ["./src/app/components/documents/*"],
       "@/projects/*": ["./src/app/components/projects/*"],
-      "@/tasks/*": [".src/app/components/tasks/*"],
+      "@/tasks/*": ["./src/app/components/tasks/*"], // Corrected path typo
       "@/support/*": ["./src/app/components/support/*"],
-      "@/animations/*": ["./src/app/components/animations*"],
+      "@/animations/*": ["./src/app/components/animations/*"], // Corrected path typo
       "@/stores/*": ["./src/app/components/state/stores/*"],
       "@/videos/*": ["./src/app/components/video/*"],
       "@/hooks/*": ["./src/app/components/hooks/*"],
@@ -49,30 +46,14 @@
       "@/versions/*": ["./src/app/components/versions/*"],
       "@/configs/*": ["./src/app/configs/*"],
       "@/snapshot/*": ["./src/app/configs/snapshot/*"],
-      "@/models/*": ["./src/app/components/hooks/*"],
-      
-      "@/configs/appStructure/*": ["./src/app/configs/appStructure/*"],
-      "@/configs/appStructure/components/*": [
-        "./src/app/configs/appStructure/components/*"
-      ],
-      "@/configs/appStructure/pages/*": [
-        "./src/app/configs/appStructure/pages/*"
-      ],
-      "@/configs/appStructure/pages/onboarding/*": [
-        "./src/app/configs/appStructure/pages/onboarding/*"
-      ],
-      "@/configs/appStructure/pages/dashboards/*": [
-        "./src/app/configs/appStructure/pages/dashboards/*"
-      ],
-      "@/configs/appStructure/pages/forms/*": [
-        "./src/app/configs/appStructure/pages/forms/*"
-      ],
-      "@/configs/appStructure/pages/layouts/*": [
-        "./src/app/configs/appStructure/pages/layouts/*"
-      ],
-      "@/components/*": [
-        "./src/app/components/support/NotificationContext.tsx"
-      ],
+      // "@/configs/appStructure/*": ["./src/app/configs/appStructure/*"], // Commented out
+      "@/configs/appStructure/components/*": ["./src/app/configs/appStructure/components/*"],
+      "@/configs/appStructure/pages/*": ["./src/app/configs/appStructure/pages/*"],
+      "@/configs/appStructure/pages/onboarding/*": ["./src/app/configs/appStructure/pages/onboarding/*"],
+      "@/configs/appStructure/pages/dashboards/*": ["./src/app/configs/appStructure/pages/dashboards/*"],
+      "@/configs/appStructure/pages/forms/*": ["./src/app/configs/appStructure/pages/forms/*"],
+      "@/configs/appStructure/pages/layouts/*": ["./src/app/configs/appStructure/pages/layouts/*"],
+      // "@/components/*": ["./src/app/components/support/NotificationContext.tsx"], // Commented out
       "@/management/*": ["./src/app/components/management/*"],
       "@/context/*": ["./src/app/context/*"],
       "@/onboarding/*": ["./src/app/pages/onboarding/*"],
@@ -114,8 +95,8 @@
     "src/app/configs/declarations/**/*.d.ts",
     "src/app/components/libraries/toolbar/Sidebar.tsx",
     "src/app/context/DashboardContext.tsx",
-    "src/app/components/calendar/CalendarWeek.tsx",
-    // "src/app/components/models/realtime/RealTimeDataCollection.tsx"
+    "src/app/components/calendar/CalendarWeek.tsx"
+    // "src/app/components/models/realtime/RealTimeDataCollection.tsx" // Commented out
   ],
   "exclude": [
     "node_modules",

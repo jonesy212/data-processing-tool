@@ -29,9 +29,9 @@ class TaskService {
   @observable error: string | null = null;
 
   @action
-  createTask = async (task: Task, taskId: string, requestData: string) => {
+  createTask = async (task: Task, name: string,  title: string, type: NotificationTypeEnum, requestData: string) => {
     try {
-      task.id = UniqueIDGenerator.generateTaskID(taskId, String(task));
+      task.id = UniqueIDGenerator.generateTaskID(name, title, type);
 
       const endpoint = API_BASE_URL.create;
       await axiosInstance.post(

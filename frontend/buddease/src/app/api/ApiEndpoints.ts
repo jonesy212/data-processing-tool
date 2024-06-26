@@ -4,6 +4,7 @@ import HighlightEvent from "../components/documents/screenFunctionality/Highligh
 const BASE_URL = "https://your-api-base-url";
 const FACEBOOK_API_BASE_URL = 'https://graph.facebook.com/v12.0';
 const TWITTER_API_BASE_URL = 'https://api.twitter.com/1.1';
+
 type NestedEndpoints = {
   [key: string]: string | ((...args: any[]) => string) | NestedEndpoints;
 };
@@ -65,6 +66,15 @@ export const endpoints: Endpoints = {
     exportUserSettings: `${BASE_URL}/api/user-settings/export`,
 
     importUserSettings: `${BASE_URL}/api/user-settings/import`,
+  },
+
+  files: {
+    getFileType: (file: string) => `${BASE_URL}/${file}/type`,
+    fetchFiles: `${BASE_URL}`,
+    fetchFileAPI: (fileId: string) => `${BASE_URL}/${fileId}`,
+    uploadFileAPI: `${BASE_URL}/upload`,
+    determineFileTypeAPI: `${BASE_URL}/type`,
+    // Define other file operations as needed
   },
 
   userRoles: {

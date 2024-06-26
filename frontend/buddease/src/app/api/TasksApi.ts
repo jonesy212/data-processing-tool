@@ -1,3 +1,4 @@
+import { Dispatch } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 import dotProp from 'dot-prop';
 import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
@@ -7,7 +8,6 @@ import { useTaskManagerStore } from '../components/state/stores/TaskStore ';
 import { NotificationType, useNotification } from '../components/support/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
-import { Dispatch } from '@reduxjs/toolkit';
 
 // Define the API base URL
 const API_BASE_URL = dotProp.getProperty(endpoints, 'tasks.list');
@@ -39,6 +39,7 @@ interface TaskNotificationMessages {
   BULK_UNASSIGN_TODOS_ERROR: string;
   FETCH_TASK_HISTORY_ERROR: string;
   FETCH_TASKS_BY_USER_ERROR: string;
+  FETCH_UPDATED_TASK_ERROR: string;
   // Add more keys as needed
 }
 
@@ -69,6 +70,7 @@ const taskApiNotificationMessages: TaskNotificationMessages = {
   BULK_UNASSIGN_TODOS_ERROR: 'Failed to bulk unassign todos',
   FETCH_TASK_HISTORY_ERROR: 'Failed to fetch task history',
   FETCH_TASKS_BY_USER_ERROR: 'Failed to fetch tasks by user',
+  FETCH_UPDATED_TASK_ERROR: 'Failed to fetch updated task',
   // Add more properties as needed
 };
 // Function to handle API errors and notify for tasks
@@ -456,3 +458,5 @@ export const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]
     throw error;
   }
 };
+
+export { handleTaskApiErrorAndNotify };

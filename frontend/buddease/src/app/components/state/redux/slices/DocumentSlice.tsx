@@ -20,7 +20,7 @@ import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages
 import Version, { data } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { AppThunk } from "@/app/configs/appThunk";
 import { getStructureAsArray, traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { performSearch } from "@/app/pages/searchs/SearchComponent";
@@ -29,23 +29,25 @@ import { produce } from "immer";
 import { v4 as uuidv4 } from "uuid";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import { backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import { DocumentSize } from "@/app/components/models/data/StatusType";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 
 
 
 
 interface DocumentSliceState {
-  documents: DocumentData[];
+  documents: WritableDraft<DocumentObject>[];
   selectedDocument: DocumentData | null;
   filteredDocuments: DocumentData[];
   searchResults: DocumentData[];
   loading: boolean; // Add this line to include the initial state for loading
   error: Error | null; // Add this line to include the initial state for error
-  changes: boolean;
+  changes?: boolean | string | string[];
   documentBuilder?: typeof DocumentBuilder;
 }
 
-const initialState: DocumentSliceState = {
+const initialDocumentSliceState: DocumentSliceState = {
   documents: [],
   selectedDocument: null,
   filteredDocuments: [],
@@ -56,9 +58,1134 @@ const initialState: DocumentSliceState = {
   documentBuilder: undefined,
 };
 
-type DocumentObject = Document & DocumentData;
+interface DocumentObject extends Document, DocumentData, DocumentSliceState {
+  // additional fields if needed
+}
 
 
+function toObject(document: DocumentObject): object {
+  return { ...document };
+}
+
+
+
+
+const initialState: DocumentObject = {
+  _id: uuidv4(),
+  id: "",
+  title: "New Document",
+
+  content: "",
+  topics: [],
+  highlights: [],
+  files: [],
+  name: "New Document",
+  description: "New document description",
+  visibility: "Public",
+  documentType: DocumentTypeEnum.Other,
+  documentStatus: DocumentStatusEnum.Draft,
+  documentOwner: "",
+  documentCreationDate: new Date(),
+  documentLastModifiedDate: new Date(),
+  documentVersion: 0,
+  documentContent: "",
+  keywords: [],
+  options: {} as DocumentOptions,
+  folderPath: "",
+  previousMetadata: {} as WritableDraft<StructuredMetadata>,
+  currentMetadata: {} as WritableDraft<StructuredMetadata>,
+  accessHistory: [],
+  folders: [],
+  lastModifiedDate: {} as WritableDraft<ModifiedDate>,
+  documents: [],
+  selectedDocument: null,
+  filteredDocuments: [],
+  loading: false, // Add this line if it's not already present
+  error: null,
+  changes: false,
+  searchResults: [],
+  documentBuilder: undefined,
+  version: {
+    id: 0,
+    name: "Initial Version",
+    url: "https://example.com/initial_version",
+    versionNumber: "1.0",
+    appVersion: "v1.0",
+    buildNumber: "1",
+    description: "Initial version description",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    content: "Initial version content",
+    userId: "user123",
+    documentId: "doc123",
+    parentId: "",
+    parentType: "document",
+    parentVersion: "",
+    parentTitle: "",
+    parentContent: "",
+    parentName: "",
+    parentUrl: "",
+    parentChecksum: "",
+    parentMetadata: {},
+    parentAppVersion: "",
+    parentVersionNumber: "",
+    checksum: "abc123",
+    isLatest: true,
+    isPublished: false,
+    publishedAt: null,
+    source: "Internal",
+    status: "Draft",
+    workspaceId: "workspace123",
+    workspaceName: "Sample Workspace",
+    workspaceType: "Team",
+    workspaceUrl: "https://example.com/workspace123",
+    workspaceViewers: ["user1", "user2"],
+    workspaceAdmins: ["admin1"],
+    workspaceMembers: ["user1", "user2", "admin1"],
+    frontendStructure: Promise.resolve([]),
+    backendStructure: Promise.resolve([]),
+    data: [],
+    draft: false,
+    versions: {
+      data: {
+        id: 0,
+        parentId: "",
+        parentType: "",
+        parentVersion: "",
+        parentTitle: "",
+        parentContent: "",
+        parentName: "",
+        parentUrl: "",
+        parentChecksum: "",
+        parentAppVersion: "",
+        parentVersionNumber: "",
+        isLatest: false,
+        isPublished: false,
+        publishedAt: null,
+        source: "",
+        status: "",
+        workspaceId: "",
+        workspaceName: "",
+        workspaceType: "",
+        workspaceUrl: "",
+        workspaceViewers: [],
+        workspaceAdmins: [],
+        workspaceMembers: [],
+        data: [],
+        name: "",
+        url: "",
+        versionNumber: "",
+        documentId: "",
+        draft: false,
+        userId: "",
+        content: "",
+        metadata: {
+          author: "",
+          timestamp: undefined,
+          revisionNotes: undefined
+        },
+        versions: {
+          data: undefined,
+          backend: undefined,
+          frontend: undefined
+        },
+        checksum: ""
+      },
+      backend: {
+        getStructure: function (): Promise<Record<string, AppStructureItem>> {
+          throw new Error("Function not implemented.");
+        },
+        getStructureAsArray: function (): AppStructureItem[] {
+          throw new Error("Function not implemented.");
+        },
+        traverseDirectoryPublic: function (dir: string, fs: typeof import("fs")): Promise<AppStructureItem[]> {
+          throw new Error("Function not implemented.");
+        }
+      },
+      frontend: {
+        id: "",
+        name: "",
+        type: "",
+        path: "",
+        content: "",
+        draft: false,
+        permissions: {
+          read: false,
+          write: false,
+          delete: false,
+          share: false,
+          execute: false
+        },
+        getStructure: function (): Record<string, AppStructureItem> {
+          throw new Error("Function not implemented.");
+        },
+        getStructureAsArray: function (): Promise<AppStructureItem[]> {
+          throw new Error("Function not implemented.");
+        }
+      },
+    },
+    _structure: {},
+    metadata: {
+      author: "Author Name",
+      timestamp: new Date(),
+    },
+    getVersion: async () => "1.0",
+    versionHistory: {
+      versions: [],
+    },
+    mergeAndHashStructures: async (baseStructure, additionalStructure) => {
+      return "merged_structure_hash";
+    },
+    getVersionNumber: () => "1.0",
+    updateVersionNumber: (newVersionNumber) => {
+      console.log(`Updating version number to ${newVersionNumber}`);
+    },
+    getVersionData: (): VersionData => {
+      return {
+        id: 0,
+        name: "Initial Version",
+        url: "https://example.com/initial_version",
+        userId: "user123",
+        documentId: "doc123",
+        draft: false,
+        data: [],
+        versionNumber: "1.0",
+        parentId: '',
+        parentType: '',
+        parentVersion: '',
+        parentTitle: '',
+        parentContent: '',
+        parentName: '',
+        parentUrl: '',
+        parentChecksum: '',
+        parentAppVersion: '',
+        parentVersionNumber: '',
+        isLatest: false,
+        isPublished: false,
+        publishedAt: null,
+        source: '',
+        status: '',
+        workspaceId: '',
+        workspaceName: '',
+        workspaceType: '',
+        workspaceUrl: '',
+        workspaceViewers: [],
+        workspaceAdmins: [],
+        workspaceMembers: [],
+        content: "Initial version content",
+        checksum: "abc123",
+        metadata: {
+          author: "Author Name",
+          timestamp: new Date(),
+          revisionNotes: undefined,
+        },
+        versions: {
+          data: {
+            frontend: {
+              versionNumber: "1.0",
+            },
+            backend: {
+              versionNumber: "1.0",
+            },
+          },
+          backend: {
+            structure: {},
+            traverseDirectory: async () => [],
+            getStructure: async () => ({}),
+            getStructureAsArray: async () => [],
+          },
+          frontend: {
+            id: "frontend",
+            name: "Frontend",
+            type: "folder",
+            path: "./frontend",
+            content: "",
+            draft: false,
+            permissions: {
+              read: true,
+              write: true,
+              delete: true,
+              share: true,
+              execute: true,
+            },
+            items: {},
+            getStructureAsArray: async () => [],
+            traverseDirectoryPublic: async () => [],
+            getStructure: async () => ({}),
+          },
+        },
+      };
+    },
+  },
+  permissions: {
+    // readAccess: false,
+    writeAccess: false,
+    readWriteAccess: false,
+    isActive: false,
+    getReadAccess: () => false,
+    setReadAccess: () => false,
+    getWriteAccess:   () => false,
+    setWriteAccess: () => false,
+    getReadWriteAccess: () => false,
+    setReadWriteAccess: () => false,
+           
+  } ,
+  versionData: {
+    id: 0,
+    name: "Initial Version",
+    url: "https://example.com/initial_version",
+    versionNumber: "1.0",
+    documentId: "doc123",
+    draft: false,
+    userId: "user123",
+    data: [],
+    parentId: '',
+    parentType: '',
+    parentVersion: '',
+    parentTitle: '',
+    parentContent: '',
+    parentName: '',
+    parentUrl: '',
+    parentChecksum: '',
+    parentAppVersion: '',
+    parentVersionNumber: '',
+    isLatest: false,
+    isPublished: false,
+    publishedAt: null,
+    source: '',
+    status: '',
+    workspaceId: '',
+    workspaceName: '',
+    workspaceType: '',
+    workspaceUrl: '',
+    workspaceViewers: [],
+    workspaceAdmins: [],
+    workspaceMembers: [],
+    content: "Initial version content",
+    checksum: "abc123",
+    metadata: {
+      author: "Author Name",
+      timestamp: new Date(),
+      revisionNotes: undefined,
+    },
+    versions: {
+      data: {
+        frontend: {
+          versionNumber: "1.0",
+        },
+        backend: {
+          versionNumber: "1.0",
+        },
+      },
+      backend: {
+        structure: {
+          traverseDirectory: {
+            id: "traverseDirectory",
+            name: "Traverse Directory",
+            type: "folder",
+            path: "./",
+            content: "",
+            draft: false,
+            permissions: {
+              read: true,
+              write: true,
+              delete: true,
+              share: true,
+              execute: true,
+            },
+            items: {
+              "1": {
+                id: "1",
+                name: "Item 1",
+                type: "file",
+                path: "./item1.txt",
+                content: "Item 1 content",
+                draft: false,
+                permissions: {
+                  read: true,
+                  write: true,
+                  delete: true,
+                  share: true,
+                  execute: true,
+                },
+              },
+            },
+          },
+        },
+        getStructure: async () => ({}),
+        traverseDirectory: async () => [],
+        getStructureAsArray: async () => [],
+      },
+      frontend: {
+        id: "frontend",
+        name: "Frontend",
+        type: "folder",
+        path: "./frontend",
+        content: "",
+        draft: false,
+        permissions: {
+          read: true,
+          write: true,
+          delete: true,
+          share: true,
+          execute: true,
+        },
+        items: {},
+        getStructureAsArray: async () => [],
+        traverseDirectoryPublic: async () => [],
+        getStructure: async () => ({}),
+      },
+    },
+  },
+};
+
+
+function createNewDocument(documentId: string): DocumentObject {
+  const newDocument: DocumentObject = {
+    _id: uuidv4(),
+    id: documentId,
+    title: "New Document",
+    content: "This is a new document",
+    topics: [],
+    highlights: [],
+    files: [],
+    name: "New Document",
+    description: "New document description",
+    visibility: "Public",
+    documentType: DocumentTypeEnum.Other,
+    documentStatus: DocumentStatusEnum.Draft,
+    documentOwner: "",
+    documentCreationDate: new Date(),
+    documentLastModifiedDate: new Date(),
+    documentVersion: 0,
+    documentContent: "",
+    keywords: [],
+    options: {} as DocumentOptions,
+    folderPath: "",
+    previousMetadata: {} as WritableDraft<StructuredMetadata>,
+    currentMetadata: {} as WritableDraft<StructuredMetadata>,
+    accessHistory: [],
+    folders: [],
+    lastModifiedDate: {} as WritableDraft<ModifiedDate>,
+    version: {
+      id: 0,
+      name: "Initial Version",
+      url: "https://example.com/initial_version",
+      versionNumber: "1.0",
+      appVersion: "v1.0",
+      buildNumber: "1",
+      description: "Initial version description",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      content: "Initial version content",
+      userId: "user123",
+      documentId: "doc123",
+      parentId: "",
+      parentType: "document",
+      parentVersion: "",
+      parentTitle: "",
+      parentContent: "",
+      parentName: "",
+      parentUrl: "",
+      parentChecksum: "",
+      parentMetadata: {},
+      parentAppVersion: "",
+      parentVersionNumber: "",
+      checksum: "abc123",
+      isLatest: true,
+      isPublished: false,
+      publishedAt: null,
+      source: "Internal",
+      status: "Draft",
+      workspaceId: "workspace123",
+      workspaceName: "Sample Workspace",
+      workspaceType: "Team",
+      workspaceUrl: "https://example.com/workspace123",
+      workspaceViewers: ["user1", "user2"],
+      workspaceAdmins: ["admin1"],
+      workspaceMembers: ["user1", "user2", "admin1"],
+      frontendStructure: Promise.resolve([]),
+      backendStructure: Promise.resolve([]),
+      data: [],
+      draft: false,
+      versions: {
+        data: data,
+        backend: backend,
+        frontend: frontend,
+      },
+      _structure: {
+        // data: [],
+        // draft: false,
+        // frontendStructure: Promise.resolve([]),
+        // backendStructure: Promise.resolve([]),
+      },
+      metadata: {
+        author: "Author Name",
+        timestamp: new Date(),
+      },
+      getVersion: async () => "1.0",
+      versionHistory: {
+        versions: [],
+      },
+      mergeAndHashStructures: async (baseStructure, additionalStructure) => {
+        return "merged_structure_hash";
+      },
+      getVersionNumber: () => "1.0",
+      updateVersionNumber: (newVersionNumber) => {
+        console.log(`Updating version number to ${newVersionNumber}`);
+      },
+      getVersionData: (): VersionData => {
+        return {
+          id: 0,
+          name: "Initial Version",
+          url: "https://example.com/initial_version",
+          userId: "user123",
+          documentId: "doc123",
+          draft: false,
+          data: [],
+          versionNumber: "1.0",
+          parentId: '', // Provide appropriate values based on your application logic
+          parentType: '', // Provide appropriate values based on your application logic
+          parentVersion: '', // Provide appropriate values based on your application logic
+          parentTitle: '', // Provide appropriate values based on your application logic
+          parentContent: '', // Provide appropriate values based on your application logic
+          parentName: '', // Provide appropriate values based on your application logic
+          parentUrl: '', // Provide appropriate values based on your application logic
+          parentChecksum: '', // Provide appropriate values based on your application logic
+          parentAppVersion: '', // Provide appropriate values based on your application logic
+          parentVersionNumber: '', // Provide appropriate values based on your application logic
+          isLatest: false, // Provide appropriate values based on your application logic
+          isPublished: false, // Provide appropriate values based on your application logic
+          publishedAt: null, // Provide appropriate values based on your application logic
+          source: '', // Provide appropriate values based on your application logic
+          status: '', // Provide appropriate values based on your application logic
+          workspaceId: '', // Provide appropriate values based on your application logic
+          workspaceName: '', // Provide appropriate values based on your application logic
+          workspaceType: '', // Provide appropriate values based on your application logic
+          workspaceUrl: '', // Provide appropriate values based on your application logic
+          workspaceViewers: [], // Provide appropriate values based on your application logic
+          workspaceAdmins: [], // Provide appropriate values based on your application logic
+          workspaceMembers: [], // Provide appropriate values based on your application logic
+          content: "Initial version content",
+          checksum: "abc123",
+          metadata: {
+            author: "Author Name",
+            timestamp: new Date(),
+            revisionNotes: undefined, // Adjust as per your application logic
+          },
+          versions: {
+            data: {
+              frontend: {
+                versionNumber: "1.0",
+              },
+              backend: {
+                versionNumber: "1.0",
+              },
+            },
+            backend: {
+              traverseDirectory: traverseBackendDirectory,
+              getStructure: () => {
+                return (
+                  options?.backendStructure?.getStructure() ||
+                  Promise.resolve({})
+                );
+              },
+              getStructureAsArray: getStructureAsArray,
+              traverseDirectoryPublic: traverseBackendDirectory, // Added this line
+            },
+            frontend: {
+              id: "frontend",
+              name: "Frontend",
+              type: "folder",
+              path: "./frontend",
+              content: "",
+              draft: false,
+              permissions: {
+                read: true,
+                write: true,
+                delete: true,
+                share: true,
+                execute: true,
+              },
+              items: {},
+              getStructureAsArray: async () => [],
+              traverseDirectoryPublic: async () => [],
+              getStructure: async () => ({}),
+            } as FrontendStructure,
+          },
+        };
+      },
+    },
+    permissions: new DocumentPermissions(true, false),
+    versionData: {
+      id: 0,
+      name: "Initial Version",
+      url: "https://example.com/initial_version",
+      versionNumber: "1.0",
+      // appVersion: "v1.0",
+      documentId: "doc123",
+      draft: false,
+      userId: "user123",
+      data: [],
+      parentId: '', // Provide appropriate values based on your application logic
+      parentType: '', // Provide appropriate values based on your application logic
+      parentVersion: '', // Provide appropriate values based on your application logic
+      parentTitle: '', // Provide appropriate values based on your application logic
+      parentContent: '', // Provide appropriate values based on your application logic
+      parentName: '', // Provide appropriate values based on your application logic
+      parentUrl: '', // Provide appropriate values based on your application logic
+      parentChecksum: '', // Provide appropriate values based on your application logic
+      parentAppVersion: '', // Provide appropriate values based on your application logic
+      parentVersionNumber: '', // Provide appropriate values based on your application logic
+      isLatest: false, // Provide appropriate values based on your application logic
+      isPublished: false, // Provide appropriate values based on your application logic
+      publishedAt: null, // Provide appropriate values based on your application logic
+      source: '', // Provide appropriate values based on your application logic
+      status: '', // Provide appropriate values based on your application logic
+      workspaceId: '', // Provide appropriate values based on your application logic
+      workspaceName: '', // Provide appropriate values based on your application logic
+      workspaceType: '', // Provide appropriate values based on your application logic
+      workspaceUrl: '', // Provide appropriate values based on your application logic
+      workspaceViewers: [], // Provide appropriate values based on your application logic
+      workspaceAdmins: [], // Provide appropriate values based on your application logic
+      workspaceMembers: [], // Provide appropriate values based on your application logic
+      content: "Initial version content",
+      checksum: "abc123",
+      metadata: {
+        author: "Author Name",
+        timestamp: new Date(),
+        revisionNotes: undefined, // Adjust as per your application logic
+      },
+      versions: {
+        data: {
+          frontend: {
+            versionNumber: "1.0",
+          },
+          backend: {
+            versionNumber: "1.0",
+          },
+        },
+        backend: {
+          id: "backend",
+          name: "Backend",
+          type: "folder",
+          path: "./backend",
+          content: "",
+          draft: false,
+          permissions: {
+            read: true,
+            write: true,
+            delete: true,
+            share: true,
+            execute: true,
+          },
+          items: backendStructure.getStructure(),
+          getStructureAsArray: backendStructure.getStructureAsArray.bind(backendStructure),
+          traverseDirectoryPublic: backendStructure.traverseDirectoryPublic?.bind(backendStructure),
+          getStructure: () => backendStructure.getStructure(),
+        } as BackendStructure, // Version of the backend
+        frontend: {
+          id: "frontend",
+          name: "Frontend",
+          type: "folder",
+          path: "./frontend",
+          content: "",
+          draft: false,
+          permissions: {
+            read: true,
+            write: true,
+            delete: true,
+            share: true,
+            execute: true,
+          },
+          items: {},
+          getStructureAsArray: async () => [],
+          traverseDirectoryPublic: async () => [],
+          getStructure: async () => ({}),
+        } as FrontendStructure,
+      },
+    },
+    URL: "",
+    alinkColor: "",
+    all: undefined,
+    anchors: undefined,
+    applets: undefined,
+    bgColor: "",
+    body: undefined,
+    characterSet: "",
+    charset: "",
+    compatMode: "",
+    contentType: "",
+    cookie: "",
+    currentScript: null,
+    defaultView: null,
+    designMode: "",
+    dir: "",
+    doctype: null,
+    documentElement: undefined,
+    documentURI: "",
+    domain: "",
+    embeds: undefined,
+    fgColor: "",
+    forms: undefined,
+    fullscreen: false,
+    fullscreenEnabled: false,
+    head: undefined,
+    hidden: false,
+    images: undefined,
+    implementation: undefined,
+    inputEncoding: "",
+    lastModified: "",
+    linkColor: "",
+    links: undefined,
+    location: undefined,
+    onfullscreenchange: null,
+    onfullscreenerror: null,
+    onpointerlockchange: null,
+    onpointerlockerror: null,
+    onreadystatechange: null,
+    onvisibilitychange: null,
+    ownerDocument: null,
+    pictureInPictureEnabled: false,
+    plugins: undefined,
+    readyState: "loading",
+    referrer: "",
+    rootElement: null,
+    scripts: undefined,
+    scrollingElement: null,
+    timeline: undefined,
+    visibilityState: "hidden",
+    vlinkColor: "",
+    adoptNode: function <T extends Node>(node: T): T {
+      throw new Error("Function not implemented.");
+    },
+    captureEvents: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    caretRangeFromPoint: function (x: number, y: number): Range | null {
+      throw new Error("Function not implemented.");
+    },
+    clear: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    close: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    createAttribute: function (localName: string): Attr {
+      throw new Error("Function not implemented.");
+    },
+    createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
+      throw new Error("Function not implemented.");
+    },
+    createCDATASection: function (data: string): CDATASection {
+      throw new Error("Function not implemented.");
+    },
+    createComment: function (data: string): Comment {
+      throw new Error("Function not implemented.");
+    },
+    createDocumentFragment: function (): DocumentFragment {
+      throw new Error("Function not implemented.");
+    },
+    createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
+      throw new Error("Function not implemented.");
+    },
+    createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
+      throw new Error("Function not implemented.");
+    },
+    createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
+      throw new Error("Function not implemented.");
+    },
+    createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
+      throw new Error("Function not implemented.");
+    },
+    createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
+      throw new Error("Function not implemented.");
+    },
+    createRange: function (): Range {
+      throw new Error("Function not implemented.");
+    },
+    createTextNode: function (data: string): Text {
+      throw new Error("Function not implemented.");
+    },
+    createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
+      throw new Error("Function not implemented.");
+    },
+    execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
+      throw new Error("Function not implemented.");
+    },
+    exitFullscreen: function (): Promise<void> {
+      throw new Error("Function not implemented.");
+    },
+    exitPictureInPicture: function (): Promise<void> {
+      throw new Error("Function not implemented.");
+    },
+    exitPointerLock: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    getElementById: function (elementId: string): HTMLElement | null {
+      throw new Error("Function not implemented.");
+    },
+    getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
+      throw new Error("Function not implemented.");
+    },
+    getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
+      throw new Error("Function not implemented.");
+    },
+    getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
+      throw new Error("Function not implemented.");
+    },
+    getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
+      throw new Error("Function not implemented.");
+    },
+    getSelection: function (): Selection | null {
+      throw new Error("Function not implemented.");
+    },
+    hasFocus: function (): boolean {
+      throw new Error("Function not implemented.");
+    },
+    hasStorageAccess: function (): Promise<boolean> {
+      throw new Error("Function not implemented.");
+    },
+    importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
+      throw new Error("Function not implemented.");
+    },
+    open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
+      throw new Error("Function not implemented.");
+    },
+    queryCommandEnabled: function (commandId: string): boolean {
+      throw new Error("Function not implemented.");
+    },
+    queryCommandIndeterm: function (commandId: string): boolean {
+      throw new Error("Function not implemented.");
+    },
+    queryCommandState: function (commandId: string): boolean {
+      throw new Error("Function not implemented.");
+    },
+    queryCommandSupported: function (commandId: string): boolean {
+      throw new Error("Function not implemented.");
+    },
+    queryCommandValue: function (commandId: string): string {
+      throw new Error("Function not implemented.");
+    },
+    releaseEvents: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    requestStorageAccess: function (): Promise<void> {
+      throw new Error("Function not implemented.");
+    },
+    write: function (...text: string[]): void {
+      throw new Error("Function not implemented.");
+    },
+    writeln: function (...text: string[]): void {
+      throw new Error("Function not implemented.");
+    },
+    addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
+      throw new Error("Function not implemented.");
+    },
+    removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
+      throw new Error("Function not implemented.");
+    },
+    startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
+      throw new Error("Function not implemented.");
+    },
+    baseURI: "",
+    childNodes: undefined,
+    firstChild: null,
+    isConnected: false,
+    lastChild: null,
+    nextSibling: null,
+    nodeName: "",
+    nodeType: 0,
+    nodeValue: null,
+    parentElement: null,
+    parentNode: null,
+    previousSibling: null,
+    textContent: null,
+    appendChild: function <T extends Node>(node: T): T {
+      throw new Error("Function not implemented.");
+    },
+    cloneNode: function (deep?: boolean | undefined): Node {
+      throw new Error("Function not implemented.");
+    },
+    compareDocumentPosition: function (other: Node): number {
+      throw new Error("Function not implemented.");
+    },
+    contains: function (other: Node | null): boolean {
+      throw new Error("Function not implemented.");
+    },
+    getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
+      throw new Error("Function not implemented.");
+    },
+    hasChildNodes: function (): boolean {
+      throw new Error("Function not implemented.");
+    },
+    insertBefore: function <T extends Node>(node: T, child: Node | null): T {
+      throw new Error("Function not implemented.");
+    },
+    isDefaultNamespace: function (namespace: string | null): boolean {
+      throw new Error("Function not implemented.");
+    },
+    isEqualNode: function (otherNode: Node | null): boolean {
+      throw new Error("Function not implemented.");
+    },
+    isSameNode: function (otherNode: Node | null): boolean {
+      throw new Error("Function not implemented.");
+    },
+    lookupNamespaceURI: function (prefix: string | null): string | null {
+      throw new Error("Function not implemented.");
+    },
+    lookupPrefix: function (namespace: string | null): string | null {
+      throw new Error("Function not implemented.");
+    },
+    normalize: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    removeChild: function <T extends Node>(child: T): T {
+      throw new Error("Function not implemented.");
+    },
+    replaceChild: function <T extends Node>(node: Node, child: T): T {
+      throw new Error("Function not implemented.");
+    },
+    ELEMENT_NODE: 1,
+    ATTRIBUTE_NODE: 2,
+    TEXT_NODE: 3,
+    CDATA_SECTION_NODE: 4,
+    ENTITY_REFERENCE_NODE: 5,
+    ENTITY_NODE: 6,
+    PROCESSING_INSTRUCTION_NODE: 7,
+    COMMENT_NODE: 8,
+    DOCUMENT_NODE: 9,
+    DOCUMENT_TYPE_NODE: 10,
+    DOCUMENT_FRAGMENT_NODE: 11,
+    NOTATION_NODE: 12,
+    DOCUMENT_POSITION_DISCONNECTED: 1,
+    DOCUMENT_POSITION_PRECEDING: 2,
+    DOCUMENT_POSITION_FOLLOWING: 4,
+    DOCUMENT_POSITION_CONTAINS: 8,
+    DOCUMENT_POSITION_CONTAINED_BY: 16,
+    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+    dispatchEvent: function (event: Event): boolean {
+      throw new Error("Function not implemented.");
+    },
+    activeElement: null,
+    adoptedStyleSheets: [],
+    fullscreenElement: null,
+    pictureInPictureElement: null,
+    pointerLockElement: null,
+    styleSheets: undefined,
+    elementFromPoint: function (x: number, y: number): Element | null {
+      throw new Error("Function not implemented.");
+    },
+    elementsFromPoint: function (x: number, y: number): Element[] {
+      throw new Error("Function not implemented.");
+    },
+    getAnimations: function (): Animation[] {
+      throw new Error("Function not implemented.");
+    },
+    fonts: undefined,
+    onabort: null,
+    onanimationcancel: null,
+    onanimationend: null,
+    onanimationiteration: null,
+    onanimationstart: null,
+    onauxclick: null,
+    onbeforeinput: null,
+    onbeforetoggle: null,
+    onblur: null,
+    oncancel: null,
+    oncanplay: null,
+    oncanplaythrough: null,
+    onchange: null,
+    onclick: null,
+    onclose: null,
+    oncontextmenu: null,
+    oncopy: null,
+    oncuechange: null,
+    oncut: null,
+    ondblclick: null,
+    ondrag: null,
+    ondragend: null,
+    ondragenter: null,
+    ondragleave: null,
+    ondragover: null,
+    ondragstart: null,
+    ondrop: null,
+    ondurationchange: null,
+    onemptied: null,
+    onended: null,
+    onerror: null,
+    onfocus: null,
+    onformdata: null,
+    ongotpointercapture: null,
+    oninput: null,
+    oninvalid: null,
+    onkeydown: null,
+    onkeypress: null,
+    onkeyup: null,
+    onload: null,
+    onloadeddata: null,
+    onloadedmetadata: null,
+    onloadstart: null,
+    onlostpointercapture: null,
+    onmousedown: null,
+    onmouseenter: null,
+    onmouseleave: null,
+    onmousemove: null,
+    onmouseout: null,
+    onmouseover: null,
+    onmouseup: null,
+    onpaste: null,
+    onpause: null,
+    onplay: null,
+    onplaying: null,
+    onpointercancel: null,
+    onpointerdown: null,
+    onpointerenter: null,
+    onpointerleave: null,
+    onpointermove: null,
+    onpointerout: null,
+    onpointerover: null,
+    onpointerup: null,
+    onprogress: null,
+    onratechange: null,
+    onreset: null,
+    onresize: null,
+    onscroll: null,
+    onscrollend: null,
+    onsecuritypolicyviolation: null,
+    onseeked: null,
+    onseeking: null,
+    onselect: null,
+    onselectionchange: null,
+    onselectstart: null,
+    onslotchange: null,
+    onstalled: null,
+    onsubmit: null,
+    onsuspend: null,
+    ontimeupdate: null,
+    ontoggle: null,
+    ontransitioncancel: null,
+    ontransitionend: null,
+    ontransitionrun: null,
+    ontransitionstart: null,
+    onvolumechange: null,
+    onwaiting: null,
+    onwebkitanimationend: null,
+    onwebkitanimationiteration: null,
+    onwebkitanimationstart: null,
+    onwebkittransitionend: null,
+    onwheel: null,
+    childElementCount: 0,
+    children: undefined,
+    firstElementChild: null,
+    lastElementChild: null,
+    append: function (...nodes: (string | Node)[]): void {
+      throw new Error("Function not implemented.");
+    },
+    prepend: function (...nodes: (string | Node)[]): void {
+      throw new Error("Function not implemented.");
+    },
+    querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
+      throw new Error("Function not implemented.");
+    },
+    querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
+      throw new Error("Function not implemented.");
+    },
+    replaceChildren: function (...nodes: (string | Node)[]): void {
+      throw new Error("Function not implemented.");
+    },
+    createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
+      throw new Error("Function not implemented.");
+    },
+    createNSResolver: function (nodeResolver: Node): Node {
+      throw new Error("Function not implemented.");
+    },
+    evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
+      throw new Error("Function not implemented.");
+    },
+    documentSize: DocumentSize.A4,
+    lastModifiedBy: "",
+    createdBy: "",
+    createdDate: undefined,
+    _rev: "",
+    _attachments: undefined,
+    _links: undefined,
+    _etag: "",
+    _local: false,
+    _revs: [],
+    _source: undefined,
+    _shards: undefined,
+    _size: 0,
+    _version: 0,
+    _version_conflicts: 0,
+    _seq_no: 0,
+    _primary_term: 0,
+    _routing: "",
+    _parent: "",
+    _parent_as_child: false,
+    _slices: [],
+    _highlight: undefined,
+    _highlight_inner_hits: undefined,
+    _source_as_doc: false,
+    _source_includes: [],
+    _routing_keys: [],
+    _routing_values: [],
+    _routing_values_as_array: [],
+    _routing_values_as_array_of_objects: [],
+    _routing_values_as_array_of_objects_with_key: [],
+    _routing_values_as_array_of_objects_with_key_and_value: [],
+    _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+    filePathOrUrl: "",
+    uploadedBy: 0,
+    uploadedAt: "",
+    tagsOrCategories: "",
+    format: "",
+    uploadedByTeamId: null,
+    uploadedByTeam: null,
+    documents: [],
+    selectedDocument: null,
+    filteredDocuments: [],
+    searchResults: [],
+    loading: false,
+    error: null
+  };
+
+  return newDocument;
+}
+
+
+
+export const restoreDocument = (state: WritableDraft<DocumentSliceState>, action: PayloadAction<number>) => {
+  try {
+    const documentId = action.payload;
+    const newDocument = createNewDocument(String(documentId));
+    const newDocumentObject = toObject(newDocument as DocumentObject);
+    state.documents.push(newDocumentObject as WritableDraft<DocumentObject>);
+    
+    state.loading = false;  // Update loading state
+    state.error = null;  // Clear error state
+
+    useNotification().notify(
+      "restoreDocumentSuccess",
+      `Restoring document with ID: ${documentId} success`,
+      NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+  } catch (error) {
+    console.error("Error restoring document:", error);
+    state.loading = false;  // Update loading state
+    state.error = error as Error;  // Set error state
+
+    useNotification().notify(
+      "restoreDocumentError",
+      "Error restoring document",
+      NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_ERROR,
+      new Date(),
+      NotificationTypeEnum.Error
+    );
+  }
+};
 
 interface ExtendedDocumentData extends DocumentData {
   mergeStructures?: (
@@ -99,17 +1226,13 @@ export const deleteDocumentAsync = createAsyncThunk(
 
 // Define an async thunk action creator to fetch document by ID
 export const fetchDocumentById = createAsyncThunk(
-  "documents/fetchDocumentById",
+  'documents/fetchDocumentById',
   async (documentId: number) => {
     try {
-      // Perform asynchronous operation to fetch document data by ID
-      const response = await fetch(`your-api-endpoint/documents/${documentId}`);
+      const response = await fetch(`${API_BASE_URL}/documents/${documentId}`);
       const data = await response.json();
-
-      // Return the fetched data
-      return data;
+      return data; // Assuming data is of type DocumentObject
     } catch (error) {
-      // If there's an error, throw it to be caught by the caller
       throw error;
     }
   }
@@ -141,7 +1264,7 @@ export const downloadDocument = createAsyncThunk(
     // Your asynchronous operation logic here (e.g., fetching the document)
     const fetchedDocument = await fetchDocumentByIdAPI(
       documentId,
-      (data: WritableDraft<DocumentData>) => {
+      (data: WritableDraft<DocumentObject>) => {
         data.status = DocumentStatusEnum.Draft;
         data.type = DocumentTypeEnum.Document;
       }
@@ -158,7 +1281,7 @@ export const downloadDocumentAsync = createAsyncThunk(
       // Fetch document data based on the document ID
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,
-        (data: WritableDraft<DocumentData>) => {
+        (data: WritableDraft<DocumentObject>) => {
           // Call the dispatch function to update the state with the fetched document data
           dispatch(setDownloadedDocument(data));
         }
@@ -309,53 +1432,53 @@ export const exportDocumentsAsync = createAsyncThunk(
 
 // Define the transformations object and applyTransformation function
 const applyTransformation = (
-  document: WritableDraft<DocumentData>,
+  document: WritableDraft<DocumentObject>,
   documentTag: string,
-  transformation: (doc: WritableDraft<DocumentData>, value: string) => void,
+  transformation: (doc: WritableDraft<DocumentObject>, value: string) => void,
   value: string
 ) => {
   transformation(document, value);
 };
 
 const transformations = {
-  tag: (document: WritableDraft<DocumentData>, tag: string) => {
+  tag: (document: WritableDraft<DocumentObject>, tag: string) => {
     document.content = `${tag} Tagged: ${document.content}`;
   },
 
-  categorize: (document: WritableDraft<DocumentData>, category: string) => {
+  categorize: (document: WritableDraft<DocumentObject>, category: string) => {
     document.content = `${category} Categorized: ${document.content}`;
   },
 
-  customizeView: (document: WritableDraft<DocumentData>, view: string) => {
+  customizeView: (document: WritableDraft<DocumentObject>, view: string) => {
     document.content = `${view} Customized: ${document.content}`;
   },
 
-  comment: (document: WritableDraft<DocumentData>, comment: string) => {
+  comment: (document: WritableDraft<DocumentObject>, comment: string) => {
     document.content = `${comment} Commented: ${document.content}`;
   },
 
-  mention: (document: WritableDraft<DocumentData>, mention: string) => {
+  mention: (document: WritableDraft<DocumentObject>, mention: string) => {
     document.content = `${mention} Mentioned: ${document.content}`;
   },
 
-  assignTask: (document: WritableDraft<DocumentData>, task: string) => {
+  assignTask: (document: WritableDraft<DocumentObject>, task: string) => {
     document.content = `${task} Assigned: ${document.content}`;
   },
 
-  requestReview: (document: WritableDraft<DocumentData>, review: string) => {
+  requestReview: (document: WritableDraft<DocumentObject>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
-  approve: (document: WritableDraft<DocumentData>, approval: string) => {
+  approve: (document: WritableDraft<DocumentObject>, approval: string) => {
     document.content = `${approval} Approved: ${document.content}`;
   },
 
-  reject: (document: WritableDraft<DocumentData>, rejection: string) => {
+  reject: (document: WritableDraft<DocumentObject>, rejection: string) => {
     document.content = `${rejection} Rejected: ${document.content}`;
   },
 
   provideFeedback: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     feedback: string
   ) => {
     document.content = `${feedback} Provided: ${document.content}`;
@@ -363,62 +1486,62 @@ const transformations = {
     
   },
 
-  requestFeedback: (document: WritableDraft<DocumentData>, review: string) => {
+  requestFeedback: (document: WritableDraft<DocumentObject>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
   resolveFeedback: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     feedback: string
   ) => {
     document.content = `${feedback} Resolved: ${document.content}`;
   },
 
   collaborate: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     collaborator: string
   ) => {
     document.content = `${collaborator} Collaborated: ${document.content}`;
   },
 
-  version: (document: WritableDraft<DocumentData>, version: string) => {
+  version: (document: WritableDraft<DocumentObject>, version: string) => {
     document.content = `${version} Versioned: ${document.content}`;
   },
 
-  annotate: (document: WritableDraft<DocumentData>, annotation: string) => {
+  annotate: (document: WritableDraft<DocumentObject>, annotation: string) => {
     document.content = `${annotation} Annotated: ${document.content}`;
   },
 
-  logActivity: (document: WritableDraft<DocumentData>, activity: string) => {
+  logActivity: (document: WritableDraft<DocumentObject>, activity: string) => {
     document.content = `${activity} Logged: ${document.content}`;
   },
 
-  revert: (document: WritableDraft<DocumentData>, revert: string) => {
+  revert: (document: WritableDraft<DocumentObject>, revert: string) => {
     document.content = `${revert} Reverted: ${document.content}`;
   },
 
-  search: (document: WritableDraft<DocumentData>, search: string) => {
+  search: (document: WritableDraft<DocumentObject>, search: string) => {
     document.content = `${search} Searched: ${document.content}`;
   },
 
-  grantAccess: (document: WritableDraft<DocumentData>, access: string) => {
+  grantAccess: (document: WritableDraft<DocumentObject>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  viewHistory: (document: WritableDraft<DocumentData>, view: string) => {
+  viewHistory: (document: WritableDraft<DocumentObject>, view: string) => {
     document.content = `${view} Viewed: ${document.content}`;
   },
 
-  compare: (document: WritableDraft<DocumentData>, compare: string) => {
+  compare: (document: WritableDraft<DocumentObject>, compare: string) => {
     document.content = `${compare} Compared: ${document.content}`;
   },
 
-  revokeAccess: (document: WritableDraft<DocumentData>, access: string) => {
+  revokeAccess: (document: WritableDraft<DocumentObject>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
   managePermissions: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     permissions: string
   ) => {
     // Add permission transformation logic
@@ -426,43 +1549,43 @@ const transformations = {
   },
 
   initiateWorkflow: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     workflow: string
   ) => {
     document.content = `${workflow} Initiated: ${document.content}`;
   },
 
-  automateTasks: (document: WritableDraft<DocumentData>, tasks: string) => {
+  automateTasks: (document: WritableDraft<DocumentObject>, tasks: string) => {
     document.content = `${tasks} Automated: ${document.content}`;
   },
 
-  triggerEvents: (document: WritableDraft<DocumentData>, events: string) => {
+  triggerEvents: (document: WritableDraft<DocumentObject>, events: string) => {
     document.content = `${events} Triggered: ${document.content}`;
   },
 
   approvalWorkflow: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     workflow: string
   ) => {
     document.content = `${workflow} Approved: ${document.content}`;
   },
 
   lifecycleManagement: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     lifecycle: string
   ) => {
     document.content = `${lifecycle} Lifecycle: ${document.content}`;
   },
 
   connectWithExternalSystem: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Connected: ${document.content}`;
   },
 
   synchronizeWithCloudStorage: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     cloudStorage: string
   ) => {
     document.content = `${cloudStorage} Synchronized: ${document.content}`;
@@ -538,315 +1661,331 @@ const transformations = {
     document.content = `${version} Version retrieved: ${document.content}`;
   },
 };
-const toObject = (document: Document): object => {
-  // Convert Document to plain object
-  const plainObject: object = { ...document };
-  return plainObject;
-};
 
-const createNewDocument: (documentId: string) => DocumentData = (
-  documentId
-) => {
-  const initialState: DocumentData = {
-    _id: uuidv4(),
-    id: documentId,
-    title: "New Document",
-    content: "",
-    topics: [],
-    highlights: [],
-    files: [],
-    name: "New Document",
-    description: "New document description",
-    visibility: "Public",
-    documentType: DocumentTypeEnum.Other,
-    documentStatus: DocumentStatusEnum.Draft,
-    documentOwner: "",
-    documentCreationDate: new Date(),
-    documentLastModifiedDate: new Date(),
-    documentVersion: 0,
-    documentContent: "",
-    keywords: [],
-    options: {} as DocumentOptions,
-    folderPath: "",
-    previousMetadata: {} as WritableDraft<StructuredMetadata>,
-    currentMetadata: {} as WritableDraft<StructuredMetadata>,
-    accessHistory: [],
-    folders: [],
-    lastModifiedDate: {} as WritableDraft<ModifiedDate>,
-    version: {
-      id: 0,
-      name: "Initial Version",
-      url: "https://example.com/initial_version",
-      versionNumber: "1.0",
-      appVersion: "v1.0",
-      buildNumber: "1",
-      description: "Initial version description",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      content: "Initial version content",
-      userId: "user123",
-      documentId: "doc123",
-      parentId: "",
-      parentType: "document",
-      parentVersion: "",
-      parentTitle: "",
-      parentContent: "",
-      parentName: "",
-      parentUrl: "",
-      parentChecksum: "",
-      parentMetadata: {},
-      parentAppVersion: "",
-      parentVersionNumber: "",
-      checksum: "abc123",
-      isLatest: true,
-      isPublished: false,
-      publishedAt: null,
-      source: "Internal",
-      status: "Draft",
-      workspaceId: "workspace123",
-      workspaceName: "Sample Workspace",
-      workspaceType: "Team",
-      workspaceUrl: "https://example.com/workspace123",
-      workspaceViewers: ["user1", "user2"],
-      workspaceAdmins: ["admin1"],
-      workspaceMembers: ["user1", "user2", "admin1"],
-      frontendStructure: Promise.resolve([]),
-      backendStructure: Promise.resolve([]),
-      data: [],
-      draft: false,
-      versions: {
-        data: data,
-        backend: {
-          data: data,
-          draft: false,
-          frontendStructure: Promise.resolve([]),
-          backendStructure: Promise.resolve([]),
-        },
-        frontend: {
-          data: data,
-          draft: false,
-          frontendStructure: Promise.resolve([]),
-          backendStructure: Promise.resolve([]),
-        },
-      },
-      _structure: {
-        // data: [],
-        // draft: false,
-        // frontendStructure: Promise.resolve([]),
-        // backendStructure: Promise.resolve([]),
-      },
-      metadata: {
-        author: "Author Name",
-        timestamp: new Date(),
-      },
-      getVersion: async () => "1.0",
-      versionHistory: {
-        versions: [],
-      },
-      mergeAndHashStructures: async (baseStructure, additionalStructure) => {
-        return "merged_structure_hash";
-      },
-      getVersionNumber: () => "1.0",
-      updateVersionNumber: (newVersionNumber) => {
-        console.log(`Updating version number to ${newVersionNumber}`);
-      },
+// function createNewDocument(documentId: string): DocumentObject {
+//   return {
+//     _id: uuidv4(),
+//     id: documentId,
+//     title: "New Document",
+//     content: "",
+//     topics: [],
+//     highlights: [],
+//     files: [],
+//     name: "New Document",
+//     description: "New document description",
+//     visibility: "Public",
+//     documentType: DocumentTypeEnum.Other,
+//     documentStatus: DocumentStatusEnum.Draft,
+//     documentOwner: "",
+//     documentCreationDate: new Date(),
+//     documentLastModifiedDate: new Date(),
+//     documentVersion: 0,
+//     documentContent: "",
+//     keywords: [],
+//     options: {} as DocumentOptions,
+//     folderPath: "",
+//     previousMetadata: {} as WritableDraft<StructuredMetadata>,
+//     currentMetadata: {} as WritableDraft<StructuredMetadata>,
+//     accessHistory: [],
+//     folders: [],
+//     lastModifiedDate: {} as WritableDraft<ModifiedDate>,
+//     version: {
+//       id: 0,
+//       name: "Initial Version",
+//       url: "https://example.com/initial_version",
+//       versionNumber: "1.0",
+//       appVersion: "v1.0",
+//       buildNumber: "1",
+//       description: "Initial version description",
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//       content: "Initial version content",
+//       userId: "user123",
+//       documentId: "doc123",
+//       parentId: "",
+//       parentType: "document",
+//       parentVersion: "",
+//       parentTitle: "",
+//       parentContent: "",
+//       parentName: "",
+//       parentUrl: "",
+//       parentChecksum: "",
+//       parentMetadata: {},
+//       parentAppVersion: "",
+//       parentVersionNumber: "",
+//       checksum: "abc123",
+//       isLatest: true,
+//       isPublished: false,
+//       publishedAt: null,
+//       source: "Internal",
+//       status: "Draft",
+//       workspaceId: "workspace123",
+//       workspaceName: "Sample Workspace",
+//       workspaceType: "Team",
+//       workspaceUrl: "https://example.com/workspace123",
+//       workspaceViewers: ["user1", "user2"],
+//       workspaceAdmins: ["admin1"],
+//       workspaceMembers: ["user1", "user2", "admin1"],
+//       frontendStructure: Promise.resolve([]),
+//       backendStructure: Promise.resolve([]),
+//       data: [],
+//       draft: false,
+//       versions: {
+//         data: data,
+//         backend: backend,
+//         frontend: frontend,
+//       },
+//       _structure: {
+//         // data: [],
+//         // draft: false,
+//         // frontendStructure: Promise.resolve([]),
+//         // backendStructure: Promise.resolve([]),
+//       },
+//       metadata: {
+//         author: "Author Name",
+//         timestamp: new Date(),
+//       },
+//       getVersion: async () => "1.0",
+//       versionHistory: {
+//         versions: [],
+//       },
+//       mergeAndHashStructures: async (baseStructure, additionalStructure) => {
+//         return "merged_structure_hash";
+//       },
+//       getVersionNumber: () => "1.0",
+//       updateVersionNumber: (newVersionNumber) => {
+//         console.log(`Updating version number to ${newVersionNumber}`);
+//       },
       
-      getVersionData: (): VersionData => {
-        return {
-          id: 0,
-          name: "Initial Version",
-          url: "https://example.com/initial_version",
-          userId: "user123",
-          documentId: "doc123",
-          draft: false,
-          data: [],
-          versionNumber: "1.0",
-          parentId: '', // Provide appropriate values based on your application logic
-          parentType: '', // Provide appropriate values based on your application logic
-          parentVersion: '', // Provide appropriate values based on your application logic
-          parentTitle: '', // Provide appropriate values based on your application logic
-          parentContent: '', // Provide appropriate values based on your application logic
-          parentName: '', // Provide appropriate values based on your application logic
-          parentUrl: '', // Provide appropriate values based on your application logic
-          parentChecksum: '', // Provide appropriate values based on your application logic
-          parentAppVersion: '', // Provide appropriate values based on your application logic
-          parentVersionNumber: '', // Provide appropriate values based on your application logic
-          isLatest: false, // Provide appropriate values based on your application logic
-          isPublished: false, // Provide appropriate values based on your application logic
-          publishedAt: null, // Provide appropriate values based on your application logic
-          source: '', // Provide appropriate values based on your application logic
-          status: '', // Provide appropriate values based on your application logic
-          workspaceId: '', // Provide appropriate values based on your application logic
-          workspaceName: '', // Provide appropriate values based on your application logic
-          workspaceType: '', // Provide appropriate values based on your application logic
-          workspaceUrl: '', // Provide appropriate values based on your application logic
-          workspaceViewers: [], // Provide appropriate values based on your application logic
-          workspaceAdmins: [], // Provide appropriate values based on your application logic
-          workspaceMembers: [], // Provide appropriate values based on your application logic
-          content: "Initial version content",
-          checksum: "abc123",
-          metadata: {
-            author: "Author Name",
-            timestamp: new Date(),
-            revisionNotes: undefined, // Adjust as per your application logic
-          },
-          versions: {
-            data: {
-              frontend: {
-                versionNumber: "1.0",
-              },
-              backend: {
-                versionNumber: "1.0",
-              },
-            },
-            backend: {
-              structure: {},
-              traverseDirectory: traverseBackendDirectory,
-              getStructure: () => {
-                return (
-                  options?.backendStructure?.getStructure() ||
-                  Promise.resolve({})
-                );
-              },
-              getStructureAsArray: getStructureAsArray,
-            }, // Version of the backend
-            frontend: {} as FrontendStructure, // Version of the frontend
-          },
-        };
-      },
-    },
-    // updateVersionHistory: () => {
-    //   console.log("Updating version history");
-    // },
-    // generateChecksum: () => {
-    //   return "abc123";
-    // },
-    // compare: () => 0,
-    // parse: () => [],
-    // isValid: () => true,
-    // generateHash: (appVersion: AppVersion) => {
-    //   return "hash_value";
-    // },
-    // isNewer: () => false,
-    // hashStructure: () => {
-    //   return "structure_hash";
-    // },
-    // getStructureHash: async () => {
-    //   return "structure_hash";
-    // },
-    // getContent: () => "Initial version content",
-    // setContent: (content: Content) => {
-    //   console.log(`Setting content to: ${content}`);
-    // },
+//       getVersionData: (): VersionData => {
+//         return {
+//           id: 0,
+//           name: "Initial Version",
+//           url: "https://example.com/initial_version",
+//           userId: "user123",
+//           documentId: "doc123",
+//           draft: false,
+//           data: [],
+//           versionNumber: "1.0",
+//           parentId: '', // Provide appropriate values based on your application logic
+//           parentType: '', // Provide appropriate values based on your application logic
+//           parentVersion: '', // Provide appropriate values based on your application logic
+//           parentTitle: '', // Provide appropriate values based on your application logic
+//           parentContent: '', // Provide appropriate values based on your application logic
+//           parentName: '', // Provide appropriate values based on your application logic
+//           parentUrl: '', // Provide appropriate values based on your application logic
+//           parentChecksum: '', // Provide appropriate values based on your application logic
+//           parentAppVersion: '', // Provide appropriate values based on your application logic
+//           parentVersionNumber: '', // Provide appropriate values based on your application logic
+//           isLatest: false, // Provide appropriate values based on your application logic
+//           isPublished: false, // Provide appropriate values based on your application logic
+//           publishedAt: null, // Provide appropriate values based on your application logic
+//           source: '', // Provide appropriate values based on your application logic
+//           status: '', // Provide appropriate values based on your application logic
+//           workspaceId: '', // Provide appropriate values based on your application logic
+//           workspaceName: '', // Provide appropriate values based on your application logic
+//           workspaceType: '', // Provide appropriate values based on your application logic
+//           workspaceUrl: '', // Provide appropriate values based on your application logic
+//           workspaceViewers: [], // Provide appropriate values based on your application logic
+//           workspaceAdmins: [], // Provide appropriate values based on your application logic
+//           workspaceMembers: [], // Provide appropriate values based on your application logic
+//           content: "Initial version content",
+//           checksum: "abc123",
+//           metadata: {
+//             author: "Author Name",
+//             timestamp: new Date(),
+//             revisionNotes: undefined, // Adjust as per your application logic
+//           },
+//           versions: {
+//             data: {
+//               frontend: {
+//                 versionNumber: "1.0",
+//               },
+//               backend: {
+//                 versionNumber: "1.0",
+//               },
+//             },
+//             backend: {
+//               structure: {},
+//               traverseDirectory: traverseBackendDirectory,
+//               getStructure: () => {
+//                 return (
+//                   options?.backendStructure?.getStructure() ||
+//                   Promise.resolve({})
+//                 );
+//               },
+//               getStructureAsArray: getStructureAsArray,
+//             }, // Version of the backend
+//             frontend: {
+//               id: "frontend",
+//               name: "Frontend",
+//               type: "folder",
+//               path: "./frontend",
+//               content: "",
+//               draft: false,
+//               permissions: {
+//                 read: true,
+//                 write: true,
+//                 delete: true,
+//                 share: true,
+//                 execute: true,
+//               },
+//               items: {},
+//             } as FrontendStructure, // Version of the frontend
+//           },
+//         };
+//       },
+//     },
+//     // updateVersionHistory: () => {
+//     //   console.log("Updating version history");
+//     // },
+//     // generateChecksum: () => {
+//     //   return "abc123";
+//     // },
+//     // compare: () => 0,
+//     // parse: () => [],
+//     // isValid: () => true,
+//     // generateHash: (appVersion: AppVersion) => {
+//     //   return "hash_value";
+//     // },
+//     // isNewer: () => false,
+//     // hashStructure: () => {
+//     //   return "structure_hash";
+//     // },
+//     // getStructureHash: async () => {
+//     //   return "structure_hash";
+//     // },
+//     // getContent: () => "Initial version content",
+//     // setContent: (content: Content) => {
+//     //   console.log(`Setting content to: ${content}`);
+//     // },
 
    
 
-    // generateStructureHash: async () => {
-    //   // Implement generateStructureHash logic here
-    //   // Return the generated structure hash
-    //   return "generated_structure_hash"; // Example: returning a mock hash
-    // },
+//     // generateStructureHash: async () => {
+//     //   // Implement generateStructureHash logic here
+//     //   // Return the generated structure hash
+//     //   return "generated_structure_hash"; // Example: returning a mock hash
+//     // },
 
-    permissions: new DocumentPermissions(true, false),
-    versionData: {
-      id: 0,
-      name: "Initial Version",
-      url: "https://example.com/initial_version",
-      versionNumber: "1.0",
-      // appVersion: "v1.0",
-      documentId: "doc123",
-      draft: false,
-      userId: "user123",
-      data: [],
-      parentId: '', // Provide appropriate values based on your application logic
-      parentType: '', // Provide appropriate values based on your application logic
-      parentVersion: '', // Provide appropriate values based on your application logic
-      parentTitle: '', // Provide appropriate values based on your application logic
-      parentContent: '', // Provide appropriate values based on your application logic
-      parentName: '', // Provide appropriate values based on your application logic
-      parentUrl: '', // Provide appropriate values based on your application logic
-      parentChecksum: '', // Provide appropriate values based on your application logic
-      parentAppVersion: '', // Provide appropriate values based on your application logic
-      parentVersionNumber: '', // Provide appropriate values based on your application logic
-      isLatest: false, // Provide appropriate values based on your application logic
-      isPublished: false, // Provide appropriate values based on your application logic
-      publishedAt: null, // Provide appropriate values based on your application logic
-      source: '', // Provide appropriate values based on your application logic
-      status: '', // Provide appropriate values based on your application logic
-      workspaceId: '', // Provide appropriate values based on your application logic
-      workspaceName: '', // Provide appropriate values based on your application logic
-      workspaceType: '', // Provide appropriate values based on your application logic
-      workspaceUrl: '', // Provide appropriate values based on your application logic
-      workspaceViewers: [], // Provide appropriate values based on your application logic
-      workspaceAdmins: [], // Provide appropriate values based on your application logic
-      workspaceMembers: [], // Provide appropriate values based on your application logic
-      content: "Initial version content",
-      checksum: "abc123",
-      metadata: {
-        author: "Author Name",
-        timestamp: new Date(),
-        revisionNotes: undefined, // Adjust as per your application logic
-      },
-      versions: {
-        data: {
-          frontend: {
-            versionNumber: "1.0",
-          },
-          backend: {
-            versionNumber: "1.0",
-          },
-        },
-        backend: {
-          structure: {
-            traverseDirectory: {
-              id: "traverseDirectory",
-              name: "Traverse Directory",
-              type: "folder",
-              path: "./",
-              content: "",
-              draft: false,
-              permissions: {
-                read: true,
-                write: true,
-                delete: true,
-                share: true,
-                execute: true,
-              },
-              items: {
-                "1": {
-                  id: "1",
-                  name: "Item 1",
-                  type: "file",
-                  path: "./item1.txt",
-                  content: "Item 1 content",
-                  draft: false,
-                  permissions: {
-                    read: true,
-                    write: true,
-                    delete: true,
-                    share: true,
-                    execute: true,
-                  },
-                },
-              },
-            },
-          },
-          getStructure: () => {
-            return (
-              options?.backendStructure?.getStructure() || Promise.resolve({})
-            );
-          },
-          traverseDirectory: traverseBackendDirectory,
-          getStructureAsArray: getStructureAsArray
-        }, // Version of the backend
-        frontend: {} as FrontendStructure, // Version of the frontend
-      },
-    },
-  };
-  return produce(initialState, (draftState) => {
-    return { ...draftState };
-  });
-};
+//     permissions: new DocumentPermissions(true, false),
+//     versionData: {
+//       id: 0,
+//       name: "Initial Version",
+//       url: "https://example.com/initial_version",
+//       versionNumber: "1.0",
+//       // appVersion: "v1.0",
+//       documentId: "doc123",
+//       draft: false,
+//       userId: "user123",
+//       data: [],
+//       parentId: '', // Provide appropriate values based on your application logic
+//       parentType: '', // Provide appropriate values based on your application logic
+//       parentVersion: '', // Provide appropriate values based on your application logic
+//       parentTitle: '', // Provide appropriate values based on your application logic
+//       parentContent: '', // Provide appropriate values based on your application logic
+//       parentName: '', // Provide appropriate values based on your application logic
+//       parentUrl: '', // Provide appropriate values based on your application logic
+//       parentChecksum: '', // Provide appropriate values based on your application logic
+//       parentAppVersion: '', // Provide appropriate values based on your application logic
+//       parentVersionNumber: '', // Provide appropriate values based on your application logic
+//       isLatest: false, // Provide appropriate values based on your application logic
+//       isPublished: false, // Provide appropriate values based on your application logic
+//       publishedAt: null, // Provide appropriate values based on your application logic
+//       source: '', // Provide appropriate values based on your application logic
+//       status: '', // Provide appropriate values based on your application logic
+//       workspaceId: '', // Provide appropriate values based on your application logic
+//       workspaceName: '', // Provide appropriate values based on your application logic
+//       workspaceType: '', // Provide appropriate values based on your application logic
+//       workspaceUrl: '', // Provide appropriate values based on your application logic
+//       workspaceViewers: [], // Provide appropriate values based on your application logic
+//       workspaceAdmins: [], // Provide appropriate values based on your application logic
+//       workspaceMembers: [], // Provide appropriate values based on your application logic
+//       content: "Initial version content",
+//       checksum: "abc123",
+//       metadata: {
+//         author: "Author Name",
+//         timestamp: new Date(),
+//         revisionNotes: undefined, // Adjust as per your application logic
+//       },
+//       versions: {
+//         data: {
+//           frontend: {
+//             versionNumber: "1.0",
+//           },
+//           backend: {
+//             versionNumber: "1.0",
+//           },
+//         },
+//         backend: {
+//           structure: {
+//             traverseDirectory: {
+//               id: "traverseDirectory",
+//               name: "Traverse Directory",
+//               type: "folder",
+//               path: "./",
+//               content: "",
+//               draft: false,
+//               permissions: {
+//                 read: true,
+//                 write: true,
+//                 delete: true,
+//                 share: true,
+//                 execute: true,
+//               },
+//               items: {
+//                 "1": {
+//                   id: "1",
+//                   name: "Item 1",
+//                   type: "file",
+//                   path: "./item1.txt",
+//                   content: "Item 1 content",
+//                   draft: false,
+//                   permissions: {
+//                     read: true,
+//                     write: true,
+//                     delete: true,
+//                     share: true,
+//                     execute: true,
+//                   },
+//                 },
+//               },
+//             },
+//           },
+//           getStructure: () => {
+//             return (
+//               options?.backendStructure?.getStructure() || Promise.resolve({})
+//             );
+//           },
+//           traverseDirectory: traverseBackendDirectory,
+//           getStructureAsArray: getStructureAsArray
+//         }, // Version of the backend
+//         frontend: {
+//           id: "frontend",
+//           name: "Frontend",
+//           type: "folder",
+//           path: "./frontend",
+//           content: "",
+//           draft: false,
+//           permissions: {
+//             read: true,
+//             write: true,
+//             delete: true,
+//             share: true,
+//             execute: true,
+//           },
+//           items: await frontendStructure.getStructure(),
+//           getStructureAsArray: frontendStructure.getStructureAsArray.bind(frontendStructure),
+//           traverseDirectoryPublic: frontendStructure.traverseDirectoryPublic?.bind(frontendStructure),
+//           getStructure: () => frontendStructure.getStructure(),
+//         }, // Version of the frontend
+//       },
+//     },
+//   } as DocumentObject;;
+//   return produce(initialDocumentSliceState, (draftState) => {
+//     return { ...draftState };
+//   });
+// };
 
 // Create a slice for managing document-related data
 export const useDocumentManagerSlice = createSlice({
@@ -854,13 +1993,13 @@ export const useDocumentManagerSlice = createSlice({
   initialState,
   reducers: {
     createDocument: {
-      reducer: (state, action: PayloadAction<WritableDraft<DocumentData>>) => {
+      reducer: (state, action: PayloadAction<WritableDraft<DocumentObject>>) => {
         state.selectedDocument = action.payload;
         state.documents.push(action.payload);
       },
       prepare: () => {
         // Generate a new document with default values
-        const newDocument: WritableDraft<DocumentData> = {
+        const newDocument: WritableDraft<DocumentObject> = {
           _id: "i989adn8dd",
           id: Math.floor(Math.random() * 1000).toString(), // Generate a unique ID
           title: "New Document",
@@ -868,6 +2007,8 @@ export const useDocumentManagerSlice = createSlice({
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
+
+
 
           // Add other properties as needed
           keywords: [],
@@ -882,6 +2023,452 @@ export const useDocumentManagerSlice = createSlice({
           versionData: undefined,
           permissions: undefined,
           visibility: undefined,
+          documentSize: DocumentSize.A4,
+          lastModifiedBy: "",
+          name: "",
+          description: "",
+          createdBy: "",
+          createdDate: undefined,
+          documentType: "",
+          _rev: "",
+          _attachments: undefined,
+          _links: undefined,
+          _etag: "",
+          _local: false,
+          _revs: [],
+          _source: undefined,
+          _shards: undefined,
+          _size: 0,
+          _version: 0,
+          _version_conflicts: 0,
+          _seq_no: 0,
+          _primary_term: 0,
+          _routing: "",
+          _parent: "",
+          _parent_as_child: false,
+          _slices: [],
+          _highlight: undefined,
+          _highlight_inner_hits: undefined,
+          _source_as_doc: false,
+          _source_includes: [],
+          _routing_keys: [],
+          _routing_values: [],
+          _routing_values_as_array: [],
+          _routing_values_as_array_of_objects: [],
+          _routing_values_as_array_of_objects_with_key: [],
+          _routing_values_as_array_of_objects_with_key_and_value: [],
+          _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+          filePathOrUrl: "",
+          uploadedBy: 0,
+          uploadedAt: "",
+          tagsOrCategories: "",
+          format: "",
+          uploadedByTeamId: null,
+          uploadedByTeam: null,
+          URL: "",
+          alinkColor: "",
+          all: undefined,
+          anchors: undefined,
+          applets: undefined,
+          bgColor: "",
+          body: undefined,
+          characterSet: "",
+          charset: "",
+          compatMode: "",
+          contentType: "",
+          cookie: "",
+          currentScript: null,
+          defaultView: null,
+          designMode: "",
+          dir: "",
+          doctype: null,
+          documentElement: undefined,
+          documentURI: "",
+          domain: "",
+          embeds: undefined,
+          fgColor: "",
+          forms: undefined,
+          fullscreen: false,
+          fullscreenEnabled: false,
+          head: undefined,
+          hidden: false,
+          images: undefined,
+          implementation: undefined,
+          inputEncoding: "",
+          lastModified: "",
+          linkColor: "",
+          links: undefined,
+          location: undefined,
+          onfullscreenchange: null,
+          onfullscreenerror: null,
+          onpointerlockchange: null,
+          onpointerlockerror: null,
+          onreadystatechange: null,
+          onvisibilitychange: null,
+          ownerDocument: null,
+          pictureInPictureEnabled: false,
+          plugins: undefined,
+          readyState: "loading",
+          referrer: "",
+          rootElement: null,
+          scripts: undefined,
+          scrollingElement: null,
+          timeline: undefined,
+          visibilityState: "hidden",
+          vlinkColor: "",
+          adoptNode: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          captureEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          caretRangeFromPoint: function (x: number, y: number): Range | null {
+            throw new Error("Function not implemented.");
+          },
+          clear: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          close: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          createAttribute: function (localName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createCDATASection: function (data: string): CDATASection {
+            throw new Error("Function not implemented.");
+          },
+          createComment: function (data: string): Comment {
+            throw new Error("Function not implemented.");
+          },
+          createDocumentFragment: function (): DocumentFragment {
+            throw new Error("Function not implemented.");
+          },
+          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
+            throw new Error("Function not implemented.");
+          },
+          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
+            throw new Error("Function not implemented.");
+          },
+          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
+            throw new Error("Function not implemented.");
+          },
+          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
+            throw new Error("Function not implemented.");
+          },
+          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
+            throw new Error("Function not implemented.");
+          },
+          createRange: function (): Range {
+            throw new Error("Function not implemented.");
+          },
+          createTextNode: function (data: string): Text {
+            throw new Error("Function not implemented.");
+          },
+          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
+            throw new Error("Function not implemented.");
+          },
+          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
+            throw new Error("Function not implemented.");
+          },
+          exitFullscreen: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPictureInPicture: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPointerLock: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          getElementById: function (elementId: string): HTMLElement | null {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getSelection: function (): Selection | null {
+            throw new Error("Function not implemented.");
+          },
+          hasFocus: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          hasStorageAccess: function (): Promise<boolean> {
+            throw new Error("Function not implemented.");
+          },
+          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
+            throw new Error("Function not implemented.");
+          },
+          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandEnabled: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandIndeterm: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandState: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandSupported: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandValue: function (commandId: string): string {
+            throw new Error("Function not implemented.");
+          },
+          releaseEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          requestStorageAccess: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          write: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          writeln: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
+            throw new Error("Function not implemented.");
+          },
+          baseURI: "",
+          childNodes: undefined,
+          firstChild: null,
+          isConnected: false,
+          lastChild: null,
+          nextSibling: null,
+          nodeName: "",
+          nodeType: 0,
+          nodeValue: null,
+          parentElement: null,
+          parentNode: null,
+          previousSibling: null,
+          textContent: null,
+          appendChild: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          cloneNode: function (deep?: boolean | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          compareDocumentPosition: function (other: Node): number {
+            throw new Error("Function not implemented.");
+          },
+          contains: function (other: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          hasChildNodes: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
+            throw new Error("Function not implemented.");
+          },
+          isDefaultNamespace: function (namespace: string | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isEqualNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isSameNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          lookupNamespaceURI: function (prefix: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          lookupPrefix: function (namespace: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          normalize: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          removeChild: function <T extends Node>(child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          replaceChild: function <T extends Node>(node: Node, child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          ELEMENT_NODE: 1,
+          ATTRIBUTE_NODE: 2,
+          TEXT_NODE: 3,
+          CDATA_SECTION_NODE: 4,
+          ENTITY_REFERENCE_NODE: 5,
+          ENTITY_NODE: 6,
+          PROCESSING_INSTRUCTION_NODE: 7,
+          COMMENT_NODE: 8,
+          DOCUMENT_NODE: 9,
+          DOCUMENT_TYPE_NODE: 10,
+          DOCUMENT_FRAGMENT_NODE: 11,
+          NOTATION_NODE: 12,
+          DOCUMENT_POSITION_DISCONNECTED: 1,
+          DOCUMENT_POSITION_PRECEDING: 2,
+          DOCUMENT_POSITION_FOLLOWING: 4,
+          DOCUMENT_POSITION_CONTAINS: 8,
+          DOCUMENT_POSITION_CONTAINED_BY: 16,
+          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+          dispatchEvent: function (event: Event): boolean {
+            throw new Error("Function not implemented.");
+          },
+          activeElement: null,
+          adoptedStyleSheets: [],
+          fullscreenElement: null,
+          pictureInPictureElement: null,
+          pointerLockElement: null,
+          styleSheets: undefined,
+          elementFromPoint: function (x: number, y: number): Element | null {
+            throw new Error("Function not implemented.");
+          },
+          elementsFromPoint: function (x: number, y: number): Element[] {
+            throw new Error("Function not implemented.");
+          },
+          getAnimations: function (): Animation[] {
+            throw new Error("Function not implemented.");
+          },
+          fonts: undefined,
+          onabort: null,
+          onanimationcancel: null,
+          onanimationend: null,
+          onanimationiteration: null,
+          onanimationstart: null,
+          onauxclick: null,
+          onbeforeinput: null,
+          onbeforetoggle: null,
+          onblur: null,
+          oncancel: null,
+          oncanplay: null,
+          oncanplaythrough: null,
+          onchange: null,
+          onclick: null,
+          onclose: null,
+          oncontextmenu: null,
+          oncopy: null,
+          oncuechange: null,
+          oncut: null,
+          ondblclick: null,
+          ondrag: null,
+          ondragend: null,
+          ondragenter: null,
+          ondragleave: null,
+          ondragover: null,
+          ondragstart: null,
+          ondrop: null,
+          ondurationchange: null,
+          onemptied: null,
+          onended: null,
+          onerror: null,
+          onfocus: null,
+          onformdata: null,
+          ongotpointercapture: null,
+          oninput: null,
+          oninvalid: null,
+          onkeydown: null,
+          onkeypress: null,
+          onkeyup: null,
+          onload: null,
+          onloadeddata: null,
+          onloadedmetadata: null,
+          onloadstart: null,
+          onlostpointercapture: null,
+          onmousedown: null,
+          onmouseenter: null,
+          onmouseleave: null,
+          onmousemove: null,
+          onmouseout: null,
+          onmouseover: null,
+          onmouseup: null,
+          onpaste: null,
+          onpause: null,
+          onplay: null,
+          onplaying: null,
+          onpointercancel: null,
+          onpointerdown: null,
+          onpointerenter: null,
+          onpointerleave: null,
+          onpointermove: null,
+          onpointerout: null,
+          onpointerover: null,
+          onpointerup: null,
+          onprogress: null,
+          onratechange: null,
+          onreset: null,
+          onresize: null,
+          onscroll: null,
+          onscrollend: null,
+          onsecuritypolicyviolation: null,
+          onseeked: null,
+          onseeking: null,
+          onselect: null,
+          onselectionchange: null,
+          onselectstart: null,
+          onslotchange: null,
+          onstalled: null,
+          onsubmit: null,
+          onsuspend: null,
+          ontimeupdate: null,
+          ontoggle: null,
+          ontransitioncancel: null,
+          ontransitionend: null,
+          ontransitionrun: null,
+          ontransitionstart: null,
+          onvolumechange: null,
+          onwaiting: null,
+          onwebkitanimationend: null,
+          onwebkitanimationiteration: null,
+          onwebkitanimationstart: null,
+          onwebkittransitionend: null,
+          onwheel: null,
+          childElementCount: 0,
+          children: undefined,
+          firstElementChild: null,
+          lastElementChild: null,
+          append: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          prepend: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
+            throw new Error("Function not implemented.");
+          },
+          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          replaceChildren: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
+            throw new Error("Function not implemented.");
+          },
+          createNSResolver: function (nodeResolver: Node): Node {
+            throw new Error("Function not implemented.");
+          },
+          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
+            throw new Error("Function not implemented.");
+          },
+          documents: [],
+          selectedDocument: null,
+          filteredDocuments: [],
+          searchResults: [],
+          loading: false,
+          error: null
         };
         return { payload: newDocument };
       },
@@ -889,23 +2476,494 @@ export const useDocumentManagerSlice = createSlice({
 
     setDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData[]>>
+      action: PayloadAction<WritableDraft<DocumentObject[]>>
     ) => {
       state.documents = action.payload;
     },
 
     setDownloadedDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData>>
+      action: PayloadAction<WritableDraft<DocumentObject>>
     ) => {
       state.selectedDocument = action.payload;
     },
 
     addDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData>>
+      action: PayloadAction<WritableDraft<DocumentObject>>
     ) => {
       state.documents.push(action.payload);
+    },
+
+    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string }>) => {
+      const documentIndex = state.documents.findIndex(doc => doc.id === action.payload.id);
+      if (documentIndex !== -1) {
+        state.documents[documentIndex].title = action.payload.title;
+      } else {
+        // Optionally handle case where document is not found
+        state.documents.push({
+          id: action.payload.id, title: action.payload.title,
+          _id: "",
+          content: "",
+          permissions: undefined,
+          folders: [],
+          options: undefined,
+          folderPath: "",
+          previousMetadata: undefined,
+          currentMetadata: undefined,
+          accessHistory: [],
+          lastModifiedDate: undefined,
+          versionData: undefined,
+          version: undefined,
+          visibility: undefined,
+          documentSize: DocumentSize.A4,
+          lastModifiedBy: "",
+          name: "",
+          description: "",
+          createdBy: "",
+          createdDate: undefined,
+          documentType: "",
+          _rev: "",
+          _attachments: undefined,
+          _links: undefined,
+          _etag: "",
+          _local: false,
+          _revs: [],
+          _source: undefined,
+          _shards: undefined,
+          _size: 0,
+          _version: 0,
+          _version_conflicts: 0,
+          _seq_no: 0,
+          _primary_term: 0,
+          _routing: "",
+          _parent: "",
+          _parent_as_child: false,
+          _slices: [],
+          _highlight: undefined,
+          _highlight_inner_hits: undefined,
+          _source_as_doc: false,
+          _source_includes: [],
+          _routing_keys: [],
+          _routing_values: [],
+          _routing_values_as_array: [],
+          _routing_values_as_array_of_objects: [],
+          _routing_values_as_array_of_objects_with_key: [],
+          _routing_values_as_array_of_objects_with_key_and_value: [],
+          _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+          filePathOrUrl: "",
+          uploadedBy: 0,
+          uploadedAt: "",
+          tagsOrCategories: "",
+          format: "",
+          uploadedByTeamId: null,
+          uploadedByTeam: null,
+          URL: "",
+          alinkColor: "",
+          all: undefined,
+          anchors: undefined,
+          applets: undefined,
+          bgColor: "",
+          body: undefined,
+          characterSet: "",
+          charset: "",
+          compatMode: "",
+          contentType: "",
+          cookie: "",
+          currentScript: null,
+          defaultView: null,
+          designMode: "",
+          dir: "",
+          doctype: null,
+          documentElement: undefined,
+          documentURI: "",
+          domain: "",
+          embeds: undefined,
+          fgColor: "",
+          forms: undefined,
+          fullscreen: false,
+          fullscreenEnabled: false,
+          head: undefined,
+          hidden: false,
+          images: undefined,
+          implementation: undefined,
+          inputEncoding: "",
+          lastModified: "",
+          linkColor: "",
+          links: undefined,
+          location: undefined,
+          onfullscreenchange: null,
+          onfullscreenerror: null,
+          onpointerlockchange: null,
+          onpointerlockerror: null,
+          onreadystatechange: null,
+          onvisibilitychange: null,
+          ownerDocument: null,
+          pictureInPictureEnabled: false,
+          plugins: undefined,
+          readyState: "loading",
+          referrer: "",
+          rootElement: null,
+          scripts: undefined,
+          scrollingElement: null,
+          timeline: undefined,
+          visibilityState: "hidden",
+          vlinkColor: "",
+          adoptNode: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          captureEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          caretRangeFromPoint: function (x: number, y: number): Range | null {
+            throw new Error("Function not implemented.");
+          },
+          clear: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          close: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          createAttribute: function (localName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createCDATASection: function (data: string): CDATASection {
+            throw new Error("Function not implemented.");
+          },
+          createComment: function (data: string): Comment {
+            throw new Error("Function not implemented.");
+          },
+          createDocumentFragment: function (): DocumentFragment {
+            throw new Error("Function not implemented.");
+          },
+          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
+            throw new Error("Function not implemented.");
+          },
+          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
+            throw new Error("Function not implemented.");
+          },
+          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
+            throw new Error("Function not implemented.");
+          },
+          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
+            throw new Error("Function not implemented.");
+          },
+          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
+            throw new Error("Function not implemented.");
+          },
+          createRange: function (): Range {
+            throw new Error("Function not implemented.");
+          },
+          createTextNode: function (data: string): Text {
+            throw new Error("Function not implemented.");
+          },
+          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
+            throw new Error("Function not implemented.");
+          },
+          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
+            throw new Error("Function not implemented.");
+          },
+          exitFullscreen: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPictureInPicture: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPointerLock: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          getElementById: function (elementId: string): HTMLElement | null {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getSelection: function (): Selection | null {
+            throw new Error("Function not implemented.");
+          },
+          hasFocus: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          hasStorageAccess: function (): Promise<boolean> {
+            throw new Error("Function not implemented.");
+          },
+          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
+            throw new Error("Function not implemented.");
+          },
+          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandEnabled: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandIndeterm: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandState: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandSupported: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandValue: function (commandId: string): string {
+            throw new Error("Function not implemented.");
+          },
+          releaseEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          requestStorageAccess: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          write: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          writeln: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
+            throw new Error("Function not implemented.");
+          },
+          baseURI: "",
+          childNodes: undefined,
+          firstChild: null,
+          isConnected: false,
+          lastChild: null,
+          nextSibling: null,
+          nodeName: "",
+          nodeType: 0,
+          nodeValue: null,
+          parentElement: null,
+          parentNode: null,
+          previousSibling: null,
+          textContent: null,
+          appendChild: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          cloneNode: function (deep?: boolean | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          compareDocumentPosition: function (other: Node): number {
+            throw new Error("Function not implemented.");
+          },
+          contains: function (other: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          hasChildNodes: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
+            throw new Error("Function not implemented.");
+          },
+          isDefaultNamespace: function (namespace: string | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isEqualNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isSameNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          lookupNamespaceURI: function (prefix: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          lookupPrefix: function (namespace: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          normalize: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          removeChild: function <T extends Node>(child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          replaceChild: function <T extends Node>(node: Node, child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          ELEMENT_NODE: 1,
+          ATTRIBUTE_NODE: 2,
+          TEXT_NODE: 3,
+          CDATA_SECTION_NODE: 4,
+          ENTITY_REFERENCE_NODE: 5,
+          ENTITY_NODE: 6,
+          PROCESSING_INSTRUCTION_NODE: 7,
+          COMMENT_NODE: 8,
+          DOCUMENT_NODE: 9,
+          DOCUMENT_TYPE_NODE: 10,
+          DOCUMENT_FRAGMENT_NODE: 11,
+          NOTATION_NODE: 12,
+          DOCUMENT_POSITION_DISCONNECTED: 1,
+          DOCUMENT_POSITION_PRECEDING: 2,
+          DOCUMENT_POSITION_FOLLOWING: 4,
+          DOCUMENT_POSITION_CONTAINS: 8,
+          DOCUMENT_POSITION_CONTAINED_BY: 16,
+          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+          dispatchEvent: function (event: Event): boolean {
+            throw new Error("Function not implemented.");
+          },
+          activeElement: null,
+          adoptedStyleSheets: [],
+          fullscreenElement: null,
+          pictureInPictureElement: null,
+          pointerLockElement: null,
+          styleSheets: undefined,
+          elementFromPoint: function (x: number, y: number): Element | null {
+            throw new Error("Function not implemented.");
+          },
+          elementsFromPoint: function (x: number, y: number): Element[] {
+            throw new Error("Function not implemented.");
+          },
+          getAnimations: function (): Animation[] {
+            throw new Error("Function not implemented.");
+          },
+          fonts: undefined,
+          onabort: null,
+          onanimationcancel: null,
+          onanimationend: null,
+          onanimationiteration: null,
+          onanimationstart: null,
+          onauxclick: null,
+          onbeforeinput: null,
+          onbeforetoggle: null,
+          onblur: null,
+          oncancel: null,
+          oncanplay: null,
+          oncanplaythrough: null,
+          onchange: null,
+          onclick: null,
+          onclose: null,
+          oncontextmenu: null,
+          oncopy: null,
+          oncuechange: null,
+          oncut: null,
+          ondblclick: null,
+          ondrag: null,
+          ondragend: null,
+          ondragenter: null,
+          ondragleave: null,
+          ondragover: null,
+          ondragstart: null,
+          ondrop: null,
+          ondurationchange: null,
+          onemptied: null,
+          onended: null,
+          onerror: null,
+          onfocus: null,
+          onformdata: null,
+          ongotpointercapture: null,
+          oninput: null,
+          oninvalid: null,
+          onkeydown: null,
+          onkeypress: null,
+          onkeyup: null,
+          onload: null,
+          onloadeddata: null,
+          onloadedmetadata: null,
+          onloadstart: null,
+          onlostpointercapture: null,
+          onmousedown: null,
+          onmouseenter: null,
+          onmouseleave: null,
+          onmousemove: null,
+          onmouseout: null,
+          onmouseover: null,
+          onmouseup: null,
+          onpaste: null,
+          onpause: null,
+          onplay: null,
+          onplaying: null,
+          onpointercancel: null,
+          onpointerdown: null,
+          onpointerenter: null,
+          onpointerleave: null,
+          onpointermove: null,
+          onpointerout: null,
+          onpointerover: null,
+          onpointerup: null,
+          onprogress: null,
+          onratechange: null,
+          onreset: null,
+          onresize: null,
+          onscroll: null,
+          onscrollend: null,
+          onsecuritypolicyviolation: null,
+          onseeked: null,
+          onseeking: null,
+          onselect: null,
+          onselectionchange: null,
+          onselectstart: null,
+          onslotchange: null,
+          onstalled: null,
+          onsubmit: null,
+          onsuspend: null,
+          ontimeupdate: null,
+          ontoggle: null,
+          ontransitioncancel: null,
+          ontransitionend: null,
+          ontransitionrun: null,
+          ontransitionstart: null,
+          onvolumechange: null,
+          onwaiting: null,
+          onwebkitanimationend: null,
+          onwebkitanimationiteration: null,
+          onwebkitanimationstart: null,
+          onwebkittransitionend: null,
+          onwheel: null,
+          childElementCount: 0,
+          children: undefined,
+          firstElementChild: null,
+          lastElementChild: null,
+          append: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          prepend: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
+            throw new Error("Function not implemented.");
+          },
+          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          replaceChildren: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
+            throw new Error("Function not implemented.");
+          },
+          createNSResolver: function (nodeResolver: Node): Node {
+            throw new Error("Function not implemented.");
+          },
+          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
+            throw new Error("Function not implemented.");
+          },
+          documents: [],
+          selectedDocument: null,
+          filteredDocuments: [],
+          searchResults: [],
+          loading: false,
+          error: null
+        });
+      }
     },
 
     selectDocument: (state, action: PayloadAction<number>) => {
@@ -920,14 +2978,14 @@ export const useDocumentManagerSlice = createSlice({
 
     setExportedDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData[]>>
+      action: PayloadAction<WritableDraft<DocumentObject[]>>
     ) => {
       state.documents = action.payload;
     },
 
     setFilteredDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData[]>>
+      action: PayloadAction<WritableDraft<DocumentObject[]>>
     ) => {
       state.filteredDocuments = action.payload;
     },
@@ -947,7 +3005,7 @@ export const useDocumentManagerSlice = createSlice({
       // Additional logic...
     },
 
-    updateDocument: (state, action: PayloadAction<Partial<DocumentData>>) => {
+    updateDocument: (state, action: PayloadAction<Partial<DocumentObject>>) => {
       const { id, ...updates } = action.payload;
       const existingDocument = state.documents.find((doc) => doc.id === id);
       if (existingDocument) {
@@ -1291,8 +3349,456 @@ export const useDocumentManagerSlice = createSlice({
             setReadAccess: () => true,
             getWriteAccess: () => false,
             setWriteAccess: () => false,
+            getReadWriteAccess: () => false,
+            setReadWriteAccess: () => false,
           },
           visibility: undefined,
+          documentSize: DocumentSize.A4,
+          lastModifiedBy: "",
+          name: "",
+          description: "",
+          createdBy: "",
+          createdDate: undefined,
+          documentType: "",
+          _rev: "",
+          _attachments: undefined,
+          _links: undefined,
+          _etag: "",
+          _local: false,
+          _revs: [],
+          _source: undefined,
+          _shards: undefined,
+          _size: 0,
+          _version: 0,
+          _version_conflicts: 0,
+          _seq_no: 0,
+          _primary_term: 0,
+          _routing: "",
+          _parent: "",
+          _parent_as_child: false,
+          _slices: [],
+          _highlight: undefined,
+          _highlight_inner_hits: undefined,
+          _source_as_doc: false,
+          _source_includes: [],
+          _routing_keys: [],
+          _routing_values: [],
+          _routing_values_as_array: [],
+          _routing_values_as_array_of_objects: [],
+          _routing_values_as_array_of_objects_with_key: [],
+          _routing_values_as_array_of_objects_with_key_and_value: [],
+          _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+          filePathOrUrl: "",
+          uploadedBy: 0,
+          uploadedAt: "",
+          tagsOrCategories: "",
+          format: "",
+          uploadedByTeamId: null,
+          uploadedByTeam: null,
+          URL: "",
+          alinkColor: "",
+          all: undefined,
+          anchors: undefined,
+          applets: undefined,
+          bgColor: "",
+          body: undefined,
+          characterSet: "",
+          charset: "",
+          compatMode: "",
+          contentType: "",
+          cookie: "",
+          currentScript: null,
+          defaultView: null,
+          designMode: "",
+          dir: "",
+          doctype: null,
+          documentElement: undefined,
+          documentURI: "",
+          domain: "",
+          embeds: undefined,
+          fgColor: "",
+          forms: undefined,
+          fullscreen: false,
+          fullscreenEnabled: false,
+          head: undefined,
+          hidden: false,
+          images: undefined,
+          implementation: undefined,
+          inputEncoding: "",
+          lastModified: "",
+          linkColor: "",
+          links: undefined,
+          location: undefined,
+          onfullscreenchange: null,
+          onfullscreenerror: null,
+          onpointerlockchange: null,
+          onpointerlockerror: null,
+          onreadystatechange: null,
+          onvisibilitychange: null,
+          ownerDocument: null,
+          pictureInPictureEnabled: false,
+          plugins: undefined,
+          readyState: "loading",
+          referrer: "",
+          rootElement: null,
+          scripts: undefined,
+          scrollingElement: null,
+          timeline: undefined,
+          visibilityState: "hidden",
+          vlinkColor: "",
+          adoptNode: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          captureEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          caretRangeFromPoint: function (x: number, y: number): Range | null {
+            throw new Error("Function not implemented.");
+          },
+          clear: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          close: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          createAttribute: function (localName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createCDATASection: function (data: string): CDATASection {
+            throw new Error("Function not implemented.");
+          },
+          createComment: function (data: string): Comment {
+            throw new Error("Function not implemented.");
+          },
+          createDocumentFragment: function (): DocumentFragment {
+            throw new Error("Function not implemented.");
+          },
+          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
+            throw new Error("Function not implemented.");
+          },
+          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
+            throw new Error("Function not implemented.");
+          },
+          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
+            throw new Error("Function not implemented.");
+          },
+          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
+            throw new Error("Function not implemented.");
+          },
+          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
+            throw new Error("Function not implemented.");
+          },
+          createRange: function (): Range {
+            throw new Error("Function not implemented.");
+          },
+          createTextNode: function (data: string): Text {
+            throw new Error("Function not implemented.");
+          },
+          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
+            throw new Error("Function not implemented.");
+          },
+          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
+            throw new Error("Function not implemented.");
+          },
+          exitFullscreen: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPictureInPicture: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPointerLock: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          getElementById: function (elementId: string): HTMLElement | null {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getSelection: function (): Selection | null {
+            throw new Error("Function not implemented.");
+          },
+          hasFocus: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          hasStorageAccess: function (): Promise<boolean> {
+            throw new Error("Function not implemented.");
+          },
+          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
+            throw new Error("Function not implemented.");
+          },
+          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandEnabled: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandIndeterm: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandState: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandSupported: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandValue: function (commandId: string): string {
+            throw new Error("Function not implemented.");
+          },
+          releaseEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          requestStorageAccess: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          write: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          writeln: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
+            throw new Error("Function not implemented.");
+          },
+          baseURI: "",
+          childNodes: undefined,
+          firstChild: null,
+          isConnected: false,
+          lastChild: null,
+          nextSibling: null,
+          nodeName: "",
+          nodeType: 0,
+          nodeValue: null,
+          parentElement: null,
+          parentNode: null,
+          previousSibling: null,
+          textContent: null,
+          appendChild: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          cloneNode: function (deep?: boolean | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          compareDocumentPosition: function (other: Node): number {
+            throw new Error("Function not implemented.");
+          },
+          contains: function (other: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          hasChildNodes: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
+            throw new Error("Function not implemented.");
+          },
+          isDefaultNamespace: function (namespace: string | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isEqualNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isSameNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          lookupNamespaceURI: function (prefix: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          lookupPrefix: function (namespace: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          normalize: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          removeChild: function <T extends Node>(child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          replaceChild: function <T extends Node>(node: Node, child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          ELEMENT_NODE: 1,
+          ATTRIBUTE_NODE: 2,
+          TEXT_NODE: 3,
+          CDATA_SECTION_NODE: 4,
+          ENTITY_REFERENCE_NODE: 5,
+          ENTITY_NODE: 6,
+          PROCESSING_INSTRUCTION_NODE: 7,
+          COMMENT_NODE: 8,
+          DOCUMENT_NODE: 9,
+          DOCUMENT_TYPE_NODE: 10,
+          DOCUMENT_FRAGMENT_NODE: 11,
+          NOTATION_NODE: 12,
+          DOCUMENT_POSITION_DISCONNECTED: 1,
+          DOCUMENT_POSITION_PRECEDING: 2,
+          DOCUMENT_POSITION_FOLLOWING: 4,
+          DOCUMENT_POSITION_CONTAINS: 8,
+          DOCUMENT_POSITION_CONTAINED_BY: 16,
+          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+          dispatchEvent: function (event: Event): boolean {
+            throw new Error("Function not implemented.");
+          },
+          activeElement: null,
+          adoptedStyleSheets: [],
+          fullscreenElement: null,
+          pictureInPictureElement: null,
+          pointerLockElement: null,
+          styleSheets: undefined,
+          elementFromPoint: function (x: number, y: number): Element | null {
+            throw new Error("Function not implemented.");
+          },
+          elementsFromPoint: function (x: number, y: number): Element[] {
+            throw new Error("Function not implemented.");
+          },
+          getAnimations: function (): Animation[] {
+            throw new Error("Function not implemented.");
+          },
+          fonts: undefined,
+          onabort: null,
+          onanimationcancel: null,
+          onanimationend: null,
+          onanimationiteration: null,
+          onanimationstart: null,
+          onauxclick: null,
+          onbeforeinput: null,
+          onbeforetoggle: null,
+          onblur: null,
+          oncancel: null,
+          oncanplay: null,
+          oncanplaythrough: null,
+          onchange: null,
+          onclick: null,
+          onclose: null,
+          oncontextmenu: null,
+          oncopy: null,
+          oncuechange: null,
+          oncut: null,
+          ondblclick: null,
+          ondrag: null,
+          ondragend: null,
+          ondragenter: null,
+          ondragleave: null,
+          ondragover: null,
+          ondragstart: null,
+          ondrop: null,
+          ondurationchange: null,
+          onemptied: null,
+          onended: null,
+          onerror: null,
+          onfocus: null,
+          onformdata: null,
+          ongotpointercapture: null,
+          oninput: null,
+          oninvalid: null,
+          onkeydown: null,
+          onkeypress: null,
+          onkeyup: null,
+          onload: null,
+          onloadeddata: null,
+          onloadedmetadata: null,
+          onloadstart: null,
+          onlostpointercapture: null,
+          onmousedown: null,
+          onmouseenter: null,
+          onmouseleave: null,
+          onmousemove: null,
+          onmouseout: null,
+          onmouseover: null,
+          onmouseup: null,
+          onpaste: null,
+          onpause: null,
+          onplay: null,
+          onplaying: null,
+          onpointercancel: null,
+          onpointerdown: null,
+          onpointerenter: null,
+          onpointerleave: null,
+          onpointermove: null,
+          onpointerout: null,
+          onpointerover: null,
+          onpointerup: null,
+          onprogress: null,
+          onratechange: null,
+          onreset: null,
+          onresize: null,
+          onscroll: null,
+          onscrollend: null,
+          onsecuritypolicyviolation: null,
+          onseeked: null,
+          onseeking: null,
+          onselect: null,
+          onselectionchange: null,
+          onselectstart: null,
+          onslotchange: null,
+          onstalled: null,
+          onsubmit: null,
+          onsuspend: null,
+          ontimeupdate: null,
+          ontoggle: null,
+          ontransitioncancel: null,
+          ontransitionend: null,
+          ontransitionrun: null,
+          ontransitionstart: null,
+          onvolumechange: null,
+          onwaiting: null,
+          onwebkitanimationend: null,
+          onwebkitanimationiteration: null,
+          onwebkitanimationstart: null,
+          onwebkittransitionend: null,
+          onwheel: null,
+          childElementCount: 0,
+          children: undefined,
+          firstElementChild: null,
+          lastElementChild: null,
+          append: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          prepend: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
+            throw new Error("Function not implemented.");
+          },
+          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          replaceChildren: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
+            throw new Error("Function not implemented.");
+          },
+          createNSResolver: function (nodeResolver: Node): Node {
+            throw new Error("Function not implemented.");
+          },
+          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
+            throw new Error("Function not implemented.");
+          },
+          documents: [],
+          selectedDocument: null,
+          filteredDocuments: [],
+          searchResults: [],
+          loading: false,
+          error: null
         });
         // Assuming implementation here...
         useNotification().notify(
@@ -1313,36 +3819,35 @@ export const useDocumentManagerSlice = createSlice({
         );
       }
     },
-    restoreDocument: (state, action: PayloadAction<number>) => {
-      try {
-        const documentId = action.payload;
-        // Implement document restoring functionality
-        const newDocument = createNewDocument(String(documentId));
-        const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
-        state.documents.push(
-          newDocumentObject as WritableDraft<DocumentObject>
-        ); // Add the new document object to the state array
+    
+//  restoreDocument:( state, action: PayloadAction<number>) => {
+//   try {
+//     const documentId = action.payload;
+//     // Implement document restoring functionality
+//     const newDocument = createNewDocument(String(documentId));
+//     const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
+//     state.documents.push(newDocumentObject as WritableDraft<DocumentObject>); // Add the new document object to the state array
 
-        // Notify success
-        useNotification().notify(
-          "restoreDocumentSuccess",
-          `Restoring document with ID: ${documentId} success`,
-          NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OperationSuccess
-        );
-      } catch (error) {
-        console.error("Error restoring document:", error);
-        // Notify error
-        useNotification().notify(
-          "restoreDocumentError",
-          "Error restoring document",
-          NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.Error
-        );
-      }
-    },
+//     // Notify success
+//     useNotification().notify(
+//       "restoreDocumentSuccess",
+//       `Restoring document with ID: ${documentId} success`,
+//       NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
+//       new Date(),
+//       NotificationTypeEnum.OperationSuccess
+//     );
+//   } catch (error) {
+//     console.error("Error restoring document:", error);
+//     // Notify error
+//     useNotification().notify(
+//       "restoreDocumentError",
+//       "Error restoring document",
+//       NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_ERROR,
+//       new Date(),
+//       NotificationTypeEnum.Error
+//     );
+//   }
+//     },
 
     moveDocument: (
       state,
@@ -1488,6 +3993,452 @@ export const useDocumentManagerSlice = createSlice({
           versionData: undefined,
           _id: "",
           visibility: undefined,
+          documentSize: DocumentSize.A4,
+          lastModifiedBy: "",
+          name: "",
+          description: "",
+          createdBy: "",
+          createdDate: undefined,
+          documentType: "",
+          _rev: "",
+          _attachments: undefined,
+          _links: undefined,
+          _etag: "",
+          _local: false,
+          _revs: [],
+          _source: undefined,
+          _shards: undefined,
+          _size: 0,
+          _version: 0,
+          _version_conflicts: 0,
+          _seq_no: 0,
+          _primary_term: 0,
+          _routing: "",
+          _parent: "",
+          _parent_as_child: false,
+          _slices: [],
+          _highlight: undefined,
+          _highlight_inner_hits: undefined,
+          _source_as_doc: false,
+          _source_includes: [],
+          _routing_keys: [],
+          _routing_values: [],
+          _routing_values_as_array: [],
+          _routing_values_as_array_of_objects: [],
+          _routing_values_as_array_of_objects_with_key: [],
+          _routing_values_as_array_of_objects_with_key_and_value: [],
+          _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+          filePathOrUrl: "",
+          uploadedBy: 0,
+          uploadedAt: "",
+          tagsOrCategories: "",
+          format: "",
+          uploadedByTeamId: null,
+          uploadedByTeam: null,
+          URL: "",
+          alinkColor: "",
+          all: undefined,
+          anchors: undefined,
+          applets: undefined,
+          bgColor: "",
+          body: undefined,
+          characterSet: "",
+          charset: "",
+          compatMode: "",
+          contentType: "",
+          cookie: "",
+          currentScript: null,
+          defaultView: null,
+          designMode: "",
+          dir: "",
+          doctype: null,
+          documentElement: undefined,
+          documentURI: "",
+          domain: "",
+          embeds: undefined,
+          fgColor: "",
+          forms: undefined,
+          fullscreen: false,
+          fullscreenEnabled: false,
+          head: undefined,
+          hidden: false,
+          images: undefined,
+          implementation: undefined,
+          inputEncoding: "",
+          lastModified: "",
+          linkColor: "",
+          links: undefined,
+          location: undefined,
+          onfullscreenchange: null,
+          onfullscreenerror: null,
+          onpointerlockchange: null,
+          onpointerlockerror: null,
+          onreadystatechange: null,
+          onvisibilitychange: null,
+          ownerDocument: null,
+          pictureInPictureEnabled: false,
+          plugins: undefined,
+          readyState: "loading",
+          referrer: "",
+          rootElement: null,
+          scripts: undefined,
+          scrollingElement: null,
+          timeline: undefined,
+          visibilityState: "hidden",
+          vlinkColor: "",
+          adoptNode: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          captureEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          caretRangeFromPoint: function (x: number, y: number): Range | null {
+            throw new Error("Function not implemented.");
+          },
+          clear: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          close: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          createAttribute: function (localName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
+            throw new Error("Function not implemented.");
+          },
+          createCDATASection: function (data: string): CDATASection {
+            throw new Error("Function not implemented.");
+          },
+          createComment: function (data: string): Comment {
+            throw new Error("Function not implemented.");
+          },
+          createDocumentFragment: function (): DocumentFragment {
+            throw new Error("Function not implemented.");
+          },
+          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
+            throw new Error("Function not implemented.");
+          },
+          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
+            throw new Error("Function not implemented.");
+          },
+          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
+            throw new Error("Function not implemented.");
+          },
+          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
+            throw new Error("Function not implemented.");
+          },
+          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
+            throw new Error("Function not implemented.");
+          },
+          createRange: function (): Range {
+            throw new Error("Function not implemented.");
+          },
+          createTextNode: function (data: string): Text {
+            throw new Error("Function not implemented.");
+          },
+          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
+            throw new Error("Function not implemented.");
+          },
+          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
+            throw new Error("Function not implemented.");
+          },
+          exitFullscreen: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPictureInPicture: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          exitPointerLock: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          getElementById: function (elementId: string): HTMLElement | null {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
+            throw new Error("Function not implemented.");
+          },
+          getSelection: function (): Selection | null {
+            throw new Error("Function not implemented.");
+          },
+          hasFocus: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          hasStorageAccess: function (): Promise<boolean> {
+            throw new Error("Function not implemented.");
+          },
+          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
+            throw new Error("Function not implemented.");
+          },
+          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandEnabled: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandIndeterm: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandState: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandSupported: function (commandId: string): boolean {
+            throw new Error("Function not implemented.");
+          },
+          queryCommandValue: function (commandId: string): string {
+            throw new Error("Function not implemented.");
+          },
+          releaseEvents: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          requestStorageAccess: function (): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          write: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          writeln: function (...text: string[]): void {
+            throw new Error("Function not implemented.");
+          },
+          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
+            throw new Error("Function not implemented.");
+          },
+          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
+            throw new Error("Function not implemented.");
+          },
+          baseURI: "",
+          childNodes: undefined,
+          firstChild: null,
+          isConnected: false,
+          lastChild: null,
+          nextSibling: null,
+          nodeName: "",
+          nodeType: 0,
+          nodeValue: null,
+          parentElement: null,
+          parentNode: null,
+          previousSibling: null,
+          textContent: null,
+          appendChild: function <T extends Node>(node: T): T {
+            throw new Error("Function not implemented.");
+          },
+          cloneNode: function (deep?: boolean | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          compareDocumentPosition: function (other: Node): number {
+            throw new Error("Function not implemented.");
+          },
+          contains: function (other: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
+            throw new Error("Function not implemented.");
+          },
+          hasChildNodes: function (): boolean {
+            throw new Error("Function not implemented.");
+          },
+          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
+            throw new Error("Function not implemented.");
+          },
+          isDefaultNamespace: function (namespace: string | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isEqualNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          isSameNode: function (otherNode: Node | null): boolean {
+            throw new Error("Function not implemented.");
+          },
+          lookupNamespaceURI: function (prefix: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          lookupPrefix: function (namespace: string | null): string | null {
+            throw new Error("Function not implemented.");
+          },
+          normalize: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          removeChild: function <T extends Node>(child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          replaceChild: function <T extends Node>(node: Node, child: T): T {
+            throw new Error("Function not implemented.");
+          },
+          ELEMENT_NODE: 1,
+          ATTRIBUTE_NODE: 2,
+          TEXT_NODE: 3,
+          CDATA_SECTION_NODE: 4,
+          ENTITY_REFERENCE_NODE: 5,
+          ENTITY_NODE: 6,
+          PROCESSING_INSTRUCTION_NODE: 7,
+          COMMENT_NODE: 8,
+          DOCUMENT_NODE: 9,
+          DOCUMENT_TYPE_NODE: 10,
+          DOCUMENT_FRAGMENT_NODE: 11,
+          NOTATION_NODE: 12,
+          DOCUMENT_POSITION_DISCONNECTED: 1,
+          DOCUMENT_POSITION_PRECEDING: 2,
+          DOCUMENT_POSITION_FOLLOWING: 4,
+          DOCUMENT_POSITION_CONTAINS: 8,
+          DOCUMENT_POSITION_CONTAINED_BY: 16,
+          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+          dispatchEvent: function (event: Event): boolean {
+            throw new Error("Function not implemented.");
+          },
+          activeElement: null,
+          adoptedStyleSheets: [],
+          fullscreenElement: null,
+          pictureInPictureElement: null,
+          pointerLockElement: null,
+          styleSheets: undefined,
+          elementFromPoint: function (x: number, y: number): Element | null {
+            throw new Error("Function not implemented.");
+          },
+          elementsFromPoint: function (x: number, y: number): Element[] {
+            throw new Error("Function not implemented.");
+          },
+          getAnimations: function (): Animation[] {
+            throw new Error("Function not implemented.");
+          },
+          fonts: undefined,
+          onabort: null,
+          onanimationcancel: null,
+          onanimationend: null,
+          onanimationiteration: null,
+          onanimationstart: null,
+          onauxclick: null,
+          onbeforeinput: null,
+          onbeforetoggle: null,
+          onblur: null,
+          oncancel: null,
+          oncanplay: null,
+          oncanplaythrough: null,
+          onchange: null,
+          onclick: null,
+          onclose: null,
+          oncontextmenu: null,
+          oncopy: null,
+          oncuechange: null,
+          oncut: null,
+          ondblclick: null,
+          ondrag: null,
+          ondragend: null,
+          ondragenter: null,
+          ondragleave: null,
+          ondragover: null,
+          ondragstart: null,
+          ondrop: null,
+          ondurationchange: null,
+          onemptied: null,
+          onended: null,
+          onerror: null,
+          onfocus: null,
+          onformdata: null,
+          ongotpointercapture: null,
+          oninput: null,
+          oninvalid: null,
+          onkeydown: null,
+          onkeypress: null,
+          onkeyup: null,
+          onload: null,
+          onloadeddata: null,
+          onloadedmetadata: null,
+          onloadstart: null,
+          onlostpointercapture: null,
+          onmousedown: null,
+          onmouseenter: null,
+          onmouseleave: null,
+          onmousemove: null,
+          onmouseout: null,
+          onmouseover: null,
+          onmouseup: null,
+          onpaste: null,
+          onpause: null,
+          onplay: null,
+          onplaying: null,
+          onpointercancel: null,
+          onpointerdown: null,
+          onpointerenter: null,
+          onpointerleave: null,
+          onpointermove: null,
+          onpointerout: null,
+          onpointerover: null,
+          onpointerup: null,
+          onprogress: null,
+          onratechange: null,
+          onreset: null,
+          onresize: null,
+          onscroll: null,
+          onscrollend: null,
+          onsecuritypolicyviolation: null,
+          onseeked: null,
+          onseeking: null,
+          onselect: null,
+          onselectionchange: null,
+          onselectstart: null,
+          onslotchange: null,
+          onstalled: null,
+          onsubmit: null,
+          onsuspend: null,
+          ontimeupdate: null,
+          ontoggle: null,
+          ontransitioncancel: null,
+          ontransitionend: null,
+          ontransitionrun: null,
+          ontransitionstart: null,
+          onvolumechange: null,
+          onwaiting: null,
+          onwebkitanimationend: null,
+          onwebkitanimationiteration: null,
+          onwebkitanimationstart: null,
+          onwebkittransitionend: null,
+          onwheel: null,
+          childElementCount: 0,
+          children: undefined,
+          firstElementChild: null,
+          lastElementChild: null,
+          append: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          prepend: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
+            throw new Error("Function not implemented.");
+          },
+          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
+            throw new Error("Function not implemented.");
+          },
+          replaceChildren: function (...nodes: (string | Node)[]): void {
+            throw new Error("Function not implemented.");
+          },
+          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
+            throw new Error("Function not implemented.");
+          },
+          createNSResolver: function (nodeResolver: Node): Node {
+            throw new Error("Function not implemented.");
+          },
+          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
+            throw new Error("Function not implemented.");
+          },
+          documents: [],
+          selectedDocument: null,
+          filteredDocuments: [],
+          searchResults: [],
+          loading: false,
+          error: null
         });
       }
     },
@@ -1681,7 +4632,7 @@ export const useDocumentManagerSlice = createSlice({
     tagDocument: (
       state,
       action: PayloadAction<{
-        document: WritableDraft<DocumentData>;
+        document: WritableDraft<DocumentObject>;
         documentId: number;
         tag: string;
       }>
@@ -2588,6 +5539,7 @@ export const {
   setDocuments,
   setDownloadedDocument,
   addDocument,
+  addDocumentSuccess,
   selectDocument,
   clearSelectedDocument,
 
@@ -2603,7 +5555,6 @@ export const {
   importDocuments,
   archiveDocument,
   fetchDocumentFromArchive,
-  restoreDocument,
   moveDocument,
   copyDocument,
   mergeDocuments,
@@ -2687,7 +5638,7 @@ export const selectSelectedDocument = (state: RootState) =>
 // Export the reducer
 export default useDocumentManagerSlice.reducer;
 
-export type { DocumentSliceState };
+export type { DocumentSliceState, DocumentObject };
 
 
 

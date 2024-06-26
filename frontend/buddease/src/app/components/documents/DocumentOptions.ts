@@ -1,9 +1,12 @@
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserSettings } from "@/app/configs/UserSettings";
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import BackendStructure, { backend } from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure, { frontend } from "@/app/configs/appStructure/FrontendStructure";
+import BackendStructure, {
+  backend,
+} from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure, {
+  frontend,
+} from "@/app/configs/appStructure/FrontendStructure";
 import docx from "docx";
 import { IHydrateResult } from "mobx-persist";
 import {
@@ -16,6 +19,7 @@ import {
   Layout,
   ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
+import { Phase } from "../phases/Phase";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { CustomProperties, HighlightColor } from "../styling/Palette";
 import { AllTypes } from "../typings/PropTypes";
@@ -24,8 +28,9 @@ import Version from "../versions/Version";
 import { ModifiedDate } from "./DocType";
 import { DocumentData, RevisionOptions } from "./DocumentBuilder";
 import { DocumentTypeEnum } from "./DocumentGenerator";
-import { NoteOptions } from "./NoteData";
+import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
+import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
@@ -129,10 +134,15 @@ export const getDefaultDocumentBuilderOptions = (): DocumentBuilderOptions => {
   };
 };
 
+// Function to get default note options
 export const getDefaultNoteOptions = (): NoteOptions => {
   const defaultOptions = getDefaultDocumentOptions();
   return {
     ...defaultOptions,
+    animations: {
+      ...defaultOptions.animations,
+      duration: defaultOptions.animations?.duration ?? 0,
+    } as NoteAnimationOptions & { duration?: number },
     additionalOption2: "", // Add default value for additional option 2
   };
 };
@@ -140,16 +150,45 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 // documentOptions.ts
 export interface DocumentOptions {
   uniqueIdentifier: string;
-  documentType: DocumentTypeEnum; // Add documentType property
+  documentType: string | DocumentTypeEnum; // Add documentType property
   userIdea?: string | UserIdea | undefined;
   documentSize: DocumentSize;
   limit: number;
   page: number;
+  levels: {
+    enabled: boolean;
+    startLevel: number;
+    endLevel: number | string | undefined;
+    format: string;
+    separator: string;
+    style: {
+      main: string;
+      styles: {
+        format: string[];
+        separator: string[];
+        style: {
+          format: string[];
+          separator: string[];
+          style: string[];
+        };
+      }[];
+    };
+  };
   additionalOptions: readonly string[] | string | number | any[] | undefined;
 
   language: LanguageEnum;
+  setDocumentPhase: (
+    phase:
+      | string
+      | Phase
+      | undefined,
+    phaseType: DocumentPhaseTypeEnum
+  ) => {
+    phase: string | Phase | undefined;
+    phaseType: DocumentPhaseTypeEnum;
+  };
   documentPhase:
-    | string
+    | string  
     | {
         name: string;
         originalPath: string;
@@ -169,12 +208,12 @@ export interface DocumentOptions {
         customProp1: string;
         customProp2: number;
         onChange: (phase: ProjectPhaseTypeEnum) => void;
-  };
-  
-  version: Version;
+      };
+
+  version: Version | undefined;
   isDynamic: boolean | undefined;
   size: DocumentSize;
-  animations: DocumentAnimationOptions;
+  animations: DocumentAnimationOptions | undefined;
   layout: Layout | BackendStructure | FrontendStructure | undefined;
   panels: { [key: string]: any } | undefined;
   pageNumbers:
@@ -400,7 +439,7 @@ export interface DocumentOptions {
         author: string;
         dateFormat: string;
       };
-  revisions: RevisionOptions;
+  revisions: RevisionOptions | undefined;
   embeddedMedia:
     | boolean
     | {
@@ -418,10 +457,10 @@ export interface DocumentOptions {
   styles: {
     [key: string]: Style;
   };
-  previousMetadata: StructuredMetadata;
-  currentMetadata: StructuredMetadata;
+  previousMetadata: StructuredMetadata | undefined;
+  currentMetadata: StructuredMetadata | undefined;
+  lastModifiedDate: ModifiedDate | undefined;
   accessHistory: AccessRecord[];
-  lastModifiedDate: ModifiedDate;
   tableCells: {
     enabled: boolean;
     padding: number;
@@ -477,7 +516,7 @@ export interface DocumentOptions {
   css?: string;
   html?: string;
   color: string;
-  colorCoding: Record<string, string>; // Object representing color coding system
+  colorCoding: Record<string, string> | undefined; // Object representing color coding system
   highlight:
     | boolean
     | {
@@ -487,7 +526,7 @@ export interface DocumentOptions {
         };
       };
   highlightColor: string;
-  customSettings: Record<string, any>;
+  customSettings: Record<string, any> | undefined;
   documents: DocumentData[];
   includeType: "all" | "selected" | "none";
   footnote:
@@ -504,18 +543,19 @@ export interface DocumentOptions {
   includeContent: boolean | { enabled: boolean }; // New property to include content in the report
   includeStatus: boolean | { enabled: boolean }; // New property to include status in the report
   includeAdditionalInfo: boolean | { enabled: boolean }; // Example: include additional information
+  metadata: StructuredMetadata | undefined;
 
   // Properties specific to DocumentGenerator
   title?: string;
   enableStemming?: boolean;
   enableStopWords?: boolean;
   enableWildcards?: boolean;
-  userSettings: UserSettings;
+  userSettings: UserSettings | undefined;
   enableFuzzy?: boolean;
-  dataVersions: DataVersions;
+  dataVersions: DataVersions | undefined;
   backendStructure?: BackendStructure;
   frontendStructure?: FrontendStructure;
-  metadata: StructuredMetadata | undefined;
+  revisionOptions?: RevisionOptions;
 }
 
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
@@ -525,6 +565,27 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       value: undefined,
       isModified: false,
     } as ModifiedDate,
+    levels: {
+      enabled: true,
+      startLevel: 2,
+      endLevel: 4,
+      format: "PDF", // Example of format as "PDF"
+      separator: ",", // Example of separator as ","
+      style: {
+        main: "bold", // Example of main style as "bold"
+        styles: [
+          {
+            format: ["bold", "italic"], // Example of format styles as ["bold", "italic"]
+            separator: [",", ";"], // Example of separator styles as [",", ";"]
+            style: {
+              format: [],
+              separator: [],
+              style: ["underline", "strikethrough"],
+            },
+          },
+        ],
+      },
+    },
     documentSize: DocumentSize.Letter,
     uniqueIdentifier: "",
     documentType: DocumentTypeEnum.Default,
@@ -676,7 +737,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     additionalOptions: [],
     customSettings: {},
     documents: [] as DocumentData[],
-    animations: {} as DocumentAnimationOptions,
+    animations: {} as DocumentAnimationOptions | undefined,
     includeType: "all",
     includeTitle: true,
     includeContent: true,
@@ -790,7 +851,10 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     },
     bookmarks: { enabled: true },
     crossReferences: { enabled: true, format: "Page Number" },
-    footnotes: { enabled: true, format: "numeric" },
+    footnotes: {
+      enabled: true,
+      format: "numeric",
+    },
     endnotes: { enabled: true, format: "numeric" },
     comments: {
       enabled: true,
@@ -801,7 +865,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       enabled: true,
       author: "default-author",
       dataFormat: "DD-MM-YYYY",
-    },
+    } as RevisionOptions,
     embeddedMedia: { enabled: true, allow: false },
     embeddedCode: {
       enabled: true,
@@ -832,6 +896,12 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     previousMetadata: {},
     currentMetadata: {},
     accessHistory: [],
+    setDocumentPhase: (
+      phase:string |  Phase | undefined,
+      phaseType: ProjectPhaseTypeEnum
+    ) => {
+      return { phase, phaseType };
+    },
   };
 };
 
@@ -863,4 +933,4 @@ export const getDocumentPhase = (phase: ProjectPhaseTypeEnum) => {
       return "Draft";
   }
 };
-export type { Style };
+export type { Style, AccessRecord };

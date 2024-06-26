@@ -1,5 +1,8 @@
-import { Snapshot } from '@/app/components/snapshots/SnapshotStore';
-// YourSpecificSnapshotType
+import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
+import { generateSnapshotId } from '../utils/snapshotUtils';
+import SnapshotStore, { defaultCategory } from '../snapshots/SnapshotStore';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import {  CommunicationType, CollaborationOption, CreationPhase, CryptoFeature, CryptoAction, CryptoInformation, CryptoCommunity, BlockchainCapability } from '@/app/typings/appTypes';
 
 // Define YourSpecificSnapshotType implementing Snapshot<T>
 class YourSpecificSnapshotType<T> implements Snapshot<T> {
@@ -31,3 +34,51 @@ class YourSpecificSnapshotType<T> implements Snapshot<T> {
   
   // Export the specific snapshot type if needed
   export { YourSpecificSnapshotType };
+
+
+// Updated snapshotType using specific names
+const snapshotType: (snapshot: Snapshot<CommunicationType | CollaborationOption | CreationPhase | CryptoFeature | CryptoAction | CryptoInformation | CryptoCommunity | BlockchainCapability>) => Snapshot<CommunicationType | CollaborationOption | CreationPhase | CryptoFeature | CryptoAction | CryptoInformation | CryptoCommunity | BlockchainCapability> = (snapshot: Snapshot<CommunicationType | CollaborationOption | CreationPhase | CryptoFeature | CryptoAction | CryptoInformation | CryptoCommunity | BlockchainCapability>) => {
+  const newSnapshot = snapshot;
+  newSnapshot.id = snapshot.id || generateSnapshotId;
+  newSnapshot.title = snapshot.title || "";
+  newSnapshot.timestamp = snapshot.timestamp
+    ? new Date(snapshot.timestamp)
+    : new Date();
+  newSnapshot.subscriberId = snapshot.subscriberId || "";
+  newSnapshot.category =
+    typeof snapshot.category === "string"
+      ? defaultCategory
+      : snapshot.category || defaultCategory;
+  newSnapshot.length = snapshot.length || 0;
+  newSnapshot.content = snapshot.content || "";
+  newSnapshot.data = snapshot.data;
+  newSnapshot.value = snapshot.value || 0;
+  newSnapshot.key = snapshot.key || "";
+  newSnapshot.subscription = snapshot.subscription || null;
+  newSnapshot.config = snapshot.config || null;
+  newSnapshot.status = snapshot.status || "";
+  newSnapshot.metadata = snapshot.metadata || {};
+  newSnapshot.delegate = snapshot.delegate || [];
+  newSnapshot.store =
+    snapshot.store ||
+    new SnapshotStore<CommunicationType | CollaborationOption | CreationPhase | CryptoFeature | CryptoAction | CryptoInformation | CryptoCommunity | BlockchainCapability>(
+      newSnapshot.data || null,
+      (newSnapshot.category as CategoryProperties) || defaultCategory,
+      newSnapshot.date ? new Date(newSnapshot.date) : new Date(),
+      newSnapshot.type ? newSnapshot.type : "new snapshot",
+      newSnapshot.initialState,
+      newSnapshot.snapshotConfig || [],
+      newSnapshot.subscribeToSnapshots
+        ? newSnapshot.subscribeToSnapshots
+        : () => {},
+      newSnapshot.delegate,
+      newSnapshot.dataStoreMethods,
+    );
+  newSnapshot.state = snapshot.state || null;
+  newSnapshot.todoSnapshotId = snapshot.todoSnapshotId || "";
+  newSnapshot.initialState = snapshot.initialState || null;
+  return newSnapshot;
+};
+
+
+export { snapshotType };

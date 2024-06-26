@@ -21,8 +21,8 @@ import { User, UserData } from "../components/users/User";
     isOnline: boolean;
     lastSeen: string | Date;
     description?: string;
-    createdAt:  Date,
-    updatedAt:  Date,
+    createdAt:  Date | undefined,
+    updatedAt:  Date | undefined,
     deletedAt: null,
     imageUrl: string,
     

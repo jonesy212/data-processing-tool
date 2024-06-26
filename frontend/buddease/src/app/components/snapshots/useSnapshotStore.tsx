@@ -58,6 +58,7 @@ import { CustomSnapshotData, Payload, Snapshot, UpdateSnapshotPayload } from "./
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { delegate, deleteSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 
@@ -128,7 +129,7 @@ const useSnapshotStore = async (
   
     const newSnapshot = new SnapshotStore<any>(
       null,
-      'newSnapshot',
+      { /* Initialize category properties */ } as CategoryProperties,
       new Date(),
       NotificationTypeEnum.CreationSuccess,
       initialState,

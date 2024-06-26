@@ -171,7 +171,7 @@ const useSnapshotManager = async <T extends Data>() => {
       );
     } catch (error: any) {
       // Notify failure
-      (await snapshotStore).createSnapshotSuccess.createSnapshotFailure({
+      (await snapshotStore).createSnapshotFailure({
         error: "error creating snapshot: " + error,
       });
       // Using a custom error message
@@ -185,7 +185,7 @@ const useSnapshotManager = async <T extends Data>() => {
     }
   };
 
-  const setSnapshotData = async (snapshot: Snapshot<T>) => {
+  const setSnapshotData = async (snapshot: Snapshot<any>) => {
     try {
       // Make API call to set snapshot data using the defined endpoint
       const response = await fetch(endpoints.snapshots.set.toString(), {
@@ -421,11 +421,16 @@ const useSnapshotManager = async <T extends Data>() => {
 
   const onSnapshot = (
     snapshotId: string,
-    callback: (snapshot: Snapshot<Data>) => void
+    callback: (snapshot: Snapshot<Data>) => void,
+    asyncCallback: (snapshot: Snapshot<Data>) => Promise<void>
+
   ) => {
     (async () => {
       const store = await snapshotStore;
-      store.subscribeToSnapshots(snapshotId, callback);
+      store.subscribeToSnapshots(snapshotId, async (snapshot: Snapshot<Data>) => {
+        callback(snapshot);
+        await asyncCallback(snapshot);
+      });
     })();
   };
 
@@ -651,6 +656,7 @@ const useSnapshotManager = async <T extends Data>() => {
     clearSnapshots,
     addToSnapshotList,
     setSnapshotData,
+    handleSnapshot,
     loading: todoManagerStore.loading,
     error: todoManagerStore.error,
   };

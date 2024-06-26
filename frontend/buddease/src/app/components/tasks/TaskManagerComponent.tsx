@@ -1,6 +1,6 @@
 // TaskManagerComponent.tsx
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
-import { fetchTasks, updateTask } from "@/app/api/TasksApi";
+import { fetchTasks, handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
 import { ProjectDetails } from "@/app/components/projects/Project";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { Router, useRouter } from "next/router";
@@ -12,8 +12,8 @@ import updateUI from "../documents/editing/updateUI";
 import ContentRenderer from "../libraries/ui/ContentRenderer";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { Data } from "../models/data/Data";
-import { PriorityStatus, StatusType } from "../models/data/StatusType";
-import { Task } from "../models/tasks/Task";
+import { PriorityStatus, PriorityTypeEnum, StatusType } from "../models/data/StatusType";
+import { Task, TaskData } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
@@ -23,7 +23,6 @@ import { brandingSettings } from "../projects/branding/BrandingSettings";
 import TaskProgress from "../projects/projectManagement/TaskProgress";
 import TeamProgress from "../projects/projectManagement/TeamProgress";
 import TodoProgress from "../projects/projectManagement/TodoProgress";
-import { Snapshot } from "../snapshots/SnapshotStore";
 import { createMilestone } from "../state/redux/slices/TrackerSlice";
 import { rootStores } from "../state/stores/RootStores";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
@@ -31,6 +30,8 @@ import useTrackerStore from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
 import { VideoData } from "../video/Video";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { AxiosError } from "axios";
 
 interface TaskAssignmentProps {
   taskId: () => string;
@@ -54,6 +55,8 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       assignedTo: null,
       assigneeId: "",
       dueDate: new Date() as Date,
+      timestamp: new Date() as Date,
+      
       payload: null,
       type: "addTodo",
       status: StatusType.Pending,
@@ -108,9 +111,9 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       payload: null,
       type: "addTask",
       status: "todo",
-      priority: "low",
+      priority: PriorityTypeEnum.High,
       done: false,
-      data: {} as Data,
+      data: {} as TaskData,
       source: "user",
       some: () => false,
       then: () => {},
@@ -153,9 +156,9 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       payload: null,
       type: "addTask",
       status: "inProgress",
-      priority: "low",
+      priority: PriorityTypeEnum.Low,
       done: false,
-      data: {} as Data,
+      data: {} as TaskData,
       source: "user",
       some: () => false,
       then: () => {},
@@ -198,9 +201,9 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       payload: null,
       type: "addTask",
       status: "completed",
-      priority: "low",
+      priority: PriorityTypeEnum.Low,
       done: false,
-      data: {} as Data,
+      data: {} as TaskData,
       source: "user",
       some: () => false,
       then: () => {},
@@ -252,11 +255,17 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
           ? {
               ...todo,
               progress: {
+                max: 100,
+                min: 0,
+                percentage: todo.progress?.percentage || 0,
                 value: newProgress,
                 label: todo.progress?.label || "",
                 id: todo.progress?.id || "",
                 current: todo.progress?.current || 0,
-                max: 100,
+                name: todo.progress?.name || "",
+                color: todo.progress?.color || "",
+                description: todo.progress?.description || "",
+                done: false,
               },
             }
           : todo
@@ -265,16 +274,35 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     
   };
 
-  const handleUpdateTask = async (taskId: number, newTitle: string) => {
-    try {
-      await updateTask(taskId, newTitle);
-      // Fetch tasks again to update the list
-      const updatedTasks = await fetchTasks();
-      setTasks(updatedTasks);
-    } catch (error) {
-      console.error("Error updating task:", error);
+  const handleUpdateTask =  (
+    taskId: string,
+    newTitle: string
+  ): Promise<Task | void> => {
+    return new Promise<Task | void>(async (resole, reject) => {
+      try {
+        const updatedTask = await updateTask(Number(taskId), newTitle);
+        // Optimistically update local task data
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task._id === taskId ? { ...task, title: newTitle } : task
+          )
+        );
+        return resole(updatedTask);
+      } catch (error) {
+        console.error("Error updating task:", error);
+        handleTaskApiErrorAndNotify(
+          error as AxiosError<unknown>,
+          "Failed to update task",
+          "FETCH_UPDATED_TASK_ERROR"
+        )
+        reject(error);
+        throw error;
+      }
     }
+  )
+    
   };
+  
 
   const handleUpdateTodo = async (
     todoId: string,
@@ -314,25 +342,27 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
 
 
   // Define handleTodoClick with the correct signature
-  const handleTodoClick = async (todoId: Todo['id']) => {
-    try {
-      // Assuming you have a function to fetch the todo details based on its ID
-      const todoDetails = await todoService.fetchTodoDetails(todoId);
+  const handleTodoClick = (todoId: Todo['id']): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      todoService
+        .fetchTodoDetails(todoId)
+        .then((todoDetails) => {
+          UIActions.updateUIWithTodoDetails({
+            todoId: todoId,
+            todoDetails: {
+              title: todoDetails.title,
+              description: todoDetails.description,
+            },
+          });
 
-      // Assuming you have a function to update the UI or perform any other action
-      UIActions.updateUIWithTodoDetails({
-        todoId: todoId,
-        todoDetails: {
-          title: todoDetails.title,
-          description: todoDetails.description,
-        },
-      });
-
-      // Log a message to the console
-      console.log(`Todo clicked: ${todoId}`);
-    } catch (error) {
-      console.error("Error handling todo click:", error);
-    }
+          console.log(`Todo clicked: ${todoId}`);
+          resolve();
+        })
+        .catch((error) => {
+          console.error("Error handling todo click:", error);
+          reject(error);
+        });
+    });
   };
 
   const updateUIWithProjectDetails = async (projectId: {
@@ -419,9 +449,9 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     // Update UI as per your application's requirements
   };
 
-  const handleTaskClick = async (taskId: Task) => {
+  const handleTaskClick = async (task: Task) => {
     // Assuming you have a function to fetch the taskId details based on its ID
-    const taskDetails = fetchTaskDetails(await taskId);
+    const taskDetails = fetchTaskDetails(task.id);
 
     // Assuming you have a function to update the UI or perform any other action
     updateUIWithTaskDetails(taskDetails);
@@ -470,6 +500,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       id: "milestone1",
       title: "Project Kickoff",
       date: new Date(),
+      startDate: new Date("2024-01-01"),
       dueDate: new Date("2024-03-21"),
       description: "Initiating the project",
     };
@@ -479,7 +510,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   useEffect(() => {
     // Update global state when local state changes
     taskManagerStore.updateTaskTitle(
-      taskManagerStore.taskId,
+      taskManagerStore.taskId || "",
       taskManagerStore.taskTitle,
     );
   }, [localState, taskManagerStore]);
@@ -522,7 +553,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               onEvent={(event: React.MouseEvent<HTMLButtonElement>) => {
                 const taskId = event.currentTarget.dataset.taskid;
                 const newTitle = event.currentTarget.dataset.newtitle;
-                handleUpdateTask(Number(taskId), String(newTitle));
+                handleUpdateTask(String(taskId), String(newTitle));
               }}
               data-taskid={task.id}
               data-newtitle={task.title}

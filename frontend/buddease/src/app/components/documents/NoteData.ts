@@ -96,10 +96,19 @@ export interface NoteGeolocation {
 }
 
 
-export interface NoteAnimationOptions {
-  type: "slide" | "fade" | "custom" | "show" | "none";
-  duration?: number;
-  // Add more animation options if needed
+export interface NoteOptions {
+  size: DocumentSize;
+  animations: NoteAnimationOptions & {
+    duration?: number 
+    
+  };
+  additionalOption2: string;
 }
 
-export type{ Highlight}
+export interface NoteAnimationOptions extends CommonAnimationOptions {
+  // You can add any note-specific animation properties here if needed
+}
+
+
+
+export type { Highlight };

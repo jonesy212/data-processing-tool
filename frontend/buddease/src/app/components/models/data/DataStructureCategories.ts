@@ -100,7 +100,7 @@ const developerCategories = {
 
 const userIsDeveloper = true;
 // Merge all categories
-const allCategories = {
+export const allCategories = {
     ...dataCategories,
     ...boardCategories,
     ...taskCategories,

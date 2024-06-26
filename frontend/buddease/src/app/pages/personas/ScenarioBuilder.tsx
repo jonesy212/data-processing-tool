@@ -216,6 +216,13 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum) {
       _routing_values_as_array_of_objects_with_key: [],
       _routing_values_as_array_of_objects_with_key_and_value: [],
       _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+      filePathOrUrl: "",
+      uploadedBy: 0,
+      uploadedAt: "",
+      tagsOrCategories: "",
+      format: "",
+      uploadedByTeamId: null,
+      uploadedByTeam: null
     },
     // Add more document data as needed
   ];

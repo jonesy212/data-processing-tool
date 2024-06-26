@@ -8,8 +8,9 @@ import { WritableDraft } from "../ReducerGenerator";
 import { FC } from "react";
 import { useSnapshotStore } from "@/app/components/snapshots/useSnapshotStore";
 import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
-import SnapshotStore, { Snapshot, Snapshots } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { Data } from "@/app/components/models/data/Data";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 
 
 

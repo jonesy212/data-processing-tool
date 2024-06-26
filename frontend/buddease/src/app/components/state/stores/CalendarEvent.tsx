@@ -123,6 +123,7 @@ interface CalendarEvent extends CommonEvent, CommonData {
   archived?: boolean;
   documentReleased?: boolean;
   metadata?: StructuredMetadata;
+  getData: () => Promise<SnapshotStore<Snapshot<Data>>[]>;
   then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
 }
 

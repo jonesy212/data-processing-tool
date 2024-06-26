@@ -4,17 +4,16 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { UserSettings } from '@/app/configs/UserSettings';
+import ErrorHandler from '@/app/shared/ErrorHandler';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
+import { ErrorInfo } from 'react';
 import { UIActions } from '../actions/UIActions';
+import safeParseData, { DataWithComment } from '../crypto/SafeParseData';
+import { ParsedData } from '../crypto/parseData';
+import useErrorHandling from '../hooks/useErrorHandling';
 import axiosInstance from '../security/csrfToken';
 import { UserData } from './User';
-import useErrorHandling from '../hooks/useErrorHandling';
-import { YourResponseType } from '../typings/types';
-import safeParseData from '../crypto/SafeParseData';
-import { ErrorInfo } from 'react';
-import ErrorHandler from '@/app/shared/ErrorHandler';
-import { ParsedData } from '../crypto/parseData';
 
 // Define the API base URL for UI
 const UI_API_BASE_URL = endpoints.ui;
@@ -96,20 +95,19 @@ const handleUiApiErrorAndNotify = (
 
 // Function to safely parse data with error handling
 
-const parseDataWithErrorHandling = <T extends object>(
-  data: YourResponseType[],
+const parseDataWithErrorHandling = <T extends DataWithComment>(
+  data: T[],
   threshold: number
 ): ParsedData<T>[] => {
   try {
-    // Call safeParseData function with type arguments
     return safeParseData<T>(data, threshold);
   } catch (error: any) {
-    const errorMessage = 'Error parsing data';
+    const errorMessage = "Error parsing data";
     const errorInfo: ErrorInfo = { componentStack: error.stack };
     ErrorHandler.logError(new Error(errorMessage), errorInfo);
     return [];
   }
-}
+};
   
   // Updated UIApi with error handling and logging
   export const UIApi = {

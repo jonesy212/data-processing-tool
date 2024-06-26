@@ -1,14 +1,10 @@
 import axiosInstance from "@/app/api/axiosInstance";
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
-import { getStructureAsArray } from "../declarations/traverseBackend";
-import getAppPath from "appPath";
-import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 
 export default class FrontendStructure implements AppStructureItem {
-  async getStructureAsArray(): Promise<AppStructureItem[]> {
-    return Object.values(this.structure || {});
-  }
 
   id: string;
   name: string;
@@ -75,7 +71,7 @@ export default class FrontendStructure implements AppStructureItem {
 
     const files = await fs!.promises.readdir(dir);
     const items: AppStructureItem[] = [];
-
+    
     for (const file of files) {
       const filePath = path.join(dir, file);
       const stat = await fs!.promises.stat(filePath);
@@ -111,6 +107,18 @@ export default class FrontendStructure implements AppStructureItem {
   getStructure(): Record<string, AppStructureItem> {
     return { ...this.structure };
   }
+
+  public async getStructureAsArray(): Promise<AppStructureItem[]> {
+    return Object.values(this.structure || {});
+  }
+
+
+  public async traverseDirectoryPublic?(
+    dir: string,
+    fs: typeof import("fs")
+  ): Promise<AppStructureItem[]> {
+    return this.traverseDirectory!(dir, fs);
+  }
 }
 
 // Instantiate FrontendStructure
@@ -124,24 +132,20 @@ const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
 // Export frontendStructure
 export { frontendStructure };
 
-// Define frontend object using frontendStructure
-export const frontend = {
-  id: '0',
-  name: "",
-  type: "",
-  path: "",
-  content: "",
-  draft: false,
-  // structure: frontendStructure.getStructure(),
-  permissions: {
-    read: false,
-    write: false,
-    delete: false,
-    share: false,
-    execute: false,
-  },
-  // structure: frontendStructure.getStructure(),
-  getStructureAsArray: getStructureAsArray,
-  // traverseDirectory: frontendStructure.traverseFrontendDirectory(),
-  getStructure: () => frontendStructure.getStructure(), // Accessing structure via frontendStructure instance
-};
+const dir = path.join(
+  getAppPath(getCurrentAppInfo().versionNumber, getCurrentAppInfo().appVersion),
+  "frontend"
+)
+
+// Define frontend object inside an async function
+async function initializeFrontend() {
+  return {
+    ...frontendStructure,
+    items: await frontendStructure.getStructure(),
+    getStructureAsArray: frontendStructure.getStructureAsArray.bind(frontendStructure),
+    traverseDirectoryPublic: frontendStructure.traverseDirectoryPublic?.bind(frontendStructure),
+    getStructure: () => frontendStructure.getStructure(), // Accessing structure via frontendStructure instance
+  };
+}
+
+export const frontend = await initializeFrontend();

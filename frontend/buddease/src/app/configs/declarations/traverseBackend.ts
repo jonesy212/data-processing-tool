@@ -55,7 +55,9 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
 
 
 // If you want to allow the method to be used outside the class as well, you can do the following:
-export const getStructureAsArray = async (structure?: Record<string, AppStructureItem>): Promise<AppStructureItem[]> => {
+export const getStructureAsArray = (
+  structure?: Record<string, AppStructureItem>
+): AppStructureItem[] => {
   return structure ? Object.values(structure) : [];
 };
 

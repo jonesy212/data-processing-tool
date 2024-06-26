@@ -131,7 +131,9 @@ function loadPDF(pdfFilePath: string): YourPDFType[] {
 }
 // Function to parse PDF files and populate the pdfContent field in ParsedData objects
 function parsePDFData<T extends object>(
-  { pdfDataType, parsedData, appType }: {
+  { pdfDataType,
+    parsedData,
+    appType }: {
     pdfDataType: YourPDFType[];
     parsedData: ParsedData<T>[];
     appType?: AppType; // Make appType optional
@@ -198,6 +200,6 @@ function extractPDFContent(pdf: YourPDFType): string {
 }
 
 
-export { extractPDFContent, loadPDFFile, parsePDF, parsePDFData };
+export { pdfParser, extractPDFContent, loadPDFFile, parsePDF, parsePDFData };
 export type { AppType, PDFData };
 

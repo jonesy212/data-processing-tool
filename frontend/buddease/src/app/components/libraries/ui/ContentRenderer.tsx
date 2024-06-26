@@ -24,7 +24,7 @@ interface EntityProps {
 
 interface ContentRendererProps {
   dynamicContent?: Task[] | Project[]; // Union type of Task[] or Project[]
-  handleTaskClick: (task: Task) => void;
+  handleTaskClick: (task: Task) => Promise<void>;
   handleTodoClick: (todoId: Todo["id"]) => Promise<void>;
   handleProjectClick: (
     project: {
@@ -70,7 +70,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 
 const renderDynamicContent = (
   dynamicContent: (Task | Project)[],
-  handleTaskClick?: (task: Task) => void,
+  handleTaskClick?: (task: Task) => Promise<void>,
   handleProjectClick?: (
     project: {
       projectId: string;
@@ -93,7 +93,7 @@ const renderDynamicContent = (
           <>
             <h3>{content.title}</h3>
             {handleTaskClick && (
-              <button onClick={() => handleTaskClick(content)}>
+              <button onClick={() => handleTaskClick(content as Task)}>
                 Click Task
               </button>
             )}

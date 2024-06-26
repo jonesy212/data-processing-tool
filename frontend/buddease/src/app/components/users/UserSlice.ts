@@ -3,7 +3,7 @@ import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
-import { Task } from "../models/tasks/Task";
+import { Task, TaskData } from "../models/tasks/Task";
 import { NFT } from "../nft/NFT";
 import { Project } from "../projects/Project";
 import { PrivacySettings } from "../settings/PrivacySettings";
@@ -139,7 +139,7 @@ export const userManagerSlice = createSlice({
       }
     },
 
-    updateData: (state, action: PayloadAction<User>) => {
+    updateData: (state, action: PayloadAction<WritableDraft<User>>) => {
       state.data = {
         ...state.data,
         ...action.payload,
@@ -287,7 +287,7 @@ export const userManagerSlice = createSlice({
 
     updateUserNotifications: (
       state,
-      action: PayloadAction<{ userId: string; notifications: WritableDraft<NotificationSettings> }>
+      action: PayloadAction<{ userId: string; notifications: WritableDraft<NotificationSettings>[] }>
     ) => {
       const { userId, notifications } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -370,28 +370,36 @@ export const userManagerSlice = createSlice({
     },
 
 
-    updateUserProjectTasks: (
-      state,
-      action: PayloadAction<{
-        userId: string;
-        projectId: string;
-        tasks: Task[];
-      }>
-    ) => {
-      const { userId, projectId, tasks } = action.payload;
-      const userIndex = state.users.findIndex((user) => user.id === userId);
-      if (userIndex !== -1) {
-        const user = state.users[userIndex];
-        const projectIndex = user.projects
-          ? user.projects.findIndex((project) => project.id === projectId)
-          : -1;
-        if (projectIndex !== -1 && user.projects) {
-          user.projects[projectIndex].tasks = tasks.map((task) => ({
-            ...task,
-          }));
-        }
-      }
-    },
+   
+updateUserProjectTasks : (
+  state,
+  action: PayloadAction<{
+    userId: string;
+    projectId: string;
+    tasks: Task[];
+  }>
+) => {
+  const { userId, projectId, tasks } = action.payload;
+  const userIndex = state.users.findIndex((user) => user.id === userId);
+  if (userIndex !== -1) {
+    const user = state.users[userIndex];
+    const projectIndex = user.projects
+      ? user.projects.findIndex((project) => project.id === projectId)
+      : -1;
+    if (projectIndex !== -1 && user.projects) {
+      // Update tasks immutably using Immer
+      user.projects[projectIndex].tasks = tasks.map((task) => ({
+        ...task,
+        // Ensure each task property is compatible with WritableDraft<Task>
+        assignedTo: task.assignedTo as WritableDraft<User> | WritableDraft<User>[] | null,
+        dependencies: task.dependencies as WritableDraft<Task>[] | null | undefined,
+        previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User>[],
+        data: task.data as WritableDraft<TaskData> | null,
+        // Add other properties here
+      }));
+    }
+  }
+};
 
     updateUserProjectProgress: (
       state,

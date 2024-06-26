@@ -189,6 +189,7 @@ export enum ProjectPhaseTypeEnum {
   Previous = "previous",
   Register = "register",
   Planning = "planning",
+  Development = "development",
 }
 
 
@@ -307,8 +308,51 @@ enum SubscriptionTypeEnum {
   PREMIUM = "premium",
   ENTERPRISE = "enterprise",
   TRIAL = "trial",
-
+  // Basic = "basic"
 }
+
+
+enum DocumentPhaseEnum {
+  Ideation = "ideation",             // Initial phase where ideas are generated
+  Drafting = "drafting",             // Document is being drafted
+  Review = "review",                 // Document is under review
+  Approval = "approval",             // Awaiting approval
+  Revision = "revision",             // Document is being revised
+  Finalization = "finalization",     // Final touches are being added
+  Publication = "publication",       // Document is published
+  Distribution = "distribution",     // Document is being distributed
+  Feedback = "feedback",             // Collecting feedback on the document
+  Archiving = "archiving",           // Document is being archived
+  Deletion = "deletion",             // Document is marked for deletion
+  Suspension = "suspension",         // Document is temporarily suspended
+  Restoration = "restoration",       // Document is being restored
+  ConfidentialReview = "confidential_review", // Document is under confidential review
+  PublicReview = "public_review",    // Document is under public review
+  EmergencyUpdate = "emergency_update", // Document is being updated urgently
+  HistoricalReview = "historical_review", // Historical document review phase
+  Encryption = "encryption",         // Document is being encrypted
+  Decryption = "decryption",         // Document is being decrypted
+  Formatting = "formatting",         // Document formatting phase
+  MetadataAssignment = "metadata_assignment", // Assigning metadata to the document
+  Collaboration = "collaboration",   // Document is under collaborative editing
+  Translation = "translation",       // Document is being translated
+  LegalReview = "legal_review",      // Document is under legal review
+  CommunityEngagement = "community_engagement", // Document is being shared for community engagement
+  PodcastPreparation = "podcast_preparation", // Document is being prepared for a podcast
+  CryptoAnalysis = "crypto_analysis", // Document is under crypto-related analysis
+  MarketResearch = "market_research", // Document is being used for market research
+  BusinessStrategy = "business_strategy", // Document is part of business strategy planning
+  DataAnalysis = "data_analysis",    // Document is being analyzed for data insights
+  Presentation = "presentation",     // Document is being prepared for presentation
+  ReportGeneration = "report_generation", // Generating reports from the document
+  TemplateCreation = "template_creation", // Creating templates from the document
+  ImageProcessing = "image_processing", // Processing images within the document
+  FileHandling = "file_handling",    // Handling file-specific tasks
+  URLLinking = "url_linking",        // Linking URLs within the document
+  Other = "other"                    // Any other custom phase
+}
+
+
 
 enum SubscriberTypeEnum {
   FREE = "free",
@@ -317,6 +361,7 @@ enum SubscriberTypeEnum {
   ENTERPRISE = "enterprise",
   TRIAL = "trial",
   PortfolioUpdates = "portfolioUpdates",
+  Individual = "individual",
   // Add more types as needed
 }
 
@@ -338,8 +383,7 @@ export {
   CalendarStatus, CalendarViewType, ChatType,
   CollaborationOptionType,
   ComponentStatus,
-  DataStatus,
-  DocumentSize,
+  DataStatus, DocumentPhaseEnum, DocumentSize,
   IncludeType,
   Layout, NotificationPosition, NotificationStatus,
   Orientation,

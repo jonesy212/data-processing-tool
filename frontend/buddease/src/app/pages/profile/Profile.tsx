@@ -7,6 +7,7 @@ import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '../personas/Person
 
 interface ProfileProps {
   user: User; // Pass the user data as props
+  props: ProfileAccessControl;
 }
 
 
@@ -17,9 +18,13 @@ interface ProfileAccessControl {
   blockList: string[];
   allowMessagesFromNonContacts: boolean,
   shareProfileWithSearchEngines: boolean,
+  isPrivate: boolean;
+  isPrivateOnly: boolean; 
+  isPrivateOnlyForContacts: boolean; 
+  isPrivateOnlyForGroups: boolean; 
 }
 
-const Profile: React.FC<ProfileProps> = ({ user }) => {
+const Profile: React.FC<ProfileProps> = ({ user, props }) => {
   // Assume personaData is available
   const personaData: PersonaData = {
     // Populate persona data as needed

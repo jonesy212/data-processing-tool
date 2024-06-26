@@ -4,9 +4,9 @@ import useRealtimeData, { RealtimeUpdateCallback } from "../hooks/commHooks/useR
 import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { Snapshot } from "../snapshots/SnapshotStore";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
-type Subscription = {
+type Subscription {
   unsubscribe: () => void;
   portfolioUpdates: () => void;
   tradeExecutions: () => void;
@@ -73,6 +73,7 @@ const SubscriptionComponent = (
     </div>
   );
 };
+
 
 export default SubscriptionComponent;
 export type { Subscription };

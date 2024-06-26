@@ -181,6 +181,29 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           crossReferences: false,
           footnotes: false,
           endnotes: false,
+          levels: {
+            enabled: false,
+            startLevel: 1,
+            endLevel: 1,
+            format: "{level}",
+            separator: ".",
+            style: {
+              main: "none",
+              styles: [
+                {
+                  format: [],
+                  separator: [],
+                  style: [
+                    {
+                      format: [],
+                      separator: [],
+                      style: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
           revisions: {
             enabled: false,
             author: "",

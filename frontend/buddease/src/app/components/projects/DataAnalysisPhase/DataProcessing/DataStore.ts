@@ -1,45 +1,55 @@
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 // data/DataStore.ts
-import { Data } from "@/app/components/models/data/Data";
-import Version from "@/app/components/versions/Version";
+import { BaseData, Data } from "@/app/components/models/data/Data";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { useDispatch } from "react-redux";
-import * as apiData from '../../../../api//ApiData';
+import * as apiData from "../../../../api//ApiData";
 import { DataActions } from "../DataActions";
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
-export interface DataStore {
-  data: Data[];
-  addData: (data: Data) => void;
+
+type T = BaseData | undefined;
+export interface DataStore<T extends BaseData> {
+  data: Map<string, Snapshot<T>>;
+  addData: (data: T) => void;
+  getItem: (id: string) => Snapshot<T> | undefined;
   removeData: (id: number) => void;
-  updateData: (id: number, newData: Data) => void;
+  updateData: (id: number, newData: T) => void;
   updateDataTitle: (id: number, title: string) => void;
   updateDataDescription: (description: string) => void;
   updateDataStatus: (status: "pending" | "inProgress" | "completed") => void;
-  addDataSuccess: (payload: { data: Data[] }) => void;
-  getDataVersions: (id: number) => Promise<Data[] | undefined>
-  updateDataVersions: (id: number, versions: Data[]) => void;
+  addDataSuccess: (payload: { data: T[] }) => void;
+  getDataVersions: (id: number) => Promise<T[] | undefined>;
+  updateDataVersions: (id: number, versions: T[]) => void;
   getBackendVersion: () => Promise<string>;
   getFrontendVersion: () => Promise<string>;
-  fetchData: () => Promise<SnapshotStore<Snapshot<Data>>[]>; // Modify the signature to return a Promise
-
+  fetchData: () => Promise<SnapshotStore<Snapshot<T>>[]>; // Modify the signature to return a Promise
 }
 
-const useDataStore = (): DataStore => {
-  const data: Data[] = [];
+interface VersionedData<T extends BaseData> {
+  versionNumber: string;
+  appVersion: string;
+  content: any;
+  getData: () => Promise<SnapshotStore<Snapshot<T>>[]>;
+}
+
+const useDataStore = <T extends BaseData>(): DataStore<T> => {
+  const data: Map<string, Snapshot<T>> = new Map<string, Snapshot<T>>();
   const dispatch = useDispatch();
 
-
-  const fetchData = async (): Promise<SnapshotStore<Snapshot<Data>>[]> => {
+  const fetchData = async (): Promise<SnapshotStore<Snapshot<T>>[]> => {
     try {
       // Dispatch the fetchDataRequest action
       dispatch(DataActions.fetchDataRequest());
-      
+
       // Simulate fetching data from an API
-      const responseData = await fetch('https://api.example.com/data');
+      const responseData = await fetch("https://api.example.com/data");
       const jsonData = await responseData.json();
 
       // Assuming jsonData is the format you expect, convert it to SnapshotStore<Snapshot<Data>>[]
-      const snapshotData: SnapshotStore<Snapshot<Data>>[] = jsonData.map((item: any) => ({
-        // Map item properties to your Snapshot<Data> structure
-      }));
+      const snapshotData: SnapshotStore<Snapshot<T>>[] = jsonData.map(
+        (item: any) => ({
+          // Map item properties to your Snapshot<Data> structure
+        })
+      );
 
       return snapshotData;
     } catch (error) {
@@ -48,20 +58,26 @@ const useDataStore = (): DataStore => {
     }
   };
 
-  const addData = (newData: Data) => {
-    // Dispatch the addData action
+
+  const addData = (newData: T): void => {
     dispatch(DataActions.addData(newData));
   };
 
+  
   const removeData = (id: number) => {
     // Dispatch the removeData action
     dispatch(DataActions.removeData(id));
   };
 
-  const updateData = (id: number, newData: Data) => {
-    // Dispatch the updateData action
+  const updateData = (id: number, newData: T): void => {
     dispatch(DataActions.updateData({ id, newData }));
   };
+
+
+  const getItem = (id: string): Snapshot<T> | undefined => {
+    return data.get(id);
+  };
+
 
   const updateDataTitle = (id: number, title: string) => {
     // Dispatch the updateDataTitle action
@@ -89,34 +105,30 @@ const useDataStore = (): DataStore => {
   };
 
 
-  const getDataVersions = async (id: number): Promise<Data[] | undefined> => {
+  const getDataVersions = async (id: number): Promise<T[] | undefined> => {
     try {
-      const response = apiData.getDataVersions(id);
-      // Assuming response contains Version objects, convert them to Data objects
-      const dataVersions: Data[] = (await response).map((version: Version) => ({
-        id: version.id,
-        versionNumber: version.versionNumber,
-        appVersion: version.appVersion,
-        content: version.content,
-        getData: async () => {
-          const snapshots: SnapshotStore<Snapshot<Data>>[] = []; // Initialize an empty array
-          // Perform any necessary operations to populate the snapshots array
-          return snapshots;
-        },
-      }));
+      const response = await apiData.getDataVersions(id);
+
+      // Use type assertion to map response to T[]
+      const dataVersions: T[] = response.map((version): T => {
+        const { id, versionNumber, appVersion, content, ...rest } = version;
+        return rest as unknown as T;
+      });
+
       return dataVersions;
     } catch (error) {
       console.error("Error fetching data versions:", error);
-      // Handle error if needed
       return undefined;
     }
   };
   
-
-  const addDataSuccess = (payload: { data: Data[] }) => {
-    // Add data to store
+  const addDataSuccess = (payload: { data: T[] }): void => {
     const { data: newData } = payload;
-    data.push(...newData); // Assuming 'data' is intended to store the array of Data objects
+    newData.forEach((item: T) => {
+      if (item.id !== undefined) {
+        data.set(item.id.toString(), item);
+      }
+    });
   };
 
   const updateDataVersions = (id: number, versions: Data[]) => {
@@ -132,7 +144,7 @@ const useDataStore = (): DataStore => {
     );
   };
 
-  const getBackendVersion = async () => {
+  const getBackendVersion = async (): Promise<string> => {
     try {
       const response = await apiData.getBackendVersion();
       return response;
@@ -142,7 +154,7 @@ const useDataStore = (): DataStore => {
     }
   };
 
-  const getFrontendVersion = async () => {
+  const getFrontendVersion = async (): Promise<string> => {
     try {
       const response = await apiData.getFrontendVersion();
       return response;
@@ -150,7 +162,7 @@ const useDataStore = (): DataStore => {
       console.error("Error fetching frontend version:", error);
       throw error;
     }
-  }
+  };
   // Other methods...
 
   return {
@@ -159,6 +171,7 @@ const useDataStore = (): DataStore => {
     addData,
     removeData,
     updateData,
+    getItem,
     updateDataTitle,
     updateDataDescription,
     updateDataStatus,
@@ -166,7 +179,7 @@ const useDataStore = (): DataStore => {
     getDataVersions,
     updateDataVersions,
     getBackendVersion,
-    getFrontendVersion
+    getFrontendVersion,
   };
 };
 export { useDataStore };
