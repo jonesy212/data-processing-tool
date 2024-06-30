@@ -15,6 +15,8 @@ export const DataActions = {
    fetchDataFailure: createAction<{ error: string }>("fetchDataFailure"),
  
    addData: createAction<Data>("addData"),
+   addDataSuccess: createAction<{ data: Data }>("addDataSuccess"),
+   addDataFailure: createAction<{ error: string }>("addDataFailure"),
    removeData: createAction<number>("removeData"),
    fetchDataFrame: createAction<number>("fetchDataFrame"),
    setDataFrame: createAction<Data>("setDataFrame"),

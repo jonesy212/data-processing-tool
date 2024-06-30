@@ -612,7 +612,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     },
 
     configureSnapshotStore: (
-      snapshotStore: SnapshotStore<Snapshot<Data>>
+      snapshotStore: SnapshotStore<BaseData>
     ) => { },
    
     createSnapshotSuccess: () => { },
@@ -648,13 +648,13 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       }
     }, // Change 'any' to 'Error' if you handle specific error types
     batchTakeSnapshot: async (
-      snapshotStore: SnapshotStore<Snapshot<Data>>,
+      snapshotStore: SnapshotStore<BaseData>,
       snapshots: Snapshots<Snapshot<Data>>
     ) => {
       return { snapshots: [] };
     },
-    onSnapshot: (snapshotStore: SnapshotStore<Snapshot<Data>>) => { },
-    snapshotData: (snapshot: SnapshotStore<Snapshot<Data>>) => {
+    onSnapshot: (snapshotStore: SnapshotStore<BaseData>) => { },
+    snapshotData: (snapshot: SnapshotStore<BaseData>) => {
       return { snapshot: [] };
     },
     initSnapshot: () => { },
@@ -677,7 +677,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       snapshotConfig: SnapshotStoreConfig<Snapshot<BaseData>, BaseData>[],
       snapshotType: string,
       delegate: SnapshotStoreConfig<BaseData, any>[]
-    ): Promise<SnapshotStore<Snapshot<T>>> => {
+    ): Promise<SnapshotStore<BaseData>> => {
       try {
         if (!snapshot) {
           throw new Error('Snapshot function is undefined.');
@@ -692,7 +692,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         }
     
         // Create a new SnapshotStore instance
-        const snapshotStore = new SnapshotStore<Snapshot<T>>(
+        const snapshotStore = new SnapshotStore<BaseData>(
           snapshotData.snapshot ,
           snapshotData.category,
           snapshotData.timestamp,
@@ -709,13 +709,13 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         console.error('Error fetching snapshot:', error);
         throw error;
       }
-    }
+    },
     
   
     clearSnapshot: () => {},
     updateSnapshot: async (
       snapshotId: string,
-      data: SnapshotStore<Snapshot<T>>,
+      data: SnapshotStore<BaseData>,
       events: Record<string, CalendarEvent[]>,
       snapshotStore: SnapshotStore<T>,
       dataItems: RealtimeDataItem[],
@@ -730,18 +730,18 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     ) => {
       return { snapshots };
     },
-    takeSnapshot: async (snapshot: SnapshotStore<Snapshot<Data>>) => {
+    takeSnapshot: async (snapshot: SnapshotStore<BaseData>) => {
       return { snapshot: snapshot };
     },
 
     getAllSnapshots: async (
       data: (
-        subscribers: Subscriber<Snapshot<T>>[],
+        subscribers: Subscriber<BaseData>[],
         snapshots: Snapshots<T>
       ) => Promise<Snapshots<T>>
     ) => {
       // Implement your logic here
-      const subscribers: Subscriber<Snapshot<T>>[] = []; // Example
+      const subscribers: Subscriber<BaseData>[] = []; // Example
       const snapshots: Snapshots<T> = []; // Example
       return data(subscribers, snapshots);
     },
@@ -775,7 +775,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     };
 
     batchFetchSnapshots: async (
-      subscribers: Subscriber<Snapshot<Snapshot<Data>>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshots: Snapshots<Data>
     ) => {
       return {
@@ -785,7 +785,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     },
 
     batchUpdateSnapshots: async (
-      subscribers: Subscriber<Data | undefined>[],
+      subscribers: Subscriber<BaseData>[],
       snapshots: Snapshots<Data>
     ) => {
       // Perform batch update logic
@@ -795,7 +795,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     },
 
     batchFetchSnapshotsRequest: async (snapshotData: {
-      subscribers: Subscriber<Snapshot<Snapshot<Data>>>[];
+      subscribers: Subscriber<BaseData>[];
       snapshots: Snapshots<Data>;
     }) => {
       console.log("Batch snapshot fetching requested.");
@@ -835,11 +835,12 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
             content: snapshot.content,
             data: snapshot.data,
             store: snapshot.store,
-            metadata: snapshot.metadata
+            metadata: snapshot.metadata,
+            initialState: snapshot.initialState,
           }));
         }
 
-        snapshots = snapshots.map((snapshot: Snapshot<Data>) => ({
+        snapshots = snapshots.map((snapshot: Snapshot<CustomSnapshotData>) => ({
           id: snapshot.id,
           timestamp: snapshot.timestamp,
           category: snapshot.category,
@@ -868,7 +869,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       snapshots: Snapshot<Data>[];
     }> => {
       try {
-        const subscriberId = subscriber.getId();
+        const subscriberId = subscriber.id;
         const snapshotData = snapshots[Number(subscriberId)];
 
         if (!snapshotData) {
@@ -911,7 +912,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     batchUpdateSnapshotsFailure: (payload: { error: Error }) => {},
 
     notifySubscribers: (
-      subscribers: Subscriber<Snapshot<Data>>[],
+      subscribers: Subscriber<BaseData>[],
       data: Snapshot<Data>
     ) => {
       return subscribers;
@@ -939,14 +940,14 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
 
     // Implementing the removeSubscriber method
     removeSubscriber: (subscriber) => {
-      const subscriberId = subscriber.getId();
+      const subscriberId = subscriber.id
       if (subscriberId !== undefined) {
         const currentConfig = snapshotConfig.find(
           (config) => config.snapshotId === "snapshot1" // Adjust the condition to match your use case
         );
         if (currentConfig && currentConfig.subscribers) {
           const filteredSubscribers = currentConfig.subscribers.filter(
-            (sub) => sub.getId() !== subscriberId
+            (sub) => sub.id !== subscriberId
           );
           currentConfig.subscribers = filteredSubscribers;
         } else {
@@ -965,7 +966,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         "category" in snapshot &&
         typeof snapshot.category === "string"
       ) {
-        const snapshotWithValidTimestamp: SnapshotStore<Snapshot<T>> = {
+        const snapshotWithValidTimestamp: SnapshotStore<BaseData> = {
           ...snapshot,
           timestamp: new Date(snapshot.timestamp as unknown as string),
           // Ensure all required properties of SnapshotStore<Snapshot<T>> are included
@@ -1076,11 +1077,11 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     },
 
     getSubscribers: async (
-      subscribers: Subscriber<Snapshot<Data>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshots: Snapshots<Data>[] 
         ): Promise<{
-      subscribers: Subscriber<Snapshot<Snapshot<Data>>>[];
-      snapshots: Snapshot<Snapshot<Data>>[] 
+      subscribers: Subscriber<BaseData>[];
+      snapshots: Snapshot<BaseData>[] 
       
     }> => {
       const data = Object.entries(snapshots).map(
@@ -1108,7 +1109,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         
         subscribers.map(async (subscriber) => {
           const updatedSnapshots = await Promise.all(
-            subscriber.snapshots.map(async (snapshot: Snapshot<Data>) => {
+            subscriber.snapshots.map(async (snapshot: BaseData) => {
               return {
                 ...snapshot,
                 data: { ...snapshot.data },
@@ -1116,9 +1117,9 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
             })
           );
 
-          const subscriberObj: Subscriber<Snapshot<Snapshot<Data>>> = {
+          const subscriberObj: Subscriber<BaseData> = {
             ...subscriber,
-            id: subscriber.getId(),
+            id: subscriber.id,
             optionalData: subscriber.getOptionalData(),
             fetchSnapshotIds: subscriber.getFetchSnapshotIds(),
             snapshotIds: subscriber.getSnapshotIds(),
@@ -1130,7 +1131,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
 
             name: "subscriber",
             data: {
-              ...subscriber.getId,
+              ...subscriber.id,
               snapshots: updatedSnapshots,
             },
             email: updatedSnapshots[0].data.email,
@@ -1175,11 +1176,11 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
             toSnapshotStore: (
               initialState: Snapshot<T>,
               snapshotConfig: SnapshotStoreConfig<
-                Snapshot<Data>,
+                BaseData,
                Data
               >[]
             ):
-              | SnapshotStore<Snapshot<BaseData>>[]
+              | SnapshotStore<BaseData>[]
               | undefined => {
               let snapshotString: string | undefined;
               if (initialState !== undefined) {
@@ -1189,7 +1190,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
               if (snapshotString !== undefined) {
                 const category = process.argv[3] as keyof CategoryProperties;
             
-                const snapshotStore = new SnapshotStore<Snapshot<BaseData>>(
+                const snapshotStore = new SnapshotStore<BaseData>(
                   snapshot,
                   category,
                   new Date(),
@@ -1198,7 +1199,9 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
                   snapshotConfig,
                   subscribeToSnapshots,
                   delegate,
+                  dataStoreMethods
                 );
+                
             
                 // Return the single SnapshotStore instance wrapped in an array
                 return [snapshotStore];
@@ -1226,7 +1229,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
               type: NotificationType
             ): Promise<void> {
               return new Promise<void>((resolve, reject) => {
-                const snapshotData: Snapshot<Snapshot<Data>> = {
+                const snapshotData: Snapshot<BaseData> = {
                   id,
                   timestamp: date,
                   category: "subscriberCategory",
@@ -1259,7 +1262,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         Object.entries(snapshots).map(([category, categorySnapshots]) => [
           category,
           categorySnapshots
-            .filter((snapshot): snapshot is Array<Snapshot<Data>> =>
+            .filter((snapshot): snapshot is Array<BaseData> =>
               isArray(snapshot)
             )
             .flatMap((snapshot: Snapshot<Data>[]) =>
@@ -1278,10 +1281,10 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     },
 
     addSubscriber: function <T extends Data | CustomSnapshotData>(
-      subscriber: Subscriber<Snapshot<T>>,
+      subscriber: Subscriber<BaseData>,
       data: T,
-      snapshotConfig: SnapshotStoreConfig<Snapshot<T>, T>[],
-      delegate: SnapshotStoreSubset<Snapshot<T>>,
+      snapshotConfig: SnapshotStoreConfig<BaseData, T>[],
+      delegate: SnapshotStoreSubset<BaseData>,
       sendNotification: (type: NotificationTypeEnum) => void
     ): void {},
 
@@ -1307,11 +1310,11 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
             category: any;
             timestamp: any;
             id: any;
-            snapshot: SnapshotStore<Snapshot<Snapshot<Data>>>;
+            snapshot: SnapshotStore<BaseData>;
             data: Data;
           }>
         | undefined
-    ): Promise<SnapshotStore<Snapshot<Snapshot<Data>>>> {
+    ): Promise<SnapshotStore<BaseData>> {
       try {
         const result = await snapshot();
         if (!result) {
@@ -1338,7 +1341,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       console.log("Snapshot updated successfully.");
     },
     batchUpdateSnapshotsSuccess: (
-      subscribers: Subscriber<Snapshot<Snapshot<Data>>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshots: Data[]
     ) => {
       try {

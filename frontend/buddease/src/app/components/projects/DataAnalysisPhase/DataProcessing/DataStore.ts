@@ -9,21 +9,22 @@ import * as apiData from "../../../../api//ApiData";
 import { DataActions } from "../DataActions";
 
 export interface DataStore<T extends BaseData> {
-  data: Map<string, T> | undefined;
+   data: Map<string, T> | undefined;
   addData: (data: T) => void;
   getItem: (id: string) => Promise<T | undefined>;
   removeData: (id: number) => void;
   updateData: (id: number, newData: T) => void;
   updateDataTitle: (id: number, title: string) => void;
   updateDataDescription: (id: number, description: string) => void;
-  updateDataStatus: (status: "pending" | "inProgress" | "completed") => void;
+  addDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => void;
+  updateDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => void;
   addDataSuccess: (payload: { data: T[] }) => void;
   getDataVersions: (id: number) => Promise<T[] | undefined>;
   updateDataVersions: (id: number, versions: T[]) => void;
   getBackendVersion: () => Promise<string | undefined>;
   getFrontendVersion: () => Promise<string | undefined>;
   getAllKeys: () => Promise<string[]>;
-  fetchData: () => Promise<SnapshotStore<BaseData>[]>; // Modify the signature to return a Promise
+  fetchData: (id: number) => Promise<SnapshotStore<BaseData>[]>; // Modify the signature to return a Promise
   setItem: (id: string, item: T) => Promise<void>;
   removeItem: (key: string) => Promise<void>
   getAllItems: () => Promise<T[]>;
@@ -35,6 +36,20 @@ interface VersionedData<T extends BaseData> {
   content: any;
   getData: () => Promise<SnapshotStore<BaseData>[]>;
 }
+
+const useVersionedData = <T extends BaseData>(
+  data: Map<string, T>,
+  fetchData: () => Promise<SnapshotStore<BaseData>[]>,
+): VersionedData<T> => {
+  const { versionNumber } = getCurrentAppInfo();
+  return {
+    versionNumber: versionNumber,
+    appVersion: currentAppVersion,
+    content: {}, // Provide appropriate values
+    getData: fetchData, // Provide appropriate values
+  };
+};
+
 
 const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => {
   const data: Map<string, T> = new Map<string, T>();
@@ -120,7 +135,9 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     );
   };
 
-  const updateDataStatus = (status: "pending" | "inProgress" | "completed") => {
+  const updateDataStatus = (
+    id: number,
+    status: "pending" | "inProgress" | "completed") => {
     // Dispatch the updateDataStatus action
     dispatch(
       DataActions.updateDataStatus({
@@ -163,6 +180,29 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     });
   };
 
+    const addDataStatus = (id: number, status: "pending" | "inProgress" | "completed"): void => {
+    // Implement your logic here
+    // Example: Update data status based on id and status
+    const newData = data.get(id.toString());
+    if (newData) {
+      const snapshotItem: Snapshot<T> = {
+        id: id.toString(),
+        data: newData,
+        initialState: newData.initialState || null,
+        timestamp: new Date(),
+      };
+      // Update or set the data in the map
+      data.set(id.toString(), snapshotItem as T);
+
+      // Dispatch the addDataSuccess action
+      dispatch(DataActions.addDataSuccess({ data: [snapshotItem] }));
+    } else {
+      // Dispatch the addDataFailure action
+      dispatch(DataActions.addDataFailure({ error: "Invalid data" }));
+    }
+  };
+
+
   const updateDataVersions = (id: number, versions: T[]) => {
     // Dispatch the updateDataVersions action
     dispatch(
@@ -197,6 +237,8 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
   };
 
 
+
+
   const getAllKeys = async (): Promise<string[]> => {
     try {
       const response = await apiData.getAllKeys();
@@ -222,6 +264,7 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     updateDataDescription,
     updateDataStatus,
     addDataSuccess,
+    addDataStatus,
     getDataVersions,
     updateDataVersions,
     getBackendVersion,
