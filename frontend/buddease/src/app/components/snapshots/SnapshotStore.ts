@@ -258,7 +258,7 @@ class SnapshotStore<T extends BaseData>
   subscribers: Subscriber<BaseData>[] = [];
   set: ((type: string, event: Event) => void | null) | undefined;
   data: Map<string, T> = new Map<string, T>();
-  state?: Snapshot<T> | null = null;
+  state: SnapshotStore<any>[] | null;
   snapshots: SnapshotStore<BaseData>[] = [];
   subscribeToSnapshots: (
     snapshotId: string,
@@ -1342,9 +1342,20 @@ class SnapshotStore<T extends BaseData>
     this.delegate[0].handleActions();
   }
 
-  setSnapshot(snapshot: SnapshotStore<BaseData >): void {
+  setSnapshot(snapshot: SnapshotStore<BaseData>): void {
     this.delegate[0].setSnapshot(snapshot);
   }
+
+  setSnapshotData(snapshotData: Partial<SnapshotStore<BaseData>>): void {
+    const currentSnapshot = this.delegate[0];
+    if (currentSnapshot) {
+      this.delegate[0] = {
+        ...currentSnapshot,
+        ...snapshotData,
+      }; // Update the data portion
+    }
+  }
+  
 
   setSnapshots(snapshots: Snapshot<T>[]): void {
     this.delegate[0].setSnapshots(snapshots);

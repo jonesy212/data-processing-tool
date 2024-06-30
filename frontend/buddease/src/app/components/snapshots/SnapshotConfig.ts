@@ -81,8 +81,10 @@ export interface SnapshotStoreConfig<
   key?: string;
   topic?: string;
   initialState:
-  | BaseData
-  | null
+   SnapshotStore<BaseData>
+        | Snapshot<BaseData>
+        | null
+        | undefined,
   configOption?: SnapshotStoreConfig<T, K> | null;
   subscription?: Subscription | null;
   initialConfig?: SnapshotStoreConfig<T, K> | null;
@@ -502,7 +504,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         events: Record<string, CalendarEvent[]>,
         snapshotStore: SnapshotStore<T>,
         dataItems: RealtimeDataItem[],
-        newData: Data,
+        newData: Snapshot<Data>,
         payload: UpdateSnapshotPayload<T>,
         store: SnapshotStore<any>
       ) => {
@@ -617,12 +619,13 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
    
     createSnapshotSuccess: () => { },
     createSnapshotFailure: async (snapshot: Snapshot<T>, error: Error) => {
-      const snapshotStore = (await useSnapshotManager()).state;
-  
+      const snapshotManager = await useSnapshotManager();
+      const snapshotStore: SnapshotStore<any>[] = snapshotManager.state as SnapshotStore<any>[]; // Ensure state matches the type
+
       if (snapshotStore && snapshotStore.length > 0) {
         // Generate snapshot ID
-        const generatedSnapshotId = generateSnapshotId; // Assuming generateSnapshotId is a function
-        const updatedSnapshotData = {
+        const generatedSnapshotId = generateSnapshotId; // Ensure generateSnapshotId is a function
+        const updatedSnapshotData: Snapshot<any> = {
           id: generatedSnapshotId,
           data: {
             ...snapshot.data,
@@ -631,18 +634,20 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
           },
           timestamp: new Date(),
           category: "update",
-          length: 0, // Check if this is needed
-          content: undefined, // Check if this is needed
+          initialState: snapshot.data,
+          // Assuming 'length' and 'content' are not necessary for Snapshot
         };
-    
-        // Check if snapshotStore[0] is defined before invoking setSnapshotData
-        if (snapshotStore[0]?.setSnapshotData) {
+
+        // Check if snapshotStore[0] is defined and has the method setSnapshotData
+        if (snapshotStore[0]?.setSnapshot.setSnapshotData) {
           snapshotStore[0].setSnapshotData(updatedSnapshotData); // Assuming setSnapshotData mutates the snapshot object
         }
-        
-        // Assuming snapshotStore.unshift is a synchronous operation
-        snapshotStore.unshift(updatedSnapshotData); // Add the updated snapshot to the beginning of the snapshot store
-    
+
+        // Check if snapshotStore is an array
+        if (Array.isArray(snapshotStore)) {
+          snapshotStore.unshift(updatedSnapshotData); // Add the updated snapshot to the beginning of the snapshot store
+        }
+
         // Update the snapshot store through a setter method if available
         // Example: await setSnapshotManager(newState); // Ensure this method exists and correctly updates state
       }

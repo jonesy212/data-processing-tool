@@ -81,7 +81,7 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
 
 interface CoreSnapshot<T extends BaseData> {
   id?: string | number;
-  data?: T | null | undefined;
+  data: T | null | undefined;
   name?: string;
   timestamp?: string | Date;
   createdBy?: string;
@@ -97,9 +97,13 @@ interface CoreSnapshot<T extends BaseData> {
   phase?: Phase | null;
   ownerId?: string;
   store?: SnapshotStore<T>;
-  state?: Snapshot<T> | null | undefined; // Ensure state matches Snapshot<T> or null/undefined
+  state?: Snapshot<T> | null; // Ensure state matches Snapshot<T> or null/undefined
   dataStore?: DataStore<T>;
-  initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null ;
+  initialState?:
+   SnapshotStore<BaseData>
+        | Snapshot<BaseData>
+        | null
+        | undefined,
   setSnapshotData?: (data: Data) => void;
   snapshotConfig?: SnapshotStoreConfig<BaseData, BaseData>[];
   subscribeToSnapshots?: (
@@ -217,21 +221,21 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
     },
     dataStoreMethods: DataStore<T> = {
       data: undefined,
-      addData: (data: T) => {},
-      updateData: (id: number, newData: T) => {},
-      removeData: (id: number) => {},
-      updateDataTitle: (id: number, title: string) => {},
-      updateDataDescription: (id: number, description: string) => {},
+      addData: (data: T) => { },
+      updateData: (id: number, newData: T) => { },
+      removeData: (id: number) => { },
+      updateDataTitle: (id: number, title: string) => { },
+      updateDataDescription: (id: number, description: string) => { },
       addDataStatus: (
         id: number,
         status: "pending" | "inProgress" | "completed"
-      ) => {},
+      ) => { },
       // removeDataStatus: (id: number) => { },
       updateDataStatus: (
         id: number,
         status: "pending" | "inProgress" | "completed"
-      ) => {},
-      addDataSuccess: (payload: { data: T[] }) => {},
+      ) => { },
+      addDataSuccess: (payload: { data: T[] }) => { },
       getDataVersions: async (id: number) => {
         // Implement logic to fetch data versions from a data source
         return undefined;
@@ -257,6 +261,7 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
           resolve();
         });
       },
+
       removeItem: async (key: string): Promise<void> => {
         await this.removeItem(key);
       },
@@ -272,33 +277,32 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
         return keys;
       },
 
-      async getAllItems(): Promise<T[]> {
-        return new Promise(async (resolve, reject) => {
-          try {
-            const keys = await this.getAllKeys();
-            const items = await Promise.all(
-              keys.map((key) => {
-                return this.getItem(key).then((item) => {
-                  if (item) {
-                    const snapshot = new snapshotType(item.initialState);
-                    snapshot.initialState = item.initialState;
-                    return snapshot;
-                  }
-                  return undefined;
-                });
-              })
-            );
-
-            const filteredItems = items.filter(
-              (item): item is Snapshot<T> => item !== undefined
-            );
-            resolve(filteredItems);
-          } catch (error) {
-            reject(error);
+    
+      
+  async getAllItems(): Promise<Snapshot<T>[]> {
+    try {
+      const keys = await this.getAllKeys();
+      const items = await Promise.all(
+        keys.map(async (key) => {
+          const item = await this.getItem(key);
+          if (item) {
+            const snapshot = snapshotType(item.initialState);
+            snapshot.initialState = item.initialState;
+            return snapshot;
           }
-        });
-      },
+          return undefined;
+        })
+      );
+
+      const filteredItems = items.filter(
+        (item): item is Snapshot<T> => item !== undefined
+      );
+      return filteredItems;
+    } catch (error) {
+      throw error;
     }
+  }
+}     
   ) {
     super(
       snapshot,
@@ -314,17 +318,19 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
     this.storage = storage;
   }
 
-  setItem(key: string, value: T): void {
+  setItem(key: string, value: T): Promise<void> {
     this.storage.setItem(key, JSON.stringify(value));
+    return Promise.resolve();
   }
 
-  getItem(key: string): Snapshot<T> | undefined {
+  getItem(key: string): Promise<T | undefined> {
     const item = this.storage.getItem(key);
-    return item ? JSON.parse(item) : null;
+    return Promise.resolve(item ? JSON.parse(item) : null);
   }
 
-  removeItem(key: string): void {
+  removeItem(key: string): Promise<void> {
     this.storage.removeItem(key);
+    return Promise.resolve();
   }
 
   getAllKeys(): Promise<string[]> {
@@ -338,18 +344,26 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
     return Promise.resolve(keys);
   }
 
-  getAllItems(): Snapshot<T>[] {
-    const items: Snapshot<T>[] = [];
-    for (let i = 0; i < this.storage.length; i++) {
-      const key = this.storage.key(i);
-      if (key) {
-        const value = this.storage.getItem(key);
-        if (value) {
-          items.push(JSON.parse(value));
+  getAllItems(): Promise<T[]> {
+    const items: T[] = [];
+    try {
+      for (let i = 0; i < this.storage.length; i++) {
+        const key = this.storage.key(i);
+        if (key) {
+          const value = this.storage.getItem(key);
+          if (value) {
+            items.push(JSON.parse(value));
+          }
         }
       }
+
+      const filteredItems = items.filter(
+        (item): item is T => item !== undefined && typeof item === 'object'
+      );
+      return Promise.resolve(filteredItems);
+    } catch (error) {
+      throw error;
     }
-    return items;
   }
 }
 
@@ -384,6 +398,7 @@ const newTask: Task = {
       onFulfill({
         data: this as Data,
         store: store,
+        state: null
       });
     }, 1000);
   },

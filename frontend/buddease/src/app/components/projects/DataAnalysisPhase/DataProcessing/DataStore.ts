@@ -175,7 +175,7 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
           timestamp: new Date(),
         };
 
-        data.set(item.id!.toString(), snapshotItem as T);
+        data.set(item.id!.toString(), snapshotItem );
       }
     });
   };

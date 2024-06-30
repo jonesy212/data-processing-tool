@@ -26,7 +26,7 @@ function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
     tags: ["sample", "snapshot"],
     metadata: {},
     data: {} as T,
-    initialState: undefined
+    initialState: null
   };
 
   // Usage example
