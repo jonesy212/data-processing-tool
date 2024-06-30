@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import { Task, TaskDetails } from "../models/tasks/Task";
+import TaskDetails, { Task } from "../models/tasks/Task";
 
 interface ProjectListProps {
   tasks: Task[];
@@ -16,7 +16,10 @@ const ProjectList: React.FC<ProjectListProps> = observer(({ tasks }) => {
       <ul>
         {tasks.map((task: Task) => (
           <li key={task.id}>
-             <TaskDetails task={task} />
+            <TaskDetails
+              task={task}
+              completed={false}
+            />
             {/* Render TaskDetails component for each task if needed */}
             <Link to={`/task-project-details/${task.id}`}>
               {task.title} - {task.status}

@@ -50,7 +50,7 @@ import { fetchCategoryByName } from '@/app/api/CategoryApi';
 import determineFileCategory, { fetchSnapshotData } from '../libraries/categories/determineFileCategory';
 import { snapshotType } from '../typings/YourSpecificSnapshotType';
 
-type T = Snapshot<any>;
+type T = BaseData;
 type K = any;
 type Subscribers = Subscriber<CustomSnapshotData | Data>[];
 interface AuditRecord {
@@ -81,26 +81,24 @@ export interface SnapshotStoreConfig<
   key?: string;
   topic?: string;
   initialState:
-    | SnapshotStore<T>
-    | Snapshot<T>
-    | null
-    | undefined;
+  | BaseData
+  | null
   configOption?: SnapshotStoreConfig<T, K> | null;
   subscription?: Subscription | null;
   initialConfig?: SnapshotStoreConfig<T, K> | null;
-  config?: SnapshotStoreConfig<Snapshot<any>, any>[] | null;
+  config?: SnapshotStoreConfig<BaseData, any>[] | null;
   category: string | CategoryProperties | undefined;
   timestamp: string | Date | undefined;
   set?: (type: string, event: Event) => void | null;
   data?: T | SnapshotStoreConfig<T, K> | null;
   store?: SnapshotStoreConfig<T, K> | null;
-  removeSubscriber?: (subscriber: Subscriber<Snapshot<T>>) => void;
+  removeSubscriber?: (subscriber: Subscriber<BaseData>) => void;
   handleSnapshot: (
     snapshot: Snapshot<T> | null,
     snapshotId: string
   ) => void | null;
-  state: Snapshot<Snapshot<T>>[] | Snapshot<T>[] | null;
-  snapshots: SnapshotStore<Snapshot<T>>[];
+  state: Snapshot<BaseData>[] | Snapshot<T>[] | null;
+  snapshots: SnapshotStore<BaseData>[];
   onInitialize?: () => void;
   subscribers: Subscriber<T>[];
   onError?: (error: Payload) => void;
@@ -152,7 +150,7 @@ export interface SnapshotStoreConfig<
     snapshot: Snapshots<T>;
   };
   initSnapshot: (
-    snapshotConfig: SnapshotStoreConfig<Snapshot<T>, T>,
+    snapshotConfig: SnapshotStoreConfig<BaseData, T>,
     snapshotData: SnapshotStore<T>
   ) => void;
 
@@ -188,28 +186,28 @@ export interface SnapshotStoreConfig<
 
   addSnapshot: (
     snapshot: T,
-    subscribers: Subscriber<K | CustomSnapshotData>[]
+    subscribers: Subscriber<BaseData>[]
   ) => void;
 
   addSnapshotSuccess: (
     snapshot: T,
-    subscribers: Subscriber<K | CustomSnapshotData>[]
+    subscribers: Subscriber<BaseData>[]
   ) => void;
 
   removeSnapshot: (snapshotToRemove: SnapshotStore<T>) => void;
 
   getSubscribers: (
-    subscribers: Subscriber<Snapshot<K>>[],
+    subscribers: Subscriber<BaseData>[],
     snapshots: Snapshots<K>
   ) => Promise<{
-    subscribers: Subscriber<Snapshot<T>>[];
+    subscribers: Subscriber<BaseData>[];
     snapshots: Snapshots<T>;
   }>;
 
   addSubscriber: (
-    subscriber: Subscriber<Snapshot<T>>,
+    subscriber: Subscriber<BaseData>,
     data: T,
-    snapshotConfig: SnapshotStoreConfig<Snapshot<T>, T>[],
+    snapshotConfig: SnapshotStoreConfig<BaseData, T>[],
     delegate: SnapshotStoreSubset<T>,
     sendNotification: (type: NotificationTypeEnum) => void
   ) => void;
@@ -220,78 +218,78 @@ export interface SnapshotStoreConfig<
           category: any;
           timestamp: any;
           id: any;
-          snapshot: SnapshotStore<Snapshot<T>>;
+          snapshot: SnapshotStore<BaseData>;
           data: T;
         }>
       | undefined
-  ) => Promise<SnapshotStore<Snapshot<T>>>;
+  ) => Promise<SnapshotStore<BaseData>>;
 
   getAllSnapshots: (
     data: (
-      subscribers: Subscriber<Snapshot<T>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshots: Snapshots<T>
     ) => Promise<Snapshots<T>>
   ) => Promise<Snapshots<T>>;
 
   takeSnapshotSuccess: (snapshot: SnapshotStore<T>) => void;
   updateSnapshotFailure: (payload: { error: string }) => void;
-  takeSnapshotsSuccess: (snapshots: Snapshots<T>) => void;
+  takeSnapshotsSuccess: (snapshots: T) => void;
   fetchSnapshot: (
     snapshot: (category: string) =>
       | Promise<{
         id: any;
           category: any;
           timestamp: any;
-          snapshot: SnapshotStore<Snapshot<T>>;
+          snapshot: SnapshotStore<BaseData>;
         data: T;
           
         }>
       | undefined,
       category: string,
       initialState:
-        SnapshotStore<Snapshot<any>>
-        | Snapshot<Snapshot<any>>
+        SnapshotStore<BaseData>
+        | Snapshot<BaseData>
         | null
         | undefined,
-      snapshotConfig: SnapshotStoreConfig<Snapshot<BaseData>, BaseData>[],
+      snapshotConfig: SnapshotStoreConfig<BaseData, BaseData>[],
       snapshotType: string,
-      delegate: SnapshotStoreConfig<Snapshot<any>, any>[] // Adjust the type of delegate
-    ) => Promise<SnapshotStore<Snapshot<T>>>;
+      delegate: SnapshotStoreConfig<BaseData, any>[] // Adjust the type of delegate
+    ) => Promise<SnapshotStore<BaseData>>;
   setSnapshotSuccess: (snapshot: SnapshotStore<T>,  subscribers: ((data: Snapshot<T>) => void)[]) => void;
   updateSnapshotSuccess: () => void;
   updateSnapshotsSuccess: (
     snapshotData: (
-      subscribers: Subscriber<Snapshot<T>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshot: Snapshots<T>
     ) => void
   ) => void;
   fetchSnapshotSuccess: (
     snapshotData: (
-      subscribers: Subscriber<Snapshot<T>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshot: Snapshots<T>
     ) => void
   ) => void;
 
   updateSnapshotForSubscriber: (
-    subscriber: Subscriber<K | undefined>,
+    subscriber: Subscriber<BaseData>,
     snapshots: Snapshots<T>
   ) => Promise<{
-    subscribers: Subscriber<K | undefined>[];
+    subscribers: Subscriber<BaseData>[];
     snapshots: T[];
   }>;
 
   updateMainSnapshots: (snapshots: Snapshots<T>) => Promise<Snapshots<T>>;
 
   batchUpdateSnapshots: (
-    subscribers: Subscriber<K | undefined>[],
+    subscribers: Subscriber<BaseData>[],
     snapshots: Snapshots<T>
   ) => Promise<{ snapshots: Snapshots<T> }[]>; // Corrected return type
 
   batchFetchSnapshotsRequest: (snapshotData: {
-    subscribers: Subscriber<Snapshot<T>>[];
+    subscribers: Subscriber<BaseData>[];
     snapshots: Snapshots<T>;
   }) => Promise<{
-    subscribers: Subscriber<Snapshot<T>>[];
+    subscribers: Subscriber<BaseData>[];
     snapshots: T[];
   }>;
 
@@ -300,7 +298,7 @@ export interface SnapshotStoreConfig<
   }>;
 
   batchUpdateSnapshotsSuccess?: (
-    subscribers: Subscriber<Snapshot<T>>[],
+    subscribers: Subscriber<BaseData>[],
     snapshots: Snapshots<T>
   ) => {
     snapshots: Snapshots<T>;
@@ -308,31 +306,31 @@ export interface SnapshotStoreConfig<
 
   batchUpdateSnapshotsRequest: (
     snapshotDatas: (
-      subscribers: Subscriber<Snapshot<T>>[],
+      subscribers: Subscriber<BaseData>[],
       snapshots: Snapshots<T>
     ) => Promise<{
-      subscribers: Subscriber<Snapshot<T>>[];
+      subscribers: Subscriber<BaseData>[];
       snapshots: Snapshots<T>;
     }>
   ) => {
-    subscribers: Subscriber<Snapshot<T>>[];
+    subscribers: Subscriber<BaseData>[];
     snapshots: Snapshots<T>;
   };
 
   batchFetchSnapshots: (
-    subscribers: Subscriber<Snapshot<T>>[],
+    subscribers: Subscriber<BaseData>[],
     snapshots: Snapshots<T>
   ) => Promise<{
-    subscribers: Subscriber<Snapshot<T>>[];
+    subscribers: Subscriber<BaseData>[];
     snapshots: Snapshots<T>;
   }>;
 
-  getData: (data: Snapshot<Data> | Snapshot<CustomSnapshotData>) => Promise<{
+  getData: (data: Snapshot<T> | Snapshot<CustomSnapshotData>) => Promise<{
     data: Snapshots<T>;
   }>;
 
   batchFetchSnapshotsSuccess: (
-    subscribers: Subscriber<Snapshot<T>>[],
+    subscribers: Subscriber<BaseData>[],
     snapshots: Snapshots<T>
   ) => Snapshots<T>;
 
@@ -341,7 +339,7 @@ export interface SnapshotStoreConfig<
   notifySubscribers: (
     subscribers: Subscriber<CustomSnapshotData | T>[],
     data: Snapshot<T>
-  ) => Subscriber<Snapshot<T>>[];
+  ) => Subscriber<BaseData>[];
 
   notify: (
     message: string,
@@ -378,9 +376,9 @@ export interface SnapshotStoreConfig<
   updateSnapshotsFailure: (error: Payload) => void;
 
   flatMap: (
-    value: SnapshotStoreConfig<Snapshot<T>, T>,
+    value: SnapshotStoreConfig<BaseData, T>,
     index: number,
-    array: SnapshotStoreConfig<Snapshot<T>, T>[]
+    array: SnapshotStoreConfig<BaseData, T>[]
   ) => void;
 
   setData: (data: K) => void;
@@ -415,7 +413,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     snapshots: [],
     subscribers: [],
     subscription: null,
-    initialState: undefined,
+    initialState: null,
     clearSnapshots: null,
     isCompressed: false,
     expirationDate: new Date(),
@@ -433,7 +431,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       key: "",
       configOption: null,
       subscription: null,
-      initialState: undefined,
+      initialState: null,
       category: "",
       timestamp: new Date(),
       set: (type: string, event: Event) => {
@@ -462,7 +460,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         snapshotData: SnapshotStoreConfig<any, any>, // Adjust as per your definition
         category: string | CategoryProperties | undefined,
         callback: (snapshot: Snapshot<Data>) => void
-      ): Snapshot<any> => { // Adjust as per your definition
+      ): BaseData => { // Adjust as per your definition
         console.log(
           `Creating snapshot with ID: ${id} in category: ${category}`,
           snapshotData
@@ -500,7 +498,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
 
       updateSnapshot: async (
         snapshotId: string,
-        data: SnapshotStore<Snapshot<T>>,
+        data: SnapshotStore<BaseData>,
         events: Record<string, CalendarEvent[]>,
         snapshotStore: SnapshotStore<T>,
         dataItems: RealtimeDataItem[],
@@ -597,7 +595,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       snapshotData: SnapshotStoreConfig<any, any>,
       category: string | CategoryProperties | undefined
       // store?: SnapshotStore<any>
-    ): Snapshot<any> => {
+    ): BaseData => {
       console.log(
         `Creating snapshot with ID: ${id} in category: ${category}`,
         snapshotData
@@ -672,13 +670,13 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
       }> | undefined,
       category: string,
       initialState:
-        | SnapshotStore<Snapshot<any>>
-        | Snapshot<Snapshot<any>>
+        | SnapshotStore<BaseData>
+        | Snapshot<BaseData>
         | null
         | undefined,
       snapshotConfig: SnapshotStoreConfig<Snapshot<BaseData>, BaseData>[],
       snapshotType: string,
-      delegate: SnapshotStoreConfig<Snapshot<any>, any>[]
+      delegate: SnapshotStoreConfig<BaseData, any>[]
     ): Promise<SnapshotStore<Snapshot<T>>> => {
       try {
         if (!snapshot) {

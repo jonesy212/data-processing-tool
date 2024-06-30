@@ -8,7 +8,7 @@ import { UserSettings } from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
-import { Editor } from "draft-js";
+import { ContentState, Editor, EditorState } from "draft-js";
 import { IHydrateResult } from "mobx-persist";
 import React, { SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,7 @@ import { setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { ComponentActions } from "../libraries/ui/components/ComponentActions";
 import axiosInstance from "../security/csrfToken";
+import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import useEditorState from "../state/useEditorState";
 import AppVersionImpl, {
@@ -26,10 +27,11 @@ import AppVersionImpl, {
   selectDatabaseVersion,
 } from "../versions/AppVersion";
 import Version from "../versions/Version";
+import { ModifiedDate } from "./DocType";
 import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
-import { ModifiedDate } from "./DocType";
+import { VersionData } from "../versions/VersionData";
 
 const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
   const dispatch = useDispatch();
@@ -41,6 +43,35 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
   const [appVersionObject, setAppVersionObject] = useState<AppVersion | null>(
     null
   ); // Initialize appVersionObject as null
+
+
+
+  // Define phase handlers
+const phaseHandlers: Record<ProjectPhaseTypeEnum, () => void> = {
+  [ProjectPhaseTypeEnum.Draft]: () => {
+    console.log("Switched to Draft phase");
+    // Handle actions for Draft phase
+  },
+  [ProjectPhaseTypeEnum.Review]: () => {
+    console.log("Switched to Review phase");
+    // Handle actions for Review phase
+  },
+  [ProjectPhaseTypeEnum.Final]: () => {
+    console.log("Switched to Final phase");
+    // Handle actions for Final phase
+  },
+};
+
+// Handle phase change logic
+const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
+  const handler = phaseHandlers[phase];
+  if (handler) {
+    handler();
+  } else {
+    console.warn("Unsupported phase:", phase);
+    // Handle unsupported phase gracefully
+  }
+};
 
   // Use useEffect to fetch appVersion data when the component mounts
   useEffect(() => {
@@ -68,7 +99,7 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
       // Dispatch an action to update the component
       dispatch(
         ComponentActions.updateComponent({
-          id: documentId,
+          id: Number(documentId),
           updatedComponent: { name: componentName },
         })
       );
@@ -95,31 +126,94 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
 
       {/* Integrate DocumentBuilder component */}
       <DocumentBuilder
+        currentContent={{} as ContentState}
         isDynamic={true}
         version={appVersionObject ? appVersionObject : undefined}
         documentPhase={{
           phaseType: ProjectPhaseTypeEnum.Draft,
-          onChange: (phase: ProjectPhaseTypeEnum) => {},
+          onChange: (phase: ProjectPhaseTypeEnum) => phaseHandlers[phase],
           customProp1: "",
           customProp2: 0,
         }}
         buildDocument={async (
           documentData: DocumentData,
-          document: DocumentTypeEnum
+          document: DocumentObject,
+          documentType: DocumentTypeEnum
         ) => {
           try {
             // Dispatch an action to create a new document
             dispatch(
               DocumentActions.createDocument({
+                id: "",
+                _id: "",
+                title: "",
+                content: "",
                 documentData: documentData,
                 document: document,
+                documentType: documentType,
+                permissions: undefined,
+                folders: [],
+                options: undefined,
+                folderPath: "",
+                previousMetadata: undefined,
+                currentMetadata: undefined,
+                accessHistory: [],
+                documentPhase: undefined,
+                version: undefined,
+                visibility: undefined,
+                documentSize: DocumentSize.A4,
+                lastModifiedDate: undefined,
+                lastModifiedBy: "",
+                name: "",
+                description: "",
+                createdBy: "",
+                createdDate: undefined,
+                _rev: "",
+                _attachments: undefined,
+                _links: undefined,
+                versionData: undefined,
+                all: null,
+                updatedBy: undefined,
+                selectedDocument: null,
+                _etag: "",
+                _local: false,
+                _revs: [],
+                _source: undefined,
+                _shards: undefined,
+                _size: 0,
+                _version: 0,
+                _version_conflicts: 0,
+                _seq_no: 0,
+                _primary_term: 0,
+                _routing: "",
+                _parent: "",
+                _parent_as_child: false,
+                _slices: [],
+                _highlight: undefined,
+                _highlight_inner_hits: undefined,
+                _source_as_doc: false,
+                _source_includes: [],
+                _routing_keys: [],
+                _routing_values: [],
+                _routing_values_as_array: [],
+                _routing_values_as_array_of_objects: [],
+                _routing_values_as_array_of_objects_with_key: [],
+                _routing_values_as_array_of_objects_with_key_and_value: [],
+                _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+                filePathOrUrl: "",
+                uploadedBy: 0,
+                uploadedAt: "",
+                tagsOrCategories: "",
+                format: "",
+                uploadedByTeamId: null,
+                uploadedByTeam: null
               })
             );
           } catch (error: any) {
             // Handle the error using the useErrorHandling hook
             handleError("Error creating document", error);
           }
-        }}
+        } }
         onOptionsChange={(options: DocumentOptions) => {
           if (typeof options.documentPhase === "string") {
             setCurrentPhase({
@@ -158,14 +252,15 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
               startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void | undefined): void | undefined {
                 throw new Error("Function not implemented.");
               }
-            });          }
+            });
+          }
 
           options.documentSize = DocumentSize.A4;
           DocumentActions.setOptions({ options });
-        }}
+        } }
         onConfigChange={(config: any) => {
           setCurrentPhase(config.documentPhase);
-        }}
+        } }
         setOptions={options as React.Dispatch<SetStateAction<DocumentOptions>>} // Assuming setOptions is correctly defined elsewhere
         documents={[]}
         options={{
@@ -193,13 +288,11 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
                 {
                   format: [],
                   separator: [],
-                  style: [
-                    {
-                      format: [],
-                      separator: [],
-                      style: [],
-                    },
-                  ],
+                  style: {
+                    format: [],
+                    separator: [],
+                    style: [],
+                  },
                 },
               ],
             },
@@ -247,17 +340,17 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
               tags: []
             },
           },
-           accessHistory: [],
+          accessHistory: [],
           lastModifiedDate: {
             value: new Date(),
             isModified: false,
-           } as ModifiedDate,
+          } as ModifiedDate,
 
           tableStyles: {},
           highlightColor: "",
           defaultZoomLevel: 100,
           uniqueIdentifier: "",
-          language:LanguageEnum.English,
+          language: LanguageEnum.English,
           limit: 0,
           page: 0,
           documentPhase: getDocumentPhase(ProjectPhaseTypeEnum.Draft) || "",
@@ -373,6 +466,15 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
             createdAt: new Date(),
             updatedAt: undefined,
             buildNumber: "",
+            versions: {
+              data: undefined,
+              backend: undefined,
+              frontend: undefined
+            },
+            metadata: {
+              author: "",
+              timestamp: undefined
+            }
           }),
           metadata: {} as StructuredMetadata, // Pass metadata
           userIdea: "",
@@ -417,7 +519,7 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           content: "content",
           css: "css",
           html: "html",
-          colorCoding: {} as Record<string, string> ,
+          colorCoding: {} as Record<string, string>,
           customSettings: {},
           documents: [] as DocumentData[],
           includeType: "all",
@@ -438,8 +540,8 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           toc: false,
           textStyles: {},
           links: { enabled: true, color: "#0000FF", underline: false },
-          embeddedContent: false || { enabled: true, allow: false, language: LanguageEnum.English }, 
-          comments: false || { enabled: true, author:"", dateFormat: "" },
+          embeddedContent: false || { enabled: true, allow: false, language: LanguageEnum.English },
+          comments: false || { enabled: true, author: "", dateFormat: "" },
           embeddedMedia: false || { enabled: true, allow: true },
           embeddedCode: false || {
             enabled: true,
@@ -466,8 +568,40 @@ const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
           footnote: false || { enabled: false, format: "numeric" },
           customProperties: {},
           value: 1,
+          lastModifiedBy: "",
+          versionData: {} as VersionData,
+          currentContent: {} as ContentState,
+          previousContent: {} as ContentState,
         }}
-      />
+        currentMetadata={undefined}
+        previousMetadata={undefined}
+        accessHistory={[]}
+        lastModifiedDate={undefined}
+        versionData={undefined}
+        editorState={new EditorState}
+        projectPath={""}
+        id={""} _id={""}
+        title={""} content={""}
+        permissions={undefined}
+        folders={[]} folderPath={""}
+        visibility={undefined}
+        documentSize={DocumentSize.A4}
+        lastModifiedBy={""}
+        name={undefined}
+        createdBy={undefined}
+        createdDate={undefined}
+        documentType={""}
+        document={undefined}
+        _rev={undefined}
+        filePathOrUrl={""}
+        uploadedBy={0}
+        uploadedAt={""}
+        tagsOrCategories={""}
+        format={""}
+        uploadedByTeamId={null}
+        uploadedByTeam={null}
+        all={null}
+        selectedDocument={null} />
 
       {/* Add Draft.js Editor */}
       <Editor editorState={editorState} onChange={handleEditorStateChange} />

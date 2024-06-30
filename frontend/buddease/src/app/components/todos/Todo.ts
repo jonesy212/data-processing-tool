@@ -5,7 +5,7 @@ import { Month } from "../calendar/Month";
 import { Attachment } from "../documents/Attachment/attachment";
 import { Content } from "../models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
-import { PriorityStatus, StatusType } from "../models/data/StatusType";
+import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { Progress } from "../models/tracker/ProgressBar";
 import { Tag } from "../models/tracker/Tag";
 import { Phase } from "../phases/Phase";
@@ -25,16 +25,16 @@ export interface Todo extends BaseData {
   content?: Data | string |  Content | undefined; // Adjust the content property to accept Content type
   done: boolean;
   status?: StatusType;
-  priorityStatus?: PriorityStatus | undefined;
+  priorityStatus?: PriorityTypeEnum | undefined;
   todos: Todo[];
   title: string;
   selectedTodo?: Todo;
   progress?: Progress;
   description: string;
-  dueDate: Date | null;
+  dueDate: Date | null | undefined;
   payload?: any;
   type?: string;
-  priority: PriorityStatus | undefined;
+  priority: PriorityTypeEnum | undefined;
   assignedTo: UserAssignee | null;
   assigneeId: string;
   assignee: UserAssignee | null;
@@ -136,6 +136,7 @@ class TodoImpl implements Todo{
   name?: string;
   checklists?: FC<ChecklistItemProps>[];
   startDate?: Date | undefined;
+  endDate?: Date | undefined
   elapsedTime?: number | undefined;
   timeEstimate?: number | undefined;
   timeSpent?: number | undefined;
@@ -152,12 +153,12 @@ class TodoImpl implements Todo{
   title: string = "";
   isActive?: boolean = false;
   done: boolean = false;
-  priorityStatus?: PriorityStatus | undefined;
+  priorityStatus?: PriorityTypeEnum | undefined;
   text?: string
   todos: Todo[] = [];
   description: string = "";
-  dueDate: Date | null = null;
-  priority: PriorityStatus | undefined = undefined;
+  dueDate: Date | null | undefined = null;
+  priority: PriorityTypeEnum | undefined = undefined;
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
   assignedTo: User | null = null;
@@ -188,6 +189,8 @@ class TodoImpl implements Todo{
   recurringDaysOfWeek: number[] = [];
   recurringDaysOfMonth: number[] = [];
   recurringMonthsOfYear: number[] = [];
+  source: string = "";
+  previouslyAssignedTo: string = "";
 
   ideas: Idea[] = [];
   tags: Tag[] = [];

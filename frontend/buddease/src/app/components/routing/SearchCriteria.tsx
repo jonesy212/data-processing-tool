@@ -9,7 +9,7 @@ import { FileTypeEnum } from "../documents/FileType";
 import FormatEnum from "../form/FormatEnum";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { SearchLogger } from "../logging/Logger";
-import BookmarkStatus, { CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
+import BookmarkStatus, { CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
 import { ContentManagementPhaseEnum } from "../phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "../phases/FeedbackPhase";
 import { TaskPhaseEnum } from "../phases/TaskProcess";
@@ -26,7 +26,7 @@ interface SearchCriteria {
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null;
-  priority?: PriorityStatus | null;
+  priority?: PriorityTypeEnum | null;
   assignedUser?: string | null;
   notificationType?: NotificationTypeEnum | null;
   todoStatus?: TodoStatus | null;

@@ -159,11 +159,35 @@ class AuthService {
     }
   }
 
+  async loginWithRolesAndNFTs(
+    username: string,
+    password: string,
+    roles: string[],
+    nfts: string[],
+    loginWithRolesAndNFTsFn: (user: any, roles: string[], nfts: string[]) => void // Accept loginWithRoles function as a parameter
+  ): Promise<{ accessToken: string }> {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const user = await UserService.fetchUserbyUserName(username);
+        loginWithRolesAndNFTsFn(user, roles, nfts); // Call the loginWithRoles function passed as a parameter
+        return { accessToken: data.accessToken };
+      } else {
+        throw new Error("Login failed");
+      }
 
-
-
-
-
+      // Example: Call the loginWithRoles function with the user and roles
+    } catch (error) {
+      throw new Error("Login failed");
+    }
+  }
 
   async integrateAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
     // Example logic to integrate authentication providers
@@ -178,7 +202,6 @@ class AuthService {
     this.saveAuthenticationProviders(mergedProviders);
   }
 
-  // Example function to retrieve existing authentication providers from storage
   
   // Private method to save authentication providers
   private async saveAuthenticationProvidersInternal(providers: AuthenticationProvider[]): Promise<void> {
@@ -205,15 +228,16 @@ class AuthService {
   }
 }
 
-
-
 // Example usage
 
-const databaseConfig: DatabaseConfig = {
-  url: 'your_database_url',
-  database: 'your_database_name',
-  username: 'your_username',
-  authToken: 'YOUR_AUTH_TOKEN',
+export const databaseConfig: DatabaseConfig = {
+  url: process.env.DB_URL!,
+  host: process.env.DB_HOST!,
+  database: process.env.DB_NAME!,
+  username: process.env.DB_USER!,
+  password: process.env.DB_PASSWORD!,
+  port: parseInt(process.env.DB_PORT!, 10),
+  authToken: process.env.AUTH_TOKEN, // Optional if needed
 };
 
 // Create a singleton instance of the AuthService

@@ -55,9 +55,24 @@ interface Project extends Data {
   then?: typeof implementThen;
   data?: ProjectData;
   customProperty?: string;
+
   // tags?: string[] | Tag[];
 
 }
+
+type ReassignProject = (
+  newTeam: Team,
+  newProject: Project,
+  previousTeam: Team,
+  reassignmentDate: Date
+) => void;
+
+
+
+
+
+
+
 
 
 
@@ -69,9 +84,40 @@ export interface ProjectDetails {
   description: string;
   status: StatusType;
   tasks: Task[];
-  projectDetails?: Partial<ProjectDetails>
+  projectDetails?: Partial<ProjectDetails>;
+
   // Add other properties as needed
 }
+
+
+
+const reassignProject: ReassignProject = (
+  newTeam: Team,
+  newProject: Project,
+  previousTeam: Team,
+  reassignmentDate: Date
+) => {
+  // Step 1: Update project's current team assignment
+  newProject.currentTeam = newTeam;
+
+  // Step 2: Record the reassignment in reassignedProjects array
+  newProject.reassignedProjects.push({
+    projectId: newProject.id,
+    project: newProject,
+    projectName: newProject.name,
+    previousTeam: previousTeam,
+    reassignmentDate: reassignmentDate,
+  });
+
+  // Step 3: Implement any additional logic, such as notifying stakeholders, updating related data, etc.
+  
+  // Example: Log the reassignment details
+  console.log(`Project "${newProject.name}" reassigned from "${previousTeam.teamName}" to "${newTeam.teamName}" on ${reassignmentDate}`);
+
+  // Example: Trigger notifications or other actions
+
+  // Optionally, you might persist these changes to your data storage or trigger further actions
+};
 
 // Function to determine if the project is in a special phase
 export function isProjectInSpecialPhase(project: Project): boolean {
@@ -259,7 +305,7 @@ currentProject.phases = [
   },
 ];
 
-const inSpecialPhase = isProjectInSpecialPhase(currentProject);
+const inSpecialPhase = isProjectInSpecialPhase(await currentProject);
 console.log("Is project in special phase?", inSpecialPhase);
 
 
@@ -334,3 +380,4 @@ const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({
 export default ProjectDetailsComponents
 export type { Project };
 
+export { reassignProject }

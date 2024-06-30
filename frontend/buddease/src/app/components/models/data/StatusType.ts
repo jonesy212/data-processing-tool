@@ -149,13 +149,8 @@ enum NotificationStatus {
 }
 
 
-// Assuming PriorityStatus and StatusType enums are defined elsewhere
-enum PriorityStatus {
-  Low = "low",
-  Medium = "medium",
-  High = "high",
-  PendingReview = "pendingReview",
-}
+// Assuming PriorityTypeEnum and StatusType enums are defined elsewhere
+
 
 enum ProductStatus {
   Planned = StatusType.Tentative,
@@ -267,7 +262,7 @@ enum BookmarkStatus {
   Archived = "archived",
   Tagged = "tagged",
   Error = "error",
-  PendingReview = PriorityStatus.PendingReview,
+  PendingReview = PriorityTypeEnum.PendingReview,
   Confirmed = StatusType.Confirmed,
   Cancelled = StatusType.Cancelled,
   Scheduled = StatusType.Scheduled,
@@ -388,7 +383,7 @@ export {
   Layout, NotificationPosition, NotificationStatus,
   Orientation,
   OutcomeType,
-  PriorityStatus, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
+  PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
   StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
   TodoStatus
 };

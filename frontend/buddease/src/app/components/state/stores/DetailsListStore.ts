@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
   useNotification
@@ -18,7 +18,7 @@ import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import {
   DataStatus,
-  PriorityStatus,
+  PriorityTypeEnum,
   ProductStatus,
   StatusType,
   TaskStatus,
@@ -31,6 +31,9 @@ import { Project } from "../../projects/Project";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
 import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
+import { snapshotType } from '../../typings/YourSpecificSnapshotType';
+import { subscribeToSnapshots } from '../../snapshots/snapshotHandlers';
+import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -41,7 +44,7 @@ export type AllStatus =
   | DataStatus
   | TeamStatus
   | DocumentStatus
-  | PriorityStatus
+  | PriorityTypeEnum
   | ProductStatus;
 // Define a generic interface for details
 // isActive
@@ -66,6 +69,7 @@ interface DetailsItem<T> {
   collaborators?: Member[];
   tags?: Tag[] | string[];
   analysisResults?: DataAnalysisResult[];
+  tracker?: string;
   // Core properties...
 }
 
@@ -201,8 +205,12 @@ const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[] = []; // Examp
     this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
       null, // Assuming you're passing null for `snapshot`, adjust as per your actual data structure
       category,
+      new Date(),
+      snapshotType,
       initialState,
       snapshotConfig,
+      subscribeToSnapshots,
+      dataStoreMethods,
       delegate
     );
   }

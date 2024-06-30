@@ -13,7 +13,6 @@ import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
-import { Snapshot } from "@/app/components/snapshots/SnapshotStore";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
@@ -24,7 +23,6 @@ import {
   DataStatus,
   DevelopmentPhaseEnum,
   NotificationStatus,
-  PriorityStatus,
   PriorityTypeEnum,
   PrivacySettingEnum,
   ProjectPhaseTypeEnum,
@@ -36,13 +34,15 @@ import {
   TodoStatus,
 } from "./../../components/models/data/StatusType";
 import { CalendarEvent } from "./../../components/state/stores/CalendarEvent";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { createSnapshot } from "@/app/api/SnapshotApi";
 
 // .ts
 interface FilterCriteria {
   startDate?: Date;
   endDate?: Date;
-  status?: StatusType | null;
-  priority?: PriorityStatus | null;
+  status?: StatusType | null | null;
+  priority?: PriorityTypeEnum | null;
   assignedUser?: string | null;
   notificationType?: NotificationTypeEnum;
   todoStatus?: TodoStatus | null; // Filter by todo status
@@ -57,8 +57,7 @@ interface FilterCriteria {
   developmentPhase?: DevelopmentPhaseEnum | null; // Filter by development phase
   subscriberType?: SubscriberTypeEnum | null; // Filter by subscriber type
   subscriptionType?: SubscriptionTypeEnum | null; // Filter by subscription type
-  priorityTypeE?: PriorityTypeEnum;
-  analysisType?: AnalysisTypeEnum | null; // Filter by analysis type
+   analysisType?: AnalysisTypeEnum | null; // Filter by analysis type
   documentType?: DocumentTypeEnum | null; // Filter by document type
   fileType?: FileTypeEnum | null; // Filter by file type
   tenantType?: TenantManagementPhaseEnum | null;
@@ -365,10 +364,10 @@ const events: CalendarEvent[] = [
       hasQuota: false,
       profilePicture: null,
       processingTasks: [],
-      persona: undefined,
+      persona: null,
       friends: [],
       blockedUsers: [],
-      settings: undefined,
+      settings: null,
       privacySettings: undefined,
       notifications: undefined,
       activityLog: [],
@@ -383,9 +382,102 @@ const events: CalendarEvent[] = [
     participants: [],
     teamMemberId: "",
     date: new Date(),
-    then: async function (callback: (newData: Snapshot<Data>) => void): Promise<void> {
-      callback(await this);
-        }
+    then: function <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void): void {
+      // Simulate fetching data
+      const snapshot: Snapshot<Snapshot<T>> = {
+        snapshot: {
+          description: "This is a sample event",
+          startDate: new Date("2024-06-01"),
+          endDate: new Date("2024-06-05"),
+          status: "scheduled",
+          priority: "high",
+          assignedUser: "John Doe",
+          todoStatus: "completed",
+          taskStatus: "in progress",
+          teamStatus: "active",
+          dataStatus: "processed",
+          calendarStatus: "approved",
+          notificationStatus: "read",
+          bookmarkStatus: "saved",
+          priorityType: "urgent",
+          projectPhase: "planning",
+          developmentPhase: "coding",
+          subscriberType: "premium",
+          subscriptionType: "monthly",
+          analysisType: AnalysisTypeEnum.STATISTICAL,
+          documentType: "pdf",
+          fileType: "document",
+          tenantType: "tenantA",
+          ideaCreateionPhaseType: "ideation",
+          securityFeatureType: "encryption",
+          feedbackPhaseType: "review",
+          contentManagementType: "content",
+          taskPhaseType: "execution",
+          animationType: "2d",
+          languageType: "english",
+          codingLanguageType: "javascript",
+          formatType: "json",
+          privacySettingsType: "public",
+          messageType: "email",
+          id: "",
+          title: "",
+          content: "",
+          topics: [], 
+          highlights: [],
+          files: [],
+          rsvpStatus: "yes",
+          getData: function <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void): void {
+            // Simulate fetching data
+            // Fetch or create the snapshot data
+            const snapshot: Snapshot<Snapshot<T>> = {
+              snapshot: {
+                description: "This is a sample event",
+                startDate: new Date("2024-06-01"),
+                endDate: new Date("2024-06-05"),
+                status: "scheduled",
+                priority: "high",
+                assignedUser: "John Doe",
+                todoStatus: "completed",
+                taskStatus: "in progress",
+                teamStatus: "active",
+                dataStatus: "processed",
+                calendarStatus: "approved",
+                notificationStatus: "read",
+                bookmarkStatus: "saved",
+                priorityType: "urgent",
+                projectPhase: "planning",
+                developmentPhase: "coding",
+                subscriberType: "premium",
+                subscriptionType: "monthly",
+                analysisType: AnalysisTypeEnum.STATISTICAL,
+                documentType: "pdf",
+                fileType: "document",
+                tenantType: "tenantA",
+                ideaCreateionPhaseType: "ideation",
+                securityFeatureType: "encryption",
+                feedbackPhaseType: "review",
+                contentManagementType: "content",
+                taskPhaseType: "execution",
+                animationType: "2d",
+                languageType: "english",
+                codingLanguageType: "javascript",
+                formatType: "json",
+                privacySettingsType: "public",
+                messageType: "email",
+                id: "",
+                title: "",
+                content: "",
+                topics: [],
+                highlights: [],
+                files: [],
+                rsvpStatus: "yes",
+              }
+            }
+          }
+
+    createSnapshot(snapshot: any);
+      callback(snapshot: any);
+    }
   },
   // Add more CalendarEvent data as needed
 ];
@@ -396,7 +488,7 @@ const filterCriteria: FilterCriteria = {
   startDate: new Date("2024-06-01"),
   endDate: new Date("2024-06-30"),
   status: StatusType.Scheduled,
-  priority: PriorityStatus.High,
+  priority: PriorityTypeEnum.High,
   assignedUser: "John Doe",
   todoStatus: TodoStatus.Completed,
   taskStatus: TaskStatus.InProgress, // Updated to enum value

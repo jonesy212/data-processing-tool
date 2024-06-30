@@ -3,7 +3,7 @@ import { ContentState } from 'draft-js';
 
 
 
-interface CustomContentState {
+interface CustomContentState  {
   contentState: ContentState;
   metadata: StructuredMetadata;
   customProperty: string; // Add any additional properties here

@@ -152,5 +152,6 @@ export type {
   ChatCardProps,
   NotificationProps,
   ProgressProps,
-  TextType,
+  TextType
 };
+

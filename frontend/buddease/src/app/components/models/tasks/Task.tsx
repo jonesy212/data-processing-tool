@@ -14,7 +14,6 @@ import { Team, TeamDetails } from "../teams/Team";
 
 import React from "react";
 
-
 export type TaskData =  SupportedData;
 
 // Remove the 'then' method from the Task interface
@@ -26,9 +25,9 @@ interface Task extends Data {
   projectName?: string;
   assignedTo: User | User[] | null;
   assigneeId: User["id"];
-  dueDate: Date | undefined;
-  payload: any;
-  priority: PriorityTypeEnum;
+  dueDate: Date | null | undefined
+  payload?: any;
+  priority: PriorityTypeEnum | undefined;
   type?: AllTypes | string;
   status?: AllStatus;
   estimatedHours?: number | null;
@@ -54,8 +53,8 @@ interface Task extends Data {
   videoThumbnail?: string;
   videoDuration?: number;
   videoUrl?: string;
-  userId?: number; // Assuming each task has a userId
-  query?: string; // Assuming each task has a query field
+  userId?: number; 
+  query?: string; 
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.

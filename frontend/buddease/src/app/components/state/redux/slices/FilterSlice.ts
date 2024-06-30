@@ -12,7 +12,6 @@ import {
   DataStatus,
   DevelopmentPhaseEnum,
   NotificationStatus,
-  PriorityStatus,
   PriorityTypeEnum,
   PrivacySettingEnum,
   ProjectPhaseTypeEnum,
@@ -38,7 +37,7 @@ interface FilterState {
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null;
-  priority?: PriorityStatus | null;
+  priority?: PriorityTypeEnum | null;
   assignedUser?: string | null;
   notificationType?: NotificationTypeEnum | null;
   todoStatus?: TodoStatus | null;
@@ -85,7 +84,7 @@ const filterSlice = createSlice({
     setStatusFilter: (state, action: PayloadAction<StatusType | null>) => {
       state.status = action.payload;
     },
-    setPriorityFilter: (state, action: PayloadAction<PriorityStatus | null>) => {
+    setPriorityFilter: (state, action: PayloadAction<PriorityTypeEnum | null>) => {
       state.priority = action.payload;
     },
     setAssignedUserFilter: (state, action: PayloadAction<string | null>) => {

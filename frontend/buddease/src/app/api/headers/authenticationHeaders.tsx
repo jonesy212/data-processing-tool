@@ -10,7 +10,7 @@ type AuthenticationHeaders = {
   'X-App-Version': string;
 };
 
-const currentAppVersion = configData.currentAppVersion;
+export const currentAppVersion = configData.currentAppVersion;
 
 export  const createAuthenticationHeaders = (
   token: string | null,

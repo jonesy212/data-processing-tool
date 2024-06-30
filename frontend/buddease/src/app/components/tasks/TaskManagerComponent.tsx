@@ -12,7 +12,7 @@ import updateUI from "../documents/editing/updateUI";
 import ContentRenderer from "../libraries/ui/ContentRenderer";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { Data } from "../models/data/Data";
-import { PriorityStatus, PriorityTypeEnum, StatusType } from "../models/data/StatusType";
+import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { Task, TaskData } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
@@ -62,7 +62,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       status: StatusType.Pending,
       done: false,
       todos: [],
-      priority: PriorityStatus.High,
+      priority: PriorityTypeEnum.High,
       assignee: null,
       projectId: "",
       milestoneId: "",

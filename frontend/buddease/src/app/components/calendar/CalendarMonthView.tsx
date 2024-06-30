@@ -26,11 +26,11 @@ import { YearInfo } from "./CalendarYear";
 import * as taskApi from "@/app/api/TasksApi";
 import { NOTIFICATION_TYPES } from "../support/NotificationTypes";
 import { TaskState } from "../state/redux/slices/TaskSlice";
-import { PriorityStatus } from "../models/data/StatusType";
+import { PriorityTypeEnum } from "../models/data/StatusType";
 
 import useNotification from "../support/NotificationContext";
 
-const {notify} = useNotification();
+const {notify} = useNotification;
 interface MonthViewProps extends CommonCalendarProps {
   selectedProject: (state: RootState, projectId: string) => Project | null;
   month: MonthInfo[]; // Add month prop
@@ -219,10 +219,11 @@ const initialState: TaskState = {
   taskDescription: '',
   status: 'pending', // Example initialization for status
   dueDate: null,
-  priority: PriorityStatus.Low, // Example initialization for priority
+  priority: PriorityTypeEnum.Low, // Example initialization for priority
   taskStatus: 'active', // Example initialization for taskStatus
   entitiesLoaded: {},
   tags: [],
+  draggingTaskId: '',
 };
   
   

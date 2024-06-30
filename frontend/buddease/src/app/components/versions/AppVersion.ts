@@ -1,7 +1,12 @@
+import BackendStructure, {
+  backend,
+} from "@/app/configs/appStructure/BackendStructure";
 import { API_VERSION_HEADER } from "@/app/configs/AppConfig";
 import { RootState } from "../state/redux/slices/RootSlice";
 import Version from "./Version";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { VersionData } from "./VersionData";
 
 // Define the AppVersion interface
 interface AppVersion {
@@ -13,7 +18,7 @@ interface AppVersion {
   build: number;
   isDevBuild: boolean;
   getVersionString: () => string;
-  getVersionNumber: () => string;
+  getVersionNumber: (() => string) | undefined;
   getVersionStringWithBuildNumber: (buildNumber: number) => string;
   releaseDate: string;
   releaseNotes: string[];
@@ -25,12 +30,14 @@ interface AppVersion {
 }
 
 // Define selector functions to extract appVersion and databaseVersion from the state
-export const selectAppVersion = (state: RootState) => state.versionManager.appVersion;
-export const selectDatabaseVersion = (state: RootState) => state.versionManager.databaseVersion;
+export const selectAppVersion = (state: RootState) =>
+  state.versionManager.appVersion;
+export const selectDatabaseVersion = (state: RootState) =>
+  state.versionManager.databaseVersion;
 
 // Implement the AppVersion interface
 class AppVersionImpl extends Version implements AppVersion {
-  appName: string = '';
+  appName: string = "";
   releaseDate: string = "2023-04-20"; // Ensure releaseDate is typed as a string
   releaseNotes: string[] = [];
 
@@ -74,51 +81,58 @@ class AppVersionImpl extends Version implements AppVersion {
     parentVersionNumber: string; // Add parentVersionNumber property
     documentType: DocumentTypeEnum;
     documentName: string;
-    documentDescription:string,
-    documentTags: [],
-    documentStatus: string,
-    documentVisibility: string,
-    documentCreatedAt:  Date,
-    documentUpdatedAt: Date,
-    description: string,
+    documentDescription: string;
+    documentTags: [];
+    documentStatus: string;
+    documentVisibility: string;
+    documentCreatedAt: Date;
+    documentUpdatedAt: Date;
+    description: string;
 
-  createdAt: Date;
-  updatedAt: Date;
-  isLatest: boolean;
-  isPublished: boolean;
-  publishedAt: Date | null;
-  source: string;
-  status: string;
-  workspaceId: string;
-  workspaceName: string;
-  workspaceType: string;
-  workspaceUrl: string;
-  workspaceViewers: string[];
-  workspaceAdmins: string[];
+    createdAt: Date;
+    updatedAt: Date;
+    isLatest: boolean;
+    isPublished: boolean;
+    publishedAt: Date | null;
+    source: string;
+    status: string;
+    workspaceId: string;
+    workspaceName: string;
+    workspaceType: string;
+    workspaceUrl: string;
+    workspaceViewers: string[];
+    workspaceAdmins: string[];
     workspaceMembers: string[];
-    workspaceRoles: string[]
+    workspaceRoles: string[];
 
-
-
-    workspacePermissions: string[],
-  workspaceSettings: {},
-  workspaceMetadata: {},
-  workspaceCreator: {
-    id: number,
-    name: string,
-  },
-  workspaceCreatedAt: string,
-  workspaceUpdatedAt: string,
-  workspaceArchivedAt: string,
-  workspaceDeletedAt: string,
-  workspaceVersion: string,
-  workspaceVersionHistory: string[] | null,
+    workspacePermissions: string[];
+    workspaceSettings: {};
+    workspaceMetadata: {};
+    workspaceCreator: {
+      id: number;
+      name: string;
+    };
+    workspaceCreatedAt: string;
+    workspaceUpdatedAt: string;
+    workspaceArchivedAt: string;
+    workspaceDeletedAt: string;
+    workspaceVersion: string;
+    workspaceVersionHistory: string[] | null;
+    metadata: {
+      author: string;
+      timestamp: string | Date;
+    };
+    buildNumber: string;
+    versions: {
+      data: VersionData;
+      frontend: FrontendStructure;
+      backend: BackendStructure;
+    };
   }) {
     super(versionInfo);
-    this.appName = versionInfo.appName;
+    this.appName = versionInfo.appName ? versionInfo.appName : ""; // Ensure appName is typed as a string
     this.releaseDate = versionInfo.releaseDate; // Ensure releaseDate remains a string
     this.releaseNotes = versionInfo.releaseNotes;
-
   }
 
   getAppName(): string {
@@ -143,7 +157,9 @@ class AppVersionImpl extends Version implements AppVersion {
 
   getVersionString(): string {
     const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
-    const apiVersionHeader = API_VERSION_HEADER ? `- API Version: ${API_VERSION_HEADER}` : '';
+    const apiVersionHeader = API_VERSION_HEADER
+      ? `- API Version: ${API_VERSION_HEADER}`
+      : "";
     return `${versionString} ${apiVersionHeader}`;
   }
 
@@ -172,6 +188,11 @@ const appVersion: AppVersion = new AppVersionImpl({
   name: "",
   url: "",
   versionHistory: null,
+  metadata: {
+    author: "Admin",
+    timestamp: "2024-03-07",
+  },
+  buildNumber: "0",
   draft: false,
   userId: "0",
   documentId: "0",
@@ -209,8 +230,8 @@ const appVersion: AppVersion = new AppVersionImpl({
   workspaceVersion: "",
   workspaceVersionHistory: null,
   documentVisibility: "",
-  documentCreatedAt: new Date,
-  documentUpdatedAt: new Date,
+  documentCreatedAt: new Date(),
+  documentUpdatedAt: new Date(),
   description: "",
   createdAt: new Date(), // Add createdAt property
   updatedAt: new Date(), // Add updatedAt property
@@ -222,17 +243,22 @@ const appVersion: AppVersion = new AppVersionImpl({
   workspaceName: "", // Add workspaceName property
   workspaceUrl: "", // Add workspaceUrl property
   workspaceViewers: [], // Add workspaceViewers property
-  workspaceAdmins: [], // Add workspaceAdmins property  
+  workspaceAdmins: [], // Add workspaceAdmins property
+  versions: {
+    data: {} as VersionData,
+    frontend: {} as FrontendStructure,
+    backend: {} as BackendStructure,
+  },
 });
 
 // Update the appName
-appVersion.updateAppName('NewApp');
+appVersion.updateAppName("NewApp");
 
 // Get the current appName
 const currentAppName = appVersion.getAppName();
 
 // Update the appName
-appVersion.updateAppName('NewApp');
+appVersion.updateAppName("NewApp");
 const updatedAppName = appVersion.getAppName();
 
 export { currentAppName, updatedAppName };

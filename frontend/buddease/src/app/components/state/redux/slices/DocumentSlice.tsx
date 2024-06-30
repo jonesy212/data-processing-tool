@@ -25,13 +25,13 @@ import { AppThunk } from "@/app/configs/appThunk";
 import { getStructureAsArray, traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { produce } from "immer";
 import { v4 as uuidv4 } from "uuid";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
 import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import { DocumentSize } from "@/app/components/models/data/StatusType";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import { Document } from "../../stores/DocumentStore";
 
 
 
@@ -59,7 +59,13 @@ const initialDocumentSliceState: DocumentSliceState = {
 };
 
 interface DocumentObject extends Document, DocumentData, DocumentSliceState {
-  // additional fields if needed
+  // Optionally add additional fields here if needed
+}
+
+interface ViewTransition {
+  onStart?: () => void;
+  onComplete?: () => void;
+  onError?: (error: Error) => void;
 }
 
 
@@ -189,7 +195,11 @@ const initialState: DocumentObject = {
           backend: undefined,
           frontend: undefined
         },
-        checksum: ""
+        checksum: "",
+        version: "",
+        timestamp: "",
+        user: "",
+        comments: []
       },
       backend: {
         getStructure: function (): Promise<Record<string, AppStructureItem>> {
@@ -249,6 +259,10 @@ const initialState: DocumentObject = {
         documentId: "doc123",
         draft: false,
         data: [],
+        version: "1.0",
+        timestamp: new Date(),
+        user: "",
+        comments: [],
         versionNumber: "1.0",
         parentId: '',
         parentType: '',
@@ -280,19 +294,12 @@ const initialState: DocumentObject = {
           revisionNotes: undefined,
         },
         versions: {
-          data: {
-            frontend: {
-              versionNumber: "1.0",
-            },
-            backend: {
-              versionNumber: "1.0",
-            },
-          },
+          data: [],
           backend: {
-            structure: {},
             traverseDirectory: async () => [],
             getStructure: async () => ({}),
-            getStructureAsArray: async () => [],
+            getStructureAsArray: () => [],
+            traverseDirectoryPublic: async () => [],
           },
           frontend: {
             id: "frontend",
@@ -311,132 +318,87 @@ const initialState: DocumentObject = {
             items: {},
             getStructureAsArray: async () => [],
             traverseDirectoryPublic: async () => [],
-            getStructure: async () => ({}),
+            getStructure: () => ({} as Record<string, AppStructureItem>),
           },
         },
       };
     },
   },
-  permissions: {
-    // readAccess: false,
-    writeAccess: false,
-    readWriteAccess: false,
-    isActive: false,
-    getReadAccess: () => false,
-    setReadAccess: () => false,
-    getWriteAccess:   () => false,
-    setWriteAccess: () => false,
-    getReadWriteAccess: () => false,
-    setReadWriteAccess: () => false,
-           
-  } ,
-  versionData: {
-    id: 0,
-    name: "Initial Version",
-    url: "https://example.com/initial_version",
-    versionNumber: "1.0",
-    documentId: "doc123",
-    draft: false,
-    userId: "user123",
-    data: [],
-    parentId: '',
-    parentType: '',
-    parentVersion: '',
-    parentTitle: '',
-    parentContent: '',
-    parentName: '',
-    parentUrl: '',
-    parentChecksum: '',
-    parentAppVersion: '',
-    parentVersionNumber: '',
-    isLatest: false,
-    isPublished: false,
-    publishedAt: null,
-    source: '',
-    status: '',
-    workspaceId: '',
-    workspaceName: '',
-    workspaceType: '',
-    workspaceUrl: '',
-    workspaceViewers: [],
-    workspaceAdmins: [],
-    workspaceMembers: [],
-    content: "Initial version content",
-    checksum: "abc123",
-    metadata: {
-      author: "Author Name",
-      timestamp: new Date(),
-      revisionNotes: undefined,
-    },
-    versions: {
-      data: {
-        frontend: {
-          versionNumber: "1.0",
-        },
-        backend: {
-          versionNumber: "1.0",
-        },
-      },
-      backend: {
-        structure: {
-          traverseDirectory: {
-            id: "traverseDirectory",
-            name: "Traverse Directory",
-            type: "folder",
-            path: "./",
-            content: "",
-            draft: false,
-            permissions: {
-              read: true,
-              write: true,
-              delete: true,
-              share: true,
-              execute: true,
-            },
-            items: {
-              "1": {
-                id: "1",
-                name: "Item 1",
-                type: "file",
-                path: "./item1.txt",
-                content: "Item 1 content",
-                draft: false,
-                permissions: {
-                  read: true,
-                  write: true,
-                  delete: true,
-                  share: true,
-                  execute: true,
-                },
-              },
-            },
-          },
-        },
-        getStructure: async () => ({}),
-        traverseDirectory: async () => [],
-        getStructureAsArray: async () => [],
-      },
-      frontend: {
-        id: "frontend",
-        name: "Frontend",
-        type: "folder",
-        path: "./frontend",
-        content: "",
-        draft: false,
-        permissions: {
-          read: true,
-          write: true,
-          delete: true,
-          share: true,
-          execute: true,
-        },
-        items: {},
-        getStructureAsArray: async () => [],
-        traverseDirectoryPublic: async () => [],
-        getStructure: async () => ({}),
-      },
-    },
-  },
+  permissions: new DocumentPermissions(false, false),
+  tags: [],
+  createdAt: "",
+  createdBy: "",
+  updatedBy: "",
+  documentData: undefined,
+  documentPhase: undefined,
+  documentSize: DocumentSize.A4,
+  lastModifiedBy: "",
+  createdDate: undefined,
+  document: undefined,
+  _rev: "",
+  _attachments: undefined,
+  _links: undefined,
+  _etag: "",
+  _local: false,
+  _revs: [],
+  _source: undefined,
+  _shards: undefined,
+  _size: 0,
+  _version: 0,
+  _version_conflicts: 0,
+  _seq_no: 0,
+  _primary_term: 0,
+  _routing: "",
+  _parent: "",
+  _parent_as_child: false,
+  _slices: [],
+  _highlight: undefined,
+  _highlight_inner_hits: undefined,
+  _source_as_doc: false,
+  _source_includes: [],
+  _routing_keys: [],
+  _routing_values: [],
+  _routing_values_as_array: [],
+  _routing_values_as_array_of_objects: [],
+  _routing_values_as_array_of_objects_with_key: [],
+  _routing_values_as_array_of_objects_with_key_and_value: [],
+  _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+  filePathOrUrl: "",
+  uploadedBy: 0,
+  uploadedAt: "",
+  tagsOrCategories: "",
+  format: "",
+  uploadedByTeamId: null,
+  uploadedByTeam: null,
+  URL: "",
+  bgColor: "",
+  documentURI: "",
+  currentScript: null,
+  defaultView: null,
+  doctype: null,
+  ownerDocument: null,
+  scrollingElement: null,
+  timeline: undefined,
+  characterSet: "",
+  charset: "",
+  compatMode: "",
+  contentType: "",
+  cookie: "",
+  designMode: "",
+  dir: "",
+  domain: "",
+  inputEncoding: "",
+  lastModified: "",
+  linkColor: "",
+  referrer: "",
+  vlinkColor: "",
+  fullscreen: false,
+  fullscreenEnabled: false,
+  hidden: false,
+  pictureInPictureEnabled: false,
+  readyState: "",
+  visibilityState: "",
+  versionData: undefined
 };
 
 
@@ -544,6 +506,10 @@ function createNewDocument(documentId: string): DocumentObject {
           draft: false,
           data: [],
           versionNumber: "1.0",
+          version: "1.0",
+          timestamp: new Date(),
+          user: "",
+          comments: [],
           parentId: '', // Provide appropriate values based on your application logic
           parentType: '', // Provide appropriate values based on your application logic
           parentVersion: '', // Provide appropriate values based on your application logic
@@ -610,8 +576,8 @@ function createNewDocument(documentId: string): DocumentObject {
               items: {},
               getStructureAsArray: async () => [],
               traverseDirectoryPublic: async () => [],
-              getStructure: async () => ({}),
-            } as FrontendStructure,
+              getStructure: () => ({} as Record<string, AppStructureItem>),
+            },
           },
         };
       },
@@ -622,7 +588,11 @@ function createNewDocument(documentId: string): DocumentObject {
       name: "Initial Version",
       url: "https://example.com/initial_version",
       versionNumber: "1.0",
-      // appVersion: "v1.0",
+      version: "1.0",
+      timestamp: new Date(),
+      user: "",
+      comments: [],
+      appVersion: "v1.0",
       documentId: "doc123",
       draft: false,
       userId: "user123",
@@ -701,12 +671,11 @@ function createNewDocument(documentId: string): DocumentObject {
           items: {},
           getStructureAsArray: async () => [],
           traverseDirectoryPublic: async () => [],
-          getStructure: async () => ({}),
+          getStructure:  () => ({} as Record<string, AppStructureItem>),
         } as FrontendStructure,
       },
     },
     URL: "",
-    alinkColor: "",
     all: undefined,
     anchors: undefined,
     applets: undefined,
@@ -726,7 +695,6 @@ function createNewDocument(documentId: string): DocumentObject {
     documentURI: "",
     domain: "",
     embeds: undefined,
-    fgColor: "",
     forms: undefined,
     fullscreen: false,
     fullscreenEnabled: false,
@@ -2476,32 +2444,38 @@ export const useDocumentManagerSlice = createSlice({
 
     setDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject[]>>
+      action: PayloadAction<WritableDraft<DocumentData[]>>
     ) => {
       state.documents = action.payload;
+      // TODO: Add logic to filter documents
+      state.filteredDocuments = state.documents;
+      state.loading = false;
+      state.error = null;
+      return { payload: state };
+      
     },
 
     setDownloadedDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject>>
+      action: PayloadAction<WritableDraft<DocumentData>>
     ) => {
       state.selectedDocument = action.payload;
     },
 
     addDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject>>
+      action: PayloadAction<WritableDraft<DocumentData>>
     ) => {
-      state.documents.push(action.payload);
+      state.documents?.push(action.payload);
     },
 
     addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string }>) => {
-      const documentIndex = state.documents.findIndex(doc => doc.id === action.payload.id);
+      const documentIndex = state.documents?.findIndex(doc => doc.id === action.payload.id);
       if (documentIndex !== -1) {
-        state.documents[documentIndex].title = action.payload.title;
+        state.documents![documentIndex!].title = action.payload.title;
       } else {
         // Optionally handle case where document is not found
-        state.documents.push({
+        state.documents?.push({
           id: action.payload.id, title: action.payload.title,
           _id: "",
           content: "",
@@ -2609,353 +2583,7 @@ export const useDocumentManagerSlice = createSlice({
           timeline: undefined,
           visibilityState: "hidden",
           vlinkColor: "",
-          adoptNode: function <T extends Node>(node: T): T {
-            throw new Error("Function not implemented.");
-          },
-          captureEvents: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          caretRangeFromPoint: function (x: number, y: number): Range | null {
-            throw new Error("Function not implemented.");
-          },
-          clear: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          close: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          createAttribute: function (localName: string): Attr {
-            throw new Error("Function not implemented.");
-          },
-          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
-            throw new Error("Function not implemented.");
-          },
-          createCDATASection: function (data: string): CDATASection {
-            throw new Error("Function not implemented.");
-          },
-          createComment: function (data: string): Comment {
-            throw new Error("Function not implemented.");
-          },
-          createDocumentFragment: function (): DocumentFragment {
-            throw new Error("Function not implemented.");
-          },
-          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
-            throw new Error("Function not implemented.");
-          },
-          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
-            throw new Error("Function not implemented.");
-          },
-          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
-            throw new Error("Function not implemented.");
-          },
-          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
-            throw new Error("Function not implemented.");
-          },
-          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
-            throw new Error("Function not implemented.");
-          },
-          createRange: function (): Range {
-            throw new Error("Function not implemented.");
-          },
-          createTextNode: function (data: string): Text {
-            throw new Error("Function not implemented.");
-          },
-          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
-            throw new Error("Function not implemented.");
-          },
-          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
-            throw new Error("Function not implemented.");
-          },
-          exitFullscreen: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          exitPictureInPicture: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          exitPointerLock: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          getElementById: function (elementId: string): HTMLElement | null {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
-            throw new Error("Function not implemented.");
-          },
-          getSelection: function (): Selection | null {
-            throw new Error("Function not implemented.");
-          },
-          hasFocus: function (): boolean {
-            throw new Error("Function not implemented.");
-          },
-          hasStorageAccess: function (): Promise<boolean> {
-            throw new Error("Function not implemented.");
-          },
-          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
-            throw new Error("Function not implemented.");
-          },
-          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandEnabled: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandIndeterm: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandState: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandSupported: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandValue: function (commandId: string): string {
-            throw new Error("Function not implemented.");
-          },
-          releaseEvents: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          requestStorageAccess: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          write: function (...text: string[]): void {
-            throw new Error("Function not implemented.");
-          },
-          writeln: function (...text: string[]): void {
-            throw new Error("Function not implemented.");
-          },
-          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
-            throw new Error("Function not implemented.");
-          },
-          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
-            throw new Error("Function not implemented.");
-          },
-          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
-            throw new Error("Function not implemented.");
-          },
-          baseURI: "",
-          childNodes: undefined,
-          firstChild: null,
-          isConnected: false,
-          lastChild: null,
-          nextSibling: null,
-          nodeName: "",
-          nodeType: 0,
-          nodeValue: null,
-          parentElement: null,
-          parentNode: null,
-          previousSibling: null,
-          textContent: null,
-          appendChild: function <T extends Node>(node: T): T {
-            throw new Error("Function not implemented.");
-          },
-          cloneNode: function (deep?: boolean | undefined): Node {
-            throw new Error("Function not implemented.");
-          },
-          compareDocumentPosition: function (other: Node): number {
-            throw new Error("Function not implemented.");
-          },
-          contains: function (other: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
-            throw new Error("Function not implemented.");
-          },
-          hasChildNodes: function (): boolean {
-            throw new Error("Function not implemented.");
-          },
-          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
-            throw new Error("Function not implemented.");
-          },
-          isDefaultNamespace: function (namespace: string | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isEqualNode: function (otherNode: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isSameNode: function (otherNode: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          lookupNamespaceURI: function (prefix: string | null): string | null {
-            throw new Error("Function not implemented.");
-          },
-          lookupPrefix: function (namespace: string | null): string | null {
-            throw new Error("Function not implemented.");
-          },
-          normalize: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          removeChild: function <T extends Node>(child: T): T {
-            throw new Error("Function not implemented.");
-          },
-          replaceChild: function <T extends Node>(node: Node, child: T): T {
-            throw new Error("Function not implemented.");
-          },
-          ELEMENT_NODE: 1,
-          ATTRIBUTE_NODE: 2,
-          TEXT_NODE: 3,
-          CDATA_SECTION_NODE: 4,
-          ENTITY_REFERENCE_NODE: 5,
-          ENTITY_NODE: 6,
-          PROCESSING_INSTRUCTION_NODE: 7,
-          COMMENT_NODE: 8,
-          DOCUMENT_NODE: 9,
-          DOCUMENT_TYPE_NODE: 10,
-          DOCUMENT_FRAGMENT_NODE: 11,
-          NOTATION_NODE: 12,
-          DOCUMENT_POSITION_DISCONNECTED: 1,
-          DOCUMENT_POSITION_PRECEDING: 2,
-          DOCUMENT_POSITION_FOLLOWING: 4,
-          DOCUMENT_POSITION_CONTAINS: 8,
-          DOCUMENT_POSITION_CONTAINED_BY: 16,
-          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
-          dispatchEvent: function (event: Event): boolean {
-            throw new Error("Function not implemented.");
-          },
-          activeElement: null,
-          adoptedStyleSheets: [],
-          fullscreenElement: null,
-          pictureInPictureElement: null,
-          pointerLockElement: null,
-          styleSheets: undefined,
-          elementFromPoint: function (x: number, y: number): Element | null {
-            throw new Error("Function not implemented.");
-          },
-          elementsFromPoint: function (x: number, y: number): Element[] {
-            throw new Error("Function not implemented.");
-          },
-          getAnimations: function (): Animation[] {
-            throw new Error("Function not implemented.");
-          },
-          fonts: undefined,
-          onabort: null,
-          onanimationcancel: null,
-          onanimationend: null,
-          onanimationiteration: null,
-          onanimationstart: null,
-          onauxclick: null,
-          onbeforeinput: null,
-          onbeforetoggle: null,
-          onblur: null,
-          oncancel: null,
-          oncanplay: null,
-          oncanplaythrough: null,
-          onchange: null,
-          onclick: null,
-          onclose: null,
-          oncontextmenu: null,
-          oncopy: null,
-          oncuechange: null,
-          oncut: null,
-          ondblclick: null,
-          ondrag: null,
-          ondragend: null,
-          ondragenter: null,
-          ondragleave: null,
-          ondragover: null,
-          ondragstart: null,
-          ondrop: null,
-          ondurationchange: null,
-          onemptied: null,
-          onended: null,
-          onerror: null,
-          onfocus: null,
-          onformdata: null,
-          ongotpointercapture: null,
-          oninput: null,
-          oninvalid: null,
-          onkeydown: null,
-          onkeypress: null,
-          onkeyup: null,
-          onload: null,
-          onloadeddata: null,
-          onloadedmetadata: null,
-          onloadstart: null,
-          onlostpointercapture: null,
-          onmousedown: null,
-          onmouseenter: null,
-          onmouseleave: null,
-          onmousemove: null,
-          onmouseout: null,
-          onmouseover: null,
-          onmouseup: null,
-          onpaste: null,
-          onpause: null,
-          onplay: null,
-          onplaying: null,
-          onpointercancel: null,
-          onpointerdown: null,
-          onpointerenter: null,
-          onpointerleave: null,
-          onpointermove: null,
-          onpointerout: null,
-          onpointerover: null,
-          onpointerup: null,
-          onprogress: null,
-          onratechange: null,
-          onreset: null,
-          onresize: null,
-          onscroll: null,
-          onscrollend: null,
-          onsecuritypolicyviolation: null,
-          onseeked: null,
-          onseeking: null,
-          onselect: null,
-          onselectionchange: null,
-          onselectstart: null,
-          onslotchange: null,
-          onstalled: null,
-          onsubmit: null,
-          onsuspend: null,
-          ontimeupdate: null,
-          ontoggle: null,
-          ontransitioncancel: null,
-          ontransitionend: null,
-          ontransitionrun: null,
-          ontransitionstart: null,
-          onvolumechange: null,
-          onwaiting: null,
-          onwebkitanimationend: null,
-          onwebkitanimationiteration: null,
-          onwebkitanimationstart: null,
-          onwebkittransitionend: null,
-          onwheel: null,
-          childElementCount: 0,
-          children: undefined,
-          firstElementChild: null,
-          lastElementChild: null,
-          append: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          prepend: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
-            throw new Error("Function not implemented.");
-          },
-          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
-            throw new Error("Function not implemented.");
-          },
-          replaceChildren: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
-            throw new Error("Function not implemented.");
-          },
-          createNSResolver: function (nodeResolver: Node): Node {
-            throw new Error("Function not implemented.");
-          },
-          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
-            throw new Error("Function not implemented.");
-          },
+        
           documents: [],
           selectedDocument: null,
           filteredDocuments: [],
@@ -2968,7 +2596,7 @@ export const useDocumentManagerSlice = createSlice({
 
     selectDocument: (state, action: PayloadAction<number>) => {
       state.selectedDocument =
-        state.documents.find((doc) => doc.id === action.payload.toString()) ||
+        state.documents?.find((doc) => doc.id === action.payload.toString()) ||
         null;
     },
 
@@ -2978,14 +2606,14 @@ export const useDocumentManagerSlice = createSlice({
 
     setExportedDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject[]>>
+      action: PayloadAction<WritableDraft<DocumentData[]>>
     ) => {
       state.documents = action.payload;
     },
 
     setFilteredDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject[]>>
+      action: PayloadAction<WritableDraft<DocumentData[]>>
     ) => {
       state.filteredDocuments = action.payload;
     },
@@ -2995,9 +2623,9 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ id: string; status: DocumentStatus }>
     ) => {
       const { id, status } = action.payload;
-      const documentIndex = state.documents.findIndex((doc) => doc.id === id);
+      const documentIndex = state.documents?.findIndex((doc) => doc.id === id);
       if (documentIndex !== -1) {
-        state.documents[documentIndex].status = status;
+        state.documents?[documentIndex].status = status;
       } else {
         console.log("Document not found");
       }
@@ -3005,9 +2633,9 @@ export const useDocumentManagerSlice = createSlice({
       // Additional logic...
     },
 
-    updateDocument: (state, action: PayloadAction<Partial<DocumentObject>>) => {
+    updateDocument: (state, action: PayloadAction<Partial<DocumentData>>) => {
       const { id, ...updates } = action.payload;
-      const existingDocument = state.documents.find((doc) => doc.id === id);
+      const existingDocument = state.documents?.find((doc) => doc.id === id);
       if (existingDocument) {
         Object.assign(existingDocument, updates);
       } else {
@@ -3018,11 +2646,11 @@ export const useDocumentManagerSlice = createSlice({
     },
 
     deleteDocument: (state, action: PayloadAction<string>) => {
-      const documentIndex = state.documents.findIndex(
+      const documentIndex = state.documents?.findIndex(
         (doc) => doc.id === action.payload
       );
       if (documentIndex !== -1) {
-        state.documents.splice(documentIndex, 1);
+        state.documents?.splice(documentIndex!, 1);
         useNotification().notify(
           "deleteDocumentSuccess",
           "Document deleted successfully",
@@ -4036,7 +3664,6 @@ export const useDocumentManagerSlice = createSlice({
           uploadedByTeamId: null,
           uploadedByTeam: null,
           URL: "",
-          alinkColor: "",
           all: undefined,
           anchors: undefined,
           applets: undefined,
@@ -4086,353 +3713,7 @@ export const useDocumentManagerSlice = createSlice({
           timeline: undefined,
           visibilityState: "hidden",
           vlinkColor: "",
-          adoptNode: function <T extends Node>(node: T): T {
-            throw new Error("Function not implemented.");
-          },
-          captureEvents: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          caretRangeFromPoint: function (x: number, y: number): Range | null {
-            throw new Error("Function not implemented.");
-          },
-          clear: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          close: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          createAttribute: function (localName: string): Attr {
-            throw new Error("Function not implemented.");
-          },
-          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
-            throw new Error("Function not implemented.");
-          },
-          createCDATASection: function (data: string): CDATASection {
-            throw new Error("Function not implemented.");
-          },
-          createComment: function (data: string): Comment {
-            throw new Error("Function not implemented.");
-          },
-          createDocumentFragment: function (): DocumentFragment {
-            throw new Error("Function not implemented.");
-          },
-          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
-            throw new Error("Function not implemented.");
-          },
-          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
-            throw new Error("Function not implemented.");
-          },
-          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
-            throw new Error("Function not implemented.");
-          },
-          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
-            throw new Error("Function not implemented.");
-          },
-          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
-            throw new Error("Function not implemented.");
-          },
-          createRange: function (): Range {
-            throw new Error("Function not implemented.");
-          },
-          createTextNode: function (data: string): Text {
-            throw new Error("Function not implemented.");
-          },
-          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
-            throw new Error("Function not implemented.");
-          },
-          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
-            throw new Error("Function not implemented.");
-          },
-          exitFullscreen: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          exitPictureInPicture: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          exitPointerLock: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          getElementById: function (elementId: string): HTMLElement | null {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
-            throw new Error("Function not implemented.");
-          },
-          getSelection: function (): Selection | null {
-            throw new Error("Function not implemented.");
-          },
-          hasFocus: function (): boolean {
-            throw new Error("Function not implemented.");
-          },
-          hasStorageAccess: function (): Promise<boolean> {
-            throw new Error("Function not implemented.");
-          },
-          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
-            throw new Error("Function not implemented.");
-          },
-          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandEnabled: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandIndeterm: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandState: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandSupported: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandValue: function (commandId: string): string {
-            throw new Error("Function not implemented.");
-          },
-          releaseEvents: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          requestStorageAccess: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          write: function (...text: string[]): void {
-            throw new Error("Function not implemented.");
-          },
-          writeln: function (...text: string[]): void {
-            throw new Error("Function not implemented.");
-          },
-          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
-            throw new Error("Function not implemented.");
-          },
-          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
-            throw new Error("Function not implemented.");
-          },
-          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
-            throw new Error("Function not implemented.");
-          },
-          baseURI: "",
-          childNodes: undefined,
-          firstChild: null,
-          isConnected: false,
-          lastChild: null,
-          nextSibling: null,
-          nodeName: "",
-          nodeType: 0,
-          nodeValue: null,
-          parentElement: null,
-          parentNode: null,
-          previousSibling: null,
-          textContent: null,
-          appendChild: function <T extends Node>(node: T): T {
-            throw new Error("Function not implemented.");
-          },
-          cloneNode: function (deep?: boolean | undefined): Node {
-            throw new Error("Function not implemented.");
-          },
-          compareDocumentPosition: function (other: Node): number {
-            throw new Error("Function not implemented.");
-          },
-          contains: function (other: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
-            throw new Error("Function not implemented.");
-          },
-          hasChildNodes: function (): boolean {
-            throw new Error("Function not implemented.");
-          },
-          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
-            throw new Error("Function not implemented.");
-          },
-          isDefaultNamespace: function (namespace: string | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isEqualNode: function (otherNode: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isSameNode: function (otherNode: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          lookupNamespaceURI: function (prefix: string | null): string | null {
-            throw new Error("Function not implemented.");
-          },
-          lookupPrefix: function (namespace: string | null): string | null {
-            throw new Error("Function not implemented.");
-          },
-          normalize: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          removeChild: function <T extends Node>(child: T): T {
-            throw new Error("Function not implemented.");
-          },
-          replaceChild: function <T extends Node>(node: Node, child: T): T {
-            throw new Error("Function not implemented.");
-          },
-          ELEMENT_NODE: 1,
-          ATTRIBUTE_NODE: 2,
-          TEXT_NODE: 3,
-          CDATA_SECTION_NODE: 4,
-          ENTITY_REFERENCE_NODE: 5,
-          ENTITY_NODE: 6,
-          PROCESSING_INSTRUCTION_NODE: 7,
-          COMMENT_NODE: 8,
-          DOCUMENT_NODE: 9,
-          DOCUMENT_TYPE_NODE: 10,
-          DOCUMENT_FRAGMENT_NODE: 11,
-          NOTATION_NODE: 12,
-          DOCUMENT_POSITION_DISCONNECTED: 1,
-          DOCUMENT_POSITION_PRECEDING: 2,
-          DOCUMENT_POSITION_FOLLOWING: 4,
-          DOCUMENT_POSITION_CONTAINS: 8,
-          DOCUMENT_POSITION_CONTAINED_BY: 16,
-          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
-          dispatchEvent: function (event: Event): boolean {
-            throw new Error("Function not implemented.");
-          },
-          activeElement: null,
-          adoptedStyleSheets: [],
-          fullscreenElement: null,
-          pictureInPictureElement: null,
-          pointerLockElement: null,
-          styleSheets: undefined,
-          elementFromPoint: function (x: number, y: number): Element | null {
-            throw new Error("Function not implemented.");
-          },
-          elementsFromPoint: function (x: number, y: number): Element[] {
-            throw new Error("Function not implemented.");
-          },
-          getAnimations: function (): Animation[] {
-            throw new Error("Function not implemented.");
-          },
-          fonts: undefined,
-          onabort: null,
-          onanimationcancel: null,
-          onanimationend: null,
-          onanimationiteration: null,
-          onanimationstart: null,
-          onauxclick: null,
-          onbeforeinput: null,
-          onbeforetoggle: null,
-          onblur: null,
-          oncancel: null,
-          oncanplay: null,
-          oncanplaythrough: null,
-          onchange: null,
-          onclick: null,
-          onclose: null,
-          oncontextmenu: null,
-          oncopy: null,
-          oncuechange: null,
-          oncut: null,
-          ondblclick: null,
-          ondrag: null,
-          ondragend: null,
-          ondragenter: null,
-          ondragleave: null,
-          ondragover: null,
-          ondragstart: null,
-          ondrop: null,
-          ondurationchange: null,
-          onemptied: null,
-          onended: null,
-          onerror: null,
-          onfocus: null,
-          onformdata: null,
-          ongotpointercapture: null,
-          oninput: null,
-          oninvalid: null,
-          onkeydown: null,
-          onkeypress: null,
-          onkeyup: null,
-          onload: null,
-          onloadeddata: null,
-          onloadedmetadata: null,
-          onloadstart: null,
-          onlostpointercapture: null,
-          onmousedown: null,
-          onmouseenter: null,
-          onmouseleave: null,
-          onmousemove: null,
-          onmouseout: null,
-          onmouseover: null,
-          onmouseup: null,
-          onpaste: null,
-          onpause: null,
-          onplay: null,
-          onplaying: null,
-          onpointercancel: null,
-          onpointerdown: null,
-          onpointerenter: null,
-          onpointerleave: null,
-          onpointermove: null,
-          onpointerout: null,
-          onpointerover: null,
-          onpointerup: null,
-          onprogress: null,
-          onratechange: null,
-          onreset: null,
-          onresize: null,
-          onscroll: null,
-          onscrollend: null,
-          onsecuritypolicyviolation: null,
-          onseeked: null,
-          onseeking: null,
-          onselect: null,
-          onselectionchange: null,
-          onselectstart: null,
-          onslotchange: null,
-          onstalled: null,
-          onsubmit: null,
-          onsuspend: null,
-          ontimeupdate: null,
-          ontoggle: null,
-          ontransitioncancel: null,
-          ontransitionend: null,
-          ontransitionrun: null,
-          ontransitionstart: null,
-          onvolumechange: null,
-          onwaiting: null,
-          onwebkitanimationend: null,
-          onwebkitanimationiteration: null,
-          onwebkitanimationstart: null,
-          onwebkittransitionend: null,
-          onwheel: null,
-          childElementCount: 0,
-          children: undefined,
-          firstElementChild: null,
-          lastElementChild: null,
-          append: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          prepend: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
-            throw new Error("Function not implemented.");
-          },
-          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
-            throw new Error("Function not implemented.");
-          },
-          replaceChildren: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
-            throw new Error("Function not implemented.");
-          },
-          createNSResolver: function (nodeResolver: Node): Node {
-            throw new Error("Function not implemented.");
-          },
-          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
-            throw new Error("Function not implemented.");
-          },
+          
           documents: [],
           selectedDocument: null,
           filteredDocuments: [],
@@ -4561,14 +3842,15 @@ export const useDocumentManagerSlice = createSlice({
         (doc) => doc.id === documentId.toString()
       );
       if (documentToTrack) {
-        // Initialize the changes property if it's not already initialized
-        if (!documentToTrack.changes) {
+        // Ensure changes property is initialized as an array
+        if (!Array.isArray(documentToTrack.changes)) {
           documentToTrack.changes = [];
         }
         // Push the changes to the changes array
         documentToTrack.changes.push(changes);
       }
     },
+    
 
     compareDocuments: (
       state,

@@ -1,9 +1,9 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { makeAutoObservable } from "mobx";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
-import { DocumentPath, DocumentTypeEnum } from "../../documents/DocumentGenerator";
+import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Comment } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
@@ -19,24 +19,116 @@ interface DocumentContent {
   // Add more properties as needed
 }
 
-interface Document extends DocumentData {
-  id: number;
+interface DocumentBase {
+  id: string | number;
   title: string;
-  type: DocumentTypeEnum;
   content: string;
-  description: string;
+  description: string | null | undefined
   tags: string[];
   createdAt: string;
   updatedAt?: string;
   createdBy: string;
   updatedBy: string;
-  documentData: any;
-  filePath?: DocumentPath;
-  visibility: AllTypes
-  comments?: Comment[]
-
-    // Other properties
+  visibility: AllTypes;
+  comments?: Comment[];
+  selectedDocument: DocumentData | null;
+  selectedDocuments?: DocumentData[];
 }
+
+interface DocumentMetadata {
+  characterSet: string;
+  charset: string;
+  compatMode: string;
+  contentType: string;
+  cookie: string;
+  designMode: string;
+  dir: string;
+  domain: string;
+  inputEncoding: string;
+  lastModified: string;
+  linkColor: string;
+  referrer: string;
+  vlinkColor: string;
+}
+
+interface DocumentStatus {
+  fullscreen: boolean;
+  fullscreenEnabled: boolean;
+  hidden: boolean;
+  pictureInPictureEnabled: boolean;
+  readyState: string;
+  visibilityState: string;
+}
+
+interface DocumentAdditionalProps {
+  URL: string;
+  bgColor: string;
+  documentURI: string;
+  currentScript: string | null;
+  defaultView: Window | null;
+  doctype: DocumentType | null;
+  ownerDocument: Document | null;
+  scrollingElement: Element | null;
+  timeline: DocumentTimeline | undefined;
+  all?: any;
+  anchors?: any;
+  applets?: any;
+  body?: HTMLElement;
+  documentElement?: HTMLElement;
+  embeds?: any;
+  forms?: any;
+  head?: HTMLHeadElement;
+  images?: any;
+  implementation?: DOMImplementation;
+  links?: any;
+  location?: Location;
+  onfullscreenchange?: ((this: Document, ev: Event) => any) | null;
+  onfullscreenerror?: ((this: Document, ev: Event) => any) | null;
+}
+
+
+  interface Document extends DocumentBase, DocumentMetadata, DocumentStatus, DocumentAdditionalProps  {
+  // URL: string | undefined;
+  bgColor: string;
+  documentURI: string;
+  currentScript: string | null;
+  defaultView: Window | null;
+  doctype: DocumentType | null;
+  ownerDocument: Document | null;
+  scrollingElement: Element | null;
+  timeline: DocumentTimeline | undefined;
+  filePath?: DocumentPath;
+  documentData?: DocumentData;
+  _rev: string | undefined;
+  _attachments?: Record<string, any> | undefined;
+  _links?: Record<string, any> | undefined;
+  _etag?: string;
+  _local?: boolean;
+  _revs?: string[];
+  _source?: Record<string, any> | undefined;
+  _shards?: Record<string, any> | undefined;
+  _size?: number;
+  _version?: number;
+  _version_conflicts?: number;
+  _seq_no?: number;
+  _primary_term?: number;
+  _routing?: string;
+  _parent?: string;
+  _parent_as_child?: boolean;
+  _slices?: any[];
+  _highlight?: any;
+  _highlight_inner_hits?: any;
+  _source_as_doc?: boolean;
+  _source_includes?: any[];
+  _routing_keys?: any[];
+  _routing_values?: any[];
+  _routing_values_as_array?: any[];
+  _routing_values_as_array_of_objects?: any[];
+  _routing_values_as_array_of_objects_with_key?: any[];
+  _routing_values_as_array_of_objects_with_key_and_value?: any[];
+  _routing_values_as_array_of_objects_with_key_and_value_and_value?: any[];
+}
+
   
 export interface DocumentStore {
   documents: Record<string, Document>;
@@ -46,6 +138,8 @@ export interface DocumentStore {
   updateDocument: (id: number, updatedDocument: Document) => void;
   deleteDocument: (id: string) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
+  selectedDocument: Document | undefined;
+  selectedDocuments: Document[] | undefined;
   // Add more methods as needed
 }
 
@@ -54,7 +148,7 @@ const useDocumentStore = (): DocumentStore => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
-
+  const selectedDocumentId = useMemo(() => "", []);
 
 
   const fetchDocuments = async () => {
@@ -129,8 +223,14 @@ const useDocumentStore = (): DocumentStore => {
   }
 };
 
+  const selectedDocument = useMemo(() => {
+    return Object.values(documents).find((document) => document.id === selectedDocumentId);
+  }, [documents, selectedDocumentId]);
   
 
+  const selectedDocuments = useMemo(() => {
+    return Object.values(documents).filter((document) => document.id === selectedDocumentId);
+  }, [documents, selectedDocumentId]);
   
   const updateDocument = (id: number, updatedDocument: Document) => {
     setDocuments((prevDocuments) => ({
@@ -192,7 +292,9 @@ const useDocumentStore = (): DocumentStore => {
     
     deleteDocument,
     updateDocumentTags,
-    loadCalendarEventsDocumentContent
+    loadCalendarEventsDocumentContent,
+    selectedDocument,
+    selectedDocuments
     // Add more methods as needed
   });
 
@@ -200,5 +302,5 @@ const useDocumentStore = (): DocumentStore => {
 };
 
 export default useDocumentStore;
-export type { Document };
+export type { Document, DocumentBase };
 

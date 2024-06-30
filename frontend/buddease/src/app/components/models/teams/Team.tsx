@@ -7,7 +7,7 @@ import useFiltering from "../../hooks/useFiltering";
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project, ProjectType } from "../../projects/Project";
+import { Project, ProjectType, reassignProject } from "../../projects/Project";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { implementThen } from "../../state/stores/CommonEvent";
 import { Settings } from "../../state/stores/SettingsStore";
@@ -21,18 +21,20 @@ import CommonDetails, { CommonData } from "../CommonData";
 import { Data, DataDetailsProps } from "../data/Data";
 import { PriorityTypeEnum, StatusType, TeamStatus } from "../data/StatusType";
 import generateTimeBasedCode from "../realtime/TimeBasedCodeGenerator";
-import { Task } from "../tasks/Task";
+import { Task, TaskData } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from "./TeamMembers";
 
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
+import { assignProject, unassignProject, updateProgress } from "../../calendar/CalendarApp";
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "../../communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "../../notifications/Notification";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { SortCriteria } from "../../settings/SortCriteria";
+import { Snapshot } from "../../snapsho, updateProgressts/LocalStorageSnapshotStore";
 
 // Assume 'options' is provided elsewhere
 const options: SearchOptions = {
@@ -56,7 +58,46 @@ const options: SearchOptions = {
   projectView: "",
   calendarSettings: undefined,
   dashboardPreferences: undefined,
-  securityFeatures: []
+  securityFeatures: [],
+  newsOptions: {
+    newsCategory: "",
+    newsLanguage: "",
+    sortBy: SortCriteria.Date,
+    searchKeywords: [],
+    excludeKeywords: [],
+    // show: false,
+    // showTime: false,
+    // showDate: false,
+    // showProject: false,
+    // showTeam: false,
+    // showUser: false,
+    // showIdea: false,
+    // showTask: false,
+    // showData: false,
+    // showVideo: false,
+    // showSnapshot: false,
+    // showProgress: false,
+    // showTeamMember: false,
+    // showIdeaMember: false,
+    // showTaskMember: false,
+    // showDataMember: false,
+    // showVideoMember: false,
+    // showSnapshotMember: false,
+    // showProgressMember: false,
+    // showTeamMemberTask: false,
+    // showIdeaMemberTask: false,
+    // showTaskMemberTask: false,
+    // showDataMemberTask: false,
+    // showVideoMemberTask: false,
+    // showSnapshotMemberTask: false,
+    // showProgressMemberTask: false,
+    // showTeamMemberData: false,
+    // showIdeaMemberData: false,
+    // showTaskMemberData: false,
+    // showDataMemberData: false,
+    // showVideoMemberData: false,
+    // showSnapshotMemberData: false,
+  },
 };
 
 // Initialize the useFiltering hook with the provided options
@@ -134,7 +175,7 @@ const team: Team = {
     name: "",
     color: "",
     min: 0,
-    description: ""
+    description: "",
   },
   members: [
     {
@@ -294,7 +335,7 @@ const team: Team = {
             | "projectView"
             | "calendarSettings"
             | "dashboardPreferences"
-          |  "securityFeatures"
+            | "securityFeatures"
         ): void {
           // Filtering based on the provided key
           switch (key) {
@@ -335,9 +376,13 @@ const team: Team = {
               addFilter("projectView", "equal", options.projectView);
               break;
             case "calendarSettings":
-              addFilter("calendarSettings", "equal", options.calendarSettings || "");
+              addFilter(
+                "calendarSettings",
+                "equal",
+                options.calendarSettings || ""
+              );
               break;
-            case  "dashboardPreferences":
+            case "dashboardPreferences":
               addFilter(
                 "dashboardPreferences",
                 "equal",
@@ -345,7 +390,11 @@ const team: Team = {
               );
               break;
             case "securityFeatures":
-              addFilter("securityFeatures", "equal", options.securityFeatures[0]);
+              addFilter(
+                "securityFeatures",
+                "equal",
+                options.securityFeatures[0]
+              );
               break;
             // Add more cases for other settings options as needed
             default:
@@ -382,7 +431,7 @@ const team: Team = {
         directMessage: false,
         enabled: false,
         notificationType: "sms",
-              },
+      },
       activityLog: [],
       projects: [],
       socialLinks: undefined,
@@ -470,6 +519,10 @@ const team: Team = {
         blockList: [],
         allowMessagesFromNonContacts: false,
         shareProfileWithSearchEngines: false,
+        isPrivate: false,
+        isPrivateOnly: false,
+        isPrivateOnlyForContacts: false,
+        isPrivateOnlyForGroups: false,
       },
       activityStatus: "",
       isAuthorized: false,
@@ -535,7 +588,7 @@ const team: Team = {
           description: "Description of Task 1",
           phase: {} as Phase,
           assignedTo: [],
-          then(arg0: (newTask: any) => void): unknown {
+          then(arg0: (newTask: Team) => void): void {
             const newTask = {
               _id: "task-2",
               id: "2",
@@ -549,16 +602,42 @@ const team: Team = {
               priority: "low",
               estimatedHours: null,
               actualHours: null,
-              startDate: null,
+              startDate: undefined,
               endDate: new Date(),
               completionDate: new Date(),
               isActive: true,
               tags: [],
               dependencies: [],
+              team: {
+                id: "1",
+                name: "Team A",
+                color: "#000000",
+                label: "Team A",
+                current: 0,
+                max: 100,
+                min: 0,
+                percentage: 0,
+                value: 0,
+                description: " ",
+                done: false,
+              },
+              teamName: "Team A",
+              projects: [],
+              creationDate: new Date(),
+              progress: {} as Progress,
+              percentage: 0,
+              leader: {} as User,
+              assignedProjects: [],
+              reassignedProjects: [],
+              assignProject: assignProject,
+              reassignProject: reassignProject,
+              unassignProject: unassignProject,
+              updateProgress: updateProgress,
             };
             arg0(newTask);
             return;
           },
+          data: {} as TaskData,
           previouslyAssignedTo: [],
           done: false,
           dueDate: new Date(),
@@ -610,7 +689,7 @@ const team: Team = {
               },
             };
           },
-          data: {} as Data,
+          // data: {} as Data,
           source: "user",
           some: (
             callbackfn: (value: Task, index: number, array: Task[]) => unknown,
@@ -657,11 +736,10 @@ const team: Team = {
     snapshots: [] as SnapshotStore<Snapshot<Data>>[],
   } as User,
 
-  then(callback: (newData: Snapshot<Team>) => void) {
+  then(callback: (newData: Team) => void) {
     const newData = {
       _id: "team-1",
       id: "1",
-      name: "Team A",
       description: "Description of Team A",
       members: [],
       projects: [],
@@ -674,6 +752,27 @@ const team: Team = {
       data: {} as TeamData & Team,
       category: "Technology",
       content: undefined,
+      team: {
+        id: "string",
+        current: 0,
+        name: "string",
+        color: "string",
+        max: 100,
+        min: 0,
+        label: "string",
+        percentage: 0,
+        value: 0,
+        description: "string",
+        done: false,
+      },
+      teamName: "",
+      percentage: 0,
+      assignedProjects: [],
+      reassignedProjects: [],
+      assignProject: assignProject,
+      reassignProject: reassignProject,
+      unassignProject: unassignProject,
+      updateProgress: updateProgress,
     };
     callback(newData);
   },
@@ -788,12 +887,20 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
         analysisResults: team.analysisResults,
         assignedProjects: team.assignedProjects,
         reassignedProjects: team.reassignedProjects
-        .filter((reassignment) => reassignment.project !== undefined)
-        .map(({ projectId, project, projectName, previousTeam, reassignmentDate }) => ({
-          project: project!,
-          previousTeam,
-          reassignmentDate,
-        })),
+          .filter((reassignment) => reassignment.project !== undefined)
+          .map(
+            ({
+              projectId,
+              project,
+              projectName,
+              previousTeam,
+              reassignmentDate,
+            }) => ({
+              project: project!,
+              previousTeam,
+              reassignmentDate,
+            })
+          ),
         updatedAt: team.updatedAt ? team.updatedAt : new Date(),
         setCurrentTeam: setCurrentTeam,
         setCurrentProject: setCurrentProject,

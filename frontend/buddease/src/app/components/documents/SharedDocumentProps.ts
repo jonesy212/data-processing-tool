@@ -1,15 +1,20 @@
+import { ContentState } from 'draft-js';
 // SharedDocumentProps.ts
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { ContentState, EditorState } from "draft-js";
+import { EditorState } from "draft-js";
 import { Dispatch, SetStateAction } from "react";
 import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
+import AccessHistory from '../versions/AccessHistory';
 import AppVersionImpl from "../versions/AppVersion";
+import { VersionData } from '../versions/VersionData';
 import { ModifiedDate } from "./DocType";
 import { DocumentData } from "./DocumentBuilder";
-import { AccessRecord, DocumentOptions } from "./DocumentOptions";
+import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
+import { DocumentObject } from '../state/redux/slices/DocumentSlice';
+import { DocumentTypeEnum } from './DocumentGenerator';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -21,38 +26,37 @@ export interface CommonAnimationOptions {
 
 export interface DocumentBuilderProps extends DocumentData  {
   isDynamic: boolean;
-  setDocumentPhase: (
+  setDocumentPhase?: (
     docPhase: string | Phase | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
     phase: string | Phase | undefined,
     phaseType: DocumentPhaseTypeEnum
-    };
+    } | undefined;
   currentContent: ContentState
-  previousContent: string;
-  currentMetadata: StructuredMetadata;
-  
-  previousMetadata: StructuredMetadata;
-  accessHistory: AccessRecord[];
+  previousContent?: string | ContentState;
+  currentMetadata: StructuredMetadata | undefined;
+  previousMetadata: StructuredMetadata | undefined;
+  accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate | undefined;
-  versionData: Version | undefined;
+  versionData: VersionData | undefined;
   documentPhase:
     | string
     | {
-        name: string;
-        originalPath: string;
-        alternatePaths: string[];
-        fileType: string;
-        title: string;
-        description: string;
-        keywords: string[];
-        authors: string[];
-        contributors: string[];
-        publisher: string;
-        copyright: string;
-        license: string;
-        links: string[];
-        tags: string[];
+        name?: string;
+        originalPath?: string;
+        alternatePaths?: string[];
+        fileType?: string;
+        title?: string;
+        description?: string;
+        keywords?: string[];
+        authors?: string[];
+        contributors?: string[];
+        publisher?: string;
+        copyright?: string;
+        license?: string;
+        links?: string[];
+        tags?: string[];
         phaseType: ProjectPhaseTypeEnum;
         customProp1: string;
         customProp2: number;
@@ -61,13 +65,12 @@ export interface DocumentBuilderProps extends DocumentData  {
   version: AppVersionImpl | undefined;
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
-  setOptions: Dispatch<SetStateAction<DocumentOptions>>; // Use Dispatch and SetStateAction
-  documents: DocumentData[]; // Add documents prop to receive document data
+  setOptions: Dispatch<SetStateAction<DocumentOptions>>; 
+  documents: DocumentData[]; 
   options: DocumentOptions;
   editorState: EditorState
-  
-  
-  buildDocument: (documentData: DocumentData) => void;
+  projectPath: string;
+  buildDocument: (documentData: DocumentData, document: DocumentObject, documentType: DocumentTypeEnum) => void;
   buildDocuments?: DocumentData[];
 }
 

@@ -20,6 +20,8 @@ interface SearchResultWithQuery<T> extends SearchResult<T> {
 interface SearchResultProps<T> {
   result: SearchResultWithQuery<T>;
 }
+
+
 interface SearchResult<T> {
   items: T[];
   totalCount: number;
@@ -49,9 +51,7 @@ interface SearchResult<T> {
   repoURL?: string
 }
 
-
-
-const SearchResultComponent: React.FC<SearchResultProps<Document>> = ({ result }) => {
+const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]); // State to store search results
   const [loading, setLoading] = useState(false); // State to track loading status
   const [error, setError] = useState(""); // State to track errors

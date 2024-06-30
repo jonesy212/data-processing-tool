@@ -33,10 +33,10 @@ class Version {
     revisionNotes?: string;
   } | undefined;
   versions: {
-    data: VersionData;
-    backend: BackendStructure;
-    frontend: FrontendStructure;
-  };
+    data: VersionData | undefined;
+    backend: BackendStructure | undefined;
+    frontend: FrontendStructure | undefined;
+  } | null;
   appVersion: string;
   published?: boolean;
   checksum: string;
@@ -125,9 +125,9 @@ class Version {
       revisionNotes?: string;
     } | undefined;
     versions: {
-      data: VersionData;
-      backend: BackendStructure;
-      frontend: FrontendStructure;
+      data: VersionData | undefined;
+      backend: BackendStructure | undefined;
+      frontend: FrontendStructure | undefined;
     };
 
     versionHistory: VersionHistory;
@@ -270,7 +270,7 @@ class Version {
     });
   }
 
-  getVersionNumber?(): string {
+  getVersionNumber(): string {
     return this.versionNumber;
   }
 
@@ -290,13 +290,13 @@ class Version {
     data: Data[];
     name: string;
     versions: {
-      data: VersionData;
-      backend: BackendStructure;
-      frontend: FrontendStructure;
+      data: VersionData | undefined;
+      backend: BackendStructure | undefined;
+      frontend: FrontendStructure | undefined;
     };
     metadata: {
       author: string;
-      timestamp: string | Date | undefined;
+      timestamp: string | Date  | undefined
     };
     url: string;
     versionHistory: VersionHistory;
@@ -586,9 +586,12 @@ const data: VersionData = {
     },
     backend: backend,
     frontend: frontend,
-      
   },
-  data: [], // If data is required at this level, ensure it matches the type definition
+  data: [],
+  version: "",
+  timestamp: "",
+  user: "",
+  comments: []
 };
 
 export { data };

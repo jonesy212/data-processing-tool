@@ -15,3 +15,7 @@ function generateDrawingJSON(drawing: Drawing): any {
   };
   return drawingJSON;
 }
+
+
+export { generateDrawingJSON };
+export type { Drawing };

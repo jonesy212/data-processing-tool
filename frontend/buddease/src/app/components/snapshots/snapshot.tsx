@@ -6,16 +6,13 @@ import { Signature } from "ethers";
 import { LanguageEnum } from "../communications/LanguageEnum";
 import { CustomTransaction } from "../crypto/SmartContractInteraction";
 import { createCustomTransaction } from "../hooks/dynamicHooks/createCustomTransaction";
-import { Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Settings } from "../state/stores/SettingsStore";
 import { subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { CustomSnapshotData, Snapshot } from "./LocalStorageSnapshotStore";
-
-
-
 
 // Define T as a generic type parameter
 function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
@@ -28,24 +25,22 @@ function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
     description: "Sample snapshot description",
     tags: ["sample", "snapshot"],
     metadata: {},
-    data: {} as T
-    // Other properties as needed
+    data: {} as T,
+    initialState: undefined
   };
 
   // Usage example
   console.log(newSnapshot);
 }
 
-
-
-const snapshot: Snapshot<Data> = {
+const snapshot: BaseData = {
   id: "snapshot1",
   category: "example category",
   timestamp: new Date(),
   createdBy: "creator1",
   description: "Sample snapshot description",
   tags: ["sample", "snapshot"],
-  metadata:{},
+  metadata: {},
 
   data: {
     _id: "1",
@@ -73,20 +68,20 @@ const snapshot: Snapshot<Data> = {
       component: {} as React.FC<any>,
       duration: 0,
       hooks: {
-        onInit: () => {},
-        onMount: () => {},
-        onUnmount: () => {},
-        onPhaseChange: () => {},
-        onPhaseCompletion: () => {},
-        onPhaseCreation: () => {},
-        onPhaseDeletion: () => {},
-        onPhaseUpdate: () => {},
-        onPhaseMove: () => {},
-        onPhaseDueDateChange: () => {},
-        onPhasePriorityChange: () => {},
-        onPhaseAssigneeChange: () => {},
+        onInit: () => { },
+        onMount: () => { },
+        onUnmount: () => { },
+        onPhaseChange: () => { },
+        onPhaseCompletion: () => { },
+        onPhaseCreation: () => { },
+        onPhaseDeletion: () => { },
+        onPhaseUpdate: () => { },
+        onPhaseMove: () => { },
+        onPhaseDueDateChange: () => { },
+        onPhasePriorityChange: () => { },
+        onPhaseAssigneeChange: () => { },
 
-        resetIdleTimeout: async () => {},
+        resetIdleTimeout: async () => { },
         isActive: false,
         progress: {
           id: "",
@@ -210,7 +205,7 @@ const snapshot: Snapshot<Data> = {
       isActive: true,
       profilePicture: null,
       processingTasks: [],
-      role: UserRoles.Leader,
+      role: UserRoles.TeamLeader,
       firstName: "",
       lastName: "",
       friends: [],
@@ -218,10 +213,10 @@ const snapshot: Snapshot<Data> = {
       persona: new Persona(PersonaTypeEnum.Default),
       settings: {
         id: "",
-        filter: (key: keyof Settings) => {},
+        filter: (key: keyof Settings) => { },
         appName: "buddease",
         userId: 123,
-        userSettings: setTimeout(() => {}, 1000), // Example timeout
+        userSettings: setTimeout(() => { }, 1000), // Example timeout
         communicationMode: "email",
         enableRealTimeUpdates: true,
         defaultFileType: "pdf",
@@ -326,6 +321,8 @@ const snapshot: Snapshot<Data> = {
         hideVisitedProfiles: true,
         restrictContentSharing: true,
         enableIncognitoMode: false,
+        restrictContentSharingToContacts: false,
+        restrictContentSharingToGroups: false,
       },
       notifications: {
         email: true,
@@ -387,6 +384,10 @@ const snapshot: Snapshot<Data> = {
         blockList: [],
         allowMessagesFromNonContacts: true,
         shareProfileWithSearchEngines: false,
+        isPrivate: false,
+        isPrivateOnly: false,
+        isPrivateOnlyForContacts: false,
+        isPrivateOnlyForGroups: false,
       },
       activityStatus: "Online",
       isAuthorized: true,
@@ -469,10 +470,8 @@ const snapshot: Snapshot<Data> = {
             if (this.type !== null && this.type !== undefined) {
               types.push(this.type);
             }
-            if (
-              this.maxFeePerGas !== null &&
-              this.maxPriorityFeePerGas !== null
-            ) {
+            if (this.maxFeePerGas !== null &&
+              this.maxPriorityFeePerGas !== null) {
               types.push(2);
             }
             if (types.length === 0) {
@@ -520,10 +519,9 @@ const snapshot: Snapshot<Data> = {
               description: this.description || "",
               startDate: this.startDate ? new Date(this.startDate) : undefined,
               endDate: this.endDate ? new Date(this.endDate) : undefined,
-              isSigned:
-                typeof this.isSigned === "function"
-                  ? this.isSigned.bind(this)
-                  : this.isSigned,
+              isSigned: typeof this.isSigned === "function"
+                ? this.isSigned.bind(this)
+                : this.isSigned,
               serialized: this.serialized,
               unsignedSerialized: this.unsignedSerialized,
               nonce: this.nonce as number,
@@ -544,30 +542,24 @@ const snapshot: Snapshot<Data> = {
               blobVersionedHashes: this.blobVersionedHashes as string,
               from: this.from as string,
               fromPublicKey: this.fromPublicKey,
-              isLegacy:
-                typeof this.isLegacy === "function"
-                  ? this.isLegacy.bind(this)
-                  : this.isLegacy,
-              isBerlin:
-                typeof this.isBerlin === "function"
-                  ? this.isBerlin.bind(this)
-                  : this.isBerlin,
-              isLondon:
-                typeof this.isLondon === "function"
-                  ? this.isLondon.bind(this)
-                  : this.isLondon,
-              isCancun:
-                typeof this.isCancun === "function"
-                  ? this.isCancun.bind(this)
-                  : this.isCancun,
-              inferType:
-                typeof this.inferType === "function"
-                  ? this.inferType.bind(this)
-                  : this.inferType,
-              inferTypes:
-                typeof this.inferTypes === "function"
-                  ? this.inferTypes.bind(this)
-                  : this.inferTypes,
+              isLegacy: typeof this.isLegacy === "function"
+                ? this.isLegacy.bind(this)
+                : this.isLegacy,
+              isBerlin: typeof this.isBerlin === "function"
+                ? this.isBerlin.bind(this)
+                : this.isBerlin,
+              isLondon: typeof this.isLondon === "function"
+                ? this.isLondon.bind(this)
+                : this.isLondon,
+              isCancun: typeof this.isCancun === "function"
+                ? this.isCancun.bind(this)
+                : this.isCancun,
+              inferType: typeof this.inferType === "function"
+                ? this.inferType.bind(this)
+                : this.inferType,
+              inferTypes: typeof this.inferTypes === "function"
+                ? this.inferTypes.bind(this)
+                : this.inferTypes,
               clone: typeof this.clone === "function" ? this.clone : this.clone,
 
               equals: function (
@@ -626,46 +618,36 @@ const snapshot: Snapshot<Data> = {
             return clonedData;
           },
           equals(data: CustomTransaction) {
-            const isSigned =
-              typeof this.isSigned === "function"
-                ? this.isSigned()
-                : this.isSigned;
-            const dataIsSigned =
-              typeof data.isSigned === "function"
-                ? data.isSigned()
-                : data.isSigned;
-            const isCancun =
-              typeof this.isCancun === "function"
-                ? this.isCancun()
-                : this.isCancun;
-            const dataIsCancun =
-              typeof data.isCancun === "function"
-                ? data.isCancun()
-                : data.isCancun;
-            const isLegacy =
-              typeof this.isLegacy === "function"
-                ? this.isLegacy()
-                : this.isLegacy;
-            const dataIsLegacy =
-              typeof data.isLegacy === "function"
-                ? data.isLegacy()
-                : data.isLegacy;
-            const isBerlin =
-              typeof this.isBerlin === "function"
-                ? this.isBerlin()
-                : this.isBerlin;
-            const dataIsBerlin =
-              typeof data.isBerlin === "function"
-                ? data.isBerlin()
-                : data.isBerlin;
-            const isLondon =
-              typeof this.isLondon === "function"
-                ? this.isLondon()
-                : this.isLondon;
-            const dataIsLondon =
-              typeof data.isLondon === "function"
-                ? data.isLondon()
-                : data.isLondon;
+            const isSigned = typeof this.isSigned === "function"
+              ? this.isSigned()
+              : this.isSigned;
+            const dataIsSigned = typeof data.isSigned === "function"
+              ? data.isSigned()
+              : data.isSigned;
+            const isCancun = typeof this.isCancun === "function"
+              ? this.isCancun()
+              : this.isCancun;
+            const dataIsCancun = typeof data.isCancun === "function"
+              ? data.isCancun()
+              : data.isCancun;
+            const isLegacy = typeof this.isLegacy === "function"
+              ? this.isLegacy()
+              : this.isLegacy;
+            const dataIsLegacy = typeof data.isLegacy === "function"
+              ? data.isLegacy()
+              : data.isLegacy;
+            const isBerlin = typeof this.isBerlin === "function"
+              ? this.isBerlin()
+              : this.isBerlin;
+            const dataIsBerlin = typeof data.isBerlin === "function"
+              ? data.isBerlin()
+              : data.isBerlin;
+            const isLondon = typeof this.isLondon === "function"
+              ? this.isLondon()
+              : this.isLondon;
+            const dataIsLondon = typeof data.isLondon === "function"
+              ? data.isLondon()
+              : data.isLondon;
 
             return (
               this.id === data.id &&
@@ -711,6 +693,7 @@ const snapshot: Snapshot<Data> = {
       ],
     },
   },
+  initialState: undefined
 };
 
 const sampleSnapshot: CustomSnapshotData = {

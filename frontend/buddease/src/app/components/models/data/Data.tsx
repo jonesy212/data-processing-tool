@@ -25,6 +25,7 @@ import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Content } from "../content/AddContent";
+import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
 import { Tag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
@@ -54,7 +55,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: Snapshots<T>
+    snapshots?: Snapshots<BaseData>
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -94,73 +95,71 @@ export interface Comment {
   // Add other properties as needed
 }
 
-interface BaseData {
-  _id?: string;
-  id?: string | number;
-  title?: string;
-  description?: string | null;
-  startDate?: Date;
-  endDate?: Date;
-  scheduled?: boolean;
-  status?: AllStatus;
-  timestamp?: string | Date;
-  isActive?: boolean;
-  tags?: string[] | Tag[];
-  phase?: Phase | null;
-  phaseType?: ProjectPhaseTypeEnum;
+  interface BaseData {
+    _id?: string;
+    id?: string | number;
+    title?: string;
+    description?: string | null;
+    startDate?: Date;
+    endDate?: Date;
+    scheduled?: boolean;
+    status?: AllStatus;
+    timestamp?: string | Date;
+    isActive?: boolean;
+    tags?: string[] | Tag[];
+    phase?: Phase | null;
+    phaseType?: ProjectPhaseTypeEnum;
 
-  // Properties specific to Todo
-  dueDate?: Date | null;
-  priority?: string | AllStatus;
-  assignee?: UserAssignee | null;
-  collaborators?: string[];
-  comments?: (Comment | CustomComment)[] | undefined;
-  attachments?: Attachment[];
-  subtasks?: Todo[];
-  createdAt?: Date;
-  updatedAt?: Date;
-  createdBy?: string;
-  updatedBy?: string;
+    // Properties specific to Todo
+    dueDate?: Date | null;
+    priority?: string | AllStatus;
+    assignee?: UserAssignee | null;
+    collaborators?: string[];
+    comments?: (Comment | CustomComment)[] | undefined;
+    attachments?: Attachment[];
+    subtasks?: Task[];
+    createdAt?: Date;
+    updatedAt?: Date;
+    createdBy?: string;
+    updatedBy?: string;
 
-  updatedDetails?: DetailsItem<SupportedData>;
-  isArchived?: boolean;
-  isCompleted?: boolean;
-  isBeingEdited?: boolean;
-  isBeingDeleted?: boolean;
-  isBeingCompleted?: boolean;
-  isBeingReassigned?: boolean;
-  analysisType?: AnalysisTypeEnum;
-  analysisResults?: DataAnalysisResult[] | string;
+    updatedDetails?: DetailsItem<SupportedData>;
+    isArchived?: boolean;
+    isCompleted?: boolean;
+    isBeingEdited?: boolean;
+    isBeingDeleted?: boolean;
+    isBeingCompleted?: boolean;
+    isBeingReassigned?: boolean;
+    analysisType?: AnalysisTypeEnum;
+    analysisResults?: DataAnalysisResult[] | string;
 
-  audioUrl?: string;
-  videoUrl?: string;
-  videoThumbnail?: string;
-  videoDuration?: number;
-  collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
-  videoData?: VideoData;
-  additionalData?: any;
-  ideas?: Idea[];
-  members?: number | Member[];
+    audioUrl?: string;
+    videoUrl?: string;
+    videoThumbnail?: string;
+    videoDuration?: number;
+    collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
+    videoData?: VideoData;
+    additionalData?: any;
+    ideas?: Idea[];
+    members?: number | Member[];
 
-  leader?: User | null;
-  snapshots?: SnapshotStore<Snapshot<BaseData>>[];
-  text?: string;
-  category?: string | CategoryProperties | undefined;
-  [key: string]: any;
-  getData?: () => Promise<SnapshotStore<Snapshot<BaseData>>[]>; // Define the getData method
+    leader?: User | null;
+    snapshots?: SnapshotStore<Snapshot<BaseData>>[];
+    text?: string;
+    category?: string | CategoryProperties | undefined;
+    [key: string]: any;
+    getData?: () => Promise<SnapshotStore<Snapshot<BaseData>>[]>; // Define the getData method
 
-  // Implement the `then` function using the reusable function
-  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
-}
+    // Implement the `then` function using the reusable function
+    then?: <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void) => void | undefined;
+
+  }
 
 interface Data extends BaseData {
   category?: string | CategoryProperties | undefined;
-  subtasks?: Todo[];
-  actions?: SnapshotStoreConfig<Data, Data>[];
+  subtasks?: Task[];
+  actions?: SnapshotStoreConfig<BaseData, BaseData>[];
   [key: string]: any;
-
-  // Implement the `then` function using the reusable function
-  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
 }
 
 // Define the UserDetails component
@@ -310,7 +309,7 @@ const data: Data = {
     isActive: true,
     profilePicture: null,
     processingTasks: [],
-    role: UserRoles.Leader,
+    role: UserRoles.TeamLeader,
     firstName: "",
     lastName: "",
     friends: [],
@@ -337,6 +336,8 @@ const data: Data = {
       hideVisitedProfiles: true,
       restrictContentSharing: true,
       enableIncognitoMode: false,
+      restrictContentSharingToContacts: false,
+      restrictContentSharingToGroups: false,
     }, // Added missing properties
     notifications: {
       email: true,
@@ -397,6 +398,10 @@ const data: Data = {
       blockList: [],
       allowMessagesFromNonContacts: true,
       shareProfileWithSearchEngines: false,
+      isPrivate: true,
+      isPrivateOnly: false,
+      isPrivateOnlyForContacts: false,
+      isPrivateOnlyForGroups: false,
     },
     activityStatus: "Online",
     isAuthorized: true,

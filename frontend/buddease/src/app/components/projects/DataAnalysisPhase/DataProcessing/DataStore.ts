@@ -1,7 +1,9 @@
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 // data/DataStore.ts
+import { currentAppVersion } from '@/app/api/headers/authenticationHeaders';
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import { useDispatch } from "react-redux";
 import * as apiData from "../../../../api//ApiData";
 import { DataActions } from "../DataActions";
@@ -21,6 +23,7 @@ export interface DataStore<T extends BaseData> {
   updateDataVersions: (id: number, versions: T[]) => void;
   getBackendVersion: () => Promise<string>;
   getFrontendVersion: () => Promise<string>;
+  getAllKeys: () => Promise<string[]>;
   fetchData: () => Promise<SnapshotStore<Snapshot<T>>[]>; // Modify the signature to return a Promise
 }
 
@@ -31,7 +34,7 @@ interface VersionedData<T extends BaseData> {
   getData: () => Promise<SnapshotStore<Snapshot<T>>[]>;
 }
 
-const useDataStore = <T extends BaseData>(): DataStore<T> => {
+const useDataStore = <T extends BaseData>(): DataStore<T>  & VersionedData<T> => {
   const data: Map<string, Snapshot<T>> = new Map<string, Snapshot<T>>();
   const dispatch = useDispatch();
 
@@ -165,6 +168,8 @@ const useDataStore = <T extends BaseData>(): DataStore<T> => {
   };
   // Other methods...
 
+  const { versionNumber } = getCurrentAppInfo()
+    // useVersionedData(data, fetchData);
   return {
     data,
     fetchData,
@@ -180,6 +185,10 @@ const useDataStore = <T extends BaseData>(): DataStore<T> => {
     updateDataVersions,
     getBackendVersion,
     getFrontendVersion,
+    versionNumber: versionNumber,
+    appVersion: currentAppVersion,
+    content: {}, // Provide appropriate values
+    getData: fetchData, // Provide appropriate values
   };
 };
 export { useDataStore };

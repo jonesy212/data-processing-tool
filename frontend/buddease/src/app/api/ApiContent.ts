@@ -2,12 +2,12 @@
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import dotProp from "dot-prop";
+import useErrorHandling from "../components/hooks/useErrorHandling";
 import { YourResponseType } from "../components/typings/types";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import useErrorHandling from "../components/hooks/useErrorHandling";
 
 // Define the API base URL
 const API_BASE_URL = dotProp.getProperty(endpoints, "content");
@@ -198,7 +198,32 @@ export const saveTaskHistoryToDatabase = async (
       // Handle error as needed
       throw error;
     }
-  };
+};
+  
+export const createContentStateFromText = (text: string): any => {
+  // Create a new content state object with the text and the current date/time
+  
+    return {
+        text: text,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    };
+};
+
+
+export const getMetadataForContent = async(
+  contentId: string
+): Promise<any> => {
+    try {
+        // Make API call to fetch metadata for the content
+        const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;
+        const response = await axiosInstance.get(getMetadataEndpoint, { headers: headersConfig });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching metadata for content:", error);
+        throw error;
+    }
+}
   
 
 export const getTaskHistoryFromDatabase = async (

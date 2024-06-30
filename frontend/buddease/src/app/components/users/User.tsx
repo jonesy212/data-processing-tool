@@ -71,7 +71,7 @@ export interface User extends UserData {
   settings: UserSettings | null;
   interests: string[]
   privacySettings: PrivacySettings | undefined
-  notifications: NotificationSettings[] | undefined
+  notifications: NotificationSettings | undefined
   activityLog: ActivityLogEntry[]
   projects?: Project[]; // Define the type explicitly as an array of Project objects
   socialLinks: SocialLinks | undefined;

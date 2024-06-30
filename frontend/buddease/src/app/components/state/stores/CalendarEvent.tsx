@@ -18,7 +18,7 @@ import { CommonData } from "../../models/CommonData";
 import { Data } from "../../models/data/Data";
 import {
   CalendarStatus,
-  PriorityStatus,
+  PriorityTypeEnum,
   StatusType,
 } from "../../models/data/StatusType";
 import { Team } from "../../models/teams/Team";
@@ -28,7 +28,7 @@ import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import axiosInstance from "../../security/csrfToken";
 import { SnapshotStoreConfig, snapshotConfig } from "../../snapshots/SnapshotConfig";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
   NotificationTypeEnum,
@@ -351,7 +351,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
       color: "",
       isImportant: false,
       teamMemberId: "0",
-      priority: {} as PriorityStatus.Medium,
+      priority: {} as PriorityTypeEnum.Medium,
       _id: "",
       isActive: false,
       tags: [],
@@ -658,7 +658,7 @@ export const events: Record<string, CalendarEvent[]> = {
       isCompleted: false,
       isActive: false,
       tags: [],
-      priority: {} as PriorityStatus.High,
+      priority: {} as PriorityTypeEnum.High,
       phase: null,
       participants: [],
       then: (callback: (newData: Snapshot<Data>) => void) => {

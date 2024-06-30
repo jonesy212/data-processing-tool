@@ -1,14 +1,11 @@
+import { AllTypes } from '@/app/components/typings/PropTypes';
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserSettings } from "@/app/configs/UserSettings";
-import BackendStructure, {
-  backend,
-} from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure, {
-  frontend,
-} from "@/app/configs/appStructure/FrontendStructure";
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import docx from "docx";
-import { IHydrateResult } from "mobx-persist";
+import { ContentState } from "draft-js";
 import {
   CodingLanguageEnum,
   LanguageEnum,
@@ -17,20 +14,21 @@ import {
   BorderStyle,
   DocumentSize,
   Layout,
+  PrivacySettingEnum,
   ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { CustomProperties, HighlightColor } from "../styling/Palette";
-import { AllTypes } from "../typings/PropTypes";
 import { UserIdea } from "../users/Ideas";
 import Version from "../versions/Version";
+import { VersionData } from "../versions/VersionData";
 import { ModifiedDate } from "./DocType";
 import { DocumentData, RevisionOptions } from "./DocumentBuilder";
 import { DocumentTypeEnum } from "./DocumentGenerator";
+import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
-import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
@@ -43,7 +41,8 @@ interface AccessRecord {
   action: string; // e.g., 'viewed', 'edited', 'shared', etc.
 }
 
-type LinksType =
+export type LinksType =
+  | "None"
   | boolean
   | {
       enabled: boolean;
@@ -153,6 +152,15 @@ export interface DocumentOptions {
   documentType: string | DocumentTypeEnum; // Add documentType property
   userIdea?: string | UserIdea | undefined;
   documentSize: DocumentSize;
+  name?: string,
+  description?: string | null | undefined,
+  createdBy?: string,
+  createdDate?:string |  Date,
+  _rev?: string;
+  _attachments?: { [key: string]: string }
+  _links?: { [key: string]: string;  }
+  lastModifiedBy: string;
+ 
   limit: number;
   page: number;
   levels: {
@@ -177,7 +185,7 @@ export interface DocumentOptions {
   additionalOptions: readonly string[] | string | number | any[] | undefined;
 
   language: LanguageEnum;
-  setDocumentPhase: (
+  setDocumentPhase?: (
     phase:
       | string
       | Phase
@@ -210,7 +218,8 @@ export interface DocumentOptions {
         onChange: (phase: ProjectPhaseTypeEnum) => void;
       };
 
-  version: Version | undefined;
+  versionData: VersionData | undefined;
+  version?: Version | undefined;
   isDynamic: boolean | undefined;
   size: DocumentSize;
   animations: DocumentAnimationOptions | undefined;
@@ -327,6 +336,7 @@ export interface DocumentOptions {
   };
 
   visibility: AllTypes;
+  updatedDocument?: DocumentData;
   fontSize: number;
   font: string;
   textColor: string;
@@ -459,6 +469,8 @@ export interface DocumentOptions {
   };
   previousMetadata: StructuredMetadata | undefined;
   currentMetadata: StructuredMetadata | undefined;
+  currentContent: ContentState
+  previousContent: ContentState | undefined
   lastModifiedDate: ModifiedDate | undefined;
   accessHistory: AccessRecord[];
   tableCells: {
@@ -561,111 +573,45 @@ export interface DocumentOptions {
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
-    lastModifiedDate: {
-      value: undefined,
-      isModified: false,
-    } as ModifiedDate,
+    uniqueIdentifier: "",
+    documentType: "default",
+    userIdea: undefined,
+    documentSize: DocumentSize.Letter,
+    name: "Document",
+    description: "Default Document",
+    createdBy: "Buddease",
+    createdDate: new Date().toISOString(),
+    lastModifiedBy: "Buddease",
+    _rev: "1-1234567890",
+    _attachments: {},
+    _links: {},
+    limit: 0,
+    page: 1,
     levels: {
       enabled: true,
       startLevel: 2,
       endLevel: 4,
-      format: "PDF", // Example of format as "PDF"
-      separator: ",", // Example of separator as ","
+      format: "PDF",
+      separator: ",",
       style: {
-        main: "bold", // Example of main style as "bold"
+        main: "bold",
         styles: [
           {
-            format: ["bold", "italic"], // Example of format styles as ["bold", "italic"]
-            separator: [",", ";"], // Example of separator styles as [",", ";"]
+            format: ["bold", "italic"],
+            separator: [",", ";"],
             style: {
-              format: [],
-              separator: [],
-              style: ["underline", "strikethrough"],
+              format: ["underline", "strikethrough"],
+              separator: [",", ";"],
+              style: ["underline", "strikethrough"]
             },
           },
         ],
       },
     },
-    documentSize: DocumentSize.Letter,
-    uniqueIdentifier: "",
-    documentType: DocumentTypeEnum.Default,
-    language: LanguageEnum.English,
-    documentPhase: "Draft",
-    color: "#FFFFFF",
-    limit: 0,
-    page: 1,
-    version: Version.create({
+    accessHistory: [],
+    versionData: {
       id: 0,
-      name: "",
-      content: "",
-      appVersion: "1.0",
-      limit: 10,
-      versionNumber: "1.0",
-      buildNumber: "1",
-      versions: {
-        data: {
-          id: 0,
-          parentId: "0",
-          parentType: "",
-          parentVersion: "",
-          parentTitle: "",
-          parentContent: "",
-          parentName: "",
-          parentUrl: "",
-          parentChecksum: "",
-          parentAppVersion: "",
-          parentVersionNumber: "",
-          isLatest: false,
-          isPublished: false,
-          publishedAt: null,
-          source: "",
-          status: "",
-          workspaceId: "",
-          workspaceName: "",
-          workspaceType: "",
-          workspaceUrl: "",
-          workspaceViewers: [],
-          workspaceAdmins: [],
-          workspaceMembers: [],
-          data: [],
-          name: "",
-          url: "",
-          versionNumber: "",
-          documentId: "",
-          draft: false,
-          userId: "",
-          content: "",
-          metadata: {
-            author: "",
-            timestamp: undefined,
-            revisionNotes: undefined,
-          },
-          versions: {
-            data: undefined,
-            backend: undefined,
-            frontend: undefined,
-          },
-          checksum: "",
-        },
-        backend: backend,
-        frontend: frontend,
-      },
-      metadata: {
-        author: "",
-        timestamp: undefined,
-      },
-
-      data: [],
-      url: "",
-      checksum: "",
-      versionHistory: {
-        versions: [],
-      },
-      draft: false,
-      description: "",
-      userId: "",
-      documentId: "",
-      parentId: "",
+      parentId: "0",
       parentType: "",
       parentVersion: "",
       parentTitle: "",
@@ -673,7 +619,6 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       parentName: "",
       parentUrl: "",
       parentChecksum: "",
-      parentMetadata: {},
       parentAppVersion: "",
       parentVersionNumber: "",
       isLatest: false,
@@ -688,21 +633,103 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       workspaceViewers: [],
       workspaceAdmins: [],
       workspaceMembers: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }),
-    userIdea: "",
-    fontSize: 14,
+      data: [],
+      name: "",
+      url: "",
+      versionNumber: "1.0.0",
+      documentId: "",
+      draft: false,
+      userId: "",
+      content: "",
+      metadata: {
+        author: "",
+        timestamp: new Date().toISOString(),
+        revisionNotes: undefined,
+      },
+      versions: {
+        data: undefined,
+        backend: undefined,
+        frontend: undefined,
+      },
+      checksum: "",
+      version: "1.0.0",
+      timestamp: new Date().toISOString(),
+      user: "Buddease",
+      comments: [],
+    },
+    lastModifiedDate: {
+      value: undefined,
+      isModified: false,
+    } as ModifiedDate,
+    isDynamic: true,
+    currentMetadata: undefined,
+    previousMetadata: undefined,
+    currentContent: ContentState.createFromText(""),
+    previousContent: undefined,
+    documentPhase: "Draft",
+    additionalOptions: undefined,
+    language: LanguageEnum.English,
+    setDocumentPhase: (phase, phaseType) => ({ phase, phaseType }),
+    version: undefined,
+    size: "0" as DocumentSize,
+    animations: undefined,
+    layout: undefined,
+    panels: [],
+
+    // Add missing properties
+    pageNumbers: false,
+    footer: "",
+    watermark: {
+      enabled: false,
+      text: "",
+      color: "",
+      opacity: 0,
+      fontSize: 12,
+      size: "medium",
+      x: 0,
+      y: 0,
+      rotation: 0,
+      borderStyle: "solid",
+    },
+    headerFooterOptions: {
+      enabled: false,
+      headerContent: "",
+      footerContent: "",
+      showHeader: false,
+      showFooter: false,
+      dateFormat: "MM/DD/YYYY",
+      differentFirstPage: false,
+      differentOddEven: false,
+      headerOptions: undefined,
+      footerOptions: undefined,
+    },
+    zoom: 100,
+    showRuler: false,
+    showDocumentOutline: false,
+    showComments: false,
+    showRevisions: false,
+    spellCheck: false,
+    grammarCheck: false,
+    margin: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
+    visibility: PrivacySettingEnum.Private,
+    updatedDocument: undefined,
+    fontSize: 12,
+    font: "Arial",
     textColor: "#000000",
     backgroundColor: "#ffffff",
-    fontFamily: "Arial, sans-serif",
-    font: "normal",
-    lineSpacing: 1.5,
+    fontFamily: "Arial",
+    lineSpacing: 1.15,
     alignment: AlignmentOptions.LEFT,
-    indentSize: 20,
-    bulletList: true,
-    numberedList: true,
+    indentSize: 0,
+    bulletList: false,
+    numberedList: false,
     headingLevel: 1,
+    toc: false,
     bold: false,
     italic: false,
     underline: false,
@@ -710,201 +737,68 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     subscript: false,
     superscript: false,
     hyperlink: "",
+    textStyles: {},
     image: "",
+    links: "None",
+    embeddedContent: false,
+    bookmarks: false,
+    crossReferences: false,
+    footnotes: false,
+    endnotes: false,
+    comments: false,
+    revisions: undefined,
+    embeddedMedia: false,
+    embeddedCode: false,
+    styles: {},
+    tableCells: {
+      enabled: false,
+      padding: 5,
+      fontSize: 12,
+      alignment: "left",
+      borders: undefined,
+    },
     table: false,
-    tableRows: 3,
-    tableColumns: 3,
+    tableRows: 0,
+    tableColumns: 0,
     codeBlock: false,
+    tableStyles: undefined,
     blockquote: false,
     codeInline: false,
     quote: "",
     todoList: false,
     orderedTodoList: false,
     unorderedTodoList: false,
-    isDynamic: true,
-    visibility: "private",
-    margin: {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
-    content: "content",
-    css: "css",
-    html: "html",
-    size: "0" as DocumentSize,
-    colorCoding: {} as Record<string, string>,
-    additionalOptions: [],
-    customSettings: {},
-    documents: [] as DocumentData[],
-    animations: {} as DocumentAnimationOptions | undefined,
+    content: "",
+    css: "",
+    html: "",
+    color: "#000000",
+    colorCoding: undefined,
+    highlight: false,
+    highlightColor: "#FFFF00",
+    customSettings: undefined,
+    documents: [],
     includeType: "all",
-    includeTitle: true,
-    includeContent: true,
-    includeStatus: true,
-    includeAdditionalInfo: true,
-    title: "",
-    userSettings: {} as UserSettings,
-    dataVersions: {
-      backend: {} as IHydrateResult<number> | Promise<string>,
-      frontend: {} as IHydrateResult<number> | Promise<string>,
-    },
-    tableStyles: {},
-    metadata: {} as StructuredMetadata,
-    layout: {} as BackendStructure | FrontendStructure,
-    panels: [],
-    pageNumbers: true,
-    footer: "footer",
-    value: 1,
-    watermark: {
-      enabled: false,
-      text: "Confidential",
-      color: "#4527A0",
-      opacity: 0.2,
-      size: "medium",
-      x: 0.5,
-      y: 0.5,
-      rotation: 0,
-      borderStyle: "none",
-      fontSize: 0,
-    },
-    headerFooterOptions: {
-      showHeader: true,
-      showFooter: true,
-      differentFirstPage: false,
-      differentOddEven: false,
-      headerOptions: {
-        height: {
-          type: "string",
-          value: 0.5,
-        },
-        underline: false,
-        strikeThrough: false,
-        alignment: "center",
-        font: "bold",
-        bold: true,
-        italic: true,
-        fontSize: 12,
-        fontFamily: "Arial",
-        fontColor: "#000000",
-        margin: {
-          top: 0.2,
-          right: 0.2,
-          bottom: 0.2,
-          left: 0.2,
-        },
-      },
-      footerOptions: {
-        underline: false,
-        strikeThrough: false,
-        height: {
-          type: "string",
-          value: 0.5,
-        },
-        alignment: "center",
-        font: "normal",
-        bold: false,
-        italic: false,
-        fontSize: 12,
-        fontFamily: "Arial",
-        fontColor: "#000000",
-        margin: {
-          top: 0.2,
-          right: 0.2,
-          bottom: 0.2,
-          left: 0.2,
-        },
-      },
-      enabled: false,
-    },
-    zoom: 0 || {
-      value: 1,
-      enabled: true,
-      levels: [
-        {
-          name: "100%",
-          value: 1,
-        },
-        {
-          name: "125%",
-          value: 1.25,
-        },
-        {
-          name: "150%",
-          value: 3,
-        },
-      ],
-    },
-    showRuler: true,
-    showDocumentOutline: true,
-    showComments: true,
-    showRevisions: true,
-    spellCheck: true,
-    grammarCheck: true,
-    toc: false,
-    textStyles: {},
-    links: { enabled: true, color: "#0000FF", underline: false },
-    embeddedContent: {
-      enabled: true,
-      allow: false,
-      language: LanguageEnum.English,
-    },
-    bookmarks: { enabled: true },
-    crossReferences: { enabled: true, format: "Page Number" },
-    footnotes: {
-      enabled: true,
-      format: "numeric",
-    },
-    endnotes: { enabled: true, format: "numeric" },
-    comments: {
-      enabled: true,
-      author: "default-author",
-      dateFormat: "DD-MM-YYYY",
-    },
-    revisions: {
-      enabled: true,
-      author: "default-author",
-      dataFormat: "DD-MM-YYYY",
-    } as RevisionOptions,
-    embeddedMedia: { enabled: true, allow: false },
-    embeddedCode: {
-      enabled: true,
-      language: CodingLanguageEnum.JavaScript,
-      allow: false,
-    },
-    styles: {},
-    tableCells: {
-      enabled: true,
-      borders: {
-        top: {} as BorderStyle,
-        bottom: {} as BorderStyle,
-        left: {} as BorderStyle,
-        right: {} as BorderStyle,
-      },
-      padding: 10,
-      fontSize: 12,
-      alignment: "left",
-    },
-    highlight: {
-      enabled: false,
-      colors: {},
-    },
-    highlightColor: "",
-    footnote: { enabled: false, format: "" },
-    customProperties: {},
-    defaultZoomLevel: 1,
-    previousMetadata: {},
-    currentMetadata: {},
-    accessHistory: [],
-    setDocumentPhase: (
-      phase:string |  Phase | undefined,
-      phaseType: ProjectPhaseTypeEnum
-    ) => {
-      return { phase, phaseType };
-    },
+    footnote: false,
+    defaultZoomLevel: 100,
+    customProperties: undefined,
+    value: undefined,
+    includeTitle: false,
+    includeContent: false,
+    includeStatus: false,
+    includeAdditionalInfo: false,
+    metadata: undefined,
+    title: undefined,
+    enableStemming: false,
+    enableStopWords: false,
+    enableWildcards: false,
+    userSettings: undefined,
+    enableFuzzy: false,
+    dataVersions: undefined,
+    backendStructure: undefined,
+    frontendStructure: undefined,
+    revisionOptions: undefined,
   };
 };
-
 // Extend DocumentOptions to include additional properties
 export interface ExtendedDocumentOptions extends DocumentOptions {
   // Add any additional properties needed for robustness
@@ -933,4 +827,5 @@ export const getDocumentPhase = (phase: ProjectPhaseTypeEnum) => {
       return "Draft";
   }
 };
-export type { Style, AccessRecord };
+export type { AccessRecord, Style };
+

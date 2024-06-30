@@ -30,7 +30,6 @@ interface StructuredMetadata {
     links: string[],
     tags: string[]
   };
-
 }
 
 interface VideoMetadata {

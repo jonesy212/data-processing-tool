@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { SnapshotStoreConfig, snapshotConfig } from '../../components/snapshots/SnapshotConfig';
 import updateUI from '../documents/editing/updateUI';
 import useErrorHandling from '../hooks/useErrorHandling';
-import { Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import axiosInstance from '../security/csrfToken';
 import { clearSnapshots, useSnapshotSlice } from '../state/redux/slices/SnapshotSlice';
@@ -476,7 +476,7 @@ const snapshotStore = await initializeSnapshotStore();
 
 export const updateSnapshot = async <T extends { data: any }>(
   snapshotId: string,
-  data: SnapshotStore<Snapshot<T>>,
+  data: SnapshotStore<BaseData>,
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<T>,
   dataItems: RealtimeDataItem[],

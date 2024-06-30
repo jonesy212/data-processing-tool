@@ -3,13 +3,14 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
-import { PriorityStatus, StatusType } from "../models/data/StatusType";
+import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { Todo } from "./Todo";
 import { User } from "../users/User";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;
@@ -70,7 +71,7 @@ const TodoList: React.FC = observer(() => {
         todos: [],
         description: "This is a description of the new todo item.",
         dueDate: new Date(), // Set a specific due date if needed
-        priority: PriorityStatus.Low,
+        priority: PriorityTypeEnum.Low,
         assignedTo: {
           id: "User123",
           username: "john_doe",

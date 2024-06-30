@@ -1485,11 +1485,14 @@ export const getDocumentUrl = async (url: string): Promise<any> => {
   }
 };
 
-
-export const getDocument = async (documentId: string): Promise<any> => {
+export const getDocument = async ({ data }: { data: Uint8Array }): Promise<any> => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}/api/documents/${documentId}`, {
-      headers: headersConfig,
+    const response = await axiosInstance.post(`${API_BASE_URL}/api/documents`, data, {
+      headers: {
+        ...headersConfig,
+        'Content-Type': 'application/pdf'
+      },
+      responseType: 'arraybuffer' // Adjust this if needed
     });
     return response.data;
   } catch (error) {
@@ -1503,6 +1506,7 @@ export const getDocument = async (documentId: string): Promise<any> => {
     throw error;
   }
 };
+
 
 
 export const documentTemplates = async (templatesData: any): Promise<any> => {

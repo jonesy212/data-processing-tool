@@ -1,29 +1,24 @@
-import { Data } from "@/app/components/models/data/Data";
-import SearchResultItem from "@/app/components/models/data/SearchResultItem";
-import { Team, team } from "@/app/components/models/teams/Team";
+import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
+import { BorderStyle, DocumentSize } from "@/app/components/models/data/StatusType";
+import { Team } from "@/app/components/models/teams/Team";
 import ProgressBar, {
   Progress,
   ProgressPhase,
 } from "@/app/components/models/tracker/ProgressBar";
 import TeamProgressBar from "@/app/components/projects/projectManagement/TeamProgressBar";
-import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
+import SearchResult, { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
+import { AlignmentOptions } from "@/app/components/state/redux/slices/toolbarSlice";
+import { Settings } from "@/app/components/state/stores/SettingsStore";
+import Version from "@/app/components/versions/Version";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import React, { useState } from "react";
 import CommunityProjectsPage from "../community/CommunityProjectsPage";
 import { useSearch } from "../searchs/SearchContext";
-import {
-  ProjectProgressProps,
-  projectProgressData,
-} from "@/app/components/projects/projectManagement/ProjectProgress";
-import SearchResult, { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
-import Version from "@/app/components/versions/Version";
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
-import { BorderStyle, DocumentSize } from "@/app/components/models/data/StatusType";
-import { Alignment } from "docx";
-import { AlignmentOptions } from "@/app/components/state/redux/slices/toolbarSlice";
-import { Settings } from "@/app/components/state/stores/SettingsStore";
-import { VersionData } from "@/app/components/versions/VersionData";
-import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import SearchResultComponent from "@/app/components/routing/SearchResult";
+import { ContentState } from "draft-js";
+
+
 
 interface ProjectManagerPersonaProps {
   teams: TeamDocument[];
@@ -32,13 +27,11 @@ interface ProjectManagerPersonaProps {
 type TeamDocument = Document & Team
 
 // Adjust the SearchResultProps interface to accept Team instead of Document
-interface SearchResultProps<T> {
-  result: SearchResultWithQuery<TeamDocument>; // Change SearchResultWithQuery<Document> to SearchResultWithQuery<Team>
-}
+
 const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
   teams,
 }) => {
-  const [searchResults, setSearchResults] = useState<TeamDocument[]>([]); 
+  const [searchResults, setSearchResults] = useState<SearchResultWithQuery<TeamDocument>[]>([]);
   const { searchQuery } = useSearch();
   const versionInfo = {
     id: 0,
@@ -50,6 +43,9 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
     data: [],
     name: "",
     url: "",
+    buildNumber: 0,
+    metadata: "",
+    versions: [],
     versionHistory: {
       versions: [],
     },
@@ -86,11 +82,37 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
   const version = new Version(versionInfo);
   const structure = version.getStructure ? version.getStructure() : {};
 
-  const filterTeams = (teams: TeamDocument[]): TeamDocument[] => {
-    return teams.filter((team) =>
-      team.teamName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filterTeams = (teams: TeamDocument[]): SearchResultWithQuery<TeamDocument>[] => {
+    return teams
+      .filter((team) => team.teamName.toLowerCase().includes(searchQuery.toLowerCase()))
+      .map((filteredTeam) => ({
+        items: [filteredTeam],
+        totalCount: 1,
+        id: filteredTeam.id,
+        title: filteredTeam.teamName,
+        description: filteredTeam.description,
+        source: filteredTeam.source,
+        content: filteredTeam.content,
+        topics: filteredTeam.topics,
+        highlights: filteredTeam.highlights,
+        keywords: filteredTeam.keywords,
+        folders: filteredTeam.folders,
+        options: filteredTeam.options,
+        folderPath: filteredTeam.folderPath,
+        previousMetadata: filteredTeam.previousMetadata,
+        currentMetadata: filteredTeam.currentMetadata,
+        accessHistory: filteredTeam.accessHistory,
+        lastModifiedDate: filteredTeam.lastModifiedDate,
+        searchHistory: filteredTeam.searchHistory,
+        version: filteredTeam.version,
+        load: filteredTeam.load,
+        query: searchQuery,
+        results: [],
+        repoName: filteredTeam.repoName,
+        repoURL: filteredTeam.repoURL,
+      }));
   };
+
 
   React.useEffect(() => {
     setSearchResults(filterTeams(teams));
@@ -181,6 +203,13 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
               name: "",
               url: "",
               versionNumber: "",
+              buildNumber: '0',
+              versions: {
+                data: undefined,
+                backend: undefined,
+                frontend: undefined,
+              },
+              getVersionNumber: () => "",
               appVersion: "",
               description: "",
               createdAt: undefined,
@@ -221,7 +250,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
                 timestamp: undefined
               },
               draft: false,
-              getVersion: function (): {} {
+              getVersion: async function (): Promise<string | null> {
                 throw new Error("Function not implemented.");
               },
               versionHistory: {
@@ -238,8 +267,8 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
             size: DocumentSize.A4,
             animations: {
               type: "fade",
-              duration: 10          
-             },
+              duration: 10
+            },
             layout: undefined,
             panels: undefined,
             pageNumbers: false,
@@ -368,7 +397,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
             tableRows: 0,
             tableColumns: 0,
             codeBlock: false,
-            tableStyles: [],
+            tableStyles: {},
             blockquote: false,
             codeInline: false,
             quote: "",
@@ -405,20 +434,27 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
                   const element = document.querySelector(selector);
                   if (element) {
                     element.classList.add('animate-in');
-        
+
                   } else {
                     console.error('Element not found');
                   }
-        
+
                 },
-                toggleActivation: function (): void {
+                idleTimeoutId: null, // Initialize with null or NodeJS.Timeout | null
+                startIdleTimeout: function (timeoutDuration: number): void {
+                  this.isActive = true;
+                  this.intervalId = setInterval(() => {
+                    // Perform some action on timeout
+                  }, timeoutDuration) as any;
+                },
+                toggleActivation: async function (): Promise<boolean> {
                   this.isActive = !this.isActive;
                   if (this.isActive) {
                     this.startAnimation();
                   } else {
                     this.stopAnimation();
                   }
-        
+                  return this.isActive;
                 },
                 startAnimation: function (): void {
                 },
@@ -426,7 +462,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
                   this.isActive = false;
                   clearInterval(this.intervalId);
                 },
-                resetIdleTimeout: async () => {}
+                resetIdleTimeout: async () => { }
               },
               startIdleTimeout: function (timeoutDuration: number, onTimeout: () => void): void {
                 throw new Error("Function not implemented.");
@@ -511,8 +547,29 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
             dataVersions: {
               backend: new Promise<string>(() => ""),
               frontend: new Promise<string>(() => ""),
-           },
-            metadata: undefined
+            },
+            metadata: undefined,
+            lastModifiedBy: "",
+            levels: {
+              enabled: false,
+              startLevel: 0,
+              endLevel: undefined,
+              format: "",
+              separator: "",
+              style: {
+                main: "",
+                styles: []
+              }
+            },
+            language: LanguageEnum.English,
+            versionData: undefined,
+            previousMetadata: undefined,
+            currentMetadata: undefined,
+            currentContent: new ContentState,
+            previousContent: undefined,
+            lastModifiedDate: undefined,
+            accessHistory: [],
+            color: ""
           },
           folderPath: null,
           previousMetadata: null,
@@ -534,6 +591,165 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
           teamMembers: [],
         }}
       />
+      <SearchResultComponent
+        result={{
+          items: searchResults,
+          totalCount: searchResults.length,
+          id: 1,
+          title: "Search Results",
+          description: "Results from search",
+          source: "https://example.com",
+          content: "Search results content",
+          topics: ["search", "results"],
+          highlights: [],
+          keywords: ["search", "keywords"],
+          folders: [],
+          options: {
+            limit: 10,
+            page: 1,
+            uniqueIdentifier: "",
+            documentType: "team",
+            documentSize: DocumentSize.A4,
+            lastModifiedBy: "",
+            levels: {
+              enabled: false,
+              startLevel: 0,
+              endLevel: undefined,
+              format: "",
+              separator: "",
+              style: {
+                main: "",
+                styles: []
+              }
+            },
+            additionalOptions: undefined,
+            language: LanguageEnum.English,
+            documentPhase: "",
+            versionData: undefined,
+            isDynamic: undefined,
+            size: DocumentSize.A4,
+            animations: undefined,
+            layout: undefined,
+            panels: undefined,
+            pageNumbers: false,
+            footer: "",
+            watermark: {
+              enabled: false,
+              text: "",
+              color: "",
+              opacity: 0,
+              fontSize: 0,
+              size: "",
+              x: 0,
+              y: 0,
+              rotation: 0,
+              borderStyle: ""
+            },
+            headerFooterOptions: {
+              enabled: false,
+              headerContent: undefined,
+              footerContent: undefined,
+              showHeader: false,
+              showFooter: false,
+              dateFormat: undefined,
+              differentFirstPage: false,
+              differentOddEven: false,
+              headerOptions: undefined,
+              footerOptions: undefined
+            },
+            zoom: 0,
+            showRuler: false,
+            showDocumentOutline: false,
+            showComments: false,
+            showRevisions: false,
+            spellCheck: false,
+            grammarCheck: false,
+            visibility: undefined,
+            fontSize: 0,
+            font: "",
+            textColor: "",
+            backgroundColor: "",
+            fontFamily: "",
+            lineSpacing: 0,
+            alignment: AlignmentOptions.LEFT,
+            indentSize: 0,
+            bulletList: false,
+            numberedList: false,
+            headingLevel: 0,
+            toc: false,
+            bold: false,
+            italic: false,
+            underline: false,
+            strikethrough: false,
+            subscript: false,
+            superscript: false,
+            hyperlink: "",
+            textStyles: {},
+            image: "",
+            links: false,
+            embeddedContent: false,
+            bookmarks: false,
+            crossReferences: false,
+            footnotes: false,
+            endnotes: false,
+            comments: false,
+            revisions: undefined,
+            embeddedMedia: false,
+            embeddedCode: false,
+            styles: {},
+            previousMetadata: undefined,
+            currentMetadata: undefined,
+            currentContent: new ContentState,
+            previousContent: undefined,
+            lastModifiedDate: undefined,
+            accessHistory: [],
+            tableCells: {
+              enabled: false,
+              padding: 0,
+              fontSize: 0,
+              alignment: "left",
+              borders: undefined
+            },
+            table: false,
+            tableRows: 0,
+            tableColumns: 0,
+            codeBlock: false,
+            blockquote: false,
+            codeInline: false,
+            quote: "",
+            todoList: false,
+            orderedTodoList: false,
+            unorderedTodoList: false,
+            color: "",
+            colorCoding: undefined,
+            highlight: false,
+            highlightColor: "",
+            customSettings: undefined,
+            documents: [],
+            includeType: "none",
+            footnote: false,
+            defaultZoomLevel: 0,
+            customProperties: undefined,
+            value: undefined,
+            includeTitle: false,
+            includeContent: false,
+            includeStatus: false,
+            includeAdditionalInfo: false,
+            metadata: undefined,
+            userSettings: undefined,
+            dataVersions: undefined
+          },
+          folderPath: null,
+          previousMetadata: null,
+          currentMetadata: null,
+          accessHistory: [],
+          lastModifiedDate: new Date(),
+          searchHistory: [],
+          results: searchResults,
+          query: searchQuery,
+        }}
+      />
+      
     </div>
   );
 };

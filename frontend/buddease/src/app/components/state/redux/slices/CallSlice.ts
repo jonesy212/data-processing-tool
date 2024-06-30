@@ -4,7 +4,7 @@ import { AllStatus } from "../../stores/DetailsListStore";
 import { WritableDraft } from "../ReducerGenerator";
 import updateCall from "./CollaborationSlice";
 import { Tag } from "@/app/components/models/tracker/Tag";
-import { PriorityStatus } from "@/app/components/models/data/StatusType";
+import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 
 export interface Call {
   id: string;
@@ -17,7 +17,7 @@ export interface Call {
     x: number;
     y: number;
   };
-  priority: PriorityStatus;
+  priority: PriorityTypeEnum;
   dueDate: Date | null;
   tags: Tag[];
 }
@@ -31,7 +31,7 @@ interface CallState {
   callDescription: string;
   status: AllStatus;
   dueDate: Date | null;
-  priority: PriorityStatus;
+  priority: PriorityTypeEnum;
   callStatus: AllStatus;
   entitiesLoaded: { [key: string]: Call };
   tags: Tag[];
@@ -50,7 +50,7 @@ const initialState: CallState = {
   callDescription: "",
   status: "",
   dueDate: null,
-  priority: PriorityStatus.Low,
+  priority: PriorityTypeEnum.Low,
   callStatus: "",
   entitiesLoaded: {},
   tags: [],

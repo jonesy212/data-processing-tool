@@ -32,9 +32,9 @@ const resetAppState = () => {
 };
 
 type IdleTimeoutType = {
-  intervalId: undefined;
+  intervalId: number | undefined;
   isActive: boolean;
-  animateIn: () => void;
+  animateIn: (selector: string) => void;
   startAnimation: () => void;
   stopAnimation: () => void;
   resetIdleTimeout: () => Promise<void>;

@@ -4,7 +4,7 @@ import {
 } from "@/app/configs/StructuredMetadata";
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
-import StatusType, { PriorityStatus } from "../models/data/StatusType";
+import StatusType, { PriorityTypeEnum } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
@@ -183,7 +183,7 @@ const event: CalendarEvent = {
   isCompleted: false,
   isActive: false,
   tags: [],
-  priority: {} as PriorityStatus.Medium,
+  priority: {} as PriorityTypeEnum.Medium,
   phase: null,
   participants: [],
   then: implementThen,

@@ -7,34 +7,35 @@ import { DetailsItem } from "../components/state/stores/DetailsListStore";
 // Define a new type for DetailsItem with optional properties
 type DetailsItemCommon<T> = DetailsItem<Partial<AllProperties>>;
 
-interface ListGeneratorProps<T extends Data> {
+interface ListGeneratorProps<T extends Data, U> {
   items: DetailsItemCommon<T>[]; // Use DetailsItemCommon type
-  onItemClick?: (contentItemId: DetailsItemCommon<Data>) => void
+  onItemClick?: (contentItemId: DetailsItemCommon<T>, tracker: U) => void; // Accept both contentItemId and tracker
+  
 }
 
-const ListGenerator = <T extends Data>({ items, onItemClick }: ListGeneratorProps<T>) => {
+const ListGenerator = <T extends Data, U>({ items, onItemClick }: ListGeneratorProps<T, U>) => {
 
     // Add handleContentItemClick function to handle item click
-    const handleContentItemClick = (contentItem: DetailsItemCommon<T>) => {
-      onItemClick && onItemClick(contentItem); // Call onItemClick callback with contentItem
+    const handleContentItemClick = (contentItem: DetailsItemCommon<T>, tracker: U) => {
+      onItemClick && onItemClick(contentItem, tracker); // Call onItemClick callback with contentItem
     };
   
   return (
     <div>
-      {items.map((item, index) => (
-        <div key={index} onClick={() => handleContentItemClick(item)}> {/* Attach onClick handler */}
+    {items.map((item, index) => (
+      <div key={index} onClick={() => handleContentItemClick(item, item.tracker)}> {/* Pass tracker as needed */}
         {/* Check if label and value are defined before passing them */}
-          {item.label !== undefined && item.value !== undefined && (
-            <DetailsListItem
-              item={item}
-              label={item.label}
-              value={item.value}
-            />
-          )}
-          {/* Render other item components or details as needed */}
-        </div>
-      ))}
-    </div>
+        {item.label !== undefined && item.value !== undefined && (
+          <DetailsListItem
+            item={item}
+            label={item.label}
+            value={item.value}
+          />
+        )}
+        {/* Render other item components or details as needed */}
+      </div>
+    ))}
+  </div>
   );
 };
 

@@ -1,48 +1,52 @@
-import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '../../hooks/useStore';
 import { Tracker } from './Tracker';
-import { DocumentData } from '../../documents/DocumentBuilder';
-import { User } from '../../users/User';
+import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
+import { Data } from '../data/Data';
 
 const ExampleComponent: React.FC = observer(() => {
-  const { trackerStore } = useStore(); // Replace with your actual store names
+  const { trackerManager } = useStore(); // Replace with your actual store names
 
   const addNewTracker = () => {
     const newTracker: Tracker = {
       id: 'uniqueId', // Assign a unique identifier
       name: 'New Tracker', // Provide a default name
       phases: [], // Initialize phases as an empty array
-      trackFileChanges: (file: DocumentData) => {
+      trackFileChanges: (file) => {
         // Implement file tracking logic here
         console.log(`Tracking changes for file: ${file.title}`);
       },
       trackFolderChanges: () => {
         // Implement folder tracking logic here
-        console.log("Tracking changes for folder.");
+        console.log('Tracking changes for folder.');
       },
-      updateUserProfile: (userData: User) => {
+      updateUserProfile: (userData) => {
         // Implement user profile update logic here
-        console.log("Updating user profile:", userData);
+        console.log('Updating user profile:', userData);
       },
-      sendNotification: (notification: string, userData: User) => {
+      sendNotification: (notification, userData) => {
         // Implement notification sending logic here
-        console.log("Sending notification:", notification);
+        console.log('Sending notification:', notification);
       },
     };
 
-    trackerStore.addTracker(newTracker); // Replace with the actual method in your store
+    trackerManager.addTracker(newTracker); // Replace with the actual method in your store
   };
 
   return (
     <div>
-       <button onClick={addNewTracker}>Add Tracker</button>
-      {Object.values(trackerStore.trackers).map((tracker: Tracker) => (
-        <div key={tracker.id}>
-          <h3>{tracker.name}</h3>
-          <p>Phases: {tracker.phases.join(', ')}</p>
-        </div>
-      ))}
+      <button onClick={addNewTracker}>Add Tracker</button>
+      <ListGenerator<Data, Tracker>
+        items={Object.values(trackerManager.trackers)}
+        onItemClick={(
+          contentItemId: DetailsItemCommon<Data>,
+          tracker: Tracker
+        ) => {
+          // Handle onItemClick logic if needed
+          console.log('Clicked on tracker:', tracker);
+        }}
+      />
     </div>
   );
 });

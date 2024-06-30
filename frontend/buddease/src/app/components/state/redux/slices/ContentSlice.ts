@@ -1,5 +1,6 @@
-import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
+import { action } from 'mobx';
 // ContentSlice.ts
+import CommonDetails from '@/app/components/models/CommonDetails';
 import { endpoints } from "@/app/api/ApiEndpoints";
 import * as ApiTask from "@/app/api/TasksApi";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -13,19 +14,20 @@ import {
 } from "@/app/components/models/data/StatusType";
 import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
-import { Task } from "@/app/components/models/tasks/Task";
+import TaskDetails, { Task, TaskData } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
-import SortCriteria from "@/app/components/settings/SortCriteria";
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import { SortCriteria } from "@/app/components/settings/SortCriteria";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { TaskSort } from "@/app/components/sort/TaskSort";
+import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import useWebNotifications from "../../../hooks/commHooks/useWebNotifications";
 import { ContentLogger } from "../../../logging/Logger";
 import { ContentItem } from "../../../models/content/ContentItem";
-import { Data } from "../../../models/data/Data";
+import { BaseData, Comment, Data, DataDetails } from "../../../models/data/Data";
 import { sanitizeInput } from "../../../security/SanitizationFunctions";
 import {
   NotificationType,
@@ -37,8 +39,19 @@ import { Idea, IdeationSession } from "../../../users/Ideas";
 import { User } from "../../../users/User";
 import { VideoData } from "../../../video/Video";
 import { ProjectManagerStore } from "../../stores/ProjectStore";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { DetailsItem } from "../../stores/DetailsListStore";
+import { Team } from "@/app/components/models/teams/Team";
+import { FC } from "react";
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotConfig';
+import { SupportedData } from '@/app/components/models/CommonData';
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
+
+interface CompleteTaskPayload {
+  taskId: string;
+  userId: string;
+}
 interface ContentManagerState {
   name: string;
   contentItems: ContentItem[];
@@ -179,7 +192,18 @@ const generateNewContent = (
 // Assuming TaskDetails has a structure similar to Task interface
 interface TaskDetails {
   taskId: string;
-  details: Partial<Task>; // Partial to allow partial updates
+  details: TaskDetails; // Partial to allow partial updates
+}
+
+
+function createUpdatedDetail(detail: DetailsItem<any>): WritableDraft<DetailsItem<any>> {
+  return {
+    ...detail,
+    // Assuming the id, subtitle, and value are mandatory properties
+    id: detail.id,
+    subtitle: detail.subtitle,
+    value: detail.value,
+  } as WritableDraft<DetailsItem<any>>;
 }
 
 const API_BASE_URL = endpoints.conent;
@@ -394,25 +418,28 @@ export const useContentSlice = createSlice({
       );
     },
 
-    completeTask: (state, action: PayloadAction<string>) => {
-      const taskId = action.payload;
-
+    completeTask: (
+      state: WritableDraft<ContentManagerState>,
+      action: PayloadAction<CompleteTaskPayload>
+    ) => {
+      const { taskId, userId } = action.payload;
+    
       // Find the task to complete
-      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
+      const taskIndex = state.tasks.findIndex((task: WritableDraft<Task>) => task.id === taskId);
+    
       if (taskIndex === -1) {
         return;
       }
-
+    
       // Mark task as completed using the TaskStatus enum
       state.tasks[taskIndex].status = TaskStatus.Completed;
-
+    
       // Log task completion
-      ContentLogger.logTaskCompletion(taskId);
-
+      ContentLogger.logTaskCompletion(taskId, userId);
+    
       // Move completed task to completedTasks array
       state.completedTasks.push(state.tasks[taskIndex]);
-
+    
       // Remove task from tasks array
       state.tasks.splice(taskIndex, 1);
     },
@@ -483,7 +510,7 @@ export const useContentSlice = createSlice({
         priority: PriorityTypeEnum.Low,
         previouslyAssignedTo: [],
         done: false,
-        data: {} as WritableDraft<Data>,
+        data: {} as WritableDraft<TaskData>,
         source: "user",
         startDate: undefined,
         endDate: undefined,
@@ -589,31 +616,138 @@ export const useContentSlice = createSlice({
       // Add more conditions for other sorting criteria if needed
     },
 
-    editTask: (
-      state,
-      action: PayloadAction<{
-        completedContentId: string;
-        changes: Partial<Task>;
-        taskId: string;
-      }>
-    ) => {
-      const { completedContentId, taskId, changes } = action.payload;
-    
-      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-    
-      if (taskIndex !== -1) {
-        state.tasks[taskIndex] = {
-          ...state.tasks[taskIndex],
-          ...changes,
-        };
-      }
+     editTask:(
+        state: WritableDraft<ContentManagerState>,
+        action: PayloadAction<{
+          completedContentId: string;
+          changes: Partial<Task>;
+          taskId: string;
+        }>
+      ) => {
+        const { completedContentId, taskId, changes } = action.payload;
+        
+        const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
+        
+        if (taskIndex !== -1) {
+          const existingTask = state.tasks[taskIndex];
+          const updatedTask: WritableDraft<Task> = {
+            ...existingTask,
+            ...changes,
+            assignedTo: changes.assignedTo
+              ? Array.isArray(changes.assignedTo)
+                ? changes.assignedTo.map((user) => ({ ...user } as WritableDraft<User>))
+                : [changes.assignedTo as WritableDraft<User>]
+              : existingTask.assignedTo,
+            dependencies: changes.dependencies
+              ? Array.isArray(changes.dependencies)
+                ? changes.dependencies.map((dependency) => ({ ...dependency } as WritableDraft<Task>))
+                : [changes.dependencies as WritableDraft<Task>]
+              : existingTask.dependencies,
+            previouslyAssignedTo: changes.previouslyAssignedTo
+              ? Array.isArray(changes.previouslyAssignedTo)
+                ? changes.previouslyAssignedTo.map((user) => ({ ...user } as WritableDraft<User>))
+                : [changes.previouslyAssignedTo as WritableDraft<User>]
+              : existingTask.previouslyAssignedTo,
+            details: changes.details
+              ? { ...changes.details } as WritableDraft<DetailsItem<TaskDetails>>
+              : existingTask.details,
+            subtasks: changes.subtasks
+              ? Array.isArray(changes.subtasks)
+                ? changes.subtasks.map((subtask) => ({ ...subtask } as WritableDraft<Task>))
+                : [changes.subtasks as WritableDraft<Task>]
+              : existingTask.subtasks,
+            actions: changes.actions
+              ? Array.isArray(changes.actions)
+                ? changes.actions.map((action) => ({ ...action } as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>))
+                : existingTask.actions
+              : existingTask.actions,
+            status: changes.status ?? existingTask.status,
+            phase: changes.phase as WritableDraft<Phase> ?? existingTask.phase as WritableDraft<Phase>,
+            comments: changes.comments
+              ? Array.isArray(changes.comments) 
+                ? changes.comments.map((comment) => ({ ...comment } as WritableDraft<Comment>))
+                : [changes.comments as WritableDraft<Comment>] 
+              : existingTask.comments,
+            updatedDetails: changes.updatedDetails
+              ? Array.isArray(changes.updatedDetails)
+                ? changes.updatedDetails.map((updatedDetail) => createUpdatedDetail(updatedDetail))
+                : [createUpdatedDetail(changes.updatedDetails) as WritableDraft<DetailsItem<SupportedData>>]
+              : existingTask.updatedDetails,
+            getData: changes.getData ?? existingTask.getData,
+            updatedSubtasks: changes.updatedSubtasks
+              ? Array.isArray(changes.updatedSubtasks)
+                ? changes.updatedSubtasks.map((updatedSubtask) => ({ ...updatedSubtask } as WritableDraft<Task>))
+                : [changes.updatedSubtasks as WritableDraft<Task>]
+              : existingTask.updatedSubtasks,
+            updatedActions: changes.updatedActions
+              ? Array.isArray(changes.updatedActions)
+                ? changes.updatedActions.map((updatedAction) => ({ ...updatedAction } as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>))
+                : existingTask.updatedActions
+              : existingTask.updatedActions,
+            updatedComments: changes.updatedComments
+              ? Array.isArray(changes.updatedComments)
+                ? changes.updatedComments.map((updatedComment) => ({ ...updatedComment } as WritableDraft<Comment>))
+                : [changes.updatedComments as WritableDraft<Comment>]
+              : existingTask.updatedComments,
+            updatedPhase: changes.updatedPhase
+              ? changes.updatedPhase as WritableDraft<Phase>
+              : existingTask.updatedPhase as WritableDraft<Phase>,
+            updatedStatus: changes.updatedStatus ?? existingTask.updatedStatus,
+          };
       
-      // Log content completion
-      const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : "";
-      if (userId) {
-        ContentLogger.logContentCompletion(completedContentId, taskId, userId);
+      // Update the task in the state
+        state.tasks[taskIndex] = updatedTask;
+    
+        // Determine the userId
+        const assignedUsers = updatedTask.assignedTo;
+        const userId =
+          assignedUsers && Array.isArray(assignedUsers) && assignedUsers.length > 0
+            ? (assignedUsers[0] as User)._id
+            : "";
+    
+        if (userId) {
+          // Log content completion
+          ContentLogger.logContentCompletion(completedContentId, taskId, userId);
+    
+          // Log task completion
+          if (updatedTask.status === TaskStatus.Completed) {
+            ContentLogger.logTaskCompletion(taskId, userId);
+          }
+    
+          // Log task editing
+          if (updatedTask.status !== TaskStatus.Completed) {
+            ContentLogger.logTaskEditing(taskId, userId);
+          }
+    
+          // Log task assignment
+          if (assignedUsers) {
+            ContentLogger.logTaskAssignment(taskId, userId);
+          }
+    
+          // Log task deletion
+          if (Array.isArray(assignedUsers) && assignedUsers.length === 0) {
+            ContentLogger.logTaskDeletion(taskId, updatedTask.title, userId);
+          }
+    
+          // Log task re-assignment
+          if (
+            Array.isArray(existingTask.assignedTo) &&
+            existingTask.assignedTo.length > 0 &&
+            Array.isArray(assignedUsers) &&
+            assignedUsers.length > 0 &&
+            existingTask.assignedTo[0]._id !== (assignedUsers[0] as User)._id
+          ) {
+            ContentLogger.logTaskReassignment(
+              taskId,
+              existingTask.assignedTo[0]._id ?? "",
+              (assignedUsers[0] as User)._id ?? ""
+            );
+          }
+        }
       }
     },
+    
+    
     
 
     searchTasks: (state, action: PayloadAction<string>) => {
@@ -676,22 +810,32 @@ export const useContentSlice = createSlice({
       }>
     ) => {
       const { taskId, changes } = action.payload;
-    
+
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-    
+
       if (taskIndex !== -1) {
         state.tasks[taskIndex] = {
           ...state.tasks[taskIndex],
           ...changes,
+          assignedTo: changes.assignedTo
+            ? (changes.assignedTo as (User | WritableDraft<User>)[]).map(
+                (user) => user as WritableDraft<User>
+              )
+            : state.tasks[taskIndex].assignedTo,
         };
-    
+
         // Log content completion
-        const userId = state.assignedTo && state.assignedTo.length > 0 ? state.assignedTo[0]._id : undefined;
-        const contentId = state.tasks[taskIndex].contentId;
-        if (userId) {
+        const userId =
+          state.tasks[taskIndex].assignedTo &&
+          Array.isArray(state.tasks[taskIndex].assignedTo) &&
+          state.tasks[taskIndex].assignedTo.length > 0
+            ? (state.tasks[taskIndex].assignedTo[0] as WritableDraft<User>)?._id
+            : undefined;
+        if (userId && state.tasks[taskIndex].contentId) {
+          const contentId = state.tasks[taskIndex].contentId;
           ContentLogger.logContentCompletion(contentId, taskId, userId);
         }
-    
+
         // Check if notification permission is granted before displaying notification
         if (!("Notification" in window)) {
           notify(
@@ -717,13 +861,24 @@ export const useContentSlice = createSlice({
           state.tasks[taskIndex] = {
             ...state.tasks[taskIndex],
             ...task,
-            previouslyAssignedTo:
-              task.previouslyAssignedTo?.map(
-                (user) => user as WritableDraft<User>
-              ) || [],
-            phase: task.phase as WritableDraft<Phase> | null | undefined,
-            data: task.data as WritableDraft<Data>,
-          };
+            previouslyAssignedTo: task.previouslyAssignedTo
+              ? (task.previouslyAssignedTo as User[]).map(
+                  (user) => user as WritableDraft<User>
+                )
+              : [],
+            phase: task.phase ? (task.phase as WritableDraft<Phase>) : null,
+            data: task.data as WritableDraft<TaskData>,
+            assignedTo: task.assignedTo
+              ? (task.assignedTo as User[]).map(
+                  (user) => user as WritableDraft<User>
+                )
+              : [],
+            dependencies: task.dependencies
+              ? task.dependencies.map(
+                  (dependency) => dependency as WritableDraft<Task>
+                )
+              : null,
+          } as WritableDraft<Task>;
         }
       });
     },
@@ -731,26 +886,52 @@ export const useContentSlice = createSlice({
     importTasks: (state, action: PayloadAction<ImportTasksPayload>) => {
       const { tasks } = action.payload;
 
-      tasks.forEach((task: WritableDraft<Task>) => {
+      tasks.forEach((task: Task) => {
         if (!state.tasks.find((t) => t.id === task.id)) {
-          state.tasks.push(task);
+          state.tasks.push(task as WritableDraft<Task>);
         }
       });
     },
 
-    updateTaskDetails: (state, action: PayloadAction<TaskDetails>) => {
-      const { taskId, details } = action.payload;
-
+    updateTaskDetails: (
+      state: WritableDraft<ContentManagerState>,
+      action: PayloadAction<TaskDetails & {
+        assignedTo?: User[];
+        dependencies?: Task[];
+        previouslyAssignedTo?: User[];
+        phase?: Phase;
+        id: string;
+        subtitle: string;
+        value: number;
+      }>
+    ) => {
+      const { taskId, details, assignedTo, dependencies, previouslyAssignedTo, phase, id, subtitle, value } = action.payload;
+    
       const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
+    
       if (taskIndex !== -1) {
         state.tasks[taskIndex] = {
           ...state.tasks[taskIndex],
           ...details,
+          id,
+          subtitle,
+          value,
+          assignedTo: assignedTo
+            ? assignedTo.map((user: User) => user as WritableDraft<User>)
+            : [],
+          dependencies: dependencies
+            ? dependencies.map((dependency: Task) => dependency as WritableDraft<Task>)
+            : null,
+          previouslyAssignedTo: previouslyAssignedTo
+            ? previouslyAssignedTo.map((user: User) => user as WritableDraft<User>)
+            : [],
+
+
+
+          phase: phase ? (phase as WritableDraft<Phase>) : null,
         };
       }
     },
-
     updateTaskTags: (
       state,
       action: PayloadAction<{ taskId: string; tags: string[] }>

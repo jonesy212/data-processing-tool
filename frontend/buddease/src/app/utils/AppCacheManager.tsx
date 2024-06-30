@@ -1,5 +1,6 @@
 import { Data } from "../components/models/data/Data";
-import { Snapshot } from "../components/snapshots/SnapshotStore";
+import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
+import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import { VideoData } from "../components/video/Video";
 import FrontendStructure from "../configs/appStructure/FrontendStructureComponent";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
@@ -26,15 +27,22 @@ abstract class AppCacheManagerBase<T extends Data> {
   async updateFrontendCache(key: string, data: ExtendedData): Promise<string> {
     try {
       // Fetch existing frontend cache
-      const existingCache = this.frontendCacheManager.getCacheData();
 
-      // Update cache with new data for the specified key
-      existingCache[key] = {
+
+      const existingCache: Record<string, FrontendStructure> = this.frontendCacheManager.getCacheData();
+      const uniqueConstraints = {
         path: `/src/${key}.tsx`, // Example path, adjust as needed
         content: JSON.stringify(data),
       };
+      // Update cache with new data for the specified key
+
+
+
+
+      existingCache[key] = new FrontendStructure(uniqueConstraints);
 
       // Save the updated cache
+
       this.frontendCacheManager.updateCache(existingCache);
 
       return "Frontend Cache updated successfully";
@@ -85,15 +93,18 @@ const backendData: {
     status: "inProgress",
     isActive: false,
     tags: [],
-    then: async function (callback: (newData: Snapshot<Data>) => void): Promise<void> {
-      // Fetch existing data from backend cache
-      const cachedData = await appCacheManager.getBackendCache('backendCache');
-      // Call callback with cached data if available
-      if (cachedData !== null) {
-        callback(cachedData);
+    data: {
+      then: function <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void): void {
+        // Fetch existing data from backend cache
+        appCacheManager.getBackendCache('backendCache')
+          .then(cachedData => {
+            if (cachedData !== null) {
+              callback(cachedData as Snapshot<Snapshot<T>>);
+            }
+          });
       }
     },
-    analysisType: "",
+    analysisType: AnalysisTypeEnum.CAUSAL,
     analysisResults: [],
     phase: null,
     videoUrl: "",

@@ -39,17 +39,18 @@ import {
 import { YourSpecificSnapshotType } from "../typings/YourSpecificSnapshotType";
 import { sendNotification } from "./UserSlice";
 import { snapshot } from "../snapshots/snapshot";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
-type SnapshotStoreDelegate<T extends Data | undefined> = (
+type SnapshotStoreDelegate<T extends BaseData> = (
   snapshot: Snapshot<T>,
   initialState: Snapshot<T>,
-  snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[]
+  snapshotConfig: SnapshotStoreConfig<BaseData, Data>[]
 ) => void;
 
 const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData> = (
   snapshot: Snapshot<CustomSnapshotData>,
   initialState: Snapshot<CustomSnapshotData>,
-  snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[]
+  snapshotConfig: SnapshotStoreConfig<BaseData, Data>[]
 ) => {
   console.log("Delegate function called with snapshot:", snapshot);
   console.log("Initial state:", initialState);
@@ -61,7 +62,7 @@ interface CustomSnapshotData extends Data {
   value: number | undefined;
 }
 
-class Subscriber<T extends Data | undefined> {
+class Subscriber<T extends BaseData> {
   private _id: string | undefined;
   private readonly name: string;
   private subscription: Subscription;
@@ -180,7 +181,7 @@ class Subscriber<T extends Data | undefined> {
   }
 
   initialData(data: Snapshot<T>) {
-    this.state = data.state as T;
+    this.state = data.state as T | null | undefined;
     if (this.notifyEventSystem) {
       this.notifyEventSystem(NotificationTypeEnum.SUBSCRIBER_INITIAL_DATA, {
         subscriberId: this.subscriberId,
@@ -213,10 +214,10 @@ class Subscriber<T extends Data | undefined> {
   }
 
   toSnapshotStore(
-    initialState: Snapshot<T> | undefined,
-    snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[],
+    initialState: Snapshot<BaseData> | undefined,
+    snapshotConfig: SnapshotStoreConfig<BaseData, Data>[],
     delegate: SnapshotStoreDelegate<T>
-  ): SnapshotStore<Snapshot<BaseData>>[] | undefined {
+  ): SnapshotStore<BaseData>[] | undefined {
     let snapshotString: string | undefined;
     if (initialState !== undefined) {
       snapshotString = initialState.id?.toString();
@@ -226,10 +227,10 @@ class Subscriber<T extends Data | undefined> {
       // Ensure initialState is defined
       const category = this.determineCategory(initialState);
 
-      const delegateFunction: SnapshotStoreSubset<Snapshot<T>> = {
+      const delegateFunction: SnapshotStoreSubset<BaseData> = {
         onSnapshot: (
-          snapshot: Snapshot<Snapshot<T>>,
-          config: SnapshotStoreConfig<Snapshot<Data>, Data>[]
+          snapshot: Snapshot<BaseData>,
+          config: SnapshotStoreConfig<BaseData, Data>[]
         ) => {
           delegate(snapshot.data as Snapshot<T>, initialState, config);
         },
@@ -239,9 +240,9 @@ class Subscriber<T extends Data | undefined> {
         addSnapshotSuccess: addSnapshotSuccess,
         updateSnapshot: updateSnapshot as (
           snapshotId: string,
-          data: SnapshotStore<Snapshot<T>>,
+          data: SnapshotStore<BaseData>,
           events: Record<string, CalendarEvent[]>,
-          snapshotStore: SnapshotStore<Snapshot<T>>,
+          snapshotStore: SnapshotStore<BaseData>,
           dataItems: RealtimeDataItem[],
           newData: T | Data,
           payload: UpdateSnapshotPayload<any>
@@ -300,15 +301,16 @@ class Subscriber<T extends Data | undefined> {
         // batchTakeSnapshot: batchTakeSnapshot
       };
 
-      return new SnapshotStore<Snapshot<T>>(
+      return new SnapshotStore<BaseData>(
         snapshot,
-        category,
+        category as CategoryProperties,
         new Date(),
         type,
         initialState,
         snapshotConfig,
         subscribeToSnapshots,
-        delegateFunction
+        delegateFunction,
+        dataStoreMethods
       );
     }
 
@@ -340,6 +342,9 @@ class Subscriber<T extends Data | undefined> {
     return new Promise<void>((resolve, reject) => {
       const snapshotData: Snapshot<T> = {
         id,
+        message: message,
+        initialState: snapshotContent as T,
+        date: date,
         category: "subscriberCategory",
         content: snapshotContent!.toString(),
         data: snapshotContent as T,
@@ -430,7 +435,7 @@ class Subscriber<T extends Data | undefined> {
   static createSubscriber<T extends CustomSnapshotData | undefined>(
     id: string,
     name: string,
-    subscription: Subscription,
+    subscription:  Subscription,
     subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
@@ -438,9 +443,10 @@ class Subscriber<T extends Data | undefined> {
     triggerIncentives: Function,
     data: T | null = null
   ) {
-    return new Subscriber<T>(
+    return new Subscriber<BaseData>(
+      id,
       name,
-      subscription,
+      subscription, 
       subscriberId,
       notifyEventSystem,
       updateProjectState,
@@ -503,7 +509,7 @@ export const payload: Payload = {
 };
 
 const subscriber = new Subscriber<CustomSnapshotData>(
-  // payload.meta.id,
+  payload.meta.id,
   // Assuming payload.name is a string, replace with your actual data structure
   payload.meta.name,
   {

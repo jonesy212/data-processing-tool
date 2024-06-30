@@ -1276,7 +1276,7 @@ class PaymentLogger extends Logger {
 
 
 class ContentLogger extends Logger {
-  static logTaskCompletion(taskId: string) {
+  static logTaskCompletion(taskId: string, userId: string) {
     throw new Error('Method not implemented.');
   }
   static logContentCreation(title: string, contentId: string, userId: string) {
@@ -1318,6 +1318,32 @@ class ContentLogger extends Logger {
       userId
     );
   }
+
+  static logTaskEditing(taskId: string, userId: string) {
+    super.logWithOptions(
+      "Content",
+      `Task updated (Task ID: ${taskId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  static logTaskAssignment(taskId: string, userId: string) {
+    super.logWithOptions(
+      "Content",
+      `Task assigned (Task ID: ${taskId}, User ID: ${userId})`,
+      userId
+    );
+  }
+
+  
+  static logTaskReassignment(taskId: string, oldUserId: string, newUserId: string) {
+    super.logWithOptions(
+      "Content",
+      `Task reassigned (Task ID: ${taskId}, Old User ID: ${oldUserId}, New User ID: ${newUserId})`,
+      newUserId
+    );
+  }
+
   
   static logTaskDeletion(taskId: string, title: string, userId: string, contentId?: string) {
     super.logWithOptions(

@@ -1,7 +1,12 @@
 // DocumentBuilder.tsx
+import {
+  createContentStateFromText,
+  getMetadataForContent,
+} from "@/app/api/ApiContent";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import { saveDocumentToDatabase } from "@/app/configs/database/updateDocumentInDatabase";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import Clipboard from "@/app/ts/clipboard";
@@ -11,27 +16,23 @@ import {
   Editor,
   EditorState,
   Modifier,
-  RichUtils
+  RichUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import getAppPath from "../../../../appPath";
-import {
-  LanguageEnum
-} from "../communications/LanguageEnum";
+import { LanguageEnum } from "../communications/LanguageEnum";
 import useErrorHandling from "../hooks/useErrorHandling";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
 import useResizablePanels from "../hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "../libraries/animations/movementAnimations/MovementAnimationActions";
+import { CustomContentState } from "../libraries/ui/CustomContentState";
 import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import FileData from "../models/data/FileData";
 import FolderData from "../models/data/FolderData";
-import {
-  DocumentSize,
-  ProjectPhaseTypeEnum
-} from "../models/data/StatusType";
+import { DocumentSize, ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
@@ -49,7 +50,6 @@ import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { AllTypes } from "../typings/PropTypes";
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
-import { VersionData } from "../versions/VersionData";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { ModifiedDate } from "./DocType";
 import {
@@ -65,6 +65,11 @@ import {
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import AccessHistory, {
+  convertAccessRecordToHistory,
+} from "../versions/AccessHistory";
+import { VersionInfo } from "next/dist/server/dev/parse-version-info";
+import { VersionData } from "../versions/VersionData";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -76,9 +81,9 @@ function computeChecksum(data: string): string {
 const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
-
-type ContentStructuredMetadata = StructuredMetadata & ContentState
+type ContentStructuredMetadata = StructuredMetadata & ContentState;
 // DocumentData.tsx
+
 export interface DocumentData extends CommonData, DatasetModel {
   id: string | number;
   _id: string;
@@ -92,7 +97,7 @@ export interface DocumentData extends CommonData, DatasetModel {
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document
   folder?: FolderData;
-  folders: FolderData[]; // Array of FolderData associated with the document
+  folders: FolderData[]; // Array fof FolderData associated with the document
   filePath?: DocumentPath;
   status?: AllStatus;
   type?: AllTypes;
@@ -104,13 +109,36 @@ export interface DocumentData extends CommonData, DatasetModel {
   options: DocumentOptions | undefined;
   // documentPhase?: string | Phase;
   folderPath: string;
-  previousContent?: string;
-  currentContent?: string;
+  previousContent?: string | ContentState;
+  currentContent?: ContentState;
   previousMetadata: StructuredMetadata | undefined;
   currentMetadata: StructuredMetadata | undefined;
   accessHistory: AccessHistory[];
-  documentPhase: VersionData | undefined;
+  documentPhase:
+    | string
+    | {
+        name?: string;
+        originalPath?: string;
+        alternatePaths?: string[];
+        fileType?: string;
+        title?: string;
+        description?: string;
+        keywords?: string[];
+        authors?: string[];
+        contributors?: string[];
+        publisher?: string;
+        copyright?: string;
+        license?: string;
+        links?: string[];
+        tags?: string[];
+        phaseType: ProjectPhaseTypeEnum;
+        customProp1: string;
+        customProp2: number;
+        onChange: (phase: ProjectPhaseTypeEnum) => void;
+      }
+    | undefined;
   version: Version | undefined | null;
+  versionData: VersionData | undefined;
   visibility: AllTypes;
   url?: string;
   updatedDocument?: DocumentData;
@@ -119,40 +147,41 @@ export interface DocumentData extends CommonData, DatasetModel {
   lastModifiedBy: string;
   lastModifiedByTeamId?: number | null;
   lastModifiedByTeam?: Team;
-  name: string;
-  description: string;
-  createdBy: string;
-  createdDate: Date | undefined;
+  name: string | undefined;
+  description?: string | null;
+  createdBy: string | undefined;
+  createdDate: string | Date | undefined
   documentType: string | DocumentTypeEnum;
   documentData?: DocumentData;
-  _rev: string;
-  _attachments: Record<string, any> | undefined;
-  _links: Record<string, any> | undefined;
-  _etag: string;
-  _local: boolean;
-  _revs: string[];
-  _source: Record<string, any> | undefined;
-  _shards: Record<string, any> | undefined;
-  _size: number;
-  _version: number;
-  _version_conflicts: number;
-  _seq_no: number;
-  _primary_term: number;
-  _routing: string;
-  _parent: string;
-  _parent_as_child: boolean;
-  _slices: any[];
-  _highlight: Record<string, any> | undefined;
-  _highlight_inner_hits: Record<string, any> | undefined;
-  _source_as_doc: boolean;
-  _source_includes: string[];
-  _routing_keys: string[];
-  _routing_values: string[];
-  _routing_values_as_array: string[];
-  _routing_values_as_array_of_objects: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value: Record<
+  document: DocumentObject | undefined;
+  _rev: string | undefined;
+  _attachments?: Record<string, any> | undefined;
+  _links?: Record<string, any> | undefined;
+  _etag?: string;
+  _local?: boolean;
+  _revs?: string[];
+  _source?: Record<string, any> | undefined;
+  _shards?: Record<string, any> | undefined;
+  _size?: number;
+  _version?: number;
+  _version_conflicts?: number;
+  _seq_no?: number;
+  _primary_term?: number;
+  _routing?: string;
+  _parent?: string;
+  _parent_as_child?: boolean;
+  _slices?: any[];
+  _highlight?: Record<string, any> | undefined;
+  _highlight_inner_hits?: Record<string, any> | undefined;
+  _source_as_doc?: boolean;
+  _source_includes?: string[];
+  _routing_keys?: string[];
+  _routing_values?: string[];
+  _routing_values_as_array?: string[];
+  _routing_values_as_array_of_objects?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<
     string,
     any
   >[];
@@ -327,8 +356,51 @@ const initialOptions: DocumentOptions = {
     phase: string | Phase | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
-    return {phase, phaseType}
+    return { phase, phaseType };
   },
+  lastModifiedBy: "",
+  versionData: {
+    version: "",
+    timestamp: "",
+    user: "",
+    id: "",
+    parentId: "",
+    parentType: "",
+    parentVersion: "",
+    createdAt: "",
+    updatedAt: "",
+    deletedAt: "",
+    createdBy: "",
+    updatedBy: "",
+    deletedBy: "",
+    status: "",
+    type: "",
+    name: "",
+    description: "",
+    content: "",
+    fileType: "",
+    fileSize: 0,
+    filePath: "",
+    fileUrl: "",
+    fileHash: "",
+    fileMetadata: {},
+    customMetadata: {},
+    tags: [],
+    collaborators: [],
+    permissions: [],
+    revisions: [],
+    activities: [],
+    comments: [],
+    attachments: [],
+    links: [],
+    references: [],
+    relatedItems: [],
+    externalLinks: [],
+    externalReferences: [],
+    externalRelatedItems: [],
+  } as unknown as VersionData,
+  currentContent: new ContentState(),
+  previousContent: undefined,
 };
 
 export const [options, setOptions] = useState<Options>(initialOptions);
@@ -348,46 +420,45 @@ const resetEditorContent = () => {
   setEditorState(newEditorState); // Update editor state
 };
 
-
-
-
 // Assuming you have some way to retrieve or maintain your metadata
-const getMetadataForContentState = (contentState: ContentState): StructuredMetadata => {
+const getMetadataForContentState = (
+  contentState: CustomContentState
+): StructuredMetadata => {
   // Replace this with your actual logic to extract or retrieve metadata based on contentState
   return {
-    "fileOrFolderId1": {
-      originalPath: 'path1',
-      alternatePaths: ['altPath1', 'altPath2'],
-      author: 'author1',
+    fileOrFolderId1: {
+      originalPath: "path1",
+      alternatePaths: ["altPath1", "altPath2"],
+      author: "author1",
       timestamp: new Date(),
-      fileType: 'fileType1',
-      title: 'title1',
-      description: 'description1',
-      keywords: ['keyword1', 'keyword2'],
-      authors: ['author1', 'author2'],
-      contributors: ['contributor1', 'contributor2'],
-      publisher: 'publisher1',
-      copyright: 'copyright1',
-      license: 'license1',
-      links: ['link1', 'link2'],
-      tags: ['tag1', 'tag2'],
+      fileType: "fileType1",
+      title: "title1",
+      description: "description1",
+      keywords: ["keyword1", "keyword2"],
+      authors: ["author1", "author2"],
+      contributors: ["contributor1", "contributor2"],
+      publisher: "publisher1",
+      copyright: "copyright1",
+      license: "license1",
+      links: ["link1", "link2"],
+      tags: ["tag1", "tag2"],
     },
-    "fileOrFolderId2": {
-      originalPath: 'path2',
-      alternatePaths: ['altPath3', 'altPath4'],
-      author: 'author2',
+    fileOrFolderId2: {
+      originalPath: "path2",
+      alternatePaths: ["altPath3", "altPath4"],
+      author: "author2",
       timestamp: new Date(),
-      fileType: 'fileType2',
-      title: 'title2',
-      description: 'description2',
-      keywords: ['keyword3', 'keyword4'],
-      authors: ['author3', 'author4'],
-      contributors: ['contributor3', 'contributor4'],
-      publisher: 'publisher2',
-      copyright: 'copyright2',
-      license: 'license2',
-      links: ['link3', 'link4'],
-      tags: ['tag3', 'tag4'],
+      fileType: "fileType2",
+      title: "title2",
+      description: "description2",
+      keywords: ["keyword3", "keyword4"],
+      authors: ["author3", "author4"],
+      contributors: ["contributor3", "contributor4"],
+      publisher: "publisher2",
+      copyright: "copyright2",
+      license: "license2",
+      links: ["link3", "link4"],
+      tags: ["tag3", "tag4"],
     },
     // Add more entries as needed
   };
@@ -397,48 +468,58 @@ const getMetadataForContentState = (contentState: ContentState): StructuredMetad
 const contentState: ContentState = editorState.getCurrentContent();
 const previousContent: string = contentState.getPlainText(); // Or use any other method to get required data
 
+// Extracting metadata
+
+// Convert ContentState to string for metadata extraction
+const extractMetadata = async (
+  contentState: ContentState
+): Promise<StructuredMetadata> => {
+  const contentString = contentState.getPlainText();
+  return await getMetadataForContent(contentString);
+};
+
+// Initial state or default values for metadata
+const [currentMetadata, setCurrentMetadata] = useState<StructuredMetadata>({});
+const [previousMetadata, setPreviousMetadata] = useState<StructuredMetadata>({});
+
+// Using async function to handle metadata extraction
+const handleMetadataExtraction = async (
+  contentState: ContentState,
+  previousContentState: ContentState,
+  setCurrentMetadata: React.Dispatch<React.SetStateAction<StructuredMetadata>>,
+  setPreviousMetadata: React.Dispatch<React.SetStateAction<StructuredMetadata>>
+) => {
+  const currentMetadataResult = await extractMetadata(contentState);
+  setCurrentMetadata(currentMetadataResult);
+
+  const previousMetadataResult = await extractMetadata(previousContentState);
+  setPreviousMetadata(previousMetadataResult);
+};
 // Assuming you have a way to determine the previous content state
 // For example, using a saved snapshot or version history
-const previousContentState: ContentState = createContentStateFromText(previousContent); // Replace with your custom function
+const previousContentState: ContentState =
+  createContentStateFromText(previousContent); // Replace with your custom function
 
-// Extracting metadata
-const currentMetadata: StructuredMetadata = getMetadataForContent(contentState);
-const previousMetadata: StructuredMetadata = getMetadataForContent(previousContentState);
+//
 
+handleMetadataExtraction(
+  contentState,
+  previousContentState,
+  setCurrentMetadata,
+  setPreviousMetadata
+);
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
+const convertedAccessHistory = options.accessHistory.map(
+  convertAccessRecordToHistory
+);
 
 // Now you can use these values in DocumentBuilderProps
 const documentBuilderProps: DocumentBuilderProps = {
   isDynamic: true,
-  // setDocumentPhase: (docPhase, phaseType) => ({
-  //   phase: docPhase,
-  //   phaseType: phaseType
-  // }),
-  // documentPhase: {
-  //   name: "default",
-  //   originalPath: "",
-  //   alternatePaths: [],
-  //   fileType: "string",
-  //   title: "",
-  //   description: "",
-  //   keywords: [],
-  //   authors: [],
-  //   contributors: [],
-  //   publisher: "",
-  //   copyright: "",
-  //   license: "",
-  //   links: [],
-  //   tags: [],
-  //   phaseType: ProjectPhaseTypeEnum.Draft,
-  //   customProp1: "value1",
-  //   customProp2: 123,
-  //   onChange: (phase: ProjectPhaseTypeEnum): void => {
-  //     console.log("New phase selected:", phase);
-  //   },
-  // },
   documents: [],
+  projectPath: projectPath,
   editorState: editorState,
   options: options,
   setOptions: setOptions,
@@ -448,22 +529,22 @@ const documentBuilderProps: DocumentBuilderProps = {
   previousContent: previousContent,
   currentMetadata: currentMetadata,
   previousMetadata: previousMetadata,
-  accessHistory: options.accessHistory,
+  accessHistory: convertedAccessHistory,
   lastModifiedDate: options.lastModifiedDate,
   versionData: options.versionData,
   // version: options.version,
   visibility: options.visibility,
   updatedDocument: options.updatedDocument,
-  documentSize: documentSize,
-  lastModifiedBy: lastModifiedBy,
-  name: name,
-  description: description,
-  createdBy: createdBy,
-  createdDate: createdDate,
-  documentType: documentType,
-  _rev: _rev,
-  _attachments: _attachments,
-  _links: _links,
+  documentSize: options.documentSize,
+  lastModifiedBy: options.lastModifiedBy,
+  name: options.name,
+  description: options.description,
+  createdBy: options.createdBy,
+  createdDate: options.createdDate,
+  documentType: options.documentType,
+  _rev: options._rev,
+  _attachments: options._attachments,
+  _links: options._links,
 
   version: new AppVersionImpl({
     id: 0,
@@ -492,6 +573,97 @@ const documentBuilderProps: DocumentBuilderProps = {
     draft: true,
     userId: "0",
     documentId: "0",
+    metadata: {
+      author: "Test User",
+      timestamp: new Date(),
+    },
+    versions: {
+      data: {
+        id: 0,
+        user: "0",
+        version: "0.9.0",
+        timestamp: new Date(),
+        comments: [],
+        parentId: "",
+        parentType: "",
+        parentVersion: "",
+        parentTitle: "",
+        parentContent: "",
+        parentName: "",
+        parentUrl: "",
+        parentChecksum: "",
+        parentAppVersion: "",
+        parentVersionNumber: "",
+        isLatest: false,
+        isPublished: false,
+        publishedAt: null,
+        source: "",
+        status: "",
+        workspaceId: "",
+        workspaceName: "",
+        workspaceType: "",
+        workspaceUrl: "",
+        workspaceViewers: [],
+        workspaceAdmins: [],
+        workspaceMembers: [],
+        data: [],
+        name: "",
+        url: "",
+        versionNumber: "",
+        documentId: "",
+        draft: false,
+        userId: "",
+        content: "",
+        metadata: {
+          author: "",
+          timestamp: undefined,
+          revisionNotes: undefined,
+        },
+        versions: {
+          data: undefined,
+          backend: undefined,
+          frontend: undefined,
+        },
+        checksum: "",
+      },
+      frontend: {
+        id: "",
+        name: "",
+        type: "",
+        path: "",
+        content: "",
+        draft: false,
+        permissions: {
+          read: false,
+          write: false,
+          delete: false,
+          share: false,
+          execute: false,
+        },
+        getStructure: function (): Record<string, AppStructureItem> {
+          throw new Error("Function not implemented.");
+        },
+        getStructureAsArray: function (): Promise<AppStructureItem[]> {
+          throw new Error("Function not implemented.");
+        },
+      },
+      backend: {
+        getStructure: function (): Promise<Record<string, AppStructureItem>> {
+          throw new Error("Function not implemented.");
+        },
+        getStructureAsArray: function (): AppStructureItem[] {
+          throw new Error("Function not implemented.");
+        },
+        traverseDirectoryPublic: function (
+          dir: string,
+          fs: typeof import("fs")
+        ): Promise<AppStructureItem[]> {
+          throw new Error("Function not implemented.");
+        },
+      },
+    },
+    buildNumber: "1",
+
     parentId: "0",
     parentType: "document",
     parentVersionNumber: "0.0.0",
@@ -557,6 +729,10 @@ const documentBuilderProps: DocumentBuilderProps = {
           filePathOrUrl: documentData.filePathOrUrl,
           uploadedBy: documentData.uploadedBy,
           uploadedAt: documentData.uploadedAt,
+          createdAt: documentData.createdAt,
+          updatedBy: documentData.updatedBy,
+          documents: documentData.documents,
+          selectedDocument: documentData.selectedDocument,
           tagsOrCategories: documentData.tagsOrCategories,
 
           format: documentData.format,
@@ -568,7 +744,8 @@ const documentBuilderProps: DocumentBuilderProps = {
           lastModifiedBy: documentData.lastModifiedBy,
           lastModifiedByTeamId: documentData.lastModifiedByTeamId,
           lastModifiedByTeam: documentData.lastModifiedByTeam,
-
+          url: documentData.url,
+          all: documentData.all,
           // Populate other fields as needed from documentData
         },
         documentData.content
@@ -595,7 +772,7 @@ const documentBuilderProps: DocumentBuilderProps = {
       }));
 
       // Dispatch actions if needed
-      dispatch(addDocument(documentData as WritableDraft<DocumentObject>));
+      dispatch(addDocument(documentData));
       dispatch(
         addDocumentSuccess({
           id: documentData.id.toString(),
@@ -604,7 +781,6 @@ const documentBuilderProps: DocumentBuilderProps = {
       );
 
       // Optionally, perform additional operations or dispatch more actions
-
       console.log("Document built successfully.");
     } catch (error: any) {
       // Handle errors
@@ -612,226 +788,252 @@ const documentBuilderProps: DocumentBuilderProps = {
       handleError(errorMessage, error.stack);
       dispatch({
         type: "ADD_DOCUMENT_FAILURE",
-        payload: "Failed to build document",
+
+        payload: error.message,
       });
     }
     return Promise.resolve();
   },
 
   onConfigChange: (newConfig: DocumentBuilderConfig) => {
-    setOptions: (prevOptions: any, newConfig: any) => {
-      return {
-        ...prevOptions,
-        page: newConfig.page ?? prevOptions.page,
-        levels: newConfig.levels ?? prevOptions.levels,
-        limit: newConfig.limit ?? prevOptions.limit,
-        metadata: newConfig.metadata ?? prevOptions.metadata,
-        uniqueIdentifier:
-          newConfig.uniqueIdentifier ?? prevOptions.uniqueIdentifier,
-        documentType: newConfig.documentType ?? prevOptions.documentType,
-        userIdea: newConfig.userIdea ?? prevOptions.userIdea,
-        documentSize: newConfig.documentSize ?? prevOptions.documentSize,
-        documentPhase: newConfig.documentPhase ?? prevOptions.documentPhase,
-        version: newConfig.version ?? prevOptions.version,
-        isDynamic: newConfig.isDynamic ?? prevOptions.isDynamic,
-        size: newConfig.size ?? prevOptions.size,
-        animations: newConfig.animations ?? prevOptions.animations,
-        layout: newConfig.layout ?? prevOptions.layout,
-        panels: newConfig.panels ?? prevOptions.panels,
-        pageNumbers: newConfig.pageNumbers ?? prevOptions.pageNumbers,
-        footer: newConfig.footer ?? prevOptions.footer,
-        watermark: newConfig.watermark ?? prevOptions.watermark,
-        additionalOptions:
-          newConfig.additionalOptions || prevOptions.additionalOptions,
-        frontendStructure:
-          newConfig.frontendStructure || prevOptions.frontendStructure,
-        visibility: newConfig.visibility || prevOptions.visibility,
-        backendStructure:
-          newConfig.backendStructure ?? prevOptions.backendStructure,
-        structure: newConfig.structure || prevOptions.structure,
-        backgroundColor:
-          newConfig.backgroundColor || prevOptions.backgroundColor,
-        fontSize: newConfig.fontSize || prevOptions.fontSize,
-        textColor: newConfig.textColor || prevOptions.textColor,
-        fontFamily: newConfig.fontFamily || prevOptions.fontFamily,
-        lineSpacing: newConfig.lineSpacing || prevOptions.lineSpacing,
-        enableSpellCheck:
-          newConfig.enableSpellCheck || prevOptions.enableSpellCheck,
-        enableAutoSave: newConfig.enableAutoSave || prevOptions.enableAutoSave,
-        autoSaveInterval:
-          newConfig.autoSaveInterval || prevOptions.autoSaveInterval,
-        showWordCount: newConfig.showWordCount || prevOptions.showWordCount,
-        maxWordCount: newConfig.maxWordCount || prevOptions.maxWordCount,
-        enableSyncWithExternalCalendars:
-          newConfig.enableSyncWithExternalCalendars ??
-          prevOptions.enableSyncWithExternalCalendars,
-        enableThirdPartyIntegration:
-          newConfig.enableThirdPartyIntegration ??
-          prevOptions.enableThirdPartyIntegration,
-        thirdPartyAPIKey:
-          newConfig.thirdPartyAPIKey || prevOptions.thirdPartyAPIKey,
-        thirdPartyEndpoint:
-          newConfig.thirdPartyEndpoint || prevOptions.thirdPartyEndpoint,
-        enableAccessibilityMode:
-          newConfig.enableAccessibilityMode ||
-          prevOptions.enableAccessibilityMode,
-        highContrastMode:
-          newConfig.highContrastMode || prevOptions.highContrastMode,
-        screenReaderSupport:
-          newConfig.screenReaderSupport || prevOptions.screenReaderSupport,
-        orientation: newConfig.orientation ?? prevOptions.orientation,
-        font: newConfig.font || prevOptions.font,
-        alignment: newConfig.alignment || prevOptions.alignment,
-        indentSize: newConfig.indentSize || prevOptions.indentSize,
-        bulletList: newConfig.bulletList || prevOptions.bulletList,
-        numberedList: newConfig.numberedList || prevOptions.numberedList,
-        headingLevel: newConfig.headingLevel || prevOptions.headingLevel,
-        toc: newConfig.toc || prevOptions.toc,
-        bold: newConfig.bold || prevOptions.bold,
-        italic: newConfig.italic || prevOptions.italic,
-        underline: newConfig.underline || prevOptions.underline,
-        strikethrough: newConfig.strikethrough || prevOptions.strikethrough,
-        subscript: newConfig.subscript || prevOptions.subscript,
-        superscript: newConfig.superscript || prevOptions.superscript,
-        hyperlink: newConfig.hyperlink || prevOptions.hyperlink,
-        sections: newConfig.sections || prevOptions.sections,
-        textStyles: newConfig.textStyles || prevOptions.textStyles,
-        links: {
-          ...prevOptions.links,
-          ...newConfig.links,
-        },
-        embeddedContent: {
-          ...prevOptions.embeddedContent,
-          ...newConfig.embeddedContent,
-        },
-        comments: {
+    setOptions((prevOptions: any) => ({
+      ...prevOptions,
+      page: newConfig.page ?? prevOptions.page,
+      levels: newConfig.levels ?? prevOptions.levels,
+      limit: newConfig.limit ?? prevOptions.limit,
+      metadata: newConfig.metadata ?? prevOptions.metadata,
+      uniqueIdentifier: newConfig.uniqueIdentifier ?? prevOptions.uniqueIdentifier,
+      documentType: newConfig.documentType ?? prevOptions.documentType,
+      userIdea: newConfig.userIdea ?? prevOptions.userIdea,
+      documentSize: newConfig.documentSize ?? prevOptions.documentSize,
+      documentPhase: newConfig.documentPhase ?? prevOptions.documentPhase,
+      version: newConfig.version ?? prevOptions.version,
+      isDynamic: newConfig.isDynamic ?? prevOptions.isDynamic,
+      size: newConfig.size ?? prevOptions.size,
+      animations: newConfig.animations ?? prevOptions.animations,
+      layout: newConfig.layout ?? prevOptions.layout,
+      panels: newConfig.panels ?? prevOptions.panels,
+      pageNumbers: newConfig.pageNumbers ?? prevOptions.pageNumbers,
+      footer: newConfig.footer ?? prevOptions.footer,
+      watermark: newConfig.watermark ?? prevOptions.watermark,
+      additionalOptions: newConfig.additionalOptions || prevOptions.additionalOptions,
+      frontendStructure: newConfig.frontendStructure || prevOptions.frontendStructure,
+      visibility: newConfig.visibility || prevOptions.visibility,
+      backendStructure: newConfig.backendStructure ?? prevOptions.backendStructure,
+      structure: newConfig.structure || prevOptions.structure,
+      backgroundColor: newConfig.backgroundColor || prevOptions.backgroundColor,
+      fontSize: newConfig.fontSize || prevOptions.fontSize,
+      textColor: newConfig.textColor || prevOptions.textColor,
+      fontFamily: newConfig.fontFamily || prevOptions.fontFamily,
+      lineSpacing: newConfig.lineSpacing || prevOptions.lineSpacing,
+      enableSpellCheck: newConfig.enableSpellCheck || prevOptions.enableSpellCheck,
+      enableAutoSave: newConfig.enableAutoSave || prevOptions.enableAutoSave,
+      autoSaveInterval: newConfig.autoSaveInterval || prevOptions.autoSaveInterval,
+      showWordCount: newConfig.showWordCount || prevOptions.showWordCount,
+      maxWordCount: newConfig.maxWordCount || prevOptions.maxWordCount,
+      enableSyncWithExternalCalendars: newConfig.enableSyncWithExternalCalendars ??
+        prevOptions.enableSyncWithExternalCalendars,
+      enableThirdPartyIntegration: newConfig.enableThirdPartyIntegration ??
+        prevOptions.enableThirdPartyIntegration,
+      thirdPartyAPIKey: newConfig.thirdPartyAPIKey || prevOptions.thirdPartyAPIKey,
+      thirdPartyEndpoint: newConfig.thirdPartyEndpoint || prevOptions.thirdPartyEndpoint,
+      enableAccessibilityMode: newConfig.enableAccessibilityMode ||
+        prevOptions.enableAccessibilityMode,
+      highContrastMode: newConfig.highContrastMode || prevOptions.highContrastMode,
+      screenReaderSupport: newConfig.screenReaderSupport || prevOptions.screenReaderSupport,
+      orientation: newConfig.orientation ?? prevOptions.orientation,
+      font: newConfig.font || prevOptions.font,
+      alignment: newConfig.alignment || prevOptions.alignment,
+      indentSize: newConfig.indentSize || prevOptions.indentSize,
+      bulletList: newConfig.bulletList || prevOptions.bulletList,
+      numberedList: newConfig.numberedList || prevOptions.numberedList,
+      headingLevel: newConfig.headingLevel || prevOptions.headingLevel,
+      toc: newConfig.toc || prevOptions.toc,
+      bold: newConfig.bold || prevOptions.bold,
+      italic: newConfig.italic || prevOptions.italic,
+      underline: newConfig.underline || prevOptions.underline,
+      strikethrough: newConfig.strikethrough || prevOptions.strikethrough,
+      subscript: newConfig.subscript || prevOptions.subscript,
+      superscript: newConfig.superscript || prevOptions.superscript,
+      hyperlink: newConfig.hyperlink || prevOptions.hyperlink,
+      sections: newConfig.sections || prevOptions.sections,
+      textStyles: newConfig.textStyles || prevOptions.textStyles,
+      links: typeof prevOptions.links === "object" &&
+        typeof newConfig.links === "object"
+        ? { ...prevOptions.links, ...newConfig.links }
+        : newConfig.links || prevOptions.links,
+      embeddedContent: typeof prevOptions.embeddedContent === "object" &&
+        typeof newConfig.embeddedContent == "object"
+        ? { ...(newConfig.embeddedCode || prevOptions.embeddedCode) }
+        : newConfig.embeddedContent || prevOptions.embeddedContent,
+      comments: typeof prevOptions.comments === "object" &&
+        typeof newConfig.comments === "object"
+        ? {
           ...prevOptions.comments,
           ...newConfig.comments,
-        },
-        embeddedMedia: {
-          ...prevOptions.embeddedMedia,
-          ...newConfig.embeddedMedia,
-        },
-        embeddedCode: {
-          ...prevOptions.embeddedCode,
-          ...newConfig.embeddedCode,
-        },
-        styles: newConfig.styles || prevOptions.styles,
-        image: {
-          ...prevOptions.image,
-          ...newConfig.image,
-        },
-        table: {
-          ...prevOptions.table,
-          ...newConfig.table,
-        },
-        tableRows: newConfig.tableRows || prevOptions.tableRows,
-        tableColumns: newConfig.tableColumns || prevOptions.tableColumns,
-        tableCells: newConfig.tableCells || prevOptions.tableCells,
-        codeBlock: newConfig.codeBlock || prevOptions.codeBlock,
-        blockquote: newConfig.blockquote || prevOptions.blockquote,
-        codeInline: newConfig.codeInline || prevOptions.codeInline,
-        quote: newConfig.quote || prevOptions.quote,
-        todoList: newConfig.todoList || prevOptions.todoList,
-        orderedTodoList:
-          newConfig.orderedTodoList || prevOptions.orderedTodoList,
-        unorderedTodoList:
-          newConfig.unorderedTodoList || prevOptions.unorderedTodoList,
-        color: newConfig.color || prevOptions.color,
-        colorCoding: newConfig.colorCoding ?? prevOptions.colorCoding,
-        highlight: newConfig.highlight || prevOptions.highlight,
-        highlightColor: newConfig.highlightColor || prevOptions.highlightColor,
-        customSettings: newConfig.customSettings || prevOptions.customSettings,
-        documents: newConfig.documents || prevOptions.documents,
-        includeType: newConfig.includeType || prevOptions.includeType,
-        includeTitle: newConfig.includeTitle || prevOptions.includeTitle,
-        includeContent: newConfig.includeContent || prevOptions.includeContent,
-        includeStatus: newConfig.includeStatus || prevOptions.includeStatus,
-        includeAdditionalInfo:
-          newConfig.includeAdditionalInfo || prevOptions.includeAdditionalInfo,
-        headerFooterOptions: {
-          ...prevOptions.headerFooterOptions,
-          ...newConfig.headerFooterOptions,
-        },
-        value: newConfig.value || prevOptions.value,
-        userSettings: newConfig.userSettings ?? prevOptions.userSettings,
-        dataVersions: newConfig.dataVersions ?? prevOptions.dataVersions,
-        customProperties:
-          newConfig.customProperties || prevOptions.customProperties,
-        zoom: {
-          ...prevOptions.zoom,
-          ...newConfig.zoom,
-        },
-        showRuler:
-          newConfig.showRuler !== undefined
-            ? newConfig.showRuler
-            : prevOptions.showRuler,
-        showDocumentOutline:
-          newConfig.showDocumentOutline !== undefined
-            ? newConfig.showDocumentOutline
-            : prevOptions.showDocumentOutline,
-        showComments:
-          newConfig.showComments !== undefined
-            ? newConfig.showComments
-            : prevOptions.showComments,
-        showRevisions:
-          newConfig.showRevisions !== undefined
-            ? newConfig.showRevisions
-            : prevOptions.showRevisions,
-        spellCheck:
-          newConfig.spellCheck !== undefined
-            ? newConfig.spellCheck
-            : prevOptions.spellCheck,
-        grammarCheck:
-          newConfig.grammarCheck !== undefined
-            ? newConfig.grammarCheck
-            : prevOptions.grammarCheck,
-        language: {
-          ...prevOptions.language,
-          ...newConfig.language,
-        },
-        bookmarks: {
-          ...prevOptions.bookmarks,
-          ...newConfig.bookmarks,
-        },
-        crossReferences: {
-          ...prevOptions.crossReferences,
-          ...newConfig.crossReferences,
-        },
-        footnotes: {
-          ...prevOptions.footnotes,
-          ...newConfig.footnotes,
-        },
-        endnotes: {
-          ...prevOptions.endnotes,
-          ...newConfig.endnotes,
-        },
-        revisions: newConfig.revisions ?? prevOptions.revisions,
-        defaultZoomLevel:
-          newConfig.defaultZoomLevel ?? prevOptions.defaultZoomLevel,
-        previousMetadata:
-          newConfig.previousMetadata !== undefined
-            ? newConfig.previousMetadata
-            : prevOptions.previousMetadata,
-        currentMetadata:
-          newConfig.currentMetadata !== undefined
-            ? newConfig.currentMetadata
-            : prevOptions.currentMetadata,
-        accessHistory:
-          newConfig.accessHistory !== undefined
-            ? newConfig.accessHistory
-            : prevOptions.accessHistory,
-        tableStyles:
-          newConfig.tableStyles !== undefined
-            ? newConfig.tableStyles
-            : prevOptions.tableStyles,
-        footnote:
-          newConfig.footnote !== undefined
-            ? newConfig.footnote
-            : prevOptions.footnote,
-      };
-    };
+        }
+        : newConfig.comments || prevOptions.comments,
+      embeddedMedia: typeof prevOptions.embeddedMedia === "object" &&
+        typeof newConfig.embeddedMedia === "object"
+        ? { ...prevOptions.embeddedMedia, ...newConfig.embeddedMedia }
+        : newConfig.embeddedMedia || prevOptions.embeddedMedia,
+
+      embeddedCode: typeof prevOptions.embeddedCode === "object" &&
+        typeof newConfig.embeddedCode === "object"
+        ? { ...prevOptions.embeddedCode, ...newConfig.embeddedCode }
+        : newConfig.embeddedCode || prevOptions.embeddedCode,
+
+      styles: newConfig.styles || prevOptions.styles,
+
+      image: typeof prevOptions.image === "object" &&
+        typeof newConfig.image === "object"
+        ? { ...prevOptions.image, ...newConfig.image }
+        : newConfig.image || prevOptions.image,
+
+      table: typeof prevOptions.table === "object" &&
+        typeof newConfig.table === "object"
+        ? { ...prevOptions.table, ...newConfig.table }
+        : newConfig.table || prevOptions.table,
+      tableRows: newConfig.tableRows || prevOptions.tableRows,
+      tableColumns: newConfig.tableColumns || prevOptions.tableColumns,
+      tableCells: newConfig.tableCells || prevOptions.tableCells,
+      codeBlock: newConfig.codeBlock || prevOptions.codeBlock,
+      blockquote: newConfig.blockquote || prevOptions.blockquote,
+      codeInline: newConfig.codeInline || prevOptions.codeInline,
+      quote: newConfig.quote || prevOptions.quote,
+      todoList: newConfig.todoList || prevOptions.todoList,
+      orderedTodoList: newConfig.orderedTodoList || prevOptions.orderedTodoList,
+      unorderedTodoList: newConfig.unorderedTodoList || prevOptions.unorderedTodoList,
+      color: newConfig.color || prevOptions.color,
+      colorCoding: newConfig.colorCoding ?? prevOptions.colorCoding,
+      highlight: newConfig.highlight || prevOptions.highlight,
+      highlightColor: newConfig.highlightColor || prevOptions.highlightColor,
+      customSettings: newConfig.customSettings || prevOptions.customSettings,
+      documents: newConfig.documents || prevOptions.documents,
+      includeType: newConfig.includeType || prevOptions.includeType,
+      includeTitle: newConfig.includeTitle || prevOptions.includeTitle,
+      includeContent: newConfig.includeContent || prevOptions.includeContent,
+      includeStatus: newConfig.includeStatus || prevOptions.includeStatus,
+      includeAdditionalInfo: newConfig.includeAdditionalInfo || prevOptions.includeAdditionalInfo,
+      headerFooterOptions: {
+        ...prevOptions.headerFooterOptions,
+        ...newConfig.headerFooterOptions,
+      },
+      value: newConfig.value || prevOptions.value,
+      userSettings: newConfig.userSettings ?? prevOptions.userSettings,
+      dataVersions: newConfig.dataVersions ?? prevOptions.dataVersions,
+      customProperties: newConfig.customProperties || prevOptions.customProperties,
+      zoom: typeof prevOptions.zoom === "object" &&
+        typeof newConfig.zoom === "object"
+        ? { ...prevOptions.zoom, ...newConfig.zoom }
+        : newConfig.zoom || prevOptions.zoom,
+      showRuler: newConfig.showRuler !== undefined
+        ? newConfig.showRuler
+        : prevOptions.showRuler,
+      showDocumentOutline: newConfig.showDocumentOutline !== undefined
+        ? newConfig.showDocumentOutline
+        : prevOptions.showDocumentOutline,
+      showComments: newConfig.showComments !== undefined
+        ? newConfig.showComments
+        : prevOptions.showComments,
+      showRevisions: newConfig.showRevisions !== undefined
+        ? newConfig.showRevisions
+        : prevOptions.showRevisions,
+      spellCheck: newConfig.spellCheck !== undefined
+        ? newConfig.spellCheck
+        : prevOptions.spellCheck,
+      grammarCheck: newConfig.grammarCheck !== undefined
+        ? newConfig.grammarCheck
+        : prevOptions.grammarCheck,
+
+      language: newConfig.language || prevOptions.language,
+
+      bookmarks: typeof prevOptions.bookmarks === "object" &&
+        typeof newConfig.bookmarks === "object"
+        ? { ...prevOptions.bookmarks, ...newConfig.bookmarks }
+        : newConfig.bookmarks || prevOptions.bookmarks,
+
+      crossReferences: typeof prevOptions.crossReferences === "object" &&
+        typeof newConfig.crossReferences === "object"
+        ? { ...prevOptions.crossReferences, ...newConfig.crossReferences }
+        : newConfig.crossReferences || prevOptions.crossReferences,
+
+      footnotes: typeof prevOptions.footnotes === "object" &&
+        typeof newConfig.footnotes === "object"
+        ? { ...prevOptions.footnotes, ...newConfig.footnotes }
+        : newConfig.footnotes || prevOptions.footnotes,
+
+      endnotes: typeof prevOptions.endnotes === "object" &&
+        typeof newConfig.endnotes === "object"
+        ? { ...prevOptions.endnotes, ...newConfig.endnotes }
+        : newConfig.endnotes || prevOptions.endnotes,
+
+      revisions: newConfig.revisions ?? prevOptions.revisions,
+      defaultZoomLevel: newConfig.defaultZoomLevel ?? prevOptions.defaultZoomLevel,
+      previousMetadata: newConfig.previousMetadata !== undefined
+        ? newConfig.previousMetadata
+        : prevOptions.previousMetadata,
+      currentMetadata: newConfig.currentMetadata !== undefined
+        ? newConfig.currentMetadata
+        : prevOptions.currentMetadata,
+      accessHistory: newConfig.accessHistory !== undefined
+        ? newConfig.accessHistory
+        : prevOptions.accessHistory,
+      tableStyles: newConfig.tableStyles !== undefined
+        ? newConfig.tableStyles
+        : prevOptions.tableStyles,
+      footnote: newConfig.footnote !== undefined
+        ? newConfig.footnote
+        : prevOptions.footnote,
+    }));
   },
+  onOptionsChange: function (newOptions: DocumentOptions): void {
+    throw new Error("Function not implemented.");
+  },
+  id: "",
+  _id: "",
+  title: "",
+  content: "",
+  permissions: undefined,
+  folders: [],
+  folderPath: "",
+  document: undefined,
+  _etag: "",
+  _local: false,
+  _revs: [],
+  _source: undefined,
+  _shards: undefined,
+  _size: 0,
+  _version: 0,
+  _version_conflicts: 0,
+  _seq_no: 0,
+  _primary_term: 0,
+  _routing: "",
+  _parent: "",
+  _parent_as_child: false,
+  _slices: [],
+  _highlight: undefined,
+  _highlight_inner_hits: undefined,
+  _source_as_doc: false,
+  _source_includes: [],
+  _routing_keys: [],
+  _routing_values: [],
+  _routing_values_as_array: [],
+  _routing_values_as_array_of_objects: [],
+  _routing_values_as_array_of_objects_with_key: [],
+  _routing_values_as_array_of_objects_with_key_and_value: [],
+  _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+  filePathOrUrl: "",
+  uploadedBy: 0,
+  uploadedAt: "",
+  tagsOrCategories: "",
+  format: "",
+  uploadedByTeamId: null,
+  uploadedByTeam: null,
+  url: undefined,
+  updatedBy: "",
+  selectedDocument: null,
+  all: null
 };
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({

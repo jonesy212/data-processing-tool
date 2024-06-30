@@ -135,7 +135,8 @@ const useSnapshotStore = async (
       initialState,
       snapshotConfig,
       subscribeToSnapshots,
-      resolvedDelegate // Pass the resolved value
+      resolvedDelegate, // Pass the resolved value
+      dataStoreMethods
     );
   
     const dataStore = newSnapshot.getDataStore();
@@ -312,7 +313,7 @@ const useSnapshotStore = async (
     subscribe();
 
     return () => {
-      const subscriberId = subscriber.getId();
+      const subscriberId = subscriber.id!
       unsubscribe(subscriberId);
     };
   }, [

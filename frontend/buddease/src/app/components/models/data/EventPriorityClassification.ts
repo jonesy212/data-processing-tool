@@ -1,4 +1,4 @@
-import { PriorityStatus } from "./StatusType";
+import { PriorityTypeEnum } from "./StatusType";
 
 
 
@@ -6,7 +6,7 @@ export type EventTrendType = "Increasing" | "Decreasing" | "Stable" |  "Positive
 // EventPriorityClassification.ts
 interface EventPriorityClassification {
   eventId: string;
-  priority: PriorityStatus;
+  priority: PriorityTypeEnum;
 }
 
 interface EventFeedbackAnalysis {

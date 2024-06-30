@@ -1,4 +1,4 @@
-// LocalStorageSnapshotStore.tsx
+f// LocalStorageSnapshotStore.tsx
 
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { getSubscriberId } from "@/app/api/subscriberApi";
@@ -20,7 +20,6 @@ import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState }
 import { generateSnapshotId } from "../utils/snapshotUtils";
 import { AuditRecord, SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
 import SnapshotStore, { defaultCategory, initialState } from "./SnapshotStore";
-import { snapshot } from "./snapshot";
 import { subscribeToSnapshots } from "./snapshotHandlers";
 import { NonUndefined } from "node_modules/@reduxjs/toolkit/dist/tsHelpers";
 
@@ -66,6 +65,10 @@ interface Payload {
 
   type Snapshots<T> = Array<Snapshot<Data> | Snapshot<CustomSnapshotData>>;
 
+const SNAPSHOT_STORE_CONFIG = snapshotConfig;
+
+
+ 
   interface CoreSnapshot<T extends BaseData> {
     id?: string | number;
     data?: T | null | undefined;
@@ -86,9 +89,9 @@ interface Payload {
     store?: SnapshotStore<T>;
     state?: Snapshot<T> | null;
     dataStore?: DataStore<T>
-    initialState?: SnapshotStore<Snapshot<T>> | Snapshot<Snapshot<T>> | null | undefined
+    initialState: BaseData
     setSnapshotData?: (data: Data) => void;
-    snapshotConfig?: SnapshotStoreConfig<Snapshot<T>, T>[] | undefined;
+    snapshotConfig?: SnapshotStoreConfig<T, T>[] ;
     subscribeToSnapshots?: (snapshotId: string, callback: (snapshot: Snapshot<Data>) => void) => void
   }
 
@@ -102,7 +105,7 @@ interface Payload {
     topic?: string;
     priority?: string | PriorityTypeEnum;
     subscription?: Subscription | null;
-    config?: SnapshotStoreConfig<Snapshot<any>, any>[] | null;
+    config?: SnapshotStoreConfig<BaseData, any>[] | null;
     metadata?: any;
     isExpired?: boolean;
     isCompressed?: boolean;
@@ -111,7 +114,7 @@ interface Payload {
     expirationDate?: Date | string;
     auditTrail?: AuditRecord[];
     subscribers?: Subscriber<CustomSnapshotData | Data>[];
-    delegate?: SnapshotStoreConfig<Snapshot<any>, any>[];
+    delegate?: SnapshotStoreConfig<BaseData, any>[];
     value?: number;
     todoSnapshotId?: string;
     dataStoreMethods?: DataStore<T> | null;
@@ -124,8 +127,8 @@ interface Payload {
 
   
 // Example implementation of LocalStorageSnapshotStore
-const snapshotType = (snapshot: Snapshot<BaseData>): Snapshot<BaseData> => {
-  const newSnapshot = { ...snapshot }; // Shallow copy of the snapshot
+const snapshotType = <T extends BaseData>(snapshot: Snapshot<T>): Snapshot<T> => {
+  const newSnapshot: Snapshot<T> = { ...snapshot }; // Shallow copy of the snapshot
 
   newSnapshot.id = snapshot.id || generateSnapshotId;
   newSnapshot.title = snapshot.title || "";
@@ -147,15 +150,16 @@ const snapshotType = (snapshot: Snapshot<BaseData>): Snapshot<BaseData> => {
   newSnapshot.status = snapshot.status || "";
   newSnapshot.metadata = snapshot.metadata || {};
   newSnapshot.delegate = snapshot.delegate || [];
-  newSnapshot.store =
-    snapshot.store ||
-    new SnapshotStore<BaseData>(
+   
+  newSnapshot.store = (snapshot.store as SnapshotStore<T>) || 
+    new SnapshotStore<T>(
       newSnapshot.data || null,
+
       (newSnapshot.category as CategoryProperties) || defaultCategory,
       newSnapshot.date ? new Date(newSnapshot.date) : new Date(),
       newSnapshot.type ? newSnapshot.type : "new snapshot",
-      newSnapshot.initialState,
-      newSnapshot.snapshotConfig || [],
+      newSnapshot.initialState ? newSnapshot.initialState : null,
+      (newSnapshot.snapshotConfig as SnapshotStoreConfig<T, T>[]) || [],
       newSnapshot.subscribeToSnapshots
         ? newSnapshot.subscribeToSnapshots
         : () => {},
@@ -174,62 +178,73 @@ const snapshotType = (snapshot: Snapshot<BaseData>): Snapshot<BaseData> => {
 class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
     
   private storage: Storage;
-  constructor(storage: Storage, category: CategoryProperties = {
-    name: "LocalStorageSnapshotStore",
-    description: "LocalStorageSnapshotStore",
-    icon: "fa-solid fa-database",
-    color: "bg-blue-500",
-    iconColor: "text-white",
-    isActive: true,
-    isPublic: true,
-    isSystem: true,
-    isDefault: true,
-    isHidden: false,
-    isHiddenInList: false,
-    UserInterface: [],
-    DataVisualization: [],
-    Forms: undefined,
-    Analysis: [],
-    Communication: [],
-    TaskManagement: [],
-    Crypto: [],
-    brandName: "",
-    brandLogo: "",
-    brandColor: "",
-    brandMessage: ""
-  },
+  constructor(
+    storage: Storage,
+    category: CategoryProperties = {
+      name: "LocalStorageSnapshotStore",
+      description: "LocalStorageSnapshotStore",
+      icon: "fa-solid fa-database",
+      color: "bg-blue-500",
+      iconColor: "text-white",
+      isActive: true,
+      isPublic: true,
+      isSystem: true,
+      isDefault: true,
+      isHidden: false,
+      isHiddenInList: false,
+      UserInterface: [],
+      DataVisualization: [],
+      Forms: undefined,
+      Analysis: [],
+      Communication: [],
+      TaskManagement: [],
+      Crypto: [],
+      brandName: "",
+      brandLogo: "",
+      brandColor: "",
+      brandMessage: "",
+    },
     dataStoreMethods: DataStore<T> = {
       getItem: async (key: string): Promise<Snapshot<T> | undefined> => {
         const item = await this.getItem(key);
         return item ? snapshotType(item) : undefined;
       },
       setItem: async (key: string, value: T): Promise<void> => {
-        this.setItem(key, value);
+        await this.setItem(key, value);
       },
       removeItem: async (key: string): Promise<void> => {
-        this.removeItem(key);
+        await this.removeItem(key);
       },
-      getAllKeys: async (): Promise<(string | null)[]> => {
-        const keys = [];
+      getAllKeys: async (): Promise<string[]> => {
+        const keys: string[] = [];
         for (let i = 0; i < this.storage.length; i++) {
-          keys.push(this.storage.key(i));
+          const key = this.storage.key(i);
+          if (key) {
+            keys.push(key);
+          }
         }
         return keys;
       },
-      getAllItems: async (): Promise<Snapshot<T>[]> => {
-        const keys = this.getAllKeys();
-        const items = await Promise.all(
-          keys.map(async (key) => {
-            const item = await this.getItem(key);
-            return item ? snapshotType(item) : null;
-          })
-        );
-        return items.filter((item): item is Snapshot<T> => item !== undefined);
-      },
+      
+  async getAllItems(): Promise<Snapshot<T>[]> {
+    const keys = await this.getAllKeys();
+    const items = await Promise.all(
+      keys.map(async (key) => {
+        const item = await this.getItem(key);
+        return item ? snapshotType(item) : undefined;
+      })
+    );
+
+    if (!items) {
+      return [];
+    }
+
+    return items.filter((item: any): item is Snapshot<T> => item !== undefined);
+  }
     }
   ) {
     super(
-      snapshot as T,
+      snapshot,
       category,
       new Date(),
       snapshotType.toString(),
@@ -246,7 +261,7 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       this.storage.setItem(key, JSON.stringify(value));
     }
   
-    getItem(key: string): Promise<T | null> {
+    getItem(key: string): Snapshot<T> | undefined {
       const item = this.storage.getItem(key);
       return item ? JSON.parse(item) : null;
     }
@@ -255,7 +270,7 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       this.storage.removeItem(key);
     }
   
-  getAllKeys(): string[] {
+  getAllKeys(): Promise<string[]> {
       const keys: string[] = [];
       for (let i = 0; i < this.storage.length; i++) {
         const key = this.storage.key(i);
@@ -263,7 +278,7 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
           keys.push(key);
         }
       }
-      return keys;
+      return Promise.resolve(keys);
     }
   
   
