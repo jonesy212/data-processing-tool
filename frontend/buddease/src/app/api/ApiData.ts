@@ -320,3 +320,18 @@ export const getFrontendVersion = async (): Promise<string> => {
   }
 };
 
+
+
+export const getAllKeys = async (): Promise<string[]> => {
+  try {
+    const allKeysEndpoint = `${API_BASE_URL}.getAllKeys`;
+    const response = await axiosInstance.get(allKeysEndpoint);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching all keys:", error);
+
+    // Handle error using the provided pattern
+    handleApiErrorAndNotify(error, "Failed to fetch all keys", "GetAllKeysErrorId" as keyof DataNotificationMessages)
+    return [];
+  }
+}

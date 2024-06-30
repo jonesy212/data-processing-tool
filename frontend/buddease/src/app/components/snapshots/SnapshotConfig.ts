@@ -665,7 +665,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         id: any;
         category: any;
         timestamp: any;
-        snapshot: SnapshotStore<Snapshot<T>>;
+        snapshot: Snapshot<T>;
         data: T;
       }> | undefined,
       category: string,

@@ -109,7 +109,7 @@ export interface Comment {
     tags?: string[] | Tag[];
     phase?: Phase | null;
     phaseType?: ProjectPhaseTypeEnum;
-
+    initialState?: Snapshot<BaseData>;
     // Properties specific to Todo
     dueDate?: Date | null;
     priority?: string | AllStatus;
@@ -144,14 +144,14 @@ export interface Comment {
     members?: number | Member[];
 
     leader?: User | null;
-    snapshots?: SnapshotStore<Snapshot<BaseData>>[];
+    snapshots?: SnapshotStore<BaseData>[];
     text?: string;
     category?: string | CategoryProperties | undefined;
     [key: string]: any;
-    getData?: () => Promise<SnapshotStore<Snapshot<BaseData>>[]>; // Define the getData method
+    getData?: () => Promise<SnapshotStore<BaseData>[]>; // Define the getData method
 
     // Implement the `then` function using the reusable function
-    then?: <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void) => void | undefined;
+    then?: <T extends Data>(callback: (newData: Snapshot<BaseData>) => void) => void | undefined;
 
   }
 
@@ -716,7 +716,7 @@ const data: Data = {
     },
   },
   snapshots: [],
-  getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+  getData: function (): Promise<SnapshotStore<BaseData>[]> {
     // Implement logic to get the data
     return Promise.resolve([]);
   },

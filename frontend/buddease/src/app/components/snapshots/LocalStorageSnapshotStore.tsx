@@ -1,4 +1,4 @@
-f// LocalStorageSnapshotStore.tsx
+// LocalStorageSnapshotStore.tsx
 
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { getSubscriberId } from "@/app/api/subscriberApi";
@@ -22,6 +22,7 @@ import { AuditRecord, SnapshotStoreConfig, snapshotConfig } from "./SnapshotConf
 import SnapshotStore, { defaultCategory, initialState } from "./SnapshotStore";
 import { subscribeToSnapshots } from "./snapshotHandlers";
 import { NonUndefined } from "node_modules/@reduxjs/toolkit/dist/tsHelpers";
+import { reject } from "lodash";
 
 
 interface Payload {
@@ -89,9 +90,9 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
     store?: SnapshotStore<T>;
     state?: Snapshot<T> | null;
     dataStore?: DataStore<T>
-    initialState: BaseData
+    initialState: Snapshot<BaseData> | null;
     setSnapshotData?: (data: Data) => void;
-    snapshotConfig?: SnapshotStoreConfig<T, T>[] ;
+    snapshotConfig?: SnapshotStoreConfig<BaseData, BaseData>[];
     subscribeToSnapshots?: (snapshotId: string, callback: (snapshot: Snapshot<Data>) => void) => void
   }
 
@@ -159,13 +160,15 @@ const snapshotType = <T extends BaseData>(snapshot: Snapshot<T>): Snapshot<T> =>
       newSnapshot.date ? new Date(newSnapshot.date) : new Date(),
       newSnapshot.type ? newSnapshot.type : "new snapshot",
       newSnapshot.initialState ? newSnapshot.initialState : null,
-      (newSnapshot.snapshotConfig as SnapshotStoreConfig<T, T>[]) || [],
+      (newSnapshot.snapshotConfig,
       newSnapshot.subscribeToSnapshots
         ? newSnapshot.subscribeToSnapshots
         : () => {},
       newSnapshot.delegate,
       newSnapshot.dataStoreMethods || ({} as DataStore<BaseData>) // Cast to DataStore<BaseData> if null
-    );
+      ),
+
+    )
 
 
   newSnapshot.state = snapshot.state || null;
@@ -205,16 +208,34 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       brandMessage: "",
     },
     dataStoreMethods: DataStore<T> = {
-      getItem: async (key: string): Promise<Snapshot<T> | undefined> => {
-        const item = await this.getItem(key);
-        return item ? snapshotType(item) : undefined;
+      data: undefined,
+      addData: (data: T) => { },
+      updateData: (id: number, newData: T) => { },
+      removeData: (id: number) => { },
+      updateDataTitle: (id: number, title: string) => { },
+      updateDataDescription: (id: number, description: string) => { },
+      addDataStatus: (status: string)=> Promise<void> ,
+      getItem: (key: string): Promise<T | undefined> => {
+        return new Promise((resolve, reject) => {
+          const item = this.storage.getItem(key);
+          if (item) {
+            resolve(JSON.parse(item));
+          } else {
+            resolve(undefined);
+          }
+        })
       },
-      setItem: async (key: string, value: T): Promise<void> => {
-        await this.setItem(key, value);
+    
+      setItem:  (id: string, item: T): Promise<void> => {
+        return new Promise((resolve, reject) => {
+          this.storage.setItem(id, JSON.stringify(item));
+          resolve();
+        })
       },
       removeItem: async (key: string): Promise<void> => {
         await this.removeItem(key);
       },
+
       getAllKeys: async (): Promise<string[]> => {
         const keys: string[] = [];
         for (let i = 0; i < this.storage.length; i++) {
@@ -227,20 +248,23 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       },
       
   async getAllItems(): Promise<Snapshot<T>[]> {
-    const keys = await this.getAllKeys();
-    const items = await Promise.all(
-      keys.map(async (key) => {
-        const item = await this.getItem(key);
-        return item ? snapshotType(item) : undefined;
-      })
-    );
-
-    if (!items) {
-      return [];
-    }
-
-    return items.filter((item: any): item is Snapshot<T> => item !== undefined);
-  }
+    return new Promise(async (resolve, reject) => {
+      try {
+        const keys = await this.getAllKeys();
+        const items = await Promise.all(
+          keys.map(async (key) => {
+            const item = await this.getItem(key);
+            return item ? snapshotType(item) : undefined;
+          })
+        );
+  
+        const filteredItems = items.filter((item): item is Snapshot<T> => item !== undefined);
+        resolve(filteredItems);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }  
     }
   ) {
     super(
@@ -445,8 +469,8 @@ subscriber.id = "new-id"; // Set the private property using the setter method
           value: new Date(),
           isModified: false,
         } as ModifiedDate,
-        determineCategory: (data: any) => { 
-          return snapshot
+        determineCategory: (snapshotCategory: any) => { 
+          return snapshotCategory
          },
                 // id: "sub123",
         // name: "Subscriber 1",
