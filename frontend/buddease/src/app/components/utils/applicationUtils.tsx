@@ -314,6 +314,24 @@ const isValidStatus = (status: StatusType): boolean => {
       handleIncentiveWithoutParameters();
     }
   };
+
+
+const portfolioUpdates = ({
+  userId,
+  snapshotId,
+}:{userId: string, snapshotId: string}) => {
+  // Logic to update the user's portfolio snapshot
+  console.log(`Updating portfolio snapshot '${snapshotId}' for user '${userId}'`);
+
+  // Additional logic to handle the portfolio update
+  if (!userId || userId.trim() === '') {
+    throw new Error("User ID is required for portfolio updates");
+  }
+  if (!snapshotId || snapshotId.trim() === '') {
+    throw new Error("Snapshot ID is required for portfolio updates");
+  }
+
+}
   
 
   
@@ -388,6 +406,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-  logActivity, notifyEventSystem, triggerIncentives, updateProjectState
+  logActivity, notifyEventSystem, triggerIncentives, updateProjectState, portfolioUpdates
 };
 
+export type {TriggerIncentivesParams}

@@ -4,12 +4,13 @@ import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { Data } from "@/app/components/models/data/Data";
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { EventData } from "@/app/components/state/stores/AssignEventStore";
 
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 
 interface BaseRealtimeData {
   id: string;
@@ -27,8 +28,8 @@ interface RealtimeDataItem extends BaseRealtimeData,EventData {
   dispatch: (action: any) => void;
   value: string;
   name: string;
-  timestamp: string | Date
-
+  timestamp: string | Date;
+  data?:  Snapshot<any>;
   // Add other properties specific to RealtimeDataItem here
 }
 

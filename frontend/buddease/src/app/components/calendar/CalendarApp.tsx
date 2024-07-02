@@ -22,6 +22,9 @@ import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotStoreConfig } from '../snapshots/SnapshotConfig';
+import { initSnapshot, subscribeToSnapshots } from '../snapshots/snapshotHandlers';
+import { takeSnapshot } from '@/app/api/SnapshotApi';
+import { snapshotType } from '../typings/YourSpecificSnapshotType';
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -116,20 +119,20 @@ const CalendarApp = () => {
     brandMessage: ''
   };
   const date = new Date();
-  const type = "exampleType";
+  const type = snapshotType.toString();
   const initialState: SnapshotStore<Snapshot<Data>> | Snapshot<Snapshot<Data>> | null | undefined = null;
   const snapshotConfig: SnapshotStoreConfig<Snapshot<BaseData>, BaseData>[] = [];
   const delegate: SnapshotStoreConfig<Snapshot<Data>, Data>[] = [];
 
   const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore(
-    snapshot,
+    initialState,
     category,
     date,
     type,
-    initialState,
     snapshotConfig,
-    snapshotType,
-    delegate
+    subscribeToSnapshots,
+    delegate,
+    dataStoreMethods
   );
 
   const snapshotManager = useSnapshotManager<Todo>(); // Initialize the snapshot manager
@@ -475,8 +478,8 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
             snapshots: [
               {
                 
-                initSnapshot: (await useSnapshotManager()).initSnapshot,
-                takeSnapshot: useSnapshotManager().takeSnapshot,
+                initSnapshot: initSnapshot,
+                takeSnapshot: takeSnapshot,
                 takeSnapshotSuccess: useSnapshotManager().takeSnapshotSuccess,
                 takeSnapshotsSuccess: useSnapshotManager().takeSnapshotsSuccess,
 

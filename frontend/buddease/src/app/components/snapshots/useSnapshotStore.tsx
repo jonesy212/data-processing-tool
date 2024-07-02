@@ -1,6 +1,6 @@
 // useSnapshotStore.ts
 import { SnapshotStoreConfig, snapshotConfig } from "@/app/components/snapshots/SnapshotConfig";
-import { Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -112,7 +112,7 @@ const useSnapshotStore = async (
 ): Promise<SnapshotStore<any>> => {
   // Initialize state for snapshots
   // const snapshotId =  UniqueIDGenerator.generateSnapshoItemID();
-  const [snapshots, setSnapshots] = useState<SnapshotStore<Snapshot<Data>> | undefined>(
+  const [snapshots, setSnapshots] = useState<SnapshotStore<BaseData> | undefined>(
     undefined
   );
   const [subscribers, setSubscribers] = useState<

@@ -4,15 +4,18 @@ import {
 } from "@/app/configs/StructuredMetadata";
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
+import { Data } from "../models/data/Data";
 import StatusType, { PriorityTypeEnum } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
-import { CalendarManagerState } from "./CalendarSlice";
 import useAttendancePrediction from "./AttendancePrediction";
+import { CalendarManagerState } from "./CalendarSlice";
 
 
 interface Attendee {
@@ -37,6 +40,7 @@ interface AttendeeBusyTimes {
 interface AttendeeAvailability {
   attendeeId: string;
   availability: string; // e.g., 'available', 'busy', etc.
+  busyTimes: BusyTime[];
 }
 
 
@@ -67,13 +71,15 @@ interface AttendeeAvailabilityAnalysis {
   attendeeBusyTimes: AttendeeBusyTimes; 
   attendeeAvailability: AttendeeAvailability;
   confidenceScore: number;
-  attendeeAvailabilityPrediction: AttendeeAvailabilityPrediction[];
-  attendeeAvailabilityPredictionConfidenceScore: number;
-  attendeeAvailabilityPredictionConfidenceInterval: AttendeeAvailabilityPredictionConfidenceInterval[];
-  attendeeAvailabilityPredictionConfidenceIntervalLower: number;
-  attendeeAvailabilityPredictionConfidenceIntervalUpper: number;
-  attendeeAvailabilityPredictionConfidenceIntervalLower95: number;
-  attendeeAvailabilityPredictionConfidenceIntervalUpper95: number;
+  attendeeId: string;
+  // busyTimes: BusyTime[];
+  // attendeeAvailabilityPrediction: AttendeeAvailabilityPrediction[];
+  // attendeeAvailabilityPredictionConfidenceScore: number;
+  // attendeeAvailabilityPredictionConfidenceInterval: AttendeeAvailabilityPredictionConfidenceInterval[];
+  // attendeeAvailabilityPredictionConfidenceIntervalLower: number;
+  // attendeeAvailabilityPredictionConfidenceIntervalUpper: number;
+  // attendeeAvailabilityPredictionConfidenceIntervalLower95: number;
+  // attendeeAvailabilityPredictionConfidenceIntervalUpper95: number;
 }
 
 
@@ -102,6 +108,7 @@ const useAttendeeAvailabilityAnalysis = (
     attendees: [],
     busyHours: [],
     freeTimes: [],
+    attendeeId: "",
     suggestedAvailability: [],
     suggestedTimeOff: [],
     suggestedTimeOffDates: [],
@@ -116,14 +123,15 @@ const useAttendeeAvailabilityAnalysis = (
     attendeeAvailability: {
       attendeeId: "",
       availability: "",
+      busyTimes: [],
     },
-    attendeeAvailabilityPrediction: [],
-    attendeeAvailabilityPredictionConfidenceScore: 0,
-    attendeeAvailabilityPredictionConfidenceInterval: [],
-    attendeeAvailabilityPredictionConfidenceIntervalLower: 0,
-    attendeeAvailabilityPredictionConfidenceIntervalUpper: 0,
-    attendeeAvailabilityPredictionConfidenceIntervalLower95: 0,
-    attendeeAvailabilityPredictionConfidenceIntervalUpper95: 0,
+    // attendeeAvailabilityPrediction: [],
+    // attendeeAvailabilityPredictionConfidenceScore: 0,
+    // attendeeAvailabilityPredictionConfidenceInterval: [],
+    // attendeeAvailabilityPredictionConfidenceIntervalLower: 0,
+    // attendeeAvailabilityPredictionConfidenceIntervalUpper: 0,
+    // attendeeAvailabilityPredictionConfidenceIntervalLower95: 0,
+    // attendeeAvailabilityPredictionConfidenceIntervalUpper95: 0,
   });
 
   const analyze = () => {
@@ -195,6 +203,9 @@ const event: CalendarEvent = {
   highlights: [],
   files: [],
   options: getDefaultDocumentOptions(),
+  attendees: [],
+  location: "Event location",
+  getData: () => Promise.resolve([]) as Promise<SnapshotStore<Snapshot<Data>>[]>,
 };
 
 const calendarManagerState: CalendarManagerState = {

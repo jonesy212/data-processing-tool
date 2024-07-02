@@ -1,7 +1,8 @@
-import SnapshotStore, { Snapshot } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
+import { Snapshot } from "./LocalStorageSnapshotStore";
 
 interface SnapshotItem {
   message: any;
@@ -15,7 +16,7 @@ interface SnapshotItem {
   timestamp: string | Date;
   categories?: string[];
   updatedAt: Date | undefined;
-  store: SnapshotStore<Data> | null;
+  store: SnapshotStore<Data> | undefined;
   
 }
 

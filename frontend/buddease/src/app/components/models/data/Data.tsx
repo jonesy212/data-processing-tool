@@ -98,16 +98,18 @@ interface BaseData {
   _id?: string;
   id?: string | number;
   title?: string;
+  data?: any;
   description?: string | null;
   startDate?: Date;
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  timestamp?: string | Date;
+  timestamp?: string | Date | undefined;
   isActive?: boolean;
   tags?: string[] | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
+  value?: string | undefined;
   initialState?:
     | SnapshotStore<BaseData>
     | Snapshot<BaseData>

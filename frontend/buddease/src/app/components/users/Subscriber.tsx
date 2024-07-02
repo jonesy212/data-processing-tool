@@ -2,44 +2,44 @@ import { addSnapshot } from "@/app/api/SnapshotApi";
 import { ModifiedDate } from "../documents/DocType";
 import { BaseData, Data } from "../models/data/Data";
 
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import {
-  NotificationStatus,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
+    NotificationStatus,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import {
-  Payload,
-  Snapshot,
-  UpdateSnapshotPayload,
+    Payload,
+    Snapshot,
+    UpdateSnapshotPayload,
 } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
 import SnapshotStore, { SnapshotStoreSubset } from "../snapshots/SnapshotStore";
+import { snapshot } from "../snapshots/snapshot";
 import {
-  addSnapshotSuccess,
-  createSnapshot,
-  createSnapshotFailure,
-  createSnapshotSuccess,
-  subscribeToSnapshots,
-  updateSnapshot,
-  updateSnapshotFailure,
-  updateSnapshotSuccess,
-  updateSnapshots,
+    addSnapshotSuccess,
+    createSnapshot,
+    createSnapshotFailure,
+    createSnapshotSuccess,
+    subscribeToSnapshots,
+    updateSnapshot,
+    updateSnapshotFailure,
+    updateSnapshotSuccess,
+    updateSnapshots,
 } from "../snapshots/snapshotHandlers";
 import {
-  clearSnapshots,
-  removeSnapshot,
+    clearSnapshots,
+    removeSnapshot,
 } from "../state/redux/slices/SnapshotSlice";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { Subscription } from "../subscriptions/Subscription";
 import {
-  NotificationType,
-  NotificationTypeEnum,
+    NotificationType,
+    NotificationTypeEnum,
 } from "../support/NotificationContext";
 import { YourSpecificSnapshotType } from "../typings/YourSpecificSnapshotType";
 import { sendNotification } from "./UserSlice";
-import { snapshot } from "../snapshots/snapshot";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 type SnapshotStoreDelegate<T extends BaseData> = (
   snapshot: Snapshot<T>,
@@ -59,10 +59,13 @@ const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData> = (
 
 interface CustomSnapshotData extends Data {
   timestamp: string | Date | undefined;
-  value: number | undefined;
+  value: string | undefined;
 }
 
 class Subscriber<T extends BaseData> {
+  getId() {
+    throw new Error('Method not implemented.');
+  }
   private _id: string | undefined;
   private readonly name: string;
   private subscription: Subscription;
@@ -334,7 +337,7 @@ class Subscriber<T extends BaseData> {
   async processNotification(
     id: string,
     message: string,
-    snapshotContent: Snapshot<Data> | T,
+    snapshotContent: Map<string, T> | null | undefined,
     date: Date,
     type: NotificationType,
     store: SnapshotStore<T>
@@ -343,11 +346,11 @@ class Subscriber<T extends BaseData> {
       const snapshotData: Snapshot<T> = {
         id,
         message: message,
-        initialState: snapshotContent as T,
+        initialState: snapshotContent,
         date: date,
         category: "subscriberCategory",
         content: snapshotContent!.toString(),
-        data: snapshotContent as T,
+        data: snapshotContent,
         type,
         store: store,
       };
@@ -508,7 +511,7 @@ export const payload: Payload = {
   },
 };
 
-const subscriber = new Subscriber<CustomSnapshotData>(
+const subscriber = new Subscriber<BaseData>(
   payload.meta.id,
   // Assuming payload.name is a string, replace with your actual data structure
   payload.meta.name,

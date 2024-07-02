@@ -69,7 +69,10 @@ const BlogComponent: React.FC<BlogProps> = ({
   useEffect(() => {
     subscriber.subscribe((data: Snapshot<Data>) => {
       // Assuming data can be converted to Subscription
-      setSubscriptionData(data.data as Subscription);
+
+      const subscription = data.data as unknown as Subscription;
+      setSubscriptionData(subscription);
+
       // Send notification when blog content is updated
       sendNotification(
         "BlogUpdated" as NotificationType,

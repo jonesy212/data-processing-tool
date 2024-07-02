@@ -5,29 +5,36 @@ import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { TriggerIncentivesParams, triggerIncentives } from "../utils/applicationUtils";
+import { useSnapshotStore } from "../snapshots/useSnapshotStore";
 
-type Subscription {
+type Subscription = {
   unsubscribe: () => void;
-  portfolioUpdates: () => void;
+  portfolioUpdates: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    }
+  ) => void;
   tradeExecutions: () => void;
   marketUpdates: () => void;
-  triggerIncentives: () => void;
+  triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
   communityEngagement: () => void;
   subscriberId?: string;
-  subscriptionId?: string
-  subscriberType?: SubscriberTypeEnum
+  subscriptionId?: string;
+  subscriberType?: SubscriberTypeEnum;
   subscriptionType?: SubscriptionTypeEnum;
-  getPlanName?: () => SubscriberTypeEnum; 
+  getPlanName?: () => SubscriberTypeEnum;
   portfolioUpdatesLastUpdated: ModifiedDate | null;
   getId?: () => string;
-  determineCategory: (data: any) => Snapshot<any>
+  determineCategory: (data: any) => Snapshot<any>; // Ensure determineCategory returns Snapshot<any>
   category?: string;
 };
 
 const SubscriptionComponent = (
   initialData: RealtimeDataItem[],
-  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>, 
-  hookName: string 
+  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>,
+  hookName: string
 ) => {
   const [subscriptionData, setSubscriptionData] = useState<Subscription | null>(
     null
@@ -37,27 +44,42 @@ const SubscriptionComponent = (
   useEffect(() => {
     // Subscribe to the data service
     const subscription = subscriptionService;
-    const subscriptionUsage: Subscription = subscription.subscribe(
-      hookName, // Use the dynamic hook name here
-      () => {
-        // Construct and return the Subscription object
-        return {
-          unsubscribe: () => {}, // Placeholder function
-          portfolioUpdates: () => {}, // Placeholder function
-          tradeExecutions: () => {}, // Placeholder function
-          marketUpdates: () => {}, // Placeholder function
-          communityEngagement: () => {}, // Placeholder function
-        };
-      }
-    ) as Subscription;
 
-    // Cleanup: Unsubscribe when the component unmounts
-    return () => {
-      if (typeof subscriptionUsage !== "string") {
-        subscriptionUsage.unsubscribe();
+    // Your subscription usage
+    const subscriptionUsage: Subscription | undefined = subscription.subscribe(
+      hookName,
+      async (data: RealtimeDataItem) => {
+        if (data.type === "snapshot" && data.data && data.data.subscriberId === hookName) {
+          const snapshot = data.data as Snapshot<any>;
+          const snapshotStore = await useSnapshotStore(addToSnapshotList);
+          const subscriptionData: Subscription | null = snapshot.data ? {
+            unsubscribe: () => {},
+            portfolioUpdates: () => {},
+            tradeExecutions: () => {},
+            marketUpdates: () => {},
+            triggerIncentives: () => {},
+            communityEngagement: () => {},
+            determineCategory: snapshotStore.determineCategory,
+            portfolioUpdatesLastUpdated: {} as ModifiedDate,
+            ...snapshot.data
+          } : null;
+          setSubscriptionData(subscriptionData)
+        }
       }
-    };
-  }, [data, hookName]); // Include hookName in the dependencies array
+    );
+
+    // Ensure subscriptionUsage is defined before accessing unsubscribe
+    if (subscriptionUsage) {
+      // Cleanup: Unsubscribe when the component unmounts
+      return () => {
+        subscriptionUsage.unsubscribe();
+      };
+    }
+
+    // If subscriptionUsage is undefined, return a no-op function
+    return () => {};
+
+  }, [hookName]); // Depend only on hookName
 
   return (
     <div>
@@ -73,7 +95,6 @@ const SubscriptionComponent = (
     </div>
   );
 };
-
 
 export default SubscriptionComponent;
 export type { Subscription };

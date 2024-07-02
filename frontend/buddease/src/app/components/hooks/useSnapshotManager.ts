@@ -6,7 +6,7 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { useEffect } from "react";
-import { Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
@@ -64,8 +64,8 @@ const asyncHook: LibraryAsyncHook = {
 
 const useSnapshotManager = async <T extends Data>() => {
   const addToSnapshotList = async (
-    snapshot: SnapshotStore<Snapshot<T>>,
-    subscribers: Subscriber<CustomSnapshotData | Snapshot<T>>[]
+    snapshot: SnapshotStore<BaseData>,
+    subscribers: Subscriber<BaseData>[]
   ) => {
     const snapshotStore = await snapshot; // Assuming snapshotStore is awaited here
     snapshotStore.addSnapshot(snapshot, subscribers);
@@ -172,7 +172,8 @@ const useSnapshotManager = async <T extends Data>() => {
     } catch (error: any) {
       // Notify failure
       (await snapshotStore).createSnapshotFailure({
-        error: "error creating snapshot: " + error,
+        message: "error creating snapshot: ",
+        name: "createSnapshotManagerFailure",
       });
       // Using a custom error message
       notify(
@@ -185,7 +186,10 @@ const useSnapshotManager = async <T extends Data>() => {
     }
   };
 
-  const setSnapshotData = async (snapshot: Snapshot<any>) => {
+  const setSnapshotData = async (
+    snapshot: Snapshot<any>,
+    subscribers: ((data: Snapshot<BaseData>) => void)[]
+  ) => {
     try {
       // Make API call to set snapshot data using the defined endpoint
       const response = await fetch(endpoints.snapshots.set.toString(), {
@@ -198,7 +202,11 @@ const useSnapshotManager = async <T extends Data>() => {
         }),
       });
       const snapshotData = await response.json();
-      (await snapshotStore).setSnapshotSuccess(snapshotData);
+      (await snapshotStore).setSnapshotSuccess(
+  
+        snapshotData,
+        subscribers,
+      );
       // Notify success
       notify(
         "setSnapshotManagerSuccess",
@@ -222,6 +230,11 @@ const useSnapshotManager = async <T extends Data>() => {
       );
     }
   };
+
+
+  const handleSnapshot = async (snapshot: Snapshot<any>) => {
+    
+  }
 
     const takeSnapshot = async (
       snapshotData: Omit<Todo, "id">,
@@ -271,7 +284,7 @@ const useSnapshotManager = async <T extends Data>() => {
       const snapshotData = await response.json();
 
       // Store the snapshot data using the provided SnapshotStore
-      const snapshot = useSnapshotManager().initSnapshot(
+      const snapshot = (await useSnapshotManager()).initSnapshot(
         snapshotStore,
         snapshotData
       );
@@ -405,8 +418,8 @@ const useSnapshotManager = async <T extends Data>() => {
     (await snapshotStore).takeSnapshotSuccess({ snapshot });
   };
 
-  const takeSnapshotsSuccess = (snapshots: Todo[]) => {
-    snapshotStore.takeSnapshotsSuccess({ snapshots });
+  const takeSnapshotsSuccess = async (snapshots: Todo[]) => {
+    (await snapshotStore).takeSnapshotsSuccess({ snapshots });
   };
 
   const getSnapshots = async (snapshots: SnapshotStore<Snapshot<Data>>) => {
@@ -461,7 +474,7 @@ const useSnapshotManager = async <T extends Data>() => {
 
       if (response.ok) {
         const updated = await response.json();
-        snapshotStore.updateSnapshotsSuccess({ snapshot: updated });
+        (await snapshotStore).updateSnapshotsSuccess({ snapshot: updated });
         // Notify success
         notify(
           "updatedSnapshot",
@@ -539,7 +552,7 @@ const useSnapshotManager = async <T extends Data>() => {
     } catch (error) {
       console.error("Error updating snapshots:", error);
       if (typeof error === "object" && error !== null && "message" in error) {
-        snapshotStore.batchUpdateSnapshotsFailure({
+        (await snapshotStore).batchUpdateSnapshotsFailure({
           error: (error as Error).message,
         });
       } else {
@@ -553,7 +566,7 @@ const useSnapshotManager = async <T extends Data>() => {
       // Adjust the API endpoint based on your project
       const response = await fetch("/api/snapshots");
       const snapshotsData = await response.json();
-      snapshotStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+      (await snapshotStore).batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
       // Notify success
       notify(
         "fetchSnapshotsSuccess",
@@ -565,12 +578,12 @@ const useSnapshotManager = async <T extends Data>() => {
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {
         console.error("Error fetching snapshots:", error);
-        snapshotStore.batchFetchSnapshotsFailure({
+        (await snapshotStore).batchFetchSnapshotsFailure({
           error: (error as Error).message,
         });
       } else {
         console.error("Error fetching snapshots:", error);
-        snapshotStore.batchFetchSnapshotsFailure({ error: String(error) });
+        (await snapshotStore).batchFetchSnapshotsFailure({ error: String(error) });
       }
       // Notify failure
       notify(
@@ -588,7 +601,7 @@ const useSnapshotManager = async <T extends Data>() => {
       // Adjust the API endpoint based on your project
       const response = await fetch("/api/snapshots");
       const snapshotsData = await response.json();
-      snapshotStore.batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+      (await snapshotStore).batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
       // Notify success
       notify(
         "batchSnapshotSuccess",
@@ -600,12 +613,12 @@ const useSnapshotManager = async <T extends Data>() => {
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {
         console.error("Error fetching snapshots:", error);
-        snapshotStore.batchFetchSnapshotsFailure({
+        (await snapshotStore).batchFetchSnapshotsFailure({
           error: (error as Error).message,
         });
       } else {
         console.error("Error fetching snapshots:", error);
-        snapshotStore.batchFetchSnapshotsFailure({ error: String(error) });
+        (await snapshotStore).batchFetchSnapshotsFailure({ error: String(error) });
       }
       // Notify failure
       notify(

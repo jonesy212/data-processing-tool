@@ -1,3 +1,4 @@
+import { ModifiedDate } from '@/app/components/documents/DocType';
 // DynamicHooks.tsx
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import { useEffect, useState } from "react";
@@ -305,7 +306,10 @@ const subscriptionService = {
         portfolioUpdates: () => {}, // Placeholder function
         tradeExecutions: () => {}, // Placeholder function
         marketUpdates: () => {}, // Placeholder function
-        communityEngagement: () => {}, // Placeholder function
+        communityEngagement: () => { }, // Placeholder function
+        triggerIncentives: () => { }, // Placeholder function
+        determineCategory: () => { }, // Placeholder function
+        portfolioUpdatesLastUpdated: {} as ModifiedDate, // Placeholder function
       };
     }
   },

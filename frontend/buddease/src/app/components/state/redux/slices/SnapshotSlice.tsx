@@ -9,14 +9,15 @@ import { FC } from "react";
 import { useSnapshotStore } from "@/app/components/snapshots/useSnapshotStore";
 import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from "@/app/components/models/data/Data";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotConfig";
 
 
 
 interface SnapshotState {
   snapshotId: string;
-  snapshots: SnapshotStore<Snapshot<Data>>[];
+  snapshots: SnapshotStore<BaseData>[];
   loading: boolean;
   error: string | null;
 }
@@ -33,7 +34,7 @@ export const useSnapshotSlice = createSlice({
   initialState,
   reducers: {
     addSnapshot: (state,
-      action: PayloadAction<WritableDraft<SnapshotStore<Snapshot<Data>>>>
+      action: PayloadAction<WritableDraft<SnapshotStore<BaseData>>>
     ) => {
       state.snapshots.push(action.payload);
     },
@@ -52,7 +53,7 @@ export const useSnapshotSlice = createSlice({
         (snapshot) => snapshot.id === action.payload
       );
       if (snapshotToRemove) {
-        snapshotToRemove.data = {} as Data;
+        snapshotToRemove.data = {} as Map<string, WritableDraft<BaseData>>
       }
     },
 
@@ -98,13 +99,16 @@ export const useSnapshotSlice = createSlice({
       state.loading = true;
       state.error = null;
 
-      const notifySubscribers = async(
+      const notifySubscribers = async (
         subscribers: Subscriber<any>[]
       ) => {
         const { startDate, endDate } = action.payload;
         const snapshots = state.snapshots.filter(
           (snapshot) =>
-            snapshot.addSnapshotFailure.date >= startDate && snapshot.date <= endDate
+            snapshot.date &&
+            (snapshot.addSnapshotFailure?.date
+              ? snapshot.addSnapshotFailure.date >= startDate && snapshot.date <= endDate
+              : snapshot.date >= startDate && snapshot.date <= endDate)
         );
         if (snapshots.length > 0) {
           for (const snapshot of snapshots) {
@@ -119,8 +123,7 @@ export const useSnapshotSlice = createSlice({
             }
           }
         }
-      }
-      notifySubscribers(subscribers)
+      };      notifySubscribers(subscribers)
     },
 
     batchFetchSnapshotsRequest: (
@@ -155,30 +158,22 @@ export const useSnapshotSlice = createSlice({
   
       // Fetch snapshots from database or API
       const { notify } = action.meta;
+      type WritableDraft<T> = {
+        -readonly [P in keyof T]: WritableDraft<T[P]>;
+      };
       // For demonstration purposes, we're just going to return the same snapshots
       state.snapshots = [
         {
           id: "1",
           key: "value",
           topic: "topic",
-          configOption: {} as WritableDraft<SnapshotStoreConfig<Snapshot<Snapshot<Data>>, Snapshot<Data>>>
-          config: {} as WritableDraft<SnapshotStoreConfig<Snapshot<Snapshot<Data>>, Snapshot<Data>>>,
-          subscription: {} as WritableDraft<SnapshotStoreConfig<Snapshot<Snapshot<Data>>, Snapshot<Data>>>,
-          initialState: {} as WritableDraft<SnapshotStoreConfig<Snapshot<Snapshot<Data>>, Snapshot<Data>>>,
+          configOption: {} as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>,
+          config: {} as WritableDraft<SnapshotStoreConfig<BaseData>>,
+          subscription: {} as WritableDraft<SnapshotStoreConfig<BaseData>>,
+          initialState: {} as WritableDraft<SnapshotStoreConfig<BaseData>>,
           category: "category",
-          store
+          store,
           timestamp: new Date(),
-          // data: {
-          //   assignee: {
-          //     name: "user_1",
-          //     email: "<EMAIL>",
-          //   },
-          //   startDate: new Date(),
-          //   endDate: new Date(),
-          //   component: {} as FC<any>,
-          // },
-
-
         },
         {
           id: "2",

@@ -101,7 +101,6 @@ export function fetchDataAnalysis(
       return Promise.reject(error);
     });
 }
-
 // Function to fetch analysis results
 export const fetchAnalysisResults = (): Promise<any> => {
   const endpoint = DATA_ANALYSIS_BASE_URL.getAnalysisResults;
@@ -110,14 +109,19 @@ export const fetchAnalysisResults = (): Promise<any> => {
     return Promise.reject(new Error("Endpoint is not a string"));
   }
 
-  
   return fetchDataAnalysis(endpoint)
     .then((response) => {
-      const analysisResults = response.data as DataAnalysisResult;
-      if (!analysisResults) {
+      const analysisResults = response.data;
+
+      // Check if analysisResults is of type DataAnalysisResult
+      if (!isDataAnalysisResult(analysisResults)) {
         return Promise.reject(new Error("Invalid response data"));
       }
-      const { description, phase, priority, sentiment,sentimentAnalysis, ...rest } = analysisResults;
+
+      // Destructure analysisResults safely
+      const { description, phase, priority, sentiment, sentimentAnalysis, ...rest } = analysisResults as DataAnalysisResult;
+
+      // Return processed data
       return {
         ...rest,
         description: description ?? undefined,
@@ -128,7 +132,6 @@ export const fetchAnalysisResults = (): Promise<any> => {
         sentimentAnalysis: analysisResults.sentimentAnalysis,
       };
     })
-
     .catch((error) => {
       handleDataAnalysisApiErrorAndNotify(
         error as AxiosError<unknown>,
@@ -137,7 +140,38 @@ export const fetchAnalysisResults = (): Promise<any> => {
       );
       return Promise.reject(error);
     });
-}
+};
+
+// Function to check if an object conforms to DataAnalysisResult interface
+const isDataAnalysisResult = (obj: any): obj is DataAnalysisResult => {
+  return (
+    typeof obj === "object" &&
+    typeof obj.id === "number" &&
+    typeof obj.title === "string" &&
+    Array.isArray(obj.insights) &&
+    obj.analysisType !== undefined &&
+    obj.analysisDate instanceof Date &&
+    Array.isArray(obj.results) &&
+    typeof obj.result === "number" &&
+    typeof obj.description === "string" &&
+    typeof obj.status === "string" &&
+    obj.createdAt instanceof Date &&
+    (obj.updatedAt === undefined || obj.updatedAt instanceof Date) &&
+    Array.isArray(obj.recommendations) &&
+    typeof obj.sentimentAnalysis === "boolean" &&
+    typeof obj.metrics === "object" &&
+    typeof obj.visualizations === "object" &&
+    typeof obj.communityImpact === "boolean" &&
+    typeof obj.globalCollaboration === "boolean" &&
+    typeof obj.solutionQuality === "boolean" &&
+    typeof obj.unityPromotion === "boolean" &&
+    typeof obj.humanityBenefit === "boolean" &&
+    typeof obj.conclusions === "string" &&
+    Array.isArray(obj.futureSteps)
+    // Add more checks for additional properties if necessary
+  );
+};
+
 
 export const fetchSentimentAnalysisResults = (text: string): Promise<string> => {
   const endpoint = getEndpoint();

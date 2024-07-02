@@ -9,7 +9,7 @@ import * as apiData from "../../../../api//ApiData";
 import { DataActions } from "../DataActions";
 
 export interface DataStore<T extends BaseData> {
-   data: Map<string, T> | undefined;
+  data?: Map<string, T> | undefined;
   addData: (data: T) => void;
   getItem: (id: string) => Promise<T | undefined>;
   removeData: (id: number) => void;
@@ -170,37 +170,39 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
       if ('id' in item) {
         const snapshotItem: Snapshot<T> = {
           id: item.id,
-          data: item,
+          data: new Map<string, T>().set(item.id!.toString(), item), // Correctly assign data as Map<string, T>
           initialState: item.initialState || null,
           timestamp: new Date(),
         };
-
-        data.set(item.id!.toString(), snapshotItem );
+  
+        if (snapshotItem.data) {
+          snapshotItem.data.set(item.id!.toString(), item);
+        }
       }
     });
   };
 
     const addDataStatus = (id: number, status: "pending" | "inProgress" | "completed"): void => {
-    // Implement your logic here
-    // Example: Update data status based on id and status
-    const newData = data.get(id.toString());
-    if (newData) {
-      const snapshotItem: Snapshot<T> = {
-        id: id.toString(),
-        data: newData,
-        initialState: newData.initialState || null,
-        timestamp: new Date(),
-      };
-      // Update or set the data in the map
-      data.set(id.toString(), snapshotItem as T);
+  // Implement your logic here
+  // Example: Update data status based on id and status
+  const newData = data.get(id.toString());
+  if (newData) {
+    const snapshotItem: Snapshot<T> = {
+      id: id.toString(),
+      data: new Map<string, T>().set(id.toString(), newData),
+      initialState: newData.initialState || null,
+      timestamp: new Date(),
+    };
+    // Update or set the data in the map
+    data.set(id.toString(), snapshotItem as T);
 
-      // Dispatch the addDataSuccess action
-      dispatch(DataActions.addDataSuccess({ data: [snapshotItem] }));
-    } else {
-      // Dispatch the addDataFailure action
-      dispatch(DataActions.addDataFailure({ error: "Invalid data" }));
-    }
-  };
+    // Dispatch the addDataSuccess action
+    dispatch(DataActions.addDataSuccess({ data: [snapshotItem] }));
+  } else {
+    // Dispatch the addDataFailure action
+    dispatch(DataActions.addDataFailure({ error: "Invalid data" }));
+  }
+};
 
 
   const updateDataVersions = (id: number, versions: T[]) => {

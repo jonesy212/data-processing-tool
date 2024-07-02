@@ -20,6 +20,7 @@ import { SearchResponseData } from "./ApiSearch";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 import { Tag } from "../components/models/tracker/Tag";
+import AccessHistory from "../components/versions/AccessHistory";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;

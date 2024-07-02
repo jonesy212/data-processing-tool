@@ -1,15 +1,9 @@
-import {AttendeeAvailabilityAnalysis} from "./Attendee";
+import {AttendeeAvailability, AttendeeAvailabilityAnalysis} from "./Attendee";
 
 // CalendarEventAttendeeAvailabilityAnalysis.tsx
-interface CalendarEventAttendeeAvailabilityAnalysis
-  extends Partial<AttendeeAvailabilityAnalysis> {
-  
+interface CalendarEventAttendeeAvailabilityAnalysis extends AttendeeAvailabilityAnalysis {
   eventId: string;
-  attendeeAvailability: Record<
-    string,
-    { busyTimes: { start: string; end: string }[] }
-  >;
-  attendeeAvailabilityAnalysis: CalendarEventAttendeeAvailabilityAnalysis;
+  
 }
 
 // Function to analyze attendee availability for a calendar event
@@ -26,20 +20,20 @@ function analyzeAttendeeAvailability(
 
   const attendeeAvailability: Record<
     string,
-    { busyTimes: { start: string; end: string }[] }
+    AttendeeAvailability
   > = {};
 
   // Simulate attendee availability analysis
   attendees.forEach((attendee) => {
-    attendeeAvailability[attendee] = { busyTimes };
+    attendeeAvailability[attendee] = { busyTimes, attendeeId: attendee, availability :"" };
   });
 
   return {
     eventId,
     attendeeAvailability,
     attendeeAvailabilityAnalysis: analyzeAttendeeAvailability(
-    eventId,
-    attendees
+      eventId,
+      attendees
     ),
   };
 }
