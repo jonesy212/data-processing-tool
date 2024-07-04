@@ -1,8 +1,10 @@
 // determineFileCategory.tsx
 
 import { FileCategory } from "../../documents/FileType";
+import { BaseData } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../../snapshots/SnapshotStore";
+import { snapshot } from "../../snapshots/snapshot";
 
 // Utility function to determine file category based on categoryName
 function determineFileCategory(categoryName: string): FileCategory {
@@ -73,8 +75,8 @@ function determineFileCategory(categoryName: string): FileCategory {
 }
 
 // Example implementation of fetching snapshot data based on category
-async function fetchSnapshotData(
-  category: FileCategory
+async function fetchFileSnapshotData(
+  category: FileCategory,
 ): Promise<{ data: any }> {
   // Example implementation fetching data based on category
   // Here you can replace this with your actual fetching logic
@@ -82,7 +84,7 @@ async function fetchSnapshotData(
     id: "123",
     category: category,
     timestamp: new Date(),
-    snapshot: new SnapshotStore<Snapshot<any>>(
+    snapshot: new SnapshotStore<BaseData>(
       snapshot,
       category,
       new Date(),
@@ -99,4 +101,4 @@ async function fetchSnapshotData(
 }
 
 export default determineFileCategory;
-export { fetchSnapshotData };
+export { fetchFileSnapshotData };

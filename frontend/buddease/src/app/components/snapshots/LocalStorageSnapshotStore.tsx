@@ -33,7 +33,7 @@ import {
   SnapshotStoreConfig,
   snapshotConfig,
 } from "./SnapshotConfig";
-import { defaultCategory } from "./SnapshotStore";
+import SnapshotStore, { defaultCategory } from "./SnapshotStore";
 import { subscribeToSnapshots } from "./snapshotHandlers";
 
 interface Payload {
@@ -69,9 +69,9 @@ interface UpdateSnapshotPayload<T> {
   snapshotId: string;
   title: string;
   description: string;
-  newData: Snapshot<BaseData>;
-  createdAt: Date;
-  updatedAt: Date;
+  newData: T;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
   status: "active" | "inactive" | "archived";
   category: string;
 }
@@ -99,7 +99,7 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
   category?: string | CategoryProperties | undefined;
   date?: string | Date;
   status?: string;
-  content?: T | string | Content | undefined;
+  content?:  string | Content | undefined;
   message?: string;
   type?: string;
   phases?: ProjectPhaseTypeEnum;
@@ -107,13 +107,13 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
   ownerId?: string;
   store?: SnapshotStore<T>;
   state?: Snapshot<T> | null; // Ensure state matches Snapshot<T> or null/undefined
-  dataStore?: DataStore<T>;
+  dataStore?: DataStore<BaseData>;
   initialState?:Map<string, T> | null,
   setSnapshotData?: (data: Data) => void;
   snapshotConfig?: SnapshotStoreConfig<BaseData, BaseData>[];
   subscribeToSnapshots?: (
     snapshotId: string,
-    callback: (snapshot: Snapshot<Data>) => void
+    callback: (snapshot: Snapshot<T>) => void
   ) => void;
   getItem?: (key: T) => T | undefined;
 }
@@ -136,7 +136,7 @@ interface SnapshotData<T extends BaseData> {
   expirationDate?: Date | string;
   auditTrail?: AuditRecord[];
   subscribers?: Subscriber<BaseData>[];
-  delegate?: SnapshotStoreConfig<BaseData, BaseData>[];
+  delegate?: SnapshotStoreConfig<BaseData, T>[];
   value?: number;
   todoSnapshotId?: string;
   dataStoreMethods?: DataStore<T> | null;

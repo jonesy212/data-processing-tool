@@ -18,6 +18,7 @@ import {
   useNotification,
 } from "../support/NotificationContext";
 import NotificationManager from "../support/NotificationManager";
+import { useSecureUserId } from "./useSecureUserId";
 const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -330,9 +331,24 @@ const portfolioUpdates = ({
   if (!snapshotId || snapshotId.trim() === '') {
     throw new Error("Snapshot ID is required for portfolio updates");
   }
-
 }
   
+const userId = useSecureUserId()
+
+const unsubscribe = ({
+  userId,
+  snapshotId,
+  unsubscribeType,
+  unsubscribeDate,
+  unsubscribeReason,
+  unsubscribeData,
+  portfolioData,
+  portfolioSnapshotId,
+  portfolioSnapshotData,
+  portfolioValue,
+  portfolioReturn,
+  portfolioRisk,
+})
 
   
   // Additional logic to handle the triggered incentive with parameters

@@ -7,7 +7,6 @@ import { Snapshot } from "./LocalStorageSnapshotStore";
 interface SnapshotItem {
   message: any;
   content?: string | Data | Content; 
-  data: any;
   user: any;
   id: string;
   value: Snapshot<Data> | undefined;
@@ -17,7 +16,8 @@ interface SnapshotItem {
   categories?: string[];
   updatedAt: Date | undefined;
   store: SnapshotStore<Data> | undefined;
-  
+  data: Map<string, Data>;
+  metadata: any
 }
 
 class SnapshotList {

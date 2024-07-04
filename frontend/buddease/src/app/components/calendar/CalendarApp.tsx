@@ -11,7 +11,7 @@ import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Member, TeamMember } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectType } from "../projects/Project";
 import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import { default as SnapshotStore, default as useSnapshotStore } from "../snapshots/SnapshotStore";
@@ -120,10 +120,91 @@ const CalendarApp = () => {
   };
   const date = new Date();
   const type = snapshotType.toString();
-  const initialState: SnapshotStore<Snapshot<Data>> | Snapshot<Snapshot<Data>> | null | undefined = null;
-  const snapshotConfig: SnapshotStoreConfig<Snapshot<BaseData>, BaseData>[] = [];
-  const delegate: SnapshotStoreConfig<Snapshot<Data>, Data>[] = [];
-
+  const initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null | undefined = null;
+  const snapshotConfig: SnapshotStoreConfig<BaseData, BaseData>[] = [];
+  const delegate: SnapshotStoreConfig<BaseData, Data>[] = [];
+  
+  const dataStoreMethods: DataStore<BaseData> = {
+    data: undefined,
+    // storage: undefined,
+    addData: (data: BaseData) => { },
+    updateData: (id: number, newData: BaseData) => { },
+    removeData: (id: number) => { },
+    updateDataTitle: (id: number, title: string) => { },
+    updateDataDescription: (id: number, description: string) => { },
+    addDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { },
+    updateDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { },
+    addDataSuccess: (payload: { data: BaseData[] }) => { },
+    getDataVersions: async (id: number) => {
+      // Implement logic to fetch data versions from a data source
+      return undefined;
+    },
+    updateDataVersions: (id: number, versions: BaseData[]) => Promise.resolve(),
+    getBackendVersion: () => Promise.resolve(undefined),
+    getFrontendVersion: () => Promise.resolve(undefined),
+    fetchData: (id: number) => Promise.resolve([]),
+    getItem: (key: string): Promise<BaseData | undefined> => {
+      return new Promise((resolve, reject) => {
+       if (this.storage) {
+          const item = this.storage.getItem(key);
+          if (item) {
+            resolve(JSON.parse(item));
+          } else {
+            resolve(undefined);
+          }
+        } else {
+          reject(new Error("Storage is not defined"));
+        }
+      });
+    },
+    setItem: (id: string, item: BaseData): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (this.storage) {
+          this.storage.setItem(id, JSON.stringify(item));
+          resolve();
+        } else {
+          reject(new Error("Storage is not defined"));
+        }
+      });
+    },
+    removeItem: async (key: string): Promise<void> => {
+      if (this.storage) {
+        await this.storage.removeItem(key);
+      } else {
+        throw new Error("Storage is not defined");
+      }
+    },
+    getAllKeys: async (): Promise<string[]> => {
+      const keys: string[] = [];
+      if (this.storage) {
+        for (let i = 0; i < this.storage.length; i++) {
+          const key = this.storage.key(i);
+          if (key) {
+            keys.push(key);
+          }
+        }
+      } else {
+        throw new Error("Storage is not defined");
+      }
+      return keys;
+    },
+    async getAllItems(): Promise<BaseData[]> {
+      try {
+        const keys = await this.getAllKeys();
+        const items: (BaseData | undefined)[] = await Promise.all(
+          keys.map(async (key) => {
+            const item = await this.getItem(key);
+            return item;
+          })
+        );
+        const filteredItems = items.filter((item): item is BaseData => item !== undefined);
+        return filteredItems;
+      } catch (error) {
+        throw error;
+      }
+    }
+  };
+  
   const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore(
     initialState,
     category,
@@ -179,21 +260,41 @@ const calendarEvent: CalendarEvent = {
   _id: "",
   analysisResults: [],
   snapshots: [],
-  getData: async function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+  getData: async function (): Promise<SnapshotStore<BaseData>[]> {
     throw new Error("Function not implemented.");
   },
   timestamp: undefined,
 };
+  
 
+  
+// Type guard to check if an object is a SnapshotStore<BaseData>
+function isSnapshotStoreBaseData(
+  snapshot: any
+): snapshot is SnapshotStore<BaseData> {
+  return (
+    snapshot &&
+    typeof snapshot === 'object' &&
+    'id' in snapshot &&
+    'timestamp' in snapshot
+  );
+}
 
-const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Snapshot<Data>) => void) => {
-  // This callback function can be used to add a snapshot to the snapshot list
-  // Implement logic to add the snapshot to the component's state or perform any other actions
-  // For example:
+// Adjusted addSnapshotHandler function
+export const addSnapshotHandler = (
+  snapshot: Snapshot<Data>,
+  subscribers: (snapshot: Snapshot<Data>) => void,
+  delegate: SnapshotStoreConfig<BaseData, BaseData>[]
+) => {
   if (delegate && delegate.length > 0 && typeof delegate[0].setSnapshots === 'function') {
-    // Ensure the delegate[0].snapshots type matches the expected Snapshot<Data>[]
-    const currentSnapshots = delegate[0].snapshots as Snapshots<Data>;
-    delegate[0].setSnapshots([...currentSnapshots, snapshot]);
+    const currentSnapshots: SnapshotStore<BaseData>[] = delegate[0].snapshots ? delegate[0].snapshots.filter(isSnapshotStoreBaseData) : [];
+    
+    // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
+    if (isSnapshotStoreBaseData(snapshot)) {
+      delegate[0].setSnapshots([...currentSnapshots, snapshot]);
+    } else {
+      console.error('Snapshot is not of type SnapshotStore<BaseData>', snapshot);
+    }
   }
 };
   
@@ -330,8 +431,8 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
               phases: [],
               type: ProjectType.Internal,
               currentPhase: null,
-              getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-                throw new Error("Function not implemented.");
+              getData: function (): Promise<SnapshotStore<BaseData>[]> {
+                return Promise.resolve([]);
               },
               timestamp: undefined,
               category: "",
@@ -354,8 +455,8 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
               phases: [],
               type: ProjectType.Internal,
               currentPhase: null,
-              getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-                throw new Error("Function not implemented.");
+              getData: function (): Promise<SnapshotStore<BaseData>[]> {
+                return Promise.resolve([]);
               },
               timestamp: undefined,
               category: "",
@@ -403,8 +504,8 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
               phases: [],
               type: ProjectType.Internal,
               currentPhase: null,
-              getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-                throw new Error("Function not implemented.");
+              getData: function (id: number): Promise<SnapshotStore<BaseData>[]> {
+                return Promise.resolve([]);
               },
               timestamp: undefined,
               category: "",
@@ -440,25 +541,12 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
                 percentage: 0,
                 assignedProjects: [],
                 reassignedProjects: [],
-                assignProject: function (team: Team, project: Project): void {
-                  throw new Error("Function not implemented.");
-                },
-                reassignProject: function (
-                  team: Team,
-                  project: Project,
-                  previousTeam: Team,
-                  reassignmentDate: Date
-                ): void {
-                  throw new Error("Function not implemented.");
-                },
-                unassignProject: function (team: Team, project: Project): void {
-                  throw new Error("Function not implemented.");
-                },
-                updateProgress: function (team: Team, project: Project): void {
-                  throw new Error("Function not implemented.");
-                },
-                getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
-                  throw new Error("Function not implemented.");
+                assignProject: assignProject,
+                reassignProject: reassignProject,
+                unassignProject: unassignProject,
+                updateProgress: updateProgress,
+                getData: function (): Promise<SnapshotStore<BaseData>[]> {
+                  return Promise.resolve([]);
                 },
                 timestamp: undefined,
                 category: "",
@@ -627,10 +715,15 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
             id: "team-1",
             current: 5,
             max: 10,
-            label: "Alpha Team",
+            label: "Team A",
             value: 0,
             percentage: 0,
-            done: false
+            done: false,
+            name: "Alpha Team",
+            color: "#000000",
+            min: 0,
+            description: "Alpha Team",
+                      
           },
           // todo
           getData: fetchData,
@@ -638,8 +731,6 @@ const addSnapshotHandler = (snapshot: Snapshot<Data>, subscribers: (snapshot: Sn
       />
     </div>
   );
-};
-
-export default CalendarApp;
+};export default CalendarApp;
 
 export { assignProject, reassignProject, unassignProject, updateProgress };

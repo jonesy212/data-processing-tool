@@ -31,7 +31,11 @@ export const generateNewTeam = (): Team => {
     assignedProjects: [],
     reassignedProjects: [],
     assignProject: (team: Team, project: Project) => {},
-    reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => {},
+    reassignProject: (
+      team: Team,
+      project: Project,
+      previousTeam: Team,
+      reassignmentDate: Date) => { },
     unassignProject: (team: Team, project: Project) =>{},
     updateProgress: (team: Team, project: Project) => {},
   };

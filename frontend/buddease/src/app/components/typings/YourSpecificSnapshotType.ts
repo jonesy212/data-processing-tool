@@ -1,78 +1,133 @@
-import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
-import { generateSnapshotId } from '../utils/snapshotUtils';
-import SnapshotStore, { defaultCategory } from '../snapshots/SnapshotStore';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import {  CommunicationType, CollaborationOption, CreationPhase, CryptoFeature, CryptoAction, CryptoInformation, CryptoCommunity, BlockchainCapability } from '@/app/typings/appTypes';
-import { BaseData } from '../models/data/Data';
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { generateSnapshotId } from "../utils/snapshotUtils";
+import SnapshotStore, { defaultCategory } from "../snapshots/SnapshotStore";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import {
+  CommunicationType,
+  CollaborationOption,
+  CreationPhase,
+  CryptoFeature,
+  CryptoAction,
+  CryptoInformation,
+  CryptoCommunity,
+  BlockchainCapability,
+} from "@/app/typings/appTypes";
+import { BaseData } from "../models/data/Data";
+import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 // Define YourSpecificSnapshotType implementing Snapshot<T>
-class YourSpecificSnapshotType<T> implements Snapshot<T> {
-    id: string;
-    data: T;
-  
-    constructor(id: string, data: T) {
-      this.id = id;
-      this.data = data;
-      // Additional initialization if necessary
-    }
-  
-    // Implement methods required by Snapshot<T>
-    getId(): string {
-      return this.id;
-    }
-  
-    setData(data: T): void {
-      this.data = data;
-      // Additional logic if necessary
-    }
+class YourSpecificSnapshotType<T> implements Snapshot<BaseData> {
+  id: string;
+  data: Map<string, BaseData>;
+
+  constructor(id: string, data: Map<string, BaseData>) {
+    this.id = id;
+    this.data = data;
+    // Additional initialization if necessary
   }
-  
-  // Example usage:
-  const specificSnapshot = new YourSpecificSnapshotType<string>('123', 'snapshot data');
-  console.log(specificSnapshot.getId()); // Output: '123'
-  specificSnapshot.setData('updated snapshot data');
-  console.log(specificSnapshot.data); // Output: 'updated snapshot data'
-  
-  // Export the specific snapshot type if needed
-  export { YourSpecificSnapshotType };
+
+  // Implement methods required by Snapshot<T>
+  getId(): string {
+    return this.id;
+  }
+
+  setData(data: Map<string, BaseData>): void {
+    this.data = data;
+    // Additional logic if necessary
+  }
+}
+
+// Example usage:
+const specificSnapshot = new YourSpecificSnapshotType<string>(
+  "123",
+  new Map([["key", { id: "keyId", name: "Example Data" } as BaseData]])
+);
+console.log(specificSnapshot.getId()); // Output: '123'
+specificSnapshot.setData(new Map([["updatedKey", { id: "updatedId", name: "Updated Data" } as BaseData]]));console.log(specificSnapshot.data); // Output: 'updated snapshot data'
 
 
-// Updated snapshotType using specific names
+
+
+
+// Conversion function
+const convertSnapshotStoreToSnapshot = (store: SnapshotStore<BaseData>): Snapshot<BaseData> => {
+  // Implement the logic to convert SnapshotStore<BaseData> to Snapshot<BaseData>
+  return {
+    id: store.id,
+    title: store.title,
+    timestamp: store.timestamp,
+    subscriberId: store.subscriberId,
+    category: store.category,
+    length: store.length,
+    content: store.content,
+    data: store.data,
+    value: store.value,
+    key: store.key,
+    subscription: store.subscription,
+    config: store.config,
+    status: store.status,
+    metadata: store.metadata,
+    delegate: store.delegate,
+    store: store.store,
+    state: store.state,
+    todoSnapshotId: store.todoSnapshotId,
+    initialState: store.initialState
+  } as Snapshot<BaseData>;
+}
+// Export the specific snapshot type if needed
+export { YourSpecificSnapshotType };
 const snapshotType = <T extends BaseData>(
-  snapshot: Snapshot<T>
+  snapshot: Snapshot<BaseData>
 ): Snapshot<T> => {
-  const newSnapshot = { ...snapshot };
-  newSnapshot.id = snapshot.id || generateSnapshotId
+  const newSnapshot = { ...snapshot } as Snapshot<T>;
+  newSnapshot.id = snapshot.id || generateSnapshotId;
   newSnapshot.title = snapshot.title || "";
-  newSnapshot.timestamp = snapshot.timestamp ? new Date(snapshot.timestamp) : new Date();
+  newSnapshot.timestamp = snapshot.timestamp
+    ? new Date(snapshot.timestamp)
+    : new Date();
   newSnapshot.subscriberId = snapshot.subscriberId || "";
-  newSnapshot.category = typeof snapshot.category === "string" ? defaultCategory : snapshot.category || defaultCategory;
+  newSnapshot.category =
+    typeof snapshot.category === "string"
+      ? defaultCategory
+      : snapshot.category || defaultCategory;
   newSnapshot.length = snapshot.length || 0;
   newSnapshot.content = snapshot.content || "";
-  newSnapshot.data = snapshot.data;
+  newSnapshot.data = snapshot.data as Map<string, T>;
   newSnapshot.value = snapshot.value || 0;
   newSnapshot.key = snapshot.key || "";
   newSnapshot.subscription = snapshot.subscription || null;
   newSnapshot.config = snapshot.config || null;
   newSnapshot.status = snapshot.status || "";
   newSnapshot.metadata = snapshot.metadata || {};
-  newSnapshot.delegate = snapshot.delegate || [];
+  newSnapshot.delegate = snapshot.delegate
+    ? snapshot.delegate.map(delegateConfig => ({
+        ...delegateConfig,
+        data: delegateConfig.data as T | SnapshotStoreConfig<BaseData, T> | null | undefined,
+        snapshot: delegateConfig.snapshot as (
+          id: string,
+          snapshotData: SnapshotStoreConfig<any, T>,
+          category: string | CategoryProperties | undefined,
+          callback: (snapshot: Snapshot<Data>) => void
+        ) => Promise<void>
+      }))
+    : [];
   newSnapshot.store = new SnapshotStore<T>(
     newSnapshot.initialState || null,
     (newSnapshot.category as CategoryProperties) || defaultCategory,
     newSnapshot.date ? new Date(newSnapshot.date) : new Date(),
     newSnapshot.type ? newSnapshot.type : "new snapshot",
     newSnapshot.snapshotConfig || [],
-    newSnapshot.subscribeToSnapshots ? newSnapshot.subscribeToSnapshots : () => {},
-    newSnapshot.delegate,
-    newSnapshot.dataStoreMethods
+    newSnapshot.subscribeToSnapshots
+      ? newSnapshot.subscribeToSnapshots
+      : () => {},
+    newSnapshot.delegate as SnapshotStoreConfig<BaseData, T>[],
+    newSnapshot.dataStoreMethods as DataStore<T>
   );
-  newSnapshot.state = snapshot.state || null;
+  newSnapshot.state = snapshot.state as Snapshot<T>;
   newSnapshot.todoSnapshotId = snapshot.todoSnapshotId || "";
-  newSnapshot.initialState = snapshot.initialState || null;
+  newSnapshot.initialState = snapshot.initialState as Map<string, T>;
   return newSnapshot;
 };
 
-
-
-export { snapshotType };
+export { snapshotType, convertSnapshotStoreToSnapshot };

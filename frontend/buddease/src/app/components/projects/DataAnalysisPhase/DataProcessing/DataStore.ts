@@ -28,6 +28,7 @@ export interface DataStore<T extends BaseData> {
   setItem: (id: string, item: T) => Promise<void>;
   removeItem: (key: string) => Promise<void>
   getAllItems: () => Promise<T[]>;
+  // storage: SnapshotStore<T> | undefined;
 }
 
 interface VersionedData<T extends BaseData> {

@@ -25,7 +25,7 @@ function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
     description: "Sample snapshot description",
     tags: ["sample", "snapshot"],
     metadata: {},
-    data: {} as T,
+    data: new Map<string, T>(),
     initialState: null
   };
 
@@ -698,13 +698,13 @@ const snapshot: BaseData = {
 
 const sampleSnapshot: CustomSnapshotData = {
   timestamp: new Date().toISOString() ?? "",
-  value: 42,
+  value: "42",
   category: "sample snapshot",
 };
 
 subscriber.receiveSnapshot({
   ...sampleSnapshot,
   timestamp: new Date().toISOString(),
-  value: sampleSnapshot.value ?? 0, // Ensure value is a number
+  value: sampleSnapshot.value ?? "0", // Ensure value is a number
 });
 export { snapshot };

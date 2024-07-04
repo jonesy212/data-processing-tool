@@ -23,6 +23,17 @@ const getMarketUpdates = async () => {
   }
 };
 
+const getPortfolioUpdatesLastUpdated = async () => {
+  try {
+    // Logic to fetch portfolio updates last updated timestamp from the backend
+    const portfolioUpdatesLastUpdated = await fetchPortfolioUpdatesLastUpdated();
+    return portfolioUpdatesLastUpdated;
+  } catch (error) {
+    console.error("Error fetching portfolio updates last updated timestamp:", error);
+    throw error;
+  }
+};
+
 // Example implementation of getCommunityEngagement
 const getCommunityEngagement = async () => {
   try {
@@ -36,4 +47,4 @@ const getCommunityEngagement = async () => {
 };
 
 
-export { getTradeExecutions, getMarketUpdates, getCommunityEngagement };
+export { getCommunityEngagement, getMarketUpdates, getPortfolioUpdatesLastUpdated, getTradeExecutions };

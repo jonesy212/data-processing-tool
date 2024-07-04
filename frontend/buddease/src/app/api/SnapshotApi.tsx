@@ -1,10 +1,12 @@
 import { AxiosError } from "axios";
 import { authToken } from "../components/auth/authToken";
+import useErrorHandling from "../components/hooks/useErrorHandling";
 import { Content } from "../components/models/content/AddContent";
 import { Data } from "../components/models/data/Data";
 import { PriorityTypeEnum, ProjectStateEnum } from "../components/models/data/StatusType";
 import { Member } from "../components/models/teams/TeamMembers";
 import { ProjectType } from "../components/projects/Project";
+import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import SnapshotList from "../components/snapshots/SnapshotList";
 import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext";
 import { AppConfig, getAppConfig } from "../configs/AppConfig";
@@ -22,8 +24,6 @@ import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
-import useErrorHandling from "../components/hooks/useErrorHandling";
-import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 
@@ -604,6 +604,38 @@ export const removeSnapshot = async (snapshotId: number): Promise<void> => {
     });
   } catch (error) {
     const errorMessage = "Failed to update client details";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+};
+
+
+
+export const getSnapshotId = async (snapshot: Snapshot<Data>): Promise<number> => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const currentAppVersion = configData.currentAppVersion;
+    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ""),
+      // Add other header objects as needed
+    ];
+    const headers = Object.assign({}, ...headersArray);
+
+    // Make an API call to fetch the snapshot ID based on the provided snapshot
+    const response = await axiosInstance.get<number>('/api/snapshotId', {
+      headers,
+      params: { snapshotData: snapshot.data },
+    });
+
+    return response.data; // Assuming the response contains the snapshot ID
+  } catch (error) {
+    const errorMessage = "Failed to get snapshot id";
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
   }

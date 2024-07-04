@@ -66,7 +66,7 @@ const SubscriptionComponent = (
           setSubscriptionData(subscriptionData)
         }
       }
-    );
+    ) as Subscription | undefined;
 
     // Ensure subscriptionUsage is defined before accessing unsubscribe
     if (subscriptionUsage) {

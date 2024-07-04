@@ -114,7 +114,7 @@ interface BaseData {
     | SnapshotStore<BaseData>
     | Snapshot<BaseData>
     | null
-    | undefined; // Properties specific to Todo
+    | undefined; 
   dueDate?: Date | null;
   priority?: string | AllStatus;
   assignee?: UserAssignee | null;
@@ -152,7 +152,7 @@ interface BaseData {
   text?: string;
   category?: string | CategoryProperties | undefined;
   [key: string]: any;
-  getData?: () => Promise<SnapshotStore<BaseData>[]>; // Define the getData method
+  getData?: (id: number) => Promise<SnapshotStore<BaseData>[]>; // Define the getData method
 
   // Implement the `then` function using the reusable function
   then?: <T extends Data>(

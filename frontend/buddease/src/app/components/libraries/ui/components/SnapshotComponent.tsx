@@ -1,32 +1,34 @@
 import React from "react";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from "@/app/components/models/data/Data";
 import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotConfig";
 import { useEffect, useState } from "react";
 import { Snapshot, Snapshots } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 
 // Define props interface
 interface SnapshotProps {
-  snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>;
+  snapshotConfig: SnapshotStoreConfig<BaseData, Data>;
   id: any; // Define the type of id
   snapshotData: SnapshotStoreConfig<any, Data>; // Define the type of snapshotData
   category: string; // Define the type of category
   createSnapshot: (additionalData: any) => void; // Define the type of createSnapshot
 }
 
+
 // Define the Snapshot component
 const SnapshotComponent: React.FC<SnapshotProps> = ({ snapshotConfig, id, snapshotData, category, createSnapshot }) => {
-  const [snapshots, setSnapshots] = useState<Snapshots<Data>[]>([]);
+  const [snapshots, setSnapshots] = useState<Snapshots<Data>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { error, handleError, clearError } = useErrorHandling();
 
   useEffect(() => {
     const fetchSnapshot = async () => {
       try {
-        const { snapshot: newSnapshot } = await snapshotConfig.snapshot(id, snapshotData, category);
+        const newSnapshot = await snapshotConfig.snapshot(id, snapshotData, category, createSnapshot);
         setSnapshots((prevSnapshots) => [
           ...prevSnapshots,
-          newSnapshot.snapshot,
+          ...(Array.isArray(newSnapshot.snapshot)
+            ? newSnapshot.snapshot : [newSnapshot.snapshot]),
         ]);
       } catch (error: any) {
         const errorMessage = "Failed to fetch snapshot";
