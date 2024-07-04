@@ -136,7 +136,7 @@ interface SnapshotData<T extends BaseData> {
   expirationDate?: Date | string;
   auditTrail?: AuditRecord[];
   subscribers?: Subscriber<BaseData>[];
-  delegate?: SnapshotStoreConfig<BaseData, T>[];
+  delegate?: SnapshotStoreConfig<T, T>[];
   value?: number;
   todoSnapshotId?: string;
   dataStoreMethods?: DataStore<T> | null;
@@ -149,9 +149,9 @@ interface Snapshot<T extends BaseData>
   extends CoreSnapshot<T>,
     SnapshotData<T> {
   // Additional specific properties
-}
-// Example implementation of LocalStorageSnapshotStore
-const snapshotType = <T extends BaseData>(snapshot: Snapshot<T>): Snapshot<T> => {
+}// Example implementation of snapshotType function
+const snapshotType = <T extends BaseData>(
+  snapshot: Snapshot<T>): Snapshot<T> => {
   const newSnapshot = { ...snapshot }; // Shallow copy of the snapshot
 
   // Handle SnapshotStore<BaseData> or Snapshot<BaseData>
@@ -180,28 +180,29 @@ const snapshotType = <T extends BaseData>(snapshot: Snapshot<T>): Snapshot<T> =>
     status: snapshot.status || "",
     metadata: snapshot.metadata || {},
     delegate: snapshot.delegate || [],
-    store: (snapshot.store as SnapshotStore<T>) ||
-      new SnapshotStore<T>(
-        snapshot.data || null,
-        (snapshot.category as CategoryProperties) || defaultCategory,
-        snapshot.date ? new Date(snapshot.date) : new Date(),
-        snapshot.type ? snapshot.type : "new snapshot",
-        snapshot.snapshotConfig ? snapshot.snapshotConfig : [],
-        (snapshotId: string, callback: (snapshot: Snapshot<T>) => void) => {},
-        (snapshot.delegate as unknown as SnapshotStoreConfig<BaseData, T>[]),
-        snapshot.dataStoreMethods || ({} as DataStore<T>)
-      ),
+    store: snapshot.store as SnapshotStore<T> || new SnapshotStore<T>(
+      {}, // Pass an empty object or adjust as necessary
+      snapshot.initialState || null,
+      (snapshot.category || defaultCategory) as CategoryProperties,
+      snapshot.timestamp ? new Date(snapshot.timestamp) : new Date(),
+      '', // Ensure type is appropriately handled
+      [], // Ensure snapshotConfig is appropriately handled
+      () => {}, // Ensure subscribeToSnapshots is appropriately handled
+      [], // Ensure delegate is appropriately handled
+      {} as DataStore<T> // Ensure dataStoreMethods is appropriately handled
+    ),
     state: snapshot.state || null,
     todoSnapshotId: snapshot.todoSnapshotId || "",
     initialState: snapshot.initialState || null,
-  }
+  };
 
   return result;
 };
 
-
 class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
   private storage: Storage;
+  private dataStoreMethods: DataStore<T>;
+
   constructor(
     storage: Storage,
     category: CategoryProperties = {
@@ -228,7 +229,21 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       brandColor: "",
       brandMessage: "",
     },
-    dataStoreMethods: DataStore<T> = {
+    dataStoreMethods?: Partial<DataStore<T>>,
+    initialState: Map<string, T> | null = null,
+  ) {
+    super(
+      initialState ?? new Map<string, T>(),
+      category,
+      new Date(),
+      snapshotType.toString(),
+      [], // Ensure snapshotConfig is appropriately handled
+      () => {}, // Ensure subscribeToSnapshots is appropriately handled
+      [], // Ensure delegate is appropriately handled
+      dataStoreMethods as DataStore<T>, // Cast to DataStore<T> or provide defaults
+    );
+    this.storage = storage;
+    this.dataStoreMethods = {
       data: undefined,
       addData: (data: T) => { },
       updateData: (id: number, newData: T) => { },
@@ -253,28 +268,34 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       getBackendVersion: () => Promise.resolve(undefined),
       getFrontendVersion: () => Promise.resolve(undefined),
       fetchData: (id: number) => Promise.resolve([]),
-      getItem: (key: string): Promise<T | undefined> => {
+      getItem: (key: string | SnapshotData<T>): Promise<T | undefined> => {
         return new Promise((resolve, reject) => {
-          const item = this.storage.getItem(key);
-          if (item) {
-            resolve(JSON.parse(item));
+          if (typeof key === 'string') {
+            const item = this.storage.getItem(key);
+            if (item) {
+              resolve(JSON.parse(item));
+            } else {
+              resolve(undefined);
+            }
           } else {
-            resolve(undefined);
+            const item = this.storage.getItem(String(key._id));
+            if (item) {
+              resolve(JSON.parse(item));
+            } else {
+              resolve(undefined);
+            }
           }
         });
       },
-
       setItem: (id: string, item: T): Promise<void> => {
         return new Promise((resolve, reject) => {
           this.storage.setItem(id, JSON.stringify(item));
           resolve();
         });
       },
-
       removeItem: async (key: string): Promise<void> => {
         await this.removeItem(key);
       },
-
       getAllKeys: async (): Promise<string[]> => {
         const keys: string[] = [];
         for (let i = 0; i < this.storage.length; i++) {
@@ -285,8 +306,7 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
         }
         return keys;
       },
-
-      async getAllItems(): Promise<T[]> {
+      getAllItems: async (): Promise<T[]> => {
         try {
           const keys = await this.getAllKeys();
           const items: (T | undefined)[] = await Promise.all(
@@ -299,28 +319,27 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
               return undefined;
             })
           );
-      
+
           const filteredItems = items.filter((item): item is T => item !== undefined);
-      
+
           return filteredItems;
         } catch (error) {
           throw error;
         }
       },
-    },
-    initialState: Map<string, T> | null = null,
-  ) {
-    super(
-      initialState,
-      category,
-      new Date(),
-      snapshotType.toString(),
-      snapshotConfig,
-      subscribeToSnapshots,
-      [], // Default empty delegate, to be populated asynchronously
-      dataStoreMethods,
-    );
-    this.storage = storage;
+      ...dataStoreMethods, // Include additional methods provided
+    };
+  }
+
+  async getItem(key: string | SnapshotData<T>): Promise<T | undefined> {
+    if (typeof key === 'string') {
+      const item = this.storage.getItem(key);
+      return item ? JSON.parse(item) : undefined;
+    } else {
+      const itemKey = String(key._id);
+      const item = this.storage.getItem(itemKey);
+      return item ? JSON.parse(item) : undefined;
+    }
   }
 
   setItem(key: string, value: T): Promise<void> {
@@ -328,17 +347,12 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
     return Promise.resolve();
   }
 
-  getItem(key: string): Promise<T | undefined> {
-    const item = this.storage.getItem(key);
-    return Promise.resolve(item ? JSON.parse(item) : null);
-  }
-
   removeItem(key: string): Promise<void> {
     this.storage.removeItem(key);
     return Promise.resolve();
   }
 
-  getAllKeys(): Promise<string[]> {
+  async getAllKeys(): Promise<string[]> {
     const keys: string[] = [];
     for (let i = 0; i < this.storage.length; i++) {
       const key = this.storage.key(i);
@@ -346,31 +360,22 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
         keys.push(key);
       }
     }
-    return Promise.resolve(keys);
+    return keys;
   }
 
-  getAllItems(): Promise<T[]> {
+  async getAllItems(): Promise<T[]> {
+    const keys = await this.getAllKeys();
     const items: T[] = [];
-    try {
-      for (let i = 0; i < this.storage.length; i++) {
-        const key = this.storage.key(i);
-        if (key) {
-          const value = this.storage.getItem(key);
-          if (value) {
-            items.push(JSON.parse(value));
-          }
-        }
+    keys.forEach(key => {
+      const item = this.storage.getItem(key);
+      if (item) {
+        items.push(JSON.parse(item));
       }
-
-      const filteredItems = items.filter(
-        (item): item is T => item !== undefined && typeof item === 'object'
-      );
-      return Promise.resolve(filteredItems);
-    } catch (error) {
-      throw error;
-    }
+    });
+    return items;
   }
 }
+
 
 // Example usage in a Redux slice or elsewhere
 const newTask: Task = {

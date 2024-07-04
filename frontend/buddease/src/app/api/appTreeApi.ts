@@ -68,20 +68,43 @@ class AppTreeApiService {
     }
   }
 
+
+  private async fetchCacheKey(): Promise<string> {
+    let cacheKey = "";
+  
+    // Check localStorage first
+    const localStorageCacheKey = localStorage.getItem("cacheKey");
+    if (localStorageCacheKey) {
+      cacheKey = localStorageCacheKey;
+    } else {
+      // If not found in localStorage, fallback to process.env
+      cacheKey = process.env.CACHE_KEY || "";
+    }
+  
+    // Return the cache key (defaulting to an empty string if not found)
+    return cacheKey;
+  }
+
   async refreshAppTreeFromApi(): Promise<any> {
     try {
       // Fetch app tree data from local storage
       const cachedData = await this.fetchAppTreeFromLocalStorage();
-
-      // Calculate the threshold based on the cached data
-      const threshold = setThreshold(cachedData, 0); // Adjust the threshold value as needed
-
+  
+      // Fetch cache key as a string
+      const cacheKeyString = await this.fetchCacheKey();
+  
+      // Convert cacheKeyString to a number
+      const cacheKey = parseInt(cacheKeyString, 10); // Convert string to number (adjust radix as needed)
+  
+      // Calculate the threshold based on the cached data and cache key
+      const threshold = setThreshold(cachedData, cacheKey); // Adjust the threshold value as needed
+  
       // Check if cachedData exists and if it's recent enough to avoid unnecessary API calls
       if (cachedData && isDataRecentEnough(cachedData, Number(threshold))) {
         // If the cached data is recent enough, return it without making an API call
         return cachedData;
       }
-
+  
       // Notify user about app tree refresh
       this.notify(
         "App tree refresh",
@@ -90,13 +113,13 @@ class AppTreeApiService {
         new Date(),
         NotificationTypeEnum.Info
       );
-
+  
       // Fetch updated app tree data from the API
       const responseData = await this.callApi("getTree");
-
+  
       // Save the updated app tree data to local storage
       await this.saveAppTreeToLocalStorage(responseData);
-
+  
       // Return the updated app tree data
       return responseData;
     } catch (error) {
@@ -105,6 +128,8 @@ class AppTreeApiService {
       throw error;
     }
   }
+  
+  
 
   private async callApi(endpoint: string): Promise<any> {
     try {
@@ -115,6 +140,8 @@ class AppTreeApiService {
       throw error;
     }
   }
+
+
 
   async getTree(): Promise<any> {
     try {

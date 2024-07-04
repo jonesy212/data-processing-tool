@@ -57,11 +57,10 @@ import SnapshotStore from "./SnapshotStore";
 import useSnapshotManager from "../hooks/useSnapshotManager";
 import { generateSnapshotId } from "../utils/snapshotUtils";
 import { fetchCategoryByName } from "@/app/api/CategoryApi";
-import determineFileCategory, {
-  fetchSnapshotData,
-} from "../libraries/categories/determineFileCategory";
+import determineFileCategory, { fetchFileSnapshotData } from "../libraries/categories/determineFileCategory";
 import { snapshotType } from "../typings/YourSpecificSnapshotType";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import { FileCategory } from "../documents/FileType";
 
 type T = BaseData;
 type K = any;
@@ -111,6 +110,7 @@ export interface SnapshotStoreConfig<T extends BaseData, K extends BaseData> {
   onInitialize?: () => void;
   subscribers: Subscriber<T>[];
   onError?: (error: Payload) => void;
+  getSnapshotId: (data: SnapshotData) => string;
   snapshot: (
     id: string,
     snapshotData: SnapshotStoreConfig<any, K>,
@@ -710,8 +710,8 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
     }> => {
       try {
         // Example implementation fetching snapshot data
-        const snapshotData = (await fetchSnapshotData(
-          category
+        const snapshotData = (await fetchFileSnapshotData(
+          category as FileCategory
         )) as SnapshotData;
 
         // Check if snapshotData is defined
@@ -722,14 +722,14 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         // Create a new SnapshotStore instance
         const snapshotStore = new SnapshotStore<BaseData>(
           snapshotData.snapshot,
-          snapshotData.category,
-          snapshotData.timestamp,
+          snapshotData.category ? snapshotData.category : category,
+          snapshotData.timestamp as Date,
           initialState,
           snapshotConfig,
           snapshotType,
           snapshotData.data,
           delegate,
-          dataStoreMethods
+          // dataStoreMethods
         );
 
         return {
@@ -847,13 +847,12 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         { snapshots: [] }, // Example empty array, adjust as per your logic
       ];
     },
-
     batchFetchSnapshotsRequest: async (snapshotData: {
       subscribers: Subscriber<BaseData>[];
       snapshots: Snapshots<Data>;
     }) => {
       console.log("Batch snapshot fetching requested.");
-
+    
       try {
         const target = {
           endpoint: "https://example.com/api/snapshots/batch",
@@ -862,14 +861,14 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
             sortBy: "createdAt",
           },
         };
-
+    
         const fetchedSnapshots: SnapshotList | Snapshots<Data> =
           await snapshotApi
             .getSortedList(target)
             .then((sortedList) => snapshotApi.fetchAllSnapshots(sortedList));
-
+    
         let snapshots: Snapshots<CustomSnapshotData>;
-
+    
         if (Array.isArray(fetchedSnapshots)) {
           snapshots = fetchedSnapshots.map((snapshot) => ({
             id: snapshot.id,
@@ -897,8 +896,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
               initialState: new Map(), // Adjust this based on your actual data structure
             }));
         }
-        }
-
+    
         return {
           subscribers: snapshotData.subscribers,
           snapshots: snapshots,
@@ -1031,7 +1029,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
           config: this.config,
           category: snapshot.category,
           set: this.set,
-          data: snapshot.data,
+          data: snapshot.data || undefined,
           store: this.store!,
           removeSubscriber: this.removeSubscriber,
           handleSnapshot: this.handleSnapshot,

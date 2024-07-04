@@ -1,35 +1,32 @@
 // setThresholdUtils.ts
-export const setThreshold = <T>(
+
+interface DataWithPrices {
+  prices: { price: number }[];
+}
+
+interface DataWithPriceDisparity {
+  priceDisparity: number;
+}
+
+export const setThreshold = <T extends DataWithPrices | DataWithPriceDisparity>(
   parsedData: T[],
   threshold: number
 ): boolean => {
   // Iterate through the parsed data to identify any item that meets the threshold criteria
   for (const data of parsedData) {
-    // Ensure that data is not inferred as 'never' type
-    if (typeof data !== "undefined" && typeof (data as any).data !== "undefined") {
+    if ("priceDisparity" in data) {
       // Check if the data contains 'priceDisparity' property
-      if ("priceDisparity" in (data as any).data) {
-        // Check if the price disparity is not undefined and exceeds the defined threshold
-        if (
-          typeof (data as any).data.priceDisparity === "number" &&
-          (data as any).data.priceDisparity > threshold
-        ) {
-          // If the disparity exceeds the threshold, return true
-          return true;
-        }
+      if (typeof data.priceDisparity === "number" && data.priceDisparity > threshold) {
+        // If the disparity exceeds the threshold, return true
+        return true;
       }
-      if (
-        "prices" in (data as any).data &&
-        Array.isArray((data as any).data.prices) &&
-        (data as any).data.prices.length > 1
-      ) {
-        // Check if prices array exists and has length greater than 1
+    } else if ("prices" in data) {
+      // Check if prices array exists and has length greater than 1
+      if (Array.isArray(data.prices) && data.prices.length > 1) {
         // Compare prices from different sources to identify potential arbitrage opportunities
-        for (let i = 0; i < (data as any).data.prices.length - 1; i++) {
-          for (let j = i + 1; j < (data as any).data.prices.length; j++) {
-            const priceDifference = Math.abs(
-              (data as any).data.prices[i].price - (data as any).data.prices[j].price
-            );
+        for (let i = 0; i < data.prices.length - 1; i++) {
+          for (let j = i + 1; j < data.prices.length; j++) {
+            const priceDifference = Math.abs(data.prices[i].price - data.prices[j].price);
             // If the price difference exceeds the threshold, return true
             if (priceDifference >= threshold) {
               return true;

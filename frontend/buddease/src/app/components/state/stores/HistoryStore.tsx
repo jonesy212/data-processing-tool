@@ -1,3 +1,4 @@
+import {UndoRedoStore, useUndoRedoStore}  from './UndoRedoStore';
 // HistoryStore.ts
 import { getUsersData, saveUserProfiles } from "@/app/api/UsersApi";
 import { makeAutoObservable } from "mobx";
@@ -7,7 +8,6 @@ import { authToken } from "../../auth/authToken";
 import useDataExport from "../../hooks/dataHooks/useDataExport";
 import UserService from "../../users/ApiUser";
 import { useSecureUserId } from "../../utils/useSecureUserId";
-import { UndoRedoStore } from "./UndoRedoStore";
 import { TaskHistoryEntry } from "../../interfaces/history/TaskHistoryEntry";
 
 interface BaseHistoryStore {
@@ -87,9 +87,9 @@ export const baseStore = (): BaseHistoryStore => {
     // Implement navigateHistory logic here to move backward/forward in history array
     // Check if direction is 'backward' or 'forward'
     if (direction === "backward") {
-      UndoRedoStore.undo();
+      useUndoRedoStore().undo();
     } else {
-      UndoRedoStore.redo();
+      useUndoRedoStore().redo();
     }
   };
 
@@ -99,7 +99,7 @@ export const baseStore = (): BaseHistoryStore => {
   };
 
   const undoHistory = () => {
-    UndoRedoStore.undo();
+    useUndoRedoStore().undo();
   };
 
   const redoHistory = () => {

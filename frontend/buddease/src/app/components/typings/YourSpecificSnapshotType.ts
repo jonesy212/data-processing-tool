@@ -69,14 +69,16 @@ const convertSnapshotStoreToSnapshot = (store: SnapshotStore<BaseData>): Snapsho
     status: store.status,
     metadata: store.metadata,
     delegate: store.delegate,
-    store: store.store,
+    store: store as SnapshotStore<BaseData>,
     state: store.state,
     todoSnapshotId: store.todoSnapshotId,
-    initialState: store.initialState
+    initialState: store.initializedState
   } as Snapshot<BaseData>;
 }
 // Export the specific snapshot type if needed
 export { YourSpecificSnapshotType };
+  
+  
 const snapshotType = <T extends BaseData>(
   snapshot: Snapshot<BaseData>
 ): Snapshot<T> => {

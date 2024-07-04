@@ -6,7 +6,7 @@ import { Snapshot } from "./LocalStorageSnapshotStore";
 
 interface SnapshotItem {
   message: any;
-  content?: string | Data | Content; 
+  content?: string | Content;
   user: any;
   id: string;
   value: Snapshot<Data> | undefined;

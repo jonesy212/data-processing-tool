@@ -70,6 +70,7 @@ const categoryProperties: CategoryProperties = {
 
 
 const componentFilePath = apiFilePath;
+
 const reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
 
 // Define function to create user scenarios and map out user journey
@@ -222,7 +223,10 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum) {
       tagsOrCategories: "",
       format: "",
       uploadedByTeamId: null,
-      uploadedByTeam: null
+      uploadedByTeam: null,
+      document: undefined,
+      all: null,
+      selectedDocument: null
     },
     // Add more document data as needed
   ];
