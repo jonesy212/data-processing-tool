@@ -128,12 +128,13 @@ const useSnapshotStore = async (
     const resolvedDelegate = await delegate(); // Resolve the promise
   
     const newSnapshot = new SnapshotStore<any>(
-      null,
-      { /* Initialize category properties */ } as CategoryProperties,
+      {},
+      initialState,
+      {} as CategoryProperties,
       new Date(),
       NotificationTypeEnum.CreationSuccess,
-      initialState,
       snapshotConfig,
+      subscribeToSnapshot,
       subscribeToSnapshots,
       resolvedDelegate, // Pass the resolved value
       dataStoreMethods

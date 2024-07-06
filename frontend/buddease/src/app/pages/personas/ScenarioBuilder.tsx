@@ -68,6 +68,39 @@ const categoryProperties: CategoryProperties = {
   brandMessage: "Bringing insights to life",
 };
 
+function convertToCategoryProperties(category: string | CategoryProperties | undefined): CategoryProperties {
+  if (typeof category === 'string') {
+    // Convert the string to CategoryProperties
+    return {
+      name: category,
+      description: '',
+      icon: '',
+      color: '',
+      iconColor: '',
+      isActive: false,
+      isPublic: false,
+      isSystem: false,
+      isDefault: false,
+      isHidden: false,
+      isHiddenInList: false,
+      UserInterface: [],
+      DataVisualization: [],
+      Forms: undefined,
+      Analysis: [],
+      Communication: [],
+      TaskManagement: [],
+      Crypto: [],
+      brandName: '',
+      brandLogo: '',
+      brandColor: '',
+      brandMessage: ''
+    };
+  } else if (category !== undefined) {
+    return category;
+  } else {
+    throw new Error("Invalid category");
+  }
+}
 
 const componentFilePath = apiFilePath;
 
@@ -407,19 +440,10 @@ generateComponent(componentName, category, properties, validationRules);
 
 
 
-
-
-
-
-
-
-
-
-
 // Example usage
 generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, categoryProperties);
 export type { CategoryProperties };
-
+export {convertToCategoryProperties}
 
 
 

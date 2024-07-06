@@ -17,7 +17,7 @@ interface StructuredMetadata {
     originalPath: string;
     alternatePaths: string[];
     author: string;
-    timestamp: Date;
+    timestamp: Date | undefined;
     fileType: string;
     title: string,
     description: string,

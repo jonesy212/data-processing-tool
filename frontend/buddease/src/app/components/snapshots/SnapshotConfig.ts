@@ -8,7 +8,7 @@ import { fetchData } from "@/app/api/ApiData";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CategoryProperties, convertToCategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useParams } from "next/navigation";
 import {
   UserConfigExport,
@@ -35,6 +35,7 @@ import {
   notifyEventSystem,
   portfolioUpdates,
   triggerIncentives,
+  unsubscribe,
   updateProjectState,
 } from "../utils/applicationUtils";
 import * as snapshotApi from "./../../api/SnapshotApi";
@@ -61,6 +62,7 @@ import determineFileCategory, { fetchFileSnapshotData } from "../libraries/categ
 import { snapshotType } from "../typings/YourSpecificSnapshotType";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { FileCategory } from "../documents/FileType";
+import { useSecureUserId } from "../utils/useSecureUserId";
 
 type T = BaseData;
 type K = any;
@@ -83,22 +85,21 @@ interface UserConfig extends ViteUserConfig {
 }
 
 export interface SnapshotStoreConfig<T extends BaseData, K extends BaseData> {
-  id?: any;
+  id: string | null;
+  data: T;
+  timestamp: string | Date | undefined;
   snapshotId: string;
   taskIdToAssign?: string;
   clearSnapshots?: any;
   key?: string;
   topic?: string;
-  initialState: Map<string, T> | null;
-
+  initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null;
   configOption?: SnapshotStoreConfig<T, K> | null;
   subscription?: Subscription | null;
   initialConfig?: SnapshotStoreConfig<T, K> | null;
   config?: SnapshotStoreConfig<BaseData, any>[] | null;
   category: string | CategoryProperties | undefined;
-  timestamp: string | Date | undefined;
   store?: SnapshotStoreConfig<T, K> | null;
-  data?: T | SnapshotStoreConfig<T, K> | null;
   set?: (type: string, event: Event) => void | null;
   removeSubscriber?: (subscriber: Subscriber<BaseData>) => void;
   handleSnapshot: (
@@ -106,7 +107,7 @@ export interface SnapshotStoreConfig<T extends BaseData, K extends BaseData> {
     snapshotId: string
   ) => void | null;
   state: Snapshot<BaseData>[] | Snapshot<T>[] | null;
-  snapshots: SnapshotStore<BaseData>[];
+  snapshots: Snapshots<T>
   onInitialize?: () => void;
   subscribers: Subscriber<T>[];
   onError?: (error: Payload) => void;
@@ -180,7 +181,7 @@ export interface SnapshotStoreConfig<T extends BaseData, K extends BaseData> {
   fetchInitialSnapshotData: () => Promise<Snapshot<Data>[]>;
   updateSnapshot: (
     snapshotId: string,
-    data: SnapshotStore<T>,
+    data: Map<string, BaseData>,
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<T>,
     dataItems: RealtimeDataItem[],
@@ -403,7 +404,7 @@ export interface SnapshotStoreConfig<T extends BaseData, K extends BaseData> {
   findSnapshot: () => void;
   subscribe: () => void;
   unsubscribe: () => void;
-  fetchSnapshotFailure: () => void;
+  fetchSnapshotFailure: (payload: { error: Error }) => void;
   generateId: () => string;
 }
 
@@ -506,7 +507,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
 
       updateSnapshot: async (
         snapshotId: string,
-        data: SnapshotStore<BaseData>,
+        data: Map<string, BaseData>,
         events: Record<string, CalendarEvent[]>,
         snapshotStore: SnapshotStore<T>,
         dataItems: RealtimeDataItem[],
@@ -635,6 +636,8 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
 
         const config = {} as SnapshotStoreConfig<BaseData, any>[];
         const configOption = {} as SnapshotStoreConfig<BaseData, any>;
+        const userId = useSecureUserId()!.toString()
+        const snapshotId = (await snapshotApi.getSnapshotId(generatedSnapshotId)).toString();
         // Example: Transforming snapshot.data (Map<string, BaseData>) to initialState (SnapshotStore<BaseData> | Snapshot<BaseData>)
         const initialState: SnapshotStore<BaseData> = {
           id: generatedSnapshotId,
@@ -644,7 +647,16 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
           configOption: configOption,
           config: config,
           subscription: {
-            unsubscribe: unsubscribe,
+            unsubscribe: (
+              unsubscribeType: string,
+              unsubscribeDate: Date,
+              unsubscribeReason: string,
+              unsubscribeData: any
+            ) => {
+              // Implement logic to unsubscribe
+              // For example:
+              unsubscribe(userId, snapshotId, unsubscribeType, unsubscribeDate, unsubscribeReason, unsubscribeData);
+            },
             portfolioUpdates: portfolioUpdates,
             tradeExecutions: getTradeExecutions,
             marketUpdates: getMarketUpdates,
@@ -722,14 +734,15 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         // Create a new SnapshotStore instance
         const snapshotStore = new SnapshotStore<BaseData>(
           snapshotData.snapshot,
-          snapshotData.category ? snapshotData.category : category,
+          snapshotData.initialState instanceof Map ? snapshotData.initialState : null,
+          convertToCategoryProperties(snapshotData.category ? snapshotData.category : category),
           snapshotData.timestamp as Date,
           initialState,
           snapshotConfig,
           snapshotType,
           snapshotData.data,
           delegate,
-          // dataStoreMethods
+          dataStoreMethods
         );
 
         return {
@@ -750,7 +763,7 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
 
     updateSnapshot: async (
       snapshotId: string,
-      data: SnapshotStore<T>,
+      data: Map<string, BaseData>,
       events: Record<string, CalendarEvent[]>,
       snapshotStore: SnapshotStore<T>,
       dataItems: RealtimeDataItem[],
@@ -1134,34 +1147,36 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
           const subscribersForCategory = subscribers.filter(
             (subscriber) => subscriber.getData()?.category === category
           );
-          const snapshotsForCategory = categorySnapshots.map(
-            (snapshot: Snapshot<Data>) => {
-              const updatedSnapshot = {
-                ...snapshot,
-                subscribers: subscribersForCategory.map((subscriber) => {
-                  const subscriberData = subscriber.getData();
-                  if (subscriberData) {
-                    return {
-                      ...subscriberData,
-                      id: subscriber.getId(),
-                    };
-                  } else {
-                    return {
-                      id: subscriber.getId(),
-                    };
-                  }
-                }),
-              };
-              return updatedSnapshot;
-            }
-          );
-          return snapshotsForCategory;
-        })
-        .flat();
-
-      return {
-        subscribers,
-        snapshots: data,
+          if (Array.isArray(categorySnapshots)) {
+            const snapshotsForCategory = categorySnapshots.map(
+              (snapshot: Snapshot<Data>) => {
+                const updatedSnapshot = {
+                  ...snapshot,
+                  subscribers: subscribersForCategory.map((subscriber) => {
+                    const subscriberData = subscriber.getData();
+                    if (subscriberData) {
+                      return {
+                        ...subscriberData,
+                        id: subscriber.getId(),
+                      };
+                    } else {
+                      return {
+                        id: subscriber.getId(),
+                      };
+                    }
+                  }),
+                };
+                return updatedSnapshot;
+              }
+            );
+            return snapshotsForCategory;
+          }
+          })
+          .flat();
+          
+          return {
+            subscribers,
+            snapshots: data,
       };
     },
 
@@ -1218,18 +1233,37 @@ const snapshotConfig: SnapshotStoreConfig<any, any>[] = [
         throw error;
       }
     },
-    getSnapshotById: async function (
+      
+    getSnapshotById: async function(
       snapshotId: string,
-      snapshotConfig: SnapshotStoreConfig<BaseData, Data>[]
-    ): Promise<SnapshotStore<BaseData>> {
+      snapshotConfig: SnapshotStoreConfig<BaseData, any>[] // Adjust the type for Data as per your needs
+    ): Promise<SnapshotStore<BaseData> | undefined> {
       try {
-        const snapshot = snapshotConfig.find(
+        const config = snapshotConfig.find(
           (config) => config.snapshotId === snapshotId
         );
-        if (!snapshot) {
-          throw new Error("Snapshot not found");
+
+        if (!config) {
+          throw new Error("Snapshot configuration not found");
         }
-        return snapshot;
+
+        // Here, assuming `config` is of type `SnapshotStoreConfig<BaseData, Data>`
+        // and you need to create or access a `SnapshotStore<BaseData>` instance
+        const snapshotStore: SnapshotStore<BaseData> = {
+          id: config.id, // Ensure `id` is accessible from `SnapshotStoreConfig`
+          key: config.key ? config.key : config.snapshotId, // Ensure `key` is accessible from `SnapshotStoreConfig`
+          topic: config.topic ? config.topic : 'defaultTopic',
+          date: new Date(), // Adjust as per your logic
+          title: "Snapshot Title", // Example, adjust as per your logic
+          type: "snapshot_type", // Example, adjust as per your logic
+          subscription: null, // Example, adjust as per your logic
+          category: config.category,
+          timestamp: new Date(), // Example, adjust as per your logic
+
+          // Ensure to include other necessary properties
+        } 
+
+        return snapshotStore;
       } catch (error) {
         console.error("Error fetching snapshot:", error);
         throw error;
@@ -1315,12 +1349,12 @@ const createSnapshotExample = async (
   id: string,
   snapshotData: SnapshotStoreConfig<any, Data>,
   category: string
-): Promise<{ snapshot: SnapshotStore<Snapshot<Data>> }> => {
+): Promise<{ snapshot: SnapshotStore<BaseData> }> => {
   const currentConfig = snapshotConfig.find(
     (config) => (config.snapshotId as string) === id
   );
 
-  return new Promise<{ snapshot: SnapshotStore<Snapshot<Data>> }>(
+  return new Promise<{ snapshot: SnapshotStore<BaseData> }>(
     (resolve, reject) => {
       if (currentConfig && typeof currentConfig.createSnapshot === "function") {
         // Ensure currentConfig.createSnapshot is called with correct arguments
@@ -1387,7 +1421,9 @@ const johnSubscriber = new Subscriber<CustomSnapshotData>(
   notifyEventSystem,
   updateProjectState,
   logActivity,
-  triggerIncentives
+  triggerIncentives,
+  payload.meta.optionalData,
+  payload.meta.data
 );
 
 // Example of asynchronous function using async/await
@@ -1407,11 +1443,13 @@ const updateSubscribersAndSnapshots = async (
 
   try {
     // Update each subscriber asynchronously
+    const subscribersArray: Subscriber<BaseData>[] = subscribers; 
+
     const updatedSubscribers = await Promise.all(
-      subscribers.map(async (subscriber) => {
+      subscribersArray.map(async (subscriber: Subscriber<BaseData>) => {
         // Update each snapshot in the subscriber
         const updatedSnapshots = await Promise.all(
-          subscriber.snapshots.map(async (snapshot) => {
+          subscriber.snapshots.map(async (snapshot: Snapshot<BaseData>) => {
             return {
               ...snapshot,
               data: { ...snapshot.data }, // Ensure data is cloned correctly if needed
@@ -1465,7 +1503,7 @@ const updateSubscribersAndSnapshots = async (
           processNotification: async (
             id: string,
             message: string,
-            snapshotContent: Snapshot<Data>,
+            snapshotContent: Map<string, BaseData>,
             date: Date,
             type: NotificationType
           ): Promise<void> => {

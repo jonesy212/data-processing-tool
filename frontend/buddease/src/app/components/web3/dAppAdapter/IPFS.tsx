@@ -7,7 +7,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { CustomDAppAdapter } from './DApp';
 import { DAppAdapterConfig, DappProps } from './DAppAdapterConfig';
   // Get configs data and handle the case where it returns undefined
-  const extendedProps: ExtendedDappProps | undefined = await getConfigsData();
+const extendedProps: ExtendedDappProps | undefined = await getConfigsData();
 
 // Extend the existing DAppAdapterConfig interface
 interface ExtendedDappProps extends DappProps {
@@ -207,7 +207,7 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
 
 
 // Check if extendedProps is defined before using it
-if (extendedProps) {
+if (extendedProps: { systemApiData: any; userApiData: any; }) {
   // Use extendedProps here
   // For example:
   console.log(extendedProps.systemApiData);
@@ -229,7 +229,7 @@ const baseConfig = {
 
 const extendedConfig: ExtendedDAppAdapterConfig = {
   ...baseConfig,
-  ethereumRpcUrl: "https://your-ethereum-rpc-url", 
+  ethereumRpcUrl: "https://your-ethereum-rpc-url",
   ipfsConfig: {
     ...ipfsConfig,
     ipfsPath: '/path/to/ipfs/repo',
@@ -252,7 +252,8 @@ const extendedConfig: ExtendedDAppAdapterConfig = {
     ipfsSwarmUrl: 'http://localhost:4001',
     ipfsSwarmPath: '/swarm/peers',
     ipfsWsPort: 5003
-  }
+  },
+  postgresConfig: undefined
 };
 
 const extendedDApp = new ExtendedDAppAdapter(extendedConfig);

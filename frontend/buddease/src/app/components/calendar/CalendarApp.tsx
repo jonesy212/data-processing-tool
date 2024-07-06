@@ -126,7 +126,7 @@ const CalendarApp = () => {
   
   const dataStoreMethods: DataStore<BaseData> = {
     data: undefined,
-    // storage: undefined,
+    storage: undefined,
     addData: (data: BaseData) => { },
     updateData: (id: number, newData: BaseData) => { },
     removeData: (id: number) => { },
@@ -206,12 +206,14 @@ const CalendarApp = () => {
   };
   
   const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore(
+    data,
     initialState,
     category,
-    date,
+    new Date(),
     type,
     snapshotConfig,
     subscribeToSnapshots,
+    subscribeToSnapshot,
     delegate,
     dataStoreMethods
   );

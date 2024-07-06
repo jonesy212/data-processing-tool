@@ -1,20 +1,19 @@
-import { UserConfigExport } from "vite";
+import { addSnapshot, mergeSnapshots, takeSnapshot } from "@/app/api/SnapshotApi";
 import { PayloadAction } from "@reduxjs/toolkit";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import useSnapshotManager from "../../hooks/useSnapshotManager";
-import { Data } from "../../models/data/Data";
+import useStorageManager from "../../hooks/useStorageManager";
+import { BaseData, Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore, {
-  CustomSnapshotData,
-  Snapshot,
 } from "../../snapshots/SnapshotStore";
 import { snapshot } from "../../snapshots/snapshot";
-import { addSnapshot, mergeSnapshots, takeSnapshot } from "@/app/api/SnapshotApi";
 import {
   deleteSnapshot,
   updateSnapshot,
 } from "../../snapshots/snapshotHandlers";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 
 // Define project phases
 enum ProjectPhase {
@@ -24,51 +23,61 @@ enum ProjectPhase {
   // Add more phases as needed
 }
 
+
+// Define Data for the snapshot
+interface ProjectData extends BaseData {
+  currentPhase: ProjectPhase;
+  tasks: Task[];
+}
+
 const ProjectManager: React.FC = () => {
+  const storageManager = useStorageManager("project-phase-data");
+  const initialData = storageManager.getItem() as ProjectData | undefined;
   const [currentPhase, setCurrentPhase] = useState<ProjectPhase>(
-    ProjectPhase.PHASE_1
+    initialData?.currentPhase || ProjectPhase.PHASE_1
   );
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(initialData?.tasks || []);
+  const snapshotStoreRef = useRef(new SnapshotStore<ProjectData>(
+    data,
+    initialState,
+    category,
+    date,
+    type,
+    snapshotConfig,
+    subscribeToSnapshots,
+    subscribeToSnapshot,
+    
+    delegate,
+    dataStoreMethods,
+  ));
 
   const advanceToNextPhase = () => {
-    console.log(`Advancing to the next project phase (${currentPhase})...`);
-    // Add your logic to move to the next phase
-    // For example, update the currentPhase state to the next phase
-    // and perform any other necessary actions
+    const nextPhase = getNextPhase(currentPhase);
+    setCurrentPhase(nextPhase);
+    updateLocalStorage(nextPhase, tasks);
   };
 
   const markTaskAsComplete = (taskId: string) => {
-    console.log(`Marking task ${taskId} as complete...`);
-    // Add your logic to mark a task as complete
-    // For example, update the tasks state to mark the task as complete
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: true } : task
-      )
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, completed: true } : task
     );
+    setTasks(updatedTasks);
+    updateLocalStorage(currentPhase, updatedTasks);
   };
 
   const rollbackToPreviousPhase = () => {
-    console.log(
-      `Rolling back to the previous project phase (${currentPhase})...`
-    );
-    // Add your logic to rollback to the previous phase
-    // For example, update the currentPhase state to the previous phase
-    // and perform any other necessary actions
+    const previousPhase = getPreviousPhase(currentPhase);
+    setCurrentPhase(previousPhase);
+    updateLocalStorage(previousPhase, tasks);
   };
 
-  const getActionHistory = async (
-    snapshot: SnapshotStore<Snapshot<Data>>
-  ): Promise<SnapshotStoreConfig<Snapshot<Data>, Data>> => {
+  const updateLocalStorage = (phase: ProjectPhase, taskList: Task[]) => {
+    storageManager.setItem({ currentPhase: phase, tasks: taskList });
+  };
+
+  const getActionHistory = async (): Promise<SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData>> => {
     const entityActions = useSnapshotManager();
-    const snapshotStoreSnapshots = await (
-      await entityActions
-    ).getSnapshots(snapshot);
-
-    // Assuming snapshotStoreSnapshots is of type SnapshotStoreConfig<Snapshot<Data>, Data>
-    const otherActions: PayloadAction[] = []; // Example other actions
-
-    // Constructing the actions object as per the SnapshotStoreConfig interface
+    const snapshotStoreSnapshots = await entityActions.getSnapshots(snapshotStoreRef.current);
     const actions = {
       takeSnapshot: takeSnapshot,
       updateSnapshot: updateSnapshot,
@@ -77,29 +86,21 @@ const ProjectManager: React.FC = () => {
       mergeSnapshots: mergeSnapshots,
     };
 
-    const actionHistory: SnapshotStoreConfig<Snapshot<Data>, Data> = {
-      ...snapshotStoreSnapshots,
+    const actionHistory: SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData> = {
+      snapshots: snapshotStoreSnapshots,
       actions: actions,
     };
 
     return actionHistory;
   };
 
-  // Function to undo the last action
   const undoLastAction = () => {
-    if (snapshot.store) {
-      getActionHistory(snapshot.store).then(
-        (value: SnapshotStoreConfig<Snapshot<Data>, Data>) => {
-          console.log('Undoing the last action...');
-  
-          // Access action history from value
+    if (snapshotStoreRef.current) {
+      getActionHistory().then(
+        (value: SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData>) => {
           const actionHistory = value.actions || [];
-  
           if (Array.isArray(actionHistory) && actionHistory.length > 0) {
-            // Get the last action
             const lastAction = actionHistory.pop();
-  
-            // Log that the last action was undone
             console.log('Last action undone:', lastAction);
           } else {
             console.log('No actions to undo.');
@@ -110,15 +111,27 @@ const ProjectManager: React.FC = () => {
       console.log('No snapshot store available.');
     }
   };
-  
+
+  const getNextPhase = (currentPhase: ProjectPhase): ProjectPhase => {
+    const phases = Object.values(ProjectPhase);
+    const currentIndex = phases.indexOf(currentPhase);
+    const nextIndex = (currentIndex + 1) % phases.length;
+    return phases[nextIndex];
+  };
+
+  const getPreviousPhase = (currentPhase: ProjectPhase): ProjectPhase => {
+    const phases = Object.values(ProjectPhase);
+    const currentIndex = phases.indexOf(currentPhase);
+    const previousIndex = (currentIndex - 1 + phases.length) % phases.length;
+    return phases[previousIndex];
+  };
+
   return (
     <div>
       <h2>Project Manager</h2>
       <p>Current Phase: {currentPhase}</p>
       <button onClick={advanceToNextPhase}>Advance to Next Phase</button>
-      <button onClick={rollbackToPreviousPhase}>
-        Rollback to Previous Phase
-      </button>
+      <button onClick={rollbackToPreviousPhase}>Rollback to Previous Phase</button>
       <button onClick={undoLastAction}>Undo Last Action</button>
 
       <h3>Tasks</h3>
@@ -126,9 +139,7 @@ const ProjectManager: React.FC = () => {
         {tasks.map((task) => (
           <li key={task.id}>
             {task.description} - {task.completed ? "Completed" : "Incomplete"}
-            <button onClick={() => markTaskAsComplete(task.id as string)}>
-              Mark as Complete
-            </button>
+            <button onClick={() => markTaskAsComplete(task.id as string)}>Mark as Complete</button>
           </li>
         ))}
       </ul>

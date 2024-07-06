@@ -15,7 +15,7 @@ function transformSnapshotsToStores(snapshots: Snapshot<BaseData>[] | null): Sna
             data: snapshot.data,
             category: snapshot.category,
             date: typeof snapshot.date === 'string' ? new Date(snapshot.date) : snapshot.date || new Date(),
-            type: snapshotType ? snapshotType(snapshot) : undefined,
+            type: snapshotType,
             subscribers: [],
             snapshots: [],
             subscribeToSnapshots: subscribeToSnapshots,

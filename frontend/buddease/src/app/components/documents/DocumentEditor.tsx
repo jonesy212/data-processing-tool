@@ -60,6 +60,39 @@ const phaseHandlers: Record<ProjectPhaseTypeEnum, () => void> = {
     console.log("Switched to Final phase");
     // Handle actions for Final phase
   },
+  [ProjectPhaseTypeEnum.Ideation]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.TeamFormation]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.ProductBrainstorming]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.Launch]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.DataAnalysis]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.Test]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.CreatePhase]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.Previous]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.Register]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.Planning]: function (): void {
+    throw new Error("Function not implemented.");
+  },
+  [ProjectPhaseTypeEnum.Development]: function (): void {
+    throw new Error("Function not implemented.");
+  }
 };
 
 // Handle phase change logic

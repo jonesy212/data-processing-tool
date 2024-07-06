@@ -334,21 +334,38 @@ const portfolioUpdates = ({
 }
   
 const userId = useSecureUserId()
+const unsubscribe = (
+  userId: string,
+  snapshotId: string,
+  unsubscribeType: string,
+  unsubscribeDate: Date,
+  unsubscribeReason: string,
+  unsubscribeData: any
+) => {
+  // Implement logic to unsubscribe or clean up resources
+  console.log(`Unsubscribing user ${userId} from snapshot ${snapshotId}`);
+  
+  // Example: Perform actions based on unsubscribeType
+  switch (unsubscribeType) {
+    case 'email':
+      sendEmail(userId, 'Unsubscribe Notification', 'You have been unsubscribed.');
+      break;
+    case 'sms':
+      sendSMS(userId, 'You have been unsubscribed from SMS notifications.');
+      break;
+    default:
+      console.warn(`Unknown unsubscribe type: ${unsubscribeType}`);
+      break;
+  }
 
-const unsubscribe = ({
-  userId,
-  snapshotId,
-  unsubscribeType,
-  unsubscribeDate,
-  unsubscribeReason,
-  unsubscribeData,
-  portfolioData,
-  portfolioSnapshotId,
-  portfolioSnapshotData,
-  portfolioValue,
-  portfolioReturn,
-  portfolioRisk,
-})
+  // Example: Log unsubscribe details
+  console.log(`Unsubscribe Date: ${unsubscribeDate}`);
+  console.log(`Unsubscribe Reason: ${unsubscribeReason}`);
+  console.log(`Additional Data:`, unsubscribeData);
+
+  // Additional logic here...
+};
+
 
   
   // Additional logic to handle the triggered incentive with parameters
@@ -422,7 +439,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-  logActivity, notifyEventSystem, triggerIncentives, updateProjectState, portfolioUpdates
+  logActivity, notifyEventSystem, portfolioUpdates, triggerIncentives, unsubscribe, updateProjectState
 };
 
-export type {TriggerIncentivesParams}
+  export type { TriggerIncentivesParams };

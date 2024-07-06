@@ -76,22 +76,29 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<Data>> => {
   const category = ""
   const timestamp = new Date()
   // Define or initialize newData (placeholder)
-  const newData: Data = {
-    id: "new-id",
-    name: "New Name",
-    value: "New Value",
-    timestamp: new Date(),
-    category: "New Category",
-  };
+  
+// Example newData object
+const newData: Data = {
+  id: "new-id",
+  name: "New Name",
+  value: "New Value",
+  timestamp: new Date(),
+  category: "New Category",
+};
 
-  // Example usage:
-  const newSnapshot: Snapshot<Data> = {
-    id: "123",
-    data: newData,
-    timestamp: new Date(),
-    category: "New Category",
-    type: "",
-  };
+// Convert newData to a Map<string, Data>
+const newDataMap = new Map<string, Data>();
+newDataMap.set(newData.id!.toString(), newData);
+
+// Example usage:
+const newSnapshot: Snapshot<Data> = {
+  id: "123",
+  data: newDataMap,
+  timestamp: new Date(),
+  category: "New Category",
+  type: "",
+};
+
 
   // Define methods to be exposed by the snapshot store
   const addSnapshot = (snapshot: Snapshot<Data>) => {
@@ -107,26 +114,26 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<Data>> => {
     }
   });
   // Create an instance of SnapshotStore with the implemented methods
-  const snapshotStore: SnapshotStoreConfig<Snapshot<any>, any> = {
+  const snapshotStore: SnapshotStoreConfig<BaseData, any> = {
     snapshots: [], 
     taskIdToAssign: "", 
     config: snapshotConfig, 
-    addSnapshot, 
+    addSnapshot: (await useSnapshotManager()).addSnapshot,
     snapshotId: (await useSnapshotManager()).snapshotId.toString(),
     updateSnapshot: (await useSnapshotManager()).updateSnapshot,
     removeSnapshot: (await useSnapshotManager()).removeSnapshot,
     clearSnapshots: (await useSnapshotManager()).clearSnapshots,
-    initialState: [],
+    initialState: null,
     category,
     timestamp,
     handleSnapshot: (await useSnapshotManager()).handleSnapshot,
     state: [],
     subscribers: [],
-    snapshot: [],
+    snapshots: [],
     createSnapshot: (snapshot: Snapshot<Data>) => {
       // Implement createSnapshot logic here
     },
-    configureSnapshotStore: (snapshotStore: SnapshotStore<Snapshot<any>>) => {
+    configureSnapshotStore: (snapshotStore: SnapshotStore<BaseData>) => {
       // Implement configureSnapshotStore logic here
     },
     createSnapshotSuccess: (snapshot: Snapshot<Data>) => {
@@ -373,7 +380,7 @@ export const updateSnapshotFailure = async<T extends Data>(
         ...firstSnapshot,
         data: updatedSnapshotData,
       };
-      (await useSnapshotManager()).setSnapshotData(updatedSnapshot);
+      (await useSnapshotManager()).setSnapshotData(updatedSnapshot, subscribers);
     }
     return Promise.resolve(updatedSnapshotData);
   }
@@ -580,37 +587,35 @@ export const deleteSnapshot = async (
 
 
 
-export const getAllSnapshots = async <T, K>(
-  snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<T>>, K>
-): Promise<SnapshotStore<Snapshot<T >>[]> => {
+
+export const getAllSnapshots = async <T extends BaseData, K extends BaseData>(
+  snapshotConfig: SnapshotStoreConfig<Snapshot<T>, K>
+): Promise<SnapshotStore<Snapshot<T>>[]> => {
   const category = process.argv[3] as keyof CategoryProperties;
 
   try {
     return Promise.resolve(
-      snapshotConfig.snapshots.map(
-        (snapshotData: SnapshotStore<Snapshot<T>>) => {
-          const snapshotStore = new SnapshotStore<Snapshot<T>>(
-            snapshot,
-            category,
-            new Date(),
-            initSnapshot,
-            null,
-            subscribeToSnapshots,
-            delegate,
-            {
-              ...snapshotData.data,
-              priority: snapshotData.data?.priority?.toString(),
-            }
-          );
-          return snapshotStore;
-        }
-      )
+      snapshotConfig.snapshots.map((snapshotData: Snapshot<T>) => {
+        const snapshotStore = new SnapshotStore<Snapshot<T>>(
+          snapshot,
+          category,
+          new Date(),
+          initSnapshot,
+          null,
+          subscribeToSnapshots,
+          delegate,
+          {
+            ...snapshotData.data,
+            priority: snapshotData.data?.priority?.toString(),
+          }
+        );
+        return snapshotStore;
+      })
     );
   } catch (error) {
     throw error;
   }
 };
-
 // Handler for batch taking snapshots
 export const batchTakeSnapshot = async <T>(
   snapshot: SnapshotStore<Snapshot<T>>, // Use generic type T for Snapshot and any for data

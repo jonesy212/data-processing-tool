@@ -8,23 +8,23 @@ import {
 import { useEffect } from "react";
 import { BaseData, Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
+import {
+  CustomSnapshotData,
+  Snapshot,
+} from "../snapshots/LocalStorageSnapshotStore";
+import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
 import SnapshotStore from "../snapshots/SnapshotStore";
+import { useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { useUndoRedoStore } from "../state/stores/UndoRedoStore";
 import { userManagerStore } from "../state/stores/UserStore";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
-import { User } from "../users/User";
-import useAsyncHookLinker, { AsyncHook, LibraryAsyncHook } from "./useAsyncHookLinker";
-import { useSnapshotStore } from "../snapshots/useSnapshotStore";
-import { snapshotConfig } from "../snapshots/SnapshotConfig";
 import { Subscriber } from "../users/Subscriber";
-import { SubscriptionPayload } from "../actions/SubscriptionActions";
-import {
-  CustomSnapshotData,
-  Snapshot,
-} from "../snapshots/LocalStorageSnapshotStore";
+import { User } from "../users/User";
+import asyncFunction from "../utils/asyncFunction";
+import useAsyncHookLinker, { LibraryAsyncHook } from "./useAsyncHookLinker";
 
 const { notify } = useNotification();
 // Define the async hook configuration
@@ -50,33 +50,30 @@ const asyncHook: LibraryAsyncHook = {
     }
   },
   isActive: false,
-  initialStartIdleTimeout: () => {}, // Add initialStartIdleTimeout method
-  resetIdleTimeout: async () => {}, // Add resetIdleTimeout method
-  startAnimation: () => {}, // Add startAnimation method
-  stopAnimation: () => {}, // Add stopAnimation method
-  animateIn: () => {}, // Add animateIn method
-  toggleActivation: () => {}, // Add toggleActivation method
-  cleanup: undefined,
-  progress: null,
-  name: "",
-  duration: undefined,
 };
 
-const useSnapshotManager = async <T extends Data>() => {
+const useSnapshotManager = async <T extends BaseData>() => {
+  // Example function using snapshotStore
+  // Declare and initialize snapshotStore
   const addToSnapshotList = async (
-    snapshot: SnapshotStore<BaseData>,
+    snapshot: SnapshotStore<any>,
     subscribers: Subscriber<BaseData>[]
-  ) => {
-    const snapshotStore = await snapshot; // Assuming snapshotStore is awaited here
-    snapshotStore.addSnapshot(snapshot, subscribers);
-  };
+    ) => {
+    await snapshotStore.addSnapshot(snapshot, subscribers);
+    };
+  const snapshotStorePromise: Promise<SnapshotStore<any>> = useSnapshotStore(addToSnapshotList);
+  const snapshotStore = await snapshotStorePromise;
+
+  // Example custom hooks
+  const todoManagerStore = useTodoManagerStore();
+  const taskManagerStore = useTaskManagerStore();
+  const userManagedStore = userManagerStore();
+  const undoRedoStore = useUndoRedoStore();
+
+
   const snapshotId = useSnapshotStore(addToSnapshotList);
-  const delegate = (await snapshotStore).getDelegate()
-  const snapshotStore = useSnapshotStore(addToSnapshotList);
-  const todoManagerStore = useTodoManagerStore(); // Example custom hook
-  const taskManagerStore = useTaskManagerStore(); // Example custom hook
-  const userManagedStore = userManagerStore(); // Example custom hook
-  const undoRedoStore = useUndoRedoStore(); // Example custom hook
+  // Example usage of delegate
+  const delegate = snapshotStore.getDelegate();
 
   const initSnapshot = async (
     snapshotStore: SnapshotStore<T>,
@@ -171,10 +168,11 @@ const useSnapshotManager = async <T extends Data>() => {
       );
     } catch (error: any) {
       // Notify failure
-      (await snapshotStore).createSnapshotFailure({
-        message: "error creating snapshot: ",
-        name: "createSnapshotManagerFailure",
-      });
+      const errorMessage = "error creating snapshot: " + (error instanceof Error ? error.message : String(error));
+      const snapshot = { /* Define a default snapshot object or obtain it from the context */ };
+  
+      (await snapshotStore).createSnapshotFailure(snapshot, new Error(errorMessage));
+  
       // Using a custom error message
       notify(
         "snapshotCreationSuccess",
@@ -217,24 +215,60 @@ const useSnapshotManager = async <T extends Data>() => {
       );
     } catch (error: any) {
       // Notify failure
-      (await snapshotStore).setSnapshotSuccess.setSnapshotFailure({
-        error: "error setting snapshot: " + error,
-      });
+      const errorMessage = "Error setting snapshot: " + (error instanceof Error ? error.message : String(error));
+      (await snapshotStore).setSnapshotFailure(new Error(errorMessage));
+      
       // Using a custom error message
       notify(
-        "snapshotSetSuccess",
+        "snapshotSetFailure",
         "Snapshot set was unsuccessful",
         NOTIFICATION_MESSAGES.Generic.ERROR,
         new Date(),
         "Error" as NotificationType
       );
     }
-  };
-
-
-  const handleSnapshot = async (snapshot: Snapshot<any>) => {
-    
   }
+  
+  const handleSnapshot: SnapshotStoreConfig<BaseData, any>["handleSnapshot"] = (
+    snapshot: Snapshot<BaseData> | null,
+    snapshotId: string
+  ) => {
+    const processSnapshot = async () => {
+      if (snapshot) {
+        console.log(`Handling snapshot with ID ${snapshotId}`);
+  
+        // Ensure snapshot.state is not null or undefined
+        const state = snapshot.state || [];
+        // Update state or perform operations based on the snapshot
+        if (Array.isArray(snapshot.state)) {
+          const updatedState = snapshot.state.map(item => ({
+            ...item,
+            processed: true, // Example: Update each item's processed flag
+          }));
+  
+          try {
+            // Example: Perform async operation (asyncFunction)
+            await asyncFunction();
+            console.log("Async operation completed");
+          } catch (error) {
+            console.error("Error in async operation:", error);
+            // Handle error as needed
+          }
+        } else {
+          console.warn(`Snapshot with ID ${snapshotId} is null`);
+        }
+      };
+  
+      // Call the async processing function but do not return its promise
+      processSnapshot().catch(error => {
+        console.error("Error in processSnapshot:", error);
+      });
+  
+      // Return void
+      return null;
+    };
+  }
+  
 
     const takeSnapshot = async (
       snapshotData: Omit<Todo, "id">,
@@ -253,7 +287,7 @@ const useSnapshotManager = async <T extends Data>() => {
 
         if (response.ok) {
           const createdSnapshot = await response.json();
-          (await snapshotStore).takeSnapshotSuccess(createdSnapshot, []);
+          (await snapshotStore).takeSnapshotSuccess(createdSnapshot);
         } else {
           console.error("Failed to take snapshot:", response.statusText);
         }
@@ -277,7 +311,7 @@ const useSnapshotManager = async <T extends Data>() => {
   
   const getSnapshot = async (
     id: string,
-    snapshotStore: SnapshotStore<Snapshot<Data>>
+    snapshotStore: SnapshotStore<BaseData>
   ) => {
     try {
       const response = await fetch(`/api/snapshots/${id}`);
@@ -313,9 +347,8 @@ const useSnapshotManager = async <T extends Data>() => {
       if (response.ok) {
         // Adjust the response handling based on your project
         const updatedSnapshot: Todo[] = await response.json();
-        (await snapshotStore).updateSnapshotSuccess({
-          snapshot: updatedSnapshot,
-        });
+        (await snapshotStore).updateSnapshotSuccess(); // Call without arguments
+
         // Notify success
         notify(
           "updateSnapshotSuccess",
@@ -368,7 +401,7 @@ const useSnapshotManager = async <T extends Data>() => {
   };
 
   const removeSnapshot = async (
-    snapshotToRemove: SnapshotStore<Snapshot<T>>
+    snapshotToRemove: SnapshotStore<BaseData>
   ) => {
     try {
       const response = await fetch(`/api/snapshots/${snapshotToRemove.id}`, {
@@ -414,15 +447,15 @@ const useSnapshotManager = async <T extends Data>() => {
     }
   };
 
-  const takeSnapshotSuccess = async (snapshot: Todo) => {
-    (await snapshotStore).takeSnapshotSuccess({ snapshot });
+  const takeSnapshotSuccess = async (snapshot: SnapshotStore<BaseData>) => {
+    (await snapshotStore).takeSnapshotSuccess(snapshot);
   };
 
   const takeSnapshotsSuccess = async (snapshots: Todo[]) => {
     (await snapshotStore).takeSnapshotsSuccess({ snapshots });
   };
 
-  const getSnapshots = async (snapshots: SnapshotStore<Snapshot<Data>>) => {
+  const getSnapshots = async (snapshots: SnapshotStore<BaseData>) => {
     try {
       const response = await fetch("/api/snapshots");
       const snapshots = await response.json();
@@ -458,12 +491,12 @@ const useSnapshotManager = async <T extends Data>() => {
     }
   };
 
+  
   const updateSnapshot = async (
     updatedSnapshotId: string,
     updatedSnapshot: Omit<Todo, "id">
-  ) => {
+  ): Promise<{ snapshot: Snapshot<Data> }> => {
     try {
-      // Update snapshot logic
       const response = await fetch(`/api/snapshots/${updatedSnapshotId}`, {
         method: "PUT",
         headers: {
@@ -471,11 +504,13 @@ const useSnapshotManager = async <T extends Data>() => {
         },
         body: JSON.stringify(updatedSnapshot),
       });
-
+  
       if (response.ok) {
         const updated = await response.json();
-        (await snapshotStore).updateSnapshotsSuccess({ snapshot: updated });
-        // Notify success
+        (await snapshotStore).updateSnapshotsSuccess((subscribers, snapshots) => {
+          // Handle the subscribers and snapshots as needed
+          return { subscribers: [], snapshots: updated }; // Adjust accordingly
+        });
         notify(
           "updatedSnapshot",
           "Snapshot updated successfully",
@@ -483,9 +518,9 @@ const useSnapshotManager = async <T extends Data>() => {
           new Date(),
           NotificationTypeEnum.OperationSuccess
         );
+        return { snapshot: updated }; // Return the updated snapshot
       } else {
         console.error("Failed to update snapshot:", response.statusText);
-        // Notify failure
         notify(
           "updateSnapshotFailure",
           "Failed to update snapshot",
@@ -493,6 +528,7 @@ const useSnapshotManager = async <T extends Data>() => {
           new Date(),
           "Error" as NotificationType
         );
+        throw new Error("Failed to update snapshot");
       }
     } catch (error) {
       console.error("Error updating snapshot:", error);
@@ -503,7 +539,6 @@ const useSnapshotManager = async <T extends Data>() => {
       } else {
         console.error("An unknown error occurred:", error);
       }
-      // Notify failure
       notify(
         "updateSnapshotFailure",
         "Error updating snapshot",
@@ -511,97 +546,97 @@ const useSnapshotManager = async <T extends Data>() => {
         new Date(),
         "Error" as NotificationType
       );
+      throw error; // Propagate the error
     }
   };
+  
+  
+const updateSnapshots = async (updatedSnapshots: Subscriber<BaseData>[]) => {
+  try {
+    // Adjust the API endpoint based on your project
+    const response = await fetch("/api/snapshots/batch", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedSnapshots),
+    });
 
-  const updateSnapshots = async (updatedSnapshots: Todo[]) => {
-    try {
-      // Adjust the API endpoint based on your project
-      const response = await fetch("/api/snapshots/batch", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedSnapshots),
-      });
-
-      if (response.ok) {
-        const updated = await response.json();
-        (await snapshotStore).batchUpdateSnapshotsSuccess({
-          snapshots: updated,
-        });
-        // Notify success
-        notify(
-          "updateSnapshotsSuccess",
-          "Snapshots updated successfully",
-          NOTIFICATION_MESSAGES.Generic.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OperationSuccess
-        );
-      } else {
-        console.error("Failed to update snapshots:", response.statusText);
-        // Notify failure
-        notify(
-          "updateSnapshoFailure",
-          "Failed to update snapshots",
-          NOTIFICATION_MESSAGES.Generic.ERROR,
-          new Date(),
-          "Error" as NotificationType
-        );
-      }
-    } catch (error) {
-      console.error("Error updating snapshots:", error);
-      if (typeof error === "object" && error !== null && "message" in error) {
-        (await snapshotStore).batchUpdateSnapshotsFailure({
-          error: (error as Error).message,
-        });
-      } else {
-        console.error("An unknown error occurred:", error);
-      }
-    }
-  };
-
-  const fetchSnapshots = async () => {
-    try {
-      // Adjust the API endpoint based on your project
-      const response = await fetch("/api/snapshots");
-      const snapshotsData = await response.json();
-      (await snapshotStore).batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+    if (response.ok) {
+      const updated = await response.json();
+      (await snapshotStore).batchUpdateSnapshotsSuccess(updatedSnapshots, updated);
       // Notify success
       notify(
-        "fetchSnapshotsSuccess",
-        "Snapshots fetched successfully",
+        "updateSnapshotsSuccess",
+        "Snapshots updated successfully",
         NOTIFICATION_MESSAGES.Generic.DEFAULT,
         new Date(),
         NotificationTypeEnum.OperationSuccess
       );
-    } catch (error) {
-      if (typeof error === "object" && error !== null && "message" in error) {
-        console.error("Error fetching snapshots:", error);
-        (await snapshotStore).batchFetchSnapshotsFailure({
-          error: (error as Error).message,
-        });
-      } else {
-        console.error("Error fetching snapshots:", error);
-        (await snapshotStore).batchFetchSnapshotsFailure({ error: String(error) });
-      }
+    } else {
+      console.error("Failed to update snapshots:", response.statusText);
       // Notify failure
       notify(
-        "fetchSnapshotsFailure",
-        "Failed to fetch snapshots",
+        "updateSnapshoFailure",
+        "Failed to update snapshots",
         NOTIFICATION_MESSAGES.Generic.ERROR,
         new Date(),
         "Error" as NotificationType
       );
     }
-  };
+  } catch (error) {
+    console.error("Error updating snapshots:", error);
+    if (typeof error === "object" && error !== null && "message" in error) {
+      snapshotStore.batchFetchSnapshotsFailure({ error: new Error(String(error)) })
+    } else {
+      console.error("An unknown error occurred:", error);
+    }
+  }
+};
+
+
+const fetchSnapshots = async () => {
+  try {
+    const response = await fetch("/api/snapshots");
+    const snapshotsData = await response.json();
+    snapshotStore.batchFetchSnapshotsSuccess([], snapshotsData);
+    // Notify success
+    notify(
+      "fetchSnapshotsSuccess",
+      "Snapshots fetched successfully",
+      NOTIFICATION_MESSAGES.Generic.DEFAULT,
+      new Date(),
+      NotificationTypeEnum.OperationSuccess
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      // If error is an instance of Error, pass it directly
+      console.error("Error fetching snapshots:", error);
+      await snapshotStore.batchFetchSnapshotsFailure({ error });
+    } else {
+      // Otherwise, convert the error to a string
+      console.error("Error fetching snapshots:", error);
+       snapshotStore.batchFetchSnapshotsFailure({ error: new Error(String(error)) });
+    }
+    // Notify failure
+    notify(
+      "fetchSnapshotsFailure",
+      "Failed to fetch snapshots",
+      NOTIFICATION_MESSAGES.Generic.ERROR,
+      new Date(),
+      "Error" as NotificationType
+    );
+  }
+};
+
+
 
   const batchFetchSnapshotsFailure = async (payload: { error: string }) => {
     try {
       // Adjust the API endpoint based on your project
       const response = await fetch("/api/snapshots");
       const snapshotsData = await response.json();
-      (await snapshotStore).batchFetchSnapshotsSuccess({ snapshots: snapshotsData });
+       snapshotStore.batchFetchSnapshotsSuccess([], snapshotsData);
       // Notify success
       notify(
         "batchSnapshotSuccess",
@@ -613,12 +648,10 @@ const useSnapshotManager = async <T extends Data>() => {
     } catch (error) {
       if (typeof error === "object" && error !== null && "message" in error) {
         console.error("Error fetching snapshots:", error);
-        (await snapshotStore).batchFetchSnapshotsFailure({
-          error: (error as Error).message,
-        });
+        snapshotStore.batchFetchSnapshotsFailure({ error: new Error(String(error)) });
       } else {
         console.error("Error fetching snapshots:", error);
-        (await snapshotStore).batchFetchSnapshotsFailure({ error: String(error) });
+        snapshotStore.batchFetchSnapshotsFailure({ error: new Error(String(error)) });
       }
       // Notify failure
       notify(
@@ -637,9 +670,9 @@ const useSnapshotManager = async <T extends Data>() => {
   const subscribeToSnapshot = async (
     snapshotId: string,
     callback: (snapshot: Snapshot<T>) => void,
-    snapshot: Snapshot<Todo>
+    snapshot: Snapshot<BaseData>
   ) => {
-    (await snapshotStore).subscribeToSnapshot(snapshotId, callback, snapshot);
+   snapshotStore.subscribeToSnapshot(snapshotId, callback, snapshot);
   };
 
   // Add more methods as needed

@@ -50,7 +50,7 @@ import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
     idleTimeoutId: NodeJS.Timeout | null;
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }) => Promise<() => void>;
-  phaseType?: ProjectPhaseTypeEnum;
+  phaseType?: string | ProjectPhaseTypeEnum;
   customProp1?: string;
   customProp2?: number;
 }
@@ -87,6 +87,7 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
       condition: config.condition,
       // Define custom phase hooks here
       onStart: () => {
+        //todo
         // Logic to execute when the test phase starts
         console.log("Test phase started");
       },

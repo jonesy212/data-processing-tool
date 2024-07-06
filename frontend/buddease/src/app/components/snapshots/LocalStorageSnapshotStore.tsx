@@ -34,7 +34,6 @@ import {
   snapshotConfig,
 } from "./SnapshotConfig";
 import SnapshotStore, { defaultCategory } from "./SnapshotStore";
-import { subscribeToSnapshots } from "./snapshotHandlers";
 
 interface Payload {
   error: string;
@@ -60,6 +59,8 @@ interface Payload {
     isAutoDismissOnAction: boolean;
     isAutoDismissOnTimeout: boolean;
     isAutoDismissOnTap: boolean;
+    optionalData: any;
+    data: any;
   };
 }
 
@@ -84,7 +85,7 @@ interface CustomSnapshotData extends Data {
 
 const SNAPSHOT_URL = endpoints.snapshots;
 
-type Snapshots<T> = Array<Snapshot<Data>>;
+type Snapshots<T> = Array<SnapshotStore<BaseData>>;
 
 const SNAPSHOT_STORE_CONFIG = snapshotConfig;
 
@@ -108,7 +109,11 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
   store?: SnapshotStore<T>;
   state?: Snapshot<T> | null; // Ensure state matches Snapshot<T> or null/undefined
   dataStore?: DataStore<BaseData>;
-  initialState?:Map<string, T> | null,
+  initialState?:
+  | SnapshotStore<BaseData>
+  | Snapshot<BaseData>
+  | null
+  | undefined;
   setSnapshotData?: (data: Data) => void;
   snapshotConfig?: SnapshotStoreConfig<BaseData, BaseData>[];
   subscribeToSnapshots?: (
@@ -137,7 +142,7 @@ interface SnapshotData<T extends BaseData> {
   auditTrail?: AuditRecord[];
   subscribers?: Subscriber<BaseData>[];
   delegate?: SnapshotStoreConfig<T, T>[];
-  value?: number;
+  value?: number | string | undefined;
   todoSnapshotId?: string;
   dataStoreMethods?: DataStore<T> | null;
   createdAt?: Date;
@@ -150,6 +155,9 @@ interface Snapshot<T extends BaseData>
     SnapshotData<T> {
   // Additional specific properties
 }// Example implementation of snapshotType function
+
+
+
 const snapshotType = <T extends BaseData>(
   snapshot: Snapshot<T>): Snapshot<T> => {
   const newSnapshot = { ...snapshot }; // Shallow copy of the snapshot
@@ -188,6 +196,7 @@ const snapshotType = <T extends BaseData>(
       '', // Ensure type is appropriately handled
       [], // Ensure snapshotConfig is appropriately handled
       () => {}, // Ensure subscribeToSnapshots is appropriately handled
+      () => {}, // Ensure subscribeToSnapshots is appropriately handled
       [], // Ensure delegate is appropriately handled
       {} as DataStore<T> // Ensure dataStoreMethods is appropriately handled
     ),
@@ -201,7 +210,6 @@ const snapshotType = <T extends BaseData>(
 
 class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
   private storage: Storage;
-  private dataStoreMethods: DataStore<T>;
 
   constructor(
     storage: Storage,
@@ -230,116 +238,28 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       brandMessage: "",
     },
     dataStoreMethods?: Partial<DataStore<T>>,
-    initialState: Map<string, T> | null = null,
+    initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null = null,
   ) {
     super(
-      initialState ?? new Map<string, T>(),
+      {},
+      initialState || null,
       category,
       new Date(),
       snapshotType.toString(),
       [], // Ensure snapshotConfig is appropriately handled
+      () => {}, // Ensure subscribeToSnapshot is appropriately handled
       () => {}, // Ensure subscribeToSnapshots is appropriately handled
       [], // Ensure delegate is appropriately handled
       dataStoreMethods as DataStore<T>, // Cast to DataStore<T> or provide defaults
     );
     this.storage = storage;
-    this.dataStoreMethods = {
-      data: undefined,
-      addData: (data: T) => { },
-      updateData: (id: number, newData: T) => { },
-      removeData: (id: number) => { },
-      updateDataTitle: (id: number, title: string) => { },
-      updateDataDescription: (id: number, description: string) => { },
-      addDataStatus: (
-        id: number,
-        status: "pending" | "inProgress" | "completed"
-      ) => { },
-      // removeDataStatus: (id: number) => { },
-      updateDataStatus: (
-        id: number,
-        status: "pending" | "inProgress" | "completed"
-      ) => { },
-      addDataSuccess: (payload: { data: T[] }) => { },
-      getDataVersions: async (id: number) => {
-        // Implement logic to fetch data versions from a data source
-        return undefined;
-      },
-      updateDataVersions: (id: number, versions: T[]) => Promise.resolve(),
-      getBackendVersion: () => Promise.resolve(undefined),
-      getFrontendVersion: () => Promise.resolve(undefined),
-      fetchData: (id: number) => Promise.resolve([]),
-      getItem: (key: string | SnapshotData<T>): Promise<T | undefined> => {
-        return new Promise((resolve, reject) => {
-          if (typeof key === 'string') {
-            const item = this.storage.getItem(key);
-            if (item) {
-              resolve(JSON.parse(item));
-            } else {
-              resolve(undefined);
-            }
-          } else {
-            const item = this.storage.getItem(String(key._id));
-            if (item) {
-              resolve(JSON.parse(item));
-            } else {
-              resolve(undefined);
-            }
-          }
-        });
-      },
-      setItem: (id: string, item: T): Promise<void> => {
-        return new Promise((resolve, reject) => {
-          this.storage.setItem(id, JSON.stringify(item));
-          resolve();
-        });
-      },
-      removeItem: async (key: string): Promise<void> => {
-        await this.removeItem(key);
-      },
-      getAllKeys: async (): Promise<string[]> => {
-        const keys: string[] = [];
-        for (let i = 0; i < this.storage.length; i++) {
-          const key = this.storage.key(i);
-          if (key) {
-            keys.push(key);
-          }
-        }
-        return keys;
-      },
-      getAllItems: async (): Promise<T[]> => {
-        try {
-          const keys = await this.getAllKeys();
-          const items: (T | undefined)[] = await Promise.all(
-            keys.map(async (key) => {
-              const item = await this.getItem(key);
-              if (item) {
-                const snapshot = snapshotType(item as Snapshot<any>);
-                return snapshot as T; // Cast to T directly here
-              }
-              return undefined;
-            })
-          );
-
-          const filteredItems = items.filter((item): item is T => item !== undefined);
-
-          return filteredItems;
-        } catch (error) {
-          throw error;
-        }
-      },
-      ...dataStoreMethods, // Include additional methods provided
-    };
+    
   }
 
-  async getItem(key: string | SnapshotData<T>): Promise<T | undefined> {
-    if (typeof key === 'string') {
-      const item = this.storage.getItem(key);
-      return item ? JSON.parse(item) : undefined;
-    } else {
-      const itemKey = String(key._id);
-      const item = this.storage.getItem(itemKey);
-      return item ? JSON.parse(item) : undefined;
-    }
+
+  async getItem(key: string): Promise<T | undefined> {
+    const item = this.storage.getItem(key);
+    return item ? JSON.parse(item) as T : undefined;
   }
 
   setItem(key: string, value: T): Promise<void> {
@@ -402,7 +322,7 @@ const newTask: Task = {
   source: "user",
   tags: [],
   dependencies: [],
-  then: function (onFulfill: (newData: Snapshot<Data>) => void): void {
+  then: function (onFulfill: (newData: Snapshot<Data>) => void): Snapshot<Data> {
     const store = new LocalStorageSnapshotStore<Data>(window.localStorage);
     setTimeout(() => {
       onFulfill({
@@ -411,6 +331,11 @@ const newTask: Task = {
         state: null
       });
     }, 1000);
+    return {
+      data: {} as Map<string, Data>,
+      store: store,
+      state: null
+    };
   },
 };
 
@@ -451,7 +376,7 @@ const subscriber = new Subscriber(
   logActivity,
   triggerIncentives,
   undefined,
-  () => {}
+  {} as Partial<SnapshotStore<BaseData>>
 );
 subscriber.id = "new-id"; // Set the private property using the setter method
 
@@ -502,10 +427,10 @@ const snapshots: Snapshots<Data> = [
       tags: ["tag1", "tag2"],
     },
     ownerId: "Owner123",
-    store: undefined,
+    store: null,
     state: null,
     initialState: null,
-    setSnapshotData: (data: Data) => {
+    setSnapshotData: (snapshotData: Partial<SnapshotStoreConfig<BaseData, T>>) => {
       /* set data */
     },
     // Additional metadata

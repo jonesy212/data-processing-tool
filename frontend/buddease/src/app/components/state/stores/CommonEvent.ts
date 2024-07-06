@@ -6,7 +6,7 @@ import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
 import { Tag } from '../../models/tracker/Tag';
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { Snapshot } from "../../snapshots/SnapshotStore";
+import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 import { VideoData } from "../../video/Video";
 
 interface CommonEvent extends Data {
@@ -33,7 +33,7 @@ interface CommonEvent extends Data {
   collaborationTool?: string;
   metadata?: StructuredMetadata;
   // Implement the `then` function using the reusable function
-  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
+  then?: (callback: (newData: Snapshot<Data>) => void) =>  Snapshot<Data> | undefined;
 }
 
 // Define the function to implement the `then` functionality
@@ -41,20 +41,7 @@ export function implementThen(callback: (newData: Snapshot<BaseData>) => void): 
     return {
       timestamp: new Date(),
       category: "",
-      data: {
-        _id: "",
-        id: "",
-        title: "",
-        isActive: true,
-        status: StatusType.Scheduled,
-        isCompleted: false,
-        tags: [],
-        phase: null,
-        then: implementThen, 
-        analysisType: {} as AnalysisTypeEnum.CUSTOM,
-        analysisResults: [],
-        videoData: {} as VideoData,
-        },
+      data: {} as Map<string, Data>,
     };
   }
   
@@ -74,7 +61,7 @@ export function implementThen(callback: (newData: Snapshot<BaseData>) => void): 
     collaborationTool?: string;
     metadata?: StructuredMetadata;
     // Implement the `then` function using the reusable function
-    then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
+    then?: (callback: (newData: Snapshot<Data>) => void) =>  Snapshot<Data> | undefined;
   }
   
   // Define the `commonEvent` object using the `CommonEvent` interface
@@ -107,7 +94,9 @@ export function implementThen(callback: (newData: Snapshot<BaseData>) => void): 
         copyright: '',
         license: '',
         links: [],
-        tags: []
+        tags: [],
+        author: '',
+        timestamp: undefined
       },
     },
   

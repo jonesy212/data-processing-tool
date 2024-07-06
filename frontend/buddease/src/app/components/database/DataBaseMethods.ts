@@ -1,8 +1,8 @@
 // DataBaseMethods.ts
 
-import express = require('express');
-import { DatabasePool } from './databasePool';
+import express from 'express';
 import authService from '../auth/AuthService';
+import { DatabasePool } from './DatabasePool';
 
 const app = express();
 const port = 3000;
@@ -39,7 +39,7 @@ async function fetchTextContentFromDatabase(documentId: number): Promise<string>
     } else {
       throw new Error('Document not found');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching text content:', error.message);
     throw error;
   } finally {
@@ -65,3 +65,6 @@ app.get('/document/:id', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+export {fetchTextContentFromDatabase}

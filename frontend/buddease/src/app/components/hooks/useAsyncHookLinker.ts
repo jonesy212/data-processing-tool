@@ -1,11 +1,11 @@
 import { HookActions } from './../actions/HookActions';
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { UIActions } from '../actions/UIActions';
+import { Progress } from '../models/tracker/ProgressBar';
 import { RootState } from '../state/redux/slices/RootSlice';
 import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
-import { Progress } from '../models/tracker/ProgressBar';
-import { useDispatch } from 'react-redux';
 export interface AsyncHook<T> extends PhaseHookConfig {
   enable?: () => void; // Change enable method to not be optional
   disable?: () => void; // Change disable method to not be optional
@@ -32,6 +32,7 @@ export interface AsyncHook<T> extends PhaseHookConfig {
 
 // Library's AsyncHook type
 export interface LibraryAsyncHook {
+  isActive?: boolean;
   enable: () => void;
   disable: () => void;
   condition: (idleTimeoutDuration: number) => Promise<boolean>

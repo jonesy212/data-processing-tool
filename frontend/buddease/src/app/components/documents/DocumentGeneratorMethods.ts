@@ -55,15 +55,15 @@ import { ModifiedDate, YourPDFType, ParsedData } from "./DocType";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 import { parseDocx } from "./parseDocx";
 import { PDFData, pdfParser, extractPDFContent } from "./parsePDF";
-
 import {
   Drawing,
   generateDrawingJSON,
 } from "../libraries/drawing/generateDrawingJSON";
+import { fetchTextContentFromDatabase } from "../database/DataBaseMethods";
 
 var xl = require("excel4node");
 
-function loadTextDocumentContent(document: DocumentData): string {
+async function loadTextDocumentContent(document: DocumentData): Promise<string> {
   let textContent = "";
 
   // Check if content exists in local storage
@@ -73,7 +73,7 @@ function loadTextDocumentContent(document: DocumentData): string {
   } else {
     // Example: If content is not directly stored but needs fetching
     if (document.source === "database") {
-      textContent = fetchTextContentFromDatabase(Number(document.id));
+      textContent = await fetchTextContentFromDatabase(Number(document.id));
       console.log("Content loaded from database:", textContent);
     } else if (document.source === "cloud") {
       textContent = downloadTextContentFromCloud(String(document.url));
@@ -127,7 +127,8 @@ async function loadDiagramDocumentContent(
         break;
       case "xls":
       case "xlsx":
-        parsedContent = await parseExcel(document.content);
+
+        parsedContent = await parseExcel(document.content.toString());
         break;
       default:
         throw new Error(`Unsupported diagram format: ${format}`);

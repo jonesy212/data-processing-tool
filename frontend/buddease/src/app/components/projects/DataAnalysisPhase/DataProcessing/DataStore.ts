@@ -7,6 +7,7 @@ import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import { useDispatch } from "react-redux";
 import * as apiData from "../../../../api//ApiData";
 import { DataActions } from "../DataActions";
+import transformDataToSnapshot from '@/app/components/snapshots/transformDataToSnapshot';
 
 export interface DataStore<T extends BaseData> {
   data?: Map<string, T> | undefined;
@@ -100,7 +101,7 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
   };
 
   const setItem = (id: string, item: T): Promise<void> => {
-  return new Promise((resolve) => {
+    return new Promise((resolve) => {
       data.set(id, item);
       resolve();
     });
@@ -112,7 +113,6 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
       resolve(items);
     });
   };
-
 
   const removeItem = (key: string): Promise<void> => {
     return new Promise((resolve) => {
@@ -126,7 +126,7 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     dispatch(DataActions.updateDataTitle({ id, title }));
   };
 
-  const updateDataDescription = (id: number,description: string) => {
+  const updateDataDescription = (id: number, description: string) => {
     // Dispatch the updateDataDescription action
     dispatch(
       DataActions.updateDataDescription({
@@ -138,7 +138,8 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
 
   const updateDataStatus = (
     id: number,
-    status: "pending" | "inProgress" | "completed") => {
+    status: "pending" | "inProgress" | "completed"
+  ) => {
     // Dispatch the updateDataStatus action
     dispatch(
       DataActions.updateDataStatus({
@@ -169,13 +170,9 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     const { data: newData } = payload;
     newData.forEach((item: T) => {
       if ('id' in item) {
-        const snapshotItem: Snapshot<T> = {
-          id: item.id,
-          data: new Map<string, T>().set(item.id!.toString(), item), // Correctly assign data as Map<string, T>
-          initialState: item.initialState || null,
-          timestamp: new Date(),
-        };
-  
+        const snapshotItem: Snapshot<T> = transformDataToSnapshot(item);
+
+
         if (snapshotItem.data) {
           snapshotItem.data.set(item.id!.toString(), item);
         }
@@ -183,27 +180,42 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     });
   };
 
-    const addDataStatus = (id: number, status: "pending" | "inProgress" | "completed"): void => {
-  // Implement your logic here
-  // Example: Update data status based on id and status
-  const newData = data.get(id.toString());
-  if (newData) {
-    const snapshotItem: Snapshot<T> = {
-      id: id.toString(),
-      data: new Map<string, T>().set(id.toString(), newData),
-      initialState: newData.initialState || null,
-      timestamp: new Date(),
-    };
-    // Update or set the data in the map
-    data.set(id.toString(), snapshotItem as T);
-
-    // Dispatch the addDataSuccess action
-    dispatch(DataActions.addDataSuccess({ data: [snapshotItem] }));
-  } else {
-    // Dispatch the addDataFailure action
-    dispatch(DataActions.addDataFailure({ error: "Invalid data" }));
-  }
-};
+  const addDataStatus = (id: number, status: "pending" | "inProgress" | "completed"): void => {
+    // Implement your logic here
+    // Example: Update data status based on id and status
+    const newData = data.get(id.toString());
+    
+    if (newData) {
+      let initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null | undefined = null;
+  
+      if (newData.initialState instanceof SnapshotStore) {
+        initialState = newData.initialState;
+      } else if (newData.initialState === null || newData.initialState === undefined) {
+        initialState = null;
+      } else {
+        // Transform newData.initialState to Map<string, T> if necessary
+        // Example:
+        initialState = convertMapToSnapshotStore(newData.initialState); 
+      }
+  
+      const snapshotItem: Snapshot<T> = {
+        id: id.toString(),
+        data: new Map<string, T>().set(id.toString(), newData),
+        initialState: initialState,
+        timestamp: new Date(),
+      };
+  
+      // Update or set the data in the map
+      data.set(id.toString(), snapshotItem as T);
+  
+      // Dispatch the addDataSuccess action
+      dispatch(DataActions.addDataSuccess({ data: [snapshotItem] }));
+    } else {
+      // Dispatch the addDataFailure action
+      dispatch(DataActions.addDataFailure({ error: "Invalid data" }));
+    }
+  };
+  
 
 
   const updateDataVersions = (id: number, versions: T[]) => {
@@ -239,9 +251,6 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     }
   };
 
-
-
-
   const getAllKeys = async (): Promise<string[]> => {
     try {
       const response = await apiData.getAllKeys();
@@ -251,8 +260,9 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
       throw error;
     }
   };
+
+  // Return the composed object with all methods and properties
   const { versionNumber } = getCurrentAppInfo();
-  // useVersionedData(data, fetchData);
   return {
     data,
     fetchData,
@@ -279,4 +289,5 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     getAllKeys
   };
 };
+
 export { useDataStore };

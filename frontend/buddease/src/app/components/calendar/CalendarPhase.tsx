@@ -52,12 +52,13 @@ export const handleTransitionToCalendarPhase = async () => {
 
 
     const initialState: Phase = {
+      id: "",
       name: "",
       startDate: new Date(),
       endDate: new Date(),
       subPhases: [],
       component: {} as React.FC,
-      hooks: {} as CustomPhaseHooks[],
+      hooks: {} as CustomPhaseHooks,
       lessons: [],
       duration: 0
     };
@@ -75,6 +76,7 @@ export const handleTransitionToCalendarPhase = async () => {
 // Define the fetchData function using Axios
 const fetchDataUsingAxios = async () => {
   try {
+    // todo
     // Replace 'http://your-backend-api-base-url' with your actual backend API base URL
     const API_BASE_URL = 'http://your-backend-api-base-url';
 
@@ -94,6 +96,7 @@ const fetchDataUsingAxios = async () => {
 
 // Define the calendar phase configuration
 export const calendarPhase: Phase = {
+  id: "calendar",
   name: "Calendar Phase",
   startDate: new Date(),
   endDate: new Date(),
@@ -104,6 +107,14 @@ export const calendarPhase: Phase = {
   hooks: createPhaseHook(idleTimeoutDuration, {
     canTransitionTo: () => true,
     handleTransitionTo: handleTransitionToCalendarPhase,
+    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void | undefined) => {
+      // logic to start the idle timeout
+      const timeoutId = setTimeout(() => {
+        console.log("Idle timeout triggered");
+        onTimeout && onTimeout();
+      }, timeoutDuration);
+      console.log("Starting idle timeout");
+    },
     name: "Calendar Phase",
     duration: "0",
     condition: async function (): Promise<boolean> {
@@ -135,10 +146,11 @@ export const calendarPhase: Phase = {
       });
 
       
+      
       // Return the promise for the cleanup function
       return asyncTask;
     },
-  }) as unknown as CustomPhaseHooks[],
+  }) as unknown as CustomPhaseHooks,
 };
 
 

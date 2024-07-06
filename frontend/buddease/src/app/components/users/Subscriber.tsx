@@ -82,7 +82,7 @@ class Subscriber<T extends BaseData> {
   private logActivity: Function | undefined;
   private triggerIncentives: Function | undefined;
   private optionalData: CustomSnapshotData | null;
-  private data: Data | null;
+  private data: Partial<SnapshotStore<BaseData>>;
   private email: string = "";
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
@@ -109,7 +109,7 @@ class Subscriber<T extends BaseData> {
     logActivity: Function,
     triggerIncentives: Function,
     optionalData: CustomSnapshotData | null = null,
-    data: Data | null = null,
+    data: Partial<SnapshotStore<BaseData>>,
     payload: T | null = null
   ) {
     this.id = id
@@ -163,7 +163,7 @@ class Subscriber<T extends BaseData> {
     return this.snapshotIds;
   }
 
-  getData(): Data | null {
+  getData(): Partial<SnapshotStore<BaseData>> | null {
     return this.data;
   }
 
@@ -217,7 +217,7 @@ class Subscriber<T extends BaseData> {
   }
 
   toSnapshotStore(
-    initialState: Snapshot<BaseData> | undefined,
+    initialState: Snapshot<T> | undefined,
     snapshotConfig: SnapshotStoreConfig<BaseData, Data>[],
     delegate: SnapshotStoreDelegate<T>
   ): SnapshotStore<BaseData>[] | undefined {
@@ -304,17 +304,20 @@ class Subscriber<T extends BaseData> {
         // batchTakeSnapshot: batchTakeSnapshot
       };
 
-      return new SnapshotStore<BaseData>(
-        snapshot,
-        category as CategoryProperties,
-        new Date(),
-        type,
-        initialState,
-        snapshotConfig,
-        subscribeToSnapshots,
-        delegateFunction,
-        dataStoreMethods
-      );
+      return [
+        new SnapshotStore<BaseData>(
+          this.data,
+          initialState as Snapshot<BaseData>,
+          category as CategoryProperties,
+          new Date(),
+          'type',
+          snapshotConfig,
+          subscribeToSnapshots,
+          subscribeToSnapshot,
+          delegateFunction,
+          dataStoreMethods
+        ),
+      ];
     }
 
     return undefined;
@@ -455,6 +458,7 @@ class Subscriber<T extends BaseData> {
       updateProjectState,
       logActivity,
       triggerIncentives,
+      optionalData,
       data
     );
   }
@@ -534,12 +538,15 @@ const subscriber = new Subscriber<BaseData>(
   notifyEventSystem,
   updateProjectState,
   logActivity,
-  triggerIncentives
+  triggerIncentives,
+  optionalData,
+  data,
+  payload
 );
 
 const sampleSnapshot: CustomSnapshotData = {
   timestamp: new Date().toISOString(),
-  value: 42,
+  value: "42",
 };
 
 subscriber.receiveSnapshot(sampleSnapshot);

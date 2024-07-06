@@ -7,28 +7,55 @@ import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { TriggerIncentivesParams, triggerIncentives } from "../utils/applicationUtils";
 import { useSnapshotStore } from "../snapshots/useSnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 type Subscription = {
-  unsubscribe: () => void;
+  unsubscribe: (
+    unsubscribeType: string,
+    unsubscribeDate: Date,
+    unsubscribeReason: string,
+    unsubscribeData: any) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
       userId: string;
       snapshotId: string;
     }
   ) => void;
-  tradeExecutions: () => void;
-  marketUpdates: () => void;
+  tradeExecutions: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    }
+
+  ) => void;
+  marketUpdates: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    }
+  ) => void;
   triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
-  communityEngagement: () => void;
+  communityEngagement: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    }
+  ) => void;
   subscriberId?: string;
   subscriptionId?: string;
   subscriberType?: SubscriberTypeEnum;
   subscriptionType?: SubscriptionTypeEnum;
-  getPlanName?: () => SubscriberTypeEnum;
+  getPlanName?: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    }
+  ) => SubscriberTypeEnum;
   portfolioUpdatesLastUpdated: ModifiedDate | null;
   getId?: () => string;
   determineCategory: (data: any) => Snapshot<any>; // Ensure determineCategory returns Snapshot<any>
-  category?: string;
+  category?: string | CategoryProperties | null;
 };
 
 const SubscriptionComponent = (
@@ -39,6 +66,11 @@ const SubscriptionComponent = (
   const [subscriptionData, setSubscriptionData] = useState<Subscription | null>(
     null
   );
+  const [unsubscribeType, setUnsubscribeType] = useState<string>(""); // Initialize with empty string
+  const [unsubscribeDate, setUnsubscribeDate] = useState<Date>(new Date()); // Initialize with current date
+  const [unsubscribeReason, setUnsubscribeReason] = useState<string>(""); // Initialize with empty string
+  const [unsubscribeData, setUnsubscribeData] = useState<any>({}); // Initialize with empty object
+
   const data = useRealtimeData(initialData, updateCallback);
 
   useEffect(() => {
@@ -63,7 +95,7 @@ const SubscriptionComponent = (
             portfolioUpdatesLastUpdated: {} as ModifiedDate,
             ...snapshot.data
           } : null;
-          setSubscriptionData(subscriptionData)
+          setSubscriptionData(subscriptionData);
         }
       }
     ) as Subscription | undefined;
@@ -72,15 +104,75 @@ const SubscriptionComponent = (
     if (subscriptionUsage) {
       // Cleanup: Unsubscribe when the component unmounts
       return () => {
-        subscriptionUsage.unsubscribe();
+        // Make sure to pass the correct parameters to unsubscribe
+        subscriptionUsage.unsubscribe(
+          unsubscribeType,
+          unsubscribeDate,
+          unsubscribeReason,
+          unsubscribeData
+        );
       };
     }
 
     // If subscriptionUsage is undefined, return a no-op function
     return () => {};
 
-  }, [hookName]); // Depend only on hookName
+  }, [hookName, unsubscribeType, unsubscribeDate, unsubscribeReason, unsubscribeData]); // Depend on relevant variables
 
+  const addToSnapshotList = async (snapshot: SnapshotStore<any>) => {
+    console.log("Snapshot added to snapshot list: ", snapshot);
+    setSubscriptionData(snapshot.data? {
+      unsubscribe: () => {},
+      portfolioUpdates: () => {},
+      tradeExecutions: () => {},
+      marketUpdates: () => {},
+      triggerIncentives: () => {},
+      communityEngagement: () => {},
+      determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory,
+      portfolioUpdatesLastUpdated: {} as ModifiedDate,
+     ...snapshot.data
+    } : null);
+  };
+  const handleUnsubscribe = () => {
+    // Example: Set unsubscribe parameters dynamically
+    setUnsubscribeType("actualType");
+    setUnsubscribeDate(new Date('2024-07-06')); // Replace with actual date
+    setUnsubscribeReason("actualReason");
+    setUnsubscribeData({ key: 'value' }); // Replace with actual data structure
+  };
+
+  
+  // Function to handle subscribe action
+  const handleSubscribe = () => {
+    // Implement subscription logic here
+    // For example:
+    subscriptionService.subscribe(hookName, handleSubscriptionCallback);
+  };
+
+  // Callback function for subscription update
+   // Callback function for subscription update
+   const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
+    // Handle incoming subscription data here
+    // Transform RealtimeDataItem to Subscription or null
+    const transformedData: Subscription | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
+      ? {
+          unsubscribe: () => {},
+          portfolioUpdates: () => {},
+          tradeExecutions: () => {},
+          marketUpdates: () => {},
+          triggerIncentives: () => {},
+          communityEngagement: () => {},
+          determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory,
+          portfolioUpdatesLastUpdated: {} as ModifiedDate,
+          ...data.data
+        }
+      : null;
+
+    // Update state with transformed data
+    setSubscriptionData(transformedData);
+  };
+
+  // Render your component JSX with subscribe/unsubscribe actions
   return (
     <div>
       <h2>Subscription Component</h2>
@@ -88,9 +180,13 @@ const SubscriptionComponent = (
         <div>
           <p>Data Received:</p>
           <pre>{JSON.stringify(subscriptionData, null, 2)}</pre>
+          <button onClick={handleUnsubscribe}>Unsubscribe</button>
         </div>
       ) : (
-        <p>No data received yet.</p>
+        <div>
+          <p>No data received yet.</p>
+          <button onClick={handleSubscribe}>Subscribe</button>
+        </div>
       )}
     </div>
   );

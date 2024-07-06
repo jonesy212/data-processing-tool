@@ -162,7 +162,7 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
           };
   
           // Take the snapshot
-          data.takeSnapshot(snapshot);
+          data.takeSnapshot(snapshot, subscribers);
         }
       });
   

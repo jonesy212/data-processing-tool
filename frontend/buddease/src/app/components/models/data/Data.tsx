@@ -109,7 +109,7 @@ interface BaseData {
   tags?: string[] | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
-  value?: string | undefined;
+  value?: number | string | undefined;
   initialState?:
     | SnapshotStore<BaseData>
     | Snapshot<BaseData>
@@ -157,7 +157,7 @@ interface BaseData {
   // Implement the `then` function using the reusable function
   then?: <T extends Data>(
     callback: (newData: Snapshot<BaseData>) => void
-  ) => void | undefined;
+  ) =>  Snapshot<Data> | undefined;
 }
 
 interface Data extends BaseData {
