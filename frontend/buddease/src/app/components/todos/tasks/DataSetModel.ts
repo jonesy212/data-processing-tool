@@ -4,15 +4,18 @@ import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Team } from "../../models/teams/Team";
 import { Tag } from "../../models/tracker/Tag";
+import { WritableDraft } from "../../state/redux/ReducerGenerator";
+import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
+import { DocumentBase } from "../../state/stores/DocumentStore";
 import { AllTypes } from "../../typings/PropTypes";
 
-interface DatasetModel {
+interface DatasetModel extends DocumentBase {
   id: string | number;
   name: string | undefined;
   description?: string | null;
   filePathOrUrl: string;
   uploadedBy: number; // Assuming this is the user ID
-  uploadedAt: string; // Assuming the date is sent as a string
+  uploadedAt?: string; // Assuming the date is sent as a string
   tagsOrCategories: string; // Comma-separated list or JSON array
   format: string;
   visibility: AllTypes;
@@ -22,17 +25,18 @@ interface DatasetModel {
   // Relationships
   uploadedByTeamId: number | null; // Assuming this is the team ID
   uploadedByTeam: Team | null; // Assuming you have a Team interface
-  all: Team | null;
+  all?: string | null;
   lastModifiedDate: ModifiedDate | undefined;
   lastModifiedBy: string; // Assuming this is the user ID
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath;
   tags?: string[] | Tag[];
-  createdBy?: string;
-  updatedBy?: string;
-  documents?: DocumentData[];
-  createdAt?: string;
+  createdBy: string;
+  updatedBy: string;
+  documents: WritableDraft<DocumentObject>[];
+  createdAt: string | Date | undefined;
+  updatedAt?: string | Date; 
   selectedDocument: DocumentData | null;
   selectedDocuments?: DocumentData[];
   // Optional: Add other relationships as needed
@@ -63,6 +67,10 @@ const dataset: DatasetModel = {
   updatedBy: "",
   selectedDocument: null,
   all: null,
+  documents: [],
+  createdAt: undefined,
+  title: "",
+  content: ""
 };
 
 export { dataset };

@@ -15,7 +15,7 @@ import {
 } from "../../documents/DocumentOptions";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { CommonData } from "../../models/CommonData";
-import { Data } from "../../models/data/Data";
+import { BaseData, Data } from "../../models/data/Data";
 import {
   CalendarStatus,
   PriorityTypeEnum,
@@ -45,6 +45,8 @@ import { RootState } from "../redux/slices/RootSlice";
 import { useStore } from "./StoreProvider";
 import { delegate, subscribeToSnapshots } from "../../snapshots/snapshotHandlers";
 import { initialSnapshot } from "../../crypto/exchangeIntegration";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import useSnapshotManager from "../../hooks/useSnapshotManager";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -123,7 +125,7 @@ interface CalendarEvent extends CommonEvent, CommonData {
   archived?: boolean;
   documentReleased?: boolean;
   metadata?: StructuredMetadata;
-  getData: () => Promise<SnapshotStore<Snapshot<Data>>[]>;
+  getData: () => Promise<SnapshotStore<BaseData>[]>;
   then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
 }
 
@@ -140,7 +142,7 @@ export interface CalendarManagerStore {
   eventStatus: AllStatus; // Assuming this is the property expecting the mentioned types
 
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Snapshot<Data>>;
+  snapshotStore: SnapshotStore<BaseData>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateEventTitle: (title: string) => void;
@@ -172,9 +174,13 @@ export interface CalendarManagerStore {
   setDynamicNotificationMessage: (message: string) => void;
   handleRealtimeUpdate: (
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>
+    snapshotStore: SnapshotStore<BaseData>
   ) => void;
 }
+
+
+
+const options = await useSnapshotManager()
 
 class CalendarManagerStoreClass implements CalendarManagerStore {
   getState: () => RootState; // Add getState method
@@ -189,17 +195,7 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   eventStatus: AllStatus = StatusType.Pending;
 
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<Snapshot<Data>> =
-    new SnapshotStore<Snapshot<Data>>(
-      {} as SnapshotStoreConfig<T, K>,
-      category,
-      new Date(),
-      notifyCallback,
-      initialSnapshot,
-      snapshotConfig,
-      subscribeToSnapshots,
-      delegate
-  );
+  snapshotStore: SnapshotStore<BaseData> = new SnapshotStore<BaseData>(options);
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;

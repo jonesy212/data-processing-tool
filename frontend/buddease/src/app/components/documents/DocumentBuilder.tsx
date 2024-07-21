@@ -48,15 +48,19 @@ import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { AllTypes } from "../typings/PropTypes";
+import AccessHistory, {
+  convertAccessRecordToHistory,
+} from "../versions/AccessHistory";
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
+import { VersionData } from "../versions/VersionData";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { ModifiedDate } from "./DocType";
 import {
   createPdfDocument,
   getFormattedOptions,
 } from "./DocumentCreationUtils";
-import { DocumentPath, DocumentTypeEnum } from "./DocumentGenerator";
+import { DocumentPath, DocumentTypeEnum, FinancialReport } from "./DocumentGenerator";
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import {
@@ -64,12 +68,9 @@ import {
   DocumentBuilderProps,
 } from "./SharedDocumentProps";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
+import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import AccessHistory, {
-  convertAccessRecordToHistory,
-} from "../versions/AccessHistory";
-import { VersionInfo } from "next/dist/server/dev/parse-version-info";
-import { VersionData } from "../versions/VersionData";
+import { DocumentBase } from "../state/stores/DocumentStore";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -84,11 +85,12 @@ const checksum = computeChecksum(versionData);
 type ContentStructuredMetadata = StructuredMetadata & ContentState;
 // DocumentData.tsx
 
-export interface DocumentData extends CommonData, DatasetModel {
+export interface DocumentData extends DocumentBase, CommonData, DatasetModel {
   id: string | number;
   _id: string;
   title: string;
   content: string;
+  documents: WritableDraft<DocumentObject>[];
   permissions: DocumentPermissions | undefined;
   topics?: string[] | undefined;
   highlights?: string[] | undefined;
@@ -106,6 +108,7 @@ export interface DocumentData extends CommonData, DatasetModel {
   changes?: boolean | string | string[];
   timestamp?: Date;
   source?: string;
+  report?: FinancialReport | TechnicalReport | ResearchReport; // Union type for different reports
   options: DocumentOptions | undefined;
   // documentPhase?: string | Phase;
   folderPath: string;
@@ -148,8 +151,8 @@ export interface DocumentData extends CommonData, DatasetModel {
   lastModifiedByTeamId?: number | null;
   lastModifiedByTeam?: Team;
   name: string | undefined;
-  description?: string | null;
-  createdBy: string | undefined;
+  descriptionRenamed?: string | null;
+  createdByRenamed: string | undefined;
   createdDate: string | Date | undefined
   documentType: string | DocumentTypeEnum;
   documentData?: DocumentData;
@@ -217,6 +220,7 @@ const initialOptions: DocumentOptions = {
   documentSize: DocumentSize.A4,
   limit: 0,
   page: 0,
+  createdBy: "",
   additionalOptions: undefined,
   language: LanguageEnum.English,
   documentPhase: "",
@@ -527,6 +531,7 @@ const documentBuilderProps: DocumentBuilderProps = {
   setDocumentPhase: options?.setDocumentPhase,
   currentContent: contentState,
   previousContent: previousContent,
+  createdByRenamed: options.createdByRenamed,
   currentMetadata: currentMetadata,
   previousMetadata: previousMetadata,
   accessHistory: convertedAccessHistory,
@@ -731,6 +736,7 @@ const documentBuilderProps: DocumentBuilderProps = {
           uploadedAt: documentData.uploadedAt,
           createdAt: documentData.createdAt,
           updatedBy: documentData.updatedBy,
+          createdBy: documentData.createdBy,
           documents: documentData.documents,
           selectedDocument: documentData.selectedDocument,
           tagsOrCategories: documentData.tagsOrCategories,
@@ -746,7 +752,8 @@ const documentBuilderProps: DocumentBuilderProps = {
           lastModifiedByTeam: documentData.lastModifiedByTeam,
           url: documentData.url,
           all: documentData.all,
-          // Populate other fields as needed from documentData
+          title: "",
+          content: ""
         },
         documentData.content
       );
@@ -1033,7 +1040,8 @@ const documentBuilderProps: DocumentBuilderProps = {
   url: undefined,
   updatedBy: "",
   selectedDocument: null,
-  all: null
+  all: null,
+  createdAt: undefined
 };
 
 const DocumentBuilder: React.FC<DocumentBuilderProps> = ({

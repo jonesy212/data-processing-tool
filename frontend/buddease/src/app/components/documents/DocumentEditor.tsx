@@ -239,7 +239,8 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
                 tagsOrCategories: "",
                 format: "",
                 uploadedByTeamId: null,
-                uploadedByTeam: null
+                uploadedByTeam: null,
+                documents: [],
               })
             );
           } catch (error: any) {

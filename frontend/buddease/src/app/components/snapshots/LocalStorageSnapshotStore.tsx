@@ -5,6 +5,7 @@ import { getSubscriberId } from "@/app/api/subscriberApi";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { FC } from "react";
 import { ModifiedDate } from "../documents/DocType";
+import { SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import {
@@ -30,10 +31,14 @@ import {
 import { generateSnapshotId } from "../utils/snapshotUtils";
 import {
   AuditRecord,
+  K,
   SnapshotStoreConfig,
+  T,
   snapshotConfig,
 } from "./SnapshotConfig";
-import SnapshotStore, { defaultCategory } from "./SnapshotStore";
+import SnapshotStore, { defaultCategory, defaultDelegate, defaultSubscribeToSnapshots, defaultSubscribeToSnapshot } from "./SnapshotStore";
+import { snapshot } from "./snapshot";
+import { Callback } from "./subscribeToSnapshotsImplementation";
 
 interface Payload {
   error: string;
@@ -64,8 +69,6 @@ interface Payload {
   };
 }
 
-
-
 interface UpdateSnapshotPayload<T> {
   snapshotId: string;
   title: string;
@@ -85,11 +88,12 @@ interface CustomSnapshotData extends Data {
 
 const SNAPSHOT_URL = endpoints.snapshots;
 
-type Snapshots<T> = Array<SnapshotStore<BaseData>>;
+
+type Snapshots<T extends BaseData> = Array<SnapshotStore<T, any>>; 
 
 const SNAPSHOT_STORE_CONFIG = snapshotConfig;
 
-  interface CoreSnapshot<T extends BaseData> {
+  interface CoreSnapshot<T extends BaseData, K extends BaseData> {
   id?: string | number;
   data?: Map<string, T> | null | undefined
   name?: string;
@@ -106,24 +110,24 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
   phases?: ProjectPhaseTypeEnum;
   phase?: Phase | null;
   ownerId?: string;
-  store?: SnapshotStore<T>;
+  store?: SnapshotStore<T, K>;
   state?: Snapshot<T> | null; // Ensure state matches Snapshot<T> or null/undefined
-  dataStore?: DataStore<BaseData>;
+  dataStore?: DataStore<T, K>;
   initialState?:
-  | SnapshotStore<BaseData>
-  | Snapshot<BaseData>
+  | SnapshotStore<T, K>
+  | Snapshot<T, K>
   | null
   | undefined;
   setSnapshotData?: (data: Data) => void;
   snapshotConfig?: SnapshotStoreConfig<BaseData, BaseData>[];
   subscribeToSnapshots?: (
     snapshotId: string,
-    callback: (snapshot: Snapshot<T>) => void
+    callback: (snapshots: Snapshots<T>) => void
   ) => void;
   getItem?: (key: T) => T | undefined;
 }
 
-interface SnapshotData<T extends BaseData> {
+interface SnapshotData<T extends BaseData, K extends BaseData = T> {
   _id?: string;
   title?: string;
   description?: string | null;
@@ -140,44 +144,203 @@ interface SnapshotData<T extends BaseData> {
   isSigned?: boolean;
   expirationDate?: Date | string;
   auditTrail?: AuditRecord[];
-  subscribers?: Subscriber<BaseData>[];
-  delegate?: SnapshotStoreConfig<T, T>[];
+  subscribers?: Subscriber<T, K>[];
+  delegate?: SnapshotStoreConfig<T, K>[];
   value?: number | string | undefined;
   todoSnapshotId?: string;
-  dataStoreMethods?: DataStore<T> | null;
+  dataStoreMethods?: DataStore<T, K> | null;
   createdAt?: Date;
   updatedAt?: Date;
   then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
 }
 
-interface Snapshot<T extends BaseData>
-  extends CoreSnapshot<T>,
+interface Snapshot<T extends BaseData, K extends BaseData = T>
+  extends CoreSnapshot<T, K>,
     SnapshotData<T> {
   // Additional specific properties
-}// Example implementation of snapshotType function
+}
 
 
 
-const snapshotType = <T extends BaseData>(
-  snapshot: Snapshot<T>): Snapshot<T> => {
+function createOptions<T extends BaseData, K extends BaseData>(
+  params: {
+    initialState: SnapshotStore<T, K> | null;
+    date: string | Date;
+    snapshotId: string;
+    category: CategoryProperties;
+    dataStoreMethods: Partial<DataStore<T, K>>;
+    type?: string; // Optional, adjust as needed
+    snapshotConfig?: any; // Optional, adjust as needed
+    subscribeToSnapshots?: (snapshotId: string, callback: (snapshots: Snapshots<T>) => void) => void;
+    subscribeToSnapshot?: (snapshotId: string, callback: Callback<Snapshot<T, K>>, snapshot: Snapshot<T, K>) => void;
+    delegate?: SnapshotStoreConfig<T, K>[]; // Adjust if needed
+  }
+): SnapshotStoreOptions<T, K> {
+  // Default implementations for dataStoreMethods
+  const defaultDataStoreMethods: DataStore<T, K> = {
+    data: new Map<string, T>(),
+    addData: (data: T) => { /* Default implementation */ },
+    removeData: (id: number) => { /* Default implementation */ },
+    updateData: (id: number, data: T) => { /* Default implementation */ },
+    addDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { /* Default implementation */ },
+    updateDataTitle: (id: number, title: string) => { /* Default implementation */ },
+    updateDataDescription: (id: number, description: string) => { /* Default implementation */ },
+    updateDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { /* Default implementation */ },
+    getItem: async (key: string) => undefined,
+    setItem: async (id: string, item: T) => { /* Default implementation */ },
+    removeItem: async (key: string) => { /* Default implementation */ },
+    getAllKeys: async () => [],
+    getAllItems: async () => [],
+    getDataVersions: async (id: number): Promise<T[] | undefined> => {
+      return undefined;
+    },
+    updateDataVersions: async (id: number, versions: T[]) => { /* Default implementation */ },
+    getBackendVersion: async (): Promise<string> => "0.0.0",
+    getFrontendVersion: async (): Promise<string> => "0.0.0",
+    addDataSuccess: async (payload: { data: T[] }) => { /* Default implementation */ },
+    fetchData: async (): Promise<SnapshotStore<T, K>[]> => [],
+    // Ensure all required methods are provided
+    ...params.dataStoreMethods // Override defaults with provided implementations
+  };
+
+  const subscribeToSnapshots = params.subscribeToSnapshots || ((snapshotId: string, callback: (snapshots: Snapshot<T, K>[]) => void) => {
+    // Default implementation
+    const dummySnapshots: Snapshot<T, K>[] = [];
+    callback(dummySnapshots);
+  });
+
+  const subscribeToSnapshot = params.subscribeToSnapshot || ((
+    snapshotId: string,
+    callback: (snapshot: Snapshot<T, K>) => void
+  ) => {
+    subscribeToSnapshots(snapshotId, (snapshots) => {
+      if (Array.isArray(snapshots)) {
+        snapshots.forEach(snapshot => {
+          // Ensure `snapshot` is of type `Snapshot<T, K>`
+          callback(snapshot as Snapshot<T, K>);
+        });
+      } else {
+        // Handle the case where `snapshots` is a single `Snapshot<T, K>`
+        callback(snapshots as Snapshot<T, K>);
+      }
+    });
+  });
+
+
+  return {
+    data: {} as Partial<SnapshotStore<T, K>>,
+    date: params.date || new Date(),
+    initialState: params.initialState || null,
+    snapshotId: params.snapshotId || "",
+    category: {
+      name: params.category.name || "default-category",
+      description: params.category.description || "",
+      icon: params.category.icon || "",
+      color: params.category.color || "",
+      iconColor: params.category.iconColor || "",
+      isActive: params.category.isActive || false,
+      isPublic: params.category.isPublic || false,
+      isSystem: params.category.isSystem || false,
+      isDefault: params.category.isDefault || false,
+      isHidden: params.category.isHidden || false,
+      isHiddenInList: params.category.isHiddenInList || false,
+      UserInterface: params.category.UserInterface || [],
+      DataVisualization: params.category.DataVisualization || [],
+      Forms: params.category.Forms || undefined,
+      Analysis: params.category.Analysis || [],
+      Communication: params.category.Communication || [],
+      TaskManagement: [],
+      Crypto: [],
+      brandName: "",
+      brandLogo: "",
+      brandColor: "",
+      brandMessage: ""
+    },
+    dataStoreMethods: defaultDataStoreMethods,
+    type: params.type || "default-type", // Provide a default value if necessary
+    snapshotConfig: params.snapshotConfig || {}, // Provide a default value if necessary
+    subscribeToSnapshots: params.subscribeToSnapshots || defaultSubscribeToSnapshots, // Provide a default implementation if necessary
+    subscribeToSnapshot: params.subscribeToSnapshot || defaultSubscribeToSnapshot, // Provide a default implementation if necessary
+    delegate: params.delegate || [], // Provide a default value if necessary
+  };
+}
+
+
+function createSnapshotOptions<T extends BaseData, K extends BaseData>(
+  snapshot: Snapshot<T, K>
+): SnapshotStoreOptions<T, K> {
+  return {
+    data: {} as Partial<SnapshotStore<T, K>>,
+    initialState: snapshot.initialState || null,
+    snapshotId: snapshot.id || "",
+    category: {
+      name: typeof snapshot.category === "string"
+        ? snapshot.category : "default-category",
+      description: "",
+      icon: "",
+      color: "",
+      iconColor: "",
+      isActive: false,
+      isPublic: false,
+      isSystem: false,
+      isDefault: false,
+      isHidden: false,
+      isHiddenInList: false,
+      UserInterface: [],
+      DataVisualization: [],
+      Forms: undefined,
+      Analysis: [],
+      Communication: [],
+      TaskManagement: [],
+      Crypto: [],
+      brandName: "",
+      brandLogo: "",
+      brandColor: "",
+      brandMessage: ""
+    },
+    date: new Date(),
+    type: "default-type",
+    snapshotConfig: [], // Adjust as needed
+    subscribeToSnapshots: (snapshotId, callback) => {
+      // Implement subscribeToSnapshots function
+    },
+    subscribeToSnapshot: (snapshotId, callback, snapshot) => {
+      // Implement subscribeToSnapshot function
+    },
+    delegate: [], // Adjust as needed
+    dataStoreMethods: {} as DataStore<T, K> // Provide actual data store methods
+  };
+}
+
+
+// Example implementation of snapshotType function
+const snapshotType = <T extends BaseData, K extends BaseData = T>(
+  snapshot: Snapshot<T, K>
+): Snapshot<T, K> => {
   const newSnapshot = { ...snapshot }; // Shallow copy of the snapshot
+  
+  // Retrieve options for SnapshotStore initialization using the helper function
+  const options: SnapshotStoreOptions<T, K> = createSnapshotOptions(snapshot);
 
   // Handle SnapshotStore<BaseData> or Snapshot<BaseData>
-  if (snapshot.initialState && ('store' in snapshot.initialState)) {
+  if (snapshot.initialState && "store" in snapshot.initialState) {
     newSnapshot.initialState = snapshot.initialState;
-  } else if (snapshot.initialState && ('data' in snapshot.initialState)) {
+  } else if (snapshot.initialState && "data" in snapshot.initialState) {
     newSnapshot.initialState = snapshot.initialState;
   } else {
     newSnapshot.initialState = null; // Handle null or undefined case
   }
 
   // Cast newSnapshot to Snapshot<T> to satisfy TypeScript requirements
-  const result: Snapshot<T> = {
+  const result: Snapshot<T, K> = {
     id: snapshot.id || generateSnapshotId,
     title: snapshot.title || "",
     timestamp: snapshot.timestamp ? new Date(snapshot.timestamp) : new Date(),
     subscriberId: snapshot.subscriberId || "",
-    category: typeof snapshot.category === "string" ? defaultCategory : snapshot.category || defaultCategory,
+    category:
+      typeof snapshot.category === "string"
+        ? defaultCategory
+        : snapshot.category || defaultCategory,
     length: snapshot.length || 0,
     content: snapshot.content || "",
     data: snapshot.data,
@@ -188,18 +351,8 @@ const snapshotType = <T extends BaseData>(
     status: snapshot.status || "",
     metadata: snapshot.metadata || {},
     delegate: snapshot.delegate || [],
-    store: snapshot.store as SnapshotStore<T> || new SnapshotStore<T>(
-      {}, // Pass an empty object or adjust as necessary
-      snapshot.initialState || null,
-      (snapshot.category || defaultCategory) as CategoryProperties,
-      snapshot.timestamp ? new Date(snapshot.timestamp) : new Date(),
-      '', // Ensure type is appropriately handled
-      [], // Ensure snapshotConfig is appropriately handled
-      () => {}, // Ensure subscribeToSnapshots is appropriately handled
-      () => {}, // Ensure subscribeToSnapshots is appropriately handled
-      [], // Ensure delegate is appropriately handled
-      {} as DataStore<T> // Ensure dataStoreMethods is appropriately handled
-    ),
+    store: snapshot.store as SnapshotStore<T, K> || new SnapshotStore<T, K>(options),
+
     state: snapshot.state || null,
     todoSnapshotId: snapshot.todoSnapshotId || "",
     initialState: snapshot.initialState || null,
@@ -208,7 +361,7 @@ const snapshotType = <T extends BaseData>(
   return result;
 };
 
-class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
+class LocalStorageSnapshotStore<T extends BaseData, K extends BaseData> extends SnapshotStore<T, T> {
   private storage: Storage;
 
   constructor(
@@ -237,21 +390,28 @@ class LocalStorageSnapshotStore<T extends BaseData> extends SnapshotStore<T> {
       brandColor: "",
       brandMessage: "",
     },
-    dataStoreMethods?: Partial<DataStore<T>>,
-    initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null = null,
+    dataStoreMethods?: Partial<DataStore<T, K>>,
+    initialState: SnapshotStore<T, K> | Snapshot<T, K> | null = null,
   ) {
-    super(
-      {},
-      initialState || null,
-      category,
-      new Date(),
-      snapshotType.toString(),
-      [], // Ensure snapshotConfig is appropriately handled
-      () => {}, // Ensure subscribeToSnapshot is appropriately handled
-      () => {}, // Ensure subscribeToSnapshots is appropriately handled
-      [], // Ensure delegate is appropriately handled
-      dataStoreMethods as DataStore<T>, // Cast to DataStore<T> or provide defaults
-    );
+
+      // Construct a snapshot object with default values
+      const snapshot: Snapshot<T, K> = {
+        id: "",
+        category: category,
+        timestamp: new Date(),
+        createdBy: "",
+        description: "",
+        tags: [],
+        metadata: {},
+        data: new Map<string, T>(),
+        initialState: initialState,
+      };
+  
+    // Use createSnapshotOptions to create the options object
+    const options = createSnapshotOptions(snapshot);
+
+
+    super(options);
     this.storage = storage;
     
   }
@@ -323,7 +483,7 @@ const newTask: Task = {
   tags: [],
   dependencies: [],
   then: function (onFulfill: (newData: Snapshot<Data>) => void): Snapshot<Data> {
-    const store = new LocalStorageSnapshotStore<Data>(window.localStorage);
+    const store = new LocalStorageSnapshotStore<Data, BaseData>(window.localStorage);
     setTimeout(() => {
       onFulfill({
         data: {} as Map<string, Data>,
@@ -366,7 +526,8 @@ const subscription: Subscription = {
   category: "category-123",
 };
 const subscriberId = getSubscriberId.toString();
-const subscriber = new Subscriber(
+
+const subscriber = new Subscriber<T>(
   "_id",
   "John Doe",
   subscription,
@@ -376,7 +537,7 @@ const subscriber = new Subscriber(
   logActivity,
   triggerIncentives,
   undefined,
-  {} as Partial<SnapshotStore<BaseData>>
+  {} as Partial<SnapshotStore<BaseData, CustomSnapshotData>>
 );
 subscriber.id = "new-id"; // Set the private property using the setter method
 
@@ -387,7 +548,7 @@ const snapshots: Snapshots<Data> = [
       /* your data */
     } as Map<string, Data>,
     
-    name: "Snapshot 1",
+    // name: "Snapshot 1",
     timestamp: new Date(),
     createdBy: "User123",
     subscriberId: "Sub123",
@@ -430,8 +591,22 @@ const snapshots: Snapshots<Data> = [
     store: null,
     state: null,
     initialState: null,
-    setSnapshotData: (snapshotData: Partial<SnapshotStoreConfig<BaseData, T>>) => {
-      /* set data */
+    setSnapshotData(
+      subscribers: Subscriber<any, any>[],
+      snapshotData: Partial<SnapshotStoreConfig<BaseData, any>>
+    ) {
+      // If the config array already exists, update it with the new snapshotData
+      if (this.config) {
+        this.config.forEach((config) => {
+          Object.assign(config, snapshotData);
+        });
+      } else {
+        // If no config array exists, create a new one with the provided snapshotData
+        this.config = [{
+          ...snapshotData,
+          subscribers: subscribers as Subscriber<T, K>[] // Set the subscribers in the config
+        } as SnapshotStoreConfig<T, K>];
+      }
     },
     // Additional metadata
     _id: "abc123",
@@ -513,3 +688,6 @@ const snapshots: Snapshots<Data> = [
     },
   },
 ];
+
+
+export {snapshots}

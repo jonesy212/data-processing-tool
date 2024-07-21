@@ -32,12 +32,15 @@ import BackendStructure, { backend, backendStructure } from "@/app/configs/appSt
 import { DocumentSize } from "@/app/components/models/data/StatusType";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import { Document } from "../../stores/DocumentStore";
+import getAppPath from "appPath";
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 
 
-
+const {versionNumber, appVersion} = getCurrentAppInfo()
+const API_BASE_URL = getAppPath(versionNumber, appVersion);
 
 interface DocumentSliceState {
-  documents: WritableDraft<DocumentObject>[];
+  documentList: WritableDraft<DocumentObject>[];
   selectedDocument: DocumentData | null;
   filteredDocuments: DocumentData[];
   searchResults: DocumentData[];
@@ -48,7 +51,7 @@ interface DocumentSliceState {
 }
 
 const initialDocumentSliceState: DocumentSliceState = {
-  documents: [],
+  documentList: [],
   selectedDocument: null,
   filteredDocuments: [],
   loading: false, // Add this line if it's not already present
@@ -60,6 +63,9 @@ const initialDocumentSliceState: DocumentSliceState = {
 
 interface DocumentObject extends Document, DocumentData, DocumentSliceState {
   // Optionally add additional fields here if needed
+  documents: DocumentObject[];
+  description?: string | null; // Reintroduce with the original name
+  createdBy?: string | undefined; // Reintroduce with the original name
 }
 
 interface ViewTransition {
@@ -103,7 +109,7 @@ const initialState: DocumentObject = {
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
-  documents: [],
+  documentList: [],
   selectedDocument: null,
   filteredDocuments: [],
   loading: false, // Add this line if it's not already present
@@ -227,9 +233,8 @@ const initialState: DocumentObject = {
           execute: false
         },
         getStructure: function (): Record<string, AppStructureItem> {
-          throw new Error("Function not implemented.");
-        },
-        getStructureAsArray: function (): Promise<AppStructureItem[]> {
+  throw new Error("Function not implemented.")
+},        getStructureAsArray: function (): Promise<AppStructureItem[]> {
           throw new Error("Function not implemented.");
         }
       },
@@ -398,7 +403,8 @@ const initialState: DocumentObject = {
   pictureInPictureEnabled: false,
   readyState: "",
   visibilityState: "",
-  versionData: undefined
+  versionData: undefined,
+  rootElement: null
 };
 
 
@@ -1110,7 +1116,7 @@ function createNewDocument(documentId: string): DocumentObject {
     format: "",
     uploadedByTeamId: null,
     uploadedByTeam: null,
-    documents: [],
+    documentList: [],
     selectedDocument: null,
     filteredDocuments: [],
     searchResults: [],
@@ -1128,7 +1134,7 @@ export const restoreDocument = (state: WritableDraft<DocumentSliceState>, action
     const documentId = action.payload;
     const newDocument = createNewDocument(String(documentId));
     const newDocumentObject = toObject(newDocument as DocumentObject);
-    state.documents.push(newDocumentObject as WritableDraft<DocumentObject>);
+    state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject>);
     
     state.loading = false;  // Update loading state
     state.error = null;  // Clear error state
@@ -1197,7 +1203,7 @@ export const fetchDocumentById = createAsyncThunk(
   'documents/fetchDocumentById',
   async (documentId: number) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/documents/${documentId}`);
+      const response = await fetch(`${`${API_BASE_URL}`}/documents/${documentId}`);
       const data = await response.json();
       return data; // Assuming data is of type DocumentObject
     } catch (error) {
@@ -1228,18 +1234,22 @@ export const fetchDocumentsByIds = async (documentIds: number[]) => {
 
 export const downloadDocument = createAsyncThunk(
   "document/downloadDocument",
-  async (documentId: number) => {
-    // Your asynchronous operation logic here (e.g., fetching the document)
-    const fetchedDocument = await fetchDocumentByIdAPI(
-      documentId,
-      (data: WritableDraft<DocumentObject>) => {
-        data.status = DocumentStatusEnum.Draft;
-        data.type = DocumentTypeEnum.Document;
-      }
-    );
-    return fetchedDocument;
+  async (documentId: number, { rejectWithValue }) => {
+    try {
+      const fetchedDocument = await fetchDocumentByIdAPI(
+        documentId,
+        (data: WritableDraft<DocumentObject>) => {
+          data.status = DocumentStatusEnum.Draft;
+          data.type = DocumentTypeEnum.Document;
+        }
+      );
+      return fetchedDocument;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
   }
 );
+
 
 // Define thunk action creator for downloading document asynchronously
 export const downloadDocumentAsync = createAsyncThunk(
@@ -1963,7 +1973,7 @@ export const useDocumentManagerSlice = createSlice({
     createDocument: {
       reducer: (state, action: PayloadAction<WritableDraft<DocumentObject>>) => {
         state.selectedDocument = action.payload;
-        state.documents.push(action.payload);
+        state.documents?.push(action.payload);
       },
       prepare: () => {
         // Generate a new document with default values
@@ -2464,7 +2474,7 @@ export const useDocumentManagerSlice = createSlice({
 
     addDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData>>
+      action: PayloadAction<WritableDraft<DocumentObject>>
     ) => {
       state.documents?.push(action.payload);
     },
@@ -2673,7 +2683,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document filtering functionality
         const filterKeyword = action.payload.toLowerCase();
-        state.filteredDocuments = state.documents.filter(
+        state.filteredDocuments = state.documents?.filter(
           (doc) =>
             (typeof doc.title === "string" &&
               doc.title.toLowerCase().includes(filterKeyword)) ||
@@ -2703,7 +2713,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document sorting functionality
         const sortKey = action.payload as keyof DocumentData; // Type assertion
-        state.documents.sort((a, b) => {
+        state.documents?.sort((a, b) => {
           if (a[sortKey]! < b[sortKey]!) return -1; // Use optional chaining (!) to handle possible null or undefined values
           if (a[sortKey]! > b[sortKey]!) return 1; // Use optional chaining (!) to handle possible null or undefined values
           return 0;
@@ -2734,7 +2744,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document sharing functionality
         const { documentId, recipients } = action.payload;
-        const documentToShare = state.documents.find(
+        const documentToShare = state.documents?.find(
           (doc) => doc.id === documentId.toString()
         );
         if (documentToShare) {
@@ -2771,7 +2781,7 @@ export const useDocumentManagerSlice = createSlice({
 
     downloadDocument: (state, action: PayloadAction<number>) => {
       // Implement document download functionality
-      const documentIndex = state.documents.findIndex(
+      const documentIndex = state.documents?.findIndex(
         (doc) => doc.id === action.payload.toString()
       );
       if (documentIndex !== -1) {
@@ -2797,7 +2807,7 @@ export const useDocumentManagerSlice = createSlice({
 
     exportDocument: (state, action: PayloadAction<number>) => {
       // Implement document export functionality
-      const documentIndex = state.documents.findIndex(
+      const documentIndex = state.documents?.findIndex(
         (doc) => doc.id === action.payload.toString()
       );
       if (documentIndex !== -1) {
@@ -2954,7 +2964,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const documentId = action.payload;
         // Update state with the fetched document
-        state.documents.push({
+        state.documents?.push({
           _id: "fetchedArchive",
           id: documentId.toString(),
           title: "",
@@ -2979,6 +2989,7 @@ export const useDocumentManagerSlice = createSlice({
             setWriteAccess: () => false,
             getReadWriteAccess: () => false,
             setReadWriteAccess: () => false,
+            _readAccess: true,
           },
           visibility: undefined,
           documentSize: DocumentSize.A4,
@@ -3023,9 +3034,7 @@ export const useDocumentManagerSlice = createSlice({
           format: "",
           uploadedByTeamId: null,
           uploadedByTeam: null,
-          URL: "",
-          alinkColor: "",
-          all: undefined,
+          all: null,
           anchors: undefined,
           applets: undefined,
           bgColor: "",
@@ -3454,7 +3463,7 @@ export const useDocumentManagerSlice = createSlice({
 //     // Implement document restoring functionality
 //     const newDocument = createNewDocument(String(documentId));
 //     const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
-//     state.documents.push(newDocumentObject as WritableDraft<DocumentObject>); // Add the new document object to the state array
+//     state.documents?.push(newDocumentObject as WritableDraft<DocumentObject>); // Add the new document object to the state array
 
 //     // Notify success
 //     useNotification().notify(
@@ -3484,16 +3493,16 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const { documentId, destinationId } = action.payload;
         // Implement document moving functionality
-        const documentIndex = state.documents.findIndex(
+        const documentIndex = state.documents?.findIndex(
           (doc) => doc.id === documentId.toString()
         );
         if (documentIndex !== -1) {
-          const movedDocument = state.documents.splice(documentIndex, 1)[0];
-          const destinationIndex = state.documents.findIndex(
+          const movedDocument = state.documents?.splice(documentIndex!, 1)[0];
+          const destinationIndex = state.documents?.findIndex(
             (doc) => doc.id === destinationId.toString()
           );
           if (destinationIndex !== -1) {
-            state.documents.splice(destinationIndex, 0, movedDocument);
+            state.documents?.splice(destinationIndex!, 0, movedDocument!);
             // Notify success
             useNotification().notify(
               "moveDocumentSuccess",
@@ -3543,10 +3552,10 @@ export const useDocumentManagerSlice = createSlice({
         const { sourceId, destinationId } = action.payload;
 
         // Find the source document and destination document in the state
-        const sourceDocumentIndex = state.documents.findIndex(
+        const sourceDocumentIndex = state.documents?.findIndex(
           (doc) => doc.id === sourceId
         );
-        const destinationDocumentIndex = state.documents.findIndex(
+        const destinationDocumentIndex = state.documents?.findIndex(
           (doc) => doc.id === destinationId
         );
 
@@ -3555,11 +3564,11 @@ export const useDocumentManagerSlice = createSlice({
         }
 
         // Merge the content of the source document into the destination document
-        state.documents[destinationDocumentIndex].content +=
-          state.documents[sourceDocumentIndex].content;
+        state.documents![destinationDocumentIndex!].content +=
+          state.documents![sourceDocumentIndex!].content;
 
         // Remove the source document from the state
-        state.documents.splice(sourceDocumentIndex, 1);
+        state.documents?.splice(sourceDocumentIndex!, 1);
 
         // Notify success
         useNotification().notify(
@@ -3584,7 +3593,7 @@ export const useDocumentManagerSlice = createSlice({
 
     splitDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToSplit = state.documents.find(
+      const documentToSplit = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToSplit) {
@@ -3598,8 +3607,8 @@ export const useDocumentManagerSlice = createSlice({
           .join(" ");
         // Update the original document and add the new document
         documentToSplit.content = firstHalf;
-        state.documents.push({
-          id: state.documents.length + 1,
+        state.documents?.push({
+          id: state.documents?.length + 1,
           title: `${documentToSplit.title} - Split`,
           content: secondHalf,
           topics: [],
@@ -3726,7 +3735,7 @@ export const useDocumentManagerSlice = createSlice({
 
     validateDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToValidate = state.documents.find(
+      const documentToValidate = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
 
@@ -3767,7 +3776,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; encryptionType: string }>
     ) => {
       const { documentId, encryptionType } = action.payload;
-      const documentToEncrypt = state.documents.find(
+      const documentToEncrypt = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
 
@@ -3792,7 +3801,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; encryptionType: string }>
     ) => {
       const { documentId, encryptionType } = action.payload;
-      const documentToDecrypt = state.documents.find(
+      const documentToDecrypt = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
 
@@ -3814,7 +3823,7 @@ export const useDocumentManagerSlice = createSlice({
 
     lockDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToLock = state.documents.find(
+      const documentToLock = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToLock) {
@@ -3824,7 +3833,7 @@ export const useDocumentManagerSlice = createSlice({
 
     unlockDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToUnlock = state.documents.find(
+      const documentToUnlock = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToUnlock) {
@@ -3838,7 +3847,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; changes: string }>
     ) => {
       const { documentId, changes } = action.payload;
-      const documentToTrack = state.documents.find(
+      const documentToTrack = state.documents?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToTrack) {
@@ -3857,8 +3866,8 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId1: number; documentId2: number }>
     ) => {
       const { documentId1, documentId2 } = action.payload;
-      const document1 = state.documents.find((doc) => doc.id === documentId1);
-      const document2 = state.documents.find((doc) => doc.id === documentId2);
+      const document1 = state.documents?.find((doc) => doc.id === documentId1);
+      const document2 = state.documents?.find((doc) => doc.id === documentId2);
       if (document1 && document2) {
         // Example: Compare the content of the two documents
         const document1Content = document1.content.split(" ");
@@ -3878,7 +3887,7 @@ export const useDocumentManagerSlice = createSlice({
 
     searchDocuments: (state, action: PayloadAction<string>) => {
       const searchTerm = action.payload;
-      const searchResults = state.documents.filter((doc) =>
+      const searchResults = state.documents?.filter((doc) =>
         doc.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
       console.log(
@@ -3891,7 +3900,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; query: string }>
     ) => {
       const { documentId, query } = action.payload;
-      const documentToSearch = state.documents.find(
+      const documentToSearch = state.documents?.find(
         (doc) => doc.id === documentId
       );
 
@@ -3902,7 +3911,7 @@ export const useDocumentManagerSlice = createSlice({
       }
 
       // Perform search within the document content or any other necessary logic
-      const searchResults = state.documents.filter((doc) =>
+      const searchResults = state.documents?.filter((doc) =>
         performSearch(doc.content, query)
       );
 
@@ -3920,7 +3929,7 @@ export const useDocumentManagerSlice = createSlice({
       }>
     ) => {
       const { document, documentId, tag } = action.payload;
-      const documentToTag = state.documents.find(
+      const documentToTag = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTag) {
@@ -3937,7 +3946,7 @@ export const useDocumentManagerSlice = createSlice({
     ) => {
       const { documentIds, tag } = action.payload;
       documentIds.forEach((documentId) => {
-        const documentToTag = state.documents.find(
+        const documentToTag = state.documents?.find(
           (doc) => doc.id === documentId
         );
         if (documentToTag) {
@@ -3951,7 +3960,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; category: string }>
     ) => {
       const { documentId, category } = action.payload;
-      const documentToCategorize = state.documents.find(
+      const documentToCategorize = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCategorize) {
@@ -3970,7 +3979,7 @@ export const useDocumentManagerSlice = createSlice({
     ) => {
       const { documentIds, category } = action.payload;
       documentIds.forEach((documentId) => {
-        const documentToCategorize = state.documents.find(
+        const documentToCategorize = state.documents?.find(
           (doc) => doc.id === documentId
         );
         if (documentToCategorize) {
@@ -3989,7 +3998,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; view: string }>
     ) => {
       const { documentId, view } = action.payload;
-      const documentToCustomize = state.documents.find(
+      const documentToCustomize = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCustomize) {
@@ -4007,7 +4016,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; comment: string }>
     ) => {
       const { documentId, comment } = action.payload;
-      const documentToComment = state.documents.find(
+      const documentToComment = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToComment) {
@@ -4025,7 +4034,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToMention = state.documents.find(
+      const documentToMention = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToMention) {
@@ -4043,7 +4052,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; task: string }>
     ) => {
       const { documentId, task } = action.payload;
-      const documentToAssign = state.documents.find(
+      const documentToAssign = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToAssign) {
@@ -4061,7 +4070,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(
+      const documentToReview = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4079,7 +4088,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; approver: string }>
     ) => {
       const { documentId, approver } = action.payload;
-      const documentToApprove = state.documents.find(
+      const documentToApprove = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToApprove) {
@@ -4097,7 +4106,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; rejector: string }>
     ) => {
       const { documentId, rejector } = action.payload;
-      const documentToReject = state.documents.find(
+      const documentToReject = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReject) {
@@ -4115,7 +4124,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(
+      const documentToReview = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4133,7 +4142,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(
+      const documentToReview = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4151,7 +4160,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents.find(
+      const documentToReview = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4169,7 +4178,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; collaborator: string }>
     ) => {
       const { documentId, collaborator } = action.payload;
-      const documentToCollaborate = state.documents.find(
+      const documentToCollaborate = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCollaborate) {
@@ -4187,7 +4196,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; tag: string }>
     ) => {
       const { documentId, tag } = action.payload;
-      const documentToTag = state.documents.find(
+      const documentToTag = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTag) {
@@ -4205,7 +4214,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; annotation: string }>
     ) => {
       const { documentId, annotation } = action.payload;
-      const documentToAnnotate = state.documents.find(
+      const documentToAnnotate = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToAnnotate) {
@@ -4223,7 +4232,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; activity: string }>
     ) => {
       const { documentId, activity } = action.payload;
-      const documentToLog = state.documents.find(
+      const documentToLog = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToLog) {
@@ -4241,7 +4250,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; search: string }>
     ) => {
       const { documentId, search } = action.payload;
-      const documentToSearch = state.documents.find(
+      const documentToSearch = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToSearch) {
@@ -4259,7 +4268,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToVersion = state.documents.find(
+      const documentToVersion = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToVersion) {
@@ -4277,7 +4286,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToRevert = state.documents.find(
+      const documentToRevert = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRevert) {
@@ -4295,7 +4304,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToView = state.documents.find(
+      const documentToView = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToView) {
@@ -4313,7 +4322,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToCompare = state.documents.find(
+      const documentToCompare = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCompare) {
@@ -4331,7 +4340,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToGrant = state.documents.find(
+      const documentToGrant = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToGrant) {
@@ -4349,7 +4358,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToRevoke = state.documents.find(
+      const documentToRevoke = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRevoke) {
@@ -4367,7 +4376,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToManage = state.documents.find(
+      const documentToManage = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToManage) {
@@ -4385,7 +4394,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToInitiate = state.documents.find(
+      const documentToInitiate = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToInitiate) {
@@ -4403,7 +4412,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToAutomate = state.documents.find(
+      const documentToAutomate = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToAutomate) {
@@ -4421,7 +4430,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToTrigger = state.documents.find(
+      const documentToTrigger = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTrigger) {
@@ -4439,7 +4448,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToApprove = state.documents.find(
+      const documentToApprove = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToApprove) {
@@ -4457,7 +4466,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToManage = state.documents.find(
+      const documentToManage = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToManage) {
@@ -4475,7 +4484,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToConnect = state.documents.find(
+      const documentToConnect = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToConnect) {
@@ -4493,7 +4502,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToSynchronize = state.documents.find(
+      const documentToSynchronize = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToSynchronize) {
@@ -4511,7 +4520,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToImport = state.documents.find(
+      const documentToImport = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToImport) {
@@ -4529,7 +4538,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToExport = state.documents.find(
+      const documentToExport = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToExport) {
@@ -4547,7 +4556,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToGenerate = state.documents.find(
+      const documentToGenerate = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToGenerate) {
@@ -4565,7 +4574,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToExport = state.documents.find(
+      const documentToExport = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToExport) {
@@ -4583,7 +4592,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToSchedule = state.documents.find(
+      const documentToSchedule = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToSchedule) {
@@ -4601,7 +4610,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToCustomize = state.documents.find(
+      const documentToCustomize = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCustomize) {
@@ -4619,7 +4628,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToBackup = state.documents.find(
+      const documentToBackup = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToBackup) {
@@ -4637,7 +4646,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToRetrieve = state.documents.find(
+      const documentToRetrieve = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRetrieve) {
@@ -4655,7 +4664,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToRedact = state.documents.find(
+      const documentToRedact = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRedact) {
@@ -4673,7 +4682,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToControl = state.documents.find(
+      const documentToControl = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToControl) {
@@ -4691,7 +4700,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToTemplate = state.documents.find(
+      const documentToTemplate = state.documents?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTemplate) {
@@ -4714,11 +4723,11 @@ export const useDocumentManagerSlice = createSlice({
 
     builder.addCase(deleteDocumentAsync.fulfilled, (state, action) => {
       // Handle fulfilled state
-      const documentIndex = state.documents.findIndex(
+      const documentIndex = state.documents?.findIndex(
         (doc) => doc.id === action.payload
       );
       if (documentIndex !== -1) {
-        state.documents.splice(documentIndex, 1);
+        state.documents?.splice(documentIndex, 1);
         useNotification().notify(
           "deleteDocumentSuccess",
           "Document deleted",
@@ -4773,7 +4782,7 @@ export const useDocumentManagerSlice = createSlice({
       })
       .addCase(deleteDocumentAsync.fulfilled, (state, action) => {
         // Handle successful document deletion
-        state.documents = state.documents.filter(
+        state.documents = state.documents?.filter(
           (doc) => doc.id !== action.payload
         );
       });

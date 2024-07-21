@@ -154,7 +154,8 @@ export interface DocumentOptions {
   documentSize: DocumentSize;
   name?: string,
   description?: string | null | undefined,
-  createdBy?: string,
+  createdBy: string,
+  createdByRenamed?: string
   createdDate?:string |  Date,
   _rev?: string;
   _attachments?: { [key: string]: string }
@@ -217,7 +218,6 @@ export interface DocumentOptions {
         customProp2: number;
         onChange: (phase: ProjectPhaseTypeEnum) => void;
       };
-
   versionData: VersionData | undefined;
   version?: Version | undefined;
   isDynamic: boolean | undefined;

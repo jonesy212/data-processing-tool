@@ -4,7 +4,7 @@ import { endpoints } from '@/app/api/ApiEndpoints';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { useSubscription } from '@refinedev/core';
 import { useDispatch } from 'react-redux';
-import { SnapshotStoreConfig, snapshotConfig } from '../../components/snapshots/SnapshotConfig';
+import { K, SnapshotStoreConfig, T, snapshotConfig } from '../../components/snapshots/SnapshotConfig';
 import updateUI from '../documents/editing/updateUI';
 import useErrorHandling from '../hooks/useErrorHandling';
 import { BaseData, Data } from "../models/data/Data";
@@ -18,8 +18,9 @@ import {
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
 import { generateSnapshotId } from "../utils/snapshotUtils";
-import { Payload, Snapshot, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
+import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
+import { useEffect } from 'react';
 const { notify } = useNotification();
 const dispatch = useDispatch()
 
@@ -50,27 +51,28 @@ export const initSnapshot: T = {
 
 
 type Subscriber<T> = (snapshot: T) => void;
-export type T = any;
 
 const snapshotSubscribers: Map<string, Subscriber<Snapshot<any>>[]> = new Map();
 
-export const subscribeToSnapshots = (
+// Combine and update the subscribeToSnapshots function
+export const subscribeToSnapshots = <T extends BaseData>(
   snapshotId: string,
-  callback: (snapshot: Snapshot<any>) => void
+  callback: Subscriber<Snapshot<T>> // Ensure the callback matches the Subscriber type
 ): void => {
+  // Ensure the snapshotSubscribers map has an entry for the snapshotId
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
   }
 
+  // Add the callback to the list of subscribers for the snapshotId
   snapshotSubscribers.get(snapshotId)?.push(callback);
-  console.log(`Subscribed to snapshot with ID: ${snapshotId}`);
+
+  console.log(`Subscribed to snapshots with ID: ${snapshotId}`);
 };
 
 
-
-
 // Create a function to initialize the snapshot store
-const initializeSnapshotStore = async (): Promise<SnapshotStore<Data>> => {
+const initializeSnapshotStore = async (): Promise<SnapshotStore<T, K>> => {
   // Initialize any required variables or state here
 
   const category = ""
@@ -396,40 +398,37 @@ export const setSnapshotManager = async (snapshotManager: SnapshotManager) => {
 
   
 export const createSnapshotFailure = async (
-  snapshot: Snapshot<T>,
+  snapshot: Snapshot<T>, // Assuming T is your data type
   error: any,
 ) => {
-  const snapshotStore = (await useSnapshotManager()).state;
-  
-  if (snapshotStore && snapshotStore.length > 0) {
-    // Generate snapshot ID
-    const generatedSnapshotId = generateSnapshotId; // Assuming generateSnapshotId is a function
-    const updatedSnapshotData = {
-      id: generatedSnapshotId,
-      data: {
-        ...snapshot.data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      timestamp: new Date(),
-      category: "update",
-      length: 0, // Check if this is needed
-      content: undefined, // Check if this is needed
-    };
+  const { state, setSnapshotManager } = (await useSnapshotManager()); // Assuming useSnapshotManager returns state and setSnapshotManager
 
-    // Check if snapshotStore[0] is defined before invoking setSnapshotData
-    if (snapshotStore[0]?.setSnapshotData) {
-      snapshotStore[0].setSnapshotData(updatedSnapshotData); // Assuming setSnapshotData mutates the snapshot object
+  useEffect(() => {
+    if (state.length > 0) {
+      const generatedSnapshotId = generateSnapshotId; // Example function to generate ID
+      const updatedSnapshotData = {
+        id: generatedSnapshotId,
+        data: {
+          ...snapshot.data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        timestamp: new Date(),
+        category: 'update',
+        length: 0, // Adjust as needed
+        content: undefined, // Adjust as needed
+      };
+
+      // Assuming your setSnapshotData function mutates the snapshot object in the state
+      state[0].setSnapshotData(updatedSnapshotData);
+
+      // Create a new snapshot manager state and update using setSnapshotManager
+      const newState = [...state, updatedSnapshotData]; // Example of creating new state with updated data
+      setSnapshotManager(newState);
     }
-    
-    // Assuming snapshotStore.unshift is a synchronous operation
-    snapshotStore.unshift(updatedSnapshotData); // Add the updated snapshot to the beginning of the snapshot store
+  }, [state, setSnapshotManager]);
 
-    // Create a new snapshot manager with the updated snapshot store
-    const newState = new SnapshotManager(snapshotStore);
-    // Update the snapshot store through a setter method if available
-    await setSnapshotManager(newState); // Ensure this method exists and correctly updates state
-  }
+  // Other logic related to handling the error or additional actions
 };
 
 

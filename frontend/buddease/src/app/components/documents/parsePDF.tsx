@@ -3,7 +3,7 @@ import { ParsedData } from "../crypto/parseData";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
 import { YourPDFType } from "./DocType";
-import { extractTextFromPDF } from "./DocumentGenerator";
+import { extractTextFromPDF } from "./DocumentGeneratorMethods";
 
 enum AppType {
   Web = "web",

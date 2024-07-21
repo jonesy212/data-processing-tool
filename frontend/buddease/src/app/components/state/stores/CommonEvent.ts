@@ -37,14 +37,28 @@ interface CommonEvent extends Data {
 }
 
 // Define the function to implement the `then` functionality
-export function implementThen(callback: (newData: Snapshot<BaseData>) => void): Snapshot<Data> {
-    return {
+export function implementThen(callback: (newData: Snapshot<Data>) => void): Snapshot<Data> | undefined {
+  const snapshot: Snapshot<Data> = {
+    id: "someId",
+    data: { key: "exampleKey", value: "exampleValue" },
+    timestamp: new Date(),
+    subscriberId: "someSubscriberId",
+    category: "someCategory",
+    content: {
+      id: "someId",
+      title: "someTitle",
+      description: "someDescription",
+      subscriberId: "someSubscriberId",
+      category: "someCategory",
       timestamp: new Date(),
-      category: "",
-      data: {} as Map<string, Data>,
-    };
-  }
-  
+      length: 0,
+      data: { key: "exampleKey", value: "exampleValue" },
+    },
+    store: undefined,
+  };
+  callback(snapshot);
+  return snapshot;
+}
   // Define the `CommonEvent` interface
   interface CommonEvent extends Data {
     title: string;

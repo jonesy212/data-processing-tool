@@ -8,8 +8,9 @@ import { useDispatch } from "react-redux";
 import * as apiData from "../../../../api//ApiData";
 import { DataActions } from "../DataActions";
 import transformDataToSnapshot from '@/app/components/snapshots/transformDataToSnapshot';
+import { convertMapToSnapshotStore } from '@/app/components/typings/YourSpecificSnapshotType';
 
-export interface DataStore<T extends BaseData> {
+export interface DataStore<T extends BaseData, K extends BaseData> {
   data?: Map<string, T> | undefined;
   addData: (data: T) => void;
   getItem: (id: string) => Promise<T | undefined>;
@@ -25,24 +26,24 @@ export interface DataStore<T extends BaseData> {
   getBackendVersion: () => Promise<string | undefined>;
   getFrontendVersion: () => Promise<string | undefined>;
   getAllKeys: () => Promise<string[]>;
-  fetchData: (id: number) => Promise<SnapshotStore<BaseData>[]>; // Modify the signature to return a Promise
+  fetchData: (id: number) => Promise<SnapshotStore<T, K>[]>; // Modify the signature to return a Promise
   setItem: (id: string, item: T) => Promise<void>;
   removeItem: (key: string) => Promise<void>
   getAllItems: () => Promise<T[]>;
   // storage: SnapshotStore<T> | undefined;
 }
 
-interface VersionedData<T extends BaseData> {
+interface VersionedData<T extends BaseData, K extends BaseData> {
   versionNumber: string;
   appVersion: string;
   content: any;
-  getData: () => Promise<SnapshotStore<BaseData>[]>;
+  getData: () => Promise<SnapshotStore<T,K>[]>;
 }
 
-const useVersionedData = <T extends BaseData>(
+const useVersionedData = <T extends BaseData, K extends BaseData>(
   data: Map<string, T>,
-  fetchData: () => Promise<SnapshotStore<BaseData>[]>,
-): VersionedData<T> => {
+  fetchData: () => Promise<SnapshotStore<T, K>[]>,
+): VersionedData<T, K> => {
   const { versionNumber } = getCurrentAppInfo();
   return {
     versionNumber: versionNumber,
@@ -53,11 +54,11 @@ const useVersionedData = <T extends BaseData>(
 };
 
 
-const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => {
+const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K> & VersionedData<T, K> => {
   const data: Map<string, T> = new Map<string, T>();
   const dispatch = useDispatch();
 
-  const fetchData = async (): Promise<SnapshotStore<BaseData>[]> => {
+  const fetchData = async (): Promise<SnapshotStore<T, K>[]> => {
     try {
       // Dispatch the fetchDataRequest action
       dispatch(DataActions.fetchDataRequest());
@@ -67,7 +68,7 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
       const jsonData = await responseData.json();
 
       // Assuming jsonData is the format you expect, convert it to SnapshotStore<Snapshot<Data>>[]
-      const snapshotData: SnapshotStore<BaseData>[] = jsonData.map(
+      const snapshotData: SnapshotStore<T, K>[] = jsonData.map(
         (item: any) => ({
           // Map item properties to your Snapshot<Data> structure
         })
@@ -186,7 +187,7 @@ const useDataStore = <T extends BaseData>(): DataStore<T> & VersionedData<T> => 
     const newData = data.get(id.toString());
     
     if (newData) {
-      let initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null | undefined = null;
+      let initialState: SnapshotStore<T, K> | Snapshot<T, K> | null | undefined = null;
   
       if (newData.initialState instanceof SnapshotStore) {
         initialState = newData.initialState;

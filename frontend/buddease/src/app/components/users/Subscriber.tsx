@@ -62,7 +62,7 @@ interface CustomSnapshotData extends Data {
   value: string | undefined;
 }
 
-class Subscriber<T extends BaseData> {
+class Subscriber<T extends BaseData, K extends BaseData> {
   getId() {
     throw new Error('Method not implemented.');
   }
@@ -82,7 +82,7 @@ class Subscriber<T extends BaseData> {
   private logActivity: Function | undefined;
   private triggerIncentives: Function | undefined;
   private optionalData: CustomSnapshotData | null;
-  private data: Partial<SnapshotStore<BaseData>>;
+  private data: Partial<SnapshotStore<T, K>>;
   private email: string = "";
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
@@ -109,7 +109,7 @@ class Subscriber<T extends BaseData> {
     logActivity: Function,
     triggerIncentives: Function,
     optionalData: CustomSnapshotData | null = null,
-    data: Partial<SnapshotStore<BaseData>>,
+    data: Partial<SnapshotStore<T, K>>,
     payload: T | null = null
   ) {
     this.id = id
@@ -163,7 +163,7 @@ class Subscriber<T extends BaseData> {
     return this.snapshotIds;
   }
 
-  getData(): Partial<SnapshotStore<BaseData>> | null {
+  getData(): Partial<SnapshotStore<T, K>> | null {
     return this.data;
   }
 
@@ -220,7 +220,7 @@ class Subscriber<T extends BaseData> {
     initialState: Snapshot<T> | undefined,
     snapshotConfig: SnapshotStoreConfig<BaseData, Data>[],
     delegate: SnapshotStoreDelegate<T>
-  ): SnapshotStore<BaseData>[] | undefined {
+  ): SnapshotStore<T, K>[] | undefined {
     let snapshotString: string | undefined;
     if (initialState !== undefined) {
       snapshotString = initialState.id?.toString();
@@ -243,9 +243,9 @@ class Subscriber<T extends BaseData> {
         addSnapshotSuccess: addSnapshotSuccess,
         updateSnapshot: updateSnapshot as (
           snapshotId: string,
-          data: SnapshotStore<BaseData>,
+          data: SnapshotStore<T, K>,
           events: Record<string, CalendarEvent[]>,
-          snapshotStore: SnapshotStore<BaseData>,
+          snapshotStore: SnapshotStore<T, K>,
           dataItems: RealtimeDataItem[],
           newData: T | Data,
           payload: UpdateSnapshotPayload<any>
@@ -258,7 +258,7 @@ class Subscriber<T extends BaseData> {
         updateSnapshots: updateSnapshots,
         updateSnapshotSuccess: updateSnapshotSuccess,
         updateSnapshotFailure: updateSnapshotFailure,
-        // updateSnapshotsSuccess: updateSnapshotsSuccess,
+        updateSnapshotsSuccess: updateSnapshotsSuccess,
         // updateSnapshotsFailure: updateSnapshotsFailure,
         // initSnapshot: initSnapshot,
         // takeSnapshot: takeSnapshot,
@@ -305,7 +305,7 @@ class Subscriber<T extends BaseData> {
       };
 
       return [
-        new SnapshotStore<BaseData>(
+        new SnapshotStore<T, K>(
           this.data,
           initialState as Snapshot<BaseData>,
           category as CategoryProperties,
@@ -343,7 +343,7 @@ class Subscriber<T extends BaseData> {
     snapshotContent: Map<string, T> | null | undefined,
     date: Date,
     type: NotificationType,
-    store: SnapshotStore<T>
+    store: SnapshotStore<T, K>
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const snapshotData: Snapshot<T> = {
@@ -405,9 +405,12 @@ class Subscriber<T extends BaseData> {
     return this.subscription.getId ? this.subscription.getId() : "";
   }
 
-  getSubscriberType?(): SubscriberTypeEnum | undefined {
+  getSubscriberType?(
+    userId: string,
+    snapshotId: string
+  ): SubscriberTypeEnum | undefined {
     return this.subscription?.getPlanName
-      ? this.subscription.getPlanName()
+      ? this.subscription.getPlanName({userId,snapshotId})
       : undefined;
   }
 
@@ -449,7 +452,7 @@ class Subscriber<T extends BaseData> {
     triggerIncentives: Function,
     data: T | null = null
   ) {
-    return new Subscriber<BaseData>(
+    return new Subscriber<BaseData, K>(
       id,
       name,
       subscription, 

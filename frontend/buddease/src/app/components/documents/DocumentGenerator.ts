@@ -56,6 +56,7 @@ import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import Version from "../versions/Version";
 import { DocumentSize } from "../models/data/StatusType";
 import { loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent, loadSQLDocumentContent, loadSpreadsheetDocumentContent, loadTextDocumentContent } from "./DocumentGeneratorMethods";
+import { FinancialReport } from "./documentation/report/Report";
 
 var xl = require("excel4node");
 
@@ -105,7 +106,8 @@ enum DocumentStatusEnum {
   Deleted = "deleted",
 }
 
-const documents: Document[] = [
+
+const documents: DocumentData[] = [
   {
     id: 1,
     title: "Financial Report",
@@ -122,12 +124,16 @@ const documents: Document[] = [
     previousMetadata: {} as StructuredMetadata,
     currentMetadata: {} as StructuredMetadata,
     accessHistory: [],
-    documentData: {
-      financialReport: {
-        financialReportContent: "Financial Report Content",
-        financialReportFileName: "financial_report.docx",
-      },
-    },
+    report: {
+      id: 1,
+      title: "Financial Report",
+      description: "Detailed financial report for Q1",
+      reportContent: "Financial Report Content",
+      reportFileName: "financial_report.docx",
+      financialMetrics: "Q1 Financial Metrics",
+      financialReportContent: "Financial Report Content",
+      fiscalYear: 2023
+    } as FinancialReport,
     tags: ["financial", "report", "2021"],
     topics: ["goals", "executive summary", "financial report"],
     highlights: ["goals", "objectives"],
@@ -185,6 +191,10 @@ const documents: Document[] = [
     format: "",
     uploadedByTeamId: null,
     uploadedByTeam: null,
+    documentPhase: undefined,
+    document: undefined,
+    all: null,
+    selectedDocument: null
   },
   // Add more documents as needed
 ];
@@ -400,7 +410,7 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
 
   manageDocument(
     draftId: string,
-    documentPath: DocumentObject,
+    documentPath: DocumentPath,
     newContent: CustomDocxtemplater<any>,
     dataCallback: (data: WritableDraft<DocumentObject>) => void,
     format: FormatEnum
@@ -633,4 +643,4 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
 
 export default DocumentGenerator;
 export { DocumentStatusEnum, DocumentTypeEnum, }
-export type { CustomDocxtemplater, DocumentPath, CustomPDFProxyPage, CustomPDFPage };
+export type { CustomDocxtemplater, DocumentPath, CustomPDFProxyPage, CustomPDFPage, FinancialReport };

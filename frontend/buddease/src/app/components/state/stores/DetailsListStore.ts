@@ -1,14 +1,14 @@
-import { Progress } from '@/app/components/models/tracker/ProgressBar';
-import { FC } from 'react';
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { FC } from "react";
 // DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
-import { Data } from "../../models/data/Data";
+import { BaseData, Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
-  useNotification
+  useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
@@ -30,10 +30,11 @@ import { Tag } from "../../models/tracker/Tag";
 import { Project } from "../../projects/Project";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
-import { DataAnalysisResult } from '../../projects/DataAnalysisPhase/DataAnalysisResult';
-import { snapshotType } from '../../typings/YourSpecificSnapshotType';
-import { subscribeToSnapshots } from '../../snapshots/snapshotHandlers';
-import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { snapshotType } from "../../typings/YourSpecificSnapshotType";
+import { subscribeToSnapshots } from "../../snapshots/snapshotHandlers";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { options } from "../../hooks/useSnapshotManager";
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -51,31 +52,32 @@ export type AllStatus =
 
 interface DetailsItem<T> {
   _id?: string;
-  id: string;
+  id: string | number;
   title?: string;
   type?: AllTypes;
   status?: AllStatus;
   description?: string | null | undefined;
-  startDate?: Date,
-  endDate?: Date,
-  updatedAt?: Date,
+  startDate?: Date;
+  endDate?: Date;
+  updatedAt?: Date;
   Phase?: Phase | null;
   subtitle: string;
   author?: string;
   date?: Date;
   label?: string;
-  value: string,
-  phase?: Phase,
+  value: string;
+  phase?: Phase;
   collaborators?: Member[];
   tags?: Tag[] | string[];
   analysisResults?: DataAnalysisResult[];
   tracker?: string;
+  participants?: Member[];
   // Core properties...
 }
 
 interface DetailsItemExtended<T> extends DataDetails {
+  id: string | number;
   _id?: string;
-  id: string;
   title?: string;
   name?: string;
   isRecurring?: boolean;
@@ -84,7 +86,7 @@ interface DetailsItemExtended<T> extends DataDetails {
   participants?: Member[];
   description?: string | null | undefined;
   assignedProjects?: Project[];
-  
+
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
@@ -119,7 +121,7 @@ interface DetailsItemExtended<T> extends DataDetails {
   clearCurrentProject?: () => void;
 }
 
-export interface DetailsListStore {
+export interface DetailsListStore<T extends BaseData, K extends BaseData> {
   details: Record<string, DetailsItemExtended<Data>[]>;
   detailsTitle: string;
   detailsDescription: string;
@@ -132,7 +134,7 @@ export interface DetailsListStore {
     | TaskStatus.Cancelled
     | TaskStatus.Scheduled
     | undefined;
-  snapshotStore: SnapshotStore<Snapshot<Data>>;
+  snapshotStore: SnapshotStore<T, K>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
@@ -159,7 +161,9 @@ export interface DetailsListStore {
   setDynamicNotificationMessage: (message: string) => void;
 }
 
-class DetailsListStoreClass implements DetailsListStore {
+class DetailsListStoreClass<T extends BaseData, K extends BaseData>
+  implements DetailsListStore<T, K>
+{
   details: Record<string, DetailsItemExtended<Data>[]> = {
     pending: [],
     inProgress: [],
@@ -176,7 +180,7 @@ class DetailsListStoreClass implements DetailsListStore {
     | TaskStatus.Cancelled
     | TaskStatus.Scheduled
     | undefined = undefined;
-  snapshotStore!: SnapshotStore<Snapshot<Data>>;
+  snapshotStore!: SnapshotStore<T, K>;
 
   subscribe = (callback: (snapshot: Snapshot<Data>) => void) => {};
   NOTIFICATION_MESSAGE = "";
@@ -189,8 +193,8 @@ class DetailsListStoreClass implements DetailsListStore {
 
   private async initSnapshotStore() {
     const initialState = null; // or undefined, depending on your default handling
-const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[] = []; // Example empty array
-    const delegate = this.snapshotStore.getDelegate()
+    const snapshotConfig: SnapshotStoreConfig<T, K>[] = [];  // Example empty array
+    const delegate = this.snapshotStore.getDelegate();
     const category = this.snapshotStore.determineCategory(delegate);
     await notify(
       "interna snapshot notifications",
@@ -200,19 +204,7 @@ const snapshotConfig: SnapshotStoreConfig<Snapshot<Data>, Data>[] = []; // Examp
       NotificationTypeEnum.InvalidCredentials
     );
 
-
-
-    this.snapshotStore = new SnapshotStore<Snapshot<Data>>(
-      null, // Assuming you're passing null for `snapshot`, adjust as per your actual data structure
-      category,
-      new Date(),
-      snapshotType,
-      initialState,
-      snapshotConfig,
-      subscribeToSnapshots,
-      dataStoreMethods,
-      delegate
-    );
+    this.snapshotStore = new SnapshotStore<T, K>(options);
   }
 
   updateDetailsTitle(id: string, newTitle: string): void {
@@ -479,4 +471,3 @@ const useDetailsListStore = (): DetailsListStore => {
 
 export { useDetailsListStore };
 export type { DetailsItem, DetailsItemExtended };
-

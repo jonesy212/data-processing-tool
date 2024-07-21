@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Comment } from "../../models/data/Data";
+import { Tag } from "../../models/tracker/Tag";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
@@ -23,10 +24,10 @@ interface DocumentBase {
   id: string | number;
   title: string;
   content: string;
-  description: string | null | undefined
-  tags: string[];
-  createdAt: string;
-  updatedAt?: string;
+  description?: string | null | undefined;
+  tags?: string[] | Tag[];
+  createdAt: string | Date | undefined;
+  updatedAt?: string | Date;
   createdBy: string;
   updatedBy: string;
   visibility: AllTypes;
@@ -55,9 +56,9 @@ interface DocumentStatus {
   fullscreen: boolean;
   fullscreenEnabled: boolean;
   hidden: boolean;
-  pictureInPictureEnabled: boolean;
+  pictureInPictureEnabled?: boolean;
   readyState: string;
-  visibilityState: string;
+  visibilityState?: string;
 }
 
 interface DocumentAdditionalProps {
@@ -69,8 +70,9 @@ interface DocumentAdditionalProps {
   doctype: DocumentType | null;
   ownerDocument: Document | null;
   scrollingElement: Element | null;
+  readyState: string;
   timeline: DocumentTimeline | undefined;
-  all?: any;
+  all?: string | null;
   anchors?: any;
   applets?: any;
   body?: HTMLElement;
@@ -84,7 +86,25 @@ interface DocumentAdditionalProps {
   location?: Location;
   onfullscreenchange?: ((this: Document, ev: Event) => any) | null;
   onfullscreenerror?: ((this: Document, ev: Event) => any) | null;
+
+
+
+  onpointerlockerror?: ((this: Document, ev: Event) => any) | null;
+  onpointerlockchange?: ((this: Document, ev: Event) => any) | null
+  onreadystatechange?: ((this: Document, ev: Event) => any) | null;
+  onvisibilitychange?: ((this: Document, ev: Event) => any) | null;
+  pictureInPictureEnabled?: boolean;
+
+  plugins?: any;
+  referrer: string;
+  rootElement: Element | null;
+  scripts?: any;
+  visibilityState?: string;
+  vliinkColor?: string;
+
 }
+
+
 
 
   interface Document extends DocumentBase, DocumentMetadata, DocumentStatus, DocumentAdditionalProps  {
@@ -116,17 +136,20 @@ interface DocumentAdditionalProps {
   _parent?: string;
   _parent_as_child?: boolean;
   _slices?: any[];
-  _highlight?: any;
-  _highlight_inner_hits?: any;
+  _highlight?: Record<string, any> | undefined;
+  _highlight_inner_hits?: Record<string, any> | undefined;
   _source_as_doc?: boolean;
-  _source_includes?: any[];
-  _routing_keys?: any[];
-  _routing_values?: any[];
-  _routing_values_as_array?: any[];
-  _routing_values_as_array_of_objects?: any[];
-  _routing_values_as_array_of_objects_with_key?: any[];
-  _routing_values_as_array_of_objects_with_key_and_value?: any[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value?: any[];
+  _source_includes?: string[];
+  _routing_keys?: string[];
+  _routing_values?: string[];
+  _routing_values_as_array?: string[];
+  _routing_values_as_array_of_objects?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<
+    string,
+    any
+  >[];
 }
 
   

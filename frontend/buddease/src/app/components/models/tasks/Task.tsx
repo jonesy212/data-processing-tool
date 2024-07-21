@@ -36,7 +36,7 @@ interface Task extends Data {
   dependencies?: Task[] | null;
   previouslyAssignedTo: User[];
   done: boolean;
-  data: TaskData
+  data: TaskData | undefined;
   [Symbol.iterator]?(): Iterator<any, any, undefined>;
   source: "user" | "system";
   some?: (

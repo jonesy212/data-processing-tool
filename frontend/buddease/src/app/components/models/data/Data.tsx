@@ -27,13 +27,13 @@ import CommonDetails, { SupportedData } from "../CommonData";
 import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
-import { Tag } from "../tracker/Tag";
+import { Tag, TagOptions, createTag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
 
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
-  id: string;
+  id: string | number;
   title?: string;
   description?: string | null;
   details?: DetailsItem<SupportedData>;
@@ -96,7 +96,7 @@ export interface Comment {
 
 interface BaseData {
   _id?: string;
-  id?: string | number;
+  id: string | number;
   title?: string;
   data?: any;
   description?: string | null;
@@ -110,11 +110,11 @@ interface BaseData {
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
   value?: number | string | undefined;
-  initialState?:
-    | SnapshotStore<BaseData>
-    | Snapshot<BaseData>
-    | null
-    | undefined; 
+  initialState?: 
+  | SnapshotStore<BaseData, BaseData> 
+  | Snapshot<BaseData, BaseData> 
+  | null 
+  | undefined;
   dueDate?: Date | null;
   priority?: string | AllStatus;
   assignee?: UserAssignee | null;
@@ -146,13 +146,12 @@ interface BaseData {
   additionalData?: any;
   ideas?: Idea[];
   members?: number | Member[];
-
   leader?: User | null;
-  snapshots?: SnapshotStore<BaseData>[];
+  snapshots?: SnapshotStore<BaseData, BaseData>[];
   text?: string;
   category?: string | CategoryProperties | undefined;
   [key: string]: any;
-  getData?: (id: number) => Promise<SnapshotStore<BaseData>[]>; // Define the getData method
+  getData?: (id: number) => Promise<SnapshotStore<BaseData, BaseData>[]>; 
 
   // Implement the `then` function using the reusable function
   then?: <T extends Data>(
@@ -168,33 +167,41 @@ interface Data extends BaseData {
 }
 
 // Define the UserDetails component
-const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => (
-  <CommonDetails
-    data={{
-      id: data.id as string,
-      title: "Data Details",
-      description: "Data descriptions",
-      details: data.details,
-      completed: !!data.completed,
-    }}
-    details={{
-      _id: data._id,
-      id: data.id as string,
-      title: data.title,
-      description: data.description,
-      phase: data.phase,
-      isActive: data.isActive,
-      tags: data.tags?.map((tag) => (tag as Tag).getOptions().name) || [],
-      status: data.status,
-      type: data.type,
-      analysisType: data.analysisType,
-      analysisResults: data.analysisResults,
-      updatedAt: data.uploadedAt ? new Date(data.uploadedAt) : new Date(),
-      // fakeData: data.fakeData,
-      // Add other properties as needed
-    }}
-  />
-);
+
+const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
+  const getTagNames = (tags: TagOptions[] | string[]): string[] => {
+    return tags
+      .filter((tag): tag is TagOptions => typeof tag !== 'string') // Type guard for TagOptions
+      .map(tag => tag.name);
+  };
+
+  return (
+    <CommonDetails
+      data={{
+        id: data.id,
+        title: "Data Details",
+        description: "Data descriptions",
+        details: data.details,
+        completed: !!data.completed,
+      }}
+      details={{
+        _id: data._id,
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        phase: data.phase,
+        isActive: data.isActive,
+        tags: data.tags ? getTagNames(data.tags) : [], // Use the type guard
+        status: data.status,
+        type: data.type,
+        analysisType: data.analysisType,
+        analysisResults: data.analysisResults,
+        updatedAt: data.uploadedAt ? new Date(data.uploadedAt) : new Date(),
+        // Add other properties as needed
+      }}
+    />
+  );
+};
 
 const data: Data = {
   _id: "1",
@@ -208,7 +215,7 @@ const data: Data = {
   scheduled: true,
   status: "Pending",
   isActive: true,
-  tags: [new Tag({ id: "1", name: "Important", color: "red" })],
+  tags: [createTag("1", "Important", "red")],
   phase: {} as Phase,
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -726,7 +733,7 @@ const data: Data = {
     },
   },
   snapshots: [],
-  getData: function (): Promise<SnapshotStore<BaseData>[]> {
+  getData: function (): Promise<SnapshotStore<BaseData, BaseData>[]> {
     // Implement logic to get the data
     return Promise.resolve([]);
   },

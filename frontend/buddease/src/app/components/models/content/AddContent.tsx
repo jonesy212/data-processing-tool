@@ -6,11 +6,18 @@ import UserRoles from "../../users/UserRoles";
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
 import ContentItemComponent from '@/app/components/models/content/ContentItem';
+import { CustomSnapshotData } from "../../snapshots/LocalStorageSnapshotStore";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 interface Content {
-  id: number;
+  id: string | number | undefined;
   title: string;
   description: string;
+  subscriberId: string,
+  category: string | CategoryProperties | undefined,
+  timestamp: string | Date,
+  length: 0,
+  data: CustomSnapshotData | undefined,
 }
 
 interface ContentProps {
@@ -39,6 +46,11 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
       id: Math.floor(Math.random() * 1000),
       title,
       description,
+      subscriberId: "",
+      category: undefined,
+      timestamp: "",
+      length: 0,
+      data: undefined
     };
 
     // Send new content to server or perform other actions
@@ -411,7 +423,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               lastName: "",
               friends: [],
               blockedUsers: [],
-              settings: undefined,
+              settings: null,
               interests: [],
               privacySettings: undefined,
               notifications: undefined,
@@ -443,6 +455,8 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
           description: "Sample Description",
           status: "Sample Status",
           updatedAt: new Date(),
+          subtitle: "Sample Subtitle",
+          value: "Sample Value",
           participants: [
             {
               _id: "123",
@@ -478,7 +492,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               lastName: "",
               friends: [],
               blockedUsers: [],
-              settings: undefined,
+              settings: null,
               interests: [],
               privacySettings: undefined,
               notifications: undefined,

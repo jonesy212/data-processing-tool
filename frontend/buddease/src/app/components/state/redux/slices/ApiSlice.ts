@@ -6,7 +6,6 @@ import { Data } from "@/app/components/models/data/Data";
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
-import { Snapshot, SnapshotStore } from "@/app/components/snapshots/SnapshotStore";
 import { EncryptionSetting, Permission } from "@/app/components/users/Permission";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
@@ -14,6 +13,8 @@ import { useDispatch } from "react-redux";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { addTask } from "./TaskSlice";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 
 interface CommunityEvent {
   id: string;
