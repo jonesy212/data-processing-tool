@@ -2,51 +2,73 @@
 import { BaseData } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
+import SnapshotStore from "./SnapshotStore";
 
 type Callback<T> = (snapshot: T) => void;
-type Subscriber<T, K> = (snapshot: Snapshot<T, K>) => void;
 
-const snapshotSubscribers: Record<string, Callback<Snapshot<any, any>>[]> = {};
+const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
+  new Map();
 
-const subscribeToSnapshotsImpl = <T extends BaseData, K extends BaseData>(
+  const subscribeToSnapshotsImpl = <T extends BaseData, K extends BaseData>(
+    snapshotId: string,
+    snapshotCallback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
+    snapshot: Snapshot<T, K>
+  ) => {
+    // Ensure the snapshotSubscribers map has an entry for the snapshotId
+    if (!snapshotSubscribers.has(snapshotId)) {
+      snapshotSubscribers.set(snapshotId, []);
+    }
+  
+    // Add the callback to the list of subscribers for the given snapshotId
+    const typedCallback: Callback<Snapshot<T, K>> = (snapshot) => {
+      // Safely convert snapshot to unknown first before casting to desired type
+      snapshotCallback([snapshot as unknown as SnapshotStore<T, K>] as unknown as Snapshots<T>);
+    };
+  
+    snapshotSubscribers.get(snapshotId)?.push(typedCallback);
+  
+    // Call the callback immediately with the current snapshot
+    typedCallback(snapshot);
+  
+    // Simulate fetching or creating snapshots
+    const snapshots: Snapshots<T> = []; // Replace with actual logic to get snapshots
+  
+    // Call the callback with each snapshot
+    snapshots.forEach(snap => {
+      if (snap.type !== null && snap.type !== undefined && snap.timestamp !== undefined) {
+        typedCallback([{
+          ...snap,
+          type: snap.type as string,
+          timestamp: typeof snap.timestamp === 'number' ? new Date(snap.timestamp) : snap.timestamp,
+          store: snap.store,
+          dataStore: snap.dataStore,
+          // data: snap.data ?? ({} as T),
+        }]);
+      }
+    });
+  };
+
+const subscribeToSnapshotImpl = <T extends BaseData, K extends BaseData>(
   snapshotId: string,
-  callback: Subscriber<T, K> // Ensure this matches the expected type
+  callback: Callback<Snapshot<T, K>>,
+  snapshot: Snapshot<T, K>
 ) => {
-  // Ensure the snapshotSubscribers map has an entry for the snapshotId
+  // Add the callback to the list of subscribers for the given snapshotId
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
   }
-
-  // Add the callback to the list of subscribers for the snapshotId
   snapshotSubscribers.get(snapshotId)?.push(callback);
 
-  // Simulate fetching or creating snapshots
-  const snapshots: Snapshots<T> = []; // Replace with actual logic to get snapshots
-
-  // Call the callback with each snapshot
-  snapshots.forEach(snapshot => callback(snapshot as Snapshot<T, K>));
+  // Call the callback immediately with the current snapshot
+  callback(snapshot);
 };
-
-  
-  
-  const subscribeToSnapshotImpl = <T extends BaseData>(
-    snapshotId: string,
-    callback: Callback<Snapshot<T>>,
-    snapshot: Snapshot<T, T>
-  ) => {
-    // Add the callback to the list of subscribers for the given snapshotId
-    if (!snapshotSubscribers[snapshotId]) {
-      snapshotSubscribers[snapshotId] = [];
-    }
-    snapshotSubscribers[snapshotId].push(callback);
-  
-    // Call the callback immediately with the current snapshot
-    callback(snapshot);
-  };
 // Function to trigger callbacks when a snapshot is updated
 const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>) => {
-  if (snapshotSubscribers[snapshotId]) {
-    snapshotSubscribers[snapshotId].forEach((callback) => callback(snapshot));
+  const subscribers = snapshotSubscribers.get(snapshotId);
+  if (subscribers) {
+    subscribers.forEach((callback: Callback<Snapshot<any, any>>) =>
+      callback(snapshot)
+    );
   }
 };
 

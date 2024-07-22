@@ -68,7 +68,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   }
   private _id: string | undefined;
   private readonly name: string;
-  private subscription: Subscription;
+  private subscription: Subscription<T>;
   private subscriberId: string;
   private subscribers: ((data: Snapshot<T>) => void)[] = [];
   private onSnapshotCallbacks: ((snapshot: Snapshot<T>) => void)[] = [];
@@ -82,7 +82,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   private logActivity: Function | undefined;
   private triggerIncentives: Function | undefined;
   private optionalData: CustomSnapshotData | null;
-  private data: Partial<SnapshotStore<T, K>>;
+  public data: Partial<SnapshotStore<T, K>> = {};
   private email: string = "";
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
@@ -102,14 +102,14 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   constructor(
     id: string,
     name: string,
-    subscription: Subscription,
+    subscription: Subscription<T>,
     subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
     logActivity: Function,
     triggerIncentives: Function,
     optionalData: CustomSnapshotData | null = null,
-    data: Partial<SnapshotStore<T, K>>,
+    // data: Partial<SnapshotStore<T, K>>,
     payload: T | null = null
   ) {
     this.id = id
@@ -121,7 +121,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     this.logActivity = logActivity;
     this.triggerIncentives = triggerIncentives;
     this.optionalData = optionalData;
-    this.data = data;
+    // this.data = data;
     this.payload = payload !== null ? payload : (optionalData as unknown as T);
   }
 
@@ -343,7 +343,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     snapshotContent: Map<string, T> | null | undefined,
     date: Date,
     type: NotificationType,
-    store: SnapshotStore<T, K>
+    store: SnapshotStore<T, T>
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const snapshotData: Snapshot<T> = {
@@ -399,6 +399,10 @@ class Subscriber<T extends BaseData, K extends BaseData> {
 
   getSubscriberId(): string {
     return this.subscriberId;
+  }
+
+  getSubscription(): Subscription<T> {
+    return this.subscription;
   }
 
   getSubscriptionId?(): string {

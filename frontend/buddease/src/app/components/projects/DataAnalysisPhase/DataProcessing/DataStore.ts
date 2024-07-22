@@ -60,20 +60,14 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
 
   const fetchData = async (): Promise<SnapshotStore<T, K>[]> => {
     try {
-      // Dispatch the fetchDataRequest action
       dispatch(DataActions.fetchDataRequest());
-
-      // Simulate fetching data from an API
       const responseData = await fetch("https://api.example.com/data");
       const jsonData = await responseData.json();
-
-      // Assuming jsonData is the format you expect, convert it to SnapshotStore<Snapshot<Data>>[]
       const snapshotData: SnapshotStore<T, K>[] = jsonData.map(
         (item: any) => ({
           // Map item properties to your Snapshot<Data> structure
         })
       );
-
       return snapshotData;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -86,7 +80,6 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
   };
 
   const removeData = (id: number) => {
-    // Dispatch the removeData action
     dispatch(DataActions.removeData(id));
   };
 
@@ -123,16 +116,14 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
   };
 
   const updateDataTitle = (id: number, title: string) => {
-    // Dispatch the updateDataTitle action
     dispatch(DataActions.updateDataTitle({ id, title }));
   };
 
   const updateDataDescription = (id: number, description: string) => {
-    // Dispatch the updateDataDescription action
     dispatch(
       DataActions.updateDataDescription({
         type: "updateDataDescription",
-        payload: "Updated description",
+        payload: description,
       })
     );
   };
@@ -141,7 +132,6 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
     id: number,
     status: "pending" | "inProgress" | "completed"
   ) => {
-    // Dispatch the updateDataStatus action
     dispatch(
       DataActions.updateDataStatus({
         type: "updateDataStatus",
@@ -153,13 +143,10 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
   const getDataVersions = async (id: number): Promise<T[] | undefined> => {
     try {
       const response = await apiData.getDataVersions(id);
-
-      // Use type assertion to map response to T[]
       const dataVersions: T[] = response.map((version): T => {
         const { id, versionNumber, appVersion, content, ...rest } = version;
         return rest as unknown as T;
       });
-
       return dataVersions;
     } catch (error) {
       console.error("Error fetching data versions:", error);
@@ -171,9 +158,7 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
     const { data: newData } = payload;
     newData.forEach((item: T) => {
       if ('id' in item) {
-        const snapshotItem: Snapshot<T> = transformDataToSnapshot(item);
-
-
+        const snapshotItem: Snapshot<T, K> = transformDataToSnapshot(item);
         if (snapshotItem.data) {
           snapshotItem.data.set(item.id!.toString(), item);
         }
@@ -182,45 +167,35 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
   };
 
   const addDataStatus = (id: number, status: "pending" | "inProgress" | "completed"): void => {
-    // Implement your logic here
-    // Example: Update data status based on id and status
     const newData = data.get(id.toString());
     
     if (newData) {
       let initialState: SnapshotStore<T, K> | Snapshot<T, K> | null | undefined = null;
   
       if (newData.initialState instanceof SnapshotStore) {
-        initialState = newData.initialState;
+        initialState = newData.initialState as SnapshotStore<BaseData, BaseData>
       } else if (newData.initialState === null || newData.initialState === undefined) {
         initialState = null;
       } else {
-        // Transform newData.initialState to Map<string, T> if necessary
-        // Example:
-        initialState = convertMapToSnapshotStore(newData.initialState); 
+        initialState = convertMapToSnapshotStore(newData.initialState) as SnapshotStore<T, K>;
       }
   
-      const snapshotItem: Snapshot<T> = {
+      const snapshotItem: Snapshot<T, K> = {
         id: id.toString(),
         data: new Map<string, T>().set(id.toString(), newData),
         initialState: initialState,
         timestamp: new Date(),
       };
   
-      // Update or set the data in the map
-      data.set(id.toString(), snapshotItem as T);
+      data.set(id.toString(), snapshotItem.data?.get(id.toString())!);
   
-      // Dispatch the addDataSuccess action
       dispatch(DataActions.addDataSuccess({ data: [snapshotItem] }));
     } else {
-      // Dispatch the addDataFailure action
       dispatch(DataActions.addDataFailure({ error: "Invalid data" }));
     }
   };
-  
-
 
   const updateDataVersions = (id: number, versions: T[]) => {
-    // Dispatch the updateDataVersions action
     dispatch(
       DataActions.updateDataVersions({
         payload: {
@@ -262,7 +237,6 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
     }
   };
 
-  // Return the composed object with all methods and properties
   const { versionNumber } = getCurrentAppInfo();
   return {
     data,
@@ -285,8 +259,8 @@ const useDataStore = <T extends BaseData, K extends BaseData>(): DataStore<T, K>
     getFrontendVersion,
     versionNumber: versionNumber,
     appVersion: currentAppVersion,
-    content: {}, // Provide appropriate values
-    getData: fetchData, // Provide appropriate values
+    content: {},
+    getData: fetchData,
     getAllKeys
   };
 };

@@ -7,22 +7,19 @@ import {
 } from "@/app/components/support/NotificationContext";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useEffect, useState } from "react";
+import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
   CustomSnapshotData,
-  Payload,
   Snapshot,
   Snapshots,
-  UpdateSnapshotPayload,
+  createSnapshotOptions
 } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
-import SnapshotStore, {
-  SnapshotData,
-  SnapshotStoreSubset,
-  handleSnapshotOperation,
-} from "../snapshots/SnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import { Callback, subscribeToSnapshotImpl, subscribeToSnapshotsImpl } from "../snapshots/subscribeToSnapshotsImplementation";
 import { useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTodoManagerStore from "../state/stores/TodoStore";
@@ -30,44 +27,53 @@ import { useUndoRedoStore } from "../state/stores/UndoRedoStore";
 import { userManagerStore } from "../state/stores/UserStore";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo } from "../todos/Todo";
+import { convertSnapshot } from "../typings/YourSpecificSnapshotType";
 import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
 import asyncFunction from "../utils/asyncFunction";
 import useAsyncHookLinker, { LibraryAsyncHook } from "./useAsyncHookLinker";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { Content } from "../models/content/AddContent";
-import { Callback, subscribeToSnapshotImpl, subscribeToSnapshotsImpl } from "../snapshots/subscribeToSnapshotsImplementation";
 
 const { notify } = useNotification();
 
 interface SnapshotStoreOptions<T extends BaseData, K extends BaseData> {
   data: Partial<SnapshotStore<T, K>>;
-  initialState?:
-  SnapshotStore<T, K>
-  | Snapshot<T, K>
-  | null
-  | undefined;
+  initialState?: SnapshotStore<T, K> | Snapshot<T, K> | null;
   category: string | CategoryProperties;
   date: string | Date;
   type: string | null;
   snapshotId: string | number;
-
   snapshotConfig: SnapshotStoreConfig<T, K>[];
-  subscribeToSnapshots?: (snapshotId: string, callback: (snapshots: Snapshots<T>) => void) => void;
-  subscribeToSnapshot?: (snapshotId: string, callback: (snapshot: Snapshot<T, K>) => void, snapshot: Snapshot<T, K>) => void;
-  unsubscribeToSnapshots?: (snapshotId: string, callback: (snapshot: Snapshots<T>) => void) => void;
-  unsubscribeToSnapshot?: (snapshotId: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+  subscribeToSnapshots?: (
+    snapshotId: string,
+    callback: (snapshots: Snapshots<T>) => Subscriber<T, T> | null,
+    snapshot: Snapshot<T, K>
+  ) => void;
+  subscribeToSnapshot?: (
+    snapshotId: string,
+    callback: Callback<Snapshot<T, T>>,
+    snapshot: Snapshot<T, K>
+  ) => void;
+  unsubscribeToSnapshots?: (
+    snapshotId: string,
+    callback: (snapshot: Snapshots<T>) => void
+  ) => void;
+  unsubscribeToSnapshot?: (
+    snapshotId: string,
+    callback: (snapshot: Snapshot<T, K>) => void
+  ) => void;
   delegate: SnapshotStoreConfig<T, K>[];
   dataStoreMethods: DataStore<T, K>;
   configOption?: SnapshotStoreConfig<T, K> | null;
 }
+
 
 interface SnapshotManager<T extends BaseData, K extends BaseData> {
   initSnapshot: (
     snapshotConfig: SnapshotStoreConfig<T, K>,
     snapshotData: SnapshotStore<T, K>
   ) => Promise<void>;
+  state: SnapshotStore<T, K>[];
+  
 }
 
 // Define the async hook configuration
@@ -101,7 +107,7 @@ const options = <T extends BaseData, K extends BaseData = T>({
   category,
   dataStoreMethods,
 }: {
-  initialState: SnapshotStore<T, T> | Snapshot<T, T> | null;
+  initialState: SnapshotStore<T, K> | Snapshot<T, K> | null;
   snapshotId: string;
   category: CategoryProperties;
   dataStoreMethods: Partial<DataStore<T, K>>;
@@ -113,23 +119,35 @@ const options = <T extends BaseData, K extends BaseData = T>({
   date: new Date(),
   type: "default-type",
   snapshotConfig: [], // Adjust as needed
-  subscribeToSnapshots: (snapshotId: string, callback: Subscriber<T, K>) => {
-    subscribeToSnapshotsImpl(snapshotId, callback);
+  subscribeToSnapshots: (
+    snapshotId: string,
+    callback: (snapshots: Snapshots<T>) => Subscriber<T, T> | null,
+    snapshot: Snapshot<T, K>
+  ) => {
+    const convertedSnapshot = convertSnapshot(snapshot);
+    subscribeToSnapshotsImpl(snapshotId, callback, convertedSnapshot);
   },
-  subscribeToSnapshot: (snapshotId: string,
-    callback: Callback<Snapshot<T, K>>,
-    snapshot: Snapshot<T, K>) => {
-    subscribeToSnapshotImpl(snapshotId, callback, snapshot);
+  subscribeToSnapshot: (
+    snapshotId: string,
+    callback: Callback<Snapshot<T, T>>,
+    snapshot: Snapshot<T, K>
+  ) => {
+    const convertedSnapshot = convertSnapshot(snapshot);
+    subscribeToSnapshotImpl(snapshotId, callback, convertedSnapshot);
   },
   delegate: [], // Adjust as needed
   dataStoreMethods: dataStoreMethods as DataStore<T, K>,
 });
 
 
-
 // Function to convert Snapshot<T, K> to Content
-const convertSnapshotToContent = (snapshot: Snapshot<T, K>): Content => {
-  // Example conversion logic. Adjust as needed.
+const convertSnapshotToContent = <T extends BaseData, K extends BaseData>(
+  snapshot: Snapshot<T, K>
+): Content => {
+  const data: CustomSnapshotData | null | undefined = snapshot.data instanceof Map
+    ? convertMapToCustomSnapshotData(snapshot.data)
+    : snapshot.data;
+
   return {
     id: snapshot.id ?? "default-id",
     title: snapshot.title ?? "default-title",
@@ -138,22 +156,26 @@ const convertSnapshotToContent = (snapshot: Snapshot<T, K>): Content => {
     category: snapshot.category,
     timestamp: snapshot.timestamp ?? new Date(),
     length: 0,
-    data: snapshot.data ?? {} as CustomSnapshotData,
+    data: data
   };
+};
+
+// Example conversion function from Map to CustomSnapshotData
+const convertMapToCustomSnapshotData = (map: Map<string, BaseData>): CustomSnapshotData => {
+  // Implement the logic to convert a Map to CustomSnapshotData
+  // For example:
+  const customData: CustomSnapshotData = {
+    id: "map-id", // or some appropriate value
+    // other required properties
+  };
+  return customData;
 };
 
 const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
   snapshotStore: SnapshotStore<T, K>,
   snapshotContent?: Snapshot<T, K>
 ): SnapshotStoreConfig<T, K> => {
-  let content: string | Content | undefined;
-
-  if (snapshotContent) {
-    // Convert or map Snapshot<T, K> to Content
-    content = convertSnapshotToContent(snapshotContent);
-  } else {
-    content = undefined;
-  }
+  const content = snapshotContent ? convertSnapshotToContent(snapshotContent) : undefined;
 
   return {
     snapshotStore,
@@ -165,9 +187,8 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
     id: null,
     data: {} as T,
     initialState: null,
-    handleSnapshot: (snapshot: Snapshot<T, T> | null, snapshotId: string) => {
+    handleSnapshot: (snapshot: Snapshot<T, K> | null, snapshotId: string) => {
       if (snapshot) {
-        // Handle the snapshot
         console.log(`Handling snapshot with ID: ${snapshotId}`);
       } else {
         console.log(`No snapshot to handle for ID: ${snapshotId}`);
@@ -176,9 +197,48 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
     state: null,
     snapshots: [],
     subscribers: [],
+    category: "default-category", // Adjust if needed
+    getSnapshotId: () => "default-id", // Provide an appropriate implementation
+    snapshot: async <T extends BaseData, K extends BaseData>(
+      id: string,
+      snapshotData: SnapshotStoreConfig<T, K>,
+      category: string | CategoryProperties | undefined,
+      callback: (snapshotStore: SnapshotStore<T, K>) => void
+    ) => {
+      // Create or obtain a SnapshotStore instance as needed
+      /* obtain or create your snapshot object */
+      const snapshot: Snapshot<T, K> = snapshotData.createSnapshot(
+        id,
+        snapshotData,
+        category,
+        callback
+      );
+      
+      // Ensure that createSnapshotOptions returns the correct type
+      const options: SnapshotStoreOptions<T, K> = createSnapshotOptions<T, K>(snapshot);
+      
+      // Ensure that SnapshotStore is correctly instantiated
+      const snapshotStore = new SnapshotStore<T, K>(options);
+      
+      // Call the provided callback function with the snapshot store
+      callback(snapshotStore);
+      
+      // Return the result
+      return {
+        snapshotStore,
+      };
+    }, // Adjust if needed
+    createSnapshot: () => ({ 
+      id: "default-id",
+      data: new Map<string, T>(),
+      timestamp: new Date(),
+      category: "default-category",
+      subscriberId: "default-subscriber-id",
+      // Adjust as needed
+    }) // Provide an appropriate implementation
+    // Include other required properties and methods
   };
 };
-
 
 
 
@@ -693,7 +753,7 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
     };
 
     const removeSnapshot = async (
-      snapshotToRemove: SnapshotStore<BaseData, K>
+      snapshotToRemove: Snapshot<T, K>
     ) => {
       try {
         const response = await fetch(`/api/snapshots/${snapshotToRemove.id}`, {
@@ -1020,5 +1080,6 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
 };
 
 export default useSnapshotManager;
-export type { SnapshotStoreOptions };
 export { options };
+export type { SnapshotManager, SnapshotStoreOptions };
+

@@ -17,7 +17,7 @@ interface Content {
   category: string | CategoryProperties | undefined,
   timestamp: string | Date,
   length: 0,
-  data: CustomSnapshotData | undefined,
+  data: CustomSnapshotData | null | undefined,
 }
 
 interface ContentProps {

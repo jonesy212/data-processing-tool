@@ -128,6 +128,7 @@ const SNAPSHOT_STORE_CONFIG = snapshotConfig;
 }
 
 interface SnapshotData<T extends BaseData, K extends BaseData = T> {
+  // id: string
   _id?: string;
   title?: string;
   description?: string | null;
@@ -135,7 +136,7 @@ interface SnapshotData<T extends BaseData, K extends BaseData = T> {
   key?: string;
   topic?: string;
   priority?: string | PriorityTypeEnum;
-  subscription?: Subscription | null;
+  subscription?: Subscription<T> | null;
   config?: SnapshotStoreConfig<BaseData, any>[] | null;
   metadata?: any;
   isExpired?: boolean;
@@ -156,7 +157,7 @@ interface SnapshotData<T extends BaseData, K extends BaseData = T> {
 
 interface Snapshot<T extends BaseData, K extends BaseData = T>
   extends CoreSnapshot<T, K>,
-    SnapshotData<T> {
+  SnapshotData<T> {
   // Additional specific properties
 }
 
@@ -527,7 +528,7 @@ const subscription: Subscription = {
 };
 const subscriberId = getSubscriberId.toString();
 
-const subscriber = new Subscriber<T>(
+const subscriber = new Subscriber<T, K>(
   "_id",
   "John Doe",
   subscription,
@@ -541,7 +542,7 @@ const subscriber = new Subscriber<T>(
 );
 subscriber.id = "new-id"; // Set the private property using the setter method
 
-const snapshots: Snapshots<Data> = [
+const snapshots: Snapshots<BaseData> = [
   {
     id: "1",
     data: {
@@ -690,4 +691,4 @@ const snapshots: Snapshots<Data> = [
 ];
 
 
-export {snapshots}
+export {snapshots, createSnapshotOptions}

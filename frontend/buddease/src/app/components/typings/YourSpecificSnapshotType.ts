@@ -6,6 +6,7 @@ import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
 import SnapshotStore, { defaultCategory } from "../snapshots/SnapshotStore";
 import { generateSnapshotId } from "../utils/snapshotUtils";
 import { options } from "../hooks/useSnapshotManager";
+import { Subscriber } from '../users/Subscriber';
 
 type T = BaseData; // BaseData is a base type shared by all data entities
 type K = T;        // K could be the same as T or a different specialized type
@@ -66,6 +67,31 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(sn
     store: snapshot.store ? convertToSnapshotStoreConfig(snapshot.store) : undefined
   })) : null;
 
+
+  function isSnapshot<T, K>(obj: any): obj is Snapshot<T, K> {
+    return obj && typeof obj === 'object' && 'id' in obj && 'data' in obj;
+  }
+
+  function isSubscriber<T, K>(obj: any): obj is Subscriber<T, K> {
+    return obj && typeof obj === 'object' && 'getId' in obj && '_id' in obj && 'name' in obj &&'subscription' in obj;
+  }
+
+  //createa a mappedSubscribers:
+  const mappedSubscribers: Subscriber<T, K>[] = snapshotStore.subscribers.map(s => {
+    if (isSubscriber<T, K>(s)) {
+      return {
+        ...s,
+        getId: s.getId,
+        _id: s.getId(),
+        name: s.getName(),
+        subscription: s.getSubscription(),
+        // Add other required properties here
+      };
+    } else {
+      // Handle the case where `s` is not a `Subscriber<T, K>`
+      throw new Error("Invalid subscriber type");
+    }
+  });
   // Example mapping, adjust as per your actual properties and requirements
   return {
     id: snapshotStore.id,
@@ -78,7 +104,7 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(sn
     timestamp: snapshotStore.date, // Assuming date is timestamp in SnapshotStoreConfig
     state: mappedState,
     snapshots: mappedSnapshots,
-    subscribers: snapshotStore.subscribers,
+    subscribers: mappedSubscribers,
     subscription: snapshotStore.subscription ? {
       unsubscribe: snapshotStore.subscription.unsubscribe ? snapshotStore.subscription.unsubscribe : () => {},
       portfolioUpdates: snapshotStore.subscription.portfolioUpdates ? snapshotStore.subscription.portfolioUpdates : () => {},
@@ -158,7 +184,7 @@ const snapshotType = <T extends BaseData>(snapshot: Snapshot<T>): Snapshot<T> =>
   newSnapshot.store = snapshot.store as SnapshotStore<T, T>;
   newSnapshot.state = snapshot.state as Snapshot<T>;
   newSnapshot.todoSnapshotId = snapshot.todoSnapshotId || "";
-  newSnapshot.initialState = snapshot.initialState as ChosenSnapshotState
+  newSnapshot.initialState = snapshot.initialState 
   return newSnapshot;
 };
 
@@ -206,6 +232,31 @@ function convertMapToSnapshotStore<T extends BaseData>(map: Map<string, T>): Sna
   return snapshotStore;
 }
 
-export { convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, isSnapshotStore, snapshotType, convertToSnapshotStoreConfig, convertMapToSnapshotStore };
+
+function convertSnapshot<T extends BaseData>(snapshot: Snapshot<T, any>): Snapshot<T, T> {
+  return {
+    ...snapshot,
+    store: snapshot.store ? new SnapshotStore<T, T>({
+      ...snapshot.store,
+      dataStoreMethods: snapshot.store.getDataStoreMethods().map(method => ({
+        ...method,
+         snapshot: (id, snapshotData, category, callback) =>
+           method.snapshot(id, snapshotData as SnapshotStoreConfig<any, T>, category, callback)
+      })) as SnapshotStoreMethod<T, T>[] ?? [],
+      delegate: snapshot.store.getDelegate().map(delegateConfig => ({
+        ...delegateConfig,
+        data: delegateConfig.data as T,
+        snapshotStore: delegateConfig.snapshotStore as SnapshotStore<T, T>
+      })) as SnapshotDelegateConfig<T, T>[] ?? [],
+      snapshotConfig: snapshot.store.snapshotConfig?.map(config => ({
+        ...config,
+        snapshot: (id, snapshotData, category, callback) => 
+          config.snapshot(id, snapshotData as SnapshotStoreConfig<any, T>, category, callback)
+      })) as SnapshotStoreConfig<T, T>[] ?? [],
+    }) : undefined
+  };
+}
+
+export { convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, isSnapshotStore, snapshotType, convertToSnapshotStoreConfig, convertMapToSnapshotStore, convertSnapshot };
 export type { ChosenSnapshotState };
 
