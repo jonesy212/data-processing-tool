@@ -22,7 +22,7 @@ interface ExtendedVersionData {
   content: string; // Include content here if needed
   metadata: {
     author: string;
-    timestamp: string | Date | undefined;
+    timestamp: string | number | Date | undefined;
     revisionNotes?: string;
     // Add other metadata fields as needed
   };

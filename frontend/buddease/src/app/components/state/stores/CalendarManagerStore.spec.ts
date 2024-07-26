@@ -35,7 +35,8 @@ const convertToPartialFakeDataEvent = (fakeData: FakeDataPartial): PartialFakeDa
   teamMemberId: '',
   then: function (callback: (newData: Snapshot<Data>) => void): void {
     throw new Error('Function not implemented.');
-  }
+  },
+  getData: ""
 });
 describe("CalendarManagerStoreClass", () => {
   let calendarManagerStore = useCalendarManagerStore();

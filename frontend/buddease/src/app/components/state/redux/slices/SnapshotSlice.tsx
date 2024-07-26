@@ -10,14 +10,14 @@ import { useSnapshotStore } from "@/app/components/snapshots/useSnapshotStore";
 import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { BaseData, Data } from "@/app/components/models/data/Data";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotConfig";
-
+import { Snapshot, Snapshots } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { K, SnapshotStoreConfig, T } from "@/app/components/snapshots/SnapshotConfig";
 
 
 interface SnapshotState {
   snapshotId: string;
-  snapshots: SnapshotStore<BaseData>[];
+  snapshotsStore: SnapshotStore<BaseData, BaseData>[];
+  snapshots: Snapshots<BaseData>
   loading: boolean;
   error: string | null;
 }
@@ -27,6 +27,7 @@ const initialState: SnapshotState = {
   snapshots: [],
   loading: false,
   error: null,
+  snapshotsStore: []
 };
 
 export const useSnapshotSlice = createSlice({
@@ -34,7 +35,7 @@ export const useSnapshotSlice = createSlice({
   initialState,
   reducers: {
     addSnapshot: (state,
-      action: PayloadAction<WritableDraft<SnapshotStore<BaseData>>>
+      action: PayloadAction<WritableDraft<SnapshotStore<BaseData, K>>>
     ) => {
       state.snapshots.push(action.payload);
     },
@@ -71,7 +72,7 @@ export const useSnapshotSlice = createSlice({
     },
     sendNotification: (
       state,
-      action: PayloadAction<{ snapshot: Snapshot<Data>; subscriber: Subscriber<any> }>
+      action: PayloadAction<{ snapshot: Snapshot<Data>; subscriber: Subscriber<BaseData,K> }>
     ) => {
       const { snapshot, subscriber } = action.payload;
       if (snapshot.id && subscriber.getData()?.name) {
@@ -100,7 +101,7 @@ export const useSnapshotSlice = createSlice({
       state.error = null;
 
       const notifySubscribers = async (
-        subscribers: Subscriber<any>[]
+        subscribers: Subscriber<T, K>[]
       ) => {
         const { startDate, endDate } = action.payload;
         const snapshots = state.snapshots.filter(
@@ -123,7 +124,8 @@ export const useSnapshotSlice = createSlice({
             }
           }
         }
-      };      notifySubscribers(subscribers)
+      };
+      notifySubscribers(subscribers)
     },
 
     batchFetchSnapshotsRequest: (
@@ -138,8 +140,8 @@ export const useSnapshotSlice = createSlice({
       state.error = null;
 
       const notifySubscribers = async (
-        subscribers: Subscriber<any>[],
-        action: PayloadAction<{ snapshot: Snapshot<Data>; subscriber: Subscriber<any> }>
+        subscribers: Subscriber<T, K>[],
+        action: PayloadAction<{ snapshot: Snapshot<Data>; subscriber: Subscriber<T, K> }>
       ) => {
         const { snapshot, subscriber } = action.payload;
         if (snapshot.id && subscriber.getData()?.name) {
@@ -168,9 +170,9 @@ export const useSnapshotSlice = createSlice({
           key: "value",
           topic: "topic",
           configOption: {} as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>,
-          config: {} as WritableDraft<SnapshotStoreConfig<BaseData>>,
-          subscription: {} as WritableDraft<SnapshotStoreConfig<BaseData>>,
-          initialState: {} as WritableDraft<SnapshotStoreConfig<BaseData>>,
+          config: {} as WritableDraft<SnapshotStoreConfig<T, K>>[],
+          subscription: {} as WritableDraft<SnapshotStoreConfig<T, K>>,
+          initialState: {} as WritableDraft<SnapshotStoreConfig<T, K>>,
           category: "category",
           store,
           timestamp: new Date(),
@@ -190,20 +192,21 @@ export const useSnapshotSlice = createSlice({
       ];
       // Notify subscribers
       notifySubscribers(
+        snapshot,
         subscribers,
-        notify,
-        id,
-        notification,
-        date,
-        content,
-        type
+        // notify,
+        // id,
+        // notification,
+        // date,
+        // content,
+        // type
       );
     },
 
     batchFetchSnapshotsSuccess: (
       state,
       action: PayloadAction<{
-        snapshots: WritableDraft<Snapshot<Data>>[];
+        snapshots: WritableDraft<Snapshot<BaseData, any>>[];
       }>
     ) => {
       state.loading = false;

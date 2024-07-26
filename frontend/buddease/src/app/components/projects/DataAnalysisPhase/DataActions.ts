@@ -14,7 +14,7 @@ export const DataActions = {
    fetchDataSuccess: createAction<{ data: Data[] }>("fetchDataSuccess"),
    fetchDataFailure: createAction<{ error: string }>("fetchDataFailure"),
  
-   addData: createAction<Data>("addData"),
+   addData: createAction<Snapshot<T,K>>("addData"),
    addDataSuccess: createAction<{ data: Data }>("addDataSuccess"),
    addDataFailure: createAction<{ error: string }>("addDataFailure"),
    removeData: createAction<number>("removeData"),

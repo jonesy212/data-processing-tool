@@ -5,17 +5,18 @@ import socketIOClient from 'socket.io-client';
 import { Data } from "../../models/data/Data";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import axiosInstance from "../../security/csrfToken";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
 import { fetchData } from "../../utils/dataAnalysisUtils";
 import { useSecureUserId } from "../../utils/useSecureUserId";
-
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import {BaseData} from "../../models/data/Data"
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 
 export type RealtimeUpdateCallback<T extends RealtimeData> = (
-  data: SnapshotStore<Snapshot<Data>>,
+  data: SnapshotStore<T>,
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<Snapshot<Data>>,
+  snapshotStore: SnapshotStore<T>,
   dataItems: T[]
 ) => void;
 
@@ -35,7 +36,7 @@ const useUIRealtimeData = (
       (
         data: any,
         events: Record<string, CalendarEvent[]>,
-        snapshotStore: SnapshotStore<Snapshot<Data>>,
+        snapshotStore: SnapshotStore<RealtimeData>,
         dataItems: RealtimeDataItem[]
       ) => {
         // Call the provided updateCallback with the updated data, events, snapshotStore, and dataItems

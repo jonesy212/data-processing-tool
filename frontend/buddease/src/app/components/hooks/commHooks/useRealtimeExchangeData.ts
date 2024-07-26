@@ -4,7 +4,7 @@ import { ExchangeEnum } from "../../crypto/exchangeIntegration";
 import { RealtimeData } from "../../models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
-const useRealtimeExchangeData = (
+const useRealtimeExchangeData = <T>(
   initialData: any,
   updateCallback: RealtimeUpdateCallback<RealtimeData>,
   processExchangeData: (exchangeData: any[]) => any[],

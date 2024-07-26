@@ -35,7 +35,7 @@ interface RealtimeDataItem extends BaseRealtimeData,EventData {
 
 interface RealtimeData extends BaseRealtimeData {
   date: Date | string;
-  timestamp: string | Date | undefined;
+  timestamp: string | number | Date | undefined;
   eventId: string;
   type: string;
   // Define other properties specific to RealtimeData here

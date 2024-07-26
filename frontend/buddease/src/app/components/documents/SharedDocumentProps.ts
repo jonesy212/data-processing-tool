@@ -15,6 +15,7 @@ import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { DocumentObject } from '../state/redux/slices/DocumentSlice';
 import { DocumentTypeEnum } from './DocumentGenerator';
+import { WritableDraft } from '../state/redux/ReducerGenerator';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -66,7 +67,7 @@ export interface DocumentBuilderProps extends DocumentData  {
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
   setOptions: Dispatch<SetStateAction<DocumentOptions>>; 
-  documents: DocumentData[]; 
+  documents: WritableDraft<DocumentObject>[]
   options: DocumentOptions;
   editorState: EditorState
   projectPath: string;

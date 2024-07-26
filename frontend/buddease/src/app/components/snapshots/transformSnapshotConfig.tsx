@@ -1,6 +1,6 @@
 import { SnapshotStoreConfig } from "./SnapshotConfig";
 import { BaseData, Data } from "./../../components/models/data/Data";
-
+import {  convertMapToSnapshotStore } from '@/app/components/typings/YourSpecificSnapshotType';
 
 function transformSnapshotConfig<BaseData extends Data, T extends BaseData>(
   config: SnapshotStoreConfig<BaseData, T>
@@ -10,13 +10,17 @@ function transformSnapshotConfig<BaseData extends Data, T extends BaseData>(
   const transformedConfigOption = configOption
     ? {
         ...configOption,
-        initialState: configOption.initialState ? new Map([...configOption.initialState.entries()]) as Map<string, T> : null,
+        initialState: configOption.initialState instanceof Map
+          ? new Map([...configOption.initialState.entries()]) as Map<string, T>
+          : null,
       }
     : undefined;
 
   return {
     ...rest,
-    initialState: initialState ? new Map([...initialState.entries()]) as Map<string, T> : null,
+    initialState: initialState instanceof Map
+      ? new Map([...initialState.entries()]) as Map<string, T>
+      : null,
     configOption: transformedConfigOption,
   };
 }

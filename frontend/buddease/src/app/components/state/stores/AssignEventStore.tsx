@@ -19,7 +19,7 @@ const RESPONSES_STORAGE_KEY = 'responses';
 
 interface EventData {
   eventId: string;
-  timestamp?: string | Date;  
+  timestamp?: string | number | Date | undefined
 }
 
 interface ReassignData {

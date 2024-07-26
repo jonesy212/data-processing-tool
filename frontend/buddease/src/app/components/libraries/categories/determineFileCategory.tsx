@@ -1,5 +1,6 @@
 // determineFileCategory.tsx
 
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { FileCategory } from "../../documents/FileType";
 import { BaseData } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
@@ -82,18 +83,9 @@ async function fetchFileSnapshotData(
   // Here you can replace this with your actual fetching logic
   const data = {
     id: "123",
-    category: category,
+    category: category as CategoryProperties, 
     timestamp: new Date(),
-    snapshot: new SnapshotStore<BaseData>(
-      snapshot,
-      category,
-      new Date(),
-      type,
-      initialState,
-      snapshotConfig,
-      subscribeToSnapshots,
-      delegate
-    ),
+    snapshot: new SnapshotStore<BaseData, BaseData>(options),
     data: {}, // Replace with actual data
   };
 

@@ -1074,12 +1074,13 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
   ) => {
     onOptionsChange({ ...options, animations: animationOptions });
   };
-
+  
+  
   const handleOptionsChange = (newOptions: any) => {
     // Call setOptions prop to update options state
     setOptions(newOptions);
   };
-
+  
   const handleCopy = () => {
     // Get the current selected content from the editor
     const selection = editorState.getSelection();
@@ -1100,7 +1101,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
     // Log the pasted content
     console.log("Pasted in DocumentBuilder:", pastedContent);
-
+    
     // You can update the editor state with the pasted content if needed
     const newContentState = Modifier.replaceText(
       editorState.getCurrentContent(),
@@ -1126,14 +1127,25 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     }
     return "not-handled";
   };
-
-  const handleCreateDocument = (userOptions: any) => {
+  
+  const handleCreateDocument = async (
+  options: DocumentFormattingOptions
+  ) => {
     const documentContent = editorState.getCurrentContent().getPlainText();
-    const formattedOptions = getFormattedOptions(userOptions);
+    const formattedOptions = getFormattedOptions(options);
 
-    // Call a utility function to create a document (PDF or other formats)
-    createPdfDocument(documentContent, formattedOptions);
+    // Create a document object
+    const documentObject: DocumentObject = {
+      // Populate with actual data
+    };
+    
+    // Call the buildDocument function passed as a prop
+    await buildDocument({ ...formattedOptions, content: documentContent },
+      documentObject,
+      DocumentTypeEnum.SomeType
+    );
   };
+  
   const handleEditorStateChange = async (
     newEditorState: EditorState
   ): Promise<void> => {

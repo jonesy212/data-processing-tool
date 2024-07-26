@@ -4,7 +4,7 @@ import { DEXEnum } from '../../crypto/exchangeIntegration';
 import { RealtimeData } from "../../models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
-const useRealtimeDextData = (
+const useRealtimeDextData = <T>(
   initialData: any,
   updateCallback: RealtimeUpdateCallback<RealtimeData>,
   processDEXData: (dexData: any[]) => any[],

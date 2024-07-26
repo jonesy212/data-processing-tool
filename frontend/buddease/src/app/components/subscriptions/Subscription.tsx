@@ -10,9 +10,20 @@ import { K, T } from "../snapshots/SnapshotConfig";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { TriggerIncentivesParams } from "../utils/applicationUtils";
+import { userId } from "../users/ApiUser";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
+import { snapshot } from "../snapshots/snapshot";
+
+
+type FetchSnapshotByIdCallback = {
+  onSuccess: (snapshot: Snapshot<T, T>) => void;
+  onError: (error: any) => void;
+};
 
 type Subscription<T> = {
   unsubscribe: (
+    userId: string,
+    snapshotId: string,
     unsubscribeType: string,
     unsubscribeDate: Date,
     unsubscribeReason: string,
@@ -53,10 +64,25 @@ type Subscription<T> = {
       snapshotId: string;
     }
   ) => SubscriberTypeEnum;
-  portfolioUpdatesLastUpdated: ModifiedDate | null;
+  portfolioUpdatesLastUpdated:number | ModifiedDate | null;
   getId?: () => string;
-  determineCategory: (data: any) => Snapshot<any>; // Ensure determineCategory returns Snapshot<any>
+  determineCategory: (data: any) => Snapshot<any> ; // Ensure determineCategory returns Snapshot<any>
   category?: string | CategoryProperties | null;
+  fetchSnapshotById?: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    }) => void;
+
+    
+  fetchSnapshotByIdCallback?: (
+    { userId, snapshotId }: {
+      userId: string;
+      snapshotId: string;
+    },
+    callback: FetchSnapshotByIdCallback
+  ) => void; // Adjust this type according to the actual implementation
+
 };
 
 const SubscriptionComponent = (
@@ -103,10 +129,13 @@ const SubscriptionComponent = (
 
     // Ensure subscriptionUsage is defined before accessing unsubscribe
     if (subscriptionUsage) {
+      const snapshotId = getSnapshotId(snapshot)
       // Cleanup: Unsubscribe when the component unmounts
       return () => {
         // Make sure to pass the correct parameters to unsubscribe
         subscriptionUsage.unsubscribe(
+          String(userId),
+          snapshotId,
           unsubscribeType,
           unsubscribeDate,
           unsubscribeReason,
@@ -194,4 +223,4 @@ const SubscriptionComponent = (
 };
 
 export default SubscriptionComponent;
-export type { Subscription };
+export type { Subscription, FetchSnapshotByIdCallback };

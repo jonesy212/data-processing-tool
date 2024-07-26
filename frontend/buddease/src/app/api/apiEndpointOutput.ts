@@ -3,8 +3,6 @@ import { NestedEndpoints, endpoints } from "../api/ApiEndpoints";
 import { generatedApiCode } from "../generators/ApiCodeGenerator";
 import { endpointPreferences } from "./ApiPreferencesEndpoints";
 
-
-
 console.log(generatedApiCode); // Output generated TypeScript API code
 
 // Type assertion to inform TypeScript that endpointPreferences.userMiscellaneousPreferences is of type NestedEndpoints

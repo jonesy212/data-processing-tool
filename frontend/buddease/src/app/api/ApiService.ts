@@ -76,7 +76,7 @@ const fetchCacheData = async (filePath: string): Promise<CacheResponse> => {
       id: "",
       lastUpdated: versionHistory,
       userSettings: userSettings,
-      dataVersions: dataVersions,
+      dataVersions: dataVersions ?? [],
       frontendStructure: frontendStructure,
       backendStructure: backendStructure,
       backendConfig: backendConfig,

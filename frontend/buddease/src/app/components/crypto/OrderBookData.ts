@@ -1,6 +1,8 @@
 // OrderBookData.ts
 import { Data } from "../models/data/Data";
 
+
+
 interface OrderBookData extends Data {
   bids: Array<{ price: number; volume: number }>;
   asks: Array<{ price: number; volume: number }>;

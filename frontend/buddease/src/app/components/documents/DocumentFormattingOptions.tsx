@@ -9,7 +9,7 @@ interface DocumentFormattingOptionsProps {
   // ...
 }
 
-const DocumentFormattingOptions: React.FC<DocumentFormattingOptionsProps> = ({ /* Pass necessary props */ }) => {
+const DocumentFormattingOptionsComponent: React.FC<DocumentFormattingOptionsProps> = ({ /* Pass necessary props */ }) => {
   // Implement UI for document formatting options
   // ...
   return (
@@ -20,5 +20,5 @@ const DocumentFormattingOptions: React.FC<DocumentFormattingOptionsProps> = ({ /
   );
 };
 
-export default DocumentFormattingOptions;
+export default DocumentFormattingOptionsComponent;
 export type { DocumentFormattingOptionsProps };

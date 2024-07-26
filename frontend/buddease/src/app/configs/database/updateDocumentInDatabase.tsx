@@ -6,11 +6,13 @@ import { useAuth } from "@/app/components/auth/AuthContext";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import DatabaseClient, { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
+import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
 import { AxiosError, AxiosResponse } from "axios";
 import { PoolConfig } from 'pg';
 import configData from "../configData";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
+import DatabaseClient from "@/app/components/todos/tasks/DatabaseClient";
 
 const { notify } = useNotification();
 

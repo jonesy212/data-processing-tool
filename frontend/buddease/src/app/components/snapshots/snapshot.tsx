@@ -25,7 +25,7 @@ function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
     description: "Sample snapshot description",
     tags: ["sample", "snapshot"],
     metadata: {},
-    data: new Map<string, T>(),
+    data: new Map<string,Snapshot<T>>(),
     initialState: null
   };
 
@@ -33,16 +33,8 @@ function processSnapshot<T extends Data>(snapshot: Snapshot<T>) {
   console.log(newSnapshot);
 }
 
-const snapshot: BaseData = {
-  id: "snapshot1",
-  category: "example category",
-  timestamp: new Date(),
-  createdBy: "creator1",
-  description: "Sample snapshot description",
-  tags: ["sample", "snapshot"],
-  metadata: {},
-
-  data: {
+const plainDataObject: Record<string, BaseData> = {
+  "1": {
     _id: "1",
     id: "data1",
     title: "Sample Data",
@@ -693,6 +685,23 @@ const snapshot: BaseData = {
       ],
     },
   },
+}
+
+// Convert plain object to Map
+export const dataObject = new Map<string, BaseData>(
+  Object.entries(plainDataObject).map(([key, value]) => [key, value])
+);
+
+
+const snapshot: Snapshot<BaseData, BaseData> = {
+  id: "snapshot1",
+  category: "example category",
+  timestamp: new Date(),
+  createdBy: "creator1",
+  description: "Sample snapshot description",
+  tags: ["sample", "snapshot"],
+  metadata: {},
+  data: dataObject,
   initialState: undefined
 };
 
@@ -707,4 +716,5 @@ subscriber.receiveSnapshot({
   timestamp: new Date().toISOString(),
   value: sampleSnapshot.value ?? "0", // Ensure value is a number
 });
-export { snapshot };
+export { sampleSnapshot, snapshot };
+

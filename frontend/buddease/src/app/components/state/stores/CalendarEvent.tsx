@@ -195,13 +195,13 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   eventStatus: AllStatus = StatusType.Pending;
 
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<BaseData> = new SnapshotStore<BaseData>(options);
+  snapshotStore: SnapshotStore<BaseData, BaseData> = new SnapshotStore<BaseData, BaseData>(options);
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
   handleRealtimeUpdate: (
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>
+    snapshotStore:SnapshotStore<BaseData, BaseData> 
   ) => void;
 
   openCalendarSettingsPage: () => void;

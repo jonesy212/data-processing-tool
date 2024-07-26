@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { authToken } from "../components/auth/authToken";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { Content } from "../components/models/content/AddContent";
-import { Data } from "../components/models/data/Data";
+import { BaseData, Data } from "../components/models/data/Data";
 import { PriorityTypeEnum, ProjectStateEnum } from "../components/models/data/StatusType";
 import { Member } from "../components/models/teams/TeamMembers";
 import { ProjectType } from "../components/projects/Project";
@@ -24,6 +24,7 @@ import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
+
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 
@@ -394,7 +395,7 @@ export const mergeSnapshots = async (
   }
 };
 
-export const fetchSnapshotById = (snapshotId: string): Promise<Snapshot<Data>> => {
+export const fetchSnapshotById = (snapshotId: string): Promise<Snapshot<BaseData, BaseData>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -638,5 +639,25 @@ export const getSnapshotId = async (snapshot: Snapshot<Data>): Promise<number> =
     const errorMessage = "Failed to get snapshot id";
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
+  }
+};
+
+
+export const fetchSnapshotIds = async (): Promise<string[]> => {
+  try {
+    // Define the endpoint for fetching snapshot IDs
+    const fetchSnapshotIdsEndpoint = `${API_BASE_URL}/snapshotIds`;
+
+    // Make an API call to fetch snapshot IDs
+    const response = await axiosInstance.get<string[]>(fetchSnapshotIdsEndpoint, {
+      headers: headersConfig, // Include any necessary headers
+    });
+
+    // Return the snapshot IDs from the response
+    return response.data;
+  } catch (error) {
+    const errorMessage = "Failed to fetch snapshot IDs";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw new Error(errorMessage);
   }
 };

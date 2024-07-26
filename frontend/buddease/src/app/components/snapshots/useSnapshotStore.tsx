@@ -1,7 +1,7 @@
 // useSnapshotStore.ts
 import { SnapshotStoreConfig, snapshotConfig } from "@/app/components/snapshots/SnapshotConfig";
 import { BaseData, Data } from "../models/data/Data";
-
+import {  SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
@@ -13,6 +13,7 @@ import { CryptoActions } from "../actions/CryptoActions";
 import { ProjectManagementActions } from "../actions/ProjectManagementActions";
 import { SubscriptionPayload } from "../actions/SubscriptionActions";
 import { TaskActions } from "../actions/TaskActions";
+import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { ModifiedDate } from "../documents/DocType";
 import useSubscription from "../hooks/useSubscription";
 import { SnapshotLogger } from "../logging/Logger";
@@ -57,15 +58,15 @@ import SnapshotStore, { initialState } from "./SnapshotStore";
 import { CustomSnapshotData, Payload, Snapshot, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { delegate, deleteSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
+import { delegate, deleteSnapshot, subscribeToSnapshots } from "../snapshotHandlers";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 
 const convertSubscriptionPayloadToSubscriber = (
   payload: SubscriptionPayload
-): Subscriber<CustomSnapshotData | Data> => {
-  const subscriber = new Subscriber<CustomSnapshotData | Data>(
+): Subscriber<CustomSnapshotData, Data> => {
+  const subscriber = new Subscriber<CustomSnapshotData, Data>(
     payload.id,
     // Assuming payload.name is a string, replace with your actual data structure
     payload.name,
@@ -106,8 +107,8 @@ const convertSubscriptionPayloadToSubscriber = (
 // Create the snapshot store
 const useSnapshotStore = async (
   addToSnapshotList: (
-    snapshot: SnapshotStore<any>,
-    subscribers: Subscriber<Data | CustomSnapshotData>[]
+    snapshot: Snapshot<any>,
+    subscribers: Subscriber<Data, CustomSnapshotData>[]
   ) => void
 ): Promise<SnapshotStore<any>> => {
   // Initialize state for snapshots
@@ -116,7 +117,7 @@ const useSnapshotStore = async (
     undefined
   );
   const [subscribers, setSubscribers] = useState<
-    Subscriber<Data | CustomSnapshotData>[]
+    Subscriber<Data, CustomSnapshotData>[]
   >([]);
   
   
@@ -126,19 +127,27 @@ const useSnapshotStore = async (
     };
   
     const resolvedDelegate = await delegate(); // Resolve the promise
-  
-    const newSnapshot = new SnapshotStore<any>(
-      {},
-      initialState,
-      {} as CategoryProperties,
-      new Date(),
-      NotificationTypeEnum.CreationSuccess,
+    
+
+    // Convert dataStoreMethods
+    const dataStoreMethods = snapshot.store?.getDataStoreMethods() as DataStoreWithSnapshotMethods<T, K>;
+
+    const data = {} as Partial<SnapshotStore<any, any>>
+    // const delegate = {} as SnapshotStoreConfig<any, any>[]
+    const snapshotStoreOptions: SnapshotStoreOptions<any, any> = {
+      snapshotId: "defaultId",
+      category: {} as CategoryProperties,
+      dataStoreMethods: dataStoreMethods || { addSnapshot: defaultImplementation },
+      type,
+      date,
+      data,
       snapshotConfig,
-      subscribeToSnapshot,
-      subscribeToSnapshots,
-      resolvedDelegate, // Pass the resolved value
-      dataStoreMethods
-    );
+      delegate: delegate,
+      getDelegate,
+      
+    };
+  
+    const newSnapshot = new SnapshotStore<any>(snapshotStoreOptions);
   
     const dataStore = newSnapshot.getDataStore();
   

@@ -1,10 +1,14 @@
 import { DataStore } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { K, T } from "../../snapshots/SnapshotConfig";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import { BaseData } from "./Data";
-
+type IHydrateResult<T> = T;
 // dataStoreMethods.ts
-const dataStoreMethods: DataStore<BaseData> = {
+const dataStoreMethods: DataStore<T, K> = {
   data: undefined,
-  addData: (data: BaseData) => {},
+  storage: {} as SnapshotStore<BaseData, any>,
+  addData: (data: Snapshot<T,K>) => {},
   updateData: (id: number, newData: BaseData) => {},
   removeData: (id: number) => {},
   updateDataTitle: (id: number, title: string) => {},
@@ -22,9 +26,9 @@ const dataStoreMethods: DataStore<BaseData> = {
     // Implement logic to fetch data versions from a data source
     return undefined;
   },
-  updateDataVersions: (id: number, versions: BaseData[]) => Promise.resolve(),
-  getBackendVersion: () => Promise.resolve(undefined),
-  getFrontendVersion: () => Promise.resolve(undefined),
+  updateDataVersions: (id: number, versions: BaseData[]) => {},
+  getBackendVersion: () => Promise.resolve(""),
+  getFrontendVersion: () => Promise.resolve(""),
   fetchData: (id: number) => Promise.resolve([]),
   getItem: (key: string): Promise<BaseData | undefined> => {
     return new Promise((resolve, reject) => {

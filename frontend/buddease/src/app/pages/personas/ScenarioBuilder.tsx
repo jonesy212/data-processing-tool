@@ -68,7 +68,7 @@ const categoryProperties: CategoryProperties = {
   brandMessage: "Bringing insights to life",
 };
 
-function convertToCategoryProperties(category: string | CategoryProperties | undefined): CategoryProperties {
+export function convertToCategoryProperties(category: string | CategoryProperties | undefined): CategoryProperties {
   if (typeof category === 'string') {
     // Convert the string to CategoryProperties
     return {
@@ -100,171 +100,6 @@ function convertToCategoryProperties(category: string | CategoryProperties | und
   } else {
     throw new Error("Invalid category");
   }
-}
-
-const componentFilePath = apiFilePath;
-
-const reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
-
-// Define function to create user scenarios and map out user journey
-async function createUserScenarios(props: any, type: PersonaTypeEnum) {
-  const [options, setOptions] = useState(getDefaultDocumentOptions());
-
-  // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
-  const userPersonaBuilder = new PersonaBuilder();
-  const phaseManager = new PhaseManager({ phases: [] });
-
-  // Use the modules to create detailed user scenarios and map out user journey
-  // Example:
-  const userPersona = PersonaBuilder.buildPersona(
-    PersonaTypeEnum.CasualUser,
-    props
-  );
-  // Check if phaseManager is not null or undefined before accessing its properties
-  const phases = phaseManager?.phases?.[0];
-  // Generate user scenarios and map out user journey
-  if (phases) {
-    phases.scenarios = userPersonaBuilder.buildScenarios(userPersona);
-    phases.userJourney = userPersonaBuilder.mapUserJourney(type, phases.scenarios);
-  }
-  // Output or utilize the created user scenarios and mapped user journey
-  console.log("User scenarios and user journey mapped successfully.");
-  // Generate validation rules code
-  const validationRules = generateValidationRulesCode(
-    categoryProperties.Forms?.validationRules
-  );
-  // Generate component code
-  generateComponent(
-    "ValidationRules",
-    "Forms",
-    {
-      formFields: categoryProperties.Forms?.validationRules,
-    },
-    validationRules
-  );
-  // Save component code to file
-  fs.writeFileSync(componentFilePath, reactCode);
-  // Return component name
-
-  const document = await DocumentBuilder.buildDocument(
-    userPersona,
-    phaseManager,
-    options
-  );
-  // Instead, include the DocumentBuilder component in your JSX markup with the required props:
-  const docPermissions = new DocumentPermissions(true, true);
-
-  const documents: DocumentData[] = [
-    {
-      id: "1",
-      documentSize: DocumentSize.A4,
-      versionData: {} as VersionData,
-      version: {} as Version,
-      visibility: "public",
-      _id: "1",
-      permissions: docPermissions,
-      folders: [],
-      lastModifiedDate: {
-        value: new Date(),
-        // todo add timezone
-        // utc: true,
-        isModified: true,
-      } as ModifiedDate,
-      lastModifiedBy: "user1",
-      name: "Document 1",
-      description: "Description for Document 1",
-      createdBy: "user1",
-      createdDate: new Date(),
-      status: "active",
-      type: "type1",
-      // user: "user1",
-      title: "Document 1",
-      content: "Content for Document 1",
-      highlights: ["highlighted phrase 1", "tagged item 2"],
-      topics: ["topic 1", "topic 2"],
-      files: [
-        {
-          name: "file 1",
-          content: "",
-          fileSize: 0,
-          fileType: "",
-          filePath: "",
-          uploader: "uploader1",
-          fileName: "",
-          uploadDate: new Date(),
-          id: "file1",
-          title: "",
-          description: "",
-          scheduledDate: new Date(),
-          createdBy: "user1",
-        },
-        {
-          name: "file 2",
-          content: "",
-          fileSize: 0,
-          fileType: "",
-          filePath: "",
-          uploader: "uploader2",
-          fileName: "",
-          uploadDate: new Date(),
-          id: "file2",
-          title: "",
-          description: "",
-          scheduledDate: new Date(),
-          createdBy: "user2",
-        },
-      ],
-      documentType: "document type 1",
-      options: getDefaultDocumentOptions(),
-      documentPhase: getDocumentPhase(document),
-      keywords: ["keyword 1", "keyword 2"],
-      folderPath: "",
-      previousMetadata: {},
-      currentMetadata: {},
-      accessHistory: [],
-      _rev: "1",
-      _attachments: {},
-      _links: {},
-      _etag: "etag1",
-      _local: false,
-      _revs: [],
-      _source: {},
-      _shards: {},
-      _size: 0,
-      _version: 1,
-      _version_conflicts: 0,
-      _seq_no: 0,
-      _primary_term: 1,
-      _routing: "route1",
-      _parent: "parent1",
-      _parent_as_child: false,
-      _slices: [],
-      _highlight: {},
-      _highlight_inner_hits: {},
-      _source_as_doc: false,
-      _source_includes: [],
-      _routing_keys: [],
-      _routing_values: [],
-      _routing_values_as_array: [],
-      _routing_values_as_array_of_objects: [],
-      _routing_values_as_array_of_objects_with_key: [],
-      _routing_values_as_array_of_objects_with_key_and_value: [],
-      _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
-      filePathOrUrl: "",
-      uploadedBy: 0,
-      uploadedAt: "",
-      tagsOrCategories: "",
-      format: "",
-      uploadedByTeamId: null,
-      uploadedByTeam: null,
-      document: undefined,
-      all: null,
-      selectedDocument: null
-    },
-    // Add more document data as needed
-  ];
-  // Output or utilize the created user scenarios and mapped user journey
-  console.log("User scenarios and user journey mapped successfully.");
 }
 
 
@@ -300,31 +135,211 @@ function generateComponent(componentName: string, category: keyof CategoryProper
 }
 
 
-
-// Function to generate user interface component code
-function generateUserInterfaceComponent(componentName: string, componentDescription: string, brand: any) {
-  return `
+function generateUserJourneyComponent(componentName: string, brand: any, userScenarios: string[]): string {
+  // Generate React component code for user journey
+  
+  // Generate the user interface code
+  const userJourneyInterfaceCode = `
     import React from 'react';
+    import { UserJourney } from '@/app/components/UserJourney';
+  
+    interface ${componentName}Props {
+      userScenarios: string[]; // Props for user scenarios
+      brand: any; // Props for brand
+    }
+  
+    const ${componentName}: React.FC<${componentName}Props> = ({ userScenarios, brand }) => {
+      // Implement user journey logic here
+      return (
+        <div style={{ borderColor: brand.brandColor, borderStyle: "solid" }}>
+          <img src={brand.brandLogo} alt={brand.brandName} />
+          <h2>${componentName} Component</h2>
+          <UserJourney scenarios={userScenarios} />
+          <p>{brand.brandMessage}</p>
+        </div>
+      );
+    };
+  
+    export default ${componentName};
+  `;
+
+  return userJourneyInterfaceCode;
+}
+
+function generateUserScenarioComponent(componentName: string, brand: any, userScenario: string): string {
+  // Generate React component code for user scenario
+  const userScenarioInterfaceCode = `
+    import React from 'react';
+    import { UserScenario } from '@/app/components/UserScenario';
+  
+    interface ${componentName}Props {
+      userScenario: string; // Props for user scenario
+      brand: any; // Props for brand
+    }
+  
+    const ${componentName}: React.FC<${componentName}Props> = ({ userScenario, brand }) => {
+      return (
+        <div style={{ borderColor: brand.brandColor, borderStyle: "solid", padding: "20px" }}>
+          <img src={brand.brandLogo} alt={brand.brandName} />
+          <h2>${componentName} Component</h2>
+          <UserScenario scenario={userScenario} />
+          <p>{brand.brandMessage}</p>
+        </div>
+      );
+    };
+  
+    export default ${componentName};
+  `;
+
+  return userScenarioInterfaceCode;
+}
+
+
+function generateUserJourneyMapComponent(componentName: string, brand: any, userJourneyData: any[]): string {
+  // Generate React component code for user journey map
+  const userJourneyMapComponentCode = `
+    import React from 'react';
+    import { UserJourneyMap } from '@/app/components/UserJourneyMap'; // Import your journey map component
 
     interface ${componentName}Props {
-      // Add component props here
+      userJourneyData: Array<{ step: string, description: string }>; // Props for user journey data
+      brand: any; // Props for brand
     }
 
-    const ${componentName}: React.FC<${componentName}Props> = (props) => {
-      // Component implementation
+    const ${componentName}: React.FC<${componentName}Props> = ({ userJourneyData, brand }) => {
       return (
-        <div style={{ borderColor: "${brand.brandColor}", borderStyle: "solid" }}>
-          <img src="${brand.brandLogo}" alt="${brand.brandName} Logo" />
-          <h1>${componentName} Component</h1>
-          <p>${componentDescription}</p>
-          <p>${brand.brandMessage}</p>
+        <div style={{ borderColor: brand.brandColor, borderStyle: "solid", padding: "20px" }}>
+          <img src={brand.brandLogo} alt={brand.brandName} />
+          <h2>${componentName} Component</h2>
+          <UserJourneyMap data={userJourneyData} /> {/* Render the journey map */}
+          <p>{brand.brandMessage}</p>
         </div>
       );
     };
 
     export default ${componentName};
   `;
+
+  return userJourneyMapComponentCode;
 }
+
+
+function generateNewsComponent(componentName: string, brand: any, newsData: { title: string; summary: string; content: string; date: string; author: string }[]): string {
+  // Generate React component code for news
+  const newsComponentCode = `
+    import React from 'react';
+    import { NewsItem } from '@/app/components/NewsItem'; // Import your news item component
+
+    interface ${componentName}Props {
+      newsData: Array<{ title: string, summary: string, content: string, date: string, author: string }>;
+      brand: any; // Props for brand
+    }
+
+    const ${componentName}: React.FC<${componentName}Props> = ({ newsData, brand }) => {
+      return (
+        <div style={{ borderColor: brand.brandColor, borderStyle: "solid", padding: "20px" }}>
+          <img src={brand.brandLogo} alt={brand.brandName} />
+          <h2>${componentName} Component</h2>
+          {newsData.map((newsItem, index) => (
+            <NewsItem
+              key={index}
+              title={newsItem.title}
+              summary={newsItem.summary}
+              content={newsItem.content}
+              date={newsItem.date}
+              author={newsItem.author}
+            />
+          ))}
+          <p>{brand.brandMessage}</p>
+        </div>
+      );
+    };
+
+    export default ${componentName};
+  `;
+
+  return newsComponentCode;
+}
+
+
+function generateNewsCategories(componentName: string, categories: { category: string; newsData: { title: string; summary: string; content: string; date: string; author: string }[] }[], brand: any): string {
+  // Generate React component code for news categories
+  const newsCategoriesCode = `
+    import React from 'react';
+    import { NewsItem } from '@/app/components/NewsItem'; // Import your news item component
+
+    interface NewsCategory {
+      category: string;
+      newsData: Array<{ title: string, summary: string, content: string, date: string, author: string }>;
+    }
+
+    interface ${componentName}Props {
+      categories: NewsCategory[];
+      brand: any; // Props for brand
+    }
+
+    const ${componentName}: React.FC<${componentName}Props> = ({ categories, brand }) => {
+      return (
+        <div style={{ borderColor: brand.brandColor, borderStyle: "solid", padding: "20px" }}>
+          <img src={brand.brandLogo} alt={brand.brandName} />
+          <h2>${componentName} Component</h2>
+          {categories.map((category, index) => (
+            <div key={index} style={{ marginBottom: "20px" }}>
+              <h3>{category.category}</h3>
+              {category.newsData.map((newsItem, idx) => (
+                <NewsItem
+                  key={idx}
+                  title={newsItem.title}
+                  summary={newsItem.summary}
+                  content={newsItem.content}
+                  date={newsItem.date}
+                  author={newsItem.author}
+                />
+              ))}
+            </div>
+          ))}
+          <p>{brand.brandMessage}</p>
+        </div>
+      );
+    };
+
+    export default ${componentName};
+  `;
+
+  return newsCategoriesCode;
+}
+
+
+
+function generateUserScenarioMapComponent(componentName: string, brand: any, userScenarioMapData: any[]): string {
+  // Generate React component code for user scenario map
+  const userScenarioMapComponentCode = `
+    import React from 'react';
+    import { UserScenarioMap } from '@/app/components/UserScenarioMap'; // Import your scenario map component
+
+    interface ${componentName}Props {
+      userScenarioMapData: Array<{ scenario: string, details: string }>; // Props for user scenario map data
+      brand: any; // Props for brand
+    }
+
+    const ${componentName}: React.FC<${componentName}Props> = ({ userScenarioMapData, brand }) => {
+      return (
+        <div style={{ borderColor: brand.brandColor, borderStyle: "solid", padding: "20px" }}>
+          <img src={brand.brandLogo} alt={brand.brandName} />
+          <h2>${componentName} Component</h2>
+          <UserScenarioMap data={userScenarioMapData} /> {/* Render the scenario map */}
+          <p>{brand.brandMessage}</p>
+        </div>
+      );
+    };
+
+    export default ${componentName};
+  `;
+
+  return userScenarioMapComponentCode;
+}
+
+
 
 // Function to generate data visualization component code
 function generateDataVisualizationComponent(componentName: string, dataProperties: string[], chartType: string, brand: any) {
@@ -424,30 +439,237 @@ if (!componentName || !category) {
   process.exit(1);
 }
 
-// Get properties based on the selected category
-const properties = categoryProperties[category];
 
-if (!properties) {
-  console.error("Invalid category.");
-  process.exit(1);
+// Function to generate user interface component code
+function generateUserInterfaceComponent(componentName: string, componentDescription: string, brand: any) {
+  return `
+    import React from 'react';
+
+    interface ${componentName}Props {
+      // Add component props here
+    }
+
+    const ${componentName}: React.FC<${componentName}Props> = (props) => {
+      // Component implementation
+      return (
+        <div style={{ borderColor: "${brand.brandColor}", borderStyle: "solid" }}>
+          <img src="${brand.brandLogo}" alt="${brand.brandName} Logo" />
+          <h1>${componentName} Component</h1>
+          <p>${componentDescription}</p>
+          <p>${brand.brandMessage}</p>
+        </div>
+      );
+    };
+
+    export default ${componentName};
+  `;
 }
 
-// Simulating validation rules for DataVisualization category
-const validationRules = {}; // Include your validation rules here
+const componentFilePath = `src/app/components/${componentName}/${componentName}.tsx`;
 
-// Generate the component
-generateComponent(componentName, category, properties, validationRules);
+const properties = CategoryProperties[category];
+
+const reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
+
+// Define function to create user scenarios and map out user journey
+async function createUserScenarios(props: any, type: PersonaTypeEnum) {
+  const [options, setOptions] = useState(getDefaultDocumentOptions());
+
+  // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
+  const userPersonaBuilder = new PersonaBuilder();
+  const phaseManager = PhaseManager({ phases: [] });
+
+  // Use the modules to create detailed user scenarios and map out user journey
+  // Example:
+  const userPersona = PersonaBuilder.buildPersona(
+    PersonaTypeEnum.CasualUser,
+    props
+  );
+  if (phaseManager) {
+    // Check if phaseManager is not null or undefined before accessing its properties
+    const phases = phaseManager.phases
+    // Generate user scenarios and map out user journey
+    if (phases) {
+      phases.scenarios = userPersonaBuilder.buildScenarios(userPersona);
+      phases.userJourney = userPersonaBuilder.mapUserJourney(type, phases.scenarios);
+    }
+    // Output or utilize the created user scenarios and mapped user journey
+    console.log("User scenarios and user journey mapped successfully.");
+    // Generate validation rules code
+    const validationRules = generateValidationRulesCode(
+      categoryProperties.Forms?.validationRules
+    );
+    // Generate component code
+    generateComponent(
+      "ValidationRules",
+      "Forms",
+      {
+        formFields: categoryProperties.Forms?.validationRules,
+      },
+      validationRules
+    );
+    // Save component code to file
+    fs.writeFileSync(componentFilePath, reactCode);
+    // Return component name
+
+    const document = await DocumentBuilder.buildDocument(
+      userPersona,
+      phaseManager,
+      options
+    );
+    // Instead, include the DocumentBuilder component in your JSX markup with the required props:
+    const docPermissions = new DocumentPermissions(true, true);
+
+    const documents: DocumentData[] = [
+      {
+        id: "1",
+        documentSize: DocumentSize.A4,
+        versionData: {} as VersionData,
+        version: {} as Version,
+        visibility: "public",
+        _id: "1",
+        permissions: docPermissions,
+        folders: [],
+        lastModifiedDate: {
+          value: new Date(),
+          // todo add timezone
+          // utc: true,
+          isModified: true,
+        } as ModifiedDate,
+        lastModifiedBy: "user1",
+        name: "Document 1",
+        description: "Description for Document 1",
+        createdBy: "user1",
+        createdDate: new Date(),
+        status: "active",
+        type: "type1",
+        // user: "user1",
+        title: "Document 1",
+        content: "Content for Document 1",
+        highlights: ["highlighted phrase 1", "tagged item 2"],
+        topics: ["topic 1", "topic 2"],
+        files: [
+          {
+            name: "file 1",
+            content: "",
+            fileSize: 0,
+            fileType: "",
+            filePath: "",
+            uploader: "uploader1",
+            fileName: "",
+            uploadDate: new Date(),
+            id: "file1",
+            title: "",
+            description: "",
+            scheduledDate: new Date(),
+            createdBy: "user1",
+          },
+          {
+            name: "file 2",
+            content: "",
+            fileSize: 0,
+            fileType: "",
+            filePath: "",
+            uploader: "uploader2",
+            fileName: "",
+            uploadDate: new Date(),
+            id: "file2",
+            title: "",
+            description: "",
+            scheduledDate: new Date(),
+            createdBy: "user2",
+          },
+        ],
+        documentType: "document type 1",
+        options: getDefaultDocumentOptions(),
+        documentPhase: getDocumentPhase(document),
+        keywords: ["keyword 1", "keyword 2"],
+        folderPath: "",
+        previousMetadata: {},
+        currentMetadata: {},
+        accessHistory: [],
+        _rev: "1",
+        _attachments: {},
+        _links: {},
+        _etag: "etag1",
+        _local: false,
+        _revs: [],
+        _source: {},
+        _shards: {},
+        _size: 0,
+        _version: 1,
+        _version_conflicts: 0,
+        _seq_no: 0,
+        _primary_term: 1,
+        _routing: "route1",
+        _parent: "parent1",
+        _parent_as_child: false,
+        _slices: [],
+        _highlight: {},
+        _highlight_inner_hits: {},
+        _source_as_doc: false,
+        _source_includes: [],
+        _routing_keys: [],
+        _routing_values: [],
+        _routing_values_as_array: [],
+        _routing_values_as_array_of_objects: [],
+        _routing_values_as_array_of_objects_with_key: [],
+        _routing_values_as_array_of_objects_with_key_and_value: [],
+        _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+        filePathOrUrl: "",
+        uploadedBy: 0,
+        uploadedAt: "",
+        tagsOrCategories: "",
+        format: "",
+        uploadedByTeamId: null,
+        uploadedByTeam: null,
+        document: undefined,
+        all: null,
+        selectedDocument: null,
+        documents: [],
+        createdByRenamed: "user1",
+        createdAt: new Date(),
+        updatedBy: "user1",
+        
+      },
+      // Add more document data as needed
+    ];
+    // Output or utilize the created user scenarios and mapped user journey
+    console.log("User scenarios and user journey mapped successfully.");
+  }
 
 
 
+  // Get properties based on the selected category
+  const properties = categoryProperties[category];
+
+  if (!properties) {
+    console.error("Invalid category.");
+    process.exit(1);
+  }
+
+  // Simulating validation rules for DataVisualization category
+  const validationRules = {}; // Include your validation rules here
+
+  // Generate the component
+  generateComponent(componentName, category, properties, validationRules);
+
+}
 // Example usage
 generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, categoryProperties);
 export type { CategoryProperties };
-export {convertToCategoryProperties}
-
-
-
-
+export {
+  generateFormsComponent,
+  generateComponent,
+  generateUserJourneyComponent,
+  generateUserScenarioComponent,
+  generateUserJourneyMapComponent,
+  generateUserScenarioMapComponent, 
+  generateNewsComponent, 
+  generateNewsCategories,
+  categorizeNews,
+  categoryProperties
+};
 
 // Example usage of categories
 const newsFeedData = { /* Provide your news feed data here */ };

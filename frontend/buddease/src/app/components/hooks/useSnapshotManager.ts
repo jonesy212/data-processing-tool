@@ -1,16 +1,20 @@
 // useSnapshotManager.ts
-import { endpoints } from "@/app/api/ApiEndpoints";
 import {
-  NotificationType,
   NotificationTypeEnum,
-  useNotification,
+  useNotification
 } from "@/app/components/support/NotificationContext";
+import { Task } from './../models/tasks/Task';
+import { NotificationType } from '@/app/components/support/NotificationContext';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { NotificationType } from '@/app/components/support/NotificationContext';
+import { endpoints } from "@/app/api/ApiEndpoints";
 import { useEffect, useState } from "react";
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
-import { Task } from "../models/tasks/Task";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { Todo } from "@/app/components/todos/Todo";
 import {
   CustomSnapshotData,
   Snapshot,
@@ -18,29 +22,30 @@ import {
   createSnapshotOptions
 } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
+import { SnapshotStoreMethod } from "../snapshots/SnapshotStorMethods";
 import SnapshotStore from "../snapshots/SnapshotStore";
+import { subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 import { Callback, subscribeToSnapshotImpl, subscribeToSnapshotsImpl } from "../snapshots/subscribeToSnapshotsImplementation";
 import { useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { useUndoRedoStore } from "../state/stores/UndoRedoStore";
 import { userManagerStore } from "../state/stores/UserStore";
-import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
-import { Todo } from "../todos/Todo";
-import { convertSnapshot } from "../typings/YourSpecificSnapshotType";
+import { convertSnapshot, convertSnapshotToStore } from "../typings/YourSpecificSnapshotType";
 import { Subscriber } from "../users/Subscriber";
-import { User } from "../users/User";
-import asyncFunction from "../utils/asyncFunction";
-import useAsyncHookLinker, { LibraryAsyncHook } from "./useAsyncHookLinker";
+import { LibraryAsyncHook } from "./useAsyncHookLinker";
+import { LibraryAsyncHook } from "./useAsyncHookLinker";
+import { Todo } from "@/app/components/todos/Todo";
 
 const { notify } = useNotification();
 
 interface SnapshotStoreOptions<T extends BaseData, K extends BaseData> {
   data: Partial<SnapshotStore<T, K>>;
   initialState?: SnapshotStore<T, K> | Snapshot<T, K> | null;
-  category: string | CategoryProperties;
-  date: string | Date;
-  type: string | null;
+  snapshot?: Snapshot<T, K>;
+  category: string | CategoryProperties | undefined;
+  date: string | number | Date | undefined;
+  type: string | null | undefined;  
   snapshotId: string | number;
   snapshotConfig: SnapshotStoreConfig<T, K>[];
   subscribeToSnapshots?: (
@@ -62,8 +67,21 @@ interface SnapshotStoreOptions<T extends BaseData, K extends BaseData> {
     callback: (snapshot: Snapshot<T, K>) => void
   ) => void;
   delegate: SnapshotStoreConfig<T, K>[];
-  dataStoreMethods: DataStore<T, K>;
+  getDelegate: SnapshotStoreConfig<T, K>[];
+  dataStoreMethods: DataStoreWithSnapshotMethods<T, K>;
+  getDataStoreMethods: () => DataStoreWithSnapshotMethods<T, K>;
+  snapshotMethods: SnapshotStoreMethod<T, K>[];
   configOption?: SnapshotStoreConfig<T, K> | null;
+  handleSnapshotOperation: (
+    snapshot: Snapshot<any, any>,
+    data: SnapshotStoreConfig<any, any>
+  ) => Promise<void>; // Added handleSnapshotOperation
+  handleSnapshotStoreOperation: (
+    snapshotStore: SnapshotStore<any, any>,
+    data: SnapshotStoreConfig<any, any>
+  ) => Promise<void>; // Added handleSnapshotOperation
+  displayToast: (message: string) => void; // Added displayToast
+  addToSnapshotList: (snapshot: Snapshot<T, K>) => void; // Added addToSnapshotList
 }
 
 
@@ -73,7 +91,6 @@ interface SnapshotManager<T extends BaseData, K extends BaseData> {
     snapshotData: SnapshotStore<T, K>
   ) => Promise<void>;
   state: SnapshotStore<T, K>[];
-  
 }
 
 // Define the async hook configuration
@@ -110,7 +127,7 @@ const options = <T extends BaseData, K extends BaseData = T>({
   initialState: SnapshotStore<T, K> | Snapshot<T, K> | null;
   snapshotId: string;
   category: CategoryProperties;
-  dataStoreMethods: Partial<DataStore<T, K>>;
+  dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>;
 }): SnapshotStoreOptions<T, K> => ({
   data: {} as Partial<SnapshotStore<T, K>>, // Adjust as per your actual data requirement
   initialState,
@@ -136,9 +153,15 @@ const options = <T extends BaseData, K extends BaseData = T>({
     subscribeToSnapshotImpl(snapshotId, callback, convertedSnapshot);
   },
   delegate: [], // Adjust as needed
-  dataStoreMethods: dataStoreMethods as DataStore<T, K>,
+  dataStoreMethods: dataStoreMethods as DataStoreWithSnapshotMethods<T, K>,
+  getDelegate: [],
+  getDataStoreMethods: getDataStoreMethods,
+  snapshotMethods: [],
+  handleSnapshotOperation: handleSnapshotOperation,
+  displayToast: displayToast,
+  addToSnapshotList: addToSnapshotList,
+  handleSnapshotStoreOperation: handleSnapshotStoreOperation
 });
-
 
 // Function to convert Snapshot<T, K> to Content
 const convertSnapshotToContent = <T extends BaseData, K extends BaseData>(
@@ -165,7 +188,8 @@ const convertMapToCustomSnapshotData = (map: Map<string, BaseData>): CustomSnaps
   // Implement the logic to convert a Map to CustomSnapshotData
   // For example:
   const customData: CustomSnapshotData = {
-    id: "map-id", // or some appropriate value
+    id: "custom_map-id", // or some appropriate value
+    timestamp: new Date().getTime()
     // other required properties
   };
   return customData;
@@ -187,7 +211,9 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
     id: null,
     data: {} as T,
     initialState: null,
-    handleSnapshot: (snapshot: Snapshot<T, K> | null, snapshotId: string) => {
+    handleSnapshot: (
+      snapshot: Snapshot<T, K> | null,
+      snapshotId: string) => {
       if (snapshot) {
         console.log(`Handling snapshot with ID: ${snapshotId}`);
       } else {
@@ -201,36 +227,49 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
     getSnapshotId: () => "default-id", // Provide an appropriate implementation
     snapshot: async <T extends BaseData, K extends BaseData>(
       id: string,
-      snapshotData: SnapshotStoreConfig<T, K>,
+      snapshotData: Snapshot<T, K>,
       category: string | CategoryProperties | undefined,
-      callback: (snapshotStore: SnapshotStore<T, K>) => void
+      snapshotStoreData: SnapshotStoreConfig<T, K>,
+      callback: (snapshot: Snapshot<T, K>) => void
     ) => {
       // Create or obtain a SnapshotStore instance as needed
       /* obtain or create your snapshot object */
-      const snapshot: Snapshot<T, K> = snapshotData.createSnapshot(
+      const snapshot: Snapshot<T, K> | null = snapshotStoreData.createSnapshot(
         id,
         snapshotData,
         category,
         callback
       );
       
-      // Ensure that createSnapshotOptions returns the correct type
-      const options: SnapshotStoreOptions<T, K> = createSnapshotOptions<T, K>(snapshot);
-      
-      // Ensure that SnapshotStore is correctly instantiated
-      const snapshotStore = new SnapshotStore<T, K>(options);
-      
-      // Call the provided callback function with the snapshot store
-      callback(snapshotStore);
-      
-      // Return the result
-      return {
-        snapshotStore,
-      };
+      if (snapshot) {
+        // Call the provided callback function with the snapshot
+        callback(snapshot);
+        
+        // Convert the snapshot to a SnapshotStore
+        const snapshotStore = convertSnapshotToStore(snapshot);
+        
+        // Ensure that createSnapshotOptions returns the correct type
+        const options: SnapshotStoreOptions<T, K> = createSnapshotOptions<T, K>(snapshotStore);
+        
+        // Ensure that SnapshotStore is correctly instantiated
+        const newSnapshotStore = new SnapshotStore<T, K>(options);
+        
+        // Call the provided callback function with the new snapshot store
+        callback(newSnapshotStore);
+        
+        // Return the result
+        return {
+          snapshotStore: newSnapshotStore,
+        };
+      } else {
+        // Handle the case where the snapshot is null
+        console.error('Failed to create snapshot');
+        return null;
+      }
     }, // Adjust if needed
     createSnapshot: () => ({ 
       id: "default-id",
-      data: new Map<string, T>(),
+      data: new Map<string, Snapshot<T>>(),
       timestamp: new Date(),
       category: "default-category",
       subscriberId: "default-subscriber-id",
@@ -240,23 +279,16 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
   };
 };
 
-
-
+ 
 const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
   // Initialize state for snapshotManager and snapshotConfig
-  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfig<
-    T,
-    K
-  > | null>(null);
-  const [snapshotStore, setSnapshotStore] = useState<SnapshotStore<
-    T,
-    K
-  > | null>(null);
+  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfig<T, K> | null>(null);
+  const [snapshotStore, setSnapshotStore] = useState<SnapshotStore<T, K> | null>(null);
 
   useEffect(() => {
     const initSnapshotManager = async () => {
       const options: SnapshotStoreOptions<T, K> = {
-        data: {}, // Provide actual data if required
+        data: new Map<string, T>(), // Provide actual data if required
         initialState: null, // Provide initial state
         snapshotId: "",
         category: {
@@ -286,25 +318,26 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
         date: new Date(),
         type: "initial-type", // Example value, adjust as needed
         snapshotConfig: [], // Example value, adjust as needed
-        subscribeToSnapshots: (snapshotId, callback) => {
-          // Implement subscribeToSnapshots function
-        },
+        subscribeToSnapshots: subscribeToSnapshots,
         subscribeToSnapshot: (snapshotId, callback, snapshot) => {
           // Implement subscribeToSnapshot function
         },
         delegate: [], // Example value, adjust as needed
-        dataStoreMethods: {} as DataStore<T, K>, // Provide actual data store methods
+        dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
+        getDelegate: [],
+        getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
+          throw new Error("Function not implemented.");
+        },
+        snapshotMethods: []
       };
 
       // Initialize SnapshotStore with options
       const snapshotStore = new SnapshotStore<T, K>(options);
 
       // Example initialization of SnapshotStoreConfig
-      // Use the utility function to create snapshotConfig
       const snapshotConfig = createSnapshotConfig(snapshotStore);
 
       setSnapshotManager(snapshotConfig);
-
       setSnapshotStore(snapshotStore);
     };
 
@@ -389,178 +422,178 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
     }
   };
   // Example function to add a snapshot to the list
-  const addToSnapshotList = async (
-    snapshotStore: SnapshotStore<any, any>,
-    subscribers: Subscriber<BaseData, K>[]
-  ) => {
-    await snapshotManager.snapshotStore.addSnapshot(snapshotStore, subscribers);
+const addToSnapshotList = async (
+  snapshotStore: SnapshotStore<any, any>,
+  subscribers: Subscriber<BaseData, K>[]
+) => {
+  await snapshotManager.snapshotStore.addSnapshot(snapshotStore, subscribers);
 
-    // Example custom hooks
-    const todoManagerStore = useTodoManagerStore();
-    const taskManagerStore = useTaskManagerStore();
-    const userManagedStore = userManagerStore();
-    const undoRedoStore = useUndoRedoStore();
+  // custom hooks
+  const todoManagerStore = useTodoManagerStore();
+  const taskManagerStore = useTaskManagerStore();
+  const userManagedStore = userManagerStore();
+  const undoRedoStore = useUndoRedoStore();
 
-    const snapshotId = useSnapshotStore(addToSnapshotList);
+  const snapshotId = useSnapshotStore(addToSnapshotList);
     
-    // Example usage of delegate
-    const delegate = snapshotManager.snapshotStore.getDelegate();
+  // usage of delegate
+  const delegate = snapshotManager.snapshotStore.getDelegate();
     
-  
-    // Ensure snapshotManager is defined and call initSnapshot
-    (async () => {
-      const snapshotManager = await useSnapshotManager<BaseData, BaseData>();
-      if (snapshotManager) {
-        const initialSnapshotData: Snapshot<T> = {};
-         initSnapshot(
-          snapshotManager,
-          snapshotStore!,
-          initialSnapshotData
-        );
+  // Ensure snapshotManager is defined and call initSnapshot
+  (async () => {
+    const snapshotManager = await useSnapshotManager<BaseData, BaseData>();
+    if (snapshotManager) {
+      const initialSnapshotData: Snapshot<T> = {};
+      initSnapshot(
+        snapshotManager,
+        snapshotStore!,
+        initialSnapshotData
+      );
+    } else {
+      console.error("Snapshot manager is not initialized");
+    }
+  })();
+
+  const addSnapshot = async (newSnapshot: Omit<T, "id">) => {
+    try {
+      // Adjust the API endpoint and request details based on your project
+      const response = await fetch("/api/snapshots", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newSnapshot),
+      });
+
+      if (response.ok) {
+        // Adjust the response handling based on your project
+        const createdSnapshot: T = await response.json();
+        snapshotManager.snapshotStore.addSnapshotSuccess(createdSnapshot, []);
       } else {
-        console.error("Snapshot manager is not initialized");
+        console.error("Failed to add snapshot:", response.statusText);
       }
-    })();
+    } catch (error) {
+      console.error("Error adding snapshot:", error);
+    }
+  };
 
-    const addSnapshot = async (newSnapshot: Omit<T, "id">) => {
-      try {
-        // Adjust the API endpoint and request details based on your project
-        const response = await fetch("/api/snapshots", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newSnapshot),
-        });
+  // Use the useAsyncHookLinker hook with the async hook
+  useAsyncHookLinker({ hooks: [asyncHook] });
 
-        if (response.ok) {
-          // Adjust the response handling based on your project
-          const createdSnapshot: T = await response.json();
-          snapshotManager.snapshotStore.addSnapshotSuccess(createdSnapshot, []);
-        } else {
-          console.error("Failed to add snapshot:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error adding snapshot:", error);
-      }
-    };
+  useEffect(() => {
+    // Fetch snapshots or perform any initialization logic
+    todoManagerStore.batchFetchTodoSnapshotsRequest(
+      {} as Record<string, Todo[]>
+    );
+    taskManagerStore.batchFetchTaskSnapshotsSuccess(
+      {} as Record<string, Task[]>
+    );
+    userManagedStore.batchFetchUserSnapshotsRequest(
+      {} as Record<string, User[]>
+    );
+    undoRedoStore.batchFetchUndoRedoSnapshotsRequest(
+      {} as Record<string, Todo[]>
+    );
 
-    //   // Use the useAsyncHookLinker hook with the async hook
-    useAsyncHookLinker({ hooks: [asyncHook] });
+    fetchSnapshots();
+    createSnapshot();
+  }, [todoManagerStore, taskManagerStore, userManagedStore, undoRedoStore]);
 
-    useEffect(() => {
-      // Fetch snapshots or perform any initialization logic
-      todoManagerStore.batchFetchTodoSnapshotsRequest(
-        {} as Record<string, Todo[]>
+  const createSnapshot = async () => {
+    try {
+      // Make API call to create snapshot using the defined endpoint
+      const response = await fetch(endpoints.snapshots.add.toString(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // Pass snapshot data
+        }),
+      });
+      const snapshotData = await response.json();
+      snapshotManager.snapshotStore.createSnapshotSuccess(snapshotData);
+      // Notify success
+      notify(
+        "createSnapshotManagerSuccess",
+        "Snapshot created successfully!",
+        NOTIFICATION_MESSAGES.Generic.DEFAULT,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
       );
-      taskManagerStore.batchFetchTaskSnapshotsSuccess(
-        {} as Record<string, Task[]>
+    } catch (error: any) {
+      // Notify failure
+      const errorMessage =
+        "error creating snapshot: " +
+        (error instanceof Error ? error.message : String(error));
+      const snapshot = {
+        /* Define a default snapshot object or obtain it from the context */
+      };
+
+      snapshotManager.snapshotStore.createSnapshotFailure(
+        snapshot,
+        new Error(errorMessage)
       );
-      userManagedStore.batchFetchUserSnapshotsRequest(
-        {} as Record<string, User[]>
+
+      // Using a custom error message
+      notify(
+        "snapshotCreationSuccess",
+        "Snapshot creation was unsuccessful",
+        NOTIFICATION_MESSAGES.Generic.ERROR,
+        new Date(),
+        "Error" as NotificationType
       );
-      undoRedoStore.batchFetchUndoRedoSnapshotsRequest(
-        {} as Record<string, Todo[]>
+    }
+  };
+
+  const setSnapshotData = async (
+    snapshot: Snapshot<any>,
+    subscribers: ((data: Snapshot<BaseData>) => void)[]
+  ) => {
+    try {
+      // Make API call to set snapshot data using the defined endpoint
+      const response = await fetch(endpoints.snapshots.set.toString(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // Pass snapshot data
+        }),
+      });
+      const snapshotData = await response.json();
+      snapshotManager.snapshotStore.setSnapshotSuccess(
+        snapshotData,
+        subscribers
+      );
+      // Notify success
+      notify(
+        "setSnapshotManagerSuccess",
+        "Snapshot set successfully!",
+        NOTIFICATION_MESSAGES.Generic.DEFAULT,
+        new Date(),
+        NotificationTypeEnum.OperationSuccess
+      );
+    } catch (error: any) {
+      // Notify failure
+      const errorMessage =
+        "Error setting snapshot: " +
+        (error instanceof Error ? error.message : String(error));
+      snapshotManager.snapshotStore.setSnapshotFailure(
+        new Error(errorMessage)
       );
 
-      fetchSnapshots();
-      createSnapshot();
-    }, [todoManagerStore, taskManagerStore, userManagedStore, undoRedoStore]);
+      // Using a custom error message
+      notify(
+        "snapshotSetFailure",
+        "Snapshot set was unsuccessful",
+        NOTIFICATION_MESSAGES.Generic.ERROR,
+        new Date(),
+        "Error" as NotificationType
+      );
+    }
+  };
 
-    const createSnapshot = async () => {
-      try {
-        // Make API call to create snapshot using the defined endpoint
-        const response = await fetch(endpoints.snapshots.add.toString(), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            // Pass snapshot data
-          }),
-        });
-        const snapshotData = await response.json();
-        snapshotManager.snapshotStore.createSnapshotSuccess(snapshotData);
-        // Notify success
-        notify(
-          "createSnapshotManagerSuccess",
-          "Snapshot created successfully!",
-          NOTIFICATION_MESSAGES.Generic.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OperationSuccess
-        );
-      } catch (error: any) {
-        // Notify failure
-        const errorMessage =
-          "error creating snapshot: " +
-          (error instanceof Error ? error.message : String(error));
-        const snapshot = {
-          /* Define a default snapshot object or obtain it from the context */
-        };
-
-        snapshotManager.snapshotStore.createSnapshotFailure(
-          snapshot,
-          new Error(errorMessage)
-        );
-
-        // Using a custom error message
-        notify(
-          "snapshotCreationSuccess",
-          "Snapshot creation was unsuccessful",
-          NOTIFICATION_MESSAGES.Generic.ERROR,
-          new Date(),
-          "Error" as NotificationType
-        );
-      }
-    };
-
-    const setSnapshotData = async (
-      snapshot: Snapshot<any>,
-      subscribers: ((data: Snapshot<BaseData>) => void)[]
-    ) => {
-      try {
-        // Make API call to set snapshot data using the defined endpoint
-        const response = await fetch(endpoints.snapshots.set.toString(), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            // Pass snapshot data
-          }),
-        });
-        const snapshotData = await response.json();
-        snapshotManager.snapshotStore.setSnapshotSuccess(
-          snapshotData,
-          subscribers
-        );
-        // Notify success
-        notify(
-          "setSnapshotManagerSuccess",
-          "Snapshot set successfully!",
-          NOTIFICATION_MESSAGES.Generic.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OperationSuccess
-        );
-      } catch (error: any) {
-        // Notify failure
-        const errorMessage =
-          "Error setting snapshot: " +
-          (error instanceof Error ? error.message : String(error));
-        snapshotManager.snapshotStore.setSnapshotFailure(
-          new Error(errorMessage)
-        );
-
-        // Using a custom error message
-        notify(
-          "snapshotSetFailure",
-          "Snapshot set was unsuccessful",
-          NOTIFICATION_MESSAGES.Generic.ERROR,
-          new Date(),
-          "Error" as NotificationType
-        );
-      }
-    };
 
     const handleSnapshot: SnapshotStoreConfig<
       BaseData,
@@ -639,7 +672,8 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
       } else {
         console.warn(`Snapshot with ID ${snapshotId} not found.`);
       }
-    };
+    }
+  
     const state = snapshotManager.snapshotStore.state;
 
    
@@ -737,7 +771,7 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
       }
     };
 
-    const setSnapshots = async (snapshots: Snapshot<Data>[]) => {
+    const setSnapshots = async (snapshots: Snapshots<T>) => {
       try {
         const response = await fetch(`/api/snapshots`, {
           method: "PUT",
@@ -753,7 +787,7 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
     };
 
     const removeSnapshot = async (
-      snapshotToRemove: Snapshot<T, K>
+      snapshotToRemove: SnapshotStore<T, K>
     ) => {
       try {
         const response = await fetch(`/api/snapshots/${snapshotToRemove.id}`, {
@@ -799,7 +833,7 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
       }
     };
 
-    const takeSnapshotSuccess = async (snapshot: SnapshotStore<T, K>) => {
+    const takeSnapshotSuccess = async (snapshot: Snapshot<T, K>) => {
       snapshotManager.snapshotStore.takeSnapshotSuccess(snapshot);
     };
 
@@ -807,7 +841,7 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
       snapshotManager.snapshotStore.takeSnapshotsSuccess(snapshots);
     };
 
-    const getSnapshots = async (snapshots: SnapshotStore<BaseData, K>[]) => {
+    const getSnapshots = async (snapshots: Snapshots<T>) => {
       try {
         const response = await fetch("/api/snapshots");
         const snapshots = await response.json();
@@ -819,21 +853,34 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
 
     const onSnapshot = (
       snapshotId: string,
-      callback: (snapshot: Snapshot<T>) => void,
-      asyncCallback: (snapshot: Snapshot<T>) => Promise<void>
+      callback: (snapshot: Snapshot<T, any>) => void,
+      asyncCallback: (snapshot: Snapshot<T, any>) => Promise<Subscriber<T, T> | null>
     ) => {
       (async () => {
-        const store = snapshotManager.snapshotStore;
+        const store = snapshotManager.snapshotStore as SnapshotStore<T, K>; // Cast to the correct type
         store.subscribeToSnapshots(
           snapshotId,
-          async (snapshot: Snapshot<T>) => {
-            callback(snapshot);
-            await asyncCallback(snapshot);
-          }
+          (snapshots: Snapshots<T>) => {
+            // Directly call the callback for each snapshot
+            snapshots.forEach(snapshot => {
+              callback(snapshot);
+            });
+    
+            // Perform async operations separately
+            (async () => {
+              for (const snapshot of snapshots) {
+                await asyncCallback(snapshot);
+              }
+            })();
+    
+            // Return null to satisfy the return type
+            return null;
+          },
+          null // or pass the actual snapshot if available
         );
       })();
     };
-
+    
  
 
     const updateSnapshot = async (
@@ -894,7 +941,7 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
         );
         throw error; // Propagate the error
       }
-    };
+    }
 
     const updateSnapshots = async (
       updatedSnapshots: Subscriber<T, K>[]
@@ -1031,20 +1078,26 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
     const { notify } = useNotification();
     const subscribeToSnapshot = async (
       snapshotId: string,
-      callback: (snapshot: Snapshot<T, K>) => void,
-      snapshot: Snapshot<BaseData>
+      callback: Callback<Snapshot<T, T>>,
+      snapshot: Snapshot<T, K>
     ) => {
+
       snapshotManager.snapshotStore.subscribeToSnapshot(
         snapshotId,
         callback,
+        snapshot
        );
     };
 
-    // Add more methods as needed
+  // Add more methods as needed
+
+
     return {
       state,
       snapshotId,
       delegate,
+      snapshotManager,
+      snapshotStore,
       initSnapshot,
       setSnapshotManager,
       fetchSnapshot,
@@ -1077,9 +1130,9 @@ const useSnapshotManager = async <T extends BaseData, K extends BaseData>() => {
   //   error: "Snapshot manager not initialized",
 
   // };
-};
-
+export { convertSnapshotToContent, options };
+export type { SnapshotManager, SnapshotStoreOptions };
 export default useSnapshotManager;
-export { options };
+export { convertSnapshotToContent, options };
 export type { SnapshotManager, SnapshotStoreOptions };
 

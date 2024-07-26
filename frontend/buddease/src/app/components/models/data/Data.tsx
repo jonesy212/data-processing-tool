@@ -29,6 +29,7 @@ import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
 import { Tag, TagOptions, createTag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
+import TodoImpl from "../../todos/Todo";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -54,7 +55,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: Snapshots<BaseData>;
+  snapshots?: SnapshotStore<Snapshot<BaseData>, BaseData>[];
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -69,6 +70,7 @@ interface DataDetailsProps<T> {
   data: T;
 }
 
+type TodoSubtasks = Todo[] & Task[]
 export interface Comment {
   id?: string;
   text?: string | Content;
@@ -96,7 +98,7 @@ export interface Comment {
 
 interface BaseData {
   _id?: string;
-  id: string | number;
+  id?: string | number | undefined;
   title?: string;
   data?: any;
   description?: string | null;
@@ -104,29 +106,28 @@ interface BaseData {
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  timestamp?: string | Date | undefined;
+  timestamp?: string | number | Date | undefined
   isActive?: boolean;
   tags?: string[] | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
   value?: number | string | undefined;
   initialState?: 
-  | SnapshotStore<BaseData, BaseData> 
-  | Snapshot<BaseData, BaseData> 
-  | null 
-  | undefined;
+    | SnapshotStore<Snapshot<BaseData>, BaseData> 
+    | Snapshot<Snapshot<BaseData>, BaseData> 
+    | null 
+    | undefined;
   dueDate?: Date | null;
   priority?: string | AllStatus;
   assignee?: UserAssignee | null;
   collaborators?: string[];
   comments?: (Comment | CustomComment)[] | undefined;
   attachments?: Attachment[];
-  subtasks?: Task[];
+  subtasks?: TodoImpl[];
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: string;
   updatedBy?: string;
-
   updatedDetails?: DetailsItem<SupportedData>;
   isArchived?: boolean;
   isCompleted?: boolean;
@@ -147,21 +148,21 @@ interface BaseData {
   ideas?: Idea[];
   members?: number | Member[];
   leader?: User | null;
-  snapshots?: SnapshotStore<BaseData, BaseData>[];
+  snapshots?: SnapshotStore<Snapshot<BaseData>, BaseData>[];
   text?: string;
   category?: string | CategoryProperties | undefined;
   [key: string]: any;
-  getData?: (id: number) => Promise<SnapshotStore<BaseData, BaseData>[]>; 
+  getData?: (id: number) => Promise<SnapshotStore<Snapshot<BaseData>, BaseData>[]>;
 
   // Implement the `then` function using the reusable function
   then?: <T extends Data>(
-    callback: (newData: Snapshot<BaseData>) => void
+    callback: (newData: Snapshot<Snapshot<BaseData>, BaseData>) => void
   ) =>  Snapshot<Data> | undefined;
 }
 
 interface Data extends BaseData {
   category?: string | CategoryProperties | undefined;
-  subtasks?: Task[];
+  subtasks?: TodoImpl[];
   actions?: SnapshotStoreConfig<BaseData, BaseData>[];
   [key: string]: any;
 }
@@ -178,7 +179,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
   return (
     <CommonDetails
       data={{
-        id: data.id,
+        id: data.id ? data.id.toString() : "",
         title: "Data Details",
         description: "Data descriptions",
         details: data.details,
@@ -186,7 +187,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
       }}
       details={{
         _id: data._id,
-        id: data.id,
+        id: data.id ? data.id.toString() : "",
         title: data.title,
         description: data.description,
         phase: data.phase,

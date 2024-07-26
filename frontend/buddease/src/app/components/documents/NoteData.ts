@@ -6,7 +6,7 @@ import { Collaborator } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import Version from "../versions/Version";
 
-
+import {CommonAnimationOptions} from './SharedDocumentProps'
 
 export interface Change {
   id: number;

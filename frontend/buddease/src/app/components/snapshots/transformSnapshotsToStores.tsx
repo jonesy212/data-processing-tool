@@ -34,23 +34,7 @@ function transformSnapshotsToStores(snapshots: Snapshot<BaseData>[] | null): Sna
     ));
 }
 
-
-        // snapshot.status,
-        // snapshot.options,
-        // snapshot.rsvpStatus,
-        // snapshot.priority,
-        // snapshot.host,
-        // snapshot.teamMemberId,
-        // snapshot.participants,
-        // snapshot.then,
-        // snapshot.analysisResults,
-        // snapshot.snapshots,
-        // snapshot.getData,
-        // snapshot.timestamp
-    ));
-  }
-  
-
+ 
 
 
 

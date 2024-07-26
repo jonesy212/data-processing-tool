@@ -1,12 +1,29 @@
-// AppTreeService.ts
 import { getUserData, getUsersData } from "../api/UsersApi";
-import { userId } from "../components/users/ApiUser";
+import { fetchUserIdsFromDatabase } from "../api/DatabaseApi"; // Example function to fetch user IDs
 
 class AppTreeService {
+  // Function to fetch user IDs from the database
+  static async getUserIds(): Promise<string[]> {
+    try {
+      // Fetch user IDs from the database
+      const userIds = await fetchUserIdsFromDatabase();
+      return userIds;
+    } catch (error) {
+      console.error("Error fetching user IDs:", error);
+      return []; // Return an empty array or handle as needed
+    }
+  }
+
+  // Fetch single user data
   static async getTree() {
     try {
+      const userIds = await this.getUserIds(); // Get user IDs
+      if (userIds.length === 0) {
+        throw new Error("No user IDs found.");
+      }
 
-      const usersData = await getUserData(String(userId)); // Call getUsersData function instead of generateInitialAppTree
+      // Fetch data for the first user ID as an example
+      const usersData = await getUserData(userIds[0]);
       return usersData;
     } catch (error) {
       console.error("Error fetching app tree:", error);
@@ -14,18 +31,22 @@ class AppTreeService {
     }
   }
 
-
+  // Fetch data for multiple users
   static async getTrees() {
     try {
+      const userIds = await this.getUserIds(); // Get user IDs
+      if (userIds.length === 0) {
+        throw new Error("No user IDs found.");
+      }
 
-      const userIds = [userId1, userId2, userId3]; // Get list of user IDs
+      // Fetch data for all user IDs
       const usersData = await getUsersData(userIds);
       return usersData;
-
     } catch (error) {
       console.error("Error fetching app trees:", error);
       return null;
     }
   }
 }
+
 export default AppTreeService;

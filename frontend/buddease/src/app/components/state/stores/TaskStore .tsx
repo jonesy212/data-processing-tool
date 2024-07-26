@@ -166,6 +166,8 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
     const taskSnapshotStore: Promise<SnapshotStore<Snapshot<Task>>> = useSnapshotStore(addToSnapshotList);
     const taskIdToAssign = "someTaskId";
+    
+    
     taskStore.setAssignedTaskStore({
       ...assignedTaskStore,
       flatMap: () => { },

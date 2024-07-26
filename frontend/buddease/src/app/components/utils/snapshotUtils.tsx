@@ -14,11 +14,11 @@ function isSnapshot<T extends BaseData>(obj: any): obj is Snapshot<T> {
     }
 
 
-export const addToSnapshotList = async (snapshot: SnapshotStore<any>) => {
+export const addToSnapshotList = async (snapshot: Snapshot<any>) => {
     console.log("Snapshot added to snapshot list: ", snapshot);
   
     const snapshotStore = await useSnapshotStore(addToSnapshotList); // Ensure addToSnapshotList is passed correctly
-    const subscriptionData: Subscription | null = snapshot.data ? {
+    const subscriptionData: Subscription<T> | null = snapshot.data ? {
       unsubscribe: () => {},
       portfolioUpdates: () => {},
       tradeExecutions: () => {},

@@ -28,13 +28,16 @@ import {
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { Tag } from "../../models/tracker/Tag";
 import { Project } from "../../projects/Project";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import { K, SnapshotStoreConfig, T } from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { snapshotType } from "../../typings/YourSpecificSnapshotType";
+import { createSnapshotStoreOptions, snapshotType } from "../../typings/YourSpecificSnapshotType";
 import { subscribeToSnapshots } from "../../snapshots/snapshotHandlers";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { options } from "../../hooks/useSnapshotManager";
+import determineFileCategory from "../../libraries/categories/determineFileCategory";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -203,6 +206,15 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
       new Date(),
       NotificationTypeEnum.InvalidCredentials
     );
+
+    const options = createSnapshotStoreOptions<T, K>({
+      initialState,
+      snapshotId: "", // Provide appropriate snapshotId
+      category: category as CategoryProperties,
+      dataStoreMethods: {
+
+      } // Provide appropriate dataStoreMethods
+    });
 
     this.snapshotStore = new SnapshotStore<T, K>(options);
   }
@@ -465,7 +477,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
   }
 }
 
-const useDetailsListStore = (): DetailsListStore => {
+const useDetailsListStore = (): DetailsListStore<T, K> => {
   return new DetailsListStoreClass();
 };
 

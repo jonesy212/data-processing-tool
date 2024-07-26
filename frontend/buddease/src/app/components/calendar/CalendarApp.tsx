@@ -90,6 +90,24 @@ const analysisType = (project: Project) => {
 };
 const { fetchData } = useDataStore();
 
+
+// Adjusted addSnapshotHandler function
+export const addSnapshotHandler = (
+  snapshot: Snapshot<Data>,
+  subscribers: (snapshot: Snapshot<Data>) => void,
+  delegate: SnapshotStoreConfig<BaseData, BaseData>[]
+) => {
+  if (delegate && delegate.length > 0 && typeof delegate[0].setSnapshots === 'function') {
+    const currentSnapshots: SnapshotStore<BaseData>[] = delegate[0].snapshots ? delegate[0].snapshots.filter(isSnapshotStoreBaseData) : [];
+    
+    // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
+    if (isSnapshotStoreBaseData(snapshot)) {
+      delegate[0].setSnapshots([...currentSnapshots, snapshot]);
+    } else {
+      console.error('Snapshot is not of type SnapshotStore<BaseData>', snapshot);
+    }
+  }
+};
 const CalendarApp = () => {
   const snapshot = null; // Replace with actual snapshot data if available
   const category: CategoryProperties = {
@@ -282,23 +300,6 @@ function isSnapshotStoreBaseData(
   );
 }
 
-// Adjusted addSnapshotHandler function
-export const addSnapshotHandler = (
-  snapshot: Snapshot<Data>,
-  subscribers: (snapshot: Snapshot<Data>) => void,
-  delegate: SnapshotStoreConfig<BaseData, BaseData>[]
-) => {
-  if (delegate && delegate.length > 0 && typeof delegate[0].setSnapshots === 'function') {
-    const currentSnapshots: SnapshotStore<BaseData>[] = delegate[0].snapshots ? delegate[0].snapshots.filter(isSnapshotStoreBaseData) : [];
-    
-    // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
-    if (isSnapshotStoreBaseData(snapshot)) {
-      delegate[0].setSnapshots([...currentSnapshots, snapshot]);
-    } else {
-      console.error('Snapshot is not of type SnapshotStore<BaseData>', snapshot);
-    }
-  }
-};
   
   
   return (
@@ -581,45 +582,39 @@ export const addSnapshotHandler = (
                 setState: useSnapshotManager().setState,
                 validateSnapshot: useSnapshotManager().validateSnapshot,
                 handleSnapshot: useSnapshotManager().handleSnapshot,
-                handleActions: ,
+                handleActions: useSnapshotManager().handleActions,
 
-                setSnapshot: ,
-                setSnapshots: ,
-                clearSnapshot: ,
-                mergeSnapshots: ,
-                reduceSnapshots:,
-                sortSnapshots:,
-                filterSnapshots:,
-
-                mapSnapshots:,
-                findSnapshot:,
-                getSubscribers:,
-                notify:,
-
-                notifySubscribers:,
-                subscribe:,
-                unsubscribe:,
-                fetchSnapshot:,
-
-                fetchSnapshotSuccess:,
-                fetchSnapshotFailure:,
-                getSnapshot:,
-
-                getSnapshots:,
-                getAllSnapshots:,
-                generateId:,
-                batchFetchSnapshots:,
-
-                batchTakeSnapshotsRequest:,
-                batchUpdateSnapshotsRequest:,
-                batchFetchSnapshotsSuccess:,
-                batchFetchSnapshotsFailure:,
-
-                batchUpdateSnapshotsSuccess:,
-                batchUpdateSnapshotsFailure:,
-                batchTakeSnapshot: ,
-                snapshots:,
-                config:,
+                setSnapshot: useSnapshotManager().setSnapshot,
+                setSnapshots: useSnapshotManager().setSnapshots,
+                clearSnapshot: useSnapshotManager().clearSnapshot ,
+                mergeSnapshots: useSnapshotManager().mergeSnapshots ,
+                reduceSnapshots: useSnapshotManager().reduceSnapshots,
+                sortSnapshots: useSnapshotManager().sortSnapshots,
+                filterSnapshots: useSnapshotManager().filterSnapshots,
+                mapSnapshots: useSnapshotManager().mapSnapshots,
+                findSnapshot: useSnapshotManager().findSnapshot,
+                getSubscribers: useSnapshotManager().getSubscribers,
+                notify: useSnapshotManager().notify,
+                notifySubscribers: useSnapshotManager().notifySubscribers,
+                subscribe: useSnapshotManager().subscribe,
+                fetchSnapshot: useSnapshotManager().fetchSnapshot,
+                unsubscribe: useSnapshotManager().unsubscribe,
+                fetchSnapshotFailure: useSnapshotManager().fetchSnapshotFailure,
+                fetchSnapshotSuccess: useSnapshotManager().fetchSnapshotSuccess,
+                getSnapshots: useSnapshotManager().getSnapshots,
+                getSnapshot: useSnapshotManager().getSnapshot,
+                generateId: useSnapshotManager().generateId,
+                getAllSnapshots: useSnapshotManager().getAllSnapshots,
+                batchTakeSnapshotsRequest: useSnapshotManager().batchTakeSnapshotsRequest,
+                batchFetchSnapshots: useSnapshotManager().batchFetchSnapshots,
+                batchFetchSnapshotsSuccess: useSnapshotManager().batchFetchSnapshotsSuccess,
+                batchUpdateSnapshotsRequest: useSnapshotManager().batchUpdateSnapshotsRequest,
+                batchUpdateSnapshotsSuccess: useSnapshotManager().batchUpdateSnapshotsSuccess,
+                batchFetchSnapshotsFailure: useSnapshotManager().batchFetchSnapshotsFailure,
+                batchTakeSnapshot: useSnapshotManager().batchTakeSnapshot ,
+                batchUpdateSnapshotsFailure: useSnapshotManager().batchUpdateSnapshotsFailure,
+                config: useSnapshotManager().config,
+                snapshots: useSnapshotManager().snapshots,
                 // mergeSnapshot:,
                 // mergeSnapshotSuccess, mergeSnapshotsSuccess,
                 snapshotId: "snap-1",

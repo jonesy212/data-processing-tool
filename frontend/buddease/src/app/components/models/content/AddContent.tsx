@@ -1,13 +1,13 @@
 // AddContent.tsx
 
+import ContentItemComponent from '@/app/components/models/content/ContentItem';
 import { Persona } from "@/app/pages/personas/Persona";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
+import { CustomSnapshotData } from "../../snapshots/LocalStorageSnapshotStore";
 import UserRoles from "../../users/UserRoles";
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
-import ContentItemComponent from '@/app/components/models/content/ContentItem';
-import { CustomSnapshotData } from "../../snapshots/LocalStorageSnapshotStore";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 interface Content {
   id: string | number | undefined;
@@ -15,7 +15,7 @@ interface Content {
   description: string;
   subscriberId: string,
   category: string | CategoryProperties | undefined,
-  timestamp: string | Date,
+  timestamp: string | number | Date,
   length: 0,
   data: CustomSnapshotData | null | undefined,
 }
@@ -541,4 +541,5 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 };
 
 export default AddContent;
-export type { ContentProps, Content };
+export type { Content, ContentProps };
+

@@ -34,8 +34,8 @@ interface RetrievedSnapshot<T> extends Snapshot<Data> {
 // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data>>
 const convertToSnapshotStore = (
   retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse>
-): SnapshotStore<BaseData> => {
-  const snapshotStore: SnapshotStore<BaseData> = {
+): SnapshotStore<T,K> => {
+  const snapshotStore: SnapshotStore<T,K> = {
     key: retrievedSnapshot.id,
     state: {
       data: retrievedSnapshot.data ? new Map<string, Data>([[retrievedSnapshot.id, retrievedSnapshot.data]]) : new Map<string, Data>(),
@@ -71,7 +71,7 @@ const convertToSnapshotStore = (
 
 // Define a function to convert SnapshotStore<Snapshot<Data>> to RetrievedSnapshot<SnapshotDataResponse>
 const convertToRetrievedSnapshot = (
-  snapshotStore: SnapshotStore<Data>
+  snapshotStore: SnapshotStore<T, K>
 ): RetrievedSnapshot<SnapshotDataResponse> => {
   // Perform the conversion here
   const retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse> = {
