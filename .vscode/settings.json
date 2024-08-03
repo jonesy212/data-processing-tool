@@ -1,8 +1,0 @@
-{
-  "python.terminal.activateEnvironment": true,
-  "workbench.settings.openDefaultSettings": true,
-  "java.configuration.updateBuildConfiguration": "interactive",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  }
-}

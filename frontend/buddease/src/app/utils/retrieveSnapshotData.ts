@@ -2,10 +2,11 @@ import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import axios from "axios";
 import { BaseData, Data } from "../components/models/data/Data";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
-import SnapshotStore from "../components/snapshots/SnapshotStore";
+import {SnapshotStore} from "../components/snapshots/SnapshotStore";
 import { VideoData } from "../components/video/Video";
 import axiosInstance from '../api/axiosInstance';
 import { CategoryProperties } from '../pages/personas/ScenarioBuilder';
+import { subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 
 // Define the API endpoint for retrieving snapshot data
 const SNAPSHOT_DATA_API_URL = "https://example.com/api/snapshot";
@@ -53,9 +54,7 @@ const convertToSnapshotStore = (
     subscribers: [],
     set: undefined,
     snapshots: [],
-    subscribeToSnapshots: (snapshotId, callback) => {
-      // Implement subscription logic
-    },
+    subscribeToSnapshots: subscribeToSnapshots,
     subscribeToSnapshot: (snapshotId, callback, snapshot) => {
       // Implement subscription to a specific snapshot logic
     },

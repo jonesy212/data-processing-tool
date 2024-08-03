@@ -11,6 +11,7 @@ import { makeAutoObservable } from "mobx";
 import { useDispatch } from "react-redux";
 import { Attendee } from "../../calendar/Attendee";
 import {
+  DocumentOptions,
   getDefaultDocumentOptions
 } from "../../documents/DocumentOptions";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
@@ -28,7 +29,7 @@ import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import axiosInstance from "../../security/csrfToken";
 import { SnapshotStoreConfig, snapshotConfig } from "../../snapshots/SnapshotConfig";
-import SnapshotStore from "../../snapshots/SnapshotStore";
+import SnapshotStore, { SnapshotData } from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
   NotificationTypeEnum,
@@ -46,7 +47,9 @@ import { useStore } from "./StoreProvider";
 import { delegate, subscribeToSnapshots } from "../../snapshots/snapshotHandlers";
 import { initialSnapshot } from "../../crypto/exchangeIntegration";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-import useSnapshotManager from "../../hooks/useSnapshotManager";
+import  { useSnapshotManager, CombinedEvents, SnapshotStoreOptions } from "../../hooks/useSnapshotManager";
+import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
+import { MobXRootState } from "./RootStores";
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
 const API_BASE_URL = endpoints.calendar.events;
@@ -96,13 +99,14 @@ interface CalendarEvent extends CommonEvent, CommonData {
   type?: NotificationType;
   locked?: boolean;
   changes?: string[];
-  date: Date
+  date: Date | undefined
   tags?: string[] | Tag[];
-
+  meta: Data | undefined;
   options?: {
     // ...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
-    
+    additionalDocumentOptions: DocumentOptions
+    additionalOptionsLabel: string;
     // ...
   };
   documentPhase?: WritableDraft<Phase>;
@@ -125,24 +129,27 @@ interface CalendarEvent extends CommonEvent, CommonData {
   archived?: boolean;
   documentReleased?: boolean;
   metadata?: StructuredMetadata;
-  getData: () => Promise<SnapshotStore<BaseData>[]>;
-  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
+  getSnapshotStoreData: () => Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]>;
+  getData: () => Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]>;
+ 
+  then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, T> | undefined;
 }
 
-export interface CalendarManagerStore {
+export interface CalendarManagerStore<T extends Data = BaseData, K extends Data = BaseData> {
   dispatch: (action: PayloadAction<any, string, any, any>) => void;
   openScheduleEventModal: (content: JSX.Element) => void;
   openCalendarSettingsPage: () => void;
   updateDocumentReleaseStatus: (eventId: string, released: boolean) => void;
-  getState: () => RootState; // Add getState method
+  getState: () => MobXRootState; // Add getState method
 
   events: Record<string, CalendarEvent[]>;
   eventTitle: string;
   eventDescription: string;
-  eventStatus: AllStatus; // Assuming this is the property expecting the mentioned types
+  eventStatus: AllStatus; 
 
   assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<BaseData>;
+
+  snapshotStore: SnapshotStore<T, K>
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateEventTitle: (title: string) => void;
@@ -174,7 +181,7 @@ export interface CalendarManagerStore {
   setDynamicNotificationMessage: (message: string) => void;
   handleRealtimeUpdate: (
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<BaseData>
+    snapshotStore: SnapshotStore<T, K>
   ) => void;
 }
 
@@ -182,8 +189,8 @@ export interface CalendarManagerStore {
 
 const options = await useSnapshotManager()
 
-class CalendarManagerStoreClass implements CalendarManagerStore {
-  getState: () => RootState; // Add getState method
+class CalendarManagerStoreClass<T extends Data, K extends Data> implements CalendarManagerStore {
+  getState: () => MobXRootState; // Add getState method
   dispatch: (action: PayloadAction<any, string, any, any>) => void;
   events: Record<string, CalendarEvent[]> = {
     scheduled: [],
@@ -193,22 +200,22 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
   eventTitle = "";
   eventDescription = "";
   eventStatus: AllStatus = StatusType.Pending;
-
-  assignedEventStore: AssignEventStore;
-  snapshotStore: SnapshotStore<BaseData, BaseData> = new SnapshotStore<BaseData, BaseData>(options);
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
+
+  assignedEventStore: AssignEventStore;
+  snapshotStore: SnapshotStore<T, K> 
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
   handleRealtimeUpdate: (
     events: Record<string, CalendarEvent[]>,
-    snapshotStore:SnapshotStore<BaseData, BaseData> 
+    snapshotStore: SnapshotStore<T, K> 
   ) => void;
 
   openCalendarSettingsPage: () => void;
   openScheduleEventModal: (content: JSX.Element) => void;
   entities: CalendarEntities; 
 
-  constructor() {
+  constructor(options: SnapshotStoreOptions<T, K>) {
     // Initialize entities in the constructor
     this.entities = {
       events: [],
@@ -224,13 +231,12 @@ class CalendarManagerStoreClass implements CalendarManagerStore {
     this.setDocumentReleaseStatus = this.setDocumentReleaseStatus.bind(this);
     this.updateDocumentReleaseStatus =
       this.updateDocumentReleaseStatus.bind(this);
-    this.handleRealtimeUpdate = (
+    this.handleRealtimeUpdate = <T extends Data, K extends Data>(
       events: Record<string, CalendarEvent[]>,
-      snapshotStore: SnapshotStore<Snapshot<Data>>
+      snapshotStore: SnapshotStore<T, K>
     ) => {
       this.events = events;
-      this.snapshotStore = snapshotStore; // Use the provided snapshotStore
-    };
+      this.snapshotStore = new SnapshotStore<T, K>(options);     };
 
     this.openCalendarSettingsPage = () => {
       this.openScheduleEventModal(<CalendarSettingsPage />);
@@ -634,6 +640,86 @@ function convertEventsToData(events: Record<string, CalendarEvent[]>): Data {
   return convertedData;
 }
 
+
+// Function to fetch Snapshot data
+const fetchSnapshotData = async (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> => {
+  // Replace this with your actual data fetching logic
+  return [
+    // Mock data
+    {
+      // Fill in with actual Snapshot data
+      id: 'snapshot1',
+      data: {} as SnapshotWithCriteria<BaseData>,
+      criteria: {} as SnapshotWithCriteria<BaseData>,
+      events: {
+        scheduled: false,
+        isCompleted: false,
+        _id: "",
+        id: "",
+        title: "",
+        status: StatusType.Pending,
+        isActive: false,
+        tags: [],
+        phase: null,
+        then: implementThen,
+        analysisType: {} as AnalysisTypeEnum,
+        analysisResults: [],
+        videoUrl: "",
+        videoThumbnail: "",
+        videoDuration: 0,
+        videoData: {} as VideoData,
+        ideas: [],
+        eventRecords,
+        callbacks: [{
+          completeAllEvents: {
+            request: completeAllEventsRequest,
+            success: completeAllEventsSuccess,
+            failure: completeAllEventsFailure,
+          },
+          fetchEvents: {
+            request: fetchEventsRequest,
+            success: fetchEventsSuccess,
+            failure: fetchEventsFailure,
+          },
+          openCalendarSettingsPage: {
+            request: openCalendarSettingsPage,
+            success: openCalendarSettingsPageSuccess,
+            failure: openCalendarSettingsPageFailure,
+          },
+          openScheduleEventModal: {
+            request: openScheduleEventModal,
+            success: openScheduleEventModalSuccess,
+            failure: openScheduleEventModalFailure,
+          },
+        }],
+      },
+      meta: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    } as Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>,
+  ];
+};
+
+// Function to fetch SnapshotStore data
+const fetchSnapshotStoreData = async (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>> => {
+  // You can also return a Promise that resolves to a SnapshotStore object
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        // Fill in with actual SnapshotStore data
+        snapshots: [
+          {
+            id: 'snapshot1',
+            data: {} as SnapshotWithCriteria<BaseData>,
+            criteria: {} as SnapshotWithCriteria<BaseData>,
+          } as Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>,
+        ],
+      } as SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>);
+    }, 2000);
+  });
+};
+
 // Example usage:
 export const events: Record<string, CalendarEvent[]> = {
   "2024-02-08": [
@@ -657,15 +743,14 @@ export const events: Record<string, CalendarEvent[]> = {
       priority: {} as PriorityTypeEnum.High,
       phase: null,
       participants: [],
-      then: (callback: (newData: Snapshot<Data>) => void) => {
-        // Implement logic to handle the snapshot of data
-        const newData: Snapshot<Data> = {
-          category: "calendarEvents",
-          timestamp: new Date(),
-          data: convertedData,
-        };
-        callback(newData);
+      ideas: [],
+      getSnapshotStoreData: async () => {
+        return fetchSnapshotStoreData();
       },
+      getData: async () => {
+        return fetchSnapshotData();
+      },
+    
       analysisType: {} as AnalysisTypeEnum,
       analysisResults: [],
       videoData: {} as VideoData,
@@ -680,6 +765,32 @@ export const events: Record<string, CalendarEvent[]> = {
   // Add more dates with corresponding events as needed
 };
 
+
+// Example implementation of CombinedEvents
+const combinedEvents: CombinedEvents<Data, Data> = {
+  eventRecords: events,
+  callbacks: [
+    (snapshot: Snapshot<Data, Data>) => {
+      // Handle snapshot data
+      console.log(snapshot);
+    }
+  ],
+};
+
+// Use CombinedEvents in SnapshotData
+const snapshotData: SnapshotData<Data, Data> = {
+  then: (callback: (newData: Snapshot<Data, Data>) => void) => {
+    // Implement logic to handle the snapshot of data
+    const newData: Snapshot<Data, Data> = {
+      category: "calendarEvents",
+      timestamp: new Date(),
+      data: {} as Data, // Provide actual data here
+      events: combinedEvents,
+    };
+    callback(newData);
+  }
+};
+
 export const calendarEvent: CalendarEvent = {} as CalendarEvent;
 //
 
@@ -689,4 +800,5 @@ console.log(convertedData);
 export { fetchEventsRequest, updateCallback, useCalendarManagerStore };
 export default CalendarManagerStoreClass;
 export type { CalendarEntities, CalendarEvent };
+
 

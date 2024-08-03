@@ -3,10 +3,11 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
 import { Snapshot } from "./LocalStorageSnapshotStore";
+import { T } from "./SnapshotConfig";
 
 interface SnapshotItem {
   message: any;
-  content?: string | Content;
+  content?: string | Content<T>;
   user: any;
   id: string;
   value: Snapshot<Data> | undefined;
@@ -16,7 +17,7 @@ interface SnapshotItem {
   categories?: string[];
   updatedAt: Date | undefined;
   store: SnapshotStore<Data> | undefined;
-  data: Map<string, Data>;
+  data: T | Map<string, Data> | null | undefined;
   metadata: any
 }
 

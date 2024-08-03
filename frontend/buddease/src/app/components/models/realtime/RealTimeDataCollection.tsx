@@ -106,7 +106,9 @@ const RealTimeDataCollection: React.FC<{}> = () => {
         type: ExchangeDataTypeEnum.TRADES,
         data: undefined,
         liquidity: 0,
-        tokens: []
+        tokens: [],
+        createdAt: undefined,
+        updatedAt: undefined
       },
       // Add other exchanges similarly
     ];

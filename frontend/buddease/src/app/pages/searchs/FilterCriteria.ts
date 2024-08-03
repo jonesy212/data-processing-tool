@@ -6,7 +6,7 @@ import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from "@/app/components/models/data/Data";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
@@ -36,6 +36,10 @@ import {
 import { CalendarEvent } from "./../../components/state/stores/CalendarEvent";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { createSnapshot } from "@/app/api/SnapshotApi";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { resolve } from "path";
+import { reject } from "lodash";
+import  SnapshotWithCriteria from "@/app/components/routing/SearchCriteria";
 
 // .ts
 interface FilterCriteria {
@@ -382,13 +386,69 @@ const events: CalendarEvent[] = [
     participants: [],
     teamMemberId: "",
     date: new Date(),
-    then: function <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void): void {
+    getData(): Promise<SnapshotStore<SnapshotWithCriteria<BaseData, BaseData>, SnapshotWithCriteria<BaseData, BaseData>>[]> {
+      return new Promise((resolve, reject) => {
+        try {
+          // Your logic to retrieve data goes here
+          const data: SnapshotStore<SnapshotWithCriteria<BaseData, BaseData>, SnapshotWithCriteria<BaseData, BaseData>>[] = [
+            {
+              description: "This is a sample event",
+              startDate: new Date("2024-06-01"),
+              endDate: new Date("2024-06-05"),
+              status: "scheduled",
+              priority: "high",
+              assignedUser: "John Doe",
+              todoStatus: "completed",
+              taskStatus: "in progress",
+              teamStatus: "active",
+              dataStatus: "processed",
+              calendarStatus: "approved",
+              notificationStatus: "read",
+              bookmarkStatus: "saved",
+              priorityType: "urgent",
+              projectPhase: "planning",
+              developmentPhase: "coding",
+              subscriberType: "premium",
+              subscriptionType: "monthly",
+              analysisType: AnalysisTypeEnum.STATISTICAL,
+              documentType: "pdf",
+              fileType: "document",
+              tenantType: "tenantA",
+              ideaCreationPhaseType: "ideation",
+              securityFeatureType: "encryption",
+              feedbackPhaseType: "review",
+              contentManagementType: "content",
+              taskPhaseType: "execution",
+              animationType: "2d",
+              languageType: "english",
+              codingLanguageType: "javascript",
+              formatType: "json",
+              privacySettingsType: "public",
+              messageType: "email",
+              id: "event1",
+              title: "Sample Event",
+              content: "This is a sample event content",
+              topics: [],
+              highlights: [],
+              files: [],
+              rsvpStatus: "yes"
+            }
+          ]; // Example data, replace with actual logic
+    
+          // Resolve the promise with the data
+          resolve(data);
+        } catch (error) {
+          // In case of an error, you can call reject with an error message
+          reject(new Error("Something went wrong"));
+        }
+      })
+    },
+    then: function <T extends Data, K extends Data>(callback: (newData: Snapshot<T, K>) => void): void {
       // Simulate fetching data
-      const snapshot: Snapshot<Snapshot<T>> = {
-        snapshot: {
+      const snapshot: Snapshot<T,K> = {
           description: "This is a sample event",
-          startDate: new Date("2024-06-01"),
-          endDate: new Date("2024-06-05"),
+          // startDate: new Date("2024-06-01"),
+          // endDate: new Date("2024-06-05"),
           status: "scheduled",
           priority: "high",
           assignedUser: "John Doe",
@@ -422,15 +482,14 @@ const events: CalendarEvent[] = [
           id: "",
           title: "",
           content: "",
-          topics: [], 
+          topics: [],
           highlights: [],
           files: [],
           rsvpStatus: "yes",
-          getData: function <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void): void {
+          getData: function <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void): void {
             // Simulate fetching data
             // Fetch or create the snapshot data
-            const snapshot: Snapshot<Snapshot<T>> = {
-              snapshot: {
+            const snapshot: Snapshot<T, K> = {
                 description: "This is a sample event",
                 startDate: new Date("2024-06-01"),
                 endDate: new Date("2024-06-05"),
@@ -473,10 +532,15 @@ const events: CalendarEvent[] = [
                 rsvpStatus: "yes",
               }
             }
-          }
+          },
+        },
 
-    createSnapshot(snapshot: any);
-      callback(snapshot: any);
+          createSnapshot(additionalData: any) {
+            const newSnapshoht = {
+              id: "",
+            }
+    },
+      callback(snapshot: any){},
     }
   },
   // Add more CalendarEvent data as needed

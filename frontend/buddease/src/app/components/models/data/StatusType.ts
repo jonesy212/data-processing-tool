@@ -37,7 +37,9 @@ enum StatusType {
   Status = "status",
   Urgent = "urgent",
   Emergency = "emergency",
-  
+  Active = "active",
+  Inactive = "inactive", 
+  Archived = "archived" ,
 }
 
 // Define the DocumentSize enum

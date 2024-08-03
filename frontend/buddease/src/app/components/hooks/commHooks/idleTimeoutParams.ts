@@ -13,9 +13,9 @@ interface IdleTimeoutParams extends DynamicHookParams {
     }: {
       idleTimeoutId: any;
       startIdleTimeout: any;
-    }) => Promise<void | (() => void)>;
+    }) => Promise<(() => void)>;
     cleanup?: () => void;
-    resetIdleTimeout: () => void;
+    resetIdleTimeout: () => Promise<void>;
     idleTimeoutId: NodeJS.Timeout;
     startIdleTimeout: () => void;
   }

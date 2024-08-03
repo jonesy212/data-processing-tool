@@ -255,6 +255,7 @@ const useDocumentStore = (): DocumentStore => {
     return Object.values(documents).filter((document) => document.id === selectedDocumentId);
   }, [documents, selectedDocumentId]);
   
+
   const updateDocument = (id: number, updatedDocument: Document) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,

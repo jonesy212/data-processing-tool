@@ -1,10 +1,9 @@
 // useStorageManager.ts
 // useStorageManager.ts
 import { useState, useCallback } from "react";
+import { BaseData } from "../models/data/Data";
 
-interface BaseData {
-  [key: string]: any;
-}
+
 
 const useStorageManager = (key: string) => {
   const [storedValue, setStoredValue] = useState<BaseData | undefined>(() => {

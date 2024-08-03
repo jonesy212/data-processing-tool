@@ -25,7 +25,7 @@ import { AllTypes } from "../typings/PropTypes";
 import { UserData } from "../users/User";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
-import { Data, DataDetails } from "./data/Data";
+import { BaseData, Data, DataDetails } from "./data/Data";
 import DetailsProps from "./data/Details";
 import FolderData from "./data/FolderData";
 import { RealtimeDataComponent } from "./realtime/RealtimeData";
@@ -35,7 +35,8 @@ import { Member } from "./teams/TeamMembers";
 import { Tag } from "./tracker/Tag";
 import AccessHistory from "../versions/AccessHistory";
 // Define a generic type for data
-interface CommonData{
+
+interface CommonData {
   id: string | number;
   _id?: string;
   title?: string;
@@ -64,7 +65,12 @@ interface CommonData{
   documentVersion?: number;
   documentContent?: string;
   keywords?: string[];
-  options?: DocumentOptions;
+  options?: {
+    // ...
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+    // documentOptions: DocumentOptions
+    // ...
+  };
   folderPath?: string;
   previousMetadata?: StructuredMetadata;
   currentMetadata?: StructuredMetadata;
@@ -82,7 +88,7 @@ interface CommonData{
   documentBackup?: string;
   date?: Date | undefined;
   completed?: boolean;
-  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined
+  then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 
 }
 
@@ -177,7 +183,7 @@ const CommonDetails = <T extends SupportedData>({
                     {data.tags &&
                       data.tags.map((tag, index) => (
                         <li key={index}>
-                          {typeof tag === "string" ? tag : tag.getOptions.name}
+                          {typeof tag === "string" ? tag : tag.name}
                         </li>
                       ))}
                   </ul>

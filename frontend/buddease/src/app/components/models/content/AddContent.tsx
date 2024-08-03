@@ -9,7 +9,7 @@ import UserRoles from "../../users/UserRoles";
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
 
-interface Content {
+interface Content<T> {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ interface Content {
   category: string | CategoryProperties | undefined,
   timestamp: string | number | Date,
   length: 0,
-  data: CustomSnapshotData | null | undefined,
+  data: T | CustomSnapshotData | null | undefined,
 }
 
 interface ContentProps {

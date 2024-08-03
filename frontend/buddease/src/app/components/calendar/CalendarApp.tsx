@@ -2,7 +2,7 @@
 import useSnapshotManager from '@/app/components/hooks/useSnapshotManager';
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { Todo } from "@/app/components/todos/Todo";
-import React from "react";
+import React, { useState } from "react";
 import { DocumentOptions } from "../documents/DocumentOptions";
 import CommonDetails, { CommonData } from "../models/CommonData";
 import CalendarDetails from "../models/data/CalendarDetails";
@@ -21,10 +21,11 @@ import { DetailsItem } from "../state/stores/DetailsListStore";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { SnapshotStoreConfig } from '../snapshots/SnapshotConfig';
+import { K, SnapshotStoreConfig } from '../snapshots/SnapshotConfig';
 import { initSnapshot, subscribeToSnapshots } from '../snapshots/snapshotHandlers';
 import { takeSnapshot } from '@/app/api/SnapshotApi';
 import { snapshotType } from '../typings/YourSpecificSnapshotType';
+import { isSnapshotStoreBaseData } from '../utils/snapshotUtils';
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -93,12 +94,12 @@ const { fetchData } = useDataStore();
 
 // Adjusted addSnapshotHandler function
 export const addSnapshotHandler = (
-  snapshot: Snapshot<Data>,
-  subscribers: (snapshot: Snapshot<Data>) => void,
+  snapshot: Snapshot<Data, K>,
+  subscribers: (snapshot: Snapshot<Data, K>) => void,
   delegate: SnapshotStoreConfig<BaseData, BaseData>[]
 ) => {
   if (delegate && delegate.length > 0 && typeof delegate[0].setSnapshots === 'function') {
-    const currentSnapshots: SnapshotStore<BaseData>[] = delegate[0].snapshots ? delegate[0].snapshots.filter(isSnapshotStoreBaseData) : [];
+    const currentSnapshots: Snapshots<BaseData> = delegate[0].snapshots ? delegate[0].snapshots.filter(isSnapshotStoreBaseData) : [];
     
     // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
     if (isSnapshotStoreBaseData(snapshot)) {
@@ -108,15 +109,25 @@ export const addSnapshotHandler = (
     }
   }
 };
+
 const CalendarApp = () => {
-  const snapshot = null; // Replace with actual snapshot data if available
+  const [snapshot, setSnapshot] = useState<Snapshot<Data, Data> | null>(null);
+    // Default empty snapshot with the required properties
+    const defaultSnapshot: SnapshotWithData = {
+      data: new Map<string, Data>(), // Initialize with empty map
+      events: {}, // Initialize with empty object or suitable default
+      meta: {} as Data // Initialize with default or empty Data
+    };
+  
+    const [snapshots, setSnapshots] = useState<SnapshotWithData[]>([
+      defaultSnapshot // Add default snapshot to the array
+    ]);
+  
   const category: CategoryProperties = {
     name: "",
     description: "category description",
     icon: "category_png",
     color: "categorized_color",
-    name: '',
-    description: '',
     iconColor: '',
     isActive: false,
     isPublic: false,
@@ -138,28 +149,28 @@ const CalendarApp = () => {
   };
   const date = new Date();
   const type = snapshotType.toString();
-  const initialState: SnapshotStore<BaseData> | Snapshot<BaseData> | null | undefined = null;
+  const initialState: SnapshotStore<BaseData, K> | Snapshot<BaseData, K> | null | undefined = null;
   const snapshotConfig: SnapshotStoreConfig<BaseData, BaseData>[] = [];
   const delegate: SnapshotStoreConfig<BaseData, Data>[] = [];
   
-  const dataStoreMethods: DataStore<BaseData> = {
+  const dataStoreMethods: DataStore<Data, Data> = {
     data: undefined,
     storage: undefined,
-    addData: (data: BaseData) => { },
-    updateData: (id: number, newData: BaseData) => { },
+    addData: (data: Snapshot<Data, Data>) => { },
+    updateData: (id: number, newData:  Snapshot<Data, Data>) => { },
     removeData: (id: number) => { },
     updateDataTitle: (id: number, title: string) => { },
     updateDataDescription: (id: number, description: string) => { },
     addDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { },
     updateDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { },
-    addDataSuccess: (payload: { data: BaseData[] }) => { },
+    addDataSuccess: (payload: { data: Snapshots<Data> }) => { },
     getDataVersions: async (id: number) => {
       // Implement logic to fetch data versions from a data source
       return undefined;
     },
-    updateDataVersions: (id: number, versions: BaseData[]) => Promise.resolve(),
-    getBackendVersion: () => Promise.resolve(undefined),
-    getFrontendVersion: () => Promise.resolve(undefined),
+    updateDataVersions: (id: number, versions: Snapshots<Data>) => Promise.resolve(),
+    getBackendVersion: () => Promise.resolve(""),
+    getFrontendVersion: () => Promise.resolve(""),
     fetchData: (id: number) => Promise.resolve([]),
     getItem: (key: string): Promise<BaseData | undefined> => {
       return new Promise((resolve, reject) => {
@@ -566,147 +577,9 @@ function isSnapshotStoreBaseData(
           unassignProject: (project) =>
             console.log("Project unassigned:", project),
           analysisType: "quantitative" as AnalysisTypeEnum | undefined,
-            snapshots: [
-              {
-                
-                initSnapshot: initSnapshot,
-                takeSnapshot: takeSnapshot,
-                takeSnapshotSuccess: useSnapshotManager().takeSnapshotSuccess,
-                takeSnapshotsSuccess: useSnapshotManager().takeSnapshotsSuccess,
+            
+          snapshots: [],
 
-                configureSnapshotStore: useSnapshotManager().configureSnapshotStore,
-                getData: useSnapshotManager().getData,
-                setData: useSnapshotManager().setData,
-                getState: useSnapshotManager().getState,
-
-                setState: useSnapshotManager().setState,
-                validateSnapshot: useSnapshotManager().validateSnapshot,
-                handleSnapshot: useSnapshotManager().handleSnapshot,
-                handleActions: useSnapshotManager().handleActions,
-
-                setSnapshot: useSnapshotManager().setSnapshot,
-                setSnapshots: useSnapshotManager().setSnapshots,
-                clearSnapshot: useSnapshotManager().clearSnapshot ,
-                mergeSnapshots: useSnapshotManager().mergeSnapshots ,
-                reduceSnapshots: useSnapshotManager().reduceSnapshots,
-                sortSnapshots: useSnapshotManager().sortSnapshots,
-                filterSnapshots: useSnapshotManager().filterSnapshots,
-                mapSnapshots: useSnapshotManager().mapSnapshots,
-                findSnapshot: useSnapshotManager().findSnapshot,
-                getSubscribers: useSnapshotManager().getSubscribers,
-                notify: useSnapshotManager().notify,
-                notifySubscribers: useSnapshotManager().notifySubscribers,
-                subscribe: useSnapshotManager().subscribe,
-                fetchSnapshot: useSnapshotManager().fetchSnapshot,
-                unsubscribe: useSnapshotManager().unsubscribe,
-                fetchSnapshotFailure: useSnapshotManager().fetchSnapshotFailure,
-                fetchSnapshotSuccess: useSnapshotManager().fetchSnapshotSuccess,
-                getSnapshots: useSnapshotManager().getSnapshots,
-                getSnapshot: useSnapshotManager().getSnapshot,
-                generateId: useSnapshotManager().generateId,
-                getAllSnapshots: useSnapshotManager().getAllSnapshots,
-                batchTakeSnapshotsRequest: useSnapshotManager().batchTakeSnapshotsRequest,
-                batchFetchSnapshots: useSnapshotManager().batchFetchSnapshots,
-                batchFetchSnapshotsSuccess: useSnapshotManager().batchFetchSnapshotsSuccess,
-                batchUpdateSnapshotsRequest: useSnapshotManager().batchUpdateSnapshotsRequest,
-                batchUpdateSnapshotsSuccess: useSnapshotManager().batchUpdateSnapshotsSuccess,
-                batchFetchSnapshotsFailure: useSnapshotManager().batchFetchSnapshotsFailure,
-                batchTakeSnapshot: useSnapshotManager().batchTakeSnapshot ,
-                batchUpdateSnapshotsFailure: useSnapshotManager().batchUpdateSnapshotsFailure,
-                config: useSnapshotManager().config,
-                snapshots: useSnapshotManager().snapshots,
-                // mergeSnapshot:,
-                // mergeSnapshotSuccess, mergeSnapshotsSuccess,
-                snapshotId: "snap-1",
-                addSnapshot: (snapshot: Snapshot<Data>) => {
-                  // Add snapshot logic
-                },
-                updateSnapshot: (
-                  snapshotId: string,
-                  newData: Data,
-                  payload: UpdateSnapshotPayload<Data>
-                ) => {
-                  // Update snapshot logic
-                },
-                removeSnapshot: (snapshotId: string) => {
-                  // Remove snapshot logic
-                },
-                clearSnapshots: () => {
-                  // Clear snapshots logic
-                },
-                // Add other functions and properties required by SnapshotStoreSubset
-                createSnapshot: () => {
-                  // Create snapshot logic
-                },
-                createSnapshotSuccess: (snapshot: Snapshot<Data>) => {
-                  // Create snapshot success logic
-                },
-                createSnapshotFailure: (error: Payload) => {
-                  // Create snapshot failure logic
-                },
-                updateSnapshots: () => {
-                  // Update snapshots logic
-                },
-                updateSnapshotSuccess: () => {
-                  // Update snapshot success logic
-                },
-                updateSnapshotFailure: (error: Payload) => {
-                  // Update snapshot failure logic
-                },
-                updateSnapshotsSuccess: () => {
-                  // Update snapshots success logic
-                },
-                updateSnapshotsFailure: (error: Payload) => {
-                  // Update snapshots failure logic
-                },
-                // Add more properties...
-              },
-            {
-              snapshotId: "snap-2",
-              addSnapshot: (snapshot: Snapshot<Data>) => {
-                // Add snapshot logic
-              },
-              updateSnapshot: (
-                snapshotId: string,
-                newData: Data,
-                payload: UpdateSnapshotPayload<Data>
-              ) => {
-                // Update snapshot logic
-              },
-              removeSnapshot: (snapshotId: string) => {
-                // Remove snapshot logic
-              },
-              clearSnapshots: () => {
-                // Clear snapshots logic
-              },
-              // Add other functions and properties required by SnapshotStoreSubset
-              createSnapshot: () => {
-                // Create snapshot logic
-              },
-              createSnapshotSuccess: (snapshot: Snapshot<Data>) => {
-                // Create snapshot success logic
-              },
-              createSnapshotFailure: (error: Payload) => {
-                // Create snapshot failure logic
-              },
-              updateSnapshots: () => {
-                // Update snapshots logic
-              },
-              updateSnapshotSuccess: () => {
-                // Update snapshot success logic
-              },
-              updateSnapshotFailure: (error: Payload) => {
-                // Update snapshot failure logic
-              },
-              updateSnapshotsSuccess: () => {
-                // Update snapshots success logic
-              },
-              updateSnapshotsFailure: (error: Payload) => {
-                // Update snapshots failure logic
-              },
-              // Add more properties...
-            },
-          ],
           
           team: {
             id: "team-1",

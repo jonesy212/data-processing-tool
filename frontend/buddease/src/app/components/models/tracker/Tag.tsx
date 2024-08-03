@@ -1,5 +1,6 @@
 // Tag.tsx
 import React from 'react';
+import { Data } from '../data/Data';
 
 interface TagOptions {
   id: string;
@@ -11,10 +12,14 @@ interface TagProps {
   tagOptions: TagOptions;
 }
 
-interface Tag {
+interface Tag  extends Data{
   id: string;
   name: string;
   color: string;
+  tags: string[] | Tag[];
+  description: string;
+  enabled: boolean;
+  type: string;
 }
 
 
@@ -75,7 +80,7 @@ const sortTags = (tags: TagOptions[]) => {
 };
 
 
-export const createTag = (id: string, name: string, color: string): TagOptions => ({
+export const createTag = (id: string, name: string, color: string, p0: { tags: never[]; description: string; enabled: boolean; }): TagOptions => ({
   id,
   name,
   color,

@@ -10,6 +10,8 @@ import CalendarManagerStoreClass, {
 } from "./CalendarEvent";
 import { ReassignEventResponse } from './AssignEventStore';
 import SnapshotStoreConfig from '../../snapshots/SnapshotConfig';
+import { resolve } from 'path';
+import { SnapshotWithCriteria } from '../../routing/SearchCriteria';
 const eventIds: string[] = [];
 const events: Record<string, CalendarEvent[]> = {};
 interface PartialFakeDataEvent extends FakeDataPartial, CalendarEvent {
@@ -36,7 +38,111 @@ const convertToPartialFakeDataEvent = (fakeData: FakeDataPartial): PartialFakeDa
   then: function (callback: (newData: Snapshot<Data>) => void): void {
     throw new Error('Function not implemented.');
   },
-  getData: ""
+  
+  getData(): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Your logic to retrieve data goes here
+        const data: SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[] = [
+          {
+            description: "This is a sample event",
+            startDate: new Date("2024-06-01"),
+            endDate: new Date("2024-06-05"),
+            status: "scheduled",
+            priority: "high",
+            assignedUser: "John Doe",
+            todoStatus: "completed",
+            taskStatus: "in progress",
+            teamStatus: "active",
+            dataStatus: "processed",
+            calendarStatus: "approved",
+            notificationStatus: "read",
+            bookmarkStatus: "saved",
+            priorityType: "urgent",
+            projectPhase: "planning",
+            developmentPhase: "coding",
+            subscriberType: "premium",
+            subscriptionType: "monthly",
+            analysisType: AnalysisTypeEnum.STATISTICAL,
+            documentType: "pdf",
+            fileType: "document",
+            tenantType: "tenantA",
+            ideaCreationPhaseType: "ideation",
+            securityFeatureType: "encryption",
+            feedbackPhaseType: "review",
+            contentManagementType: "content",
+            taskPhaseType: "execution",
+            animationType: "2d",
+            languageType: "english",
+            codingLanguageType: "javascript",
+            formatType: "json",
+            privacySettingsType: "public",
+            messageType: "email",
+            id: "event1",
+            title: "Sample Event",
+            content: "This is a sample event content",
+            topics: [],
+            highlights: [],
+            files: [],
+            rsvpStatus: "yes",
+            then: function <T extends Data>(callback: (newData: Snapshot<BaseData, BaseData>) => void): Snapshot<Data, Data> | undefined {
+              // Implement the then function here
+              // Example implementation, you might need to adapt this
+              callback({
+                description: "This is a sample event",
+                startDate: new Date("2024-06-01"),
+                endDate: new Date("2024-06-05"),
+                status: "scheduled",
+                priority: "high",
+                assignedUser: "John Doe",
+                todoStatus: "completed",
+                taskStatus: "in progress",
+                teamStatus: "active",
+                dataStatus: "processed",
+                calendarStatus: "approved",
+                notificationStatus: "read",
+                bookmarkStatus: "saved",
+                priorityType: "urgent",
+                projectPhase: "planning",
+                developmentPhase: "coding",
+                subscriberType: "premium",
+                subscriptionType: "monthly",
+                analysisType: AnalysisTypeEnum.STATISTICAL,
+                documentType: "pdf",
+                fileType: "document",
+                tenantType: "tenantA",
+                ideaCreationPhaseType: "ideation",
+                securityFeatureType: "encryption",
+                feedbackPhaseType: "review",
+                contentManagementType: "content",
+                taskPhaseType: "execution",
+                animationType: "2d",
+                languageType: "english",
+                codingLanguageType: "javascript",
+                formatType: "json",
+                privacySettingsType: "public",
+                messageType: "email",
+                id: "event1",
+                title: "Sample Event",
+                content: "This is a sample event content",
+                topics: [],
+                highlights: [],
+                files: [],
+                rsvpStatus: "yes",
+              });
+              return undefined;
+            }
+          }
+        ]; // Example data, replace with actual logic
+  
+        // Resolve the promise with the data
+        resolve(data);
+      } catch (error) {
+        // In case of an error, you can call reject with an error message
+        reject(new Error("Something went wrong"));
+      }
+    })
+  }
 });
 describe("CalendarManagerStoreClass", () => {
   let calendarManagerStore = useCalendarManagerStore();

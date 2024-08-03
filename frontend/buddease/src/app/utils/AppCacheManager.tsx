@@ -6,6 +6,9 @@ import FrontendStructure from "../configs/appStructure/FrontendStructureComponen
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";
 import FrontendCacheManager from "./FrontendCacheManager";
+import { useNotification } from "../components/support/NotificationContext";
+
+const { notify } = useNotification();
 // Assuming Data has properties like 'property1' and 'property2'
 interface ExtendedData extends Data {
   property1: string;
@@ -28,16 +31,13 @@ abstract class AppCacheManagerBase<T extends Data> {
     try {
       // Fetch existing frontend cache
 
-
-      const existingCache: Record<string, FrontendStructure> = this.frontendCacheManager.getCacheData();
+      const existingCache: Record<string, FrontendStructure> =
+        this.frontendCacheManager.getCacheData();
       const uniqueConstraints = {
         path: `/src/${key}.tsx`, // Example path, adjust as needed
         content: JSON.stringify(data),
       };
       // Update cache with new data for the specified key
-
-
-
 
       existingCache[key] = new FrontendStructure(uniqueConstraints);
 
@@ -53,12 +53,23 @@ abstract class AppCacheManagerBase<T extends Data> {
   }
 
   // Retrieve data from backend cache for a specific key
-   async getBackendCache(key: string): Promise<Data | null> {
-    return this.backendCacheManager.getCache(key).then((cachedData) => {
-      if (cachedData) {
-        return cachedData.data;
+  getBackendCache(key: string): Promise<Data | null> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Fetch data from the backend cache
+        const cachedData = await this.backendCacheManager.getCache(key);
+
+        // Check if cachedData is not null and contains the 'data' property
+        if (cachedData && "data" in cachedData) {
+          resolve(cachedData.data as Data);
+        } else {
+          resolve(null);
+        }
+      } catch (error) {
+        // Handle errors appropriately
+        console.error("Error retrieving backend cache:", error);
+        reject(error); // Reject the promise with the error
       }
-      return null;
     });
   }
 
@@ -76,8 +87,10 @@ abstract class AppCacheManagerBase<T extends Data> {
 }
 
 // Example usage
-const appCacheManager = new AppCacheManagerExtended("http://localhost:5000");
-
+const appCacheManager = new AppCacheManagerExtended(
+  "http://localhost:5000",
+  notify
+);
 
 const backendData: {
   key: string;
@@ -92,17 +105,19 @@ const backendData: {
     title: "",
     status: "inProgress",
     isActive: false,
+    timestamp: 0,
     tags: [],
     data: {
-      then: function <T extends Data>(callback: (newData: Snapshot<Snapshot<T>>) => void): void {
+      then: function <T extends Data>(
+        callback: (newData: Snapshot<Snapshot<T, K>>) => void
+      ): void {
         // Fetch existing data from backend cache
-        appCacheManager.getBackendCache('backendCache')
-          .then(cachedData => {
-            if (cachedData !== null) {
-              callback(cachedData as Snapshot<Snapshot<T>>);
-            }
-          });
-      }
+        appCacheManager.getBackendCache("backendCache").then((cachedData) => {
+          if (cachedData !== null) {
+            callback(cachedData as Snapshot<Snapshot<T, K>>);
+          }
+        });
+      },
     },
     analysisType: AnalysisTypeEnum.CAUSAL,
     analysisResults: [],
@@ -111,18 +126,24 @@ const backendData: {
     videoThumbnail: "",
     videoDuration: 0,
     videoData: {} as VideoData,
-    ideas: []
-  }
-}
+    ideas: [],
+  },
+};
 
 const frontendData = {
   key: "frontendKey",
-  data: "frontendData"
+  data: "frontendData",
 };
 
-await appCacheManager.updateBackendCache(backendData.key, backendData.data as Data);
+await appCacheManager.updateBackendCache(
+  backendData.key,
+  backendData.data as Data
+);
 console.log(
-  await appCacheManager.updateFrontendCache(frontendData.key, frontendData.data as unknown as ExtendedData)
+  await appCacheManager.updateFrontendCache(
+    frontendData.key,
+    frontendData.data as unknown as ExtendedData
+  )
 );
 
 const retrievedBackendData = await appCacheManager.getBackendCache(

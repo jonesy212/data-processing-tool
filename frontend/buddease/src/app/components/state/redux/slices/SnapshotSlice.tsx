@@ -2,22 +2,23 @@
 
 import { Subscriber } from "@/app/components/users/Subscriber";
 import { User, UserData } from "@/app/components/users/User";
-import { sendNotification } from "@/app/components/users/UserSlice";
+import { sendNotification, UserManagerState } from "@/app/components/users/UserSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "../ReducerGenerator";
 import { FC } from "react";
 import { useSnapshotStore } from "@/app/components/snapshots/useSnapshotStore";
-import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
+import {useSnapshotManager} from "@/app/components/hooks/useSnapshotManager";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { Snapshot, Snapshots } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { K, SnapshotStoreConfig, T } from "@/app/components/snapshots/SnapshotConfig";
+import { findCorrectSnapshotStore, isSnapshot } from "@/app/components/utils/snapshotUtils";
 
 
 interface SnapshotState {
   snapshotId: string;
-  snapshotsStore: SnapshotStore<BaseData, BaseData>[];
-  snapshots: Snapshots<BaseData>
+  snapshotStores: SnapshotStore<BaseData, BaseData>[];
+  snapshots: Snapshot<BaseData, BaseData>[];
   loading: boolean;
   error: string | null;
 }
@@ -27,19 +28,34 @@ const initialState: SnapshotState = {
   snapshots: [],
   loading: false,
   error: null,
-  snapshotsStore: []
+  snapshotStores: []
 };
 
 export const useSnapshotSlice = createSlice({
   name: "snapshot",
   initialState,
   reducers: {
-    addSnapshot: (state,
-      action: PayloadAction<WritableDraft<SnapshotStore<BaseData, K>>>
+    addSnapshot: (
+      state,
+      action: PayloadAction<Snapshot<BaseData, BaseData>>
     ) => {
-      state.snapshots.push(action.payload);
+      if (isSnapshot(action.payload)) {
+        const correctStore = findCorrectSnapshotStore(
+          action.payload,
+          state.snapshotStores as SnapshotStore<BaseData, BaseData>[]        );
+        if (correctStore) {
+          correctStore.snapshots.push(action.payload);
+        } else {
+          state.error = 'No matching snapshot store found';
+        }
+      } else {
+        state.error = 'Snapshot data does not match expected type';
+      }
     },
-    removeSnapshot: (state, action: PayloadAction<string>) => {
+    removeSnapshot: (
+      state,
+      action: PayloadAction<string>
+    ) => {
       state.snapshots = state.snapshots.filter(
         (snapshot) => snapshot.id !== action.payload
       );
@@ -54,7 +70,7 @@ export const useSnapshotSlice = createSlice({
         (snapshot) => snapshot.id === action.payload
       );
       if (snapshotToRemove) {
-        snapshotToRemove.data = {} as Map<string, WritableDraft<BaseData>>
+        snapshotToRemove.data = {} as Map<string, WritableDraft<Snapshot<BaseData, BaseData>>>
       }
     },
 
@@ -70,25 +86,8 @@ export const useSnapshotSlice = createSlice({
         snapshotToUpdate.data = newData;
       }
     },
-    sendNotification: (
-      state,
-      action: PayloadAction<{ snapshot: Snapshot<Data>; subscriber: Subscriber<BaseData,K> }>
-    ) => {
-      const { snapshot, subscriber } = action.payload;
-      if (snapshot.id && subscriber.getData()?.name) {
-        const snapshotData = state.snapshots.find(
-          (s) => s.id === snapshot.id
-        )?.data;
-        if (snapshotData) {
-          sendNotification({
-            message: `New snapshot received: ${snapshot.id}`,
-            recipient: subscriber.getData()?.name,
-            snapshot: JSON.parse(JSON.stringify(snapshotData)),
-          });
-        }
-      }
-    },
 
+    
 
     batchRemoveSnapshotsRequest: (
       state,
@@ -107,7 +106,7 @@ export const useSnapshotSlice = createSlice({
         const snapshots = state.snapshots.filter(
           (snapshot) =>
             snapshot.date &&
-            (snapshot.addSnapshotFailure?.date
+            (snapshot.updateSnapshotFailure.addSnapshotFailure?.date
               ? snapshot.addSnapshotFailure.date >= startDate && snapshot.date <= endDate
               : snapshot.date >= startDate && snapshot.date <= endDate)
         );
@@ -290,8 +289,7 @@ export const useSnapshotSlice = createSlice({
     batchRemoveSnapshotsSuccess: (state, action: PayloadAction<string[]>) => {
       state.loading = false;
       state.snapshots = state.snapshots.filter(
-        (snapshot) => !action.payload.includes(snapshot.id)
-      );
+        (snapshot) => !action.payload.includes(snapshot.id as string)      );
     },
     batchRemoveSnapshotsFailure: (
       state,

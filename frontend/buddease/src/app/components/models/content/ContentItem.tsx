@@ -7,7 +7,7 @@ import { Tag } from "../tracker/Tag";
 
 // Check if the tag is an instance of Tag
 function isTagObject(tag: string | Tag): tag is Tag {
-  return (tag as Tag).getOptions().id !== undefined;
+  return (tag as Tag).id !== undefined;
 }
 
 // Define the type for the content item

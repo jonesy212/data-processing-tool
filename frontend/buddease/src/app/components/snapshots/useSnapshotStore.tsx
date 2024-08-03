@@ -1,5 +1,5 @@
 // useSnapshotStore.ts
-import { SnapshotStoreConfig, snapshotConfig } from "@/app/components/snapshots/SnapshotConfig";
+import { K, SnapshotStoreConfig, T, snapshotConfig } from "@/app/components/snapshots/SnapshotConfig";
 import { BaseData, Data } from "../models/data/Data";
 import {  SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -55,11 +55,12 @@ import {
 import { useSecureUserId } from "../utils/useSecureUserId";
 import { SnapshotActions } from "./SnapshotActions";
 import SnapshotStore, { initialState } from "./SnapshotStore";
-import { CustomSnapshotData, Payload, Snapshot, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { CustomSnapshotData, Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { delegate, deleteSnapshot, subscribeToSnapshots } from "../snapshotHandlers";
+import { delegate, deleteSnapshot, getDelegate, subscribeToSnapshots } from "./snapshotHandlers";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { snapshot } from "./snapshot";
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 
@@ -81,7 +82,7 @@ const convertSubscriptionPayloadToSubscriber = (
       communityEngagement: () => {},
       triggerIncentives: () => {},
       unsubscribe: () => { },
-      determineCategory: (data) => data.category,
+      determineCategory: (data) => typeof data?.category === 'string' ? data.category : "",
       portfolioUpdatesLastUpdated: {
         value: new Date(),
         isModified: false,
@@ -107,7 +108,7 @@ const convertSubscriptionPayloadToSubscriber = (
 // Create the snapshot store
 const useSnapshotStore = async (
   addToSnapshotList: (
-    snapshot: Snapshot<any>,
+    snapshot: Snapshot<any, any>,
     subscribers: Subscriber<Data, CustomSnapshotData>[]
   ) => void
 ): Promise<SnapshotStore<any>> => {
@@ -144,22 +145,25 @@ const useSnapshotStore = async (
       snapshotConfig,
       delegate: delegate,
       getDelegate,
-      
     };
   
+    const newSnap = {} as Snapshot<any, any>
     const newSnapshot = new SnapshotStore<any>(snapshotStoreOptions);
   
     const dataStore = newSnapshot.getDataStore();
   
     // Add the new snapshot to the list (example usage)
-    addToSnapshotList(newSnapshot, []);
+    addToSnapshotList(newSnap, []);
   
     // Update the state synchronously
     setSnapshots((currentSnapshots) => {
-      const updatedSnapshots = currentSnapshots
-        ? [...currentSnapshots, newSnapshot]
-        : [newSnapshot];
-      return updatedSnapshots;
+      if (!currentSnapshots) {
+        return new SnapshotStore<T, any>({ snapshots: [newSnapshot] });
+      }
+      return new SnapshotStore<BaseData>({
+        ...currentSnapshots,
+        snapshots: [...currentSnapshots.snapshots, newSnapshot]
+      });
     });
   };
   
@@ -716,7 +720,7 @@ const useSnapshotStore = async (
 
   const createSnapshot = (
     id: string,
-    subscribers: Subscriber<CustomSnapshotData | Data>[], // Accept both Data and CustomSnapshotData
+    subscribers: Subscriber<CustomSnapshotData, Data>[], // Accept both Data and CustomSnapshotData
     notify: NotificationContextType["notify"],
     message: string,
     notification: NotificationData,
@@ -728,12 +732,20 @@ const useSnapshotStore = async (
       return UniqueIDGenerator.generateSnapshotID();
     };
 
-    const newSnapshot: Snapshot<Data> = {
+    const newSnapshot: Snapshot<Data, K> = {
       id: generateSnapshotID().toString(),
       data: content,
       timestamp: date,
       category: type,
       type: type,
+      events: {
+        eventRecords: {},
+        callbacks: (
+          snapshot.events as SnapshotEvents<CustomSnapshotData, Data>
+        ).callbacks,
+      },
+      meta: {},
+      subscribers: subscribers,
     };
 
     // Add the new snapshot to the snapshots array

@@ -11,7 +11,7 @@ import * as subscriberApi from './../../api/subscriberApi';
 
 interface BlogProps {
   title: string;
-  content: string | Content | undefined;
+  content: string | Content<T> | undefined;
   subscriberId: string;
   // Add more properties as needed (date, author, etc.)
 }
@@ -21,7 +21,7 @@ const BlogComponent: React.FC<BlogProps> = ({
   content,
   subscriberId,
 }) => {
-  const [subscriptionData, setSubscriptionData] = useState<Subscription | undefined>(); 
+  const [subscriptionData, setSubscriptionData] = useState<Subscription<T,K> | undefined>(); 
   const { sendNotification } = useNotification(); 
   const optionalData: CustomSnapshotData | null = null;
   const name = "Blog"; 

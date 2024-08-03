@@ -425,7 +425,7 @@ const initialData: CustomSnapshotData = {
 }
 
 // Create an instance of the Subscriber class for order book updates
-const subscription: Subscription<T> = {
+const subscription: Subscription<T, K> = {
   unsubscribe: () => {},
   portfolioUpdates: () => {},
   tradeExecutions: () => {},
@@ -459,7 +459,7 @@ const createSubscriber = (): Subscriber<T, K> => {
 
   const subscriberId = subscriptionApi.getSubscriberId(tempSubscriber);
 
-  return Subscriber.createSubscriber<CustomSnapshotData, K>(
+  return Subscriber.createSubscriber<T, CustomSnapshotData>(
     "1",
     name,
     subscription,
@@ -478,6 +478,11 @@ const subscriber = createSubscriber();
 // Create an instance of the Subscriber class for order book updates
 export const initialSnapshot: Snapshot<BaseData> = {
   data: initialData, // Replace with actual initial data
+  events: {
+    eventRecords: undefined,
+    callbacks: []
+  }, // Replace with actual initial events
+  callbacksts: {}
   // Other properties as needed
 };
 // Create an instance of the Subscriber class for order book updates
@@ -513,6 +518,8 @@ const notifyOrderBookUpdate = (): void => {
     timestamp: new Date(),
     data: undefined,
     category: undefined,
+    events: undefined,
+    meta: undefined
   };
 
   // Notify subscribers about the update

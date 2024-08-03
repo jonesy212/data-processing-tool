@@ -28,7 +28,8 @@ export interface DocumentBuilderConfig extends DocumentOptions {
   options: {
     // other properties...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
-
+    additionalDocumentOptions: DocumentOptions
+    additionalOptionsLabel: string;
     // other properties...
   };
   // Additional options for customization
@@ -138,6 +139,9 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     isDynamic: true,
     options: {
       additionalOptions: undefined,
+      //todo update props in doc optins
+      additionalDocumentOptions: {}as DocumentOptions,
+      additionalOptionsLabel: "",
     },
     color: "",
     size: DocumentSize.Letter,

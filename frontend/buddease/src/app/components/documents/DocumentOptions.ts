@@ -45,56 +45,56 @@ export type LinksType =
   | "None"
   | boolean
   | {
+    enabled: boolean;
+    color: string;
+    underline: boolean | { enabled: boolean };
+    internal?: {
       enabled: boolean;
-      color: string;
-      underline: boolean | { enabled: boolean };
-      internal?: {
-        enabled: boolean;
-      };
-      external?: {
-        enabled: boolean;
-      };
     };
+    external?: {
+      enabled: boolean;
+    };
+  };
 
 interface Style {
   name: string;
 
   style:
-    | {
-        [key: string]: string | AllTypes;
-      }
-    | undefined;
+  | {
+    [key: string]: string | AllTypes;
+  }
+  | undefined;
 
   custom:
-    | {
-        name: string;
-        style: {
-          [key: string]: string | AllTypes;
-        };
-      }
-    | undefined;
+  | {
+    name: string;
+    style: {
+      [key: string]: string | AllTypes;
+    };
+  }
+  | undefined;
   tableCells:
-    | {
-        enabled: boolean;
-        padding: number;
-        fontSize: number;
-        alignment: "left";
-        borders: undefined;
-      }
-    | undefined;
+  | {
+    enabled: boolean;
+    padding: number;
+    fontSize: number;
+    alignment: "left";
+    borders: undefined;
+  }
+  | undefined;
 
   highlight:
-    | {
-        enabled: boolean;
-        color: string;
-      }
-    | undefined;
+  | {
+    enabled: boolean;
+    color: string;
+  }
+  | undefined;
   footnote:
-    | {
-        enabled: boolean;
-        format: string;
-      }
-    | undefined;
+  | {
+    enabled: boolean;
+    format: string;
+  }
+  | undefined;
   highlightColor: HighlightColor | undefined;
   defaultZoomLevel: number;
   customProperties: CustomProperties | undefined;
@@ -156,12 +156,12 @@ export interface DocumentOptions {
   description?: string | null | undefined,
   createdBy: string,
   createdByRenamed?: string
-  createdDate?:string |  Date,
+  createdDate?: string | Date,
   _rev?: string;
   _attachments?: { [key: string]: string }
-  _links?: { [key: string]: string;  }
+  _links?: { [key: string]: string; }
   lastModifiedBy: string;
- 
+
   limit: number;
   page: number;
   levels: {
@@ -184,7 +184,7 @@ export interface DocumentOptions {
     };
   };
   additionalOptions: readonly string[] | string | number | any[] | undefined;
-
+  documentOptions?: DocumentOptions | undefined;
   language: LanguageEnum;
   setDocumentPhase?: (
     phase:
@@ -197,27 +197,27 @@ export interface DocumentOptions {
     phaseType: DocumentPhaseTypeEnum;
   };
   documentPhase:
-    | string  
-    | {
-        name: string;
-        originalPath: string;
-        alternatePaths: string[];
-        fileType: string;
-        title: string;
-        description: string;
-        keywords: string[];
-        authors: string[];
-        contributors: string[];
-        publisher: string;
-        copyright: string;
-        license: string;
-        links: string[];
-        tags: string[];
-        phaseType: ProjectPhaseTypeEnum;
-        customProp1: string;
-        customProp2: number;
-        onChange: (phase: ProjectPhaseTypeEnum) => void;
-      };
+  | string
+  | {
+    name: string;
+    originalPath: string;
+    alternatePaths: string[];
+    fileType: string;
+    title: string;
+    description: string;
+    keywords: string[];
+    authors: string[];
+    contributors: string[];
+    publisher: string;
+    copyright: string;
+    license: string;
+    links: string[];
+    tags: string[];
+    phaseType: ProjectPhaseTypeEnum;
+    customProp1: string;
+    customProp2: number;
+    onChange: (phase: ProjectPhaseTypeEnum) => void;
+  };
   versionData: VersionData | undefined;
   version?: Version | undefined;
   isDynamic: boolean | undefined;
@@ -226,11 +226,11 @@ export interface DocumentOptions {
   layout: Layout | BackendStructure | FrontendStructure | undefined;
   panels: { [key: string]: any } | undefined;
   pageNumbers:
-    | boolean
-    | {
-        enabled: boolean;
-        format: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    format: string;
+  };
   footer: string;
   watermark: {
     enabled: false;
@@ -256,72 +256,72 @@ export interface DocumentOptions {
     differentFirstPage: boolean;
     differentOddEven: boolean;
     headerOptions:
-      | {
-          height: {
-            type: string;
-            value: number;
-          };
-          fontSize: number;
-          fontFamily: string;
-          fontColor: string;
-          alignment: string;
-          font: string;
-          bold: boolean;
-          italic: boolean;
-          underline: boolean;
-          strikeThrough: boolean;
-          margin: {
-            top: number;
-            right: number;
-            bottom: number;
-            left: number;
-          };
-        }
-      | undefined;
+    | {
+      height: {
+        type: string;
+        value: number;
+      };
+      fontSize: number;
+      fontFamily: string;
+      fontColor: string;
+      alignment: string;
+      font: string;
+      bold: boolean;
+      italic: boolean;
+      underline: boolean;
+      strikeThrough: boolean;
+      margin: {
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
+      };
+    }
+    | undefined;
     footerOptions:
-      | {
-          alignment: string;
-          font: string;
-          fontSize: number;
-          fontFamily: string;
-          fontColor: string;
-          bold: boolean;
-          italic: boolean;
-          underline: boolean;
-          strikeThrough: boolean;
-          height: {
-            type: string;
-            value: number;
-          };
-          margin: {
-            top: number;
-            right: number;
-            bottom: number;
-            left: number;
-          };
-        }
-      | undefined;
+    | {
+      alignment: string;
+      font: string;
+      fontSize: number;
+      fontFamily: string;
+      fontColor: string;
+      bold: boolean;
+      italic: boolean;
+      underline: boolean;
+      strikeThrough: boolean;
+      height: {
+        type: string;
+        value: number;
+      };
+      margin: {
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
+      };
+    }
+    | undefined;
   };
   zoom:
-    | number
-    | {
-        enabled: boolean;
-        value: number;
-        levels: [
-          {
-            name: "100%";
-            value: 1;
-          },
-          {
-            name: "125%";
-            value: 1.25;
-          },
-          {
-            name: "150%";
-            value: 3;
-          }
-        ];
-      };
+  | number
+  | {
+    enabled: boolean;
+    value: number;
+    levels: [
+      {
+        name: "100%";
+        value: 1;
+      },
+      {
+        name: "125%";
+        value: 1.25;
+      },
+      {
+        name: "150%";
+        value: 3;
+      }
+    ];
+  };
   showRuler: boolean;
   showDocumentOutline: boolean;
   showComments: boolean;
@@ -346,124 +346,124 @@ export interface DocumentOptions {
   alignment: AlignmentOptions;
   indentSize: number;
   bulletList:
-    | boolean
-    | {
-        symbol: string;
-        style: string;
-      };
+  | boolean
+  | {
+    symbol: string;
+    style: string;
+  };
   numberedList:
-    | boolean
-    | {
-        style: string;
-        format: string;
-      };
+  | boolean
+  | {
+    style: string;
+    format: string;
+  };
   headingLevel:
-    | number
-    | {
-        enabled: boolean;
-      };
+  | number
+  | {
+    enabled: boolean;
+  };
   toc:
-    | boolean
-    | {
-        enabled: boolean;
-        format: string; // Add default format for TOC
-        levels: number;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    format: string; // Add default format for TOC
+    levels: number;
+  };
   bold:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   italic:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   underline:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   strikethrough:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   subscript:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   superscript:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   hyperlink:
-    | string
-    | {
-        enabled: boolean;
-      };
+  | string
+  | {
+    enabled: boolean;
+  };
   textStyles: { [key: string]: docx.Style };
   image:
-    | string
-    | {
-        enabled: boolean;
-      };
+  | string
+  | {
+    enabled: boolean;
+  };
   links: LinksType;
   embeddedContent:
-    | boolean
-    | {
-        enabled: boolean;
-        allow: boolean;
-        language: LanguageEnum | CodingLanguageEnum;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    allow: boolean;
+    language: LanguageEnum | CodingLanguageEnum;
+  };
   bookmarks:
-    | boolean
-    | {
-        enabled: boolean;
-        // format: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    // format: string;
+  };
   crossReferences:
-    | boolean
-    | {
-        enabled: boolean;
-        format: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    format: string;
+  };
   footnotes:
-    | boolean
-    | {
-        enabled: boolean;
-        format: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    format: string;
+  };
   endnotes:
-    | boolean
-    | {
-        enabled: boolean;
-        format: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    format: string;
+  };
   comments:
-    | boolean
-    | {
-        enabled: boolean;
-        author: string;
-        dateFormat: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    author: string;
+    dateFormat: string;
+  };
   revisions: RevisionOptions | undefined;
   embeddedMedia:
-    | boolean
-    | {
-        enabled: boolean;
-        allow: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    allow: boolean;
+  };
 
   embeddedCode:
-    | boolean
-    | {
-        enabled: boolean;
-        language: CodingLanguageEnum;
-        allow: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    language: CodingLanguageEnum;
+    allow: boolean;
+  };
   styles: {
     [key: string]: Style;
   };
@@ -479,20 +479,20 @@ export interface DocumentOptions {
     fontSize: number;
     alignment: "left";
     borders:
-      | {
-          top: BorderStyle;
-          bottom: BorderStyle;
-          left: BorderStyle;
-          right: BorderStyle;
-        }
-      | undefined;
+    | {
+      top: BorderStyle;
+      bottom: BorderStyle;
+      left: BorderStyle;
+      right: BorderStyle;
+    }
+    | undefined;
   };
 
   table:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   tableRows: number | [];
   tableColumns: number | [];
   codeBlock: boolean | [] | { enabled: boolean };
@@ -507,20 +507,20 @@ export interface DocumentOptions {
     border?: string; // Added border property
   };
   blockquote:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   codeInline:
-    | boolean
-    | {
-        enabled: boolean;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+  };
   quote:
-    | string
-    | {
-        enabled: boolean;
-      };
+  | string
+  | {
+    enabled: boolean;
+  };
   todoList: boolean | { enabled: boolean };
   orderedTodoList: boolean | { enabled: boolean };
   unorderedTodoList: boolean | { enabled: boolean };
@@ -530,23 +530,23 @@ export interface DocumentOptions {
   color: string;
   colorCoding: Record<string, string> | undefined; // Object representing color coding system
   highlight:
-    | boolean
-    | {
-        enabled: boolean;
-        colors: {
-          [key: string]: string;
-        };
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    colors: {
+      [key: string]: string;
+    };
+  };
   highlightColor: string;
   customSettings: Record<string, any> | undefined;
   documents: DocumentData[];
   includeType: "all" | "selected" | "none";
   footnote:
-    | boolean
-    | {
-        enabled: boolean;
-        format: string;
-      };
+  | boolean
+  | {
+    enabled: boolean;
+    format: string;
+  };
 
   defaultZoomLevel: number;
   customProperties: Record<string, any> | undefined; // Allow defining custom properties
@@ -573,6 +573,159 @@ export interface DocumentOptions {
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
+    documentOptions: {
+      additionalOptions: [],
+      uniqueIdentifier: "",
+      documentType: "default",
+      userIdea: undefined,
+      documentSize: DocumentSize.Letter,
+      name: "Document",
+      description: "Default Document",
+      createdBy: "Buddease",
+      createdDate: new Date().toISOString(),
+      lastModifiedBy: "Buddease",
+      _rev: "1-1234567890",
+      _attachments: {},
+      _links: {},
+      limit: 0,
+      page: 1,
+      levels: {
+        enabled: true,
+        startLevel: 2,
+        endLevel: 4,
+        format: "PDF",
+        separator: ",",
+        style: {
+          main: "bold",
+          styles: [
+            {
+              format: ["bold", "italic"],
+              separator: [",", ";"],
+              style: {
+                format: ["underline", "strikethrough"],
+                separator: [" ", "-"],
+                style: ["bold", "italic", "underline", "strikethrough"],
+              }
+            }
+          ]
+        }
+      },
+      language: LanguageEnum.English,
+      documentPhase: '',
+      versionData: undefined,
+      isDynamic: undefined,
+      size: DocumentSize.A4,
+      animations: undefined,
+      layout: undefined,
+      panels: undefined,
+      pageNumbers: false,
+      footer: '',
+      watermark: {
+        enabled: false,
+        text: '',
+        color: '',
+        opacity: 0,
+        fontSize: 0,
+        size: '',
+        x: 0,
+        y: 0,
+        rotation: 0,
+        borderStyle: ''
+      },
+      headerFooterOptions: {
+        enabled: false,
+        headerContent: undefined,
+        footerContent: undefined,
+        showHeader: false,
+        showFooter: false,
+        dateFormat: undefined,
+        differentFirstPage: false,
+        differentOddEven: false,
+        headerOptions: undefined,
+        footerOptions: undefined
+      },
+      zoom: 0,
+      showRuler: false,
+      showDocumentOutline: false,
+      showComments: false,
+      showRevisions: false,
+      spellCheck: false,
+      grammarCheck: false,
+      visibility: undefined,
+      fontSize: 0,
+      font: '',
+      textColor: '',
+      backgroundColor: '',
+      fontFamily: '',
+      lineSpacing: 0,
+      alignment: AlignmentOptions.LEFT,
+      indentSize: 0,
+      bulletList: false,
+      numberedList: false,
+      headingLevel: 0,
+      toc: false,
+      bold: false,
+      italic: false,
+      underline: false,
+      strikethrough: false,
+      subscript: false,
+      superscript: false,
+      hyperlink: '',
+      textStyles: {},
+      image: '',
+      links: false,
+      embeddedContent: false,
+      bookmarks: false,
+      crossReferences: false,
+      footnotes: false,
+      endnotes: false,
+      comments: false,
+      revisions: undefined,
+      embeddedMedia: false,
+      embeddedCode: false,
+      styles: {},
+      previousMetadata: undefined,
+      currentMetadata: undefined,
+      currentContent: new ContentState,
+      previousContent: undefined,
+      lastModifiedDate: undefined,
+      accessHistory: [],
+      tableCells: {
+        enabled: false,
+        padding: 0,
+        fontSize: 0,
+        alignment: 'left',
+        borders: undefined
+      },
+      table: false,
+      tableRows: 0,
+      tableColumns: 0,
+      codeBlock: false,
+      blockquote: false,
+      codeInline: false,
+      quote: '',
+      todoList: false,
+      orderedTodoList: false,
+      unorderedTodoList: false,
+      color: '',
+      colorCoding: undefined,
+      highlight: false,
+      highlightColor: '',
+      customSettings: undefined,
+      documents: [],
+      includeType: 'all',
+      footnote: false,
+      defaultZoomLevel: 0,
+      customProperties: undefined,
+      value: undefined,
+      includeTitle: false,
+      includeContent: false,
+      includeStatus: false,
+      includeAdditionalInfo: false,
+      metadata: undefined,
+      userSettings: undefined,
+      dataVersions: undefined
+    },
     uniqueIdentifier: "",
     documentType: "default",
     userIdea: undefined,

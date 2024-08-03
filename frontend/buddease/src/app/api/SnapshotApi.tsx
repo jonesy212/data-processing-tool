@@ -6,7 +6,7 @@ import { BaseData, Data } from "../components/models/data/Data";
 import { PriorityTypeEnum, ProjectStateEnum } from "../components/models/data/StatusType";
 import { Member } from "../components/models/teams/TeamMembers";
 import { ProjectType } from "../components/projects/Project";
-import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot, Snapshots } from "../components/snapshots/LocalStorageSnapshotStore";
 import SnapshotList from "../components/snapshots/SnapshotList";
 import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext";
 import { AppConfig, getAppConfig } from "../configs/AppConfig";
@@ -24,6 +24,10 @@ import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
+import { resolve } from "path";
+import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { K } from "../components/snapshots/SnapshotConfig";
+import React from "react";
 
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
@@ -44,6 +48,7 @@ const snapshotNotificationMessages: SnapshotNotificationMessages = {
   // Add more messages as needed
 };
 
+// 
 
 
 const handleSnapshotApiError = (error: AxiosError<unknown>, customMessage: string) => {
@@ -110,26 +115,35 @@ export const findSubscriberById = async (
 };
 
 
-export const createSnapshot = (
-  snapshot: Snapshot<Data>
-) => {
-  const headersArray: Array<Record<string, string>> = [];
-  const token = localStorage.getItem("accessToken");
-  const userId = localStorage.getItem("userId");
-  const appVersion = configData.currentAppVersion;
-  const authenticationHeaders: AuthenticationHeaders = {
-    'Content-Type': 'application/json',
-    'X-App-Version': appVersion,
-    ...createAuthenticationHeaders(token, userId, appVersion) as Record<string, string>
-  };
-  headersArray.push(authenticationHeaders);
-  const cacheHeaders: Record<string, any> = createCacheHeaders();
-  headersArray.push(cacheHeaders);
-  const contentHeaders: Record<string, any> = createContentHeaders();
-  headersArray.push(contentHeaders);
-  const requestHeaders: Record<string, any> = createRequestHeaders(authToken);
-  headersArray.push(requestHeaders);
-}
+
+// Create snapshot
+export const createSnapshot = async <T extends Data, K extends Data>(snapshot: Snapshot<T, K>): Promise<void> => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const appVersion = configData.currentAppVersion;
+
+    const headersArray = [
+      createAuthenticationHeaders(token, userId, appVersion),
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(token || ""),
+    ];
+
+    const headers = Object.assign({}, ...headersArray);
+    const response = await axiosInstance.post("/snapshots", snapshot, { headers: headers as Record<string, string> });
+
+    if (response.status === 201) {
+      console.log("Snapshot created successfully:", response.data);
+    } else {
+      console.error("Failed to create snapshot. Status:", response.status);
+    }
+  } catch (error) {
+    handleApiError(error as AxiosError<unknown>, "Failed to create snapshot");
+    throw error;
+  }
+};
 
 const handleOtherApplicationLogic = (
   appConfig: AppConfig,
@@ -184,64 +198,34 @@ const handleOtherStatusCodes = (appConfig: AppConfig, statusCode: number) => {
 };
 
 
-export const addSnapshot = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    const userId = localStorage.getItem("userId");
-    const currentAppVersion = configData.currentAppVersion;
 
-    const authenticationHeaders: AuthenticationHeaders =
-      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+export const addSnapshot = async <T extends Data, K extends Data>(newSnapshot: Omit<Snapshot<T, K>, "id">): Promise<void> => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const appVersion = configData.currentAppVersion;
 
     const headersArray = [
-      authenticationHeaders,
+      createAuthenticationHeaders(token, userId, appVersion),
       createCacheHeaders(),
       createContentHeaders(),
       generateCustomHeaders({}),
-      createRequestHeaders(accessToken || ""),
-      // Add other header objects as needed
+      createRequestHeaders(token || ""),
     ];
 
     const headers = Object.assign({}, ...headersArray);
+    const response = await axiosInstance.post("/snapshots", newSnapshot, { headers: headers as Record<string, string> });
 
-    const response = await axiosInstance.post(`${API_BASE_URL}`, newSnapshot, {
-      headers: headers as Record<string, string>,
-    });
-
-    if (response.status === 200) {
-      // Handle successful response
-      if (
-        typeof response.data === "string" &&
-        response.headers["content-type"] === "application/json"
-      ) {
-        const numericData = parseInt(response.data, 10); // Convert string to number
-        if (!isNaN(numericData)) {
-          // Pass additional argument for statusCode
-          handleSpecificApplicationLogic(appConfig, numericData);
-        } else {
-          // Handle the case where response.data is not a valid number
-          console.error("Response data is not a valid number:", response.data);
-        }
-      } else {
-        // Code for other types of applications
-        handleOtherApplicationLogic(appConfig, response.data);
-      }
-      // Handle other status codes
-      if (response.status === 200 && response.data) {
-        // Pass additional argument for statusCode
-        handleSpecificStatusCode(appConfig, response.status);
-      } else {
-        // Code for handling other status codes
-        handleOtherStatusCodes(appConfig, response.status);
-      }
+    if (response.status === 201) {
+      console.log("Snapshot added successfully:", response.data);
+    } else {
+      console.error("Failed to add snapshot. Status:", response.status);
     }
   } catch (error) {
-    const errorMessage = "Failed to add snapshot";
-    handleApiError(error as AxiosError<unknown>, errorMessage);
+    handleApiError(error as AxiosError<unknown>, "Failed to add snapshot");
     throw error;
   }
-}
-
+};
 
 export const addSnapshotSuccess = async (newSnapshot: Omit<Snapshot<Data>, "id">) => {
   try {
@@ -345,7 +329,7 @@ export const getSnapshots = async (category: string) => {
 
 
 export const mergeSnapshots = async (
-  snapshots: Snapshot<Data>[],
+  snapshots: Snapshots<any>,
   category: string
 ): Promise<void> => {
   try {
@@ -395,42 +379,37 @@ export const mergeSnapshots = async (
   }
 };
 
-export const fetchSnapshotById = (snapshotId: string): Promise<Snapshot<BaseData, BaseData>> => {
+// Fetch snapshot by ID
+export const fetchSnapshotById = <T extends Data, K extends Data>(snapshotId: string): Promise<Snapshot<T, K>> => {
   return new Promise(async (resolve, reject) => {
     try {
-      const accessToken = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken");
       const userId = localStorage.getItem("userId");
-      const currentAppVersion = configData.currentAppVersion;
-
-      const authenticationHeaders: AuthenticationHeaders =
-        createAuthenticationHeaders(accessToken, userId, currentAppVersion);
-
+      const appVersion = configData.currentAppVersion;
+  
       const headersArray = [
-        authenticationHeaders,
+        createAuthenticationHeaders(token, userId, appVersion),
         createCacheHeaders(),
         createContentHeaders(),
         generateCustomHeaders({}),
-        createRequestHeaders(accessToken || ""),
-        // Add other header objects as needed
+        createRequestHeaders(token || ""),
       ];
-
+  
       const headers = Object.assign({}, ...headersArray);
-
-      const response = await axiosInstance.get<Snapshot<Data>>(
-        `${API_BASE_URL}/${snapshotId}`,
-        {
-          headers: headers as Record<string, string>,
-        }
-      );
-
-      resolve(response.data);
+      const response = await axiosInstance.get(`/snapshots/${snapshotId}`, { headers: headers as Record<string, string> });
+  
+      if (response.status === 200) {
+        resolve(response.data);
+      } else {
+        reject(new Error("Failed to fetch snapshot by ID"));
+      }
     } catch (error) {
-      const errorMessage = "Failed to fetch snapshot by ID";
-      handleApiError(error as AxiosError<unknown>, errorMessage);
+      handleApiError(error as AxiosError<unknown>, "Failed to fetch snapshot by ID");
       reject(error);
     }
   });
 };
+
 
 
 
@@ -471,20 +450,18 @@ export const fetchAllSnapshots = async (
   }
 };
 
-export const takeSnapshot = async (
-  target: SnapshotList | Content,
-  date?: Date,
-  projectType?: ProjectType,
-  projectId?: string,
-  projectState?: ProjectStateEnum,
-  projectPriority?: PriorityTypeEnum,
-  projectMembers?: Member[]
-) => {
+
+export const fetchSnapshotStoreData = async (
+  snapshotId: string
+): Promise<SnapshotStore<Data, K>> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
     const currentAppVersion = configData.currentAppVersion;
-    const authenticationHeaders = createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
@@ -495,36 +472,84 @@ export const takeSnapshot = async (
     ];
     const headers = Object.assign({}, ...headersArray);
 
-    let url = '';
-    let data: any = {};
+    const response = await axiosInstance.get<SnapshotStore<Data, K>>(
+      // Assuming target is a valid URL string
+      `${API_BASE_URL}/snapshots/${snapshotId}`,
+      {
+        headers: headers,
+      }
+    );
 
-    if ('projectType' in target) {
-      url = `${API_BASE_URL}/snapshotListEndpoint`; 
-      data = {
-        date,
-        projectType,
-        projectId,
-        projectState,
-        projectPriority,
-        projectMembers
-      };
-    } else if ('title' in target) {
-      url = `${API_BASE_URL}/contentEndpoint`; // Replace with your actual endpoint
-      data = {
-        content: target
-      };
-    } else {
-      throw new Error('Invalid target');
-    }
-
-    const response = await axiosInstance.post(url, data, { headers });
-    if (response.status === 200) {
-      return response.data;
-    }
+    return response.data;
   } catch (error: any) {
-    handleApiError(error as AxiosError<unknown>, "Failed to take snapshot");
-    throw error; 
+    handleApiError(
+      error as AxiosError<unknown>,
+      "Failed to fetch snapshot store data"
+    );
+    throw error;
   }
+};
+
+export const takeSnapshot =  <T extends Data>(
+  target: SnapshotList | Content<T>,
+  date?: Date,
+  projectType?: ProjectType,
+  projectId?: string,
+  projectState?: ProjectStateEnum,
+  projectPriority?: PriorityTypeEnum,
+  projectMembers?: Member[]
+): Promise<Snapshot<T, Data>> => {
+  return new Promise(async (resolve, reject) => {
+  
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const userId = localStorage.getItem("userId");
+      const currentAppVersion = configData.currentAppVersion;
+      const authenticationHeaders = createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+      const headersArray = [
+        authenticationHeaders,
+        createCacheHeaders(),
+        createContentHeaders(),
+        generateCustomHeaders({}),
+        createRequestHeaders(accessToken || ""),
+        // Add other header objects as needed
+      ];
+      const headers = Object.assign({}, ...headersArray);
+
+      let url = '';
+      let data: any = {};
+
+      if ('projectType' in target) {
+        url = `${API_BASE_URL}/snapshotListEndpoint`;
+        data = {
+          date,
+          projectType,
+          projectId,
+          projectState,
+          projectPriority,
+          projectMembers
+        };
+      } else if ('title' in target) {
+        url = `${API_BASE_URL}/contentEndpoint`; // Replace with your actual endpoint
+        data = {
+          content: target
+        };
+      } else {
+        throw new Error('Invalid target');
+      }
+
+      const response = await axiosInstance.post(url, data, { headers });
+      if (response.status === 200) {
+        resolve(response.data);
+        return response.data;
+      }
+    } catch (error: any) {
+      handleApiError(error as AxiosError<unknown>, "Failed to take snapshot");
+      reject(error);
+      throw error;
+    }
+  })
+
 };
 
 
@@ -612,12 +637,48 @@ export const removeSnapshot = async (snapshotId: number): Promise<void> => {
 
 
 
-export const getSnapshotId = async (snapshot: Snapshot<Data>): Promise<number> => {
+// Get snapshot ID by some criteria
+export const getSnapshotId = <T, K>(criteria: any): Promise<string | undefined> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const userId = localStorage.getItem("userId");
+      const appVersion = configData.currentAppVersion;
+  
+      const headersArray = [
+        createAuthenticationHeaders(token, userId, appVersion),
+        createCacheHeaders(),
+        createContentHeaders(),
+        generateCustomHeaders({}),
+        createRequestHeaders(token || ""),
+      ];
+  
+      const headers = Object.assign({}, ...headersArray);
+      const response = await axiosInstance.get(`/snapshots`, {
+        headers: headers as Record<string, string>,
+        params: criteria,
+      })
+  
+      if (response.status === 200 && response.data.length > 0) {
+        resolve(response.data[0].id);
+      } else {
+        reject(new Error("Failed to retrieve snapshot ID"));
+      }
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, "Failed to get snapshot ID");
+      reject(error);
+    }
+  });
+};
+
+export const snapshotContainer = async (snapshotId: string): Promise<SnapshotContainer> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
     const currentAppVersion = configData.currentAppVersion;
-    const authenticationHeaders: AuthenticationHeaders = createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    // const snapshotId = "5f9666666666666666666666";
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
     const headersArray = [
       authenticationHeaders,
       createCacheHeaders(),
@@ -627,21 +688,17 @@ export const getSnapshotId = async (snapshot: Snapshot<Data>): Promise<number> =
       // Add other header objects as needed
     ];
     const headers = Object.assign({}, ...headersArray);
-
-    // Make an API call to fetch the snapshot ID based on the provided snapshot
-    const response = await axiosInstance.get<number>('/api/snapshotId', {
-      headers,
-      params: { snapshotData: snapshot.data },
-    });
-
-    return response.data; // Assuming the response contains the snapshot ID
-  } catch (error) {
-    const errorMessage = "Failed to get snapshot id";
+    const response = await axiosInstance.get<SnapshotContainer>(
+      `${API_BASE_URL}/${snapshotId}/container`,
+      {
+        headers: headers as Record<string, string>,
+      }
+    );
+  }catch (error) {
+    const errorMessage = "Failed to get snapshot container";
     handleApiError(error as AxiosError<unknown>, errorMessage);
     throw error;
   }
-};
-
 
 export const fetchSnapshotIds = async (): Promise<string[]> => {
   try {

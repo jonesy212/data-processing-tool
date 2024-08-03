@@ -4,12 +4,13 @@ import { BaseData, Data } from "@/app/components/models/data/Data";
 import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotConfig";
 import { useEffect, useState } from "react";
 import { Snapshot, Snapshots } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 
 // Define props interface
 interface SnapshotProps {
   snapshotConfig: SnapshotStoreConfig<BaseData, Data>;
-  id: any; // Define the type of id
-  snapshotData: SnapshotStoreConfig<any, Data>; // Define the type of snapshotData
+  id: string | number | null;
+  snapshotData: SnapshotStore<BaseData, Data>; // Updated type
   category: string; // Define the type of category
   createSnapshot: (additionalData: any) => void; // Define the type of createSnapshot
 }
@@ -24,7 +25,16 @@ const SnapshotComponent: React.FC<SnapshotProps> = ({ snapshotConfig, id, snapsh
   useEffect(() => {
     const fetchSnapshot = async () => {
       try {
-        const newSnapshot = await snapshotConfig.snapshot(id, snapshotData, category, createSnapshot);
+        // Ensure id is converted to string if it's not null
+        
+     // Convert snapshotId to string if it's not null
+     const snapshotId = snapshotData.id ? String(snapshotData.id) : (id !== null ? String(id) : null);
+     const newSnapshot = await snapshotConfig.snapshot(
+          String(id),
+          snapshotId,
+          snapshotData,
+          category,
+          createSnapshot);
         setSnapshots((prevSnapshots) => [
           ...prevSnapshots,
           ...(Array.isArray(newSnapshot.snapshot)

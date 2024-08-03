@@ -1,3 +1,4 @@
+import { DocumentOptions } from "../documents/DocumentOptions";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 
 // ExternalCalendarOverlay.ts
@@ -10,7 +11,8 @@ interface ExternalCalendarOverlay {
     options: {
       // ...
       additionalOptions: readonly string[] | string | number | any[] | undefined;
-      
+      additionalDocumentOptions: DocumentOptions
+      additionalOptionsLabel: string;
       
       // ...
   };

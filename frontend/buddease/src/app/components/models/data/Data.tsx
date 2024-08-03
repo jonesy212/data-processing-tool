@@ -30,6 +30,9 @@ import { Member } from "../teams/TeamMembers";
 import { Tag, TagOptions, createTag } from "../tracker/Tag";
 import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
 import TodoImpl from "../../todos/Todo";
+import { LanguageEnum } from "../../communications/LanguageEnum";
+import { Settings } from "../../state/stores/SettingsStore";
+import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -55,7 +58,7 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-  snapshots?: SnapshotStore<Snapshot<BaseData>, BaseData>[];
+  snapshots?: SnapshotStore<BaseData, BaseData>[];
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -73,7 +76,7 @@ interface DataDetailsProps<T> {
 type TodoSubtasks = Todo[] & Task[]
 export interface Comment {
   id?: string;
-  text?: string | Content;
+  text?: string | Content<Data>;
   editedAt?: Date;
   editedBy?: string;
   attachments?: Attachment[];
@@ -86,7 +89,7 @@ export interface Comment {
   // Consolidating commentBy and author into one field
   author?: string | number | readonly string[] | undefined;
   upvotes?: number;
-  content?: string | Content;
+  content?: string | Content<Data>;
   resolved?: boolean;
   pinned?: boolean;
   // Consolidating upvotes into likes if they serve the same purpose
@@ -103,18 +106,21 @@ interface BaseData {
   data?: any;
   description?: string | null;
   startDate?: Date;
+  
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
   timestamp?: string | number | Date | undefined
   isActive?: boolean;
-  tags?: string[] | Tag[];
+  tags?: string[] | Tag[]
+  // | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
+  key?: string;
   value?: number | string | undefined;
   initialState?: 
-    | SnapshotStore<Snapshot<BaseData>, BaseData> 
-    | Snapshot<Snapshot<BaseData>, BaseData> 
+    | SnapshotStore<BaseData, BaseData> 
+    | Snapshot<BaseData, BaseData> 
     | null 
     | undefined;
   dueDate?: Date | null;
@@ -146,18 +152,19 @@ interface BaseData {
   videoData?: VideoData;
   additionalData?: any;
   ideas?: Idea[];
-  members?: number | Member[];
+  members?: number[] | string[] | Member[];
   leader?: User | null;
-  snapshots?: SnapshotStore<Snapshot<BaseData>, BaseData>[];
+  snapshotsStores?: SnapshotStore<BaseData, BaseData>[];
+  snapshots?: Snapshots<BaseData>;
   text?: string;
   category?: string | CategoryProperties | undefined;
   [key: string]: any;
-  getData?: (id: number) => Promise<SnapshotStore<Snapshot<BaseData>, BaseData>[]>;
+  // getData?: (id: number) => Promise<Snapshot<
+  //   SnapshotWithCriteria<BaseData>,
+  //   SnapshotWithCriteria<BaseData>>>;
 
-  // Implement the `then` function using the reusable function
-  then?: <T extends Data>(
-    callback: (newData: Snapshot<Snapshot<BaseData>, BaseData>) => void
-  ) =>  Snapshot<Data> | undefined;
+  // // Implement the `then` function using the reusable function
+  // then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
 interface Data extends BaseData {
@@ -216,7 +223,21 @@ const data: Data = {
   scheduled: true,
   status: "Pending",
   isActive: true,
-  tags: [createTag("1", "Important", "red")],
+  tags: [{
+    id: "tag1",
+    name: "Tag 1",
+    color: "#000000",
+    description: "Tag 1 description",
+    enabled: true,
+    type: "Category",
+    tags: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: "creator1",
+    timestamp: new Date().getTime(),
+    // Add other properties as needed
+    
+  }],
   phase: {} as Phase,
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -329,12 +350,94 @@ const data: Data = {
     blockedUsers: [],
     persona: new Persona(PersonaTypeEnum.Default),
     settings: {
-      // notificationPreferences: {
-      //   email: true,
-      //   mobile: false,
-      //   desktop: true
-      // }
-    } as UserSettings,
+      id:"0",
+      userId: 123,
+      userSettings: setTimeout(() => {}, 1000),
+      communicationMode: "email",
+      enableRealTimeUpdates: true,
+      filter: (key: keyof Settings) => "defaultFilter", 
+      appName: "MyApp" ,
+   
+      defaultFileType: "pdf",
+      allowedFileTypes: ["pdf", "docx", "xlsx"],
+      enableGroupManagement: true,
+      enableTeamManagement: false,
+      idleTimeout: undefined,
+
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
+      idleTimeoutDuration: 300,
+      activePhase: "development",
+      realTimeChatEnabled: true,
+      todoManagementEnabled: false,
+      notificationEmailEnabled: true,
+      analyticsEnabled: true,
+      twoFactorAuthenticationEnabled: true,
+      projectManagementEnabled: true,
+      documentationSystemEnabled: false,
+      versionControlEnabled: true,
+      userProfilesEnabled: true,
+      accessControlEnabled: true,
+      taskManagementEnabled: true,
+      loggingAndNotificationsEnabled: true,
+      securityFeaturesEnabled: true,
+      theme: "dark",
+      language: LanguageEnum.English,
+      fontSize: 14,
+      darkMode: true,
+      enableEmojis: true,
+      enableGIFs: true,
+      emailNotifications: true,
+      pushNotifications: true,
+      notificationSound: "ding",
+      timeZone: "UTC",
+      dateFormat: "YYYY-MM-DD",
+      timeFormat: "24-hour",
+      defaultProjectView: "list",
+      taskSortOrder: "priority",
+      showCompletedTasks: true,
+      projectColorScheme: "blue",
+      showTeamCalendar: false,
+      teamViewSettings: [],
+      defaultTeamDashboard: "overview",
+      passwordExpirationDays: 90,
+      privacySettings: [],
+      thirdPartyApiKeys: { key1: "value1", key2: "value2" },
+      externalCalendarSync: true,
+      dataExportPreferences: [],
+      dashboardWidgets: [],
+      customTaskLabels: [],
+      customProjectCategories: [],
+      customTags: [],
+      formHandlingEnabled: true,
+      paginationEnabled: true,
+      modalManagementEnabled: true,
+      sortingEnabled: true,
+      notificationSoundEnabled: true,
+      localStorageEnabled: true,
+      clipboardInteractionEnabled: true,
+      deviceDetectionEnabled: true,
+      loadingSpinnerEnabled: true,
+      errorHandlingEnabled: true,
+      toastNotificationsEnabled: true,
+      datePickerEnabled: true,
+      themeSwitchingEnabled: true,
+      imageUploadingEnabled: true,
+      passwordStrengthEnabled: true,
+      browserHistoryEnabled: true,
+      geolocationEnabled: true,
+      webSocketsEnabled: true,
+      dragAndDropEnabled: true,
+      idleTimeoutEnabled: true,
+      enableAudioChat: true,
+      enableVideoChat: true,
+      enableFileSharing: true,
+      enableBlockchainCommunication: true,
+      enableDecentralizedStorage: true,
+      selectDatabaseVersion: "v1.0",
+      selectAppVersion: "v1.0",
+      enableDatabaseEncryption: true,
+
+    },
     interests: [],
     privacySettings: {
       hidePersonalInfo: true,

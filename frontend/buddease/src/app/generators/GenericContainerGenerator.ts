@@ -1,7 +1,7 @@
 // GenericContainerGenerator.ts
 
 import { AxiosError } from 'axios';
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 
 // Define a generic container interface
 interface Container<T> {
@@ -61,7 +61,17 @@ const createContainer = <T>(props: ContainerGeneratorProps<T>) => {
     userNeeds.forEach((need) => {
       const container = getContainer(need);
       // Connect the container based on user needs
-      // Implement your connection logic here
+      if (container) {
+        container.isActive = true;
+      } else {
+        notify({
+          id: `${need}-connect-error`,
+          message: `Failed to connect container for ${need}`,
+          content: error.message,
+          date: new Date(),
+          type: NotificationTypeEnum.ERROR,
+        });
+      }
     });
   };
 

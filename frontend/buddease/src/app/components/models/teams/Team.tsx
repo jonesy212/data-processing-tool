@@ -18,7 +18,7 @@ import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
-import { Data, DataDetailsProps } from "../data/Data";
+import { BaseData, Data, DataDetailsProps } from "../data/Data";
 import { PriorityTypeEnum, StatusType, TeamStatus } from "../data/StatusType";
 import generateTimeBasedCode from "../realtime/TimeBasedCodeGenerator";
 import { Task, TaskData } from "../tasks/Task";
@@ -129,7 +129,7 @@ interface Team extends Data {
   percentage: number;
   data?: TeamData;
   members?: Member[];
-  then?: (callback: (newData: Snapshot<Data>) => void) => void | undefined;
+  then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
   pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;

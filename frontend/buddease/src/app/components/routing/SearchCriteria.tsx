@@ -21,6 +21,8 @@ import { NotificationTypeEnum } from "../support/NotificationContext";
 import { userService } from "../users/ApiUser";
 import { IdeaCreationPhaseEnum } from "../users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { BaseData } from "../models/data/Data";
 
 interface SearchCriteria {
   startDate?: Date;
@@ -193,7 +195,9 @@ const SearchCriteriaComponent: React.FC<{
       <button onClick={handleDispatchExample}>Dispatch Example Action</button>
     </div>
   );
-};
+  };
+
+
 
 export default SearchCriteriaComponent;
 export type { SearchCriteria };

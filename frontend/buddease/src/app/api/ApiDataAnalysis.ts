@@ -5,7 +5,7 @@ import {
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
-import { Data } from "../components/models/data/Data";
+import { BaseData, Data } from "../components/models/data/Data";
 import { PriorityTypeEnum } from "../components/models/data/StatusType";
 import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
@@ -101,6 +101,9 @@ export function fetchDataAnalysis(
       return Promise.reject(error);
     });
 }
+
+
+
 // Function to fetch analysis results
 export const fetchAnalysisResults = (): Promise<any> => {
   const endpoint = DATA_ANALYSIS_BASE_URL.getAnalysisResults;
@@ -110,7 +113,7 @@ export const fetchAnalysisResults = (): Promise<any> => {
   }
 
   return fetchDataAnalysis(endpoint)
-    .then((response) => {
+    .then((response: YourResponseType | Snapshot<Data>) => {
       const analysisResults = response.data;
 
       // Check if analysisResults is of type DataAnalysisResult
@@ -119,7 +122,7 @@ export const fetchAnalysisResults = (): Promise<any> => {
       }
 
       // Destructure analysisResults safely
-      const { description, phase, priority, sentiment, sentimentAnalysis, ...rest } = analysisResults as DataAnalysisResult;
+      const { description, phase, priority, sentiment, sentimentAnalysis, ...rest } = analysisResults;
 
       // Return processed data
       return {
@@ -130,7 +133,9 @@ export const fetchAnalysisResults = (): Promise<any> => {
         data: analysisResults.data,
         sentiment: analysisResults.sentiment,
         sentimentAnalysis: analysisResults.sentimentAnalysis,
-      };
+        events: analysisResults.events,
+        meta: analysisResults.meta,
+      } as Snapshot<BaseData>;
     })
     .catch((error) => {
       handleDataAnalysisApiErrorAndNotify(

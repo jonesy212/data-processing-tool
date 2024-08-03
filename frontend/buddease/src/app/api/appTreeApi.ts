@@ -129,7 +129,9 @@ class AppTreeApiService {
     }
   }
   
-  
+  get cacheKey(): Promise<string> {
+    return this.fetchCacheKey();
+  }
 
   private async callApi(endpoint: string): Promise<any> {
     try {

@@ -1,10 +1,7 @@
-import {
-  projectMetadata,
-  transformProjectToStructured,
-} from "@/app/configs/StructuredMetadata";
+
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
-import { Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import StatusType, { PriorityTypeEnum } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
@@ -16,6 +13,8 @@ import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import useAttendancePrediction from "./AttendancePrediction";
 import { CalendarManagerState } from "./CalendarSlice";
+import { projectMetadata, transformProjectToStructured} from "@/app/configs/StructuredMetadata";
+import { SnapshotWithCriteria } from "../routing/SearchCriteria";
 
 
 interface Attendee {
@@ -27,8 +26,8 @@ interface Attendee {
 }
 
 interface BusyTime {
-  start: Date;
-  end: Date;
+  start: string | Date;
+  end: string | Date;
 }
 
 
@@ -205,7 +204,7 @@ const event: CalendarEvent = {
   options: getDefaultDocumentOptions(),
   attendees: [],
   location: "Event location",
-  getData: () => Promise.resolve([]) as Promise<SnapshotStore<Snapshot<Data>>[]>,
+  getData: () => Promise.resolve([]) as Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]>,
 };
 
 const calendarManagerState: CalendarManagerState = {

@@ -6,24 +6,28 @@ import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
 import { Tag } from '../../models/tracker/Tag';
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 import { VideoData } from "../../video/Video";
+import { SnapshotWithCriteria } from '../../snapshots/SnapshotWithCriteria';
+import { Type } from 'docx';
+import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
+import { SnapshotData } from '../../snapshots/SnapshotStore';
+import { Subscriber } from '../../users/Subscriber';
 
 interface CommonEvent extends Data {
   title: string;
 
   // Shared date properties
-  date: Date;
+  date: Date | undefined;
 
   // Shared time properties
   startTime?: string;
   endTime?: string;
-  tags?: string[] | Tag[];
+  tags?:  string[] | Tag[]
 
   // Recurrence properties
   recurring?: boolean;
   recurrenceRule?: string;
-
   // Other common properties
   category?: string;
   timezone?: string;
@@ -33,14 +37,27 @@ interface CommonEvent extends Data {
   collaborationTool?: string;
   metadata?: StructuredMetadata;
   // Implement the `then` function using the reusable function
-  then?: (callback: (newData: Snapshot<Data>) => void) =>  Snapshot<Data> | undefined;
+  then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
 // Define the function to implement the `then` functionality
-export function implementThen(callback: (newData: Snapshot<Data>) => void): Snapshot<Data> | undefined {
-  const snapshot: Snapshot<Data> = {
+export function implementThen<T extends BaseData, K extends BaseData>(
+  callback: (newData: Snapshot<T, K>) => void
+): Snapshot<T, K> | undefined {
+  const snapshot: Snapshot<T, K> = {
     id: "someId",
-    data: { key: "exampleKey", value: "exampleValue" },
+    data: new Map([
+      ["someId", {
+        id: "someId",
+        title: "someTitle",
+        description: "someDescription",
+        timestamp: new Date(),
+        length: 0,
+        data: {} as T,
+        events: undefined,
+        meta: undefined
+      } as Snapshot<T, K>]
+    ]),
     timestamp: new Date(),
     subscriberId: "someSubscriberId",
     category: "someCategory",
@@ -52,78 +69,138 @@ export function implementThen(callback: (newData: Snapshot<Data>) => void): Snap
       category: "someCategory",
       timestamp: new Date(),
       length: 0,
-      data: { key: "exampleKey", value: "exampleValue" },
+      data: {} as T,
     },
     store: undefined,
+    events: undefined,
+    meta: undefined,
+    getSnapshotId: function (key: Snapshot<T, K> | SnapshotData<T, K>): unknown {
+      // fetch snapshot id then check if there is a snapshot Id
+      const snapshotId = key as Snapshot<T, K>;
+      if (snapshotId) {
+        return snapshotId;
+      }
+      
+      return snapshotId;
+    },
+    compareSnapshotState: function (arg0: Snapshot<T, K> | null, state: any): unknown {
+      const snapshot = arg0 as Snapshot<T, K>;
+      if (snapshot) {
+        return snapshot.state;
+      }
+      return state;
+    },
+    eventRecords: null,
+    snapshotStore: null,
+      dataItems: null,
+      newData: undefined,
+      stores: null,
+      unsubscribe: function (callback: Callback<Snapshot<T, K>> | null): void {
+        // Remove reference to callback
+        let callbackRef = callback;
+        callbackRef = null;
+        // Remove reference to callback
+        callback = null;
+        
+      },
+
+      fetchSnapshot: function (
+        callback: (
+          snapshotId: string,
+          snapshot: Snapshot<T, K> | undefined
+        ) => void
+      ): string | undefined {
+        if (callback) {
+          callback("someId", undefined);
+        }
+        return;
+      },
+      
+    handleSnapshot: function (
+      snapshotId: string,
+      snapshot: Snapshot<T, K> | null,
+      snapshots: Snapshots<T>,
+      type: string,
+      event: Event,
+    ): void {
+     
+      const snapshotInstance = snapshot as Snapshot<T, K>;
+      if (snapshotInstance) {
+        snapshotInstance.state = snapshots;
+        snapshotInstance.event = event;
+        snapshotInstance.type = type;
+      }
+      return;
+    },
+    subscribe: function (
+      arg0: Subscriber<T, K> | null,
+      arg1: T,
+      arg2: Event,
+      callback: Callback<Snapshot<T, K>> ,
+      value: T,
+    ): void {
+      const subscriber = arg0 as Subscriber<T, K>;
+      if (subscriber) {
+        subscriber.getState(arg1)
+        subscriber.setEvent(arg2, value);
+      }
+
+      callback(snapshot);
+    }
   };
   callback(snapshot);
   return snapshot;
 }
-  // Define the `CommonEvent` interface
-  interface CommonEvent extends Data {
-    title: string;
-    date: Date;
-    startTime?: string;
-    endTime?: string;
-    recurring?: boolean;
-    recurrenceRule?: string;
-    category?: string;
-    timezone?: string;
-    participants: Member[];
-    language?: string;
-    agenda?: string;
-    collaborationTool?: string;
-    metadata?: StructuredMetadata;
-    // Implement the `then` function using the reusable function
-    then?: (callback: (newData: Snapshot<Data>) => void) =>  Snapshot<Data> | undefined;
-  }
-  
-  // Define the `commonEvent` object using the `CommonEvent` interface
-  const commonEvent: CommonEvent = {
-    _id: "",
-    id: "",
-    title: "",
-    date: new Date(),
-    startTime: "",
-    endTime: "",
-    recurring: false,
-    recurrenceRule: "",
-    category: "",
-    timezone: "",
-    participants: [],
-    language: "",
-    agenda: "",
-    collaborationTool: "",
-    metadata: {
-      structuredMetadata: {
-        originalPath: "originalPath",
-        fileType: "fileType",
-        alternatePaths: [],
-        title: '',
-        description: '',
-        keywords: [],
-        authors: [],
-        contributors: [],
-        publisher: '',
-        copyright: '',
-        license: '',
-        links: [],
-        tags: [],
-        author: '',
-        timestamp: undefined
-      },
+
+
+
+// Define the `commonEvent` object using the `CommonEvent` interface
+const commonEvent: CommonEvent = {
+  _id: "",
+  id: "",
+  title: "",
+  date: new Date(),
+  startTime: "",
+  endTime: "",
+  recurring: false,
+  recurrenceRule: "",
+  category: "",
+  timezone: "",
+  participants: [],
+  language: "",
+  agenda: "",
+  collaborationTool: "",
+  metadata: {
+    structuredMetadata: {
+      originalPath: "originalPath",
+      fileType: "fileType",
+      alternatePaths: [],
+      title: '',
+      description: '',
+      keywords: [],
+      authors: [],
+      contributors: [],
+      publisher: '',
+      copyright: '',
+      license: '',
+      links: [],
+      tags: [],
+      author: '',
+      timestamp: undefined
     },
-  
-    status: StatusType.Scheduled,
-    isActive: false,
-    tags: [],
-    phase: null,
-    // Implement the `then` function using the reusable function
-    then: implementThen,
-    analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
-    analysisResults: [],
-    videoData: {} as VideoData,
-  };
-  
-  export default CommonEvent;
-  export { commonEvent };
+  },
+
+  status: StatusType.Scheduled,
+  isActive: false,
+  tags: [],
+  phase: null,
+  // Implement the `then` function using the reusable function
+  then: <T extends Data, K extends Data>(
+    callback: (newData: Snapshot<Data, K>) => void) => implementThen(callback),
+  analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
+  analysisResults: [],
+  videoData: {} as VideoData,
+};
+
+export default CommonEvent;
+export { commonEvent };

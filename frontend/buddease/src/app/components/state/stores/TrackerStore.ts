@@ -33,7 +33,7 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
   };
 
   const dispatch = (action: any) => { 
-    rootStore.trackerStore.dispatch(action);
+    rootStore.trackerManager.dispatch(action);
   }
 
 

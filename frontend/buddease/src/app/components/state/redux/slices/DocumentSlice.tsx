@@ -1235,6 +1235,7 @@ export const fetchDocumentsByIds = async (documentIds: number[]) => {
 export const downloadDocument = createAsyncThunk(
   "document/downloadDocument",
   async (documentId: number, { rejectWithValue }) => {
+    
     try {
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,

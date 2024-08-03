@@ -19,16 +19,16 @@ interface StructuredMetadata {
     author: string;
     timestamp: Date | undefined;
     fileType: string;
-    title: string,
-    description: string,
-    keywords: string[],
-    authors: string[],
-    contributors: string[],
-    publisher: string,
-    copyright: string,
-    license: string,
-    links: string[],
-    tags: string[]
+    title: string;
+    description: string;
+    keywords: string[];
+    authors: string[];
+    contributors: string[];
+    publisher: string;
+    copyright: string;
+    license: string;
+    links: string[];
+    tags: string[];
   };
 }
 
@@ -145,10 +145,6 @@ const { state, setState, undo, redo } = useUndoRedo(initialState);
 
 // Add undo and redo handlers to the metadata structure
 (state as any).undo = undo;
-
-
-
-
 
 
 

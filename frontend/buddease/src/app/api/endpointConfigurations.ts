@@ -34,7 +34,16 @@ interface EndpointConfigurations {
     // Add more searching endpoints as needed
   };
   snapshots: {
-
+    create: EndpointConfig;
+    list: EndpointConfig;
+    single: (snapshotId: string) => EndpointConfig;
+    add: EndpointConfig;
+    remove: (snapshotId: string) => EndpointConfig;
+    update: (snapshotId: string) => EndpointConfig;
+    fetchUpdatedData: (snapshotId: string) => EndpointConfig;
+    bulkAdd: EndpointConfig;
+    bulkRemove: EndpointConfig;
+    bulkUpdate: EndpointConfig;
   },
   tasks: {
     create: EndpointConfig;
@@ -119,11 +128,16 @@ const endpointConfigurations: EndpointConfigurations = {
     update: (taskId: number) => `/api/tasks/${taskId}/update`,
   },
   snapshots: {
-    create: { path: "/api/snapshots/create", method: "POST" },
     list: { path: "/api/snapshots", method: "GET" },
-    single: (snapshotId: number) => `/api/snapshots/${snapshotId}`,
+    create: { path: "/api/snapshots/create", method: "POST" },
+    single: (snapshotId: string): EndpointConfig => ({ path: `/api/snapshots/${snapshotId}`, method: "GET" }),
     add: { path: "/api/snapshots/add", method: "POST" },
-    remove: (snapshotId: number) => `/api/snapshots/${snapshotId}/remove`,
+    remove: (snapshotId: string): EndpointConfig => ({ path: `/api/snapshots/${snapshotId}/remove`, method: "DELETE" }),
+    update: (snapshotId: string): EndpointConfig => ({ path: `/api/snapshots/${snapshotId}`, method: "PUT" }),
+    fetchUpdatedData: (snapshotId: string): EndpointConfig => ({ path: `/api/snapshots/${snapshotId}/fetch-updated-data`, method: "GET" }),
+    bulkAdd: { path: "/api/snapshots/bulk-add", method: "POST" },
+    bulkRemove: { path: "/api/snapshots/bulk-remove", method: "POST" },
+    bulkUpdate: { path: "/api/snapshots/bulk-update", method: "POST" },
   },
   todos: {
     create: `${BASE_URL}/api/todos/create`,

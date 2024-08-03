@@ -1,11 +1,14 @@
 // NotificationSlice.tsx
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { Data } from '../models/data/Data';
+import { BaseData, Data } from '../models/data/Data';
 import { LogData } from '../models/LogData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { AllStatus } from '../state/stores/DetailsListStore';
 import { NotificationTypeEnum } from './NotificationContext';
+import { DocumentOptions } from '../documents/DocumentOptions';
+import SnapshotStore from '../snapshots/SnapshotStore';
+import { SnapshotWithCriteria } from '../snapshots/SnapshotWithCriteria';
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -33,8 +36,9 @@ interface NotificationData extends Data, CalendarEvent {
   inApp?: boolean; // Add inApp property to differentiate push vs in-app
   notificationType?: NotificationTypeEnum | string
   options?: {
-    additionalOptions: readonly string[] | string | number | any[] | undefined
-  }
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+    additionalDocumentOptions: DocumentOptions
+    additionalOptionsLabel: string;  }
 }
 
 interface NotificationsState {
@@ -71,14 +75,20 @@ export const dispatchNotification = (
         notificationType: NotificationTypeEnum.Info,
         inApp: true,
         options: {
-          additionalOptions: undefined
+          additionalOptions: undefined,
+          additionalDocumentOptions: {} as WritableDraft<DocumentOptions>,
+          additionalOptionsLabel: ''
         },
         topics: [],
         highlights: [],
         files: [],
         rsvpStatus: 'yes',
         participants: [],
-        teamMemberId: ''
+        teamMemberId: '',
+        meta: undefined,
+        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+          throw new Error('Function not implemented.');
+        }
       })
     );
   } catch (error) {
@@ -97,7 +107,9 @@ export const dispatchNotification = (
         notificationType: NotificationTypeEnum.Error,
         inApp: true,
         options: {
-          additionalOptions: undefined
+          additionalOptions: undefined,
+          additionalDocumentOptions: {} as WritableDraft<DocumentOptions>,
+          additionalOptionsLabel: ''
         },
         data: payload,
         date: new Date(),
@@ -106,7 +118,11 @@ export const dispatchNotification = (
         files: [],
         rsvpStatus: 'yes',
         participants: [],
-        teamMemberId: ''
+        teamMemberId: '',
+        meta: WritableDraft<Data>,
+        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+          throw new Error('Function not implemented.');
+        }
       },
       )
     );

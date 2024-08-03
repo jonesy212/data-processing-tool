@@ -9,7 +9,7 @@ import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import axiosInstance from '../security/csrfToken';
 import { endpoints } from './../../api/ApiEndpoints';
-import useSnapshotManager, { SnapshotManager } from './../../components/hooks/useSnapshotManager';
+import { SnapshotManager, useSnapshotManager } from './../../components/hooks/useSnapshotManager';
 import SnapshotStore from './../../components/snapshots/SnapshotStore';
 import { CategoryProperties } from './../../pages/personas/ScenarioBuilder';
 
@@ -20,15 +20,18 @@ import {
   useNotification
 } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
-import { generateSnapshotId } from "../utils/snapshotUtils";
+import { addToSnapshotList, generateSnapshotId } from "../utils/snapshotUtils";
 import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
 import { K, SnapshotStoreConfig, T, snapshotConfig } from './SnapshotConfig';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { resolve } from "path";
+import { useSnapshotStore } from "./useSnapshotStore";
 const { notify } = useNotification();
 const dispatch = useDispatch()
 
 const API_BASE_URL = endpoints
 // Handler for creating a snapshot
-export const createSnapshot = (additionalData: any): void => {
+export const createInitSnapshot = (additionalData: any): void => {
   const newSnapshot = {
     id: generateSnapshotId,
     data: {},
@@ -53,28 +56,68 @@ export const initSnapshot: T = {
 
 
 
-type Subscriber<T> = (snapshot: T) => void;
+type Subscriber<T extends BaseData, K extends BaseData> = (
+  snapshot: Snapshot<T, K>,
+  add: (snapshot: Snapshot<T, K>) => void,
+) => void;
 
-const snapshotSubscribers: Map<string, Subscriber<Snapshot<any>>[]> = new Map();
+
+type Subscribers<T extends BaseData, K extends BaseData> = (
+  snapshots: Snapshots<T>
+) => Subscribers<T, K>
+
+const snapshotSubscribers: Map<string, Set<Subscriber<Data, any>>> = new Map();
 
 // Combine and update the subscribeToSnapshots function
-export const subscribeToSnapshots = <T extends BaseData>(
+
+// Combine and update the subscribeToSnapshots function
+export const subscribeToSnapshots = <T extends Data, K extends Data>(
   snapshotId: string,
-  callback: Subscriber<Snapshot<T>> // Ensure the callback matches the Subscriber type
+  callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
+  snapshots: Snapshots<T>
+): void => {
+  // Ensure the snapshotSubscribers map has an entry for the snapshotId
+  if (!snapshotSubscribers.has(snapshotId)) {
+    snapshotSubscribers.set(snapshotId, new Set());
+  }
+
+  if (callback !== null) {
+    const subscriber = callback(snapshots);
+    if (subscriber !== null) {
+      // Add the subscriber to the set of subscribers for the snapshotId
+      const subscribersSet = snapshotSubscribers.get(snapshotId) as Set<Subscriber<T, K>>;
+
+      if (subscribersSet) {
+        subscribersSet.add(subscriber);
+      }
+    }
+  }
+
+  console.log(`Subscribed to snapshots with ID: ${snapshotId}`);
+};
+
+
+
+
+export const subscribeToSnapshot = <T extends BaseData, K extends BaseData>(
+  snapshotId: string,
+  callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
 ): void => {
   // Ensure the snapshotSubscribers map has an entry for the snapshotId
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
   }
-
   // Add the callback to the list of subscribers for the snapshotId
   snapshotSubscribers.get(snapshotId)?.push(callback);
+  console.log(`Subscribed to snapshot with ID: ${snapshotId}`);
+}
 
-  console.log(`Subscribed to snapshots with ID: ${snapshotId}`);
-};
+
 
 // Create a function to initialize the snapshot store
-const initializeSnapshotStore = async (): Promise<SnapshotStore<BaseData, K>> => {
+const initializeSnapshotStore = async (
+
+): Promise<SnapshotStore<BaseData, K>> => {
   // Initialize snapshotManager and snapshotStore
   const snapshotManager = await useSnapshotManager<BaseData, BaseData>();
   const snapshotStore = await createSnapshotStore<BaseData, BaseData>();
@@ -107,6 +150,7 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<BaseData, K>> =>
     timestamp: new Date(),
     category: "New Category",
     type: "",
+    meta: {},
   };
 
   // Define methods to be exposed by the snapshot store
@@ -129,7 +173,7 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<BaseData, K>> =>
     taskIdToAssign: "", 
     config: [snapshotManager],
     addSnapshot: snapshotStore.addSnapshot,
-    snapshotId: snapshotStore.snapshotId.toString(),
+    snapshotId: snapshotStore.snapshotId?.toString(),
     updateSnapshot: snapshotStore.updateSnapshot,
     removeSnapshot: snapshotStore.removeSnapshot,
     clearSnapshots: snapshotStore.clearSnapshots,
@@ -140,16 +184,65 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<BaseData, K>> =>
     state: [],
     subscribers: [],
     
-    createSnapshot: (
-      id: string,
-      snapshotData: SnapshotStoreConfig<any, BaseData>,
-      category: string,
-      snapshot: Snapshot<Data>) => {
-      // Implement createSnapshot logic here
-      return snapshot;
-    },
-    configureSnapshotStore: (snapshotStore: SnapshotStore<T, K>) => {
+    
+  createSnapshot(
+    id: string,
+    snapshotData: SnapshotStoreConfig<any, T>,
+    category: string
+  ): Snapshot<Data> {
+    if (!snapshotData) {
+      throw new Error("snapshotData is null or undefined");
+    }
+
+    let data: Data;
+    if ("data" in snapshotData && snapshotData.data) {
+      data = snapshotData.data;
+    } else if (snapshotData.data && "data" in snapshotData.data) {
+      data = snapshotData.data.data;
+    } else {
+      throw new Error("snapshotData does not have a valid 'data' property");
+    }
+
+    id =
+      typeof data.id === "string"
+        ? data.id
+        : String(
+            UniqueIDGenerator.generateID(
+              "SNAP",
+              "defaultID",
+              NotificationTypeEnum.GeneratedID
+            )
+          );
+
+    const snapshot: Snapshot<Data> = {
+      id,
+      data,
+      timestamp: snapshotData.timestamp || new Date(),
+      category: this.category,
+      topic: this.topic,
+      meta: this.meta
+    };
+
+    // Add null checks
+    if (this.snapshots) {
+      this.snapshots.push(snapshot);
+    } else {
+      console.error("Snapshots array is not initialized.");
+    }
+
+    if (this.getDelegate() && this.getDelegate().length > 0) {
+      this.getDelegate()[0].createSnapshotSuccess(snapshot);
+    } else {
+      console.error("Delegate is not initialized or is empty.");
+    }
+
+    return snapshot;
+  },
+ 
+
+    configureSnapshotStore: (snapshotStore: SnapshotStore<BaseData, K>) => {
       // Implement configureSnapshotStore logic here
+
     },
     createSnapshotSuccess: (snapshot: Snapshot<Data>) => {
       // Implement createSnapshotSuccess logic here
@@ -228,14 +321,19 @@ const initializeSnapshotStore = async (): Promise<SnapshotStore<BaseData, K>> =>
 };
 
 // Assume this function exists to create a snapshot store
-async function createSnapshotStore<T, K>(): Promise<SnapshotStore<T, K>> {
+async function createSnapshotStore<T extends BaseData, K extends BaseData>(): Promise<SnapshotStore<T, K>> {
   // Implement the logic to create a snapshot store
   const snapshotStore: SnapshotStore<T, K> = {
     // Fill with actual implementations
     snapshots: [],
     taskIdToAssign: "",
     config: [],
-    addSnapshot: () => {},
+    addSnapshot: async (
+      snapshot: Snapshot<T, K>,
+      subscribers: Subscriber<BaseData, K>[]
+    ) => {
+      
+    },
     snapshotId: "",
     updateSnapshot: () => {},
     removeSnapshot: () => {},
@@ -273,7 +371,16 @@ async function createSnapshotStore<T, K>(): Promise<SnapshotStore<T, K>> {
     takeSnapshotSuccess: () => {},
     updateSnapshotFailure: () => {},
     takeSnapshotsSuccess: () => {},
-    fetchSnapshot: () => ({} as Snapshot<Data>),
+    fetchSnapshot: (
+      snapshotId: string,
+      category: string | CategoryProperties | undefined,
+      timestamp: Date,
+      snapshot: Snapshot<BaseData, K>,
+      data: T,
+      delegate: SnapshotStoreConfig<BaseData, K>[]
+    ) => {
+      return Promise.resolve();
+    },
     updateSnapshotSuccess: () => {},
     updateSnapshotsSuccess: () => {},
     fetchSnapshotSuccess: () => {},
@@ -308,7 +415,7 @@ async function createSnapshotStore<T, K>(): Promise<SnapshotStore<T, K>> {
     unsubscribe: () => {},
     fetchSnapshotFailure: () => {},
     generateId: () => "id",
-    [Symbol.iterator]: () => ({} as IterableIterator<T>),
+    [Symbol.iterator]: () => ({} as IterableIterator<Snapshot<T, K>>),
     [Symbol.asyncIterator]: () => ({} as AsyncIterableIterator<T>),
   };
   return snapshotStore;
@@ -316,8 +423,11 @@ async function createSnapshotStore<T, K>(): Promise<SnapshotStore<T, K>> {
 ;
 
 
-export const createSnapshotSuccess = async <T>(snapshot: Snapshot<T>) => {
-  const snapshotStore = (await useSnapshotManager()).state;
+export const createSnapshotSuccess = async <T extends BaseData, K extends BaseData>(
+  snapshot: Snapshot<T, K>
+) => {
+  const snapshotManager = await useSnapshotManager();
+  const snapshotStore = snapshotManager?.state;
   if (snapshotStore && snapshotStore.length > 0) {
     const updatedSnapshotData = {
       id: generateSnapshotId,
@@ -335,35 +445,126 @@ export const createSnapshotSuccess = async <T>(snapshot: Snapshot<T>) => {
   }
 }
 
+export const onSnapshot = async <T extends BaseData, K extends BaseData>(
+  snapshotId: string,
+  snapshot: Snapshot<T, K>,
+  type: string,
+  event: Event,
+  callback: (snapshot: Snapshot<T, K>) => void
+): Promise<void> => {
+  const snapshotManager = await useSnapshotManager<T, K>();
+  const snapshotStore = snapshotManager?.state;
 
-export const delegate = async (): Promise<SnapshotStoreConfig<Data, K>[]> => {
-    const snapshotManager = await useSnapshotManager();
-    return snapshotManager.delegate;
+  if (snapshotStore && snapshotStore.length > 0) {
+    const updatedSnapshotData: Snapshot<T, K> = {
+      ...snapshot,
+      id: generateSnapshotId,
+      data: {
+        ...(snapshot.data as T),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as T,
+      timestamp: new Date(),
+      category: "update",
+      length: 0,
+      content: undefined,
+    };
+
+    snapshotStore.push(updatedSnapshotData);
+
+    // Call the callback with the updated snapshot
+    callback(updatedSnapshotData);
+  } else {
+    // Call the callback with the original snapshot if no updates were made
+    callback(snapshot);
+  }
+}
+
+
+export const onSnapshots = async <T extends BaseData, K extends BaseData>(
+  snapshotId: string,
+  snapshots: Snapshots<T>,
+  type: string,
+  event: Event,
+  callback: (snapshots: Snapshots<T>) => void
+): Promise<void> => {
+  const snapshotManager = await useSnapshotManager<T, K>();
+  const snapshotStore = snapshotManager?.state;
+
+  if (snapshotStore && snapshotStore.length > 0) {
+    const updatedSnapshotData: Snapshot<T, K>[] = snapshots.map((snapshot) => ({
+      ...snapshot,
+      id: generateSnapshotId,
+      data: {
+        ...(snapshot.data as T),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as T,
+      timestamp: new Date(),
+      category: "update",
+      length: 0,
+      content: undefined,
+    }));
+
+    snapshotStore.push(...updatedSnapshotData);
+
+    // Call the callback with the updated snapshots
+    callback(updatedSnapshotData);
+  } else {
+    // Call the callback with the original snapshots if no updates were made
+    callback(snapshots);
+  }
+}
+
+
+export const delegate = async (): Promise<SnapshotStoreConfig<T, K>[]> => {
+  const snapshotManager = await useSnapshotManager<BaseData, BaseData>();
+  if (!snapshotManager || !snapshotManager.delegate) {
+    console.error("snapshotManager or delegate is undefined");
+    return [];
+  }
+  return snapshotManager.delegate;
 };
 
-export const getDelegate = async () => {
-  const snapshotManager = useSnapshotManager();
-  const delegate = snapshotManager.delegate;
-  return delegate;
-}
+
+export const getDelegate = <T extends Data, K extends Data>(): Promise<SnapshotStoreConfig<T, K>[]> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const snapshotManager = await useSnapshotManager<T, K>();
+      const delegate = snapshotManager?.delegate;
+
+      if (delegate) {
+        resolve(delegate);
+      } else {
+        resolve([]);
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 
 export const determinePrefix = async () => { 
-  const snapshotManager = (await useSnapshotManager());
-  const snapshotId = snapshotManager.snapshotId.toString();
+  const snapshotManager = await useSnapshotManager<T, K>();
+  if (!snapshotManager) {
+    throw new Error("SnapshotManager is null");
+  }
+  const snapshotId = snapshotManager.snapshotId;
   const prefix = snapshotId.substring(0, 2);
   return prefix;
-}
+};
 
 
 export const handleSnapshotSuccess = <T extends Data>(snapshot: Snapshot<T>): Promise<Snapshot<T>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const snapshotManager = await useSnapshotManager(); // Assuming useSnapshotManager returns the correct type
-      const snapshotStore = snapshotManager.state;
+      const snapshotStore = snapshotManager?.state;
       
       if (snapshotStore && snapshotStore.length > 0) {
         const updatedSnapshotData = {
-          id: generateSnapshotId(),
+          id: generateSnapshotId,
           data: {
             ...snapshot.data,
             createdAt: new Date(),
@@ -393,10 +594,15 @@ export const handleSnapshotSuccess = <T extends Data>(snapshot: Snapshot<T>): Pr
   });
 };
 
-export const updateSnapshots = async <T extends Data>(
-  snapshot: Snapshot<T>
+
+
+export const updateSnapshots = async <T extends Data, K extends Data>(
+  snapshot: Snapshot<T, K>
 ) => { 
-  const snapshotStore = (await useSnapshotManager()).state;
+  const snapshotStore = await useSnapshotManager();
+
+  snapshotStore?.state
+
   if (snapshotStore && snapshotStore.length > 0) {
     const updatedSnapshotData = {
       id: generateSnapshotId,
@@ -422,47 +628,59 @@ export const updateSnapshots = async <T extends Data>(
   }
   return Promise.resolve(undefined);
 }
-
-export const updateSnapshotSuccess = async<T extends Data>(
-  snapshot: Snapshot<T>
+export const updateSnapshotSuccess = async <T extends Data, K extends Data>(
+  snapshot: Snapshot<T>,
+  subscribers: Subscriber<T, K>[],
+  snapshotData: Snapshot<T, K>
 ) => {
-  const snapshotStore = (await useSnapshotManager()).state;
-  if (snapshotStore && snapshotStore.length > 0) {
-    const updatedSnapshotData = {
+  const snapshotStore = await useSnapshotStore(addToSnapshotList);
+  if (!snapshotStore || !snapshotStore.state) {
+    throw new Error("SnapshotManager or state is null");
+  }
+
+  if (snapshotStore.state.length > 0) {
+    const updatedSnapshotData: Partial<SnapshotStoreConfig<BaseData, T>> = {
       id: generateSnapshotId,
       data: {
         ...snapshot.data,
         createdAt: new Date(),
         updatedAt: new Date(),
+        timestamp: new Date().getTime(),
       },
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       category: "update",
       length: 0,
       content: undefined,
     };
-    if (snapshotStore.length > 0 && snapshotStore[0]) {
-      const firstSnapshot = snapshotStore[0];
-      const updatedSnapshot = {
-        ...firstSnapshot,
-        data: updatedSnapshotData,
-      };
-      (await useSnapshotManager()).setSnapshotData(updatedSnapshot);
-    }
+
+    const firstSnapshot = snapshotStore.state[0];
+    const updatedSnapshot = {
+      ...firstSnapshot,
+      data: updatedSnapshotData,
+    };
+
+    snapshotStore.setSnapshotData(new Map([[updatedSnapshot.id, updatedSnapshot]]), subscribers, updatedSnapshotData);
     return Promise.resolve(updatedSnapshotData);
   }
-  return Promise.resolve(undefined);
-}
 
-export const updateSnapshotFailure = async<T extends Data>(
-  error: Payload,
-  subscribers: Subscriber<T>
+  return Promise.resolve(undefined);
+};
+
+
+export const updateSnapshotFailure = async<T extends Data, K extends Data>(
+  subscribers: Subscriber<T, K>,
+  payload: {error: Payload},
 ) => {
-  const snapshotStore = (await useSnapshotManager()).state;
+  const snapshotManager = await useSnapshotManager();
+  if (!snapshotManager) {
+    return Promise.resolve(undefined);
+  }
+  const snapshotStore = snapshotManager.state;
   if (snapshotStore && snapshotStore.length > 0) {
     const updatedSnapshotData = {
       id: generateSnapshotId,
       data: {
-        ...error,
+        ...payload.error,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -471,13 +689,13 @@ export const updateSnapshotFailure = async<T extends Data>(
       length: 0,
       content: undefined,
     };
-    if (snapshotStore.length > 0 && snapshotStore[0]) {
+    if (snapshotStore[0]) {
       const firstSnapshot = snapshotStore[0];
       const updatedSnapshot = {
         ...firstSnapshot,
         data: updatedSnapshotData,
       };
-      (await useSnapshotManager()).setSnapshotData(updatedSnapshot, subscribers);
+      snapshotManager.setSnapshotData(updatedSnapshot, subscribers);
     }
     return Promise.resolve(updatedSnapshotData);
   }
@@ -770,7 +988,7 @@ export const batchTakeSnapshotsRequest = async <T extends BaseData, K extends Ba
 
 export const batchUpdateSnapshotsRequest = async <T extends BaseData, K extends BaseData>(
   snapshotData: (
-    subscribers: Subscriber<Snapshot<T>>[],
+    subscribers: Subscriber<T, K>[],
     snapshots: Snapshots<T>
   ) => Promise<Snapshots<T>>
 ): Promise<{ snapshots: Snapshots<T> }> => {
@@ -782,10 +1000,10 @@ export const batchUpdateSnapshotsRequest = async <T extends BaseData, K extends 
 
 // Define batchFetchSnapshotsRequest function
 export async function batchFetchSnapshotsRequest(
-  subscribers: Subscriber<Snapshot<Data>>[],
+  subscribers: Subscriber<T, K>[],
   snapshots: Snapshots<Data>
 ): Promise<{
-  subscribers: Subscriber<Snapshot<Data>>[];
+  subscribers: Subscriber<T, K>[];
   snapshots: Snapshots<Data>;
 }> {
   console.log("Batch snapshot fetching requested.");
@@ -843,8 +1061,8 @@ export const batchUpdateSnapshotsFailure = (payload: { error: Error }) => {
   // handle failure
 };
 
-function adaptSnapshot<T extends Data>(snapshot: Snapshot<Data>): Snapshot<T> {
-  const adaptedSnapshot: Snapshot<T> = {
+function adaptSnapshot<T extends Data, K extends Data>(snapshot: Snapshot<Data, K>): Snapshot<T, K> {
+  const adaptedSnapshot: Snapshot<T, K> = {
     id: snapshot.id,
     timestamp: snapshot.timestamp,
     category: snapshot.category,
@@ -857,15 +1075,20 @@ function adaptSnapshot<T extends Data>(snapshot: Snapshot<Data>): Snapshot<T> {
 
 export const notifySubscribers = async <T extends Data>(
   snapshotId: string,
-  subscribers: Subscriber<T>[],
+  subscribers: Subscriber<T, K>[],
   callback: (data: any) => void
-): Promise<Subscriber<T>[]> => {
-  const snapshotManager = useSnapshotManager<T,K>();
+): Promise<Subscriber<T, K>[]> => {
+  const snapshotManager = useSnapshotManager
   const { handleError } = useErrorHandling(); // Access handleError function from useErrorHandling
+
+  if (!snapshotManager || !snapshotManager.onSnapshot) {
+    handleError("Snapshot Manager not initialized.");
+    return [];
+  }
 
   await Promise.all(
     subscribers.map(async (subscriber) => {
-      (await snapshotManager).onSnapshot(
+     await snapshotManager.onSnapshot(
           snapshotId,
           callback,
         async (snapshot: Snapshot<Data>) => {
@@ -910,3 +1133,5 @@ export const notifySubscribers = async <T extends Data>(
 
   return subscribers;
 };
+
+export {createSnapshotStore}

@@ -19,6 +19,11 @@ import {
 } from "../support/NotificationContext";
 import NotificationManager from "../support/NotificationManager";
 import { useSecureUserId } from "./useSecureUserId";
+import { BaseData } from "../models/data/Data";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import { SnapshotWithCriteria } from "../snapshots/SnapshotWithCriteria";
+import { options } from "../hooks/useSnapshotManager";
 const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -71,14 +76,50 @@ const notifyEventSystem = (
           timestamp: new Date(),
           level: "info",
           message: "",
+          date: new Date(),
         },
+        timestamp: undefined,
+        topics: [],
+        highlights: [],
+        files: [],
+        meta: undefined,
+        rsvpStatus: "yes",
+        participants: [],
+        teamMemberId: "",
+        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+         
+          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(options);
+          return Promise.resolve([snapshotStore]);
+        },
+        getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+          const snapshot = new Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(
+            {
+              data: eventData,
+              category: "EventSystem",
+              timestamp: new Date(),
+              dataItems: [],
+              newData: eventData,
+              meta: {
+                events: [],
+                callbacks: [],
+                subscribers: [],
+                eventIds: [],
+              },
+              fetchSnapshot: () => Promise.resolve(eventData),
+            },
+            "EventSystem"
+          );
+          return Promise.resolve([snapshot]);
+        }
       },
+
+
       new Date(),
       NotificationTypeEnum.Info,
       {
         id: "",
         content: "Add content here",
-        timestamp: new Date(),
+        timestamp: undefined,
         level: "info",
         message: "",
         sendStatus: "Delivered",
@@ -86,7 +127,22 @@ const notifyEventSystem = (
           timestamp: new Date(),
           level: "info",
           message: "",
+          date: new Date(),
         },
+        topics: [],
+        highlights: [],
+        files: [],
+        meta: undefined,
+        rsvpStatus: "yes",
+        participants: [],
+        teamMemberId: "",
+        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(options);
+          return Promise.resolve([snapshotStore]);
+        },
+        getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+          throw new Error("Function not implemented.");
+        }
       }
     ),
     notificationType: NotificationTypeEnum.Info,
@@ -332,6 +388,42 @@ const portfolioUpdates = ({
     throw new Error("Snapshot ID is required for portfolio updates");
   }
 }
+
+const tradeExections = ({
+  userId,
+  snapshotId,
+  tradeExecutionType,
+  tradeExecutionData,
+}: {
+  userId: string;
+  snapshotId: string;
+  tradeExecutionType: string;
+  tradeExecutionData: any;
+}) => {
+  // Logic to execute trades based on the provided data
+  console.log(`Executing trade for user '${userId}' with snapshot '${snapshotId}'`);
+  console.log(`Trade type: '${tradeExecutionType}'`);
+  console.log("Trade data:", tradeExecutionData);
+  // Additional logic to handle the trade execution
+  if (!userId || userId.trim() === '') {
+    throw new Error("User ID is required for trade execution");
+  }
+  if (!snapshotId || snapshotId.trim() === '') {
+    throw new Error("Snapshot ID is required for trade execution");
+  }
+  if (!tradeExecutionType || tradeExecutionType.trim() === '') {
+    throw new Error("Trade execution type is required");
+  }
+  if (!tradeExecutionData || typeof tradeExecutionData !== 'object') {
+    throw new Error("Trade execution data is required and should be an object");
+  }
+  if (typeof tradeExecutionData !== 'object') {
+    throw new Error("Trade execution data should be an object");
+  }
+  if (Array.isArray(tradeExecutionData)) {
+    throw new Error("Trade execution data should not be an array");
+  }
+}
   
 const userId = useSecureUserId()
 const unsubscribe = (
@@ -439,7 +531,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-  logActivity, notifyEventSystem, portfolioUpdates, triggerIncentives, unsubscribe, updateProjectState
+  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerIncentives, unsubscribe, updateProjectState
 };
 
   export type { TriggerIncentivesParams };

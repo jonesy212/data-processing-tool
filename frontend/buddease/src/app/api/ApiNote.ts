@@ -70,8 +70,8 @@ interface Note {
   folders: FolderData[];
   options: any;
   folderPath: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | undefined;
+  updatedAt: Date | undefined;
   tags: Tag[];
   previousMetadata: string;
   currentMetadat: string;

@@ -29,6 +29,21 @@ export const endpoints: Endpoints = {
     frontend: `${BASE_URL}/api/user/frontend`
 
   },
+  delegates: {
+    fetch: `${BASE_URL}/delegates`,
+    fetchById: (id: number) => `${BASE_URL}/delegates/${id}`,
+    create: `${BASE_URL}/delegates/create`,
+    update: (id: number) => `${BASE_URL}/delegates/update/${id}`,
+    delete: (id: number) => `${BASE_URL}/delegates/delete/${id}`,
+  },
+  drawing: {
+    fetch: `${BASE_URL}/drawing/fetch`, // GET request for fetching all drawings
+    fetchById: `${BASE_URL}/drawing/fetch`, // GET request for fetching a drawing by ID
+    create: `${BASE_URL}/drawing/create`, // POST request for creating a new drawing
+    update: `${BASE_URL}/drawing/update`, // PUT request for updating an existing drawing
+    save: `${BASE_URL}/drawing/save`, // POST request for saving a drawing to the database
+    delete: `${BASE_URL}/drawing/delete`, // DELETE request for deleting a drawing
+  },
   apiConfig: {
     getUserApiConfig: `${BASE_URL}/api/user/api-config`, // GET request for fetching user's API configuration
     updateUserApiConfig: `${BASE_URL}/api/user/api-config`, // PUT request for updating user's API configuration
