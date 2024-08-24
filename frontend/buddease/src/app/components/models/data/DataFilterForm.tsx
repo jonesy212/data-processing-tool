@@ -23,6 +23,7 @@ import SnapshotList from "../../snapshots/SnapshotList";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
+import { K, T } from "../../snapshots/SnapshotConfig";
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -67,7 +68,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   );
   
   
-  const snapshotDetails: DetailsItem<Data> = {
+  const snapshotDetails: DetailsItem<T, K> = {
     id: "",
     title: "",
     label: "",
@@ -80,15 +81,27 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
     updatedAt: undefined
   }
 
-  const snapshotListArray: DetailsItem<Data>[] = Array.from(snapshotList).map(
-    (snapshot: Snapshot<Data> | null) => ({
-      ...snapshotDetails,
-      label: snapshot.data?.label || "",
-      value: snapshot.data?.value || "",
-      status: snapshot.status,
-      // Add other properties as needed
-    })
-  );
+  
+const snapshotListArray: DetailsItem<Data, Data>[] = Array.from(snapshotList).map(
+  (value: unknown) => {
+    const snapshot = value as Snapshot<Data, Data> | null;
+    const snapshotDetails: DetailsItem<Data, Data> = {
+      id: "",
+      subtitle: "",
+      label: "",
+      value: "",
+      status: snapshot?.status,
+    };
+
+    if (snapshot?.data && typeof snapshot.data === 'object') {
+      const data = snapshot.data as Data;  // type assertion to `Data`
+      snapshotDetails.label = data.label || "";
+      snapshotDetails.value = data.value || "";
+    }
+
+    return snapshotDetails;
+  }
+);
   
 
   const dispatch: DataAnalysisDispatch =

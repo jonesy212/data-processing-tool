@@ -108,7 +108,7 @@ interface Team extends Data {
     id: string;
     current: number;
     name: string;
-    color: string;
+    color: string | null;
     max: number;
     min: number;
     label: string;
@@ -119,6 +119,7 @@ interface Team extends Data {
   };
   _id: string;
   id: string;
+  color: string | null
   teamName: string;
   description?: string;
   projects: Project[];

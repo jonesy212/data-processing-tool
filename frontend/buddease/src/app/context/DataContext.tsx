@@ -7,27 +7,23 @@ import {
   VersionedData,
 } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotWithCriteria } from "../components/snapshots/SnapshotWithCriteria";
-import { BaseData } from "../components/models/data/Data";
-import { SnapshotStoreConfig } from "../components/snapshots/SnapshotConfig";
+import { BaseData, Data } from "../components/models/data/Data";
+import { SnapshotStoreConfig, SnapshotUnion } from "../components/snapshots";
 
 interface DataContextProps<T extends BaseData, K extends BaseData> {
   dataStore: DataStore<T, K> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
-  simulatedDataSource: SnapshotStoreConfig<T, K>[]
+  simulatedDataSource: SnapshotStoreConfig<SnapshotUnion<T>, K>[]
 }
 
-const DataContext = createContext<
-  | DataContextProps<SnapshotWithCriteria<BaseData, BaseData>, BaseData>
-  | undefined
->(undefined);
-
-export const DataProvider: React.FC<{ children: ReactNode }> = ({
+const DataContext = createContext<DataContextProps<any, any> | undefined>(undefined);
+  
+export const DataProvider = <T extends Data, K extends BaseData>({
   children,
+}: {
+  children: ReactNode;
 }) => {
-  const dataStore = useDataStore<
-    SnapshotWithCriteria<BaseData, BaseData>,
-    BaseData
-  >();
+  const dataStore = useDataStore<T, K>();
 
   return (
     <DataContext.Provider

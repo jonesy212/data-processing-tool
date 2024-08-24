@@ -6,6 +6,9 @@ import {
 import { Data } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
 import { CustomSnapshotData } from "../snapshots/LocalStorageSnapshotStore";
+import { ModifiedDate } from "../documents/DocType";
+import { fetchPortfolioUpdatesLastUpdated } from "../trading/TradingUtils";
+import { useDispatch } from 'react-redux';
 
 interface UseSubscriptionOptions {
   channel: string;
@@ -13,16 +16,27 @@ interface UseSubscriptionOptions {
   enabled?: boolean;
 }
 
+const portfolioUpdatesLastUpdated = async (): Promise<number | ModifiedDate | null> => {
+  try {
+    const portfolioUpdatesLastUpdated = await fetchPortfolioUpdatesLastUpdated();
+    return portfolioUpdatesLastUpdated;
+  } catch (error) {
+    console.error("Error fetching portfolio updates last updated timestamp:", error);
+    return null;
+  }
+}; 
+
+
 const useSubscription = ({
   channel,
   onLiveEvent,
   enabled = true,
 }: UseSubscriptionOptions) => {
   const [subscribers, setSubscribers] = useState<
-    Subscriber<Data | CustomSnapshotData>[]
+    Subscriber<Data, CustomSnapshotData>[]
   >([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
-
+  const dispatch = useDispatch()
   const subscribe = () => {
     // Add the new subscriber to the subscribers array
     setIsSubscribed(true);
@@ -40,12 +54,13 @@ const useSubscription = ({
      
     updatedSubscribers && setSubscribers(updatedSubscribers);
     // Dispatch an action to handle unsubscription on the backend
-    SubscriptionActions.unsubscribe(subscriberId);
+  
+    dispatch(SubscriptionActions().unsubscribe(subscriberId));
   };
 
   useEffect(() => {
     // Fetch initial subscriptions on component mount
-    SubscriptionActions.fetchInitialSubscriptions();
+    dispatch(SubscriptionActions().fetchInitialSubscriptions());
   }, []);
 
   return {
@@ -53,6 +68,7 @@ const useSubscription = ({
     subscribe,
     unsubscribe,
     isSubscribed,
+    portfolioUpdatesLastUpdated
   };
 };
 

@@ -14,14 +14,13 @@ import { useDispatch } from "react-redux";
 import {
   dropTask,
   resizeTask,
-  updateTaskDetails,
+ 
   updateTaskPositionAsync,
 } from "../state/redux/slices/TaskSlice";
 import { updateTask } from "../state/redux/slices/CollaborationSlice";
 import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
 // import CalendarMonth from './CalendarMonthView';
-import { updateTaskPosition } from "../state/redux/slices/TaskSlice";
-import { MonthInfo } from "./Month";
+ import { MonthInfo } from "./Month";
 import { YearInfo } from "./CalendarYear";
 import * as taskApi from "@/app/api/TasksApi";
 import { NOTIFICATION_TYPES } from "../support/NotificationTypes";
@@ -29,6 +28,7 @@ import { TaskState } from "../state/redux/slices/TaskSlice";
 import { PriorityTypeEnum } from "../models/data/StatusType";
 
 import useNotification from "../support/NotificationContext";
+import { updateTaskDetails } from "../state/redux/slices/ContentSlice";
 
 const {notify} = useNotification;
 interface MonthViewProps extends CommonCalendarProps {
@@ -100,7 +100,7 @@ const MonthView: React.FC<MonthViewProps> = ({
 const updateTaskPosition = (
   taskId: string,
   newPosition: number
-): ThunkAction<ReturnType, RootState, unknown, Action<string>> => {
+): ThunkAction<void, RootState, unknown, Action<string>> => {
   return async (dispatch: Dispatch<Action<string>>, getState: () => RootState) => {
     try {
       // Make an API call to update the task's position in the database

@@ -22,7 +22,7 @@ interface AppStructureItem {
   items?: {
     [key: string]: AppStructureItem 
   }
-  getStructure?(): Record<string, AppStructureItem>;
+  getStructure?(): Promise<Record<string, AppStructureItem>>;
   
 }
 

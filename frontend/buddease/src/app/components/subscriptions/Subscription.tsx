@@ -14,6 +14,7 @@ import { userId } from "../users/ApiUser";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { snapshot } from "../snapshots/snapshot";
 import { Data } from "../models/data/Data";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 
 
 type FetchSnapshotByIdCallback = {
@@ -23,12 +24,15 @@ type FetchSnapshotByIdCallback = {
 
 type Subscription<T extends Data, K extends Data> = {
   unsubscribe: (
-    userId: string,
-    snapshotId: string,
-    unsubscribeType: string,
-    unsubscribeDate: Date,
-    unsubscribeReason: string,
-    unsubscribeData: any) => void;
+    unsubscribeDetails: {
+      userId: string;
+      snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+    }
+  ) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
       userId: string;
@@ -36,10 +40,12 @@ type Subscription<T extends Data, K extends Data> = {
     }
   ) => void;
   tradeExecutions: (
-    { userId, snapshotId }: {
+    { userId, snapshotId, tradeExecutionType, tradeExecutionData }: {
       userId: string;
       snapshotId: string;
-    }
+      tradeExecutionType: string,
+      tradeExecutionData: any
+    },
 
   ) => void;
   marketUpdates: (
@@ -67,15 +73,15 @@ type Subscription<T extends Data, K extends Data> = {
   ) => SubscriberTypeEnum;
   portfolioUpdatesLastUpdated:number | ModifiedDate | null;
   getId?: () => string;
-  determineCategory: (data: Snapshot<T, K> | null | undefined) => string; // Ensure determineCategory returns a string
-  category?: string | CategoryProperties | null;
+  determineCategory: (data: Snapshot<T, K>) => string | CategoryProperties;
+  category?: Category | null;
+  categoryProperties?: CategoryProperties | null;
   fetchSnapshotById?: (
     { userId, snapshotId }: {
       userId: string;
       snapshotId: string;
     }) => void;
 
-    
   fetchSnapshotByIdCallback?: (
     { userId, snapshotId }: {
       userId: string;
@@ -134,14 +140,14 @@ const SubscriptionComponent = (
       // Cleanup: Unsubscribe when the component unmounts
       return () => {
         // Make sure to pass the correct parameters to unsubscribe
-        subscriptionUsage.unsubscribe(
-          String(userId),
+        subscriptionUsage.unsubscribe({
+          userId: String(userId),
           snapshotId,
           unsubscribeType,
           unsubscribeDate,
           unsubscribeReason,
           unsubscribeData
-        );
+        });
       };
     }
 
@@ -183,27 +189,39 @@ const SubscriptionComponent = (
 
   // Callback function for subscription update
    // Callback function for subscription update
-   const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
-    // Handle incoming subscription data here
-    // Transform RealtimeDataItem to Subscription or null
-    const transformedData: Subscription<T, K> | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
-      ? {
-          unsubscribe: () => {},
-          portfolioUpdates: () => {},
-          tradeExecutions: () => {},
-          marketUpdates: () => {},
-          triggerIncentives: () => {},
-          communityEngagement: () => {},
-          determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory,
-          portfolioUpdatesLastUpdated: {} as ModifiedDate,
-          ...data.data
-        }
-      : null;
+const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
+  // Handle incoming subscription data here
+  // Transform RealtimeDataItem to Subscription or null
+  const transformedData: Subscription<T, K> | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
+    ? {
+        portfolioUpdates: () => {},
+        tradeExecutions: () => {},
+        marketUpdates: () => {},
+        triggerIncentives: () => {},
+        communityEngagement: () => {},
+        portfolioUpdatesLastUpdated: {} as ModifiedDate,
+        ...data.data,
+        unsubscribe: (
+          unsubscribeDetails: {
+            userId: string;
+            snapshotId: string;
+            unsubscribeType: string;
+            unsubscribeDate: Date;
+            unsubscribeReason: string;
+            unsubscribeData: any;
+          }
+        ) => {
+          if (data.data?.unsubscribe) {
+            data.data.unsubscribe(unsubscribeDetails);
+          }
+        },
+        determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory
+      }
+    : null;
 
-    // Update state with transformed data
-    setSubscriptionData(transformedData);
-  };
-
+  // Update state with transformed data
+  setSubscriptionData(transformedData);
+};
   // Render your component JSX with subscribe/unsubscribe actions
   return (
     <div>

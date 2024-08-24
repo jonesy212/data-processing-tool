@@ -90,6 +90,7 @@ class NotificationStore {
         opened: null,
         clicked: null,
         responded: null,
+        date: new Date(),
       },
     });
   };

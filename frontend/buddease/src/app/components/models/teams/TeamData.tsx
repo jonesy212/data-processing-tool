@@ -18,7 +18,7 @@ interface TeamData extends Partial<Data> {
   isActive: boolean;
   leader: User | null;
   progress: Progress | null;
-
+  color: string | null;
   collaborationTools?: {
     audio: boolean;
     video: boolean;
@@ -55,6 +55,7 @@ const teamData: TeamData & Partial<TeamData> = {
   isActive: false,
   leader: null,
   progress: null,
+  color: "",
   collaborationTools: {
     audio: false,
     video: false,

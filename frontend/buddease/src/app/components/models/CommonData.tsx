@@ -1,7 +1,7 @@
 // CommonDetails.tsx
 import React from "react";
 
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import ProjectMetadata, { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CacheData } from "@/app/generators/GenerateCache";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -34,6 +34,7 @@ import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
 import { Tag } from "./tracker/Tag";
 import AccessHistory from "../versions/AccessHistory";
+import { TagsRecord } from "../snapshots";
 // Define a generic type for data
 
 interface CommonData {
@@ -51,11 +52,11 @@ interface CommonData {
   status?: AllStatus;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
-  metadata?: StructuredMetadata;
-  details?: DetailsItem<DataDetails>
+  metadata?: StructuredMetadata | ProjectMetadata;
+  details?: DetailsItem
   // data?: T extends CommonData<infer R> ? R : never;
   projectId?: string;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord
   categories?: string[];
   documentType?: string;
   documentStatus?: string;
@@ -127,7 +128,6 @@ type SupportedData = UserData &
   FakeData & {
   [key: string]: any
   type?: AllTypes; // Include the 'type' property with the DataType union type
-
   };
 
 // Define the DetailsProps interface with the generic CommonData type
@@ -157,7 +157,7 @@ const CommonDetails = <T extends SupportedData>({
               <h4>Data Details</h4>
               {Object.entries(data).map(([key, value]) => (
                 <p key={key}>
-                  {key}: {value as React.ReactNode}
+                  {key}: {String(value)}
                 </p>
               ))}
             </div>
@@ -167,7 +167,7 @@ const CommonDetails = <T extends SupportedData>({
               <h4>Additional Details</h4>
               {Object.entries(details).map(([key, value]) => (
                 <p key={key}>
-                  {key}: {value as React.ReactNode}
+                  {key}: {String(value)}
                 </p>
               ))}
             </div>
@@ -180,12 +180,11 @@ const CommonDetails = <T extends SupportedData>({
                 <div>
                   <p>Tags:</p>
                   <ul>
-                    {data.tags &&
-                      data.tags.map((tag, index) => (
-                        <li key={index}>
-                          {typeof tag === "string" ? tag : tag.name}
-                        </li>
-                      ))}
+                    {Object.entries(data.tags).map(([key, value]) => (
+                      <li key={key}>
+                        {key}: {String(value)}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}
@@ -215,7 +214,7 @@ const CommonDetails = <T extends SupportedData>({
               // Default rendering if no customization function is provided
               return (
                 <p key={key}>
-                  {key}: {value as React.ReactNode}
+                  {key}: {String(value)}
                 </p>
               );
             }
@@ -227,7 +226,7 @@ const CommonDetails = <T extends SupportedData>({
       <RealtimeDataComponent
         id={data?._id || ""}
         name={data?.username || ""}
-        date={data?.startDate || "No date"}
+        date={data?.startDate || new Date()}
         userId={userId}
         dispatch={dispatch}
         value={""}

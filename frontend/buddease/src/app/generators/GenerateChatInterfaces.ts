@@ -26,7 +26,7 @@ import { User, UserData } from "../components/users/User";
     deletedAt: null,
     imageUrl: string,
     
-    bio: string,
+    bio: string | null,
     website: string,
     location: string,
     coverImageUrl: string,

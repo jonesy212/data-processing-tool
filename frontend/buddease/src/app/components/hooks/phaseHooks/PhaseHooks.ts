@@ -367,6 +367,15 @@ async function initializeDecentralizedStorage(): Promise<{
       // Specify IPFS configurations
      ...ipfsConfig
     },
+    postgresConfig: {
+      // Specify PostgreSQL configurations
+      clientId: 'postgresql-client-id',
+      clientName: 'postgresql-client-name',
+      clientEmail: 'postgresql-client-email',
+      notificationMessages: {
+        updateClientDetailsError: 'Error updating client details',
+      }
+    },
   };
 
 

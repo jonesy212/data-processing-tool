@@ -1,19 +1,22 @@
 // CommonEvent.ts
 
 import { StatusType } from '@/app/components/models/data/StatusType';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import ProjectMetadata, { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
 import { Tag } from '../../models/tracker/Tag';
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
 import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 import { VideoData } from "../../video/Video";
-import { SnapshotWithCriteria } from '../../snapshots/SnapshotWithCriteria';
+import { SnapshotWithCriteria, TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Type } from 'docx';
 import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
-import { SnapshotData } from '../../snapshots/SnapshotStore';
 import { Subscriber } from '../../users/Subscriber';
-
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { FetchSnapshotPayload } from '../../database/Payload';
+import { SnapshotData } from '../../snapshots';
+import SnapshotStore from '../../snapshots/SnapshotStore';
+import * as snapshotApi from '@/app/api/SnapshotApi'
 interface CommonEvent extends Data {
   title: string;
 
@@ -23,7 +26,7 @@ interface CommonEvent extends Data {
   // Shared time properties
   startTime?: string;
   endTime?: string;
-  tags?:  string[] | Tag[]
+  tags?:  TagsRecord
 
   // Recurrence properties
   recurring?: boolean;
@@ -35,7 +38,7 @@ interface CommonEvent extends Data {
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata?: StructuredMetadata;
+  metadata?: StructuredMetadata | ProjectMetadata;
   // Implement the `then` function using the reusable function
   then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
@@ -55,8 +58,12 @@ export function implementThen<T extends BaseData, K extends BaseData>(
         length: 0,
         data: {} as T,
         events: undefined,
-        meta: undefined
-      } as Snapshot<T, K>]
+        meta: undefined,
+        snapshotStoreConfig: {},
+        getSnapshotItems: () => [],
+        defaultSubscribeToSnapshots: () => {},
+        versionInfo: {},
+      } as unknown as Snapshot<T, K>]
     ]),
     timestamp: new Date(),
     subscriberId: "someSubscriberId",
@@ -72,8 +79,8 @@ export function implementThen<T extends BaseData, K extends BaseData>(
       data: {} as T,
     },
     store: undefined,
-    events: undefined,
-    meta: undefined,
+    events: [],
+    meta: {},
     getSnapshotId: function (key: Snapshot<T, K> | SnapshotData<T, K>): unknown {
       // fetch snapshot id then check if there is a snapshot Id
       const snapshotId = key as Snapshot<T, K>;
@@ -92,29 +99,47 @@ export function implementThen<T extends BaseData, K extends BaseData>(
     },
     eventRecords: null,
     snapshotStore: null,
-      dataItems: null,
-      newData: undefined,
-      stores: null,
-      unsubscribe: function (callback: Callback<Snapshot<T, K>> | null): void {
-        // Remove reference to callback
-        let callbackRef = callback;
-        callbackRef = null;
-        // Remove reference to callback
-        callback = null;
+    dataItems: null,
+    newData: null,
+    stores: null,
+    unsubscribe: function (callback: Callback<Snapshot<T, K>> | null): void {
+      // Remove reference to callback
+      let callbackRef = callback;
+      callbackRef = null;
+      // Remove reference to callback
+      callback = null;
+    },
+    fetchSnapshot: function (
+      callback: (
+        snapshotId: string,
+        payload: FetchSnapshotPayload<K> | undefined,
+        snapshotStore: SnapshotStore<T, K>,
+        payloadData: T | Data,
+        category: string | CategoryProperties | undefined,
+        timestamp: Date,
+        data: T,
+        delegate: SnapshotWithCriteria<T, K>[]
+      ) => Snapshot<T, K>
+    ): Promise<Snapshot<T, K> | undefined> {
+      if (callback) {
+        const criteria = await snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot);
+        const id = await snapshotApi.getSnapshotId(criteria);
+        const dummySnapshotStore: SnapshotStore<T, K> = {} as SnapshotStore<T, K>;
+        const dummyPayloadData: T | Data = {} as T | Data;
+        const dummyCategory: string | CategoryProperties | undefined = undefined;
+        const dummyTimestamp: Date = new Date();
+        const dummyData: T = {} as T;
+        const dummyDelegate: SnapshotWithCriteria<T, K>[] = [];
         
-      },
-
-      fetchSnapshot: function (
-        callback: (
-          snapshotId: string,
-          snapshot: Snapshot<T, K> | undefined
-        ) => void
-      ): string | undefined {
-        if (callback) {
-          callback("someId", undefined);
-        }
-        return;
-      },
+        return callback(id, undefined, dummySnapshotStore, dummyPayloadData, dummyCategory, dummyTimestamp, dummyData, dummyDelegate);
+      }
+      return undefined;
+    },
+    snapshotStoreConfig: {},
+    getSnapshotItems: () => [],
+    defaultSubscribeToSnapshots: () => {},
+    versionInfo: {},
+  },
       
     handleSnapshot: function (
       snapshotId: string,

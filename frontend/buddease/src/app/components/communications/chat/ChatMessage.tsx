@@ -152,7 +152,16 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       id: chatMessageId,
       text: message,
       senderId: "user",
+      isOnline: true,
+      lastSeen: new Date(),
+      deletedAt: null,
+      imageUrl: "",
       timestamp: new Date(),
+      website: "",
+      location: "",
+      coverImageUrl: "",
+      following: [],
+      followers: [],
       sender: undefined,
       channel: undefined,
       channelId: undefined,
@@ -178,11 +187,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       hasQuota: false,
       profilePicture: null,
       processingTasks: [],
-      role: userRole || UserRoles.USER,
-      persona: undefined,
+      role: userRole || UserRoles.Guest,
+      persona: null,
       friends: [],
       blockedUsers: [],
-      settings: undefined,
+      settings: null,
       interests: [],
       privacySettings: undefined,
       notifications: undefined,
@@ -195,7 +204,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       profileVisibility: "",
       profileAccessControl: undefined,
       activityStatus: "",
-      isAuthorized: false
+      isAuthorized: false,
+      chatRooms: [],
+      blockedBy: [],
     };
 
     setMessages([...messages, newMessage]);
@@ -247,6 +258,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       const count = await getUnreadMessageCount(roomId);
       // Use unreadCount here directly
       console.log("Unread message count:", count);
+
     };
 
     // Run this effect once when the component mounts

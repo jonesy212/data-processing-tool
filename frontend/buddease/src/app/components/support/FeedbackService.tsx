@@ -2,6 +2,7 @@
 import { YourProductContentType } from '../products/YourProductContentType';
 import dataProcessingService, { DataProcessing, DataProcessingResult } from '../projects/DataAnalysisPhase/DataProcessing/DataProcessingService';
 import { Feedback } from './Feedback';
+import { Channel, ChannelType } from "@/app/components/interfaces/chat/Channel";
 
 class FeedbackService {
   private static instance: FeedbackService;
@@ -31,7 +32,10 @@ class FeedbackService {
 
 
   // Function to gather feedback from team members
-  public async gatherFeedback(feedbackData: Feedback[], channel: string): Promise<void> {
+  public async gatherFeedback(
+    feedbackData: Feedback[],
+    channel: Channel,
+  ): Promise<void> {
     try {
       if (!this.initialized) {
         this.initialize();
@@ -48,18 +52,18 @@ class FeedbackService {
       };
 
       // Switch based on the channel to customize the dataset path
-      switch (channel) {
+      switch (channel.type) {
         case 'audio':
           dataProcessingPayload.datasetPath = '/audio-feedback-data';
           break;
         case 'video':
           dataProcessingPayload.datasetPath = '/video-feedback-data';
           break;
-        case 'channel':
+        case 'text':
           dataProcessingPayload.datasetPath = '/channel-feedback-data';
           break;
         default:
-          throw new Error(`Invalid feedback channel: ${channel}`);
+          throw new Error(`Invalid feedback channel: ${channel.type}`);
       }
 
       // Send feedback data for processing
@@ -113,16 +117,26 @@ try {
   // Assume you have gathered feedback data
   const feedbackData: Feedback[] = [
     {
-      userId: 'user1',
+      userId: 'user-feedbackId-1',
+      id: 'user-feedbackId-2',
       comment: 'Great work!',
       rating: 5,
       timestamp: new Date(),
+      audioUrl: 'http://www.youtube.com/watch?v',
+      videoUrl: 'http://www.youtube.com/watch?v',
+      resolved: false,
     },
     // Add more feedback items
   ];
 
   // Gather and process feedback
-  feedbackService.gatherFeedback(feedbackData, 'audio'); // Specify the channel
+  feedbackService.gatherFeedback(feedbackData, {
+    type: ChannelType.Audio,
+    id: 'channel-feedback-audio-id',
+    name: 'feedback-audio-name',
+    members: [],
+    messages: []
+  }); // Specify the channel
 
   // Example usage for processing product content
   const productContent: YourProductContentType = {} as YourProductContentType

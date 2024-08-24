@@ -3,7 +3,7 @@ import { generateSnapshotId } from './../../utils/snapshotUtils';
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
-import useSnapshotManager from "../../hooks/useSnapshotManager";
+import {useSnapshotManager} from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import useSnapshotStore from "../../snapshots/SnapshotStore";
@@ -14,10 +14,10 @@ import {
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
-import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 
 const { notify } = useNotification();
-export interface TodoManagerStore<T extends Data> {
+export interface TodoManagerStore {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
@@ -27,7 +27,7 @@ export interface TodoManagerStore<T extends Data> {
   error: MutableRefObject<string>;
   addTodos: (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<Todo>>
+    data: SnapshotStore<Snapshot<any, any>>
   ) => void;
   removeTodo: (id: string) => void;
   assignTodoToUser: (todoId: string, userId: string) => void;
@@ -54,7 +54,7 @@ export interface TodoManagerStore<T extends Data> {
   batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
 }
 
-const useTodoManagerStore = (): TodoManagerStore<Todo> => {
+const useTodoManagerStore = (props: P): TodoManagerStore<Todo> => {
   const [todos, setTodos] = useState<Record<string, Todo>>({});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
@@ -551,11 +551,16 @@ const useTodoManagerStore = (): TodoManagerStore<Todo> => {
   };
 
   const batchFetchSnapshotsSuccess = async (payload: {
-    snapshots: Snapshot<Data>[];
+    snapshots: Snapshots<Data>;
   }) => {
     console.log("Snapshots fetched successfully!");
     const { snapshots } = payload;
-    (await snapshotStore).setSnapshots(snapshots);
+
+    const { snapshotManager, snapshotStore } = await useSnapshotManager();
+  
+    if (!snapshotManager && snapshotManager?.snapshotStore) {
+      snapshotManager.setSnapshots(snapshots);
+    }
     // You can add additional logic or trigger notifications as needed
     setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT

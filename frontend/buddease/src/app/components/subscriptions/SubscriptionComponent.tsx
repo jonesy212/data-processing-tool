@@ -1,36 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { Data } from "../models/data/Data";
 import { subscriptionService } from "./SubscriptionService";
-import useRealtimeData, { RealtimeUpdateCallback } from "../hooks/commHooks/useRealtimeData";
+import useRealtimeData, {
+  RealtimeUpdateCallback,
+} from "../hooks/commHooks/useRealtimeData";
 import { Subscription } from "./Subscription";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
+import {
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
+} from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { useUser } from "@/app/context/UserContext";
 import { Subscriber } from "../users/Subscriber";
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "../utils/applicationUtils";
+import {
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
+} from "../utils/applicationUtils";
 import { getSubscriberId } from "@/app/api/subscriberApi";
-import useSnapshotManager from "../hooks/useSnapshotManager";
+import { useSnapshotManager } from "../hooks/useSnapshotManager";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
+import { K, T } from "../snapshots/SnapshotConfig";
 
 interface Props {
   initialData: RealtimeDataItem[];
-  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>
-  hookName: string
-  
+  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>;
+  hookName: string;
 }
 
-const SubscriptionComponent: React.FC<Props> = async ({ initialData, updateCallback, hookName }) => {
+const SubscriptionComponent: React.FC<Props> = async ({
+  initialData,
+  updateCallback,
+  hookName,
+}) => {
   const { user } = useUser(); // Use the useUser hook to get the user data
-  const [subscriptionData, setSubscriptionData] = useState<Data | null>(initialData as unknown as Data);
+  const [subscriptionData, setSubscriptionData] = useState<Data | null>(
+    initialData as unknown as Data
+  );
   const data = useRealtimeData(initialData, updateCallback);
-  const snapshotStore = (await useSnapshotManager()).state!
-  const events = {} as Record<string, CalendarEvent[]>
+  const snapshotStore = useSnapshotManager();
+  const events = {} as Record<string, CalendarEvent<T, K>[]>;
   useEffect(() => {
     if (user) {
       // Create a subscription object
-      const subscription: Subscription = {
+      const subscription: Subscription<T, K> = {
         unsubscribe: () => {},
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
@@ -38,11 +54,11 @@ const SubscriptionComponent: React.FC<Props> = async ({ initialData, updateCallb
         triggerIncentives: () => {},
         communityEngagement: () => {},
         portfolioUpdatesLastUpdated: null,
-        determineCategory: (data: any) => ({} as Snapshot<any>),
+        determineCategory: (data: Snapshot<T, K> | null | undefined) => "",
         subscriberId: user._id,
         subscriptionId: "sub-123-id",
         subscriberType: SubscriberTypeEnum.Individual,
-        subscriptionType: SubscriptionTypeEnum.Basic,
+        subscriptionType: SubscriptionTypeEnum.STANDARD,
         getPlanName: () => SubscriberTypeEnum.Individual,
         getId: () => user._id || "id-123",
         category: "category-123",
@@ -54,7 +70,7 @@ const SubscriptionComponent: React.FC<Props> = async ({ initialData, updateCallb
         user._id!, // Dynamic _id from user data
         user.username, // name from user data
         subscription, // subscription object
-        getSubscriberId.toString(), 
+        getSubscriberId.toString(),
         notifyEventSystem,
         updateProjectState,
         logActivity,
@@ -63,24 +79,27 @@ const SubscriptionComponent: React.FC<Props> = async ({ initialData, updateCallb
 
       setSubscriptionData(subscription as unknown as Data);
 
-     // Subscribe to the data service
-     const callback = (data: SnapshotStore<Snapshot<Data>>) => {
-      // Transform data from SnapshotStore<Snapshot<Data>> to Data
-      const extractedData = data.snapshots.length > 0 ? data.snapshots[0].snapshots[0] : null;
-      if (extractedData) {
-        setSubscriptionData(extractedData as SnapshotStore<Snapshot<BaseData>>[]);
-      }
-      // Additional logic based on the received data
-      updateCallback(
-        extractedData!,
-        events,
-        snapshotStore,
-        data.snapshots, // Assuming dataItems refers to snapshots
-      );
-    };
-    subscriptionService.subscribe(hookName, callback);
-
- 
+      // Subscribe to the data service
+      const callback = (data: SnapshotStore<T, K>) => {
+        // Transform data from SnapshotStore<Snapshot<Data>> to Data
+        const extractedData =
+          Array.isArray(data.snapshots) && data.snapshots.length > 0 && Array.isArray(data.snapshots[0].snapshots)
+            ? data.snapshots[0].snapshots[0]
+            : null;
+        if (extractedData) {
+          setSubscriptionData(extractedData as unknown as Data);
+        }
+        // Additional logic based on the received data
+        if (extractedData) {
+          updateCallback(
+            extractedData,
+            events,
+            snapshotStore,
+            Array.isArray(data.snapshots) ? data.snapshots : [] // Assuming dataItems refers to snapshots
+          );
+        }
+      };
+      subscriptionService.subscribe(hookName, callback);
 
       // Create a web3 provider instance and connect it
       const web3Provider = new Web3Provider(
@@ -139,4 +158,4 @@ subscriptionService.subscribe("web3Hook", () => {
 });
 
 // Unsubscribe from the web3-related hook
-subscriptionService.unsubscribe("web3Hook"); // You might want to unsubscribe based on a certain condition or component unmount
+subscriptionService.unsubscribe("web3Hook", updateCallback); // You might want to unsubscribe based on a certain condition or component unmount

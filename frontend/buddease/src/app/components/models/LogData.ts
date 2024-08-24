@@ -1,4 +1,5 @@
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { DefaultCalendarEvent } from "../actions/CalendarEventActions";
 
 interface LogData {
   date: Date | string | number;
@@ -13,6 +14,18 @@ interface LogData {
   status?: string,
   response?: any,
 
+
+
+
+  sent: Date,
+  isSent: boolean,
+  isDelivered: boolean,
+  delivered: Date | null,
+  opened: Date | null,
+  clicked: Date | null,
+  responded: boolean,
+  responseTime: Date | null,
+  eventData: DefaultCalendarEvent | null, // todo verify
   // Additional fields specific to completionMessageLog
 }
 

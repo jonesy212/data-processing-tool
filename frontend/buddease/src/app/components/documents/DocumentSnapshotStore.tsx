@@ -72,6 +72,43 @@ const DocumentSnapshotStore: React.FC<DocumentSnapshotStoreProps> = ({
       }
       return null;
     };
+
+
+    const compareSnapshotItems = (snapshotId1: string, snapshotId2: string, keys: string[]) => {
+      const snapshot1 = states.find((s) => s.id === snapshotId1);
+      const snapshot2 = states.find((s) => s.id === snapshotId2);
+  
+      if (snapshot1 && snapshot2) {
+        const itemDifferences: Record<string, {
+          snapshot1: any;
+          snapshot2: any;
+          differences: {
+            [key: string]: { value1: any; value2: any };
+          };
+        }> = {};
+  
+        keys.forEach((key) => {
+          const value1 = snapshot1.data[key];
+          const value2 = snapshot2.data[key];
+  
+          if (value1 !== value2) {
+            itemDifferences[key] = {
+              snapshot1: value1,
+              snapshot2: value2,
+              differences: {
+                [key]: { value1, value2 }
+              }
+            };
+          }
+        });
+  
+        return {
+          itemDifferences
+        };
+      }
+  
+      return null;
+    };
   
     const exportSnapshot = (snapshotId: string) => {
       const snapshot = states.find((s) => s.id === snapshotId);

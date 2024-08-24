@@ -1,4 +1,3 @@
-// CategoryManager.tsx
 // CategoryManager.ts
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { allCategories } from '../../models/data/DataStructureCategories';
@@ -39,3 +38,6 @@ function getCategoryProperties(category: keyof typeof allCategories): CategoryPr
 
     return propertiesMap[subCategories[0]]; // Assuming the first sub-category dictates the main properties
 }
+
+
+export {getCategoryProperties}

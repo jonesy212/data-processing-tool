@@ -17,6 +17,10 @@ enum FormatEnum {
   CSV = "csv",
   XLS = "xls",
   XLSX = "xlsx",
+  PDF = "pdf",
+  DOCX = "docx",
+  DOC = "doc",
+  
   // Add more formats as needed
 }
 

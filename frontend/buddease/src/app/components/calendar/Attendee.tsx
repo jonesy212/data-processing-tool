@@ -14,7 +14,6 @@ import { VideoData } from "../video/Video";
 import useAttendancePrediction from "./AttendancePrediction";
 import { CalendarManagerState } from "./CalendarSlice";
 import { projectMetadata, transformProjectToStructured} from "@/app/configs/StructuredMetadata";
-import { SnapshotWithCriteria } from "../routing/SearchCriteria";
 
 
 interface Attendee {

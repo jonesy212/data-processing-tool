@@ -156,7 +156,8 @@ interface DocumentAdditionalProps {
 export interface DocumentStore {
   documents: Record<string, Document>;
   fetchDocuments: () => void;
-  
+  getSnapshotDataKey: (id: string) => string;
+  getData: (id: string) => Document | undefined;
   addDocument: (document: Document) => void;
   updateDocument: (id: number, updatedDocument: Document) => void;
   deleteDocument: (id: string) => void;

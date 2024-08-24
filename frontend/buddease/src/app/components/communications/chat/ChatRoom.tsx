@@ -7,11 +7,13 @@ import { Params } from "react-router-dom";
 import { useThemeConfig } from "../../hooks/userInterface/ThemeConfigContext";
 import connectToChatWebSocket, { retryConfig } from "../WebSocket";
 import ChatMessageData from "./ChatRoomDashboard";
+import ChatMessage from "./ChatMessage";
 
 interface ChatRoomProps  {
   roomId: string;
+  onSendMessage: (message: ChatMessageData) => void;
   topics: string[];
-  chatEvent: (newTitle: string) => string;
+  chatEvent: ChatMessage | null
 
   
 }
@@ -30,7 +32,7 @@ const ChatRoomComponent: React.FC<ChatRoomProps> = ({
     if (socket) {
       socket.addEventListener("message", (event) => {
         const newMessage = JSON.parse(event.data);
-        setChatMessages([...chatMessages, newMessage]);
+        setChatMessages((prevMessages) => [...prevMessages, newMessage]);
       });
     }
 
@@ -45,7 +47,11 @@ const ChatRoomComponent: React.FC<ChatRoomProps> = ({
 
     fetchMessages();
 
-    return () => {};
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
   }, [roomId]);
 
   const sendMessage = async (message: string) => {
@@ -84,8 +90,10 @@ const ChatRoomComponent: React.FC<ChatRoomProps> = ({
     return [];
   };
 
-  const newTitle = chatEvent("");
-  topics.push(`${roomId}: ${newTitle}`);
+  if (chatEvent) {
+    const newTitle = chatEvent.message;
+    topics.push(`${roomId}: ${newTitle}`);
+  }
 
   return (
     <div style={{ borderColor: primaryColor, fontSize }}>

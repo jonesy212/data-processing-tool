@@ -1,54 +1,54 @@
-import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ColorPalettes } from "antd/es/theme/interface";
 import React from "react";
+import { LanguageEnum } from "../../communications/LanguageEnum";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
+import { Category } from "../../libraries/categories/generateCategoryProperties";
 import { Phase } from "../../phases/Phase";
+import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
+import { T } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria, TagsRecord } from "../../snapshots/SnapshotWithCriteria";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import Todo, { UserAssignee } from "../../todos/Todo";
+import { Settings } from "../../state/stores/SettingsStore";
+import TodoImpl, { Todo, UserAssignee } from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
-import CommonDetails, { SupportedData } from "../CommonData";
+import CommonDetails from "../CommonData";
 import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
-import { Tag, TagOptions, createTag } from "../tracker/Tag";
-import { ProjectPhaseTypeEnum, SubscriptionTypeEnum } from "./StatusType";
-import TodoImpl from "../../todos/Todo";
-import { LanguageEnum } from "../../communications/LanguageEnum";
-import { Settings } from "../../state/stores/SettingsStore";
-import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
+import { ProjectPhaseTypeEnum, StatusType, SubscriptionTypeEnum } from "./StatusType";
 
 // Define the interface for DataDetails
 interface DataDetails {
   _id?: string;
-  id: string | number;
+  id?: string | number;
   title?: string;
   description?: string | null;
-  details?: DetailsItem<SupportedData>;
+
+  details?: DetailsItem
   completed?: boolean | undefined;
   startDate?: Date;
   endDate?: Date;
-  createdAt?: Date | undefined;
-  updatedAt: Date | undefined;
-  uploadedAt?: Date;
+  createddAt?: Date | undefined;
+  updateddAt?: Date | undefined;
   type?: AllTypes;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord;
   isActive?: boolean;
   status?: AllStatus;
 
@@ -58,13 +58,14 @@ interface DataDetails {
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-  snapshots?: SnapshotStore<BaseData, BaseData>[];
+    snapshots?: SnapshotStore<BaseData, BaseData>[];
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
   analysisType?: AnalysisTypeEnum;
+  updatedAt: Date | undefined;
   analysisResults?: string | DataAnalysisResult[] | undefined;
-  todo?: Todo;
+  todo?: Todo
   // Add other properties as needed
 }
 
@@ -84,7 +85,7 @@ export interface Comment {
   likes?: number;
   watchLater?: boolean;
   highlightColor?: ColorPalettes;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord;
   highlights?: string[];
   // Consolidating commentBy and author into one field
   author?: string | number | readonly string[] | undefined;
@@ -106,18 +107,20 @@ interface BaseData {
   data?: any;
   description?: string | null;
   startDate?: Date;
-  
+  label?: string | Label | null;
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
   timestamp?: string | number | Date | undefined
   isActive?: boolean;
-  tags?: string[] | Tag[]
+  tags?: TagsRecord;  // Update as needed based on your schema
+  
   // | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
-  value?: number | string | undefined;
+  
+  value?: number | string | Snapshot<BaseData, BaseData> | undefined;
   initialState?: 
     | SnapshotStore<BaseData, BaseData> 
     | Snapshot<BaseData, BaseData> 
@@ -129,12 +132,12 @@ interface BaseData {
   collaborators?: string[];
   comments?: (Comment | CustomComment)[] | undefined;
   attachments?: Attachment[];
-  subtasks?: TodoImpl[];
-  createdAt?: Date;
-  updatedAt?: Date;
-  createdBy?: string;
+  subtasks?: TodoImpl<any, any>[];
+  createdAt?: string | Date | undefined;
+  updatedAt?: string | Date | undefined;
+  createdBy?: string | Date | undefined;
   updatedBy?: string;
-  updatedDetails?: DetailsItem<SupportedData>;
+  updatedDetails?: DetailsItem
   isArchived?: boolean;
   isCompleted?: boolean;
   isBeingEdited?: boolean;
@@ -157,7 +160,8 @@ interface BaseData {
   snapshotsStores?: SnapshotStore<BaseData, BaseData>[];
   snapshots?: Snapshots<BaseData>;
   text?: string;
-  category?: string | CategoryProperties | undefined;
+  category?: Category
+  categoryProperties?: CategoryProperties;
   [key: string]: any;
   // getData?: (id: number) => Promise<Snapshot<
   //   SnapshotWithCriteria<BaseData>,
@@ -168,19 +172,21 @@ interface BaseData {
 }
 
 interface Data extends BaseData {
-  category?: string | CategoryProperties | undefined;
-  subtasks?: TodoImpl[];
-  actions?: SnapshotStoreConfig<BaseData, BaseData>[];
+  category?: Category;
+  categoryProperties?: CategoryProperties; 
+  subtasks?: TodoImpl<T, any>[];
+  actions?: SnapshotStoreConfig<SnapshotWithCriteria<Data, any>, Data>[]; // Use Data instead of BaseData
+  snapshotWithCriteria?: SnapshotWithCriteria<Data, any>;
+  value?: any;
+  label?:  any;
   [key: string]: any;
 }
 
 // Define the UserDetails component
 
 const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
-  const getTagNames = (tags: TagOptions[] | string[]): string[] => {
-    return tags
-      .filter((tag): tag is TagOptions => typeof tag !== 'string') // Type guard for TagOptions
-      .map(tag => tag.name);
+  const getTagNames = (tags: TagsRecord): string[] => {
+    return Object.values(tags).map(tag => tag.name);
   };
 
   return (
@@ -199,20 +205,18 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
         description: data.description,
         phase: data.phase,
         isActive: data.isActive,
-        tags: data.tags ? getTagNames(data.tags) : [], // Use the type guard
+        tags: data.tags ? getTagNames(data.tags) : [],
         status: data.status,
         type: data.type,
         analysisType: data.analysisType,
         analysisResults: data.analysisResults,
-        updatedAt: data.uploadedAt ? new Date(data.uploadedAt) : new Date(),
-        // Add other properties as needed
+        updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
       }}
     />
   );
 };
 
-const data: Data = {
-  _id: "1",
+const coreData: Data = {  _id: "1",
   id: "data1",
   title: "Sample Data",
   description: "Sample description",
@@ -221,24 +225,48 @@ const data: Data = {
   startDate: new Date(),
   endDate: new Date(),
   scheduled: true,
-  status: "Pending",
+  status: StatusType.Pending,
   isActive: true,
-  tags: [{
-    id: "tag1",
-    name: "Tag 1",
-    color: "#000000",
-    description: "Tag 1 description",
-    enabled: true,
-    type: "Category",
-    tags: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    createdBy: "creator1",
-    timestamp: new Date().getTime(),
-    // Add other properties as needed
-    
-  }],
-  phase: {} as Phase,
+  tags: {
+    "tag1": {
+      id: "tag1",
+      name: "Tag 1",
+      color: "#000000",
+      description: "Tag 1 description",
+      enabled: true,
+      type: "Category",
+      relatedTags: [], // This should match the type defined in Tag
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: "creator1",
+      timestamp: new Date().getTime(),
+    }
+  },
+  phase: {
+    id: "phase1",
+    name: "Phase 1",
+    description: "Phase 1 description",
+    startDate: new Date(),
+    endDate: new Date(),
+    status: "Active",
+    isActive: true,
+    tags: {
+      "tag1": {
+        id: "tag1",
+        name: "Tag 1",
+        color: "#000000",
+        description: "Tag 1 description",
+        enabled: true,
+        type: "Category",
+        relatedTags: [], // This should match the type defined in Tag
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: "creator1",
+        timestamp: new Date().getTime(),
+      }
+    }, // This should match the type defined in Tag
+    subPhases: []
+  },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
   priority: "High",
@@ -280,7 +308,22 @@ const data: Data = {
     commentsCount: 20,
     title: "Sample Video Title",
     description: "Sample video description",
-    tags: ["sample", "video"],
+    tags: {
+      "tag1": {
+        id: "tag1",
+        name: "Tag 1",
+        color: "#000000",
+        description: "Tag 1 description",
+        enabled: true,
+        type: "Category",
+        relatedTags: [], 
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: "creator1",
+        timestamp: new Date().getTime(),
+      }
+    },
+    createdBy: "uploader1",
     createdAt: new Date(),
     uploadedAt: new Date(),
     updatedAt: new Date(),
@@ -851,3 +894,4 @@ export type {
   DataDetailsProps
 };
 
+  export { coreData };

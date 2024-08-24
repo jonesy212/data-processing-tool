@@ -28,7 +28,7 @@ type SimpleCalendarEvent = {
   location?: string;
   attendees?: Member[];
   shared: React.ReactNode;
-  details: DetailsItem<DataDetails>;
+  details: DetailsItem;
   bulkEdit: boolean;
   recurring: boolean;
   customEventNotifications: string; // Update type to string

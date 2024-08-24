@@ -288,3 +288,4 @@ const files: string[] = [
 checkUserFiles(files);
 
 
+export {fileMapping}

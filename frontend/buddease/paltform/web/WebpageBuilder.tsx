@@ -22,7 +22,7 @@ const WebpageBuilder: React.FC = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
-
+    
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();
   const { handleError } = useErrorHandling(); // Access handleError function from useErrorHandling

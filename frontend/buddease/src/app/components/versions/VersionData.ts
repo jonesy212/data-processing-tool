@@ -8,8 +8,9 @@ import { getCurrentAppInfo } from "./VersionGenerator";
 interface VersionHistory {
   // Define the structure of the version history
   // Each element represents a version of the data
-  versions: VersionData[];
+  versionData: VersionData[]; 
 }
+
 
 interface ExtendedVersionData {
   name: string;
@@ -26,11 +27,7 @@ interface ExtendedVersionData {
     revisionNotes?: string;
     // Add other metadata fields as needed
   };
-  versions: {
-    data: Data | undefined;
-    backend: BackendStructure | undefined;
-    frontend: FrontendStructure | undefined;
-  };
+  versionData:  VersionData[] | null;
   published?: boolean;
   checksum: string;
 }
@@ -38,8 +35,8 @@ interface ExtendedVersionData {
 interface VersionData extends ExtendedVersionData {
   // Add more specific properties if needed
   id: number;
-  parentId: string;
-  parentType: string;
+  parentId: string | null;
+  parentType: string | null;
   parentVersion: string;
   parentTitle: string;
   parentContent: string;
@@ -55,8 +52,9 @@ interface VersionData extends ExtendedVersionData {
   source: string;
   status: string;
   version: string;
-  timestamp: string | Date;
+  timestamp: string | Date | undefined
   user: string;
+  changes: string[];
   comments: Comment[];
   workspaceId: string;
   workspaceName: string;
@@ -65,49 +63,72 @@ interface VersionData extends ExtendedVersionData {
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string | Date | undefined;
+  updatedAt?: string | Date | undefined;
   _structure?: any; // Adjust as per actual type
   frontendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
   backendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
-  data: Data[]; // Adjust as per actual type
+  data: Data | undefined;
+  backend: BackendStructure | undefined;
+  frontend: FrontendStructure | undefined;
 }
-
 // Example usage and data
 const updatedContent = "Updated file content here...";
 const author = "John Doe";
 const timestamp = new Date();
 const revisionNotes = "Added new section and fixed typos.";
-const versions = {
-  data: {
-    frontend: {
-      versionNumber: "1.0",
-    },
-    backend: {
-      versionNumber: "1.0",
-    },
-  },
-  backend: {
-    structure: {},
-    traverseDirectory: async () => [],
-    getStructure: async () => ({
-      sections: [
-        {
-          name: "Section 1",
-          fields: [
-            {
-              name: "Field 1",
-              type: "text",
-              value: "Field 1 value",
-            },
-          ],
-        },
-      ],
-    }),
-  } as unknown as BackendStructure, // Cast to BackendStructure
-  frontend: {
-    getStructure: () => ({})
-  } as unknown as FrontendStructure, // Adjust frontend structure if needed
+
+const versions: VersionHistory = {
+  versionData: [
+    {
+      name: "Version 1",
+      url: "https://example.com/version1",
+      versionNumber: "1.0.0",
+      appVersion: "1.0.0",
+      documentId: "documentId",
+      draft: false,
+      userId: "userId",
+      content: updatedContent,
+      metadata: {
+        author: author,
+        timestamp: timestamp,
+        revisionNotes: revisionNotes
+      },
+      changes: [],
+      versionData: [],
+      checksum: calculateChecksum(updatedContent),
+      id: 0,
+      parentId: "",
+      parentType: "",
+      parentVersion: "",
+      parentTitle: "",
+      parentContent: "",
+      parentName: "",
+      parentUrl: "",
+      parentChecksum: "",
+      parentAppVersion: "",
+      parentVersionNumber: "",
+      isLatest: false,
+      isPublished: false,
+      publishedAt: null,
+      source: "",
+      status: "",
+      version: "",
+      timestamp: "",
+      user: "",
+      comments: [],
+      workspaceId: "",
+      workspaceName: "",
+      workspaceType: "",
+      workspaceUrl: "",
+      workspaceViewers: [],
+      workspaceAdmins: [],
+      workspaceMembers: [],
+      data: undefined,
+      backend: undefined,
+      frontend: undefined
+    }
+  ]
 };
 
 const { versionNumber } = getCurrentAppInfo();
@@ -127,11 +148,7 @@ const versionData: VersionData = {
     timestamp: new Date(),
     revisionNotes: "Initial release with updates"
   },
-  versions: {
-    data: {} as VersionData,
-    frontend: {} as FrontendStructure,
-    backend: {} as BackendStructure,
-  },
+  versionData: [],
   checksum: calculateChecksum(updatedContent),
   parentId: "12345",
   parentType: "document",
@@ -155,13 +172,46 @@ const versionData: VersionData = {
   workspaceViewers: ["viewer1@example.com", "viewer2@example.com"],
   workspaceAdmins: ["admin1@example.com", "admin2@example.com"],
   workspaceMembers: ["member1@example.com", "member2@example.com"],
-  data: [
-    { id: 1, key: "exampleKey1", value: "exampleValue1" },
-    { id: 2, key: "exampleKey2", value: "exampleValue2" },
-  ],
+  data: versions,
   version: "1.0.0",
   user: "user@example.com",
-  comments: []
+  comments: [],
+  backend: {
+    getStructure: async (): Promise<Record<string, AppStructureItem>> => {
+      return {};
+    },
+    getStructureAsArray: () => [],
+    traverseDirectoryPublic: async (dir: string, fs: typeof import("fs")): Promise<AppStructureItem[]> => {
+      return [];
+    },
+    backendVersions: () => [versions]
+  },
+  frontend: {
+    id: "0",
+    name: "frontend",
+    type: "directory",
+    path: "workspace/frontend",
+    draft: false,
+    permissions: {
+      read: true,
+      write: false,
+      delete: false,
+      share: false,
+      execute: false,
+    },
+    content: updatedContent,
+    getStructure: async (): Promise<Record<string, AppStructureItem>> => {
+      return {};
+    },
+    getStructureAsArray: async () => [],
+    traverseDirectoryPublic: async (
+      dir: string,
+      fs: typeof import("fs")): Promise<AppStructureItem[]> => {
+      return [];
+    },
+    frontendVersions: async () => [versions]
+  },
+  changes: []
 };
 
 // Function to calculate checksum (example implementation)
@@ -181,7 +231,7 @@ function calculateChecksum(content: string): string {
 
 // Create a VersionHistory instance and add VersionData to it
 export const versionHistory: VersionHistory = {
-  versions: [versionData] // Add the VersionData to the versions array
+  versionData: [versionData] // Add the VersionData to the versions array
 };
 
 export type { ExtendedVersionData, VersionData, VersionHistory };

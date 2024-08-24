@@ -1,5 +1,7 @@
 // CalendarApp.tsx
-import useSnapshotManager from '@/app/components/hooks/useSnapshotManager';
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+
+import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { Todo } from "@/app/components/todos/Todo";
 import React, { useState } from "react";
@@ -11,21 +13,40 @@ import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Member, TeamMember } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import {
+  DataStore,
+  useDataStore,
+} from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectType } from "../projects/Project";
-import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
-import { default as SnapshotStore, default as useSnapshotStore } from "../snapshots/SnapshotStore";
+import {
+  Payload,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotsObject,
+  SnapshotUnion,
+  UpdateSnapshotPayload,
+} from "../snapshots/LocalStorageSnapshotStore";
+import {
+  default as SnapshotStore,
+  default as useSnapshotStore,
+} from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { K, SnapshotStoreConfig } from '../snapshots/SnapshotConfig';
-import { initSnapshot, subscribeToSnapshots } from '../snapshots/snapshotHandlers';
-import { takeSnapshot } from '@/app/api/SnapshotApi';
-import { snapshotType } from '../typings/YourSpecificSnapshotType';
-import { isSnapshotStoreBaseData } from '../utils/snapshotUtils';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { K } from "../snapshots/SnapshotConfig";
+import {
+  initSnapshot,
+  subscribeToSnapshots,
+} from "../snapshots/snapshotHandlers";
+import { getSnapshotStore, takeSnapshot } from "@/app/api/SnapshotApi";
+import { snapshotType } from "../typings/YourSpecificSnapshotType";
+import { isSnapshotStoreBaseData } from "../utils/snapshotUtils";
+import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
+import { SnapshotContainer, SnapshotWithCriteria } from "../snapshots";
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -91,44 +112,58 @@ const analysisType = (project: Project) => {
 };
 const { fetchData } = useDataStore();
 
-
 // Adjusted addSnapshotHandler function
 export const addSnapshotHandler = (
   snapshot: Snapshot<Data, K>,
   subscribers: (snapshot: Snapshot<Data, K>) => void,
-  delegate: SnapshotStoreConfig<BaseData, BaseData>[]
+  delegate: SnapshotStoreConfig<SnapshotUnion<BaseData>, K>[]
 ) => {
-  if (delegate && delegate.length > 0 && typeof delegate[0].setSnapshots === 'function') {
-    const currentSnapshots: Snapshots<BaseData> = delegate[0].snapshots ? delegate[0].snapshots.filter(isSnapshotStoreBaseData) : [];
-    
-    // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
-    if (isSnapshotStoreBaseData(snapshot)) {
-      delegate[0].setSnapshots([...currentSnapshots, snapshot]);
-    } else {
-      console.error('Snapshot is not of type SnapshotStore<BaseData>', snapshot);
-    }
+  if (delegate && delegate.length > 0) {
+    delegate.forEach((config) => {
+      if (typeof config.setSnapshots === "function") {
+        const currentSnapshots: Snapshots<BaseData> = config.snapshots
+          ? config.snapshots.filter(isSnapshotStoreBaseData)
+          : [];
+
+        // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
+        if (isSnapshotStoreBaseData(snapshot)) {
+          const newSnapshot: SnapshotUnion<BaseData> = snapshot as SnapshotUnion<BaseData>;
+          config.setSnapshots([...currentSnapshots, newSnapshot]);
+        } else {
+          console.error(
+            "Snapshot is not of type SnapshotStore<BaseData>",
+            snapshot
+          );
+        }
+      }
+    });
+  } else {
+    console.error("Delegate array is empty or not provided");
   }
 };
 
-const CalendarApp = () => {
+const CalendarApp = <T extends Data, K extends Data>() => {
   const [snapshot, setSnapshot] = useState<Snapshot<Data, Data> | null>(null);
-    // Default empty snapshot with the required properties
-    const defaultSnapshot: SnapshotWithData = {
-      data: new Map<string, Data>(), // Initialize with empty map
-      events: {}, // Initialize with empty object or suitable default
-      meta: {} as Data // Initialize with default or empty Data
-    };
+  // Default empty snapshot with the required properties
   
-    const [snapshots, setSnapshots] = useState<SnapshotWithData[]>([
-      defaultSnapshot // Add default snapshot to the array
-    ]);
+  const storage = window.localStorage; // or wherever your storage is defined
   
+  const defaultSnapshot: SnapshotWithData = {
+    data: new Map<string, Data>(), // Initialize with empty map
+    events: {}, // Initialize with empty object or suitable default
+    meta: {} as Data, // Initialize with default or empty Data
+  };
+
+  const [snapshots, setSnapshots] = useState<SnapshotWithData[]>([
+    defaultSnapshot, // Add default snapshot to the array
+  ]);
+
   const category: CategoryProperties = {
     name: "",
     description: "category description",
     icon: "category_png",
     color: "categorized_color",
-    iconColor: '',
+    iconColor: "",
     isActive: false,
     isPublic: false,
     isSystem: false,
@@ -142,42 +177,59 @@ const CalendarApp = () => {
     Communication: [],
     TaskManagement: [],
     Crypto: [],
-    brandName: '',
-    brandLogo: '',
-    brandColor: '',
-    brandMessage: ''
+    brandName: "",
+    brandLogo: "",
+    brandColor: "",
+    brandMessage: "",
   };
   const date = new Date();
   const type = snapshotType.toString();
-  const initialState: SnapshotStore<BaseData, K> | Snapshot<BaseData, K> | null | undefined = null;
-  const snapshotConfig: SnapshotStoreConfig<BaseData, BaseData>[] = [];
-  const delegate: SnapshotStoreConfig<BaseData, Data>[] = [];
+  const initialState:
+    | SnapshotStore<BaseData, K>
+    | Snapshot<BaseData, K>
+    | null
+    | undefined = null;
+  const snapshotConfig: SnapshotStoreConfig<Snapshot<any, BaseData> 
+  | SnapshotWithCriteria<any, BaseData>, BaseData>[] = [];
+  const delegate: SnapshotStoreConfig<Snapshot<any, BaseData> 
+  | SnapshotWithCriteria<any, BaseData>, Data>[] = [];
   
-  const dataStoreMethods: DataStore<Data, Data> = {
+  
+  const dataStoreMethods: DataStore<T, K> = {
+    id: "",
     data: undefined,
     storage: undefined,
-    addData: (data: Snapshot<Data, Data>) => { },
-    updateData: (id: number, newData:  Snapshot<Data, Data>) => { },
-    removeData: (id: number) => { },
-    updateDataTitle: (id: number, title: string) => { },
-    updateDataDescription: (id: number, description: string) => { },
-    addDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { },
-    updateDataStatus: (id: number, status: "pending" | "inProgress" | "completed") => { },
-    addDataSuccess: (payload: { data: Snapshots<Data> }) => { },
+    metadata: undefined,
+    dataStoreConfig: undefined,
+    addData: (data: Snapshot<T, K>) => {},
+    updateData: (id: number, newData: Snapshot<T, K>) => {},
+    removeData: (id: number) => {},
+    updateDataTitle: (id: number, title: string) => {},
+    updateDataDescription: (id: number, description: string) => {},
+    addDataStatus: (id: number, status: StatusType | undefined) => {},
+    updateDataStatus: (id: number, status: StatusType | undefined) => {},
+    addDataSuccess: (payload: { data: Snapshots<T> }) => {},
     getDataVersions: async (id: number) => {
       // Implement logic to fetch data versions from a data source
       return undefined;
     },
-    updateDataVersions: (id: number, versions: Snapshots<Data>) => Promise.resolve(),
+    updateDataVersions: (id: number, versions: Snapshots<T>) =>
+      Promise.resolve(),
     getBackendVersion: () => Promise.resolve(""),
     getFrontendVersion: () => Promise.resolve(""),
     fetchData: (id: number) => Promise.resolve([]),
-    getItem: (key: string): Promise<BaseData | undefined> => {
+
+    getItem: (key: string): Promise<Snapshot<T, K> | undefined> => {
       return new Promise((resolve, reject) => {
-       if (this.storage) {
-          const item = this.storage.getItem(key);
+        if (storage) {
+          const item = storage.getItem(key);
           if (item) {
-            resolve(JSON.parse(item));
+            try {
+              const parsedItem = JSON.parse(item) as Snapshot<T, K>;
+              resolve(parsedItem);
+            } catch (error: any) {
+              reject(new Error(`Failed to parse item: ${error.message}`));
+            }
           } else {
             resolve(undefined);
           }
@@ -186,28 +238,36 @@ const CalendarApp = () => {
         }
       });
     },
-    setItem: (id: string, item: BaseData): Promise<void> => {
+
+    setItem: (id: string, item: Snapshot<T, any>): Promise<void> => {
       return new Promise((resolve, reject) => {
-        if (this.storage) {
-          this.storage.setItem(id, JSON.stringify(item));
-          resolve();
+        if (storage) {
+          try {
+            storage.setItem(id, JSON.stringify(item));
+            resolve();
+          } catch (error: any) {
+            reject(new Error(`Failed to set item: ${error.message}`));
+          }
         } else {
           reject(new Error("Storage is not defined"));
         }
       });
     },
+
     removeItem: async (key: string): Promise<void> => {
-      if (this.storage) {
-        await this.storage.removeItem(key);
+      if (storage) {
+        storage.removeItem(key);
       } else {
         throw new Error("Storage is not defined");
       }
     },
+
     getAllKeys: async (): Promise<string[]> => {
       const keys: string[] = [];
-      if (this.storage) {
-        for (let i = 0; i < this.storage.length; i++) {
-          const key = this.storage.key(i);
+
+      if (storage) {
+        for (let i = 0; i < storage.length; i++) {
+          const key = storage.key(i);
           if (key) {
             keys.push(key);
           }
@@ -217,109 +277,268 @@ const CalendarApp = () => {
       }
       return keys;
     },
-    async getAllItems(): Promise<BaseData[]> {
+
+    getAllItems: async function(): Promise<Snapshot<T, any>[]> {
       try {
         const keys = await this.getAllKeys();
-        const items: (BaseData | undefined)[] = await Promise.all(
-          keys.map(async (key) => {
-            const item = await this.getItem(key);
-            return item;
-          })
+        const items: (Snapshot<T, K> | undefined)[] = await Promise.all(
+          keys.map((key) => this.getItem(key))
         );
-        const filteredItems = items.filter((item): item is BaseData => item !== undefined);
+        const filteredItems = items.filter(
+          (item): item is Snapshot<T, K> => item !== undefined
+        );
         return filteredItems;
-      } catch (error) {
-        throw error;
+      } catch (error: any) {
+        throw new Error(`Failed to get all items: ${error.message}`);
       }
-    }
-  };
-  
-  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } = new useSnapshotStore(
-    data,
-    initialState,
-    category,
-    new Date(),
-    type,
-    snapshotConfig,
-    subscribeToSnapshots,
-    subscribeToSnapshot,
-    delegate,
-    dataStoreMethods
-  );
+    },
 
-  const snapshotManager = useSnapshotManager<Todo>(); // Initialize the snapshot manager
+    // Define the mapSnapshot function
+    mapSnapshot: function (
+      storeId: number,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotContainer: SnapshotContainer<T, K>,
+      snapshotId: string,
+      criteria: CriteriaType,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event
+    ): Promise<Snapshot<T, K> | null | undefined> {
+      return new Promise(async (resolve, reject) => {
+        try {
+          // Ensure getSnapshotStore is correctly used
+          const snapshotStoreFromFunction = await getSnapshotStore(storeId, snapshotContainer, criteria);
+          if (snapshotStoreFromFunction) {
+            const snapshot = snapshotStoreFromFunction.getSnapshot(snapshot);
+            if (snapshot) {
+              const mappedSnapshot = this.mapSnapshot(
+                storeId,
+                snapshotStoreFromFunction,
+                snapshotContainer,
+                snapshotId,
+                criteria,
+                snapshot,
+                type,
+                event
+              );
+              resolve(mappedSnapshot);
+            } else {
+              reject(new Error("Snapshot not found"));
+            }
+          } else {
+            reject(new Error("Snapshot store not found"));
+          }
+        } catch (error: any) {
+          reject(new Error(`Failed to map snapshot: ${error.message}`));
+        }
+      });
+    },
+
+    mapSnapshots: function (
+      storeIds: number[],
+      snapshotId: string,
+      category: string | CategoryProperties | undefined,
+      snapshot: Snapshot<T, K>,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<T, K>,
+      data: T,
+      callback: (
+        storeIds: number[],
+        snapshotId: string,
+        category: string | CategoryProperties | undefined,
+        snapshot: Snapshot<T, K>,
+        timestamp: string | number | Date | undefined,
+        type: string,
+        event: Event,
+        id: number,
+        snapshotStore: SnapshotStore<T, K>,
+        data: T
+      ) => SnapshotsObject<T>
+    ): SnapshotsObject<T> {
+      throw new Error("Function not implemented.");
+    },
+    mapSnapshotStore: function (
+      storeId: number,
+      snapshotId: string,
+      category: string | CategoryProperties | undefined,
+      snapshot: Snapshot<any, any>,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<any, any>,
+      data: any
+    ): Promise<SnapshotContainer<T, K> | undefined> {
+      throw new Error("Function not implemented.");
+    },
+
+    getData: function (
+      id: number
+    ): Promise<SnapshotWithCriteria<T, K> | undefined> {
+      throw new Error("Function not implemented.");
+    },
+    getStoreData: function (id: number): Promise<SnapshotStore<T, K>[]> {
+      throw new Error("Function not implemented.");
+    },
+    updateStoreData: function (
+      data: Data,
+      id: number,
+      newData: SnapshotStore<T, K>
+    ): void {
+      throw new Error("Function not implemented.");
+    },
+    getDelegate: function (context: {
+      useSimulatedDataSource: boolean;
+      simulatedDataSource: SnapshotStoreConfig<SnapshotUnion<T>, K>[];
+    }): Promise<SnapshotStoreConfig<SnapshotUnion<T>, K>[]> {
+      throw new Error("Function not implemented.");
+    },
+    updateDelegate: function (
+      config: SnapshotStoreConfig<SnapshotUnion<T>, K>[]
+    ): Promise<SnapshotStoreConfig<SnapshotUnion<T>, K>[]> {
+      throw new Error("Function not implemented.");
+    },
+    getSnapshot: function (
+      category: any,
+      timestamp: any,
+      id: number,
+      snapshot: Snapshot<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      data: T
+    ): Promise<Snapshot<T, K> | undefined> {
+      throw new Error("Function not implemented.");
+    },
+    getSnapshotWithCriteria: function (
+      category: any,
+      timestamp: any,
+      id: number,
+      snapshot: Snapshot<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      data: T
+    ): Promise<SnapshotWithCriteria<T, K> | undefined> {
+      throw new Error("Function not implemented.");
+    },
+    getSnapshotContainer: function (
+      category: string,
+      timestamp: string,
+      id: number,
+      snapshot: Snapshot<BaseData, any>,
+      snapshotStore: SnapshotStore<Data, any>,
+      snapshotData: SnapshotStore<T, K>,
+      data: Data,
+      snapshotsArray: SnapshotsArray<T>,
+      snapshotsObject: SnapshotsObject<T>
+    ): Promise<SnapshotContainer<T, K> | undefined> {
+      throw new Error("Function not implemented.");
+    },
+    getSnapshotVersions: function (
+      category: any,
+      timestamp: any,
+      id: number,
+      snapshot: Snapshot<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      data: T
+    ): Promise<Snapshot<T, K>[] | undefined> {
+      throw new Error("Function not implemented.");
+    },
+    getSnapshotWithCriteriaVersions: function (
+      category: any,
+      timestamp: any,
+      id: number,
+      snapshot: Snapshot<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      data: T
+    ): Promise<SnapshotWithCriteria<T, K>[] | undefined> {
+      throw new Error("Function not implemented.");
+    },
+  };
+
+  
+
+  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } =
+    new useSnapshotStore(
+     storeId, options, config, operation
+    );
+
+  const snapshotManager = useSnapshotManager<Todo<T, K>, K>(); // Initialize the snapshot manager
 
   // Define the CalendarEvent object
-const calendarEvent: CalendarEvent = {
-  id: "1",
-  title: "Meeting",
-  description: "Discuss project plans",
-  startDate: new Date(),
-  endDate: new Date(),
-  location: "Office",
-  attendees: [],
-  reminder: "15 minutes before",
-  reminderOptions: {
-    recurring: true,
-    frequency: "weekly",
-    interval: 1,
-  },
-  date: new Date(),
-  isActive: false,
-  category: "",
-  shared: undefined,
-  details: {} as DetailsItem<DataDetails>,
-  bulkEdit: false,
-  recurring: false,
-  customEventNotifications: "customNotifications",
-  comment: "comment",
-  attachment: "attachment",
-  content: "",
-  topics: [],
-  highlights: [],
-  files: [],
-  options: {} as DocumentOptions,
-  status: StatusType.Upcoming,
-  rsvpStatus: "yes",
-  priority: "",
-  host: {} as Member,
-  teamMemberId: "",
-  participants: [],
-  then: () => {
-    console.log("Then function called");
-  },
-  _id: "",
-  analysisResults: [],
-  snapshots: [],
-  getData: async function (): Promise<SnapshotStore<BaseData>[]> {
-    throw new Error("Function not implemented.");
-  },
-  timestamp: undefined,
-};
-  
+  const calendarEvent: CalendarEvent<T, K> = {
+    id: "1",
+    title: "Meeting",
+    description: "Discuss project plans",
+    startDate: new Date(),
+    endDate: new Date(),
+    location: "Office",
+    attendees: [],
+    reminder: "15 minutes before",
+    reminderOptions: {
+      recurring: true,
+      frequency: "weekly",
+      interval: 1,
+    },
+    date: new Date(),
+    isActive: false,
+    category: "",
+    shared: undefined,
+    details: {} as DetailsItem,
+    bulkEdit: false,
+    recurring: false,
+    customEventNotifications: "customNotifications",
+    comment: "comment",
+    attachment: "attachment",
+    content: "",
+    topics: [],
+    highlights: [],
+    files: [],
+    options: {} as DocumentOptions,
+    status: StatusType.Upcoming,
+    rsvpStatus: "yes",
+    priority: "",
+    host: {} as Member,
+    teamMemberId: "",
+    participants: [],
+    then: function<T extends Data, K extends Data>(callback: (newData: Snapshot<T, K>) => void): Snapshot<T, K> | undefined {
+      if (this as unknown as Snapshot<T, K>) {
+        callback(this as unknown as Snapshot<T, K>);
+      }
+      return undefined;
+    },
+    _id: "",
+    analysisResults: [],
+    snapshots: [],
+    getData: async function (): Promise<Snapshot<T, K>[]> {
+      return [];
+    },
+    timestamp: undefined,
+    meta: {},
+    getSnapshotStoreData: async function (): Promise<SnapshotStore<T, K>[]> {
+      return [];
+    }
+  };
 
-  
-// Type guard to check if an object is a SnapshotStore<BaseData>
-function isSnapshotStoreBaseData(
-  snapshot: any
-): snapshot is SnapshotStore<BaseData> {
-  return (
-    snapshot &&
-    typeof snapshot === 'object' &&
-    'id' in snapshot &&
-    'timestamp' in snapshot
-  );
-}
+  // Type guard to check if an object is a SnapshotStore<BaseData>
+  function isSnapshotStoreBaseData(
+    snapshot: any
+  ): snapshot is SnapshotStore<BaseData> {
+    return (
+      snapshot &&
+      typeof snapshot === "object" &&
+      "id" in snapshot &&
+      "timestamp" in snapshot
+    );
+  }
 
-  
-  
   return (
     <div>
       <h1>Calendar App</h1>
       <CalendarDetails
         data={{
           id: "1",
-          tags: ["work", "meeting"],
+          tags: {},
           metadata: {},
         }}
         details={{
@@ -518,7 +737,9 @@ function isSnapshotStoreBaseData(
               phases: [],
               type: ProjectType.Internal,
               currentPhase: null,
-              getData: function (id: number): Promise<SnapshotStore<BaseData>[]> {
+              getData: function (
+                id: number
+              ): Promise<SnapshotStore<BaseData>[]> {
                 return Promise.resolve([]);
               },
               timestamp: undefined,
@@ -539,10 +760,10 @@ function isSnapshotStoreBaseData(
                   value: 0,
                   percentage: 0,
                   done: false,
-                  name: '',
-                  color: '',
+                  name: "",
+                  color: "",
                   min: 0,
-                  description: ''
+                  description: "",
                 },
                 _id: "",
                 id: "",
@@ -577,10 +798,9 @@ function isSnapshotStoreBaseData(
           unassignProject: (project) =>
             console.log("Project unassigned:", project),
           analysisType: "quantitative" as AnalysisTypeEnum | undefined,
-            
+
           snapshots: [],
 
-          
           team: {
             id: "team-1",
             current: 5,
@@ -593,7 +813,6 @@ function isSnapshotStoreBaseData(
             color: "#000000",
             min: 0,
             description: "Alpha Team",
-                      
           },
           // todo
           getData: fetchData,
@@ -601,6 +820,7 @@ function isSnapshotStoreBaseData(
       />
     </div>
   );
-};export default CalendarApp;
+};
+export default CalendarApp;
 
 export { assignProject, reassignProject, unassignProject, updateProgress };

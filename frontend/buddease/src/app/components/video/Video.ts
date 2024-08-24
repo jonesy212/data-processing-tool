@@ -1,9 +1,11 @@
-import { DataDetails } from "../models/data/Data";
+import { Data, DataDetails } from "../models/data/Data";
+import { TagsRecord } from "../snapshots";
 import { Tag } from "./../models/tracker/Tag";
 
 interface VideoProperties {
   // Define essential video properties
-  id: string;
+
+  id?: string | number | undefined;
   title?: string;
   description?: string | null | undefined;
   videoLikes: number;
@@ -39,7 +41,28 @@ interface Video extends VideoProperties {
   commentsCount: number;
   videoAuthor: string;
   videoDurationInSeconds: number;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord
+
+  createdAt?: Date | undefined;
+  updatedAt: Date | undefined;
+  createdBy: string | undefined
+  uploadedAt: Date | undefined;
+
+  videoLikes: number,
+  videoViews: number,
+  videoComments: number,
+  videoThumbnail: string,
+  videoUrl: string,
+  videoTitle: string,
+  thumbnail: string,
+  videoDescription: string,
+  videoTags: string[],
+
+  isDeleting: boolean,
+  isCompleted: boolean,
+  isUploading: boolean,
+  isDownloading: boolean,
+  isProcessing: boolean,
   uploadDate: Date;
   category: string;
   resolution: string;
@@ -67,9 +90,9 @@ interface Video extends VideoProperties {
 interface VideoData extends DataDetails, Video {
   // Define properties specific to video data
   // For example:
-  
+
   resolution: string;
-  size:string; // Size of the video file in bytes
+  size: string; // Size of the video file in bytes
   aspectRatio: string;
   language: string;
   subtitles: string[] | boolean;
@@ -120,6 +143,10 @@ class BasicVideoGenerator {
       id,
       title,
       description: description || "",
+      updatedAt: undefined,
+      createdBy: undefined,
+      uploadedAt: undefined,
+      tags: {},
       videoDislikes: 0,
       videoAuthor: "",
       videoDurationInSeconds: 0,
@@ -144,7 +171,7 @@ class BasicVideoGenerator {
       isDownloading: false,
       isDeleting: false,
       thumbnail: "",
-      isProcessing: false
+      isProcessing: false,
     };
 
     return video;
@@ -154,15 +181,17 @@ class BasicVideoGenerator {
 
 const videoData: VideoData = {
   resolution: "",
+  id: "",
   aspectRatio: "",
   language: "",
   subtitles: [],
   duration: 0,
   campaignId: 0,
-  id: "",
   size: "",
   codec: "",
   frameRate: 0,
+  createdBy: undefined,
+  uploadedAt: undefined,
   updatedAt: undefined,
   url: "",
   thumbnailUrl: "",
@@ -205,7 +234,7 @@ const videoData: VideoData = {
   isDownloading: false,
   isDeleting: false,
   thumbnail: "",
-  isProcessing: false
+  isProcessing: false,
 };
 
 

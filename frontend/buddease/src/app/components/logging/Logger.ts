@@ -566,7 +566,7 @@ class AnimationLogger extends Logger {
     prefix: string,
     name: string,
     type: NotificationType,
-    dataDetails?: DataDetails
+    dataDetails?: DataDetails<any, any>
   ): string {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);

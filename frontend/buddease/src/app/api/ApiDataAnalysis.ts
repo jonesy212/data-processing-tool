@@ -135,6 +135,12 @@ export const fetchAnalysisResults = (): Promise<any> => {
         sentimentAnalysis: analysisResults.sentimentAnalysis,
         events: analysisResults.events,
         meta: analysisResults.meta,
+        initialConfig, removeSubscriber, onInitialize, onError,
+        snapshot, setCategory, applyStoreConfig, snapshotData, 
+        getSnapshotItems, defaultSubscribeToSnapshots, versionInfo, transformSubscriber,
+        transformDelegate, initializedState, getAllKeys, getAllItems, 
+        addDataStatus, removeData, updateData, updateDataTitle
+        
       } as Snapshot<BaseData>;
     })
     .catch((error) => {

@@ -26,6 +26,7 @@ export interface Phase extends CommonData {
   members?: Member[];
   color?: string;
   status?: string;
+  isActive?: boolean;
   type?: string;
   createdAt?: undefined;
   updatedAt?: undefined;
@@ -78,7 +79,7 @@ export class PhaseImpl implements Phase {
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
   metadata?: StructuredMetadata | undefined;
-  details?: DetailsItem<Data> | undefined;
+  details?: DetailsItem | undefined;
   tags?: string[] | undefined;
   categories?: string[] | undefined;
   documentType?: string | undefined;

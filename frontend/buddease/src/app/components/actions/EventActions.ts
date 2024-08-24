@@ -11,8 +11,16 @@ export const EventActions = {
   dataProcessingRequested: createAction("dataProcessingRequested"),
   dataProcessingSucceeded: createAction("dataProcessingSucceeded"),
   dataProcessingFailed: createAction<{ error: string }>("dataProcessingFailed"),
+  updateEvent: createAction<{ eventId: string, updatedData: any }>('updateEvent'),
 
+  // Action for adding a new event
+  addEvent: createAction<{ eventId: string, eventData: any }>('addEvent'),
 
+  // Action for showing a notification
+  showNotification: createAction<{ message: string, type: 'info' | 'success' | 'warning' | 'error' }>('showNotification'),
+
+  updateEventDescriptionSuccess: createAction<{ eventId: string, description: string, meta: any }>('updateEventDescriptionSuccess'),
+  updateEventDescriptionFailure: createAction<{ eventId: string, error: string, meta: any }>('updateEventDescriptionFailure'),
   fetchEvents: createAction('fetchEvents'),
   analyzeEvents: createAction<any>('analyzeEvents'),
   // Events related to data management
@@ -42,3 +50,5 @@ export const EventActions = {
   bulkDataUpdatingRequested: createAction("bulkDataUpdatingRequested"),
   bulkDataRemovingRequested: createAction("bulkDataRemovingRequested"),
 };
+
+

@@ -23,8 +23,7 @@ import { BaseData } from "../models/data/Data";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotWithCriteria } from "../snapshots/SnapshotWithCriteria";
-import { options } from "../hooks/useSnapshotManager";
-const dispatch = useDispatch()
+ const dispatch = useDispatch()
 const { notify } = useNotification()
 
 
@@ -77,6 +76,15 @@ const notifyEventSystem = (
           level: "info",
           message: "",
           date: new Date(),
+          sent: new Date(),
+          isSent: false,
+          isDelivered: false,
+          delivered: new Date(),
+          opened: new Date(),
+          clicked: new Date(),
+          responded: false,
+          responseTime: new Date(),
+          eventData: eventData,
         },
         timestamp: undefined,
         topics: [],
@@ -88,7 +96,7 @@ const notifyEventSystem = (
         teamMemberId: "",
         getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
          
-          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(options);
+          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(storeId, options, config, operation);
           return Promise.resolve([snapshotStore]);
         },
         getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
@@ -128,6 +136,15 @@ const notifyEventSystem = (
           level: "info",
           message: "",
           date: new Date(),
+          sent: new Date(),
+          isSent: false,
+          isDelivered: false,
+          delivered: new Date(),
+          opened: new Date(),
+          clicked: new Date(),
+          responded: false,
+          responseTime: new Date(),
+          eventData: eventData,
         },
         topics: [],
         highlights: [],
@@ -137,7 +154,7 @@ const notifyEventSystem = (
         participants: [],
         teamMemberId: "",
         getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
-          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(options);
+          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(storeId, options, config, operation);
           return Promise.resolve([snapshotStore]);
         },
         getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
@@ -154,7 +171,16 @@ const notifyEventSystem = (
       timestamp: new Date(),
       level: "info",
       message: "",
-      data: eventData,
+      date: new Date(),
+      sent: new Date(),
+      isSent: false,
+      delivered: new Date(),
+      isDelivered: false,
+      opened: new Date(),
+      clicked: new Date(),
+      responded: false,
+      responseTime: new Date(),
+      eventData: eventData,
     },
     sendStatus: "Sent",
   };
@@ -170,6 +196,16 @@ const notifyEventSystem = (
       timestamp: new Date(),
       level: "info",
       message: "",
+      date: new Date(),
+      sent: new Date(),
+      isSent: false,
+      delivered: new Date(),
+      isDelivered: false,
+      opened: new Date(),
+      clicked: new Date(),
+      responded: false,
+      responseTime: new Date(),
+      eventData: eventData,
     },
   };
 
@@ -449,15 +485,67 @@ const unsubscribe = (
       console.warn(`Unknown unsubscribe type: ${unsubscribeType}`);
       break;
   }
-
   // Example: Log unsubscribe details
   console.log(`Unsubscribe Date: ${unsubscribeDate}`);
   console.log(`Unsubscribe Reason: ${unsubscribeReason}`);
   console.log(`Additional Data:`, unsubscribeData);
-
   // Additional logic here...
 };
 
+const triggerEvent = (
+  eventType: string,
+  eventData: any,
+  eventDate: Date
+) => {
+  // Log the event for debugging purposes
+  console.log("Event Triggered:");
+  console.log(`Type: ${eventType}`);
+  console.log(`Data:`, eventData);
+  console.log(`Date: ${eventDate.toISOString()}`);
+
+  // You can add additional logic here to handle the event
+  // For example, send the event data to an analytics service, or trigger specific actions based on eventType
+
+  // Example: Send event data to an analytics service
+  sendEventToAnalyticsService({
+    type: eventType,
+    data: eventData,
+    date: eventDate.toISOString(), // Format date as an ISO string for consistency
+  });
+
+  // Example: Handle specific event types
+  switch (eventType) {
+    case "USER_LOGIN":
+      handleUserLogin(eventData);
+      break;
+    case "USER_LOGOUT":
+      handleUserLogout(eventData);
+      break;
+    default:
+      console.warn(`Unhandled event type: ${eventType}`);
+  }
+};
+
+// Example function to send event data to an analytics service
+const sendEventToAnalyticsService = (event: {
+  type: string;
+  data: any;
+  date: string;
+}) => {
+  // Replace with actual analytics service logic
+  console.log("Sending event to analytics service:", event);
+};
+
+// Example functions to handle specific event types
+const handleUserLogin = (data: any) => {
+  // Logic for handling user login events
+  console.log("User logged in with data:", data);
+};
+
+const handleUserLogout = (data: any) => {
+  // Logic for handling user logout events
+  console.log("User logged out with data:", data);
+};
 
   
   // Additional logic to handle the triggered incentive with parameters
@@ -531,7 +619,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerIncentives, unsubscribe, updateProjectState
+  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerIncentives, unsubscribe, updateProjectState, triggerEvent
 };
 
   export type { TriggerIncentivesParams };

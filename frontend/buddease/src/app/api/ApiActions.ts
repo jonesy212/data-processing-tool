@@ -38,3 +38,28 @@ export const ApiActions = {
 
   // Add more actions as needed
 };
+
+
+// Define action types for ApiActions
+export type ApiActionTypes =
+  | ReturnType<typeof ApiActions.fetchApiConfigRequest>
+  | ReturnType<typeof ApiActions.fetchApiConfigSuccess>
+  | ReturnType<typeof ApiActions.fetchApiConfigFailure>
+  | ReturnType<typeof ApiActions.updateApiConfigRequest>
+  | ReturnType<typeof ApiActions.updateApiConfigSuccess>
+  | ReturnType<typeof ApiActions.updateApiConfigFailure>
+  | ReturnType<typeof ApiActions.removeApiConfigRequest>
+  | ReturnType<typeof ApiActions.removeApiConfigSuccess>
+  | ReturnType<typeof ApiActions.removeApiConfigFailure>
+  | ReturnType<typeof ApiActions.fetchApiDataRequest>
+  | ReturnType<typeof ApiActions.fetchApiDataSuccess>
+  | ReturnType<typeof ApiActions.fetchApiDataFailure>
+  | ReturnType<typeof ApiActions.batchFetchApiDataRequest>
+  | ReturnType<typeof ApiActions.batchFetchApiDataSuccess>
+  | ReturnType<typeof ApiActions.batchFetchApiDataFailure>
+  | ReturnType<typeof ApiActions.batchUpdateApiConfigRequest>
+  | ReturnType<typeof ApiActions.batchUpdateApiConfigSuccess>
+  | ReturnType<typeof ApiActions.batchUpdateApiConfigFailure>
+  | ReturnType<typeof ApiActions.batchRemoveApiConfigRequest>
+  | ReturnType<typeof ApiActions.batchRemoveApiConfigSuccess>
+  | ReturnType<typeof ApiActions.batchRemoveApiConfigFailure>;

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import useFiltering from '../hooks/useFiltering';
 import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
+import React from 'react'
 
 const NewsComponent = (options: SearchOptions) => {
   const { addFilter, handleSubmit } = useFiltering(options);
@@ -24,15 +25,18 @@ const NewsComponent = (options: SearchOptions) => {
     addFilter("category", "equal", "technology");
 
     // Submitting filters to fetch filtered news
-    handleSubmit()
-      .then((response: any) => {
-        // Assuming response.data contains filtered news articles
-        updateFilteredNewsUI(response.data);
-      })
-      .catch((error: any) => {
-        console.error("Error filtering news:", error);
-        // Handle error and notify user
+    const handleSubmit = (): Promise<any> => {
+      return new Promise((resolve, reject) => {
+        try {
+          // Simulate an async operation, such as an API request
+          const response = await 
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        }
       });
+    };
+    
   };
 
   return (

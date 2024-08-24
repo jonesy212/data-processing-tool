@@ -4,9 +4,10 @@ import CalendarWeek from './CalendarWeek';
 import { CommonCalendarProps } from './Calendar';
 import { CalendarEvent } from '../state/stores/CalendarEvent';
 
-interface WeekViewProps extends CommonCalendarProps {
+interface WeekViewProps<T, K> extends CommonCalendarProps<CalendarEvent<T, K>, Date> {
   weekStartDate: Date;
-  events: CalendarEvent[];
+  events: CalendarEvent<T, K>[];
+  
 }
 
 const WeekView: React.FC<WeekViewProps> = ({ weekStartDate, events, ...taskHandlers }) => {

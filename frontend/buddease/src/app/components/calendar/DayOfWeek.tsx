@@ -3,9 +3,9 @@ import { Task } from '../models/tasks/Task';
 import { CalendarEvent } from '../state/stores/CalendarEvent';
 import { CommonCalendarProps } from './Calendar';
 
-interface DayOfWeekProps extends CommonCalendarProps {
+interface DayOfWeekProps extends CommonCalendarProps{
   day: string;
-  events: CalendarEvent[];
+  events: CalendarEvent<any, any>[];
   tasks: Task[]; // Assuming each task has a 'name' property
 }
 

@@ -80,3 +80,56 @@ saveDocumentEditingPermissions: createAction<{id: number, userId: string, permis
   updateUserIdea: createAction<Partial<UserIdea>>("updateUserIdea"),
   deleteUserIdea: createAction<number>("deleteUserIdea"),
 };
+
+
+
+
+// Define the action types
+export type DocumentActionTypes =
+  | ReturnType<typeof DocumentActions.addDocument>
+  | ReturnType<typeof DocumentActions.addDocumentSuccess>
+  | ReturnType<typeof DocumentActions.addDocumentFailure>
+  | ReturnType<typeof DocumentActions.createDocument>
+  | ReturnType<typeof DocumentActions.updateDocument>
+  | ReturnType<typeof DocumentActions.updateDocumentDetails>
+  | ReturnType<typeof DocumentActions.updateDocumentDetailsSuccess>
+  | ReturnType<typeof DocumentActions.updateDocumentDetailsFailure>
+  | ReturnType<typeof DocumentActions.updateDocumentDetailsReset>
+  | ReturnType<typeof DocumentActions.showOptionsForSelectedText>
+  | ReturnType<typeof DocumentActions.deleteDocument>
+  | ReturnType<typeof DocumentActions.selectDocument>
+  | ReturnType<typeof DocumentActions.selectDocumentSuccess>
+  | ReturnType<typeof DocumentActions.setOptions>
+  | ReturnType<typeof DocumentActions.updateDocumentTitle>
+  | ReturnType<typeof DocumentActions.updateDocumentTitleSuccess>
+  | ReturnType<typeof DocumentActions.updateDocumentTitleFailure>
+  | ReturnType<typeof DocumentActions.updateDocumentStatus>
+  | ReturnType<typeof DocumentActions.updateDocumentStatusSuccess>
+  | ReturnType<typeof DocumentActions.updateDocumentStatusFailure>
+  | ReturnType<typeof DocumentActions.communication>
+  | ReturnType<typeof DocumentActions.communicationSuccess>
+  | ReturnType<typeof DocumentActions.communicationFailure>
+  | ReturnType<typeof DocumentActions.collaboration>
+  | ReturnType<typeof DocumentActions.collaborationSuccess>
+  | ReturnType<typeof DocumentActions.collaborationFailure>
+  | ReturnType<typeof DocumentActions.projectManagement>
+  | ReturnType<typeof DocumentActions.projectManagementSuccess>
+  | ReturnType<typeof DocumentActions.projectManagementFailure>
+  | ReturnType<typeof DocumentActions.dataAnalysis>
+  | ReturnType<typeof DocumentActions.dataAnalysisSuccess>
+  | ReturnType<typeof DocumentActions.dataAnalysisFailure>
+  | ReturnType<typeof DocumentActions.exportDocument>
+  | ReturnType<typeof DocumentActions.exportDocumentSuccess>
+  | ReturnType<typeof DocumentActions.exportDocumentFailure>
+  | ReturnType<typeof DocumentActions.selectDocumentEditingPermissions>
+  | ReturnType<typeof DocumentActions.saveDocumentEditingPermissions>
+  | ReturnType<typeof DocumentActions.addDocuments>
+  | ReturnType<typeof DocumentActions.updateDocuments>
+  | ReturnType<typeof DocumentActions.deleteDocuments>
+  | ReturnType<typeof DocumentActions.fetchDocumentsRequest>
+  | ReturnType<typeof DocumentActions.fetchDocumentsSuccess>
+  | ReturnType<typeof DocumentActions.fetchDocumentsFailure>
+  | ReturnType<typeof DocumentActions.selectUserIdea>
+  | ReturnType<typeof DocumentActions.addUserIdea>
+  | ReturnType<typeof DocumentActions.updateUserIdea>
+  | ReturnType<typeof DocumentActions.deleteUserIdea>;

@@ -1,5 +1,5 @@
 import { debounce } from "@/app/pages/searchs/Debounce";
-import { MessageType } from "antd/es/message/interface";
+import { MessageType } from "@/app/generators/MessaageType";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -9,7 +9,7 @@ import { FileTypeEnum } from "../documents/FileType";
 import FormatEnum from "../form/FormatEnum";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { SearchLogger } from "../logging/Logger";
-import BookmarkStatus, { CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
+import  { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
 import { ContentManagementPhaseEnum } from "../phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "../phases/FeedbackPhase";
 import { TaskPhaseEnum } from "../phases/TaskProcess";

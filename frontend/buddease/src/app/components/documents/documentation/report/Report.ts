@@ -9,7 +9,13 @@ export interface BaseReport {
   reportFileName: string;
 }
 
-
+interface ReportOptions {
+  type?: 'financial' | 'technical' | 'research';
+  fiscalYear?: number;
+  projectCode?: string;
+  experimentDate?: Date;
+  // Add more options as needed
+}
 
 interface FinancialReport extends BaseReport {
   financialMetrics: string;
@@ -27,4 +33,4 @@ interface ResearchReport extends BaseReport {
 }
 
 
-export type { FinancialReport, ResearchReport, TechnicalReport };
+export type { FinancialReport, ResearchReport, TechnicalReport, ReportOptions };

@@ -1,107 +1,398 @@
 // useUIRealtimeData.tsx
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { Dispatch, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import socketIOClient from 'socket.io-client';
-import { Data } from "../../models/data/Data";
-import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
-import axiosInstance from "../../security/csrfToken";
-import SnapshotStore from "../../snapshots/SnapshotStore";
-import { CalendarEvent } from "../../state/stores/CalendarEvent";
-import { fetchData } from "../../utils/dataAnalysisUtils";
-import { useSecureUserId } from "../../utils/useSecureUserId";
+import axiosInstance from '@/app/api/axiosInstance';
+import { EventActions } from './../../../components/actions/EventActions';
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-import {BaseData} from "../../models/data/Data"
+import { Data} from "../../models/data/Data"
+import { useSecureUserId } from '../../utils/useSecureUserId';
+import { fetchData } from '@/app/api/ApiData';
+import { RealtimeData, RealtimeDataItem } from '../../models/realtime/RealtimeData';
+import SnapshotStore from '../../snapshots/SnapshotStore';
+import CalendarEvent from '../../state/stores/CalendarEvent';
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { AppActions, AppActionsType } from '../../actions/AppActions';
+import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
+import { TokenActionTypes } from '@/app/tokens/TokenActions';
+import { DocumentData } from '../../documents/DocumentBuilder';
 
-export type RealtimeUpdateCallback<T extends RealtimeData> = (
-  data: SnapshotStore<T>,
-  events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<T>,
-  dataItems: T[]
-) => void;
+const isKnownAction = (action: any): action is AppActionsType => {
+  // This function can be as complex as needed to check if the action type is known.
+  // For simplicity, check against known action types or action type patterns.
+  return action.type in AppActions;
+};
 
-const useUIRealtimeData = (
+
+
+const handleDocumentAction = (action: DocumentActionTypes) => {
+  switch (action.type) {
+    case 'addDocument':
+      // Handle addDocument
+      console.log('Adding document:', action.payload);
+      break;
+
+    case 'addDocumentSuccess':
+      // Handle addDocumentSuccess
+      console.log('Document added successfully:', action.payload);
+      break;
+
+    case 'addDocumentFailure':
+      // Handle addDocumentFailure
+      console.error('Failed to add document:', action.payload);
+      break;
+
+    case 'createDocument':
+      // Handle createDocument
+      console.log('Creating document:', action.payload);
+      break;
+
+    case 'updateDocument':
+      // Handle updateDocument
+      console.log('Updating document:', action.payload);
+      break;
+
+    case 'updateDocumentDetails':
+      // Handle updateDocumentDetails
+      console.log('Updating document details:', action.payload);
+      break;
+
+    // Add cases for all other DocumentActionTypes
+
+    default:
+      const exhaustiveCheck: never = action;
+      throw new Error(`Unhandled document action type: ${(action as DocumentActionTypes).type}`);
+  }
+};
+const handleTokenActions = (action: TokenActionTypes) => {
+  switch (action.type) {
+    case 'addToken':
+      console.log('Handling addToken:', action.payload);
+      break;
+
+    case 'addTokens':
+      console.log('Handling addTokens:', action.payload);
+      break;
+
+    case 'editToken':
+      console.log('Handling editToken:', action.payload);
+      break;
+
+    case 'deleteToken':
+      console.log('Handling deleteToken:', action.payload);
+      break;
+
+    case 'editTokens':
+      console.log('Handling editTokens:', action.payload);
+      break;
+
+    case 'deleteTokens':
+      console.log('Handling deleteTokens:', action.payload);
+      break;
+
+    case 'createToken':
+      console.log('Handling createToken:', action.payload);
+      break;
+
+    case 'fetchTokensRequest':
+      console.log('Handling fetchTokensRequest');
+      break;
+
+    case 'fetchTokensSuccess':
+      console.log('Handling fetchTokensSuccess:', action.payload);
+      break;
+
+    case 'fetchTokensFailure':
+      console.log('Handling fetchTokensFailure:', action.payload);
+      break;
+
+    default:
+      // TypeScript should infer this as unreachable if all types are covered
+      const exhaustiveCheck: never = action;
+      throw new Error(`Unhandled token action type: ${action.type}`);
+  }
+};
+
+
+
+// // If you have a function that needs to handle all possible actions
+  const handleAction = (action: AppActionsType) => {
+    switch (action.type) {
+      case 'addDocument':
+        // Handle addDocument
+        break;
+      case 'addDocumentSuccess':
+        // Handle addDocumentSuccess
+        break;
+      case 'addDocumentFailure':
+        // Handle addDocumentFailure
+        break;
+      case 'createDocument':
+        // Handle createDocument
+        break;
+      case 'updateDocument':
+        // Handle updateDocument
+        break;
+      case 'updateDocumentDetails':
+        // Handle updateDocumentDetails
+        break;
+      case 'updateDocumentDetailsSuccess':
+        // Handle updateDocumentDetailsSuccess
+        break;
+      case 'updateDocumentDetailsFailure':
+        // Handle updateDocumentDetailsFailure
+        break;
+      case 'updateDocumentDetailsReset':
+        // Handle updateDocumentDetailsReset
+        break;
+      case 'showOptionsForSelectedText':
+        // Handle showOptionsForSelectedText
+        break;
+      case 'deleteDocument':
+        // Handle deleteDocument
+        break;
+      case 'selectDocument':
+        // Handle selectDocument
+        break;
+      case 'selectDocumentSuccess':
+        // Handle selectDocumentSuccess
+        break;
+      case 'setOptions':
+        // Handle setOptions
+        break;
+      case 'updateDocumentTitle':
+        // Handle updateDocumentTitle
+        break;
+      case 'updateDocumentTitleSuccess':
+        // Handle updateDocumentTitleSuccess
+        break;
+      case 'updateDocumentTitleFailure':
+        // Handle updateDocumentTitleFailure
+        break;
+      case 'updateDocumentStatus':
+        // Handle updateDocumentStatus
+        break;
+      case 'updateDocumentStatusSuccess':
+        // Handle updateDocumentStatusSuccess
+        break;
+      case 'updateDocumentStatusFailure':
+        // Handle updateDocumentStatusFailure
+        break;
+      case 'communication':
+        // Handle communication
+        break;
+      case 'communicationSuccess':
+        // Handle communicationSuccess
+        break;
+      case 'communicationFailure':
+        // Handle communicationFailure
+        break;
+      case 'collaboration':
+        // Handle collaboration
+        break;
+      case 'collaborationSuccess':
+        // Handle collaborationSuccess
+        break;
+      case 'collaborationFailure':
+        // Handle collaborationFailure
+        break;
+      case 'projectManagement':
+        // Handle projectManagement
+        break;
+      case 'projectManagementSuccess':
+        // Handle projectManagementSuccess
+        break;
+      case 'projectManagementFailure':
+        // Handle projectManagementFailure
+        break;
+      case 'dataAnalysis':
+        // Handle dataAnalysis
+        break;
+      case 'dataAnalysisSuccess':
+        // Handle dataAnalysisSuccess
+        break;
+      case 'dataAnalysisFailure':
+        // Handle dataAnalysisFailure
+        break;
+      case 'exportDocument':
+        // Handle exportDocument
+        break;
+      case 'exportDocumentSuccess':
+        // Handle exportDocumentSuccess
+        break;
+      case 'exportDocumentFailure':
+        // Handle exportDocumentFailure
+        break;
+      case 'selectDocumentEditingPermissions':
+        // Handle selectDocumentEditingPermissions
+        break;
+      case 'saveDocumentEditingPermissions':
+        // Handle saveDocumentEditingPermissions
+        break;
+      case 'addDocuments':
+        // Handle addDocuments
+        break;
+      case 'updateDocuments':
+        // Handle updateDocuments
+        break;
+      case 'deleteDocuments':
+        // Handle deleteDocuments
+        break;
+      case 'fetchDocumentsRequest':
+        // Handle fetchDocumentsRequest
+        break;
+      case 'fetchDocumentsSuccess':
+        // Handle fetchDocumentsSuccess
+        break;
+      case 'fetchDocumentsFailure':
+        // Handle fetchDocumentsFailure
+        break;
+      case 'selectUserIdea':
+        // Handle selectUserIdea
+        break;
+      case 'addUserIdea':
+        // Handle addUserIdea
+        break;
+      case 'updateUserIdea':
+        // Handle updateUserIdea
+        break;
+      case 'deleteUserIdea':
+        // Handle deleteUserIdea
+        break;
+      default:
+        const _exhaustiveCheck: never = action;
+        throw new Error(`Unhandled action type: ${(action as AppActionsType).type}`);
+    }
+  }
+
+
+
+
+const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
   initialData: RealtimeDataItem[],
-  updateCallback: RealtimeUpdateCallback<RealtimeData> 
-  
+  updateCallback: (events: Record<string, CalendarEvent<T, K>[]>,
+    snapshotStore: SnapshotStore<T, K>, dataItems: RealtimeDataItem[],
+    updateCallback: (dispatch: Dispatch<AppActionsType>) => void
+
+  ) => void
 ) => {
   const [realtimeData, setRealtimeData] = useState<RealtimeDataItem[]>(initialData);
-  const dispatch = useDispatch();
+  const dispatch = (action: any) => {
+    if (isKnownAction(action)) {
+      // Proceed with dispatch if action is known
+      console.log('Dispatching action:', action);
+    } else {
+      // Handle unknown action, e.g., log a warning or throw an error
+      console.warn('Unknown action type:', action.type);
+    }
+  }
+
+  const fetchAndSetData = async () => {
+    try {
+      // Fetch data from the API using the real-time endpoints
+      const result = await fetchData(endpoints.data.getData); // Use the correct endpoint
+      if (result) {
+        // Extract relevant data from the result
+        const { data } = result;
+        const { calendarEvents, todos, tasks, currentPhase, comment, highlights, data: additionalData } = data;
+
+        // Update state with the fetched data
+        setRealtimeData((prevData) => [
+          ...prevData,
+          ...calendarEvents.map((event) => ({ ...event, type: 'calendarEvent' })),
+          ...todos.map((todo) => ({ ...todo, type: 'todo' })),
+          ...tasks.map((task) => ({ ...task, type: 'task' })),
+        ]);
+
+        // Synchronize the cache with the new data
+        await axiosInstance.post(endpoints.data.updateData, {
+          preferences: data,
+        });
+
+        // Dispatch an action to update the Redux store
+        dispatch({ type: 'UPDATE_REALTIME_DATA', payload: data });
+
+        // Emit an event to trigger further updates via WebSocket
+        socketIOClient(ENDPOINT).emit('updateData', data);
+      }
+    } catch (error) {
+      console.error('Error fetching or processing data:', error);
+    }
+  };
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
 
     socket.on(
-      "updateData",
+      'updateData',
       (
         data: any,
-        events: Record<string, CalendarEvent[]>,
-        snapshotStore: SnapshotStore<RealtimeData>,
+        events: Record<string, CalendarEvent<T, K>[]>,
+        snapshotStore: SnapshotStore<T, K>,
         dataItems: RealtimeDataItem[]
       ) => {
         // Call the provided updateCallback with the updated data, events, snapshotStore, and dataItems
-        updateCallback(data, events, snapshotStore, dataItems);
+        updateCallback(events, snapshotStore, dataItems, dispatch);
+
+        // Dispatch actions based on updated events
+        Object.keys(events).forEach((eventId) => {
+          const calendarEvents = events[eventId];
+          calendarEvents.forEach((event) => {
+            // Example action for event updates
+            dispatch(EventActions.notificationReceived({
+              message: `Updated event with ID ${eventId}: ${JSON.stringify(event)}`,
+            }));
+          });
+        });
 
         // Emit an event to trigger further updates, if needed
-        socket.emit("realtimeUpdate", data);
+        socket.emit('realtimeUpdate', data);
       }
     );
 
-    socket.on("connect_error", (error) => {
-      console.error("WebSocket connection error:", error);
-      // Implement error handling, such as retry logic or showing an error message
-      // For example, you can attempt to reconnect after a delay
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
+      // Attempt to reconnect after a delay
       setTimeout(() => {
         socket.connect();
       }, 3000); // Retry connection after 3 seconds (adjust as needed)
     });
 
-    socket.on("disconnect", (reason) => {
-      console.log("WebSocket disconnected:", reason);
-      // Implement logic for reconnection or notifying the user
-      // You may want to check the reason for disconnection and handle accordingly
-      if (reason === "io server disconnect") {
-        // Automatic reconnection is attempted
-      } else {
-        // Manually attempt reconnection
+    socket.on('disconnect', (reason) => {
+      console.log('WebSocket disconnected:', reason);
+      // Prompt the user to reconnect
+      const reconnect = window.confirm('WebSocket disconnected. Do you want to reconnect?');
+      if (reconnect) {
         socket.connect();
       }
     });
 
-    const fetchData = async (userId: string, dispatchAction: (action: any) => void) => {
-      try {
-        const response = await axiosInstance.get("/api/data");
-        setRealtimeData(response.data);
-        await axiosInstance.post("/api/synchronize_cache", {
-          preferences: response.data,
-        });
-        dispatchAction({ type: "UPDATE_REALTIME_DATA", payload: response.data });
-        socket!.emit("updateData", response.data);
-      } catch (error) {
-        console.error("Error fetching or synchronizing data:", error);
-      }
-    };
-    
-
-    const userId = useSecureUserId()
     // Initial fetch
-    fetchData(String(userId), dispatch);
+    fetchAndSetData();
 
     // Interval for periodic updates
-    const intervalId = setInterval(fetchData, 5000); // Fetch data every 5 seconds (adjust as needed)
+    const intervalId = setInterval(() => fetchAndSetData(), 5000); // Fetch data every 5 seconds (adjust as needed)
 
     return () => {
       // Cleanup: Stop the interval and disconnect WebSocket when the component unmounts
       clearInterval(intervalId);
       socket.disconnect();
     };
-  }, [setRealtimeData, updateCallback]);
+  }, [dispatch, updateCallback]);
 
-  return { realtimeData, fetchData };
+  return { realtimeData, fetchData: fetchAndSetData }; // Ensure to return fetchAndSetData as `fetchData`
 };
 
+
+
 // Define your update callback function
-const updateCallback = (events: Record<string, CalendarEvent[]>) => {
+const updateCallback =<T extends Data, K extends RealtimeData = any>
+  (events: Record<string, CalendarEvent<T, K>[]>,
+  snapshotStore: SnapshotStore<RealtimeData, K>,
+  dataItems: RealtimeDataItem[]
+
+) => {
   // Your update logic here
 
   // Perform any additional logic based on the updated events data
@@ -109,7 +400,7 @@ const updateCallback = (events: Record<string, CalendarEvent[]>) => {
   Object.keys(events).forEach((eventId: string) => {
     const calendarEvents = events[eventId];
     // Perform actions based on each calendar event
-    calendarEvents.forEach((event: CalendarEvent) => {
+    calendarEvents.forEach((event: CalendarEvent<T, K>) => {
       // Example: Update UI or trigger notifications based on the event
       console.log(`Updated event with ID ${eventId}:`, event);
     });
@@ -117,3 +408,4 @@ const updateCallback = (events: Record<string, CalendarEvent[]>) => {
 };
 
 export default useUIRealtimeData;
+export {updateCallback}

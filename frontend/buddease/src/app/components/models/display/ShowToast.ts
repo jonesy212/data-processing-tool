@@ -1,28 +1,23 @@
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { toast } from 'react-toastify';
 
-async function showToast(message: Message | { content: string }): Promise<void> {
-    // Create a new div element to hold the toast message
-    const toast = document.createElement('div');
-    toast.classList.add('toast');
-    
-  
-    // Extract the content from the message object
-    const content = 'content' in message ? message.content : message;
-  
-    // Assign the content to the toast's textContent
-    toast.textContent = content;
-  
-   
-    // Assign the content to the toast's textContent
-    toast.textContent = content;
-
-    // Append the toast element to the body of the document
-    document.body.appendChild(toast);
-  
-    // Automatically remove the toast after a certain duration (e.g., 3 seconds)
-    setTimeout(() => {
-      toast.remove();
-    }, 3000); // 3000 milliseconds = 3 seconds
+async function showToast(
+  message: Message | { content: string },
+  duration: number = 3000,
+  type: 'success' | 'error' = 'success'
+): Promise<void> {
+  // Show toast notification with react-toastify
+  if (type === 'success') {
+    toast.success('content' in message ? message.content : message, {
+      position: 'top-right',
+      autoClose: duration,
+    });
+  } else if (type === 'error') {
+    toast.error('content' in message ? message.content : message, {
+      position: 'top-right',
+      autoClose: duration,
+    });
+  }
 }
 
 

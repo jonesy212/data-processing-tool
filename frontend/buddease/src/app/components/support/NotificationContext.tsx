@@ -49,6 +49,7 @@ export enum NotificationTypeEnum {
   AppStructureID = "AppStructureID",
   FileID = "FileID",
   GeneratedID = "GeneratedID",
+  GetStoreSuccess = "GetStoreSuccess",
   LocationID = "LocationID",
   MeetingID = "MeetingId",
   PhaseID = "PhaseID",

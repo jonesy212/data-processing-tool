@@ -18,11 +18,12 @@ import YearView from "./CalendarYearView";
 import DayView from "./DayOfWeek";
 import { MonthInfo } from "./Month";
 import YourCalendarLibrary from "./YourCalendarLibrary";
+import { Data } from "../models/data/Data";
 
-interface CommonCalendarProps {
+interface CommonCalendarProps{
   year?: YearInfo[] | number;
   month?: MonthInfo[] | number;
-  events: CalendarEvent[];
+  events: CalendarEvent<any, any>[];
   tasks: Task[];
   milestones: Milestone[];
   projectId: string; // Add projectId prop
@@ -83,7 +84,7 @@ interface CommonCalendarProps {
   onContentPostPerformanceTrack: (post: ContentPost) => void;
 }
 
-interface CalendarProps extends CommonCalendarProps {
+interface CalendarProps<T extends Data, K extends Data> extends CommonCalendarProps {
   view: string | CalendarManagerState;
   container: any;
   speed: number;
@@ -99,7 +100,7 @@ interface CalendarProps extends CommonCalendarProps {
   onDateSelect: (date: Date) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({
+const Calendar = <T extends Data, K extends Data>({
   view,
   container,
   speed,
@@ -113,7 +114,7 @@ const Calendar: React.FC<CalendarProps> = ({
   milestones,
   onDateSelect,
   ...taskHandlers
-}) => {
+}: CalendarProps<T, K>) => {
   return (
     <div>
       {view === "day" && (
@@ -154,7 +155,6 @@ const Calendar: React.FC<CalendarProps> = ({
         <YearView
           year={year}
           projects={projects}
-          month={month}
           tasks={tasks}
           events={events}
           milestones={milestones}

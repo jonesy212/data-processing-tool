@@ -1,3 +1,4 @@
+import * as snapshotApi from '@/app/api/SnapshotApi'
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import React, { useEffect, useState } from "react";
@@ -6,7 +7,7 @@ import {
   useCalendarContext,
 } from "../calendar/CalendarContext";
 import DynamicContent from "../documents/DynamicContent";
-import { DataDetails } from "../models/data/Data";
+import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar, { ProgressPhase } from "../models/tracker/ProgressBar";
@@ -14,7 +15,7 @@ import { Tracker } from "../models/tracker/Tracker";
 import { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import useNotificationManagerServiceProps from "../notifications/useNotificationManagerServiceProps";
 import { PromptPageProps } from "../prompts/PromptPage";
-import { updateCallback } from "../state/stores/CalendarEvent";
+import CalendarEvent, { updateCallback } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
@@ -23,6 +24,15 @@ import { useSecureUserId } from "../utils/useSecureUserId";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
+import { T, K, UpdateSnapshotPayload, snapshot } from "../snapshots";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import appTreeApiService from "@/app/api/appTreeApi";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
+import ExampleComponent from '../models/tracker/ExampleComponent';
+import { headersConfig } from '../shared/SharedHeaders';
+import { StatusType } from '../models/data/StatusType';
+import SnapshotStoreOptions from './SnapshotStoreOptions';
+
 
 interface HooksObject {
   [key: string]: React.FC<{}>;
@@ -150,6 +160,68 @@ const YourComponent: React.FC<YourComponentProps> = ({
     fetchData();
   }, [dataFrameAPI, addTracker, getTrackers]);
 
+
+
+  const updateSnapshot = async (
+    snapshotId: string,
+    data: Data,
+    events: Record<string, CalendarEvent<T, K>[]>,
+    snapshotStore: SnapshotStore<BaseData, K>,
+    dataItems: RealtimeDataItem[],
+    newData: Data,
+    payload: UpdateSnapshotPayload<Data>
+  ) => {
+    try {
+      // Implement the logic to update the snapshot
+      console.log("Updating snapshot with payload:", payload);
+      // Call your API or logic here
+    } catch (error) {
+      console.error("Error during snapshot update:", error);
+    }
+  };
+
+
+  // Example usage of updateSnapshot
+  const handleUpdateSnapshot = async () => {
+    const snapshotId = getSnapshotId(snapshot.id);
+    const baseURL = "https://example.com";
+    const enabled = true;
+    const maxRetries = 3;
+    const retryDelay = 1000;
+    const maxAge = 1000;
+    const staleWhileRevalidate = 1000;
+    const cacheKey = await appTreeApiService.cacheKey;
+    const newData: Data = { timestamp: undefined };
+    const payload: UpdateSnapshotPayload<Data> = {
+      snapshotId: snapshotId,
+      newData: newData,
+      title: "",
+      description: "",
+      createdAt: undefined,
+      updatedAt: undefined,
+      status: StatusType.Active,
+      category: ""
+    };
+
+    
+    const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
+    const events: Record<string, CalendarEvent<T, K>[]> = {};
+    const options = snapshotApi.getOptions
+    const category = 
+    const snapshotStore = new SnapshotStore<BaseData, K>(await storeId, options, category, config, operation);
+    const dataItems: RealtimeDataItem[] = [];
+
+
+    await updateSnapshot(
+      String(snapshotId),
+      data,
+      events,
+      snapshotStore,
+      dataItems,
+      newData,
+      payload
+    );
+  };
   const handleNextPage = async () => {
     // Increment the page number
     const nextPage = currentPage + 1;
@@ -185,7 +257,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
         startDate: new Date(), // Set the start date
         endDate: new Date(), // Set the end date
         shared: <div>Shared</div>, // Define the shared content
-        details: {} as DetailsItem<DataDetails>, // Define the details item
+        details: {} as DetailsItem, // Define the details item
         bulkEdit: false, // Set bulkEdit flag
         recurring: false, // Set recurring flag
         customEventNotifications: "Custom notifications", // Define custom notifications
@@ -316,3 +388,78 @@ const YourComponent: React.FC<YourComponentProps> = ({
 };
 
 export default YourComponent;
+
+
+
+// Example:
+
+const snapshotId = getSnapshotId(snapshot.id)
+const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
+const events: Record<string, CalendarEvent<T, K>[]> = {};
+const data = new SnapshotStore<T, K>(await storeId, options, config, operation);
+const snapshotStore = new SnapshotStore<BaseData, K>(storeId, snapshotStoreOptions, config, operation);
+const dataItems: RealtimeDataItem[] = [];
+const newData: Data = {
+  timestamp: undefined
+};
+
+
+const baseURL = "https://example.com";
+const enabled = true;
+const maxRetries = 3;
+const retryDelay = 1000;
+const maxAge = 1000;
+const staleWhileRevalidate = 1000;
+const cacheKey = await appTreeApiService.cacheKey
+const payload: UpdateSnapshotPayload<Data> = {
+  snapshotId: snapshotId, // Assign snapshotId here
+  newData: newData,
+  title: "",
+  description: "",
+  createdAt: undefined,
+  updatedAt: undefined,
+  status: "active",
+  category: ""
+};
+
+// Example component update call
+const component = <YourComponent
+  apiConfig={{
+    name: "exampleName",
+    baseURL: baseURL,
+    timeout: 1000,
+    headers: headersConfig,
+    retry: {
+      enabled: enabled,
+      maxRetries: maxRetries,
+      retryDelay: retryDelay
+    },
+    cache: {
+      enabled: enabled,
+      maxAge: maxAge,
+      staleWhileRevalidate: staleWhileRevalidate,
+      cacheKey: cacheKey
+    },
+    responseType: "json",
+    withCredentials: false
+  }}
+  children={[]}
+/>;
+
+component
+  .updateSnapshot(
+    snapshotId,
+    data,
+    events,
+    snapshotStore,
+    dataItems,
+    newData,
+    payload
+  )
+  .then(() => {
+    console.log("Snapshot update completed.");
+  })
+  .catch((error: any) => {
+    console.error("Error during snapshot update:", error);
+  });
+

@@ -11,8 +11,7 @@ import { Data } from "../../models/data/Data";
 import TeamData from "../../models/teams/TeamData";
 import { Phase } from "../../phases/Phase";
 import { Project } from "../../projects/Project";
-import SnapshotStoreConfig, { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationType,
   NotificationTypeEnum,
@@ -25,6 +24,7 @@ import {
   useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
+import { Snapshot, SnapshotStoreConfig, TagsRecord } from "../../snapshots";
 
 interface CustomData extends Data {
   _id: string;
@@ -32,7 +32,7 @@ interface CustomData extends Data {
   title: string;
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
-  tags: string[];
+  tags: TagsRecord
   phase: Phase | null;
   // Add other properties as needed to match the structure of Data
 }
@@ -57,7 +57,7 @@ export interface TeamManagerStore {
   removeTeam: (teamId: string) => void;
   removeTeams: (teamIds: string[]) => void;
 
-  getTeamData: (teamId: string, team: Team) => Team | null;
+  getTeamData: (teamId: string, team: Team, color: string | null) => Team | null;
   getTeamsData: (teamId: string, team: Team[]) => Team[] | null;
   fetchTeamsSuccess: (payload: { teams: Team[] }) => void;
   fetchTeamsFailure: (payload: { error: string }) => void;
@@ -68,7 +68,7 @@ export interface TeamManagerStore {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Snapshot<Data>>; // Include a SnapshotStore for teams
+  snapshotStore: SnapshotStore<Snapshot<T, K>>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
   getTeamId: (
     teamId: Team["id"],
@@ -138,16 +138,22 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   };
   
 
-  const getTeamData = (teamId: string, data: TeamData) => {
+  const getTeamData = (teamId: string, data: TeamData, color: string | null) => {
     const teamData: Team = {
       id: teamId,
+      color: color,
       team: {
-        value: 0, label: data.teamName,
-        id: "",
+        name: data.teamName,
+        color: data.color,
+        min: 0,
+        description: data.description ? data.description : "",
+        label: data.label,
+        value: data.value,
+        id: data.id ? data.id.toString() : "",
         current: 0,
         max: 0,
         percentage: 0,
-        done: false
+        done: false,
       }, // Assuming 'teamName' maps to 'label' property in 'Team' type
       description: data.description,
       members: data.members || [],
@@ -162,7 +168,6 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
       reassignedProjects: [],
       assignProject: function (team: Team, project: Project): void {
         team.assignedProjects.push(project);
-
       },
       reassignProject: function (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void {
         team.assignedProjects.push(project);
@@ -226,7 +231,7 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
     > = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>, Data>;
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot = new SnapshotStore<Snapshot<Data>>(
+    const teamSnapshot = new SnapshotStore<Snapshot<Data, K>>(
       snapshotConfig,
       null,
       () =>

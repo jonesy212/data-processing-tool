@@ -3,6 +3,7 @@ import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
+import { VersionHistory } from "@/app/components/versions/VersionData";
 
 export default class FrontendStructure implements AppStructureItem {
 
@@ -104,9 +105,48 @@ export default class FrontendStructure implements AppStructureItem {
     return items;
   }
 
-  getStructure(): Record<string, AppStructureItem> {
-    return { ...this.structure };
+  getStructure(): Promise<Record<string, AppStructureItem>> {
+    return new Promise((resolve, reject) => {
+
+      // Use axiosInstance to make HTTP requests to the backend API
+      axiosInstance.get(`/api/traverse-directory?dir=${encodeURIComponent(this.path)}`)
+    .then((response) => {
+        const structure = response.data as Record<string, AppStructureItem>;
+        this.structure = structure;
+        resolve(structure);
+    })
+    .catch((error) => {
+        console.error("Error fetching structure from backend:", error);
+        reject(error);
+      });
+    });
   }
+
+
+  async frontendVersions(): Promise<VersionHistory[]> {
+    const { versionNumber, appVersion } = getCurrentAppInfo();
+    const projectPath = getAppPath(versionNumber, appVersion);
+    const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
+    const frontendStructureItems = await frontendStructure.getStructureAsArray();
+    const frontendStructureItemsWithVersions = frontendStructureItems.map((item) => {
+      const { id, name, type, items, path, draft, content, permissions } = item;
+      return {
+        id,
+        name,
+        type,
+        items,
+        path,
+        draft,
+        content,
+        permissions,
+        versions: [],
+      };
+    });
+    return frontendStructureItemsWithVersions;
+  }
+  // public async getStructure(): Promise<Record<string, AppStructureItem>> { 
+  //   return this.structure || {};
+  // }
 
   public async getStructureAsArray(): Promise<AppStructureItem[]> {
     return Object.values(this.structure || {});

@@ -1,23 +1,26 @@
-import { CalendarEvent, convertedData } from "./../state/stores/CalendarEvent";
+import { createSnapshot, getSnapshotId } from "@/app/api/SnapshotApi";
+import { Subscriber } from '@/app/components/users/Subscriber';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CombinedEvents, SnapshotStoreOptions, options } from "../hooks/useSnapshotManager";
+import { CombinedEvents, SnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { getCurrentSnapshotConfigOptions, Snapshot, Snapshots } from "../snapshots/LocalStorageSnapshotStore";
-import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
-import { SnapshotStoreMethod } from "../snapshots/SnapshotStorMethods";
-import SnapshotStore, { defaultCategory, handleSnapshotOperation } from "../snapshots/SnapshotStore";
-import { Subscriber } from "../users/Subscriber";
-import { addToSnapshotList, generateSnapshotId } from "../utils/snapshotUtils";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SnapshotStoreConfig } from '../snapshots';
+import { Snapshot, Snapshots } from "../snapshots/LocalStorageSnapshotStore";
+import { retrieveSnapshotData } from "../snapshots/RetrieveSnapshotData";
+import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
+import SnapshotStore, { defaultCategory } from "../snapshots/SnapshotStore";
+import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
+import { SnapshotConfig } from "../snapshots/snapshot";
+import { delegate, initSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 import {
-  Callback,
-  subscribeToSnapshotsImpl,
-  subscribeToSnapshotImpl,
+  Callback
 } from "../snapshots/subscribeToSnapshotsImplementation";
-import { userId } from "../users/ApiUser";
-import { fetchSnapshotById, getSnapshotId } from "@/app/api/SnapshotApi";
-import { displayToast } from "../models/display/ShowToast";
-
+import { generateSnapshotId } from "../utils/snapshotUtils";
+import CalendarManagerStoreClass, { CalendarEvent } from "./../state/stores/CalendarEvent";
+import { StatusType } from "../models/data/StatusType";
+import { useContext } from "react";
 type T = Snapshot<BaseData>; // BaseData is a base type shared by all data entities
 type K = T; // K could be the same as T or a different specialized type
 
@@ -28,33 +31,58 @@ type ChosenSnapshotState =
   | null
   | undefined;
 
+
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K>
-class YourSpecificSnapshotType<T extends BaseData, K extends BaseData> implements Snapshot<T, K> {
+class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
+  implements Snapshot<T, K> {
   id: string;
   data: Map<string, Snapshot<T, K>>;
-  meta:Map<string, Snapshot<T, K>>;
-  events: CombinedEvents<T, K>; 
+  meta: Map<string, Snapshot<T, K>>;
+  events: {
+    callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
+    eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | undefined;
+    subscribers: Subscriber<T, K>[];
+    eventIds: string[];
+    on: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+    off: (event: string, ccallback: (snapshot: Snapshot<T, K>) => void) => void;
+    subscribe: (
+      event: string,
+      callback: (snapshot: Snapshot<T, K>) => void
+    ) => void;
+    unsubscribe: (
+      event: string,
+      callback: (snapshot: Snapshot<T, K>) => void
 
-  constructor(id: string,
+
+    ) => void;
+    trigger: (
+      event: string,
+      snapshot: Snapshot<T, K>
+    ) => void;
+    eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
+  }
+
+  constructor(
+    id: string,
     data: Map<string, Snapshot<T, K>>,
     meta: Map<string, Snapshot<T, K>>,
     events?: CombinedEvents<T, K>) {
     this.id = id;
     this.data = data;
     this.meta = meta;
-    this.events = events ?? {
-      eventRecords: {},
-      eventIds: [],
-       callbacks: (snapshot: Snapshot<T, K>) => {
-         console.log("callback called");
-         // 
-         return;
-       },
-      subscribers: [],
-       
-    }; // Initialize with default if not provided
+    this.events = {
+      callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K>) => {
+        console.log("callback called");
+        return { snapshots: [snapshot] }
+      }),
+      eventRecords: events?.eventRecords ?? {},
+      subscribers: events?.subscribers ?? [],
+      eventIds: events?.eventIds ?? [],
+      on: events?.on ?? (() => { }),
+      off: events?.off ?? (() => { }),
+      eventsDetails: events?.eventsDetails
+    };
   }
-
 
   // Implement methods required by Snapshot<T, K>
   getId(): string {
@@ -66,6 +94,23 @@ class YourSpecificSnapshotType<T extends BaseData, K extends BaseData> implement
     // Additional logic if necessary
   }
 }
+
+
+
+function flatMapImplementation<T extends Data, K extends Data, U extends Iterable<any>>(
+  array: SnapshotStoreConfig<T, K>[],
+  callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => U
+): U extends Iterable<infer I> ? I[] : never {
+  const result: any[] = [];
+  array.forEach((value, index) => {
+    const callbackResult = callback(value, index, array);
+    for (const item of callbackResult as any) {
+      result.push(item);
+    }
+  });
+  return result as U extends Iterable<infer I> ? I[] : never;
+}
+
 
 // Create specific snapshot with SampleSnapshot
 const specificSnapshot = new YourSpecificSnapshotType<string, BaseData>(
@@ -89,14 +134,89 @@ console.log(specificSnapshot.data); // Output: 'updated snapshot data'
 
 
 
+// Example function to map SnapshotStoreConfig to DataStore
+const convertToDataStore = <T extends Data, K extends Data>(
+  config: SnapshotStoreConfig<T, K>[]
+): DataStore<T, K>[] => {
+  return config.map(c => ({
+    mapSnapshot: (snapshot: Snapshot<T, K>) => snapshot,
+    mapSnapshots: (snapshots: Snapshot<T, K>[]) => snapshots,
+    mapSnapshotStore: (store: SnapshotStore<T, K>) => store,
+    id: c.id,
+    data: c.data,
+    snapshots: c.snapshots,
+    state: c.state,
+    snapshotId: c.snapshotId,
+    set: c.set,
+    snapshotItems: c.snapshotItems,
+    configOption: c.configOption,
+    initialState: c.initialState,
+    nestedStores: c.nestedStores,
+    events: c.events,
+    snapshotStore: c.snapshotStore,
+    dataItems: c.dataItems,
+    newData: c.newData,
+    stores: c.stores,
+    snapshotStoreConfig: c.snapshotStoreConfig,
+    getSnapshotItems: c.getSnapshotItems,
+    snapshotIds: c.snapshotIds,
+    dataStoreMethods: c.dataStoreMethods,
+    transformSubscriber: c.transformSubscriber,
+    transformDelegate: c.transformDelegate,
+    addSnapshotItem: c.addSnapshotItem,
+    delegate: c.delegate,
+    getData: c.getData,
+    dataStore: c.dataStore,
+    metadata: {},
+    addData: () => { },
+    getStoreData: () => null,
+    getItem: () => null,
+    setItem: () => { },
+    removeItem: () => { },
+    clear: () => { },
+    keys: () => [],
+    values: () => [],
+    entries: () => [],
+    forEach: () => { },
+    size: 0,
+    has: () => false,
+    delete: () => false,
+    get: () => null,
+    set: () => ({} as DataStore<T, K>),
+    getAll: () => [],
+    setAll: () => { },
+    removeAll: () => { },
+    clearAll: () => { },
+    keysAll: () => [],
+    valuesAll: () => [],
+    entriesAll: () => [],
+    forEachAll: () => { },
+    sizeAll: 0,
+    hasAll: () => false,
+    deleteAll: () => false,
+    getDataStore: () => ({} as DataStore<T, K>),
+    setDataStore: () => { },
 
+    removeData, updateData, updateStoreData, updateDataTitle,
+    removeData, updateData, updateStoreData, updateDataTitle,
+    updateDataDescription, addDataStatus, updateDataStatus, addDataSuccess,
+    getDataVersions, updateDataVersions, getBackendVersion, getFrontendVersion,
+  }));
+};
+
+
+function isSnapshot<T extends BaseData, K extends BaseData>(
+  obj: any
+): obj is Snapshot<T, K> {
+  return obj && typeof obj === "object" && "id" in obj && "data" in obj;
+}
 
 
 function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
   snapshotStore: SnapshotStore<T, K>
-): SnapshotStoreConfig<BaseData, any> {
-  const mappedSnapshots: SnapshotStore<BaseData, any>[] =
-    snapshotStore.snapshots.map((s) => ({
+): SnapshotStoreConfig<T, any> {
+  const mappedSnapshots: Snapshots<T> =
+    snapshotStore.snapshots.map((s: Snapshot<T, any>) => ({
       ...s,
       ...snapshotStore,
       snapshotId: s.snapshotId || '',
@@ -109,16 +229,23 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
       events: s.events || [],
       snapshotStore: s.snapshotStore || null,
       dataItems: s.dataItems || [],
-      newData: s.newData || [],
+      newData: s.newData,
       stores: s.stores || [],
       snapshotStoreConfig: s.snapshotStoreConfig || null,
       getSnapshotItems: s.getSnapshotItems || [],
-      dataStoreMethods, delegate, getData, addSnapshotItem,
-      dataStoreMethods, delegate, getData, addSnapshotItem,
+      snapshotIds: s.snapshotIds || [],
+      dataStoreMethods: s.dataStoreMethods || null,
+      transformSubscriber: s.transformSubscriber || null,
+      transformDelegate: s.transformDelegate || null,
+      addSnapshotItem: s.addSnapshotItem || null,
+      delegate: s.delegate || [],
+      getData: s.getData || (() => null),
+      dataStore: s.dataStore,
+      set: s.set,
       // Add other required properties here
     }));
 
-  const mappedState: Snapshot<BaseData, K>[] | null = snapshotStore.state
+  const mappedState: Snapshot<T, K>[] | null = snapshotStore.state
     ? snapshotStore.state.map((
       snapshot: Snapshot<T, K>
     ) => ({
@@ -136,12 +263,6 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
       type: snapshot.type || '',
     }))
     : null;
-
-  function isSnapshot<T extends BaseData, K extends BaseData>(
-    obj: any
-  ): obj is Snapshot<T, K> {
-    return obj && typeof obj === "object" && "id" in obj && "data" in obj;
-  }
 
   function isSubscriber<T extends BaseData, K extends BaseData>(
     obj: any
@@ -170,14 +291,14 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
           onSnapshotCallbacks: s.getOnSnapshotCallbacks ? s.getOnSnapshotCallbacks : [],
           onErrorCallbacks: s.getOnErrorCallbacks ? s.getOnErrorCallbacks : [],
           onUnsubscribeCallbacks: s.getOnUnsubscribeCallbacks ? s.getOnUnsubscribeCallbacks : [],
-          notifyEventSystem: s.getNotifyEventSystem ? s.getNotifyEventSystem() : () => {},
-          updateProjectState: s.getUpdateProjectState ? s.getUpdateProjectState() : () => {},
-          logActivity: s.getLogActivity ? s.getLogActivity() : () => {},
-          triggerIncentives: s.getTriggerIncentives ? s.getTriggerIncentives() : () => {},
+          notifyEventSystem: s.getNotifyEventSystem ? s.getNotifyEventSystem() : () => { },
+          updateProjectState: s.getUpdateProjectState ? s.getUpdateProjectState() : () => { },
+          logActivity: s.getLogActivity ? s.getLogActivity() : () => { },
+          triggerIncentives: s.getTriggerIncentives ? s.getTriggerIncentives() : () => { },
           newData: s.getNewData ? s.getNewData() : null,
-          defaultSubscribeToSnapshots: s.getDefaultSubscribeToSnapshots ? s.getDefaultSubscribeToSnapshots : () => {},
-          subscribeToSnapshots: s.getSubscribeToSnapshots ? s.getSubscribeToSnapshots() : () => {},
-          transformSubscriber: s.getTransformSubscriber ? s.getTransformSubscriber() : () => {},
+          defaultSubscribeToSnapshots: s.getDefaultSubscribeToSnapshots ? s.getDefaultSubscribeToSnapshots : () => { },
+          subscribeToSnapshots: s.getSubscribeToSnapshots ? s.getSubscribeToSnapshots() : () => { },
+          transformSubscriber: s.getTransformSubscriber ? s.getTransformSubscriber() : () => { },
           optionalData: s.getOptionalData ? s.getOptionalData() : null,
           email: s.getEmail ? s.getEmail() : '',
           snapshotIds: s.getSnapshotIds ? s.getSnapshotIds() : [],
@@ -188,64 +309,68 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
           getOptionalData: s.getOptionalData || (() => null),
           getFetchSnapshotIds: s.getFetchSnapshotIds || (() => Promise.resolve([])),
           getSnapshotIds: s.getSnapshotIds || (() => []),
-          getNotifyEventSystem: s.getNotifyEventSystem || (() => {}),
-          getUpdateProjectState: s.getUpdateProjectState || (() => {}),
-          getLogActivity: s.getLogActivity || (() => {}),
-          getTriggerIncentives: s.getTriggerIncentives || (() => {}),
+          getNotifyEventSystem: s.getNotifyEventSystem || (() => { }),
+          getUpdateProjectState: s.getUpdateProjectState || (() => { }),
+          getLogActivity: s.getLogActivity || (() => { }),
+          getTriggerIncentives: s.getTriggerIncentives || (() => { }),
           getName: s.getName || (() => ''),
           snapshots: s.snapshots || [],
-          determineCategory: s.getDetermineCategory ? s.getDetermineCategory(data) : () => '',
+          determineCategory: s.getDetermineCategory ? s.getDetermineCategory : () => '',
           getSubscriberId: s.getSubscriberId || (() => ''),
           subscribersById: s.getSubscribersById ? s.getSubscribersById() : {},
           getSubscribers: s.getSubscribers || (() => []),
-          setSubscribers: s.setSubscribers || (() => {}),
+          setSubscribers: s.setSubscribers || (() => { }),
           getOnSnapshotCallbacks: s.getOnSnapshotCallbacks || (() => []),
-          setOnSnapshotCallbacks: s.setOnSnapshotCallbacks || (() => {}),
+          setOnSnapshotCallbacks: s.setOnSnapshotCallbacks || (() => { }),
           getOnErrorCallbacks: s.getOnErrorCallbacks || (() => []),
-          setOnErrorCallbacks: s.setOnErrorCallbacks || (() => {}),
+          setOnErrorCallbacks: s.setOnErrorCallbacks || (() => { }),
           getOnUnsubscribeCallbacks: s.getOnUnsubscribeCallbacks || (() => []),
-          setOnUnsubscribeCallbacks: s.setOnUnsubscribeCallbacks || (() => {}),
-          setNotifyEventSystem: s.setNotifyEventSystem || (() => {}),
-          setUpdateProjectState: s.setUpdateProjectState || (() => {}),
-          setLogActivity: s.setLogActivity || (() => {}),
-          setTriggerIncentives: s.setTriggerIncentives || (() => {}),
-          setOptionalData: s.setOptionalData || (() => {}),
-          setEmail: s.setEmail || (() => {}),
-          setSnapshotIds: s.setSnapshotIds || (() => {}),
+          setOnUnsubscribeCallbacks: s.setOnUnsubscribeCallbacks || (() => { }),
+          setNotifyEventSystem: s.setNotifyEventSystem || (() => { }),
+          setUpdateProjectState: s.setUpdateProjectState || (() => { }),
+          setLogActivity: s.setLogActivity || (() => { }),
+          setTriggerIncentives: s.setTriggerIncentives || (() => { }),
+          setOptionalData: s.setOptionalData || (() => { }),
+          setEmail: s.setEmail || (() => { }),
+          setSnapshotIds: s.setSnapshotIds || (() => { }),
           getPayload: s.getPayload || (() => ({})),
-          handleCallback: s.handleCallback || (() => {}),
-          snapshotCallback: s.snapshotCallback || (() => {}),
-          subscribe: s.subscribe || (() => {}),
-          unsubscribe: s.unsubscribe || (() => {}),
+          handleCallback: s.handleCallback || (() => { }),
+          snapshotCallback: s.snapshotCallback || (() => { }),
+          subscribe: s.subscribe || (() => { }),
+          unsubscribe: s.unsubscribe || (() => { }),
           getData: s.getData || (() => null),
           getDetermineCategory: s.getDetermineCategory || (() => ''),
           initialData: s.initialData || null,
           fetchSnapshotById: s.fetchSnapshotById || (() => Promise.resolve(null)),
           toSnapshotStore: s.toSnapshotStore || (() => null),
           getDeterminedCategory: s.getDeterminedCategory || (() => ''),
-          processNotification: s.processNotification || (() => {}),
-          receiveSnapshot: s.receiveSnapshot || (() => {}),
+          processNotification: s.processNotification || (() => { }),
+          receiveSnapshot: s.receiveSnapshot || (() => { }),
           getState: s.getState || (() => null),
-          onError: s.onError || (() => {}),
+          onError: s.onError || (() => { }),
           getSubscribersById: s.getSubscribersById || (() => ({})),
           getSubscribersWithSubscriptionPlan: s.getSubscribersWithSubscriptionPlan || (() => []),
           getSubscription: s.getSubscription || (() => null),
-          onUnsubscribe: s.onUnsubscribe || (() => {}),
-          onSnapshot: s.onSnapshot || (() => {}),
-          onSnapshotError: s.onSnapshotError || (() => {}),
-          triggerOnSnapshot: s.triggerOnSnapshot || (() => {}),
-          onSnapshotUnsubscribe: s.onSnapshotUnsubscribe || (() => {}),
+          onUnsubscribe: s.onUnsubscribe || (() => { }),
+          onSnapshot: s.onSnapshot || (() => { }),
+          onSnapshotError: s.onSnapshotError || (() => { }),
+          triggerOnSnapshot: s.triggerOnSnapshot || (() => { }),
+          onSnapshotUnsubscribe: s.onSnapshotUnsubscribe || (() => { }),
           getNewData: s.getNewData || (() => null),
           enabled: s.getEnabled || false,
-          tags: s.tags || [],
+          tags: s.getTags || [],
           transformSubscribers: s.getTransformSubscribers ? s.getTransformSubscribers() : null,
           getTransformSubscribers: s.getTransformSubscribers || (() => null),
           setEvent: s.setEvent,
+          getUniqueId: s.getUniqueId || (() => null),
+          getEnabled: s.getEnabled || false,
+          getTags: s.getTags || null,
+          fetchTransformSubscribers: s.fetchTransformSubscribers || (() => null),
         };
       } else {
         throw new Error("Invalid subscriber type");
       }
-    }).filter((s): s is Subscriber<BaseData, any> => s !== null);
+    }).filter((s): s is Subscriber<T, any> => s !== null);
 
   return {
     id: snapshotStore.id,
@@ -261,20 +386,20 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
     subscribers: mappedSubscribers,
     subscription: snapshotStore.subscription
       ? {
-        unsubscribe: snapshotStore.subscription.unsubscribe ?? (() => {}),
+        unsubscribe: snapshotStore.subscription.unsubscribe ?? (() => { }),
         portfolioUpdates:
-          snapshotStore.subscription.portfolioUpdates ?? (() => {}),
+          snapshotStore.subscription.portfolioUpdates ?? (() => { }),
         tradeExecutions:
-          snapshotStore.subscription.tradeExecutions ?? (() => {}),
-        marketUpdates: snapshotStore.subscription.marketUpdates ?? (() => {}),
+          snapshotStore.subscription.tradeExecutions ?? (() => { }),
+        marketUpdates: snapshotStore.subscription.marketUpdates ?? (() => { }),
         triggerIncentives:
-          snapshotStore.subscription.triggerIncentives ?? (() => {}),
+          snapshotStore.subscription.triggerIncentives ?? (() => { }),
         communityEngagement:
-          snapshotStore.subscription.communityEngagement ?? (() => {}),
+          snapshotStore.subscription.communityEngagement ?? (() => { }),
         portfolioUpdatesLastUpdated:
           snapshotStore.subscription.portfolioUpdatesLastUpdated ?? 0,
         determineCategory:
-          snapshotStore.subscription.determineCategory ?? (() => {}),
+          snapshotStore.subscription.determineCategory ?? (() => { }),
       }
       : null,
     initialState: snapshotStore.initializedState,
@@ -317,7 +442,7 @@ function convertSnapshotToStore<T extends BaseData, K extends BaseData>(
     createdBy: snapshot.createdBy || "",
     type: snapshot.type,
     data: snapshot.data || null,
-    subscribers: snapshot.subscribers || [],
+    subscribers: snapshot.subscribers,
     snapshotConfig: snapshot.snapshotConfig,
     store: snapshot.store,
     dataStore: snapshot.dataStore,
@@ -325,152 +450,152 @@ function convertSnapshotToStore<T extends BaseData, K extends BaseData>(
     dataStoreMethods: snapshot.dataStoreMethods,
     delegate: snapshot.delegate,
     subscriberId: snapshot.subscriberId,
-     length:snapshot.length,
-     content:snapshot.content,
-     value:snapshot.value,
-    
-    todoSnapshotId:snapshot.todoSnapshotId,
-     events:snapshot.events,
-     snapshotStore:snapshot.snapshotStore,
-     dataItems:snapshot.dataItems,
-    
-    newData:snapshot.newData,
-     defaultSubscribeToSnapshots:snapshot.defaultSubscribeToSnapshots,
-     subscribeToSnapshots:snapshot.subscribeToSnapshots,
-     transformSubscriber:snapshot.transformSubscriber,
-    
-    transformDelegate:snapshot.transformDelegate,
-     initializedState:snapshot.initializedState,
-     getAllKeys:snapshot.getAllKeys,
-     getAllItems:snapshot.getAllItems,
-    
-    addData:snapshot.addData,
-     addDataStatus:snapshot.addDataStatus,
-     removeData:snapshot.removeData,
-     updateData:snapshot.updateData,
-    
-    updateDataTitle:snapshot.updateDataTitle,
-     updateDataDescription:snapshot.updateDataDescription,
-     updateDataStatus:snapshot.updateDataStatus,
-     addDataSuccess:snapshot.addDataSuccess,
-    
-    getDataVersions:snapshot.getDataVersions,
-     updateDataVersions:snapshot.updateDataVersions,
-     getBackendVersion:snapshot.getBackendVersionget,
-     getFrontendVersion:snapshot.getFrontendVersion,
-    
-    fetchData:snapshot.fetchDatafetchData,
-     defaultSubscribeToSnapshot:snapshot.defaultSubscribeToSnapshot,
-     handleSubscribeToSnapshot:snapshot.handleSubscribeToSnapshot,
-     snapshot:snapshot.snapshot,
-    
-    removeItem:snapshot.removeItem,
-     getSnapshot:snapshot.getSnapshot,
-     getSnapshotSuccess:snapshot.getSnapshotSuccess,
-     getSnapshotId:snapshot.getSnapshotId,
-    
-    getItem:snapshot.getItem,
-     setItem:snapshot.setItem,
-     addSnapshotFailure:snapshot.addSnapshotFailure,
-     getDataStore:snapshot.getDataStore,
-    
-    addSnapshotSuccess:snapshot.addSnapshotSuccess,
-     compareSnapshotState:snapshot.compareSnapshotState,
-     deepCompare:snapshot.deepCompare,
-     shallowCompare:snapshot.shallowCompareshallowCompare,
-    
-    getDataStoreMethods:snapshot.getDataStoreMethods,
-     getDelegate:snapshot.getDelegate,
-     determineCategory:snapshot.determineCategory,
-     determinePrefix:snapshot.determinePrefix,
-    
-    updateSnapshot:snapshot.updateSnapshot,
-     updateSnapshotSuccess:snapshot.updateSnapshotSuccess,
-     updateSnapshotFailure:snapshot.updateSnapshotFailure,
-     removeSnapshot:snapshot.removeSnapshot,
-    
-    snapshotItems:snapshot.snapshotItems,
-    snapshotItems:snapshot.snapshotItems,:snapshot.nestedStores,
-     nestedStores:snapshot.nestedStores,:snapshot.addSnapshotItem,
-     addSnapshotItem:snapshot.addSnapshotItem,:snapshot.addNestedStore,
-     addNestedStore:snapshot.addNestedStore,
-    getData:snapshot.getData,
-    getData:snapshot.getData,:snapshot.clearSnapshots,
-     clearSnapshots:snapshot.clearSnapshots,:snapshot.addSnapshot,
-     addSnapshot:snapshot.addSnapshot,:snapshot.createSnapshot,
-     createSnapshot:snapshot.createSnapshot,
-    snapshotStoreConfig:snapshot.snapshotStoreConfig,
-     meta:snapshot.meta,
-     getSnapshotItems:snapshot.getSnapshotItems,
-     createInitSnapshot:snapshot.createInitSnapshot,
-    
-    createSnapshotSuccess:snapshot.createSnapshotSuccess,
-     setSnapshotSuccess:snapshot.setSnapshotSuccess,
-     setSnapshotFailure:snapshot.setSnapshotFailure,
-     createSnapshotFailure:snapshot.createSnapshotFailure,
-    
-    updateSnapshots:snapshot.updateSnapshots,
-     updateSnapshotsSuccess:snapshot.updateSnapshotsSuccess,
-     updateSnapshotsFailure:snapshot.updateSnapshotsFailure,
-     initSnapshot:snapshot.initSnapshot,
-    
-    takeSnapshot:snapshot.takeSnapshot,
-     takeSnapshotSuccess:snapshot.takeSnapshotSuccess,
-     takeSnapshotsSuccess:snapshot.takeSnapshotsSuccess,
-     configureSnapshotStore:snapshot.configureSnapshotStore,
-    
-    flatMap:snapshot.flatMap,
-     setData:snapshot.setData,
-     getState:snapshot.getState,
-     setState:snapshot.setState,
-    
-    validateSnapshot:snapshot.validateSnapshot,
-     handleSnapshot:snapshot.handleSnapshot,
-     handleActions:snapshot.handleActions,
-     setSnapshot:snapshot.setSnapshot,
-    
-    transformSnapshotConfig:snapshot.transformSnapshotConfig,
-     setSnapshotData:snapshot.setSnapshotData,
-     setSnapshots:snapshot.setSnapshots,
-     clearSnapshot:snapshot.clearSnapshot,
-    
-    mergeSnapshots:snapshot.mergeSnapshots,
-     reduceSnapshots:snapshot.reduceSnapshots,
-     sortSnapshots:snapshot.sortSnapshots,
-     filterSnapshots:snapshot.filterSnapshots,
-    
-    mapSnapshots:snapshot.mapSnapshots,
-     findSnapshot:snapshot.findSnapshot,
-     getSubscribers:snapshot.getSubscribers,
-     notify:snapshot.notify,
-    
-    notifySubscribers:snapshot.notifySubscribers,
-     subscribe:snapshot.subscribe,
-     unsubscribe:snapshot.unsubscribe,
-     fetchSnapshot:snapshot.fetchSnapshot,
-    
-    fetchSnapshotSuccess:snapshot.fetchSnapshotSuccess,
-     fetchSnapshotFailure:snapshot.fetchSnapshotFailure,
-     getSnapshots:snapshot.getSnapshots,
-     getAllSnapshots:snapshot.getAllSnapshots,
-    
-    generateId:snapshot.generateId,
-     batchFetchSnapshots:snapshot.batchFetchSnapshots,
-     batchTakeSnapshotsRequest:snapshot.batchTakeSnapshotsRequest,
-     batchUpdateSnapshotsRequest:snapshot.batchUpdateSnapshotsRequest,
-    
-    filterSnapshotsByStatus:snapshot.filterSnapshotsByStatus,
-     filterSnapshotsByCategory:snapshot.filterSnapshotsByCategory,
-     filterSnapshotsByTag:snapshot.filterSnapshotsByTag,
-    
-    batchFetchSnapshotsSuccess:snapshot.batchFetchSnapshotsSuccess,
-     batchFetchSnapshotsFailure:snapshot.batchFetchSnapshotsFailure,
-     batchUpdateSnapshotsSuccess:snapshot.batchUpdateSnapshotsSuccess,
-     batchUpdateSnapshotsFailure:snapshot.batchUpdateSnapshotsFailure,
-    
-    batchTakeSnapshot:snapshot.batchTakeSnapshot,
-     handleSnapshotSuccess:snapshot.handleSnapshotSuccess,
-    
+    length: snapshot.length,
+    content: snapshot.content,
+    value: snapshot.value,
+
+    todoSnapshotId: snapshot.todoSnapshotId,
+    events: snapshot.events,
+    snapshotStore: snapshot.snapshotStore,
+    dataItems: snapshot.dataItems,
+
+    newData: snapshot.newData,
+    defaultSubscribeToSnapshots: snapshot.defaultSubscribeToSnapshots,
+    subscribeToSnapshots: snapshot.subscribeToSnapshots,
+    transformSubscriber: snapshot.transformSubscriber,
+
+    transformDelegate: snapshot.transformDelegate,
+    initializedState: snapshot.initializedState,
+    getAllKeys: snapshot.getAllKeys,
+    getAllItems: snapshot.getAllItems,
+
+    addData: snapshot.addData,
+    addDataStatus: snapshot.addDataStatus,
+    removeData: snapshot.removeData,
+    updateData: snapshot.updateData,
+
+    updateDataTitle: snapshot.updateDataTitle,
+    updateDataDescription: snapshot.updateDataDescription,
+    updateDataStatus: snapshot.updateDataStatus,
+    addDataSuccess: snapshot.addDataSuccess,
+
+    getDataVersions: snapshot.getDataVersions,
+    updateDataVersions: snapshot.updateDataVersions,
+    getBackendVersion: snapshot.getBackendVersion,
+    getFrontendVersion: snapshot.getFrontendVersion,
+
+    fetchData: snapshot.fetchData,
+    defaultSubscribeToSnapshot: snapshot.defaultSubscribeToSnapshot,
+    handleSubscribeToSnapshot: snapshot.handleSubscribeToSnapshot,
+
+
+    removeItem: snapshot.removeItem,
+    getSnapshot: snapshot.getSnapshot,
+    getSnapshotSuccess: snapshot.getSnapshotSuccess,
+    getSnapshotId: snapshot.getSnapshotId,
+
+    getItem: snapshot.getItem,
+    setItem: snapshot.setItem,
+    addSnapshotFailure: snapshot.addSnapshotFailure,
+    getDataStore: snapshot.getDataStore,
+
+    addSnapshotSuccess: snapshot.addSnapshotSuccess,
+    compareSnapshotState: snapshot.compareSnapshotState,
+    deepCompare: snapshot.deepCompare,
+    shallowCompare: snapshot.shallowCompare,
+
+    getDataStoreMethods: snapshot.getDataStoreMethods,
+    getDelegate: snapshot.getDelegate,
+    determineCategory: snapshot.determineCategory,
+    determinePrefix: snapshot.determinePrefix,
+
+    updateSnapshot: snapshot.updateSnapshot,
+    updateSnapshotSuccess: snapshot.updateSnapshotSuccess,
+    updateSnapshotFailure: snapshot.updateSnapshotFailure,
+    removeSnapshot: snapshot.removeSnapshot,
+
+    snapshotItems: snapshot.snapshotItems,
+    snapshotItems: snapshot.snapshotItems,: snapshot.nestedStores,
+    nestedStores: snapshot.nestedStores,: snapshot.addSnapshotItem,
+    addSnapshotItem: snapshot.addSnapshotItem,: snapshot.addNestedStore,
+    addNestedStore: snapshot.addNestedStore,
+    getData: snapshot.getData,
+    getData: snapshot.getData,: snapshot.clearSnapshots,
+    clearSnapshots: snapshot.clearSnapshots,: snapshot.addSnapshot,
+    addSnapshot: snapshot.addSnapshot,: snapshot.createSnapshot,
+    createSnapshot: snapshot.createSnapshot,
+    snapshotStoreConfig: snapshot.snapshotStoreConfig,
+    meta: snapshot.meta,
+    getSnapshotItems: snapshot.getSnapshotItems,
+    createInitSnapshot: snapshot.createInitSnapshot,
+
+    createSnapshotSuccess: snapshot.createSnapshotSuccess,
+    setSnapshotSuccess: snapshot.setSnapshotSuccess,
+    setSnapshotFailure: snapshot.setSnapshotFailure,
+    createSnapshotFailure: snapshot.createSnapshotFailure,
+
+    updateSnapshots: snapshot.updateSnapshots,
+    updateSnapshotsSuccess: snapshot.updateSnapshotsSuccess,
+    updateSnapshotsFailure: snapshot.updateSnapshotsFailure,
+    initSnapshot: snapshot.initSnapshot,
+
+    takeSnapshot: snapshot.takeSnapshot,
+    takeSnapshotSuccess: snapshot.takeSnapshotSuccess,
+    takeSnapshotsSuccess: snapshot.takeSnapshotsSuccess,
+    configureSnapshotStore: snapshot.configureSnapshotStore,
+
+    flatMap: snapshot.flatMap,
+    setData: snapshot.setData,
+    getState: snapshot.getState,
+    setState: snapshot.setState,
+
+    validateSnapshot: snapshot.validateSnapshot,
+    handleSnapshot: snapshot.handleSnapshot,
+    handleActions: snapshot.handleActions,
+    setSnapshot: snapshot.setSnapshot,
+
+    transformSnapshotConfig: snapshot.transformSnapshotConfig,
+    setSnapshotData: snapshot.setSnapshotData,
+    setSnapshots: snapshot.setSnapshots,
+    clearSnapshot: snapshot.clearSnapshot,
+
+    mergeSnapshots: snapshot.mergeSnapshots,
+    reduceSnapshots: snapshot.reduceSnapshots,
+    sortSnapshots: snapshot.sortSnapshots,
+    filterSnapshots: snapshot.filterSnapshots,
+
+    mapSnapshots: snapshot.mapSnapshots,
+    findSnapshot: snapshot.findSnapshot,
+    getSubscribers: snapshot.getSubscribers,
+    notify: snapshot.notify,
+
+    notifySubscribers: snapshot.notifySubscribers,
+    subscribe: snapshot.subscribe,
+    unsubscribe: snapshot.unsubscribe,
+    fetchSnapshot: snapshot.fetchSnapshot,
+
+    fetchSnapshotSuccess: snapshot.fetchSnapshotSuccess,
+    fetchSnapshotFailure: snapshot.fetchSnapshotFailure,
+    getSnapshots: snapshot.getSnapshots,
+    getAllSnapshots: snapshot.getAllSnapshots,
+
+    generateId: snapshot.generateId,
+    batchFetchSnapshots: snapshot.batchFetchSnapshots,
+    batchTakeSnapshotsRequest: snapshot.batchTakeSnapshotsRequest,
+    batchUpdateSnapshotsRequest: snapshot.batchUpdateSnapshotsRequest,
+
+    filterSnapshotsByStatus: snapshot.filterSnapshotsByStatus,
+    filterSnapshotsByCategory: snapshot.filterSnapshotsByCategory,
+    filterSnapshotsByTag: snapshot.filterSnapshotsByTag,
+
+    batchFetchSnapshotsSuccess: snapshot.batchFetchSnapshotsSuccess,
+    batchFetchSnapshotsFailure: snapshot.batchFetchSnapshotsFailure,
+    batchUpdateSnapshotsSuccess: snapshot.batchUpdateSnapshotsSuccess,
+    batchUpdateSnapshotsFailure: snapshot.batchUpdateSnapshotsFailure,
+
+    batchTakeSnapshot: snapshot.batchTakeSnapshot,
+    handleSnapshotSuccess: snapshot.handleSnapshotSuccess,
+
     [Symbol.iterator]: () => {
       return {
         next: () => {
@@ -484,6 +609,7 @@ function convertSnapshotToStore<T extends BaseData, K extends BaseData>(
     }
   }
 }
+
 const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
   store: SnapshotStore<T, K>
 ): Snapshot<T, K> => {
@@ -504,62 +630,68 @@ const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
     config: store.config,
     status: store.status,
     metadata: store.metadata,
-    delegate: store.getDelegate(snapshotStoreConfig || []),
+    delegate: store.getDelegate({
+      useSimulatedDataSource: false,
+      simulatedDataSource: []
+    }),
     store: store,
     state: store.state,
     todoSnapshotId: store.todoSnapshotId,
-    initialState: store.initializedState,
+    // initialState: store.initializedState,
     meta: store.meta,
     configOption: store.configOption,
-    getSnapshotId, 
+    getSnapshotId,
     getParentId: () => store.id.toString(), // Convert to string
     getChildIds: () => [], // Example implementation
-    addChild: () => {}, // Example implementation
+    addChild: () => { }, // Example implementation
     removeChild: () => { }, // Example implementation
-    getChildren: () => {},
+    getChildren: () => { },
     hasChildren: () => false,
     isDescendantOf: (snapshot: Snapshot<T, K>) => false,
     dataItems: [],
-    compareSnapshotState:,
-    eventRecords:,
-    snapshotStore:,
-    newData:,
-    stores:,
-    getStore:,
-    addStore:,
-    mapSnapshot:,
-    removeStore:,
-    unsubscribe:,
-    fetchSnapshot:,
-    addSnapshotFailure:,
-    configureSnapshotStore:,
-    updateSnapshotSuccess:,
-    createSnapshotFailure:,
-    createSnapshotSuccess:,
-    updateSnapshotFailure:,
-    createSnapshot:,
-    onSnapshot, onSnapshots, events, handleSnapshot
-    // updateSnapshot:,
-    // setSnapshot:,
-    // setSnapshotData:,
-    // setSnapshotSuccess:,
-    // setSnapshotFailure:,
-    // createSnapshotFailure:,
-    // createSnapshotSuccess:,
-    // updateSnapshotFailure:,
-    // updateSnapshotSuccess:,
-    // fetchSnapshotSuccess:,
-    // fetchSnapshotFailure:,
-    // getSnapshot:,
-    // getSnapshotData:,
-    // getSnapshotState:,
-    // getSnapshotStatus:,
-    // getSnapshotMetadata:,
-    // getSnapshotDelegate:,
-    // getSnapshotStore:,
-    // getSnapshotStoreConfig:,
-    // getSnapshotStoreConfigData:,
-    
+    compareSnapshotState: store.compareSnapshotState,
+    eventRecords: store.eventRecords,
+    snapshotStore: store.snapshotStore,
+    newData: store.newData,
+    stores: store.stores,
+    getStore: store.getStore,
+    addStore: store.addStore,
+    mapSnapshot: store.mapSnapshot,
+    removeStore: store.removeStore,
+    unsubscribe: store.unsubscribe,
+    fetchSnapshot: store.fetchSnapshot,
+    addSnapshotFailure: store.addSnapshotFailure,
+    configureSnapshotStore: store.configureSnapshotStore,
+    updateSnapshotSuccess: store.updateSnapshotSuccess,
+    createSnapshotFailure: store.createSnapshotFailure,
+    createSnapshotSuccess: store.createSnapshotSuccess,
+    updateSnapshotFailure: store.updateSnapshotFailure,
+    createSnapshot: store.createSnapshot,
+    onSnapshot: store.onSnapshot,
+    onSnapshots: store.onSnapshots,
+    events: store.events,
+    handleSnapshot: store.handleSnapshot,
+    updateSnapshot: store.updateSnapshot,
+    setSnapshot: store.setSnapshot,
+    setSnapshotData: store.setSnapshotData,
+    setSnapshotSuccess: store.setSnapshotSuccess,
+    setSnapshotFailure: store.setSnapshotFailure,
+    createSnapshotFailure: store.createSnapshotFailure,
+    createSnapshotSuccess: store.createSnapshotSuccess,
+    updateSnapshotFailure: store.updateSnapshotFailure,
+    updateSnapshotSuccess: store.updateSnapshotSuccess,
+    fetchSnapshotSuccess: store.fetchSnapshotSuccess,
+    fetchSnapshotFailure: store.fetchSnapshotFailure,
+    getSnapshot: store.getSnapshot,
+    getSnapshotData: store.getSnapshotData,
+    getSnapshotState: store.getSnapshotState,
+    getSnapshotStatus: store.getSnapshotStatus,
+    getSnapshotMetadata: store.getSnapshotMetadata,
+    getSnapshotDelegate: store.getSnapshotDelegate,
+    getSnapshotStore: store.getSnapshotStore,
+    getSnapshotStoreConfig: store.getSnapshotStoreConfig,
+    getSnapshotStoreConfigData: store.getSnapshotStoreConfigData,
+
   }
 };
 
@@ -567,9 +699,15 @@ const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
 export { YourSpecificSnapshotType };
 
 const convertSnapshotData = <T extends BaseData, K extends BaseData>(
+  snapshotConfigData: Snapshot<T, K> 
+): Snapshot<T, K> => {
+  return snapshotConfigData
+};
+
+const convertSnapshoStoretData = <T extends BaseData, K extends BaseData>(
   snapshotStoreConfigData: SnapshotStoreConfig<any, K>
 ): SnapshotStoreConfig<any, K> => {
-  return snapshotStoreConfigData as unknown as SnapshotStoreConfig<any, K>;
+  return snapshotStoreConfigData
 };
 
 const snapshotType = <T extends BaseData, K extends BaseData>(
@@ -593,7 +731,7 @@ const snapshotType = <T extends BaseData, K extends BaseData>(
   newSnapshot.key = snapshot.key || "";
   newSnapshot.subscription = snapshot.subscription || null;
   newSnapshot.config = snapshot.config || null;
-  newSnapshot.status = snapshot.status || "";
+  newSnapshot.status = snapshot.status || undefined;
   newSnapshot.metadata = snapshot.metadata || {};
   newSnapshot.delegate = snapshot.delegate
     ? snapshot.delegate.map((delegateConfig) => ({
@@ -607,6 +745,44 @@ const snapshotType = <T extends BaseData, K extends BaseData>(
   newSnapshot.todoSnapshotId = snapshot.todoSnapshotId || "";
   newSnapshot.initialState = snapshot.initialState;
   return newSnapshot;
+};
+
+const snapshotStoreType = <T extends BaseData, K extends BaseData>(
+  snapshotStore: SnapshotStore<T, K>
+): SnapshotStore<T, K> => {
+  const context = useContext(SnapshotContext);
+  const newSnapshotStore = { ...snapshotStore }
+  newSnapshotStore.id = snapshotStore.id || generateSnapshotId;
+  newSnapshotStore.title = snapshotStore.title || "";
+  newSnapshotStore.timestamp = snapshotStore.timestamp
+    ? new Date(snapshotStore.timestamp)
+    : new Date();
+  newSnapshotStore.subscriberId = snapshotStore.subscriberId || "";
+  newSnapshotStore.category =
+    typeof snapshotStore.category === "string"
+      ? defaultCategory
+      : snapshotStore.category || defaultCategory;
+  newSnapshotStore.length = snapshotStore.length || 0;
+  newSnapshotStore.content = snapshotStore.content || "";
+  newSnapshotStore.data = snapshotStore.data;
+  newSnapshotStore.value = snapshotStore.value || 0;
+  newSnapshotStore.key = snapshotStore.key || "";
+  newSnapshotStore.subscription = snapshotStore.subscription || null;
+  newSnapshotStore.config = snapshotStore.config || null;
+  newSnapshotStore.status = snapshotStore.status || undefined;
+  newSnapshotStore.metadata = snapshotStore.metadata || {};
+  newSnapshotStore.delegate = snapshotStore.getDelegate(context)
+    ? snapshotStore.getDelegate(snapshotStoreDelegate).map((delegateConfig) => ({
+      ...delegateConfig,
+      data: delegateConfig.data as T,
+      snapshotStore: delegateConfig.snapshotStore as SnapshotStore<T, K>
+    }))
+    : [];
+  newSnapshotStore.store = snapshotStore.store
+  newSnapshotStore.state = snapshotStore.state
+  newSnapshotStore.todoSnapshotId = snapshotStore.todoSnapshotId || "";
+  newSnapshotStore.initialState = snapshotStore.initialState;
+  return newSnapshotStore;
 };
 
 // Type guard to check if input is SnapshotStore<BaseData>
@@ -640,280 +816,755 @@ const convertSnapshotStoreItemToSnapshot = <T extends BaseData, K extends BaseDa
 
 // Function to convert SnapshotStore<BaseData> to Map<string, T>
 const convertSnapshotStoreToMap = <T extends BaseData, K extends BaseData>(
-    store: SnapshotStore<T, K>
-  ): Map<string, Snapshot<T, K>> => {
-    const dataMap = new Map<string, Snapshot<T, K>>();
-  
-    // Assuming 'data' is an array or iterable within SnapshotStore<BaseData>
-    store.data?.forEach((item: Snapshot<T, K>, key: string) => {
-      // Use the conversion function to ensure item is compatible with Snapshot<T, K>
-      const convertedItem = convertSnapshotStoreItemToSnapshot(item);
-      dataMap.set(key, convertedItem);
-    });
-  
-    return dataMap;
-  };
+  store: SnapshotStore<T, K>
+): Map<string, Snapshot<T, K>> => {
+  const dataMap = new Map<string, Snapshot<T, K>>();
 
-function convertMapToSnapshotStore<T extends BaseData, K extends BaseData = T>(
-  map: Map<string, T>
+  // Assuming 'data' is an array or iterable within SnapshotStore<BaseData>
+  store.data?.forEach((item: Snapshot<T, K>, key: string) => {
+    // Use the conversion function to ensure item is compatible with Snapshot<T, K>
+    const convertedItem = convertSnapshotStoreItemToSnapshot(item);
+    dataMap.set(key, convertedItem);
+  });
+
+  return dataMap;
+};
+
+
+function createSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
+  options: SnapshotStoreConfig<T, K>
+): SnapshotStoreConfig<T, K> {
+  return { ...options };
+}
+
+function convertMapToSnapshotStore<T extends Data, K extends Data>(
+  map: Map<string, Snapshot<T, K>>,
+  timestamp: string | number | Date | undefined
 ): SnapshotStore<T, K> {
-
   const snapshotStoreOptions = createSnapshotStoreOptions<T, K>({
     initialState: null,
     snapshotId: "defaultId",
     category: {} as CategoryProperties, // Adjust as needed
     dataStoreMethods: {} as Partial<DataStoreWithSnapshotMethods<T, K>>, // Provide actual methods if needed
   });
+  const config = createSnapshotStoreConfig<T, K>(snapshotStoreOptions);
 
-  const snapshotStore = new SnapshotStore<T, K>(snapshotStoreOptions); // Initialize SnapshotStore
+  const snapshotStore = new SnapshotStore<T, K>(snapshotStoreOptions, config, operation); // Initialize SnapshotStore
 
   // Populate snapshotStore with map data
   map.forEach((value, key) => {
     const snapshot: Snapshot<T, K> = {
       id: key,
       data: new Map<string, Snapshot<T, K>>().set(key, {
+
         id: key,
         data: typeof value === "object" ? new Map(Object.entries(value)) : value,
         initialState: null,
         timestamp: new Date(),
-        configOption: getCurrentSnapshotConfigOptions,
+        configOption: null,
         getSnapshotId: () => key,
         compareSnapshotState: () => false,
         snapshot: {} as any,
         snapshotStore: snapshotStore,
         store: {} as any,
         getInitialState: () => null,
-        getConfigOption: () => getCurrentSnapshotConfigOptions,
         getTimestamp: () => new Date(),
         getData: () => new Map<string, T>().set(key, value),
-        setData: () => {},
-        addData: () => {}
-      } as Snapshot<T, K>),
+        setData: (data: Map<string, Snapshot<T, K>>) => { },
+        addData: () => { },
+        eventRecords: {},
+        getParentId: () => null,
+        getChildIds: (childSnapshot: Snapshot<BaseData, K>) => null,
+        addChild: (snapshot: Snapshot<T, K>) => { },
+        removeChild: (snapshot: Snapshot<T, K>) => { },
+        getChildren: () => { },
+        hasChildren: () => false,
+        isDescendantOf: () => false,
+        dataItems: [],
+        newData: {} as Snapshot<T, K>,
+        stores: [],
+        getConfigOption: () => getCurrentSnapshotConfigOptions,
+        getStore: (
+          storeId: number,
+          snapshotStore: SnapshotStore<T, K>,
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          type: string,
+          event: Event
+        ) => null,
+        addStore: (
+          storeId: number,
+          snapshotStore: SnapshotStore<T, K>,
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          type: string,
+          event: Event
+        ) => null,
+        mapSnapshot: (
+          storeId: number,
+          snapshotStore: SnapshotStore<T, K>,
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          type: string,
+          event: Event
+        ) => null,
+        removeStore: (
+          storeId: number,
+          store: SnapshotStore<T, K>,
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          type: string,
+          event: Event
+        ) => null,
+        unsubscribe: (
+          callback: Callback<Snapshot<T, K>>) => null,
+        fetchSnapshot: (
+          callback: (
+            snapshotId: string,
+            snapshot: Snapshot<T, K> | undefined
+          ) => void
+        ) => null,
+        addSnapshotFailure: (
+          snapshotManager: SnapshotManager<T, K>,
+          snapshot: Snapshot<T, K>,
+          payload: { error: Error; }
+        ) => null,
+        configureSnapshotStore: (
+          snapshotStore: SnapshotStore<T, K>,
+          snapshotId: string,
+          data: Map<string, Snapshot<T, K>>,
+          events: Record<string, CalendarEvent[]>,
+          dataItems: RealtimeDataItem[],
+          newData: Snapshot<T, K>,
+          payload: ConfigureSnapshotStorePayload<T>,
+          store: SnapshotStore<any, K>,
+          callback: (snapshotStore: SnapshotStore<T, K>) => void
+        ) => null,
+        updateSnapshotSuccess: (
+          snapshotId: string,
+          snapshotManager: SnapshotManager<T, K>,
+          snapshot: Snapshot<T, K>,
+          payload: { error: Error; }
+        ) => null,
+        createSnapshotFailure: async (
+          snapshotId: string,
+          snapshotManager: SnapshotManager<T, K>,
+          snapshot: Snapshot<T, K>,
+          payload: { error: Error; }
+        ) => { },
+        createSnapshotSuccess: (
+          snapshotId: string,
+          snapshotManager: SnapshotManager<T, K>,
+          snapshot: Snapshot<T, K>,
+          payload: { error: Error; }) => null,
+        createSnapshots: (
+          id: string,
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          snapshotManager: SnapshotManager<T, K>,
+          payload: CreateSnapshotsPayload<T, K>,
+          callback: (snapshots: Snapshot<T, K>[]) => void | null,
+          snapshotDataConfig?: SnapshotConfig<T, K>[],
+          category?: string | CategoryProperties
+        ) => [],
+        onSnapshot: (
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          type: string,
+          event: Event,
+          callback: (
+            snapshot: Snapshot<T, K>
+          ) => void
+        ) => null,
+        onSnapshots: (
+          snapshotId: string,
+          snapshots: Snapshots<T>,
+          type: string,
+          event: Event,
+          callback: (snapshots: Snapshots<T>
+          ) => void) => { },
+        events: {
+          callbacks: [],
+          eventRecords: {}
+        },
+        handleSnapshot: (snapshotId: string,
+          snapshot: Snapshot<T, K> | null,
+          snapshots: Snapshots<T>,
+          type: string,
+          event: Event
+        ) => null,
+        mapSnapshots: (
+          snapshotId: string,
+          snapshot: Snapshot<T, K>,
+          snapshots: Snapshots<T>,
+          type: string,
+          event: Event
+        ) => null,
+        meta: undefined,
+        snapshotStoreConfig: config,
+
+      } as Snapshot<T, K>
+
+      ),
       dataItems: [],
       initialState: null,
       timestamp: new Date(),
-      configOption: getCurrentSnapshotConfigOptions,
+      configOption: null,
       getSnapshotId: () => key,
       compareSnapshotState: () => false,
       snapshot: {} as any,
       snapshotStore: snapshotStore,
       store: {} as any,
       getInitialState: () => null,
-      getConfigOption: () => getCurrentSnapshotConfigOptions,
+      getConfigOption: (): SnapshotStoreConfig<T, K> | null => getCurrentSnapshotConfigOptions(
+        snapshot,
+        category,
+        initSnapshot,
+        subscribeToSnapshots,
+        createSnapshot,
+        createSnapshotStore,
+        configureSnapshot,
+        delegate,
+        snapshotData
+
+      ),
       getTimestamp: () => new Date(),
       getData: () => new Map<string, Snapshot<T, K>>().set(key, {} as Snapshot<T, K>),
-      setData: () => {},
-      addData: () => {}
+      setData: (data: Map<string, Snapshot<T, K>>) => { },
+      addData: () => { },
+      eventRecords: null,
+      getParentId: function (snapshot: Snapshot<T, K>): string | null {
+        throw new Error("Function not implemented.");
+      },
+      getChildIds: function (childSnapshot: Snapshot<BaseData, T>): void {
+        throw new Error("Function not implemented.");
+      },
+      addChild: function (snapshot: Snapshot<T, K>): void {
+        throw new Error("Function not implemented.");
+      },
+      removeChild: function (snapshot: Snapshot<T, K>): void {
+        throw new Error("Function not implemented.");
+      },
+      getChildren: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      hasChildren: function (): boolean {
+        throw new Error("Function not implemented.");
+      },
+      isDescendantOf: function (snapshot: Snapshot<T, K>, childSnapshot: Snapshot<T, K>): boolean {
+        throw new Error("Function not implemented.");
+      },
+      newData: undefined,
+      stores: null,
+      getStore: function (storeId: number, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): SnapshotStore<T, K> | null {
+        throw new Error("Function not implemented.");
+      },
+      addStore: function (storeId: number, snapshotId: string, snapshotStore: SnapshotStore<T, K>, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+        throw new Error("Function not implemented.");
+      },
+      mapSnapshot: function (storeId: number, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+        throw new Error("Function not implemented.");
+      },
+      mapSnapshots: function (storeIds: number[], snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+        throw new Error("Function not implemented.");
+      },
+      removeStore: function (storeId: number, store: SnapshotStore<T, K>, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+        throw new Error("Function not implemented.");
+      },
+      unsubscribe: function (callback: Callback<Snapshot<T, K>>): void {
+        throw new Error("Function not implemented.");
+      },
+      fetchSnapshot: function (callback: (snapshotId: string, snapshot: Snapshot<T, K> | undefined) => void): void {
+        throw new Error("Function not implemented.");
+      },
+      addSnapshotFailure: function (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
+        throw new Error("Function not implemented.");
+      },
+      configureSnapshotStore: function (snapshotStore: SnapshotStore<T, K>, snapshotId: string, data: Map<string, Snapshot<T, K>>, events: Record<string, CalendarEvent[]>, dataItems: RealtimeDataItem[], newData: Snapshot<T, K>, payload: ConfigureSnapshotStorePayload<T>, store: SnapshotStore<any, T>, callback: (snapshotStore: SnapshotStore<T, K>) => void): void | null {
+        throw new Error("Function not implemented.");
+      },
+      updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
+        throw new Error("Function not implemented.");
+      },
+      createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): Promise<void> {
+        throw new Error("Function not implemented.");
+      },
+      createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
+        throw new Error("Function not implemented.");
+      },
+      createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K>, snapshotManager: SnapshotManager<T, K>, payload: CreateSnapshotsPayload<T, K>, callback: (snapshots: Snapshot<T, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, category?: string | CategoryProperties): Snapshot<T, K>[] | null {
+        throw new Error("Function not implemented.");
+      },
+      onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, K>) => void): void {
+        throw new Error("Function not implemented.");
+      },
+      onSnapshots: function (snapshotId: string, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): void {
+        throw new Error("Function not implemented.");
+      },
+      events: {
+        callbacks: [],
+        eventRecords: undefined
+      },
+      handleSnapshot: retrieveSnapshotData,
+      meta: undefined
     };
-
     snapshotStore.addData(snapshot);
   });
 
   return snapshotStore;
 }
-  
 
-const createSnapshotStoreOptions = <T extends BaseData, K extends BaseData>({
-  initialState,
-  snapshotId,
-  category,
-  dataStoreMethods,
-}: {
-  initialState: SnapshotStore<T, K> | Snapshot<T, K> | null;
-  snapshotId: string;
-  category: CategoryProperties;
-  dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>;
-}): SnapshotStoreOptions<T, K> => ({
-  data: {} as Partial<SnapshotStore<T, K>>, // Adjust as per your actual data requirement
-  initialState,
-  snapshotId,
-  category,
-  date: new Date(),
-  type: "default-type",
-  snapshotConfig: [], // Adjust as needed
-  subscribeToSnapshots: (
-    snapshotId: string,
-    callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
-    snapshot: Snapshot<T, K>
-  ) => {
-    const convertedSnapshot = convertSnapshot(snapshot);
-    subscribeToSnapshotsImpl(snapshotId, callback, convertedSnapshot);
-  },
-  subscribeToSnapshot: (
-    snapshotId: string,
-    callback: Callback<Snapshot<T, K>>,
-    snapshot: Snapshot<T, K>
-  ) => {
-    const convertedSnapshot = convertSnapshot(snapshot);
-    subscribeToSnapshotImpl(snapshotId, callback, convertedSnapshot);
-  },
-  getDelegate: (snapshotStoreConfig: SnapshotStoreConfig<T, K>[] | undefined) => {
-    return snapshotStoreConfig ?? [];
-  },
-  getSnapshotId: () => snapshotId,
-  getCategory: () => category,
-  getSnapshotConfig: () => [],
-  getSnapshot: (snapshotId: string) => {
-    return null; // Adjust as needed
-  },
-  getDataStoreMethods: () => dataStoreMethods as DataStoreWithSnapshotMethods<T, K>,
-  snapshotMethods: [],
-  delegate: [], // Adjust as needed
-  dataStoreMethods: dataStoreMethods as DataStoreWithSnapshotMethods<T, K>,
-  handleSnapshotOperation: handleSnapshotOperation,
-  displayToast: displayToast,
-  addToSnapshotList: addToSnapshotList
-});
 
-function convertSnapshot<T extends BaseData, K extends BaseData>(
-  snapshot: Snapshot<T, K>
-): Snapshot<T, K> {
-  if (!snapshot.store) {
-    throw new Error("Snapshot store is undefined");
-  }
 
-  // Convert dataStoreMethods
-  const dataStoreMethods = snapshot.store.getDataStoreMethods() as DataStoreWithSnapshotMethods<T, K>;
-
-  // Convert snapshot methods
-  const convertedSnapshotMethods = dataStoreMethods.snapshotMethods?.map(
-    (method: SnapshotStoreMethod<T, K>) => ({
-      ...method,
-      snapshot: (
-        id: string,
-        snapshotData: SnapshotStoreConfig<any, K>,
-        category: string | CategoryProperties | undefined,
-        callback: (snapshots: Snapshots<T>) => void
-      ) =>
-        method.snapshot(
-          id,
-          convertSnapshotData<T, K>(snapshotData),
-          category,
-          callback
-        ),
-    })
-  ) as SnapshotStoreMethod<T, K>[] || [];
-
-  // Convert snapshotConfig
-  const convertedSnapshotConfig = snapshot.store.snapshotConfig.map(
-    (config) => ({
-      ...config,
-      dataStoreMethods: {
-        ...config.dataStoreMethods,
-        snapshotMethods: config.dataStoreMethods?.snapshotMethods?.map(
-          (method: SnapshotStoreMethod<T, K>) => ({
-            ...method,
-            snapshot: (
-              id: string,
-              snapshotData: SnapshotStoreConfig<any, K>,
-              category: string | CategoryProperties | undefined,
-              callback: (snapshots: Snapshots<T>) => void
-            ) =>
-              method.snapshot(
-                id,
-                convertSnapshotData<T, K>(snapshotData),
-                category,
-                callback
-              ),
-          })
-        ) as SnapshotStoreMethod<T, K>[],
-      },
-    })
-  ) as unknown as SnapshotStoreConfig<T, K>[];
-
-  // Convert dataStoreMethods to ensure compatibility with DataStoreWithSnapshotMethods<T, T>
-  const convertedDataStoreMethods: DataStoreWithSnapshotMethods<T, K> = {
-    ...dataStoreMethods,
-    snapshotMethods: dataStoreMethods.snapshotMethods?.map(
-      (method) => ({
-        ...method,
-        snapshot: (
-          id: string,
-          snapshotData,
-          category,
-          callback
-        ) =>
-          method.snapshot(
-            id,
-            convertSnapshotData(snapshotData) ,
-            category,
-            callback
-          ),
-      })
-    ) as SnapshotStoreMethod<T, K>[] || [], // Type assertion to ensure compatibility
-    
-    getDelegate: dataStoreMethods.getDelegate as (context: {
-      useSimulatedDataSource: boolean;
-      simulatedDataSource: SnapshotStoreConfig<T, K>[]
-    }) => Promise<SnapshotStoreConfig<T, K>[]>
-
-    // Map other properties accordingly
-  };
-  // Create newStore
-  const newStore = new SnapshotStore<T, K>({
-    ...snapshot.store.config,
-    snapshotId: snapshot.store.id,
-    category: snapshot.store.category,
-    date: snapshot.store.timestamp,
-    type: snapshot.store.type,
-    snapshotConfig: convertedSnapshotConfig,
-    delegate: snapshot.store.getDelegate().map((delegateConfig) => ({
-      ...delegateConfig,
-      data: delegateConfig.data as T,
-      snapshotStore: delegateConfig.snapshotStore,
-    })),
-    getDataStoreMethods: () => convertedDataStoreMethods,
-    getDelegate: snapshot.store.getDelegate(),
-    dataStoreMethods: convertedDataStoreMethods,
-    snapshotMethods: convertedSnapshotMethods,
-    handleSnapshotOperation: handleSnapshotOperation,
-    displayToast: displayToast,
-    addToSnapshotList: addToSnapshotList,
-    data: {} as Partial<SnapshotStore<T, K>>, // Adjust as needed
-  });
-
-  return {
-    ...snapshot,
-    store: newStore,
-    initialState: snapshot.initialState as
-      | Snapshot<T, K>
-      | SnapshotStore<T, K>
-      | null
-      | undefined,
-  };
-}
 
 
 // Convert Map<string, T> to Snapshot<BaseData, BaseData>
+
+// Convert Map<string, T> to Snapshot<BaseData, BaseData>
 function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
-  map: Map<string, Snapshot<T, K>>
-): Snapshot<BaseData, BaseData> {
-  const dataMap = new Map<string, BaseData>();
+  map: Map<string, Snapshot<T, K>>,
+  timestamp: string | number | Date | undefined
+): Snapshot<T, K> {
+  const snapshotMap = new Map<string, Snapshot<T, K>>();
 
   map.forEach((value, key) => {
-    dataMap.set(key, value as BaseData); // Ensure that T can be cast to BaseData
+    const snapshot: Snapshot<T, K> = {
+      id: key,
+      title: "Snapshot Title",
+      timestamp: new Date(),
+      subscriberId: "some-subscriber-id",
+      category: "some-category",
+      length: 1,
+      content: value.data ? value.data.toString() : '',
+      data: value.data as T,
+      value: 0,
+      // Populate with other properties of Snapshot<T, K> as needed
+    };
+
+    snapshotMap.set(key, snapshot);
   });
 
   return {
-    id: "some-id", // Set appropriate ID or generate one
-    title: "Snapshot Title", // Set appropriate title
-    timestamp: new Date(), // Set appropriate timestamp
-    subscriberId: "some-subscriber-id", // Set appropriate subscriber ID
-    category: "some-category", // Set appropriate category
-    length: dataMap.size, // Set appropriate length
-    content: dataMap.toString(), // Set appropriate content
-    data: dataMap,
-    value: 0, // Set appropriate value
-    key: "some-key", // Set appropriate key
-    subscription: null, // Set appropriate subscription
-    config: null, // Set appropriate config
-    status: "active", // Set appropriate status
-    metadata: {}, // Set appropriate metadata
-    delegate: [], // Set appropriate delegate
-    store: null, // Set appropriate store
-    state: null, // Set appropriate state
-    todoSnapshotId: "some-todo-id", // Set appropriate todo snapshot ID
-    initialState: null, // Set appropriate initial state if needed
+    id: "some-id",
+    title: "Snapshot Title",
+    timestamp: new Date(),
+    subscriberId: "some-subscriber-id",
+    category: "some-category",
+    length: snapshotMap.size,
+    content: snapshotMap.toString(),
+    data: snapshotMap, // Ensure the type matches Snapshot<T, K>
+    value: 0,
+    key: "some-key",
+    subscription: null,
+    config: null,
+    status: StatusType.Active,
+    metadata: {},
+    delegate: [],
+    store: null,
+    state: null,
+    todoSnapshotId: "some-todo-id",
+    initialState: null,
+    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
+
+    getSnapshotItems: [],
+    defaultSubscribeToSnapshots: () => Promise.resolve(),
+    transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
+      return {
+        name: sub.getName(),
+        _id: sub.getUniqueId,
+        subscription: sub.getSubscription(),
+        subscriberId: sub.getSubscriberId(),
+        subscribersById: sub.getSubscribersById(),
+        getUniqueId: sub.getUniqueId,
+        subscribers: sub.getSubscribers,
+        onSnapshotCallbacks: sub.getOnSnapshotCallbacks,
+        onErrorCallbacks: sub.getOnErrorCallbacks,
+        onUnsubscribeCallbacks: sub.getOnSnapshotCallbacks,
+        notifyEventSystem: sub.notifyEventSystem,
+        updateProjectState: sub.updateProjectState,
+        logActivity: sub.getLogActivity,
+        triggerIncentives: sub.getTriggerIncentives,
+        optionalData: sub.getOptionalData,
+        data: sub.data,
+        email: "",
+        enabled: false,
+        tags: [],
+        snapshotIds: [],
+        payload: sub.getPayload,
+        getTransformSubscriber: sub.getTransformSubscriber,
+        fetchSnapshotIds: sub.getFetchSnapshotIds,
+        getId: sub.getId,
+        get_Id: sub.getUniqueId,
+        id: sub.id,
+        getEnabled: sub.getEnabled,
+        getTags: sub.getTags,
+        defaultSubscribeToSnapshots: sub.defaultSubscribeToSnapshots,
+        subscribeToSnapshots: sub.subscribeToSnapshots,
+        getSubscribers: sub.getSubscribers,
+        transformSubscribers: sub.transformSubscribers,
+        setSubscribers: sub.setSubscribers,
+        getOnSnapshotCallbacks: sub.getOnSnapshotCallbacks,
+        setOnSnapshotCallbacks: sub.setOnSnapshotCallbacks,
+        getOnErrorCallbacks: sub.getOnErrorCallbacks,
+        setOnErrorCallbacks: sub.setOnErrorCallbacks,
+        getOnUnsubscribeCallbacks: sub.getOnUnsubscribeCallbacks,
+        setOnUnsubscribeCallbacks: sub.setOnUnsubscribeCallbacks,
+        setNotifyEventSystem: sub.setNotifyEventSystem,
+        setUpdateProjectState: sub.setUpdateProjectState,
+        setLogActivity: sub.setLogActivity,
+        setTriggerIncentives: sub.setTriggerIncentives,
+        setOptionalData: sub.setOptionalData,
+        setEmail: sub.setEmail,
+        setSnapshotIds: sub.setSnapshotIds,
+        getPayload: sub.getPayload,
+        handleCallback: sub.handleCallback,
+        snapshotCallback: sub.snapshotCallback,
+        getEmail: sub.getEmail,
+        subscribe: sub.subscribe,
+        unsubscribe: sub.unsubscribe,
+        getOptionalData: sub.getOptionalData,
+        getFetchSnapshotIds: sub.getFetchSnapshotIds,
+        getSnapshotIds: sub.getSnapshotIds,
+        getData: sub.getData,
+        getInitialData: sub.getInitialData,
+        getNewData: sub.getNewData,
+        getDefaultSubscribeToSnapshots: sub.getDefaultSubscribeToSnapshots,
+        getSubscribeToSnapshots: sub.getSubscribeToSnapshots,
+        fetchTransformSubscribers: sub.fetchTransformSubscribers,
+        getTransformSubscribers: sub.getTransformSubscribers,
+        setTransformSubscribers: sub.setTransformSubscribers,
+        getNotifyEventSystem: sub.getNotifyEventSystem,
+        getUpdateProjectState: sub.getUpdateProjectState,
+        getLogActivity: sub.getLogActivity,
+        getTriggerIncentives: sub.getTriggerIncentives,
+        initialData: sub.initialData,
+        getName: sub.getName,
+        getDetermineCategory: sub.getDetermineCategory,
+        fetchSnapshotById: sub.fetchSnapshotById,
+        snapshots: sub.snapshots,
+        toSnapshotStore: sub.toSnapshotStore,
+        determineCategory: sub.determineCategory,
+        getDeterminedCategory: sub.getDeterminedCategory,
+        processNotification: sub.processNotification,
+        receiveSnapshot: sub.receiveSnapshot,
+        getState: sub.getState,
+        setEvent: sub.setEvent,
+        onError: sub.onError,
+        getSubscriberId: sub.getSubscriberId,
+        getSubscribersById: sub.getSubscribersById,
+        getSubscribersWithSubscriptionPlan: sub.getSubscribersWithSubscriptionPlan,
+        getSubscription: sub.getSubscription,
+        onUnsubscribe: sub.onUnsubscribe,
+        onSnapshot: sub.onSnapshot,
+        onSnapshotError: sub.onSnapshotError,
+        onSnapshotUnsubscribe: sub.onSnapshotUnsubscribe,
+        triggerOnSnapshot: sub.triggerOnSnapshot,
+      };
+    },
+    transformDelegate: (): SnapshotStoreConfig<T, K>[] => {
+      return [
+        {
+          // Add properties of SnapshotStoreConfig
+        }
+      ];
+    },
+
+    initializedState: null,
+    getAllKeys: () => [],
+    getAllItems: () => [],
+
+    addData: () => { },
+    addDataStatus: () => { },
+    removeData: () => { },
+    updateData: () => { },
+
+    updateDataTitle: () => { },
+    updateDataDescription: () => { },
+    updateDataStatus: () => { },
+    addDataSuccess: () => { },
+
+    getDataVersions: () => [],
+    updateDataVersions: () => { },
+    getBackendVersion: () => '',
+    getFrontendVersion: () => '',
+
+    fetchData: () => Promise.resolve(),
+    defaultSubscribeToSnapshot: () => Promise.resolve(),
+    handleSubscribeToSnapshot: () => Promise.resolve(),
+
+    removeItem: () => { },
+    getSnapshot: () => ({}) as Snapshot<T, K>,
+    getSnapshotSuccess: () => { },
+    getSnapshotId: () => '',
+
+    getItem: () => ({} as T),
+    setItem: () => { },
+    addSnapshotFailure: () => { },
+    getDataStore: () => ({}),
+
+    addSnapshotSuccess: () => { },
+    compareSnapshotState: () => false,
+    deepCompare: () => false,
+    shallowCompare: () => false,
+
+    getDataStoreMethods: () => ({}),
+    getDelegate: () => ({}),
+    determineCategory: () => '',
+    determinePrefix: () => '',
+
+    updateSnapshot: () => { },
+    updateSnapshotSuccess: () => { },
+    updateSnapshotFailure: () => { },
+    removeSnapshot: () => { },
+
+    snapshotItems: [],
+    nestedStores: [],
+    addSnapshotItem: () => { },
+    addNestedStore: () => { },
+    getData: () => null,
+    clearSnapshots: () => { },
+    addSnapshot: () => { },
+    createSnapshot: () => { },
+    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
+    meta: {},
+    getSnapshotItems: () => [],
+    createInitSnapshot: () => { },
+
+    createSnapshotSuccess: () => { },
+    setSnapshotSuccess: () => { },
+    setSnapshotFailure: () => { },
+    createSnapshotFailure: () => { },
+
+    updateSnapshots: () => { },
+    updateSnapshotsSuccess: () => { },
+    updateSnapshotsFailure: () => { },
+    initSnapshot: () => { },
+
+    takeSnapshot: () => { },
+    takeSnapshotSuccess: () => { },
+    takeSnapshotsSuccess: () => { },
+    configureSnapshotStore: () => { },
+    flatMap: function <U extends Iterable<any>>(
+      callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => U
+    ) {
+      // Assume we have an array of SnapshotStoreConfig<T, K>
+      const snapshotStoreConfigArray: SnapshotStoreConfig<T, K>[] = []; // Populate this as necessary
+      return flatMapImplementation(snapshotStoreConfigArray, callback);
+    },
+    setData: (data: Map<string, Snapshot<T, K>>) => { },
+    getState: () => ({}),
+    setState: () => { },
+
+    validateSnapshot: () => false,
+    handleSnapshot: async (
+      snapshotId: string,
+      snapshot: Snapshot<T, K> | null,
+      snapshots: Snapshots<T>,
+      type: string, event: Event
+    ) => { },
+    handleActions: () => { },
+    setSnapshot: () => { },
+
+    transformSnapshotConfig: () => ({}),
+    setSnapshotData: () => { },
+    setSnapshots: () => { },
+    clearSnapshot: () => { },
+
+    mergeSnapshots: () => [],
+    reduceSnapshots: () => [],
+    sortSnapshots: () => [],
+    filterSnapshots: () => [],
+
+    mapSnapshots: () => { },
+    findSnapshot: () => ({} as Snapshot<T, K>),
+    getSubscribers: () => [],
+    notify: () => { },
+
+    notifySubscribers: (
+      subscribers: Subscriber<T, K>[],
+      data: Partial<SnapshotStoreConfig<BaseData, any>>
+    ): Subscriber<BaseData, K>[] => {
+      // Implement the logic to notify subscribers
+      return subscribers;
+    },
+    subscribe: () => { },
+    unsubscribe: () => { },
+    fetchSnapshot: () => Promise.resolve(),
+
+    fetchSnapshotSuccess: () => { },
+    fetchSnapshotFailure: () => { },
+    getSnapshots: () => [],
+    getAllSnapshots: () => [],
+
+    generateId: () => '',
+    batchFetchSnapshots: () => [],
+    batchTakeSnapshotsRequest: () => [],
+    batchUpdateSnapshotsRequest: () => [],
+
+    filterSnapshotsByStatus: () => [],
+    filterSnapshotsByCategory: () => [],
+    filterSnapshotsByTag: () => [],
+
+    batchFetchSnapshotsSuccess: () => { },
+    batchFetchSnapshotsFailure: () => { },
+    batchUpdateSnapshotsSuccess: () => { },
+    batchUpdateSnapshotsFailure: () => { },
+
+    batchTakeSnapshot: (
+      snapshotStore: SnapshotStore<T, K>,
+      snapshots: Snapshots<T>
+    ): Promise<{ snapshots: Snapshots<T>; }> => {
+      // Implement the logic to batch take snapshots
+      return Promise.resolve({ snapshots });
+    },
+
+    handleSnapshotSuccess: () => { },
+    handleSnapshotFailure: () => { },
+    eventRecords: {},
+
+    getBackendVersion: async () => "",
+    snapshotStore: {} as SnapshotStore<T, K>,
+    getParentId: () => '',
+    getChildIds: () => [],
+
+    addChild: () => { },
+    removeChild: () => { },
+    getChildren: () => [],
+    hasChildren: () => false,
+
+    isDescendantOf: () => false,
+    dataItems: [],
+    newData: null,
+    getInitialState: () => null,
+
+    getConfigOption: () => ({} as SnapshotStoreConfig<T, K>),
+    getTimestamp: () => new Date(),
+    stores: [],
+    getStore: () => ({} as SnapshotStore<T, K>),
+
+    addStore: () => { },
+    mapSnapshot: () => ({} as Snapshot<T, K>),
+    removeStore: () => { },
+    createSnapshots: () => [],
+
+    onSnapshot: () => { },
+    onSnapshots: () => { },
+    events: {
+      callbacks: {} as Callback<Snapshots<T>>,
+      eventRecords: {} as Record<string, CalendarEvent[]>
+    },
+
+    defaultActionHandler: () => { },
+    handleActionSuccess: () => { },
+    handleActionFailure: () => { },
+    configureSnapshot: () => { },
+
+    sortStores: () => [],
+    mapStores: () => [],
+    filterStores: () => [],
+    mapNestedStores: () => [],
+
+    getStoreKeys: () => [],
+    getStoreItems: () => [],
+    mergeStore: () => { },
+    setStoreData: () => { },
+
+    handleTransformSnapshotConfig: () => ({}),
+    handleTransformSnapshot: () => ({}),
+    addSnapshotStore: () => { },
+    handleTransformStores: () => [],
+
+    sortData: () => [],
+    mapData: () => [],
+    filterData: () => [],
+    reduceData: () => [],
+
+    findData: () => null,
+    getStoreData: () => { },
+    getStoreSnapshot: () => ({} as Snapshot<T, K>),
+    fetchStoreSnapshots: () => [],
+
+    transformSnapshot: () => ({} as Snapshot<T, K>),
+    flattenSnapshot: () => { },
+    batchSnapshots: [],
+    batchStores: [],
+
+    getAllSnapshotStores: () => [],
+    getAllSnapshotItems: () => [],
+    getSnapshotConfig: () => ({} as SnapshotStoreConfig<T, K>),
+    eventStore: [],
+
+    getEventStore: () => [],
+    filterStoreEvents: () => [],
+    mapStoreEvents: () => [],
+    reduceStoreEvents: () => [],
+
+    findStoreEvent: () => null,
+    snapshotState: {},
+    storeState: {},
+    initialStoreState: {},
+
+    configureStore: () => { },
+    configureState: () => { },
+    getStateStore: () => { },
+    getStateData: () => { },
+
+    getSnapshotEvent: () => null,
+    getEvent: () => null,
+    notifyStore: () => { },
+    notifyStoreEvents: () => { },
+
+    getSubscriptionId: () => '',
+    getSnapshotEventStore: () => [],
+    addSnapshotEvent: () => { },
+    updateSnapshotEvent: () => { },
+
+    removeSnapshotEvent: () => { },
+    filterSnapshotEvents: () => [],
+    mapSnapshotEvents: () => [],
+    reduceSnapshotEvents: () => [],
+
+    findSnapshotEvent: () => null,
+    eventState: {},
+    getInitialState: (): T => {
+      return {} as T
+    },
+    getStoreItem: () => ({}),
+
+    setStoreItem: () => { },
+    removeStoreItem: () => { },
+    addStoreItem: () => { },
+    updateStoreItem: () => { },
+
+    getStoreKeys: () => [],
+    getStoreValues: () => [],
+    getStoreItems: () => [],
+    createStoreItem: () => ({}),
+
+    batchFetchStoreItems: () => [],
+    batchTakeStoreItems: () => [],
+    batchUpdateStoreItems: () => [],
+    addStoreEvent: () => { },
+
+    updateStoreEvent: () => { },
+    removeStoreEvent: () => { },
+    notifyStoreEvent: () => { },
+    fetchStoreEvent: () => Promise.resolve(),
+
+    fetchStoreEventSuccess: () => { },
+    fetchStoreEventFailure: () => { },
+    fetchStoreEvents: () => [],
+    fetchStoreEventsSuccess: () => { },
+
+    fetchStoreEventsFailure: () => { },
+    getStoreEvent: () => null,
+    findStoreEvent: () => null,
+    notifyAllStoreEvents: () => { },
+
+    fetchStoreEventList: () => [],
+    batchFetchStoreEventList: () => [],
+    batchTakeStoreEventList: () => [],
+    batchUpdateStoreEventList: () => [],
   };
 }
 
@@ -929,19 +1580,50 @@ function convertSnapshotContent<T extends BaseData>(
   return content;
 }
 
+function convertSnapshotToMap<T extends Data, K extends Data>(
+  snapshot: Snapshot<T, K>
+): Map<string, any> {
+  const map = new Map<string, any>();
+
+  if (snapshot && snapshot.data) {
+    // Check if snapshot.data is an object and not a Map
+    if (typeof snapshot.data === 'object' && !(snapshot.data instanceof Map)) {
+      Object.keys(snapshot.data as T).forEach(key => {
+        // Ensure the key exists on the data object
+        if (snapshot.data && key in snapshot.data) {
+          map.set(key, (snapshot.data as T)[key]);
+        }
+      });
+    } else if (snapshot.data instanceof Map) {
+      // If snapshot.data is a Map, merge it directly into the new map
+      snapshot.data.forEach((value, key) => {
+        map.set(key, value);
+      });
+    }
+  }
+
+  return map;
+}
+
+
 export {
   convertMapToSnapshot,
-  convertMapToSnapshotStore,
-  convertSnapshot,
+  convertSnapshotToMap,
+  convertMapToSnapshotStore, convertSnapshoStoretData,
+  convertSnapshotContent,
+  convertSnapshotData,
+  convertSnapshotStoreConfig,
+  convertSnapshotStoreItemToT,
   convertSnapshotStoreToMap,
   convertSnapshotStoreToSnapshot,
   convertSnapshotToStore,
+  convertToDataStore,
   convertToSnapshotStoreConfig,
-  isSnapshotStore,
-  snapshotType,
+  createSnapshotStoreConfig,
   createSnapshotStoreOptions,
-  convertSnapshotContent,
-  convertSnapshotData,
-  convertSnapshotStoreConfig
+  isSnapshot,
+  isSnapshotStore,
+  snapshotType
 };
 export type { ChosenSnapshotState };
+

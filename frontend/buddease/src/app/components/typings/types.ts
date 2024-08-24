@@ -31,7 +31,7 @@ interface YourResponseType extends DataWithComment,SearchNotesResponse {
   // Add field from RootStores
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore<Todo>;
+  todoStore: TodoManagerStore;
   taskManagerStore: TaskManagerStore;
   iconStore: IconStore;
   calendarStore: CalendarManagerStore;

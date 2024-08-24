@@ -1,695 +1,1161 @@
-//snapshots/SnapshotActions.ts
+// //snapshots/SnapshotActions.ts
 
-import { ActionCreator, ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
-import { BaseData, Data } from '../models/data/Data';
-import { CustomSnapshotData, Snapshot, Snapshots } from './LocalStorageSnapshotStore';
-import { ConfigureSnapshotStorePayload, K, SnapshotStoreConfig } from './SnapshotConfig';
-import { useDispatch } from 'react-redux';
-import SnapshotStore, { SnapshotData } from './SnapshotStore';
-import { SnapshotManager } from '../hooks/useSnapshotManager';
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { CalendarEvent } from '../state/stores/CalendarEvent';
-import { Callback } from './subscribeToSnapshotsImplementation';
-import { SubscriberTypeEnum } from '../models/data/StatusType';
-import { Subscription } from '../subscriptions/Subscription';
-import { NotificationType } from '../support/NotificationContext';
-import { Subscriber } from '../users/Subscriber';
-import { TriggerIncentivesParams } from '../utils/applicationUtils';
-import { getDiffieHellman } from 'crypto';
-import { subscribeToRealtimeUpdates } from '../web3/dAppAdapter/functionality/RealtimeUpdates';
+// import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+// import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+// import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
+// import { IHydrateResult } from 'mobx-persist';
+// import { useDispatch } from 'react-redux';
+// import { SnapshotData, SubscriberCollection } from '.';
+// import { SnapshotManager } from '../hooks/useSnapshotManager';
+// import determineFileCategory from '../libraries/categories/determineFileCategory';
+// import { BaseData, Data } from '../models/data/Data';
+// import { NotificationPosition, PriorityTypeEnum, StatusType } from '../models/data/StatusType';
+// import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+// import { Task } from '../models/tasks/Task';
+// import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+// import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
+// import { Subscription } from '../subscriptions/Subscription';
+// import { NotificationType, NotificationTypeEnum } from '../support/NotificationContext';
+// import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from '../trading/TradingUtils';
+// import { Subscriber } from '../users/Subscriber';
+// import { portfolioUpdates, triggerIncentives, unsubscribe } from '../utils/applicationUtils';
+// import { CreateSnapshotsPayload, FetchSnapshotPayload, Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
+// import { SnapshotConfig } from './snapshot';
+// import { ConfigureSnapshotStorePayload, K } from './SnapshotConfig';
+// import { SnapshotItem } from './SnapshotList';
+// import SnapshotStore from './SnapshotStore';
+// import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+// import { SnapshotWithCriteria } from './SnapshotWithCriteria';
+// import { Callback } from './subscribeToSnapshotsImplementation';
+// import { SourceEnum } from '../phases/TaskPhaseEnum';
+// import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 
-const dispatch = useDispatch()
+// const dispatch = useDispatch()
 
-interface TaskData extends BaseData {
-  title: string;
-  description: string;
-}
+// interface TaskData extends BaseData {
+//   title: string;
+//   description: string;
+// }
 
-interface SubtaskData extends BaseData {
-  parentId: string;
-  title: string;
-  isCompleted: boolean;
-}
-
-
-interface CallbackAction {
-  request?: () => void;
-  success?: () => void;
-  failure?: (error: Error) => void;
-}
-
-type Callback<T> = {
-  [key: string]: CallbackAction;
-};
-
-// Define generic action types
-interface SnapshotActionsTypes<T extends Data, K extends Data> {
-  addTaskSnapshot: ActionCreatorWithPayload<Snapshot<T, K>>;
-  removeTaskSnapshot: ActionCreatorWithPayload<string>;
-  updateTaskSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
-  fetchTaskSnapshotData: ActionCreatorWithPayload<string>;
-  handleTaskSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
-  handleTaskSnapshotFailure: ActionCreatorWithPayload<string>;
-}
+// interface SubtaskData extends BaseData {
+//   parentId: string;
+//   title: string;
+//   isCompleted: boolean;
+// }
 
 
-// Define action types with generics
-interface SnapshotStoreActionsTypes<T extends Data, K extends Data> {
-  addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K>>;
-  removeSnapshotFromStore: ActionCreatorWithPayload<string>; // Snapshot ID
-  updateSnapshotInStore: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
-  fetchSnapshotStoreData: ActionCreatorWithPayload<string>; // Store ID
-  handleSnapshotStoreSuccess: ActionCreatorWithPayload<{
-    snapshotStore: SnapshotStore<T, K>;
-    snapshot: Snapshot<T, K>;
-    snapshotId: string;
-  }>;
-  handleSnapshotStoreFailure: ActionCreatorWithPayload<string>;
-}
+// interface CallbackAction {
+//   request?: () => void;
+//   success?: () => void;
+//   failure?: (error: Error) => void;
+// }
 
-
-interface TaskWithSubtasksSnapshotActionsTypes<T extends Data, K extends Data>  {
-  addTaskWithSubtasksSnapshot: ActionCreatorWithPayload<Snapshot<TaskData, SubtaskData>>;
-  removeTaskWithSubtasksSnapshot: ActionCreatorWithPayload<string>;
-  updateTaskWithSubtasksSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
-  fetchTaskWithSubtasksSnapshotData: ActionCreatorWithPayload<string>;
-  handleTaskWithSubtasksSnapshotSuccess: ActionCreatorWithPayload<{
-    snapshot: Snapshot<TaskData, SubtaskData>;
-    snapshotId: string;
-  }>;
-  handleTaskWithSubtasksSnapshotFailure: ActionCreatorWithPayload<string>;
-}
-
-
-// Create action creators with generics
-export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActionsTypes<T, K> => ({
-  addTaskSnapshot: createAction<Snapshot<T, K>>('addTaskSnapshot'),
-  removeTaskSnapshot: createAction<string>('removeTaskSnapshot'),
-  updateTaskSnapshot: createAction<{ snapshotId: string; newData: any }>('updateTaskSnapshot'),
-  fetchTaskSnapshotData: createAction<string>('fetchTaskSnapshotData'),
-  handleTaskSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleTaskSnapshotSuccess'),
-  handleTaskSnapshotFailure: createAction<string>('handleTaskSnapshotFailure'),
-});
-
-
-export const SnapshotStoreActions = <T extends Data, K extends Data>(): SnapshotStoreActionsTypes<T, K> => ({
-  addSnapshotToStore: createAction<Snapshot<T, K>>('addSnapshotToStore'),
-  removeSnapshotFromStore: createAction<string>('removeSnapshotFromStore'),
-  updateSnapshotInStore: createAction<{ snapshotId: string; newData: any }>('updateSnapshotInStore'),
-  fetchSnapshotStoreData: createAction<string>('fetchSnapshotStoreData'),
-  handleSnapshotStoreSuccess: createAction<{
-    snapshotStore: SnapshotStore<T, K>;
-    snapshot: Snapshot<T, K>;
-    snapshotId: string;
-  }>('handleSnapshotStoreSuccess'),
-  handleSnapshotStoreFailure: createAction<string>('handleSnapshotStoreFailure'),
-});
-
-
-// Actions for managing task snapshots with subtasks
-export const TaskWithSubtasksSnapshotActions = <T extends Data, K extends Data>(): TaskWithSubtasksSnapshotActionsTypes<T, K> => ({
-  addTaskWithSubtasksSnapshot: createAction<Snapshot<TaskData, SubtaskData>>('addTaskWithSubtasksSnapshot'),
-  removeTaskWithSubtasksSnapshot: createAction<string>("removeTaskWithSubtasksSnapshot"),
-  updateTaskWithSubtasksSnapshot: createAction<{ snapshotId: string, newData: any }>("updateTaskWithSubtasksSnapshot"),
-  fetchTaskWithSubtasksSnapshotData: createAction<string>("fetchTaskWithSubtasksSnapshotData"),
-  handleTaskWithSubtasksSnapshotSuccess: createAction<{
-    snapshot: Snapshot<TaskData, SubtaskData>;
-    snapshotId: string;
-  }>("handleTaskWithSubtasksSnapshotSuccess"),
-  handleTaskWithSubtasksSnapshotFailure: createAction<string>("handleTaskWithSubtasksSnapshotFailure"),
-})
+// type CallbackActionsMap<T> = {
+//   [key: string]: CallbackAction;
+// };
 
 
 
 
+// type SnapshotOperation = {
+//   // Define the properties for SnapshotOperation as needed
+//   operationType: SnapshotOperationType;
+//   // Add other properties as needed
+// };
 
-const newTaskSnapshot: Snapshot<Data, K> = {
-  id: '1',
-  data: {
-    id: '1',
-    title: 'Task 1',
-    description: 'Description of Task 1',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    timestamp: new Date().getTime(),
-  },
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  events: {
-    eventRecords: {},
-    callbacks: [(snapshot: Snapshot<Data, K>) => { } ],
-    subscribers: [],
-    eventIds: []
-  },
-  meta: new Map<string, Snapshot<Data, any>>(),
-  getSnapshotId: function (key: string | SnapshotData): unknown {
-    throw new Error('Function not implemented.');
-  },
-  compareSnapshotState: function (arg0: Snapshot<Data, any> | null, state: any): unknown {
-    throw new Error('Function not implemented.');
-  },
-  eventRecords: null,
-  snapshotStore: null,
-  dataItems: null,
-  newData: undefined,
-  stores: null,
-  unsubscribe: function (callback: Callback<Snapshot<Data, any>>): void {
-    throw new Error('Function not implemented.');
-  },
-  addSnapshotFailure: function (snapshotManager: SnapshotManager<Data, any>, snapshot: Snapshot<Data, any>, payload: { error: Error; }): void {
-    throw new Error('Function not implemented.');
-  },
-  configureSnapshotStore: function (snapshotStore: SnapshotStore<Data, any>, snapshotId: string, data: Map<string, BaseData>, events: Record<string, CalendarEvent[]>, dataItems: RealtimeDataItem[], newData: Snapshot<Data, any>, payload: ConfigureSnapshotStorePayload<Data>, store: SnapshotStore<any, any>, callback: (snapshotStore: SnapshotStore<Data, any>) => void): void | null {
-    throw new Error('Function not implemented.');
-  },
-  updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<Data, any>, snapshot: Snapshot<Data, any>, payload: { error: Error; }): void | null {
-    throw new Error('Function not implemented.');
-  },
-  createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<Data, any>, snapshot: Snapshot<Data, any>, payload: { error: Error; }): Promise<void> {
-    throw new Error('Function not implemented.');
-  },
-  timestamp: undefined,
-  handleSnapshot: function (snapshotId: string, snapshot: Snapshot<Data, any> | null, snapshots: Snapshots<Data>, type: string, event: Event): void | null {
-    throw new Error('Function not implemented.');
-  },
-  getParentId: function (): string | null {
-    throw new Error('Function not implemented.');
-  },
-  getChildIds: function (): void {
-    throw new Error('Function not implemented.');
-  },
-  addChild: function (): void {
-    throw new Error('Function not implemented.');
-  },
-  removeChild: function (): void {
-    throw new Error('Function not implemented.');
-  },
-  getChildren: function (): void {
-    throw new Error('Function not implemented.');
-  },
-  hasChildren: function (): boolean {
-    throw new Error('Function not implemented.');
-  },
-  isDescendantOf: function (): boolean {
-    throw new Error('Function not implemented.');
-  },
-  getStore: function (
-    storeId: string,
-    snapshotId: string,
-    snapshot: Snapshot<Data, any>,
-    type: string,
-    event: Event,
-  ): SnapshotStore<Data, any> | null {
-    throw new Error('Function not implemented.');
-  },
-  addStore: function (
-    storeId: string,
-    store: SnapshotStore<Data, K>,
-    snapshotId: string,
-    snapshot: Snapshot<Data, K>,
-    type: string,
-    event: Event
-  ): void {
-    throw new Error('Function not implemented.');
-  },
-  mapSnapshot: function (snapshotId: string, snapshot: Snapshot<Data, any>, type: string, event: Event): void {
-    throw new Error('Function not implemented.');
-  },
-  removeStore: function (): void {
-    throw new Error('Function not implemented.');
-  }
-};
+
+// export enum SnapshotOperationType {
+//   CreateSnapshot = 'createSnapshot',
+//   UpdateSnapshot = 'updateSnapshot',
+//   DeleteSnapshot =  'deleteSnapshot',
+//   FindSnapshot = 'findSnapshot',
+//   MapSnapshot = 'mapSnapshot',
+//   SortSnapshot = 'sortSnapshot',
+//   CategorizeSnapshot = 'categorizeSnapshot',
+//   SearchSnapshot = 'searchSnapshot',
+//   CalendarSnapshot = 'calendarEvent',
+//   NewSnapshotResult = 'newSnapshotResult',
+//   TaskSnapshotReference = 'taskSnapshotReference',
+// }
+// // Define generic action types
+// interface SnapshotActionsTypes<T extends Data, K extends Data> {
+//   addSnapshot: ActionCreatorWithPayload<Snapshot<T, K>>;
+//   removeSnapshot: ActionCreatorWithPayload<string>;
+//   updateSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
+//   fetchSnapshotData: ActionCreatorWithPayload<string>;
+//   handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
+//   handleSnapshotFailure: ActionCreatorWithPayload<string>;
+// }
+
+
+// // Define action types with generics
+// interface SnapshotStoreActionsTypes<T extends Data, K extends Data> {
+//   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K>>;
+//   removeSnapshotFromStore: ActionCreatorWithPayload<string>; // Snapshot ID
+//   updateSnapshotInStore: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
+//   fetchSnapshotStoreData: ActionCreatorWithPayload<string>; // Store ID
+//   handleSnapshotStoreSuccess: ActionCreatorWithPayload<{
+//     snapshotStore: SnapshotStore<T, K>;
+//     snapshot: Snapshot<T, K>;
+//     snapshotId: string;
+//     operation: SnapshotOperation,
+//     operationType: SnapshotOperationType,
+//   }>;
+//   handleSnapshotStoreFailure: ActionCreatorWithPayload<string>;
+// }
+
+
+// interface TaskWithSubtasksSnapshotActionsTypes<T extends Data, K extends Data>  {
+//   addTaskWithSubtasksSnapshot: ActionCreatorWithPayload<Snapshot<TaskData, SubtaskData>>;
+//   removeTaskWithSubtasksSnapshot: ActionCreatorWithPayload<string>;
+//   updateTaskWithSubtasksSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
+//   fetchTaskWithSubtasksSnapshotData: ActionCreatorWithPayload<string>;
+//   handleTaskWithSubtasksSnapshotSuccess: ActionCreatorWithPayload<{
+//     snapshot: Snapshot<TaskData, SubtaskData>;
+//     snapshotId: string;
+//   }>;
+//   handleTaskWithSubtasksSnapshotFailure: ActionCreatorWithPayload<string>;
+// }
+
+
+// // Create action creators with generics
+// export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActionsTypes<T, K> => ({
+//   addSnapshot: createAction<Snapshot<T, K>>('addSnapshot'),
+//   removeSnapshot: createAction<string>('removeSnapshot'),
+//   updateSnapshot: createAction<{ snapshotId: string; newData: any }>('updateSnapshot'),
+//   fetchSnapshotData: createAction<string>('fetchSnapshotData'),
+//   handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleSnapshotSuccess'),
+//   handleSnapshotFailure: createAction<string>('handleSnapshotFailure'),
+  
+// });
+
+
+// export const SnapshotStoreActions = <T extends Data, K extends Data>(): SnapshotStoreActionsTypes<T, K> => ({
+//   addSnapshotToStore: createAction<Snapshot<T, K>>('addSnapshotToStore'),
+//   removeSnapshotFromStore: createAction<string>('removeSnapshotFromStore'),
+//   updateSnapshotInStore: createAction<{ snapshotId: string; newData: any }>('updateSnapshotInStore'),
+//   fetchSnapshotStoreData: createAction<string>('fetchSnapshotStoreData'),
+//   handleSnapshotStoreSuccess: createAction<{
+//     snapshotStore: SnapshotStore<T, K>;
+//     snapshot: Snapshot<T, K>;
+//     snapshotId: string;
+//   }>('handleSnapshotStoreSuccess'),
+//   handleSnapshotStoreFailure: createAction<string>('handleSnapshotStoreFailure'),
+// });
+
+
+// // export type SnapshotStoreActionsTypes<T extends Data, K extends Data> = ReturnType<typeof SnapshotStoreActions<T, K>>;
+
+
+// // Actions for managing task snapshots with subtasks
+// export const TaskWithSubtasksSnapshotActions = <T extends Data, K extends Data>(): TaskWithSubtasksSnapshotActionsTypes<T, K> => ({
+//   addTaskWithSubtasksSnapshot: createAction<Snapshot<TaskData, SubtaskData>>('addTaskWithSubtasksSnapshot'),
+//   removeTaskWithSubtasksSnapshot: createAction<string>("removeTaskWithSubtasksSnapshot"),
+//   updateTaskWithSubtasksSnapshot: createAction<{ snapshotId: string, newData: any }>("updateTaskWithSubtasksSnapshot"),
+//   fetchTaskWithSubtasksSnapshotData: createAction<string>("fetchTaskWithSubtasksSnapshotData"),
+//   handleTaskWithSubtasksSnapshotSuccess: createAction<{
+//     snapshot: Snapshot<TaskData, SubtaskData>;
+//     snapshotId: string;
+//   }>("handleTaskWithSubtasksSnapshotSuccess"),
+//   handleTaskWithSubtasksSnapshotFailure: createAction<string>("handleTaskWithSubtasksSnapshotFailure"),
+// })
+
+
+
+
+
+
+// const newTaskSnapshot: Snapshot<Task, any> = {
+//   id: '1',
+//   data: {
+//     id: '1',
+//     title: 'Task 1',
+//     description: 'Description of Task 1',
+//     assignedTo: null,
+//     assigned: false,
+//     previouslyAssignedTo: [],
+//     done: false,
+//     source: "system",
+//     assigneeId: '1',
+//     dueDate: new Date(),
+//     priority: PriorityTypeEnum.Low,
+//     startDate: undefined,
+//     endDate: new Date(),
+//     isActive: true,
+//     relatedTags: {},
+//     createdAt: new Date(),
+//     updatedAt: new Date(),
+//     timestamp: new Date().getTime(),
+//   },
+//   createdAt: new Date(),
+//   updatedAt: new Date(),
+//   eventRecords: null,
+//   snapshotStore: null,
+//   dataItems: null,
+//   newData: null,
+//   stores: null,
+//   timestamp: undefined,
+//   events: {
+//     eventRecords: {},
+//     callbacks: (snapshot: Snapshots<Task>): void => { },
+//     subscribers: [],
+//     eventIds: [],
+    
+//   },
+//   meta: new Map<string, Snapshot<Task, K>>(),
+//   getSnapshotId: <T extends Data, K extends Data>(
+//     key: string | SnapshotData<T, K>
+//   ): unknown => {
+//     if (typeof key === 'string') {
+//       // If key is a string, use it to generate a new snapshot ID
+//       // Generate ID using UniqueIDGenerator
+//       return UniqueIDGenerator.generateID(
+//         "snapshotGeneration",
+//         "snapshot",
+//         NotificationTypeEnum.Event,
+//         "SnapshotCreation" as NotificationType
+//       );
+//     } else {
+//       // If key is SnapshotData<T, K>, extract and return the ID from the snapshot data
+//       return key._id;
+//     }
+//   },
+//   compareSnapshotState: function (arg0: Snapshot<Task, any> | null, state: any): unknown {
+//     if (arg0 === null) {
+//       console.warn('Provided snapshot is null.');
+//       return null;
+//     }
+
+//     // Implement comparison logic here
+//     const snapshotState = arg0.data; // or any other property that represents the state
+
+
+//     // Example comparison logic (customize as needed)
+//     if (JSON.stringify(snapshotState) === JSON.stringify(state)) {
+//       return 'States are identical';
+//     } else {
+//       return 'States are different';
+//     }
+//   },
+
+//   unsubscribe: function (callback: Callback<Snapshot<Task, any>>): void {
+//     if (!this.subscribers || Object.keys(this.subscribers).length === 0) {
+//       console.warn('No subscribers to unsubscribe.');
+//       return;
+//     }
+
+//     const filteredSubscribers = Object.entries(this.subscribers).filter(([key, sub]) => sub.getCallback !== callback);
+
+//     this.subscribers = {
+//       ...Object.fromEntries(filteredSubscribers),
+//       length: filteredSubscribers.length,
+//     } as Subscriber<Task, any>[] & Record<string, Subscriber<Task, any>>;
+
+//     console.log('Callback unsubscribed successfully.');
+//   },
+
+//   addSnapshotFailure: function (
+//     snapshotManager: SnapshotManager<Task, any>,
+//     snapshot: Snapshot<Task, any>,
+//      payload: { error: Error; }
+//     ): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   configureSnapshotStore: function (
+//     snapshotStore: SnapshotStore<Task, TaskData>,
+//     snapshotId: string,
+//     data: Map<string, Snapshot<Task, any>>,
+//     events: Record<string, CalendarManagerStoreClass<Task, K>[]>,
+//     dataItems: RealtimeDataItem[],
+//     newData: Snapshot<Task, any>,
+//     payload: ConfigureSnapshotStorePayload<Data>,
+//     store: SnapshotStore<any, any>,
+//     callback: (snapshotStore: SnapshotStore<Task, any>) => void): void | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateSnapshotSuccess: function (
+//     snapshotId: string,
+//     snapshotManager: SnapshotManager<Task, any>,
+//     snapshot: Snapshot<Task, any>,
+//     payload: { error: Error; }): void | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   createSnapshotFailure: function (snapshotId: string,
+//     snapshotManager: SnapshotManager<Task, any>,
+//     snapshot: Snapshot<Task, any>,
+//     payload: { error: Error; }): Promise<void> {
+//     throw new Error('Function not implemented.');
+//   },
+//   handleSnapshot: function (
+//     id: string,
+//     snapshotId: string,
+//     snapshot:Task | null,
+//     snapshotData:Task,
+//     category: string | CategoryProperties | undefined,
+//     callback: (snapshot: Task) => void,
+//     snapshots: SnapshotsArray<Task>,
+//     type: string,
+//     event: Event,
+//     snapshotContainer?:Task,
+//     snapshotStoreConfig?: SnapshotStoreConfig<Task, K>,
+ 
+//   ): Promise<Snapshot<Task, any> | null> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getParentId: function (): string | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   getChildIds: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   addChild: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   removeChild: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   getChildren: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   hasChildren: function (): boolean {
+//     throw new Error('Function not implemented.');
+//   },
+//   isDescendantOf: function (): boolean {
+//     throw new Error('Function not implemented.');
+//   },
+//   getStore: function (
+//     storeId: number,
+//     snapshotStore: SnapshotStore<Task, any>,
+//     snapshotId: string,
+//     snapshot: Snapshot<Task, any>,
+//     type: string,
+//     event: Event
+//   ): SnapshotStore<Task, any> | null {
+//     throw new Error('Function not implemented.');
+//   },
+
+
+//   getStores(): Map<number, SnapshotStore<Task, K>>[] {
+//     // Example implementation
+//     // Adjust based on your application's store management logic
+//     return [
+//       new Map<number, SnapshotStore<Task, K>>()
+//       // Populate with your SnapshotStore instances
+//     ];
+//   },
+//   addStore: function (
+//     storeId: number,
+//     snapshotId: string,
+//     snapshotStore: SnapshotStore<Task, K>,
+//     snapshot: Snapshot<Task, K>,
+//     type: string,
+//     event: Event
+//   ): void {
+//     try {
+//       // Validate input parameters
+//       if (typeof storeId !== 'number' || storeId <= 0) {
+//         throw new Error('Invalid storeId: Must be a positive number.');
+//       }
+
+//       if (!snapshotStore || typeof snapshotStore.addStore !== 'function') {
+//         throw new Error('Invalid snapshotStore: Must be a valid SnapshotStore instance with an addStore method.');
+//       }
+
+//       if (typeof snapshotId !== 'string' || snapshotId.trim() === '') {
+//         throw new Error('Invalid snapshotId: Must be a non-empty string.');
+//       }
+
+//       if (!snapshot || typeof snapshot !== 'object') {
+//         throw new Error('Invalid snapshot: Must be a valid Snapshot object.');
+//       }
+
+//       if (typeof type !== 'string' || type.trim() === '') {
+//         throw new Error('Invalid type: Must be a non-empty string.');
+//       }
+
+//       // Optional: Validate the event if necessary
+//       if (!event || typeof event !== 'object') {
+//         throw new Error('Invalid event: Must be a valid Event object.');
+//       }
+
+//       // Log inputs for debugging purposes
+//       console.log('Adding store with parameters:', {
+//         storeId,
+//         snapshotId,
+//         snapshot,
+//         type,
+//         event
+//       });
+
+//       // Call the addStore method on the snapshotStore
+//       snapshotStore.addStore(storeId, snapshotId, snapshotStore, snapshot, type, event);
+
+//       // Log success
+//       console.log('Store added successfully:', {
+//         storeId,
+//         snapshotId
+//       });
+
+//     } catch (error: any) {
+//       // Handle errors gracefully
+//       console.error('Failed to add store:', error.message);
+//       // Consider whether to rethrow the error or handle it based on your application’s needs
+//     }
+//   },
+
+
+//   mapSnapshot: function (
+//     storeId: number,
+//     snapshotStore: SnapshotStore<Task, any>,
+//     snapshotId: string,
+//     snapshot: Snapshot<Task, K>,
+//     type: string,
+//     event: Event
+//   ): Promise<string | undefined> | null {
+//     const store = this.getStore(storeId, snapshotStore, snapshotId, snapshot, type, event);
+//     if (store) {
+//       // Assuming store contains a method to get a snapshot by ID
+//       const snapshot = store.getSnapshotId(snapshotId);
+//       return snapshot ?? null;
+//     }
+//     return null;
+//   },
+
+//   removeStore: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   snapshotStoreConfig: null,
+//   getSnapshotItems: function (): (SnapshotStoreConfig<Task, any> | SnapshotItem<Task, any>)[] {
+//     throw new Error('Function not implemented.');
+//   },
+//   defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<Task>) => Subscriber<Task, any> | null, snapshot?: Snapshot<Task, any> | null | undefined): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   transformSubscriber: function (sub: Subscriber<Task, any>): Subscriber<Task, any> {
+//     throw new Error('Function not implemented.');
+//   },
+//   transformDelegate: function (): SnapshotStoreConfig<Task, any>[] {
+//     throw new Error('Function not implemented.');
+//   },
+//   initializedState: undefined,
+//   getAllKeys: function (): Promise<string[]> | undefined {
+//     throw new Error('Function not implemented.');
+//   },
+//   getAllItems: function (): Promise<Snapshot<Task, any>[]> | undefined {
+//     throw new Error('Function not implemented.');
+//   },
+//   addDataStatus: function (id: number, status: StatusType | undefined): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   removeData: function (id: number): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateData: function (id: number, newData: Snapshot<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateDataTitle: function (id: number, title: string): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateDataDescription: function (id: number, description: string): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateDataStatus: function (
+//     id: number, 
+//     status: StatusType | undefined
+//   ): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   addDataSuccess: function (payload: { data: Snapshot<Task, any>[]; }): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   getDataVersions: function (id: number): Promise<Snapshot<Task, any>[] | undefined> {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateDataVersions: function (id: number, versions: Snapshot<Task, any>[]): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   getBackendVersion: function (): Promise<string | undefined> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getFrontendVersion: function (): Promise<string | IHydrateResult<number>> {
+//     throw new Error('Function not implemented.');
+//   },
+//   fetchData: function (id: number): Promise<SnapshotStore<Task, any>[]> {
+//     throw new Error('Function not implemented.');
+//   },
+//   defaultSubscribeToSnapshot: function (snapshotId: string, callback: Callback<Snapshot<Task, any>>, snapshot: Snapshot<Task, any>): string {
+//     throw new Error('Function not implemented.');
+//   },
+//   handleSubscribeToSnapshot: function (snapshotId: string, callback: Callback<Snapshot<Task, any>>, snapshot: Snapshot<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   removeItem: function (key: string): Promise<void> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getSnapshot: function (
+//     snapshot: (id: string) => Promise<{
+//     category: any;
+//     timestamp: any;
+//     id: any; 
+//     snapshot: Snapshot<Task, any>; 
+//     snapshotStore: SnapshotStore<Task, any>;
+//     data: Data;
+//   }> | undefined
+//   ): Promise<Snapshot<Task, any>> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getSnapshotSuccess: function (snapshot: Snapshot<Task, any>): Promise<SnapshotStore<Task, any>> {
+//     throw new Error('Function not implemented.');
+//   },
+//   setItem: function (key: string, value: Data): Promise<void> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getDataStore: (): Map<string, Data> => {
+//     throw new Error('Function not implemented.');
+//   },
+//   addSnapshotSuccess: function (snapshot: Data, subscribers: Subscriber<Task, any>[]): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   deepCompare: function (objA: any, objB: any): boolean {
+//     throw new Error('Function not implemented.');
+//   },
+//   shallowCompare: function (objA: any, objB: any): boolean {
+//     throw new Error('Function not implemented.');
+//   },
+//   getDataStoreMethods: function (): DataStoreMethods<Task, any> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getDelegate: function (snapshotStoreConfig: SnapshotStoreConfig<Task, any>[]): SnapshotStoreConfig<Task, any>[] {
+//     throw new Error('Function not implemented.');
+//   },
+//   determineCategory: function (snapshot: Snapshot<Task, any> | null | undefined): string {
+//     throw new Error('Function not implemented.');
+//   },
+//   determinePrefix: function <T extends Data>(snapshot:Data | null | undefined, category: string): string {
+//     throw new Error('Function not implemented.');
+//   },
+//   removeSnapshot: function (snapshotToRemove: SnapshotStore<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   addSnapshotItem: function (item: Snapshot<any, any> | SnapshotStoreConfig<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   addNestedStore: function (store: SnapshotStore<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   clearSnapshots: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   addSnapshot: function (
+//     snapshot: Snapshot<Task, any>,
+//     snapshotId: string,
+//     subscribers: SubscriberCollection<Task, any>
+//   ): Promise<Snapshot<Task, any> | undefined> {
+//     throw new Error('Function not implemented.');
+//   },
+//   createSnapshot: undefined,
+//   createInitSnapshot: function (
+//     id: string,
+//     snapshotData: SnapshotStoreConfig<any, Task>,
+//     category: string
+//   ): Snapshot<Task, any> {
+//     throw new Error('Function not implemented.');
+//   },
+//   setSnapshotSuccess: function (
+//     snapshotData: SnapshotStore<Task, any>,
+//     subscribers: ((data: Subscriber<Task, any>) => void)[]
+//   ): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   setSnapshotFailure: function (error: Error): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateSnapshots: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<Task, any>[], snapshot: Snapshots<Task>) => void): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   updateSnapshotsFailure: function (error: Payload): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   initSnapshot: function (snapshotConfig: SnapshotStoreConfig<Task, any>, snapshotData: SnapshotStore<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   takeSnapshot: function (snapshot: Snapshot<Task, any>, subscribers: Subscriber<Task, any>[]): Promise<{ snapshot: Snapshot<Task, any>; }> {
+//     throw new Error('Function not implemented.');
+//   },
+//   takeSnapshotSuccess: function (snapshot: Snapshot<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   takeSnapshotsSuccess: function (snapshots: Data[]): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   flatMap: function <U extends Iterable<any>>(
+//     callback: (
+//       value: SnapshotStoreConfig<Task, any>,
+//     index: number,
+//     array: SnapshotStoreConfig<Task, any>[]
+//   ) => U): U extends (infer I)[] ? I[] : U[] {
+//     throw new Error('Function not implemented.');
+//   },
+//   getState: function () {
+//     throw new Error('Function not implemented.');
+//   },
+//   setState: function (state: any): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   validateSnapshot: function (snapshot: Snapshot<Task, any>): boolean {
+//     throw new Error('Function not implemented.');
+//   },
+//   handleActions: function (action: (selectedText: string) => void): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   setSnapshot: function (snapshot: Snapshot<Task, any>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   transformSnapshotConfig: function <T extends BaseData>(config: SnapshotStoreConfig<BaseData, T>): SnapshotStoreConfig<BaseData, T> {
+//     throw new Error('Function not implemented.');
+//   },
+//   setSnapshots: function (snapshots: Snapshots<Task>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   clearSnapshot: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   mergeSnapshots: function (snapshots: Snapshots<Task>, category: string): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   reduceSnapshots: function <U>(callback: (acc: U, snapshot: Snapshot<Task, any>) => U, initialValue: U): U | undefined {
+//     throw new Error('Function not implemented.');
+//   },
+//   sortSnapshots: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   filterSnapshots: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   findSnapshot: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   getSubscribers: function (subscribers: Subscriber<Task, any>[], snapshots: Snapshots<Task>): Promise<{ subscribers: Subscriber<Task, any>[]; snapshots: Snapshots<Task>; }> {
+//     throw new Error('Function not implemented.');
+//   },
+//   notify: function (id: string, message: string, content: any, date: Date, type: NotificationType, notificationPosition?: NotificationPosition | undefined): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   notifySubscribers: function (
+//     subscribers: Subscriber<Task, any>[],
+//     data: Partial<SnapshotStoreConfig<BaseData, any>>
+//   ): SubscriberCollection<Task, any> {
+//     throw new Error('Function not implemented.');
+//   },
+//   getSnapshots: function (category: string, data: Snapshots<Task>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   getAllSnapshots: function (data: (subscribers: Subscriber<Task, any>[], snapshots: Snapshots<Task>) => Promise<Snapshots<Task>>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   generateId: function (): string {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchFetchSnapshots: function (subscribers: Subscriber<Task, any>[], snapshots: Snapshots<Task>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchTakeSnapshotsRequest: function (snapshotData: any): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchUpdateSnapshotsRequest: function (snapshotData: (subscribers: Subscriber<Task, any>[]) => Promise<{ subscribers: Subscriber<Task, any>[]; snapshots: Snapshots<Task>; }>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   filterSnapshotsByStatus: undefined,
+//   filterSnapshotsByCategory: undefined,
+//   filterSnapshotsByTag: undefined,
+//   batchFetchSnapshotsSuccess: function (subscribers: Subscriber<Task, any>[], snapshots: Snapshots<Task>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchFetchSnapshotsFailure: function (payload: { error: Error; }): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<Task, any>[], snapshots: Snapshots<Task>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchUpdateSnapshotsFailure: function (payload: { error: Error; }): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   batchTakeSnapshot: function (snapshotStore: SnapshotStore<Task, any>, snapshots: Snapshots<Task>): Promise<{ snapshots: Snapshots<Task>; }> {
+//     throw new Error('Function not implemented.');
+//   },
+//   handleSnapshotSuccess: function (snapshot: Snapshot<Task, Data> | null, snapshotId: string): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   getInitialState: function (): Snapshot<Task, any> | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   getConfigOption: function (): SnapshotStoreConfig<Task, any> | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   getTimestamp: function (): Date | undefined {
+//     throw new Error('Function not implemented.');
+//   },
+//   getData: function (): Data | Map<string, Snapshot<Task, any>> | null | undefined {
+//     throw new Error('Function not implemented.');
+//   },
+//   setData: function (data: Map<string, Snapshot<Task, any>>): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   addData: function (): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   mapSnapshots: function (
+//       storeIds: number[],
+//       snapshotId: string,
+//       category: string | CategoryProperties | undefined,
+//       snapshot: Snapshot<Task, K>,
+//       timestamp: string | number | Date | undefined,
+//       type: string,
+//       event: Event,
+//       id: number,
+//       snapshotStore: SnapshotStore<Task, K>,
+//       data: K,
+//       callback: (
+//         storeIds: number[],
+//         snapshotId: string,
+//         category: string | CategoryProperties | undefined,
+//         snapshot: Snapshot<Task, K>,
+//         timestamp: string | number | Date | undefined,
+//         type: string,
+//         event: Event,
+//         id: number,
+//         snapshotStore: SnapshotStore<Task, K>,
+//         data: K
+//       ) => SnapshotsObject<K>
+//   ): SnapshotsObject<K> | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   fetchSnapshot: function (
+//     callback: (snapshotId: string,
+//       payload: FetchSnapshotPayload<any>, 
+//       snapshotStore: SnapshotStore<Task, any>,
+//       payloadData: Task,
+//       category: string | CategoryProperties | undefined,
+//       timestamp: Date,
+//       data: Data,
+//       delegate: SnapshotWithCriteria<Task, any>[]
+//     ) => Snapshot<Task, any>): Snapshot<Task, any> {
+//     throw new Error('Function not implemented.');
+//   },
+//   createSnapshotSuccess: function (
+//     snapshotId: string,
+//     snapshotManager: SnapshotManager<Task, any>,
+//     snapshot: Snapshot<Task, any>,
+//     payload: { error: Error; }
+//   ): void | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<Task, any>, snapshotManager: SnapshotManager<Task, any>, payload: CreateSnapshotsPayload<Task, any>, callback: (snapshots: Snapshot<Task, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<Task, any>[] | undefined, category?: string | CategoryProperties): Snapshot<Task, any>[] | null {
+//     throw new Error('Function not implemented.');
+//   },
+//   onSnapshot: function (snapshotId: string, snapshot: Snapshot<Task, any>, type: string, event: Event, callback: (snapshot: Snapshot<Task, any>) => void): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   onSnapshots: function (snapshotId: string, snapshots: Snapshots<Task>, type: string, event: Event, callback: (snapshots: Snapshots<Task>) => void): void {
+//     throw new Error('Function not implemented.');
+//   },
+//   label: undefined
+// };
 
  
-const subscriber = new Subscriber('1', 'Subscriber Name', {} as Subscription<TaskData, SubtaskData>);
+// const subscriber = new Subscriber(
+//   '1',
+//   'Subscriber Name',
+//   {} as Subscription<TaskData, SubtaskData>,
+//   'subscriberId',
+//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Event System:', data); },
+//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Update Project State:', data); },
+//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Log Activity:', data); },
+//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Trigger Incentives:', data); },
+//   null, // or provide an appropriate CustomSnapshotData if available
+//   null  // or provide appropriate TaskData if available
+// );
 
-const newTaskWithSubtasksSnapshot: Snapshot<TaskData, SubtaskData> = {
-  id: '2',
-  data: {
-    id: '2',
-    title: 'Task 2',
-    description: 'Description of Task 2',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    timestamp: new Date().getTime(),
-  },
-  snapshotStore: {
-    _id: snapshotStoreConfig.getId
-    id: '2',
-    key: 'key2',
-    topic: 'subtask',
-    date: new Date(),
-    // config: {},
-    title: 'snapshot store',
-    category: 'subtask category',
-    message: 'snapshot store',
-    timestamp: new Date().getTime(),
-    createdBy: 'user1',
-    eventRecords: {},
-    type: 'snapshot',
-    subscribers: [{
-      _id: subscriber.getUniqueId(),
-      name: '',
-      subscription: {
-        unsubscribe: function (userId: string, snapshotId: string, unsubscribeType: string, unsubscribeDate: Date, unsubscribeReason: string, unsubscribeData: any): void {
-          throw new Error('Function not implemented.');
-        },
-        portfolioUpdates: function ({ userId, snapshotId }: { userId: string; snapshotId: string; }): void {
-          throw new Error('Function not implemented.');
-        },
-        tradeExecutions: function ({ userId, snapshotId }: { userId: string; snapshotId: string; }): void {
-          throw new Error('Function not implemented.');
-        },
-        marketUpdates: function ({ userId, snapshotId }: { userId: string; snapshotId: string; }): void {
-          throw new Error('Function not implemented.');
-        },
-        triggerIncentives: function ({ userId, incentiveType, params }: TriggerIncentivesParams): void {
-          throw new Error('Function not implemented.');
-        },
-        communityEngagement: function ({ userId, snapshotId }: { userId: string; snapshotId: string; }): void {
-          throw new Error('Function not implemented.');
-        },
-        subscriberId: undefined,
-        subscriptionId: undefined,
-        subscriberType: undefined,
-        subscriptionType: undefined,
-        getPlanName: undefined,
-        portfolioUpdatesLastUpdated: null,
-        getId: undefined,
-        determineCategory: function (data: Snapshot<TaskData, SubtaskData> | null | undefined): string {
-          throw new Error('Function not implemented.');
-        },
-        category: undefined,
-        fetchSnapshotById: undefined,
-        fetchSnapshotByIdCallback: undefined
-      },
-      subscriberId: '',
-      subscribersById: undefined,
-      subscribers: [],
-      onSnapshotCallbacks: [],
-      onErrorCallbacks: [],
-      onUnsubscribeCallbacks: [],
-      notifyEventSystem: undefined,
-      updateProjectState: undefined,
-      logActivity: undefined,
-      triggerIncentives: undefined,
-      optionalData: null,
-      data: undefined,
-      email: '',
-      enabled: false,
-      tags: [],
-      snapshotIds: [],
-      payload: undefined,
-      fetchSnapshotIds: function (): Promise<string[]> {
-        throw new Error('Function not implemented.');
-      },
-      getId: function (): string | undefined {
-        throw new Error('Function not implemented.');
-      },
-      id: undefined,
-      defaultSubscribeToSnapshots: [],
-      subscribeToSnapshots: [],
-      getSubscribers: [],
-      transformSubscribers: [],
-      setSubscribers: [],
-      getOnSnapshotCallbacks: [],
-      setOnSnapshotCallbacks: [],
-      getOnErrorCallbacks: [],
-      setOnErrorCallbacks: [],
-      getOnUnsubscribeCallbacks: [],
-      setOnUnsubscribeCallbacks: [],
-      setNotifyEventSystem: undefined,
-      setUpdateProjectState: undefined,
-      setLogActivity: undefined,
-      setTriggerIncentives: undefined,
-      setOptionalData: null,
-      setEmail: '',
-      setSnapshotIds: [],
-      getPayload: undefined,
-      handleCallback: function (data: Snapshot<TaskData, SubtaskData>): void {
-        throw new Error('Function not implemented.');
-      },
-      snapshotCallback: function (data: Snapshot<TaskData, SubtaskData>): void {
-        throw new Error('Function not implemented.');
-      },
-      getEmail: function (): string {
-        throw new Error('Function not implemented.');
-      },
-      subscribe: function (callback: (data: Snapshot<TaskData, SubtaskData>) => void): void {
-        throw new Error('Function not implemented.');
-      },
-      unsubscribe: function (callback: (data: Snapshot<TaskData, SubtaskData>) => void): void {
-        throw new Error('Function not implemented.');
-      },
-      getTransformSubscribers: function (): ((data: Snapshot<TaskData, SubtaskData>) => void)[] {
-        throw new Error('Function not implemented.');
-      },
-      getOptionalData: function (): CustomSnapshotData | null {
-        throw new Error('Function not implemented.');
-      },
-      getFetchSnapshotIds: function (): Promise<string[]> {
-        throw new Error('Function not implemented.');
-      },
-      getSnapshotIds: function (): string[] {
-        throw new Error('Function not implemented.');
-      },
-      getData: function (): Partial<SnapshotStore<TaskData, SubtaskData>> | null {
-        throw new Error('Function not implemented.');
-      },
-      getNewData: function (): Promise<Partial<SnapshotStore<TaskData, SubtaskData>> | null> {
-        throw new Error('Function not implemented.');
-      },
-      getNotifyEventSystem: function (): Function | undefined {
-        throw new Error('Function not implemented.');
-      },
-      getUpdateProjectState: function (): Function | undefined {
-        throw new Error('Function not implemented.');
-      },
-      getLogActivity: function (): Function | undefined {
-        throw new Error('Function not implemented.');
-      },
-      getTriggerIncentives: function (): Function | undefined {
-        throw new Error('Function not implemented.');
-      },
-      initialData: function (data: Snapshot<TaskData, SubtaskData>): void {
-        throw new Error('Function not implemented.');
-      },
-      getName: function (): string {
-        throw new Error('Function not implemented.');
-      },
-      getDetermineCategory: function (data: Snapshot<TaskData, SubtaskData>): Snapshot<TaskData, SubtaskData> {
-        throw new Error('Function not implemented.');
-      },
-      fetchSnapshotById: function (userId: string, snapshotId: string): Promise<Snapshot<TaskData, SubtaskData>> {
-        throw new Error('Function not implemented.');
-      },
-      snapshots: function (): Promise<SnapshotStoreConfig<BaseData, Data>[]> {
-        throw new Error('Function not implemented.');
-      },
-      toSnapshotStore: function (initialState: Snapshot<TaskData, SubtaskData> | undefined, snapshotConfig: SnapshotStoreConfig<BaseData, Data>[], delegate: (snapshot: Snapshot<TaskData, any>, initialState: Snapshot<TaskData, any>, snapshotConfig: SnapshotStoreConfig<BaseData, Data>[]) => void): SnapshotStore<TaskData, SubtaskData>[] | undefined {
-        throw new Error('Function not implemented.');
-      },
-      determineCategory: function (initialState: Snapshot<TaskData, SubtaskData>): string {
-        throw new Error('Function not implemented.');
-      },
-      getDeterminedCategory: function (data: Snapshot<TaskData, SubtaskData>): string {
-        throw new Error('Function not implemented.');
-      },
-      processNotification: function (id: string, message: string, snapshotContent: Map<string, Snapshot<TaskData, SubtaskData>> | null | undefined, date: Date, type: NotificationType, store: SnapshotStore<TaskData, SubtaskData>): Promise<void> {
-        throw new Error('Function not implemented.');
-      },
-      receiveSnapshot: function (snapshot: TaskData): void {
-        throw new Error('Function not implemented.');
-      },
-      getState: function (prop: any): TaskData | null {
-        throw new Error('Function not implemented.');
-      },
-      setEvent: function (prop: any, value: any): void {
-        throw new Error('Function not implemented.');
-      },
-      onError: function (callback: (error: Error) => void): void {
-        throw new Error('Function not implemented.');
-      },
-      getSubscriberId: function (): string {
-        throw new Error('Function not implemented.');
-      },
-      getSubscribersById: function (): Map<string, Subscriber<TaskData, SubtaskData>> {
-        throw new Error('Function not implemented.');
-      },
-      getSubscribersWithSubscriptionPlan: function (userId: string, snapshotId: string): SubscriberTypeEnum | undefined {
-        throw new Error('Function not implemented.');
-      },
-      getSubscription: function (): Subscription<TaskData, SubtaskData> {
-        throw new Error('Function not implemented.');
-      },
-      onUnsubscribe: function (callback: (callback: (data: Snapshot<TaskData, SubtaskData>) => void) => void): void {
-        throw new Error('Function not implemented.');
-      },
-      onSnapshot: function (callback: (snapshot: Snapshot<TaskData, SubtaskData>) => void | Promise<void>): void {
-        throw new Error('Function not implemented.');
-      },
-      onSnapshotError: function (callback: (error: Error) => void): void {
-        throw new Error('Function not implemented.');
-      },
-      onSnapshotUnsubscribe: function (callback: (callback: (data: Snapshot<TaskData, SubtaskData>) => void) => void): void {
-        throw new Error('Function not implemented.');
-      },
-      triggerOnSnapshot: function (snapshot: Snapshot<TaskData, SubtaskData>): void {
-        throw new Error('Function not implemented.');
-      }
-    }],
-    store: null,
-    stores: null,
+// const newTaskWithSubtasksSnapshot: Snapshot<TaskData, SubtaskData> = {
+//   id: '2',
+//   data: {
+//     id: '2',
+//     title: 'Task 2',
+//     description: 'Description of Task 2',
+//     createdAt: new Date(),
+//     updatedAt: new Date(),
+//     timestamp: new Date().getTime(),
+//   },
+//   snapshotStore: {
+//     // _id: 'snapshotStoreId',
+//     id: '2',
+//     key: 'key2',
+//     topic: 'subtask',
+//     date: new Date(),
+//     title: 'snapshot store',
+//     category: 'subtask category',
+//     message: 'snapshot store',
+//     timestamp: new Date().getTime(),
+//     createdBy: 'user1',
+//     eventRecords: {},
+//     type: 'snapshot',
+//     subscribers: [
+//       // Subscriber as an array entry
+//       new Subscriber<TaskData, SubtaskData>(
+//         subscriber?.getUniqueId ?? '',
+//         '',
+//         {
+//           unsubscribe: unsubscribe,
+//           portfolioUpdates: portfolioUpdates,
+//           tradeExecutions: getTradeExecutions,
+//           marketUpdates: getMarketUpdates,
+//           triggerIncentives: triggerIncentives,
+//           communityEngagement: getCommunityEngagement,
+//           portfolioUpdatesLastUpdated: portfolioUpdatesLastUpdated,
+//           determineCategory: determineFileCategory
+//         } as Subscription<TaskData, SubtaskData>,
+//         '',
+//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         null,
+//         undefined
+//       )
+//     ],
+//   },
 
-    data: new Map<string, Snapshot<TaskData, SubtaskData>>([
-      ['subtask1', {
-        id: 'subtask1',
-        data: {
-          id: 'subtask1',
-          parentId: '2',
-          title: 'Subtask 1',
-          isCompleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          description: 'Subtask 1 description',
-          timestamp: Date.now()
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        events: {
-          eventRecords: {},
-          callbacks: [],
-          subscribers: [],
-          eventIds: []
-        },
-        meta: new Map(),
-        getSnapshotId: (key) => 'subtask1',
-        compareSnapshotState: (other, state) => false,
-        snapshotStore: null,
-        getParentId: () => '2',
-        getChildIds: () => ['subtask1'],
-        addChild: () => {},
-        removeChild: () => {},
-        getChildren: () => ['subtask1'],
-        hasChildren: () => false,
-        isDescendantOf: () => false,
-        eventRecords: {},
-        dataItems: [],
-        newData: undefined,
-        stores: [],
-        getStore: (snapshotId, snapshot, type, event) => null,
-        addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
-        mapSnapshot: (snapshotId, snapshot, type, event) => {},
-        removeStore: () => {},
-        subscribe: (callback) => {},
-        unsubscribe: (callback) => {},
-        handleSnapshot: (snapshotId, snapshot, snapshots, type, event) => {},
-        fetchSnapshotFailure: (snapshotManager, snapshot, payload) => { },
-        addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-        configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
-        fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
-        updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-        updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
-        createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
-        updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
-        updateSnapshotItem: (snapshotItem) => {},
-        timestamp: new Date().getTime()
-      }],
-      ['subtask2', {
-        id: 'subtask2',
-        data: {
-          id: 'subtask2',
-          parentId: '2',
-          title: 'Subtask 2',
-          isCompleted: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          description: 'Subtask 2 description',
-          timestamp: Date.now()
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        events: {
-          eventRecords: {},
-          callbacks: [],
-          subscribers: [],
-          eventIds: []
-        },
-        meta: new Map(),
-        getSnapshotId: (key) => 'subtask2',
-        compareSnapshotState: (other, state) => false,
-        snapshotStore: null,
-        getParentId: () => '2',
-        getChildIds: () => ['subtask2'],
-        addChild: () => {},
-        removeChild: () => {},
-        getChildren: () => ['subtask2'],
-        hasChildren: () => false,
-        isDescendantOf: () => false,
-        eventRecords: {},
-        dataItems: [],
-        newData: undefined,
-        stores: [],
-        getStore: (snapshotId, snapshot, type, event) => null,
-        addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
-        mapSnapshot: (snapshotId, snapshot, type, event) => {},
-        removeStore: () => {},
-        subscribe: (callback) => {},
-        handleSnapshot: (snapshotId, snapshot, snapshots, type, event) => {},
-        unsubscribe: (callback) => { },
-        fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-        addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-        configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
-        fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
-        updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-        updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
-        createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
-        updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
-        updateSnapshotItem: (snapshotItem) => {},
-        timestamp: new Date().getTime()
-      }]
-    ]),
-  },
-  eventRecords: {},
-  store: null,
-  snapshots: {
-    'subtask1': {
-      id: 'subtask1',
-      data: {
-        id: 'subtask1',
-        parentId: '2',
-        title: 'Subtask 1',
-        isCompleted: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        description: 'Subtask 1 description',
-        timestamp: Date.now()
-      },
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      events: {
-        eventRecords: {},
-        callbacks: [],
-        subscribers: [],
-        eventIds: []
-      },
-      meta: new Map(),
-      getSnapshotId: (key) => 'subtask1',
-      compareSnapshotState: (other, state) => false,
-      snapshotStore: null,
-      getParentId: () => '2',
-      getChildIds: () => ['subtask1'],
-      addChild: () => {},
-      removeChild: () => {},
-      getChildren: () => ['subtask1'],
-      hasChildren: () => false,
-      isDescendantOf: () => false,
-      eventRecords: {},
-      dataItems: [],
-      newData: undefined,
-      stores: [],
-      getStore: (snapshotId, snapshot, type, event) => null,
-      addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
-      mapSnapshot: (snapshotId, snapshot, type, event) => {},
-      removeStore: () => {},
-      subscribe: (callback) => {},
-      unsubscribe: (callback) => {},
-      fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-      addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-      configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
-      fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
-      updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-      updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
-      createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
-      updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
-      updateSnapshotItem: (snapshotItem) => {},
-      timestamp: new Date().getTime()
-    },
-    'subtask2': {
-      id: 'subtask2',
-      data: {
-        id: 'subtask2',
-        parentId: '2',
-        title: 'Subtask 2',
-        isCompleted: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        description: 'Subtask 2 description',
-        timestamp: Date.now()
-      },
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      events: {
-        eventRecords: {},
-        callbacks: [],
-        subscribers: [],
-        eventIds: []
-      },
-      meta: new Map(),
-      getSnapshotId: (key) => 'subtask2',
-      compareSnapshotState: (other, state) => false,
-      snapshotStore: null,
-      getParentId: () => '2',
-      getChildIds: () => ['subtask2'],
-      addChild: () => {},
-      removeChild: () => {},
-      getChildren: () => ['subtask2'],
-      hasChildren: () => false,
-      isDescendantOf: () => false,
-      eventRecords: {},
-      dataItems: [],
-      newData: undefined,
-      stores: [],
-      getStore: (snapshotId, snapshot, type, event) => null,
-      addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
-      mapSnapshot: (snapshotId, snapshot, type, event) => {},
-      removeStore: () => {},
-      subscribe: (callback) => {},
-      unsubscribe: (callback) => {},
-      fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-      addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-      configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
-      fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
-      updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-      updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
-      createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
-      updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
-      updateSnapshotItem: (snapshotItem) => {},
-      timestamp: new Date().getTime()
-    }
-  },
-  getSnapshotId: (key) => '2',
-  compareSnapshotState: (other, state) => false,
-  getParentId: () => '0',
-  getChildIds: () => ['subtask1', 'subtask2'],
-  addChild: () => {},
-  removeChild: () => {},
-  getChildren: () => ['subtask1', 'subtask2'],
-  hasChildren: () => true,
-  isDescendantOf: () => false,
-  eventRecords: {},
-  dataItems: [],
-  newData: undefined,
-  stores: [],
-  getStore: (snapshotId, snapshot, type, event) => null,
-  addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
-  mapSnapshot: (snapshotId, snapshot, type, event) => {},
-  removeStore: () => {},
-  subscribe: (callback) => {},
-  unsubscribe: (callback) => {},
-  fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-  addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-  configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
-  fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
-  updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
-  updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
-  createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
-  updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
-  updateSnapshotItem: (snapshotItem) => {},
-  timestamp: new Date().getTime()
-};
+//     store: null,    stores: null,
+
+//     data: new Map<string, Snapshot<TaskData, SubtaskData>>([
+//         [
+//           'subtask1',
+//         {
+//         id: 'subtask1',
+//         data: {
+//           id: 'subtask1',
+//           parentId: '2',
+//           title: 'Subtask 1',
+//           isCompleted: false,
+//           createdAt: new Date(),
+//           updatedAt: new Date(),
+//           description: 'Subtask 1 description',
+//           timestamp: Date.now(),
+//         },
+//         createdAt: new Date(),
+//         updatedAt: new Date(),
+//         events: {
+//           eventRecords: {},
+//           callbacks: [],
+//           subscribers: [],
+//           eventIds: [],
+//         },
+//         meta: new Map(),
+//         getSnapshotId: (key) => 'subtask1',
+//         compareSnapshotState: (other, state) => false,
+//         snapshotStore: null,
+//         getParentId: () => '2',
+//         getChildIds: () => ['subtask1'],
+//         addChild: () => {},
+//         removeChild: () => {},
+//         getChildren: () => ['subtask1'],
+//         hasChildren: () => false,
+//         isDescendantOf: () => false,
+//           eventRecords: {
+//         },
+//         dataItems: [],
+//         newData: undefined,
+//         stores: [],
+//         getStore: (snapshotId, snapshot, type, event) => null,
+//         addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
+//         mapSnapshot: (snapshotId, snapshot, type, event) => {},
+//         removeStore: () => {},
+//         subscribe: (callback) => {},
+//         unsubscribe: (callback) => {},
+//         handleSnapshot: (snapshotId, snapshot, snapshots, type, event) => {},
+//         fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//         addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//         configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
+//         fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
+//         updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//         updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
+//         createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
+//         updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
+//         updateSnapshotItem: (snapshotItem) => {},
+//         timestamp: Date.now(),
+//         snapshotStoreConfig: null,
+//         getSnapshotItems: [],
+//         defaultSubscribeToSnapshots: "",
+//         transformSubscriber: "",
+//         transformDelegate: "",
+//         initializedState: "",
+//         getAllKeys: "",
+//         getAllItems: "",
+//         addDataStatus: "",
+//         removeData: "",
+//         updateData: "",
+//         updateDataTitle: "",
+//         updateDataDescription: "",
+//         updateDataStatus: "",
+//         addDataSuccess: "",
+//         getDataVersions: "",
+//         updateDataVersions: "",
+//         getBackendVersion: "",
+//         getFrontendVersion: "",
+//         fetchData: "",
+//         defaultSubscribeToSnapshot: "",
+//         handleSubscribeToSnapshot: "",
+//         removeItem: "",
+//         getSnapshot: "",
+//         getSnapshotSuccess: "",
+//         setItem: "",
+//         getDataStore: "",
+//         addSnapshotSuccess: "",
+//         deepCompare: "",
+//         shallowCompare: "",
+//         getDataStoreMethods: "",
+//         getDelegate: "",
+//         determineCategory: "",
+//         determinePrefix: "",
+//         removeSnapshot: "",
+//         addSnapshotItem: "",
+//         addNestedStore: "",
+//         clearSnapshots: "",
+//         addSnapshot: "",
+//         createSnapshot: "",
+//         createInitSnapshot: "",
+//         setSnapshotSuccess: "",
+//         setSnapshotFailure: "",
+//         updateSnapshots: "",
+//         updateSnapshotsSuccess: "",
+//         updateSnapshotsFailure: "",
+//         initSnapshot: "",
+//         takeSnapshot: "",
+//         takeSnapshotSuccess: "",
+//         takeSnapshotsSuccess: "",
+//         flatMap: "",
+//         getState: "",
+//         setState: "",
+//         validateSnapshot: "",
+//         handleActions: "",
+//         setSnapshot: "",
+//         transformSnapshotConfig: "",
+//         setSnapshots: "",
+//         clearSnapshot: "",
+//         mergeSnapshots: "",
+//         reduceSnapshots: "",
+//         sortSnapshots: "",
+//         filterSnapshots: "",
+//         findSnapshot: "",
+//         getSubscribers: "",
+//         notify: "",
+//         notifySubscribers: "",
+//         getSnapshots: "",
+//         getAllSnapshots: "",
+//         generateId: "",
+//         batchFetchSnapshots: "",
+//         batchTakeSnapshotsRequest: "",
+//         batchUpdateSnapshotsRequest: "",
+//         filterSnapshotsByStatus: "",
+//         filterSnapshotsByCategory: "",
+//         filterSnapshotsByTag: "",
+//         batchFetchSnapshotsSuccess: "",
+//         batchFetchSnapshotsFailure: "",
+//         batchUpdateSnapshotsSuccess: "",
+//         batchUpdateSnapshotsFailure: "",
+//         batchTakeSnapshot: "",
+//         handleSnapshotSuccess: "",
+//         getInitialState: "",
+//         getConfigOption: "",
+//         getTimestamp: "",
+//         getStores: "",
+//         getData: "",
+//         setData: "",
+//         addData: "",
+//         mapSnapshots: "",
+//         fetchSnapshot: "",
+//         createSnapshotSuccess: "",
+//         createSnapshots: "",
+//         onSnapshot: "",
+//         onSnapshots: "",
+//           label: "",
+//           versionInfo, 
+//           getItem, 
+//           getDataStoreMap,
+//           payload: "",
+//           subscribeToSnapshots: []
+//           subscribers: [],
+//           }
+//         ]
+//     ]),
+//   eventRecords: {},
+//   store: null,
+//   snapshots: {
+//     'subtask1': {
+//       id: 'subtask1',
+//       data: {
+//         id: 'subtask1',
+//         parentId: '2',
+//         title: 'Subtask 1',
+//         isCompleted: false,
+//         createdAt: new Date(),
+//         updatedAt: new Date(),
+//         description: 'Subtask 1 description',
+//         timestamp: Date.now()
+//       },
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//       events: {
+//         eventRecords: {},
+//         callbacks: [],
+//         subscribers: [],
+//         eventIds: []
+//       },
+//       meta: new Map(),
+//       getSnapshotId: (key) => 'subtask1',
+//       compareSnapshotState: (other, state) => false,
+//       snapshotStore: null,
+//       getParentId: () => '2',
+//       getChildIds: () => ['subtask1'],
+//       addChild: () => {},
+//       removeChild: () => {},
+//       getChildren: () => ['subtask1'],
+//       hasChildren: () => false,
+//       isDescendantOf: () => false,
+//       eventRecords: {},
+//       dataItems: [],
+//       newData: undefined,
+//       stores: [],
+//       getStore: (snapshotId, snapshot, type, event) => null,
+//       addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
+//       mapSnapshot: (snapshotId, snapshot, type, event) => {},
+//       removeStore: () => {},
+//       subscribe: (callback) => {},
+//       unsubscribe: (callback) => {},
+//       fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//       addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//       configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
+//       fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
+//       updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//       updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
+//       createSnapshotFailure: async (
+//         snapshotId,
+//         snapshotManager,
+//         snapshot,
+//         payload) => { },
+//       updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
+//       updateSnapshotItem: (snapshotItem) => {},
+//       timestamp: new Date().getTime()
+//     },
+//     'subtask2': {
+//       id: 'subtask2',
+//       data: {
+//         id: 'subtask2',
+//         parentId: '2',
+//         title: 'Subtask 2',
+//         isCompleted: true,
+//         createdAt: new Date(),
+//         updatedAt: new Date(),
+//         description: 'Subtask 2 description',
+//         timestamp: Date.now()
+//       },
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//       events: {
+//         eventRecords: {},
+//         callbacks: [],
+//         subscribers: [],
+//         eventIds: []
+//       },
+//       meta: new Map(),
+//       getSnapshotId: (key) => 'subtask2',
+//       compareSnapshotState: (other, state) => false,
+//       snapshotStore: null,
+//       getParentId: () => '2',
+//       getChildIds: () => ['subtask2'],
+//       addChild: () => {},
+//       removeChild: () => {},
+//       getChildren: () => ['subtask2'],
+//       hasChildren: () => false,
+//       isDescendantOf: () => false,
+//       eventRecords: {},
+//       dataItems: [],
+//       newData: undefined,
+//       stores: [],
+//       getStore: (snapshotId, snapshot, type, event) => null,
+//       addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
+//       mapSnapshot: (snapshotId, snapshot, type, event) => {},
+//       removeStore: () => {},
+//       subscribe: (callback) => {},
+//       unsubscribe: (callback) => {},
+//       fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//       addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//       configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
+//       fetchSnapshotSuccess: (snapshotManager, snapshot) => {},
+//       updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//       updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
+//       createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
+//       updateSnapshot: (
+//         snapshotId: "",
+//         data: "",
+//         events: "",
+//         snapshotStore: "",
+//         dataItems: "",
+//         newData: "",
+//         payload: "",
+//         store: ""
+//       ) => { },
+//       updateSnapshotItem: (snapshotItem: "") => {},
+//       timestamp: new Date().getTime()
+//     }
+//   },
+//   getSnapshotId: (key) => '2',
+//   compareSnapshotState: (other, state) => false,
+//   getParentId: () => '0',
+//   getChildIds: () => ['subtask1', 'subtask2'],
+//   addChild: () => {},
+//   removeChild: () => {},
+//   getChildren: () => ['subtask1', 'subtask2'],
+//   hasChildren: () => true,
+//   isDescendantOf: () => false,
+//   // eventRecords: {},
+//   dataItems: [],
+//   newData: null,
+//   stores: [],
+//   getStore: (snapshotId, snapshot, type, event) => null,
+//   addStore: (snapshotStore, snapshotId, snapshot, type, event) => {},
+//   mapSnapshot: (snapshotId, snapshot, type, event) => {},
+//   removeStore: () => {},
+//   subscribe: (callback) => {},
+//   unsubscribe: (callback) => {},
+//   fetchSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//   addSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//   configureSnapshotStore: (snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback) => {},
+//   fetchSnapshotSuccess: (snapshotManager, snapshot) => {
+//     return snapshot
+//     // const { id, data, createdAt, updatedAt, events, meta } = snapshot;
+//     // const { id: dataId, parentId, title, isCompleted, createdAt: dataCreatedAt, updatedAt: dataUpdatedAt, description, timestamp } = data;
+//     // const { eventRecords, callbacks, subscribers, eventIds } = events;
+//     // const { timestamp: metaTimestamp } = meta;
+//     // const { id: metaId, parentId: metaParentId, title: metaTitle, isCompleted: metaIsCompleted
+
+//   },
+//   updateSnapshotFailure: (snapshotManager, snapshot, payload) => {},
+//   updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {},
+//   createSnapshotFailure: async (snapshotId, snapshotManager, snapshot, payload) => {},
+//   updateSnapshot: (snapshotId, data, events, snapshotStore, dataItems, newData, payload, store) => {},
+//   updateSnapshotItem: (snapshotItem) => {},
+//   timestamp: new Date().getTime()
+// };
 
 
 
-dispatch(SnapshotActions().addTaskSnapshot(newTaskSnapshot));
-dispatch(TaskWithSubtasksSnapshotActions().addTaskWithSubtasksSnapshot(newTaskWithSubtasksSnapshot));
+// dispatch(SnapshotActions().addTaskSnapshot(newTaskSnapshot));
+// dispatch(TaskWithSubtasksSnapshotActions().addTaskWithSubtasksSnapshot(newTaskWithSubtasksSnapshot));
+// export type { SnapshotOperation };
+
+
+

@@ -1,7 +1,8 @@
-// ContentContext.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ContentState } from 'draft-js'; // Assuming you're using Draft.js for content state
+import { ContentState } from 'draft-js';
 import { StructuredMetadata } from '../configs/StructuredMetadata';
+import * as contentApi from './../api/ApiContent';
+import { endpoints } from '../api/endpointConfigurations';
 
 interface ContentContextType {
   contentState: ContentState | null;
@@ -11,21 +12,23 @@ interface ContentContextType {
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
-
-export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const CONTENT_API_URL = endpoints.content
+export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [contentState, setContentState] = useState<ContentState | null>(null);
   const [metadata, setMetadata] = useState<StructuredMetadata | null>(null);
 
-
-    
-  // Example function to fetch content data (replace with your actual logic)
   const fetchContentData = async () => {
-    // Replace with actual data fetching logic
-    const contentData = await fetchContentDataFromApi();
-    setContentState(contentData.contentState);
-    setMetadata(getMetadataForContent(contentData.contentState));
+    try {
+      const contentId = await contentApi.getContentIdFromURL(url);
+      const contentData = await contentApi.fetchContentDataFromAPI(contentId);
+      
+      if (contentData.contentState && contentData.contentId) {
+        setContentState(contentData.contentState);
+        setMetadata(await contentApi.getMetadataForContent(contentData.contentId, contentData.contentState));
+      }
+    } catch (error) {
+      console.error('Error fetching content data:', error);
+    }
   };
 
   useEffect(() => {

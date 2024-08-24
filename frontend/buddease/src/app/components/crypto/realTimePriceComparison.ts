@@ -12,13 +12,18 @@ import { useDispatch } from 'react-redux';
 import { Data } from '../models/data/Data';
 import { processExchangeData } from '../models/data/fetchExchangeData';
 import { RealtimeData, RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { Snapshot, UpdateSnapshotPayload } from "./../snapshots/LocalStorageSnapshotStore";
+import { createOptions, Snapshot, UpdateSnapshotPayload } from "./../snapshots/LocalStorageSnapshotStore";
 import { ExchangeEnum, DEXEnum } from "./../crypto/exchangeIntegration";
 import { BaseData } from "../models/data/Data";
-import { updateSnapshot } from '@/app/components/snapshots/snapshotHandlers'
- 
+ import * as snapshotApi from '../../api/SnapshotApi'
+import { StatusType } from '../models/data/StatusType';
+import { updateSnapshot } from '../snapshots';
 // Define the price comparison component or function
-const RealTimePriceComparison: React.FC = () => {
+interface PriceComparisonProps {
+  // Define your component props here
+  key: string;
+}
+const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
   const dispatch = useDispatch();
 
   // Define an array of exchanges to fetch data from
@@ -32,58 +37,60 @@ const RealTimePriceComparison: React.FC = () => {
   ];
 
   // Define a custom update callback function to process fetched data
-const updateCallback: RealtimeUpdateCallback<RealtimeData> = async (
-  data: SnapshotStore<BaseData>,
-  events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<BaseData>,
-  dataItems: RealtimeData[]
-) => {
-  // Example: Log received data
-  console.log("Received data:", data);
+  const updateCallback: RealtimeUpdateCallback<RealtimeData> = async (
+    id: string,
+    data: SnapshotStore<T, K>,
+    events: Record<string, CalendarEvent[]>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeData[]
+  ) => {
+    // Example: Log received data
+    console.log("Received data:", data);
 
-  // Example: Process events
-  Object.keys(events).forEach((key) => {
-    console.log(`Received events for ${key}:`, events[key]);
-  });
+    // Example: Process events
+    Object.keys(events).forEach((key) => {
+      console.log(`Received events for ${key}:`, events[key]);
+    });
 
-  const snapshotId = () => Promise<{}>
-  // Wait for the snapshot to be available before accessing its data
-  const snapshot = await data.getSnapshot(snapshotId);
-  const newData = snapshot.data;
+    const snapshotId = snapshotStore.getSnapshotId();
+    const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
+    // Wait for the snapshot to be available before accessing its data
+    const snapshot = (await createOptions(params)).dataStoreMethods.data?.get(id.toString())
 
-  // Example: Define payload as needed
-  const payload: UpdateSnapshotPayload<BaseData> = {
-    snapshotId: "snapshotId",
-    title: "Title",
-    description: "Description",
-    newData: newData as BaseData, // Provide the new data here
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    status: "active",
-    category: "Category",
-    // Define payload properties here
+    const newData = snapshot.data;
+
+    // Example: Define payload as needed
+    const payload: UpdateSnapshotPayload<BaseData> = {
+      snapshotId: Promise.resolve(snapshotId),
+      title: "Title",
+      description: "Description",
+      newData: newData as BaseData, // Provide the new data here
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: StatusType.Active,
+      category: "Category",
+      // Define payload properties here
+    };
+
+    // Example: Update snapshot store
+    updateSnapshot(
+      String(snapshotId), // Use the actual snapshotId instead of a string literal
+      data,
+      events,
+      snapshotStore,
+      dataItems as RealtimeDataItem[], // Assuming RealtimeData can be safely cast to RealtimeDataItem
+      newData, // Ensure to provide newData here
+      payload // Ensure to provide payload here
+    );
+
+    // Example: Process data items
+    dataItems.forEach((item) => {
+      console.log("Received data item:", item);
+      // Additional processing logic for each data item
+    });
+
+    // Additional update logic as needed
   };
-
-  // Example: Update snapshot store
-  updateSnapshot(
-    "snapshotId", // Provide your snapshot ID here
-    data,
-    events,
-    snapshotStore,
-    dataItems as RealtimeDataItem[], // Assuming RealtimeData can be safely cast to RealtimeDataItem
-    newData, // Ensure to provide newData here
-    payload // Ensure to provide payload here
-  );
-
-  // Example: Process data items
-  dataItems.forEach((item) => {
-    console.log("Received data item:", item);
-    // Additional processing logic for each data item
-  });
-
-  // Additional update logic as needed
-};
-
   const exchangeList: ExchangeEnum[] = [/* Populate with your exchange enums */];
   const dexList: DEXEnum[] =[/* Populate with your dex exchange enums */]
   // Fetch data from exchanges and DEXs using custom hooks

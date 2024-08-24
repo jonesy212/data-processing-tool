@@ -1238,6 +1238,58 @@ export const intelligentDocumentSearch = async (
   }
 };
 
+
+export const getDocumentVersions = async (
+  documentId: string
+): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/api/documents/getVersions`,
+      {
+        params: { documentId },
+        headers: headersConfig,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching document versions:", error);
+    const errorMessage = "Failed to fetch document versions";
+    handleDocumentApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      "GET_DOCUMENT_VERSIONS_ERROR"
+    );
+    throw error;
+  }
+}
+
+
+
+export const updateSnapshotDetails = async (
+  snapshotId: string,
+  newDetails: any // Define a proper type for `newDetails` as needed
+): Promise<any> => {
+  try {
+    const response = await axiosInstance.post(
+      `${API_BASE_URL}/api/snapshots/updateDetails`,
+      { snapshotId, newDetails },
+      {
+        headers: headersConfig,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating snapshot details:", error);
+    const errorMessage = "Failed to update snapshot details";
+    handleDocumentApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      "UPDATE_SNAPSHOT_DETAILS_ERROR"
+    );
+    throw error;
+  }
+};
+
 export const createDocumentVersion = async (
   documentId: string
 ): Promise<any> => {

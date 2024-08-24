@@ -2,8 +2,10 @@
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import dotProp from "dot-prop";
+import { ContentState } from "draft-js";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { YourResponseType } from "../components/typings/types";
+import { StructuredMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
@@ -210,21 +212,24 @@ export const createContentStateFromText = (text: string): any => {
     };
 };
 
+ 
+export const getMetadataForContent = async (
+  contentId: string,
+  contentState: ContentState // Include contentState in the function parameters
+): Promise<StructuredMetadata> => {
+  try {
+    // Make API call to fetch metadata for the content
+    const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;
+    const response = await axiosInstance.get(getMetadataEndpoint, {
+      headers: headersConfig // Ensure headersConfig is properly defined
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching metadata for content:", error);
+    throw error;
+  }
+};
 
-export const getMetadataForContent = async(
-  contentId: string
-): Promise<any> => {
-    try {
-        // Make API call to fetch metadata for the content
-        const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;
-        const response = await axiosInstance.get(getMetadataEndpoint, { headers: headersConfig });
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching metadata for content:", error);
-        throw error;
-    }
-}
-  
 
 export const getTaskHistoryFromDatabase = async (
     taskId: string
@@ -239,3 +244,36 @@ export const getTaskHistoryFromDatabase = async (
         throw error;
     }
 }
+
+
+export const fetchContentDataFromAPI = async (
+  contentId: string,
+): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/fetch/${contentId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching content data:", error);
+    throw error;
+  }
+};
+
+export const fetchContentId = async (contentId: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/fetch/${contentId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching content data:", error);
+    throw error;
+  }
+}
+
+export const getContentIdFromURL = (url: string): string => {
+  const urlParts = url.split("/");
+  const contentId = urlParts[urlParts.length - 1];
+  return contentId;
+  };

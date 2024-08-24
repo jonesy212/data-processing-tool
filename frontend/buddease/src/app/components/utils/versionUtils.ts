@@ -3,7 +3,13 @@ import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
 // versionUtils.ts
 interface DataWithVersion {
-    version?: string;
+  version?: string;
+  priority?: string
+    // other properties...
+}
+
+interface DataWithTimestamp {
+    timestamp?: Date;
     // other properties...
 }
 
@@ -45,4 +51,4 @@ export {
     processSnapshotData
 };
 
-export type {SnapshotDataType, DataWithPriority, DataWithVersion}
+export type {SnapshotDataType, DataWithPriority, DataWithVersion, DataWithTimestamp}

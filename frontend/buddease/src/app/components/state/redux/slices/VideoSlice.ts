@@ -12,10 +12,6 @@ import { CustomComment } from "./BlogSlice";
 import { VideoMetadata } from "@/app/configs/StructuredMetadata";
 
 
-
-
-
-
 // Define the generateCaptions function
 const generateCaptions = (video: any): string[] => {
   // Logic to generate captions for the video
@@ -252,7 +248,9 @@ export const useVideoManagerSlice = createSlice({
             text: comment.text,
             pinned: false,
             postedId: comment.postedId,
-            postId: ""
+            postId: comment.postId,
+            author: comment.author,
+            timestamp: comment.timestamp
           });
           state.videos[videoIndex].comments?.push(draftComment);
         } else {
@@ -751,16 +749,16 @@ export const useVideoManagerSlice = createSlice({
     autoGenerateVideoTrailers: (
       state,
       action: PayloadAction<{ videoId: string, trailer: string[] }>
-    ): VideoState => {
+    ): WritableDraft<VideoState> => {
       const { videoId, trailer } = action.payload;
       // Find the video with the given videoId
       const updatedVideos = state.videos.map(video => {
         if (video.id === videoId) {
           // Create a copy of the video object to avoid mutating the original state
-          const updatedVideo: Video = { ...video };
-          // Logic to integrate auto-generated video trailers into the video
-          updatedVideo.trailer = `Auto-generated video trailers integrated into the video with the following trailer: ${trailer.join(', ')}.`;
-          return updatedVideo;
+          return {
+            ...video,
+            trailer: `Auto-generated video trailers integrated into the video with the following trailer: ${trailer.join(', ')}.`
+          };
         }
         return video;
       });
@@ -771,7 +769,7 @@ export const useVideoManagerSlice = createSlice({
     predictiveAnalyticsForVideoEngagement: (
       state,
       action: PayloadAction<{ videoId: string; engagement: string[] }>
-    ): VideoState => {
+    ): WritableDraft<VideoState> => {
       const { videoId, engagement } = action.payload;
       const updatedVideos = state.videos.map((video) => {
         if (video.id === videoId) {
@@ -789,7 +787,7 @@ export const useVideoManagerSlice = createSlice({
     adaptiveBitrateStreaming: (
       state,
       action: PayloadAction<{ videoId: string, streaming: string[] }>
-    ): VideoState => {
+    ): WritableDraft<VideoState> => {
       const { videoId, streaming } = action.payload;
       // Find the video with the given videoId
       const updatedVideos = state.videos.map(video => {
@@ -809,7 +807,7 @@ export const useVideoManagerSlice = createSlice({
     VRbasedVideoConferencing: (
       state,
       action: PayloadAction<{ videoId: string, conferencing: string[] }>
-    ): VideoState => {
+    ): WritableDraft<VideoState> => {
     
       const { videoId, conferencing } = action.payload;
       // Find the video with the given videoId

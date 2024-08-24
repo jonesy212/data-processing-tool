@@ -3,26 +3,20 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Content } from "../models/content/AddContent";
 import { Data } from "../models/data/Data";
 import { Snapshot } from "./LocalStorageSnapshotStore";
-import { T } from "./SnapshotConfig";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Label } from "../projects/branding/BrandingSettings";
+import { User } from "../users/User";
+import { Category } from "../libraries/categories/generateCategoryProperties";
+ 
 
-interface SnapshotItem {
-  message: any;
+interface SnapshotItem<T extends Data, K extends Data> extends  Snapshot<T, K> {
+  message?: string | undefined;
   content?: string | Content<T>;
-  user: any;
-  id: string;
-  value: Snapshot<Data> | undefined;
-  label: string;
-  category: string;
-  timestamp: string | Date;
-  categories?: string[];
-  updatedAt: Date | undefined;
-  store: SnapshotStore<Data> | undefined;
-  data: T | Map<string, Data> | null | undefined;
-  metadata: any
+  data: T | Map<string, Snapshot<T, K>> | null | undefined;
 }
 
-class SnapshotList {
-  private snapshots: SnapshotItem[];
+class SnapshotList<T extends Data, K extends Data> {
+  private snapshots: SnapshotItem<T, K>[];
   private id: string;
   public category: string;
   constructor() {
@@ -33,25 +27,31 @@ class SnapshotList {
 
   sortSnapshotByDate() {
     this.snapshots.sort((a, b) => {
-      return (
-        (a.value?.timestamp instanceof Date ? a.value.timestamp.getTime() : 0) -
-        (b.value?.timestamp instanceof Date ? b.value.timestamp.getTime() : 0)
-      );
+      const aTimestamp = a.value && typeof a.value === 'object' && 'timestamp' in a.value
+        ? a.value.timestamp instanceof Date ? a.value.timestamp.getTime() : 0
+        : 0;
+      const bTimestamp = b.value && typeof b.value === 'object' && 'timestamp' in b.value
+        ? b.value.timestamp instanceof Date ? b.value.timestamp.getTime() : 0
+        : 0;
+      return aTimestamp - bTimestamp;
     });
   }
   sort() {
     this.snapshots.sort((a, b) => {
-      return (
-        (a.value?.timestamp instanceof Date ? a.value.timestamp.getTime() : 0) -
-        (b.value?.timestamp instanceof Date ? b.value.timestamp.getTime() : 0)
-      );
+      const aTimestamp = a.value && typeof a.value === 'object' && 'timestamp' in a.value
+      ? a.value.timestamp instanceof Date ? a.value.timestamp.getTime() : 0
+      : 0;
+    const bTimestamp = b.value && typeof b.value === 'object' && 'timestamp' in b.value
+      ? b.value.timestamp instanceof Date ? b.value.timestamp.getTime() : 0
+      : 0;
+    return aTimestamp - bTimestamp;
     });
   }
   sortByDate() {
     this.sortSnapshotByDate();
   }
 
-  filterByCategories(categories: string[]) {
+  filterByCategories(categories: Category[]) {
     // Filter snapshots by categories
     return this.snapshots.filter((snapshot) => {
       return categories.every((category) =>
@@ -60,50 +60,65 @@ class SnapshotList {
     });
   }
 
-  getSnapshotList(snapshots: SnapshotItem[]) {
+  getSnapshotList(snapshots: SnapshotItem<T, K>[]) {
     return snapshots;
   }
 
-  getSnapshots(): SnapshotItem[] {
+
+  getSnapshot(index: number): SnapshotItem<T, K> | undefined {
+    return this.snapshots[index];
+  }
+
+  getSnapshots(): SnapshotItem<T, K>[] {
     return this.snapshots;
   }
 
   sortSnapshotItems() {
     this.snapshots.sort((a, b) => {
-      return (
-        (a.value?.timestamp instanceof Date ? a.value.timestamp.getTime() : 0) -
-        (b.value?.timestamp instanceof Date ? b.value.timestamp.getTime() : 0)
-      );
+      const aTimestamp = a.value && typeof a.value === 'object' && 'timestamp' in a.value
+      ? a.value.timestamp instanceof Date ? a.value.timestamp.getTime() : 0
+      : 0;
+    const bTimestamp = b.value && typeof b.value === 'object' && 'timestamp' in b.value
+      ? b.value.timestamp instanceof Date ? b.value.timestamp.getTime() : 0
+      : 0;
+    return aTimestamp - bTimestamp;
     });
   }
 
+  
   sortSnapshotsByUser() {
     this.snapshots.sort((a, b) => {
-      return a.user.localeCompare(b.user);
+      if (a.user && b.user) {
+        return a.user.username.localeCompare(b.user.username);  // Use the string property for sorting
+      }
+      return 0;  // Handle cases where `user` might be undefined
     });
   }
 
-  sortSnapshotsByAlpabeticalOrder() {
+  sortSnapshotsByAlphabeticalOrder() {
     this.snapshots.sort((a, b) => {
-      return a.label.localeCompare(b.label);
+      if (a.label && b.label) {
+        return a.label.text.localeCompare(b.label.text);  // Use the string property for sorting
+      }
+      return 0;  // Handle cases where `label` might be undefined
     });
   }
 
   sortSnapshotsByTags() {
     this.snapshots.sort((a, b) => {
-      const aTags = a.value?.tags || [];
-      const bTags = b.value?.tags || [];
+      const aTags = (a.value && typeof a.value === 'object' && 'tags' in a.value && Array.isArray(a.value.tags)) ? a.value.tags : [];
+      const bTags = (b.value && typeof b.value === 'object' && 'tags' in b.value && Array.isArray(b.value.tags)) ? b.value.tags : [];
       return aTags.join(",").localeCompare(bTags.join(","));
     });
   }
 
   // Methods to manipulate snapshot items
-  addSnapshot(snapshot: SnapshotItem) {
+  addSnapshot(snapshot: SnapshotItem<T, K>) {
     snapshot.id = UniqueIDGenerator.generateSnapshoItemID(this.id);
     this.snapshots.push(snapshot);
   }
 
-  fetchSnaphostById(id: string): SnapshotItem | undefined {
+  fetchSnaphostById(id: string): SnapshotItem<T, K> | undefined {
     return this.snapshots.find((snapshot) => snapshot.id === id);
   }
 
@@ -125,7 +140,7 @@ class SnapshotList {
     const snapshots = this.snapshots;
 
     return {
-      next(): IteratorResult<SnapshotItem> {
+      next(): IteratorResult<SnapshotItem<T, K>> {
         if (index < snapshots.length) {
           const value = snapshots[index++];
           return { value, done: false };
@@ -136,7 +151,7 @@ class SnapshotList {
     };
   }
 
-  toArray(): SnapshotItem[] {
+  toArray(): SnapshotItem<T, K>[] {
     return this.snapshots;
   }
   // Other methods as needed

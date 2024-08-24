@@ -16,6 +16,7 @@ import { AlignmentOptions } from "../components/state/redux/slices/toolbarSlice"
 import { Settings } from "../components/state/stores/SettingsStore";
 import { UserIdea } from "../components/users/Ideas";
 import Version from "../components/versions/Version";
+import { VersionData } from "../components/versions/VersionData";
 import { StructuredMetadata } from "./StructuredMetadata";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
@@ -28,7 +29,7 @@ export interface DocumentBuilderConfig extends DocumentOptions {
   options: {
     // other properties...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
-    additionalDocumentOptions: DocumentOptions
+    additionalDocumentOptions: DocumentOptions | undefined
     additionalOptionsLabel: string;
     // other properties...
   };
@@ -78,11 +79,96 @@ export interface IHydrateResult<T> {
   storeValue: T;
   initialState?: any;
   rehydrate: () => IHydrateResult<T>;
+  version: Version;
   then(callback: () => void): DocumentBuilderConfig; // Adjusted return type
   [Symbol.toStringTag]: "IHydrateResult";
   finally(onFinally: () => void): IHydrateResult<T>; // Implementing finally method
   catch(onError: (err: any) => void): IHydrateResult<T>; // Implementing catch method
 }
+
+
+const versionInfo: Version = {
+  id: "123456789",
+  author: "John Doe",
+  parentId: "987654321",
+  parentType: "document",
+  parentVersion: "1.0.0",
+  parentTitle: "Parent Document",
+  parentContent: "This is the content of the parent document.",
+  parentName: "Parent Document",
+  parentUrl: "https://example.com/parent-document",
+  parentChecksum: "abcdef123456",
+  parentMetadata: {
+    title: "Parent Document",
+    description: "This is the parent document.",
+    author: "John Doe",
+    date: "2023-08-15",
+    tags: ["parent", "document"],
+    rentAppVersion: "1.0.0",
+    parentVersionNumber: "1.0.0",
+    isLatest: true,
+    isPublished: true,
+    publishedAt: "2023-08-15",
+    source: "https://example.com/parent-document",
+    status: "published",
+  }
+}
+
+const versionData: VersionData = {
+  id: versionInfo.id,
+  name: versionInfo.name, 
+  url: versionInfo.url,
+  draft: versionInfo.draft, 
+  userId: versionInfo.userId,
+  content: versionInfo.content, 
+  metadata: versionInfo.metadata || {
+    author: versionInfo.author,
+    timestamp: new Date(),
+  },
+  versionData: [], 
+  checksum: versionInfo.checksum,
+  versionNumber: versionInfo.versionNumber,
+  documentId: versionInfo.documentId,
+  parentId: versionInfo.parentId || null,
+  parentType: versionInfo.parentType,
+  parentVersion: versionInfo.parentVersion,
+  parentTitle: versionInfo.parentTitle,
+  parentContent: versionInfo.parentContent,
+  parentName: versionInfo.parentName,
+  parentUrl: versionInfo.parentUrl,
+  parentChecksum: versionInfo.parentChecksum,
+  parentMetadata: versionInfo.parentMetadata,
+  parentAppVersion: versionInfo.parentAppVersion,
+  parentVersionNumber: versionInfo.parentVersionNumber,
+  isLatest: versionInfo.isLatest,
+  isPublished: versionInfo.isPublished,
+  publishedAt: versionInfo.publishedAt || null,
+  source: versionInfo.source,
+  status: versionInfo.status,
+  version: versionInfo.versionNumber, // Assuming this refers to the version number
+  timestamp: versionInfo.createdAt || new Date(), // Assuming this is the creation timestamp
+  user: versionInfo.userId, // Assuming this refers to the user ID
+  changes: [], // Assuming this will be populated with change descriptions
+  comments: [], // Assuming this will be populated with comments
+  workspaceId: versionInfo.workspaceId,
+  workspaceName: versionInfo.workspaceName,
+  workspaceType: versionInfo.workspaceType,
+  workspaceUrl: versionInfo.workspaceUrl,
+  workspaceViewers: versionInfo.workspaceViewers,
+  workspaceAdmins: versionInfo.workspaceAdmins,
+  workspaceMembers: versionInfo.workspaceMembers,
+  createdAt: versionInfo.createdAt,
+  updatedAt: versionInfo.updatedAt,
+  _structure: this._structure, // Assuming this is set somewhere in the Version class
+  frontendStructure: this.frontendStructure,
+  backendStructure: this.backendStructure,
+  data: versionInfo.data, // Assuming this is an array of Data or undefined
+  backend: versionInfo.versions?.backend,
+  frontend: versionInfo.versions?.frontend
+};
+
+
+
 
 // Define the createHydrateResult function
 const createHydrateResult = <T extends Object>(
@@ -98,6 +184,79 @@ const createHydrateResult = <T extends Object>(
     }
     return this;
   },
+  version: new Version({
+    id: 1,
+    versionNumber: "1.0.0",
+    appVersion: "1.0.0",
+    description: "Initial version",
+    content: "Version content here",
+    checksum: "abc123",
+    data: [],
+    name: "Version 1.0",
+    url: "http://example.com/version/1.0",
+    metadata: {
+      author: "Author Name",
+      timestamp: new Date(),
+      revisionNotes: "Initial creation",
+    },
+    versions: {
+      data: undefined,
+      backend: undefined,
+      frontend: undefined,
+    },
+    versionHistory: {
+      versionData: []
+    }, // Assuming this is populated correctly
+    userId: "user123",
+    documentId: "doc123",
+    parentId: null,
+    parentType: "Document",
+    parentVersion: "0.9.0",
+    parentTitle: "Parent Title",
+    parentContent: "Parent content here",
+    parentName: "Parent Version",
+    parentUrl: "http://example.com/version/0.9",
+    parentChecksum: "xyz789",
+    parentMetadata: {},
+    parentAppVersion: "0.9.0",
+    parentVersionNumber: "0.9.0",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: undefined,
+    draft: false,
+    isLatest: true,
+    isPublished: true,
+    publishedAt: new Date(),
+    isDeleted: false,
+    publishedBy: null,
+    lastModifiedBy: null,
+    lastModifiedAt: null,
+    rootId: null,
+    branchId: null,
+    isLocked: false,
+    lockedBy: null,
+    lockedAt: null,
+    isArchived: false,
+    archivedBy: "admin",
+    archivedAt: null,
+    tags: [],
+    categories: [],
+    permissions: [],
+    collaborators: [],
+    comments: [],
+    reactions: [],
+    attachments: [],
+    source: "Initial source",
+    status: "Active",
+    buildNumber: "1001",
+    workspaceId: "workspace123",
+    workspaceName: "Workspace Name",
+    workspaceType: "Type A",
+    workspaceUrl: "http://example.com/workspace",
+    workspaceViewers: ["viewer1", "viewer2"],
+    workspaceAdmins: ["admin1"],
+    workspaceMembers: ["member1", "member2"],
+  }),
   storeKey: key,
   storeValue: store,
   then: function <T extends DocumentBuilderConfig>(callback: () => unknown): T {

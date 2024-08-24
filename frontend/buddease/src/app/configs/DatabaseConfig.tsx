@@ -500,7 +500,9 @@ const databaseConfig: DatabaseConfig = {
   database: "your_database_name",
   username: sanitizeInput("your_username"),
   authToken: `${YOUR_AUTH_TOKEN}`,
-  // isValidAuthToken("your_auth_token"),
+  host: "",
+  password: "",
+  port: 0
 };
 
 const databaseQuery: DatabaseQuery = {} as DatabaseQuery;

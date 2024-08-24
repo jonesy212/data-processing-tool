@@ -11,14 +11,14 @@ interface Target {
   url?: string;
 }
 const constructTarget = (
-  category: keyof Endpoints,
+  endpointCategory: keyof Endpoints,
   endpointKey: string,
   params: { sortBy: string; limit: number; [key: string]: string | number } = {
     sortBy: "",
     limit: 0,
   }
 ): Target => {
-  const endpoint = endpoints[category][endpointKey];
+  const endpoint = endpoints[endpointCategory][endpointKey];
   if (typeof endpoint === "string") {
     // If the endpoint is a string, directly concatenate with params
     const queryString = Object.entries(params)
@@ -31,7 +31,7 @@ const constructTarget = (
     const url = endpoint(...Object.values(params));
     return { endpoint: url, params };
   } else {
-    throw new Error(`Invalid endpoint type for ${category}/${endpointKey}`);
+    throw new Error(`Invalid endpoint type for ${endpointCategory}/${endpointKey}`);
   }
 };
 

@@ -4,20 +4,23 @@ import ContentItemComponent from '@/app/components/models/content/ContentItem';
 import { Persona } from "@/app/pages/personas/Persona";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
-import { CustomSnapshotData } from "../../snapshots/LocalStorageSnapshotStore";
 import UserRoles from "../../users/UserRoles";
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
+import { Category } from '../../libraries/categories/generateCategoryProperties';
+import { CustomSnapshotData, SnapshotWithCriteria } from '../../snapshots';
+import { BaseData, Data } from '../data/Data';
 
 interface Content<T> {
   id: string | number | undefined;
   title: string;
   description: string;
   subscriberId: string,
-  category: string | CategoryProperties | undefined,
+  category:  Category | undefined,
+  categoryProperties: string | CategoryProperties | undefined,
   timestamp: string | number | Date,
   length: 0,
-  data: T | CustomSnapshotData | null | undefined,
+  data: SnapshotWithCriteria<Data, any> | CustomSnapshotData | null | undefined,
 }
 
 interface ContentProps {
@@ -42,7 +45,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
     }
 
     // Create new content object
-    const newContent: Content = {
+    const newContent: Content<any> = {
       id: Math.floor(Math.random() * 1000),
       title,
       description,
@@ -50,7 +53,8 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
       category: undefined,
       timestamp: "",
       length: 0,
-      data: undefined
+      data: undefined,
+      categoryProperties: undefined,
     };
 
     // Send new content to server or perform other actions

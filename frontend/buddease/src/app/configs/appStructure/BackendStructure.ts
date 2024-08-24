@@ -7,6 +7,7 @@ import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
 import getAppPath from "../../../../appPath";
 import { AppStructureItem } from "./AppStructure";
+import { VersionHistory } from "@/app/components/versions/VersionData";
 
 export default class BackendStructure {
   private structure?: Record<string, AppStructureItem> = {};
@@ -91,6 +92,27 @@ export default class BackendStructure {
     return this.traverseDirectory ? this.traverseDirectory(dir) : [];
   }
 
+  backendVersions(): VersionHistory[] {
+    const { versionNumber, appVersion } = getCurrentAppInfo();
+    const projectPath = getAppPath(versionNumber, appVersion);
+    const backendStructure: BackendStructure = new BackendStructure(projectPath);
+    const backendStructureItems = backendStructure.getStructureAsArray();
+    const backendStructureItemsWithVersions = backendStructureItems.map((item) => {
+      const { id, name, type, items, path, draft, content, permissions } = item;
+      return {
+        id,
+        name,
+        type,
+        items,
+        path,
+        draft,
+        content,
+        permissions,
+        versions: [],
+      };
+    });
+    return backendStructureItemsWithVersions;
+  }
 }
 
 const { versionNumber, appVersion } = getCurrentAppInfo();

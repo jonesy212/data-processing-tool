@@ -1,7 +1,6 @@
 import { fetchData } from "@/app/api/ApiData";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
-import axios from "axios";
 import * as userApi from "../../../api/UsersApi";
 import { UIActions } from "../../actions/UIActions";
 import { LogData } from "../../models/LogData";
@@ -13,8 +12,6 @@ import { NOTIFICATION_TYPES } from "../../support/NotificationTypes";
 import useNotificationBar from "../commHooks/useNotificationBar";
 import { createPhaseHook } from "../phaseHooks/PhaseHooks";
 import useDarkModeToggle from "./useDarkModeToggle";
-import { logData } from "../../notifications/NotificationService";
-
 
 
 const usePhaseUI = () => {
@@ -98,6 +95,28 @@ const usePhaseUI = () => {
     timestamp: new Date(),
     level: "info",
     message: `GET request to ${endpoints.notifications} successful`,
+    sent: new Date(),
+    isSent: true,
+    isDelivered: true,
+    delivered: new Date(),
+    opened: new Date(),
+    clicked: new Date(),
+    responded: false,
+    responseTime: new Date(),
+    eventData: {
+      id: "",
+      title: "",
+      content: "",
+      topics: [],
+      highlights: [],
+      files: [],
+      date: new Date(),
+      participants: [],
+      rsvpStatus: "yes",
+      teamMemberId: "",
+      taskIdToAssign: undefined,
+      meta: undefined,
+    }
   };
 
   const displayNotification = (
@@ -145,6 +164,9 @@ const usePhaseUI = () => {
               participants: [],
               teamMemberId: "",
               taskIdToAssign: undefined,
+              meta: undefined,
+              getSnapshotStoreData: undefined,
+              getaData: undefined
             },
             addNotification
           );

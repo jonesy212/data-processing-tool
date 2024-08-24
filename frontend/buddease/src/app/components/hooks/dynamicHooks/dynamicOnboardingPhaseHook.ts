@@ -10,12 +10,19 @@ interface DynamicOnboardingPhaseHookConfig {
 export const createDynamicOnboardingPhaseHook = (config: DynamicOnboardingPhaseHookConfig) => {
   return createDynamicHook({
     condition: config.condition,
-    resetIdleTimeout: () => {},
-    asyncEffect: async () => {
+    resetIdleTimeout: async () => {},
+    asyncEffect: async ({
+      idleTimeoutId,
+      startIdleTimeout,
+    }: {
+      idleTimeoutId: NodeJS.Timeout | null;
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+    }): Promise<() => void> => {
       const cleanup = await config.asyncEffect();
       if (typeof cleanup === "function") {
-        return cleanup();
+        return cleanup;
       }
+      return () => {}; // Return an empty function if cleanup is not a function
     },
   });
 };

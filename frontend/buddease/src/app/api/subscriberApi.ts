@@ -1,11 +1,11 @@
 // subscriberApi.ts
- import { K, T } from "../components/snapshots/SnapshotConfig";
+ import { Data } from "../components/models/data/Data";
+import { K, T } from "../components/snapshots/SnapshotConfig";
 import { Subscriber } from "../components/users/Subscriber";
 import axiosInstance from "./axiosInstance";
 
 export const getSubscriberId = (subscriber: Subscriber<T,K>) => subscriber.id
-
-export const getSubscribersAPI = async (): Promise<Subscriber<T,K>[]> => {
+export const getSubscribersAPI = async <T extends Data, K extends Data>(): Promise<Subscriber<T, K>[]> => {
   try {
     const response = await axiosInstance.get("/subscribers");
     return response.data;
@@ -14,6 +14,7 @@ export const getSubscribersAPI = async (): Promise<Subscriber<T,K>[]> => {
     throw error;
   }
 };
+
 
 
 export const getSubscriberById = async (subscriberId: string): Promise<Subscriber<T,K>> => {

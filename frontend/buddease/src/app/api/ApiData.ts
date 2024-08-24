@@ -1,4 +1,5 @@
 // ApiData.ts
+// import { endpoints } from './ApiEndpoints';
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
@@ -7,11 +8,12 @@ import { addLog } from '../components/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { YourResponseType } from '../components/typings/types';
 import Version from '../components/versions/Version';
-import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
-
+import NotificationStore from '../components/state/stores/NotificationStore';
+import { notificationStore } from '../components/support/NotificationProvider';
+import { endpoints } from './endpointConfigurations';
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;
 export let setDynamicData: React.Dispatch<React.SetStateAction<any>>; // Define setDynamicData globally
@@ -78,6 +80,16 @@ export const fetchData = async (endpoint: string): Promise<{ data: YourResponseT
   }
 };
 
+
+export const getBackendVersion = async (): Promise<string> => {
+  try {
+    const response = await axiosInstance.get(endpoints.version.backend);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching backend version:", error);
+    return "unknown";
+  }
+};
 
 
 // Use fetchData to fetch highlights
@@ -227,68 +239,68 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
 };
 
 
-export const fetchDataById = async (dataId: number): Promise<any> => {
+export const getStoreIds = async (storeId: number): Promise<void> => {
   try {
-    const fetchDataByIdEndpoint = `${API_BASE_URL}/single/${dataId}`;
-    const response = await axiosInstance.get(fetchDataByIdEndpoint);
-    return response.data;
+    const storeIdEndpoint = `${API_BASE_URL}/store/${storeId}`;
+    const response = await axiosInstance.get(storeIdEndpoint);
+    
+    // Assuming response.data contains the necessary data to notify
+    const storeData = response.data;
+    const storeIdKey = `storeId_${storeId}`;
+    const notificationContent = `Store ID: ${storeId}, Data: ${JSON.stringify(storeData)}`;
+    const notificationDate = new Date();
+    const notificationType = NotificationTypeEnum.GetStoreSuccess;
+
+    // Assuming you have a singleton instance of NotificationStore
+    notificationStore.notify(
+      storeIdKey,
+      notificationContent,
+      notificationDate,
+      notificationType
+    );
   } catch (error) {
-    console.error("Error fetching data by ID:", error);
+    console.error('Error fetching store ID:', error);
     handleApiErrorAndNotify(
       error as AxiosError<unknown>,
-      "Failed to fetch data by ID",
-      "FetchDataByIdError" as keyof DataNotificationMessages
+      'Failed to fetch store ID',
+      'FetchStoreIdError' as keyof DataNotificationMessages
     );
     throw error;
   }
 };
 
-export const createData = async (newData: any): Promise<void> => {
+
+
+
+export const getStoreId = async (storeId: number): Promise<void> => {
   try {
-    const createDataEndpoint = `${API_BASE_URL}.addData`;
-    await axiosInstance.post(createDataEndpoint, newData);
-  } catch (error: any) {
-    console.error('Error creating data:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>,
-      'Failed to create data',
-      'CreateDataErrorId' as keyof DataNotificationMessages
+    const storeIdEndpoint = `${API_BASE_URL}/store/${storeId}`;
+    const response = await axiosInstance.get(storeIdEndpoint);
+    
+    // Assuming response.data contains the necessary data to notify
+    const storeData = response.data;
+    const storeIdKey = `storeId_${storeId}`;
+    const notificationContent = `Store ID: ${storeId}, Data: ${JSON.stringify(storeData)}`;
+    const notificationDate = new Date();
+    const notificationType = NotificationTypeEnum.GetStoreSuccess;
+
+    // Assuming you have a singleton instance of NotificationStore
+    notificationStore.notify(
+      storeIdKey,
+      notificationContent,
+      notificationDate,
+      notificationType
     );
-    throw error;
-  }
-};
-
-export const deleteData = async (dataId: number): Promise<void> => {
-  try {
-    const deleteDataEndpoint = `${API_BASE_URL}.deleteData.${dataId}`;
-    await axiosInstance.delete(deleteDataEndpoint);
-  } catch (error: any) {
-    const errorMessage = 'Failed to delete data';
-    console.error(errorMessage, error);
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>, errorMessage,
-      'DeleteDataErrorId' as keyof DataNotificationMessages
-    );
-    throw error;
-  }
-};
-
-export const getBackendVersion = async (): Promise<string> => {
-  try {
-    const versionEndpoint = `${API_BASE_URL}.getBackendVersion`;
-
-    const response = await axiosInstance.get(versionEndpoint);
-    return response.data.toString();
   } catch (error) {
-    console.error("Error fetching backend version:", error);
+    console.error('Error fetching store ID:', error);
     handleApiErrorAndNotify(
       error as AxiosError<unknown>,
-      "Failed to fetch backend version",
-      "FetchBackendVersionErrorId" as keyof DataNotificationMessages
+      'Failed to fetch store ID',
+      'FetchStoreIdError' as keyof DataNotificationMessages
     );
+    throw error;
   }
-  return "unknown";
 };
-
 
 
 
@@ -310,16 +322,17 @@ export const fetchUpdatedDynamicData = async () => {
 };
 
 
-
 export const getFrontendVersion = async (): Promise<string> => {
   try {
-    return process.env.REACT_APP_VERSION || "unknown";
-  } catch (error) {
+    // Adjust the endpoint path as necessary
+    const response = await axiosInstance.get(endpoints.version.frontend);
+    return response.data.version; // Assuming the response structure has a `version` field
+  } catch (error: any) {
     console.error("Error fetching frontend version:", error);
+    handleApiErrorAndNotify(error, "Failed to fetch frontend version", "GetFrontendVersionErrorId" as keyof DataNotificationMessages)
     return "unknown";
   }
 };
-
 
 
 export const getAllKeys = async (): Promise<string[]> => {

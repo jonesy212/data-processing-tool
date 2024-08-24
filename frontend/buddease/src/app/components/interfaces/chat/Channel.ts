@@ -26,6 +26,12 @@ export interface Channel {
   export enum ChannelType {
     Public = 'public',
     Private = 'private',
+    Audio = 'audio',
+    Video = 'video',
+    Text = 'text',
+    SMS = 'sms',
+    Email = "email",
+    Chat= 'chat'
   }
   
   export enum ChannelRole {

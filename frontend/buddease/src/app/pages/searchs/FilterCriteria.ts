@@ -41,8 +41,9 @@ import { resolve } from "path";
 import { reject } from "lodash";
 import  SnapshotWithCriteria from "@/app/components/routing/SearchCriteria";
 
-// .ts
+
 interface FilterCriteria {
+  description: string;
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null | null;
@@ -76,7 +77,7 @@ interface FilterCriteria {
   formatType?: FormatEnum | null; // Filter by format type
   privacySettingsType?: PrivacySettingEnum | null; // Filter by privacy settings type
   messageType?: MessageType | null; // Filter by message type
-  // Add more filter criteria as needed
+  categoryCriteria?: string; // Add categoryCriteria here
 }
 
 const applyFilters = (
@@ -279,6 +280,37 @@ const applyFilters = (
   return filteredEvents;
 };
 
+const criteria: FilterCriteria = {
+  description: "Sample Event",
+  startDate: new Date("2023-08-01"),
+  endDate: new Date("2023-08-05"),
+  status: StatusType.Scheduled,
+  priority: PriorityTypeEnum.High,
+  assignedUser: "John Doe",
+  todoStatus: TodoStatus.Completed,
+  taskStatus: TaskStatus.InProgress,
+  teamStatus: TeamStatus.Active,
+  dataStatus: DataStatus.Processed,
+  calendarStatus: CalendarStatus.Approved,
+  notificationStatus: NotificationStatus.READ,
+  bookmarkStatus: BookmarkStatus.Saved,
+  priorityType: PriorityTypeEnum.Urgent,
+  projectPhase: ProjectPhaseTypeEnum.Planning,
+  developmentPhase: DevelopmentPhaseEnum.CODING,
+  subscriberType: SubscriberTypeEnum.PREMIUM,
+  subscriptionType: SubscriptionTypeEnum.Monthly,
+  analysisType: AnalysisTypeEnum.STATISTICAL,
+  documentType: DocumentTypeEnum.PDF,
+  fileType: FileTypeEnum.Document,
+  tenantType: TenantManagementPhaseEnum.TenantA,
+  ideaCreateionPhaseType: IdeaCreationPhaseEnum.IDEATION,
+  securityFeatureType: SecurityFeatureEnum.Encryption,
+  feedbackPhaseType: FeedbackPhaseEnum.FEEDBACK_REVIEW,
+  contentManagementType: ContentManagementPhaseEnum.CONTENT_CREATION,
+  taskPhaseType: TaskPhaseEnum.TASK_CREATING,
+  animationType: AnimationTypeEnum.Notification,
+}
+
 // Sample CalendarEvent data
 const events: CalendarEvent[] = [
   {
@@ -386,52 +418,79 @@ const events: CalendarEvent[] = [
     participants: [],
     teamMemberId: "",
     date: new Date(),
-    getData(): Promise<SnapshotStore<SnapshotWithCriteria<BaseData, BaseData>, SnapshotWithCriteria<BaseData, BaseData>>[]> {
+    getSnapshotStoreData(): Promise<SnapshotStore<CalendarEvent, BaseData>[]> {
       return new Promise((resolve, reject) => {
         try {
           // Your logic to retrieve data goes here
-          const data: SnapshotStore<SnapshotWithCriteria<BaseData, BaseData>, SnapshotWithCriteria<BaseData, BaseData>>[] = [
+          const data: Snapshot<CalendarEvent, Data>[] = [
             {
               description: "This is a sample event",
               startDate: new Date("2024-06-01"),
               endDate: new Date("2024-06-05"),
-              status: "scheduled",
-              priority: "high",
-              assignedUser: "John Doe",
+              status: StatusType.Scheduled,
+              priority: PriorityTypeEnum.High,
+              assignedUser: "<NAME>",
               todoStatus: "completed",
               taskStatus: "in progress",
               teamStatus: "active",
               dataStatus: "processed",
-              calendarStatus: "approved",
-              notificationStatus: "read",
-              bookmarkStatus: "saved",
-              priorityType: "urgent",
-              projectPhase: "planning",
-              developmentPhase: "coding",
-              subscriberType: "premium",
-              subscriptionType: "monthly",
-              analysisType: AnalysisTypeEnum.STATISTICAL,
-              documentType: "pdf",
-              fileType: "document",
-              tenantType: "tenantA",
-              ideaCreationPhaseType: "ideation",
-              securityFeatureType: "encryption",
-              feedbackPhaseType: "review",
-              contentManagementType: "content",
-              taskPhaseType: "execution",
-              animationType: "2d",
-              languageType: "english",
-              codingLanguageType: "javascript",
-              formatType: "json",
-              privacySettingsType: "public",
-              messageType: "email",
-              id: "event1",
-              title: "Sample Event",
-              content: "This is a sample event content",
-              topics: [],
-              highlights: [],
-              files: [],
-              rsvpStatus: "yes"
+              calendarStatus: "",
+            }
+            ]
+          resolve(data);
+          } catch(error) {
+            reject(error);
+          }
+        })
+      },
+    getData(): Promise<SnapshotStore<T, K>> {
+      return new Promise((resolve, reject) => {
+        try {
+          // Your logic to retrieve data goes here
+          const data: Snapshot<T, K>[] = [
+            {
+              description: "This is a sample event",
+              
+              
+              // startDate: new Date("2024-06-01"),
+              // endDate: new Date("2024-06-05"),
+              // status: StatusType.Scheduled,
+              // priority: PriorityTypeEnum.High,
+              // assignedUser: "John Doe",
+              // todoStatus: "completed",
+              // taskStatus: "in progress",
+              // teamStatus: "active",
+              // dataStatus: "processed",
+              // calendarStatus: "approved",
+              // notificationStatus: "read",
+              // bookmarkStatus: "saved",
+              // priorityType: "urgent",
+              // projectPhase: "planning",
+              // developmentPhase: "coding",
+              // subscriberType: "premium",
+              // subscriptionType: "monthly",
+              // analysisType: AnalysisTypeEnum.STATISTICAL,
+              // documentType: "pdf",
+              // fileType: "document",
+              // tenantType: "tenantA",
+              // ideaCreationPhaseType: "ideation",
+              // securityFeatureType: "encryption",
+              // feedbackPhaseType: "review",
+              // contentManagementType: "content",
+              // taskPhaseType: "execution",
+              // animationType: "2d",
+              // languageType: "english",
+              // codingLanguageType: "javascript",
+              // formatType: "json",
+              // privacySettingsType: "public",
+              // messageType: "email",
+              // id: "event1",
+              // title: "Sample Event",
+              // content: "This is a sample event content",
+              // topics: [],
+              // highlights: [],
+              // files: [],
+              // rsvpStatus: "yes"
             }
           ]; // Example data, replace with actual logic
     
@@ -443,105 +502,110 @@ const events: CalendarEvent[] = [
         }
       })
     },
-    then: function <T extends Data, K extends Data>(callback: (newData: Snapshot<T, K>) => void): void {
+    then: function <T extends Data, K extends Data>(
+      callback: (newData: Snapshot<T, K>) => void
+    ): Snapshot<Data, K> {
       // Simulate fetching data
-      const snapshot: Snapshot<T,K> = {
-          description: "This is a sample event",
-          // startDate: new Date("2024-06-01"),
-          // endDate: new Date("2024-06-05"),
-          status: "scheduled",
-          priority: "high",
-          assignedUser: "John Doe",
-          todoStatus: "completed",
-          taskStatus: "in progress",
-          teamStatus: "active",
-          dataStatus: "processed",
-          calendarStatus: "approved",
-          notificationStatus: "read",
-          bookmarkStatus: "saved",
-          priorityType: "urgent",
-          projectPhase: "planning",
-          developmentPhase: "coding",
-          subscriberType: "premium",
-          subscriptionType: "monthly",
-          analysisType: AnalysisTypeEnum.STATISTICAL,
-          documentType: "pdf",
-          fileType: "document",
-          tenantType: "tenantA",
-          ideaCreateionPhaseType: "ideation",
-          securityFeatureType: "encryption",
-          feedbackPhaseType: "review",
-          contentManagementType: "content",
-          taskPhaseType: "execution",
-          animationType: "2d",
-          languageType: "english",
-          codingLanguageType: "javascript",
-          formatType: "json",
-          privacySettingsType: "public",
-          messageType: "email",
-          id: "",
-          title: "",
-          content: "",
-          topics: [],
-          highlights: [],
-          files: [],
-          rsvpStatus: "yes",
-          getData: function <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void): void {
-            // Simulate fetching data
-            // Fetch or create the snapshot data
-            const snapshot: Snapshot<T, K> = {
-                description: "This is a sample event",
-                startDate: new Date("2024-06-01"),
-                endDate: new Date("2024-06-05"),
-                status: "scheduled",
-                priority: "high",
-                assignedUser: "John Doe",
-                todoStatus: "completed",
-                taskStatus: "in progress",
-                teamStatus: "active",
-                dataStatus: "processed",
-                calendarStatus: "approved",
-                notificationStatus: "read",
-                bookmarkStatus: "saved",
-                priorityType: "urgent",
-                projectPhase: "planning",
-                developmentPhase: "coding",
-                subscriberType: "premium",
-                subscriptionType: "monthly",
-                analysisType: AnalysisTypeEnum.STATISTICAL,
-                documentType: "pdf",
-                fileType: "document",
-                tenantType: "tenantA",
-                ideaCreateionPhaseType: "ideation",
-                securityFeatureType: "encryption",
-                feedbackPhaseType: "review",
-                contentManagementType: "content",
-                taskPhaseType: "execution",
-                animationType: "2d",
-                languageType: "english",
-                codingLanguageType: "javascript",
-                formatType: "json",
-                privacySettingsType: "public",
-                messageType: "email",
-                id: "",
-                title: "",
-                content: "",
-                topics: [],
-                highlights: [],
-                files: [],
-                rsvpStatus: "yes",
-              }
-            }
-          },
+      const snapshot: Snapshot<T, K>  = {
+        description: "This is a sample event",
+        // startDate: new Date("2024-06-01"),
+        // endDate: new Date("2024-06-05"),
+        status: StatusType.Scheduled,
+        priority: "high",
+        assignedUser: "John Doe",
+        todoStatus: "completed",
+        taskStatus: "in progress",
+        teamStatus: "active",
+        dataStatus: "processed",
+        calendarStatus: "approved",
+        notificationStatus: "read",
+        bookmarkStatus: "saved",
+        priorityType: "urgent",
+        projectPhase: "planning",
+        developmentPhase: "coding",
+        subscriberType: "premium",
+        subscriptionType: "monthly",
+        analysisType: AnalysisTypeEnum.STATISTICAL,
+        documentType: "pdf",
+        fileType: "document",
+        tenantType: "tenantA",
+        ideaCreateionPhaseType: "ideation",
+        securityFeatureType: "encryption",
+        feedbackPhaseType: "review",
+        contentManagementType: "content",
+        taskPhaseType: "execution",
+        animationType: "2d",
+        languageType: "english",
+        codingLanguageType: "javascript",
+        formatType: "json",
+        privacySettingsType: "public",
+        messageType: "email",
+        id: "",
+        title: "",
+        content: "",
+        topics: [],
+        highlights: [],
+        files: [],
+        rsvpStatus: "yes",
+        getData: function <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void): void {
+          // Simulate fetching data
+          // Fetch or create the snapshot data
+          const snapshot: Snapshot<T, K> = {
+            description: "This is a sample event",
+            startDate: new Date("2024-06-01"),
+            endDate: new Date("2024-06-05"),
+            status: "scheduled",
+            priority: "high",
+            assignedUser: "John Doe",
+            todoStatus: "completed",
+            taskStatus: "in progress",
+            teamStatus: "active",
+            dataStatus: "processed",
+            calendarStatus: "approved",
+            notificationStatus: "read",
+            bookmarkStatus: "saved",
+            priorityType: "urgent",
+            projectPhase: "planning",
+            developmentPhase: "coding",
+            subscriberType: "premium",
+            subscriptionType: "monthly",
+            analysisType: AnalysisTypeEnum.STATISTICAL,
+            documentType: "pdf",
+            fileType: "document",
+            tenantType: "tenantA",
+            ideaCreateionPhaseType: "ideation",
+            securityFeatureType: "encryption",
+            feedbackPhaseType: "review",
+            contentManagementType: "content",
+            taskPhaseType: "execution",
+            animationType: "2d",
+            languageType: "english",
+            codingLanguageType: "javascript",
+            formatType: "json",
+            privacySettingsType: "public",
+            messageType: "email",
+            id: "",
+            title: "",
+            content: "",
+            topics: [],
+            highlights: [],
+            files: [],
+            rsvpStatus: "yes",
+          }
+
+          callback(snapshot as unknown as Snapshot<BaseData, K>)
         },
 
-          createSnapshot(additionalData: any) {
-            const newSnapshoht = {
-              id: "",
-            }
+        createSnapshot(additionalData: any) {
+          const newSnapshoht = {
+            id: "",
+          }
+        },
+        callback(snapshot: any) { },
+      }
+      return snapshot as unknown as Snapshot<Data, K>
     },
-      callback(snapshot: any){},
-    }
+
   },
   // Add more CalendarEvent data as needed
 ];

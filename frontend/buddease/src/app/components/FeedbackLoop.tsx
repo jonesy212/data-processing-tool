@@ -3,7 +3,7 @@ import React from 'react';
 import { Feedback } from './support/Feedback';
 
 interface FeedbackLoopProps {
-  feedback: Feedback;
+  feedback: Feedback[];
   feedbackType: string
   audioUrl?: string
   videoUrl?: string

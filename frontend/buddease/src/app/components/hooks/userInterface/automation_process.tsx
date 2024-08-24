@@ -1,13 +1,15 @@
 // AutomatioProcess.ts
+import {ErrorHandlingActions}  from '../../../api/ErrorHandlingActions';
 import ReactDOM, { useEffect } from 'react';
-import { Data } from '../../models/data/Data';
-import SnapshotStoreConfig, { Snapshot, SnapshotStoreConfig as SnapshotStoreConfigType, } from '../../snapshots/SnapshotStore';
-import errorHandlingStore from '../../state/stores/ErrorHandlingStore';
-import { NotificationType, useNotification } from '../../support/NotificationContext';
+import { BaseData, Data } from '../../models/data/Data';
+ import errorHandlingStore from '../../state/stores/ErrorHandlingStore';
+import { NotificationType, NotificationTypeEnum, useNotification } from '../../support/NotificationContext';
 import RandomWalkSuggestions from './RandomWalkSuggestions';
-
 import React from "react";
-
+import { notify } from '../../utils/snapshotUtils';
+import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import SnapshotStore from '../../snapshots/SnapshotStore';
+import { SnapshotWithCriteria } from '../../snapshots/SnapshotWithCriteria';
 
 
 // Define a custom hook to handle errors and notifications
@@ -17,10 +19,34 @@ const useErrorHandling = () => {
   useEffect(() => {
     // Subscribe to error changes in the ErrorHandlingStore
     const unsubscribe = errorHandlingStore.subscribe(() => {
-      const { errorMessage, showError } = errorHandlingStore;
+      const { errorMessage, showError } = errorHandlingStore.getState();
       if (showError) {
         // Display error notification
-        addNotification(errorMessage);
+        addNotification({
+          message: errorMessage,
+          type: NotificationTypeEnum.Error,
+          id: '',
+          content: undefined,
+          completionMessageLog: undefined,
+          topics: [],
+          highlights: [],
+          files: [],
+          meta: undefined,
+          rsvpStatus: 'yes',
+          participants: [],
+          teamMemberId: '',
+          getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<T, K>, SnapshotWithCriteria<BaseData, BaseData>>[]> {
+            // Implement logic to access the snapshot store data
+            const snapshotStoreData = this.snapshotStore;
+            return Promise.resolve(snapshotStoreData);
+          },
+        
+          getData: function (): Promise<Snapshot<SnapshotWithCriteria<T, K>, SnapshotWithCriteria<BaseData, BaseData>>[]> {
+            // Access the data from the snapshot object and return the data
+            const data = this.snapshots;
+            return Promise.resolve(data);
+          }
+        });
       }
     });
 
@@ -28,24 +54,35 @@ const useErrorHandling = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [addNotification]);
 
   return {
-    // Method to handle errors and trigger actions
-    handleErrors: errorHandlingStore.handleErrors,
-    // Method to clear errors
-    clearError: errorHandlingStore.clearError,
-    // Method to log errors
-    logError: errorHandlingStore.logError,
-    // Additional methods or properties as needed
-  };
+    
+      // Method to handle errors and trigger actions
+    
+    handleErrors(message: string, actions?: typeof ErrorHandlingActions) {
+      errorHandlingStore.setError(message);
+      this.logError(message, "unknown");
+      if (actions && actions.triggerAction) {
+        actions.triggerAction();
+      }
+    },
+      // Method to clear errors
+      clearError: () => {
+        errorHandlingStore.clearError();
+      },
+      // Method to log errors
+      logError: (message: string, details: string) => {
+        errorHandlingStore.logError(message, details);
+      },
+    };
 };
 
 
 // Automated system setup process
-const config: SnapshotStoreConfigType<Snapshot<Data>> = new SnapshotStoreConfig({} as SnapshotStoreConfig<Snapshot<Data>>, notify).configure();
+const config: SnapshotStoreConfigType<Snapshot<Data, K>, K> = new SnapshotStoreConfig({} as SnapshotStoreConfig<Snapshot<Data, K>, K>, notify).configure();
 
-const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data>>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) => {
+const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data, K>, K>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) => {
   // Configure SnapshotStore
   typeof SnapshotStoreConfig === "function" && new SnapshotStoreConfig(config, notify);
 
@@ -56,7 +93,11 @@ const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data>>, 
 };
 
 // Run the setup process
-setupAutomationSystem(config as  SnapshotStoreConfigType<Snapshot<Data>>);
+setupAutomationSystem(config as SnapshotStoreConfigType<Snapshot<Data>>,
+  notify()
+
+  
+);
 
 // Export the custom hook for use in components
 export default useErrorHandling;

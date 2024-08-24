@@ -11,6 +11,7 @@ interface ChatMessageData {
   sender: string;
   message: string;
   timestamp: string;
+  content: string
 }
 
 export const ChatRoom: React.FC<ChatRoomMessageProps> = ({ roomId, limit }) => {

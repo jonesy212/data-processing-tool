@@ -59,7 +59,7 @@ const handleDetailsApiErrorAndNotify = (
 };
 
 
-export const fetchDetails = async (): Promise<DetailsItem<Data>[]> => {
+export const fetchDetails = async (): Promise<DetailsItem[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     const details = response.data;

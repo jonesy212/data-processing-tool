@@ -1,5 +1,6 @@
 // generators/UserPreferencesActions.ts
 import { createAction } from "@reduxjs/toolkit";
+import { Audio } from "openai/resources/index.mjs";
 
 // Communication Preferences
 export const UserCommunicationPreferencesActions = {
@@ -11,9 +12,9 @@ export const UserCommunicationPreferencesActions = {
   setBrainstormingPhase: createAction<undefined>("setBrainstormingPhase"), // Assuming no payload needed
   setLaunchPhase: createAction<undefined>("setLaunchPhase"), // Assuming no payload needed
   setDataAnalysisPhase: createAction<undefined>("setDataAnalysisPhase"), // Assuming no payload needed
-
+  setCommunicationPreferences: createAction<undefined>("setCommunicationPreferences"), // Assuming no payload needed
   // Actions for communication features
-  enableAudioCommunication: createAction<undefined>("enableAudioCommunication"), // Assuming no payload needed
+  enableAudioCommunication: createAction<undefined>("enableAudioCommunication"), // Assuming no payload needed>
   enableAudioCommunicationSuccess: createAction<{payload: string}>("enableAudioCommunicationSuccess"), // Assuming no
   enableVideoCommunicationRequest: createAction<{ userId: string; audio: Audio, audioId: string }>("enableVideoCommunicationRequest"), // Adjusted payload types
   enableAudioCommunicationFailure: createAction <{error: string}>("enableAudioCommunicationFailure"),
@@ -43,8 +44,37 @@ export const UserCommunicationPreferencesActions = {
   setCustomNotifications: createAction<any>("setCustomNotifications"), // Adjusted payload type to 'any'
 };
 
+export type UserCommunicationPreferencesActionsTypes = 
+  | ReturnType<typeof UserCommunicationPreferencesActions.setIdeationPhase>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setBrainstormingPhase>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setLaunchPhase>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setDataAnalysisPhase>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setLaunchPhase>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setDataAnalysisPhase>
+  | ReturnType<typeof UserCommunicationPreferencesActions.enableAudioCommunication>
+  | ReturnType<typeof UserCommunicationPreferencesActions.enableAudioCommunicationSuccess>
+  | ReturnType<typeof UserCommunicationPreferencesActions.enableVideoCommunicationRequest>
+  | ReturnType<typeof UserCommunicationPreferencesActions.enableVideoCommunication>
+  | ReturnType<typeof UserCommunicationPreferencesActions.enableTextCommunication>
+  | ReturnType<typeof UserCommunicationPreferencesActions.enableRealTimeCollaboration>
+  | ReturnType<typeof UserCommunicationPreferencesActions.joinCommunity>
+  | ReturnType<typeof UserCommunicationPreferencesActions.participateInGlobalProject>
+  | ReturnType<typeof UserCommunicationPreferencesActions.contributeToUnity>
+  | ReturnType<typeof UserCommunicationPreferencesActions.offerDevelopmentServices>
+  | ReturnType<typeof UserCommunicationPreferencesActions.leveragePlatformForClientProjects>
+  | ReturnType<typeof UserCommunicationPreferencesActions.generateRevenueForSustainability>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setIdeationPhaseFailure>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setLanguage>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setNotificationPreferences>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setEmailNotifications>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setPushNotifications>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setSMSNotifications>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setDesktopNotifications>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setCustomNotifications>
+
 export const UserBrandingPreferencesActions = {
   setTheme: createAction<string>("setTheme"),
+  setBrandingPreferences: createAction<string>("setBrandingPreferences"),
   setThemeFailure: createAction<{ error: string }>("setThemeFailure"),
    setUserBrandColors: createAction<string[]>(
     "userPreferences/setUserBrandColors"
@@ -202,17 +232,98 @@ export const UserBrandingPreferencesActions = {
   setButtonOutline: createAction<string>("userPreferences/setButtonOutline"), // New action for setting button outline
 };
 
-// Visual Preferences
+
+export type UserBrandingPreferencesActionTypes = 
+  | ReturnType<typeof UserBrandingPreferencesActions.setTheme>
+  | ReturnType<typeof UserBrandingPreferencesActions.setThemeFailure>
+  | ReturnType<typeof UserBrandingPreferencesActions.setUserBrandColors>
+  | ReturnType<typeof UserBrandingPreferencesActions.setUserLogo>
+  | ReturnType<typeof UserBrandingPreferencesActions.setFontStyles>
+  | ReturnType<typeof UserBrandingPreferencesActions.setBackgroundImage>
+  | ReturnType<typeof UserBrandingPreferencesActions.setIconography>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonStyles>
+  | ReturnType<typeof UserBrandingPreferencesActions.setTypography>
+  | ReturnType<typeof UserBrandingPreferencesActions.setColors>
+  | ReturnType<typeof UserBrandingPreferencesActions.setShadows>
+  | ReturnType<typeof UserBrandingPreferencesActions.setSpacing>
+  | ReturnType<typeof UserBrandingPreferencesActions.setHeaderColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setBorderColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setHoverTextColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setHoverBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkVisitedColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkActiveColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkVisitedHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkActiveHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledVisitedColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledActiveColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledVisitedHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledActiveHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledHoverBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledVisitedBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledActiveBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setLinkDisabledVisitedHoverBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonTextColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonHoverColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonHoverTextColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonHoverBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonActiveColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonActiveTextColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonActiveBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonDisabledColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonDisabledTextColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonDisabledBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonFocusColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonFocusTextColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonFocusBackgroundColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonBorderColor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonBorderRadius>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonBorderWidth>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonShadow>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonPadding>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonTransition>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonFontFamily>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonFontSize>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonFontWeight>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonLineHeight>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonLetterSpacing>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonTextTransform>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonTextDecoration>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonTextShadow>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonOpacity>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonCursor>
+  | ReturnType<typeof UserBrandingPreferencesActions.setButtonOutline>;
+
+
+
 export const UserVisualPreferencesActions = {
-  setTheme: createAction<string>("setTheme"),
-  setDarkMode: createAction<boolean>("setDarkMode"),
-  setFontSize: createAction<string>("setFontSize"),
-  setColorScheme: createAction<string>("setColorScheme"),
-  setLogoPreferences: createAction<any>("setLogoPreferences"),
-  setIconPreferences: createAction<any>("setIconPreferences"),
-  setBackgroundPreferences: createAction<any>("setBackgroundPreferences"),
-  setAvatarPreferences: createAction<any>("setAvatarPreferences"),
-};
+    setTheme: createAction<string>("setTheme"),
+    setDarkMode: createAction<boolean>("setDarkMode"),
+    setFontSize: createAction<string>("setFontSize"),
+    setColorScheme: createAction<string>("setColorScheme"),
+    setLogoPreferences: createAction<any>("setLogoPreferences"),
+    setIconPreferences: createAction<any>("setIconPreferences"),
+    setBackgroundPreferences: createAction<any>("setBackgroundPreferences"),
+    setAvatarPreferences: createAction<any>("setAvatarPreferences"),
+}
+
+export type UserVisualPreferencesActionTypes =
+  | ReturnType<typeof UserVisualPreferencesActions.setTheme>
+  | ReturnType<typeof UserVisualPreferencesActions.setDarkMode>
+  | ReturnType<typeof UserVisualPreferencesActions.setFontSize>
+  | ReturnType<typeof UserVisualPreferencesActions.setColorScheme>
+  | ReturnType<typeof UserVisualPreferencesActions.setLogoPreferences>
+  | ReturnType<typeof UserVisualPreferencesActions.setIconPreferences>
+  | ReturnType<typeof UserVisualPreferencesActions.setBackgroundPreferences>
+  | ReturnType<typeof UserVisualPreferencesActions.setAvatarPreferences>;
 
 // Data Management Preferences
 export const UserDataManagementPreferencesActions = {
@@ -225,6 +336,18 @@ export const UserDataManagementPreferencesActions = {
   setOfflineMode: createAction<boolean>("setOfflineMode"),
 };
 
+
+// Define action types for data management preferences
+export type UserDataManagementPreferencesActionTypes =
+  | ReturnType<typeof UserDataManagementPreferencesActions.setTimeZone>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setCurrency>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setPreferredUnits>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setAutoSavePreferences>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setBackupPreferences>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setSyncPreferences>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setOfflineMode>;
+
+
 // Collaboration Preferences
 export const UserCollaborationPreferencesActions = {
   setAccessibilityOptions: createAction<any>("setAccessibilityOptions"),
@@ -234,10 +357,21 @@ export const UserCollaborationPreferencesActions = {
   setIntegrationPreferences: createAction<any>("setIntegrationPreferences"),
 };
 
+export type UserCollaborationPreferencesActionTypes =
+| ReturnType<typeof UserCollaborationPreferencesActions.setAccessibilityOptions>
+| ReturnType<typeof UserCollaborationPreferencesActions.setPrivacySettings>
+| ReturnType<typeof UserCollaborationPreferencesActions.setSecurityPreferences>
+| ReturnType<typeof UserCollaborationPreferencesActions.setCollaborationSettings>
+| ReturnType<typeof UserCollaborationPreferencesActions.setIntegrationPreferences>;
+
+
 // Task Management Preferences
 export const UserTaskManagementPreferencesActions = {
   setTaskManagementSettings: createAction<any>("setTaskManagementSettings"),
 };
+
+export type UserTaskManagementPreferencesActionTypes =
+| ReturnType<typeof UserTaskManagementPreferencesActions.setTaskManagementSettings>;
 
 // Event Management Preferences
 export const UserEventManagementPreferencesActions = {
@@ -265,6 +399,21 @@ export const UserEventManagementPreferencesActions = {
   ),
 };
 
+
+export type  UserEventManagementPreferencesActionTypes =
+| ReturnType<typeof UserEventManagementPreferencesActions.setCalendarPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventRegistrationPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventTicketPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventSchedulePreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventVenuePreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventSpeakerPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventSponsorPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventExhibitorPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventParticipantPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventAttendeePreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventOrganizerPreferences>
+| ReturnType<typeof UserEventManagementPreferencesActions.setEventCoordinatorPreferences>;
+
 // User Profile Preferences
 export const UserProfilePreferencesActions = {
   setProfilePreferences: createAction<any>("setProfilePreferences"),
@@ -273,6 +422,15 @@ export const UserProfilePreferencesActions = {
   setAddressPreferences: createAction<any>("setAddressPreferences"),
   setSocialMediaPreferences: createAction<any>("setSocialMediaPreferences"),
 };
+
+
+// Define action types for user profile preferences
+export type UserProfilePreferencesActionTypes =
+  | ReturnType<typeof UserProfilePreferencesActions.setProfilePreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setBioPreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setContactPreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setAddressPreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setSocialMediaPreferences>;
 
 // Support and Feedback Preferences
 export const UserSupportFeedbackPreferencesActions = {
@@ -295,6 +453,24 @@ export const UserSupportFeedbackPreferencesActions = {
   setTicketSupportPreferences: createAction<any>("setTicketSupportPreferences"),
 };
 
+export type UserSupportFeedbackPreferencesActionTypes =
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setFeedbackPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setRatingPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setReviewPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setSurveyPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setPollPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setFeedbackFormPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setSupportPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setHelpPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setDocumentationPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setFAQPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setContactSupportPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setChatSupportPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setEmailSupportPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setPhoneSupportPreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setTicketSupportPreferences>;
+
+
 // Training and Education Preferences
 export const UserTrainingEducationPreferencesActions = {
   setTrainingPreferences: createAction<any>("setTrainingPreferences"),
@@ -305,6 +481,18 @@ export const UserTrainingEducationPreferencesActions = {
   setSeminarPreferences: createAction<any>("setSeminarPreferences"),
   setConferencePreferences: createAction<any>("setConferencePreferences"),
 };
+
+
+
+// Define action types for training and education preferences
+export type UserTrainingEducationPreferencesActionTypes =
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setTrainingPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setTutorialPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setDemoPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setWebinarPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setWorkshopPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setSeminarPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setConferencePreferences>;
 
 // Event Preferences
 
@@ -334,12 +522,47 @@ export const UserEventPreferencesActions = {
   setExhibitionHallPreferences: createAction<any>(
     "setExhibitionHallPreferences"
   ),
+
   setVirtualEventPreferences: createAction<any>("setVirtualEventPreferences"),
   setHybridEventPreferences: createAction<any>("setHybridEventPreferences"),
   setPhysicalEventPreferences: createAction<any>("setPhysicalEventPreferences"),
   setOnlineEventPreferences: createAction<any>("setOnlineEventPreferences"),
   setOfflineEventPreferences: createAction<any>("setOfflineEventPreferences"),
 };
+
+
+
+// Define action types for user event preferences
+export type UserEventPreferencesActionTypes =
+  | ReturnType<typeof UserEventPreferencesActions.setGatheringPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setSummitPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setSymposiumPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setConventionPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setExhibitionPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setFairPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setShowPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setExpoPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setMarketPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setFestivalPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setCelebrationPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setPartyPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setGalaPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setAwardsPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setContestPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setCompetitionPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setChallengePreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setHackathonPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setGameJamPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setPitchPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setDemoDayPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setShowcasePreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setExhibitionHallPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setVirtualEventPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setHybridEventPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setPhysicalEventPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setOnlineEventPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setOfflineEventPreferences>;
+
 
 // Team Role Preferences
 export const UserTeamRolePreferencesActions = {
@@ -407,6 +630,31 @@ export const UserTeamRolePreferencesActions = {
   ),
 };
 
+
+// Define action types for user team role preferences
+export type UserTeamRolePreferencesActionTypes =
+  | ReturnType<typeof UserTeamRolePreferencesActions.setTeamFormationPhase>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventManagerialPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventSupervisoryPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventTeamLeaderPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventProjectCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventProgramCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventPortfolioCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventOperationsCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventAdministrationCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventExecutiveCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventLeaderCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventManagerialCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventSupervisoryCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventTeamLeaderCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventSupportCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventCustomerServiceCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventQualityAssuranceCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventHealthSafetyCoordinatorPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setEventComplianceCoordinatorPreferences>
+ 
+
 // Miscellaneous Preferences
 export const UserMiscellaneousPreferencesActions = {
   setMiscellaneousPreferences: createAction<any>("setMiscellaneousPreferences"),
@@ -425,7 +673,6 @@ export const UserPreferencesActions = {
   ...UserVisualPreferencesActions,
   ...UserDataManagementPreferencesActions,
   ...UserCollaborationPreferencesActions,
-  ...UserBrandingPreferencesActions,
   ...UserTaskManagementPreferencesActions,
   ...UserEventManagementPreferencesActions,
   ...UserProfilePreferencesActions,
@@ -438,6 +685,29 @@ export const UserPreferencesActions = {
   // ...UserNotificationPreferencesActions,
   // ...UserGeneralPreferencesActions
 };
+
+
+// Define action types for UserPreferencesActions
+export type UserPreferencesActionTypes =
+  | ReturnType<typeof UserPreferencesActions.fetchUserPreferencesRequest>
+  | ReturnType<typeof UserPreferencesActions.fetchUserPreferencesSuccess>
+  | ReturnType<typeof UserPreferencesActions.fetchUserPreferencesFailure>
+  // Include action types from all imported actions
+  | ReturnType<typeof UserBrandingPreferencesActions.setBrandingPreferences>
+  | ReturnType<typeof UserCommunicationPreferencesActions.setCommunicationPreferences>
+  | ReturnType<typeof UserVisualPreferencesActions.setTheme>
+  | ReturnType<typeof UserVisualPreferencesActions.setDarkMode>
+  | ReturnType<typeof UserDataManagementPreferencesActions.setTimeZone>
+  | ReturnType<typeof UserCollaborationPreferencesActions.setAccessibilityOptions>
+  | ReturnType<typeof UserTaskManagementPreferencesActions.setTaskManagementSettings>
+  | ReturnType<typeof UserEventManagementPreferencesActions.setCalendarPreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setProfilePreferences>
+  | ReturnType<typeof UserSupportFeedbackPreferencesActions.setFeedbackPreferences>
+  | ReturnType<typeof UserTrainingEducationPreferencesActions.setTrainingPreferences>
+  | ReturnType<typeof UserEventPreferencesActions.setGatheringPreferences>
+  | ReturnType<typeof UserTeamRolePreferencesActions.setTeamFormationPhase>
+  // Include other necessary action types
+
 
 // exampe usage:
 

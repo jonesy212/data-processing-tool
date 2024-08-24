@@ -1,11 +1,8 @@
-import { addSnapshot, mergeSnapshots, takeSnapshot } from "@/app/api/SnapshotApi";
-import { PayloadAction } from "@reduxjs/toolkit";
+import { addSnapshot, mergeSnapshots, snapshotContainer, takeSnapshot } from "@/app/api/SnapshotApi";
 import React, { useRef, useState } from "react";
-import useSnapshotManager from "../../hooks/useSnapshotManager";
 import useStorageManager from "../../hooks/useStorageManager";
 import { BaseData, Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotConfig";
 import SnapshotStore, {
 } from "../../snapshots/SnapshotStore";
 import { snapshot } from "../../snapshots/snapshot";
@@ -13,8 +10,11 @@ import {
   deleteSnapshot,
   updateSnapshot,
 } from "../../snapshots/snapshotHandlers";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-
+import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
+import { SnapshotContainer, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig } from "../../snapshots";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
+import * as snapshotApi from '@/app/api/SnapshotApi'
+import SnapshotManagerOptions from "../../snapshots/SnapshotManagerOptions";
 // Define project phases
 enum ProjectPhase {
   PHASE_1 = "Phase 1",
@@ -30,26 +30,32 @@ interface ProjectData extends BaseData {
   tasks: Task[];
 }
 
-const ProjectManager: React.FC = () => {
+const ProjectManager: React.FC = async () => {
   const storageManager = useStorageManager("project-phase-data");
   const initialData = storageManager.getItem() as ProjectData | undefined;
   const [currentPhase, setCurrentPhase] = useState<ProjectPhase>(
     initialData?.currentPhase || ProjectPhase.PHASE_1
   );
+
+
+
+  const criteria = await snapshotApi.getSnapshotCriteria(
+    snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
+    snapshot
+  );
+  const snapshotId = await snapshotApi.getSnapshotId(criteria);
+  const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId)); 
+  const operation: SnapshotOperation = {
+    // Provide the required operation details
+    operationType: SnapshotOperationType.TaskSnapshotReference
+  };
+  const options = await useSnapshotManager(storeId) 
+  ? new SnapshotManagerOptions().get() 
+  : {};
+
+  
   const [tasks, setTasks] = useState<Task[]>(initialData?.tasks || []);
-  const snapshotStoreRef = useRef(new SnapshotStore<ProjectData>(
-    data,
-    initialState,
-    category,
-    date,
-    type,
-    snapshotConfig,
-    subscribeToSnapshots,
-    subscribeToSnapshot,
-    
-    delegate,
-    dataStoreMethods,
-  ));
+  const snapshotStoreRef = useRef(new SnapshotStore<ProjectData>( storeId, options, category, config, operation));
 
   const advanceToNextPhase = () => {
     const nextPhase = getNextPhase(currentPhase);
@@ -76,7 +82,7 @@ const ProjectManager: React.FC = () => {
   };
 
   const getActionHistory = async (): Promise<SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData>> => {
-    const entityActions = useSnapshotManager();
+    const entityActions = useSnapshotManager(storeId);
     const snapshotStoreSnapshots = await entityActions.getSnapshots(snapshotStoreRef.current);
     const actions = {
       takeSnapshot: takeSnapshot,
@@ -97,7 +103,7 @@ const ProjectManager: React.FC = () => {
   const undoLastAction = () => {
     if (snapshotStoreRef.current) {
       getActionHistory().then(
-        (value: SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData>) => {
+        (value: SnapshotStoreConfig<SnapshotUnion<T>, ProjectData>) => {
           const actionHistory = value.actions || [];
           if (Array.isArray(actionHistory) && actionHistory.length > 0) {
             const lastAction = actionHistory.pop();

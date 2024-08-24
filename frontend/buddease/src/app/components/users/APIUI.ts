@@ -109,73 +109,92 @@ const parseDataWithErrorHandling = <T extends DataWithComment>(
   }
 };
   
-  // Updated UIApi with error handling and logging
-  export const UIApi = {
-    fetchUserData: async (userId: string): Promise<UserData> => {
-      try {
-        const userDataEndpoint = `${`${UI_API_BASE_URL}`}/user/${userId}`;
-        const response = await axiosInstance.get<UserData>(userDataEndpoint, {
-          headers: headersConfig,
-        });
-        return response.data;
-      } catch (error) {
-        // Handle error using useErrorHandling hook
-        const { handleError } = useErrorHandling();
-        handleError('Failed to fetch user data');
-        throw error;
-      }
-    },
-  
-    updateUserSettings: async (userId: string, settings: UserSettings): Promise<void> => {
-      try {
-        const updateUserSettingsEndpoint = `${UI_API_BASE_URL}/user/${userId}/settings`;
-        await axiosInstance.put(updateUserSettingsEndpoint, settings, {
-          headers: headersConfig,
-        });
-        // Optionally, you can notify the user that settings were updated successfully
-        UIActions.setNotification({
-          message: 'User settings updated successfully',
-          type: 'success',
-        });
-      } catch (error) {
-        // Handle error using useErrorHandling hook
-        const { handleError } = useErrorHandling();
-        handleError('Failed to update user settings');
-        throw error;
-      }
-  },  // Add more UI API functions as needed
-    
-
-  
-
-// Define the fetchUIData function to fetch additional data or perform an API call
-fetchUIData: async (endpoint: string, requestData: any) => {
-  try {
-    // Perform API call using fetch or axios
-    const response = await fetch(endpoint, {
-      method: 'POST', // Adjust the method as needed
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestData),
-    });
-
-    // Check if the request was successful
-    if (!response.ok) {
-      throw new Error('Failed to fetch UI data');
+// Updated UIApi with error handling and logging
+export const UIApi = {
+  fetchUserData: async (userId: string): Promise<UserData> => {
+    try {
+      const userDataEndpoint = `${`${UI_API_BASE_URL}`}/user/${userId}`;
+      const response = await axiosInstance.get<UserData>(userDataEndpoint, {
+        headers: headersConfig,
+      });
+      return response.data;
+    } catch (error) {
+      // Handle error using useErrorHandling hook
+      const { handleError } = useErrorHandling();
+      handleError('Failed to fetch user data');
+      throw error;
     }
+  },
 
-    // Parse the response data as needed
-    const responseData = await response.json();
+  updateUserSettings: async (userId: string, settings: UserSettings): Promise<void> => {
+    try {
+      const updateUserSettingsEndpoint = `${UI_API_BASE_URL}/user/${userId}/settings`;
+      await axiosInstance.put(updateUserSettingsEndpoint, settings, {
+        headers: headersConfig,
+      });
+      // Optionally, you can notify the user that settings were updated successfully
+      UIActions.setNotification({
+        message: 'User settings updated successfully',
+        type: 'success',
+      });
+    } catch (error) {
+      // Handle error using useErrorHandling hook
+      const { handleError } = useErrorHandling();
+      handleError('Failed to update user settings');
+      throw error;
+    }
+  },  // Add more UI API functions as needed
+  
 
-    // Handle the response data, update state, dispatch actions, etc.
-    console.log('Fetched UI data:', responseData);
-  } catch (error: any) {
-    console.error('Error fetching UI data:', error.message);
-    // Optionally, handle the error and notify the user
+  // Define the fetchUIData function to fetch additional data or perform an API call
+  fetchUIData: async (endpoint: string, requestData: any) => {
+    try {
+      // Perform API call using fetch or axios
+      const response = await fetch(endpoint, {
+        method: 'POST', // Adjust the method as needed
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      // Check if the request was successful
+      if (!response.ok) {
+        throw new Error('Failed to fetch UI data');
+      }
+
+      // Parse the response data as needed
+      const responseData = await response.json();
+
+      // Handle the response data, update state, dispatch actions, etc.
+      console.log('Fetched UI data:', responseData);
+    } catch (error: any) {
+      console.error('Error fetching UI data:', error.message);
+      // Optionally, handle the error and notify the user
+    }
+  },
+
+  fetchBrandingData: async () => {
+    try {
+      const brandingDataEndpoint = `${UI_API_BASE_URL}/branding`;
+      const response = await fetch(brandingDataEndpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch branding data');
+      }
+      const responseData = await response.json();
+      console.log('Fetched branding data:', responseData);
+      return responseData;
+    } catch (error: any) {
+      console.error('Error fetching branding data:', error.message);
+      // Optionally, handle the error and notify the user
+    }
   }
-}
-  };
+};
   
 
 

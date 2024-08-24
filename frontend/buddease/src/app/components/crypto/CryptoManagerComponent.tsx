@@ -25,6 +25,7 @@ const CryptoManagerComponent: React.FC = () => {
     name: "",
     ticker: "",
     valuePerUnit: 0,
+    category: ""
   });
   const [updateDetails, setUpdateDetails] = useState({ id: "", amount: 0 });
   const [transactionDetails, setTransactionDetails] = useState({
@@ -45,9 +46,10 @@ const CryptoManagerComponent: React.FC = () => {
       value: 0,
       name: "",
       ticker: "",
+      category: "",
       valuePerUnit: 0,
     });
-    SearchLogger.logSearch(`Added holding: ${newHolding.name}`, userId);
+    SearchLogger.logSearch(`Added holding: ${newHolding.name}`, String(userId));
   };
 
 
@@ -62,7 +64,7 @@ const CryptoManagerComponent: React.FC = () => {
 
   const handleRemoveHolding = (id: string) => {
     removeHolding(id);
-    SearchLogger.logSearch(`Removed holding with ID: ${id}`, userId);
+    SearchLogger.logSearch(`Removed holding with ID: ${id}`, String(userId));
   };
 
   const handleExecuteTransaction = () => {

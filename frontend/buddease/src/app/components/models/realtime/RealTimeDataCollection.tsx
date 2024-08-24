@@ -18,13 +18,13 @@ const RealTimeDataCollection: React.FC<{}> = () => {
   const dispatch = useDispatch();
   const [dexList, setDexList] = useState<DEX[]>([]);
   const [exchangeList, setExchangeList] = useState<Exchange[]>([]);
-  const [snapshotList] = useState<SnapshotList>(new SnapshotList());
+  const [snapshotList] = useState<SnapshotList<Data, Data>>(new SnapshotList<Data, Data>());
 
   // Custom update callback function to process fetched data
   const updateCallback: RealtimeUpdateCallback<RealtimeData> = async (
-    data: SnapshotStore<Snapshot<Data>>,
-    events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    data: SnapshotStore<RealtimeData, K>,
+    events: Record<string, CalendarEvent<>[]>,
+    snapshotStore: SnapshotStore<RealtimeData>,
     dataItems: RealtimeData[]
   ): Promise<void> => {
     try {
@@ -53,7 +53,7 @@ const RealTimeDataCollection: React.FC<{}> = () => {
 
       // Process and add data items to snapshot list
       convertedDataItems.forEach((item) => {
-        const snapshotItem: SnapshotItem = {
+        const snapshotItem: SnapshotItem<Data, Data> = {
           message: item,
           data: item.value,
           user: item.userId,
@@ -118,7 +118,7 @@ const RealTimeDataCollection: React.FC<{}> = () => {
 
   // Example function to convert SnapshotStore to desired data type
   const convertSnapshotToDataType = <T extends unknown>(
-    snapshotStore: SnapshotStore<Snapshot<Data>> | null | undefined
+    snapshotStore: SnapshotStore<RealtimeData> | null | undefined
   ): T[] => {
     // Implement conversion logic
     return [] as T[];

@@ -1,4 +1,5 @@
 import { Progress } from "../../models/tracker/ProgressBar";
+import { Tag } from "../../models/tracker/Tag";
 import { Resource } from "../../state/redux/slices/CollaborationSlice";
 
 // BrandingSettings.ts
@@ -106,6 +107,7 @@ interface BrandingSettings {
 interface Label {
   text: string;
   color: string;
+  localeCompare: (otherTag: Tag) => number;
 }
 
 // Define a default branding settings object

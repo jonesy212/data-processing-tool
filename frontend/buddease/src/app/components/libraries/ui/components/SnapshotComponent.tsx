@@ -1,44 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { BaseData, Data } from "@/app/components/models/data/Data";
-import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotConfig";
-import { useEffect, useState } from "react";
-import { Snapshot, Snapshots } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { SnapshotStoreConfig, SnapshotWithCriteria } from "@/app/components/snapshots";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 // Define props interface
+type CreateSnapshotType = (additionalData: any) => Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData> | null | undefined;
+
 interface SnapshotProps {
-  snapshotConfig: SnapshotStoreConfig<BaseData, Data>;
+  snapshotConfig: SnapshotStoreConfig<Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>, Data>;
   id: string | number | null;
-  snapshotData: SnapshotStore<BaseData, Data>; // Updated type
-  category: string; // Define the type of category
-  createSnapshot: (additionalData: any) => void; // Define the type of createSnapshot
+  snapshotData: Snapshot<SnapshotWithCriteria<BaseData, any>, Data>;
+  snapshotStoreData: SnapshotStore<BaseData, Data>;
+  categoryProperties: CategoryProperties;
+  category: string;
+  callback: (snapshot: Snapshot<SnapshotWithCriteria<BaseData, any>, any> | null) => void;
+  createSnapshot: CreateSnapshotType | null | undefined;
 }
 
-
-// Define the Snapshot component
-const SnapshotComponent: React.FC<SnapshotProps> = ({ snapshotConfig, id, snapshotData, category, createSnapshot }) => {
-  const [snapshots, setSnapshots] = useState<Snapshots<Data>>([]);
+const SnapshotComponent: React.FC<SnapshotProps> = ({
+  snapshotConfig,
+  id,
+  snapshotData,
+  category,
+  categoryProperties,
+  callback,
+  createSnapshot,
+}) => {
+  const [snapshots, setSnapshots] = useState<Snapshot<BaseData>[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { error, handleError, clearError } = useErrorHandling();
 
   useEffect(() => {
     const fetchSnapshot = async () => {
       try {
-        // Ensure id is converted to string if it's not null
+        const snapshotId = snapshotData?.id ? String(snapshotData.id) : id !== null ? String(id) : null;
         
-     // Convert snapshotId to string if it's not null
-     const snapshotId = snapshotData.id ? String(snapshotData.id) : (id !== null ? String(id) : null);
-     const newSnapshot = await snapshotConfig.snapshot(
+        // Invoke createSnapshot if it's defined, and pass the result to snapshotConfig.snapshot
+        const snapshotContainer = createSnapshot ? createSnapshot({}) : null;
+
+        const newSnapshot = await snapshotConfig.snapshot(
           String(id),
           snapshotId,
           snapshotData,
           category,
-          createSnapshot);
+          categoryProperties,
+          callback,
+          snapshotContainer // Pass the result of createSnapshot here
+        );
+
+        const snapshotArray = Array.isArray(newSnapshot)
+          ? newSnapshot
+          : [newSnapshot.snapshotData];
+
         setSnapshots((prevSnapshots) => [
           ...prevSnapshots,
-          ...(Array.isArray(newSnapshot.snapshot)
-            ? newSnapshot.snapshot : [newSnapshot.snapshot]),
+          ...snapshotArray,
         ]);
       } catch (error: any) {
         const errorMessage = "Failed to fetch snapshot";
@@ -53,12 +72,15 @@ const SnapshotComponent: React.FC<SnapshotProps> = ({ snapshotConfig, id, snapsh
     return () => {
       // Perform cleanup if necessary
     };
-  }, [snapshotConfig, id, snapshotData, category, handleError]);
+  }, [snapshotConfig, id, snapshotData, category, categoryProperties, callback, createSnapshot, handleError]);
 
-  // Snapshot creation handler
   const handleCreateSnapshot = () => {
     const additionalData = { /* Any additional data for the snapshot */ };
-    createSnapshot(additionalData);
+
+    if (createSnapshot) {
+      const newSnapshot = createSnapshot(additionalData);
+      // Handle the created snapshot as needed
+    }
   };
 
   if (loading) {
@@ -90,6 +112,8 @@ const SnapshotComponent: React.FC<SnapshotProps> = ({ snapshotConfig, id, snapsh
       )}
     </div>
   );
-}
+};
 
 export default SnapshotComponent;
+
+ 

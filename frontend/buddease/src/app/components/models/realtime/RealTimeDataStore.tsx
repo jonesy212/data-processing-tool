@@ -33,4 +33,4 @@ const useRealTimeDataStore = (): RealTimeDataStore => {
   return new RealTimeDataStoreClass();
 };
 
-export { useRealTimeDataStore };
+export { useRealTimeDataStore, RealTimeDataStoreClass, RealTimeDataStore}

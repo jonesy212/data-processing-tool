@@ -624,46 +624,94 @@ const documentBuilderProps: DocumentBuilderProps = {
           timestamp: undefined,
           revisionNotes: undefined,
         },
-        versions: {
-          data: undefined,
-          backend: undefined,
-          frontend: undefined,
-        },
+        versions: [],
         checksum: "",
-      },
-      frontend: {
-        id: "",
-        name: "",
-        type: "",
-        path: "",
-        content: "",
-        draft: false,
-        permissions: {
-          read: false,
-          write: false,
-          delete: false,
-          share: false,
-          execute: false,
+        
+        frontend: {
+          id: "",
+          name: "",
+          type: "",
+          path: "",
+          content: "",
+          draft: false,
+          permissions: {
+            read: false,
+            write: false,
+            delete: false,
+            share: false,
+            execute: false,
+          },
+          getStructure: function (): Promise<Record<string, AppStructureItem>> {
+            // Implement the getStructure method here if needed
+            return new Promise((resolve, reject) => {
+              try {
+                //check if structure is most up to date, if not, update it
+                const structure = this.getStructure();
+                const structureArray = this.getStructureAsArray();
+                const structureString = JSON.stringify(structure);
+                const structureArrayString = JSON.stringify(structureArray);
+                const structureChecksum = this.getStructureChecksum();
+              
+                resolve({});
+              } catch (error: any) {
+                reject(error);
+              }
+            })
+          },
+          getStructureAsArray: function (): Promise<AppStructureItem[]> {
+            throw new Error("Function not implemented.");
+          },
+          frontendVersions: async () => []
         },
-        getStructure: function (): Record<string, AppStructureItem> {
-          throw new Error("Function not implemented.");
-        },
-        getStructureAsArray: function (): Promise<AppStructureItem[]> {
-          throw new Error("Function not implemented.");
-        },
-      },
-      backend: {
-        getStructure: function (): Promise<Record<string, AppStructureItem>> {
-          throw new Error("Function not implemented.");
-        },
-        getStructureAsArray: function (): AppStructureItem[] {
-          throw new Error("Function not implemented.");
-        },
-        traverseDirectoryPublic: function (
-          dir: string,
-          fs: typeof import("fs")
-        ): Promise<AppStructureItem[]> {
-          throw new Error("Function not implemented.");
+        backend: {
+          // id: "",
+          // name: "",
+          // type: "",
+          // path: "",
+          // content: "",
+          // draft: false,
+          // permissions: {
+          //   read: false,
+          //   write: false,
+          //   delete: false,
+          //   share: false,
+          //   execute: false,
+          // },
+          getStructure: function (): Promise<Record<string, AppStructureItem>> {
+            // Implement the getStructure method here if needed
+            return new Promise((resolve, reject) => {
+              try {
+                //check if structure is most up to date, if not, update it
+                const structure = this.getStructure();
+                const structureArray = this.getStructureAsArray();
+                const structureString = JSON.stringify(structureArray);
+                const structureStringHash = hashString(structureString);
+                const structureStringHashFromBackend =
+                  this.getStructureHash();
+                if (structureStringHash !== structureStringHashFromBackend) {
+                  this.updateStructure();
+                }
+                resolve(structure);
+              } catch (error) {
+                reject(error);
+              }
+            });
+          },
+          getStructureAsArray: function (): AppStructureItem[] {
+            // verify if structure is an array
+            const structure = this.getStructure();
+            const structureArray = this.getStructureAsArray();
+            const structureString = JSON.stringify(structureArray);
+            
+            const structureStringHash = hashString(structureString);
+
+          }
+          traverseDirectoryPublic: function (
+            path: string
+          ): Promise<AppStructureItem[]> {
+            throw new Error("Function not implemented.");
+          },
+          backendVersions: () => []
         },
       },
     },

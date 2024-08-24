@@ -1,10 +1,12 @@
 // CalendarActions.ts
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData"
 import { createAction } from "@reduxjs/toolkit";
 import { default as CustomFile, default as File } from "../documents/File";
 import { Theme } from "../libraries/ui/theme/Theme";
 import { PriorityTypeEnum } from "../models/data/StatusType";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { NotificationData } from "../support/NofiticationsSlice";
+import { BaseData, Data } from "../models/data/Data";
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
@@ -12,11 +14,12 @@ export const setEventColor = createAction<{ eventId: string; color: Theme }>(
 );
 
 
+type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData>;
 
 export const CalendarActions = {
 
   // Standard actions
-  addEvent: createAction<CalendarEvent>("addEvent"),
+  addEvent: createAction<DefaultCalendarEvent>("addEvent"),
   removeEvent: createAction<string>("removeEvent"),
   updateEventTitle: createAction<{ id: string; newTitle: string }>(
     "updateEventTitle"
@@ -42,7 +45,7 @@ export const CalendarActions = {
   // Async actions
   fetchCalendarEvent: createAction<{calendarEventId: string}>("fetchCalendarEvent"),
   fetchCalendarEventsRequest: createAction("fetchCalendarEventsRequest"),
-  fetchCalendarEventsSuccess: createAction<{ events: CalendarEvent[] }>(
+  fetchCalendarEventsSuccess: createAction<{ events: DefaultCalendarEvent[] }>(
     "fetchCalendarEventsSuccess"
   ),
   fetchCalendarEventsFailure: createAction<{ error: string }>(
@@ -51,9 +54,9 @@ export const CalendarActions = {
 
   updateCalendarEventRequest: createAction<{
     id: string;
-    newEvent: CalendarEvent;
+    newEvent: DefaultCalendarEvent;
   }>("updateCalendarEventRequest"),
-  updateCalendarEventSuccess: createAction<{ event: CalendarEvent }>(
+  updateCalendarEventSuccess: createAction<{ event: DefaultCalendarEvent }>(
     "updateCalendarEventSuccess"
   ),
   updateCalendarEventFailure: createAction<{ error: string }>(
@@ -178,7 +181,7 @@ export const CalendarActions = {
 
   createEventTemplate: createAction<{
     templateName: string;
-    eventData: CalendarEvent;
+    eventData: DefaultCalendarEvent;
     // Additional parameters as needed
   }>("createEventTemplate"),
 
@@ -229,13 +232,13 @@ export const CalendarActions = {
 
   editRecurringEventInstance: createAction<{
     eventId: string;
-    newEventData: CalendarEvent;
+    newEventData: DefaultCalendarEvent;
     // Additional parameters as needed
   }>("editRecurringEventInstance"),
 
 
   collaborativeEditingOfCalendarEventDetails: createAction<{   eventId: string;
-    updatedProperties: Partial<CalendarEvent>; // Assuming CalendarEvent is the type of your event object
+    updatedProperties: Partial<DefaultCalendarEvent>; // Assuming CalendarEvent is the type of your event object
   }>("collaborativeEditingOfCalendarEventDetails"),
 
 
@@ -345,9 +348,9 @@ export const CalendarActions = {
   // Bulk actions for batching services
   batchUpdateCalendarEventsRequest: createAction<{
     ids: string[];
-    newEvent: CalendarEvent;
+    newEvent: DefaultCalendarEvent;
   }>("batchUpdateCalendarEventsRequest"),
-  batchUpdateCalendarEventsSuccess: createAction<{ events: CalendarEvent[] }>(
+  batchUpdateCalendarEventsSuccess: createAction<{ events: DefaultCalendarEvent[] }>(
     "batchUpdateCalendarEventsSuccess"
   ),
   batchUpdateCalendarEventsFailure: createAction<{ error: string }>(
@@ -366,3 +369,5 @@ export const CalendarActions = {
 
   selectMilestones: createAction<string[]>("selectMilestones"),
 };
+
+export type {DefaultCalendarEvent}

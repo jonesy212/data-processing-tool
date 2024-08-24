@@ -148,6 +148,8 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 
 // documentOptions.ts
 export interface DocumentOptions {
+  // additionalDocumentOptions: [],
+  additionalOptionsLabel: string,
   uniqueIdentifier: string;
   documentType: string | DocumentTypeEnum; // Add documentType property
   userIdea?: string | UserIdea | undefined;
@@ -574,7 +576,7 @@ export interface DocumentOptions {
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
     documentOptions: {
-      additionalOptions: [],
+      
       uniqueIdentifier: "",
       documentType: "default",
       userIdea: undefined,
@@ -724,7 +726,9 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       includeAdditionalInfo: false,
       metadata: undefined,
       userSettings: undefined,
-      dataVersions: undefined
+      dataVersions: undefined,
+      additionalOptions: [],
+      additionalOptionsLabel: "", // Add this line
     },
     uniqueIdentifier: "",
     documentType: "default",
@@ -799,11 +803,10 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
         timestamp: new Date().toISOString(),
         revisionNotes: undefined,
       },
-      versions: {
-        data: undefined,
-        backend: undefined,
-        frontend: undefined,
-      },
+      versionData: [],
+      backend: undefined,
+      frontend: undefined,
+    
       checksum: "",
       version: "1.0.0",
       timestamp: new Date().toISOString(),
@@ -950,6 +953,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     backendStructure: undefined,
     frontendStructure: undefined,
     revisionOptions: undefined,
+    additionalOptionsLabel: "", 
   };
 };
 // Extend DocumentOptions to include additional properties

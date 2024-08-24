@@ -1,12 +1,12 @@
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 import { BaseData } from "../models/data/Data";
-import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
-import { Snapshot, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+ import { Snapshot, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { Subscriber } from "../users/Subscriber";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import CalendarEvent from "../state/stores/CalendarEvent";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import { SnapshotStoreConfig, SnapshotWithCriteria } from "../snapshots";
 
 // createSnapshotStore.ts
 function createSnapshotStore<T extends BaseData, K extends BaseData>(
@@ -30,23 +30,32 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     // Initialize other properties if needed
     // Provide implementation for methods if necessary
     // ...
-    getSnapshotId: () => id,
+    getSnapshotId: async () => id,
     compareSnapshotState: () => false, // Implement comparison logic
-    snapshot: () => ({ id, data: new Map(snapshotStore.data), category: snapshotStore.category }),
+    snapshot: async () => ({
+      snapshot: {
+        id,
+        data: new Map(snapshotStore.data),
+        category: snapshotStore.category,
+
+      }
+    }),
     getSnapshotData: () => new Map(snapshotStore.data),
     getSnapshotCategory: () => snapshotStore.category,
-    setSnapshotData: (data: Map<string, Snapshot<T, K>>, subscribers: Subscriber<any, any>[],
-      snapshotData: Partial<SnapshotStoreConfig<BaseData, T>>) => {
+    setSnapshotData: (
+      data: Map<string, Snapshot<T, K>>,
+      subscribers: Subscriber<any, any>[],
+      snapshotData: Partial<SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, T>>) => {
       snapshotStore.data = new Map(data);
     },
     setSnapshotCategory: (newCategory: string | CategoryProperties) => { snapshotStore.category = newCategory; },
     deleteSnapshot: () => { /* Implement deletion logic */ },
     restoreSnapshot: () => { /* Implement restoration logic */ },
-    createSnapshot: () => ({ id, data: new Map(snapshotStore.data), category: snapshotStore.category }),
+    createSnapshot: () => ({ id, data: new Map<string, Snapshot<T, K>>(Object.entries(snapshotStore.data)), category: snapshotStore.category }),
     updateSnapshot: async (
       snapshotId: string,
-      data: Map<string, BaseData>,
-      events: Record<string, CalendarManagerStoreClass[]>,
+      data: Map<string, Snapshot<T, K>>,
+      events: Record<string, CalendarManagerStoreClass<T, K>[]>,
       snapshotStore: SnapshotStore<T, K>,
       dataItems: RealtimeDataItem[],
       newData: Snapshot<T, K>,

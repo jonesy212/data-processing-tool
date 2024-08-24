@@ -14,6 +14,18 @@ import { UndoRedoStore, useUndoRedoStore } from './UndoRedoStore';
 import { UserStore, userManagerStore } from './UserStore';
 import { AppStore } from './AppStore';
 import UIStore from './UIStore';
+import { ApiManagerStore, useApiManagerStore } from './ApiStore';
+import { AuthorizationStore, useAuthorizationStore } from './AuthorizationStore';
+import { ProjectManagerStore, useProjectManagerStore } from './ProjectStore';
+import { ToolbarStore, useToolbarStore } from './ToolbarStore';
+import { SettingManagerStore } from './SettingsStore';
+import NotificationStore from './NotificationStore';
+import { DataStore, useDataStore } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import useDocumentStore, { DocumentStore } from './DocumentStore';
+import { RealTimeDataStore, RealTimeDataStoreClass } from '../../models/realtime/RealTimeDataStore';
+import { CollaborationStore } from './CollaborationStore';
+import useVideoStore, { VideoStore } from './VideoStore';
+import useUIStore from '../../libraries/ui/useUIStore';
  
 export interface Dispatchable {
   dispatch(action: any): void;
@@ -28,12 +40,12 @@ export interface MobXRootState {
   authorizationManager: AuthorizationStore;
   projectManager: ProjectManagerStore;
   taskManager: TaskManagerStore;
-  trackerManager: TrackerManagerStore;
-  userManager: UserManagerStore;
+  trackerManager: TrackerStore;
+  userManager: UserStore;
   teamManager: TeamManagerStore;
-  projectOwner: ProjectOwnerStore;
-  dataManager: DataManagerStore;
-  dataAnalysisManager: DataAnalysisManagerStore;
+  projectOwner: ProjectManagerStore;
+  dataManager: DataStore;
+  dataAnalysisManager: DataAnal;
   calendarManager: CalendarManagerStore;
   todoManager: TodoManagerStore;
   documentManager: DocumentManagerStore;
@@ -60,59 +72,61 @@ export class RootStores {
   authorizationManager: AuthorizationStore;
   projectManager: ProjectManagerStore;
   taskManager: TaskManagerStore;
-  trackerManager: TrackerManagerStore;
-  userManager: UserManagerStore;
+  trackerManager: TrackerStore;
+  userManager: UserStore;
   teamManager: TeamManagerStore;
-  projectOwner: ProjectOwnerStore;
-  dataManager: DataManagerStore;
+  projectOwner: ProjectManagerStore;
+  dataManager: DataStore<any, any>;
   dataAnalysisManager: DataAnalysisManagerStore;
   calendarManager: CalendarManagerStore;
   todoManager: TodoManagerStore;
-  documentManager: DocumentManagerStore;
+  documentManager: DocumentStore;
   apiManager: ApiManagerStore;
-  realtimeManager: RealtimeManagerStore;
+  realtimeManager: RealTimeDataStore;
   eventManager: EventManagerStore;
-  collaborationManager: CollaborationManagerStore;
-  entityManager: EntityManagerStore;
-  notificationManager: NotificationManagerStore;
-  settingsManager: SettingsManagerStore;
-  videoManager: VideoManagerStore;
-  randomWalkManager: RandomWalkManagerStore;
+  collaborationManager: CollaborationStore;
+  entityManager: EntityStore;
+  notificationManager: NotificationStore;
+  settingsManager: SettingManagerStore;
+  videoManager: VideoStore;
+  randomWalkManager: RandomWalkStore;
   pagingManager: PagingManagerStore;
   blogManager: BlogManagerStore;
   drawingManager: DrawingManagerStore;
-  versionManager: VersionManagerStore;
+  versionManager: VersionStore;
 
-  constructor() {
-    this.appManager = useAppStore();
-    this.toolbarManager = useToolbarStore();
-    this.uiManager = useUIManagerStore();
-    this.authManager = useAuthStore();
-    this.authorizationManager = useAuthorizationStore();
-    this.projectManager = useProjectManagerStore();
-    this.taskManager = useTaskManagerStore();
-    this.trackerManager = useTrackerManagerStore();
-    this.userManager = useUserManagerStore();
-    this.teamManager = useTeamManagerStore();
-    this.projectOwner = useProjectOwnerStore();
-    this.dataManager = useDataManagerStore();
-    this.dataAnalysisManager = useDataAnalysisManagerStore();
-    this.calendarManager = useCalendarManagerStore();
-    this.todoManager = useTodoManagerStore();
-    this.documentManager = useDocumentManagerStore();
-    this.apiManager = useApiManagerStore();
-    this.realtimeManager = useRealtimeManagerStore();
-    this.eventManager = useEventManagerStore();
-    this.collaborationManager = useCollaborationManagerStore();
-    this.entityManager = useEntityManagerStore();
-    this.notificationManager = useNotificationManagerStore();
-    this.settingsManager = useSettingsManagerStore();
-    this.videoManager = useVideoManagerStore();
-    this.randomWalkManager = useRandomWalkManagerStore();
-    this.pagingManager = usePagingManagerStore();
-    this.blogManager = useBlogManagerStore();
-    this.drawingManager = useDrawingManagerStore();
-    this.versionManager = useVersionManagerStore();
+
+
+  constructor(props: any) {
+    this.appManager = useAppStore(props);
+    this.toolbarManager = useToolbarStore(props);
+    this.uiManager = useUIStore(props);
+    this.authManager = useAuthStore(props);
+    this.authorizationManager = useAuthorizationStore(props);
+    this.projectManager = useProjectManagerStore(props);
+    this.taskManager = useTaskManagerStore(props);
+    this.trackerManager = useTrackerStore(props);
+    this.userManager = userManagerStore(props);
+    this.teamManager = useTeamManagerStore(props);
+    this.projectOwner = useProjectManagerStore(props);
+    this.dataManager = useDataStore(props);
+    this.dataAnalysisManager = useDataAnalysisManagerStore(props);
+    this.calendarManager = useCalendarManagerStore(props);
+    this.todoManager = useTodoManagerStore(props);
+    this.documentManager = useDocumentStore(props);
+    this.apiManager = useApiManagerStore(props);
+    this.realtimeManager = useRealtimeManagerStore(props);
+    this.eventManager = useEventManagerStore(props);
+    this.collaborationManager = useCollaborationManagerStore(props);
+    this.entityManager = useEntityManagerStore(props);
+    this.notificationManager = useNotificationStore(props);
+    this.settingsManager = useSettingsManagerStore(props);
+    this.videoManager = useVideoStore(props);
+    this.randomWalkManager = useRandomWalkManagerStore(props);
+    this.pagingManager = usePagingManagerStore(props);
+    this.blogManager = useBlogManagerStore(props);
+    this.drawingManager = useDrawingManagerStore(props);
+    this.versionManager = useVersionManagerStore(props);
     
     makeAutoObservable(this);
   }
@@ -129,6 +143,39 @@ export class RootStores {
     this.iconStore.dispatch(action);
     this.authManager.dispatch(action);
     
+  }
+
+  @action
+  public callback(action: any) {
+    // Implement callback logic here
+    // For example:
+    this.browserCheckStore.callback(action);
+    this.trackerStore.callback(action);
+    this.todoStore.callback(action);
+    this.taskManagerStore.callback(action);
+    this.calendarStore.callback(action);
+    this.iconStore.callback(action);
+    this.authManager.callback(action);
+  }
+
+  @action
+  public setDocumentReleaseStatus(status: string) {
+    this.documentManager.setDocumentReleaseStatus(status);
+  }
+
+  @action
+  public getSnapshotDataKey() {
+    return this.documentManager.getSnapshotDataKey();
+  }
+
+  @action
+  public getData(id: string) {
+    return this.documentManager.getData(id);
+  }
+
+  @action
+  public updateDocumentReleaseStatus(status: string) {
+    this.documentManager.updateDocumentReleaseStatus(status);
   }
 
   public getState(): MobXRootState {

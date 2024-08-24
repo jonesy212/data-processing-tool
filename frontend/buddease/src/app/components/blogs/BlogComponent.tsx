@@ -8,6 +8,7 @@ import { NotificationType, useNotification } from '../support/NotificationContex
 import { Subscriber } from '../users/Subscriber';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../utils/applicationUtils';
 import * as subscriberApi from './../../api/subscriberApi';
+import { K, T } from '../snapshots/SnapshotConfig';
 
 interface BlogProps {
   title: string;
@@ -51,14 +52,51 @@ const BlogComponent: React.FC<BlogProps> = ({
         data: optionalData,
       },
       store: undefined,
-    };
+      snapshot: {},
+      getSnapshotId: () => String(id || ""),
+      compareSnapshotState: () => false,
+      eventRecords: [],
+      // Add other required properties here
+      snapshotStore: {} as any,
+      getParentId: () => "",
+      getChildIds: () => [],
+      addChild: () => {},
+      removeChild: () => {},
+      updateChild: () => {},
+      getChild: () => null,
+      hasChild: () => false,
+      getChildren: () => [],
+      getDescendants: () => [],
+      getAncestors: () => [],
+      getRootSnapshot: () => null,
+      isRootSnapshot: () => false,
+      getDepth: () => 0,
+      getPath: () => [],
+      traverse: () => {},
+      find: () => null,
+      filter: () => [],
+      map: () => [],
+      reduce: () => null,
+      toJSON: () => ({}),
+      fromJSON: () => null,
+      clone: () => null,
+      merge: () => {},
+      diff: () => ({}),
+      patch: () => {},
+      revert: () => {},
+      commit: () => {},
+      checkpoint: () => "",
+      restore: () => {},
+      getHistory: () => [],
+      clearHistory: () => {},
+    } as unknown as Snapshot<Data>;
   }
   const subscribedId = subscriberApi.getSubscriberById(subscriberId).toString();
 
-  const subscriber = new Subscriber<Data>(
+  const subscriber = new Subscriber<T, K>(
     String(id || ""), 
     name, 
-    subscriptionData || ({} as Subscription), 
+    subscriptionData || ({} as Subscription<T, K>), 
     subscribedId, 
     notifyEventSystem, 
     updateProjectState, 
@@ -70,7 +108,7 @@ const BlogComponent: React.FC<BlogProps> = ({
 
   useEffect(() => {
     subscriber.subscribe((data: Snapshot<Data>) => {
-      const subscription = data.data as unknown as Subscription;
+      const subscription = data.data as unknown as Subscription<T, K>;
       setSubscriptionData(subscription);
 
       sendNotification(

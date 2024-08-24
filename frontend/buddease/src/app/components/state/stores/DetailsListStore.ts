@@ -1,6 +1,6 @@
+// DetailsListStore.ts
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { FC } from "react";
-// DetailsListStore.ts
 import { makeAutoObservable } from "mobx";
 import { BaseData, Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
@@ -28,16 +28,17 @@ import {
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { Tag } from "../../models/tracker/Tag";
 import { Project } from "../../projects/Project";
-import { K, SnapshotStoreConfig, T } from "../../snapshots/SnapshotConfig";
 import { AllTypes } from "../../typings/PropTypes";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { createSnapshotStoreOptions, snapshotType } from "../../typings/YourSpecificSnapshotType";
-import { subscribeToSnapshots } from "../../snapshots/snapshotHandlers";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-import { options } from "../../hooks/useSnapshotManager";
-import determineFileCategory from "../../libraries/categories/determineFileCategory";
+import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-
+import { snapshotStoreConfig, SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
+import { SnapshotOperation, SnapshotOperationType } from "../../snapshots/SnapshotActions";
+import { snapshot } from "../../snapshots/snapshot";
+import * as snapshotApi from '@/app/api/SnapshotApi'
+import { TagsRecord } from "../../snapshots";
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -53,7 +54,7 @@ export type AllStatus =
 // Define a generic interface for details
 // isActive
 
-interface DetailsItem<T> {
+interface DetailsItem<T extends SnapshotUnion> {
   _id?: string;
   id: string | number;
   title?: string;
@@ -71,14 +72,14 @@ interface DetailsItem<T> {
   value: string;
   phase?: Phase;
   collaborators?: Member[];
-  tags?: Tag[] | string[];
+  tags?:  string[] | Tag[]
   analysisResults?: DataAnalysisResult[];
   tracker?: string;
   participants?: Member[];
   // Core properties...
 }
 
-interface DetailsItemExtended<T> extends DataDetails {
+interface DetailsItemExtended extends DataDetails{
   id: string | number;
   _id?: string;
   title?: string;
@@ -89,7 +90,7 @@ interface DetailsItemExtended<T> extends DataDetails {
   participants?: Member[];
   description?: string | null | undefined;
   assignedProjects?: Project[];
-
+  analysisType?: AnalysisTypeEnum | undefined;
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
@@ -104,7 +105,7 @@ interface DetailsItemExtended<T> extends DataDetails {
   endDate?: Date;
   phase?: Phase | null;
   isActive?: boolean;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord | undefined
   subtitle?: string;
   date?: Date;
   author?: string;
@@ -125,7 +126,7 @@ interface DetailsItemExtended<T> extends DataDetails {
 }
 
 export interface DetailsListStore<T extends BaseData, K extends BaseData> {
-  details: Record<string, DetailsItemExtended<Data>[]>;
+  details: Record<string, DetailsItemExtended[]>;
   detailsTitle: string;
   detailsDescription: string;
   detailsStatus:
@@ -141,7 +142,7 @@ export interface DetailsListStore<T extends BaseData, K extends BaseData> {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
-  subscribe(callback: (snapshot: Snapshot<Data>) => void): void;
+  subscribe(callback: (snapshot: Snapshot<T, K>) => void): void;
 
   toggleDetails: (detailsId: string) => void;
 
@@ -157,8 +158,8 @@ export interface DetailsListStore<T extends BaseData, K extends BaseData> {
   ) => void;
   addDetails: (id: string, description: string) => void;
   addDetail: (newDetail: Data) => void;
-  addDetailsItem: (detailsItem: DetailsItemExtended<Data>) => void;
-  setDetails: (details: Record<string, DetailsItemExtended<Data>[]>) => void;
+  addDetailsItem: (detailsItem: DetailsItemExtended) => void;
+  setDetails: (details: Record<string, DetailsItemExtended[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
   setDynamicNotificationMessage: (message: string) => void;
@@ -167,7 +168,7 @@ export interface DetailsListStore<T extends BaseData, K extends BaseData> {
 class DetailsListStoreClass<T extends BaseData, K extends BaseData>
   implements DetailsListStore<T, K>
 {
-  details: Record<string, DetailsItemExtended<Data>[]> = {
+  details: Record<string, DetailsItemExtended[]> = {
     pending: [],
     inProgress: [],
     completed: [],
@@ -185,7 +186,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     | undefined = undefined;
   snapshotStore!: SnapshotStore<T, K>;
 
-  subscribe = (callback: (snapshot: Snapshot<Data>) => void) => {};
+  subscribe = (callback: (snapshot: Snapshot<T, K>) => void) => {};
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
@@ -194,30 +195,66 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     this.initSnapshotStore();
   }
 
-  private async initSnapshotStore() {
-    const initialState = null; // or undefined, depending on your default handling
-    const snapshotConfig: SnapshotStoreConfig<T, K>[] = [];  // Example empty array
-    const delegate = this.snapshotStore.getDelegate();
-    const category = this.snapshotStore.determineCategory(delegate);
-    await notify(
-      "interna snapshot notifications",
-      "Setting up snapshot details",
-      NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.InvalidCredentials
-    );
+  
 
-    const options = createSnapshotStoreOptions<T, K>({
-      initialState,
-      snapshotId: "", // Provide appropriate snapshotId
-      category: category as CategoryProperties,
-      dataStoreMethods: {
-
-      } // Provide appropriate dataStoreMethods
-    });
-
-    this.snapshotStore = new SnapshotStore<T, K>(options);
+  determineCategory(snapshot: Snapshot<T, K> | null | undefined): string {
+    if (snapshot && snapshot.store) {
+      return snapshot.store.toString();
+    }
+    return "";
   }
+
+    // Updated initSnapshotStore method
+    private async initSnapshotStore() {
+      const initialState = null; // or undefined, depending on your default handling
+      const snapshotConfig: SnapshotStoreConfig<SnapshotUnion<T, any>, K>[] = [];  // Example empty array
+
+      // Ensure delegate is correctly typed as Snapshot<T, K>
+      const delegateSnapshot: Snapshot<T, K> = {
+        // Provide appropriate default values for the snapshot
+        id: "", // Default or generate an ID
+        store: null, // Initialize appropriately
+        state: [], // Initialize state as needed
+        category: "", // Default or computed category
+        timestamp: new Date(), // Default timestamp
+        message: "", // Default message
+        eventRecords: {}, // Default event records
+        // Add all other necessary properties with default values
+      };
+
+      const category = this.determineCategory(delegateSnapshot);
+
+      await notify(
+        "internal snapshot notifications",
+        "Setting up snapshot details",
+        NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
+        new Date(),
+        NotificationTypeEnum.InvalidCredentials
+      );
+
+      const options = createSnapshotStoreOptions<T, K>({
+        initialState,
+        snapshotId: "", // Provide appropriate snapshotId
+        category: category as unknown as CategoryProperties,
+        dataStoreMethods: {
+          // Provide appropriate dataStoreMethods
+        }
+      });
+
+
+
+      const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
+      const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
+      const config: SnapshotStoreConfig<SnapshotUnion<T>, K> = snapshotStoreConfig;
+    
+      const operation: SnapshotOperation = {
+        // Provide the required operation details
+        operationType: SnapshotOperationType.FindSnapshot
+      };
+
+
+      this.snapshotStore = new SnapshotStore<T, K>(storeId, options, config, operation);
+    }
 
   updateDetailsTitle(id: string, newTitle: string): void {
     const details = this.details;
@@ -303,10 +340,10 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
           },
           duration: 0,
         },
-        data: {} as DetailsItemExtended<Data>["data"],
+        data: {} as DetailsItemExtended["data"],
         isActive: false,
         type: "details",
-        analysisResults: {} as DetailsItemExtended<Data>["analysisResults"],
+        analysisResults: {} as DetailsItemExtended["analysisResults"],
         updatedAt: undefined,
       });
     }
@@ -371,7 +408,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     }
   }
 
-  addDetailsItem(detailsItem: DetailsItemExtended<Data>): void {
+  addDetailsItem(detailsItem: DetailsItemExtended): void {
     let status: AllStatus = detailsItem.status || TaskStatus.Pending;
 
     this.details = {
@@ -392,13 +429,13 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
       return;
     }
 
-    const newDetailsItem: DetailsItemExtended<Data> = {
+    const newDetailsItem: DetailsItemExtended = {
       id: Date.now().toString(),
       title: this.detailsTitle,
       status: TaskStatus.Pending,
       description: this.detailsDescription,
       // data: {} as Data,
-      phase: {} as DetailsItemExtended<Data>["phase"],
+      phase: {} as DetailsItemExtended["phase"],
       isActive: false,
       type: "details",
       _id: "",
@@ -414,7 +451,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     this.detailsStatus = TaskStatus.Pending;
   }
 
-  setDetails(details: Record<string, DetailsItemExtended<Data>[]>): void {
+  setDetails(details: Record<string, DetailsItemExtended[]>): void {
     this.details = details;
   }
 
@@ -477,7 +514,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
   }
 }
 
-const useDetailsListStore = (): DetailsListStore<T, K> => {
+const useDetailsListStore = (): DetailsListStore => {
   return new DetailsListStoreClass();
 };
 

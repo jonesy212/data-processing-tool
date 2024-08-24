@@ -901,6 +901,7 @@ export const useContentSlice = createSlice({
         previouslyAssignedTo?: User[];
         phase?: Phase;
         id: string;
+        updates: TaskDetails;
         subtitle: string;
         value: number;
       }>

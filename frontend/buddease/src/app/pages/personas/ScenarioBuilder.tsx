@@ -467,8 +467,7 @@ function generateUserInterfaceComponent(componentName: string, componentDescript
 
 const componentFilePath = `src/app/components/${componentName}/${componentName}.tsx`;
 
-const properties = CategoryProperties[category];
-
+const properties = categoryProperties[category];
 const reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
 
 // Define function to create user scenarios and map out user journey

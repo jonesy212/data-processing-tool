@@ -81,20 +81,5 @@ const DatabaseGenerator: React.FC = () => {
 
 export default DatabaseGenerator;
 
-
-const handleGenerate = async () => { 
-  // Validate inputs
-  if (!databaseType || !databaseName) {
-    notify(
-      "databaseGenerationError",
-      "Database type and name are required.",
-      NOTIFICATION_MESSAGES.Database.ERROR_CONNECTING,
-      new Date(),
-      NotificationTypeEnum.OperationError
-    );
-  }
-}
-
-
 const database = await databaseService.createDatabase(databaseConfig, String(databaseQuery));
 export {database}

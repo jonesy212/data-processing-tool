@@ -45,7 +45,7 @@
         "@/users/*": ["./src/app/components/users/*"],
         "@/versions/*": ["./src/app/components/versions/*"],
         "@/configs/*": ["./src/app/configs/*"],
-        "@/snapshot/*": ["./src/app/configs/snapshot/*"],
+        "@/snapshots/*": ["./src/app/components/snapshots/*"],
         "@/configs/appStructure/components/*": ["./src/app/configs/appStructure/components/*"],
         "@/configs/appStructure/pages/*": ["./src/app/configs/appStructure/pages/*"],
         "@/configs/appStructure/pages/onboarding/*": ["./src/app/configs/appStructure/pages/onboarding/*"],

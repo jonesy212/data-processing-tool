@@ -1,7 +1,7 @@
 // ProjectManagementActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
-export const ProjectManagementActions = {
+export const ProjectManagementActions = <T extends Data, K extends CustomSnapshotData>() => ({
 
   // Tenant-related actions
   addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),
@@ -124,4 +124,4 @@ export const ProjectManagementActions = {
   communicateChangePlan: createAction<{ projectId: number, changeDetails: any }>("communicateChangePlan"),
 
   
-};
+});

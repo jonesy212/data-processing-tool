@@ -110,7 +110,7 @@ enum DataStatus {
 
 enum TeamStatus {
   Active = "active",
-  Inactive = "inactive",
+  InactiveTeam = "inactiveTeam",
 }
 enum ComponentStatus {
   Tentative = StatusType.Tentative,
@@ -256,24 +256,6 @@ enum OutcomeType {
   // Add more outcomes as needed
 }
 
-enum BookmarkStatus {
-  Saved = "saved",
-  Pending = StatusType.Pending,
-  InProgress = StatusType.InProgress,
-  Completed = StatusType.Completed,
-  Archived = "archived",
-  Tagged = "tagged",
-  Error = "error",
-  PendingReview = PriorityTypeEnum.PendingReview,
-  Confirmed = StatusType.Confirmed,
-  Cancelled = StatusType.Cancelled,
-  Scheduled = StatusType.Scheduled,
-  Upcoming = StatusType.Upcoming,
-  Tentative = ComponentStatus.Tentative,
-  Ready = CalendarStatus.READY,
-  Loading = CalendarStatus.LOADING,
-  Idle = CalendarStatus.IDLE,
-}
 
 enum BorderStyle {
   NONE = "none",
@@ -371,7 +353,25 @@ enum NotificationPosition {
 }
 
 
-export default BookmarkStatus;
+enum BookmarkStatus {
+  Saved = "saved",
+  Pending = "pending",
+  InProgress = "inProgress",
+  Completed = "completed",
+  Archived = "archived",
+  Tagged = "tagged",
+  Error = "error",
+  PendingReview = "pendingReview",
+  Confirmed = "confirmed",
+  Cancelled = "cancelled",
+  Scheduled = "scheduled",
+  Upcoming = "upcoming",
+  Tentative = "tentative",
+  Ready = "ready",
+  Loading = "loading",
+  Idle = "idle",
+}
+
 
 export {
   ActivityActionEnum,

@@ -6,6 +6,7 @@ import { UIActions } from '../actions/UIActions';
 import { Progress } from '../models/tracker/ProgressBar';
 import { RootState } from '../state/redux/slices/RootSlice';
 import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
+
 export interface AsyncHook<T> extends PhaseHookConfig {
   enable?: () => void; // Change enable method to not be optional
   disable?: () => void; // Change disable method to not be optional
