@@ -5,11 +5,14 @@ import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Comment } from "../../models/data/Data";
-import { Tag } from "../../models/tracker/Tag";
 import axiosInstance from "../../security/csrfToken";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
+import { userService } from "../../users/ApiUser";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { AxiosError } from "axios";
+import { TagsRecord } from "../../snapshots";
 
 
 
@@ -25,7 +28,7 @@ interface DocumentBase {
   title: string;
   content: string;
   description?: string | null | undefined;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord;
   createdAt: string | Date | undefined;
   updatedAt?: string | Date;
   createdBy: string;
@@ -108,7 +111,7 @@ interface DocumentAdditionalProps {
 
 
   interface Document extends DocumentBase, DocumentMetadata, DocumentStatus, DocumentAdditionalProps  {
-  // URL: string | undefined;
+  // name: string | undefined;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
@@ -156,9 +159,11 @@ interface DocumentAdditionalProps {
 export interface DocumentStore {
   documents: Record<string, Document>;
   fetchDocuments: () => void;
-  getSnapshotDataKey: (id: string) => string;
+  getSnapshotDataKey: (documentId: string, eventId: string, userId: string) => string;
+  updateDocumentReleaseStatus: (id: string, status: string, isReleased: boolean) => void;
   getData: (id: string) => Document | undefined;
   addDocument: (document: Document) => void;
+  setDocumentReleaseStatus: (id: string, status: string, isReleased: boolean) => void;
   updateDocument: (id: number, updatedDocument: Document) => void;
   deleteDocument: (id: string) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
@@ -257,6 +262,26 @@ const useDocumentStore = (): DocumentStore => {
   }, [documents, selectedDocumentId]);
   
 
+  const getSnapshotDataKey = (documentId: string, userId: string): string => {
+    // Generate a unique key for snapshot data using documentId and userId
+    return `documents.${userId}.${documentId}`;
+  }
+
+
+  const getUserIdAndSnapshotDataKey = async (userId: string, documentId: string) => {
+    try {
+      const fetchedUserId = await userService.fetchUserById(userId);
+      if (!fetchedUserId) {
+        throw new Error('User ID not found');
+      }
+      const snapshotDataKey = UniqueIDGenerator.generateSnapshotDataKey(documentId, userId);
+      return { fetchedUserId, snapshotDataKey };
+    } catch (error) {
+      handleError(error as AxiosError, 'Failed to fetch user');
+      throw error;
+    }
+  };
+
   const updateDocument = (id: number, updatedDocument: Document) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
@@ -270,6 +295,12 @@ const useDocumentStore = (): DocumentStore => {
       NotificationTypeEnum.OperationSuccess
     ); // Notify success
   };
+
+
+  const getData = (id: string) => {
+    return documents[id];
+  }
+
 
   const handleError = (error: any, action: string) => {
     console.error(`Error ${action}:`, error);
@@ -319,7 +350,9 @@ const useDocumentStore = (): DocumentStore => {
     updateDocumentTags,
     loadCalendarEventsDocumentContent,
     selectedDocument,
-    selectedDocuments
+    selectedDocuments,
+    getSnapshotDataKey,
+    getData
     // Add more methods as needed
   });
 

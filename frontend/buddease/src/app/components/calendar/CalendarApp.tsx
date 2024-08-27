@@ -1,6 +1,7 @@
 // CalendarApp.tsx
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-
+import * as snapshotApi from '../../api/SnapshotApi'
+import { isSnapshot, isSnapshotOfType } from '@/app/components/utils/snapshotUtils';
 import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { Todo } from "@/app/components/todos/Todo";
@@ -47,6 +48,28 @@ import { snapshotType } from "../typings/YourSpecificSnapshotType";
 import { isSnapshotStoreBaseData } from "../utils/snapshotUtils";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
 import { SnapshotContainer, SnapshotWithCriteria } from "../snapshots";
+import { Category } from "../libraries/categories/generateCategoryProperties";
+
+
+
+// Define SnapshotWithData to include only essential properties and methods
+interface SnapshotWithData<T extends Data, K extends Data = T> {
+  data: Map<string, Snapshot<T, K>> | null; // Assuming this holds snapshot data
+  events: {
+    // Define the events object structure based on your needs
+    eventRecords?: any; // Adjust type according to actual event record type
+    eventIds?: string[];
+    onSnapshotAdded?: (snapshot: Snapshot<T, K>) => void;
+    onSnapshotRemoved?: (snapshot: Snapshot<T, K>) => void;
+    onSnapshotUpdated?: (snapshot: Snapshot<T, K>) => void;
+    // Other event handlers...
+  };
+  meta?: T; // Metadata associated with the snapshot
+}
+
+
+const { fetchData } = useDataStore();
+
 
 const assignProject = (team: Team, project: Project) => {
   // Implement the logic to assign a project to the team
@@ -110,30 +133,28 @@ const analysisType = (project: Project) => {
     );
   }
 };
-const { fetchData } = useDataStore();
 
-// Adjusted addSnapshotHandler function
-export const addSnapshotHandler = (
-  snapshot: Snapshot<Data, K>,
-  subscribers: (snapshot: Snapshot<Data, K>) => void,
-  delegate: SnapshotStoreConfig<SnapshotUnion<BaseData>, K>[]
+
+
+export const addSnapshotHandler = <T extends Data, K extends BaseData>(
+  snapshot: Snapshot<T, K>,
+  subscribers: (snapshot: Snapshot<T, K>) => void,
+  delegate: SnapshotStoreConfig<T, K>[],
+  typeGuard: (snapshot: Snapshot<T, K>) => snapshot is Snapshot<T, K>
 ) => {
   if (delegate && delegate.length > 0) {
     delegate.forEach((config) => {
       if (typeof config.setSnapshots === "function") {
-        const currentSnapshots: Snapshots<BaseData> = config.snapshots
-          ? config.snapshots.filter(isSnapshotStoreBaseData)
+        // Ensure config.snapshots is treated as an array
+        const currentSnapshotsArray: SnapshotsArray<T> = Array.isArray(config.snapshots)
+          ? (config.snapshots as SnapshotsArray<T>)
           : [];
 
-        // Ensuring snapshot is of type SnapshotStore<BaseData> before adding
-        if (isSnapshotStoreBaseData(snapshot)) {
-          const newSnapshot: SnapshotUnion<BaseData> = snapshot as SnapshotUnion<BaseData>;
-          config.setSnapshots([...currentSnapshots, newSnapshot]);
+        // Use type guard to ensure compatibility
+        if (typeGuard(snapshot)) {
+          config.setSnapshots([...currentSnapshotsArray, snapshot]);
         } else {
-          console.error(
-            "Snapshot is not of type SnapshotStore<BaseData>",
-            snapshot
-          );
+          console.error("Snapshot does not match the expected type", snapshot);
         }
       }
     });
@@ -148,13 +169,13 @@ const CalendarApp = <T extends Data, K extends Data>() => {
   
   const storage = window.localStorage; // or wherever your storage is defined
   
-  const defaultSnapshot: SnapshotWithData = {
-    data: new Map<string, Data>(), // Initialize with empty map
+  const defaultSnapshot: SnapshotWithData<T, K> = {
+    data: new Map<string, Snapshot<T, K>>(), // Initialize with empty map
     events: {}, // Initialize with empty object or suitable default
-    meta: {} as Data, // Initialize with default or empty Data
+    meta: {} as T // Initialize with default or empty Data
   };
 
-  const [snapshots, setSnapshots] = useState<SnapshotWithData[]>([
+  const [snapshots, setSnapshots] = useState<SnapshotWithData<T, K>[]>([
     defaultSnapshot, // Add default snapshot to the array
   ]);
 
@@ -189,12 +210,8 @@ const CalendarApp = <T extends Data, K extends Data>() => {
     | Snapshot<BaseData, K>
     | null
     | undefined = null;
-  const snapshotConfig: SnapshotStoreConfig<Snapshot<any, BaseData> 
-  | SnapshotWithCriteria<any, BaseData>, BaseData>[] = [];
-  const delegate: SnapshotStoreConfig<Snapshot<any, BaseData> 
-  | SnapshotWithCriteria<any, BaseData>, Data>[] = [];
-  
-  
+  const snapshotConfig: SnapshotStoreConfig<T, BaseData>[] = [];
+  const delegate: SnapshotStoreConfig<T, Data>[] = [];
   const dataStoreMethods: DataStore<T, K> = {
     id: "",
     data: undefined,
@@ -208,16 +225,16 @@ const CalendarApp = <T extends Data, K extends Data>() => {
     updateDataDescription: (id: number, description: string) => {},
     addDataStatus: (id: number, status: StatusType | undefined) => {},
     updateDataStatus: (id: number, status: StatusType | undefined) => {},
-    addDataSuccess: (payload: { data: Snapshots<T> }) => {},
+    addDataSuccess: (payload: { data: Snapshot<T, K>[] }) => {},
     getDataVersions: async (id: number) => {
       // Implement logic to fetch data versions from a data source
       return undefined;
     },
-    updateDataVersions: (id: number, versions: Snapshots<T>) =>
+    updateDataVersions: (id: number, versions: Snapshot<T, K>[]) =>
       Promise.resolve(),
     getBackendVersion: () => Promise.resolve(""),
     getFrontendVersion: () => Promise.resolve(""),
-    fetchData: (id: number) => Promise.resolve([]),
+    fetchData: (id: number) => Promise.resolve({} as SnapshotStore<T, K>),
 
     getItem: (key: string): Promise<Snapshot<T, K> | undefined> => {
       return new Promise((resolve, reject) => {
@@ -278,10 +295,33 @@ const CalendarApp = <T extends Data, K extends Data>() => {
       return keys;
     },
 
-    getAllItems: async function(): Promise<Snapshot<T, any>[]> {
+    getAllItems: async function(
+      snapshotId: string,
+      category: symbol | string | CategoryProperties | undefined,
+      snapshot: Snapshot<T, K> | null,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<T, K>,
+      data: T,
+      storeId?: number,
+    ): Promise<Snapshot<T, any>[]> {
       try {
-        const keys = await this.getAllKeys();
+        const keys = await this.getAllKeys(
+          snapshotId,
+          category,
+          snapshot,
+          timestamp,
+          type,
+          event,
+          id,
+          snapshotStore,
+          data,
+          storeId
+        );
         const items: (Snapshot<T, K> | undefined)[] = await Promise.all(
+          
           keys.map((key) => this.getItem(key))
         );
         const filteredItems = items.filter(
@@ -377,7 +417,7 @@ const CalendarApp = <T extends Data, K extends Data>() => {
 
     getData: function (
       id: number
-    ): Promise<SnapshotWithCriteria<T, K> | undefined> {
+    ): Promise<SnapshotStore<T, K>[] | undefined> {
       throw new Error("Function not implemented.");
     },
     getStoreData: function (id: number): Promise<SnapshotStore<T, K>[]> {
@@ -392,22 +432,30 @@ const CalendarApp = <T extends Data, K extends Data>() => {
     },
     getDelegate: function (context: {
       useSimulatedDataSource: boolean;
-      simulatedDataSource: SnapshotStoreConfig<SnapshotUnion<T>, K>[];
-    }): Promise<SnapshotStoreConfig<SnapshotUnion<T>, K>[]> {
+      simulatedDataSource: SnapshotStoreConfig<T, K>[];
+    }): Promise<SnapshotStoreConfig<T, K>[]> {
       throw new Error("Function not implemented.");
     },
     updateDelegate: function (
-      config: SnapshotStoreConfig<SnapshotUnion<T>, K>[]
-    ): Promise<SnapshotStoreConfig<SnapshotUnion<T>, K>[]> {
+      config: SnapshotStoreConfig<T, K>[]
+    ): Promise<SnapshotStoreConfig<T, K>[]> {
       throw new Error("Function not implemented.");
     },
     getSnapshot: function (
-      category: any,
-      timestamp: any,
-      id: number,
-      snapshot: Snapshot<T, K>,
-      snapshotStore: SnapshotStore<T, K>,
-      data: T
+      snapshot: (id: string) =>
+        | Promise<{
+          snapshotId: number;
+          snapshotData: T;
+          category: Category | undefined;
+          categoryProperties: CategoryProperties;
+          dataStoreMethods: DataStore<T, K>;
+          timestamp: string | number | Date | undefined;
+          id: string | number | undefined;
+          snapshot: Snapshot<T, K>;
+          snapshotStore: SnapshotStore<T, K>;
+          data: T;
+          }>
+        | undefined
     ): Promise<Snapshot<T, K> | undefined> {
       throw new Error("Function not implemented.");
     },
@@ -458,12 +506,12 @@ const CalendarApp = <T extends Data, K extends Data>() => {
 
   
 
-  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots } =
-    new useSnapshotStore(
-     storeId, options, config, operation
-    );
+  const snapshotId = snapshotApi.getSnapshotId(snapshotFetcher).toString();
+  const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
 
-  const snapshotManager = useSnapshotManager<Todo<T, K>, K>(); // Initialize the snapshot manager
+  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots,  } =  new useSnapshotStore(storeId, options, category, config, operation);
+
+  const snapshotManager = useSnapshotManager<Todo, K>(await storeId); // Initialize the snapshot manager
 
   // Define the CalendarEvent object
   const calendarEvent: CalendarEvent<T, K> = {
@@ -484,7 +532,7 @@ const CalendarApp = <T extends Data, K extends Data>() => {
     isActive: false,
     category: "",
     shared: undefined,
-    details: {} as DetailsItem,
+    details: {} as DetailsItem<T>,
     bulkEdit: false,
     recurring: false,
     customEventNotifications: "customNotifications",
@@ -510,12 +558,12 @@ const CalendarApp = <T extends Data, K extends Data>() => {
     _id: "",
     analysisResults: [],
     snapshots: [],
-    getData: async function (): Promise<Snapshot<T, K>[]> {
+    getData: async function (): Promise<Snapshot<T, K>> {
       return [];
     },
     timestamp: undefined,
     meta: {},
-    getSnapshotStoreData: async function (): Promise<SnapshotStore<T, K>[]> {
+    getSnapshotStoreData: async function (): Promise<napshotStore<CalendarEvent<T, K>, K>[]> {
       return [];
     }
   };
@@ -752,6 +800,7 @@ const CalendarApp = <T extends Data, K extends Data>() => {
               projectId: "proj-4",
               projectName: "Project A",
               previousTeam: {
+                color: 'green',
                 team: {
                   id: "",
                   current: 0,

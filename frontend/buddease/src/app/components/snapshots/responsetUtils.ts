@@ -1,19 +1,32 @@
 // responsetUtils.ts
+import { fetchSnapshotById } from '@/app/api/SnapshotApi';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Category } from '../libraries/categories/generateCategoryProperties';
+import { Data } from '../models/data/Data';
+import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot } from './LocalStorageSnapshotStore';
+import { SnapshotData } from './SnapshotData';
+import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
 
 
 
-function handleSnapshot<T, K>(snapshot: Snapshot<any>) {
+function handleSnapshot<T extends Data, K extends Data>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
+     
+      if(methods) {
       methods.initialize();
+      }
+      
     }
   }
 
 
-function mapResponseToSnapshot<T, K>(response: any): Snapshot<SnapshotStoreDataResponse<T, K>> {
+function mapResponseToSnapshot<T extends Data, K extends Data>(
+  response: any
+): Snapshot<SnapshotStoreDataResponse<T, K>> {
     return {
       id: response.id,
       timestamp: new Date(response.timestamp),
@@ -31,12 +44,12 @@ function mapResponseToSnapshot<T, K>(response: any): Snapshot<SnapshotStoreDataR
       snapshots: response.snapshots,
       snapshotConfig: response.snapshotConfig,
       meta: response.meta,
+      getSnapshotsBySubscriber: response.getSnapshotsBySubscriber,
       snapshotMethods: {
         initialize: response.snapshotMethods?.initialize ?? (() => {}),
         onError: response.snapshotMethods?.onError ?? ((error: Error) => {}),
         // Define other methods as needed
       },
-      getSnapshotsBySubscriber: response.getSnapshotsBySubscriber,
       getSnapshotsBySubscriberSuccess: response.getSnapshotsBySubscriberSuccess,
       getSnapshotsByTopic: response.getSnapshotsByTopic,
       getSnapshotsByTopicSuccess: response.getSnapshotsByTopicSuccess,
@@ -186,3 +199,61 @@ function mapResponseToSnapshot<T, K>(response: any): Snapshot<SnapshotStoreDataR
       getSnapshotStoreConfigFailure: response.getSnapshotStoreConfigFailure,
     };
   }  
+
+
+
+export const returnsSnapshotStore = async (
+  id: string,
+  snapshotData: SnapshotData<any, any>,
+  category: Category | undefined,
+  categoryProperties: CategoryProperties | undefined,
+  dataStoreMethods: DataStore<any, any>
+): Promise<SnapshotStore<any, any>> => {
+  try {
+    // Fetch snapshot data from the API or use the provided snapshotData
+    const fetchedData = await fetchSnapshotById(id) || snapshotData;
+
+    // Initialize required properties
+    const initialState = snapshotData.state || null;
+    const initialConfig = snapshotData.configOption || null;
+    const data = snapshotData.data;
+    const subscribers = snapshotData.subscribers || [];
+    
+    // Create a snapshot configuration object
+    const snapshotConfig: SnapshotStore<any, any> = {
+      id,
+      category: category || "defaultCategory",
+      initialState,
+      initialConfig,
+      data,
+      subscribers,
+      timestamp: new Date(),
+      snapshotData,
+      categoryProperties,
+      storeConfig: dataStoreMethods.config,
+      removeSubscriber: (subscriberId: string) => {
+        const index = subscribers.findIndex(sub => sub.id === subscriberId);
+        if (index !== -1) {
+          subscribers.splice(index, 1);
+        }
+      },
+      onInitialize: () => {
+        console.log('Snapshot initialized');
+      },
+      onError: (error: any) => {
+        console.error('Snapshot error:', error);
+      },
+      taskIdToAssign: '',
+      snapshot: {},
+      setCategory: () => {},
+      applyStoreConfig: () => {},
+      generateId: () => 'generatedId',
+      additionalData: {},
+    };
+    
+    return snapshotConfig;
+  } catch (error) {
+    console.error('Error in returnsSnapshotStore:', error);
+    throw new Error('Failed to configure snapshot store');
+  }
+};

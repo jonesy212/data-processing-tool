@@ -7,10 +7,11 @@ import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotStoreConfig } from '../snapshots';
-import { Snapshot, Snapshots } from "../snapshots/LocalStorageSnapshotStore";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
 import { retrieveSnapshotData } from "../snapshots/RetrieveSnapshotData";
 import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
-import SnapshotStore, { defaultCategory } from "../snapshots/SnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import defaultCategory from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
 import { SnapshotConfig } from "../snapshots/snapshot";
 import { delegate, initSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
@@ -21,15 +22,9 @@ import { generateSnapshotId } from "../utils/snapshotUtils";
 import CalendarManagerStoreClass, { CalendarEvent } from "./../state/stores/CalendarEvent";
 import { StatusType } from "../models/data/StatusType";
 import { useContext } from "react";
-type T = Snapshot<BaseData>; // BaseData is a base type shared by all data entities
-type K = T; // K could be the same as T or a different specialized type
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { T, K } from "../snapshots/SnapshotConfig";
 
-type ChosenSnapshotState =
-  | SnapshotStoreConfig<BaseData, BaseData>
-  | SnapshotStore<BaseData, BaseData>
-  | Snapshot<BaseData, BaseData>
-  | null
-  | undefined;
 
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K>
@@ -39,6 +34,7 @@ class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
   data: Map<string, Snapshot<T, K>>;
   meta: Map<string, Snapshot<T, K>>;
   events: {
+    // initialConfig, onSnapshotAdded, onSnapshotRemoved, removeSubscriber,
     callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
     eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | undefined;
     subscribers: Subscriber<T, K>[];
@@ -1356,17 +1352,139 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     setState: () => { },
 
     validateSnapshot: () => false,
-    handleSnapshot: async (
-      snapshotId: string,
-      snapshot: Snapshot<T, K> | null,
-      snapshots: Snapshots<T>,
-      type: string, event: Event
-    ) => { },
+    handleSnapshot: (
+      id: string,
+      snapshotId: number,
+      snapshot: T | null,
+      snapshotData: T,
+      category: Category | undefined,
+      callback: (snapshot: T) => void,
+      snapshots: SnapshotsArray<T>,
+      type: string,
+      event: Event,
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
+    ): Promise<Snapshot<T, K> | null> => { 
+      return new Promise<Snapshot<T, K> | null>(async (resolve, reject) => {
+        try {
+          // Validate input parameters
+          if (!id || !snapshotId || !snapshotData) {
+            throw new Error('Missing required parameters.');
+          }
+    
+          // Initialize snapshot
+          let currentSnapshot: T;
+    
+          if (snapshot) {
+            // Use existing snapshot
+            currentSnapshot = snapshot;
+          } else {
+            // Create a new snapshot if not provided
+            currentSnapshot = snapshotData;
+          }
+    
+          // Apply snapshot data
+          if (snapshotContainer) {
+            // Update the container with new snapshot data
+            Object.assign(snapshotContainer, snapshotData);
+          }
+    
+          // Update snapshots array based on type
+          switch (type) {
+            case 'create':
+              snapshots.push(currentSnapshot);
+              break;
+            case 'update':
+              const index = snapshots.findIndex(s => s.id === snapshotId);
+              if (index !== -1) {
+                snapshots[index] = currentSnapshot;
+              } else {
+                throw new Error('Snapshot not found for update.');
+              }
+              break;
+            case 'delete':
+              const deleteIndex = snapshots.findIndex(s => s.id === snapshotId);
+              if (deleteIndex !== -1) {
+                snapshots.splice(deleteIndex, 1);
+              } else {
+                throw new Error('Snapshot not found for deletion.');
+              }
+              break;
+            default:
+              throw new Error('Unsupported snapshot type.');
+          }
+    
+          // Apply snapshot store configuration if provided
+          if (snapshotStoreConfig) {
+            // Update snapshot store based on configuration
+            // Implementation depends on specific configuration details
+          }
+    
+          // Execute callback with updated snapshot
+          callback(currentSnapshot);
+    
+          // Handle event
+          // Implement event handling logic as needed
+    
+          // Return the updated snapshot
+          resolve({
+            id,
+            data: new Map<string, T>(), // Replace with actual snapshot data if needed
+            category,
+            store: {} as SnapshotStore<T, K>, // Replace with actual SnapshotStore instance if needed
+            getSnapshotId: async () => id,
+            compareSnapshotState: () => false, // Implement comparison logic
+            snapshot: async () => ({
+              snapshot: {
+                id,
+                data: new Map<string, T>(), // Replace with actual snapshot data if needed
+                category,
+              }
+            }),
+            getSnapshotData: () => new Map<string, Snapshot<T, K>>(), // Replace with actual snapshot data if needed
+            getSnapshotCategory: () => category,
+            setSnapshotData: () => {}, // Implement logic to set snapshot data
+            setSnapshotCategory: () => {}, // Implement logic to set snapshot category
+            deleteSnapshot: () => {}, // Implement deletion logic
+            restoreSnapshot: () => {}, // Implement restoration logic
+            createSnapshot: () => ({
+              id,
+              data: new Map<string, T>(), // Replace with actual snapshot data if needed
+              category,
+            }),
+            updateSnapshot: async () => ({
+              snapshotId,
+              data: new Map<string, T>(), // Replace with actual snapshot data if needed
+              // Include other return values as needed
+            }),
+            // Add additional properties and methods if needed
+          });
+        } catch (error) {
+          console.error('Error handling snapshot:', error);
+          // Handle error as needed, e.g., notify user or log error
+          resolve(null); // Resolve with null on error
+        }
+      });
+    },
     handleActions: () => { },
     setSnapshot: () => { },
 
-    transformSnapshotConfig: () => ({}),
-    setSnapshotData: () => { },
+    transformSnapshotConfig: (config: SnapshotStoreConfig<any, T>
+    ): SnapshotStoreConfig<any, T> => {
+      // Transform the provided config as needed
+      // This example assumes you might want to modify or return the config directly
+  
+      // Example implementation: Returning the config unchanged
+      return config;
+    },
+    setSnapshotData: (
+      snapshotStore: SnapshotStore<T, K>,
+      data: Map<string, Snapshot<T, K>>,
+      subscribers: Subscriber<T, K>[],
+      snapshotData: Partial<
+        SnapshotStoreConfig<T, K>
+      >
+    ) => { },
     setSnapshots: () => { },
     clearSnapshot: () => { },
 
@@ -1625,5 +1743,3 @@ export {
   isSnapshotStore,
   snapshotType
 };
-export type { ChosenSnapshotState };
-

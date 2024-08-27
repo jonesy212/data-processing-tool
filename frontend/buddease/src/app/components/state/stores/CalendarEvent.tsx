@@ -40,8 +40,8 @@ import { useStore } from "./StoreProvider";
 import { Snapshot,SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 import {
   useSnapshotManager,
-
 } from "../../hooks/useSnapshotManager";
+import { T, K } from "../../snapshots/SnapshotConfig";
 import { SnapshotWithCriteria} from "../../snapshots/SnapshotWithCriteria";
 import { MobXRootState } from "./RootStores";
 import {SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
@@ -57,7 +57,7 @@ import { getSnapshotConfig, getSnapshotId } from "@/app/api/SnapshotApi";
 import { EventActions } from "../../actions/EventActions";
 import { useDispatch } from "react-redux";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
-import { DocumentStore } from "./DocumentStore";
+import { Document, DocumentStore } from "./DocumentStore";
 
 
 const dispatch = useDispatch()
@@ -113,6 +113,8 @@ interface CommonCalendarManagerMethods<T extends Data, K extends Data> {
     eventId: string,
     oldUserId: string,
     newUserId: string,
+    newDate: Date,
+    newStatus: AllStatus,
     reassignData: ReassignEventResponse[]
   ) => void;
   completeAllEvents: () => void;
@@ -153,6 +155,8 @@ export interface CalendarManagerStore<
     eventId: string,
     oldUserId: string,
     newUserId: string,
+    newDate: Date,
+    newStatus: AllStatus,
     reassignData: ReassignEventResponse[]
   ) => void;
 
@@ -176,13 +180,17 @@ export interface CalendarManagerStore<
     events: Record<string, CalendarEvent<T, K>[]>,
     snapshotStore: 
     string 
-    | SnapshotStoreConfig<SnapshotUnion<T>, K> 
+    | SnapshotStoreConfig<T, K> 
     | null
     | undefined
   ) => void;
   getSnapshotDataKey: (
+    documenttId: string,
     eventId: string,
-    userId: string) => void
+    userId: string
+  ) => void
+
+  
 }
 
 
@@ -229,12 +237,12 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
       events: Record<string, CalendarEvent<T, K>[]>,
       snapshotStore:
         | string
-        | SnapshotStoreConfig<SnapshotUnion<T>, K>
+        | SnapshotStoreConfig<T, K>
         | null
         | undefined
     ) => {
       try {
-        const key = this.getSnapshotDataKey(eventId, userId) as SnapshotData<T, K>;
+        const key = this.getSnapshotDataKey(eventId, userId)
         const snapshotManager = await useSnapshotManager<T, K>(storeId);
         const snapshotId = await snapshotManager?.snapshotStore?.getSnapshotId(key);
 
@@ -287,7 +295,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
       snapshot
     );
     const snapshotId = await snapshotApi.getSnapshotId(criteria);
-    const config = await snapshotApi.getSnapshotStoreConfig()
+    const config = await snapshotApi.getSnapshotStoreConfig(snapshotId)
     const storeConfig = getSnapshotConfig(
       Number(snapshotId),
       snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
@@ -315,10 +323,10 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     eventId: string,
     userId: string,
     events: Record<string, CalendarEvent<T, K>[]>,
-    snapshotStore: string | SnapshotStoreConfig<SnapshotUnion<T>, K> | null | undefined
+    snapshotStore: string | SnapshotStoreConfig<T, K> | null | undefined
   ) => void;
   openCalendarSettingsPage: () => void;
-  getSnapshotDataKey: (eventId: string, userId: string) => void;
+  getSnapshotDataKey: (documentId: string, eventId: string, userId: string) => string;
   getData: (id: string) => Promise<Snapshot<T, K>> = (id: string) => {
     return new Promise((resolve, reject) => {
       try {
@@ -432,7 +440,14 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     this.dispatch(removeEventsSuccess(eventIds));
   }
 
-  reassignEvent(eventId: string, newDate: Date, newStatus: AllStatus): void {
+  reassignEvent(
+    eventId: string,
+    oldUserId: string,
+    newUserId: string,
+    newDate: Date,
+    newStatus: AllStatus,
+    reassignData: ReassignEventResponse[]
+  ): void {
     this.updateEventDate(eventId, newDate);
     this.updateEventStatus(eventId, newStatus);
   }
@@ -541,7 +556,7 @@ function convertEventsToData(
     title: "",
     status: StatusType.Pending,
     isActive: false,
-    tags: [],
+    tags: {},
     phase: null,
     then: implementThen,
     analysisType: {} as AnalysisTypeEnum,
@@ -549,7 +564,7 @@ function convertEventsToData(
     videoUrl: "",
     videoThumbnail: "",
     videoDuration: 0,
-    videoData: {} as VideoData<T, K>,
+    videoData: {} as VideoData,
     ideas: [],
   };
 

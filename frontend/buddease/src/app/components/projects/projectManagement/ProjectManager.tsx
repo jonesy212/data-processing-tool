@@ -103,7 +103,7 @@ const ProjectManager: React.FC = async () => {
   const undoLastAction = () => {
     if (snapshotStoreRef.current) {
       getActionHistory().then(
-        (value: SnapshotStoreConfig<SnapshotUnion<T>, ProjectData>) => {
+        (value: SnapshotStoreConfig<T, ProjectData>) => {
           const actionHistory = value.actions || [];
           if (Array.isArray(actionHistory) && actionHistory.length > 0) {
             const lastAction = actionHistory.pop();

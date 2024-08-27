@@ -11,7 +11,7 @@
 // const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
 //   item: CoreSnapshot<T, K>,
 //   snapshotConfig: SnapshotConfig<T, K>,
-//   snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<T>, K> 
+//   snapshotStoreConfig: SnapshotStoreConfig<T, K> 
 // ): Snapshot<T, K> => {
 //   const snapshotItem: SnapshotItem<T, K> = {
     

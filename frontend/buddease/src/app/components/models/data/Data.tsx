@@ -15,7 +15,7 @@ import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
-import { T } from "../../snapshots/SnapshotConfig";
+import { K, T } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria, TagsRecord } from "../../snapshots/SnapshotWithCriteria";
@@ -33,6 +33,7 @@ import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
 import { ProjectPhaseTypeEnum, StatusType, SubscriptionTypeEnum } from "./StatusType";
+import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 // Define the interface for DataDetails
 interface DataDetails {
@@ -41,7 +42,7 @@ interface DataDetails {
   title?: string;
   description?: string | null;
 
-  details?: DetailsItem
+  details?: DetailsItem<T>
   completed?: boolean | undefined;
   startDate?: Date;
   endDate?: Date;
@@ -121,11 +122,7 @@ interface BaseData {
   key?: string;
   
   value?: number | string | Snapshot<BaseData, BaseData> | undefined;
-  initialState?: 
-    | SnapshotStore<BaseData, BaseData> 
-    | Snapshot<BaseData, BaseData> 
-    | null 
-    | undefined;
+  initialState?: InitializedState<BaseData, BaseData>
   dueDate?: Date | null;
   priority?: string | AllStatus;
   assignee?: UserAssignee | null;
@@ -137,7 +134,7 @@ interface BaseData {
   updatedAt?: string | Date | undefined;
   createdBy?: string | Date | undefined;
   updatedBy?: string;
-  updatedDetails?: DetailsItem
+  updatedDetails?: DetailsItem<T>
   isArchived?: boolean;
   isCompleted?: boolean;
   isBeingEdited?: boolean;
@@ -174,8 +171,8 @@ interface BaseData {
 interface Data extends BaseData {
   category?: Category;
   categoryProperties?: CategoryProperties; 
-  subtasks?: TodoImpl<T, any>[];
-  actions?: SnapshotStoreConfig<SnapshotWithCriteria<Data, any>, Data>[]; // Use Data instead of BaseData
+  subtasks?: TodoImpl<Todo, any>[];
+  actions?: SnapshotStoreConfig<T, Data>[]; // Use Data instead of BaseData
   snapshotWithCriteria?: SnapshotWithCriteria<Data, any>;
   value?: any;
   label?:  any;

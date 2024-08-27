@@ -1,12 +1,13 @@
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { SnapshotOperationType,SnapshotOperation } from '.';
 
 import { DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { SnapshotStoreConfig, Snapshot, Callback, SnapshotConfig, SnapshotOperation, SnapshotOperationType, Snapshots, SnapshotStoreMethod, SnapshotsArray, SnapshotWithCriteria, SnapshotUnion } from '../snapshots/index'
+import { SnapshotStoreConfig, Snapshot, SnapshotConfig, Snapshots, SnapshotStoreMethod, SnapshotsArray,  SnapshotUnion } from '../snapshots/index'
 import CalendarEvent from '../state/stores/CalendarEvent';
 import { Subscriber } from '../users/Subscriber';
 import SnapshotStore from '../snapshots/SnapshotStore';
 import { BaseData, Data } from '../models/data/Data';
 import { Category } from '../libraries/categories/generateCategoryProperties';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 interface SnapshotStoreOptions<T extends Data, K extends Data> {
   data?: Map<string, Snapshot<T, K>> | undefined;
@@ -16,7 +17,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
   retryDelay: number,
   maxAge: number,
   staleWhileRevalidate: number,
-  cacheKey: number,
+  cacheKey: string,
   initialState?: SnapshotStore<T, K> | Snapshot<T, K> | null;
   snapshot?: Snapshot<T, K> | null;
   snapshots?: Snapshots<T>;
@@ -25,7 +26,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
   date: string | number | Date | undefined;
   type: string | null | undefined;
   snapshotId: string | number | undefined;
-  snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<T>, K>[] | undefined;
+  snapshotStoreConfig: SnapshotStoreConfig<T, K> | undefined;
 
   snapshotConfig: SnapshotConfig<T, K>[] | undefined;
   subscribeToSnapshots: (
@@ -54,14 +55,14 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
     event: Event,
     callback: (snapshot: Snapshot<T, K>) => void
   ) => void;
-  delegate: () => Promise<SnapshotStoreConfig<SnapshotUnion<T>, K>[]> | []
+  delegate: () => Promise<SnapshotStoreConfig<T, K>[]> | []
   getDelegate: (
     | []
     | (
       (context: {
         useSimulatedDataSource: boolean;
-        simulatedDataSource: SnapshotStoreConfig<SnapshotUnion<T>, K>[];
-      }) => SnapshotStoreConfig<SnapshotUnion<T>, K>[]
+        simulatedDataSource: SnapshotStoreConfig<T, K>[];
+      }) => SnapshotStoreConfig<T, K>[]
     )
   );
 
@@ -83,7 +84,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
       snapshotData: Snapshot<T, K>,
       category: string | CategoryProperties | undefined,
       callback: (snapshotStore: Snapshot<T, K>) => void,
-      snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
       snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
     ) => Promise<Snapshot<T, K>>,
   
@@ -92,7 +93,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
       snapshotId: string | null,
       snapshotData: SnapshotStore<T, K>,
       category: string | CategoryProperties | undefined,
-      snapshotConfig: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+      snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (snapshotStore: SnapshotStore<T, K>) => void
     ) => void,
   
@@ -101,7 +102,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
       snapshotId: string,
       snapshotData: SnapshotStore<T, K>,
       category: string | CategoryProperties | undefined,
-      snapshotConfig: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+      snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (snapshotStore: SnapshotStore<any, any>) => void
     ) => void,
   
@@ -111,7 +112,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
       category?: string | CategoryProperties,
       callback?: (snapshot: Snapshot<T, K>) => void,
       snapshotDataStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<T>, K>
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K>
     ) => Snapshot<T, K> | null,
   
     createSnapshotStore: (
@@ -120,7 +121,7 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
       snapshotStoreData: Snapshots<T>,
       category?: string | CategoryProperties,
       callback?: (snapshotStore: SnapshotStore<T, K>) => void,
-      snapshotDataConfig?: SnapshotStoreConfig<SnapshotUnion<T>, K>[]
+      snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
     ) => SnapshotStore<T, K> | null,
   
     configureSnapshot: (
@@ -130,18 +131,18 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
       category?: string | CategoryProperties,
       callback?: (snapshot: Snapshot<T, K>) => void,
       snapshotDataStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<T>, K>
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K>
     ) => SnapshotConfig<T, K> | undefined,
-  ) => SnapshotConfig<SnapshotWithCriteria<any, BaseData>, K> 
+  ) => SnapshotConfig<Data, K> 
 
   dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>;
   getDataStoreMethods: (
-    snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<T>, K>[],
+    snapshotStoreConfig: SnapshotStoreConfig<T, K>[],
     dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>
   ) => Partial<DataStoreWithSnapshotMethods<T, K>>
 
   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
-  configOption?: SnapshotStoreConfig<SnapshotUnion<T>, K> | null;
+  configOption?: SnapshotStoreConfig<T, K> | null;
 
   handleSnapshotOperation: (
     snapshot: Snapshot<T, K>,

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Team } from "../../models/teams/Team";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-
+import { T, K } from "../../snapshots/SnapshotConfig";
 import { videoService } from "@/app/api/ApiVideo";
 import teamManagementService from "@/app/api/TeamManagementApi";
 import { useNotification } from "@/app/components/support/NotificationContext";
@@ -68,7 +68,7 @@ export interface TeamManagerStore {
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<Snapshot<T, K>>; // Include a SnapshotStore for teams
+  snapshotStore: SnapshotStore<T, K>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
   getTeamId: (
     teamId: Team["id"],
@@ -76,7 +76,7 @@ export interface TeamManagerStore {
   ) => number;
   // Add more methods or properties as needed
 }
-const config = {} as typeof SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>>;
+const config = {} as typeof SnapshotStoreConfig<SnapshotStore<T, K>>;
 const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   const { notify } = useNotification();
 
@@ -96,21 +96,8 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
-  const initSnapshot = {} as SnapshotStoreConfig<
-    SnapshotStore<Snapshot<Data>>
-  >;
-  const snapshotStore = new SnapshotStore(initSnapshot,
-    config,
-    null,
-    () => {
-    notify(
-      "initSnapshot",
-      "Initial Snapshot has been taken.",
-      NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
-      new Date(),
-      NotificationTypeEnum.Info
-    );
-  });
+  const initSnapshot = {} as SnapshotStoreConfig<Data, K>;
+  const snapshotStore = new SnapshotStore(storeId, options, category, config, operation);
 
   const updateTeamName = (name: string) => {
     setTeamName(name);
@@ -225,25 +212,11 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-    const snapshotConfig: SnapshotStoreConfig<
-      SnapshotStore<Snapshot<Data>>,
-      Data
-    > = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>, Data>;
+    const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>,Data> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>, Data>;
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot = new SnapshotStore<Snapshot<Data, K>>(
-      snapshotConfig,
-      null,
-      () =>
-        notify(
-          "Snapshot taken for team " + teamId,
-          "teamSnapshot",
-          "Team Snapshot has been taken.",
-          new Date(),
-          "TeamSnapshot" as NotificationType
-        ),
-      []
-    );
+    const teamSnapshot = new SnapshotStore(storeId, options, category, config, operation);
+
 
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);

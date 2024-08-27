@@ -23,15 +23,17 @@ import Version from "../versions/Version";
 import { createBaseSnapshot } from "./createBaseSnapshot";
 import {
     Snapshot,
-    SnapshotsArray
+    SnapshotsArray,
+    SnapshotUnion
 } from "./LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload, K } from "./SnapshotConfig";
-import { SnapshotData } from "./SnapshotData";
+import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 // // import { K, T } from "./SnapshotConfig";
 
 
@@ -44,7 +46,9 @@ interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> 
   priority?: string;
   version?: Version;
   data: T;
-  subscribers: SubscriberCollection<T, K>
+  subscribers: SubscriberCollection<T, K>;
+  storeConfig: SnapshotStoreConfig<T, K>;
+  additionalData: CustomSnapshotData
 }
 
 

@@ -1,6 +1,9 @@
 import { SnapshotDataResponse } from "../../../app/utils/retrieveSnapshotData";
 import { Data } from "../models/data/Data";
-import { Snapshot } from "./LocalStorageSnapshotStore";
+import { Subscriber } from "../users/Subscriber";
+import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
+import { SnapshotItem } from "./SnapshotList";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends SnapshotDataResponse<T, K> {
   id: number;
@@ -17,8 +20,10 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   store?: any; // Adjust to specific type if known
   stores?: any; // Adjust to specific type if known
   snapshots?: any; // Adjust to specific type if known
+  snapshot: any; // Adjust to specific type if known
   snapshotConfig?: any; // Adjust to specific type if known
   meta?: any; // Adjust to specific type if known
+  initialState: any; // Adjust to specific type if known
   snapshotMethods?: {
     initialize: () => void;
     onError: (error: Error) => void;
@@ -43,9 +48,12 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   updateSnapshot?: (id: string, data: any) => void; // Adjust as needed
   deleteSnapshot?: (id: string) => void;
   findSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
-  getSnapshotItems?: () => any[]; // Adjust to specific type if known
+  getSnapshotItems: (
+    // snapshotId: string,
+    // callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
+    // snapshot: Snapshot<T, K> | null
+  ) => (SnapshotStoreConfig<T, any> | SnapshotItem<Data, any>)[] | undefined; // Adjust to specific type if known
   dataStore?: any; // Adjust to specific type if known
-  initialState?: any; // Adjust to specific type if known
   snapshotItems?: any[]; // Adjust to specific type if known
   nestedStores?: any[]; // Adjust to specific type if known
   snapshotIds?: string[];
@@ -69,7 +77,11 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   getDataStore?: () => any; // Adjust to specific type if known
   addSnapshotItem?: (item: any) => void; // Adjust type if known
   addNestedStore?: (store: any) => void; // Adjust type if known
-  defaultSubscribeToSnapshots?: () => void;
+  defaultSubscribeToSnapshots: (
+    snapshotId: string,
+    callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
+    snapshot: Snapshot<T, K> | null
+  ) => void | undefined;
   defaultCreateSnapshotStores?: () => void;
   createSnapshotStores?: () => void;
   subscribeToSnapshots?: (callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
@@ -100,7 +112,6 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   fetchData?: () => any; // Adjust to specific type if known
   defaultSubscribeToSnapshot?: (id: string) => void;
   handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
-  snapshot?: any; // Adjust to specific type if known
   removeItem?: (id: string) => void;
   getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
   getSnapshotSuccess?: boolean;

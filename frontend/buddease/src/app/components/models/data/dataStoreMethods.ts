@@ -738,11 +738,21 @@ getDelegate: function (context: {
 updateDelegate: function (config: SnapshotStoreConfig<Data, any>[]): Promise<SnapshotStoreConfig<Data, any>[]> {
   throw new Error("Function not implemented.");
 },
-getSnapshot: function (category: any,
-  timestamp: any, id: number,
-  snapshot: Snapshot<BaseData, any>,
-  snapshotStore: SnapshotStore<Data, any>,
-  data: Data
+getSnapshot: function (
+  snapshot: (id: string) =>
+    | Promise<{
+      snapshotId: number;
+        snapshotData: T;
+        category: Category | undefined;
+        categoryProperties: CategoryProperties;
+        dataStoreMethods: DataStore<T, K>;
+        timestamp: string | number | Date | undefined;
+        id: string | number | undefined;
+        snapshot: Snapshot<T, K>;
+        snapshotStore: SnapshotStore<T, K>;
+        data: T;
+      }>
+    | undefined
 ): Promise<Snapshot<Data, any> | undefined> {
   return this.getSnapshot(category, timestamp, id, snapshot, snapshotStore, data);
 },

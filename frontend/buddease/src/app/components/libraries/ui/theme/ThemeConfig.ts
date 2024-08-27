@@ -134,3 +134,4 @@ export function validateHexColor(color: string): string {
 
 export default themeSettings;
 export type { ThemeConfig };
+export {DEFAULT_COLOR}

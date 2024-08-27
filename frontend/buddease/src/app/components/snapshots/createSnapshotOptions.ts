@@ -32,7 +32,7 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
       snapshotData: Snapshot<T, K>,
       category: Category,
       callback: (snapshot: Snapshot<T, K>) => void,
-      snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
       snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
     ) => Promise<Snapshot<T, K>>,
     simulatedDataSource?: SimulatedDataSource // Optional parameter for SimulatedDataSource

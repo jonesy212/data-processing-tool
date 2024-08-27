@@ -1,5 +1,6 @@
 // fileCategoryMapping.ts
 import { FileCategory, fileMapping } from "../../documents/FileType";
+import { determineFileCategoryLogger } from "../../logging/determineFileCategoryLogger";
 import { T } from "../../snapshots";
 import { getAllSnapshotEntries } from "../../snapshots/getSnapshotEntries";
 // Define a mapping of file categories to their corresponding snapshot entries
@@ -49,24 +50,34 @@ function getEntriesByCategory(snapshot: Map<string, T>, category: FileCategory):
     return entries;
   }
   // Function to process all snapshots and filter by file category
-  function processSnapshotsByCategory(snapshot: Map<string, any>, category: FileCategory): void {
-    snapshot.forEach((value, key) => {
-      const extension = key.split('.').pop() || '';
-      
-      // Check if the file has a valid category and extension
-      if (isValidFileCategory(key, extension)) {
-        if (determineFileCategoryLogger(key, extension) === category) {
-          // Process the file if it matches the category
-          console.log(`Processing file: ${key}`);
-          // Add your processing logic here
+  function processSnapshotsByCategory<T extends Data>(
+    snapshot: Snapshot<T, any>, // Adjust type to match Snapshot<T, any> if needed
+    category: FileCategory
+  ): Snapshot<T, any> | undefined {
+    // Assuming snapshot is a Map-like structure or has similar properties
+    if (snapshot && snapshot instanceof Map) {
+      snapshot.forEach((value, key) => {
+        const extension = key.split('.').pop() || '';
+        
+        if (isValidFileCategory(key, extension)) {
+          if (determineFileCategoryLogger(key, extension) === category) {
+            console.log(`Processing file: ${key}`);
+            // Add your processing logic here
+          } else {
+            console.warn(`File: ${key} does not match the expected category: ${category}`);
+          }
         } else {
-          console.warn(`File: ${key} does not match the expected category: ${category}`);
+          console.warn(`Invalid file category or extension for file: ${key}`);
         }
-      } else {
-        console.warn(`Invalid file category or extension for file: ${key}`);
-      }
-    });
+      });
+      // Return the processed snapshot or modify it as needed
+      return snapshot;
+    } else {
+      console.warn("Snapshot is not a valid Map-like structure");
+      return undefined;
+    }
   }
+  
 
 
 
@@ -82,7 +93,7 @@ function getEntriesByCategory(snapshot: Map<string, T>, category: FileCategory):
 
 
 
-export {fileCategoryMapping, processSnapshotsByCategory}
+export {fileCategoryMapping, processSnapshotsByCategory, getEntriesByCategory}
 
 
 

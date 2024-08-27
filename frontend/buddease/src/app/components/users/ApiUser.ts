@@ -17,6 +17,13 @@ import updateUI from '../documents/editing/updateUI';
 
 const API_BASE_URL = endpoints.users;
 
+interface UserProfile extends User {
+  id: string;
+  name: string;
+  email: string;
+  // permissions: UserRole[];
+}
+
 export const fetchUserRequest = (userId: string) => ({
   type: "FETCH_USER_REQUEST",
   payload: userId,
@@ -118,14 +125,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
   fetchUserProfile = async (userId: string) => {
     try {
       const user = await this.fetchUserById(userId);
-      // Create UserProfile interface
-      interface UserProfile extends User {
-        id: string;
-        name: string;
-        email: string;
-        // permissions: UserRole[];
-      }
-
+     
       // Extract user profile from user data
       const userProfile: UserProfile = {
         id: user.id,
@@ -172,6 +172,8 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
         throw error;
       }
     }
+  
+  
   fetchUserData = async (
     req: { userId: string },
     res: {
@@ -568,3 +570,4 @@ updateUserRoles = async (users: {
 
 export const userService = new UserService();
 export default UserService;
+export type {UserProfile}

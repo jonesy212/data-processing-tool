@@ -394,7 +394,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 				}
 			},
 			updateDelegate: async (
-				delegate: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]) => {
+				delegate: SnapshotStoreConfig<BaseData, K>[]) => {
 				try {
 					const updatedDelegates = await Promise.all(
 						delegate.map(async (item) => {
@@ -409,12 +409,17 @@ function createOptions<T extends Data, K extends Data>(params: {
 				}
 			},
 			getSnapshot: (
-				category: string | CategoryProperties, // Define more specific types if possible
-				timestamp: Date,
-				id: number,
-				snapshot: Snapshot<T, K>,
-				snapshotStore: SnapshotStore<T, K>,
-				data: T
+				snapshot: (id: string) =>
+					| Promise<{
+					  category: Category | undefined;
+					  categoryProperties: CategoryProperties;
+					  timestamp: string | number | Date | undefined;
+					  id: string | number | undefined;
+					  snapshot: Snapshot<T, K>;
+					  snapshotStore: SnapshotStore<T, K>;
+					  data: T;
+					  }>
+					| undefined
 			): Promise<Snapshot<T, K> | undefined> => {
 				return new Promise((resolve, reject) => {
 					try {

@@ -5,6 +5,7 @@ import Version from '../versions/Version';
 interface VersioningComponentProps {
   version: string;
 }
+const docPermissions = new DocumentPermissions(true, false);
 
 const VersioningComponent: React.FC<VersioningComponentProps> = ({ version }) => {
   const currentVersion = new Version({
@@ -49,11 +50,11 @@ const VersioningComponent: React.FC<VersioningComponentProps> = ({ version }) =>
     lockedBy: null,
     lockedAt: null,
     isArchived: false,
-    archivedBy: null,
+    archivedBy: "archiver",
     archivedAt: null,
-    tags: [],
+    tags: {},
     categories: [],
-    permissions: [],
+    permissions: docPermissions,
     collaborators: [],
     comments: [],
     reactions: [],
@@ -83,6 +84,8 @@ const VersioningComponent: React.FC<VersioningComponentProps> = ({ version }) =>
     workspaceViewers:[],
     workspaceAdmins: [],
    
+    versionData: "", 
+    changes: "",
     // parentDescription: '',
     // parentMetadata: {},
     // parentTags: [],

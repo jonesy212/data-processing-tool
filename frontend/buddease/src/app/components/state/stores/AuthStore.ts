@@ -46,6 +46,7 @@ export class AuthStore {
   constructor() {
     makeAutoObservable(this);
   }
+  callback: (action: any) => void = () => {};
 
   loginSuccess(accessToken: string, userId: string) {
     this.isAuthenticated = true;

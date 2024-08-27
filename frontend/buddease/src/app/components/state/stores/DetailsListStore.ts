@@ -245,7 +245,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
 
       const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
       const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
-      const config: SnapshotStoreConfig<SnapshotUnion<T>, K> = snapshotStoreConfig;
+      const config: SnapshotStoreConfig<T, K> = snapshotStoreConfig;
     
       const operation: SnapshotOperation = {
         // Provide the required operation details

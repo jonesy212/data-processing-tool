@@ -81,9 +81,9 @@ import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { CreateSnapshotsPayload } from "../database/Payload";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { CustomSnapshotData } from "./SnapshotData";
-export type T = any;
-export type K = any;
 
+export type T = Snapshot<BaseData, BaseData>;
+export type K = T; // K could be the same as T or a different specialized type
 
 interface RetentionPolicy {
   retentionPeriod: number; // in days
@@ -97,7 +97,7 @@ interface ConfigureSnapshotStorePayload<T extends Data> {
   snapshotId: string;
   snapshotData: T;
   timestamp: Date;
-  snapshotStoreConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>;
+  snapshotStoreConfig: SnapshotStoreConfig<T, K>;
 
   title: string;
   description: string;
@@ -133,7 +133,7 @@ const updateSubscribersAndSnapshots = async (
     const updatedSubscribers = await Promise.all(
       subscribers.map(async (subscriber: Subscriber<BaseData, K>) => {
         // Ensure snapshots is an array and get the data from the method if necessary
-        const snapshotsArray = await subscriber.snapshots(); // Call the function if it's a method
+        const snapshotsArray = await subscriber.snapshots()// Call the function if it's a method
 
         // Function to get snapshots based on category and filter them
         const filterSnapshotsByCategory = (

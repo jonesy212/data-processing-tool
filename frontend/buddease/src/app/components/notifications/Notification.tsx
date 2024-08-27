@@ -1,7 +1,7 @@
 // Notification.ts
 import React, { useContext } from 'react';
 import { ThemeConfigProps } from '../hooks/userInterface/ThemeConfigContext';
-import { useNotificationStore } from '../state/stores/NotificationStore';
+import  useNotificationStore from '../state/stores/NotificationStore';
 import { NotificationContext, NotificationTypeEnum } from '../support/NotificationContext';
 import { NotificationProps } from '../typings/PropTypes';
 
@@ -35,7 +35,8 @@ const Notification: React.FC<NotificationStyleProps> = ({
     // Implement dismissal logic here
     try {
       // Example: Dismiss notification by removing it from the notification store
-      useNotificationStore.dismissNotification(notificationId);
+
+      useNotificationStore.getState().dismissNotification(notificationId);
 
       // Notify dismissal
       notify(
@@ -55,8 +56,8 @@ const Notification: React.FC<NotificationStyleProps> = ({
         NotificationTypeEnum.Error // Notification type for error
       );
     }
-  };
 
+  };
   return (
     <div className="notification" style={notificationStyle}>
       <span>{message}</span>

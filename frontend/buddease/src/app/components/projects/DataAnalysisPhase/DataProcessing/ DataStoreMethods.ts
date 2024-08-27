@@ -1,4 +1,5 @@
 //  DataStoreMethods.ts
+import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
 import { BaseData } from "@/app/components/models/data/Data";
 import { Snapshot, Snapshots, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
@@ -6,14 +7,15 @@ import { SnapshotStoreMethod } from "@/app/components/snapshots/SnapshotStorMeth
 import { Subscriber } from "@/app/components/users/Subscriber";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore } from "./DataStore";
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 
 interface DataStoreWithSnapshotMethods<T extends BaseData, K extends BaseData> extends DataStore<T, K> {
   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
 
 }
 
-export interface DataStoreMethods<T extends BaseData, K extends BaseData> extends DataStoreWithSnapshotMethods<T, K> {
-
+export interface DataStoreMethods<T extends BaseData, K extends BaseData> 
+extends DataStoreWithSnapshotMethods<T, K> {
   mapSnapshots: (
     storeIds: number[],
     snapshotId: string,
@@ -39,16 +41,28 @@ export interface DataStoreMethods<T extends BaseData, K extends BaseData> extend
     ) => SnapshotsObject<T>
   )=> SnapshotsObject<T>
 
-  addSnapshot: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => Promise<void>;
+  addSnapshot: ( snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K> | undefined
+  ) => Promise<void>;
   addSnapshotSuccess: (snapshot: T, subscribers: Subscriber<T, K>[]) => void;
   getSnapshot: (
-    category: any,
-    timestamp: any,
-    id: number,
-    snapshot: Snapshot<T, K>,
-    snapshotStore: SnapshotStore<T, K>,
-    data: T,
+    snapshot: (id: string) =>
+      | Promise<{
+        snapshotId: number;
+        snapshotData: T;
+        category: Category | undefined;
+        categoryProperties: CategoryProperties;
+        dataStoreMethods: DataStore<T, K>;
+        timestamp: string | number | Date | undefined;
+        id: string | number | undefined;
+        snapshot: Snapshot<T, K>;
+        snapshotStore: SnapshotStore<T, K>;
+        data: T;
+        }>
+      | undefined
   ) => Promise<Snapshot<T, K> | undefined>;
+  
   getSnapshotSuccess: (snapshot: T, subscribers: Subscriber<T, K>[]) => void;
   getSnapshotsBySubscriber: (subscriber: string) => Promise<T[]>;
   getSnapshotsBySubscriberSuccess: (snapshots: Snapshots<T>) => void;

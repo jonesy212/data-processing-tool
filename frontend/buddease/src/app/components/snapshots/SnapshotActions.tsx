@@ -1,34 +1,34 @@
 // //snapshots/SnapshotActions.ts
 
-// import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-// import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-// import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
-// import { IHydrateResult } from 'mobx-persist';
-// import { useDispatch } from 'react-redux';
-// import { SnapshotData, SubscriberCollection } from '.';
-// import { SnapshotManager } from '../hooks/useSnapshotManager';
-// import determineFileCategory from '../libraries/categories/determineFileCategory';
-// import { BaseData, Data } from '../models/data/Data';
-// import { NotificationPosition, PriorityTypeEnum, StatusType } from '../models/data/StatusType';
-// import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-// import { Task } from '../models/tasks/Task';
-// import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-// import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
-// import { Subscription } from '../subscriptions/Subscription';
-// import { NotificationType, NotificationTypeEnum } from '../support/NotificationContext';
-// import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from '../trading/TradingUtils';
-// import { Subscriber } from '../users/Subscriber';
-// import { portfolioUpdates, triggerIncentives, unsubscribe } from '../utils/applicationUtils';
-// import { CreateSnapshotsPayload, FetchSnapshotPayload, Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
-// import { SnapshotConfig } from './snapshot';
-// import { ConfigureSnapshotStorePayload, K } from './SnapshotConfig';
-// import { SnapshotItem } from './SnapshotList';
-// import SnapshotStore from './SnapshotStore';
-// import { SnapshotStoreConfig } from './SnapshotStoreConfig';
-// import { SnapshotWithCriteria } from './SnapshotWithCriteria';
-// import { Callback } from './subscribeToSnapshotsImplementation';
-// import { SourceEnum } from '../phases/TaskPhaseEnum';
-// import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
+import { IHydrateResult } from 'mobx-persist';
+import { useDispatch } from 'react-redux';
+import { SnapshotData, SubscriberCollection } from '.';
+import { SnapshotManager } from '../hooks/useSnapshotManager';
+import determineFileCategory from '../libraries/categories/determineFileCategory';
+import { BaseData, Data } from '../models/data/Data';
+import { NotificationPosition, PriorityTypeEnum, StatusType } from '../models/data/StatusType';
+import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { Task } from '../models/tasks/Task';
+import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
+import { Subscription } from '../subscriptions/Subscription';
+import { NotificationType, NotificationTypeEnum } from '../support/NotificationContext';
+import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from '../trading/TradingUtils';
+import { Subscriber } from '../users/Subscriber';
+import { portfolioUpdates, triggerIncentives, unsubscribe } from '../utils/applicationUtils';
+import { CreateSnapshotsPayload, FetchSnapshotPayload, Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
+import { SnapshotConfig } from './snapshot';
+import { ConfigureSnapshotStorePayload, K } from './SnapshotConfig';
+import { SnapshotItem } from './SnapshotList';
+import SnapshotStore from './SnapshotStore';
+import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+import { SnapshotWithCriteria } from './SnapshotWithCriteria';
+import { Callback } from './subscribeToSnapshotsImplementation';
+import { SourceEnum } from '../phases/TaskPhaseEnum';
+import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 
 // const dispatch = useDispatch()
 
@@ -57,11 +57,11 @@
 
 
 
-// type SnapshotOperation = {
-//   // Define the properties for SnapshotOperation as needed
-//   operationType: SnapshotOperationType;
-//   // Add other properties as needed
-// };
+type SnapshotOperation = {
+  // Define the properties for SnapshotOperation as needed
+  operationType: SnapshotOperationType;
+  // Add other properties as needed
+};
 
 
 // export enum SnapshotOperationType {
@@ -118,16 +118,16 @@
 // }
 
 
-// // Create action creators with generics
-// export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActionsTypes<T, K> => ({
-//   addSnapshot: createAction<Snapshot<T, K>>('addSnapshot'),
-//   removeSnapshot: createAction<string>('removeSnapshot'),
-//   updateSnapshot: createAction<{ snapshotId: string; newData: any }>('updateSnapshot'),
-//   fetchSnapshotData: createAction<string>('fetchSnapshotData'),
-//   handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleSnapshotSuccess'),
-//   handleSnapshotFailure: createAction<string>('handleSnapshotFailure'),
+// Create action creators with generics
+export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActionsTypes<T, K> => ({
+  addSnapshot: createAction<Snapshot<T, K>>('addSnapshot'),
+  removeSnapshot: createAction<string>('removeSnapshot'),
+  updateSnapshot: createAction<{ snapshotId: string; newData: any }>('updateSnapshot'),
+  fetchSnapshotData: createAction<string>('fetchSnapshotData'),
+  handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleSnapshotSuccess'),
+  handleSnapshotFailure: createAction<string>('handleSnapshotFailure'),
   
-// });
+});
 
 
 // export const SnapshotStoreActions = <T extends Data, K extends Data>(): SnapshotStoreActionsTypes<T, K> => ({
@@ -1155,7 +1155,7 @@
 
 // dispatch(SnapshotActions().addTaskSnapshot(newTaskSnapshot));
 // dispatch(TaskWithSubtasksSnapshotActions().addTaskWithSubtasksSnapshot(newTaskWithSubtasksSnapshot));
-// export type { SnapshotOperation };
+export type { SnapshotOperation };
 
 
 

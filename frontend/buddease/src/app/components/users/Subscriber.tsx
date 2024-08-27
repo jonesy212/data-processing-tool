@@ -1217,7 +1217,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
   
 
 
-  async snapshots(): Promise<SnapshotConfig<BaseData, Data>[]> {
+  async snapshots(): Promise<SnapshotConfig<BaseData, K>[]> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
@@ -1236,7 +1236,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
         })
       );
   
-      return snapshotData as SnapshotConfig<BaseData, Data>[]; // Ensure the correct type is returned
+      return snapshotData as SnapshotConfig<BaseData, K>[]; // Ensure the correct type is returned
     } catch (error) {
       console.error("Error fetching snapshot IDs:", error);
       throw new Error("Failed to fetch snapshot IDs");
@@ -1272,7 +1272,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
   toSnapshotStore(
     initialState: Snapshot<T, K> | undefined,
     snapshotConfig: SnapshotStoreConfig<BaseData, Data>[],
-    delegate: SnapshotStoreDelegate<T>
+    delegate: SnapshotStoreDelegate<T, K>
   ): SnapshotStore<T, K>[] | undefined {
     let snapshotString: string | undefined;
     if (initialState !== undefined) {
@@ -1428,7 +1428,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
           type: string,
           event: Event,
           snapshotContainer?: T,
-          snapshotStoreConfig?: SnapshotStoreConfig<Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>, any> | null,
+          snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
         ): Promise<Snapshot<T, K> | null>  => {
           console.log("handleSnapshot");
           return Promise.resolve(null);

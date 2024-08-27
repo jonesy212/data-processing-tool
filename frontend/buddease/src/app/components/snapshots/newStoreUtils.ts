@@ -1,3 +1,5 @@
+import { SnapshotConfig } from '@/app/components/snapshots';
+import { SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import * as snapshotApi from '@/app/api/SnapshotApi'
 import SnapshotStore from "./SnapshotStore";
@@ -10,6 +12,10 @@ import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/Data
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
 
 
+
+const snapConfig: SnapshotConfig | undefined = /* your snapshot configuration logic here */;
+
+
 // newStoreUtils.ts
 export const createSnapshotStores = async <T extends Data, K extends Data>(
   snapshot: Snapshot<T, K>,
@@ -19,26 +25,89 @@ export const createSnapshotStores = async <T extends Data, K extends Data>(
   callback: (snapshotStore: SnapshotStore<T, K>[]) => void | null,
   snapshotStoreData?: SnapshotStore<T, K>[],
   category?: string | CategoryProperties,
-  snapshotDataConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]
+  snapshotStoreDataConfig?: SnapshotStoreConfig<T, K> | undefined,
 ) => {
-  const snapshotStoreConfigData = snapshotDataConfig && snapshotDataConfig.length > 0 ? snapshotDataConfig[0] : undefined;
+  const snapshotStoreConfigData = snapshotStoreDataConfig || undefined;
   const snapshotId = snapshot?.store?.snapshotId ?? undefined;
   const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
-  const config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K> | undefined = snapshotStoreConfigData;
-  const options = await useSnapshotManager(storeId)
-    ? new SnapshotManagerOptions().get()
+  const config: SnapshotStoreConfig<T, K> | SnapshotStoreConfig<any, any>[] | undefined = snapshotStoreConfigData;
+  // Use dynamic properties with SnapshotManagerOptions
+  const options = await useSnapshotManager<T, K>(storeId)
+    ? new SnapshotManagerOptions<T, K>({
+        baseURL: "custom-base-url",
+        enabled: true,
+        maxRetries: 5,
+        retryDelay: 2000,
+        maxAge: 500,
+        staleWhileRevalidate: 1000,
+        cacheKey: "custom-cache-key",
+        snapshotStoreConfig: snapshotStoreConfigData,
+        unsubscribeToSnapshots: () => { /* custom unsubscribe logic */ },
+        unsubscribeToSnapshot: () => { /* custom unsubscribe logic */ },
+        getCategory: category ? { name: category as string } : undefined,
+        getSnapshotConfig: () => {
+          // Return the snapConfig or undefined if not set
+          return snapConfig ? snapConfig : undefined;
+        },
+        // handleSnapshotOperation: (
+        //   snapshot: Snapshot<T, K>, 
+        //   data: Map<string, Snapshot<T, K>>, 
+        //   operation: SnapshotOperation,
+        //   operationType: SnapshotOperationType
+        // )
+        //   // : Promise<Snapshot<T, K>>
+        //   => 
+        //     {
+        //   // Custom operation handling logic
+          
+        //   // Make sure to return a valid Promise<Snapshot<T, K>>
+        //   return Promise.resolve(snapshot); // Example return, adjust to your logic
+        // },
+    
+        handleSnapshotStoreOperation: async (
+          snapshotId: string, 
+          snapshotStore: SnapshotStore<T, K>, 
+          snapshot: Snapshot<T, K>,
+          operation: SnapshotOperation,
+          operationType: SnapshotOperationType, 
+          callback: (snapshotStore: SnapshotStore<T, K>) => void
+        ): Promise<void> => { /* custom store operation handling */ },
+        displayToast: (message) => console.log("Toast message:", message),
+        addToSnapshotList: (snapshot) => { /* custom logic to add snapshot */ },
+        simulatedDataSource: () => ({ /* simulated data */ }),
+      }).get()
     : {
-      eventRecords: [],
-      category: '',
-      date: new Date(),
-      type: '',
-      // Add other required properties here
-    };
+      baseURL: "custom-base-url",
+        enabled: true,
+        maxRetries: 5,
+        retryDelay: 2000,
+        maxAge: 500,
+        staleWhileRevalidate: 1000,
+        cacheKey: "custom-cache-key",
+        eventRecords: {},
+        category: '',
+        date: new Date(),
+        type: '',
+        data: new Map<string, Snapshot<T, K>>(),
+        initialState: null,
+        snapshotId: '',
+        snapshotConfig: [],
+        subscribeToSnapshots: subscribeToSnapshots,
+        subscribeToSnapshot: subscribeToSnapshot,
+        delegate: [],
+        dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
+        getDelegate: [],
+        getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
+          throw new Error('Function not implemented.');
+        },
+        snapshotMethods: [],
+      };
+
   const operation: SnapshotOperation = {
-    operationType: SnapshotOperationType.FindSnapshot
+    operationType: SnapshotOperationType.FindSnapshot,
   };
-  const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation)
-    ;
+
+  const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
   callback([newStore]);
   // Simulate a delay before receiving the update
   setTimeout(() => {
@@ -55,7 +124,7 @@ export const createSnapshotStores = async <T extends Data, K extends Data>(
   })
 }
 
-const category = 
+const category = process.argv[3] as keyof CategoryProperties;
 const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
 const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
 const criteria = await snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot)

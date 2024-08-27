@@ -1,6 +1,7 @@
 // ThemeUtils.ts
 
 import { ComponentsConfig } from "../../libraries/ui/components/ComponentsConfig";
+import { DEFAULT_COLOR } from "../../libraries/ui/theme/ThemeConfig";
 
 /**
  * Utility function to get a color from the provided color options.

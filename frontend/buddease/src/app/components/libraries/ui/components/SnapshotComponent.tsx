@@ -5,18 +5,19 @@ import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { SnapshotStoreConfig, SnapshotWithCriteria } from "@/app/components/snapshots";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { T, K } from "../../snapshots/SnapshotConfig";
 
 // Define props interface
-type CreateSnapshotType = (additionalData: any) => Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData> | null | undefined;
+type CreateSnapshotType = (additionalData: any) => Data | null | undefined;
 
 interface SnapshotProps {
-  snapshotConfig: SnapshotStoreConfig<Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>, Data>;
+  snapshotConfig: SnapshotStoreConfig<Data, Data>;
   id: string | number | null;
-  snapshotData: Snapshot<SnapshotWithCriteria<BaseData, any>, Data>;
-  snapshotStoreData: SnapshotStore<BaseData, Data>;
+  snapshotData: Snapshot<T, Data>;
+  snapshotStoreData: SnapshotStore<Data, BaseData>;
   categoryProperties: CategoryProperties;
   category: string;
-  callback: (snapshot: Snapshot<SnapshotWithCriteria<BaseData, any>, any> | null) => void;
+  callback: (snapshot: Snapshot<T, any> | null) => void;
   createSnapshot: CreateSnapshotType | null | undefined;
 }
 
@@ -29,7 +30,7 @@ const SnapshotComponent: React.FC<SnapshotProps> = ({
   callback,
   createSnapshot,
 }) => {
-  const [snapshots, setSnapshots] = useState<Snapshot<BaseData>[]>([]);
+  const [snapshots, setSnapshots] = useState<Snapshot<Data, BaseData>[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { error, handleError, clearError } = useErrorHandling();
 

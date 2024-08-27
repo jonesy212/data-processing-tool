@@ -1,17 +1,18 @@
-import { observable, action } from 'mobx';
+import { UserProfile } from './../../snapshots/userSnapshotData';
+
+import { handleApiError } from '@/app/api/ApiLogs';
+import ErrorHandler from '@/app/shared/ErrorHandler';
+import { action, makeObservable, observable } from 'mobx';
 import { ErrorInfo } from 'react';
-import { Theme } from '../../libraries/ui/theme/Theme';
-import { FileLogger } from '../../logging/Logger';
-import { UserProfile } from '../../snapshots/userSnapshotData';
-import { YourResponseType } from '../../typings/types';
 import { UIActions } from '../../actions/UIActions';
 import safeParseData from '../../crypto/SafeParseData';
 import { ParsedData } from '../../crypto/parseData';
-import ErrorHandler from '@/app/shared/ErrorHandler';
-import { createMessage } from '../../utils/createMessage';
-import axiosInstance from '../../security/csrfToken';
-import { handleApiError } from '@/app/api/ApiLogs';
+import { Theme } from '../../libraries/ui/theme/Theme';
+import { FileLogger } from '../../logging/Logger';
 import { displayToast } from '../../models/display/ShowToast';
+import axiosInstance from '../../security/csrfToken';
+import { YourResponseType } from '../../typings/types';
+import { createMessage } from '../../utils/createMessage';
 
 class UIStore {
   @observable theme = {
@@ -36,6 +37,7 @@ class UIStore {
 
   
   constructor(displayToast: (message: string) => void) {
+    makeObservable(this);
     this.displayToast = displayToast;
   }
 

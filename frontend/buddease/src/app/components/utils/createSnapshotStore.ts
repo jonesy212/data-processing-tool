@@ -1,12 +1,14 @@
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 import { BaseData } from "../models/data/Data";
- import { Snapshot, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+ import { Snapshot, SnapshotsArray, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { Subscriber } from "../users/Subscriber";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import CalendarEvent from "../state/stores/CalendarEvent";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
 import { SnapshotStoreConfig, SnapshotWithCriteria } from "../snapshots";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 
 // createSnapshotStore.ts
 function createSnapshotStore<T extends BaseData, K extends BaseData>(
@@ -45,23 +47,91 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     setSnapshotData: (
       data: Map<string, Snapshot<T, K>>,
       subscribers: Subscriber<any, any>[],
-      snapshotData: Partial<SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, T>>) => {
+      snapshotData: Partial<SnapshotStoreConfig<T, K>>) => {
       snapshotStore.data = new Map(data);
     },
     setSnapshotCategory: (newCategory: string | CategoryProperties) => { snapshotStore.category = newCategory; },
     deleteSnapshot: () => { /* Implement deletion logic */ },
-    restoreSnapshot: () => { /* Implement restoration logic */ },
+    
+    restoreSnapshot: (
+      snapshot: Snapshot<T, K>,
+      snapshotData: Snapshot<T, any>,
+      category: Category | undefined,
+      callback: (snapshot: T) => void,
+      snapshots: SnapshotsArray<T>,
+      type: string,
+      event: Event,
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K>
+        ) => {
+          // Step 1: Handle `this.id` being potentially undefined
+          if (!snapshot.id) {
+            throw new Error('SnapshotStore ID is undefined');
+          }
+
+          // Step 2: Ensure `this.id` is a number if required by `updateData`
+          const idAsNumber = typeof snapshot.id === 'string' ? parseInt(snapshot.id, 10) : snapshot.id;
+
+          if (isNaN(idAsNumber)) {
+            throw new Error('SnapshotStore ID could not be converted to a number');
+          }
+
+          snapshot.updateData(idAsNumber, snapshotData);
+
+          // Step 3: If a category is provided, assign the snapshot to that category
+          if (category) {
+            snapshot.setCategory(category);
+          }
+
+          // Step 4: Perform an action based on the type (e.g., "restore", "revert")
+          switch (type) {
+            case 'restore':
+              // Add the snapshot to the snapshots array if not already present
+              if (!snapshots.includes(snapshotData)) {
+                snapshots.push(snapshotData);
+              }
+              break;
+            case 'revert':
+              // Remove the snapshot from the snapshots array if present
+              const index = snapshots.indexOf(snapshotData);
+              if (index !== -1) {
+                snapshots.splice(index, 1);
+              }
+              break;
+            default:
+              console.warn(`Unknown type: ${type}`);
+          }
+
+          // Step 5: If a snapshotContainer is provided, update its data with the snapshotData
+          if (snapshotContainer) {
+            Object.assign(snapshotContainer, snapshotData);
+          }
+
+          // Step 6: If a snapshotStoreConfig is provided, use it to configure the snapshot
+          if (snapshotStoreConfig) {
+            // Update the snapshot store configuration with the provided config
+            snapshot.applyStoreConfig(snapshotStoreConfig);
+          }
+
+          // Step 7: Invoke the callback function with the updated snapshotData
+          callback(snapshotData);
+
+          // Step 8: Trigger any necessary event actions
+          if (event && typeof event.trigger === 'function') {
+            event.trigger(type, snapshotData);
+          }
+        },
     createSnapshot: () => ({ id, data: new Map<string, Snapshot<T, K>>(Object.entries(snapshotStore.data)), category: snapshotStore.category }),
     updateSnapshot: async (
       snapshotId: string,
-      data: Map<string, Snapshot<T, K>>,
-      events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-      snapshotStore: SnapshotStore<T, K>,
-      dataItems: RealtimeDataItem[],
-      newData: Snapshot<T, K>,
-      payload: UpdateSnapshotPayload<T>,
-      store: SnapshotStore<any, K>
-    ) => { 
+    data: Map<string, Snapshot<T, K>>,
+    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    newData: Snapshot<T, K>,
+    payload: UpdateSnapshotPayload<T>,
+    store: SnapshotStore<any, K>
+  ): Promise<{ snapshot: Snapshot<T, K> }> => {
       // Implement update logic
       return { snapshotId, data, events, snapshotStore, dataItems, newData, payload, store };
      },
@@ -74,11 +144,11 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
 
   // Return the Snapshot instance
   return {
-    id: snapshotStore.id,
+    id,
     data: new Map(snapshotStore.data),
-    category: snapshotStore.category,
+    category,
     store: snapshotStore,
-    getSnapshotId: snapshotStore.getSnapshotId,
+    getSnapshotId: getSnapshotId,
     compareSnapshotState: snapshotStore.compareSnapshotState,
     snapshot: snapshotStore.snapshot,
     snapshotStore: snapshotStore,
@@ -89,6 +159,28 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     deleteSnapshot: snapshotStore.deleteSnapshot,
     restoreSnapshot: snapshotStore.restoreSnapshot,
     createSnapshot: snapshotStore.createSnapshot,
-    updateSnapshot: snapshotStore.updateSnapshot
+    updateSnapshot: snapshotStore.updateSnapshot,
+    initialConfig: snapshotStore.initialConfig, 
+    removeSubscriber: snapshotStore.removeSubscriber,
+    onInitialize: snapshotStore.onInitialize, 
+    onError: snapshotStore.onError,
+    setCategory: snapshotStore.setCategory,
+    applyStoreConfig: snapshotStore.applyStoreConfig,
+    generateId: snapshotStore.generateId,
+    snapshotData: snapshotStore.snapshotData,
+    getSnapshotItems: snapshotStore.getSnapshotItems,
+    defaultSubscribeToSnapshots: snapshotStore.defaultSubscribeToSnapshots,
+    notify: snapshotStore.notify,
+    notifySubscribers: snapshotStore.notifySubscribers,
+   
+    getAllSnapshots: snapshotStore.getAllSnapshots,
+    getSubscribers: snapshotStore.getSubscribers,
+    versionInfo: snapshotStore.versionInfo,
+    transformSubscriber: snapshotStore.transformSubscriber,
+    transformDelegate, initializedState, getAllKeys, getAllValues,
+    getAllItems, getSnapshotEntries, getAllSnapshotEntries, addDataStatus,
+    removeData, updateData, updateDataTitle, updateDataDescription, 
+    updateDataStatus, addDataSuccess, getDataVersions, updateDataVersions,
+    getBackendVersion, getFrontendVersion, fetchData, defaultSubscribeToSnapshot,
   };
 }

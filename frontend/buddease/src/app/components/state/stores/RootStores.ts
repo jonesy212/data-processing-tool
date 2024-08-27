@@ -1,5 +1,7 @@
-import { initialState } from '@/app/components/state/redux/slices/FilteredEventsSlice';
 // RootStores.ts
+import { initialState } from '@/app/components/state/redux/slices/FilteredEventsSlice';
+
+
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { Todo } from '../../todos/Todo';
@@ -23,9 +25,10 @@ import NotificationStore from './NotificationStore';
 import { DataStore, useDataStore } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import useDocumentStore, { DocumentStore } from './DocumentStore';
 import { RealTimeDataStore, RealTimeDataStoreClass } from '../../models/realtime/RealTimeDataStore';
-import { CollaborationStore } from './CollaborationStore';
+import { CollaborationStore, useCollaborationStore } from './CollaborationStore';
 import useVideoStore, { VideoStore } from './VideoStore';
 import useUIStore from '../../libraries/ui/useUIStore';
+import useUserProfile from '../../hooks/useUserProfile';
  
 export interface Dispatchable {
   dispatch(action: any): void;
@@ -37,6 +40,7 @@ export interface MobXRootState {
   toolbarManager: ToolbarStore;
   uiManager: UIStore;
   authManager: AuthStore;
+  iconStore: IconStore;
   authorizationManager: AuthorizationStore;
   projectManager: ProjectManagerStore;
   taskManager: TaskManagerStore;
@@ -44,11 +48,11 @@ export interface MobXRootState {
   userManager: UserStore;
   teamManager: TeamManagerStore;
   projectOwner: ProjectManagerStore;
-  dataManager: DataStore;
+  dataManager: DataStore<T, K>;
   dataAnalysisManager: DataAnal;
   calendarManager: CalendarManagerStore;
   todoManager: TodoManagerStore;
-  documentManager: DocumentManagerStore;
+  documentManager: DocumentStore;
   apiManager: ApiManagerStore;
   realtimeManager: RealtimeManagerStore;
   eventManager: EventManagerStore;
@@ -56,7 +60,7 @@ export interface MobXRootState {
   entityManager: EntityManagerStore;
   notificationManager: NotificationManagerStore;
   settingsManager: SettingsManagerStore;
-  videoManager: VideoManagerStore;
+  videoManager: VideoStore;
   randomWalkManager: RandomWalkManagerStore;
   pagingManager: PagingManagerStore;
   blogManager: BlogManagerStore;
@@ -69,6 +73,7 @@ export class RootStores {
   toolbarManager: ToolbarStore;
   uiManager: UIStore;
   authManager: AuthStore;
+  iconStore: IconStore;
   authorizationManager: AuthorizationStore;
   projectManager: ProjectManagerStore;
   taskManager: TaskManagerStore;
@@ -99,27 +104,28 @@ export class RootStores {
 
   constructor(props: any) {
     this.appManager = useAppStore(props);
-    this.toolbarManager = useToolbarStore(props);
-    this.uiManager = useUIStore(props);
-    this.authManager = useAuthStore(props);
-    this.authorizationManager = useAuthorizationStore(props);
-    this.projectManager = useProjectManagerStore(props);
-    this.taskManager = useTaskManagerStore(props);
+    this.toolbarManager = useToolbarStore();
+    this.uiManager = useUIStore();
+    this.authManager = useAuthStore();
+    this.iconStore = useIconStore(props);
+    this.authorizationManager = useAuthorizationStore();
+    this.projectManager = useProjectManagerStore();
+    this.taskManager = useTaskManagerStore();
     this.trackerManager = useTrackerStore(props);
-    this.userManager = userManagerStore(props);
-    this.teamManager = useTeamManagerStore(props);
-    this.projectOwner = useProjectManagerStore(props);
+    this.userManager = userManagerStore();
+    this.teamManager = new TeamManagerStore();
+    this.projectOwner = useProjectManagerStore();
     this.dataManager = useDataStore(props);
     this.dataAnalysisManager = useDataAnalysisManagerStore(props);
-    this.calendarManager = useCalendarManagerStore(props);
+    this.calendarManager = useCalendarManagerStore();
     this.todoManager = useTodoManagerStore(props);
-    this.documentManager = useDocumentStore(props);
-    this.apiManager = useApiManagerStore(props);
+    this.documentManager = useDocumentStore();
+    this.apiManager = useApiManagerStore();
     this.realtimeManager = useRealtimeManagerStore(props);
     this.eventManager = useEventManagerStore(props);
-    this.collaborationManager = useCollaborationManagerStore(props);
+    this.collaborationManager = useCollaborationStore(props);
     this.entityManager = useEntityManagerStore(props);
-    this.notificationManager = useNotificationStore(props);
+    this.notificationManager = useNotificationStore();
     this.settingsManager = useSettingsManagerStore(props);
     this.videoManager = useVideoStore(props);
     this.randomWalkManager = useRandomWalkManagerStore(props);
@@ -159,13 +165,13 @@ export class RootStores {
   }
 
   @action
-  public setDocumentReleaseStatus(status: string) {
-    this.documentManager.setDocumentReleaseStatus(status);
+  public setDocumentReleaseStatus(id: string, status: string, isReleased: boolean) {
+    this.documentManager.setDocumentReleaseStatus(id, status, isReleased);
   }
 
   @action
-  public getSnapshotDataKey() {
-    return this.documentManager.getSnapshotDataKey();
+  public getSnapshotDataKey(documentId: string, eventId: string, userId: string) {
+    return this.documentManager.getSnapshotDataKey(documentId, eventId, userId)
   }
 
   @action
@@ -174,8 +180,8 @@ export class RootStores {
   }
 
   @action
-  public updateDocumentReleaseStatus(status: string) {
-    this.documentManager.updateDocumentReleaseStatus(status);
+  public updateDocumentReleaseStatus(id: string, status: string, isReleased: boolean) {
+    this.documentManager.updateDocumentReleaseStatus(id, status, isReleased);
   }
 
   public getState(): MobXRootState {

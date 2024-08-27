@@ -43,7 +43,8 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
   const [snapshots, setSnapshots] = useState<Snapshot<T, K>[]>([]);
 
   // Function to create a new snapshot
-  const createSnapshot = (id: string, snapshotData: SnapshotStoreConfig<any, T>, category: string) => {
+  const createSnapshot = (id: string,
+    snapshotData: SnapshotStoreConfig<any, T>, category: Category) => {
     try {
       const newSnapshot: Snapshot<T, K> = {
         id,
@@ -52,8 +53,8 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         category,
         topic: snapshotData.topic || '',
         meta: snapshotData.meta || ({} as Data),
-        snapshotStoreConfig: {} as SnapshotStoreConfig<SnapshotUnion<T>, any>,
-        getSnapshotItems: snapshotData.getSnapshotItems(),
+        snapshotStoreConfig: {} as SnapshotStoreConfig<T, any>,
+        getSnapshotItems: snapshotData.getSnapshotItems(category, snapshots),
         defaultSubscribeToSnapshots: function (
           snapshotId: string,
           callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
@@ -65,7 +66,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         transformSubscriber: function (sub: Subscriber<T, K>): Subscriber<T, K> {
           throw new Error('Function not implemented.');
         },
-        transformDelegate: function (): SnapshotStoreConfig<SnapshotUnion<T>, K>[] {
+        transformDelegate: function (): SnapshotStoreConfig<T, K>[] {
           throw new Error('Function not implemented.');
         },
         initializedState: undefined,
@@ -159,9 +160,9 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         },
         getDelegate: function (context: { 
           useSimulatedDataSource: boolean; 
-          simulatedDataSource: SnapshotStoreConfig<SnapshotUnion<T>, K>[];
+          simulatedDataSource: SnapshotStoreConfig<T, K>[];
         }
-        ): SnapshotStoreConfig<SnapshotUnion<T>, K>[] {
+        ): SnapshotStoreConfig<T, K>[] {
           throw new Error('Function not implemented.');
         },
         determineCategory: function (snapshot: Snapshot<T, K> | null | undefined): string {
@@ -173,7 +174,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         removeSnapshot: function (snapshotToRemove: Snapshot<T, K>): void {
           throw new Error('Function not implemented.');
         },
-        addSnapshotItem: function (item: Snapshot<any, any> | SnapshotStoreConfig<SnapshotUnion<T>, K>): void {
+        addSnapshotItem: function (item: Snapshot<any, any> | SnapshotStoreConfig<T, K>): void {
           throw new Error('Function not implemented.');
         },
         addNestedStore: function (store: SnapshotStore<T, K>): void {
@@ -221,7 +222,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
           snapshotId: string | null,
           snapshotData: SnapshotStore<T, K>,
           category: Category,
-          snapshotConfig: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+          snapshotConfig: SnapshotStoreConfig<T, K>,
           callback: (snapshotStore: SnapshotStore<any, any>) => void
         ): void {
           throw new Error('Function not implemented.');
@@ -235,7 +236,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         takeSnapshotsSuccess: function (snapshots: T[]): void {
           throw new Error('Function not implemented.');
         },
-        flatMap: function <U extends Iterable<any>>(callback: (value: SnapshotStoreConfig<SnapshotUnion<T>, K>, index: number, array: SnapshotStoreConfig<SnapshotUnion<T>, K>[]) => U): U extends (infer I)[] ? I[] : U[] {
+        flatMap: function <U extends Iterable<any>>(callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => U): U extends (infer I)[] ? I[] : U[] {
           throw new Error('Function not implemented.');
         },
         getState: function () {
@@ -256,7 +257,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         setSnapshot: function (snapshot: Snapshot<T, K>): void {
           throw new Error('Function not implemented.');
         },
-        transformSnapshotConfig: function <T extends BaseData>(config: SnapshotStoreConfig<SnapshotUnion<T>, T>): SnapshotStoreConfig<SnapshotUnion<T>, T> {
+        transformSnapshotConfig: function <T extends BaseData>(config: SnapshotStoreConfig<T, T>): SnapshotStoreConfig<T, T> {
           throw new Error('Function not implemented.');
         },
         setSnapshots: function (snapshots: Snapshots<T>): void {
@@ -315,7 +316,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
             subscribers: Subscriber<T, K>[],
             snapshots: Snapshots<T>
           ) => Promise<Snapshots<T>>
-        ): Promise<SnapshotUnion<T>[]> => {
+        ): Promise<Snapshot<T, K>[]> => {
           try {
             // If a callback is provided, use it to get the snapshots
             if (dataCallback) {
@@ -343,7 +344,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
             }
         
             // Retrieve snapshots using the simplified getSnapshotByKey
-            const items: (SnapshotUnion<T> | undefined)[] = await Promise.all(
+            const items: (Snapshot<T, K> | undefined)[] = await Promise.all(
               keys.map(async (key) => {
                 const item = await dataStoreMethods.getSnapshotByKey(id, key); // Pass storeId and key
                 return item;
@@ -352,7 +353,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         
             // Filter out undefined values and return the resulting array of snapshots
             return items.filter(
-              (item): item is SnapshotUnion<T> => item !== undefined
+              (item): item is Snapshot<T, K> => item !== undefined
             );
         
           } catch (error: any) {
@@ -448,7 +449,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         getInitialState: function (): Snapshot<T, K> | null {
           throw new Error('Function not implemented.');
         },
-        getConfigOption: function (): SnapshotStoreConfig<SnapshotUnion<T>, K> | null {
+        getConfigOption: function (): SnapshotStoreConfig<T, K> | null {
           throw new Error('Function not implemented.');
         },
         getTimestamp: function (): Date | undefined {
@@ -565,7 +566,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
           type: string,
           event: Event,
           snapshotContainer?: T,
-          snapshotStoreConfig?: SnapshotStoreConfig<Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>, any> | null,
+          snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
           ): Promise<Snapshot<T, K> | null> {
           throw new Error('Function not implemented.');
         },

@@ -72,7 +72,7 @@ interface CombinedEvents<T extends Data, K extends Data> {
 
 interface SnapshotManager<T extends BaseData, K extends BaseData> {
   initSnapshot: (
-    snapshotConfig: SnapshotStoreConfig<SnapshotUnion<T>, K>[],
+    snapshotConfig: SnapshotStoreConfig<T, K>[],
     snapshotData: SnapshotStore<T, K>
   ) => Promise<void>;
   storeIds: number[],
@@ -176,9 +176,9 @@ const convertMapToCustomSnapshotData = <T extends BaseData, K extends BaseData>(
 };
 
 const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
-  snapshotStore: SnapshotStore<SnapshotWithCriteria<BaseData, any>, K>,
+  snapshotStore: SnapshotStore<T, K>,
   snapshotContent?: Snapshot<T, K>
-): SnapshotStoreConfig<SnapshotUnion<T>, K> => {
+): SnapshotStoreConfig<T, K> => {
   const content = snapshotContent ? convertSnapshotToContent(snapshotContent) : undefined;
 
   return {
@@ -202,7 +202,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       type: string,
       event: Event,
       snapshotContainer?: T,
-      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
     ): Promise<Snapshot<T, K> | null> => {
       try {
         if (snapshot) {
@@ -256,13 +256,13 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
     snapshot: async (
       id: string,
       snapshotId: string | null,
-      snapshotData: Snapshot<SnapshotUnion<T, any>> | null,
+      snapshotData: Snapshot<T, K> | null,
       category: Category | undefined,
       categoryProperties: CategoryProperties,
-      callback: (snapshot: Snapshot<SnapshotWithCriteria<BaseData, any>, K> | null) => void,
-      snapshotContainer?: SnapshotUnion<T> | null | undefined,
-      snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotUnion<T>, K>,
-    ): Promise<{ snapshot: Snapshot<SnapshotWithCriteria<BaseData, any>, K> | null }> => {
+      callback: (snapshot: Snapshot<T, K> | null) => void,
+      snapshotContainer?: T | null | undefined,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+    ): Promise<{ snapshot: Snapshot<T, K> | null }> => {
       if(snapshotData !== null){
         
         const snapshot: Snapshot<T, K> | null = snapshotStoreConfigData?.createSnapshot?.(
@@ -279,8 +279,8 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
         const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
         const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
         
-        const defaultConfig: SnapshotStoreConfig<SnapshotUnion<T>, K> = {} as SnapshotStoreConfig<SnapshotUnion<T>, K>;
-        const config: SnapshotStoreConfig<SnapshotUnion<T>, K> = snapshotStoreConfig ? snapshotStoreConfig[0] || defaultConfig : defaultConfig;
+        const defaultConfig: SnapshotStoreConfig<T, K> = {} as SnapshotStoreConfig<T, K>;
+        const config: SnapshotStoreConfig<T, K> = snapshotStoreConfig ? snapshotStoreConfig[0] || defaultConfig : defaultConfig;
         const operation: SnapshotOperation = {
           operationType: SnapshotOperationType.FindSnapshot
         };
@@ -312,7 +312,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
 
 export const useSnapshotManager = async <T extends Data, K extends Data>(initialStoreId: number) => {
   // Initialize state for snapshotManager and snapshotConfig
-  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfig<SnapshotUnion<T>, K> | null>(null);
+  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfig<T, K> | null>(null);
   const [snapshotStore, setSnapshotStore] = useState<SnapshotStore<T, K> | null>(null);
 
   useEffect(() => {
@@ -386,7 +386,7 @@ export const useSnapshotManager = async <T extends Data, K extends Data>(initial
               snapshotData: Snapshot<T, K>,
               category: string | CategoryProperties | undefined,
               callback: (snapshotStore: Snapshot<T, K>) => void,
-              snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotUnion<T>, K>,
+              snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
               snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
             ) => Promise<Snapshot<T, K>>,
           ) {

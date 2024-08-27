@@ -148,7 +148,7 @@ const apiCall = async <T extends Data>(
     });
 
     if (response.status === 200) {
-      return response.data;
+      return response.data as T;  // Ensure the response is of type T
     } else {
       handleOtherStatusCodes(getAppConfig(), response.status);
       throw new Error(`Unexpected status code: ${response.status}`);
@@ -160,16 +160,23 @@ const apiCall = async <T extends Data>(
 };
 
 
-const getSnapshot = async <T extends Data, K extends Data>(
+const getSnapshot = <T extends Data, K extends Data>(
   snapshotId: string | number,
   additionalHeaders?: Record<string, string>
-): Promise<SnapshotUnion<T> | undefined> => {
-  return await apiCall<SnapshotUnion<T>>(`${API_BASE_URL}/snapshot/${snapshotId}`, 'GET', undefined, additionalHeaders);
+): Promise<Snapshot<T, K> | undefined> => {
+  return apiCall<Snapshot<T, K>>(
+    `${API_BASE_URL}/snapshot/${snapshotId}`,
+    'GET',
+    undefined,
+    additionalHeaders
+  )
+    .then((response) => response as Snapshot<T, K>) // Assert the response type
+    .catch((error) => {
+      console.error('Failed to fetch snapshot:', error);
+      return undefined; // Handle errors gracefully by returning undefined
+    });
 };
 
-
-
-// Get snapshot data
 
 // Get snapshot data with proper type handling
 function getSnapshotData<T extends Data, K extends Data>(
@@ -184,18 +191,13 @@ function getSnapshotData<T extends Data, K extends Data>(
   )
     .then((response) => {
       if (response) {
-        // Ensure response.data is a string before passing it to determineFileCategory
         let categoryName: string | undefined;
 
         if (typeof response.data === 'string') {
           categoryName = response.data;
         } else if (response.data instanceof Map) {
-          // Handle the case where data is a Map
-          // For example, you might choose the first key in the Map as the category name
           categoryName = Array.from(response.data.keys())[0]; 
         } else if (response.data && typeof response.data === 'object') {
-          // Handle the case where data is an object (type T)
-          // Assuming T has a category property, you can use that
           categoryName = (response.data as any).category; 
         }
 
@@ -211,22 +213,17 @@ function getSnapshotData<T extends Data, K extends Data>(
           // Process the snapshot data by category (if relevant)
           const processedSnapshot = processSnapshotsByCategory(response, category);
 
-          // Ensure that processedSnapshot is of the correct type
-          if (processedSnapshot) {
-            return processedSnapshot as Snapshot<T, K>;
-          }
+          return processedSnapshot; // Ensure the type matches Snapshot<T, K>
         }
       }
 
-      // Handle the case where the response is undefined or categoryName couldn't be determined
       return undefined;
     })
     .catch((error) => {
       console.error('Error fetching snapshot data:', error);
-      return undefined; // Handle errors appropriately
+      return undefined;
     });
 }
-
 // // Get snapshot data
 // async function getSnapshotData<T extends Data, K extends Data>(
 //   snapshotId: string | number,
@@ -943,7 +940,7 @@ const removeSnapshot = async (snapshotId: number | null): Promise<void> => {
 };
 
 // Get snapshot ID by some criteria
-const getSnapshotId = <T, K>(criteria: any): Promise<string | undefined> => {
+const getSnapshotId = <T, K>(criteria: any): Promise<number | undefined> => {
   return new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -1011,11 +1008,11 @@ const snapshotContainer =  <T extends Data, K extends Data>(
 };
 
 function extractCriteria<T extends Data>(
-  snapshot: Snapshot<T, any>,
+  snapshot: Snapshot<T, any> | undefined,
   properties: Array<keyof FilterState>
 ): Partial<FilterState> {
   return properties.reduce((criteria, prop) => {
-    if (prop in snapshot) {
+    if (snapshot && prop in snapshot) {
       (criteria as any)[prop] = (snapshot as any)[prop];
     }
     return criteria;
@@ -1025,16 +1022,16 @@ function extractCriteria<T extends Data>(
 
 const getSnapshotCriteria = async <T extends Data, K extends Data>(
   snapshotContainer: SnapshotContainer<T, K>,
-  snapshotObj: Snapshot<T, K>,
-  // snapshot: (
-  //   id: string | number | undefined,
-  //   snapshotId: string | null,
-  //   snapshotData: Snapshot<T, K>,
-  //   category: Category,
-  //   callback: (snapshot: Snapshot<T, K>) => void,
-  //   snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
-  //   snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
-  // ) => Promise<Snapshot<T, K>>,
+  snapshot?: (
+    id: string | number | undefined,
+    snapshotId: string | null,
+    snapshotData: Snapshot<T, K>,
+    category: Category,
+    callback: (snapshot: Snapshot<T, K>) => void,
+    snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
+    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+  ) => Promise<Snapshot<T, K>>,
+  snapshotObj?: Snapshot<T, K> | undefined,
 ): Promise<CriteriaType> => {
   try {
     // Define the properties you want to extract
@@ -1121,41 +1118,50 @@ const getSnapshotStoreId = async (
 
 
 
-const getSnapshotConfig = async <T extends Data, K extends Data>(
+const getSnapshotConfig = <T extends Data, K extends Data>(
   snapshotId: number | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType
 ): Promise<SnapshotConfig<T, K>> => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    const userId = localStorage.getItem("userId");
-    const currentAppVersion = configData.currentAppVersion;
-    const authenticationHeaders: AuthenticationHeaders =
-      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
-    const headersArray = [
-      authenticationHeaders,
-      createCacheHeaders(),
-      createContentHeaders(),
-      generateCustomHeaders({}),
-      createRequestHeaders(accessToken || ""),
-    ];
-    const headers = Object.assign({}, ...headersArray);
-    const response = await axiosInstance.post<SnapshotConfig<T, K>>(
-      `${API_BASE_URL}/${snapshotId}/config`,
-      {
-        snapshotContainer,
-        criteria,
-      },
-      {
-        headers: headers as Record<string, string>,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    const errorMessage = "Failed to get snapshot config";
-    handleApiError(error as AxiosError<unknown>, errorMessage);
-    throw error; // rethrow the error to ensure the promise rejects
-  }
+  return new Promise<SnapshotConfig<T, K>>((resolve, reject) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const userId = localStorage.getItem("userId");
+      const currentAppVersion = configData.currentAppVersion;
+      const authenticationHeaders: AuthenticationHeaders =
+        createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+      const headersArray = [
+        authenticationHeaders,
+        createCacheHeaders(),
+        createContentHeaders(),
+        generateCustomHeaders({}),
+        createRequestHeaders(accessToken || ""),
+      ];
+      const headers = Object.assign({}, ...headersArray);
+
+      axiosInstance
+        .post<SnapshotConfig<T, K>>(
+          `${API_BASE_URL}/${snapshotId}/config`,
+          {
+            snapshotContainer,
+            criteria,
+          },
+          {
+            headers: headers as Record<string, string>,
+          }
+        )
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((error) => {
+          const errorMessage = "Failed to get snapshot config";
+          handleApiError(error as AxiosError<unknown>, errorMessage);
+          reject(error);
+        });
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
 
 
@@ -1206,7 +1212,7 @@ const getSnapshotStoreConfig = <T extends Data, K extends Data>(
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
   storeId: number
-): Promise<SnapshotStoreConfig<SnapshotUnion<T>, K>> => {
+): Promise<SnapshotStoreConfig<T, K>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -1222,7 +1228,7 @@ const getSnapshotStoreConfig = <T extends Data, K extends Data>(
         createRequestHeaders(accessToken || ""),
       ];
       const headers = Object.assign({}, ...headersArray);
-      const response = await axiosInstance.post<SnapshotStoreConfig<SnapshotUnion<T>, K>>(
+      const response = await axiosInstance.post<SnapshotStoreConfig<T, K>>(
         `${API_BASE_URL}/${snapshotId}/config/${storeId}`,
         {
           snapshotContainer,

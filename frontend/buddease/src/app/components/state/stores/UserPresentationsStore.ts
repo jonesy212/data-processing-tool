@@ -102,6 +102,7 @@ const transformExtendedCalendarEventToOptimization = (
 ): CalendarEventTimingOptimization => {
   return {
     eventId: extendedEvent.eventId,
+    assignedTo: extendedEvent.assignedTo,
     suggestedStartTime: extendedEvent.suggestedStartTime,
     suggestedEndTime: extendedEvent.suggestedEndTime,
     suggestedDuration: extendedEvent.suggestedDuration,

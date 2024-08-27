@@ -45,6 +45,11 @@ class NotificationStore {
   }
 
   @action
+  getState = () => {
+    return this.notifications;
+  };
+
+  @action
   addNotification = (notification: NotificationData) => {
     this.notifications.push(notification);
   };

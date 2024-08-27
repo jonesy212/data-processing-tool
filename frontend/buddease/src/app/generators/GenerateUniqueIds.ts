@@ -45,6 +45,12 @@ class UniqueIDGenerator {
     );
   }
 
+   // New static method for generating snapshot data key
+   static generateSnapshotDataKey(documentId: string, userId: string): string {
+    // Generate a unique key for snapshot data using documentId and userId
+    return `documents.${userId}.${documentId}`;
+  }
+
   static generateNotificationID(
     notification: NotificationData,
     date: Date,

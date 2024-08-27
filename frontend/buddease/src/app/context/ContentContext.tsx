@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ContentState } from 'draft-js';
 import { StructuredMetadata } from '../configs/StructuredMetadata';
@@ -9,11 +10,12 @@ interface ContentContextType {
   fetchContentData: () => void;
   setContentState: (contentState: ContentState) => void;
   metadata: StructuredMetadata | null;
+  url: string;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 const CONTENT_API_URL = endpoints.content
-export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ContentProvider: React.FC<{ children: React.ReactNode, url: string }> = ({ children, url}) => {
   const [contentState, setContentState] = useState<ContentState | null>(null);
   const [metadata, setMetadata] = useState<StructuredMetadata | null>(null);
 

@@ -23,6 +23,7 @@ import {
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { useSecureUserId } from "../../utils/useSecureUserId";
+import { getTasksByUserId } from "@/app/api/TasksApi";
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
   | "assignedUsers"
@@ -185,7 +186,7 @@ const userManagerStore = (): UserStore => {
         // Check and handle as User type
         if (isUser(result)) {
           const user = result as User;
-          const tasks: Task[] = await getTasksByUserId(userId);
+          const tasks: Task[] = await getTasksByUserId(Number(userId));
 
           // Update state or perform other operations specific to User
           setUsers((prevUsers) => ({

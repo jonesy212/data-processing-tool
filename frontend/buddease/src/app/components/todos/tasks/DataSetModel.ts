@@ -4,6 +4,7 @@ import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Team } from "../../models/teams/Team";
 import { Tag } from "../../models/tracker/Tag";
+import { TagsRecord } from "../../snapshots";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
 import { DocumentBase } from "../../state/stores/DocumentStore";
@@ -31,7 +32,7 @@ interface DatasetModel extends DocumentBase {
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath;
-  tags?: string[] | Tag[];
+  tags?: TagsRecord
   createdBy: string;
   updatedBy: string;
   documents: WritableDraft<DocumentObject>[];

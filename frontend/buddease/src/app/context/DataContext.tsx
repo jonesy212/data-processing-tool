@@ -13,7 +13,7 @@ import { SnapshotStoreConfig, SnapshotUnion } from "../components/snapshots";
 interface DataContextProps<T extends BaseData, K extends BaseData> {
   dataStore: DataStore<T, K> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
-  simulatedDataSource: SnapshotStoreConfig<SnapshotUnion<T>, K>[]
+  simulatedDataSource: SnapshotStoreConfig<T, K>[]
 }
 
 const DataContext = createContext<DataContextProps<any, any> | undefined>(undefined);

@@ -4,7 +4,7 @@ import  {SnapshotStoreConfig}  from "../../snapshots/SnapshotStoreConfig";
 
 //determineSnapshotStoreCategory.ts
 function determineSnapshotStoreCategory<T extends Data, K extends Data>(
-  storeConfigs: SnapshotStoreConfig<SnapshotUnion<T>, K>[]
+  storeConfigs: SnapshotStoreConfig<T, K>[]
 ): string {
   // Example category mappings based on storeConfig properties
   const categoryMappings: { [key: string]: (config: SnapshotStoreConfig<T, K>) => boolean } = {

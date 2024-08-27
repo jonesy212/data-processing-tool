@@ -7,7 +7,7 @@ import createRequestHeaders from "./../../api/headers/requestHeaders";
 import configData from "./../../configs/configData";
 import { AxiosError } from "axios";
 import axiosInstance from "../security/csrfToken";
-import { Snapshot, SnapshotsArray, SnapshotsObject } from "./LocalStorageSnapshotStore";
+import { Snapshot, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Data, BaseData } from "../models/data/Data";
@@ -18,22 +18,24 @@ import { Category } from "../libraries/categories/generateCategoryProperties";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotData } from "./SnapshotData";
+import { SnapshotData, SnapshotRelationships } from "./SnapshotData";
 import SnapshotStoreOptions from "../hooks/SnapshotStoreOptions";
 import { SnapshotMethods } from "./SnapshotMethods";
+import SnapshotComponent from "../libraries/ui/components/SnapshotComponent";
 
 
 const API_BASE_URL = endpoints.snapshots
 // SnapshotContainer.ts
 interface SnapshotContainer<T extends Data, K extends Data> extends SnapshotData<T, K>,
-SnapshotMethods<T, K>
+SnapshotMethods<T, K>, SnapshotRelationships<T, K>
  {
   id?: string | number | undefined;
   // category: Category
   timestamp: string | number | Date | undefined;
   snapshot: (
     id: string | number | undefined,
-    snapshotData: T,
+    snapshotId: number,
+    snapshotData: Map<string, Snapshot<T, K>> | undefined,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K>
@@ -42,31 +44,57 @@ SnapshotMethods<T, K>
   }>  | Snapshot<T, K>; // Primary or detailed snapshot
   snapshotStore: SnapshotStore<T, K> | null;
   snapshotData: (
-    id: string,
-    snapshotData: T, 
-    category: Category, 
-    categoryProperties: CategoryProperties | undefined, 
+    id: string | number | undefined,
+    snapshotId: number,
+    snapshotData: T,
+    category: Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K>
   ) => Promise<SnapshotStore<T, K>>;
   data: T | Map<string, Snapshot<T, K>> | null | undefined;
   snapshotsArray?: SnapshotsArray<T>;
   snapshotsObject?: SnapshotsObject<T>
+  
+  // New property added for currentCategory
+  currentCategory: Category | undefined;
+  
+  // Updated method to set the current category
+  setSnapshotCategory: (newCategory: string | CategoryPropertie) => void;
+
+  // Method to get the current category
+  getSnapshotCategory: () => Category | undefined;
 
   // Add other fields as necessary
 }
 
 export const snapshotContainer = <T extends BaseData, K extends BaseData>(
-  snapshotId: string
+  snapshotId: string,
+  storeId: number 
 ): Promise<SnapshotContainer<T, K>> => {
   return new Promise(async (resolve, reject) => {
     try {
       // Step 1: Initialize the snapshotContainer object
       const snapshotContainer: SnapshotContainer<T, K> = {
         timestamp: undefined,
+        currentCategory: undefined, // Assuming this should be initialized
+        snapshotData: new Map<string, Snapshot<T, K>>(),
+  
+        setSnapshotCategory: (category: Category) => {
+          snapshotContainer.currentCategory = category;
+        },
+
+        getSnapshotCategory: (): Category | undefined => {
+          return snapshotContainer.currentCategory;
+        },
+
+        getSnapshotData: (): Map<string, Snapshot<T, K>> | null | undefined => {
+          return snapshotContainer.snapshotData;
+        },
+
         snapshot: async (
           id: string | number | undefined,
           snapshotId: number,
-          snapshotData: T,
+          snapshotData: Map<string, Snapshot<T, K>> | undefined,
           category: Category,
           categoryProperties: CategoryProperties | undefined,
           dataStoreMethods: DataStore<T, K>
@@ -76,28 +104,42 @@ export const snapshotContainer = <T extends BaseData, K extends BaseData>(
 
           const options: SnapshotStoreOptions<T, K> = {
             id: id,
-            data: snapshotData as T,
+            data: snapshotData,
             metadata: {},
             criteria: {}
           };
 
-          return { snapshot: new SnapshotStore<T, K>(id, options, category, {} as SnapshotStoreConfig, 'create') };
+          const snapshotStoreConfig: SnapshotStoreConfig<T, K> = {
+            snapshots: [], // Assuming you need to initialize it like this
+            // Add other necessary properties here
+          };
+
+          return {
+            snapshot: SnapshotComponent(
+              Number(storeId), // Use storeId passed to the function
+              options,
+              category,
+              snapshotStoreConfig, // Pass your constructed config here
+              'create'
+            )
+          }
         },
         snapshotStore: null,
         snapshotData: async (
           id: string,
-          snapshotData: T,
+          storeId: number,
+          snapshotData: Map<string, Snapshot<T, K>> | undefined,
           category: Category,
           categoryProperties: CategoryProperties | undefined,
           dataStoreMethods: DataStore<T, K>
         ) => {
           const options: SnapshotStoreOptions<T, K> = {
-            id: id,
-            data: snapshotData,
+            storeId: storeId,
+            data: snapshotData ? snapshotData : undefined,
             metadata: {},
             criteria: {}
           };
-          return new SnapshotStore<T, K>(id, options, category, {} as SnapshotStoreConfig, 'create');
+          return new SnapshotStore<T, K>(storeId, options, category, snapshotStoreConfig, 'create');
         },
         data: null,
         snapshotsArray: undefined,

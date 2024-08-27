@@ -1,6 +1,6 @@
 // Client.ts
 import MemberData from "../models/teams/TeamMembers";
-import Project from "../projects/Project";
+import  { Project } from "../projects/Project";
 
 interface Client extends MemberData {
     name: string;

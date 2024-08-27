@@ -84,6 +84,13 @@ interface AssignEventStore {
     oldUserId: string,
     newUserId: string
   ) => void;
+
+
+  assignUserSuccess: (message: string) => void,
+  assignUserFailure: (error: string) => void,
+
+  convertResponsesToTodos: (responses: ReassignEventResponse[]) =>string
+getResponsesByEventId: (eventId: string) => Promise<ReassignEventResponse[]>
 }
 
 const useAssignEventStore = (): AssignEventStore => {
@@ -199,8 +206,6 @@ const getResponsesByEventId = async (eventId: string): Promise<ReassignEventResp
     throw error;
   }
 };
-
-  
   
   const convertResponsesToTodos = (responses: ReassignEventResponse[]): string[] => {
     const todoIds = responses.map(response => response.todoId);

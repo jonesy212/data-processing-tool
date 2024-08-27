@@ -135,11 +135,32 @@ export const fetchAnalysisResults = (): Promise<any> => {
         sentimentAnalysis: analysisResults.sentimentAnalysis,
         events: analysisResults.events,
         meta: analysisResults.meta,
-        initialConfig, removeSubscriber, onInitialize, onError,
-        snapshot, setCategory, applyStoreConfig, snapshotData, 
-        getSnapshotItems, defaultSubscribeToSnapshots, versionInfo, transformSubscriber,
-        transformDelegate, initializedState, getAllKeys, getAllItems, 
-        addDataStatus, removeData, updateData, updateDataTitle
+        initialConfig: analysisResults.initialConfig,
+        removeSubscriber: analysisResults.removeSubscriber,
+        onInitialize: analysisResults.onInitialize,
+        onError: analysisResults.onError,
+       
+        snapshot: analysisResults.snapshot,
+        setCategory: analysisResults.setCategory,
+        applyStoreConfig: analysisResults.applyStoreConfig,
+        snapshotData: analysisResults.snapshotData,
+        
+        getSnapshotItems: analysisResults.getSnapshotItems,
+        defaultSubscribeToSnapshots: analysisResults.defaultSubscribeToSnapshots,
+        versionInfo: analysisResults.versionInfo,
+        transformSubscriber: analysisResults.transformSubscriber,
+       
+        transformDelegate: analysisResults.transformDelegate,
+        initializedState: analysisResults.initializedState,
+        getAllKeys: analysisResults.getAllKeys,
+        getAllItems: analysisResults.getAllItems,
+        
+        addDataStatus: analysisResults.addDataStatus,
+        removeData: analysisResults.removeData,
+        updateData: analysisResults.updateData,
+        updateDataTitle: analysisResults.updateDataTitle,
+        isCore, taskIdToAssign, generateId, notify,
+        
         
       } as Snapshot<BaseData>;
     })

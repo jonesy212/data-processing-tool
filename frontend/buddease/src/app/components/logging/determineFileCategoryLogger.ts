@@ -20,4 +20,4 @@ function determineFileCategoryLogger(fileName: string, extension: string): FileC
   
     return fileCategory;
   }
-  
+  export {determineFileCategoryLogger}
