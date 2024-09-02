@@ -4,6 +4,10 @@ import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { ContentItem } from "../../models/content/ContentItem";
 import { Data } from "../../models/data/Data";
+
+
+
+
 export interface ContentManagementStore {
   contentItems: ContentItem[];
   addContentItem: (contentItem: ContentItem) => void;
@@ -16,7 +20,8 @@ export interface ContentManagementStore {
 }
 
 const useContentManagementStore = (): ContentManagementStore => {
-  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+  const [contentItems, setContentItems] = useState<(ContentItem | SnapshotContent<any, any>)[]>([]);
+ 
   const [selectedContentItemId, setSelectedContentItemId] = useState<
   DetailsItemCommon<Data> | null
   >(null);

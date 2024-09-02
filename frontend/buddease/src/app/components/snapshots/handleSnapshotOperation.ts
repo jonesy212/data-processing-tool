@@ -71,6 +71,13 @@ const handleSnapshotOperation = <T extends Data, K extends Data>(
             // Modify `result` based on search results
             break;
   
+          case SnapshotOperationType.FilterSnapshot:
+          // Logic for filtering snapshots
+            console.log('Filtering snapshot');
+          case SnapshotOperationType.MapSnapshot:
+          // Logic for mapping over snapshots
+            console.log('Mapping snapshot');
+            
           default:
             throw new Error('Unknown operation type');
         }

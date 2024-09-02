@@ -7,6 +7,11 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { Subscriber } from "../users/Subscriber";
 import { Data } from "../models/data/Data";
+import { SnapshotManager } from "../hooks/useSnapshotManager";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CreateSnapshotsPayload } from "../database/Payload";
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { SnapshotConfig } from "./snapshot";
 
 // snapshotDelegate.ts
 const snapshotDelegate = <T extends Data, K extends Data>(
@@ -45,15 +50,48 @@ const snapshotDelegate = <T extends Data, K extends Data>(
           data: T;
           newData: T; // Add this line and others as necessary
           unsubscribe: () => void; // Example of unsubscribing function
-          addSnapshotFailure: (error: Error) => void;
+          addSnapshotFailure: (
+            date: Date,
+             snapshotManager: SnapshotManager<T, K>,
+              snapshot: Snapshot<T, K>,
+               payload: { error: Error; }
+          ) => void;
           // Include all other properties here:
-          createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-          createSnapshotFailure: (error: Error) => void;
-          updateSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-          batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T>) => void;
-          batchUpdateSnapshotsFailure: (error: Error) => void;
-          batchUpdateSnapshotsRequest: (snapshots: Snapshots<T>) => void;
-          createSnapshots: (snapshots: Snapshots<T>) => void;
+          createSnapshotSuccess: (snapshotId: number, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload?: { data?: any; } | undefined) => void;
+          createSnapshotFailure: (
+            date: Date,
+            snapshotId: number, 
+            snapshotManager: SnapshotManager<T, K>,
+            snapshot: Snapshot<T, K>,
+            payload: { error: Error; }
+
+          ) => void;
+          updateSnapshotSuccess: (
+            snapshotId: number,
+             snapshotManager: SnapshotManager<T, K>, 
+             snapshot: Snapshot<T, K>,
+              payload?: { data?: any; } | undefined
+            ) => void;
+          batchUpdateSnapshotsSuccess: (snapshots: Snapshot<T, K>[]) => void;
+          batchUpdateSnapshotsFailure: (
+            date: Date,
+            snapshotId: number, 
+            snapshotManager: SnapshotManager<T, K>,
+            snapshot: Snapshot<T, K>,
+            payload: { error: Error; }
+          ) => void;
+          batchUpdateSnapshotsRequest: (snapshots: Snapshot<T, K>[]) => void;
+          createSnapshots: (
+            id: string,
+            snapshotId: number,
+            snapshot: Snapshot<T, K>,
+            snapshotManager: SnapshotManager<T, K>,
+            payload: CreateSnapshotsPayload<T, K>,
+            callback: (snapshots: Snapshot<T, K>[]) => void | null,
+            snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined,
+            category?: Category,
+            categoryProperties?: string | CategoryProperties
+          ) => void;
           batchTakeSnapshot: (snapshot: Snapshot<T, K>) => void;
           batchTakeSnapshotsRequest: (snapshots: Snapshots<T>) => void;
           deleteSnapshot: (id: string) => void;
@@ -64,13 +102,11 @@ const snapshotDelegate = <T extends Data, K extends Data>(
           filterSnapshotsByCategory: (category: string) => Snapshots<T>;
           filterSnapshotsByTag: (tag: string) => Snapshots<T>;
           fetchSnapshot: (id: string) => Promise<Snapshot<T, K>>;
-
-
-          getSnapshotData: (id: string) => T;
+          getSnapshotData: (id: string | number | undefined) => T;
           setSnapshotCategory: (id: string, category: string) => void;
           getSnapshotCategory: (id: string) => string;
           getSnapshots: (criteria: any) => Snapshots<T>;
-          getAllSnapshots: () => Snapshots<T>;
+          getAllSnapshots: (filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T>>;
           addData: (id: string, data: T) => void;
           setData: (id: string, data: T) => void;
           getData: (id: string) => T;
@@ -82,11 +118,23 @@ const snapshotDelegate = <T extends Data, K extends Data>(
           stores: () => SnapshotStore<T, K>[];
           configureSnapshotStore: (config: any) => void;
 
-          onSnapshot: (callback: (snapshot: Snapshot<T, K>) => void) => void;
-          onSnapshots: (callback: (snapshots: Snapshots<T>) => void) => void;
+          onSnapshot: (snapshotId: number,
+            snapshot: Snapshot<T, K>,
+            type: string, 
+            event: Event,
+            callback: (snapshot: Snapshot<T, K>) => void
+          ) => void;
+          onSnapshots: (
+            snapshotId: number,
+            snapshots: Snapshots<T>, 
+            type: string,
+            event: Event,
+            callback: (snapshots: Snapshots<T>) => void) => void;
           events: any; // Adjust type as needed
           notify: (message: string) => void;
-          notifySubscribers: (message: string) => void;
+          notifySubscribers: (
+            message: string, subscribers: Subscriber<T, K>[], data: Partial<SnapshotStoreConfig<T, any>>
+          ) => Subscriber<T, K>[];
           parentId: string;
           childIds: string[];
           getParentId: (id: string) => string;

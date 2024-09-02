@@ -15,6 +15,7 @@ import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { Category } from "../libraries/categories/generateCategoryProperties";
+import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 const createSnapshotStoreOptions = <T extends BaseData, K extends BaseData>({
   initialState,
@@ -22,7 +23,7 @@ const createSnapshotStoreOptions = <T extends BaseData, K extends BaseData>({
   category,
   dataStoreMethods,
 }: {
-  initialState: SnapshotStore<T, K> | Snapshot<T, K> | null;
+  initialState: InitializedState<T, K>
   snapshotId: string | number | undefined;
   category: Category | undefined;
   categoryProperties: CategoryProperties | undefined;

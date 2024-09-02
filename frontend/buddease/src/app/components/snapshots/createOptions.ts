@@ -1,16 +1,19 @@
+import { fetchSnapshotById } from "@/app/api/SnapshotApi";
 import { endpoints } from "../../api/endpointConfigurations";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
-import { Subscriber } from "../users/Subscriber";
-import SnapshotStoreOptions from "../hooks/SnapshotStoreOptions";
+import SnapshotStoreOptions, { MetaDataOptions } from "../hooks/SnapshotStoreOptions";
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { BaseData, Data } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { displayToast } from "../models/display/ShowToast";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import axiosInstance from "../security/csrfToken";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import { Subscriber } from "../users/Subscriber";
 import { addToSnapshotList } from "../utils/snapshotUtils";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
-import { Snapshots, SnapshotsArray, Snapshot, SnapshotsObject } from "./LocalStorageSnapshotStore";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotContainer } from "./SnapshotContainer";
@@ -19,12 +22,21 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-import { BaseData, Data } from "../models/data/Data";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { fetchSnapshotById } from "@/app/api/SnapshotApi";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 
 // createOptions.ts
 function createOptions<T extends Data, K extends Data>(params: {
+	storeId: number;
+	baseURL: string;
+	enabled: boolean;
+	maxRetries: number;
+	retryDelay: number;
+	maxAge: number;
+	staleWhileRevalidate: boolean;
+	metadata: MetaDataOptions
+	criteria: CriteriaType;
+	callbacks: CallbacksType;
+	
 	initialState: SnapshotStore<T, K> | null;
 	date: string | Date;
 	snapshotId: string;
@@ -51,7 +63,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 		operationType: SnapshotOperationType,
 		callback: (snapshotStore: SnapshotStore<T, K>) => void,
 	) => Promise<void>;
-	delegate: () => Promise<SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]> | []
+	delegate: () => Promise<SnapshotStoreConfig<T, K>[]> | []
 	eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]>;
 	getCategory: (
 		snapshotId: string,
@@ -60,8 +72,8 @@ function createOptions<T extends Data, K extends Data>(params: {
 		event: Event
 	) => CategoryProperties;
 	useSimulatedDataSource: boolean;
-	simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[];
-	snapshotStoreConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[];
+	simulatedDataSource: SnapshotStoreConfig<T, K>[];
+	snapshotStoreConfig: SnapshotStoreConfig<T, K>;
 	unsubscribeToSnapshots: (
 		snapshotId: string,
 		snapshot: Snapshot<T, K>,
@@ -78,17 +90,20 @@ function createOptions<T extends Data, K extends Data>(params: {
 	) => void;
 
 	getSnapshotConfig: (
-		category: Category,
+		snapshotId: number | null,
+		snapshotContainer: SnapshotContainer<T, K>,
+		criteria: CriteriaType,
+		category: symbol | string | Category | undefined,
 		categoryProperties: CategoryProperties,
 		delegate: any,
 		snapshotData: SnapshotStore<T, K>,
 		snapshot: (
 			id: string,
-			snapshotId: string | null,
+			snapshotId: number | null,
 			snapshotData: Snapshot<T, K>,
-			category: string | CategoryProperties | undefined,
+			category: symbol | string | Category | undefined,
 			callback: (snapshotStore: Snapshot<T, K>) => void,
-			snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
+			snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
 			snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
 		) => Promise<Snapshot<T, K>>,
 
@@ -96,8 +111,8 @@ function createOptions<T extends Data, K extends Data>(params: {
 			snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
 			snapshotId: string | null,
 			snapshotData: SnapshotStore<T, K>,
-			category: string | CategoryProperties | undefined,
-			snapshotConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
+			category: symbol | string | Category | undefined,
+			snapshotConfig: SnapshotStoreConfig<T, K>,
 			callback: (snapshotStore: SnapshotStore<T, K>) => void
 		) => void,
 
@@ -105,8 +120,8 @@ function createOptions<T extends Data, K extends Data>(params: {
 			snapshot: SnapshotStore<T, K>,
 			snapshotId: string,
 			snapshotData: SnapshotStore<T, K>,
-			category: string | CategoryProperties | undefined,
-			snapshotConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
+			category: symbol | string | Category | undefined,
+			snapshotConfig: SnapshotStoreConfig<T, K>,
 			callback: (snapshotStore: SnapshotStore<any, any>) => void
 		) => void,
 
@@ -116,7 +131,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			category?: string | CategoryProperties,
 			callback?: (snapshot: Snapshot<T, K>) => void,
 			snapshotDataStore?: SnapshotStore<T, K>,
-			snapshotStoreConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
+			snapshotStoreConfig?: SnapshotStoreConfig<T, K>
 		) => Snapshot<T, K> | null,
 
 		createSnapshotStore: (
@@ -125,7 +140,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			snapshotStoreData: Snapshots<T>,
 			category?: string | CategoryProperties,
 			callback?: (snapshotStore: SnapshotStore<T, K>) => void,
-			snapshotDataConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]
+			snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
 		) => SnapshotStore<T, K> | null,
 
 		configureSnapshot: (
@@ -135,23 +150,35 @@ function createOptions<T extends Data, K extends Data>(params: {
 			category?: string | CategoryProperties,
 			callback?: (snapshot: Snapshot<T, K>) => void,
 			snapshotDataStore?: SnapshotStore<T, K>,
-			snapshotStoreConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
+			snapshotStoreConfig?: SnapshotStoreConfig<T, K>
 		) => SnapshotConfig<T, K> | undefined,
-  ) => SnapshotConfig<SnapshotWithCriteria<any, BaseData>, K> 
+  ) => SnapshotConfig<T, K> 
 
 	getDelegate: (
 		context: {
 			useSimulatedDataSource: boolean;
-			simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[];
-		}) => SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[];
+			simulatedDataSource: SnapshotStoreConfig<T, K>[];
+		}) => SnapshotStoreConfig<T, K>[];
 
 	getDataStoreMethods: (
-		snapshotStoreConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[],
+		snapshotStoreConfig: SnapshotStoreConfig<T, K>[],
 		dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>
 	) => Partial<DataStoreWithSnapshotMethods<T, K>>;
 }): Promise<SnapshotStoreOptions<T, K>> {
 	return new Promise<SnapshotStoreOptions<T, K>>((resolve, reject) => {
 		const {
+			id,
+			storeId,
+			baseURL,
+			enabled,
+			maxRetries,
+			retryDelay,
+			maxAge,
+			staleWhileRevalidate,
+			metadata,
+			criteria,
+			callbacks,
+			cacheKey,
 			initialState,
 			date,
 			snapshotId,
@@ -190,6 +217,18 @@ function createOptions<T extends Data, K extends Data>(params: {
 		} = snapshotConfig || {};
 
 		const options: SnapshotStoreOptions<T, K> = {
+			id,
+			storeId,
+			baseURL,
+			enabled,
+			maxRetries,
+			retryDelay,
+			maxAge,
+			staleWhileRevalidate,
+			metadata,
+			criteria,
+			callbacks,
+			cacheKey,
 			initialState,
 			date,
 			snapshotId,
@@ -219,7 +258,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			getSnapshotConfig,
 			getDelegate: (context: {
 				useSimulatedDataSource: boolean;
-				simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[];
+				simulatedDataSource: SnapshotStoreConfig<T, K>[];
 			}
 			) => {
 				return getDelegate(context);
@@ -485,7 +524,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			mapSnapshots: (
 				storeIds: number[],
 				snapshotId: string,
-				category: string | CategoryProperties | undefined,
+				category: symbol | string | Category | undefined,
 				snapshot: Snapshot<T, K>,
 				timestamp: string | number | Date | undefined,
 				type: string,
@@ -496,7 +535,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 				callback: (
 					storeIds: number[],
 					snapshotId: string,
-					category: string | CategoryProperties | undefined,
+					category: symbol | string | Category | undefined,
 					snapshot: Snapshot<T, K>,
 					timestamp: string | number | Date | undefined,
 					type: string,
@@ -539,7 +578,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			mapSnapshotStore: function (
 				storeId: number,
 				snapshotId: string,
-				category: string | CategoryProperties | undefined,
+				category: symbol | string | Category | undefined,
 				snapshot: Snapshot<any, any>,
 				timestamp: string | number | Date | undefined,
 				type: string,

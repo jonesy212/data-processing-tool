@@ -1,11 +1,16 @@
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { PrivacySettings } from "../../settings/PrivacySettings";
+import { DocumentEditingPermissions } from "../../users/Permission";
+import { NotificationTypeEnum } from "../../support/NotificationContext";
+import { GeneralNotificationTypes } from "../../settings/NotificationChannels";
 
 // Define the ChatSettingsModal type
 type ChatSettingsModal = {
   close: () => void;
   isOpen: () => boolean;
-  setNotificationPreferences: (preferences: NotificationPreferences) => void;
+  setNotificationPreferences: (
+    preferences: NotificationPreferences
+  ) => void;
   setAudioOptions: (
     options: AudioOptions,
     audioOptions: AudioOptions,
@@ -32,16 +37,29 @@ type ChatSettingsModal = {
   // Other properties and methods specific to the modal
 };
 
+type CommonNotificationSettings = {
+  email: boolean;
+  sms: boolean;
+  pushNotifications: boolean;
+  desktopNotifications: boolean;
+  emailFrequency: string; // Adjust type if needed (e.g., 'daily', 'weekly')
+  smsFrequency: string; // Adjust type if needed (e.g., 'daily', 'weekly')
+};
 // Define related types
 type NotificationPreferences = {
-  mobile: boolean,
-  desktop: boolean,
+  mobile: CommonNotificationSettings;
+  desktop: CommonNotificationSettings;
+  tablet: CommonNotificationSettings; // Add tablet section
+  
   emailNotifications: boolean;
   pushNotifications: boolean;
+  smsNotifications: boolean,
+  desktopNotifications: boolean,
   enableNotifications: boolean;
   notificationSound: string;
   notificationVolume: number;
-  sms: boolean;
+  notificationTypes?: GeneralNotificationTypes; // Use the appropriate type here
+  customNotificationSettings: any;
 };
 
 type AudioOptions = {
@@ -54,19 +72,9 @@ type VideoOptions = {
   enableVideo: boolean;
   videoInputDevice: string;
   // Other video-related options
-};
 
-type DocumentEditingPermissions = {
-  canEdit: boolean;
-  canComment: boolean;
-  // Other permissions
-};
+}
 
 
-
-
-
-export type {
-  AudioOptions, ChatSettingsModal, DocumentEditingPermissions, NotificationPreferences, VideoOptions
-};
+export type { AudioOptions, ChatSettingsModal, NotificationPreferences, VideoOptions };
 

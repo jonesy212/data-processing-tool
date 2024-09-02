@@ -10,8 +10,8 @@ export enum LanguageEnum {
 
 
 export enum CodingLanguageEnum {
-  JavaScript = "js",
-  TypeScript = "ts",
+  Javascript = "js",
+  Typescript = "ts",
   Python = "python",
   // Add other coding languages as needed
 }

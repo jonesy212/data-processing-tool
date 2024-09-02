@@ -181,6 +181,10 @@ const notifyEventSystem = (
       responded: false,
       responseTime: new Date(),
       eventData: eventData,
+      topics: [],
+      highlights: [], 
+      files: [],
+      meta: null
     },
     sendStatus: "Sent",
   };
@@ -206,7 +210,15 @@ const notifyEventSystem = (
       responded: false,
       responseTime: new Date(),
       eventData: eventData,
+      topics: [],
+      highlights: [], 
+      files: [],
+      meta: null
     },
+    topics: [],
+    highlights: [], 
+    files: [],
+    meta: undefined
   };
 
   // Example: Notify the event system by adding a notification
@@ -462,33 +474,34 @@ const tradeExections = ({
 }
   
 const userId = useSecureUserId()
-const unsubscribe = (
-  userId: string,
-  snapshotId: string,
-  unsubscribeType: string,
-  unsubscribeDate: Date,
-  unsubscribeReason: string,
-  unsubscribeData: any
+const unsubscribe = (unsubscribeDetails: {
+  userId: string;
+  snapshotId: string;
+  unsubscribeType: string;
+  unsubscribeDate: Date;
+  unsubscribeReason: string;
+  unsubscribeData: any;
+}
 ) => {
   // Implement logic to unsubscribe or clean up resources
-  console.log(`Unsubscribing user ${userId} from snapshot ${snapshotId}`);
+  console.log(`Unsubscribing user ${userId} from snapshot ${unsubscribeDetails.snapshotId}`);
   
   // Example: Perform actions based on unsubscribeType
-  switch (unsubscribeType) {
+  switch (unsubscribeDetails.unsubscribeType) {
     case 'email':
-      sendEmail(userId, 'Unsubscribe Notification', 'You have been unsubscribed.');
+      sendEmail(unsubscribeDetails.userId, 'Unsubscribe Notification', 'You have been unsubscribed.');
       break;
     case 'sms':
-      sendSMS(userId, 'You have been unsubscribed from SMS notifications.');
+      sendSMS(unsubscribeDetails.userId, 'You have been unsubscribed from SMS notifications.');
       break;
     default:
-      console.warn(`Unknown unsubscribe type: ${unsubscribeType}`);
+      console.warn(`Unknown unsubscribe type: ${unsubscribeDetails.unsubscribeType}`);
       break;
   }
   // Example: Log unsubscribe details
-  console.log(`Unsubscribe Date: ${unsubscribeDate}`);
-  console.log(`Unsubscribe Reason: ${unsubscribeReason}`);
-  console.log(`Additional Data:`, unsubscribeData);
+  console.log(`Unsubscribe Date: ${unsubscribeDetails.unsubscribeDate}`);
+  console.log(`Unsubscribe Reason: ${unsubscribeDetails.unsubscribeReason}`);
+  console.log(`Additional Data:`, unsubscribeDetails.unsubscribeData);
   // Additional logic here...
 };
 

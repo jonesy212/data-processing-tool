@@ -1,17 +1,19 @@
 import { createSnapshot, getSnapshotId } from "@/app/api/SnapshotApi";
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { useContext } from "react";
 import { CombinedEvents, SnapshotManager } from "../hooks/useSnapshotManager";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
+import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotStoreConfig } from '../snapshots';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SnapshotData, SnapshotStoreConfig } from '../snapshots';
+import { Snapshot, Snapshots, SnapshotsArray } from "../snapshots/LocalStorageSnapshotStore";
 import { retrieveSnapshotData } from "../snapshots/RetrieveSnapshotData";
-import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import defaultCategory from "../snapshots/SnapshotStore";
+import { ConfigureSnapshotStorePayload, K } from "../snapshots/SnapshotConfig";
+import { default as defaultCategory, default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
 import { SnapshotConfig } from "../snapshots/snapshot";
 import { delegate, initSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
@@ -20,10 +22,9 @@ import {
 } from "../snapshots/subscribeToSnapshotsImplementation";
 import { generateSnapshotId } from "../utils/snapshotUtils";
 import CalendarManagerStoreClass, { CalendarEvent } from "./../state/stores/CalendarEvent";
-import { StatusType } from "../models/data/StatusType";
-import { useContext } from "react";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { T, K } from "../snapshots/SnapshotConfig";
+import { SnapshotContent } from "../snapshots/SnapshotContent";
+import { SnapshotContext } from "@/app/context/SnapshotContext";
+import { snapshotStoreDelegate } from "../snapshots/SnapshotStoreDelegate";
 
 
 
@@ -56,6 +57,8 @@ class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
       snapshot: Snapshot<T, K>
     ) => void;
     eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
+    initialConfig, onSnapshotAdded, onSnapshotRemoved, removeSubscriber, 
+    onError, onInitialize, onSnapshotUpdated, emit,
   }
 
   constructor(
@@ -700,15 +703,57 @@ const convertSnapshotData = <T extends BaseData, K extends BaseData>(
   return snapshotConfigData
 };
 
+
+function convertToDataSnapshot<T extends BaseData, K extends BaseData>(
+  snapshot: Snapshot<T, K>
+): Snapshot<Data, Data> {
+  return {
+    ...snapshot,
+    data: snapshot.data as unknown as Map<string, Snapshot<Data, Data>>,
+    content: snapshot.content as unknown as SnapshotContent<T, Data>,
+    mappedSnapshotData: new Map(Object.entries(snapshot.mappedSnapshotData).map(([key, value]) => [key, value as Snapshot<Data, Data>])),
+    snapshot: (
+      id: string | number | undefined,
+      snapshotId: number,
+      snapshotData: SnapshotData<T, K>,
+      category: string | Category,
+      categoryProperties: CategoryProperties | undefined,
+      dataStoreMethods: DataStoreMethods<T, K>[]
+    ) => {
+      return new Promise<Snapshot<Data, Data>>(async (resolve, reject) => {
+        try {
+          const result = await snapshot.snapshot(
+            id,
+            snapshotId,
+            snapshotData,
+            category,
+            categoryProperties,
+            dataStoreMethods
+          );
+          resolve(result as unknown as Snapshot<Data, Data>);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+  } as unknown as Snapshot<Data, Data>;
+}
+
+
+
+
+
 const convertSnapshoStoretData = <T extends BaseData, K extends BaseData>(
   snapshotStoreConfigData: SnapshotStoreConfig<any, K>
 ): SnapshotStoreConfig<any, K> => {
   return snapshotStoreConfigData
 };
 
+
 const snapshotType = <T extends BaseData, K extends BaseData>(
   snapshot: Snapshot<T, K>
 ): Snapshot<T, K> => {
+  const defaultCategory: Category = "defaultCategory";
   const newSnapshot = { ...snapshot }
   newSnapshot.id = snapshot.id || generateSnapshotId;
   newSnapshot.title = snapshot.title || "";
@@ -716,10 +761,16 @@ const snapshotType = <T extends BaseData, K extends BaseData>(
     ? new Date(snapshot.timestamp)
     : new Date();
   newSnapshot.subscriberId = snapshot.subscriberId || "";
-  newSnapshot.category =
-    typeof snapshot.category === "string"
-      ? defaultCategory
-      : snapshot.category || defaultCategory;
+   // Handle category assignment
+   if (typeof snapshot.category === "string" || typeof snapshot.category === "symbol") {
+    newSnapshot.category = snapshot.category as Category;
+  } else if (snapshot.category && typeof snapshot.category === "object") {
+    // Ensure snapshot.category matches CategoryProperties type if it's an object
+    newSnapshot.category = snapshot.category as Category;
+  } else {
+    // Ensure defaultCategory is a valid Category
+    newSnapshot.category = defaultCategory as Category;
+  }
   newSnapshot.length = snapshot.length || 0;
   newSnapshot.content = snapshot.content || "";
   newSnapshot.data = snapshot.data;
@@ -743,9 +794,9 @@ const snapshotType = <T extends BaseData, K extends BaseData>(
   return newSnapshot;
 };
 
-const snapshotStoreType = <T extends BaseData, K extends BaseData>(
-  snapshotStore: SnapshotStore<T, K>
+const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotStore: SnapshotStore<T, K>
 ): SnapshotStore<T, K> => {
+  const defaultCategory: Category = "defaultCategory";
   const context = useContext(SnapshotContext);
   const newSnapshotStore = { ...snapshotStore }
   newSnapshotStore.id = snapshotStore.id || generateSnapshotId;
@@ -768,12 +819,11 @@ const snapshotStoreType = <T extends BaseData, K extends BaseData>(
   newSnapshotStore.status = snapshotStore.status || undefined;
   newSnapshotStore.metadata = snapshotStore.metadata || {};
   newSnapshotStore.delegate = snapshotStore.getDelegate(context)
-    ? snapshotStore.getDelegate(snapshotStoreDelegate).map((delegateConfig) => ({
+    ? snapshotStore.getDelegate(snapshotStoreDelegate).map((delegateConfig: any) => ({
       ...delegateConfig,
       data: delegateConfig.data as T,
       snapshotStore: delegateConfig.snapshotStore as SnapshotStore<T, K>
-    }))
-    : [];
+    }))    : [];
   newSnapshotStore.store = snapshotStore.store
   newSnapshotStore.state = snapshotStore.state
   newSnapshotStore.todoSnapshotId = snapshotStore.todoSnapshotId || "";
@@ -1725,21 +1775,17 @@ function convertSnapshotToMap<T extends Data, K extends Data>(
 
 
 export {
-  convertMapToSnapshot,
-  convertSnapshotToMap,
-  convertMapToSnapshotStore, convertSnapshoStoretData,
+  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData,
   convertSnapshotContent,
   convertSnapshotData,
   convertSnapshotStoreConfig,
   convertSnapshotStoreItemToT,
   convertSnapshotStoreToMap,
-  convertSnapshotStoreToSnapshot,
-  convertSnapshotToStore,
-  convertToDataStore,
+  convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore,
   convertToSnapshotStoreConfig,
   createSnapshotStoreConfig,
   createSnapshotStoreOptions,
   isSnapshot,
-  isSnapshotStore,
-  snapshotType
+  isSnapshotStore, snapshotType
 };
+

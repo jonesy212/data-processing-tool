@@ -14,7 +14,7 @@
 //     snapshotId: string,
 //     snapshot: T | null,
 //     snapshotData: T,
-//     category: string | CategoryProperties | undefined,
+//     category: symbol | string | Category | undefined,
 //     callback: (snapshot: T) => void,
 //     type: string,
 //     event: Event,

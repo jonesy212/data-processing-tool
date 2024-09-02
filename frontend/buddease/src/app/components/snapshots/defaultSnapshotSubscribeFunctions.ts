@@ -568,7 +568,7 @@ export const defaultSubscribeToSnapshot = (
           }): void {
           throw new Error("Function not implemented.");
         },
-        fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<any>, snapshotStore: SnapshotStore<any, any>, payloadData: any, category: string | CategoryProperties | undefined, timestamp: Date, data: any, delegate: SnapshotWithCriteria<any, any>[]) => Snapshot<any, any>): Snapshot<any, any> {
+        fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<any>, snapshotStore: SnapshotStore<any, any>, payloadData: any, category: symbol | string | Category | undefined, timestamp: Date, data: any, delegate: SnapshotWithCriteria<any, any>[]) => Snapshot<any, any>): Snapshot<any, any> {
           throw new Error("Function not implemented.");
         },
         addSnapshotFailure: function (snapshotManager: SnapshotManager<any, any>, snapshot: Snapshot<any, any>, payload: { error: Error; }): void {
@@ -635,7 +635,7 @@ export const defaultSubscribeToSnapshot = (
           payload: FetchSnapshotPayload<any>,
           snapshotStore: SnapshotStore<any, any>,
           payloadData: any, 
-          category: string | CategoryProperties | undefined,
+          category: symbol | string | Category | undefined,
           timestamp: Date,
           data: any,
           delegate: SnapshotWithCriteria<any, any>[]
@@ -688,7 +688,7 @@ export const defaultSubscribeToSnapshot = (
           payload: UpdateSnapshotPayload<any>, 
           snapshotStore: SnapshotStore<any, any>, 
           payloadData: any,
-          category: string | CategoryProperties | undefined,
+          category: symbol | string | Category | undefined,
           timestamp: Date, data: any,
           delegate: SnapshotWithCriteria<any, any>[]
         ): Snapshot<any, any> {
@@ -702,7 +702,7 @@ export const defaultSubscribeToSnapshot = (
           payload: SubscribeToSnapshotsPayload<any>,
           snapshotStore: SnapshotStore<any, any>,
           payloadData: any,
-          category: string | CategoryProperties | undefined,
+          category: symbol | string | Category | undefined,
           timestamp: Date,
           data: any,
           delegate: SnapshotWithCriteria<any, any>[]
@@ -741,7 +741,7 @@ export const defaultSubscribeToSnapshot = (
         },
         label: undefined,
         events: [],
-        handleSnapshot: function (id: string, snapshotId: string, snapshot: any, snapshotData: any, category: string | CategoryProperties | undefined, callback: (snapshot: any) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: any, snapshotStoreConfig?: SnapshotStoreConfig<any, any> | undefined): Promise<Snapshot<any, any> | null> {
+        handleSnapshot: function (id: string, snapshotId: string, snapshot: any, snapshotData: any, category: symbol | string | Category | undefined, callback: (snapshot: any) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: any, snapshotStoreConfig?: SnapshotStoreConfig<any, any> | undefined): Promise<Snapshot<any, any> | null> {
           throw new Error("Function not implemented.");
         },
         meta: {},

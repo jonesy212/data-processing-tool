@@ -2,12 +2,15 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { addSnapshot } from "@/app/api/SnapshotApi";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { config } from 'process';
+import { SubscriptionActions } from '../actions/SubscriptionActions';
 import { ModifiedDate } from "../documents/DocType";
 import {
   CombinedEvents,
   SnapshotStoreOptions,
   convertSnapshotToContent
 } from "../hooks/useSnapshotManager";
+import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Content } from '../models/content/AddContent';
 import { BaseData, Data } from "../models/data/Data";
 import {
@@ -16,8 +19,9 @@ import {
   SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import { CustomSnapshotData, K, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria } from '../snapshots';
+import {FetchSnapshotPayload} from '../snapshots/FetchSnapshotPayload';
 import {
-
   Payload,
   Snapshot,
   Snapshots,
@@ -26,7 +30,7 @@ import {
   createSnapshotOptions,
 } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import { snapshot, SnapshotConfig } from "../snapshots/snapshot";
+import { SnapshotConfig, snapshot } from "../snapshots/snapshot";
 import {
   addSnapshotSuccess,
   createInitSnapshot,
@@ -55,13 +59,6 @@ import {
 } from "../typings/YourSpecificSnapshotType";
 import { isSnapshotStoreConfig } from '../utils/snapshotUtils';
 import { sendNotification } from "./UserSlice";
-import { SubscriptionActions } from '../actions/SubscriptionActions';
-import { NotificationActions } from '../support/NotificationActions';
-import { ProjectManagementActions } from '../actions/ProjectManagementActions';
-import { CustomSnapshotData, K, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria } from '../snapshots';
-import FetchSnapshotPayload from '../snapshots/FetchSnapshotPayload';
-import { config } from 'process';
-import { Category } from '../libraries/categories/generateCategoryProperties';
 
 type SnapshotStoreDelegate<T extends BaseData, K extends BaseData> = (
   snapshot: Snapshot<T, K>,
@@ -503,7 +500,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       id: string,
       snapshotId: string | null,
       snapshotData: Snapshot<T, K>,
-      category: string | CategoryProperties | undefined,
+      category: symbol | string | Category | undefined,
       callback: (snapshot: Snapshot<T, K>) => void,
       snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
       snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
@@ -1702,4 +1699,4 @@ subscriber.receiveSnapshot(sampleSnapshot);
 
 console.log("Subscriber state:", subscriber.getState("state"));
 export { Subscriber, subscriber };
-export type {SubscriberCallback, AuditRecord,  Subscribers}
+export type { AuditRecord, SubscriberCallback, Subscribers };

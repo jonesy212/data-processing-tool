@@ -8,7 +8,6 @@ import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEn
 import { CalendarSettingsEnum } from "@/app/components/settings/CalendarSettingsEnum";
 import { SortCriteria } from "@/app/components/settings/SortCriteria";
 
-
 interface NewsOptions {
   newsCategory: string; // Example: 'technology', 'business', etc.
   newsLanguage: string; // Example: 'english', 'spanish', etc.
@@ -77,6 +76,14 @@ interface SearchOptions extends FilterOptions {
     value: any;
     // Add more filter properties as needed
   }
+
+  // Define your custom filter structure
+interface CustomFilter {
+  [key: string]: any;
+  operator: "",
+  value: ""
+}
+
   
   interface SortingOption {
     field: string;
@@ -84,8 +91,9 @@ interface SearchOptions extends FilterOptions {
   }
   
   interface PaginationOptions {
-    page: number;
-    pageSize: number;
+    current?: number;
+    pageSize?: number;
+    mode?: "client" | "server" | "off";
   }
     
     
@@ -107,8 +115,9 @@ interface SearchOptions extends FilterOptions {
         order: "asc",
       },
       pagination: {
-        page: 1,
+        current: 1,
         pageSize: 10,
+
       }
     },
     additionalOption2: undefined,
@@ -168,6 +177,6 @@ const options: SearchOptions = {
     excludeKeywords: []
   }
 };
-export type { AdditionalOptions, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
+export type { CustomFilter, AdditionalOptions, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
   
   export { searchOptions };

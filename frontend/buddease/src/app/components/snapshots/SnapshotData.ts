@@ -15,6 +15,8 @@ import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
 import { SnapshotConfig } from "./snapshot";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 interface CustomSnapshotData extends Data {
   timestamp?: string | number | Date | undefined
@@ -24,15 +26,20 @@ interface CustomSnapshotData extends Data {
 
 interface SnapshotRelationships<T extends Data, K extends Data = T> {
   parentId: string | null;
-  childIds: string[];
-  getParentId(snapshot: Snapshot<BaseData, T>): string | null;
-  getChildIds(childSnapshot: Snapshot<BaseData, K>): string[];
+  childIds: string[] | null;
+  getParentId(id: string, snapshot: Snapshot<BaseData, T>): string | null;
+  getChildIds(id: string, childSnapshot: Snapshot<BaseData, K>): string[];
 
-  addChild(childSnapshot: Snapshot<T, K>): void;
-  removeChild(childSnapshot: Snapshot<T, K>): void;
-  getChildren(): Snapshot<T, K>[];
-  hasChildren(): boolean;
-  isDescendantOf(parentSnapshot: Snapshot<T, K>, childSnapshot: Snapshot<T, K>): boolean;
+  addChild(parentId: string, childId: string, childSnapshot: Snapshot<T, K>): void;
+  removeChild(parentId: string, childId: string, childSnapshot: Snapshot<T, K>): void;
+  getChildren(id: string, childSnapshot: Snapshot<T, K>): Snapshot<T, K>[];
+  hasChildren(id: string): boolean;
+  isDescendantOf(
+    childId: string, 
+    parentId: string, 
+    parentSnapshot: Snapshot<T, K>,
+    childSnapshot: Snapshot<T, K>
+  ): boolean;
 }
 
 
@@ -43,14 +50,17 @@ interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMetho
   description?: string | null;
   tags?: TagsRecord
   key?: string;
-  state: T | null; // The state of the snapshot, could be of type T or null 
+  state?: Snapshot<T, K>[] | null;
   topic?: string;
-  configOption?: SnapshotConfig<T, K> | null
+  configOption?:
+    | string
+    | SnapshotStoreConfig<T, K>
+    | null;
   priority?: string | PriorityTypeEnum;
   subscription?: Subscription<T, K> | null;
   version?: Version 
   versionHistory?: VersionHistory
-  config?: SnapshotStoreConfig<T, K>
+  config: SnapshotStoreConfig<T, K>| null
   metadata?: StructuredMetadata;
   isExpired?: boolean;
   isCompressed?: boolean;
@@ -60,7 +70,7 @@ interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMetho
   auditTrail?: AuditRecord[];
   subscribers: SubscriberCollection<T, K>;
   delegate?: SnapshotStoreConfig<T, K>[];
-  value?: string | number | Snapshot<T, K> | undefined;
+  value?: string | number | Snapshot<T, K> |  null | undefined;
   todoSnapshotId?: string;
   dataStoreMethods?: DataStoreWithSnapshotMethods<T, K> | null;
   createdAt?: string | Date;
@@ -70,10 +80,17 @@ interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMetho
   data: T | Map<string, Snapshot<T, K>> | null | undefined;
   category?: Category
   timestamp: string | number | Date | undefined;
-  setSnapshotCategory: (category: Category) => void;
-  getSnapshotCategory: () => Category | undefined;
-  getSnapshotData: () => Map<string, Snapshot<T, K>> | null | undefined;
-  deleteSnapshot: () => void;
+  setSnapshotCategory: (id: string, newCategory: Category) => void;
+  getSnapshotCategory: (id: string) => Category | undefined;
+  getSnapshotData: (
+    id: string | number | undefined,
+    snapshotId: number,
+    snapshotData: T,
+    category: Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
+    dataStoreMethods: DataStore<T, K>
+  ) => Map<string, Snapshot<T, K>> | null | undefined;
+  deleteSnapshot: (id: string) => void;
   then?: (
     callback: (newData: Snapshot<T, K>) => void
   ) => Snapshot<Data, T> | undefined;

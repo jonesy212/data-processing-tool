@@ -1,37 +1,5 @@
 // snapshotStoreConfigInstance.ts
-import * as snapshotApi from '../../api/SnapshotApi'
-import { fetchCategoryByName } from "../../api/CategoryApi";
-import { endpoints } from "../../api/endpointConfigurations";
-import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
-import { Subscriber } from '../users/Subscriber';
-import { fetchData } from "pdfjs-dist";
-import { Data } from "../models/data/Data";
-import { ModifiedDate } from "../documents/DocType";
-import { FileCategory } from "../documents/FileType";
-import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
-import determineFileCategory, { fetchFileSnapshotData } from "../libraries/categories/determineFileCategory";
-import { BaseData } from "../models/data/Data";
-import { StatusType, NotificationPosition } from "../models/data/StatusType";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import CalendarEvent from "../state/stores/CalendarEvent";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
-import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "../trading/TradingUtils";
-import { AuditRecord } from "../users/Subscriber";
-import { portfolioUpdates, triggerIncentives } from "../utils/applicationUtils";
-import { generateSnapshotId } from "../utils/snapshotUtils";
-import { SnapshotsArray, Snapshot, Snapshots, FetchSnapshotPayload, UpdateSnapshotPayload, CreateSnapshotStoresPayload, Payload, SnapshotUnion } from "./LocalStorageSnapshotStore";
-import { T, K, ConfigureSnapshotStorePayload } from "./SnapshotConfig";
-import { SnapshotData } from "./SnapshotData";
-import { batchTakeSnapshotsRequest, batchUpdateSnapshotsRequest, batchFetchSnapshotsSuccess, batchFetchSnapshotsFailure, batchUpdateSnapshotsSuccess, batchUpdateSnapshotsFailure, batchTakeSnapshot, handleSnapshotSuccess } from "./snapshotHandlers";
-import SnapshotList, { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
-import { VersionHistory } from '../versions/VersionData';
-import { DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { Category } from '../libraries/categories/generateCategoryProperties';
 
 const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     // {
@@ -90,7 +58,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //       snapshotId: string,
     //       snapshot: T | null,
     //       snapshotData: T,
-    //       category: string | CategoryProperties | undefined,
+    //       category: symbol | string | Category | undefined,
     //       callback: (snapshot: T) => void,
     //       snapshots: SnapshotsArray<T>,
     //       type: string,
@@ -181,7 +149,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //     createSnapshot: (
     //       id: string,
     //       snapshotData: Snapshot<T, K>, // Use Snapshot instead of Map
-    //       category: string | CategoryProperties | undefined,
+    //       category: symbol | string | Category | undefined,
     //       callback: (snapshot: Snapshot<T, K>) => void,
     //       snapshotDataStore?: SnapshotStore<any, any> | undefined,
     //       snapshotDataConfig?: string | SnapshotStoreConfig<any, any> | null, // Adjust as per your definition
@@ -211,7 +179,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //             snapshotId: string,
     //             snapshot: T | null,
     //             snapshotData: T,
-    //             category: string | CategoryProperties | undefined,
+    //             category: symbol | string | Category | undefined,
     //             callback: (snapshot: T) => void,
     //             snapshots: Snapshots<Data>,
     //             type: string,
@@ -327,7 +295,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //               payload: FetchSnapshotPayload<K>,
     //               snapshotStore: SnapshotStore<T, K>,
     //               payloadData: T | Data,
-    //               category: string | CategoryProperties | undefined,
+    //               category: symbol | string | Category | undefined,
     //               timestamp: Date,
     //               data: T,
     //               delegate: SnapshotWithCriteria<T, K>[]            ) => void
@@ -562,7 +530,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //   createSnapshotStoresAlternate: (
     //     id: string,
     //     snapshotStoresData: SnapshotStore<any, any>[], // Use Snapshot instead of Map
-    //     category: string | CategoryProperties | undefined,
+    //     category: symbol | string | Category | undefined,
     //     callback: (snapshotStores: SnapshotStore<any, any>[]) => void,
     //     snapshotDataConfig?: SnapshotStoreConfig<any, any>[] // Adjust as per your definition
     //   ): SnapshotStore<any, any>[] | null => {
@@ -641,7 +609,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //     snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
     //     snapshotId: string | null,
     //     snapshotData: SnapshotStore<T, K>,
-    //     category: string | Category | undefined,
+    //     category: symbol | string | Category | undefined,
     //     snapshotDataConfig: SnapshotStoreConfig<any, any>, // Adjust as per your definition
     //     callback: (snapshotStore: SnapshotStore<any, any>) => void
     //   ) => {
@@ -674,7 +642,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //     return { snapshot: newData };
     //   },
     // getSnapshots: async (
-    //   category: string | Category, 
+    //   category: symbol | string | Category | undefined, 
     //   snapshots: SnapshotsArray<T>
     //   ) => {
     //     console.log(`Getting snapshots in category: ${String(category)}`, snapshots);
@@ -758,7 +726,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //   createSnapshot: (
     //     id: string,
     //     snapshotData: Snapshot<T, K>,
-    //     category: string | CategoryProperties | undefined,
+    //     category: symbol | string | Category | undefined,
     //     // snapshotStore?: SnapshotStore<any,any>
     //   ): Snapshot<T, K> | null => {
     //     console.log(
@@ -1237,7 +1205,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //         snapshotId: string,
     //         snapshot: Snapshot<T, K> | null,
     //         snapshotData: T,
-    //         category: string | CategoryProperties | undefined,
+    //         category: symbol | string | Category | undefined,
     //         callback: (snapshot: T) => void,
     //         snapshots: Snapshots<Data>,
     //         type: string,
@@ -1322,7 +1290,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //             payload: FetchSnapshotPayload<K>,
     //             snapshotStore: SnapshotStore<T, K>,
     //             payloadData: T | Data,
-    //             category: string | CategoryProperties | undefined,
+    //             category: symbol | string | Category | undefined,
     //             timestamp: Date,
     //             data: T,
     //             delegate: SnapshotWithCriteria<T, K>[]
@@ -1437,7 +1405,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
   
     //   fetchSnapshot:  (
     //     id: string,
-    //     category: string | CategoryProperties | undefined,
+    //     category: symbol | string | Category | undefined,
     //     timestamp: Date,
     //     snapshot: Snapshot<T, K>,
     //     data: T,
@@ -2119,4 +2087,4 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
   ];
   
 
-  export {snapshotStoreConfigInstance}
+  export { snapshotStoreConfigInstance };

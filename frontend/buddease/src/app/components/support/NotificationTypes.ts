@@ -52,6 +52,7 @@ export const NOTIFICATION_TYPES = {
   EVENT_REMINDER: "EventReminder",
   EVENT_OCCURRED: "EventOccurred",
 
+  PRICE_ALERTS: 'priceAlerts',
 
   LOGGING_ERROR: "LoggingError",
   // Custom Notifications
@@ -59,5 +60,24 @@ export const NOTIFICATION_TYPES = {
   CUSTOM_NOTIFICATION_2: "CustomNotification2",
 } as const;
 
+
+
+export interface NotificationTypes {
+  mention: boolean;
+  reaction: boolean;
+  follow: boolean;
+  poke: boolean;
+  activity: boolean;
+  thread: boolean;
+  inviteAccepted: boolean;
+  task: boolean;
+  file: boolean;
+  meeting: boolean;
+  directMessage: boolean;
+  announcement: boolean;
+  reminder: boolean;
+  project: boolean;
+  inApp: boolean;
+}
 export type NOTIFICATION_TYPES =
   (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];

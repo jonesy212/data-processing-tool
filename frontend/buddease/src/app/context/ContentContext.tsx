@@ -42,6 +42,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode, url: string 
     fetchContentData,
     setContentState,
     metadata,
+    url
   };
 
   return (

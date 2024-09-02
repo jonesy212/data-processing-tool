@@ -1,25 +1,28 @@
+import { snapshotStoreConfig } from '.';
+import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
 import { snapshotContainer } from '@/app/api/SnapshotApi';
 // CommonEvent.ts
-import { T, K } from "../../snapshots/SnapshotConfig";
 
+import * as snapshotApi from '@/app/api/SnapshotApi';
 import { StatusType } from '@/app/components/models/data/StatusType';
 import ProjectMetadata, { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
-import { Tag } from '../../models/tracker/Tag';
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
-import { VideoData } from "../../video/Video";
+import { SnapshotData, SnapshotStoreConfig } from '../../snapshots';
+import { FetchSnapshotPayload } from '../../snapshots/FetchSnapshotPayload';
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
+import SnapshotStore from '../../snapshots/SnapshotStore';
 import { SnapshotWithCriteria, TagsRecord } from '../../snapshots/SnapshotWithCriteria';
-import { Type } from 'docx';
 import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
 import { Subscriber } from '../../users/Subscriber';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { FetchSnapshotPayload } from '../../snapshots/FetchSnapshotPayload';
-import { SnapshotData } from '../../snapshots';
-import SnapshotStore from '../../snapshots/SnapshotStore';
-import * as snapshotApi from '@/app/api/SnapshotApi'
-import { snapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { VideoData } from "../../video/Video";
+import { Category } from '../../libraries/categories/generateCategoryProperties';
+import { EventStore } from '../../event/EventStore';
+import { ExtendedVersionData } from '../../versions/VersionData';
+import { UnsubscribeDetails } from '../../event/DynamicEventHandlerExample';
+import { InitializedState } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
 
 interface CommonEvent extends Data {
   title: string;
@@ -36,7 +39,7 @@ interface CommonEvent extends Data {
   recurring?: boolean;
   recurrenceRule?: string;
   // Other common properties
-  category?: string;
+  category?: string | Category;
   timezone?: string;
   participants: Member[];
   language?: string;
@@ -65,7 +68,7 @@ export function implementThen<T extends BaseData, K extends BaseData>(
         meta: undefined,
         snapshotStoreConfig: {},
         getSnapshotItems: () => [],
-        defaultSubscribeToSnapshots: () => {},
+        defaultSubscribeToSnapshots: () => { },
         versionInfo: {},
       } as unknown as Snapshot<T, K>]
     ]),
@@ -78,35 +81,59 @@ export function implementThen<T extends BaseData, K extends BaseData>(
       description: "someDescription",
       subscriberId: "someSubscriberId",
       category: "someCategory",
+      categoryProperties: undefined,
       timestamp: new Date(),
       length: 0,
       data: {} as T,
     },
     store: undefined,
-    events: {},
+    events: {} as EventStore<T, K>,
     meta: {},
-    getSnapshotId: function (key: string | Snapshot<T, K> | SnapshotData<T, K>): unknown {
-      // fetch snapshot id then check if there is a snapshot Id
-      const snapshotId = key as Snapshot<T, K>;
-      if (snapshotId) {
-        return snapshotId;
+    // Corrected getSnapshotId implementation
+    getSnapshotId: function (key: string | T, snapshot: Snapshot<T, K>): unknown {
+      // If the key is a string, you can use it directly
+      if (typeof key === 'string') {
+        return snapshot.id; // or some logic to derive the ID
       }
       
-      return snapshotId;
-    },
-    compareSnapshotState: function (snapshot1: Snapshot<T, K> | null,  snapshot2: Snapshot<T, K>, state: any): boolean {
-      const snapshot = snapshot1 as Snapshot<T, K>;
-      if (snapshot) {
-        return snapshot.state;
+      // If the key is of type T, you can derive the ID based on its properties
+      // This assumes T has a method or property that can be used to get an ID
+      if (key && typeof key !== 'string') {
+        // Logic to derive the ID from key
+        return key.id || snapshot.id; // Adjust as needed
       }
-      return state;
+      
+      return null; // Return null or some default value if no ID can be determined
+    },
+    compareSnapshotState: function (
+      snapshot1: Snapshot<T, K> | null,
+      snapshot2: Snapshot<T, K>
+    ): boolean {
+      // Check if snapshot1 exists and has a state property
+      if (snapshot1 && snapshot1.state) {
+        // Compare the two states and return true or false based on your logic
+        // For example, check if the states are equal in length or content
+        return snapshot1.state.length === (snapshot2.state?.length || 0);
+      }
+
+      // If snapshot1 is null or has no state, return false
+      return false;
     },
     eventRecords: null,
     snapshotStore: null,
     dataItems: null,
     newData: null,
     stores: null,
-    unsubscribe: function (callback: Callback<Snapshot<T, K>> | null): void {
+    unsubscribe: function (
+      unsubscribeDetails: {
+        userId: string;
+        snapshotId: string;
+        unsubscribeType: string;
+        unsubscribeDate: Date;
+        unsubscribeReason: string;
+        unsubscribeData: any;
+      },
+      callback: Callback<Snapshot<T, K>> | null): void {
       // Remove reference to callback
       let callbackRef = callback;
       callbackRef = null;
@@ -115,13 +142,13 @@ export function implementThen<T extends BaseData, K extends BaseData>(
     },
 
     fetchSnapshot: function (
-      
       callback: (
         snapshotId: string,
         payload: FetchSnapshotPayload<K> | undefined,
         snapshotStore: SnapshotStore<T, K>,
         payloadData: T | Data,
-        category: string | CategoryProperties | undefined,
+        category: symbol | string | Category | undefined,
+        categoryProperties: CategoryProperties,
         timestamp: Date,
         data: T,
         delegate: SnapshotWithCriteria<T, K>[]
@@ -129,60 +156,84 @@ export function implementThen<T extends BaseData, K extends BaseData>(
     ): Promise<Snapshot<T, K> | undefined> {
       if (callback) {
         
-        const criteria = await snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot);
-        const id = await snapshotApi.getSnapshotId(criteria);
+        const convertedSnapshot = convertToDataSnapshot(snapshot);
+
+        const criteria = snapshotApi.getSnapshotCriteria(
+          snapshotContainer as unknown as SnapshotContainer<Data, Data>,
+          convertedSnapshot 
+        );
+        const id = snapshotApi.getSnapshotId(criteria);
         const dummySnapshotStore: SnapshotStore<T, K> = {} as SnapshotStore<T, K>;
         const dummyPayloadData: T | Data = {} as T | Data;
-        const dummyCategory: string | CategoryProperties | undefined = undefined;
+        const dummyCategory: symbol | string | Category | undefined = undefined;
+        const categoryProperties: CategoryProperties = {} as CategoryProperties;
         const dummyTimestamp: Date = new Date();
         const dummyData: T = {} as T;
         const dummyDelegate: SnapshotWithCriteria<T, K>[] = [];
-    
+        
         // Wrap the callback result in a Promise
-        const result = callback(id, undefined, dummySnapshotStore, dummyPayloadData, dummyCategory, dummyTimestamp, dummyData, dummyDelegate);
-        return Promise.resolve(result); // Wrap the result in a Promise
-      } else {
-        return Promise.resolve(undefined); // Return a resolved Promise with undefined if callback doesn't exist
+        const result = callback(String(id), undefined, dummySnapshotStore, dummyPayloadData, dummyCategory, categoryProperties, dummyTimestamp, dummyData, dummyDelegate);
+        return Promise.resolve(result);
       }
-      return Promise.resolve(undefined); // Return a resolved Promise with undefined if callback doesn't exist    
+      return Promise.resolve(undefined);
     },
     snapshotStoreConfig: snapshotStoreConfig,
     getSnapshotItems: () => [],
-    defaultSubscribeToSnapshots: () => {},
-    versionInfo: {},
+    defaultSubscribeToSnapshots: () => { },
+    versionInfo: {} as ExtendedVersionData,
    
     handleSnapshot: function (
-      snapshotId: string,
-      snapshot: Snapshot<T, K> | null,
-      snapshots: Snapshots<T>,
+      id: string,
+      snapshotId: number,
+      snapshot: Snapshot<T, K> | null,  // <-- Change the type here
+      snapshotData: T,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties,
+      callback: (snapshot: T) => void,
+      snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
-    ): void {
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
+    ): Promise<Snapshot<T, K> | null> {
      
-      const snapshotInstance = snapshot as Snapshot<T, K>;
+      const snapshotInstance = snapshot;
       if (snapshotInstance) {
-        snapshotInstance.state = snapshots;
-        snapshotInstance.event = event;
+        snapshotInstance.state = snapshots,
+          snapshotInstance.event = event;
         snapshotInstance.type = type;
       }
-      return;
+      return Promise.resolve(null)
     },
     subscribe: function (
-      arg0: Subscriber<T, K> | null,
-      arg1: T,
-      arg2: Event,
-      callback: Callback<Snapshot<T, K>> ,
+      snapshotId: number,
+      unsubscribe: UnsubscribeDetails,
+      subscriber: Subscriber<T, K> | null,
+      data: T,
+      event: Event,
+      callback: Callback<Snapshot<T, K>>,
       value: T,
-    ): void {
-      const subscriber = arg0 as Subscriber<T, K>;
-      if (subscriber) {
-        subscriber.getState(arg1)
-        subscriber.setEvent(arg2, value);
+    ): SnapshotsArray<T> {
+      const foundSubscriber = subscriber as Subscriber<T, K>;
+      if (foundSubscriber) {
+        foundSubscriber.getState(data);
+        foundSubscriber.setEvent(event, value);
       }
-
-      callback(snapshot);
+    
+      // Create a new snapshot of type Snapshot<T, BaseData>
+      const newSnapshot: Snapshot<T, K> = {
+        ...snapshot,
+        initialState: snapshot.initialState,
+        mappedSnapshotData: snapshot.mappedSnapshotData
+      };
+    
+      // Type assertion when passing to callback
+      callback(newSnapshot as unknown as Snapshot<T, K>);
+    
+      // Return an appropriate SnapshotsArray<T> value.
+      return [newSnapshot as unknown as SnapshotUnion<T>];
     }
-  };
+  }
   callback(snapshot);
   return snapshot;
 }
@@ -227,7 +278,7 @@ const commonEvent: CommonEvent = {
 
   status: StatusType.Scheduled,
   isActive: false,
-  tags: [],
+  tags: { },
   phase: null,
   // Implement the `then` function using the reusable function
   then: <T extends Data, K extends Data>(

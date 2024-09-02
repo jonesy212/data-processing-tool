@@ -50,7 +50,7 @@ import useErrorHandling from "../hooks/useErrorHandling";
 import useWebSocket from "../hooks/useWebSocket";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { BlogActions } from "../models/blogs/BlogAction";
-import { ProgressData } from "../models/data/ProgressData";
+import {ProgressDataProps} from "../models/data/ProgressData";
 import { SortingType } from "../models/data/StatusType";
 import {
   initiateBitcoinPayment,
@@ -74,6 +74,8 @@ import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";
 import { CustomMouseEvent } from "./EventService";
+import { K, T } from "../snapshots";
+import { constructTarget, Target } from "@/app/api/EndpointConstructor";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -91,7 +93,7 @@ type ReactiveBaseMouse = BaseSyntheticEvent & React.MouseEvent<HTMLElement, Mous
 // Define the type of the event parameter to match ReactiveEventHandler
 type ReactiveMouseEvent = React.MouseEvent<HTMLElement, MouseEvent> & {
   settings?: any;
-  progress?: ProgressData;
+  progress?: ProgressDataProps;
 };
 
 // | React.MouseEvent<HTMLDivElement, MouseEvent>;
@@ -160,6 +162,17 @@ const UI_API_URL = endpoints.uiSettings;
 export type ReactiveEventListener = EventListenerOrEventListenerObject &
   ReactiveEventHandler;
 export type ZoomWheelEventListener = ReactiveEventListener & ReactiveWheelEvent;
+
+
+
+interface UnsubscribeDetails {
+  userId: string;
+  snapshotId: string;
+  unsubscribeType: string;
+  unsubscribeDate: Date;
+  unsubscribeReason: string;
+  unsubscribeData: any;
+}
 
 // const createEventHandler = createEventHandler;
 const history = useNavigate();
@@ -285,11 +298,16 @@ const resetStateVariables = () => {
 
 const clearResources = (
   socket: WebSocket | null,
-  subscription: Subscription | null
+  subscription: Subscription<T, K> | null,
+  unsubscribeDetails?: UnsubscribeDetails
 ) => {
-  cleanupSubscriptions(subscription);
-  if (socket !== null) {
-    cleanupSocketConnection(socket);
+
+  if (subscription && unsubscribeDetails) {
+   
+    cleanupSubscriptions(subscription, unsubscribeDetails);
+    if (socket !== null) {
+      cleanupSocketConnection(socket);
+    }
   }
   resetStateVariables();
 };
@@ -309,10 +327,12 @@ const cleanupState = (subscription: any) => {
   clearResources(adjustedSocket, subscription);
 };
 
-const cleanupSubscriptions = (subscription: Subscription | null) => {
+const cleanupSubscriptions = (subscription: Subscription<T, K> | null,
+  unsubscribeDetails?: UnsubscribeDetails
+) => {
   // Clean up any subscriptions
-  if (subscription) {
-    subscription.unsubscribe();
+  if (subscription && unsubscribeDetails) {
+    subscription.unsubscribe(unsubscribeDetails);
   }
 };
 
@@ -324,7 +344,8 @@ const cleanupSocketConnection = (socket: WebSocket) => {
 
 const closeConnections = (
   socket: WebSocket,
-  subscription: Subscription | null
+  subscription: Subscription<T, K>| null,
+  unsubscribeDetails?: UnsubscribeDetails
 ) => {
   // Close any open connections
 
@@ -332,8 +353,8 @@ const closeConnections = (
     socket.close();
   }
 
-  if (subscription) {
-    subscription.unsubscribe();
+  if (subscription && unsubscribeDetails) {
+    subscription.unsubscribe(unsubscribeDetails);
   }
 };
 
@@ -1147,7 +1168,7 @@ const DynamicEventHandlerService = ({
   handleSorting,
 }: {
   handleSorting: (
-    snapshotList: Promise<SnapshotList>,
+    snapshotList: Promise<SnapshotList<T, K>>,
     event: SyntheticEvent<Element, Event> | MouseEvent
   ) => void;
 }) => {
@@ -1158,10 +1179,10 @@ const DynamicEventHandlerService = ({
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
-  const snapshhotListRef = useRef<Promise<SnapshotList>>();
+  const snapshhotListRef = useRef<Promise<SnapshotList<T, K>>>();
   let sentiment: AxiosResponse<any, any>;
 
-  const handleSortingWrapper = (snapshotList: Promise<SnapshotList>) => {
+  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K>>) => {
     // Handle sorting logic
     // Assuming snapshotList is an array or object with sorting functionality
     (async () => {
@@ -2200,12 +2221,17 @@ const DynamicEventHandlerService = ({
       // Dispatch action to update progress bar state
       dispatch(
         UIActions.updateUIProgressBar({
-          value: progress?.value || 0,
+          value: typeof progress?.value === 'number' ? progress.value : 0,
           id: "",
           label: "",
           current: 0,
+          min: 0, 
           max: 100,
-          percentage: 0
+          percentage: 0,
+          name: "name", 
+          color: "blue", 
+          description: "ui progress bar update",
+          done: false,
         })
       );
 
@@ -2464,12 +2490,19 @@ const DynamicEventHandlerService = ({
         // Logic for handling sorting event
         console.log("Handling sorting event:", event);
         const target = event.target as HTMLDivElement;
-        const snapshotList: Promise<SnapshotList> = apiSnapshot.getSortedList(
-          target.innerText
-        );
+    
+        // Construct the Target object
+        const targetConfig = constructTarget("sorting", "sortEvents", {
+          sortBy: target.innerText, // Assuming target.innerText is used for sorting criteria
+          limit: 10, // Set a default limit or adjust as needed
+        });
+    
+        // Fetch the sorted list using the constructed Target
+        const snapshotList: Promise<SnapshotList<T, K>> = apiSnapshot.getSortedList(targetConfig);
         handleSorting(snapshotList, event);
       }
     );
+    
 
     const mouseClickEventHandler = createEventHandler(
       "handleMouseClick",
@@ -2602,7 +2635,7 @@ const DynamicEventHandlerService = ({
 };
 
 export default DynamicEventHandlerService;
-export type { CustomEventListener };
+export type { CustomEventListener, UnsubscribeDetails };
 export {generateNextPhaseRoute}
 
 function stopImmediatePropagation(

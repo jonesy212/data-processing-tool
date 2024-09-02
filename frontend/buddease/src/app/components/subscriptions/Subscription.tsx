@@ -12,9 +12,10 @@ import { useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { TriggerIncentivesParams } from "../utils/applicationUtils";
 import { userId } from "../users/ApiUser";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
-import { snapshot } from "../snapshots/snapshot";
+
 import { Data } from "../models/data/Data";
 import { Category } from "../libraries/categories/generateCategoryProperties";
+import { Callback } from "../snapshots";
 
 
 type FetchSnapshotByIdCallback = {
@@ -23,6 +24,11 @@ type FetchSnapshotByIdCallback = {
 };
 
 type Subscription<T extends Data, K extends Data> = {
+  name: string;
+  subscriberId?: string;
+  subscriptionId?: string;
+  subscriberType?: SubscriberTypeEnum;
+  subscriptionType?: SubscriptionTypeEnum;
   unsubscribe: (
     unsubscribeDetails: {
       userId: string;
@@ -31,7 +37,8 @@ type Subscription<T extends Data, K extends Data> = {
       unsubscribeDate: Date;
       unsubscribeReason: string;
       unsubscribeData: any;
-    }
+    },
+    callback: Callback<Snapshot<T, K>> | null
   ) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
@@ -61,10 +68,7 @@ type Subscription<T extends Data, K extends Data> = {
       snapshotId: string;
     }
   ) => void;
-  subscriberId?: string;
-  subscriptionId?: string;
-  subscriberType?: SubscriberTypeEnum;
-  subscriptionType?: SubscriptionTypeEnum;
+
   getPlanName?: (
     { userId, snapshotId }: {
       userId: string;
@@ -111,6 +115,22 @@ const SubscriptionComponent = (
     // Subscribe to the data service
     const subscription = subscriptionService;
 
+    const callback: Callback<Snapshot<any>> = (snapshot) => {
+      // Perform actions based on the snapshot provided to the callback
+      console.log("Unsubscribed successfully");
+      console.log("Snapshot ID:", snapshot.id);
+      console.log("Snapshot Data:", snapshot.data);
+      console.log("Snapshot Timestamp:", snapshot.timestamp);
+    
+      // Additional logic after unsubscribing
+      if (snapshot.data) {
+        // Example: Perform some cleanup or state updates
+        console.log("Performing cleanup based on snapshot data...");
+        // Add your custom logic here based on the snapshot data
+      }
+    
+      // Further actions can be added here if needed
+    };
     // Your subscription usage
     const subscriptionUsage: Subscription<T, K> | undefined = subscription.subscribe(
       hookName,
@@ -136,7 +156,8 @@ const SubscriptionComponent = (
 
     // Ensure subscriptionUsage is defined before accessing unsubscribe
     if (subscriptionUsage) {
-      const snapshotId = getSnapshotId(snapshot).toString()
+      const criteria = await snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot);
+      const snapshotId = getSnapshotId(criteria).toString()
       // Cleanup: Unsubscribe when the component unmounts
       return () => {
         // Make sure to pass the correct parameters to unsubscribe
@@ -147,7 +168,9 @@ const SubscriptionComponent = (
           unsubscribeDate,
           unsubscribeReason,
           unsubscribeData
-        });
+        },
+          callback
+        );
       };
     }
 

@@ -2,12 +2,13 @@ import { BaseData, Data } from "@/app/components/models/data/Data";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { IHydrateResult } from "mobx-persist";
 import { FC } from "react";
-import { CalendarEvent } from "../calendar/CalendarEvent";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Month } from "../calendar/Month";
 import { CreateSnapshotsPayload, FetchSnapshotPayload } from "../database/Payload";
 import { Attachment } from "../documents/Attachment/attachment";
+import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "../models/data/StatusType";
@@ -222,7 +223,12 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
   snapshot: Snapshot<T, K> = {
     data: new Map<string, Snapshot<T, K>>(),
     store: new LocalStorageSnapshotStore<T, K>(
-      window.localStorage
+      window.localStorage,
+      category,
+      options,
+      config,
+      initialState,
+      operation,
     ),
     state: null,
     snapshotStoreConfig: {},
@@ -539,7 +545,7 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
     removeStore: function (storeId: number, store: SnapshotStore<T, K>, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
       throw new Error("Function not implemented.");
     },
-    fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<K> | undefined, snapshotStore: SnapshotStore<T, K>, payloadData: T | Data, category: string | CategoryProperties | undefined, timestamp: Date, data: T, delegate: SnapshotWithCriteria<T, K>[]) => Snapshot<T, K>): Snapshot<T, K> | undefined {
+    fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<K> | undefined, snapshotStore: SnapshotStore<T, K>, payloadData: T | Data, category: symbol | string | Category | undefined, timestamp: Date, data: T, delegate: SnapshotWithCriteria<T, K>[]) => Snapshot<T, K>): Snapshot<T, K> | undefined {
       throw new Error("Function not implemented.");
     },
     addSnapshotFailure: function (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
@@ -554,33 +560,87 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
     updateSnapshotFailure: function (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, date: Date, payload: { error: Error; }): void {
       throw new Error("Function not implemented.");
     },
-    updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
+    updateSnapshotSuccess: function (snapshotId: number, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
       throw new Error("Function not implemented.");
     },
-    createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): Promise<void> {
+    createSnapshotFailure: function (snapshotId: number, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): Promise<void> {
       throw new Error("Function not implemented.");
     },
-    createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
+    createSnapshotSuccess: function (snapshotId: number, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
       throw new Error("Function not implemented.");
     },
-    createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K>, snapshotManager: SnapshotManager<T, K>, payload: CreateSnapshotsPayload<T, K>, callback: (snapshots: Snapshot<T, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, category?: string | CategoryProperties): Snapshot<T, K>[] | null {
+    createSnapshots: function (
+      id: string,
+      snapshotId: number,
+      snapshots: Snapshot<T, K>[], // Use Snapshot<T, K>[] here
+      snapshotManager: SnapshotManager<T, K>, 
+      payload: CreateSnapshotsPayload<T, K>, 
+      callback: (snapshots: Snapshot<T, K>[]) => void | null, 
+      snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, 
+      category?: string | Category,
+      categoryProperties?: string | CategoryProperties
+    ): Snapshot<T, K>[] | null {
+      
+  // Example logic to modify existing snapshots
+  const updatedSnapshots: Snapshot<T, K>[] = snapshots.map(snapshot => {
+    return {
+      ...snapshot,
+      data: {
+        ...snapshot.data,
+        ...payload.data, // Merge new data from payload
+      },
+      meta: {
+        ...snapshot.meta,
+        updated: new Date(), // Mark snapshot as updated
+      },
+    };
+  });
+
+  if (callback) {
+    callback(updatedSnapshots);
+  }
+
+  return updatedSnapshots;
+    },
+    onSnapshot: function (snapshotId: number, snapshot: Snapshot<T, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, K>) => void): void {
       throw new Error("Function not implemented.");
     },
-    onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, K>) => void): void {
+    onSnapshots: function (napshotId: number, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): void {
       throw new Error("Function not implemented.");
     },
-    onSnapshots: function (snapshotId: string, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): void {
-      throw new Error("Function not implemented.");
-    },
-    updateSnapshot: function (snapshotId: string, data: Map<string, Snapshot<T, K>>, events: Record<string, CalendarEvent<T, K>[]>, snapshotStore: SnapshotStore<T, K>, dataItems: RealtimeDataItem[], newData: Snapshot<T, K>, payload: UpdateSnapshotPayload<T>, store: SnapshotStore<any, K>): Promise<{ snapshot: SnapshotStore<T, K>; }> {
+    updateSnapshot: function (
+      snapshotId: string,
+      data: Map<string, Snapshot<T, K>>,
+      events: Record<string, CalendarManagerStoreClass<T, K>[]>, 
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[], 
+      newData: Snapshot<T, K>, 
+      payload: UpdateSnapshotPayload<T>,
+      store: SnapshotStore<any, K>): Promise<{ snapshot: SnapshotStore<T, K>; }> {
       throw new Error("Function not implemented.");
     },
     label: undefined,
-    events: [],
-    handleSnapshot: function (id: string, snapshotId: string, snapshot: T | null, snapshotData: T, category: string | CategoryProperties | undefined, callback: (snapshot: T) => void, snapshots: SnapshotsArray<T>, type: string, event: Event, snapshotContainer?: T | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined): Promise<Snapshot<T, K> | null> {
+    events: {},
+    handleSnapshot: function (id: string,
+      snapshotId: number, 
+      snapshot: T | null, 
+      snapshotData: T, 
+      category: symbol | string | Category | undefined, 
+      categoryProperties: CategoryProperties,
+      callback: (snapshot: T) => void,
+      snapshots: SnapshotsArray<T>,
+      type: string,
+      event: Event,
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,  
+    ): Promise<Snapshot<T, K> | null> {
       throw new Error("Function not implemented.");
     },
-    subscribeToSnapshots: function (snapshotId: string, unsubscribeType: string, unsubscribeDate: Date, unsubscribeReason: string, unsubscribeData: any, callback: (snapshots: Snapshots<T>) => Snapshot<T, K> | null): void {
+    subscribeToSnapshots: function (
+      snapshotId: number,
+      unsubscribe: UnsubscribeDetails, 
+      callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null
+    ) : SnapshotsArray<T> {
       throw new Error("Function not implemented.");
     },
 

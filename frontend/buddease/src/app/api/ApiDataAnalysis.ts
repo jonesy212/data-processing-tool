@@ -113,7 +113,7 @@ export const fetchAnalysisResults = (): Promise<any> => {
   }
 
   return fetchDataAnalysis(endpoint)
-    .then((response: YourResponseType | Snapshot<Data>) => {
+    .then((response: YourResponseType | Snapshot<Data, Data>) => {
       const analysisResults = response.data;
 
       // Check if analysisResults is of type DataAnalysisResult
@@ -126,43 +126,233 @@ export const fetchAnalysisResults = (): Promise<any> => {
 
       // Return processed data
       return {
+        // General Properties
         ...rest,
         description: description ?? undefined,
         phase: phase ?? undefined,
         priority: priority as PriorityTypeEnum | undefined,
+
+        // Data Analysis
         data: analysisResults.data,
         sentiment: analysisResults.sentiment,
         sentimentAnalysis: analysisResults.sentimentAnalysis,
         events: analysisResults.events,
         meta: analysisResults.meta,
         initialConfig: analysisResults.initialConfig,
+        config: analysisResults.config,
+
+        // Snapshot Management
+        snapshot: analysisResults.snapshot,
+        payload: analysisResults.payload,
+        snapshotData: analysisResults.snapshotData,
+        getSnapshotItems: analysisResults.getSnapshotItems,
+        getSnapshot: analysisResults.getSnapshot,
+        getAllSnapshots: analysisResults.getAllSnapshots,
+        takeSnapshot: analysisResults.takeSnapshot,
+        createSnapshot: analysisResults.createSnapshot,
+        updateSnapshots: analysisResults.updateSnapshots,
+        deleteSnapshot: analysisResults.deleteSnapshot,
+        batchTakeSnapshot: analysisResults.batchTakeSnapshot,
+        batchFetchSnapshots: analysisResults.batchFetchSnapshots,
+        batchUpdateSnapshotsRequest: analysisResults.batchUpdateSnapshotsRequest,
+        batchFetchSnapshotsSuccess: analysisResults.batchFetchSnapshotsSuccess,
+        batchUpdateSnapshotsSuccess: analysisResults.batchUpdateSnapshotsSuccess,
+        batchFetchSnapshotsFailure: analysisResults.batchFetchSnapshotsFailure,
+        batchUpdateSnapshotsFailure: analysisResults.batchUpdateSnapshotsFailure,
+        takeSnapshotSuccess: analysisResults.takeSnapshotSuccess,
+        createSnapshotSuccess: analysisResults.createSnapshotSuccess,
+        createSnapshotFailure: analysisResults.createSnapshotFailure,
+        updateSnapshotSuccess: analysisResults.updateSnapshotSuccess,
+        updateSnapshotFailure: analysisResults.updateSnapshotFailure,
+        updateSnapshotsSuccess: analysisResults.updateSnapshotsSuccess,
+        updateSnapshotsFailure: analysisResults.updateSnapshotsFailure,
+        fetchSnapshotSuccess: analysisResults.fetchSnapshotSuccess,
+        fetchSnapshotFailure: analysisResults.updateSnapshotFailure,
+        getSnapshots: analysisResults.getSnapshots,
+        getSnapshotId: analysisResults.getSnapshotId,
+        getSnapshotWithCriteria: analysisResults.getSnapshotWithCriteria,
+        getSnapshotConfigItems: analysisResults.getSnapshotConfigItems,
+        compareSnapshots: analysisResults.compareSnapshots,
+        compareSnapshotItems: analysisResults.compareSnapshotItems,
+        mergeSnapshots: analysisResults.mergeSnapshots,
+        reduceSnapshots: analysisResults.reduceSnapshots,
+        sortSnapshots: analysisResults.sortSnapshots,
+        filterSnapshots: analysisResults.filterSnapshots,
+        findSnapshot: analysisResults.findSnapshot,
+        takeLatestSnapshot: analysisResults.takeLatestSnapshot,
+        restoreSnapshot: analysisResults.restoreSnapshot,
+        clearSnapshots: analysisResults.clearSnapshots,
+        setSnapshots: analysisResults.setSnapshots,
+        clearSnapshot: analysisResults.clearSnapshot,
+        handleSnapshot: analysisResults.handleSnapshot,
+        handleSnapshotSuccess: analysisResults.handleSnapshotSuccess,
+        getSnapshotData: analysisResults.getSnapshotData,
+
+        // Snapshot Store Management
+        snapshotStore: analysisResults.snapshotStore,
+        configureSnapshotStore: analysisResults.configureSnapshotStore,
+        getDataStore: analysisResults.getDataStore,
+        addStoreConfig: analysisResults.addStoreConfig,
+        getSnapshotConfig: analysisResults.getSnapshotConfig,
+        handleSnapshotConfig: analysisResults.handleSnapshotConfig,
+        getDataStoreMethods: analysisResults.getDataStoreMethods,
+        addNestedStore: analysisResults.addNestedStore,
+        removeStore: analysisResults.removeStore,
+
+
+        removeSnapshot: analysisResults.removeSnapshot,
+        getDataStoreMap: analysisResults.getDataStoreMap,
+
+        // Subscriber Management
+        subscribe: analysisResults.subscribe,
         removeSubscriber: analysisResults.removeSubscriber,
         onInitialize: analysisResults.onInitialize,
         onError: analysisResults.onError,
-       
-        snapshot: analysisResults.snapshot,
-        setCategory: analysisResults.setCategory,
-        applyStoreConfig: analysisResults.applyStoreConfig,
-        snapshotData: analysisResults.snapshotData,
-        
-        getSnapshotItems: analysisResults.getSnapshotItems,
         defaultSubscribeToSnapshots: analysisResults.defaultSubscribeToSnapshots,
-        versionInfo: analysisResults.versionInfo,
-        transformSubscriber: analysisResults.transformSubscriber,
-       
-        transformDelegate: analysisResults.transformDelegate,
-        initializedState: analysisResults.initializedState,
-        getAllKeys: analysisResults.getAllKeys,
-        getAllItems: analysisResults.getAllItems,
-        
+        defaultSubscribeToSnapshot: analysisResults.defaultSubscribeToSnapshot,
+        subscribeToSnapshots: analysisResults.subscribeToSnapshots,
+        handleSubscribeToSnapshot: analysisResults.handleSubscribeToSnapshot,
+        unsubscribeFromSnapshot: analysisResults.unsubscribeFromSnapshot,
+        subscribeToSnapshot: analysisResults.subscribeToSnapshot,
+        notify: analysisResults.notify,
+        notifySubscribers: analysisResults.notifySubscribers,
+        getSubscribers: analysisResults.getSubscribers,
+        addSnapshotSubscriber: analysisResults.addSnapshotSubscriber,
+        removeSnapshotSubscriber: analysisResults.removeSnapshotSubscriber,
+        subscribeToSnapshotList: analysisResults.subscribeToSnapshotList,
+        unsubscribeFromSnapshots: analysisResults.unsubscribeFromSnapshots,
+
+        // Data Operations
         addDataStatus: analysisResults.addDataStatus,
         removeData: analysisResults.removeData,
         updateData: analysisResults.updateData,
         updateDataTitle: analysisResults.updateDataTitle,
-        isCore, taskIdToAssign, generateId, notify,
-        
-        
-      } as Snapshot<BaseData>;
+        updateDataDescription: analysisResults.updateDataDescription,
+        updateDataStatus: analysisResults.updateDataStatus,
+        addDataSuccess: analysisResults.addDataSuccess,
+        fetchData: analysisResults.fetchData,
+        getDataVersions: analysisResults.getDataVersions,
+        updateDataVersions: analysisResults.updateDataVersions,
+        getBackendVersion: analysisResults.getBackendVersion,
+        getFrontendVersion: analysisResults.getFrontendVersion,
+        getTimestamp: analysisResults.getTimestamp,
+        getStores: analysisResults.getStores,
+        getInitialState: analysisResults.getInitialState,
+        getConfigOption: analysisResults.getConfigOption,
+        dataItems: analysisResults.dataItems,
+        newData: analysisResults.newData,
+        getAllKeys: analysisResults.getAllKeys,
+        getAllItems: analysisResults.getAllItems,
+
+        // Utility and Helper Methods
+        transformSubscriber: analysisResults.transformSubscriber,
+        transformDelegate: analysisResults.transformDelegate,
+        deepCompare: analysisResults.deepCompare,
+        shallowCompare: analysisResults.shallowCompare,
+        getDelegate: analysisResults.getDelegate,
+        determineCategory: analysisResults.determineCategory,
+        determinePrefix: analysisResults.determinePrefix,
+        emit: analysisResults.emit,
+
+        parentId: analysisResults.parentId,
+        childIds: analysisResults.childIds,
+        getParentId: analysisResults.getParentId,
+        getChildIds: analysisResults.getChildIds,
+        addChild: analysisResults.addChild,
+        removeChild: analysisResults.removeChild,
+        getChildren: analysisResults.getChildren,
+        hasChildren: analysisResults.hasChildren,
+        isDescendantOf: analysisResults.isDescendantOf,
+        mappedSnapshotData: analysisResults.mappedSnapshotData,
+
+        // Snapshot Actions
+        executeSnapshotAction: analysisResults.executeSnapshotAction,
+        subscribeToSnapshotsSuccess: analysisResults.subscribeToSnapshotsSuccess,
+        getSnapshotItemsSuccess: analysisResults.getSnapshotItemsSuccess,
+        getSnapshotItemSuccess: analysisResults.getSnapshotItemSuccess,
+        getSnapshotKeys: analysisResults.getSnapshotKeys,
+        getSnapshotIdSuccess: analysisResults.getSnapshotIdSuccess,
+        getSnapshotValuesSuccess: analysisResults.getSnapshotValuesSuccess,
+        reduceSnapshotItems: analysisResults.reduceSnapshotItems,
+
+
+        filterSnapshotsByStatus: analysisResults.filterSnapshotsByStatus,
+        filterSnapshotsByCategory: analysisResults.filterSnapshotsByCategory,
+        filterSnapshotsByTag: analysisResults.filterSnapshotsByTag,
+
+
+        // Data Storage
+        getStore: analysisResults.getStore,
+        addStore: analysisResults.addStore,
+        mapSnapshot: analysisResults.mapSnapshot,
+        mapSnapshotWithDetails: analysisResults.mapSnapshotWithDetails,
+
+        // Initialization and State Management
+        getState: analysisResults.getState,
+        setState: analysisResults.setState,
+        initSnapshot: analysisResults.initSnapshot,
+        validateSnapshot: analysisResults.validateSnapshot,
+        handleActions: analysisResults.handleActions,
+        createSnapshots: analysisResults.createSnapshots,
+        onSnapshot: analysisResults.onSnapshot,
+        onSnapshots: analysisResults.onSnapshots,
+        setSnapshot: analysisResults.setSnapshot,
+        setSnapshotCategory: analysisResults.setSnapshotCategory,
+        getSnapshotCategory: analysisResults.getSnapshotCategory,
+
+
+
+        setCategory: analysisResults.setCategory,
+        applyStoreConfig: analysisResults.applyStoreConfig,
+        versionInfo: analysisResults.versionInfo,
+        initializedState: analysisResults.initializedState,
+        isCore: analysisResults.isCore,
+        taskIdToAssign: analysisResults.taskIdToAssign,
+        generateId: analysisResults.generateId,
+        getAllValues: analysisResults.getAllValues,
+        getSnapshotEntries: analysisResults.getSnapshotEntries,
+        getAllSnapshotEntries: analysisResults.getAllSnapshotEntries,
+
+        removeItem: analysisResults.removeItem,
+        getSnapshotSuccess: analysisResults.getSnapshotSuccess,
+        setItem: analysisResults.setItem,
+
+        getItem: analysisResults.getItem,
+        addSnapshotSuccess: analysisResults.addSnapshotSuccess,
+        addSnapshotItem: analysisResults.addSnapshotItem,
+
+        addSnapshot: analysisResults.addSnapshot,
+        createInitSnapshot: analysisResults.createInitSnapshot,
+        getSnapshotListByCriteria: analysisResults.getSnapshotListByCriteria,
+        setSnapshotSuccess: analysisResults.setSnapshotSuccess,
+        setSnapshotFailure: analysisResults.setSnapshotFailure,
+
+        takeSnapshotsSuccess: analysisResults.takeSnapshotsSuccess,
+        flatMap: analysisResults.flatMap,
+        transformSnapshotConfig: analysisResults.transformSnapshotConfig,
+        mapSnapshots: analysisResults.mapSnapshots,
+        updateSnapshot: analysisResults.updateSnapshot,
+
+        subscribers: analysisResults.subscribers,
+
+        batchTakeSnapshotsRequest: analysisResults.batchTakeSnapshotsRequest,
+
+        compareSnapshotState: analysisResults.compareSnapshotState,
+
+
+        getData: analysisResults.getData,
+        setData: analysisResults.setData,
+        addData: analysisResults.addData,
+        stores: analysisResults.stores,
+
+        unsubscribe: analysisResults.unsubscribe,
+        fetchSnapshot: analysisResults.fetchSnapshot,
+        addSnapshotFailure: analysisResults.addSnapshotFailure,
+
+
+        currentCategory: analysisResults.currentCategory,
+
+      } as Snapshot<BaseData, BaseData>
     })
     .catch((error) => {
       handleDataAnalysisApiErrorAndNotify(

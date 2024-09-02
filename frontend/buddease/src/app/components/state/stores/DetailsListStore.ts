@@ -207,7 +207,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     // Updated initSnapshotStore method
     private async initSnapshotStore() {
       const initialState = null; // or undefined, depending on your default handling
-      const snapshotConfig: SnapshotStoreConfig<SnapshotUnion<T, any>, K>[] = [];  // Example empty array
+      const snapshotConfig: SnapshotStoreConfig<T, K>[] = [];  // Example empty array
 
       // Ensure delegate is correctly typed as Snapshot<T, K>
       const delegateSnapshot: Snapshot<T, K> = {
@@ -236,9 +236,14 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
         initialState,
         snapshotId: "", // Provide appropriate snapshotId
         category: category as unknown as CategoryProperties,
+        categoryProperties: {
+          // Provide appropriate category properties
+          name, description, icon, color
+        },
         dataStoreMethods: {
           // Provide appropriate dataStoreMethods
-        }
+        },
+
       });
 
 
@@ -253,7 +258,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
       };
 
 
-      this.snapshotStore = new SnapshotStore<T, K>(storeId, options, config, operation);
+      this.snapshotStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
     }
 
   updateDetailsTitle(id: string, newTitle: string): void {

@@ -210,7 +210,7 @@
 //         snapshotId: string,
 //         snapshot: K | null,
 //         snapshotData: K,
-//         category: string | CategoryProperties | undefined,
+//         category: symbol | string | Category | undefined,
 //         callback: (snapshot: K) => void,
 //         snapshots: SnapshotsArray<K>,
 //         type: string,
@@ -244,7 +244,7 @@
 //         payload: FetchSnapshotPayload<any>,
 //         snapshotStore: SnapshotStore<any, any>,
 //         payloadData: any,
-//         category: string | CategoryProperties | undefined,
+//         category: symbol | string | Category | undefined,
 //         timestamp: Date,
 //         data: any,
 //         delegate: SnapshotWithCriteria<any, any>[]
@@ -808,7 +808,7 @@
 //       mapSnapshots: (
 //         storeIds: number[],
 //         snapshotId: string,
-//         category: string | CategoryProperties | undefined,
+//         category: symbol | string | Category | undefined,
 //         snapshot: Snapshot<Task, K>,
 //         timestamp: string | number | Date | undefined,
 //         type: string,
@@ -819,7 +819,7 @@
 //         callback: (
 //           storeIds: number[],
 //           snapshotId: string,
-//           category: string | CategoryProperties | undefined,
+//           category: symbol | string | Category | undefined,
 //           snapshot: Snapshot<Task, K>,
 //           timestamp: string | number | Date | undefined,
 //           type: string,
@@ -843,7 +843,7 @@
 //           payload: FetchSnapshotPayload<K> | undefined,
 //           snapshotStore: SnapshotStore<Task, K>,
 //           payloadData: T | Data,
-//           category: string | CategoryProperties | undefined,
+//           category: symbol | string | Category | undefined,
 //           timestamp: Date,
 //           data: T,
 //           delegate: SnapshotWithCriteria<Task, K>[]

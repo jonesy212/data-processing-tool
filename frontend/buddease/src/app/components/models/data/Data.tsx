@@ -18,7 +18,10 @@ import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
 import { K, T } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria, TagsRecord } from "../../snapshots/SnapshotWithCriteria";
+import {
+  SnapshotWithCriteria,
+  TagsRecord,
+} from "../../snapshots/SnapshotWithCriteria";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { Settings } from "../../state/stores/SettingsStore";
@@ -28,21 +31,25 @@ import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
-import CommonDetails from "../CommonData";
+import CommonDetails, { CommonData } from "../CommonData";
 import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
-import { ProjectPhaseTypeEnum, StatusType, SubscriptionTypeEnum } from "./StatusType";
+import {
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriptionTypeEnum,
+} from "./StatusType";
 import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { NotificationSettings } from "../../support/NotificationSettings";
 
 // Define the interface for DataDetails
-interface DataDetails {
+interface DataDetails extends CommonData {
   _id?: string;
-  id?: string | number;
   title?: string;
   description?: string | null;
 
-  details?: DetailsItem<T>
+  details?: DetailsItem<T>;
   completed?: boolean | undefined;
   startDate?: Date;
   endDate?: Date;
@@ -66,7 +73,7 @@ interface DataDetails {
   analysisType?: AnalysisTypeEnum;
   updatedAt: Date | undefined;
   analysisResults?: string | DataAnalysisResult[] | undefined;
-  todo?: Todo
+  todo?: Todo;
   // Add other properties as needed
 }
 
@@ -75,7 +82,8 @@ interface DataDetailsProps<T> {
   data: T;
 }
 
-type TodoSubtasks = Todo[] & Task[]
+type TodoSubtasks = Todo[] & Task[];
+
 export interface Comment {
   id?: string;
   text?: string | Content<Data>;
@@ -112,17 +120,17 @@ interface BaseData {
   endDate?: Date;
   scheduled?: boolean;
   status?: AllStatus;
-  timestamp?: string | number | Date | undefined
+  timestamp?: string | number | Date | undefined;
   isActive?: boolean;
-  tags?: TagsRecord;  // Update as needed based on your schema
-  
+  tags?: TagsRecord; // Update as needed based on your schema
+
   // | Tag[];
   phase?: Phase | null;
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
-  
+
   value?: number | string | Snapshot<BaseData, BaseData> | undefined;
-  initialState?: InitializedState<BaseData, BaseData>
+  initialState?: InitializedState<BaseData, BaseData>;
   dueDate?: Date | null;
   priority?: string | AllStatus;
   assignee?: UserAssignee | null;
@@ -134,7 +142,7 @@ interface BaseData {
   updatedAt?: string | Date | undefined;
   createdBy?: string | Date | undefined;
   updatedBy?: string;
-  updatedDetails?: DetailsItem<T>
+  updatedDetails?: DetailsItem<T>;
   isArchived?: boolean;
   isCompleted?: boolean;
   isBeingEdited?: boolean;
@@ -154,10 +162,12 @@ interface BaseData {
   ideas?: Idea[];
   members?: number[] | string[] | Member[];
   leader?: User | null;
-  snapshotsStores?: SnapshotStore<BaseData, BaseData>[];
+  snapshotStores?: SnapshotStore<BaseData, BaseData>[];
   snapshots?: Snapshots<BaseData>;
   text?: string;
-  category?: Category
+  category?: Category;
+
+  notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
   [key: string]: any;
   // getData?: (id: number) => Promise<Snapshot<
@@ -169,13 +179,13 @@ interface BaseData {
 }
 
 interface Data extends BaseData {
-  category?: Category;
-  categoryProperties?: CategoryProperties; 
+  category?: string | Category;
+  categoryProperties?: CategoryProperties;
   subtasks?: TodoImpl<Todo, any>[];
   actions?: SnapshotStoreConfig<T, Data>[]; // Use Data instead of BaseData
   snapshotWithCriteria?: SnapshotWithCriteria<Data, any>;
   value?: any;
-  label?:  any;
+  label?: any;
   [key: string]: any;
 }
 
@@ -183,7 +193,7 @@ interface Data extends BaseData {
 
 const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
   const getTagNames = (tags: TagsRecord): string[] => {
-    return Object.values(tags).map(tag => tag.name);
+    return Object.values(tags).map((tag) => tag.name);
   };
 
   return (
@@ -213,7 +223,8 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
   );
 };
 
-const coreData: Data = {  _id: "1",
+const coreData: Data = {
+  _id: "1",
   id: "data1",
   title: "Sample Data",
   description: "Sample description",
@@ -225,7 +236,7 @@ const coreData: Data = {  _id: "1",
   status: StatusType.Pending,
   isActive: true,
   tags: {
-    "tag1": {
+    tag1: {
       id: "tag1",
       name: "Tag 1",
       color: "#000000",
@@ -237,7 +248,7 @@ const coreData: Data = {  _id: "1",
       updatedAt: new Date(),
       createdBy: "creator1",
       timestamp: new Date().getTime(),
-    }
+    },
   },
   phase: {
     id: "phase1",
@@ -248,7 +259,7 @@ const coreData: Data = {  _id: "1",
     status: "Active",
     isActive: true,
     tags: {
-      "tag1": {
+      tag1: {
         id: "tag1",
         name: "Tag 1",
         color: "#000000",
@@ -260,9 +271,9 @@ const coreData: Data = {  _id: "1",
         updatedAt: new Date(),
         createdBy: "creator1",
         timestamp: new Date().getTime(),
-      }
+      },
     }, // This should match the type defined in Tag
-    subPhases: []
+    subPhases: [],
   },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -306,19 +317,19 @@ const coreData: Data = {  _id: "1",
     title: "Sample Video Title",
     description: "Sample video description",
     tags: {
-      "tag1": {
+      tag1: {
         id: "tag1",
         name: "Tag 1",
         color: "#000000",
         description: "Tag 1 description",
         enabled: true,
         type: "Category",
-        relatedTags: [], 
+        relatedTags: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: "creator1",
         timestamp: new Date().getTime(),
-      }
+      },
     },
     createdBy: "uploader1",
     createdAt: new Date(),
@@ -389,15 +400,18 @@ const coreData: Data = {  _id: "1",
     friends: [],
     blockedUsers: [],
     persona: new Persona(PersonaTypeEnum.Default),
+    followers: [],
+    preferences: {},
+
     settings: {
-      id:"0",
+      id: "0",
       userId: 123,
       userSettings: setTimeout(() => {}, 1000),
       communicationMode: "email",
       enableRealTimeUpdates: true,
-      filter: (key: keyof Settings) => "defaultFilter", 
-      appName: "MyApp" ,
-   
+      filter: (key: keyof Settings) => "defaultFilter",
+      appName: "MyApp",
+
       defaultFileType: "pdf",
       allowedFileTypes: ["pdf", "docx", "xlsx"],
       enableGroupManagement: true,
@@ -476,7 +490,6 @@ const coreData: Data = {  _id: "1",
       selectDatabaseVersion: "v1.0",
       selectAppVersion: "v1.0",
       enableDatabaseEncryption: true,
-
     },
     interests: [],
     privacySettings: {
@@ -494,7 +507,8 @@ const coreData: Data = {  _id: "1",
       enableIncognitoMode: false,
       restrictContentSharingToContacts: false,
       restrictContentSharingToGroups: false,
-    }, // Added missing properties
+    },
+
     notifications: {
       email: true,
       push: true,
@@ -520,8 +534,7 @@ const coreData: Data = {  _id: "1",
       thread: false,
       inviteAccepted: false,
       directMessage: false,
-    }, // Added missing property
-
+    },
     activityLog: [
       {
         action: "Logged in",
@@ -567,9 +580,36 @@ const coreData: Data = {  _id: "1",
       enableNotifications: true,
       notificationSound: "birds",
       notificationVolume: 50,
-      sms: false,
-      mobile: false,
-      desktop: true,
+      smsNotifications: true,
+      desktopNotifications: true,
+      notificationTypes: {
+
+      },
+      customNotificationSettings: "",
+      mobile: {
+        email: true,
+        sms: false,
+        pushNotifications: true,
+        desktopNotifications: true,
+        emailFrequency: "daily",
+        smsFrequency: "daily",
+      },
+      desktop: {
+        email: true,
+        sms: false,
+        pushNotifications: true,
+        desktopNotifications: true,
+        emailFrequency: "daily",
+        smsFrequency: "daily",
+      },
+      tablet: {
+        email: true,
+        sms: false,
+        pushNotifications: true,
+        desktopNotifications: true,
+        emailFrequency: "daily",
+        smsFrequency: "daily",
+      },
     },
     securitySettings: {
       securityQuestions: ["What is your pet's name?"],
@@ -591,292 +631,214 @@ const coreData: Data = {  _id: "1",
       },
       accountLockoutThreshold: 5,
     },
-    emailVerificationStatus: true,
-    phoneVerificationStatus: true,
-    walletAddress: "0x123456789abcdef",
-    transactionHistory: [
-      createCustomTransaction({
-        id: "tx1",
-        amount: 100,
-        date: new Date(),
-        description: "Sample transaction",
-        type: null,
-        typeName: null,
-        to: null,
-        nonce: 0,
-        gasLimit: BigInt(0),
-        gasPrice: null,
-        maxPriorityFeePerGas: null,
-        maxFeePerGas: null,
-        data: "",
-        value: BigInt(0),
-        chainId: BigInt(0),
-        signature: null,
-        accessList: [],
-        maxFeePerBlobGas: null,
-        blobVersionedHashes: null,
-        hash: null,
-        unsignedHash: "",
-        from: null,
-        fromPublicKey: null,
-
-        isSigned(): boolean {
-          return !!(this.type && this.typeName && this.from && this.signature);
-        },
-        serialized: "",
-        unsignedSerialized: "",
-        inferType(): number {
-          if (this.type !== null && this.type !== undefined) {
-            return this.type;
-          }
-          // Add other type inference logic here
-          // For now, we assume a default type if no specific logic matches
-          return 0; // default type
-        },
-        inferTypes(): number[] {
-          const types: number[] = [];
-          if (this.type !== null && this.type !== undefined) {
-            types.push(this.type);
-          }
-          // Add other logic to infer additional types
-          // Example:
-          if (
-            this.maxFeePerGas !== null &&
-            this.maxPriorityFeePerGas !== null
-          ) {
-            types.push(2); // Example for London type transaction
-          }
-          if (types.length === 0) {
-            types.push(0); // Default to legacy type if no other type inferred
-          }
-          return types;
-        },
-
-        isLegacy() {
-          // Check if the transaction type is legacy (type 0) and gas price is not null
-          return this.type === 0 && this.gasPrice !== null;
-        },
-        isBerlin() {
-          // Check if the transaction type is Berlin (type 1) and gas price and access list are not null
-          return (
-            this.type === 1 &&
-            this.gasPrice !== null &&
-            this.accessList !== null
-          );
-        },
-
-        isLondon() {
-          return (
-            this.type === 2 &&
-            this.accessList !== null &&
-            this.maxFeePerGas !== null &&
-            this.maxPriorityFeePerGas !== null
-          );
-        },
-        isCancun() {
-          return (
-            this.type === 3 &&
-            this.to !== null &&
-            this.accessList !== null &&
-            this.maxFeePerGas !== null &&
-            this.maxPriorityFeePerGas !== null &&
-            this.maxFeePerBlobGas !== null &&
-            this.blobVersionedHashes !== null
-          );
-        },
-
-        clone(): CustomTransaction {
-          // Implement logic to clone the data object
-
-          const clonedData: CustomTransaction = {
-            _id: this._id,
-            id: this.id || "", // Provide a default value of empty string
-            amount: this.amount,
-            date: this.date ? new Date(this.date.getTime()) : undefined,
-            description: this.description || "", // Provide a default value of empty string
-            startDate: this.startDate ? new Date(this.startDate) : undefined,
-            endDate: this.endDate ? new Date(this.endDate) : undefined,
-            isSigned:
-              typeof this.isSigned === "function"
-                ? this.isSigned.bind(this)
-                : this.isSigned, // Handle both boolean and function cases
-            serialized: this.serialized || "", // Provide a default value or handle undefined
-            unsignedSerialized: this.unsignedSerialized || "", // Provide a default value or handle undefined
-            inferType: this.inferType?.bind(this),
-            inferTypes: this.inferTypes?.bind(this),
-            isLegacy: this.isLegacy?.bind(this),
-            isBerlin: this.isBerlin?.bind(this),
-            isLondon: this.isLondon?.bind(this),
-            isCancun: this.isCancun?.bind(this),
-            clone: this.clone?.bind(this),
-            toJSON: this.toJSON?.bind(this),
-            title: "",
-            accessList: [],
-            type: null,
-            typeName: null,
-            from: null,
-            signature: null,
-            maxFeePerGas: null,
-            maxPriorityFeePerGas: null,
-            gasPrice: null,
-            to: null,
-            nonce: 0,
-            gasLimit: BigInt(0),
-            data: "",
-            value: BigInt(0),
-            chainId: BigInt(0),
-            maxFeePerBlobGas: null,
-            blobVersionedHashes: null,
-            hash: null,
-            unsignedHash: "",
-            fromPublicKey: null,
-
-            equals(transaction: CustomTransaction): boolean {
-              // Compare each property of the transactions
-              return (
-                this.id === transaction.id &&
-                this.amount === transaction.amount &&
-                this.date?.getTime() === transaction.date?.getTime() &&
-                this.title === transaction.title
-                // Add more comparisons for other properties as needed
-              );
-            },
-
-            getSubscriptionLevel(): string {
-              if (this.subscriptionType) {
-                switch (this.subscriptionType) {
-                  case SubscriptionTypeEnum.FREE:
-                    return "Free";
-                  case SubscriptionTypeEnum.STANDARD:
-                    return "Standard";
-                  case SubscriptionTypeEnum.PREMIUM:
-                    return "Enterprise";
-                  case SubscriptionTypeEnum.ENTERPRISE:
-                    return "Premium";
-                  case SubscriptionTypeEnum.TRIAL:
-                    return "Premium";
-                  default:
-                    return "Unknown";
-                }
-              } else {
-                return "Unknown";
-              }
-            },
-            getRecentActivity: () => {
-              if (this.recentActivity && this.recentActivity.length === 2) {
-                return this.recentActivity;
-              } else {
-                // If recentActivity is undefined or has incorrect length, return default values
-                return [
-                  { action: "", timestamp: new Date() },
-                  { action: "", timestamp: new Date() },
-                ];
-              }
-            },
-            notificationsEnabled: this.notificationsEnabled ?? false,
-            recentActivity: [
-              { action: "Action 1", timestamp: new Date() },
-              { action: "Action 2", timestamp: new Date() },
-            ],
-          };
-          return clonedData;
-        },
-        toJSON(): CustomTransaction {
-          const customTransaction: CustomTransaction = {
-            id: this.id ?? null,
-            type: this.type ?? null,
-            typeName: this.typeName ?? null,
-            from: this.from ?? null,
-            signature: this.signature ?? null,
-            maxFeePerGas: this.maxFeePerGas ?? null,
-            maxFeePerBlobGas: this.maxFeePerBlobGas ?? null,
-            blobVersionedHashes: this.blobVersionedHashes ?? null,
-            maxPriorityFeePerGas: this.maxPriorityFeePerGas ?? null,
-            gasPrice: this.gasPrice ?? null,
-            date: this.date,
-            data: this.data || "",
-            description: this.description ?? null,
-            value: this.value ?? null,
-            unsignedHash: this.unsignedHash ?? null,
-            notificationsEnabled: this.notificationsEnabled ?? false,
-            amount: this.amount,
-            title: this.title ?? null,
-            startDate: this.startDate,
-            endDate: this.endDate,
-            serialized: this.serialized,
-            unsignedSerialized: this.unsignedSerialized,
-            recentActivity: this.recentActivity ?? [
-              {
-                action: "Action 1",
-                timestamp: new Date(),
-              },
-              {
-                action: "Action 2",
-                timestamp: new Date(),
-              },
-            ],
-          };
-          return customTransaction;
-        },
-      }),
-    ],
-    tokenBalance: 1000,
-    smartContractInteractions: [
-      {
-        id: "sc1",
-        amount: 200,
-        date: new Date(),
-        description: "Smart contract interaction",
-      },
-    ],
-    blockchainPermissions: {
-      canMintNFT: true,
-      canTransferTokens: true,
-      canViewBlockchainTransactions: true,
-      canDeploySmartContracts: true,
-      canInteractWithSmartContracts: true,
-      canAccessDecentralizedApplications: true,
-      canManageBlockchainAssets: true,
-    },
-    blockchainIdentity: "leader_blockchain_id",
-    blockchainAssets: [
-      {
-        id: "asset1",
-        name: "Asset 1",
-        value: 1000,
-        symbol: "",
-        balance: 0,
-        contractAddress: "",
-        decimals: 0,
-      },
-    ],
-    nftCollection: [
-      {
-        id: "nft1",
-        name: "NFT 1",
-        imageUrl: "https://example.com/nft1.png",
-        description: "",
-        role: "Owner",
-      },
-    ],
-    daoMemberships: [{ id: "dao1", name: "DAO 1", role: "Member" }],
-    decentralizedStorageUsage: {
-      usedSpace: 500,
-      totalSpace: 1000,
-    },
-    decentralizedIdentity: {
-      id: "did:example:123",
-      publicKey: "public-key",
-    },
-    decentralizedMessagingKeys: {
-      publicKey: "public-key",
-      privateKey: "private-key",
-    },
-    decentralizedAuthentication: {
-      methods: ["password", "fingerprint"],
-    },
   },
-  snapshots: [],
+  emailVerificationStatus: true,
+  phoneVerificationStatus: true,
+  walletAddress: "0x123456789abcdef",
+  transactionHistory: [
+    createCustomTransaction({
+      id: "tx1",
+      amount: 100,
+      date: new Date(),
+      description: "Sample transaction",
+      type: null,
+      typeName: null,
+      to: null,
+      nonce: 0,
+      gasLimit: BigInt(0),
+      gasPrice: null,
+      maxPriorityFeePerGas: null,
+      maxFeePerGas: null,
+      data: "",
+      value: BigInt(0),
+      chainId: BigInt(0),
+      signature: null,
+      accessList: [],
+      maxFeePerBlobGas: null,
+      blobVersionedHashes: null,
+      hash: null,
+      unsignedHash: "",
+      from: null,
+      fromPublicKey: null,
+
+      isSigned(): boolean {
+        return !!(this.type && this.typeName && this.from && this.signature);
+      },
+      serialized: "",
+      unsignedSerialized: "",
+      inferType(): number {
+        if (this.type !== null && this.type !== undefined) {
+          return this.type;
+        }
+        return 0;
+      },
+      inferTypes(): number[] {
+        const types: number[] = [];
+        if (this.type !== null && this.type !== undefined) {
+          types.push(this.type);
+        }
+        if (this.maxFeePerGas !== null && this.maxPriorityFeePerGas !== null) {
+          types.push(2);
+        }
+        if (types.length === 0) {
+          types.push(0);
+        }
+        return types;
+      },
+
+      isLegacy() {
+        return this.type === 0 && this.gasPrice !== null;
+      },
+      isBerlin() {
+        return (
+          this.type === 1 && this.gasPrice !== null && this.accessList !== null
+        );
+      },
+
+      isLondon() {
+        return (
+          this.type === 2 &&
+          this.accessList !== null &&
+          this.maxFeePerGas !== null &&
+          this.maxPriorityFeePerGas !== null
+        );
+      },
+      isCancun() {
+        return (
+          this.type === 3 &&
+          this.to !== null &&
+          this.accessList !== null &&
+          this.maxFeePerGas !== null &&
+          this.maxPriorityFeePerGas !== null &&
+          this.maxFeePerBlobGas !== null &&
+          this.blobVersionedHashes !== null
+        );
+      },
+
+      clone(): CustomTransaction {
+        const clonedData: CustomTransaction = {
+          _id: this._id,
+          id: this.id || "",
+          amount: this.amount,
+          date: this.date ? new Date(this.date.getTime()) : undefined,
+          description: this.description || "",
+          startDate: this.startDate ? new Date(this.startDate) : undefined,
+          endDate: this.endDate ? new Date(this.endDate) : undefined,
+          isSigned:
+            typeof this.isSigned === "function"
+              ? this.isSigned.bind(this)
+              : this.isSigned,
+          serialized: this.serialized || "",
+          unsignedSerialized: this.unsignedSerialized || "",
+          inferType: this.inferType?.bind(this),
+          inferTypes: this.inferTypes?.bind(this),
+          isLegacy: this.isLegacy?.bind(this),
+          isBerlin: this.isBerlin?.bind(this),
+          isLondon: this.isLondon?.bind(this),
+          isCancun: this.isCancun?.bind(this),
+          clone: this.clone?.bind(this),
+          toJSON: this.toJSON?.bind(this),
+          title: "",
+          accessList: [],
+          type: null,
+          typeName: null,
+          from: null,
+          signature: null,
+          maxFeePerGas: null,
+          maxPriorityFeePerGas: null,
+          gasPrice: null,
+          to: null,
+          nonce: 0,
+          gasLimit: BigInt(0),
+          data: "",
+          value: BigInt(0),
+          chainId: BigInt(0),
+          maxFeePerBlobGas: null,
+          blobVersionedHashes: null,
+          hash: null,
+          unsignedHash: "",
+          fromPublicKey: null,
+
+          equals(transaction: CustomTransaction): boolean {
+            return (
+              this.id === transaction.id &&
+              this.amount === transaction.amount &&
+              this.date?.getTime() === transaction.date?.getTime() &&
+              this.title === transaction.title
+            );
+          },
+
+          getSubscriptionLevel(): string {
+            if (this.subscriptionType) {
+              switch (this.subscriptionType) {
+                case SubscriptionTypeEnum.FREE:
+                  return "Free";
+                case SubscriptionTypeEnum.STANDARD:
+                  return "Standard";
+                case SubscriptionTypeEnum.PREMIUM:
+                  return "Enterprise";
+                case SubscriptionTypeEnum.ENTERPRISE:
+                  return "Premium";
+                case SubscriptionTypeEnum.TRIAL:
+                  return "Premium";
+                default:
+                  return "Unknown";
+              }
+            } else {
+              return "Unknown";
+            }
+          },
+          getRecentActivity: () => {
+            if (this.recentActivity && this.recentActivity.length === 2) {
+              return this.recentActivity;
+            } else {
+              return [
+                { action: "", timestamp: new Date() },
+                { action: "", timestamp: new Date() },
+              ];
+            }
+          },
+          notificationsEnabled: this.notificationsEnabled ?? false,
+          recentActivity: [
+            { action: "Action 1", timestamp: new Date() },
+            { action: "Action 2", timestamp: new Date() },
+          ],
+        };
+        return clonedData;
+      },
+      toJSON(): CustomTransaction {
+        const customTransaction: CustomTransaction = {
+          id: this.id ?? null,
+          type: this.type ?? null,
+          title: this.title ?? null,
+          startDate: this.startDate, 
+          endDate: this.endDate, 
+          serialized: this.serialized,
+          typeName: this.typeName ?? null,
+          from: this.from ?? null,
+          signature: this.signature ?? null,
+          maxFeePerGas: this.maxFeePerGas ?? null,
+          maxFeePerBlobGas: this.maxFeePerBlobGas ?? null,
+          blobVersionedHashes: this.blobVersionedHashes ?? null,
+          maxPriorityFeePerGas: this.maxPriorityFeePerGas ?? null,
+          gasPrice: this.gasPrice ?? null,
+          date: this.date,
+          data: this.data || "",
+          description: this.description ?? null,
+          value: this.value ?? null,
+          unsignedHash: this.unsignedHash ?? null,
+          notificationsEnabled: this.notificationsEnabled ?? false,
+          amount: 0,
+          unsignedSerialized: this.unsignedSerialized, 
+          recentActivity: this.recentActivity ?? [
+            { action: "", timestamp: new Date() },
+            { action: "", timestamp: new Date() },
+          ]
+        };
+        return customTransaction;
+      },
+    }),
+  ],
   getData: function (): Promise<SnapshotStore<BaseData, BaseData>[]> {
     // Implement logic to get the data
     return Promise.resolve([]);
@@ -888,7 +850,7 @@ export type {
   Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps
+  DataDetailsProps,
 };
 
-  export { coreData };
+export { coreData };

@@ -1,15 +1,22 @@
+import { User } from "../users/User";
+import { UserRole } from "../users/UserRole";
+
 export interface PrivacySettings {
-      /**
-   * Indicates whether the data should be encrypted.
-   */
+  /**
+* Indicates whether the data should be encrypted.
+*/
   encryptData?: boolean;
+
 
   /**
    * List of roles or users with access to the snapshot data.
    */
   accessControl?: {
-    roles?: string[];
-    users?: string[];
+    roles?: UserRole[];
+    users?: User[];
+    accessControlEnabled: boolean,
+    accessControlType: string,
+    accessControlList: string[] // Define a list of allowed users if needed
   };
 
   /**
@@ -24,6 +31,8 @@ export interface PrivacySettings {
     policyVersion?: string;
     complianceStandards?: string[];
   };
+
+
 
   // Additional privacy settings
   hidePersonalInfo?: boolean; // Whether to hide personal information in user profiles
@@ -40,9 +49,10 @@ export interface PrivacySettings {
   enableIncognitoMode?: boolean; // Whether to enable incognito browsing mode
   restrictContentSharingToContacts?: boolean; // Whether to restrict content sharing to contacts
   restrictContentSharingToGroups?: boolean; // Whether to restrict content sharing to groups
-} // Add other privacy-related settings as needed
-  }
-  
+  // Add other privacy-related settings as needed
+}
+
+
 
 const selectedSettings: PrivacySettings = {
   hidePersonalInfo: true,
@@ -57,7 +67,7 @@ const selectedSettings: PrivacySettings = {
   hideVisitedProfiles: false,
   restrictContentSharing: false,
   enableIncognitoMode: false,
-  restrictContentSharingToContacts: false,  
+  restrictContentSharingToContacts: false,
   restrictContentSharingToGroups: false,
 };
 

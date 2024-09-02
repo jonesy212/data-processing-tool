@@ -121,6 +121,16 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
     }
   }
 
+  static fetchUserById = async (userId: string) => {
+    try {
+      const API_SINGLE_ENDPOINT = `${API_BASE_URL}/single/${userId}`;
+      const response = await axiosInstance.get(API_SINGLE_ENDPOINT);
+      return response.data;
+      } catch (error) {
+        throw error;
+      }
+    };
+  
 
   fetchUserProfile = async (userId: string) => {
     try {

@@ -10,15 +10,15 @@ import { SearchCriteria } from "../routing/SearchCriteria";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
-import { Snapshot, Snapshots, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 
-import { ModifiedDate } from "../documents/DocType";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
+import { ModifiedDate } from "../documents/DocType";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { SnapshotOperation } from "./SnapshotActions";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 // Define BaseData interface
 
 interface TagsRecord {
@@ -44,7 +44,7 @@ export class SnapshotStoreWithCriteria<T extends Data, K extends Data> extends S
   constructor(
     storeId: number,
     options: SnapshotStoreOptions<T, K>,
-    category: Category,
+    category: symbol | string | Category | undefined,
     config: SnapshotStoreConfig<T, K>,
     operation: SnapshotOperation
   ) {
@@ -356,7 +356,7 @@ const exampleSnapshotStore: SnapshotStore<BaseData, BaseData> = {
     snapshotId: string,
     snapshot: Snapshot<T, K> | null,
     snapshotData: T,
-    category: string | CategoryProperties | undefined,
+    category: symbol | string | Category | undefined,
     callback: (snapshot: T) => void,
     snapshots: Snapshots<Data>,
     type: string,
@@ -431,7 +431,7 @@ const exampleSnapshotStore: SnapshotStore<BaseData, BaseData> = {
   unsubscribe: function (): void {
     throw new Error("Function not implemented.");
   },
-  fetchSnapshot: function (snapshotId: string, category: string | CategoryProperties | undefined, timestamp: Date, snapshot: Snapshot<BaseData>, data: BaseData, delegate: SnapshotStoreConfig<BaseData, BaseData>[]): Promise<{ id: any; category: string | CategoryProperties | undefined; timestamp: any; snapshot: Snapshot<BaseData>; data: BaseData; getItem?: (snapshot: Snapshot<BaseData>) => Snapshot<BaseData> | undefined; }> {
+  fetchSnapshot: function (snapshotId: string, category: symbol | string | Category | undefined, timestamp: Date, snapshot: Snapshot<BaseData>, data: BaseData, delegate: SnapshotStoreConfig<BaseData, BaseData>[]): Promise<{ id: any; category: string | CategoryProperties | undefined; timestamp: any; snapshot: Snapshot<BaseData>; data: BaseData; getItem?: (snapshot: Snapshot<BaseData>) => Snapshot<BaseData> | undefined; }> {
     throw new Error("Function not implemented.");
   },
   fetchSnapshotSuccess: (

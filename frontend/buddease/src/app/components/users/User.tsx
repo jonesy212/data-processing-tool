@@ -10,7 +10,7 @@ import { RealtimeUpdates } from "../community/ActivityFeedComponent";
 import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
 import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
 import CommonDetails from "../models/CommonData";
-import { Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import generateTimeBasedCode from "../models/realtime/TimeBasedCodeGenerator";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
@@ -21,7 +21,6 @@ import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisRe
 import { Project } from "../projects/Project";
 import { PrivacySettings } from "../settings/PrivacySettings";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { SnapshotStoreConfig } from "../snapshots/SnapshotConfig";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { TwitterData } from "../socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
@@ -31,6 +30,9 @@ import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
 import UserRoles from "./UserRoles";
 import { ActivityLogEntry } from "./UserSlice";
+import { UserPreferences } from "@/app/configs/UserPreferences";
+import { SnapshotStoreConfig } from "../snapshots";
+import { NotificationSettings } from "../support/NotificationSettings";
 
 export interface User extends UserData {
   _id?: string; 
@@ -69,9 +71,10 @@ export interface User extends UserData {
   localeCompare?: (other: Message) => number;
   blockedUsers: User[];
   settings: UserSettings | null;
-  interests: string[]
-  privacySettings: PrivacySettings | undefined
-  notifications: NotificationSettings | undefined
+  interests: string[];
+  followers: User[];
+  privacySettings: PrivacySettings | undefined;
+  notificationSettings: NotificationSettings | undefined;
   activityLog: ActivityLogEntry[]
   projects?: Project[]; // Define the type explicitly as an array of Project objects
   socialLinks: SocialLinks | undefined;
@@ -108,7 +111,10 @@ export interface User extends UserData {
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
   twitterData?: TwitterData
+  preferences: UserPreferences;
 }
+
+
 interface Address {
   street: string;
   city: string;
@@ -160,8 +166,8 @@ export interface UserData {
   occupation?: string;
   incomeLevel?: string;
   unreadNotificationCount?: number;
-  snapshots?: SnapshotStore<Snapshot<Data>>[] | undefined
-  snapshotConfiguration?: SnapshotStoreConfig<any, any>;
+  snapshots?: SnapshotStore<Data, BaseData>[] | undefined
+  snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
   analysisResults?: DataAnalysisResult[];
   role: UserRole | undefined;
   timestamp?: Date | string;
@@ -437,7 +443,7 @@ const userData: UserData = {
   location: "Texas",
   occupation: "Software Engineer",
   incomeLevel: "string",
-  snapshots: {} as SnapshotStore<Snapshot<Data>>[],
+  snapshots: {} as SnapshotStore<Data, BaseData>[],
   role: {} as UserRole,
   deletedAt: null,
   lastLogin: new Date(),
@@ -534,6 +540,8 @@ export const usersDataSource: Record<string, User> = {
     concurrencyStamp: "", 
     accessFailedCount: 0, 
     settings: null, 
+    followers: [],
+    preferences: {} as UserPreferences,
     data: {
       role: UserRoles.Guest,
       deletedAt: null,
@@ -655,7 +663,7 @@ export const usersDataSource: Record<string, User> = {
     blockedUsers: [],
     interests: [],
     privacySettings: undefined,
-    notifications: undefined,
+    notificationSettings: undefined,
     activityLog: [],
     projects: undefined,
     socialLinks: undefined,

@@ -8,8 +8,7 @@ import { NotificationType } from '../support/NotificationContext';
 import { getCommunityEngagement, getMarketUpdates } from "../trading/TradingUtils";
 import { Subscriber } from '../users/Subscriber';
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "../utils/applicationUtils";
-import { FetchSnapshotPayload, Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
-import { SnapshotContainer } from './SnapshotContainer';
+import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import SnapshotStore, { SnapshotData, SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 
@@ -600,7 +599,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                             unsubscribe: function (): void {
                                 throw new Error("Function not implemented.");
                             },
-                            fetchSnapshot: function (snapshotId: string, category: string | CategoryProperties | undefined, timestamp: Date, snapshot: Snapshot<T, K>, data: BaseData, delegate: SnapshotWithCriteria<T, K>[]): Promise<{
+                            fetchSnapshot: function (snapshotId: string, category: symbol | string | Category | undefined, timestamp: Date, snapshot: Snapshot<T, K>, data: BaseData, delegate: SnapshotWithCriteria<T, K>[]): Promise<{
                                 id: any;
                                 category: string | CategoryProperties | undefined;
                                 timestamp: any;
@@ -943,7 +942,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                                 snapshotId: string,
                                 snapshot: T| null,
                                 snapshotData: T,
-                                category: string | CategoryProperties | undefined,
+                                category: symbol | string | Category | undefined,
                                 callback: (snapshot: T) => void,
                                 snapshots: Snapshots<Data>,
                                 type: string,
@@ -1019,7 +1018,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                                     payload: FetchSnapshotPayload<K>,
                                     snapshotStore: SnapshotStore<T, K>,
                                     payloadData: T | Data,
-                                    category: string | CategoryProperties | undefined,
+                                    category: symbol | string | Category | undefined,
                                     timestamp: Date,
                                     data: T,
                                     delegate: SnapshotWithCriteria<T, K>[]
@@ -1171,7 +1170,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
         mapSnapshots: function (
             storeIds: number[],
             snapshotId: string,
-            category: string | CategoryProperties | undefined,
+            category: symbol | string | Category | undefined,
             snapshot: Snapshot<T, K>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -1195,7 +1194,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
             throw new Error("Function not implemented.");
         },
         getSnapshot: function (
-            category: string | CategoryProperties | undefined,
+            category: symbol | string | Category | undefined,
             timestamp: any,
             id: number,
             snapshot: Snapshot<T, K>,
@@ -1205,7 +1204,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
             throw new Error("Function not implemented.");
         },
         getSnapshotWithCriteria: function (
-            category: string | CategoryProperties | undefined,
+            category: symbol | string | Category | undefined,
             timestamp: any,
             id: number,
             snapshot: Snapshot<T, K>,
@@ -1213,14 +1212,14 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
             data: BaseData): Promise<SnapshotWithCriteria<T, K> | undefined> {
             throw new Error("Function not implemented.");
         },
-        getSnapshotContainer: function (category: string | CategoryProperties | undefined,
+        getSnapshotContainer: function (category: symbol | string | Category | undefined,
             timestamp: any, id: number, snapshot: Snapshot<T, K>,
             snapshotStore: SnapshotStore<T, K>,
             data: BaseData
         ): Promise<SnapshotContainer<T, K> | undefined> {
             throw new Error("Function not implemented.");
         },
-        getSnapshotVersions: function (category: string | CategoryProperties | undefined,
+        getSnapshotVersions: function (category: symbol | string | Category | undefined,
             timestamp: any, id: number, snapshot: Snapshot<T, K>, snapshotStore: SnapshotStore<T, K>, data: BaseData): Promise<Snapshot<T, K>[] | undefined> {
             throw new Error("Function not implemented.");
         }

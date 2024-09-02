@@ -110,6 +110,21 @@ interface ConfigureSnapshotStorePayload<T extends Data> {
 }
 
 
+
+interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> {
+  id: string;
+  description?: string;
+  category: string;
+  metadata?: Record<string, any>;
+  priority?: string;
+  version?: Version;
+  data: T;
+  subscribers: SubscriberCollection<T, K>;
+  storeConfig: SnapshotStoreConfig<T, K>;
+  additionalData: CustomSnapshotData
+}
+
+
 // Example of asynchronous function using async/await
 const updateSubscribersAndSnapshots = async (
   snapshotId: string,
@@ -485,5 +500,5 @@ console.log("Subscription ID:", johnSubscriber.getSubscriberId());
 
 
 
-export type { ConfigureSnapshotStorePayload, RetentionPolicy };
+export type { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig };
 

@@ -1,260 +1,261 @@
-// // transformDataToSnapshot.ts
-// import { SnapshotConfig, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria } from ".";
-// import { Category } from "../libraries/categories/generateCategoryProperties";
-// import { BaseData } from "../models/data/Data";
-// import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-// import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-// import { CoreSnapshot, Snapshot, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
-// import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+// transformDataToSnapshot.ts
+import { SnapshotConfig, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria } from ".";
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { BaseData } from "../models/data/Data";
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import { CoreSnapshot, Snapshot, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+
+const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
+  item: CoreSnapshot<T, K>,
+  snapshotConfig: SnapshotConfig<T, K>,
+  snapshotStoreConfig: SnapshotStoreConfig<T, K>
+): Snapshot<T, K> => {
+  const snapshotItem: Snapshot<T, K> = {
+    // Core Properties
+    id: item.id?.toString() ?? '',
+    data: item.data as T | Map<string, Snapshot<T, K>> | null | undefined,
+    initialState: item.initialState as unknown as Snapshot<T, K> | null,
+    timestamp: item.timestamp ? new Date(item.timestamp) : new Date(),
+    meta: item.meta,
+    label: item.label,
+    restoreSnapshot: item.restoreSnapshot,
+    handleSnapshot: item.handleSnapshot,
+    subscribeToSnapshots: item.subscribeToSnapshots,
+    config: snapshotConfig.config,
+    isCore: snapshotConfig.isCore,
+
+    // Category Management
+    currentCategory: snapshotConfig.currentCategory,
+    setSnapshotCategory: snapshotConfig.setSnapshotCategory,
+    getSnapshotCategory: snapshotConfig.getSnapshotCategory,
 
 
-// const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
-//   item: CoreSnapshot<T, K>,
-//   snapshotConfig: SnapshotConfig<T, K>,
-//   snapshotStoreConfig: SnapshotStoreConfig<T, K> 
-// ): Snapshot<T, K> => {
-//   const snapshotItem: SnapshotItem<T, K> = {
-    
-//     id: item.id?.toString() ?? '', // Use nullish coalescing operator to provide default value
-//     data: item.data as T | Map<string, Snapshot<T, K>> | null | undefined, // Adjust type to match Snapshot<T, K>
-//     initialState: item.initialState as unknown as Snapshot<T, K> | null, // Cast to unknown first, then to Snapshot<T, K> | null
-//     timestamp: item.timestamp ? new Date(item.timestamp) : new Date(), // Handle timestamp appropriately
-//     events: {
-//       eventRecords: item.events?.eventRecords ?? {},
-//       callbacks: item.events?.callbacks ?? {}, // Default to empty object matching the Record<string, ((snapshot: Snapshot<T, K>) => void)[]> type
-//       subscribers: [], // Ensure this matches the expected type for subscribers
-//       eventIds: [],// Ensure this matches the expected type for eventIds
-//       onSnapshotAdded: item.events?.onSnapshotAdded ?? ((event: string,
-//           snapshot: Snapshot<T, K>,
-//           snapshotId: string,
-//           subscribers: SubscriberCollection<T, K>,
-//           snapshotStore: SnapshotStore<T, K>, 
-//           dataItems: RealtimeDataItem[],
-//           subscriberId: string,
-//           criteria: SnapshotWithCriteria<T, K>,
-//           category: Category) => {}),
-//       onSnapshotRemoved: item.events?.onSnapshotRemoved ?? ((event: string,
-//         snapshot: Snapshot<T, K>,
-//         snapshotId: string, 
-//         subscribers: SubscriberCollection<T, K>,
-//         snapshotStore: SnapshotStore<T, K>, 
-//         dataItems: RealtimeDataItem[],
-//         criteria: SnapshotWithCriteria<T, K>,
-//         category: Category) => {}),
-//       onSnapshotUpdated: item.events?.onSnapshotUpdated ?? ((event: string,
-//         snapshotId: string,
-//         snapshot: Snapshot<T, K>,
-//         data: Map<string, Snapshot<T, K>>,
-//         events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-//         snapshotStore: SnapshotStore<T, K>,
-//         dataItems: RealtimeDataItem[],
-//         newData: Snapshot<T, K>,
-//         payload: UpdateSnapshotPayload<T>,
-//         store: SnapshotStore<any, K>) => {}),
-//       initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K>,
-//       removeSubscriber: item.events?.removeSubscriber ?? ((event: string,
-//         snapshotId: string,
-//         snapshot: Snapshot<T, K>,
-//         snapshotStore: SnapshotStore<T, K>,
-//         dataItems: RealtimeDataItem[],
-//         criteria: SnapshotWithCriteria<T, K>,
-//         category: Category) => {}),
-//       onInitialize: item.events?.onInitialize ?? (() => {}),
-//       onError: item.events?.onError ?? (() => {}),
-//       on: item.events?.on ?? (() => {}),
-//       off: item.events?.off ?? (() => {}),
-//       emit: item.events?.emit ?? (() => {}),
-//       once: item.events?.once ?? (() => {}),
-//       addRecord: item.events?.addRecord ?? (() => {}),
-//       removeAllListeners: item.events?.removeAllListeners ?? (() => {}),
-//       subscribe: item.events?.subscribe ?? (() => {}),
-//       unsubscribe: item.events?.unsubscribe ?? (() => {}),
-//       trigger: item.events?.trigger ?? (() => {}),
-//     },
-//     meta: item.meta,
-//     initialConfig: item.events?.initialConfig, 
-//     removeSubscriber: item.snapshotStoreConfig?.removeSubscriber,
-//     onInitialize: item.events?.onInitialize,
-//     // // onError: item.onError,
-//     // // snapshot: item.snapshot,
-//     // // setCategory: item.setCategory,
-//     // // applyStoreConfig: item.applyStoreConfig,
-//     // // snapshotData: item.snapshotData,
-   
-//     // getSnapshotItems: item.getSnapshotItems,
-//     // defaultSubscribeToSnapshots: item.defaultSubscribeToSnapshots,
-//     // versionInfo: item.versionInfo,
-//     // transformSubscriber: item.transformSubscriber,
-   
-//     // transformDelegate: item.transformDelegate,
-//     // initializedState: item.initializedState,
-//     // getAllKeys: item.getAllKeys,
-//     // getAllItems: item.getAllItems,
-    
-//     // addDataStatus: item.addDataStatus,
-//     // removeData: item.removeData,
-//     // updateData: item.updateData,
-//     // updateDataTitle: item.updateDataTitle,
-   
-//     // updateDataDescription: item.updateDataDescription,
-//     // updateDataStatus: item.updateDataStatus,
-//     // addDataSuccess: item.addDataSuccess,
-//     // getDataVersions: item.getDataVersions,
-   
-//     // updateDataVersions: item.updateDataVersions,
-//     // getBackendVersion: item.getBackendVersion,
-//     // getFrontendVersion: item.getFrontendVersion,
-//     // fetchData: item.fetchData,
-   
-//     // defaultSubscribeToSnapshot: item.defaultSubscribeToSnapshot,
-//     // handleSubscribeToSnapshot: item.handleSubscribeToSnapshot,
-//     // removeItem: item.removeItem,
-//     // getSnapshot: item.getSnapshot,
-   
-//     // getSnapshotSuccess: item.getSnapshotSuccess,
-//     setItem: item.setItem,
-//     // getItem: item.getItem,
-//     getDataStore: item.getDataStore,
-   
-//     getDataStoreMap: item.getDataStoreMap,
-//     addSnapshotSuccess: item.addSnapshotSuccess,
-//     deepCompare: item.deepCompare,
-//     shallowCompare: item.shallowCompare,
-    
-//     getDataStoreMethods: item.getDataStoreMethods,
-//     getDelegate: item.getDelegate,
-//     determineCategory: item.determineCategory,
-//     determinePrefix: item.determinePrefix,
-   
-//     removeSnapshot: item.removeSnapshot,
-//     addSnapshotItem: item.addSnapshotItem,
-//     addNestedStore: item.addNestedStore,
-//     clearSnapshots: item.clearSnapshots,
-   
-//     addSnapshot: item.addSnapshot,
-//     emit: item.emit,
-//     createSnapshot: item.createSnapshot,
-//     createInitSnapshot: item.createInitSnapshot,
-   
-//     addStoreConfig: item.addStoreConfig,
-//     handleSnapshotConfig: item.handleSnapshotConfig,
-//     getSnapshotConfig: item.getSnapshotConfig,
-//     getSnapshotListByCriteria: item.getSnapshotListByCriteria,
-   
-//     setSnapshotSuccess: item.setSnapshotSuccess,
-//     setSnapshotFailure: item.setSnapshotFailure,
-//     updateSnapshots: item.updateSnapshots,
-//     updateSnapshotsSuccess: item.updateSnapshotsSuccess,
-   
-//     updateSnapshotsFailure: item.updateSnapshotsFailure,
-//     initSnapshot: item.initSnapshot,
-//     takeSnapshot: item.takeSnapshot,
-//     takeSnapshotSuccess: item.takeSnapshotSuccess,
-   
-//     takeSnapshotsSuccess: item.takeSnapshotsSuccess,
-//     flatMap: item.flatMap,
-//     getState: item.getState,
-//     setState: item.setState,
-   
-//     validateSnapshot: item.validateSnapshot,
-//     handleActions: item.handleActions,
-//     setSnapshot: item.setSnapshot,
-//     transformSnapshotConfig: item.transformSnapshotConfig,
-   
-//     setSnapshots: item.setSnapshots,
-//     clearSnapshot: item.clearSnapshot,
-//     mergeSnapshots: item.mergeSnapshots,
-//     reduceSnapshots: item.reduceSnapshots,
-   
-//     sortSnapshots: item.sortSnapshots,
-//     filterSnapshots: item.filterSnapshots,
-//     findSnapshot: item.findSnapshot,
-//     getSubscribers: item.getSubscribers,
-   
-//     notify: item.notify,
-//     notifySubscribers: item.notifySubscribers,
-//     getSnapshots: item.getSnapshots,
-//     getAllSnapshots: item.getAllSnapshots,
-   
-//     generateId: item.generateId,
-//     batchFetchSnapshots: item.batchFetchSnapshots,
-//     batchTakeSnapshotsRequest: item.batchTakeSnapshotsRequest,
-//     batchUpdateSnapshotsRequest: item.batchUpdateSnapshotsRequest,
-   
-//     filterSnapshotsByStatus: item.filterSnapshotsByStatus,
-//     filterSnapshotsByCategory: item.filterSnapshotsByCategory,
-//     filterSnapshotsByTag: item.filterSnapshotsByTag,
-//     batchFetchSnapshotsSuccess: item.batchFetchSnapshotsSuccess,
-   
-//     batchFetchSnapshotsFailure: item.batchFetchSnapshotsFailure,
-//     batchUpdateSnapshotsSuccess: item.batchUpdateSnapshotsSuccess,
-//     batchUpdateSnapshotsFailure: item.batchUpdateSnapshotsFailure,
-//     batchTakeSnapshot: item.batchTakeSnapshot,
-    
-//     handleSnapshotSuccess: item.handleSnapshotSuccess,
-//     getSnapshotId: item.getSnapshotId,
-//     compareSnapshotState: item.compareSnapshotState,
-//     eventRecords: item.eventRecords,
-   
-//     snapshotStore: item.snapshotStore,
-//     getParentId: item.getParentId,
-//     getChildIds: item.getChildIds,
-//     addChild: item.addChild,
-   
-//     removeChild: item.removeChild,
-//     getChildren: item.getChildren,
-//     hasChildren: item.hasChildren,
-//     isDescendantOf: item.isDescendantOf,
-    
-//     dataItems: item.dataItems,
-//     payload: item.payload,
-//     newData: item.newData,
-//     getInitialState: item.getInitialState,
-   
-//     getConfigOption: item.getConfigOption,
-//     getTimestamp: item.getTimestamp,
-//     getStores: item.getStores,
-//     getData: item.getData,
-    
-//     setData: item.setData,
-//     addData: item.addData,
-//     stores: item.stores,
-//     getStore: item.getStore,
-   
-//     addStore: item.addStore,
-//     mapSnapshot: item.mapSnapshot,
-//     mapSnapshots: item.mapSnapshots,
-//     removeStore: item.removeStore,
-    
-//     subscribe: item.subscribe,
-//     unsubscribe: item.unsubscribe,
-//     fetchSnapshotFailure: item.fetchSnapshotFailure,
-//     fetchSnapshot: item.fetchSnapshot,
-   
-//     addSnapshotFailure: item.addSnapshotFailure,
-//     configureSnapshotStore: item.configureSnapshotStore,
-//     fetchSnapshotSuccess: item.fetchSnapshotSuccess,
-//     updateSnapshotFailure: item.updateSnapshotFailure,
-    
-//     updateSnapshotSuccess: item.updateSnapshotSuccess,
-//     createSnapshotFailure: item.createSnapshotFailure,
-//     createSnapshotSuccess: item.createSnapshotSuccess,
-//     // createSnapshot: item.creatSnapshot,
-//     // createSnapshots: item.createSnapshots,
-//     onSnapshot: item.onSnapshot,
-//     onSnapshots: item.onSnapshots,
-//     updateSnapshot: item.updateSnapshot,
-   
-//     label: item.label,
-//     restoreSnapshot: item.restoreSnapshot,
-//     handleSnapshot: item.handleSnapshot,
-//     subscribeToSnapshots: item.subscribeToSnapshots,
-//     // subscribersts: item.subscribersts,
-   
-//   };
+    // Events Management
+    addSnapshotSubscriber: snapshotConfig.addSnapshotSubscriber,
+    removeSnapshotSubscriber: snapshotConfig.removeSnapshotSubscriber,
+    subscribeToSnapshotList: snapshotConfig.subscribeToSnapshotList,
+    subscribers: snapshotConfig.subscribers,
+    subscribeToSnapshot: snapshotConfig.subscribeToSnapshot,
+    unsubscribeFromSnapshot: snapshotConfig.unsubscribeFromSnapshot,
+    subscribeToSnapshotsSuccess: snapshotConfig.subscribeToSnapshotsSuccess,
+    unsubscribeFromSnapshots: snapshotConfig.unsubscribeFromSnapshots,
 
-//   return snapshotItem;
-// };
+    events: {
+      eventRecords: item.events?.eventRecords ?? {},
+      callbacks: item.events?.callbacks ?? {},
+      subscribers: [],
+      eventIds: [],
+      onSnapshotAdded: item.events?.onSnapshotAdded ?? (() => { }),
+      onSnapshotRemoved: item.events?.onSnapshotRemoved ?? (() => { }),
+      onSnapshotUpdated: item.events?.onSnapshotUpdated ?? (() => { }),
+      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K>,
+      removeSubscriber: item.events?.removeSubscriber ?? (() => { }),
+      onInitialize: item.events?.onInitialize ?? (() => { }),
+      onError: item.events?.onError ?? (() => { }),
+      on: item.events?.on ?? (() => { }),
+      off: item.events?.off ?? (() => { }),
+      emit: item.events?.emit ?? (() => { }),
+      once: item.events?.once ?? (() => { }),
+      addRecord: item.events?.addRecord ?? (() => { }),
+      removeAllListeners: item.events?.removeAllListeners ?? (() => { }),
+      subscribe: item.events?.subscribe ?? (() => { }),
+      unsubscribe: item.events?.unsubscribe ?? (() => { }),
+      trigger: item.events?.trigger ?? (() => { }),
+    },
 
-// export default transformDataToSnapshot;
+    // Configuration & State Management
+    initialConfig: item.events?.initialConfig,
+    removeSubscriber: item.snapshotStoreConfig?.removeSubscriber,
+    onInitialize: item.events?.onInitialize,
+    onError: snapshotConfig.onError,
+    snapshot: snapshotConfig.snapshot,
+    setCategory: snapshotConfig.setCategory,
+    applyStoreConfig: snapshotConfig.applyStoreConfig,
+    snapshotData: snapshotConfig.snapshotData,
+    initializedState: snapshotConfig.initializedState,
+    getState: snapshotConfig.getState,
+    setState: snapshotConfig.setState,
+    getSnapshotItems: snapshotConfig.getSnapshotItems,
+    defaultSubscribeToSnapshots: snapshotConfig.defaultSubscribeToSnapshots,
+    versionInfo: snapshotConfig.versionInfo,
+    transformSubscriber: snapshotConfig.transformSubscriber,
+    transformDelegate: snapshotConfig.transformDelegate,
+    getAllKeys: snapshotConfig.getAllKeys,
+    getAllItems: snapshotConfig.getAllItems,
+
+    // Snapshot Operations
+    addDataStatus: snapshotConfig.addDataStatus,
+    removeData: snapshotConfig.removeData,
+    updateData: snapshotConfig.updateData,
+    updateDataTitle: snapshotConfig.updateDataTitle,
+    updateDataDescription: snapshotConfig.updateDataDescription,
+    updateDataStatus: snapshotConfig.updateDataStatus,
+    addDataSuccess: snapshotConfig.addDataSuccess,
+    getDataVersions: snapshotConfig.getDataVersions,
+    updateDataVersions: snapshotConfig.updateDataVersions,
+    getBackendVersion: snapshotConfig.getBackendVersion,
+    getFrontendVersion: snapshotConfig.getFrontendVersion,
+    fetchData: snapshotConfig.fetchData,
+
+
+    getSnapshotSuccess: snapshotConfig.getSnapshotSuccess,
+    takeLatestSnapshot: snapshotConfig.takeLatestSnapshot,
+    executeSnapshotAction: snapshotConfig.executeSnapshotAction,
+    deleteSnapshot: snapshotConfig.deleteSnapshot,
+    compareSnapshots: snapshotConfig.compareSnapshots,
+    compareSnapshotItems: snapshotConfig.compareSnapshotItems,
+    reduceSnapshotItems: snapshotConfig.reduceSnapshotItems,
+    mapSnapshotWithDetails: snapshotConfig.mapSnapshotWithDetails,
+
+
+    // Snapshot Data Management
+    mappedSnapshotData: snapshotConfig.mappedSnapshotData,
+    getSnapshotData: snapshotConfig.getSnapshotData,
+    getSnapshotKeys: snapshotConfig.getSnapshotKeys,
+    getSnapshotValuesSuccess: snapshotConfig.getSnapshotValuesSuccess,
+    getSnapshotEntries: snapshotConfig.getSnapshotEntries,
+    getAllSnapshotEntries: snapshotConfig.getAllSnapshotEntries,
+    getSnapshotWithCriteria: snapshotConfig.getSnapshotWithCriteria,
+    getSnapshotItemsSuccess: snapshotConfig.getSnapshotItemsSuccess,
+    getSnapshotItemSuccess: snapshotConfig.getSnapshotItemSuccess,
+    getAllValues: snapshotConfig.getAllValues,
+    getSnapshotConfigItems: snapshotConfig.getSnapshotConfigItems,
+
+    // Snapshot Identification
+    getSnapshotIdSuccess: snapshotConfig.getSnapshotIdSuccess,
+
+    // Task Management
+    taskIdToAssign: snapshotConfig.taskIdToAssign,
+
+    // Hierarchical Management
+    parentId: snapshotConfig.parentId,
+    childIds: snapshotConfig.childIds,
+
+    // Snapshot Management
+    defaultSubscribeToSnapshot: snapshotConfig.defaultSubscribeToSnapshot,
+    handleSubscribeToSnapshot: snapshotConfig.handleSubscribeToSnapshot,
+    removeItem: snapshotConfig.removeItem,
+    getSnapshot: snapshotConfig.getSnapshot,
+    setItem: snapshotConfig.setItem,
+    getItem: snapshotConfig.getItem ?? (() => Promise.resolve(undefined)),
+    getDataStore: snapshotConfig.getDataStore ?? (() => ({} as any)),
+    getDataStoreMap: snapshotConfig.getDataStoreMap ?? (() => new Map()),
+    addSnapshotSuccess: snapshotConfig.addSnapshotSuccess ?? (() => { }),
+    deepCompare: snapshotConfig.deepCompare ?? (() => false),
+    shallowCompare: snapshotConfig.shallowCompare ?? (() => false),
+    getDataStoreMethods: snapshotConfig.getDataStoreMethods,
+    getDelegate: snapshotConfig.getDelegate,
+    determineCategory: snapshotConfig.determineCategory,
+    determinePrefix: snapshotConfig.determinePrefix,
+    removeSnapshot: snapshotConfig.removeSnapshot,
+    addSnapshotItem: snapshotConfig.addSnapshotItem,
+    addNestedStore: snapshotConfig.addNestedStore,
+    clearSnapshots: snapshotConfig.clearSnapshots,
+    addSnapshot: snapshotConfig.addSnapshot,
+    emit: snapshotConfig.emit,
+    createSnapshot: snapshotConfig.createSnapshot,
+    createInitSnapshot: snapshotConfig.createInitSnapshot,
+    addStoreConfig: snapshotConfig.addStoreConfig,
+    handleSnapshotConfig: snapshotConfig.handleSnapshotConfig,
+    getSnapshotConfig: snapshotConfig.getSnapshotConfig,
+    getSnapshotListByCriteria: snapshotConfig.getSnapshotListByCriteria,
+    setSnapshotSuccess: snapshotConfig.setSnapshotSuccess,
+    setSnapshotFailure: snapshotConfig.setSnapshotFailure,
+    updateSnapshots: snapshotConfig.updateSnapshots,
+    updateSnapshotsSuccess: snapshotConfig.updateSnapshotsSuccess,
+    updateSnapshotsFailure: snapshotConfig.updateSnapshotsFailure,
+    initSnapshot: snapshotConfig.initSnapshot,
+    takeSnapshot: snapshotConfig.takeSnapshot,
+    takeSnapshotSuccess: snapshotConfig.takeSnapshotSuccess,
+    takeSnapshotsSuccess: snapshotConfig.takeSnapshotsSuccess,
+    flatMap: snapshotConfig.flatMap,
+    validateSnapshot: snapshotConfig.validateSnapshot,
+    handleActions: snapshotConfig.handleActions,
+    setSnapshot: snapshotConfig.setSnapshot,
+    transformSnapshotConfig: snapshotConfig.transformSnapshotConfig,
+    setSnapshots: snapshotConfig.setSnapshots,
+    clearSnapshot: snapshotConfig.clearSnapshot,
+    mergeSnapshots: snapshotConfig.mergeSnapshots,
+    reduceSnapshots: snapshotConfig.reduceSnapshots,
+    sortSnapshots: snapshotConfig.sortSnapshots,
+    filterSnapshots: snapshotConfig.filterSnapshots,
+    findSnapshot: snapshotConfig.findSnapshot,
+    getSubscribers: snapshotConfig.getSubscribers,
+    notify: snapshotConfig.notify,
+    notifySubscribers: snapshotConfig.notifySubscribers,
+    getSnapshots: snapshotConfig.getSnapshots,
+    getAllSnapshots: snapshotConfig.getAllSnapshots,
+    generateId: snapshotConfig.generateId,
+
+    // Batch Operations
+    batchFetchSnapshots: snapshotConfig.batchFetchSnapshots,
+    batchTakeSnapshotsRequest: snapshotConfig.batchTakeSnapshotsRequest,
+    batchUpdateSnapshotsRequest: snapshotConfig.batchUpdateSnapshotsRequest,
+    filterSnapshotsByStatus: snapshotConfig.filterSnapshotsByStatus,
+    filterSnapshotsByCategory: snapshotConfig.filterSnapshotsByCategory,
+    filterSnapshotsByTag: snapshotConfig.filterSnapshotsByTag,
+    batchFetchSnapshotsSuccess: snapshotConfig.batchFetchSnapshotsSuccess,
+    batchFetchSnapshotsFailure: snapshotConfig.batchFetchSnapshotsFailure,
+    batchUpdateSnapshotsSuccess: snapshotConfig.batchUpdateSnapshotsSuccess,
+    batchUpdateSnapshotsFailure: snapshotConfig.batchUpdateSnapshotsFailure,
+    batchTakeSnapshot: snapshotConfig.batchTakeSnapshot,
+    handleSnapshotSuccess: snapshotConfig.handleSnapshotSuccess,
+
+    // Snapshot Identification & Comparison
+    getSnapshotId: snapshotConfig.getSnapshotId,
+    compareSnapshotState: snapshotConfig.compareSnapshotState,
+    eventRecords: snapshotConfig.eventRecords,
+    snapshotStore: snapshotConfig.snapshotStore,
+
+    // Hierarchical Management
+    getParentId: snapshotConfig.getParentId,
+    getChildIds: snapshotConfig.getChildIds,
+    addChild: snapshotConfig.addChild,
+    removeChild: snapshotConfig.removeChild,
+    getChildren: snapshotConfig.getChildren,
+    hasChildren: snapshotConfig.hasChildren,
+    isDescendantOf: snapshotConfig.isDescendantOf,
+
+    // Data Management
+    dataItems: snapshotConfig.dataItems,
+    payload: snapshotConfig.payload,
+    newData: snapshotConfig.newData,
+    getInitialState: snapshotConfig.getInitialState,
+    getConfigOption: snapshotConfig.getConfigOption,
+    getTimestamp: snapshotConfig.getTimestamp,
+    getStores: snapshotConfig.getStores,
+    getData: snapshotConfig.getData,
+    setData: snapshotConfig.setData,
+    addData: snapshotConfig.addData,
+    stores: snapshotConfig.stores,
+    getStore: snapshotConfig.getStore,
+    addStore: snapshotConfig.addStore,
+    mapSnapshot: snapshotConfig.mapSnapshot,
+    mapSnapshots: snapshotConfig.mapSnapshots,
+    removeStore: snapshotConfig.removeStore,
+
+    // Subscription & Notification Management
+    subscribe: item.subscribe,
+    unsubscribe: snapshotConfig.unsubscribe,
+    fetchSnapshotFailure: snapshotConfig.fetchSnapshotFailure,
+    fetchSnapshot: snapshotConfig.fetchSnapshot,
+    addSnapshotFailure: snapshotConfig.addSnapshotFailure,
+    configureSnapshotStore: snapshotConfig.configureSnapshotStore,
+    fetchSnapshotSuccess: snapshotConfig.fetchSnapshotSuccess,
+    updateSnapshotFailure: snapshotConfig.updateSnapshotFailure,
+    updateSnapshotSuccess: snapshotConfig.updateSnapshotSuccess,
+    createSnapshotFailure: snapshotConfig.createSnapshotFailure,
+    createSnapshotSuccess: snapshotConfig.createSnapshotSuccess,
+    createSnapshots: snapshotConfig.createSnapshots,
+    onSnapshot: snapshotConfig.onSnapshot,
+    onSnapshots: snapshotConfig.onSnapshots,
+    updateSnapshot: snapshotConfig.updateSnapshot,
+  };
+
+  return snapshotItem;
+};
+
+export default transformDataToSnapshot;
 

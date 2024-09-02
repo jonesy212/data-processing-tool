@@ -77,13 +77,14 @@ import useNotificationManagerService from "../components/notifications/Notificat
 import StepComponent from "../components/phases/steps/StepComponent";
 import ProtectedRoute from "../components/routing/ProtectedRoute";
 import { ThemeState } from "../components/state/redux/slices/ThemeSlice";
-import StepProvider from "../context/StepContext";
+import StepProvider, { useStepContext } from "../context/StepContext";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import FormBuilder from "./forms/formBuilder/FormBuilder";
 import LogViewer from "./logs/LogViewer";
 import steps from "../components/phases/steps/steps";
 import DetermineFileType from "../configs/DetermineFileType";
 import FilePreview from "../components/documents/FilePreview";
+import { authProvider } from "../components/interfaces/provider/authProviderInstance";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
@@ -112,6 +113,7 @@ const phaseName = "Calendar Phase";
 const phaseId = UniqueIDGenerator.generatePhaseID(phaseName);
 const phases: Phase[] = [
   {
+    id: "1",
     _id: phaseId,
     name: "Calendar Phase",
     startDate: new Date(),
@@ -121,13 +123,12 @@ const phases: Phase[] = [
     duration: 100,
     hooks: {} as CustomPhaseHooks,
     data: undefined,
-    lessons: {} as Lesson[],
+    lessons: [] as Lesson[],
   },
   // Add more phases
 ];
 
-const contentItem: DetailsItem<Data> = {
-  _id: uuidVFour(),
+const contentItem: DetailsItem<Data> = {  _id: uuidVFour(),
   id: "1",
   title: "Sample Content",
   description: "This is a sample content item.",
@@ -248,7 +249,8 @@ async function MyApp({
       files: [],
       rsvpStatus: "yes",
       participants: [],
-      teamMemberId: ""
+      teamMemberId: "",
+      meta: {}
     };
 
     // Update notifications state by appending the new notification
@@ -387,7 +389,12 @@ async function MyApp({
     clearNotifications,
   } = useNotificationManagerService();
 
+  const { currentStep, handleNext } = useStepContext();
+
   const CurrentStepComponent = steps[currentStep];
+  // Extract the `content` from each `StepProps` object
+
+  const stepContents = steps.map(step => step.content);
 
   return (
     <ErrorBoundaryProvider ErrorHandler={ErrorHandler}>
@@ -407,8 +414,8 @@ async function MyApp({
               <Refine
                 dataProvider={{
                   default: {} as DataProvider,
-                  AuthProvider: AuthProvider,
                 }}
+                authProvider={authProvider}
                 routerProvider={{
                   // basename: "",
                   Link: React.Component<{
@@ -436,7 +443,8 @@ async function MyApp({
                   },
                 ]}
               >
-                <StepProvider initialStep={0} steps={steps}>
+                
+                <StepProvider initialStep={0} steps={stepContents}>
                   <StepComponent />
                 </StepProvider>
                 <SearchComponent {...pageProps}>

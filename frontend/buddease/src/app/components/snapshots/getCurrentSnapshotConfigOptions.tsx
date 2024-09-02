@@ -1,11 +1,12 @@
 // getCurrentSnapshotConfigOptions.ts
-import * as snapshotApi from '../../../app/api/SnapshotApi'
 import { IHydrateResult } from "mobx-persist";
 import { toast } from "react-toastify";
+import * as snapshotApi from '../../../app/api/SnapshotApi';
 import { getSnapshotCriteria, getSnapshotId } from "../../../app/api/SnapshotApi";
 import UniqueIDGenerator from "../../../app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
+import { Category } from '../libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "../models/data/Data";
 import { NotificationPosition } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
@@ -17,22 +18,25 @@ import { createSnapshotStoreOptions } from "../typings/YourSpecificSnapshotType"
 import { Subscriber } from "../users/Subscriber";
 import { generateSnapshotId } from "../utils/snapshotUtils";
 import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "../utils/versionUtils";
-import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, K, T } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
-import { snapshotStoreConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-import { Category } from '../libraries/categories/generateCategoryProperties';
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 
 const snapshotContainer = new Map<string, SnapshotStore<T, K>>();
 
 export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
-  category: Category,
+  snapshotId: number | null,
+  snapshotContainer: SnapshotContainer<T, K>,
+  criteria: CriteriaType,
+  category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties,
   delegate: any,
   snapshotData: SnapshotStore<T, K>,
@@ -51,7 +55,7 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
     snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
     snapshotId: string | null,
     snapshotData: SnapshotStore<T, K>,
-    category: string | CategoryProperties | undefined,
+    category: symbol | string | Category | undefined,
     snapshotConfig: SnapshotStoreConfig<Data, K>,
     callback: (snapshotStore: SnapshotStore<T, K>) => void
   ) => void,
@@ -60,7 +64,7 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
     snapshot: SnapshotStore<T, K>,
     snapshotId: string,
     snapshotData: SnapshotStore<T, K>,
-    category: string | CategoryProperties | undefined,
+    category: symbol | string | Category | undefined,
     snapshotConfig: SnapshotStoreConfig<Data, K>,
     callback: (snapshotStore: SnapshotStore<any, any>) => void
   ) => void,
@@ -109,7 +113,7 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
     mapSnapshots: (
       storeIds: number[],
       snapshotId: string,
-      category: string | CategoryProperties | undefined,
+      category: symbol | string | Category | undefined,
       snapshot: Snapshot<Data, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -323,7 +327,7 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
     fetchInitialSnapshotData: (
       snapshotId: string,
       snapshotData: SnapshotStore<T, K>,
-      category: string | CategoryProperties | undefined,
+      category: symbol | string | Category | undefined,
       snapshotConfig: SnapshotStoreConfig<Data, K>,
       callback: (snapshotStore: SnapshotStore<T, K>) => Promise<Snapshot<T, K>>
     ): Promise<Snapshot<T, K>> => {
@@ -397,7 +401,7 @@ getSnapshots: async (
       snapshot: Snapshot<Data, K>,
       snapshotStore: SnapshotStore<T, K>,
       snapshotStoreData: SnapshotStore<T, K>,
-      category: string | CategoryProperties | undefined,
+      category: symbol | string | Category | undefined,
       subscribers: Subscriber<Data, CustomSnapshotData>[]
     ): Promise<{ snapshotStore: SnapshotStore<T, K> }> {
       try {
@@ -503,7 +507,7 @@ getSnapshots: async (
                   mapSnapshot: function (id: number, snapshotId: string, snapshot: Snapshot<Data, K>, type: string, event: Event): Promise<Snapshot<T, K> | undefined> {
                     throw new Error('Function not implemented.');
                   },
-                  mapSnapshots: function (storeIds: number[], snapshotId: string, category: string | CategoryProperties | undefined, snapshot: Snapshot<Data, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<Data, any>, data: Data): Promise<Snapshots<T>> {
+                  mapSnapshots: function (storeIds: number[], snapshotId: string, category: symbol | string | Category | undefined, snapshot: Snapshot<Data, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<Data, any>, data: Data): Promise<Snapshots<T>> {
                     throw new Error('Function not implemented.');
                   },
                   mapSnapshotStore: function (id: number): Promise<SnapshotStore<T, K> | undefined> {
@@ -1121,7 +1125,7 @@ getSnapshots: async (
   // Method to fetch a snapshot
   fetchSnapshot: async (
     id: string,
-    category: string | CategoryProperties | undefined,
+    category: symbol | string | Category | undefined,
     timestamp: Date,
     snapshot: Snapshot<Data, K>,
     data: T,
@@ -1145,7 +1149,7 @@ getSnapshots: async (
       snapshot: Snapshot<Data, K>,
       snapshotStore: SnapshotStore<T, K>,
       snapshotStoreData: SnapshotStore<T, K>,
-      category: string | CategoryProperties | undefined,
+      category: symbol | string | Category | undefined,
       subscribers: Subscriber<Data, CustomSnapshotData>[]
     ): Promise<{ snapshotStore: SnapshotStore<T, K> }> => { 
       return new Promise((resolve, reject) => {

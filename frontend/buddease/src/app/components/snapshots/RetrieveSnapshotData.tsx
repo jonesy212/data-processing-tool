@@ -3,13 +3,15 @@ import axios from 'axios';
 import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotData } from './SnapshotData';
 import { RetrievedSnapshot } from '@/app/utils/retrieveSnapshotData';
+import axiosInstance from '../security/csrfToken';
+import { Data } from '../models/data/Data';
 
 
 // // Define the API endpoint for retrieving snapshot data
 const SNAPSHOT_DATA_API_URL = 'https://example.com/api/snapshot';
 
 // Define the type for the response data
-interface SnapshotDataResponse  {
+interface SnapshotDataResponse<T extends Data,K extends Data> extends Snapshot<any, any>  {
   // Define the structure of the response data
   // This should match the structure of your snapshot data
   // Adjust it according to your actual data structure
@@ -20,19 +22,19 @@ interface SnapshotDataResponse  {
 }
 
 // Define the function to retrieve snapshot data
-export const retrieveSnapshotData = (): Promise<Snapshot<SnapshotDataResponse> | null> => {
+export const retrieveSnapshotData = (): Promise<Snapshot<SnapshotDataResponse<T, K>> | null> => {
   return new Promise(async (resolve, reject) => {
     // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data>>
-    const convertToSnapshotStore = (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse, any>) => {
+    const convertToSnapshotStore = async (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse, any>) => {
       // Create a new SnapshotStore instance
       const snapshotStore = new SnapshotStoreComponent(retrievedSnapshot.id, retrievedSnapshot.timestamp, retrievedSnapshot.category, retrievedSnapshot.data, retrievedSnapshot.callbacks);
 
       try {
         // Fetch snapshot data from the API endpoint
-        const response = await axios.get<SnapshotDataResponse>(SNAPSHOT_DATA_API_URL);
+        const response = await axiosInstance.get<SnapshotDataResponse<T, K>>(SNAPSHOT_DATA_API_URL);
 
         // Extract the snapshot data from the response
-        const snapshotData: Snapshot<SnapshotDataResponse> = {
+        const snapshotData: Snapshot<SnapshotDataResponse<T, K>> = {
           id: response.data.id.toString(), // Ensure id is a string
           timestamp: new Date(response.data.timestamp), // Convert timestamp to Date
           category: response.data.category,
@@ -217,10 +219,6 @@ export const retrieveSnapshotData = (): Promise<Snapshot<SnapshotDataResponse> |
       return snapshotStore;
     }
   })
-  
-
-
-  
-// };
+};
 
 

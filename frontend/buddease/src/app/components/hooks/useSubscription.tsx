@@ -5,10 +5,10 @@ import {
 } from "../actions/SubscriptionActions";
 import { Data } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
-import { CustomSnapshotData } from "../snapshots/LocalStorageSnapshotStore";
 import { ModifiedDate } from "../documents/DocType";
 import { fetchPortfolioUpdatesLastUpdated } from "../trading/TradingUtils";
 import { useDispatch } from 'react-redux';
+import { CustomSnapshotData } from "../snapshots";
 
 interface UseSubscriptionOptions {
   channel: string;

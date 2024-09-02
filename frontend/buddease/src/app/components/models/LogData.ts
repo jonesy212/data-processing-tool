@@ -1,5 +1,8 @@
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { DefaultCalendarEvent } from "../actions/CalendarEventActions";
+import { Highlight } from "../documents/NoteData";
+import CustomFile from "../documents/File";
+import { K, Snapshot, T } from "../snapshots";
 
 interface LogData {
   date: Date | string | number;
@@ -13,10 +16,6 @@ interface LogData {
   method?: string,
   status?: string,
   response?: any,
-
-
-
-
   sent: Date,
   isSent: boolean,
   isDelivered: boolean,
@@ -26,6 +25,10 @@ interface LogData {
   responded: boolean,
   responseTime: Date | null,
   eventData: DefaultCalendarEvent | null, // todo verify
+  topics: string[] | undefined,
+  highlights: Highlight[]
+  files: CustomFile[]
+  meta: Map<string, Snapshot<T, K>> | null
   // Additional fields specific to completionMessageLog
 }
 

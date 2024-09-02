@@ -1,3 +1,4 @@
+import {EventNotificationsSettings} from './NotificationChannels'
 // Define the CalendarSettingsEnum to represent various calendar settings
 export enum CalendarSettingsEnum {
   ShowWeekends = 'ShowWeekends',
@@ -30,7 +31,7 @@ interface CalendarSettings {
   reminderSettings: ReminderSettings; // Assuming ReminderSettings is a defined interface
   displayWeekNumbers: boolean;
   enableEventOverlap: boolean;
-  eventNotifications: NotificationSettings; // Assuming NotificationSettings is a defined interface
+  eventNotifications: EventNotificationsSettings; // Assuming NotificationSettings is a defined interface
   showCompletedEvents: boolean;
 }
 
@@ -39,10 +40,7 @@ interface ReminderSettings {
   timeBeforeEvent: number; // Time in minutes
 }
 
-interface NotificationSettings {
-  enabled: boolean;
-  notificationType: 'email' | 'sms' | 'push'; // Example types of notifications
-}
+
 
 // Example usage
 const userCalendarSettings: CalendarSettings = {
@@ -63,8 +61,35 @@ const userCalendarSettings: CalendarSettings = {
   eventNotifications: {
     enabled: true,
     notificationType: 'email',
+    channels: {
+      email: true,
+      push: true,
+      sms: false,
+      chat: false,
+      calendar: true,
+      audioCall: false,
+      videoCall: false,
+      screenShare: false
+    },
+    types: {
+      mention: true,
+      reaction: false,
+      follow: true,
+      poke: false,
+      activity: true,
+      thread: false,
+      inviteAccepted: true,
+      task: false,
+      file: true,
+      meeting: false,
+      directMessage: true,
+      announcement: true,
+      reminder: true,
+      project: false,
+      inApp: true,
+    },
   },
   showCompletedEvents: true,
-};
+}
 
-
+export {userCalendarSettings}

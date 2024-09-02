@@ -1,31 +1,27 @@
+import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import { useSecureStoreId } from './../utils/useSecureStoreId';
-import { SnapshotsArray, SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 // snapshotHandlers.ts
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { useSubscription } from '@refinedev/core';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import updateUI from '../documents/editing/updateUI';
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import axiosInstance from '../security/csrfToken';
+import { K, T } from "../snapshots/SnapshotConfig";
 import { endpoints } from './../../api/ApiEndpoints';
 import { SnapshotManager, useSnapshotManager } from './../../components/hooks/useSnapshotManager';
-import SnapshotStore, { SubscriberCollection }  from './../../components/snapshots/SnapshotStore';
+import SnapshotStore, { SubscriberCollection } from './../../components/snapshots/SnapshotStore';
 import { CategoryProperties } from './../../pages/personas/ScenarioBuilder';
-import { T, K } from "../snapshots/SnapshotConfig";
 
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { IHydrateResult } from "mobx-persist";
 import * as snapshotApi from '../../api/SnapshotApi';
-import { NotificationPosition } from "../models/data/StatusType";
+import { Category } from '../libraries/categories/generateCategoryProperties';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { clearSnapshots, useSnapshotSlice } from '../state/redux/slices/SnapshotSlice';
+import { useSnapshotSlice } from '../state/redux/slices/SnapshotSlice';
 import CalendarManagerStoreClass, { CalendarEvent } from '../state/stores/CalendarEvent';
 import {
-  NotificationType,
   NotificationTypeEnum,
   useNotification
 } from "../support/NotificationContext";
@@ -33,18 +29,15 @@ import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
 import { createSnapshotStoreOptions } from "../typings/YourSpecificSnapshotType";
 import { Subscriber } from "../users/Subscriber";
 import { addToSnapshotList, generateSnapshotId } from "../utils/snapshotUtils";
+import FetchSnapshotPayload from './FetchSnapshotPayload';
 import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
-import { SnapshotConfig } from "./snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
-import { ConfigureSnapshotStorePayload } from './SnapshotConfig';
 import { SnapshotItem } from "./SnapshotList";
+import SnapshotManagerOptions from './SnapshotManagerOptions';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 import { useSnapshotStore } from "./useSnapshotStore";
-import { Category } from '../libraries/categories/generateCategoryProperties';
-import FetchSnapshotPayload from './FetchSnapshotPayload';
-import SnapshotManagerOptions from './SnapshotManagerOptions';
 
 const { notify } = useNotification();
 const dispatch = useDispatch()
@@ -145,7 +138,7 @@ export const subscribeToSnapshot = <T extends BaseData, K extends BaseData>(
 const initializeSnapshotStore = async (
   id: string,
   snapshotStoreData: SnapshotStoreConfig<T, K>[],
-  // category: Category,
+  // category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties,
   dataStoreMethods: DataStoreMethods<T, K>,
 ): Promise<SnapshotStore<BaseData, K>> => {
@@ -250,7 +243,7 @@ const initializeSnapshotStore = async (
 async function createSnapshotStore<T extends BaseData, K extends BaseData>(
   id: string,
   snapshotStoreData: SnapshotStoreConfig<T, K>[],
-  category: Category,
+  category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties,
   dataStoreMethods: DataStoreMethods<T, K>,
 ): Promise<SnapshotStore<T, K>> {
@@ -593,31 +586,85 @@ async function createSnapshotStore<T extends BaseData, K extends BaseData>(
   return snapshotStore;
 }
 
-
 export const createSnapshotSuccess = async <T extends BaseData, K extends BaseData>(
-  snapshot: Snapshot<T, K>
+  snapshot: Snapshot<T, K>,
+  storeId: number
 ) => {
-  const snapshotManager = await useSnapshotManager();
-  const snapshotStore = snapshotManager?.state;
-  if (snapshotStore && snapshotStore.length > 0) {
-    const updatedSnapshotData = {
-      id: generateSnapshotId,
-      data: {
-        ...snapshot.data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      timestamp: new Date(),
-      category: "update",
-      length: 0,
-      content: undefined,
-    };
+  try {
+    // Get the snapshot manager for the provided storeId
+    const snapshotManager = await useSnapshotManager(storeId);
 
+    // Ensure the snapshotManager and its state are available
+    if (snapshotManager && snapshotManager.state) {
+      const snapshotStore = snapshotManager.state;
+      
+      // Find the specific snapshot store configuration using storeId
+      const snapshotStoreConfig = snapshotStore.find(
+        (store) => store.id === storeId
+      );
+
+      // If the store configuration is found, proceed with the update
+      if (snapshotStoreConfig) {
+        const updatedSnapshotData = {
+          ...snapshot,
+          timestamp: new Date(),
+        };
+
+        // Update the snapshot store by adding the new snapshot data
+        const updatedSnapshotStore = snapshotStore.map((store) => {
+          if (store.id === storeId) {
+            return {
+              ...store,
+              snapshots: [...store.snapshots, updatedSnapshotData],
+            };
+          }
+          return store;
+        });
+
+        // Update the state of the snapshot manager with the new snapshot store data
+        snapshotManager.setState(updatedSnapshotStore);
+      }
+    }
+
+    // Additional handling for the snapshot store if it exists and has data
+    const snapshotStore = snapshotManager?.state;
+    if (snapshotStore && snapshotStore.length > 0) {
+      const updatedSnapshotData = {
+        id: generateSnapshotId(), // Ensure the ID is generated correctly
+        data: {
+          ...snapshot.data,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        timestamp: new Date(),
+        category: "update",
+        length: 0, // Add logic for determining length if needed
+        content: undefined, // Modify if content is to be set
+      };
+
+      // Find the store to update with the new snapshot data
+      const updatedSnapshotStore = snapshotStore.map((store) => {
+        if (store.id === storeId) {
+          return {
+            ...store,
+            snapshots: [...store.snapshots, updatedSnapshotData],
+          };
+        }
+        return store;
+      });
+
+      // Set the updated store in the snapshot manager
+      snapshotManager.setState(updatedSnapshotStore);
+    }
+  } catch (error) {
+    // Handle any errors that may occur during the process
+    console.error("Error creating snapshot success:", error);
   }
-}
+};
+
 
 export const onSnapshot = async <T extends BaseData, K extends BaseData>(
-  snapshotId: string,
+  snapshotId: number,
   snapshot: Snapshot<T, K>,
   type: string,
   event: Event,
@@ -1428,4 +1475,5 @@ export const notifySubscribers = async <T extends Data>(
   return subscribers;
 };
 
-export { createSnapshotStore, initializeSnapshotStore, updateSnapshot, fetchSnapshot, deleteSnapshot, batchFetchSnapshots, batchUpdateSnapshots, batchFetchSnapshotsSuccess, batchFetchSnapshotsFailure, batchUpdateSnapshotsFailure, notifySubscribers, adaptSnapshot };
+export { adaptSnapshot, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshots, batchUpdateSnapshotsFailure, createSnapshotStore, deleteSnapshot, fetchSnapshot, initializeSnapshotStore, notifySubscribers, updateSnapshot };
+

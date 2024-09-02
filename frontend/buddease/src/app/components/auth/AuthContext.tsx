@@ -97,7 +97,17 @@ const initialState: AuthState = {
   token: null,
   store: new AuthStore(),
   resetAuthState: function (): void {
-    throw new Error("Function not implemented.");
+    this.id = "0";
+    this.isAuthenticated = false;
+    this.user = null;
+    this.userRoles = [];
+    this.timestamp = 0;
+    this.userNFTs = [];
+    this.authToken = null;
+    this.isLoading = false;
+    this.authenticationProviders = undefined;
+    this.token = null;
+    this.store = new AuthStore(); // Reinitialize AuthStore if needed
   },
   loginWithRoles: function (
     user: User,
@@ -105,13 +115,25 @@ const initialState: AuthState = {
     nfts: NFT[],
     authToken: string
   ): void {
-    throw new Error("Function not implemented.");
+    this.id = user.id?.toString() ?? "0"; // Set user ID as string, default to "0" if undefined
+    this.isAuthenticated = true; // Mark user as authenticated
+    this.user = user; // Set user details
+    this.userRoles = roles; // Set user roles
+    this.userNFTs = nfts; // Set user NFTs
+    this.authToken = authToken; // Set authentication token
+    this.timestamp = Date.now(); // Set current timestamp for the session
+    this.isLoading = false; // Ensure loading is finished
   },
-
   getUserPreferences: function (): UserPreferences | null {
-    throw new Error("Function not implemented.");
+    // Assuming user preferences are stored in the user object
+    if (this.user && this.user.preferences) {
+      return this.user.preferences;
+    }
+    // Return null if user or preferences are not available
+    return null;
   }
 };
+
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {

@@ -10,7 +10,7 @@ import StatusType, { NotificationPosition } from "../models/data/StatusType";
 import { displayToast } from "../models/display/ShowToast";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import CalendarEvent from "../state/stores/CalendarEvent";
 import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
@@ -27,6 +27,7 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 
 function createBaseSnapshot(
     baseData: BaseData,
@@ -83,9 +84,9 @@ function createBaseSnapshot(
           // Implement getStore logic
         },
         addStore: (
-          storeIds: number,
+          storeId: number,
+          snapshotId: number,
           snapshotStore: SnapshotStore<Data, any>,
-          snapshotId: string,
           snapshot: Snapshot<BaseData, BaseData>,
           type: string,
           event: Event
@@ -101,28 +102,33 @@ function createBaseSnapshot(
         ) => {
           // Implement mapSnapshot logic
         },
+
         async mapSnapshots(
           storeIds: number[],
           snapshotId: string,
-          category: string | CategoryProperties | undefined,
+          category: symbol | string | Category | undefined,
           snapshot: Snapshot<T, K>,
           timestamp: string | number | Date | undefined,
           type: string,
           event: Event,
           id: number,
-          snapshotStore: SnapshotStore<Data, any>,
-          data: Data
+          snapshotStore: SnapshotStore<T, K>,
+          data: T
         ): Promise<SnapshotsArray<T>> {
           try {
             const snapshotMap = new Map<string, Snapshot<T, K>>();
             snapshotMap.set(snapshotId, snapshot);
-            const snapshots: SnapshotsArray<T> = Array.from(snapshotMap.values());
+            
+            // Ensure the snapshots array is correctly typed
+            const snapshots: SnapshotsArray<T> = Array.from(snapshotMap.values()) as SnapshotsArray<T>;
+            
             return snapshots;
           } catch (error) {
             console.error("Error mapping snapshots:", error);
             throw new Error("Failed to map snapshots");
           }
         },
+        
         removeStore: (
           storeIds: number,
           store: SnapshotStore<Data, any>,
@@ -305,12 +311,15 @@ function createBaseSnapshot(
     ) => {
         return new Promise(async (resolve, reject) => {
           try {
+            const snapshotStoreConfig = useDataStore().snapshotStoreConfig
             // Check if the snapshot store is available
-            if (!snapshotStoreConfig.snapshotStore) {
+            if (!snapshotStoreConfig) {
               // Snapshot store is not available, create a new SnapshotStore instance
               // use options 
               
-              const snapshotId = getSnapshotId((await snapshot(id)).id).toString()
+              
+              const snapshotResult = await snapshot(id);
+              const snapshotId = getSnapshotId(snapshotResult?.id?.toString() || '');
               const options: SnapshotStoreOptions<BaseData, BaseData> = {
 								getCategory: getCategory,
 								getSnapshotConfig: getSnapshotConfig,
@@ -726,7 +735,7 @@ function createBaseSnapshot(
                   payload: FetchSnapshotPayload<BaseData>,
                   snapshotStore: SnapshotStore<BaseData, BaseData>,
                   payloadData: BaseData | Data,
-                  category: string | CategoryProperties | undefined,
+                  category: symbol | string | Category | undefined,
                   timestamp: Date,
                   data: BaseData,
                     delegate: SnapshotWithCriteria<BaseData, BaseData>[]
@@ -760,7 +769,7 @@ function createBaseSnapshot(
                 },
                 label: undefined,
                 events: undefined,
-                handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: string | CategoryProperties | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | undefined): Promise<Snapshot<BaseData, BaseData> | null> {
+                handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: symbol | string | Category | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | undefined): Promise<Snapshot<BaseData, BaseData> | null> {
                   throw new Error("Function not implemented.");
                 }
               };
@@ -1123,7 +1132,7 @@ function createBaseSnapshot(
                       payload: FetchSnapshotPayload<BaseData>,
                       snapshotStore: SnapshotStore<BaseData, BaseData>,
                       payloadData: BaseData | Data,
-                      category: string | CategoryProperties | undefined,
+                      category: symbol | string | Category | undefined,
                       timestamp: Date,
                       data: BaseData,
                       delegate: SnapshotWithCriteria<BaseData, BaseData>[]
@@ -1185,7 +1194,7 @@ function createBaseSnapshot(
                   },
                   label: undefined,
                   events: undefined,
-                  handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: string | CategoryProperties | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | undefined): Promise<Snapshot<BaseData, BaseData> | null> {
+                  handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: symbol | string | Category | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | undefined): Promise<Snapshot<BaseData, BaseData> | null> {
                     throw new Error("Function not implemented.");
                   }
                 };
@@ -1294,7 +1303,10 @@ function createBaseSnapshot(
       getStore: (storeId, snapshotStore, snapshotId, snapshot, type, event: Event
   
       ) => null,
-      addStore: (storeId, snapshotStore, snapshotId, snapshot, type, event: Event
+      addStore: (storeId,
+          snapshotId, 
+         snapshotStore,
+         snapshot, type, event: Event
   
       ) => null,
       mapSnapshot: (storeId, snapshotId, snapshot, type, event: Event

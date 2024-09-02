@@ -55,7 +55,8 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     
     restoreSnapshot: (
       snapshot: Snapshot<T, K>,
-      snapshotData: Snapshot<T, any>,
+      snapshotId: number,
+      snapshotData: T,
       category: Category | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T>,

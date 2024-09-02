@@ -223,6 +223,7 @@ type AdminRoleKey = CheckRoleExists<'Administrator'>; // This would resolve to '
 type ModeratorRoleKey = CheckRoleExists<'Moderator'>; // This would resolve to 'Moderator'
 
 export default UserRoles;
+export type {UserRoleEnum}
 
 // Use the AdminRoleKey and ModeratorRoleKey types to define variables
 

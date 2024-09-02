@@ -15,12 +15,12 @@ interface SnapshotStoreMethod<T extends Data, K extends Data> {
     snapshotId: number | null,
     snapshotData: Snapshot<T, K>,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
     dataStoreMethods: DataStore<T, K>,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
     snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
-  ) => Promise<Snapshot<T, K>>,
+  ) => Promise<{snapshot: Snapshot<T, K>}>,
   // Add other required properties here
 }
 

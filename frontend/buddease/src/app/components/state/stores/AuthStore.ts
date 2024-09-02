@@ -2,6 +2,7 @@
 import { UserPreferences } from "@/app/configs/UserPreferences";
 import { makeAutoObservable } from "mobx";
 import { NFT } from "../../nft/NFT";
+import { Permission } from "../../users/Permission";
 
 interface UserContactInfo {
   phone: string;
@@ -38,7 +39,7 @@ export class AuthStore {
   userContactInfo: UserContactInfo | null = null;
   userNotificationPreferences: UserNotificationPreferences | null = null;
   authenticationProviders: AuthenticationProvider[] = [];
-  
+  userPermissions: Permission[] = [];
   userSecuritySettings: SecuritySettings | null = null;
   userSessions: UserSession[] = [];
   userSubscriptionPlan: SubscriptionPlan | null = null;
@@ -82,6 +83,10 @@ export class AuthStore {
 
   getAccessToken(): string | null {
     return this.accessToken;
+  }
+
+  getUserPermissions(): Permission[] | null {
+    return this.userPermissions;
   }
 
   isLoggedIn(): boolean {

@@ -5,7 +5,7 @@ import { AnalysisTypeEnum } from "./AnalysisType";
 
 // DataAnalysisResult.ts
 export interface DataAnalysisResult extends Data {
-  id: number; // Unique identifier for the data analysis result
+  id: string | number; // Unique identifier for the data analysis result
   title: string; // Title of the data analysis result
   insights: string[]; // Array of insights gained from the data analysis
   analysisType: AnalysisTypeEnum | undefined;

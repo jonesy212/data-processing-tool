@@ -15,6 +15,16 @@ import { ProjectFeedback } from "../support/ProjectFeedback";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
 import { Address, Education, Employment, SocialLinks, User, UserData } from "./User";
+import { K, Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, T, TagsRecord } from "../snapshots";
+import TodoImpl, { Todo } from "../todos/Todo";
+import { BaseData, Data } from "../models/data/Data";
+import { Phase } from "../phases/Phase";
+import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { CustomComment } from "../state/redux/slices/BlogSlice";
+import { DetailsItem } from "../state/stores/DetailsListStore";
+import { VideoData } from "../video/Video";
+import { Member } from "../models/teams/TeamMembers";
+import SnapshotStore from "../snapshots/SnapshotStore";
 
 
 interface ActivityLogEntry {
@@ -100,17 +110,17 @@ export const userManagerSlice = createSlice({
       return state;
     },
 
-  
-// Update the sendNotification logic
+
+    // Update the sendNotification logic
     sendNotification: (
       state: WritableDraft<UserManagerState>,
       action: PayloadAction<
         | string
         | {
-            message: string;
-            recipient: string;
-            snapshot: string;
-          }
+          message: string;
+          recipient: string;
+          snapshot: string;
+        }
       >
     ) => {
       // Check if the notification property is already a string
@@ -144,16 +154,16 @@ export const userManagerSlice = createSlice({
         ...state.data,
         ...action.payload,
         securityStamp: action.payload.securityStamp || null,
-      } 
+      }
     },
     updateQuota: (state: WritableDraft<UserManagerState>, action: PayloadAction<number>) => {
       state.uploadQuota = action.payload;
     },
-    
+
     fetchUsersSuccess: (state: WritableDraft<UserManagerState>, action: PayloadAction<{ users: User[] }>) => {
       state.users = action.payload.users.map((user) => ({ ...user })) as WritableDraft<User[]>;
     },
-    
+
 
     updateUserFirstName: (
       state,
@@ -275,7 +285,7 @@ export const userManagerSlice = createSlice({
 
     updateUserPrivacySettings: (
       state,
-      action: PayloadAction<{ userId: string; privacySettings: PrivacySettings }>
+      action: PayloadAction<{ userId: string; privacySettings: WritableDraft<PrivacySettings> }>
     ) => {
       const { userId, privacySettings } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -287,7 +297,7 @@ export const userManagerSlice = createSlice({
 
     updateUserNotifications: (
       state,
-      action: PayloadAction<{ userId: string; notifications: WritableDraft<NotificationSettings>[] }>
+      action: PayloadAction<{ userId: string; notifications: WritableDraft<NotificationSettings> }>
     ) => {
       const { userId, notifications } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -369,37 +379,50 @@ export const userManagerSlice = createSlice({
       }
     },
 
+    updateUserProjectTasks: (
+      state,
+      action: PayloadAction<{
+        userId: string;
+        projectId: string;
+        tasks: Task[];
+      }>
+    ) => {
+      const { userId, projectId, tasks } = action.payload;
+      const userIndex = state.users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        const user = state.users[userIndex];
+        const projectIndex = user.projects
+          ? user.projects.findIndex((project) => project.id === projectId)
+          : -1;
+        if (projectIndex !== -1 && user.projects) {
+          // Update tasks immutably using Immer
+          user.projects[projectIndex].tasks = tasks.map((task) => ({
+            ...task,
+            // Ensure each task property is compatible with WritableDraft<Task>
+            assignedTo: task.assignedTo as WritableDraft<User> | WritableDraft<User>[] | null,
+            dependencies: task.dependencies as WritableDraft<Task>[] | null | undefined,
+            previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User>[],
+            data: task.data as WritableDraft<TaskData> | null,
+            tags: task.tags as WritableDraft<TagsRecord> | undefined,
+            subtasks: task.subtasks as WritableDraft<TodoImpl<Todo, any>>[] | undefined,
+            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, Data>[]> | undefined,
+            snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<Data, any>> | undefined,
+            phase: task.phase as WritableDraft<Phase> | null | undefined,
+            initialState: task.initialState as WritableDraft<InitializedState<Data, BaseData>> | null | undefined,
+            comments: task.comments as (WritableDraft<Comment> | WritableDraft<CustomComment>)[] | undefined,
+            updatedDetails: task.updatedDetails as WritableDraft<DetailsItem<BaseData>> | undefined,
+            videoData: task.videoData as WritableDraft<VideoData> | undefined,
+            members: task.members as string[] | WritableDraft<Member>[] | number[] | undefined,
+            leader: task.leader as WritableDraft<User> | null | undefined,
+            followers: task.followers as WritableDraft<User>[] | undefined,
+            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, BaseData>>[] | undefined,
+            snapshots: task.snapshots as WritableDraft<Snapshots<BaseData> | undefined> | undefined,
 
-   
-updateUserProjectTasks : (
-  state,
-  action: PayloadAction<{
-    userId: string;
-    projectId: string;
-    tasks: Task[];
-  }>
-) => {
-  const { userId, projectId, tasks } = action.payload;
-  const userIndex = state.users.findIndex((user) => user.id === userId);
-  if (userIndex !== -1) {
-    const user = state.users[userIndex];
-    const projectIndex = user.projects
-      ? user.projects.findIndex((project) => project.id === projectId)
-      : -1;
-    if (projectIndex !== -1 && user.projects) {
-      // Update tasks immutably using Immer
-      user.projects[projectIndex].tasks = tasks.map((task) => ({
-        ...task,
-        // Ensure each task property is compatible with WritableDraft<Task>
-        assignedTo: task.assignedTo as WritableDraft<User> | WritableDraft<User>[] | null,
-        dependencies: task.dependencies as WritableDraft<Task>[] | null | undefined,
-        previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User>[],
-        data: task.data as WritableDraft<TaskData> | null,
-        // Add other properties here
-      }));
-    }
-  }
-};
+            // Add other properties here
+          }));
+        }
+      }
+    },
 
     updateUserProjectProgress: (
       state,
@@ -462,28 +485,28 @@ updateUserProjectTasks : (
       }
     },
 
-   
- updateUserProjectResources: (
-  state: WritableDraft<UserManagerState>,
-  action: PayloadAction<{ userId: string; projectId: string; resources: Resource[] }>
-) => {
-  const { userId, projectId, resources } = action.payload;
-  const userIndex = state.users.findIndex((user) => user.id === userId);
-  if (userIndex !== -1) {
-    const user = state.users[userIndex];
-    if (user.projects) {
-      const projectIndex = user.projects.findIndex((project) => project.id === projectId);
-      if (projectIndex !== -1) {
-        user.projects[projectIndex].resources = resources;
+
+    updateUserProjectResources: (
+      state: WritableDraft<UserManagerState>,
+      action: PayloadAction<{ userId: string; projectId: string; resources: Resource[] }>
+    ) => {
+      const { userId, projectId, resources } = action.payload;
+      const userIndex = state.users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        const user = state.users[userIndex];
+        if (user.projects) {
+          const projectIndex = user.projects.findIndex((project) => project.id === projectId);
+          if (projectIndex !== -1) {
+            user.projects[projectIndex].resources = resources;
+          }
+        }
       }
-    }
-  }
     },
- 
- 
-    
-    
-   updateUserProjectBudget: (
+
+
+
+
+    updateUserProjectBudget: (
       state: WritableDraft<UserManagerState>,
       action: PayloadAction<{ userId: string; projectId: string; budget: number }>
     ) => {
@@ -533,7 +556,7 @@ updateUserProjectTasks : (
         }
       }
     },
- 
+
 
 
     // Action to update user's phone number
@@ -544,7 +567,7 @@ updateUserProjectTasks : (
         state.users[userIndex].phoneNumber = phoneNumber;
       }
     },
-    
+
     // Action to update user's address
     updateUserAddress: (state, action: PayloadAction<{ userId: string; address: WritableDraft<Address> }>) => {
       const { userId, address } = action.payload;
@@ -553,7 +576,7 @@ updateUserProjectTasks : (
         state.users[userIndex].address = address;
       }
     },
-    
+
     // Action to update user's date of birth
     updateUserDateOfBirth: (state, action: PayloadAction<{ userId: string; dateOfBirth: Date }>) => {
       const { userId, dateOfBirth } = action.payload;
@@ -562,7 +585,7 @@ updateUserProjectTasks : (
         state.users[userIndex].dateOfBirth = dateOfBirth;
       }
     },
-    
+
     // Action to update user's gender
     updateUserGender: (state, action: PayloadAction<{ userId: string; gender: string }>) => {
       const { userId, gender } = action.payload;
@@ -571,7 +594,7 @@ updateUserProjectTasks : (
         state.users[userIndex].gender = gender;
       }
     },
-        
+
     // Action to update user's language
     updateUserLanguage: (state, action: PayloadAction<{ userId: string; language: string }>) => {
       const { userId, language } = action.payload;
@@ -580,7 +603,7 @@ updateUserProjectTasks : (
         state.users[userIndex].language = language;
       }
     },
-    
+
     // Action to update user's education
     updateUserEducation: (state, action: PayloadAction<{ userId: string; education: WritableDraft<Education>[] }>) => {
       const { userId, education } = action.payload;
@@ -589,7 +612,7 @@ updateUserProjectTasks : (
         state.users[userIndex].education = education;
       }
     },
-    
+
     // Action to update user's employment
     updateUserEmployment: (state, action: PayloadAction<{ userId: string; employment: WritableDraft<Employment>[] }>) => {
       const { userId, employment } = action.payload;
@@ -609,7 +632,7 @@ updateUserProjectTasks : (
         state.users[userIndex].socialLinks = socialLinks;
       }
     },
-    
+
     // Action to update user's relationship status
     updateUserRelationshipStatus: (
       state,
@@ -621,7 +644,7 @@ updateUserProjectTasks : (
         state.users[userIndex].relationshipStatus = relationshipStatus;
       }
     },
-    
+
     // Action to update user's hobbies
     updateUserHobbies: (state, action: PayloadAction<{ userId: string; hobbies: string[] }>) => {
       const { userId, hobbies } = action.payload;
@@ -630,7 +653,7 @@ updateUserProjectTasks : (
         state.users[userIndex].hobbies = hobbies;
       }
     },
-    
+
     // Action to update user's skills
     updateUserSkills: (state, action: PayloadAction<{ userId: string; skills: string[] }>) => {
       const { userId, skills } = action.payload;
@@ -639,7 +662,7 @@ updateUserProjectTasks : (
         state.users[userIndex].skills = skills;
       }
     },
-        
+
     // Action to update user's achievements
     updateUserAchievements: (
       state,
@@ -715,7 +738,7 @@ updateUserProjectTasks : (
         state.users[userIndex].notificationPreferences = notificationPreferences;
       }
     },
-    
+
     // Action to update user's email verification status
     updateUserEmailVerificationStatus: (
       state,
@@ -727,7 +750,7 @@ updateUserProjectTasks : (
         state.users[userIndex].emailVerificationStatus = status;
       }
     },
-    
+
     // Action to update user's phone verification status
     updateUserPhoneVerificationStatus: (
       state,
@@ -755,7 +778,7 @@ updateUserProjectTasks : (
       }
     },
 
-   
+
     // Action to update user's transaction history
     updateUserTransactionHistory: (
       state,
@@ -849,7 +872,7 @@ updateUserProjectTasks : (
         state.users[userIndex].nftCollection = nftCollection;
       }
     },
-    
+
     // Action to update user's DAO memberships
     updateUserDAOMemberships: (
       state,
@@ -861,7 +884,7 @@ updateUserProjectTasks : (
         state.users[userIndex].daoMemberships = daoMemberships;
       }
     },
-    
+
     // Action to update user's decentralized storage usage
     updateUserDecentralizedStorageUsage: (
       state,
@@ -873,7 +896,7 @@ updateUserProjectTasks : (
         state.users[userIndex].decentralizedStorageUsage = usage;
       }
     },
-    
+
     // Action to update user's decentralized identity
     updateUserDecentralizedIdentity: (
       state,
@@ -885,7 +908,7 @@ updateUserProjectTasks : (
         state.users[userIndex].decentralizedIdentity = identity;
       }
     },
-    
+
     // Action to update user's decentralized messaging keys
     updateUserDecentralizedMessagingKeys: (
       state,
@@ -897,7 +920,7 @@ updateUserProjectTasks : (
         state.users[userIndex].decentralizedMessagingKeys = keys;
       }
     },
-    
+
     // Action to update user's decentralized authentication status
     updateUserDecentralizedAuthentication: (
       state,
@@ -926,7 +949,7 @@ updateUserProjectTasks : (
       const { fromUserId, toUserId, nftId } = action.payload;
       const fromUser = state.users.find(user => user.id === fromUserId);
       const toUser = state.users.find(user => user.id === toUserId);
-  
+
       if (fromUser && toUser) {
         const transferredNFT = fromUser.nftCollection?.find(nft => nft.id === nftId);
         if (transferredNFT) {
@@ -938,7 +961,7 @@ updateUserProjectTasks : (
       }
     },
   }
-  
+
 });
 
 export const {

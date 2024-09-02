@@ -1,16 +1,19 @@
 import { IHydrateResult } from 'mobx-persist';
 import * as React from 'react';
 import { createContext, ReactNode, useContext, useState } from 'react';
+import { CreateSnapshotsPayload } from '../components/database/Payload';
 import { SnapshotManager } from '../components/hooks/useSnapshotManager';
+import { Category } from '../components/libraries/categories/generateCategoryProperties';
 import { BaseData, Data, DataDetails } from '../components/models/data/Data';
 import { NotificationPosition, StatusType } from '../components/models/data/StatusType';
 import { RealtimeDataItem } from '../components/models/realtime/RealtimeData';
 import { DataStoreMethods } from '../components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { DataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import {FetchSnapshotPayload} from '../components/snapshots/FetchSnapshotPayload';
 import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from '../components/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfig } from '../components/snapshots/snapshot';
 import { ConfigureSnapshotStorePayload } from '../components/snapshots/SnapshotConfig';
 import { SnapshotData } from '../components/snapshots/SnapshotData';
-import { SnapshotItem } from '../components/snapshots/SnapshotList';
 import SnapshotStore, { SubscriberCollection } from '../components/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '../components/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '../components/snapshots/SnapshotWithCriteria';
@@ -18,12 +21,8 @@ import { Callback } from '../components/snapshots/subscribeToSnapshotsImplementa
 import { CalendarEvent } from '../components/state/stores/CalendarEvent';
 import { NotificationType, NotificationTypeEnum } from '../components/support/NotificationContext';
 import { Subscriber } from '../components/users/Subscriber';
-import { CategoryProperties } from '../pages/personas/ScenarioBuilder';
-import { Category } from '../components/libraries/categories/generateCategoryProperties';
-import { DataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import FetchSnapshotPayload from '../components/snapshots/FetchSnapshotPayload';
-import { CreateSnapshotsPayload } from '../components/database/Payload';
 import UniqueIDGenerator from '../generators/GenerateUniqueIds';
+import { CategoryProperties } from '../pages/personas/ScenarioBuilder';
 
 
 interface SnapshotContextType<T extends Data, K extends Data> {
@@ -36,7 +35,7 @@ interface SnapshotContextType<T extends Data, K extends Data> {
 }
 
 // Create the context with default values
-const SnapshotContext = createContext<SnapshotContextType<any, any> | undefined>(undefined);
+export const SnapshotContext = createContext<SnapshotContextType<any, any> | undefined>(undefined);
 
 export const SnapshotProvider = <T extends Data, K extends Data>({ children }: { children: ReactNode }) => {
   const [snapshot, setSnapshot] = useState<Snapshot<T, K> | null>(null);
@@ -73,7 +72,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         getAllKeys: function (
           storeId: number,
           snapshotId: string,
-          category: string | CategoryProperties | undefined,
+          category: symbol | string | Category | undefined,
           snapshot: Snapshot<T, K>,
           timestamp: string | number | Date | undefined,
           type: string,
@@ -221,7 +220,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
           snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
           snapshotId: string | null,
           snapshotData: SnapshotStore<T, K>,
-          category: Category,
+          category: symbol | string | Category | undefined,
           snapshotConfig: SnapshotStoreConfig<T, K>,
           callback: (snapshotStore: SnapshotStore<any, any>) => void
         ): void {
@@ -308,7 +307,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
           event: Event,
           id: number,
           snapshotStore: SnapshotStore<T, K>,
-          category: string | Category | undefined,
+          category: symbol | string | Category | undefined,
           categoryProperties: CategoryProperties | undefined,
           dataStoreMethods: DataStore<T, K>,
           data: T,
@@ -479,7 +478,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
         },
         mapSnapshots: function (storeIds: number[],
           snapshotId: string,
-          category: string | CategoryProperties | undefined,
+          category: symbol | string | Category | undefined,
           snapshot: Snapshot<T, K>,
           timestamp: string | number | Date | undefined,
           type: string,
@@ -490,7 +489,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
           callback: (
             storeIds: number[],
             snapshotId: string,
-            category: string | CategoryProperties | undefined,
+            category: symbol | string | Category | undefined,
             snapshot: Snapshot<T, K>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -514,7 +513,7 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
           payload: FetchSnapshotPayload<K>, 
           snapshotStore: SnapshotStore<T, K>, 
           payloadData: T | Data, 
-          category: string | CategoryProperties | undefined, 
+          category: symbol | string | Category | undefined, 
           timestamp: Date,
           data: T, 
           delegate: SnapshotWithCriteria<T, K>[]

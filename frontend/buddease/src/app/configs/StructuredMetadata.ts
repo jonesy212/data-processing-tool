@@ -13,24 +13,27 @@ import determineFileType from './DetermineFileType';
 
 // Define interfaces for metadata structures
 interface StructuredMetadata {
-  [fileOrFolderId: string]: {
-    originalPath: string;
-    alternatePaths: string[];
-    author: string;
-    timestamp: Date | undefined;
-    fileType: string;
-    title: string;
-    description: string;
-    keywords: string[];
-    authors: string[];
-    contributors: string[];
-    publisher: string;
-    copyright: string;
-    license: string;
-    links: string[];
-    tags: string[];
+  metadataEntries: {
+    [fileOrFolderId: string]: {
+      originalPath: string;
+      alternatePaths: string[];
+      author: string;
+      timestamp: Date | undefined;
+      fileType: string;
+      title: string;
+      description: string;
+      keywords: string[];
+      authors: string[];
+      contributors: string[];
+      publisher: string;
+      copyright: string;
+      license: string;
+      links: string[];
+      tags: string[];
+    };
   };
 }
+
 
 interface VideoMetadata {
   duration: number;
@@ -138,7 +141,7 @@ const useUndoRedo = <T>(initialState: T) => {
 
 
 // Example usage
-const initialState: StructuredMetadata = {}; // Initial state for metadata structure
+const initialState: StructuredMetadata = {metadataEntries: {}}; // Initial state for metadata structure
 const { state, setState, undo, redo } = useUndoRedo(initialState);
 
 // Define your metadata structure using 'state' and update it using 'setState'
@@ -158,7 +161,7 @@ const readMetadata = (filename: string): StructuredMetadata => {
   } catch (error: any) {
     const { handleError } = useErrorHandling(); // Use useErrorHandling hook
     handleError(`Error reading metadata file: ${error.message}`); // Handle error
-    return {};
+    return {metadataEntries: {}};
   }
 };
 
@@ -191,14 +194,19 @@ const traverseDirectory = (dir: string) => {
       const isDirectory = fs.statSync(filePath).isDirectory();
       const fileOrFolderId = Buffer.from(filePath).toString("base64");
 
-      if (!metadata[fileOrFolderId]) {
-        const fileType = determineFileType({filePath});
-        metadata[fileOrFolderId] = {
+      if (!metadata.metadataEntries[fileOrFolderId]) {
+        const filePath = path.join(dir, file);
+        const isDirectory = fs.statSync(filePath).isDirectory();
+        const fileOrFolderId = Buffer.from(filePath).toString("base64");
+    
+        if (!metadata.metadataEntries[fileOrFolderId]) {
+          const fileType = determineFileType(filePath);
+    
+        metadata.metadataEntries[fileOrFolderId] = {
           author: "",
           timestamp: new Date(),
           originalPath: filePath,
           alternatePaths: [],
-
           fileType: (fileType as string) || "Unknown",
           title: "",
           description: "",
@@ -217,12 +225,11 @@ const traverseDirectory = (dir: string) => {
         traverseDirectory(filePath);
       }
 
-      if (metadata[fileOrFolderId].originalPath !== filePath) {
-        metadata[fileOrFolderId].alternatePaths.push(filePath);
+      if (metadata.metadataEntries[fileOrFolderId].originalPath !== filePath) {
+        metadata.metadataEntries[fileOrFolderId].alternatePaths.push(filePath);
       }
     }
   };
-
   traverseDirectory(basePath);
   writeMetadata(filename, metadata);
 };

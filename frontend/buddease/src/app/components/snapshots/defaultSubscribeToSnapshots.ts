@@ -428,7 +428,7 @@ export const defaultSubscribeToSnapshots = <T extends BaseData, K extends BaseDa
           unsubscribe: function (callback: Callback<Snapshot<T, K>>): void {
             throw new Error("Function not implemented.");
           },
-          fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<K>, snapshotStore: SnapshotStore<T, K>, payloadData: T | Data, category: string | CategoryProperties | undefined, timestamp: Date, data: T, delegate: SnapshotWithCriteria<T, K>[]) => Snapshot<T, K>): Snapshot<T, K> {
+          fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<K>, snapshotStore: SnapshotStore<T, K>, payloadData: T | Data, category: symbol | string | Category | undefined, timestamp: Date, data: T, delegate: SnapshotWithCriteria<T, K>[]) => Snapshot<T, K>): Snapshot<T, K> {
             throw new Error("Function not implemented.");
           },
           addSnapshotFailure: function (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
@@ -462,7 +462,7 @@ export const defaultSubscribeToSnapshots = <T extends BaseData, K extends BaseDa
             },
             eventRecords: undefined
           },
-          handleSnapshot: function (id: string, snapshotId: string, snapshot: T | null, snapshotData: T, category: string | CategoryProperties | undefined, callback: (snapshot: T) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: T | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined): Promise<Snapshot<T, K> | null> {
+          handleSnapshot: function (id: string, snapshotId: string, snapshot: T | null, snapshotData: T, category: symbol | string | Category | undefined, callback: (snapshot: T) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: T | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined): Promise<Snapshot<T, K> | null> {
             throw new Error("Function not implemented.");
           },
           meta: undefined

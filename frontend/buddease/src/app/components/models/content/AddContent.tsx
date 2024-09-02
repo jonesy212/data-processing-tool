@@ -11,7 +11,7 @@ import { Category } from '../../libraries/categories/generateCategoryProperties'
 import { CustomSnapshotData, SnapshotWithCriteria } from '../../snapshots';
 import { BaseData, Data } from '../data/Data';
 
-interface Content<T> {
+interface Content<T extends Data> {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -20,7 +20,7 @@ interface Content<T> {
   categoryProperties: string | CategoryProperties | undefined,
   timestamp: string | number | Date,
   length: 0,
-  data: SnapshotWithCriteria<Data, any> | CustomSnapshotData | null | undefined,
+  data: T | SnapshotWithCriteria<T, Data> | CustomSnapshotData | null | undefined,
 }
 
 interface ContentProps {

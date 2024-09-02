@@ -24,9 +24,13 @@ import { User } from "../users/User";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { SnapshotConfig } from "./snapshot";
+import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
+import { Callback } from "./subscribeToSnapshotsImplementation";
 
 interface CoreSnapshot<T extends Data, K extends Data> {
-  id?: string | number;
+  id: string | number | undefined
+  config: SnapshotStoreConfig<T, K> | null;
+  configs?: SnapshotStoreConfig<T, K>[] | null;
   data: T | Map<string, Snapshot<T, K>> | null | undefined;
   name?: string;
   timestamp: string | number | Date | undefined;
@@ -36,7 +40,7 @@ interface CoreSnapshot<T extends Data, K extends Data> {
   subscriberId?: string;
   length?: number;
   task?: Task;
-  category?: Category;
+  category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties | undefined;
   date?: string | number | string | number | Date | null;
   status?: StatusType | undefined;
@@ -49,7 +53,7 @@ interface CoreSnapshot<T extends Data, K extends Data> {
   phase?: Phase | null;
   ownerId?: string;
   store?: SnapshotStore<T, K> | null;
-  state?: Snapshot<T, K>[] | null; // Ensure state matches Snapshot<T> or null/undefined
+  state?: SnapshotsArray<T> | null; // Ensure state matches Snapshot<T> or null/undefined
   dataStore?: DataStore<T, K> | null;
   snapshotId?: string | number;
   configOption?:
@@ -62,11 +66,12 @@ interface CoreSnapshot<T extends Data, K extends Data> {
   nestedStores?: SnapshotStore<T, K>[];
   events:
     | {
+        initialConfig: SnapshotConfig<T, K>,
         eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
         callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
         subscribers: SubscriberCollection<T, K>; // Ensure this is correct
         eventIds: string[];
-        initialConfig: SnapshotConfig<T, K>,
+        onInitialize: () => void
         onSnapshotAdded: (
           event: string,
           snapshot: Snapshot<T, K>,
@@ -108,7 +113,6 @@ interface CoreSnapshot<T extends Data, K extends Data> {
           criteria: SnapshotWithCriteria<T, K>,
           category: Category
         ) => void;
-        onInitialize: () => void
         onSnapshotUpdated: (
           event: string,
           snapshotId: string,
@@ -193,7 +197,9 @@ interface CoreSnapshot<T extends Data, K extends Data> {
   ) => void | null;
 
   restoreSnapshot: (
+    id: string,
     snapshot: Snapshot<T, K>,
+    snapshotId: number,
     snapshotData: T,
     category: Category | undefined,
     callback: (snapshot: T) => void,
@@ -207,7 +213,7 @@ interface CoreSnapshot<T extends Data, K extends Data> {
   handleSnapshot: (
     id: string,
     snapshotId: number,
-    snapshot: T | null,
+    snapshot: Snapshot<T, K> | null, // Update the type here
     snapshotData: T,
     category: Category | undefined,
     categoryProperties: CategoryProperties,
@@ -219,8 +225,19 @@ interface CoreSnapshot<T extends Data, K extends Data> {
     snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
   ) => Promise<Snapshot<T, K> | null>;
 
+  subscribe: (
+    snapshotId: number,
+    unsubscribe: UnsubscribeDetails,
+    subscriber: Subscriber<T, K> | null,
+    data: T,
+    event: Event,
+    callback: Callback<Snapshot<T, K>>,
+    value: T,
+  ) => [] | SnapshotsArray<T>;
+
   subscribeToSnapshots: (
-    snapshotId: string,
+    snapshotId: number,
+    unsubscribe: UnsubscribeDetails, 
     callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null
   ) => [] | SnapshotsArray<T>;
   getItem: (key: T) => Promise<Snapshot<T, K> | undefined>;

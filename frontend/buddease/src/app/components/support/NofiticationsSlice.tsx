@@ -18,8 +18,6 @@ export type TeamStatus = "active" | "inactive" | "onHold"; // Define TeamStatus 
 export type DataStatus = "processing" | "completed" | "failed"; // Define DataStatus enum
 
 
-
-
 interface NotificationData extends Data, CalendarEvent {
   id: string;
   message: string;
@@ -86,7 +84,7 @@ export const dispatchNotification = (
         participants: [],
         teamMemberId: '',
         meta: undefined,
-        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
           throw new Error('Function not implemented.');
         }
       })

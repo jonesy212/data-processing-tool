@@ -54,5 +54,5 @@ interface FetchTaskSnapshotPayload {
 }
 
 
-export default FetchSnapshotPayload;
-export type { FetchTaskSnapshotPayload };
+
+export type { FetchTaskSnapshotPayload, FetchSnapshotPayload};

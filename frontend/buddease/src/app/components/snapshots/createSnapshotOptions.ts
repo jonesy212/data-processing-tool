@@ -1,21 +1,18 @@
 // createSnapshotOptions.ts
 
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotStoreOptions } from "../hooks/useSnapshotManager";
+import { Category, getOrSetCategoryForSnapshot } from "../libraries/categories/generateCategoryProperties";
 import { BaseData } from "../models/data/Data";
 import { displayToast } from "../models/display/ShowToast";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { addToSnapshotList } from "../utils/snapshotUtils";
+import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
-import { Snapshot, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
+import { Snapshot } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { snapshotStoreConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { subscribeToSnapshotsImpl, subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
-import snapshotDelegate from "./snapshotDelegate";
-import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
-import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Category, getOrSetCategoryForSnapshot } from "../libraries/categories/generateCategoryProperties";
+import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
 
 interface SimulatedDataSource {
     // Define the properties of the simulated data source
@@ -30,7 +27,7 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
       id: string | number | undefined,
       snapshotId: string | null,
       snapshotData: Snapshot<T, K>,
-      category: Category,
+      category: symbol | string | Category | undefined,
       callback: (snapshot: Snapshot<T, K>) => void,
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
       snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
@@ -106,4 +103,4 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
     };
 }
 export default createSnapshotOptions;
-export type { SimulatedDataSource } 
+export type { SimulatedDataSource };

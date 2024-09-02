@@ -508,7 +508,7 @@ export const useSnapshotSlice = createSlice({
               payload: FetchSnapshotPayload<BaseData>,
               snapshotStore: SnapshotStore<BaseData, BaseData>,
               payloadData: BaseData | Data,
-              category: string | CategoryProperties | undefined,
+              category: symbol | string | Category | undefined,
               timestamp: Date,
               data: BaseData,
               delegate: SnapshotWithCriteria<BaseData, BaseData>[]
@@ -542,7 +542,7 @@ export const useSnapshotSlice = createSlice({
           },
           label: undefined,
           events: undefined,
-          handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: string | CategoryProperties | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | undefined): Promise<Snapshot<BaseData, BaseData> | null> {
+          handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: symbol | string | Category | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | undefined): Promise<Snapshot<BaseData, BaseData> | null> {
             throw new Error("Function not implemented.");
           },
           subscribeToSnapshots: function (snapshotId: string, unsubscribeType: string, unsubscribeDate: Date, unsubscribeReason: string, unsubscribeData: any, callback: (snapshots: Snapshots<BaseData>) => Snapshot<BaseData, BaseData> | null): void {

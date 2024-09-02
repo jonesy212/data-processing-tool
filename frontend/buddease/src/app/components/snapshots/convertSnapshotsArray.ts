@@ -1,9 +1,9 @@
+import { SnapshotStore } from '@/app/components/snapshots/SnapshotStore';
 // convertSnapshotsArray.ts
 
 import { T } from ".";
 import { BaseData, Data } from "../models/data/Data";
 import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
-import SnapshotStore from "./SnapshotStore";
 
 // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T>
 function convertSnapshotsArray<T extends Data, K extends Data>(snapshotsArray: Snapshot<T, K>[]): SnapshotsArray<T> {
@@ -22,7 +22,7 @@ function convertSnapshotsArray<T extends Data, K extends Data>(snapshotsArray: S
   }
   
   // Example usage of the conversion function
-  const filteredSnapshots: Snapshot<T, BaseData>[] = [/* your snapshots array */];
+  const filteredSnapshots: Snapshot<T, K>[] = [/* your snapshots array */];
   const convertedSnapshots: SnapshotsArray<T> = convertSnapshotsArray<T, BaseData>(filteredSnapshots);
   
   // Now use the converted snapshots in your createDefaultSnapshot function

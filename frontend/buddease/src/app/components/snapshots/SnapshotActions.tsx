@@ -1,60 +1,49 @@
 // //snapshots/SnapshotActions.ts
 
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
-import { IHydrateResult } from 'mobx-persist';
 import { useDispatch } from 'react-redux';
-import { SnapshotData, SubscriberCollection } from '.';
-import { SnapshotManager } from '../hooks/useSnapshotManager';
-import determineFileCategory from '../libraries/categories/determineFileCategory';
 import { BaseData, Data } from '../models/data/Data';
-import { NotificationPosition, PriorityTypeEnum, StatusType } from '../models/data/StatusType';
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { Task } from '../models/tasks/Task';
-import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
-import { Subscription } from '../subscriptions/Subscription';
-import { NotificationType, NotificationTypeEnum } from '../support/NotificationContext';
-import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from '../trading/TradingUtils';
-import { Subscriber } from '../users/Subscriber';
-import { portfolioUpdates, triggerIncentives, unsubscribe } from '../utils/applicationUtils';
-import { CreateSnapshotsPayload, FetchSnapshotPayload, Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from './LocalStorageSnapshotStore';
-import { SnapshotConfig } from './snapshot';
-import { ConfigureSnapshotStorePayload, K } from './SnapshotConfig';
-import { SnapshotItem } from './SnapshotList';
-import SnapshotStore from './SnapshotStore';
-import { SnapshotStoreConfig } from './SnapshotStoreConfig';
-import { SnapshotWithCriteria } from './SnapshotWithCriteria';
-import { Callback } from './subscribeToSnapshotsImplementation';
-import { SourceEnum } from '../phases/TaskPhaseEnum';
-import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { Snapshot } from './LocalStorageSnapshotStore';
 
-// const dispatch = useDispatch()
+const dispatch = useDispatch()
 
-// interface TaskData extends BaseData {
-//   title: string;
-//   description: string;
-// }
+interface TaskData extends BaseData {
+  title: string;
+  description: string;
+}
 
-// interface SubtaskData extends BaseData {
-//   parentId: string;
-//   title: string;
-//   isCompleted: boolean;
-// }
+interface SubtaskData extends BaseData {
+  parentId: string;
+  title: string;
+  isCompleted: boolean;
+}
 
 
-// interface CallbackAction {
-//   request?: () => void;
-//   success?: () => void;
-//   failure?: (error: Error) => void;
-// }
+interface CallbackAction {
+  request?: () => void;
+  success?: () => void;
+  failure?: (error: Error) => void;
+}
 
-// type CallbackActionsMap<T> = {
-//   [key: string]: CallbackAction;
-// };
+type CallbackActionsMap<T> = {
+  [key: string]: CallbackAction;
+};
 
 
+
+export enum SnapshotOperationType {
+  CreateSnapshot = 'createSnapshot',
+  UpdateSnapshot = 'updateSnapshot',
+  DeleteSnapshot =  'deleteSnapshot',
+  FindSnapshot = 'findSnapshot',
+  MapSnapshot = 'mapSnapshot',
+  SortSnapshot = 'sortSnapshot',
+  CategorizeSnapshot = 'categorizeSnapshot',
+  SearchSnapshot = 'searchSnapshot',
+  CalendarSnapshot = 'calendarEvent',
+  NewSnapshotResult = 'newSnapshotResult',
+  TaskSnapshotReference = 'taskSnapshotReference',
+}
 
 
 type SnapshotOperation = {
@@ -64,28 +53,16 @@ type SnapshotOperation = {
 };
 
 
-// export enum SnapshotOperationType {
-//   CreateSnapshot = 'createSnapshot',
-//   UpdateSnapshot = 'updateSnapshot',
-//   DeleteSnapshot =  'deleteSnapshot',
-//   FindSnapshot = 'findSnapshot',
-//   MapSnapshot = 'mapSnapshot',
-//   SortSnapshot = 'sortSnapshot',
-//   CategorizeSnapshot = 'categorizeSnapshot',
-//   SearchSnapshot = 'searchSnapshot',
-//   CalendarSnapshot = 'calendarEvent',
-//   NewSnapshotResult = 'newSnapshotResult',
-//   TaskSnapshotReference = 'taskSnapshotReference',
-// }
-// // Define generic action types
-// interface SnapshotActionsTypes<T extends Data, K extends Data> {
-//   addSnapshot: ActionCreatorWithPayload<Snapshot<T, K>>;
-//   removeSnapshot: ActionCreatorWithPayload<string>;
-//   updateSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
-//   fetchSnapshotData: ActionCreatorWithPayload<string>;
-//   handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
-//   handleSnapshotFailure: ActionCreatorWithPayload<string>;
-// }
+
+// Define generic action types
+interface SnapshotActionsTypes<T extends Data, K extends Data> {
+  addSnapshot: ActionCreatorWithPayload<Snapshot<T, K>>;
+  removeSnapshot: ActionCreatorWithPayload<string>;
+  updateSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
+  fetchSnapshotData: ActionCreatorWithPayload<string>;
+  handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
+  handleSnapshotFailure: ActionCreatorWithPayload<string>;
+}
 
 
 // // Define action types with generics
@@ -291,7 +268,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //     snapshotId: string,
 //     snapshot:Task | null,
 //     snapshotData:Task,
-//     category: string | CategoryProperties | undefined,
+//     category: symbol | string | Category | undefined,
 //     callback: (snapshot: Task) => void,
 //     snapshots: SnapshotsArray<Task>,
 //     type: string,
@@ -710,7 +687,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //   mapSnapshots: function (
 //       storeIds: number[],
 //       snapshotId: string,
-//       category: string | CategoryProperties | undefined,
+//       category: symbol | string | Category | undefined,
 //       snapshot: Snapshot<Task, K>,
 //       timestamp: string | number | Date | undefined,
 //       type: string,
@@ -721,7 +698,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //       callback: (
 //         storeIds: number[],
 //         snapshotId: string,
-//         category: string | CategoryProperties | undefined,
+//         category: symbol | string | Category | undefined,
 //         snapshot: Snapshot<Task, K>,
 //         timestamp: string | number | Date | undefined,
 //         type: string,
@@ -738,7 +715,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //       payload: FetchSnapshotPayload<any>, 
 //       snapshotStore: SnapshotStore<Task, any>,
 //       payloadData: Task,
-//       category: string | CategoryProperties | undefined,
+//       category: symbol | string | Category | undefined,
 //       timestamp: Date,
 //       data: Data,
 //       delegate: SnapshotWithCriteria<Task, any>[]

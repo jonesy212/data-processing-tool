@@ -25,6 +25,7 @@ import {
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 import { Snapshot, SnapshotStoreConfig, TagsRecord } from "../../snapshots";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 
 interface CustomData extends Data {
   _id: string;
@@ -37,7 +38,7 @@ interface CustomData extends Data {
   // Add other properties as needed to match the structure of Data
 }
 
-export interface TeamManagerStore {
+export interface TeamManagerStore <T extends Data, K extends Data> {
   teams: Record<string, Team[]>;
   teamName: string;
   teamDescription: string;
@@ -76,8 +77,8 @@ export interface TeamManagerStore {
   ) => number;
   // Add more methods or properties as needed
 }
-const config = {} as typeof SnapshotStoreConfig<SnapshotStore<T, K>>;
-const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
+const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, K>>;
+const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerStore<T, K>> => {
   const { notify } = useNotification();
 
   const [teams, setTeams] = useState<Record<string, Team[]>>({
@@ -93,11 +94,13 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
   >("active");
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(""); // Initialize it with an empty string
 
+  const storeId = useSnapshotManager(initialStoreId)
+  const options = 
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
   // Initialize SnapshotStore
   const initSnapshot = {} as SnapshotStoreConfig<Data, K>;
-  const snapshotStore = new SnapshotStore(storeId, options, category, config, operation);
+  const snapshotStore = new SnapshotStore(Number(storeId), options, category, config, operation);
 
   const updateTeamName = (name: string) => {
     setTeamName(name);
@@ -212,11 +215,12 @@ const useTeamManagerStore = async (): Promise<TeamManagerStore> => {
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-    const snapshotConfig: SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>,Data> = {} as SnapshotStoreConfig<SnapshotStore<Snapshot<Data>>, Data>;
+    const snapshotConfig: SnapshotStoreConfig<T, Data> = {} as SnapshotStoreConfig<T, Data>;
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshot = new SnapshotStore(storeId, options, category, config, operation);
+    const teamSnapshotStore = new SnapshotStore(storeId, options, category, config, operation);
 
+    const teamSnapshot = new Snapshot
 
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);

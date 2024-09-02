@@ -76,7 +76,7 @@ const isSnapshotWithCriteriaBaseData = (
 // Example conversion function
 function convertToSnapshotArray<T extends BaseData>(
   data: Snapshots<T>
-): SnapshotsArray<SnapshotWithCriteria<any, BaseData>> {
+): SnapshotsArray<T> {
   // Implement conversion logic here
   return Array.isArray(data) ? data : Object.values(data);
 }
@@ -84,7 +84,7 @@ function convertToSnapshotArray<T extends BaseData>(
 function convertToSnapshotWithCriteria(
   snapshot: Snapshot<Data, Data>
 ): SnapshotWithCriteria<any, BaseData> | null {
-  const { id, snapshotData, category, categoryProperties, dataStoreMethods } =
+  const { id, snapshotData, category,  description, categoryProperties, dataStoreMethods } =
     snapshot;
 
   // Use category as the criteria for conversion
@@ -93,6 +93,7 @@ function convertToSnapshotWithCriteria(
       ...snapshot, // Spread the existing snapshot properties
       criteria: {
         categoryCriteria: category, // Use category as a specific field in the criteria
+        description: description
         // Add more criteria fields if needed
       },
       // Modify or extend other properties if necessary
@@ -106,8 +107,8 @@ function convertToSnapshotWithCriteria(
 }
 
 function isSnapshotOfType<T extends Data, K extends BaseData>(
-  snapshot: Snapshot<Data, K>,
-  typeCheck: (snapshot: Snapshot<Data, K>) => snapshot is Snapshot<T, K>
+  snapshot: Snapshot<T, K>,
+  typeCheck: (snapshot: Snapshot<T, K>) => snapshot is Snapshot<T, K>
 ): snapshot is Snapshot<T, K> {
   // Add validation logic here to ensure snapshot is of type Snapshot<T, K>
   return typeCheck(snapshot);

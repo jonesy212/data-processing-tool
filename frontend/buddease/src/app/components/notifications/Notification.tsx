@@ -35,7 +35,6 @@ const Notification: React.FC<NotificationStyleProps> = ({
     // Implement dismissal logic here
     try {
       // Example: Dismiss notification by removing it from the notification store
-
       useNotificationStore.getState().dismissNotification(notificationId);
 
       // Notify dismissal
@@ -56,7 +55,6 @@ const Notification: React.FC<NotificationStyleProps> = ({
         NotificationTypeEnum.Error // Notification type for error
       );
     }
-
   };
   return (
     <div className="notification" style={notificationStyle}>

@@ -13,6 +13,7 @@ import CommonEvent from "../state/stores/CommonEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Attendee } from "./Attendee";
+import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 
 //CalendarEvent.t
 interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
@@ -60,7 +61,7 @@ interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
   archived?: boolean;
   documentReleased?: boolean;
   metadata?: StructuredMetadata | ProjectMetadata 
-  getSnapshotStoreData?: () => Promise<SnapshotStore<CalendarEvent, K>[]>;
+  getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
 
   
   getData?: () => Promise<

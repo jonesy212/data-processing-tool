@@ -39,11 +39,14 @@ import { createSnapshot } from "@/app/api/SnapshotApi";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { resolve } from "path";
 import { reject } from "lodash";
-import  SnapshotWithCriteria from "@/app/components/routing/SearchCriteria";
+ import { CategoryIdentifier } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { SnapshotWithCriteria } from "@/app/components/snapshots";
+import { CategoryProperties } from "../personas/ScenarioBuilder";
+import { CriteriaType } from "./CriteriaType";
 
 
 interface FilterCriteria {
-  description: string;
+  description: string | null | undefined;
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null | null;
@@ -77,8 +80,10 @@ interface FilterCriteria {
   formatType?: FormatEnum | null; // Filter by format type
   privacySettingsType?: PrivacySettingEnum | null; // Filter by privacy settings type
   messageType?: MessageType | null; // Filter by message type
-  categoryCriteria?: string; // Add categoryCriteria here
+  categoryCriteria?: CategoryIdentifier | CategoryProperties; // Add categoryCriteria here
 }
+
+type CalendarEventWithCriteria = SnapshotWithCriteria<CalendarEvent, BaseData> & CriteriaType;
 
 const applyFilters = (
   events: CalendarEvent[],
@@ -418,11 +423,11 @@ const events: CalendarEvent[] = [
     participants: [],
     teamMemberId: "",
     date: new Date(),
-    getSnapshotStoreData(): Promise<SnapshotStore<CalendarEvent, BaseData>[]> {
+    getSnapshotStoreData(): Promise<CalendarEventWithCriteria[]> {
       return new Promise((resolve, reject) => {
         try {
           // Your logic to retrieve data goes here
-          const data: Snapshot<CalendarEvent, Data>[] = [
+          const data: CalendarEventWithCriteria[] = [
             {
               description: "This is a sample event",
               startDate: new Date("2024-06-01"),
@@ -430,11 +435,11 @@ const events: CalendarEvent[] = [
               status: StatusType.Scheduled,
               priority: PriorityTypeEnum.High,
               assignedUser: "<NAME>",
-              todoStatus: "completed",
-              taskStatus: "in progress",
-              teamStatus: "active",
-              dataStatus: "processed",
-              calendarStatus: "",
+              todoStatus: TodoStatus.Completed,
+              taskStatus: TaskStatus.InProgress,
+              teamStatus: TeamStatus.Active,
+              dataStatus: DataStatus.Processed,
+              calendarStatus: CalendarStatus.IDLE,
             }
             ]
           resolve(data);
@@ -443,54 +448,53 @@ const events: CalendarEvent[] = [
           }
         })
       },
-    getData(): Promise<SnapshotStore<T, K>> {
+    meta:{} as Data,
+      getData(): Promise<SnapshotWithCriteria<BaseData, BaseData>> {
       return new Promise((resolve, reject) => {
         try {
-          // Your logic to retrieve data goes here
-          const data: Snapshot<T, K>[] = [
-            {
+          // Sample data implementing SnapshotWithCriteria
+          const data: SnapshotWithCriteria<BaseData, BaseData>[] = [
+          {
               description: "This is a sample event",
-              
-              
-              // startDate: new Date("2024-06-01"),
-              // endDate: new Date("2024-06-05"),
-              // status: StatusType.Scheduled,
-              // priority: PriorityTypeEnum.High,
-              // assignedUser: "John Doe",
-              // todoStatus: "completed",
-              // taskStatus: "in progress",
-              // teamStatus: "active",
-              // dataStatus: "processed",
-              // calendarStatus: "approved",
-              // notificationStatus: "read",
-              // bookmarkStatus: "saved",
-              // priorityType: "urgent",
-              // projectPhase: "planning",
-              // developmentPhase: "coding",
-              // subscriberType: "premium",
-              // subscriptionType: "monthly",
-              // analysisType: AnalysisTypeEnum.STATISTICAL,
-              // documentType: "pdf",
-              // fileType: "document",
-              // tenantType: "tenantA",
-              // ideaCreationPhaseType: "ideation",
-              // securityFeatureType: "encryption",
-              // feedbackPhaseType: "review",
-              // contentManagementType: "content",
-              // taskPhaseType: "execution",
-              // animationType: "2d",
-              // languageType: "english",
-              // codingLanguageType: "javascript",
-              // formatType: "json",
-              // privacySettingsType: "public",
-              // messageType: "email",
-              // id: "event1",
-              // title: "Sample Event",
-              // content: "This is a sample event content",
-              // topics: [],
-              // highlights: [],
-              // files: [],
-              // rsvpStatus: "yes"
+              startDate: new Date("2024-06-01"),
+              endDate: new Date("2024-06-05"),
+              status: StatusType.Scheduled,
+              priority: PriorityTypeEnum.High,
+              assignedUser: "John Doe",
+              todoStatus: TodoStatus.Completed,
+              taskStatus: TaskStatus.InProgress,
+              teamStatus: TeamStatus.Active,
+              dataStatus: DataStatus.Processed,
+              calendarStatus: CalendarStatus.Approved,
+              notificationStatus: NotificationStatus.READ,
+              bookmarkStatus: BookmarkStatus.Saved,
+              priorityType: PriorityTypeEnum.Urgent,
+              projectPhase: ProjectPhaseTypeEnum.Planning,
+              developmentPhase: DevelopmentPhaseEnum.CODING,
+              subscriberType: SubscriberTypeEnum.PREMIUM,
+              subscriptionType: SubscriptionTypeEnum.Monthly,
+              analysisType: AnalysisTypeEnum.STATISTICAL,
+              documentType: DocumentTypeEnum .PDF,
+              fileType: FileTypeEnum.Document,
+              tenantType: TenantManagementPhaseEnum.TenantA,
+              ideaCreationPhaseType: IdeaCreationPhaseEnum.IDEATION,
+              securityFeatureType: SecurityFeatureEnum.Encryption,
+              feedbackPhaseType: FeedbackPhaseEnum.FEEDBACK_REVIEW,
+              contentManagementType: ContentManagementPhaseEnum.CONTENT_EDITING,
+              taskPhaseType: TaskPhaseEnum.EXECUTION,
+              animationType: AnimationTypeEnum.TwoD,
+              languageType: LanguageEnum.English,
+              codingLanguageType: CodingLanguageEnum.Javascript,
+              formatType: FormatEnum.DOC,
+              privacySettingsType: PrivacySettingEnum.Public,
+              messageType: MessageType.Email,
+              id: "event1",
+              title: "Sample Event",
+              content: "This is a sample event content",
+              topics: [],
+              highlights: [],
+              files: [],
+              rsvpStatus: "yes"
             }
           ]; // Example data, replace with actual logic
     
@@ -504,7 +508,7 @@ const events: CalendarEvent[] = [
     },
     then: function <T extends Data, K extends Data>(
       callback: (newData: Snapshot<T, K>) => void
-    ): Snapshot<Data, K> {
+    ): Snapshot<T, K> {
       // Simulate fetching data
       const snapshot: Snapshot<T, K>  = {
         description: "This is a sample event",
@@ -547,14 +551,15 @@ const events: CalendarEvent[] = [
         highlights: [],
         files: [],
         rsvpStatus: "yes",
-        getData: function <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void): void {
+        getData: function <T extends Data, K extends Data>(callback: (
+          newData: Snapshot<BaseData, K>) => void): void {
           // Simulate fetching data
           // Fetch or create the snapshot data
           const snapshot: Snapshot<T, K> = {
             description: "This is a sample event",
             startDate: new Date("2024-06-01"),
             endDate: new Date("2024-06-05"),
-            status: "scheduled",
+            status: StatusType.Scheduled,
             priority: "high",
             assignedUser: "John Doe",
             todoStatus: "completed",
@@ -603,14 +608,15 @@ const events: CalendarEvent[] = [
         },
         callback(snapshot: any) { },
       }
-      return snapshot as unknown as Snapshot<Data, K>
+      return snapshot as unknown as Snapshot<T, K>
     },
 
   },
   // Add more CalendarEvent data as needed
 ];
+ 
 
-// Sample filter criteria
+
 // Sample filter criteria
 const filterCriteria: FilterCriteria = {
   startDate: new Date("2024-06-01"),
@@ -618,6 +624,7 @@ const filterCriteria: FilterCriteria = {
   status: StatusType.Scheduled,
   priority: PriorityTypeEnum.High,
   assignedUser: "John Doe",
+  description: "This is a sample event",
   todoStatus: TodoStatus.Completed,
   taskStatus: TaskStatus.InProgress, // Updated to enum value
   teamStatus: TeamStatus.Active, // Updated to enum value
@@ -652,4 +659,4 @@ const filterCriteria: FilterCriteria = {
 const filteredEvents = applyFilters(events, filterCriteria);
 
 console.log(filteredEvents);
-export type { FilterCriteria };
+export type { FilterCriteria, CalendarEventWithCriteria };

@@ -58,7 +58,7 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
   
     // Process each snapshot in the array
     snapshot.forEach(snap => {
-      typedCallback(snap as Snapshot<T, K>);
+      typedCallback(snap);
     });
 
     const snapshots: Snapshots<T> = []; // Replace with actual logic to get snapshots
@@ -73,8 +73,9 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
           dataStore: snap.dataStore,
           events: snap.events ?? [],
           meta: snap.meta,
-          data: snap.data ?? ({} as T),
-        } as Snapshot<T, K>);
+          data: snap.data ?? ({} as T
+
+          )} as Snapshot<T, K>);
       }
     });
   };

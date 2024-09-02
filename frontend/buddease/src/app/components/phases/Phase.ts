@@ -8,6 +8,7 @@ import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import { DetailsItem } from "../state/stores/DetailsListStore";
+import { TagsRecord } from "../snapshots";
 
 // Define a type for a phase
 export interface Phase extends CommonData {
@@ -16,7 +17,7 @@ export interface Phase extends CommonData {
   name: string;
   startDate: Date | undefined;
   endDate: Date | undefined;
-  subPhases: Phase[];
+  subPhases: string[] | Phase[];
   component?: FC<any>; // Adjust to accept any props
   hooks?: CustomPhaseHooks;
   data?: any;
@@ -79,8 +80,7 @@ export class PhaseImpl implements Phase {
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
   metadata?: StructuredMetadata | undefined;
-  details?: DetailsItem | undefined;
-  tags?: string[] | undefined;
+  details?: DetailsItem<any> | undefined;  tags?: TagsRecord | undefined;
   categories?: string[] | undefined;
   documentType?: string | undefined;
   documentStatus?: string | undefined;

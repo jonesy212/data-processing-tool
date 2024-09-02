@@ -1,14 +1,13 @@
 // CalendarEvent.tsx
-import React from "react";
-import * as snapshotApi from "@/app/api/SnapshotApi"
 import { endpoints } from "@/app/api/ApiEndpoints";
+import * as snapshotApi from "@/app/api/SnapshotApi";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
- import {
+import React from "react";
+import {
   getDefaultDocumentOptions,
 } from "../../documents/DocumentOptions";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
@@ -37,27 +36,28 @@ import { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 import { useStore } from "./StoreProvider";
 
-import { Snapshot,SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
+import { getSnapshotConfig } from "@/app/api/SnapshotApi";
+import { useDispatch } from "react-redux";
+import { EventActions } from "../../actions/EventActions";
+import { CalendarEvent } from "../../calendar/CalendarEvent";
+import { combinedEvents } from "../../event/Event";
 import {
   useSnapshotManager,
 } from "../../hooks/useSnapshotManager";
-import { T, K } from "../../snapshots/SnapshotConfig";
-import { SnapshotWithCriteria} from "../../snapshots/SnapshotWithCriteria";
-import { MobXRootState } from "./RootStores";
-import {SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { Category } from "../../libraries/categories/generateCategoryProperties";
+import {  SnapshotContainer, snapshotContainer, SnapshotData } from "../../snapshots";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import {
   SnapshotOperation,
   SnapshotOperationType,
 } from "../../snapshots/SnapshotActions";
-import { combinedEvents } from "../../event/Event";
-import { snapshot, SnapshotContainer, snapshotContainer, SnapshotData } from "../../snapshots";
-import {CalendarEvent} from "../../calendar/CalendarEvent";
+import { K, T } from "../../snapshots/SnapshotConfig";
 import SnapshotManagerOptions from "../../snapshots/SnapshotManagerOptions";
-import { getSnapshotConfig, getSnapshotId } from "@/app/api/SnapshotApi";
-import { EventActions } from "../../actions/EventActions";
-import { useDispatch } from "react-redux";
-import { Category } from "../../libraries/categories/generateCategoryProperties";
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
 import { Document, DocumentStore } from "./DocumentStore";
+import { MobXRootState } from "./RootStores";
+import { EventStore } from "../../event/EventStore";
 
 
 const dispatch = useDispatch()
@@ -214,7 +214,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
   
   private documentManager: DocumentStore;
   
-  constructor(category: Category, documentManager: DocumentStore) {
+  constructor(category: symbol | string | Category | undefined, documentManager: DocumentStore) {
     this.category = category;
     this.entities = {
       events: [],
@@ -301,15 +301,11 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
       snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
       criteria
     )
-
     // const config = storeConfig as unknown as SnapshotStoreConfig<T, K>;
     const operation: SnapshotOperation = {
       // Provide the required operation details
       operationType: SnapshotOperationType.FindSnapshot,
     };
-
-
-
     this.snapshotStore = new SnapshotStore<T, K>(storeId, options, this.category, config, operation);
   }
 
@@ -317,7 +313,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
   callback: (snapshot: Snapshot<T, K>) => void;
   setDocumentReleaseStatus: (eventId: string, released: boolean) => void;
   updateDocumentReleaseStatus: (eventId: string, released: boolean) => void;
-  snapshotStore: SnapshotStore<T, K>;
+  snapshotStore: SnapshotStore<T, K> = {} as SnapshotStore<T, K>;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
   handleRealtimeUpdate: (
     eventId: string,
@@ -351,8 +347,20 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
   // Example conversion function, adjust as needed
   private convertDocumentToSnapshot(document: Document): Snapshot<T, K> {
     // Implement actual conversion logic here
-    // For now, assuming direct casting is appropriate
-    return document as Snapshot<T, K>;
+   
+     
+  // Create a snapshot object using the properties of Document
+  const snapshot: Snapshot<T, K> = {
+    id: document.id,
+    initialState: document.data as T, // Ensure document.data matches type T
+    isCore: true, // Default value or derive from document if needed
+    initialConfig: {} as K, // Initialize as empty or derive from document if applicable
+    createdAt: document.createdAt,
+    updatedAt: document.updatedAt,
+    version: document.version,
+    // Map any additional properties from Document to Snapshot if necessary
+  };
+    return snapshot;
   }
   openScheduleEventModal: (content: JSX.Element) => void;
   entities: CalendarEntities;

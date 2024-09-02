@@ -34,7 +34,7 @@ import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
 import { Tag } from "./tracker/Tag";
 import AccessHistory from "../versions/AccessHistory";
-import { TagsRecord } from "../snapshots";
+import { T, TagsRecord } from "../snapshots";
 // Define a generic type for data
 
 interface CommonData {
@@ -53,7 +53,7 @@ interface CommonData {
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   metadata?: StructuredMetadata | ProjectMetadata;
-  details?: DetailsItem
+  details?: DetailsItem<T>
   // data?: T extends CommonData<infer R> ? R : never;
   projectId?: string;
   tags?: TagsRecord

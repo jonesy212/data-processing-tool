@@ -1,9 +1,8 @@
+// AuthService.ts
 import { DatabaseConfig, DatabaseService } from "@/app/configs/DatabaseConfig";
 import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
 import UserService from "../users/ApiUser";
-// AuthService.ts
-
-
+ 
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
 
 class AuthService {
@@ -242,9 +241,7 @@ export const databaseConfig: DatabaseConfig = {
 
 // Create a singleton instance of the AuthService
 const authService = new AuthService(databaseConfig);
-
-
-
+ 
 // Example usage of saveAuthenticationProviders
 const authenticationProviders: AuthenticationProvider[] = ['Google', 'Facebook', 'Twitter', 'LinkedIn', 'GitHub'];
 authService.saveAuthenticationProviders(authenticationProviders)
@@ -265,3 +262,5 @@ authService.getAuthenticationProviders()
   });
 
 export default authService;
+
+export type {AuthenticationProvider}

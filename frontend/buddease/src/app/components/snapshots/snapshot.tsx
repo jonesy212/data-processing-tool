@@ -1,55 +1,16 @@
 // // snapshot
 
-import { Persona } from "@/app/pages/personas/Persona";
-import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import operation from "antd/es/transfer/operation";
-import { Signature } from "ethers";
-import { LanguageEnum } from "../communications/LanguageEnum";
-import { CustomTransaction } from "../crypto/SmartContractInteraction";
-import { CreateSnapshotStoresPayload } from "../database/Payload";
-import { createCustomTransaction } from "../hooks/dynamicHooks/createCustomTransaction";
-import useErrorHandling from "../hooks/useErrorHandling";
-import { SnapshotManager } from "../hooks/useSnapshotManager";
-import { BaseData, Data } from "../models/data/Data";
-import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { Settings } from "../state/stores/SettingsStore";
-import { Subscriber } from "../users/Subscriber";
-import { User } from "../users/User";
-import UserRoles from "../users/UserRoles";
+import { Data } from "../models/data/Data";
 import Version from "../versions/Version";
-import { createBaseSnapshot } from "./createBaseSnapshot";
 import {
-    Snapshot,
-    SnapshotsArray,
-    SnapshotUnion
+  Snapshot
 } from "./LocalStorageSnapshotStore";
-import { ConfigureSnapshotStorePayload, K } from "./SnapshotConfig";
-import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
-import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+import { CustomSnapshotData } from "./SnapshotData";
+import { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-// // import { K, T } from "./SnapshotConfig";
+// // import { K, T , SnapshotConfig} from "./SnapshotConfig";
 
 
-
-interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> {
-  id: string;
-  description?: string;
-  category: string;
-  metadata?: Record<string, any>;
-  priority?: string;
-  version?: Version;
-  data: T;
-  subscribers: SubscriberCollection<T, K>;
-  storeConfig: SnapshotStoreConfig<T, K>;
-  additionalData: CustomSnapshotData
-}
 
 
 // // Define T as a generic type parameter
@@ -1160,7 +1121,7 @@ interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> 
 //     snapshotId: string,
 //     snapshot: Data | null,
 //     snapshotData: Data,
-//     category: string | CategoryProperties | undefined,
+//     category: symbol | string | Category | undefined,
 //     callback: (snapshot: Data) => void,
 //     snapshots: SnapshotsArray<Data>,
 //     type: string,
@@ -1559,7 +1520,7 @@ interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> 
 // //   unsubscribe: function (callback: Callback<Snapshot<BaseData, any>>): void {
 // //     throw new Error("Function not implemented.");
 // //   },
-// //   fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<any>, snapshotStore: SnapshotStore<BaseData, any>, payloadData: BaseData | Data, category: string | CategoryProperties | undefined, timestamp: Date, data: BaseData, delegate: SnapshotWithCriteria<BaseData, any>[]) => Snapshot<BaseData, any>): Snapshot<BaseData, any> {
+// //   fetchSnapshot: function (callback: (snapshotId: string, payload: FetchSnapshotPayload<any>, snapshotStore: SnapshotStore<BaseData, any>, payloadData: BaseData | Data, category: symbol | string | Category | undefined, timestamp: Date, data: BaseData, delegate: SnapshotWithCriteria<BaseData, any>[]) => Snapshot<BaseData, any>): Snapshot<BaseData, any> {
 // //     throw new Error("Function not implemented.");
 // //   },
 // //   addSnapshotFailure: function (snapshotManager: SnapshotManager<BaseData, any>, snapshot: Snapshot<BaseData, any>, payload: { error: Error; }): void {
@@ -1588,7 +1549,7 @@ interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> 
 // //   },
 // //   label: undefined,
 // //   events: undefined,
-// //   handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: string | CategoryProperties | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, any> | undefined): Promise<Snapshot<BaseData, any> | null> {
+// //   handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: symbol | string | Category | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: Event, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<BaseData, any> | undefined): Promise<Snapshot<BaseData, any> | null> {
 // //     throw new Error("Function not implemented.");
 // //   },
 // //   meta: undefined

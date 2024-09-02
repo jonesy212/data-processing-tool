@@ -812,6 +812,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       timestamp: new Date().toISOString(),
       user: "Buddease",
       comments: [],
+      changes: []
     },
     lastModifiedDate: {
       value: undefined,

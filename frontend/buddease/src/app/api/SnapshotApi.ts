@@ -1,5 +1,7 @@
 import { AxiosError } from "axios";
 import useErrorHandling from "../components/hooks/useErrorHandling";
+import determineFileCategory from "../components/libraries/categories/determineFileCategory";
+import { processSnapshotsByCategory } from "../components/libraries/categories/fileCategoryMapping";
 import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { Content } from "../components/models/content/AddContent";
 import { BaseData, Data } from "../components/models/data/Data";
@@ -12,13 +14,12 @@ import { ProjectType } from "../components/projects/Project";
 import { SnapshotConfig, SnapshotStoreConfig, SnapshotWithCriteria } from "../components/snapshots";
 import {
   Snapshot,
-  Snapshots,
-  SnapshotUnion,
+  Snapshots
 } from "../components/snapshots/LocalStorageSnapshotStore";
-import { K } from "../components/snapshots/SnapshotConfig";
 import { SnapshotContainer } from "../components/snapshots/SnapshotContainer";
 import SnapshotList from "../components/snapshots/SnapshotList";
 import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { isValidFileCategory } from "../components/snapshots/isValidFileCategory";
 import { FilterState } from "../components/state/redux/slices/FilterSlice";
 import {
   NotificationTypeEnum,
@@ -26,10 +27,11 @@ import {
 } from "../components/support/NotificationContext";
 import { AppConfig, getAppConfig } from "../configs/AppConfig";
 import configData from "../configs/configData";
+import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
 import { CriteriaType } from "../pages/searchs/CriteriaType";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import { Target, constructTarget } from "./EndpointConstructor";
+import { constructTarget, Target } from "./EndpointConstructor";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 import {
@@ -40,13 +42,10 @@ import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
-import { processSnapshotsByCategory } from "../components/libraries/categories/fileCategoryMapping";
-import determineFileCategory, { fetchFileSnapshotData } from "../components/libraries/categories/determineFileCategory";
-import { isValidFileCategory } from "../components/snapshots/isValidFileCategory";
-import { FileCategory } from "../components/documents/FileType";
+
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
-
+const dispatch = useDispatch()
 const appConfig: AppConfig = getAppConfig();
 
 // Define API notification messages for snapshot operations
@@ -131,13 +130,14 @@ const createHeaders = (additionalHeaders?: Record<string, string>) => {
   return Object.assign({}, ...headersArray);
 };
 
+
 // API call function
-const apiCall = async <T extends Data>(
+const apiCall = async <T extends Data, K extends Data>(
   url: string,
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   data?: any,
   additionalHeaders?: Record<string, string>
-): Promise<T | undefined> => {
+): Promise<Snapshot<T, K>> => {
   try {
     const headers = createHeaders(additionalHeaders);
     const response = await axiosInstance({
@@ -148,7 +148,7 @@ const apiCall = async <T extends Data>(
     });
 
     if (response.status === 200) {
-      return response.data as T;  // Ensure the response is of type T
+      return response.data as Snapshot<T, K>;
     } else {
       handleOtherStatusCodes(getAppConfig(), response.status);
       throw new Error(`Unexpected status code: ${response.status}`);
@@ -159,12 +159,11 @@ const apiCall = async <T extends Data>(
   }
 };
 
-
 const getSnapshot = <T extends Data, K extends Data>(
   snapshotId: string | number,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K> | undefined> => {
-  return apiCall<Snapshot<T, K>>(
+  return apiCall<Data>(
     `${API_BASE_URL}/snapshot/${snapshotId}`,
     'GET',
     undefined,
@@ -183,7 +182,7 @@ function getSnapshotData<T extends Data, K extends Data>(
   snapshotId: string | number,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K> | undefined> {
-  return apiCall<Snapshot<T, K>>(
+  return apiCall<Data>(
     `${API_BASE_URL}/snapshot/${snapshotId}`,
     'GET',
     undefined,
@@ -270,7 +269,7 @@ function getSnapshotData<T extends Data, K extends Data>(
 
 const findSubscriberById = async (
   subscriberId: string,
-  category: Category,
+  category: symbol | string | Category | undefined,
   endpointCategory: string | number
 ): Promise<Member> => {
   const target: Target = constructTarget(
@@ -747,9 +746,9 @@ const fetchAllSnapshots = async <T extends Data, K extends Data>(
   }
 };
 
-const fetchSnapshotStoreData = async (
+const fetchSnapshotStoreData = async  <T extends Data, K extends Data>(
   snapshotId: string
-): Promise<SnapshotStore<Data, K>> => {
+): Promise<SnapshotStore<T, BaseData>> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -768,7 +767,7 @@ const fetchSnapshotStoreData = async (
     ];
     const headers = Object.assign({}, ...headersArray);
 
-    const response = await axiosInstance.get<SnapshotStore<Data, K>>(
+    const response = await axiosInstance.get<SnapshotStore<T, Data>>(
       // Assuming target is a valid URL string
       `${API_BASE_URL}/snapshots/${snapshotId}`,
       {
@@ -1026,7 +1025,7 @@ const getSnapshotCriteria = async <T extends Data, K extends Data>(
     id: string | number | undefined,
     snapshotId: string | null,
     snapshotData: Snapshot<T, K>,
-    category: Category,
+    category: symbol | string | Category | undefined,
     callback: (snapshot: Snapshot<T, K>) => void,
     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
     snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
@@ -1121,48 +1120,103 @@ const getSnapshotStoreId = async (
 const getSnapshotConfig = <T extends Data, K extends Data>(
   snapshotId: number | null,
   snapshotContainer: SnapshotContainer<T, K>,
-  criteria: CriteriaType
+  criteria: CriteriaType,
+  category: symbol | string | Category | undefined,
+  categoryProperties: CategoryProperties,
+  delegate: any,
+  snapshot: (
+    id: string,
+    snapshotId: number | null,
+    snapshotData: Snapshot<T, K>,
+    category: symbol | string | Category | undefined,
+    callback: (snapshotStore: Snapshot<T, K>) => void,
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+  ) => Promise<Snapshot<T, K>>,
 ): Promise<SnapshotConfig<T, K>> => {
   return new Promise<SnapshotConfig<T, K>>((resolve, reject) => {
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-      const userId = localStorage.getItem("userId");
-      const currentAppVersion = configData.currentAppVersion;
-      const authenticationHeaders: AuthenticationHeaders =
-        createAuthenticationHeaders(accessToken, userId, currentAppVersion);
-      const headersArray = [
-        authenticationHeaders,
-        createCacheHeaders(),
-        createContentHeaders(),
-        generateCustomHeaders({}),
-        createRequestHeaders(accessToken || ""),
-      ];
-      const headers = Object.assign({}, ...headersArray);
+    const fetchSnapshotConfig = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        const userId = localStorage.getItem("userId");
+        const currentAppVersion = configData.currentAppVersion;
 
-      axiosInstance
-        .post<SnapshotConfig<T, K>>(
+        const authenticationHeaders: AuthenticationHeaders =
+          createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+
+        const headersArray = [
+          authenticationHeaders,
+          createCacheHeaders(),
+          createContentHeaders(),
+          generateCustomHeaders({}),
+          createRequestHeaders(accessToken || ""),
+        ];
+
+        const headers = Object.assign({}, ...headersArray);
+
+        // Perform the API request
+        const response = await axiosInstance.post<SnapshotConfig<T, K>>(
           `${API_BASE_URL}/${snapshotId}/config`,
           {
             snapshotContainer,
             criteria,
+            category,
+            categoryProperties,
+            delegate,
           },
           {
             headers: headers as Record<string, string>,
           }
-        )
-        .then((response) => {
-          resolve(response.data);
-        })
-        .catch((error) => {
-          const errorMessage = "Failed to get snapshot config";
-          handleApiError(error as AxiosError<unknown>, errorMessage);
-          reject(error);
-        });
-    } catch (error) {
-      reject(error);
-    }
+        );
+
+        const snapshotConfigData = response.data;
+
+        // Handle the snapshot if snapshotId is not null
+        if (snapshotId !== null) {
+          snapshot(
+            `${snapshotId}`,
+            snapshotId,
+            snapshotContainer.snapshotData,
+            category,
+            (snapshotStore: Snapshot<T, K>) => {
+              // Handle the snapshotStore as needed
+              const shouldUpdateState = true; // Replace with actual condition
+              const shouldLog = true; // Replace with actual condition
+              const shouldUpdateUI = false; // Replace with actual condition
+            
+              if (shouldUpdateState) {
+                // Update the state with the snapshotStore
+                dispatch(updateSnapshotStore(snapshotStore));
+              }
+            
+              if (shouldLog) {
+                // Log the snapshotStore data
+                console.log('Snapshot store updated:', snapshotStore);
+                // or send it to an analytics service
+                sendToAnalytics('snapshotStoreUpdated', snapshotStore);
+              }
+            
+              if (shouldUpdateUI) {
+                // Update the UI with the snapshotStore
+                updateUIWithSnapshotStore(snapshotStore);
+              }
+            },
+            undefined,
+            snapshotContainer.snapshotStore
+          );
+        }
+
+        resolve(snapshotConfigData);
+      } catch (error) {
+        const errorMessage = "Failed to get snapshot config";
+        handleApiError(error as AxiosError<unknown>, errorMessage);
+        reject(error);
+      }
+    };
+
+    fetchSnapshotConfig();
   });
-};
+}
 
 
 
@@ -1289,10 +1343,9 @@ const getSnapshotStore = <T extends Data, K extends Data>(
 export {
   addSnapshot,
   addSnapshotSuccess, createSnapshot, fetchAllSnapshots, fetchSnapshotById,
-  fetchSnapshotIds, fetchSnapshotStoreData, findSubscriberById, getSnapshotConfig,
-  getSnapshotCriteria, getSnapshotId, getSnapshotStoreConfigData, getSnapshotStoreId, getSnapshots, getSortedList,
+  fetchSnapshotIds, fetchSnapshotStoreData, findSubscriberById, getSnapshot, getSnapshotConfig, getSnapshotCriteria, getSnapshotData, getSnapshotId, getSnapshots, getSnapshotStore, getSnapshotStoreConfig, getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
   handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode,
   mergeSnapshots, removeSnapshot, saveSnapshotToDatabase, snapshotContainer,
-  takeSnapshot, getSnapshotData, getSnapshotStore, getSnapshotStoreConfig, getSnapshot
+  takeSnapshot, apiCall
 };
 
