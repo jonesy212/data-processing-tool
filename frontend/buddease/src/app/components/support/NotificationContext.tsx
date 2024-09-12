@@ -68,6 +68,7 @@ export enum NotificationTypeEnum {
   NewFeatureAvailable = "NewFeatureAvailable",
   NewNotification = "NewNotification",
   OperationStart = "OperationStart",
+  OperationUpdate = "OperationUpdate",
   OperationError = "OperationError",
   OperationSuccess = "OperationSuccess",
   APISuccess = "APISuccess",
@@ -89,6 +90,7 @@ export enum NotificationTypeEnum {
   SystemUpdateInProgress = "SystemUpdateInProgress",
   TaskLogged = "TaskLogged",
   TaskBoardID = "TaskBoardID",
+  SnapshotID = "SnapshotID"
   TeamJoinApproved = "TeamJoinApproved",
   TeamJoinRequest = "TeamJoinRequest",
   TeamID = "TeamID",

@@ -5,38 +5,46 @@ import {
   useNotification
 } from "@/app/components/support/NotificationContext";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { useEffect, useState } from "react";
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import { displayToast } from '../models/display/ShowToast';
+import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { CustomSnapshotData, SnapshotContainer, SnapshotWithCriteria } from '../snapshots';
+import { CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotWithCriteria, SubscriberCollection } from '../snapshots';
 import {
   Snapshot,
-  SnapshotsArray
+  SnapshotsArray,
+  UpdateSnapshotPayload
 } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "../snapshots/SnapshotActions";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
 import { handleSnapshotOperation } from '../snapshots/handleSnapshotOperation';
 import handleSnapshotStoreOperation from '../snapshots/handleSnapshotStoreOperation';
-import { delegate, subscribeToSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
+import { subscribeToSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
 import { Subscriber } from "../users/Subscriber";
-import { addToSnapshotList, isSnapshotWithCriteria } from '../utils/snapshotUtils';
+import { addToSnapshotList, isSnapshotStoreConfig, isSnapshotWithCriteria } from '../utils/snapshotUtils';
 import SnapshotStoreOptions from './SnapshotStoreOptions';
 import { LibraryAsyncHook } from "./useAsyncHookLinker";
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { VersionHistory } from '../versions/VersionData';
+import DocumentPermissions from '../documents/DocumentPermissions';
 const { notify } = useNotification();
 
 
 interface CombinedEvents<T extends Data, K extends Data> {
   eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+  
   callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
   subscribers: Subscriber<T, K>[];
   eventIds: string[];
+  initialConfig: SnapshotConfig<T, K>;
+  onInitialize: () => void;
+
   on: (
     event: string,
     callback: (snapshot: Snapshot<T, K>) => void
@@ -51,17 +59,96 @@ interface CombinedEvents<T extends Data, K extends Data> {
 
   ) => void;
 
-  unsubscribe: (
+  unsubscribe: (unsubscribeDetails: { 
+    userId: string; snapshotId: string;
+    unsubscribeType: string;
+    unsubscribeDate: Date;
+    unsubscribeReason: string;
+    unsubscribeData: any;
+  }) => void;
+
+  
+  trigger: (
+    event: string,            // Ensure parameter names match
+    snapshot: Snapshot<T, K>, // Match the Snapshot type
+    eventDate: Date          // Add eventDate to match the function signature
+  ) => void;
+  
+  
+  // Method to trigger callbacks for an event
+  eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined
+  onSnapshotAdded: (
+    event: string,
+    snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K>,
+    snapshotStore: SnapshotStore<T, K>, 
+    dataItems: RealtimeDataItem[],
+    subscriberId: string,
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
+  ) => void;
+  onSnapshotRemoved: (
+    event: string,
+    snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K>,
+    snapshotStore: SnapshotStore<T, K>, 
+    dataItems: RealtimeDataItem[],
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
+  ) => void;
+  onError: (
+    event: string,
+    error: Error,
+    snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
+  ) => void;
+  onSnapshotUpdated: (
+    event: string,
+    snapshotId: string,
+    snapshot: Snapshot<T, K>,
+    data: Map<string, Snapshot<T, K>>,
+    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    newData: Snapshot<T, K>,
+    payload: UpdateSnapshotPayload<T>,
+    store: SnapshotStore<any, K>
+  ) => void;
+  emit: (
+    event: string,
+    snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
+  ) => void;
+  once: (
     event: string,
     callback: (snapshot: Snapshot<T, K>) => void
-
-
   ) => void;
-  trigger: (
+  addRecord: (
     event: string,
-    snapshot: Snapshot<T, K>
-  ) => void; // Method to trigger callbacks for an event
-  eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined
+    record: CalendarManagerStoreClass<T, K>,
+    callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
+  ) => void;
+  removeSubscriber: (
+    event: string,
+    snapshotId: string,
+    snapshot: Snapshot<T, K>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
+  ) => void;
+  removeAllListeners: (event?: string) => void;
 }
 
 
@@ -151,7 +238,8 @@ const convertSnapshotToContent = <T extends BaseData, K extends BaseData>(
     timestamp: snapshot.timestamp ?? new Date(),
     categoryProperties: snapshot.categoryProperties ?? "default-category-properties",
     length: 0,
-    data: data
+    data: data,
+    items: snapshot.items ?? []
   };
 };
 // Example conversion function from Map to CustomSnapshotData
@@ -187,8 +275,18 @@ const createSnapshotStore = <T extends BaseData, K extends BaseData>(
     data: snapshotConfig.data || snapshotData.data, // Use the provided data or default to existing data
     createdAt: snapshotConfig.createdAt || new Date(), // Set the creation date
     updatedAt: snapshotConfig.updatedAt || new Date(), // Set the update date
+    
     category: snapshotConfig.category || snapshotData.category, // Use category from config if provided
     config: snapshotConfig, // Store the full config in the snapshot store
+    restoreSnapshot: snapshotConfig.restoreSnapshot || snapshotData.restoreSnapshot,
+    configs: snapshotConfig.configs || snapshotData.configs,
+    snapshotStores: snapshotConfig.snapshotStores || snapshotData.snapshotStores,
+    name: snapshotConfig.name || snapshotData.name,
+    schema: snapshotConfig.schema || snapshotData.schema,
+    snapshotItems: snapshotConfig.snapshotItems || snapshotData.schema,,
+    nestedStores: snapshotConfig.nestedStores || snapshotData.schema,,
+    snapshotIds: snapshotConfig.snapshotIds || snapshotData.schema,,
+   
   };
 
   // Step 3: Apply any necessary configurations or transformations
@@ -293,13 +391,16 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       snapshotId: string | null,
       snapshotData: Snapshot<T, K> | null,
       category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: Snapshot<T, K> | null) => void,
-      snapshotContainer?: T | null | undefined,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null | undefined,
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
     ): Promise<{ snapshot: Snapshot<T, K> | null }> => {
-      if(snapshotData !== null){
+    
+      // Check if snapshotData is not null
+      if (snapshotData !== null) {
         
+        // Initialize or reuse the snapshot container
         const snapshot: Snapshot<T, K> | null = snapshotStoreConfigData?.createSnapshot?.(
           id,
           snapshotData,
@@ -307,33 +408,124 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
           categoryProperties,
           callback
         ) ?? null;
-        
+    
         if (snapshot) {
+          // Callback with the created snapshot
           callback(snapshot);
-          
+    
+          // Extract the snapshot ID and fetch the store ID
           const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
-          const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
-          
+          const storeId = await snapshotApi.getSnapshotStoreId(String(snapshotId));
+    
+          // Handle default config
           const defaultConfig: SnapshotStoreConfig<T, K> = {} as SnapshotStoreConfig<T, K>;
-          const config: SnapshotStoreConfig<T, K> = snapshotStoreConfig ? snapshotStoreConfig[0] || defaultConfig : defaultConfig;
+          const config: SnapshotStoreConfig<T, K> = snapshotStoreConfigData || defaultConfig;
+    
+          // Define the snapshot operation
           const operation: SnapshotOperation = {
             operationType: SnapshotOperationType.FindSnapshot
           };
-          
-          const newSnapshotStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
-          
+    
+          // Initialize the SnapshotStore
+          const newSnapshotStore = new SnapshotStore<T, K>(
+            storeId, 
+            'snapshotName', // Provide correct name if needed
+            {
+              id: 1, // Provide actual values
+              versionNumber: '1.0.0', 
+              appVersion: '1.0.0', 
+              description: 'Initial Version',
+              content: 'Version content here',
+              checksum: 'someChecksumValue',
+              versionData: [], // Populate this as per your requirements
+              data: [], // Populate this as per your requirements
+              name: 'VersionName',
+              url: 'http://example.com',
+              metadata: {
+                author: 'Author Name',
+                timestamp: new Date(), // or undefined if not needed
+              },
+              versions: {
+                data: undefined,
+                backend: undefined,
+                frontend: undefined,
+              },
+              versionHistory: {} as VersionHistory, // Initialize properly
+              userId: 'user123',
+              documentId: 'doc123',
+              parentId: null,
+              parentType: 'Document',
+              parentVersion: '1.0.0',
+              parentTitle: 'Parent Title',
+              parentContent: 'Parent Content',
+              parentName: 'Parent Name',
+              parentUrl: 'http://parenturl.com',
+              parentChecksum: 'parentChecksumValue',
+              parentMetadata: undefined,
+              parentAppVersion: '1.0.0',
+              parentVersionNumber: '1.0.0',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              deletedAt: undefined,
+              draft: false,
+              isLatest: true,
+              isPublished: true,
+              publishedAt: null,
+              isDeleted: false,
+              publishedBy: 'user123',
+              lastModifiedBy: 'user123',
+              lastModifiedAt: new Date(),
+              rootId: null,
+              branchId: null,
+              isLocked: false,
+              lockedBy: null,
+              lockedAt: null,
+              isArchived: false,
+              archivedBy: 'user123',
+              archivedAt: null,
+              tags: {}, // Add appropriate tags here
+              categories: [], // Add categories if needed
+              permissions: {} as DocumentPermissions, // Add permissions
+              collaborators: [], // Add collaborators if needed
+              comments: [], // Add comments if needed
+              reactions: [], 
+              changes: [],
+              attachments: [], // Add attachments if necessary
+              source: 'source',
+              status: 'active',
+              buildNumber: 'build123',
+              workspaceId: 'workspace123',
+              workspaceName: 'WorkspaceName',
+              workspaceType: 'workspaceType',
+              workspaceUrl: 'http://workspaceurl.com',
+              workspaceViewers: [],
+              workspaceAdmins: [],
+              workspaceMembers: [],
+              _structure: {},
+              frontendStructure: undefined,
+              backendStructure: undefined,
+            }, // Provide correct version
+            'snapshotSchema', // Provide schema
+            'snapshotOptions', // Provide options
+            category, 
+            config, 
+            operation
+          );
+    
+          // Callback again with the snapshot
           callback(snapshot);
-          
-        }
+    
           return {
             snapshot: snapshot,
           };
         } else {
           console.error('Failed to create snapshot');
-        return { snapshot: null };
+          return { snapshot: null };
+        }
       }
-    },
-    createSnapshot: () => ({
+    
+      return { snapshot: null }; // If snapshotData is null
+    },    createSnapshot: () => ({
       id: "default-id",
       data: new Map<string, Snapshot<T, K>>(),
       timestamp: new Date(),
@@ -342,7 +534,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       meta: {} as Map<string, Snapshot<T, K>>,
       events: {} as CombinedEvents<T, K>
     })
-  };
+  }
 };
 
 export const useSnapshotManager = async <T extends Data, K extends Data>(
@@ -401,27 +593,35 @@ export const useSnapshotManager = async <T extends Data, K extends Data>(
           const category = snapshot.category;
           return typeof category === 'object' ? category : undefined;
         },
-        getSnapshotConfig: function(
-          snapshotId: number | null,
+
+
+        getSnapshotConfig: function (
+          snapshotId: string | null,
           snapshotContainer: SnapshotContainer<T, K>,
           criteria: CriteriaType,
           category: symbol | string | Category | undefined,
-          categoryProperties: CategoryProperties,
+          categoryProperties: CategoryProperties | undefined,
           delegate: any,
           snapshotData: SnapshotStore<T, K>,
-          snapshot:
-            ( id: string,
-              snapshotId: number | null,
-              snapshotData: Snapshot<T, K>, 
-              category: Category,
-              callback: (snapshotStore: Snapshot<T, K>) => void,
-              snapshotStoreConfigData?: SnapshotStoreConfig<T, K>
-            ) => void,
-          // storeConfig: SnapshotStoreConfig<T, K>,
-          
+          snapshot: (
+            id: string,
+            snapshotId: string | null,
+            snapshotData: Snapshot<T, K>,
+            category: symbol | string | Category | undefined,
+            callback: (snapshotStore: Snapshot<T, K>) => void,
+            snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+            snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+          ) => Promise<Snapshot<T, K>>
         ) {
-          const snapshotConfig = createSnapshotConfig(snapshotStore);
-          return snapshotConfig;
+          const snapshotStoreConfigData = snapshotApi.getSnapshotConfig(snapshotId, snapshotContainer, criteria, storeId, config);
+          // Use the type guard to determine whether snapshotStoreConfigData is of the correct type
+          if (snapshotStoreConfigData && isSnapshotStoreConfig(snapshotStoreConfigData)) {
+            const snapshotConfig = createSnapshotConfig(snapshotStoreConfigData); // Works with SnapshotConfig
+            return snapshotConfig;
+          } else {
+            // Handle the case where the config is not of type SnapshotConfig
+            console.error('Invalid config type');
+          }
         },
         handleSnapshotOperation,
         handleSnapshotStoreOperation,
@@ -435,7 +635,7 @@ export const useSnapshotManager = async <T extends Data, K extends Data>(
       };
 
       const storeId = await getStoreId(initialStoreId);
-      const snapshotStore = new SnapshotStore<T, K>(Number(storeId), options, category, config, operation);
+      const snapshotStore = new SnapshotStore<T, K>(Number(storeId), name, version, schema, options, category, config, operation);
       const snapshotConfig = createSnapshotConfig(snapshotStore);
 
       setSnapshotManager(snapshotConfig);

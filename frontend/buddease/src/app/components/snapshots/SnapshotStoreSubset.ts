@@ -13,7 +13,7 @@
 
 // // SnapshotStoreSubset.ts
 // interface SnapshotStoreSubset<T extends Data, K extends Data> {
-//   snapshotId: number | null;
+//   snapshotId: string | null;
 //   taskIdToAssign: Snapshot<T, K> | undefined;
 
 //   // Adds a snapshot, handling a new snapshot and a list of subscribers.

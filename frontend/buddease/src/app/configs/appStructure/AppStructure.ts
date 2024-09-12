@@ -4,6 +4,8 @@ import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import * as fs from "fs";
 import * as path from "path";
 import getAppPath from "../../../../appPath";
+import { DataVersions } from '../DataVersionsConfig';
+import { VersionData } from '@/app/components/versions/VersionData';
 // Define the interface for AppStructureItem
 interface AppStructureItem {
   id: string;
@@ -19,6 +21,8 @@ interface AppStructureItem {
     share: boolean,
     execute: boolean,
   }
+  versions: DataVersions | undefined,
+  versionData: VersionData[],
   items?: {
     [key: string]: AppStructureItem 
   }
@@ -48,13 +52,13 @@ export default class AppStructure {
       const isDirectory = fs.statSync(filePath).isDirectory();
   
       if (isDirectory) {
-        await this.traverseDirectory(filePath, type); // Wait for the recursive call to complete
+        await this.traverseDirectory(filePath, type);
       } else {
         if (
           (type === "backend" && file.endsWith(".py")) ||
           (type === "frontend" && file.endsWith(".tsx"))
         ) {
-          const fileType = await apiFile.getFileType(filePath); // Wait for getFileType to resolve
+          const fileType = await apiFile.getFileType(filePath);
           this.structure[file] = {
             id: path.basename(filePath),
             name: file,
@@ -69,13 +73,14 @@ export default class AppStructure {
               share: true,
               execute: true,
             },
-            type: fileType // Assign the resolved fileType
+            type: fileType,
+            versions: new DataVersionsComponent(),
+            versionData: []
           };
         }
       }
     }
-  }
-  
+  }  
 
   getStructure(): Record<string, AppStructureItem> {
     return { ...this.structure };
@@ -89,7 +94,7 @@ export default class AppStructure {
 
   private async handleFileChange(event: string, filePath: string) {
     try {
-      console.log(`File changed: ${event} ${filePath}`);
+      console.log(`File changed: ${event} $frontend/buddease/src/app/configs/appStructure/AppStructure.ts`);
 
       const updatedContent = await fs.promises.readFile(filePath, "utf-8");
 
@@ -107,14 +112,15 @@ export default class AppStructure {
           share: true,
           execute: true,
         },
-        type: fs.statSync(filePath).isDirectory() ? "directory" : "file"
+        type: fs.statSync(filePath).isDirectory() ? "directory" : "file",
+        versions: new DataVersionsComponent(),
+        versionData: []
       };
 
     } catch (error) {
       console.error(`Error handling file change: ${error}`);
     }
-  }
-}
+  }}
 
 // Remove the export of AppStructureItem since it's already exported as a type
 export type { AppStructureItem };

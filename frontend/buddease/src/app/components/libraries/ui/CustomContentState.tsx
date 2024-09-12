@@ -12,7 +12,9 @@ class CustomContentStateWrapper {
   contentState: ContentState;
   metadata: StructuredMetadata;
 
-  constructor(contentState: ContentState, metadata: StructuredMetadata) {
+  constructor(
+    contentState: ContentState,
+    metadata: StructuredMetadata) {
     this.contentState = contentState;
     this.metadata = metadata;
   }

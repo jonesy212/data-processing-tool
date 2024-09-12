@@ -3,7 +3,7 @@ import { fetchSnapshotById } from '@/app/api/SnapshotApi';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from '../models/data/Data';
-import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotData } from './SnapshotData';
 import SnapshotStore from './SnapshotStore';
@@ -208,13 +208,19 @@ export const returnsSnapshotStore = async (
   category: Category | undefined,
   categoryProperties: CategoryProperties | undefined,
   dataStoreMethods: DataStore<any, any>
-): Promise<SnapshotStore<any, any>> => {
+): Promise<SnapshotStore<any, any> | null> => {
   try {
     // Fetch snapshot data from the API or use the provided snapshotData
     const fetchedData = await fetchSnapshotById(id) || snapshotData;
 
     // Initialize required properties
-    const initialState = snapshotData.state || null;
+    const stateArray = snapshotData.state || [];
+    const initialState: InitializedState<any, any> = new Map(
+      stateArray
+        .filter(snapshot => snapshot.id !== undefined) // Filter out undefined IDs
+        .map(snapshot => [String(snapshot.id), snapshot]) // Convert IDs to string
+    
+    );
     const initialConfig = snapshotData.configOption || null;
     const data = snapshotData.data;
     const subscribers = snapshotData.subscribers || [];

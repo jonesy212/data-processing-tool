@@ -1,4 +1,5 @@
 import { fetchSnapshotById } from "@/app/api/SnapshotApi";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { endpoints } from "../../api/endpointConfigurations";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import SnapshotStoreOptions, { MetaDataOptions } from "../hooks/SnapshotStoreOptions";
@@ -22,7 +23,6 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 
 // createOptions.ts
 function createOptions<T extends Data, K extends Data>(params: {
@@ -90,16 +90,16 @@ function createOptions<T extends Data, K extends Data>(params: {
 	) => void;
 
 	getSnapshotConfig: (
-		snapshotId: number | null,
+		snapshotId: string | null,
 		snapshotContainer: SnapshotContainer<T, K>,
 		criteria: CriteriaType,
 		category: symbol | string | Category | undefined,
-		categoryProperties: CategoryProperties,
+		categoryProperties: CategoryProperties | undefined,
 		delegate: any,
 		snapshotData: SnapshotStore<T, K>,
 		snapshot: (
 			id: string,
-			snapshotId: number | null,
+			snapshotId: string | null,
 			snapshotData: Snapshot<T, K>,
 			category: symbol | string | Category | undefined,
 			callback: (snapshotStore: Snapshot<T, K>) => void,

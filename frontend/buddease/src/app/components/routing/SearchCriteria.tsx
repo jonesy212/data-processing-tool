@@ -24,7 +24,7 @@ import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { BaseData } from "../models/data/Data";
 
-interface SearchCriteria {
+interface SearchCriteria extends BaseData {
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null;

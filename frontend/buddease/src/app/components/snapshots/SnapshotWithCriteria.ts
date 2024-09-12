@@ -32,7 +32,7 @@ type SnapshotWithCriteria<T extends Data = Data, K extends Data = T
   analysisType?: AnalysisTypeEnum;
   events?: CombinedEvents<T, K>;  // Update as needed based on your schema
   subscribers?: SubscriberCollection<T, K>;  // Update as needed based on your schema
-  tags?: TagsRecord;  // Update as needed based on your schema
+   tags?: TagsRecord | string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined
 };
 
@@ -431,7 +431,7 @@ const exampleSnapshotStore: SnapshotStore<BaseData, BaseData> = {
   unsubscribe: function (): void {
     throw new Error("Function not implemented.");
   },
-  fetchSnapshot: function (snapshotId: string, category: symbol | string | Category | undefined, timestamp: Date, snapshot: Snapshot<BaseData>, data: BaseData, delegate: SnapshotStoreConfig<BaseData, BaseData>[]): Promise<{ id: any; category: string | CategoryProperties | undefined; timestamp: any; snapshot: Snapshot<BaseData>; data: BaseData; getItem?: (snapshot: Snapshot<BaseData>) => Snapshot<BaseData> | undefined; }> {
+  fetchSnapshot: function (snapshotId: string, category: symbol | string | Category | undefined, timestamp: Date, snapshot: Snapshot<BaseData>, data: BaseData, delegate: SnapshotStoreConfig<BaseData, BaseData>[]): Promise<{ id: any; category: string | Category | undefined; timestamp: any; snapshot: Snapshot<BaseData>; data: BaseData; getItem?: (snapshot: Snapshot<BaseData>) => Snapshot<BaseData> | undefined; }> {
     throw new Error("Function not implemented.");
   },
   fetchSnapshotSuccess: (

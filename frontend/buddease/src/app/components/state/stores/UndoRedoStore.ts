@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
 import { Data } from '../../models/data/Data';
-import { Snapshot } from '../../snapshots/SnapshotStore';
+import { Snapshot } from '../../snapshots';
 
 export interface UndoRedoStore {
   actions: any[];
@@ -43,7 +43,7 @@ const useUndoRedoStore = () => {
 
 
   const batchFetchUndoRedoSnapshotsRequest = (payload: Record<string, any>) => {
-    const snapshot = {} as Snapshot<Data>;
+    const snapshot = {} as Snapshot<Data, Data>; // Provide the correct type arguments
   };
 
   const store = makeAutoObservable({

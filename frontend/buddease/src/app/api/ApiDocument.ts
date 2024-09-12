@@ -1,6 +1,4 @@
 // ApiDocument.ts
-import { unwrapResult } from "@reduxjs/toolkit";
-import { createDraft, Draft } from "immer";
 import {
   NotificationTypeEnum,
   useNotification,
@@ -9,29 +7,27 @@ import { AxiosError } from "axios";
 import dotProp from "dot-prop";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { Presentation } from "../components/documents/Presentation";
-import { WritableDraft } from "../components/state/redux/ReducerGenerator";
+
 import {
-  DocumentObject,
-  fetchDocumentById,
-} from "../components/state/redux/slices/DocumentSlice";
-import { DatabaseConfig } from "../configs/DatabaseConfig";
-import { DocumentActions } from "../tokens/DocumentActions";
-import { endpoints } from "./ApiEndpoints";
-import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
-import { AsyncThunkAction } from "@reduxjs/toolkit";
-import {
-  AsyncThunkConfig,
-  createAsyncThunk,
+  createAsyncThunk
 } from "node_modules/@reduxjs/toolkit/dist/createAsyncThunk";
 import {
   DocumentStatusEnum,
   DocumentTypeEnum,
 } from "../components/documents/DocumentGenerator";
+import { DocumentObject } from "../components/state/redux/slices/DocumentSlice";
+import { DatabaseConfig } from "../configs/DatabaseConfig";
+import { DocumentActions } from "../tokens/DocumentActions";
+// import { endpoints } from "./ApiEndpoints";
+import { handleApiError } from "./ApiLogs";
+import axiosInstance from "./axiosInstance";
+import headersConfig from "./headers/HeadersConfig";
 
+
+import { endpoints } from './endpointConfigurations'
+import { WritableDraft } from "../components/state/redux/ReducerGenerator";
 // Define the API base URL
-const API_BASE_URL = endpoints.documents;
+const API_BASE_URL = endpoints.data.documents;
 
 // Define the API base URL for downloading documents
 const DOWNLOAD_API_BASE_URL = endpoints.documents;
@@ -48,6 +44,7 @@ interface DocumentNotificationMessages {
   UPDATE_DOCUMENT_ERROR: string;
   DELETE_DOCUMENT_SUCCESS: string;
   DELETE_DOCUMENT_ERROR: string;
+  UPDATE_DOCUMENT_NAME_SUCCESS: string;
   // Add more keys as needed
 }
 
@@ -61,6 +58,7 @@ const apiNotificationMessages: DocumentNotificationMessages = {
   UPDATE_DOCUMENT_ERROR: "Failed to update document",
   DELETE_DOCUMENT_SUCCESS: "Document deleted successfully",
   DELETE_DOCUMENT_ERROR: "Failed to delete document",
+  UPDATE_DOCUMENT_NAME_SUCCESS: "Document updated name successfully"
   // Add more properties as needed
 };
 
@@ -87,7 +85,7 @@ const handleDocumentApiErrorAndNotify = (
 };
 
 
-export const fakeApiCall = (documentId: number): Promise<DocumentObject> => {
+const fakeApiCall = (documentId: number): Promise<DocumentObject> => {
   // Simulate an API call
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -95,36 +93,76 @@ export const fakeApiCall = (documentId: number): Promise<DocumentObject> => {
         id: documentId,
         status: DocumentStatusEnum.Draft,
         type: DocumentTypeEnum.Document,
+        // createdBy, alinkColor, bgColor, documentURI,
+        // currentScript, defaultView, doctype, ownerDocument,
+        // scrollingElement, timeline, _rev, title,
+        // content, createdAt, updatedBy, visibility,
+        // characterSet, charset, compatMode, contentType,
+
         // Other properties as needed
       } as DocumentObject);
     }, 1000);
   });
 };
 
-export const fetchDocumentByIdAPI = (
-  documentId: number,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
-): Promise<DocumentObject> => {
-  return new Promise(async (resolve, reject) => {
+
+
+// Define an async thunk action creator to update the document name
+const updateDocumentName = createAsyncThunk<
+  DocumentObject, // The return type of the action
+  { documentId: number; newName: string } // Input parameters: documentId and newName
+>(
+  "documents/updateDocumentName",
+  async ({ documentId, newName }, { dispatch }) => {
     try {
-      // Dispatch the async thunk action and await its completion
-      const resultAction: any = await fetchDocumentById(documentId);
+      const response = await axiosInstance.put(
+        `${API_BASE_URL}/documents/${documentId}/name`,
+        { name: newName },
+        {
+          headers: headersConfig,
+        }
+      );
 
-      // Ensure resultAction has a payload field containing the document data
-      if (resultAction.payload) {
-        const document: DocumentObject = resultAction.payload as DocumentObject;
+      // Dispatch success notification
+      useNotification().notify(
+        "UPDATE_DOCUMENT_NAME_SUCCESS",
+        apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
+        null,
+        new Date(),
+        "DocumentSuccess" as NotificationTypeEnum
+      );
 
-        // Convert to writable draft if necessary
-        const writableDocument = createDraft(document);
+      return response.data;
+    } catch (error) {
+      const errorMessage = "Failed to update document name";
+      console.error("Error updating document name:", error);
+      handleDocumentApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        errorMessage,
+        "UPDATE_DOCUMENT_NAME_ERROR"
+      );
+      throw error;
+    }
+  }
+);
 
-        // Call the provided data callback with the fetched document data
-        dataCallback(writableDocument);
 
-        // Resolve with the fetched document data
-        resolve(document);
-      } else {
-        throw new Error("Async thunk action did not return expected payload");
-      }
+
+
+
+
+// Define an async thunk action creator to fetch document by ID
+const fetchDocumentById = createAsyncThunk<DocumentObject, number>(
+  "documents/fetchDocumentById",
+  async (documentId: number, { dispatch }) => {
+    try {
+      const response = await axiosInstance.get(
+        `${API_BASE_URL}/documents/${documentId}`,
+        {
+          headers: headersConfig,
+        }
+      );
+      return response.data;
     } catch (error) {
       console.error("Error fetching document:", error);
       const errorMessage = "Failed to fetch document";
@@ -133,13 +171,42 @@ export const fetchDocumentByIdAPI = (
         errorMessage,
         "FETCH_DOCUMENT_ERROR"
       );
-      reject(error);
+      throw error;
     }
-  });
-};
+  }
+);
 
-export const fetchJsonDocumentByIdAPI = async (
-  documentId: string,
+
+// Mock API function for fetching a document by ID
+async function fetchDocumentByIdAPI(
+  documentId: number,
+  updateDocument: (data: WritableDraft<DocumentObject>) => void
+): Promise<DocumentObject> {
+  try {
+    // Simulate an API call to fetch a document by its ID
+    const response = await fetch(`/api/documents/${documentId}`);
+    if (!response.ok) {
+      throw new Error(`Error fetching document with ID ${documentId}`);
+    }
+
+    // Parse the document data from the response
+    const documentData: DocumentObject = await response.json();
+
+    // Apply any updates to the document using the provided callback
+    const draftDocument = { ...documentData };
+    updateDocument(draftDocument);
+
+    // Return the updated document data
+    return draftDocument;
+  } catch (error) {
+    console.error("Error in fetchDocumentByIdAPI:", error);
+    throw error;
+  }
+}
+
+
+
+const fetchJsonDocumentByIdAPI = async (documentId: string,
   config: DatabaseConfig,
   dataCallback: (data: any) => void
 ) => {
@@ -162,7 +229,7 @@ export const fetchJsonDocumentByIdAPI = async (
   }
 };
 
-export const fetchXmlDocumentByIdAPI = async (
+const fetchXmlDocumentByIdAPI = async (
   documentId: string,
   config: DatabaseConfig,
   dataCallback: (data: any) => void
@@ -184,7 +251,53 @@ export const fetchXmlDocumentByIdAPI = async (
   }
 };
 
-export const addDocumentAPI = async (documentData: any): Promise<any> => {
+
+// Example API function to update document name
+const updateDocumentNameAPI = async (
+  documentId: number,
+  newName: string,
+  dataCallback: (data: any) => void
+) => {
+  try {
+    // Use dot notation to configure the endpoint URL
+    const updateNameEndpoint = `${endpoints.documents}/documents/${documentId}/name`;
+
+    // Perform the API call to update the document name
+    const response = await axiosInstance.put(
+      updateNameEndpoint,
+      { name: newName },  // Payload for the API request
+      {
+        headers: headersConfig,
+      }
+    );
+
+    // Pass the response data to the callback function
+    dataCallback(response.data);
+
+    // Dispatch success notification
+    useNotification().notify(
+      "UPDATE_DOCUMENT_NAME_SUCCESS",
+      apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
+      null,
+      new Date(),
+      "DocumentSuccess" as NotificationTypeEnum
+    );
+
+    // Return the response data
+    return response.data;
+  } catch (error: any) {
+    // Handle and notify about the error
+    const errorMessage = "Failed to update document name";
+    handleDocumentApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      "UPDATE_DOCUMENT_NAME_ERROR"
+    );
+  }
+};
+
+
+const addDocumentAPI = async (documentData: any): Promise<any> => {
   try {
     const addDocumentEndpoint = `${API_BASE_URL}/documents`;
     const response = await axiosInstance.post(
@@ -207,7 +320,7 @@ export const addDocumentAPI = async (documentData: any): Promise<any> => {
   }
 };
 
-export const loadPresentationFromDatabase = async (
+const loadPresentationFromDatabase = async (
   presentationId: DocumentObject
 ): Promise<Presentation> => {
   try {
@@ -224,7 +337,7 @@ export const loadPresentationFromDatabase = async (
   }
 };
 
-export const updateDocumentAPI = async (
+const updateDocumentAPI = async (
   documentId: number,
   updatedData: any
 ): Promise<any> => {
@@ -250,7 +363,7 @@ export const updateDocumentAPI = async (
   }
 };
 
-export const deleteDocumentAPI = async (documentId: string): Promise<void> => {
+const deleteDocumentAPI = async (documentId: string): Promise<void> => {
   try {
     const deleteDocumentEndpoint = `${API_BASE_URL}/documents/${documentId}`;
     await axiosInstance.delete(deleteDocumentEndpoint, {
@@ -268,7 +381,7 @@ export const deleteDocumentAPI = async (documentId: string): Promise<void> => {
   }
 };
 
-export const fetchAllDocumentsAPI = async (): Promise<any[]> => {
+const fetchAllDocumentsAPI = async (): Promise<any[]> => {
   try {
     const fetchAllDocumentsEndpoint = `${API_BASE_URL}/documents`;
     const response = await axiosInstance.get(fetchAllDocumentsEndpoint, {
@@ -288,7 +401,7 @@ export const fetchAllDocumentsAPI = async (): Promise<any[]> => {
 };
 
 // Add the searchDocument method
-export const searchDocumentAPI = async (searchQuery: string): Promise<any> => {
+const searchDocumentAPI = async (searchQuery: string): Promise<any> => {
   try {
     const searchDocumentEndpoint = `${API_BASE_URL}/documents/search?query=${encodeURIComponent(
       searchQuery
@@ -310,7 +423,7 @@ export const searchDocumentAPI = async (searchQuery: string): Promise<any> => {
 };
 
 // Add the filterDocuments method
-export const filterDocumentsAPI = async (
+const filterDocumentsAPI = async (
   filters: Record<string, any>
 ): Promise<any> => {
   try {
@@ -339,7 +452,7 @@ export const filterDocumentsAPI = async (
 };
 
 // Download Document Method
-export const downloadDocument = async (
+const downloadDocument = async (
   documentId: number,
   format: string
 ): Promise<Blob> => {
@@ -374,7 +487,7 @@ export const downloadDocument = async (
 };
 
 // List documents API
-export const listDocuments = async (): Promise<Document[]> => {
+const listDocuments = async (): Promise<Document[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/api/documents`);
     return response.data;
@@ -391,7 +504,7 @@ export const listDocuments = async (): Promise<Document[]> => {
 };
 
 // Remove document API
-export const removeDocument = async (documentId: string): Promise<void> => {
+const removeDocument = async (documentId: string): Promise<void> => {
   try {
     await axiosInstance.delete(`${API_BASE_URL}/api/documents/${documentId}`);
   } catch (error) {
@@ -407,7 +520,7 @@ export const removeDocument = async (documentId: string): Promise<void> => {
 };
 
 // Search documents API
-export const searchDocuments = async (searchQuery: string): Promise<any> => {
+const searchDocuments = async (searchQuery: string): Promise<any> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/api/documents/search?query=${encodeURIComponent(
@@ -428,7 +541,7 @@ export const searchDocuments = async (searchQuery: string): Promise<any> => {
 };
 
 // Filter documents API
-export const filterDocuments = async (
+const filterDocuments = async (
   filters: Record<string, any>
 ): Promise<any> => {
   try {
@@ -455,7 +568,7 @@ export const filterDocuments = async (
 };
 
 // Upload document API
-export const uploadDocument = async (document: any): Promise<any> => {
+const uploadDocument = async (document: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/upload`,
@@ -475,7 +588,7 @@ export const uploadDocument = async (document: any): Promise<any> => {
 };
 
 // Share document API
-export const shareDocument = async (documentId: string): Promise<any> => {
+const shareDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/share/${documentId}`
@@ -494,7 +607,7 @@ export const shareDocument = async (documentId: string): Promise<any> => {
 };
 
 // Lock document API
-export const lockDocument = async (documentId: string): Promise<any> => {
+const lockDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/lock/${documentId}`
@@ -513,7 +626,7 @@ export const lockDocument = async (documentId: string): Promise<any> => {
 };
 
 // Unlock document API
-export const unlockDocument = async (documentId: string): Promise<any> => {
+const unlockDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/unlock/${documentId}`
@@ -532,7 +645,7 @@ export const unlockDocument = async (documentId: string): Promise<any> => {
 };
 
 // Add document API
-export const addDocument = async (newDocument: Document): Promise<Document> => {
+const addDocument = async (newDocument: Document): Promise<Document> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents`,
@@ -555,7 +668,7 @@ export const addDocument = async (newDocument: Document): Promise<Document> => {
 };
 
 // Update document API
-export const updateDocument = async (
+const updateDocument = async (
   documentId: string,
   updatedDocument: Document
 ): Promise<Document> => {
@@ -581,7 +694,7 @@ export const updateDocument = async (
 };
 
 // Archive document API
-export const archiveDocument = async (documentId: string): Promise<any> => {
+const archiveDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/archive/${documentId}`,
@@ -604,7 +717,7 @@ export const archiveDocument = async (documentId: string): Promise<any> => {
 };
 
 // Restore document API
-export const restoreDocument = async (documentId: string): Promise<any> => {
+const restoreDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/restore/${documentId}`,
@@ -627,7 +740,7 @@ export const restoreDocument = async (documentId: string): Promise<any> => {
 };
 
 // Move document API
-export const moveDocument = async (
+const moveDocument = async (
   documentId: string,
   destination: string
 ): Promise<any> => {
@@ -653,7 +766,7 @@ export const moveDocument = async (
 };
 
 // Merge documents API
-export const mergeDocuments = async (documentIds: string[]): Promise<any> => {
+const mergeDocuments = async (documentIds: string[]): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/merge`,
@@ -676,7 +789,7 @@ export const mergeDocuments = async (documentIds: string[]): Promise<any> => {
 };
 
 // Split document API
-export const splitDocument = async (documentId: string): Promise<any> => {
+const splitDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/split`,
@@ -698,7 +811,7 @@ export const splitDocument = async (documentId: string): Promise<any> => {
   }
 };
 // Validate document API
-export const validateDocument = async (documentId: string): Promise<any> => {
+const validateDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/validate`,
@@ -721,7 +834,7 @@ export const validateDocument = async (documentId: string): Promise<any> => {
 };
 
 // Encrypt document API
-export const encryptDocument = async (documentId: string): Promise<any> => {
+const encryptDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/encrypt`,
@@ -744,7 +857,7 @@ export const encryptDocument = async (documentId: string): Promise<any> => {
 };
 
 // Decrypt document API
-export const decryptDocument = async (documentId: string): Promise<any> => {
+const decryptDocument = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/decrypt`,
@@ -767,7 +880,7 @@ export const decryptDocument = async (documentId: string): Promise<any> => {
 };
 
 // Track document changes API
-export const trackDocumentChanges = async (
+const trackDocumentChanges = async (
   documentId: string
 ): Promise<any> => {
   try {
@@ -792,7 +905,7 @@ export const trackDocumentChanges = async (
 };
 
 // Compare documents API
-export const compareDocuments = async (documentIds: string[]): Promise<any> => {
+const compareDocuments = async (documentIds: string[]): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/compare`,
@@ -815,7 +928,7 @@ export const compareDocuments = async (documentIds: string[]): Promise<any> => {
 };
 
 // Tag documents API
-export const tagDocuments = async (
+const tagDocuments = async (
   documentIds: string[],
   tag: string
 ): Promise<any> => {
@@ -841,7 +954,7 @@ export const tagDocuments = async (
 };
 
 // Categorize documents API
-export const categorizeDocuments = async (
+const categorizeDocuments = async (
   documentIds: string[],
   category: string
 ): Promise<any> => {
@@ -866,7 +979,7 @@ export const categorizeDocuments = async (
   }
 };
 
-export const customizeDocumentView = async (viewOptions: any): Promise<any> => {
+const customizeDocumentView = async (viewOptions: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/customizeView`,
@@ -888,7 +1001,7 @@ export const customizeDocumentView = async (viewOptions: any): Promise<any> => {
   }
 };
 
-export const commentOnDocument = async (
+const commentOnDocument = async (
   documentId: string,
   comment: string
 ): Promise<any> => {
@@ -913,7 +1026,7 @@ export const commentOnDocument = async (
   }
 };
 
-export const mentionUserInDocument = async (
+const mentionUserInDocument = async (
   documentId: string,
   userId: string
 ): Promise<any> => {
@@ -938,7 +1051,7 @@ export const mentionUserInDocument = async (
   }
 };
 
-export const assignTaskInDocument = async (
+const assignTaskInDocument = async (
   documentId: string,
   taskDetails: any
 ): Promise<any> => {
@@ -963,7 +1076,7 @@ export const assignTaskInDocument = async (
   }
 };
 
-export const requestReviewOfDocument = async (
+const requestReviewOfDocument = async (
   documentId: string,
   reviewDetails: any
 ): Promise<any> => {
@@ -988,7 +1101,7 @@ export const requestReviewOfDocument = async (
   }
 };
 
-export const approveDocument = async (
+const approveDocument = async (
   documentId: string,
   approvalDetails: any
 ): Promise<any> => {
@@ -1013,7 +1126,7 @@ export const approveDocument = async (
   }
 };
 
-export const rejectDocument = async (
+const rejectDocument = async (
   documentId: string,
   rejectionDetails: any
 ): Promise<any> => {
@@ -1038,7 +1151,7 @@ export const rejectDocument = async (
   }
 };
 
-export const requestFeedbackOnDocument = async (
+const requestFeedbackOnDocument = async (
   documentId: string,
   feedbackDetails: any
 ): Promise<any> => {
@@ -1063,7 +1176,7 @@ export const requestFeedbackOnDocument = async (
   }
 };
 
-export const provideFeedbackOnDocument = async (
+const provideFeedbackOnDocument = async (
   documentId: string,
   feedbackDetails: any
 ): Promise<any> => {
@@ -1088,7 +1201,7 @@ export const provideFeedbackOnDocument = async (
   }
 };
 
-export const resolveFeedbackOnDocument = async (
+const resolveFeedbackOnDocument = async (
   documentId: string,
   feedbackId: string
 ): Promise<any> => {
@@ -1113,7 +1226,7 @@ export const resolveFeedbackOnDocument = async (
   }
 };
 
-export const collaborativeEditing = async (
+const collaborativeEditing = async (
   documentId: string,
   collaborators: string[]
 ): Promise<any> => {
@@ -1137,7 +1250,7 @@ export const collaborativeEditing = async (
     throw error;
   }
 };
-export const smartTagging = async (documentId: string): Promise<any> => {
+const smartTagging = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/smartTagging`,
@@ -1159,7 +1272,7 @@ export const smartTagging = async (documentId: string): Promise<any> => {
   }
 };
 
-export const documentAnnotation = async (
+const documentAnnotation = async (
   documentId: string,
   annotationData: any
 ): Promise<any> => {
@@ -1189,7 +1302,7 @@ export const documentAnnotation = async (
   }
 };
 
-export const documentActivityLogging = async (
+const documentActivityLogging = async (
   documentId: string,
   activityDetails: any
 ): Promise<any> => {
@@ -1214,7 +1327,7 @@ export const documentActivityLogging = async (
   }
 };
 
-export const intelligentDocumentSearch = async (
+const intelligentDocumentSearch = async (
   query: string
 ): Promise<any> => {
   try {
@@ -1239,7 +1352,7 @@ export const intelligentDocumentSearch = async (
 };
 
 
-export const getDocumentVersions = async (
+const getDocumentVersions = async (
   documentId: string
 ): Promise<any> => {
   try {
@@ -1265,7 +1378,7 @@ export const getDocumentVersions = async (
 
 
 
-export const updateSnapshotDetails = async (
+const updateSnapshotDetails = async (
   snapshotId: string,
   newDetails: any // Define a proper type for `newDetails` as needed
 ): Promise<any> => {
@@ -1290,7 +1403,7 @@ export const updateSnapshotDetails = async (
   }
 };
 
-export const createDocumentVersion = async (
+const createDocumentVersion = async (
   documentId: string
 ): Promise<any> => {
   try {
@@ -1314,7 +1427,7 @@ export const createDocumentVersion = async (
   }
 };
 
-export const revertToDocumentVersion = async (
+const revertToDocumentVersion = async (
   documentId: string,
   versionId: string
 ): Promise<any> => {
@@ -1339,7 +1452,7 @@ export const revertToDocumentVersion = async (
   }
 };
 
-export const viewDocumentHistory = async (documentId: string): Promise<any> => {
+const viewDocumentHistory = async (documentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/api/documents/viewHistory/${documentId}`,
@@ -1360,7 +1473,7 @@ export const viewDocumentHistory = async (documentId: string): Promise<any> => {
   }
 };
 
-export const documentVersionComparison = async (
+const documentVersionComparison = async (
   versionId1: string,
   versionId2: string
 ): Promise<any> => {
@@ -1384,7 +1497,7 @@ export const documentVersionComparison = async (
     throw error;
   }
 };
-export const grantDocumentAccess = async (
+const grantDocumentAccess = async (
   documentId: string,
   userId: string
 ): Promise<any> => {
@@ -1409,7 +1522,7 @@ export const grantDocumentAccess = async (
   }
 };
 
-export const revokeDocumentAccess = async (
+const revokeDocumentAccess = async (
   documentId: string,
   userId: string
 ): Promise<any> => {
@@ -1434,7 +1547,7 @@ export const revokeDocumentAccess = async (
   }
 };
 
-export const manageDocumentPermissions = async (
+const manageDocumentPermissions = async (
   documentId: string,
   permissions: string[]
 ): Promise<any> => {
@@ -1459,7 +1572,7 @@ export const manageDocumentPermissions = async (
   }
 };
 
-export const initiateDocumentWorkflow = async (
+const initiateDocumentWorkflow = async (
   documentId: string,
   workflowData: any
 ): Promise<any> => {
@@ -1484,7 +1597,7 @@ export const initiateDocumentWorkflow = async (
   }
 };
 
-export const automateDocumentTasks = async (
+const automateDocumentTasks = async (
   documentId: string,
   tasksData: any
 ): Promise<any> => {
@@ -1509,7 +1622,7 @@ export const automateDocumentTasks = async (
   }
 };
 
-export const triggerDocumentEvents = async (
+const triggerDocumentEvents = async (
   documentId: string,
   eventData: any
 ): Promise<any> => {
@@ -1534,7 +1647,7 @@ export const triggerDocumentEvents = async (
   }
 };
 
-export const documentApprovalWorkflow = async (
+const documentApprovalWorkflow = async (
   documentId: string,
   workflowData: any
 ): Promise<any> => {
@@ -1559,7 +1672,7 @@ export const documentApprovalWorkflow = async (
   }
 };
 
-export const documentLifecycleManagement = async (
+const documentLifecycleManagement = async (
   documentId: string,
   lifecycleData: any
 ): Promise<any> => {
@@ -1584,7 +1697,7 @@ export const documentLifecycleManagement = async (
   }
 };
 
-export const connectWithExternalSystem = async (
+const connectWithExternalSystem = async (
   documentId: string,
   systemData: any
 ): Promise<any> => {
@@ -1609,7 +1722,7 @@ export const connectWithExternalSystem = async (
   }
 };
 
-export const synchronizeWithCloudStorage = async (
+const synchronizeWithCloudStorage = async (
   documentId: string,
   storageData: any
 ): Promise<any> => {
@@ -1634,7 +1747,7 @@ export const synchronizeWithCloudStorage = async (
   }
 };
 
-export const importFromExternalSource = async (
+const importFromExternalSource = async (
   importData: any
 ): Promise<any> => {
   try {
@@ -1658,7 +1771,7 @@ export const importFromExternalSource = async (
   }
 };
 
-export const exportToExternalSystem = async (exportData: any): Promise<any> => {
+const exportToExternalSystem = async (exportData: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/exportToExternal`,
@@ -1680,7 +1793,7 @@ export const exportToExternalSystem = async (exportData: any): Promise<any> => {
   }
 };
 
-export const generateDocument = (
+const generateDocument = (
   documentData: any,
   options: DocumentOptions
 ): Promise<DocumentObject> => {
@@ -1707,7 +1820,7 @@ export const generateDocument = (
   });
 };
 
-export const generateDocumentReport = async (reportData: any): Promise<any> => {
+const generateDocumentReport = async (reportData: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/generateReport`,
@@ -1729,7 +1842,7 @@ export const generateDocumentReport = async (reportData: any): Promise<any> => {
   }
 };
 
-export const exportDocumentReport = async (reportData: any): Promise<any> => {
+const exportDocumentReport = async (reportData: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/exportReport`,
@@ -1751,7 +1864,7 @@ export const exportDocumentReport = async (reportData: any): Promise<any> => {
   }
 };
 
-export const scheduleReportGeneration = async (
+const scheduleReportGeneration = async (
   scheduleData: any
 ): Promise<any> => {
   try {
@@ -1775,7 +1888,7 @@ export const scheduleReportGeneration = async (
   }
 };
 
-export const customizeReportSettings = async (
+const customizeReportSettings = async (
   settingsData: any
 ): Promise<any> => {
   try {
@@ -1799,7 +1912,7 @@ export const customizeReportSettings = async (
   }
 };
 
-export const backupDocuments = async (): Promise<any> => {
+const backupDocuments = async (): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/backup`,
@@ -1821,7 +1934,7 @@ export const backupDocuments = async (): Promise<any> => {
   }
 };
 
-export const retrieveBackup = async (backupId: string): Promise<any> => {
+const retrieveBackup = async (backupId: string): Promise<any> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/api/documents/retrieveBackup/${backupId}`,
@@ -1841,7 +1954,7 @@ export const retrieveBackup = async (backupId: string): Promise<any> => {
     throw error;
   }
 };
-export const documentRedaction = async (redactionData: any): Promise<any> => {
+const documentRedaction = async (redactionData: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/redact`,
@@ -1863,7 +1976,7 @@ export const documentRedaction = async (redactionData: any): Promise<any> => {
   }
 };
 
-export const documentAccessControls = async (
+const documentAccessControls = async (
   controlsData: any
 ): Promise<any> => {
   try {
@@ -1887,7 +2000,7 @@ export const documentAccessControls = async (
   }
 };
 
-export const getDocumentUrl = async (url: string): Promise<any> => {
+const getDocumentUrl = async (url: string): Promise<any> => {
   try {
     // Make a POST request to the provided URL
     const response = await axiosInstance.post(url);
@@ -1901,7 +2014,7 @@ export const getDocumentUrl = async (url: string): Promise<any> => {
   }
 };
 
-export const getDocument = async ({
+const getDocument = async ({
   data,
 }: {
   data: Uint8Array;
@@ -1931,7 +2044,7 @@ export const getDocument = async ({
   }
 };
 
-export const documentTemplates = async (templatesData: any): Promise<any> => {
+const documentTemplates = async (templatesData: any): Promise<any> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents/templates`,
@@ -1951,4 +2064,36 @@ export const documentTemplates = async (templatesData: any): Promise<any> => {
     );
     throw error;
   }
+};
+
+
+export {
+  addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
+  documentLifecycleManagement, documentRedaction, 
+  documentTemplates, documentVersionComparison, 
+  downloadDocument, encryptDocument, exportDocumentReport, 
+  exportToExternalSystem, fakeApiCall,
+  fetchAllDocumentsAPI, fetchDocumentById,
+  fetchJsonDocumentByIdAPI,
+  fetchXmlDocumentByIdAPI, filterDocuments,
+  filterDocumentsAPI, generateDocument,
+  generateDocumentReport, getDocument, getDocumentUrl, 
+  getDocumentVersions, grantDocumentAccess, 
+  importFromExternalSource, initiateDocumentWorkflow, 
+  intelligentDocumentSearch, listDocuments, 
+  loadPresentationFromDatabase, lockDocument,
+   manageDocumentPermissions, mentionUserInDocument,
+    mergeDocuments, moveDocument, 
+    provideFeedbackOnDocument, rejectDocument, 
+  removeDocument, requestFeedbackOnDocument,
+  requestReviewOfDocument, resolveFeedbackOnDocument, 
+  restoreDocument, retrieveBackup, revertToDocumentVersion, 
+  revokeDocumentAccess, scheduleReportGeneration, 
+  searchDocumentAPI, searchDocuments, shareDocument, 
+  smartTagging, splitDocument, synchronizeWithCloudStorage, 
+  tagDocuments, trackDocumentChanges, triggerDocumentEvents,
+   unlockDocument, updateDocument, updateDocumentAPI, 
+   updateDocumentNameAPI, updateSnapshotDetails, 
+   uploadDocument, validateDocument,
+    viewDocumentHistory, fetchDocumentByIdAPI,
 };

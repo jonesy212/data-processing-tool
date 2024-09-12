@@ -12,10 +12,22 @@ type ToolbarOptions = {
   [key in keyof typeof toolbarOptions]: string[];
 } & { calendar: boolean | string[] };
 
-export interface ToolbarOptionsProps {
-  isDocumentEditor?: boolean;
-  isTextCard?: boolean;
-  fontSize?: boolean;
+
+
+interface BaseFormattingOptions {
+  fontSize?: number | string;
+  margin?: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  textColor?: string;
+  backgroundColor?: string;
+  fontFamily?: string;
+}
+
+interface TextFormattingOptions extends BaseFormattingOptions {
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;
@@ -24,12 +36,20 @@ export interface ToolbarOptionsProps {
   link?: boolean;
   image?: boolean;
   audio?: boolean;
-  type: DocumentTypeEnum
-  onEditorStateChange: (newEditorState: any) => void;
-  handleEditorStateChange: (newEditorState: EditorState) => void; // Updated prop name
 }
 
-const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
+
+
+interface ToolbarOptionsProps extends TextFormattingOptions {
+  isDocumentEditor?: boolean;
+  isTextCard?: boolean;
+  type: DocumentTypeEnum;
+  onEditorStateChange: (newEditorState: any) => void;
+  handleEditorStateChange: (newEditorState: EditorState) => void;
+}
+
+
+const ToolbarOptionsComponent: React.FC<ToolbarOptionsProps> = ({
   isDocumentEditor,
   isTextCard,
   audio,
@@ -217,6 +237,7 @@ const ToolbarOptions: React.FC<ToolbarOptionsProps> = ({
   </div>
 
   );
-};
+}; 
 
-export { ToolbarOptions };
+export { ToolbarOptionsComponent }
+export type { BaseFormattingOptions, ToolbarOptions, ToolbarOptionsProps };

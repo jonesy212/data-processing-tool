@@ -19,10 +19,11 @@ import {
 } from "../support/NotificationContext";
 import NotificationManager from "../support/NotificationManager";
 import { useSecureUserId } from "./useSecureUserId";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotWithCriteria } from "../snapshots/SnapshotWithCriteria";
+import { K } from "../snapshots";
  const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -43,6 +44,13 @@ interface TriggerIncentivesParams {
   params?: any;
 }
 
+
+interface AnalyticsEvent<T extends Data, K extends Data> {
+  type: string;
+  snapshot: Snapshot<T, K>; // Include snapshot in the type definition
+  date: string;
+}
+
 // Define the NotificationManager instance and ApiNotificationsService instance if needed
 const notificationManager = new NotificationManager({
   notifications: [],
@@ -54,7 +62,7 @@ const notificationManager = new NotificationManager({
 
 const apiNotificationsService = new ApiNotificationsService(useNotification);
 
-const notifyEventSystem = (
+const notifyEventSystem = <T extends Data, K extends Data>(
   eventType: string,
   eventData: any,
   source: string
@@ -65,6 +73,8 @@ const notifyEventSystem = (
 
   // Create a NotificationData object based on the eventType and eventData
   const notificationData: NotificationData = {
+    topics, highlights, files, meta, rsvpStatus, participants, teamMemberId,
+    
     id: UniqueIDGenerator.generateNotificationID(
       {
         message: eventType,
@@ -153,8 +163,8 @@ const notifyEventSystem = (
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
-          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(storeId, options, config, operation);
+        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
+          const snapshotStore = new SnapshotStore<T, K>(storeId, options, config, operation);
           return Promise.resolve([snapshotStore]);
         },
         getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
@@ -196,6 +206,9 @@ const notifyEventSystem = (
     level: "info",
     message: "",
     sendStatus: "Delivered",
+    rsvpStatus: "no",
+    participants: [],
+    teamMemberId: "",
     completionMessageLog: {
       timestamp: new Date(),
       level: "info",
@@ -505,46 +518,44 @@ const unsubscribe = (unsubscribeDetails: {
   // Additional logic here...
 };
 
-const triggerEvent = (
-  eventType: string,
-  eventData: any,
+const triggerEvent = <T extends Data, K extends Data>(
+  event: string,            // Match parameter name with the CombinedEvents interface
+  snapshot: Snapshot<T, K>, // Ensure Snapshot type is used here
   eventDate: Date
 ) => {
   // Log the event for debugging purposes
   console.log("Event Triggered:");
-  console.log(`Type: ${eventType}`);
-  console.log(`Data:`, eventData);
+  console.log(`Event: ${event}`);
+  console.log(`Snapshot:`, snapshot);
   console.log(`Date: ${eventDate.toISOString()}`);
 
   // You can add additional logic here to handle the event
-  // For example, send the event data to an analytics service, or trigger specific actions based on eventType
+  // For example, send the event data to an analytics service, or trigger specific actions based on event
 
   // Example: Send event data to an analytics service
   sendEventToAnalyticsService({
-    type: eventType,
-    data: eventData,
+    type: event,
+    snapshot,                // Include snapshot data
     date: eventDate.toISOString(), // Format date as an ISO string for consistency
   });
 
   // Example: Handle specific event types
-  switch (eventType) {
+  switch (event) {
     case "USER_LOGIN":
-      handleUserLogin(eventData);
+      handleUserLogin(snapshot);
       break;
     case "USER_LOGOUT":
-      handleUserLogout(eventData);
+      handleUserLogout(snapshot);
       break;
     default:
-      console.warn(`Unhandled event type: ${eventType}`);
+      console.warn(`Unhandled event type: ${event}`);
   }
 };
 
 // Example function to send event data to an analytics service
-const sendEventToAnalyticsService = (event: {
-  type: string;
-  data: any;
-  date: string;
-}) => {
+const sendEventToAnalyticsService = <T extends Data, K extends Data>(
+  event: AnalyticsEvent<T, K>
+) => {
   // Replace with actual analytics service logic
   console.log("Sending event to analytics service:", event);
 };

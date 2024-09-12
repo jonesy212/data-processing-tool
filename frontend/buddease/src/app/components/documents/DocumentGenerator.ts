@@ -84,6 +84,7 @@ enum DocumentTypeEnum {
   CryptoWatch = "cryptowatch",
   Draft = "draft",
   Document = "document",
+  Design = "Design",
   PDFDocument = "PDFDocument",
   MarkdownDocument = "MarkdownDocument",
   SQLDocument = "SQLDocument",

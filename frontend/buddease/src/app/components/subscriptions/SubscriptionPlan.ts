@@ -19,3 +19,6 @@ interface Revenue {
   totalRevenue: number;
   payments: Payment[];
 }
+
+
+export type {Payment, Revenue, SubscriptionPlan};

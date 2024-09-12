@@ -18,4 +18,6 @@ interface FileData extends ScheduledData {
   imageData?: string; // Base64-encoded image data
 }
 
+
 export default FileData;
+

@@ -3,6 +3,7 @@ import { PrivacySettings } from "../../settings/PrivacySettings";
 import { DocumentEditingPermissions } from "../../users/Permission";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import { GeneralNotificationTypes } from "../../settings/NotificationChannels";
+import { CryptoPreferences } from "@/app/configs/UserPreferences";
 
 // Define the ChatSettingsModal type
 type ChatSettingsModal = {
@@ -45,6 +46,7 @@ type CommonNotificationSettings = {
   emailFrequency: string; // Adjust type if needed (e.g., 'daily', 'weekly')
   smsFrequency: string; // Adjust type if needed (e.g., 'daily', 'weekly')
 };
+
 // Define related types
 type NotificationPreferences = {
   mobile: CommonNotificationSettings;
@@ -60,6 +62,9 @@ type NotificationPreferences = {
   notificationVolume: number;
   notificationTypes?: GeneralNotificationTypes; // Use the appropriate type here
   customNotificationSettings: any;
+
+  cryptoPreferences: CryptoPreferences,
+
 };
 
 type AudioOptions = {

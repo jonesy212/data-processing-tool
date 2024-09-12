@@ -1,11 +1,21 @@
 // DocumentFormattingOptionsComponent.tsx
 import React, { useState } from "react";
+import { BaseFormattingOptions } from "./ToolbarOptions";
 
-interface DocumentFormattingOptions {
-  fontFamily: string;
-  fontSize: number | string;
-  margin: number;
-  textColor: string;
+interface DocumentFormattingOptions extends BaseFormattingOptions {
+  fontSize?: number | string | undefined;
+  margin?: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  textColor?: string;
+  backgroundColor?: string;
+  fontFamily?: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
   // Add more formatting options as needed
 }
 
@@ -40,7 +50,12 @@ const DocumentFormattingOptionsComponent: React.FC<
     const options: DocumentFormattingOptions = {
       fontSize,
       fontFamily,
-      margin,
+      margin: {
+        top: margin,
+        right: margin,
+        bottom: margin,
+        left: margin
+      },
       textColor,
       // Add more formatting options as needed
     };
@@ -65,7 +80,7 @@ const DocumentFormattingOptionsComponent: React.FC<
         Text Color:
         <input
           type="color"
-          value={textColor}
+          value={tex   tColor}
           onChange={handleTextColorChange}
         />
       </label>

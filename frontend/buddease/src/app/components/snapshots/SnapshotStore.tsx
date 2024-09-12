@@ -85,6 +85,7 @@ import { convertToSnapshotArray, isSnapshot } from "../utils/snapshotUtils";
 import Version from "../versions/Version";
 import FetchSnapshotPayload from "./FetchSnapshotPayload";
 import {
+  CoreSnapshot,
   Payload,
   Snapshot,
   Snapshots,
@@ -99,6 +100,7 @@ import {
 import {
   ConfigureSnapshotStorePayload,
   RetentionPolicy,
+  SnapshotConfig,
 } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotData } from "./SnapshotData";
@@ -106,7 +108,10 @@ import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-import { SnapshotConfig } from "./snapshot";
+
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
+import { SchemaField } from "../database/SchemaField";
 import { delegate } from "./snapshotHandlers";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 
@@ -196,6 +201,8 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
       event: Event
     ) => void | null;
     data?: T | Map<string, Snapshot<T, K>> | null = null;
+    createdAt:  string | Date | undefined
+    updatedAt?: string | Date | undefined
     state?: SnapshotsArray<T>  | null = null;
     store: SnapshotStore<T, K> | undefined | null = null;
     stores: SnapshotStore<T, K>[] | null = null;
@@ -203,7 +210,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     snapshotConfig: any;
     expirationDate?: Date;
     priority?: PriorityTypeEnum | undefined;
-    tags?: TagsRecord;
+     tags?: TagsRecord | string[] | undefined; 
     metadata?: StructuredMetadata | undefined;
     // delegate: SnapshotStoreConfig<T, K>[] = []
     meta: Map<string, Snapshot<T, K>> | {} = {};
@@ -213,7 +220,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
 
     getSnapshotsBySubscriber: any;
     getSnapshotsBySubscriberSuccess: any;
-    getSnapshotsByTopic: any;
+    etSnapshotsByTopic: any;
     getSnapshotsByTopicSuccess: any;
     getSnapshotsByCategory: any;
     getSnapshotsByCategorySuccess: any;
@@ -445,6 +452,10 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
   public initialState: InitializedState<T, K>
 
 
+  private name: string;
+  private version: Version;
+  private schema: Record<string, SchemaField>; // Replace `any` with the appropriate type for schema
+  
     private snapshotItems: SnapshotItem<T, K>[] = [];
 
     private nestedStores: SnapshotStore<T, K>[] = [];
@@ -464,7 +475,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
 
 
       // Provide a getter for controlled access
-  protected getConfig(): SnapshotStoreConfig<T, K> {
+  protected getConfig(): SnapshotStoreConfig<T, K> | null {
     return this.config;
   }
 
@@ -682,14 +693,15 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
       meta: {} as Map<string, any>,
       set: () => {},
       snapshotItems: [],
-      configOption: {} as SnapshotStoreConfig<
-        SnapshotWithCriteria<any, BaseData>,
-        K
-      >,
+      configOption: {} as SnapshotStoreConfig<T, K >,
     };
 
     constructor(
       private storeId: number,
+      name: string, // New parameter
+      version: Version, // New parameter
+      schema: Record<string, SchemaField>, // New parameter, replace `any` with the appropriate type
+      
       options: SnapshotStoreOptions<T, K>,
       category: symbol | string | Category | undefined,
       config: SnapshotStoreConfig<T, K>,
@@ -697,14 +709,25 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     ) {
       Object.assign(this, options.data);
       this.timestamp = new Date();
+      
+
+      this.name = name;
+      this.version = version;
+      this.schema = schema;
+      this.operation = operation;
+
       const prefix = this.determinePrefix(
         options.snapshotConfig,
         options.category?.toString() ?? ""
       );
+
       this.category = options.category;
+      this.config = config;
       this.operation = operation;
-      const currentConfig = this.getConfig();
-    
+      
+      // Use the provided config or derive it dynamically
+      this.config = config ? config : this.getConfig();
+      
       this.id = UniqueIDGenerator.generateID(
         prefix,
         (
@@ -717,19 +740,19 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
         ).toString(),
         NotificationTypeEnum.GeneratedID
       );
-
+    
       const eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> = {};
       const callbacks: Record<string, ((snapshot: Snapshot<T, K>) => void)[]> = {};
       const subscribers: Subscriber<T, K>[] = [];
       const eventIds: string[] = [];
-      const on = (event: string, callback: (snapshot: Snapshot<T, K>) => void): void => {
-        if (!subscribers[event]) {
-          subscribers[event] = [];
+      const on = (event:string |  number, callback: (snapshot: Snapshot<T, K>) => void): void => {
+        if (!subscribers[Number(event)]) {
+          subscribers[Number(event)] = [];
         }
-        subscribers[event].push(callback);
+        subscribers[Number(event)].push(callback);
       };
 
-      const off = (event: string, callback: (snapshot: Snapshot<T, K>) => void): void => {
+      const off = (event: number, callback: (snapshot: Snapshot<T, K>) => void): void => {
         const callbacks = subscribers[event];
         if (callbacks) {
           const index = callbacks.indexOf(callback);
@@ -738,14 +761,17 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
           }
         }
       }
-    }
 
       const subscribe = (event: string, callback: (snapshot: Snapshot<T, K>) => void): void => { }
-      getDataStore(): Promise<DataStore<T, K>[]>  {
+      const getDataStore = (
+
+      ): Promise<DataStore<T, K>[]> => {
         return new Promise((resolve, reject) => {
         try {
+
+          type FilterAnSearchCriteria = FilterCriteria | SearchCriteria;
               // Your logic to retrieve data goes here
-              const data: SearchCriteria[] = [
+              const data: FilterAnSearchCriteria[] = [
                 {
                   // description: "This is a sample event",
                   startDate: new Date("2024-06-01"),
@@ -776,7 +802,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
                   taskPhaseType: TaskPhaseEnum.EXECUTION,
                   animationType: AnimationTypeEnum.TwoD,
                   languageType: LanguageEnum.English,
-                  codingLanguageType: CodingLanguageEnum.JavaScript,
+                  codingLanguageType: CodingLanguageEnum.Javascript,
                   formatType: FormatEnum.PDF,
                   privacySettingsType: PrivacySettingEnum.Public,
                   messageType: MessageType.Text,
@@ -795,7 +821,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
                       description: "This is a sample event",
                       // startDate: new Date("2024-06-01"),
                       // endDate: new Date("2024-06-05"),
-                      status: StatuType.Scheduled,
+                      status: StatusType.Scheduled,
                       priority: "high",
                       assignedUser: "John Doe",
                       todoStatus: "completed",
@@ -846,14 +872,15 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
             }
           });
         }
+      }
 
-  async addSnapshotToStore(
+ addSnapshotToStore(
     storeId: number,
     snapshot: Snapshot<T, K>,
     snapshotStore: SnapshotStore<T, K>,
     snapshotStoreData: SnapshotStore<T, K>,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     subscribers: SubscriberCollection<T, K>
   ): Promise<{ snapshotStore: SnapshotStore<T, K> }> {
     try {
@@ -1345,12 +1372,16 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
   }
 
   mapSnapshot(
-    storeId: number,
+    id: number, 
+    storeId: string,
     snapshotStore: SnapshotStore<T, K>,
+    snapshotContainer: SnapshotContainer<T, K>,
     snapshotId: string,
+    criteria: CriteriaType,
     snapshot: Snapshot<T, K>,
     type: string,
     event: Event
+
   ): Promise<Snapshot<T, K> | null> {
     return new Promise((resolve, reject) => {
       // Ensure type safety here
@@ -1489,7 +1520,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
   // Implement the snapshot method as expected by SnapshotStoreConfig
   snapshot = async (
     id: string | number | undefined,
-    snapshotId: number | null,
+    snapshotId: string | null,
     snapshotData: Snapshot<T, K>,
     category: symbol | string | Category | undefined,
     categoryProprties: CategoryProperties | undefined,
@@ -1773,7 +1804,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     }
   }
 
-  getParentId(snapshot: Snapshot<T, K>): string | null {
+  getParentId(id: string, snapshot: Snapshot<T, K>): string | null {
     if (this.delegate && this.delegate.length > 0) {
       for (const delegateConfig of this.delegate) {
         if (
@@ -2074,7 +2105,8 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     dataItems: RealtimeDataItem[],
     newData: Snapshot<T, K>,
     payload: UpdateSnapshotPayload<T>,
-    store: SnapshotStore<any, K>
+    store: SnapshotStore<any, K>,
+    callback?: (snapshot: Snapshot<T, K>) => void // Add optional callback
   ): Promise<{ snapshot: Snapshot<T, K> }> {
     try {
       // Create updated snapshot data
@@ -2116,7 +2148,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
         },
         getChildren: function (
           id: string, childSnapshot: Snapshot<T, K>
-        ): Snapshot<T, K>[] {
+        ): CoreSnapshot<Data, BaseData>[] {
           throw new Error("Function not implemented.");
         },
         hasChildren: function (id: string): boolean {
@@ -2134,7 +2166,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
         getStore: function (
           storeId: number,
           snapshotStore: SnapshotStore<T, K>,
-          snapshotId: string,
+          snapshotId: string | null,
           snapshot: Snapshot<T, K>,
           type: string,
           event: Event
@@ -2202,7 +2234,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
             snapshotStore: SnapshotStore<T, K>,
             payloadData: T | Data,
             category: Category | undefined,
-            categoryProperties: CategoryProperties,
+            categoryProperties: CategoryProperties | undefined,
             timestamp: Date,
             data: T,
             delegate: SnapshotWithCriteria<T, K>[]
@@ -2225,7 +2257,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
           events: Record<string, CalendarManagerStoreClass<T, K>[]>,
           dataItems: RealtimeDataItem[],
           newData: Snapshot<T, K>,
-          payload: ConfigureSnapshotStorePayload<T>,
+          payload: ConfigureSnapshotStorePayload<T, K>,
           store: SnapshotStore<any, K>,
           callback: (snapshotStore: SnapshotStore<T, K>) => void
         ): void | null {
@@ -2269,17 +2301,18 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
         ): Snapshot<T, K>[] | null {
           // Implement the logic for creating snapshots
           // For example, processing the snapshots array, applying transformations, etc.
-
-          // Example implementation:
           const createdSnapshots: Snapshot<T, K>[] = snapshots.map(snapshot => {
+            // Ensure that snapshot.data is correctly typed as T | Map<string, Snapshot<T, K>> | null | undefined
+            const processedData: T | Map<string, Snapshot<T, K>> | null | undefined = snapshot.data 
+              ? { ...snapshot.data } // Properly typed data based on existing snapshot data
+              : null; // Ensure null is assignable if data is undefined
+
             // Create or update snapshots based on payload or other logic
             return {
               ...snapshot,
-              id: `${id}-${snapshotId}`, // Example of modifying snapshot ID
-              data: {
-                ...snapshot.data,
-                // Additional processing if needed
-              },
+              id: `${id}-${snapshotId}`, // Modify snapshot ID as needed
+              data: processedData, // Assign the processed data
+              // Additional processing if needed
             };
           });
 
@@ -2313,7 +2346,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
           snapshot: T | null,
           snapshotData: T,
           category: Category | undefined,
-          categoryProperties: CategoryProperties,
+          categoryProperties: CategoryProperties | undefined,
           callback: (snapshot: T) => void,
           snapshots: SnapshotsArray<T>,
           type: string,
@@ -2325,20 +2358,35 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
         },
       };
 
+      
       // Update snapshotStore with the new data
-      snapshotStore.data = new Map<string, Snapshot<T, K>>(); // Initialize if needed
-      snapshotStore.data.set(
-        snapshotId.toString(),
-        updatedSnapshotData as unknown as Snapshot<T, K>
-      );
+      if (!snapshotStore.data) {
+        snapshotStore.data = new Map<string, Snapshot<T, K>>(); // Initialize if needed
+      }
+      snapshotStore.data.set(snapshotId.toString(), updatedSnapshotData);
+
+      // Set the updated snapshot in the store
+      snapshotStore.data.set(snapshotId.toString(), updatedSnapshotData);
 
       console.log("Snapshot updated successfully:", snapshotStore);
 
-      // Return the updated snapshot store
-      return { snapshot: snapshotStore };
+      // Extract the updated snapshot from the store
+      const updatedSnapshot = snapshotStore.data.get(snapshotId.toString());
+
+      if (updatedSnapshot) {
+        // Call the callback with the updated snapshot data if provided
+        if (callback) {
+          callback(updatedSnapshotData);
+        }
+
+        // Return the updated snapshot wrapped in a Promise
+        return Promise.resolve({ snapshot: updatedSnapshot });
+      } else {
+        throw new Error("Snapshot not found in the store");
+      }
     } catch (error) {
       console.error("Error updating snapshot:", error);
-      throw error;
+      return Promise.reject(error); // Ensure error is rejected properly
     }
   }
 
@@ -2400,7 +2448,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
 
  addSnapshot(
     snapshot: Snapshot<T, K>,
-    snapshotId: number,
+    snapshotId: string,
     subscribers: SubscriberCollection<T, K> | undefined
   ): Promise<Snapshot<T, K> | undefined> {
 
@@ -2489,7 +2537,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
       // [Symbol.asyncIterator]: this[Symbol.asyncIterator],
     };
 
-    const prefix = this.determinePrefix(snapshot, this.category!.toString());
+    
     const id = `${prefix}_${this.generateId()}`;
     snapshotData.id = id;
 
@@ -2497,15 +2545,10 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
       id: snapshotData.id,
       snapshots: [
         {
-          getSnapshotByKey: snapshotData.,getSnapshotByKey,
-          mapSnapshotStore: snapshotData.,mapSnapshotStore,
+          getSnapshotByKey: snapshotData.getSnapshotByKey,
+          mapSnapshotStore: snapshotData.mapSnapshotStore,
           getSuubscribers: snapshotData.getSuubscribers,
           getDataWithSearchCriteria: snapshotData.getDataWithSearchCriteria,
-
-
-
-
-
           data: snapshotData.data as Map<string, Snapshot<T, K>>,
           id: snapshotData.id,
           timestamp: snapshotData.timestamp as Date,
@@ -2709,6 +2752,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
           },
 
           updateSnapshotFailure(
+            snapshotId: number,
             snapshotManager: SnapshotManager<T, K>,
             snapshot: Snapshot<T, K>,
             date: Date | undefined,
@@ -2909,7 +2953,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
             snapshot: T | null,
             snapshotData: T,
             category: Category | undefined,
-            categoryProperties: CategoryProperties,
+            categoryProperties: CategoryProperties | undefined,
             callback: (snapshot: T) => void,
             snapshots: SnapshotsArray<T>,
             type: string,
@@ -3012,7 +3056,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
           fetchSnapshot(
             id: any,
             category: Category | undefined,
-            categoryProperties: CategoryProperties,
+            categoryProperties: CategoryProperties | undefined,
             timestamp: any,
             snapshot: Snapshot<T, K>,
             data: T,
@@ -3389,7 +3433,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     snapshotId: number,
     snapshotData: SnapshotStore<T, K>,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     snapshotConfig: SnapshotStoreConfig<T, K>,
     callback: (snapshotStore: SnapshotStore<any, any>) => void
   ): void {
@@ -3452,19 +3496,19 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
 
   configureSnapshotStore(
     snapshotStore: SnapshotStore<T, K>,
-    snapshotId: string,
+    storeId: number,
     data: Map<string, Snapshot<T, K>>,
     events: Record<string, CalendarManagerStoreClass<T, K>[]>,
     dataItems: RealtimeDataItem[],
     newData: Snapshot<T, K>,
-    payload: ConfigureSnapshotStorePayload<T>,
+    payload: ConfigureSnapshotStorePayload<T, K>,
     store: SnapshotStore<any, K>,
     callback: (snapshotStore: SnapshotStore<T, K>) => void
   ): void {
     this.handleDelegate(
       (delegate) => delegate.configureSnapshotStore.bind(delegate),
       snapshotStore,
-      snapshotId,
+      storeId,
       data,
       events,
       dataItems,
@@ -3482,7 +3526,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     events: Record<string, CalendarManagerStoreClass<T, K>[]>,
     dataItems: RealtimeDataItem[],
     newData: Snapshot<T, K>, // New snapshot data
-    payload: ConfigureSnapshotStorePayload<T>,
+    payload: ConfigureSnapshotStorePayload<T, K>,
     store: SnapshotStore<any, K>, // New snapshot store after update
     callback: (snapshotStore: SnapshotStore<T, K>) => void
   ): void {
@@ -3575,7 +3619,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     snapshot: T | null,
     snapshotData: T,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T>,
     type: string,
@@ -3782,7 +3826,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
     storeIds: number[],
     snapshotId: string,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K>,
     timestamp: string | number | Date | undefined,
     type: string,
@@ -3947,7 +3991,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
       snapshotStore: SnapshotStore<T, K>,
       payloadData: T | Data,
       category: Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       timestamp: Date,
       data: T,
       delegate: SnapshotWithCriteria<T, K>[]
@@ -3977,7 +4021,7 @@ class SnapshotStore<T extends BaseData, K extends BaseData = T>
       return {
         id: fetchedSnapshot.id,
         category: fetchedSnapshot.category,
-        categoryProperties: categoryProperties,
+        categoryProperties: CategoryProperties | undefined,
         timestamp: fetchedSnapshot.timestamp,
         snapshot: fetchedSnapshot.snapshot,
         data: fetchedSnapshot.data as T,

@@ -24,7 +24,7 @@ import { useSecureUserId } from "../utils/useSecureUserId";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
-import { T, K, UpdateSnapshotPayload, snapshot } from "../snapshots";
+import { T, K, UpdateSnapshotPayload } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import appTreeApiService from "@/app/api/appTreeApi";
 import { getSnapshotId } from "@/app/api/SnapshotApi";

@@ -35,11 +35,11 @@ import { Member } from "./teams/TeamMembers";
 import { Tag } from "./tracker/Tag";
 import AccessHistory from "../versions/AccessHistory";
 import { T, TagsRecord } from "../snapshots";
-// Define a generic type for data
 
+// Define a generic type for data
 interface CommonData {
-  id: string | number;
   _id?: string;
+  id?: string | number | undefined;
   title?: string;
   type?: AllTypes;
 
@@ -56,7 +56,7 @@ interface CommonData {
   details?: DetailsItem<T>
   // data?: T extends CommonData<infer R> ? R : never;
   projectId?: string;
-  tags?: TagsRecord
+  tags?: TagsRecord | string[] | undefined; 
   categories?: string[];
   documentType?: string;
   documentStatus?: string;

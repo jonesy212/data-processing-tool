@@ -1,16 +1,18 @@
-import ProjectMetadata, { StructuredMetadata } from "../StructuredMetadata";
-
-
+import ProjectMetadata, { StructuredMetadata } from '../../../app/configs/StructuredMetadata';
+ 
 
   // Define the base interface
-interface BaseMetaDataOptions {
-  createdBy?: string;
-  createdAt?: Date;
-  updatedBy?: string;
-  updatedAt?: Date;
-  maxAge?: number | string;
-}
-
+  interface BaseMetaDataOptions extends StructuredMetadata {
+    id?: string;
+    title?: string;
+    description : string;
+    createdBy?: string;
+    createdAt?: Date;
+    updatedBy?: string;
+    updatedAt?: Date;
+    maxAge?: number | string;
+    timestamp?: Date;
+  }
 
 
          
@@ -38,6 +40,8 @@ interface AdditionalMetaDataOptions {
   staleWhileRevalidate?: number;
   eventRecords?: any[]; // Adjust the type based on what `eventRecords` should be
 }
+
+
 // Unified metadata interface
 interface UnifiedMetaDataOptions extends SnapshotMetaDataOptions, ProjectMetaDataOptions {}
 

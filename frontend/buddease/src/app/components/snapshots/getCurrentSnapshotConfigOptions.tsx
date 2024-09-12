@@ -1,4 +1,5 @@
 // getCurrentSnapshotConfigOptions.ts
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { IHydrateResult } from "mobx-persist";
 import { toast } from "react-toastify";
 import * as snapshotApi from '../../../app/api/SnapshotApi';
@@ -8,7 +9,7 @@ import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder"
 import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "../models/data/Data";
-import { NotificationPosition } from "../models/data/StatusType";
+import { NotificationPosition, StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -17,38 +18,38 @@ import { NotificationType, NotificationTypeEnum } from "../support/NotificationC
 import { createSnapshotStoreOptions } from "../typings/YourSpecificSnapshotType";
 import { Subscriber } from "../users/Subscriber";
 import { generateSnapshotId } from "../utils/snapshotUtils";
+import useSecureStoreId from "../utils/useSecureStoreId";
 import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "../utils/versionUtils";
 import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, K, T } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
-import { SnapshotData } from "./SnapshotData";
+import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 
 const snapshotContainer = new Map<string, SnapshotStore<T, K>>();
 
 export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
-  snapshotId: number | null,
+  snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
   category: symbol | string | Category | undefined,
-  categoryProperties: CategoryProperties,
+  categoryProperties: CategoryProperties | undefined,
   delegate: any,
   snapshotData: SnapshotStore<T, K>,
   snapshot: (
     id: string,
     snapshotId: string | null,
-    snapshotData: Snapshot<SnapshotWithCriteria<BaseData, any>, K> | null,
+    snapshotData: Snapshot<T, K> | null,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
-    callback: (snapshot: Snapshot<SnapshotWithCriteria<BaseData, any>, K> | null) => void,
+    categoryProperties: CategoryProperties | undefined,
+    callback: (snapshot: Snapshot<T, K> | null) => void,
+    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
   ) => Promise<Snapshot<T, K>>,
 
   initSnapshot: (
@@ -109,11 +110,12 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
   }
 
   // Ensure the return object conforms to SnapshotStoreConfig<Data, K>
-   const config: SnapshotStoreConfig<Data, K> = {
+   const config: SnapshotStoreConfig<T, K> = {
     mapSnapshots: (
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<Data, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -121,8 +123,8 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
       id: number,
       snapshotStore: SnapshotStore<Data, K>,
       data: Data
-    ): Promise<SnapshotsArray<Snapshot<any, BaseData>>> => {
-      return new Promise<SnapshotsArray<Snapshot<any, BaseData>>>((resolve, reject) => {
+    ): Promise<SnapshotsArray<T>> => {
+      return new Promise<SnapshotsArray<T>>((resolve, reject) => {
         try {
           // Validate inputs
           if (!storeIds || !snapshotId || !snapshot || !type || !event) {
@@ -200,37 +202,46 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
       snapshotData.id !== undefined && snapshotData.id !== null
         ? snapshotData.id.toString()
         : "",
-    snapshotStore: snapshotStoreConfig.snapshotStore,
+    snapshotStore: snapshotData.snapshotStore,
     snapshot: async (
       id: string,
       snapshotId: string | null,
-      snapshotData: Snapshot<SnapshotWithCriteria<BaseData, any>, K> | null,
+      snapshotData: Snapshot<T, K> | null,
       category: Category | undefined,
-      categoryProperties: CategoryProperties,
-      callback: (snapshot: Snapshot<SnapshotWithCriteria<BaseData, any>, K> | null) => void,
-      snapshotContainer?: Data | null | undefined,
-      snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<BaseData, any>, K>,
-    ) => {
-      return new Promise((resolve, reject) => {
+      categoryProperties: CategoryProperties | undefined,
+      callback: (snapshot: Snapshot<T, K> | null) => void,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null | undefined,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+    ): Promise<{ snapshot: Snapshot<T, K> | null }> => {
+      return new Promise(async (resolve, reject) => {
         try {
           // Use default value for `categoryProperties` if `category` is undefined
           const categoryProps = category || categoryProperties;
     
-          const snapshotContainer = snapshot(
+          const result =  snapshot(
             id,
             snapshotId,
             snapshotData,
             categoryProps,
             categoryProperties,
-            callback
+            callback,
+            snapshotContainer,
+            snapshotStoreConfigData
           );
-          if (snapshotContainer !== undefined) {
-            resolve(snapshotContainer);
-          } else {
-            reject(new Error("Snapshot container is undefined"));
-          }
+    
+          // If the result is a promise, handle the resolved value
+          Promise.resolve(result).then((resolvedResult) => {
+            if (resolvedResult) {
+              resolve({ snapshot: resolvedResult });
+            } else {
+              reject(new Error("Snapshot container is undefined"));
+            }
+          }).catch((error) => {
+            console.error("Error in snapshot operation:", error);
+            reject(error);
+          })
         } catch (error) {
-          console.error("Error fetching snapshot:", error);
+          console.error("Error in snapshot operation:", error);
           reject(error);
         }
       });
@@ -439,11 +450,58 @@ getSnapshots: async (
         console.error('Error adding snapshot to store:', error);
         throw new Error('Failed to add snapshot to store');
       }
-    },
+     },
+     
+     async getSnapshotById(
+       snapshot: (
+        id: string
+      ) => Promise<{
+        category: Category
+        timestamp: string | number | Date | undefined;
+        id: string | number | undefined;
+        snapshot: Snapshot<T, K>;
+        snapshotStore: SnapshotStore<T, K>;
+        data: T;
+      }> | undefined
+     ): Promise<{ snapshot: Snapshot<T, K> }> {
+       try {
+         // Find the snapshot by snapshotId
+         const snapshot = snapshotStore?.snapshots.find(s => s.id === snapshotId);
+         if (!snapshot) {
+           throw new Error(`Snapshot with ID ${snapshotId} not found`);
+         }
+         // Return the snapshot
+         return { snapshot };
+       } catch (error) {
+         // Handle errors appropriately
+         console.error('Error getting snapshot by ID:', error);
+         throw new Error('Failed to get snapshot by ID');
+       }
+     },
 
      getSnapshotByStoreId(
-      
-    )
+       storeId: number,
+       snapshotId: string
+     ): Promise<{ snapshot: Snapshot<Data, K> }> {
+       try {
+         // Find the snapshot store by storeId
+         const snapshotStore = this.getSnapshotStoreById(storeId);
+         if (!snapshotStore) {
+           throw new Error(`Snapshot store with ID ${storeId} not found`);
+         }
+         // Find the snapshot by snapshotId
+         const snapshot = snapshotStore.snapshots.find(s => s.id === snapshotId);
+         if (!snapshot) {
+           throw new Error(`Snapshot with ID ${snapshotId} not found in store with ID ${storeId}`);
+         }
+         // Return the snapshot
+         return { snapshot };
+       } catch (error) {
+         // Handle errors appropriately
+         console.error('Error getting snapshot by store ID:', error);
+         throw new Error('Failed to get snapshot by store ID');
+       }
+     },
 
     async takeSnapshot(snapshot: Snapshot<Data, K>): Promise<{ snapshot: Snapshot<Data, K> }> {
       try {
@@ -458,7 +516,7 @@ getSnapshots: async (
         const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId))
         const snapshotStore: SnapshotStore<T, K> = this.getSnapshotStoreById(storeId);
         const snapshotStoreData: SnapshotStore<T, K> = snapshotStore; // Example data
-        const category: string | CategoryProperties | undefined = "exampleCategory"; // Example category
+        const category: string | Category | undefined = "exampleCategory"; // Example category
         const subscribers: Subscriber<Data, CustomSnapshotData>[] = []; // Example subscribers
   
         // Add the snapshot to the store
@@ -476,8 +534,9 @@ getSnapshots: async (
   // Method to add a snapshot
   addSnapshot: (snapshot: T, subscribers: Subscriber<BaseData, K>[]): void => {
     try {
-      
-      const snapshotManager = await useSnapshotManager<T, K>();
+      const storeId = useSecureStoreId()
+      const snapshotManager = await useSnapshotManager<T, K>(Number(storeId));
+
       const snapshotStore = snapshotManager?.state;
       
       if (snapshotStore && snapshotStore.length > 0) {
@@ -504,25 +563,73 @@ getSnapshots: async (
                   metadata: {
                     // Your metadata properties here
                   } as K,
-                  mapSnapshot: function (id: number, snapshotId: string, snapshot: Snapshot<Data, K>, type: string, event: Event): Promise<Snapshot<T, K> | undefined> {
+                  mapSnapshot: function (
+                    id: number, 
+                    storeId: number,
+                    snapshotStore: SnapshotStore<T, K>,
+                    snapshotContainer: SnapshotContainer<T, K>,
+                    snapshotId: string,
+                    criteria: CriteriaType,
+                    snapshot: Snapshot<T, K>,
+                    type: string,
+                    event: Event
+                  ): Promise<Snapshot<T, K> | null | undefined> {
                     throw new Error('Function not implemented.');
                   },
-                  mapSnapshots: function (storeIds: number[], snapshotId: string, category: symbol | string | Category | undefined, snapshot: Snapshot<Data, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<Data, any>, data: Data): Promise<Snapshots<T>> {
+                  mapSnapshots: function (
+                    storeIds: number[],
+                    snapshotId: string,
+                    category: symbol | string | Category | undefined,
+                    categoryProperties: CategoryProperties | undefined,
+                    snapshot: Snapshot<T, K>,
+                    timestamp: string | number | Date | undefined,
+                    type: string,
+                    event: Event,
+                    id: number,
+                    snapshotStore: SnapshotStore<T, K>,
+                    data: T,
+                    callback: (
+                      storeIds: number[],
+                      snapshotId: string,
+                      category: symbol | string | Category | undefined,
+                      categoryProperties: CategoryProperties | undefined,
+                      snapshot: Snapshot<T, K>,
+                      timestamp: string | number | Date | undefined,
+                      type: string,
+                      event: Event,
+                      id: number,
+                      snapshotStore: SnapshotStore<T, K>,
+                      data: K,
+                      index: number
+                    ) => SnapshotsObject<T>
+                  ): SnapshotsObject<T> {
                     throw new Error('Function not implemented.');
                   },
-                  mapSnapshotStore: function (id: number): Promise<SnapshotStore<T, K> | undefined> {
+                  mapSnapshotStore: function (
+                    storeId: number,
+                    snapshotId: string,
+                    category: symbol | string | Category | undefined,
+                    categoryProperties: CategoryProperties | undefined,
+                    snapshot: Snapshot<any, any>,
+                    timestamp: string | number | Date | undefined,
+                    type: string,
+                    event: Event,
+                    id: number,
+                    snapshotStore: SnapshotStore<any, any>,
+                    data: any
+                  ): Promise<SnapshotContainer<T, K> | undefined> {
                     throw new Error('Function not implemented.');
                   },
                   addData: function (data: Snapshot<T, K>): void {
                     throw new Error('Function not implemented.');
                   },
-                  getData: function (id: number): Promise<SnapshotWithCriteria<T, K> | undefined> {
+                  getData: function (id: number): Promise<SnapshotStore<T, K>[]> {
                     throw new Error('Function not implemented.');
                   },
                   getStoreData: function (id: number): Promise<SnapshotStore<T, K>[]> {
                     throw new Error('Function not implemented.');
                   },
-                  getItem: function (id: string): Promise<Snapshot<T, K> | undefined> {
+                  getItem: function (key: T, id: number): Promise<Snapshot<T, K> | undefined> {
                     throw new Error('Function not implemented.');
                   },
                   removeData: function (id: number): void {
@@ -540,10 +647,10 @@ getSnapshots: async (
                   updateDataDescription: function (id: number, description: string): void {
                     throw new Error('Function not implemented.');
                   },
-                  addDataStatus: function (id: number, status: 'pending' | 'inProgress' | 'completed'): void {
+                  addDataStatus: function (id: number, status: StatusType | undefined): void {
                     throw new Error('Function not implemented.');
                   },
-                  updateDataStatus: function (id: number, status: 'pending' | 'inProgress' | 'completed'): void {
+                  updateDataStatus: function (id: number, status: StatusType | undefined): void {
                     throw new Error('Function not implemented.');
                   },
                   addDataSuccess: function (payload: { data: Snapshot<T, K>[]; }): void {
@@ -576,7 +683,12 @@ getSnapshots: async (
                   getAllItems: function (): Promise<Snapshot<T, K>[]> | undefined {
                     throw new Error('Function not implemented.');
                   },
-                  getDelegate: function (context: { useSimulatedDataSource: boolean; simulatedDataSource: SnapshotStoreConfig<Data, K>[]; }): Promise<SnapshotStoreConfig<Data, any>[]> {
+                  getDelegate: function (
+                    context: {
+                      useSimulatedDataSource: boolean; 
+                    simulatedDataSource: SnapshotStoreConfig<T, any>[];
+                  }
+                  ): Promise<SnapshotStoreConfig<T, any>[]> {
                     throw new Error('Function not implemented.');
                   },
                   updateDelegate: function (config: SnapshotStoreConfig<Data, K>[]): Promise<SnapshotStoreConfig<Data, K>[]> {
@@ -1031,7 +1143,7 @@ getSnapshots: async (
       category: any;
       timestamp: any; 
       id: any;
-      snapshot: Snapshot<Data, K>;
+      snapshot: Snapshot<T, K>;
       data: T
     }> | undefined
   ): Promise<Snapshot<T, K>> => {
@@ -1132,7 +1244,7 @@ getSnapshots: async (
     delegate: SnapshotWithCriteria<T, K>[] | null
   ): Promise<{
     id: any;
-    category: string | CategoryProperties | undefined;
+    category: string | Category | undefined;
     timestamp: any; 
     snapshot: Snapshot<Data, K>; 
     data: T;

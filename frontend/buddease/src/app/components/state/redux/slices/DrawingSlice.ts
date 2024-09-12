@@ -14,8 +14,6 @@ import {
 } from "./TrackerSlice";
 import { WritableDraft } from "../ReducerGenerator";
 import { DrawingActions } from "../../../actions/DrawingActions";
-import FileApiService, { fileApiService } from "@/app/api/ApiFiles";
-import { response } from "express";
 // Define interface for drawing state
 import { DragSourceHookSpec, DragSourceMonitor } from "react-dnd";
 import {
@@ -29,16 +27,111 @@ import * as drawingApi from "@/app/api/ApiDrawing";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
 import TextType from "@/app/components/documents/TextType";
 import { CalendarActions } from "@/app/components/actions/CalendarEventActions";
+import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { Content } from "@/app/components/models/content/AddContent";
+import { ContentItem } from "../../stores/ContentStore";
+import FileData from "@/app/components/models/data/FileData";
+
+interface Guide {
+  id: string;               // Unique identifier for the guide
+  type: 'horizontal' | 'vertical'; // Type of the guide (horizontal or vertical)
+  position: number;         // Position of the guide on the canvas (in pixels)
+  color?: string;           // Optional color for the guide line
+  x: number,
+  y: number,
+  label: string        // Array to store guides
+}
+
+
+interface Stroke {
+  width: number;            // Width of the stroke in pixels
+  color: string;            // Color of the stroke (e.g., hex, RGB)
+  style?: 'solid' | 'dashed' | 'dotted'; // Optional stroke style
+}
+
+interface LayerEffect {
+  effectType: string;        // Type of the effect (e.g., 'blur', 'shadow')
+  options: object;           // Options specific to the effect (e.g., intensity, color)
+}
+
+interface Layer extends DrawingOptions {
+  id: string;               // Unique identifier for the layer
+  name: string;             // Name of the layer
+  visible: boolean;         // Whether the layer is currently visible
+  locked: boolean;          // Whether the layer is locked for editing
+  groupId?: string; // Optional group identifier for layers
+ 
+  content: any[];           // Content of the layer, such as drawings or text
+  effects: LayerEffect[];   // List of effects applied to the layer
+  blendMode: BlendMode // Blend mode
+}
+
+
+interface Shape {
+  id: string;                      // Unique identifier for the shape
+  x: number;                       // X position of the shape
+  y: number;                       // Y position of the shape
+  width: number;
+  height: number;
+  fillColor: string;
+  flippedX?: boolean;
+  flippedY?: boolean; // Define additional shape properties as needed
+}
+
+
+interface DrawingOptions {
+  opacity: number;
+  // Add any other shared properties here
+}
+
+
+interface BrushOptions extends DrawingOptions {
+  size: number;           // Size of the brush in pixels       // Opacity of the brush (0 to 1)
+  hardness: number;      // Hardness of the brush (0 to 1)
+  texture: string;       // Path or identifier for the brush texture
+  color: string;         // Color of the brush (e.g., hex color code)
+  brushType: string; 
+}
+
+
+interface Brush {
+  id: string;            // Unique identifier for the brush
+  name: string;          // Name of the brush
+  options: BrushOptions; // Options for configuring the brush
+  texture: string;       // Texture applied to the brush, e.g., 'grainy', 'smooth', or a file path
+}
+
+interface DrawingElement {
+  type: string;       // Type of the drawing element (e.g., 'circle', 'line')
+  coordinates: { x: number; y: number }; // Position on the canvas
+  width: number,
+  height: number
+}
+
+
+interface DrawingTemplate {
+  id: string;               // Unique identifier for the template
+  name: string;             // Name of the template
+  description?: string;     // Optional description of the template
+  imageUrl?: string;        // Optional URL to an image representing the template
+  elements: any[];          // List of elements or patterns included in the template
+  content: Content<DrawingElement>
+}
+
+type TrackerDrawingElement = Tracker & DrawingElement;
+
+
 // Define interface for drawing state
 interface DrawingState {
   id: string;
+
   selectedDrawingId: number | null;
   isDrawing: boolean;
   beginDrag: {
     x: number;
     y: number;
   } | null;
-  drawingContent: Tracker[];
+  drawingContent: TrackerDrawingElement[];
   activeTool: string | null;
   beginText: {
     x: number;
@@ -63,10 +156,63 @@ interface DrawingState {
   };
   trackers: Tracker[];
   selectedTrackers: Tracker[];
+  clipboard: any[];           // Array to store copied elements
+ 
+  smoothingEnabled: boolean; // Boolean to track if brush smoothing is enabled
+  snapToObjectsEnabled: boolean; // Boolean to track if snap to objects is enabled
+  collaborativeDrawing: boolean; // Boolean to track if collaborative drawing is active
+  collaborativeEdit: boolean;    // Boolean to track if collaborative editing is active
+  canvasPosition: { x: number; y: number }; // Position of the canvas
+ 
+ 
+  undoStack: any[];        // Stack to store undone actions
+  redoStack: any[];        // Stack to store redone actions
+
   milestones: Milestone[];
+   // New properties
+   guides: Guide[];             // List of guides used for drawing alignment
+   layers: Layer[];             // List of drawing layers
+   canvasResolution: {
+     width: number;
+     height: number;
+   };                           // Resolution of the canvas
+   stroke: Stroke;              // Current stroke settings
+   brushes: Brush[];            // List of available brushes
+   templates: DrawingTemplate[]; // List of drawing templates
+   gridSize: number;  
+   canvasWidth: number;     // Canvas width
+   canvasHeight: number;    // Canvas height
+
+
+   selectedShapes: any[];   // Array to store currently selected shapes
+   selectedColor: string;   // Currently selected color
+   selectedLayerId: string | null; // ID of the selected layer
+   selectedTool: string;    // Currently selected tool
+   canvasBackground: string; // Background color or image of the canvas
+
+
+   pressureSensitivity: boolean; // Whether pressure sensitivity is enabled
+   shared: boolean;             // Whether the drawing is shared
+   snappingToGrid: boolean;     // Whether snapping to the grid is enabled
+ 
+
+   isCollaborativeDrawing: boolean; // Whether collaborative drawing is active
+   isCollaborativeEditing: boolean; // Whether collaborative editing is active
+   isGridViewEnabled: boolean;      // Whether the grid view is enabled
+ 
+
+   isGridVisible: boolean;      // Whether the grid is visible
+   areGuidesVisible: boolean;   // Whether guides are visible
+   history: any[];              // History stack for undo operations
+   currentState: any; 
+   zoomLevel: number;      // Current zoom level of the canvas
+
   // Define drawing-related state properties here
 }
 
+
+
+type BlendMode = "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten";
 // Define initial state
 const initialState: DrawingState = {
   id: "",
@@ -90,8 +236,34 @@ const initialState: DrawingState = {
   selectedDrawingId: null,
   trackers: [],
   selectedTrackers: [],
+  clipboard: [],
+ 
   milestones: [],
-  selectedText: null
+  selectedText: null,
+
+    layers: [],
+    guides: [],
+    canvasWidth: 800,     // Default canvas width
+    canvasHeight: 600,    // Default canvas height
+      smoothingEnabled: false,
+  snapToObjectsEnabled: false,
+  collaborativeDrawing: false,
+  collaborativeEdit: false,
+
+  pressureSensitivity: false,
+  shared: false,
+  snappingToGrid: false,
+
+  isCollaborativeDrawing: false,
+  isCollaborativeEditing: false,
+  isGridViewEnabled: false,
+
+  isGridVisible: false,
+  areGuidesVisible: true,
+  history: [],
+  currentState: null,
+  zoomLevel: 1, // Default zoom level
+
 };
 
 export const setIsDrawing = (isDrawing: boolean) => ({
@@ -211,6 +383,60 @@ const updateUIAfterDrawingSessionEnd = async () => {
     console.error("Error: Unable to retrieve file data from the response.");
   }
 };
+
+
+
+// Thunk to create milestones for trackers
+export const createMilestoneForTrackers = (trackers: Tracker[]) => (dispatch: any) => {
+  trackers.forEach((tracker) => {
+    const milestone: Milestone = {
+      id: "milestone-" + tracker.id,
+      title: "Milestone for " + tracker.name,
+      date: new Date(),
+      dueDate: null,
+      startDate: null,
+    };
+    dispatch(createMilestone(milestone));  // Assuming createMilestone is an action
+  });
+};
+
+
+
+
+
+// Example transformation function from ContentItem to Tracker
+const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDrawingElement> => {
+  return {
+    id: item.id,
+    name: item.type, // Example: Using 'type' as 'name'
+    phases: [], // Initialize with empty or default phases
+    trackFileChanges: (file: FileData) => {
+      // Default function implementation, you can customize this
+      // Assuming you have a method to update the file's metadata or state
+      updateFileMetadata(file.id, {
+        lastModified: new Date(),
+      });
+
+      // Trigger any other necessary updates, like refreshing the UI
+      refreshUIForFile(file.id);
+
+      console.log(`Tracking file changes for file: ${file.name}`);
+    },
+    trackFolderChanges: (fileLoader: FileData) => {
+      // Example: Log the change and refresh folder contents
+      console.log(`Folder ${fileLoader.name} has been updated.`);
+    
+      // Assuming you have a method to update folder's contents or state
+      refreshFolderContents(fileLoader.id);
+    
+      // Trigger any other necessary updates, like syncing with a server
+      syncFolderWithServer(fileLoader.id);
+    },
+    stroke: item.data, // Assume 'data' contains stroke information
+};
+};
+
+
 
 // Create drawing slice
 const dispatch = useDispatch();
@@ -448,6 +674,25 @@ export const useDrawingManagerSlice = createSlice({
       state.selectedTextId = action.payload.id;
     },
 
+    resetTrackers: (
+      state,
+      action: PayloadAction<{ trackers: Tracker[] }>) => {
+      const { trackers } = action.payload;
+      
+      state.trackers = [];
+      state.selectedTrackers = [];
+    },
+
+    resetMilestones(state) {
+      state.milestones = [];
+    },
+
+    createMilestone(state, action: PayloadAction<Milestone>) {
+      // Logic to add the milestone to the state
+      // For example:
+      state.milestones.push(action.payload); // Assuming state has a milestones array
+    },
+
     activateTextTool: (state, action: PayloadAction<DrawingState>) => {
       const { payload } = action;
       const { beginText } = payload;
@@ -518,7 +763,7 @@ export const useDrawingManagerSlice = createSlice({
               onDragStart,
               onDragMove,
               onDragEnd,
-              text: state.selectedText || "",
+              text: state.selectedText ? String(state.selectedText) : "", // Convert to string
             });
             const handleMouseDown = (e: MouseEvent) =>
               beginText({ x: e.clientX, y: e.clientY });
@@ -536,54 +781,967 @@ export const useDrawingManagerSlice = createSlice({
           }
         }, [beginText, drawingId, state.selectedText]);
       };
-    },
 
-    resetTrackers: (
-      state,
-      action: PayloadAction<{ trackers: Tracker[] }>) => {
-      const { trackers } = action.payload;
-      
-      state.trackers = [];
-      state.selectedTrackers = [];
-    },
+      const onDragStart = () => {
+        // Set drawing state to true
+        state.isDrawing = true;
 
-    resetMilestones(state) {
-      state.milestones = [];
-    },
-
-    createMilestoneForTrackers(
-      trackers: Tracker[],
-      state: WritableDraft<DrawingState>
-    ) {
-      return (dispatch: any) => {
-        // Logic to create milestones based on trackers
-        // For example:
-        trackers.forEach((tracker) => {
-          const milestone: Milestone = {
-            id: "milestone-" + tracker.id,
-            title: "Milestone for " + tracker.name,
-            date: new Date(),
-            dueDate: null
-          };
-          dispatch(createMilestone(milestone));
-        });
-      };
-    },
-
-    // Add more reducers as needed
-  },
-  extraReducers: (builder) => {
-    // Add extra reducers to handle the result of autosaveDrawingAsync
-    builder.addCase(autosaveDrawingAsync.fulfilled, (state, action) => {
-      // Handle the fulfilled action, which contains the autosave success result
-      const autosaveSuccess = action.payload;
-
-      // Perform any necessary actions based on the autosave result
-      if (autosaveSuccess) {
-        updateUIAfterDrawingSessionEnd();
       }
-    });
+
+      const onDragMove = () => {
+        // Keep dragging state as true during movement
+        if (state.isDragging) {
+          // You can add more logic here if needed
+        }
+      }
+
+      const onDragEnd = () => {
+        // Reset dragging state to false
+        state.isDragging = false;
+      }
+    },
+
+
+
+    addGuide: (
+      state: WritableDraft<{ guides: Guide[] }>,
+      action: PayloadAction<{
+        id: string;
+        x: number;
+        y: number;
+        label: string;
+        type: 'horizontal' | 'vertical'; // Ensure the correct type is provided here
+        position: number;                // Ensure the position is provided
+      }>
+    ) => {
+      const { id, x, y, label, type, position } = action.payload;
+
+      state.guides.push({
+        id,
+        x,
+        y,
+        label,
+        type,
+        position,
+        color: undefined, // or any default value if needed
+      });
+    },
+
+    addLayerEffect(state, action: PayloadAction<{ id: string; effectType: string; options: object }>) {
+      const { id, effectType, options } = action.payload;
+      const layer = state.layers.find(layer => layer.id === id);
+      if (layer) {
+        layer.effects.push({
+          effectType,
+          options,
+        });
+      }
+    },
+
+    adjustCanvasResolution(state, action: PayloadAction<{ width: number; height: number }>) {
+      const { width, height } = action.payload;
+      state.canvasResolution = { width, height };
+    },
+
+    adjustStroke(state, action: PayloadAction<{ id: string; width: number; color: string }>) {
+      const { id, width, color } = action.payload;
+      const drawingElement = state.drawingContent.find(element => element.id === id);
+      if (drawingElement) {
+        drawingElement.stroke = { width, color };
+      }
+    },
+
+    applyBlendMode(state, action: PayloadAction<{ id: string; blendMode: BlendMode }>) {
+      const { id, blendMode } = action.payload;
+      const layer = state.layers.find(layer => layer.id === id);
+      if (layer) {
+        layer.blendMode = blendMode;
+      }
+    },
+
+
+    applyBrushTexture(state, action: PayloadAction<{ id: string; texture: string }>) {
+      const { id, texture } = action.payload;
+      const brush = state.brushes.find(brush => brush.id === id);
+      if (brush) {
+        brush.texture = texture;
+      }
+    },
+
+
+    applyCollaborativeEdits(state, action: PayloadAction<{ edits: any[] }>) {
+      const { edits } = action.payload;
+      // Apply the collaborative edits to the drawing state
+      edits.forEach(edit => {
+        // Assuming `edit` contains information on what to modify
+        const element = state.drawingContent.find(element => element.id === edit.id);
+        if (element) {
+          Object.assign(element, edit.changes);
+        }
+      });
+    },
+
+    
+    // Apply the transformation in your reducer
+    applyDrawingTemplate(state, action: PayloadAction<{ templateId: string }>) {
+      const { templateId } = action.payload;
+      const template = state.templates.find(t => t.id === templateId);
+      if (template) {
+        // Transform ContentItem[] to Tracker[]
+        state.drawingContent = template.content.items.map(convertContentItemToTracker);
+      }
+    },
+
+    changeGridSize(state, action: PayloadAction<{ gridSize: number }>) {
+      const { gridSize } = action.payload;
+      state.gridSize = gridSize;
+    },
+
+    clearCanvas(state) {
+      state.drawingContent = [];
+      state.isDrawing = false;
+      // Additional state resets if necessary
+    },
+
+    clearHistory(state) {
+      state.history = []; // Clear undo/redo history
+      state.redoStack = []; // Clear redo stack
+    },
+
+    // Copy Selection
+    copySelection(state) {
+      if (state.selectedTrackers.length > 0) {
+        state.clipboard = state.selectedTrackers.map(tracker => ({ ...tracker }));
+      }
+    },
+
+    // Create Layer
+    createLayer(state, action: PayloadAction<{ name: string }>) {
+      const { name } = action.payload;
+      const newLayer: Layer = {
+        id: `layer_${Date.now()}`, // Generate a unique ID
+        name,
+        visible: true,
+        locked: false,
+        content: [],
+        effects: [],
+        blendMode: 'normal', // Assuming 'normal' as default blend mode
+        opacity: 80
+      };
+      state.layers.push(newLayer);
+    },
+
+    
+    cutSelection: (state) => {
+      // Logic to cut the selected drawing content
+      // For example:
+      state.drawingContent = [];
+    },
+
+
+    // Delete Selection
+    deleteSelection(state) {
+      if (state.selectedTrackers.length > 0) {
+        state.drawingContent = state.drawingContent.filter(
+          element => !state.selectedTrackers.includes(element)
+        );
+        state.selectedTrackers = []; // Clear the selection after deletion
+      }
+    },
+
+    // Deselect All Shapes
+    deselectAllShapes(state) {
+      state.selectedTrackers = []; // Clear all selections
+    },
+
+
+       // Draw Shape
+       drawShape(state, action: PayloadAction<{ shape: any; layerId: string }>) {
+        const { shape, layerId } = action.payload;
+        const layer = state.layers.find(layer => layer.id === layerId);
+        if (layer) {
+          layer.content.push(shape);
+          state.drawingContent.push(shape);
+        }
+      },
+  
+      // Duplicate Layer
+      duplicateLayer(state, action: PayloadAction<{ layerId: string }>) {
+        const { layerId } = action.payload;
+        const layer = state.layers.find(layer => layer.id === layerId);
+        if (layer) {
+          const newLayer = {
+            ...layer,
+            id: `layer_${Date.now()}`, // Generate a unique ID for the new layer
+            name: `${layer.name}_copy`, // Append '_copy' to the layer's name
+            content: [...layer.content], // Copy the content array
+          };
+          state.layers.push(newLayer);
+        }
+      },
+  
+      // Duplicate Shape
+      duplicateShape(state, action: PayloadAction<{ shapeId: string }>) {
+        const {shapeId} = action.payload;
+        const shape = state.drawingContent.find(element => element.id === shapeId);
+        if (shape) {
+          const newShape = {
+            ...shape,
+            id: `shape_${Date.now()}`, // Generate a unique ID for the new shape
+          };
+          state.drawingContent.push(newShape);
+  
+          // Optionally, add to the relevant layer if shape tracking is needed
+          const layer = state.layers.find(layer => layer.content.includes(shape));
+          if (layer) {
+            layer.content.push(newShape);
+          }
+        }
+      },
+  
+      // Enable Brush Smoothing
+      enableBrushSmoothing(state, action: PayloadAction<{ enabled: boolean }>) {
+        state.smoothingEnabled = action.payload.enabled;
+      },
+
+
+          // Enable Snap to Objects
+    enableSnapToObjects(state, action: PayloadAction<{ enabled: boolean }>) {
+      state.snapToObjectsEnabled = action.payload.enabled;
+    },
+
+    // End Collaborative Drawing
+    endCollaborativeDrawing(state) {
+      state.collaborativeDrawing = false;
+      // Additional logic to finalize or clean up collaborative drawing state
+    },
+
+    // End Collaborative Edit
+    endCollaborativeEdit(state) {
+      state.collaborativeEdit = false;
+      // Additional logic to finalize or clean up collaborative edit state
+    },
+
+    // Erase Shape
+    eraseShape(state, action: PayloadAction<{ shapeId: string }>) {
+      const { shapeId } = action.payload;
+      // Remove shape from drawingContent
+      state.drawingContent = state.drawingContent.filter(shape => shape.id !== shapeId);
+      
+      // Also remove shape from relevant layers
+      state.layers.forEach(layer => {
+        layer.content = layer.content.filter(shape => shape.id !== shapeId);
+      });
+      
+      // Optionally, remove shape from selectedTrackers if applicable
+      state.selectedTrackers = state.selectedTrackers.filter(tracker => tracker.id !== shapeId);
+    },
+
+
+
+
+     // Export Drawing
+     exportDrawing(state, action: PayloadAction<{ format: 'png' | 'jpg' | 'pdf' }>) {
+      const { format } = action.payload;
+      // Logic to export the drawing content to the specified format
+      // For example, this could involve converting the canvas content to an image or PDF file
+      console.log(`Exporting drawing as ${format}`);
+      // Example logic might involve calling a function to convert the canvas content to the specified format
+    },
+
+    // Fill Shape
+    fillShape(state, action: PayloadAction<{ shapeId: string; color: string }>) {
+      const { shapeId, color } = action.payload;
+      // Find the shape in drawingContent and update its fillColor
+      const shape = state.drawingContent.find(shape => shape.id === shapeId);
+      if (shape) {
+        shape.fillColor = color;
+      }
+    },
+
+    // Flatten Drawing
+    flattenDrawing(state) {
+      // Logic to flatten the drawing layers into a single layer or image
+      // This might involve merging all layers into one and updating the state
+      console.log('Flattening drawing');
+      state.layers = [{
+        id: 'flattened-layer',
+        name: 'Flattened Layer',
+        visible: true,
+        locked: false,
+        content: [...state.drawingContent],
+        effects: [],
+        blendMode: 'normal',
+        opacity: 50
+      }];
+      state.drawingContent = [];
+    },
+
+    // Flip Shape X
+    flipShapeX(state, action: PayloadAction<{ shapeId: string }>) {
+      const { shapeId } = action.payload;
+      // Find the shape in drawingContent and update its flippedX property
+      const shape = state.drawingContent.find(shape => shape.id === shapeId);
+      if (shape) {
+        shape.flippedX = !shape.flippedX;
+        // Apply transformation logic if needed
+      }
+    },
+
+    // Flip Shape Y
+    flipShapeY(state, action: PayloadAction<{ shapeId: string }>) {
+      const { shapeId } = action.payload;
+      // Find the shape in drawingContent and update its flippedY property
+      const shape = state.drawingContent.find(shape => shape.id === shapeId);
+      if (shape) {
+        shape.flippedY = !shape.flippedY;
+        // Apply transformation logic if needed
+      }
+    },
+
+
+    // Group Layers
+    groupLayers(state, action: PayloadAction<{ layerIds: string[]; groupName: string }>) {
+      const { layerIds, groupName } = action.payload;
+      // Find layers to group
+      const layersToGroup = state.layers.filter(layer => layerIds.includes(layer.id));
+      if (layersToGroup.length > 0) {
+        // Create a new layer group
+        const newGroup: Layer = {
+          id: `group-${new Date().getTime()}`,
+          name: groupName,
+          visible: true,
+          locked: false,
+          content: layersToGroup.flatMap(layer => layer.content),
+          effects: [], // Optionally merge or apply group-specific effects
+          blendMode: 'normal', // Default blend mode for the group
+          opacity: 50
+        };
+        // Remove the original layers and add the new group
+        state.layers = state.layers.filter(layer => !layerIds.includes(layer.id));
+        state.layers.push(newGroup);
+      }
+    },
+
+    // Hide Layer
+    hideLayer(state, action: PayloadAction<{ id: string }>) {
+      const { id } = action.payload;
+      const layer = state.layers.find(layer => layer.id === id);
+      if (layer) {
+        layer.visible = false;
+      }
+    },
+
+    // Import Drawing
+    importDrawing(state, action: PayloadAction<{ drawing: any[] }>) {
+      const { drawing } = action.payload;
+      // Logic to import a drawing into the current state
+      // Example: Clear existing drawing content and add imported drawing
+      state.drawingContent = [...drawing];
+      // Optionally, merge imported layers into the existing layers
+      // Example: Assume each item in `drawing` is a layer for simplicity
+      // You might need more complex merging depending on your use case
+      state.layers = state.layers.concat(drawing.map(d => ({
+        id: `imported-${d.id}`,
+        name: `Imported ${d.name || 'Layer'}`,
+        visible: true,
+        locked: false,
+        content: d.content,
+        effects: d.effects || [],
+        blendMode: d.blendMode || 'normal',
+        opacity: 75
+      })));
+    },
+
+
+    // Import Drawing From File
+    importDrawingFromFile(state, action: PayloadAction<{ file: File }>) {
+      const { file } = action.payload;
+      
+      // Create a new FileReader to read the file content
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          try {
+            // Parse the file content as JSON
+            const importedData = JSON.parse(e.target.result as string);
+            
+            // Assuming the file contains drawing content and layers
+            state.drawingContent = importedData.drawingContent || [];
+            state.layers = importedData.layers || [];
+          } catch (error) {
+            console.error('Failed to parse imported drawing data:', error);
+          }
+        }
+      };
+      
+      reader.readAsText(file);
+    },
+
+    // Invert Selection
+    invertSelection(state) {
+      // Logic to invert selection
+      // Assuming selectedTrackers represent selected elements
+      const allElements = state.drawingContent; // or any other collection of elements
+      const selectedElementIds = new Set(state.selectedTrackers.map(tracker => tracker.id));
+      
+      state.selectedTrackers = allElements.filter(element => !selectedElementIds.has(element.id));
+    },
+
+    // Lock Layer
+    lockLayer(state, action: PayloadAction<{ id: string }>) {
+      const { id } = action.payload;
+      const layer = state.layers.find(layer => layer.id === id);
+      if (layer) {
+        layer.locked = true;
+      }
+    },
+
+
+        // Merge All Layers
+        mergeAllLayers(state) {
+          if (state.layers.length === 0) return;
+    
+          // Combine all layers into a single layer
+          const mergedLayerContent = state.layers.reduce((acc, layer) => {
+            if (!layer.locked) {
+              acc.push(...layer.content);
+            }
+            return acc;
+          }, [] as any[]);
+    
+          // Update drawingContent with merged content
+          state.drawingContent = mergedLayerContent;
+    
+          // Clear layers
+          state.layers = [{
+            id: 'mergedLayer',
+            name: 'Merged Layer',
+            visible: true,
+            locked: false,
+            content: mergedLayerContent,
+            effects: [],
+            blendMode: 'normal',
+            opacity: 100
+          }];
+        },
+    
+        // Merge Specific Layers
+        mergeLayers(state, action: PayloadAction<{ layerIds: string[] }>) {
+          const { layerIds } = action.payload;
+          const layersToMerge = state.layers.filter(layer => layerIds.includes(layer.id));
+          
+          if (layersToMerge.length === 0) return;
+    
+          // Combine selected layers into a new layer
+          const mergedLayerContent = layersToMerge.reduce((acc, layer) => {
+            if (!layer.locked) {
+              acc.push(...layer.content);
+            }
+            return acc;
+          }, [] as any[]);
+    
+          // Remove merged layers and add new merged layer
+          state.layers = state.layers.filter(layer => !layerIds.includes(layer.id));
+          state.layers.push({
+            id: 'mergedLayer',
+            name: `Merged Layer (${layerIds.join(', ')})`,
+            visible: true,
+            locked: false,
+            content: mergedLayerContent,
+            effects: [],
+            blendMode: 'normal',
+            opacity: 100
+          });
+        },
+    
+        // Move Shape
+        moveShape(state, action: PayloadAction<{ id: string; dx: number; dy: number }>) {
+          const { id, dx, dy } = action.payload;
+          const shape = state.drawingContent.find(shape => shape.id === id);
+    
+          if (shape) {
+            shape.x += dx;
+            shape.y += dy;
+          }
+        },
+    
+        // Pan Canvas
+        panCanvas(state, action: PayloadAction<{ dx: number; dy: number }>) {
+          const { dx, dy } = action.payload;
+          state.canvasPosition.x += dx;
+          state.canvasPosition.y += dy;
+        },
+
+
+
+
+         // Paste Selection
+        pasteSelection(state) {
+          const lastCopiedSelection = state.selectedTrackers;
+          if (lastCopiedSelection.length > 0) {
+            // Create a new array of copied elements to avoid reference issues
+            const newElements = lastCopiedSelection.map(element => ({
+              ...element,
+              id: `new_${element.id}`, // Ensure new ID for pasted elements
+              x: element.x + 10, // Offset position for visual distinction
+              y: element.y + 10,
+            }));
+
+            state.drawingContent.push(...newElements);
+
+            // Save the action to the undo stack
+            state.undoStack.push({
+              action: 'pasteSelection',
+              elements: newElements,
+            });
+
+            // Clear the redo stack since a new action has been performed
+            state.redoStack = [];
+          }
+        },
+
+        // Redo Action
+        redoAction(state) {
+          if (state.redoStack.length === 0) return;
+
+          const lastRedoAction = state.redoStack.pop();
+
+          if (lastRedoAction) {
+            switch (lastRedoAction.action) {
+              case 'pasteSelection':
+                state.drawingContent.push(...lastRedoAction.elements);
+                state.undoStack.push(lastRedoAction);
+                break;
+
+              // Handle other actions if needed
+            }
+          }
+        },
+
+        // Redo History Action
+        redoHistoryAction(state) {
+          // Assuming redoHistoryAction redoes the last undone action
+          if (state.undoStack.length === 0) return;
+
+          const lastUndoAction = state.undoStack.pop();
+
+          if (lastUndoAction) {
+            switch (lastUndoAction.action) {
+              case 'pasteSelection':
+                state.drawingContent = state.drawingContent.filter(
+                  (element: TrackerDrawingElement) => 
+                    !lastUndoAction.elements.some((e: TrackerDrawingElement) => e.id === element.id)
+                );
+                state.redoStack.push(lastUndoAction);
+                break;
+
+              // Handle other actions if needed
+            }
+          }
+        },
+
+        // Remove Guide
+        removeGuide(state, action: PayloadAction<{ id: string }>) {
+          const { id } = action.payload;
+          state.guides = state.guides.filter(guide => guide.id !== id);
+    
+          // Save the action to the undo stack
+          state.undoStack.push({
+            action: 'removeGuide',
+            id,
+          });
+    
+          // Clear the redo stack since a new action has been performed
+          state.redoStack = [];
+        },
+    
+        // Remove Layer
+        removeLayer(state, action: PayloadAction<{ id: string }>) {
+          const { id } = action.payload;
+          const removedLayer = state.layers.find(layer => layer.id === id);
+          if (removedLayer) {
+            state.layers = state.layers.filter(layer => layer.id !== id);
+    
+            // Remove all content associated with the removed layer
+            state.drawingContent = state.drawingContent.filter(
+              element => !removedLayer.content.some(e => e.id === element.id)
+            );
+    
+            // Save the action to the undo stack
+            state.undoStack.push({
+              action: 'removeLayer',
+              layer: removedLayer,
+            });
+    
+            // Clear the redo stack since a new action has been performed
+            state.redoStack = [];
+          }
+        },
+    
+        // Reorder Layer
+        reorderLayer(state, action: PayloadAction<{ id: string; newIndex: number }>) {
+          const { id, newIndex } = action.payload;
+          const currentIndex = state.layers.findIndex(layer => layer.id === id);
+    
+          if (currentIndex !== -1 && newIndex >= 0 && newIndex < state.layers.length) {
+            const [layer] = state.layers.splice(currentIndex, 1);
+            state.layers.splice(newIndex, 0, layer);
+    
+            // Save the action to the undo stack
+            state.undoStack.push({
+              action: 'reorderLayer',
+              id,
+              fromIndex: currentIndex,
+              toIndex: newIndex,
+            });
+    
+            // Clear the redo stack since a new action has been performed
+            state.redoStack = [];
+          }
+        },
+
+
+
+
+         // Resize Canvas
+    resizeCanvas(state, action: PayloadAction<{ width: number; height: number }>) {
+      const { width, height } = action.payload;
+      state.canvasWidth = width;
+      state.canvasHeight = height;
+
+      // Save the action to the undo stack
+      state.undoStack.push({
+        action: 'resizeCanvas',
+        previousSize: {
+          width: state.canvasWidth,
+          height: state.canvasHeight,
+        },
+        newSize: {
+          width,
+          height,
+        },
+      });
+
+      // Clear the redo stack since a new action has been performed
+      state.redoStack = [];
+    },
+
+    // Resize Shape
+    resizeShape(state, action: PayloadAction<{ id: string; width: number; height: number }>) {
+      const { id, width, height } = action.payload;
+      const shape = state.drawingContent.find(shape => shape.id === id);
+      if (shape) {
+        shape.width = width;
+        shape.height = height;
+
+        // Save the action to the undo stack
+        state.undoStack.push({
+          action: 'resizeShape',
+          id,
+          previousDimensions: {
+            width: shape.width,
+            height: shape.height,
+          },
+          newDimensions: {
+            width,
+            height,
+          },
+        });
+
+        // Clear the redo stack since a new action has been performed
+        state.redoStack = [];
+      }
+    },
+
+    // Rotate Shape
+    rotateShape(state, action: PayloadAction<{ id: string; angle: number }>) {
+      const { id, angle } = action.payload;
+      const shape = state.drawingContent.find(shape => shape.id === id);
+      if (shape) {
+        shape.rotation = angle;
+
+        // Save the action to the undo stack
+        state.undoStack.push({
+          action: 'rotateShape',
+          id,
+          previousRotation: shape.rotation,
+          newRotation: angle,
+        });
+
+        // Clear the redo stack since a new action has been performed
+        state.redoStack = [];
+      }
+    },
+
+    // Save Drawing
+    saveDrawing(state, action: PayloadAction<{ drawingData: any }>) {
+      const { drawingData } = action.payload;
+
+      // Save drawing data to local storage or any persistence mechanism
+      localStorage.setItem('savedDrawing', JSON.stringify(drawingData));
+
+      // Save the action to the undo stack
+      state.undoStack.push({
+        action: 'saveDrawing',
+        drawingData,
+      });
+
+      // Clear the redo stack since a new action has been performed
+      state.redoStack = [];
+    },
+  
+       // Resize Canvas
+       resizeCanvas(state, action: PayloadAction<{ width: number; height: number }>) {
+        const { width, height } = action.payload;
+        state.canvasWidth = width;
+        state.canvasHeight = height;
+  
+        // Save the action to the undo stack
+        state.undoStack.push({
+          action: 'resizeCanvas',
+          previousSize: {
+            width: state.canvasWidth,
+            height: state.canvasHeight,
+          },
+          newSize: {
+            width,
+            height,
+          },
+        });
+  
+        // Clear the redo stack since a new action has been performed
+        state.redoStack = [];
+      },
+  
+      // Resize Shape
+      resizeShape(state, action: PayloadAction<{ id: string; width: number; height: number }>) {
+        const { id, width, height } = action.payload;
+        const shape = state.drawingContent.find(shape => shape.id === id);
+        if (shape) {
+          shape.width = width;
+          shape.height = height;
+  
+          // Save the action to the undo stack
+          state.undoStack.push({
+            action: 'resizeShape',
+            id,
+            previousDimensions: {
+              width: shape.width,
+              height: shape.height,
+            },
+            newDimensions: {
+              width,
+              height,
+            },
+          });
+  
+          // Clear the redo stack since a new action has been performed
+          state.redoStack = [];
+        }
+      },
+  
+      // Rotate Shape
+      rotateShape(state, action: PayloadAction<{ id: string; angle: number }>) {
+        const { id, angle } = action.payload;
+        const shape = state.drawingContent.find(shape => shape.id === id);
+        if (shape) {
+          shape.rotation = angle;
+  
+          // Save the action to the undo stack
+          state.undoStack.push({
+            action: 'rotateShape',
+            id,
+            previousRotation: shape.rotation,
+            newRotation: angle,
+          });
+  
+          // Clear the redo stack since a new action has been performed
+          state.redoStack = [];
+        }
+      },
+  
+      // Save Drawing
+      saveDrawing(state, action: PayloadAction<{ drawingData: any }>) {
+        const { drawingData } = action.payload;
+  
+        // Save drawing data to local storage or any persistence mechanism
+        localStorage.setItem('savedDrawing', JSON.stringify(drawingData));
+  
+        // Save the action to the undo stack
+        state.undoStack.push({
+          action: 'saveDrawing',
+          drawingData,
+        });
+  
+        // Clear the redo stack since a new action has been performed
+        state.redoStack = [];
+      },
+
+
+
+
+  // Select All Shapes
+  selectAllShapes(state) {
+    state.selectedShapes = [...state.drawingContent];
   },
+
+  // Select Color
+  selectColor(state, action: PayloadAction<string>) {
+    state.selectedColor = action.payload;
+  },
+
+  // Select Layer
+  selectLayer(state, action: PayloadAction<string | null>) {
+    state.selectedLayerId = action.payload;
+  },
+
+  // Select Tool
+  selectTool(state, action: PayloadAction<string>) {
+    state.selectedTool = action.payload;
+  },
+
+  // Set Canvas Background
+  setCanvasBackground(state, action: PayloadAction<string>) {
+    state.canvasBackground = action.payload;
+  },
+
+
+     // Set Layer Opacity
+     setLayerOpacity(state, action: PayloadAction<{ layerId: string; opacity: number }>) {
+      const { layerId, opacity } = action.payload;
+      const layer = state.layers.find(layer => layer.id === layerId);
+      if (layer) {
+        layer.opacity = opacity;
+      }
+    },
+
+    // Set Pressure Sensitivity
+    setPressureSensitivity(state, action: PayloadAction<boolean>) {
+      state.pressureSensitivity = action.payload;
+    },
+
+    // Share Drawing
+    shareDrawing(state, action: PayloadAction<boolean>) {
+      state.shared = action.payload;
+    },
+
+    // Show Layer
+    showLayer(state, action: PayloadAction<string>) {
+      const layer = state.layers.find(layer => layer.id === action.payload);
+      if (layer) {
+        layer.visible = true;
+      }
+    },
+
+    // Snap to Grid
+    snapToGrid(state, action: PayloadAction<boolean>) {
+      state.snappingToGrid = action.payload;
+    },
+
+    // Start Collaborative Drawing
+    startCollaborativeDrawing(state) {
+      state.isCollaborativeDrawing = true;
+    },
+
+    // Start Collaborative Edit
+    startCollaborativeEdit(state) {
+      state.isCollaborativeEditing = true;
+    },
+
+    // Toggle Grid View
+    toggleGridView(state) {
+      state.isGridViewEnabled = !state.isGridViewEnabled;
+    },
+
+          // Toggle Grid Visibility
+    toggleGridVisibility(state) {
+      state.isGridVisible = !state.isGridVisible;
+    },
+
+    // Toggle Guides Visibility
+    toggleGuides(state) {
+      state.areGuidesVisible = !state.areGuidesVisible;
+    },
+
+    // Undo Action
+    undoAction(state) {
+      if (state.history.length > 0) {
+        const previousState = state.history.pop();
+        state.currentState = previousState;
+      }
+    },
+
+
+     // Undo History Action
+     undoHistoryAction(state) {
+      if (state.history.length > 0) {
+        const previousState = state.history.pop();
+        state.currentState = previousState;
+      }
+    },
+
+    // Ungroup Layers
+    ungroupLayers(state, action: PayloadAction<{ groupId: string }>) {
+      const { groupId } = action.payload;
+      state.layers.forEach(layer => {
+        if (layer.groupId === groupId) {
+          layer.groupId = undefined; // Remove the group identifier from layers in the specified group
+        }
+      });
+    },
+
+    // Unlock Layer
+    unlockLayer(state, action: PayloadAction<{ id: string }>) {
+      const { id } = action.payload;
+      const layer = state.layers.find(layer => layer.id === id);
+      if (layer) {
+        layer.locked = false; // Set the locked status of the specified layer to false
+      }
+    },
+
+    // View Drawing History
+    viewDrawingHistory(state, action: PayloadAction<{ index: number }>) {
+      const { index } = action.payload;
+      if (index >= 0 && index < state.history.length) {
+        state.currentState = state.history[index];
+      }
+    },
+
+    // Zoom In
+    zoomIn(state, action: PayloadAction<{ increment: number }>) {
+      const { increment } = action.payload;
+      state.zoomLevel += increment;
+      if (state.zoomLevel > 5) { // Assuming 5x is the maximum zoom level
+        state.zoomLevel = 5;
+      }
+    },
+
+    // Zoom Out
+    zoomOut(state, action: PayloadAction<{ decrement: number }>) {
+      const { decrement } = action.payload;
+      state.zoomLevel -= decrement;
+      if (state.zoomLevel < 0.1) { // Assuming 0.1x is the minimum zoom level
+        state.zoomLevel = 0.1;
+      }
+    },
+
+      },
+
+
+    extraReducers: (builder) => {
+      // Add extra reducers to handle the result of autosaveDrawingAsync
+      builder.addCase(autosaveDrawingAsync.fulfilled, (state, action) => {
+        // Handle the fulfilled action, which contains the autosave success result
+        const autosaveSuccess = action.payload;
+
+        // Perform any necessary actions based on the autosave result
+        if (autosaveSuccess) {
+          updateUIAfterDrawingSessionEnd();
+        }
+      });
+    },
 });
 
 // Export actions and reducer
@@ -685,7 +1843,8 @@ invertSelection,
 } = useDrawingManagerSlice.actions;
 
 export default useDrawingManagerSlice.reducer;
-export type {DrawingState}
+export type {DrawingState, Stroke, TrackerDrawingElement}
+
 // Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;
 

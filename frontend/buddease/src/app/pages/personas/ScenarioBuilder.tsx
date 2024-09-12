@@ -1,21 +1,29 @@
+import * as React from  'react' 
+import { categorizeNews } from "@/app/components/community/articleKeywords";
+import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import {
-  getDefaultDocumentOptions,
-  getDocumentPhase,
+    getDefaultDocumentOptions,
+    getDocumentPhase,
 } from "@/app/components/documents/DocumentOptions";
-import FileData from "@/app/components/models/data/FileData";
+import { DocumentSize } from "@/app/components/models/data/StatusType";
 import PhaseManager from "@/app/components/phases/PhaseManager";
 import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
-import fs from "fs";
-import React, { useState } from "react";
-import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
-import { categorizeNews } from "@/app/components/community/articleKeywords";
-import useDocumentStore from "@/app/components/state/stores/DocumentStore";
-import { FormData } from "../forms/PreviewForm";
-import { VersionData } from "@/app/components/versions/VersionData";
 import Version from "@/app/components/versions/Version";
-import { ModifiedDate } from "@/app/components/documents/DocType";
-import { DocumentSize } from "@/app/components/models/data/StatusType";
+import { VersionData } from "@/app/components/versions/VersionData";
+import fs from "fs";
+import { useState } from "react";
+import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
+import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { CategoryKeys } from "@/app/components/libraries/categories/CategoryManager";
+import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
+import { allCategories, AllCategoryValues } from "@/app/components/models/data/DataStructureCategories";
+import { Phase } from "@/app/components/phases/Phase";
+import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
+
+
+
+type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Analysis' | 'Communication' | 'TaskManagement' | 'Crypto';
 
 // Define categories and their associated properties
 interface CategoryProperties {
@@ -41,6 +49,7 @@ interface CategoryProperties {
   brandLogo: string;
   brandColor: string;
   brandMessage: string;
+  componentDescription?: string;  // Add this if it's a direct property
 }
 
 const categoryProperties: CategoryProperties = {
@@ -66,13 +75,16 @@ const categoryProperties: CategoryProperties = {
   brandLogo: "path/to/logo.png",
   brandColor: "#ff5733",
   brandMessage: "Bringing insights to life",
+  componentDescription: "This component provides data visualization capabilities."
+
 };
 
-export function convertToCategoryProperties(category: string | CategoryProperties | undefined): CategoryProperties {
-  if (typeof category === 'string') {
-    // Convert the string to CategoryProperties
+
+export function convertToCategoryProperties(category: string | symbol | CategoryKeys | CategoryProperties | undefined): CategoryProperties {
+  if (typeof category === 'string' || typeof category === 'symbol') {
+    // Convert the string or symbol to CategoryProperties
     return {
-      name: category,
+      name: typeof category === 'string' ? category : category.toString(),  // Handle symbol case
       description: '',
       icon: '',
       color: '',
@@ -96,27 +108,45 @@ export function convertToCategoryProperties(category: string | CategoryPropertie
       brandMessage: ''
     };
   } else if (category !== undefined) {
-    return category;
+    return category as CategoryProperties;  // Assume it's already a valid CategoryProperties object
   } else {
     throw new Error("Invalid category");
   }
 }
 
 
-function generateComponent(componentName: string, category: keyof CategoryProperties, properties: any, brand: any) {
+function generateComponent(
+  componentName: string, 
+  category: AllCategoryValues, // Updated to use conditional types
+  properties: any, 
+  brand: any,
+  nestedCategory?: NestedCategoryKeys 
+) {
   let reactCode = "";
 
-  switch (category) {
-    case "UserInterface":
-      reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
-      break;
-    case "DataVisualization":
-      reactCode = generateDataVisualizationComponent(componentName, properties.dataProperties, properties.chartType, brand);
-      break;
-    // Add cases for other categories
-    default:
-      console.error("Invalid category.");
-      return;
+ 
+  if (nestedCategory) {
+    // Handle nested categories
+    switch (nestedCategory) {
+      case "UserInterface":
+        reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
+        break;
+      case "DataVisualization":
+        reactCode = generateDataVisualizationComponent(componentName, properties.dataProperties, properties.chartType, brand);
+        break;
+      default:
+        throw new Error("Unknown nested category");
+    }
+  } else {
+    // Existing logic for handling top-level categories
+    switch (category) {
+      case "assignedNotes":
+        reactCode = generateUserInterfaceComponent(componentName, properties.description, brand);
+        break;
+      // Handle other top-level categories...
+      default:
+        throw new Error("Unknown category");
+    }
   }
 
   // Create a directory for the component
@@ -132,6 +162,8 @@ function generateComponent(componentName: string, category: keyof CategoryProper
   fs.writeFileSync(componentFilePath, reactCode);
 
   console.log(`${componentName} component generated successfully.`);
+
+  return reactCode;
 }
 
 
@@ -432,7 +464,11 @@ import { User } from '../../components/users/User';
 
 // Read component name and category from command line arguments
 const componentName = process.argv[2];
-const category = process.argv[3] as keyof CategoryProperties;
+// Safely cast the category from the command line argument
+const categoryArg = process.argv[3];
+
+// Ensure that the category is a valid key of `CategoryKeys`
+const category = categoryArg as keyof typeof allCategories;
 
 if (!componentName || !category) {
   console.error("Please provide a component name and category.");
@@ -465,39 +501,99 @@ function generateUserInterfaceComponent(componentName: string, componentDescript
   `;
 }
 
+// Before accessing the properties, ensure the category is valid
+let reactCode = '';
+
 const componentFilePath = `src/app/components/${componentName}/${componentName}.tsx`;
 
-const properties = categoryProperties[category];
-const reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
+
+// Before accessing the properties, ensure the category is valid
+if (category in categoryProperties) {
+  const properties = categoryProperties[category as keyof CategoryProperties];
+  if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
+    const brand = {
+      brandName: 'brandName' in properties && typeof properties.brandName === 'string' ? properties.brandName : '',
+      brandLogo: 'brandLogo' in properties && typeof properties.brandLogo === 'string' ? properties.brandLogo : '',
+      brandColor: 'brandColor' in properties && typeof properties.brandColor === 'string' ? properties.brandColor : '',
+    };
+
+    const componentDescription = Array.isArray(properties.UserInterface)
+      ? properties.UserInterface.find((item: string) => item === 'componentDescription')
+      : undefined;
+
+    const reactCode = generateUserInterfaceComponent(
+      componentName,
+      'componentDescription' in properties && typeof properties.componentDescription === 'string' ? properties.componentDescription : '',
+      brand
+    );
+  } else {
+
+    throw new Error(`Properties for category ${String(category)} are undefined or not an object.`);
+  }
+
+
+} else { 
+   throw new Error(`Invalid category: ${String(category)}`);
+}
+
+const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> => {
+  // Define the threshold for idle timeout
+  const IDLE_TIMEOUT_THRESHOLD = 3000; // 3 seconds
+
+  // Check if the idleTimeoutDuration exceeds the threshold
+  return idleTimeoutDuration > IDLE_TIMEOUT_THRESHOLD;
+};
+
 
 // Define function to create user scenarios and map out user journey
-async function createUserScenarios(props: any, type: PersonaTypeEnum) {
-  const [options, setOptions] = useState(getDefaultDocumentOptions());
+async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode: string) {
+    const [options, setOptions] = useState(getDefaultDocumentOptions());
 
-  // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
-  const userPersonaBuilder = new PersonaBuilder();
-  const phaseManager = PhaseManager({ phases: [] });
+    // Create instances of UserPersonaBuilder and DocumentBuilder
+    const userPersonaBuilder = new PersonaBuilder();
+    
+    // Create and set phase data directly, not using PhaseManager instance directly
+    const phases: Phase[] = [
+      // Example phase objects
+      {
+        id: "201-1",
+        name: "Phase 1",
+        startDate: new Date(),
+        endDate: new Date(),
+        component: () => <div>Phase 1 Component</div>,
+        subPhases: [],
+        hooks: {
+          canTransitionTo: () => true,
+          handleTransitionTo: () => {},
+          resetIdleTimeout: () => Promise.resolve(),
+          isActive: false,
+          progress: null,
+          condition: defaultCondition,
+        },
+        duration: 1000,
+        lessons: [],
+      },
+      // Add more phases as needed
+    ];
 
-  // Use the modules to create detailed user scenarios and map out user journey
-  // Example:
-  const userPersona = PersonaBuilder.buildPersona(
-    PersonaTypeEnum.CasualUser,
-    props
-  );
-  if (phaseManager) {
-    // Check if phaseManager is not null or undefined before accessing its properties
-    const phases = phaseManager.phases
-    // Generate user scenarios and map out user journey
-    if (phases) {
-      phases.scenarios = userPersonaBuilder.buildScenarios(userPersona);
-      phases.userJourney = userPersonaBuilder.mapUserJourney(type, phases.scenarios);
-    }
+    // Process phases as needed
+    const userPersona = PersonaBuilder.buildPersona(
+      PersonaTypeEnum.CasualUser,
+      props
+    );
+
+    // Assuming you want to map user scenarios to phases
+    const scenarios = userPersonaBuilder.buildScenarios(userPersona);
+    const userJourney = userPersonaBuilder.mapUserJourney(type, scenarios);
+
     // Output or utilize the created user scenarios and mapped user journey
     console.log("User scenarios and user journey mapped successfully.");
+
     // Generate validation rules code
     const validationRules = generateValidationRulesCode(
       categoryProperties.Forms?.validationRules
     );
+    
     // Generate component code
     generateComponent(
       "ValidationRules",
@@ -507,14 +603,21 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum) {
       },
       validationRules
     );
+    
     // Save component code to file
     fs.writeFileSync(componentFilePath, reactCode);
-    // Return component name
+    
+    
+     // Example usage of buildDocument function
+     const documentObject: DocumentObject = {
+      // Define your document object here
+    };
 
-    const document = await DocumentBuilder.buildDocument(
-      userPersona,
-      phaseManager,
-      options
+    // Call buildDocument function directly
+    await buildDocument(
+      options,
+      documentObject,
+      "document type" // Define your document type here
     );
     // Instead, include the DocumentBuilder component in your JSX markup with the required props:
     const docPermissions = new DocumentPermissions(true, true);
@@ -635,40 +738,30 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum) {
     ];
     // Output or utilize the created user scenarios and mapped user journey
     console.log("User scenarios and user journey mapped successfully.");
-  }
-
-
 
   // Get properties based on the selected category
-  const properties = categoryProperties[category];
+  const properties = categoryProperties[category as keyof CategoryProperties];
 
   if (!properties) {
     console.error("Invalid category.");
     process.exit(1);
   }
 
-  // Simulating validation rules for DataVisualization category
-  const validationRules = {}; // Include your validation rules here
-
   // Generate the component
   generateComponent(componentName, category, properties, validationRules);
 
 }
+
+
+
+
 // Example usage
 generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, categoryProperties);
-export type { CategoryProperties };
 export {
-  generateFormsComponent,
-  generateComponent,
-  generateUserJourneyComponent,
-  generateUserScenarioComponent,
-  generateUserJourneyMapComponent,
-  generateUserScenarioMapComponent, 
-  generateNewsComponent, 
-  generateNewsCategories,
-  categorizeNews,
-  categoryProperties
+    categorizeNews,
+    categoryProperties, generateComponent, generateFormsComponent, generateNewsCategories, generateNewsComponent, generateUserJourneyComponent, generateUserJourneyMapComponent, generateUserScenarioComponent, generateUserScenarioMapComponent
 };
+export type { CategoryProperties };
 
 // Example usage of categories
 const newsFeedData = { /* Provide your news feed data here */ };

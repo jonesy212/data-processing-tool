@@ -15,7 +15,7 @@ import { SnapshotConfig } from "./snapshot";
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
@@ -232,7 +232,7 @@ export const defaultSubscribeToSnapshots = <T extends BaseData, K extends BaseDa
           clearSnapshots: function (): void {
             throw new Error("Function not implemented.");
           },
-          addSnapshot: function (snapshot: Snapshot<T, K>, snapshotId: string, subscribers: Subscriber<T, K>[] & Record<string, Subscriber<T, K>>): Promise<void> {
+          addSnapshot: function (snapshot: Snapshot<T, K>, snapshotId: string, subscribers: SubscriberCollection<T, K>): Promise<void> {
             throw new Error("Function not implemented.");
           },
           createSnapshot: undefined,

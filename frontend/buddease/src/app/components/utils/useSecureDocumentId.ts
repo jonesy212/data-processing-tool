@@ -3,32 +3,82 @@ import { fetchDocumentById } from './../state/redux/slices/DocumentSlice';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { sanitizeData } from '../security/SanitizationFunctions';
-import useDocumentStore from '../state/stores/DocumentStore';
+import useDocumentStore, { Document } from '../state/stores/DocumentStore';
+import UserRoles, { UserRoleEnum } from '../users/UserRoles';
+import { useNavigate } from 'react-router-dom';
+import { DocumentNode } from '../users/User';
+import { Permission } from '../users/Permission';
+
 
 export const useSecureDocumentId = () => {
-  const [documentId, setDocumentId] = useState<string | null>(null); // Initialize documentId as null or string, depending on your use case
+  const [documentId, setDocumentId] = useState<string | null>(null);
   const { isAuthenticated, isLoading, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDocumentId = async () => {
       if (!isLoading && isAuthenticated && user) {
-        // Here, you can perform additional checks to ensure that the user is authorized to access the documentId
-        // For example, you can check if the documentId belongs to the authenticated user or if the user has admin privileges
-        // If the user is not authorized, you can handle it accordingly (e.g., redirecting to a login page, displaying an error message)
-
-        // Extract documentId from the user object or any other source
-        // Replace 'documentId' with the property name where the documentId is stored in the user object or any other source
         const fetchedDocumentId = user.yourDocuments?.public?.documentId;
 
-        // Sanitize the fetched documentId if necessary (replace with your actual sanitization function)
-        const sanitizedDocumentId = typeof fetchedDocumentId === 'string' ? sanitizeData(fetchedDocumentId) : '';
+        if (!fetchedDocumentId) {
+          console.error('Document ID is not available.');
+          navigate('/error');
+          return;
+        }
+
+        const sanitizedDocumentId = typeof fetchedDocumentId === 'string'
+          ? sanitizeData(fetchedDocumentId) : '';
+
+        const hasAccess = checkDocumentAccess(sanitizedDocumentId, 'read')
+        if (!hasAccess) {
+          navigate('/access-denied');
+          return;
+        }
 
         setDocumentId(sanitizedDocumentId);
+      } else if (isLoading) {
+        console.log('Loading user authentication status...');
+      } else if (!isAuthenticated) {
+        navigate('/login');
       }
     };
-
     fetchDocumentId();
-  }, [isLoading, isAuthenticated, user]);
+  }, [isLoading, isAuthenticated, user, navigate]);
 
-  return documentId;
+  const checkDocumentAccess = (docId: string, action: string): boolean => {
+    const { isAuthenticated, user } = useAuth();
+
+    if (!isAuthenticated || !user) {
+      return false;
+    }
+
+    // Correctly type the document variable to match your custom document structure
+    const document: DocumentNode | undefined = user.yourDocuments?.[docId];
+
+    if (!document) {
+      return false;
+    }
+
+    const userRole = user.role;
+
+    if (document.isPrivate) {
+      if (userRole === UserRoles.Administrator) {
+        return true;
+      }
+
+      if (document.requiredRole && userRole !== UserRoles[document.requiredRole as keyof typeof UserRoleEnum]) {
+        return false;
+      }
+    }
+
+    // Check if the user has the required permission for the action
+    if (document.permissions && Array.isArray(document.permissions) && !document.permissions.includes(action.toString())) {
+      return false;
+    }
+
+    return true;
+  }; return documentId;
 };
+
+export default useSecureDocumentId;
+

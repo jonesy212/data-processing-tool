@@ -1,4 +1,5 @@
 // DocumentBuilderConfig.ts
+import { IHydrateResult } from "mobx-persist";
 import {
   CodingLanguageEnum,
   LanguageEnum,
@@ -73,45 +74,50 @@ type StoreType = {
   // Define your store properties here
 };
 
-// Define the interface for the result of hydration
-export interface IHydrateResult<T> {
+
+export interface CustomHydrateResult<T> extends IHydrateResult<T> {
+  customProperty1: string;
+  customMethod: () => void;
   storeKey: string; // Add the storeKey property
   storeValue: T;
   initialState?: any;
-  rehydrate: () => IHydrateResult<T>;
+  rehydrate: () => CustomHydrateResult<T>;
   version: Version;
   then(callback: () => void): DocumentBuilderConfig; // Adjusted return type
-  [Symbol.toStringTag]: "IHydrateResult";
-  finally(onFinally: () => void): IHydrateResult<T>; // Implementing finally method
-  catch(onError: (err: any) => void): IHydrateResult<T>; // Implementing catch method
+  [Symbol.toStringTag]: "CustomHydrateResult";
+  finally(onFinally: () => void): CustomHydrateResult<T>; // Implementing finally method
+  catch(onError: (err: any) => void): CustomHydrateResult<T>; // Implementing catch method
+
 }
 
 
+
 const versionInfo: Version = {
-  id: "123456789",
-  author: "John Doe",
-  parentId: "987654321",
-  parentType: "document",
-  parentVersion: "1.0.0",
-  parentTitle: "Parent Document",
-  parentContent: "This is the content of the parent document.",
-  parentName: "Parent Document",
-  parentUrl: "https://example.com/parent-document",
-  parentChecksum: "abcdef123456",
-  parentMetadata: {
-    title: "Parent Document",
-    description: "This is the parent document.",
-    author: "John Doe",
-    date: "2023-08-15",
-    tags: ["parent", "document"],
-    rentAppVersion: "1.0.0",
-    parentVersionNumber: "1.0.0",
-    isLatest: true,
-    isPublished: true,
-    publishedAt: "2023-08-15",
-    source: "https://example.com/parent-document",
-    status: "published",
-  }
+  id: 123456789,
+  
+  // author: "John Doe",
+  // parentId: "987654321",
+  // parentType: "document",
+  // parentVersion: "1.0.0",
+  // parentTitle: "Parent Document",
+  // parentContent: "This is the content of the parent document.",
+  // parentName: "Parent Document",
+  // parentUrl: "https://example.com/parent-document",
+  // parentChecksum: "abcdef123456",
+  // parentMetadata: {
+  //   title: "Parent Document",
+  //   description: "This is the parent document.",
+  //   author: "John Doe",
+  //   date: "2023-08-15",
+  //   tags: ["parent", "document"],
+  //   rentAppVersion: "1.0.0",
+  //   parentVersionNumber: "1.0.0",
+  //   isLatest: true,
+  //   isPublished: true,
+  //   publishedAt: "2023-08-15",
+  //   source: "https://example.com/parent-document",
+  //   status: "published",
+  // }
 }
 
 const versionData: VersionData = {

@@ -14,8 +14,9 @@ import { Phase } from "../../phases/Phase";
 import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
-import { K, T } from "../../snapshots/SnapshotConfig";
+import { T } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import {
@@ -25,6 +26,7 @@ import {
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { Settings } from "../../state/stores/SettingsStore";
+import { NotificationSettings } from "../../support/NotificationSettings";
 import TodoImpl, { Todo, UserAssignee } from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
@@ -40,8 +42,6 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
-import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { NotificationSettings } from "../../support/NotificationSettings";
 
 // Define the interface for DataDetails
 interface DataDetails extends CommonData {
@@ -53,14 +53,13 @@ interface DataDetails extends CommonData {
   completed?: boolean | undefined;
   startDate?: Date;
   endDate?: Date;
-  createddAt?: Date | undefined;
-  updateddAt?: Date | undefined;
+  createdAt?: Date | undefined;
+  updatedAt?: Date | undefined;
   type?: AllTypes;
-  tags?: TagsRecord;
+  tags?: TagsRecord | string[] | undefined; 
   isActive?: boolean;
   status?: AllStatus;
-
-  // Use enums for status property
+  uploadedAt?: Date | undefined; //
   phase?: Phase | null;
   fakeData?: FakeData;
   comments?: (Comment | CustomComment)[] | undefined;
@@ -71,7 +70,6 @@ interface DataDetails extends CommonData {
   };
   data?: Data;
   analysisType?: AnalysisTypeEnum;
-  updatedAt: Date | undefined;
   analysisResults?: string | DataAnalysisResult[] | undefined;
   todo?: Todo;
   // Add other properties as needed
@@ -94,7 +92,7 @@ export interface Comment {
   likes?: number;
   watchLater?: boolean;
   highlightColor?: ColorPalettes;
-  tags?: TagsRecord;
+   tags?: TagsRecord | string[] | undefined; 
   highlights?: string[];
   // Consolidating commentBy and author into one field
   author?: string | number | readonly string[] | undefined;
@@ -122,7 +120,7 @@ interface BaseData {
   status?: AllStatus;
   timestamp?: string | number | Date | undefined;
   isActive?: boolean;
-  tags?: TagsRecord; // Update as needed based on your schema
+  tags?: TagsRecord | string[] | undefined; // Update as needed based on your schema
 
   // | Tag[];
   phase?: Phase | null;
@@ -182,7 +180,7 @@ interface Data extends BaseData {
   category?: string | Category;
   categoryProperties?: CategoryProperties;
   subtasks?: TodoImpl<Todo, any>[];
-  actions?: SnapshotStoreConfig<T, Data>[]; // Use Data instead of BaseData
+  actions?: SnapshotStoreConfig<Data, Data>[]; // Use Data instead of BaseData
   snapshotWithCriteria?: SnapshotWithCriteria<Data, any>;
   value?: any;
   label?: any;
@@ -376,6 +374,8 @@ const coreData: Data = {
   members: [],
   leader: {
     id: "leader1",
+    roles: [],
+    storeId: 0,
     username: "Leader Name",
     email: "leader@example.com",
     fullName: "Leader Full Name",
@@ -510,30 +510,21 @@ const coreData: Data = {
     },
 
     notifications: {
-      email: true,
-      push: true,
-      sms: false,
-      chat: false,
-      calendar: false,
-      task: false,
-      file: false,
-      meeting: false,
-      announcement: false,
-      reminder: false,
-      project: false,
+      channels: {
+        email: true,
+        push: true,
+        sms: true, 
+        
+        chat: true,
+        calendar: true,  
+        audioCall: false, 
+        videoCall: false,
+        screenShare: false,
+      
+      },
+      types: [],
       enabled: true,
       notificationType: "push",
-      audioCall: false,
-      videoCall: false,
-      screenShare: false,
-      mention: false,
-      reaction: false,
-      follow: false,
-      poke: false,
-      activity: false,
-      thread: false,
-      inviteAccepted: false,
-      directMessage: false,
     },
     activityLog: [
       {
@@ -583,7 +574,27 @@ const coreData: Data = {
       smsNotifications: true,
       desktopNotifications: true,
       notificationTypes: {
+        mention: true,
+        reaction: true,
+        follow: true,
+        poke: true,
+        activity: true,
+        thread: true,
+        inviteAccepted: true,
+        meeting: true,
+        directMessage: true,
+        audioCall: true,
+        videoCall: true,
+        screenShare: true,
+        chat: true,
+        calendar: true,
+        task: true,
+        file: true,
 
+        announcement: true,
+        reminder: true,
+        project: true,
+        inApp: true,
       },
       customNotificationSettings: "",
       mobile: {
@@ -811,8 +822,8 @@ const coreData: Data = {
           id: this.id ?? null,
           type: this.type ?? null,
           title: this.title ?? null,
-          startDate: this.startDate, 
-          endDate: this.endDate, 
+          startDate: this.startDate,
+          endDate: this.endDate,
           serialized: this.serialized,
           typeName: this.typeName ?? null,
           from: this.from ?? null,
@@ -829,11 +840,11 @@ const coreData: Data = {
           unsignedHash: this.unsignedHash ?? null,
           notificationsEnabled: this.notificationsEnabled ?? false,
           amount: 0,
-          unsignedSerialized: this.unsignedSerialized, 
+          unsignedSerialized: this.unsignedSerialized,
           recentActivity: this.recentActivity ?? [
             { action: "", timestamp: new Date() },
             { action: "", timestamp: new Date() },
-          ]
+          ],
         };
         return customTransaction;
       },
@@ -850,7 +861,8 @@ export type {
   Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps,
+  DataDetailsProps
 };
 
-export { coreData };
+  export { coreData };
+

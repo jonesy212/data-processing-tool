@@ -1,56 +1,32 @@
 import { LanguageEnum } from "../components/communications/LanguageEnum";
 import { NotificationPreferences } from "../components/communications/chat/ChatSettingsModal";
+import FileData from "../components/models/data/FileData";
+import { CommonTrackerProps } from "../components/models/tracker/Tracker";
 import { CryptoNotificationTypes } from "../components/settings/NotificationChannels";
 import { PrivacySettings } from "../components/settings/PrivacySettings";
 
 type NotificationTypeString = 'priceAlerts' | 'tradeConfirmation' | 'marketNews';
 
-
-interface NotificationPreferences {
-  mobile: NotificationPreferences;
-  email: NotificationPreferences;
-  push: NotificationPreferences;
-  chat: NotificationPreferences;
-  calendar: NotificationPreferences;
-  audioCall: NotificationPreferences;
-  videoCall: NotificationPreferences;
-  screenShare: NotificationPreferences;
-  mention: NotificationPreferences;
-  reaction: NotificationPreferences;
-  follow: NotificationPreferences;
-  poke: NotificationPreferences;
-  activity: NotificationPreferences;
-  thread: NotificationPreferences;
-  inviteAccepted: NotificationPreferences;
-  task: NotificationPreferences;
-  file: NotificationPreferences;
-  meeting: NotificationPreferences;
-  directMessage: NotificationPreferences;
-  announcement: NotificationPreferences;
-  reminder: NotificationPreferences;
-  project: NotificationPreferences;
-  inApp: NotificationPreferences;
-  priceAlerts: NotificationPreferences;
-  tradeConfirmation: NotificationPreferences;
-  marketNews: NotificationPreferences;
-}
 interface CryptoPreferences {
   preferredCryptoAssets?: string[]; // List of preferred cryptocurrencies
   tradeNotifications?: {
     enabled: boolean; // Whether trade notifications are enabled
     notificationTypes?: NotificationTypeString; // Use NotificationTypeString here
   };
+  portfolioView?: 'overview' | 'detailed'; // View mode for the crypto portfolio
+  transactionHistoryRetention?: '30days' | '60days' | '90days'; // Retention period for transaction history
 }
 
 
-interface UserPreferences {
+
+interface UserPreferences extends CommonTrackerProps {
   // General Preferences
   theme?: 'light' | 'dark'; // Example of a theme preference
   language?: LanguageEnum; // Preferred language
   fontSize?: 'small' | 'medium' | 'large'; // Font size for accessibility
   colorScheme?: string; // Color scheme for UI
   fontStyles?: { fontFamily: string; fontSize: number }; // Font styles
-  
+  trackerId?: string;
   // Notifications Preferences
   notifications?: {
     email: boolean; // Email notifications enabled/disabled
@@ -91,16 +67,7 @@ interface UserPreferences {
     dataAnalysisPhaseEnabled?: boolean; // Whether the data analysis phase is enabled
   };
 
-  // Crypto Preferences
-  cryptoPreferences?: {
-    preferredCryptoAssets?: string[]; // List of preferred cryptocurrencies
-    tradeNotifications?: {
-      enabled: boolean; // Whether trade notifications are enabled
-      notificationTypes?: CryptoNotificationTypes; // Types of trade notifications
-    };
-    portfolioView?: 'overview' | 'detailed'; // View mode for the crypto portfolio
-    transactionHistoryRetention?: '30days' | '60days' | '90days'; // Retention period for transaction history
-  };
+ 
 
   // Accessibility Preferences
   accessibility?: {
@@ -205,8 +172,6 @@ const userPreferences = {
   
 
 
-
-// Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
 // Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
 const getUserPreferences = async (): Promise<UserPreferences> => {
   // Simulate fetching user preferences asynchronously
@@ -214,16 +179,18 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
     setTimeout(() => {
       // Example user preferences
       const userPreferences: UserPreferences = {
-
+        id: "",
+        name: "",
         theme: 'light',
-        language: LanguageEnum.English,
         fontSize: 'medium',
+        language: LanguageEnum.English,
+        phases: [],
         colorScheme: '', // Define a default color scheme if needed
         fontStyles: {
           fontFamily: '', // Define a default font family if needed
           fontSize: 16 // Define a default font size if needed
         },
-      
+
         // Notifications Preferences
         notifications: {
           email: false,
@@ -266,15 +233,33 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
           notificationSound: "",
           notificationVolume: 0,
           enableNotifications: false,
-          notificationTypes: 'priceAlerts', // Or other types based on your use case
+          notificationTypes: {
+            mention: true,
+            reaction: true,
+            follow: false,
+            poke: true,
+            activity: true,
+            thread: true,
+            inviteAccepted: false,
+            task: true,
+            file: true,
+            meeting: true,
+            directMessage: true,
+            audioCall: true,
+            videoCall: true,
+            screenShare: true,
+            chat: true,
+            calendar: true,
+            announcement: true,
+            reminder: true,
+            project: true,
+            inApp: true,
+          }, // Or other types based on your use case
           customNotificationSettings: {}, // Define custom settings if needed
-       
           // Crypto Preferences
-          cryptoPreferences?: {};
+          cryptoPreferences: {},
         },
 
-        
-        
         // Privacy Preferences
         privacy: {
           profileVisibility: 'private',
@@ -294,7 +279,7 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
             accessControlList: [] // Define a list of allowed users if needed
           } // Or other access control settings
         },
-      
+
         // Project Management Preferences
         projectManagement: {
           defaultProjectView: 'list',
@@ -343,7 +328,7 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
           unityPromotionEnabled: false,
           earningsReinvestmentEnabled: false
         },
-      
+
         monetizationOpportunities: {
           customAppDevelopmentEnabled: false,
           teamIncentivesEnabled: false,
@@ -375,7 +360,20 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
 
         // Other Preferences
         otherPreferences: {},
-        
+      
+        trackFileChanges: function (file: FileData): FileData {
+          throw new Error("Function not implemented.");
+        },
+        stroke: {
+          width: 0,
+          color: ""
+        },
+        strokeWidth: 0,
+        fillColor: "",
+        flippedX: false,
+        flippedY: false,
+        x: 0,
+        y: 0
       };
       resolve(userPreferences);
     }, 1000); // Simulate 1 second delay
@@ -395,5 +393,5 @@ getUserPreferences()
   });
   export default userPreferences;
 export { getUserPreferences };
-export type { UserPreferences };
+export type { UserPreferences, CryptoPreferences  };
 

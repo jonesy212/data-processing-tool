@@ -1,11 +1,11 @@
 //UserContext.tsx
-import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '../components/users/User';
-import UserRoles from '../components/users/UserRoles';
-import useAuthentication from '../components/hooks/useAuthentication';
-import useSocialAuthentication from '../components/hooks/commHooks/useSocialAuthentication';
-import React from 'react';
-import ProfileAccessControl  from '../pages/profile/Profile';
+import { createContext, useContext, useEffect, useState } from "react";
+import { User } from "../components/users/User";
+import UserRoles from "../components/users/UserRoles";
+import useAuthentication from "../components/hooks/useAuthentication";
+import useSocialAuthentication from "../components/hooks/commHooks/useSocialAuthentication";
+import React from "react";
+import ProfileAccessControl from "../pages/profile/Profile";
 
 interface UserContextType {
   user: User | null;
@@ -24,11 +24,8 @@ export const UserProvider: React.FC<UserContextType> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { login, logout } = useAuthentication();
-  const {
-    socialAuthProviders,
-    fetchSocialAuthProviders,
-    initiateSocialLogin,
-  } = useSocialAuthentication();
+  const { socialAuthProviders, fetchSocialAuthProviders, initiateSocialLogin } =
+    useSocialAuthentication();
 
   const fetchUserData = async () => {
     // Replace with actual data fetching logic
@@ -58,7 +55,7 @@ export const UserProvider: React.FC<UserContextType> = ({ children }) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };
@@ -67,6 +64,8 @@ const fetchUserDataFromApi = async (): Promise<User> => {
   // Mock API call
   return {
     interests: [],
+    followers: [],
+    preferences: {},
     privacySettings: {
       hidePersonalInfo: true,
       enablePrivacyMode: true,
@@ -83,46 +82,59 @@ const fetchUserDataFromApi = async (): Promise<User> => {
       restrictContentSharingToContacts: false,
       restrictContentSharingToGroups: false,
     },
-    notifications: [],
+    notifications: {
+      channels: {
+        email: false,
+        push: false,
+        sms: false,
+        chat: false,
+        calendar: false,
+        audioCall: false,
+        videoCall: false,
+        screenShare: false,
+      },
+      types: [],
+      enabled: true,
+      notificationType: "all",
+    },
     activityLog: [],
     socialLinks: {},
-    relationshipStatus: 'none',
+    relationshipStatus: "none",
     hobbies: [],
     skills: [],
     achievements: [],
-    profileVisibility: 'public',
+    profileVisibility: "public",
     profileAccessControl: {
       friendsOnly: true,
       allowTagging: true,
       blockList: [],
       allowMessagesFromNonContacts: true,
       shareProfileWithSearchEngines: true,
-      
+
       isPrivate: false,
       isPrivateOnly: false,
       isPrivateOnlyForContacts: false,
       isPrivateOnlyForGroups: false,
-
     },
-    activityStatus: 'none',
+    activityStatus: "none",
     isAuthorized: true,
 
-    _id: 'id-123',
-    username: 'John Doe',
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    tier: 'free',
-    token: 'mock-token',
+    _id: "id-123",
+    username: "John Doe",
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@example.com",
+    tier: "free",
+    token: "mock-token",
     uploadQuota: 1000,
-    avatarUrl: 'https://example.com/avatar.jpg',
+    avatarUrl: "https://example.com/avatar.jpg",
     createdAt: new Date(),
     updatedAt: new Date(),
-    fullName: 'John Doe',
-    bio: '',
-    userType: 'individual',
+    fullName: "John Doe",
+    bio: "",
+    userType: "individual",
     hasQuota: true,
-    profilePicture: '',
+    profilePicture: "",
     processingTasks: [],
     role: UserRoles.Moderator,
     persona: null,

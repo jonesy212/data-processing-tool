@@ -1,12 +1,8 @@
+import { snapshot } from '.';
 // Function to add or update a snapshot in the map
-function updateSnapshotMap(
-  map: Map<string, Snapshot<T, K>>,
-  key: string,
-  snapshot: Snapshot<T, K>
-): Map<string, Snapshot<T, K>> {
-  map.set(key, snapshot);
-  return map;
-}
+
+import { Snapshot } from "./LocalStorageSnapshotStore";
+import { T, K } from "./SnapshotConfig";
 
 // Function to remove a snapshot from the map
 function removeSnapshotFromMap(
@@ -73,9 +69,12 @@ const updatedSnapshots = batchUpdateSnapshots(existingSnapshots, updates);
 const snapshotsMap = new Map<string, Snapshot<T, K>>();
 // Populate snapshotsMap with initial data
 
-const newSnapshot: Snapshot<T, K> = /*...*/;
+const newSnapshot: Snapshot<T, K> = {
+  ...snapshot,
+
+}
 safeUpdateSnapshots(snapshotsMap, 'newKey', newSnapshot);
-#review 
+// #review 
 /**
  * Adds or updates a snapshot in the given map.
  * @param map - The existing map of snapshots.

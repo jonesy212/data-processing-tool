@@ -4,6 +4,7 @@ import React, { createContext, useContext, useReducer } from "react";
 import { NFT } from "../nft/NFT";
 import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "../state/stores/AuthStore";
 import { User } from "../users/User";
+import { LanguageEnum } from "../communications/LanguageEnum";
 //todo update roles to use UserRole type
 // Define the types for the context and state
 interface AuthState {
@@ -195,7 +196,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
     store.setUser(user);
     store.setRoles(verifiedRoles);
     store.setNFTs(nfts);
-    store.setUserPreferences({ theme: "dark", language: "en-US" });
+    store.setUserPreferences({ theme: "dark", language: LanguageEnum.English });
     store.setUserProfilePicture("https://example.com/profile-picture-url");
     store.setUserEmail("newemail@example.com");
     store.setUserContactInfo({

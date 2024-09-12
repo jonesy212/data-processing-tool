@@ -14,20 +14,7 @@ import { fetchDataFrameSuccess } from '../slices/DataFrameSlice';
 import { updateDataTitle } from '../slices/DataSlice';
 const { handleError } = useErrorHandling();
 
-import archiveFile from '@/app/api/ApiFiles';
-import batchRemoveFiles from '@/app/api/ApiFiles';
-import createFileVersion from '@/app/api/ApiFiles';
-import determineFileType from '@/app/api/ApiFiles';
-import exportFile from '@/app/api/ApiFiles';
-import fetchFileVersions from '@/app/api/ApiFiles';
-import fetchFiles from '@/app/api/ApiFiles';
-import importFile from '@/app/api/ApiFiles';
-import markFileAsComplete from '@/app/api/ApiFiles';
-import receiveFileUpdate from '@/app/api/ApiFiles';
-import requestAccessToFile from '@/app/api/ApiFiles';
-import shareFile from '@/app/api/ApiFiles';
-import startCollaborativeEdit from '@/app/api/ApiFiles';
-import uploadFile from '@/app/api/ApiFiles';
+import { default as archiveFile, default as batchRemoveFiles, default as createFileVersion, default as determineFileType, default as exportFile, default as fetchFiles, default as fetchFileVersions, default as importFile, default as markFileAsComplete, default as receiveFileUpdate, default as requestAccessToFile, default as shareFile, default as startCollaborativeEdit, default as uploadFile } from '@/app/api/ApiFiles';
 
 
 // Import other unused imports
@@ -63,7 +50,7 @@ function* fetchNewFileData(
     yield put(fetchDataFrameSuccess(data));
   } catch (error: any) {
     const errorMessage = " Error fetching new file data";
-    yield handleError(errorMessage, {componentStack: error.stack});
+    yield handleError(errorMessage, { componentStack: error.stack });
   }
 }
 
@@ -163,7 +150,8 @@ function* handleFetchFileVersions(): Generator<any, void, any> {
     const fileVersions = yield call(fetchFileVersions);
     yield put(FileActions.fetchFileVersionsSuccess(fileVersions));
   } catch (error) {
-    yield call(handleError, error);
+    const errorMessage = "Error fetching access to file";
+    yield handleError(errorMessage, { componentStack: error.stack });
   }
 }
 
@@ -271,7 +259,7 @@ function* handleRemoveFileRequest(action: ReturnType<typeof FileActions.removeFi
 }
 
 
-function* handleUpdateDataFrame(action: ReturnType<typeof DataFrameActions.updateDataFrame>): Generator<any, void, any> { 
+function* handleUpdateDataFrame(action: ReturnType<typeof DataFrameActions.updateDataFrame>): Generator<any, void, any> {
   try {
     const { payload } = action;
     const dataFrame = yield call(updateDataFrame, payload);
@@ -281,6 +269,8 @@ function* handleUpdateDataFrame(action: ReturnType<typeof DataFrameActions.updat
     yield handleError(errorMessage, { componentStack: error.stack });
   }
 }
+
+function handleDeleteDataFrame
 
 
 // Define handleFetchDataFrame saga
@@ -314,16 +304,16 @@ function* fileSagas() {
   yield takeLatest(FileActions.determineFileType.type, handleDetermineFileType);
   yield takeLatest(FileActions.importFile.type, handleImportFile);
   yield takeLatest(FileActions.removeFile.type, handleRemoveFileRequest);
-  yield takeLatest(DataActions.updateDataFrame.type, handleUpdateDataFrame);
-  yield takeLatest(DataActions.deleteDataFrame.type, handleDeleteDataFrame);
-  yield takeLatest(DataActions.updateDataTitle.type, handleUpdateDataTitle);
-  yield takeLatest(DataActions.updateDataDescription.type, handleUpdateDataDescription);
-  yield takeLatest(DataActions.updateDataStatus.type, handleUpdateDataStatus);
-  yield takeLatest(DataActions.updateDataDetails.type, handleUpdateDataDetails);
-  yield takeLatest(DataActions.addData.type, handleAddData);
-  yield takeLatest(DataActions.removeData.type, handleRemoveData);
-  yield takeLatest(DataActions.fetchDataFrame.type, handleFetchDataFrame);
-  yield takeLatest(DataActions.setDataFrame.type, handleSetDataFrame);
+  yield takeLatest(DataActions().updateDataFrame.type, handleUpdateDataFrame);
+  yield takeLatest(DataActions().deleteDataFrame.type, handleDeleteDataFrame);
+  yield takeLatest(DataActions().updateDataTitle.type, handleUpdateDataTitle);
+  yield takeLatest(DataActions().updateDataDescription.type, handleUpdateDataDescription);
+  yield takeLatest(DataActions().updateDataStatus.type, handleUpdateDataStatus);
+  yield takeLatest(DataActions().updateDataDetails.type, handleUpdateDataDetails);
+  yield takeLatest(DataActions().addData.type, handleAddData);
+  yield takeLatest(DataActions().removeData.type, handleRemoveData);
+  yield takeLatest(DataActions().fetchDataFrame.type, handleFetchDataFrame);
+  yield takeLatest(DataActions().setDataFrame.type, handleSetDataFrame);
 }
 
 export default fileSagas;

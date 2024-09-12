@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import { useDispatch } from 'react-redux';
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import determineFileCategory from "../components/libraries/categories/determineFileCategory";
 import { processSnapshotsByCategory } from "../components/libraries/categories/fileCategoryMapping";
@@ -11,7 +12,7 @@ import {
 } from "../components/models/data/StatusType";
 import { Member } from "../components/models/teams/TeamMembers";
 import { ProjectType } from "../components/projects/Project";
-import { SnapshotConfig, SnapshotStoreConfig, SnapshotWithCriteria } from "../components/snapshots";
+import { SnapshotConfig, SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria } from "../components/snapshots";
 import {
   Snapshot,
   Snapshots
@@ -25,6 +26,7 @@ import {
   NotificationTypeEnum,
   useNotification,
 } from "../components/support/NotificationContext";
+import { addToSnapshotList } from "../components/utils/snapshotUtils";
 import { AppConfig, getAppConfig } from "../configs/AppConfig";
 import configData from "../configs/configData";
 import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
@@ -42,7 +44,6 @@ import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
 import generateCustomHeaders from "./headers/customHeaders";
 import createRequestHeaders from "./headers/requestHeaders";
-
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 const dispatch = useDispatch()
@@ -132,38 +133,41 @@ const createHeaders = (additionalHeaders?: Record<string, string>) => {
 
 
 // API call function
-const apiCall = async <T extends Data, K extends Data>(
+const apiCall =  <T extends Data, K extends Data>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   data?: any,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K>> => {
-  try {
-    const headers = createHeaders(additionalHeaders);
-    const response = await axiosInstance({
-      url,
-      method,
-      headers: headers as Record<string, string>,
-      data
-    });
+  return new Promise<Snapshot<T, K>>(async (resolve, reject) => {
+    try {
+      const headers = createHeaders(additionalHeaders);
+      const response = await axiosInstance({
+        url,
+        method,
+        headers: headers as Record<string, string>,
+        data
+      });
 
-    if (response.status === 200) {
-      return response.data as Snapshot<T, K>;
-    } else {
-      handleOtherStatusCodes(getAppConfig(), response.status);
-      throw new Error(`Unexpected status code: ${response.status}`);
+      if (response.status === 200) {
+        resolve(response.data as Snapshot<T, K>);
+      } else {
+        handleOtherStatusCodes(getAppConfig(), response.status);
+        reject(new Error(`Unexpected status code: ${response.status}`));
+      }
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, `Failed to ${method.toLowerCase()} data`);
+      reject(error);
     }
-  } catch (error) {
-    handleApiError(error as AxiosError<unknown>, `Failed to ${method.toLowerCase()} data`);
-    throw error;
-  }
+  });
 };
+
 
 const getSnapshot = <T extends Data, K extends Data>(
   snapshotId: string | number,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K> | undefined> => {
-  return apiCall<Data>(
+  return apiCall<T, K>(
     `${API_BASE_URL}/snapshot/${snapshotId}`,
     'GET',
     undefined,
@@ -182,7 +186,7 @@ function getSnapshotData<T extends Data, K extends Data>(
   snapshotId: string | number,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K> | undefined> {
-  return apiCall<Data>(
+  return apiCall<T, K>(
     `${API_BASE_URL}/snapshot/${snapshotId}`,
     'GET',
     undefined,
@@ -908,7 +912,7 @@ const getSortedList = async <T extends Data, K extends Data>(
   }
 };
 
-const removeSnapshot = async (snapshotId: number | null): Promise<void> => {
+const removeSnapshot = async (snapshotId: string | null): Promise<void> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -1018,7 +1022,6 @@ function extractCriteria<T extends Data>(
   }, {} as Partial<FilterState>);
 }
 
-
 const getSnapshotCriteria = async <T extends Data, K extends Data>(
   snapshotContainer: SnapshotContainer<T, K>,
   snapshot?: (
@@ -1083,7 +1086,7 @@ const getSnapshotCriteria = async <T extends Data, K extends Data>(
 };
 
 const getSnapshotStoreId = async (
-  snapshotId: number | null
+  snapshotId: string | null
 ): Promise<number> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
@@ -1118,16 +1121,16 @@ const getSnapshotStoreId = async (
 
 
 const getSnapshotConfig = <T extends Data, K extends Data>(
-  snapshotId: number | null,
+  snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
   category: symbol | string | Category | undefined,
-  categoryProperties: CategoryProperties,
+  categoryProperties: CategoryProperties | undefined,
   delegate: any,
   snapshot: (
     id: string,
-    snapshotId: number | null,
-    snapshotData: Snapshot<T, K>,
+    snapshotId: string | null,
+    snapshotData: SnapshotDataType<T, K>,
     category: symbol | string | Category | undefined,
     callback: (snapshotStore: Snapshot<T, K>) => void,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
@@ -1176,7 +1179,7 @@ const getSnapshotConfig = <T extends Data, K extends Data>(
           snapshot(
             `${snapshotId}`,
             snapshotId,
-            snapshotContainer.snapshotData,
+            snapshotContainer.snapshotData ?? snapshotContainer.snapshotData,
             category,
             (snapshotStore: Snapshot<T, K>) => {
               // Handle the snapshotStore as needed
@@ -1186,7 +1189,7 @@ const getSnapshotConfig = <T extends Data, K extends Data>(
             
               if (shouldUpdateState) {
                 // Update the state with the snapshotStore
-                dispatch(updateSnapshotStore(snapshotStore));
+                dispatch(useSnapshotStore(addToSnapshotList).updateSnapshotStore(snapshotStore));
               }
             
               if (shouldLog) {
@@ -1221,7 +1224,7 @@ const getSnapshotConfig = <T extends Data, K extends Data>(
 
 
 const getSnapshotStoreConfigData =  <T extends Data, K extends Data>(
-  snapshotId: number | null,
+  snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
   storeId: number,
@@ -1261,8 +1264,49 @@ const getSnapshotStoreConfigData =  <T extends Data, K extends Data>(
   })
 };
 
+
+const getSnapshotConfigData = <T extends Data, K extends Data>(
+  snapshotId: string | null,
+  snapshotContainer: SnapshotContainer<T, K>,
+  criteria: CriteriaType,
+  storeId: number):
+  Promise<SnapshotConfig<T, K>> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const userId = localStorage.getItem("userId");
+      const currentAppVersion = configData.currentAppVersion;
+      const authenticationHeaders: AuthenticationHeaders =
+        createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+      const headersArray = [
+        authenticationHeaders,
+        createCacheHeaders(),
+        createContentHeaders(),
+        generateCustomHeaders({}),
+        createRequestHeaders(accessToken || ""),
+      ];
+      const headers = Object.assign({}, ...headersArray);
+      const response = await axiosInstance.post<SnapshotConfig<T, K>>(
+        `${API_BASE_URL}/${snapshotId}/config`,
+        {
+          snapshotContainer,
+          criteria,
+        },
+        {
+          headers: headers as Record<string, string>,
+        }
+      );
+      resolve(response.data);
+    } catch (error) {
+      const errorMessage = "Failed to get snapshot config";
+      handleApiError(error as AxiosError<unknown>, errorMessage);
+      reject(error);
+    }
+  })
+}
+
 const getSnapshotStoreConfig = <T extends Data, K extends Data>(
-  snapshotId: number | null,
+  snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
   storeId: number
@@ -1342,10 +1386,13 @@ const getSnapshotStore = <T extends Data, K extends Data>(
 
 export {
   addSnapshot,
-  addSnapshotSuccess, createSnapshot, fetchAllSnapshots, fetchSnapshotById,
-  fetchSnapshotIds, fetchSnapshotStoreData, findSubscriberById, getSnapshot, getSnapshotConfig, getSnapshotCriteria, getSnapshotData, getSnapshotId, getSnapshots, getSnapshotStore, getSnapshotStoreConfig, getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
+  addSnapshotSuccess, apiCall, createSnapshot, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
+  fetchSnapshotIds, fetchSnapshotStoreData, findSubscriberById, getSnapshot, getSnapshotConfig,
+  getSnapshotCriteria, getSnapshotData,
+  getSnapshotId, getSnapshots, getSnapshotStore,
+  getSnapshotStoreConfig,getSnapshotConfigData,
+  getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
   handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode,
-  mergeSnapshots, removeSnapshot, saveSnapshotToDatabase, snapshotContainer,
-  takeSnapshot, apiCall
+  mergeSnapshots, removeSnapshot, saveSnapshotToDatabase, snapshotContainer, takeSnapshot
 };
 

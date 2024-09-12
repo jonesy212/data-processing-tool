@@ -1,17 +1,6 @@
 // DocumentCreationUtils.ts
 import { PDFDocument, rgb } from 'pdf-lib';
-
-interface DocumentFormattingOptions {
-  fontSize?: number;
-  textColor?: string;
-  backgroundColor?: string;
-  fontFamily?: string;
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
-  // Add more formatting options as needed
-}
-
+import { DocumentFormattingOptions } from './ DocumentFormattingOptionsComponent';
 
 
 export const getFormattedOptions = (userOptions: DocumentFormattingOptions): DocumentFormattingOptions => {
@@ -24,6 +13,7 @@ export const getFormattedOptions = (userOptions: DocumentFormattingOptions): Doc
       bold: false,
       italic: false,
       underline: false,
+      margin: 20,
       // Add more default options as needed
     };
   

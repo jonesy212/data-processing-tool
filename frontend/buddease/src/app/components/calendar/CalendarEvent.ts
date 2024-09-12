@@ -14,6 +14,7 @@ import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Attendee } from "./Attendee";
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 //CalendarEvent.t
 interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
@@ -31,7 +32,7 @@ interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
   action?: string;
   changes?: string[];
   date: Date | undefined;
-  tags?: TagsRecord
+  tags?: TagsRecord | string[] | undefined; // Update as needed based on your schema
   meta: Data | undefined;
 
   options?: {
@@ -60,7 +61,7 @@ interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
   pinned?: boolean;
   archived?: boolean;
   documentReleased?: boolean;
-  metadata?: StructuredMetadata | ProjectMetadata 
+  metadata?: UnifiedMetaDataOptions;
   getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
 
   

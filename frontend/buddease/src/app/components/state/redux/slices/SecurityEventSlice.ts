@@ -1,4 +1,6 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
+import { StatusUpdate, SubscriptionCriteria } from '@/app/generators/SubscriptionCriteria';
+import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SecurityEvent {
@@ -27,24 +29,25 @@ export const createEvent = createAsyncThunk(
 );
 
 
-export const fetchEvents = createAsyncThunk(
+
+export const fetchSecurityEvents = createAsyncThunk(
   'securityEvents/fetchEvents',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await fetch(endpoints.security.fetchEvents as string); // Using the fetchEvents endpoint from endpoints
       if (!response.ok) {
-        throw new Error("Failed to fetch security events");
+        // If the response is not ok, throw an error with the status text
+        throw new Error(response.statusText || "Failed to fetch security events");
       }
       const events = await response.json();
-      return events;
-    } catch (error) {
+      return events; // Return the fetched events
+    } catch (error: any) {
+      // Log the error and return it using rejectWithValue
       console.error("Error fetching security events:", error);
-      return [];
+      return rejectWithValue(error.message || "Failed to fetch security events");
     }
   }
 );
-
-
 
 export const viewEventDetails = createAsyncThunk(
   'securityEvents/viewEventDetails',
@@ -74,19 +77,64 @@ export const exportEvents = createAsyncThunk(
   }
 );
 
+
+// Define the thunk
 export const subscribeToEvents = createAsyncThunk(
   'securityEvents/subscribeToEvents',
-  async (subscriptionCriteria: SubscriptionCriteria) => {
-    // Logic to subscribe to receive notifications or alerts for specific types of security events
+  async (subscriptionCriteria: SubscriptionCriteria, { rejectWithValue }) => {
+    try {
+      // Replace the URL with your subscription endpoint
+      const response = await fetch('/api/subscribe-to-events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(subscriptionCriteria),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to subscribe to events');
+      }
+
+      // Return the response data if needed
+      return await response.json();
+    } catch (error: any) {
+      console.error('Error subscribing to events:', error);
+      return rejectWithValue(error.message || 'Subscription failed');
+    }
   }
 );
 
+
+
+// Define the thunk
 export const manageEventStatus = createAsyncThunk(
   'securityEvents/manageEventStatus',
-  async (statusUpdate: StatusUpdate) => {
-    // Logic to change the status of security events, such as marking them as resolved or closed
+  async (statusUpdate: StatusUpdate, { rejectWithValue }) => {
+    try {
+      // Replace the URL with your status update endpoint
+      const response = await fetch(`/api/events/${statusUpdate.eventId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: statusUpdate.status, comments: statusUpdate.comments }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update event status');
+      }
+
+      // Return the updated event status if needed
+      return await response.json();
+    } catch (error: any) {
+      console.error('Error updating event status:', error);
+      return rejectWithValue(error.message || 'Status update failed');
+    }
   }
 );
+
+
 
 export const useSecurityEventSlice = createSlice({
   name: "securityEvents",
@@ -112,7 +160,7 @@ export const useSecurityEventSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchEvents.fulfilled, (state, action) => {
+      .addCase(fetchSecurityEvents.fulfilled, (state, action) => {
         state.events = action.payload;
       })
       .addCase(createEvent.fulfilled, (state, action) => {

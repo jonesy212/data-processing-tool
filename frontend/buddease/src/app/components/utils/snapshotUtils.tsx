@@ -15,12 +15,16 @@ import { Subscription } from "../subscriptions/Subscription";
 import { useNotification } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "../snapshots";
+import { SnapshotConfig, SnapshotWithCriteria } from "../snapshots";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { IHydrateResult } from "mobx-persist";
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
+}
+
+function isSnapshotConfig<T, K>(config: any): config is SnapshotConfig<T, K> {
+  return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
 // Type guard function to check if a snapshot is a SnapshotStoreObject<BaseData, any>
@@ -162,6 +166,7 @@ export const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
 
   const subscriptionData: Subscription<T, K> | null = snapshot.data
     ? {
+        name: snapshot.name ? snapshot.name : undefined,
         unsubscribe: (): void => {},
         portfolioUpdates: (): void => {},
         tradeExecutions: (): void => {},

@@ -29,6 +29,8 @@ import { CollaborationStore, useCollaborationStore } from './CollaborationStore'
 import useVideoStore, { VideoStore } from './VideoStore';
 import useUIStore from '../../libraries/ui/useUIStore';
 import useUserProfile from '../../hooks/useUserProfile';
+import { CalendarActionPayload, CalendarActionType } from '../../database/CalendarActionPayload';
+import { EventStore } from '../../event/EventStore';
  
 export interface Dispatchable {
   dispatch(action: any): void;
@@ -53,6 +55,7 @@ export interface MobXRootState {
   calendarManager: CalendarManagerStore;
   todoManager: TodoManagerStore;
   documentManager: DocumentStore;
+  
   apiManager: ApiManagerStore;
   realtimeManager: RealtimeManagerStore;
   eventManager: EventManagerStore;
@@ -79,7 +82,7 @@ export class RootStores {
   taskManager: TaskManagerStore;
   trackerManager: TrackerStore;
   userManager: UserStore;
-  teamManager: TeamManagerStore;
+  teamManager: TeamManagerStore<T, K>;
   projectOwner: ProjectManagerStore;
   dataManager: DataStore<any, any>;
   dataAnalysisManager: DataAnalysisManagerStore;
@@ -88,7 +91,7 @@ export class RootStores {
   documentManager: DocumentStore;
   apiManager: ApiManagerStore;
   realtimeManager: RealTimeDataStore;
-  eventManager: EventManagerStore;
+  eventManager: EventStore;
   collaborationManager: CollaborationStore;
   entityManager: EntityStore;
   notificationManager: NotificationStore;
@@ -113,13 +116,14 @@ export class RootStores {
     this.taskManager = useTaskManagerStore();
     this.trackerManager = useTrackerStore(props);
     this.userManager = userManagerStore();
-    this.teamManager = new TeamManagerStore();
+    this.teamManager = useTeamManagerStore(storeId);
     this.projectOwner = useProjectManagerStore();
     this.dataManager = useDataStore(props);
     this.dataAnalysisManager = useDataAnalysisManagerStore(props);
     this.calendarManager = useCalendarManagerStore();
     this.todoManager = useTodoManagerStore(props);
     this.documentManager = useDocumentStore();
+    
     this.apiManager = useApiManagerStore();
     this.realtimeManager = useRealtimeManagerStore(props);
     this.eventManager = useEventManagerStore(props);
@@ -165,12 +169,12 @@ export class RootStores {
   }
 
   @action
-  public setDocumentReleaseStatus(id: string, status: string, isReleased: boolean) {
-    this.documentManager.setDocumentReleaseStatus(id, status, isReleased);
+  public setDocumentReleaseStatus(id: number, eventId: number, status: string, isReleased: boolean) {
+    this.documentManager.setDocumentReleaseStatus(id, eventId, status, isReleased);
   }
 
   @action
-  public getSnapshotDataKey(documentId: string, eventId: string, userId: string) {
+  public getSnapshotDataKey(documentId: string, eventId: number, userId: string) {
     return this.documentManager.getSnapshotDataKey(documentId, eventId, userId)
   }
 
@@ -180,8 +184,13 @@ export class RootStores {
   }
 
   @action
-  public updateDocumentReleaseStatus(id: string, status: string, isReleased: boolean) {
-    this.documentManager.updateDocumentReleaseStatus(id, status, isReleased);
+  public updateDocumentReleaseStatus(id: number, eventId: number, status: string, isReleased: boolean) {
+    this.documentManager.updateDocumentReleaseStatus(id, eventId, status, isReleased);
+  }
+
+  @action
+  public action(type: CalendarActionType, payload: CalendarActionPayload<T, K>) {
+    this.calendarManager.action(type, payload);
   }
 
   public getState(): MobXRootState {
@@ -200,7 +209,7 @@ export class RootStores {
   }
 }
 
-export const rootStores = new RootStores();
+export const rootStores = new RootStores(props);
 
 class BrowserCheckStore {
   rootStores?: RootStores;

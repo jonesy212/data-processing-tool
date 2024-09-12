@@ -29,12 +29,12 @@ import axiosInstance from "../components/security/csrfToken";
 import { selectApiConfigs } from "../components/state/redux/slices/ApiSlice";
 import { UserData } from "../components/users/User";
 import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
+import UniqueIDGenerator from "../generators/GenerateUniqueIds";
+import { id_ID } from "@faker-js/faker";
+import { TrackerProps } from "../components/models/tracker/Tracker";
 
-const ApiConfigComponent: React.FC = () => {
-  const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Specify correct type
-  const [showProfileSetup, setShowProfileSetup] = useState(false);
-  const userPreferences = useSelector((state: any) => state.userPreferences);
-  const [filePath, setFilePath] = useState<string>('');
+
+const handleFileChanges = (file: FileData): FileData => file; // Handles file change logic
 
   // Access API configurations from Redux state
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
@@ -80,6 +80,33 @@ const ApiConfigComponent: React.FC = () => {
     setShowProfileSetup(false);
   };
 
+
+
+  const generateTrackerID = UniqueIDGenerator.generateTrackerID(
+    name, type, id)
+   
+// Function to generate dynamic tracker props based on user preferences or conditions
+const getDynamicTrackerProps = (userPreferences: typeof UserPreferences): TrackerProps => {
+  return {
+    id: userPreferences.trackerId || generateTrackerID, // Function to dynamically generate or fetch the tracker ID
+    name: "dynamic-task-tracker", // You can set this dynamically based on preferences
+    phases: [], // Dynamically fetch or calculate the phases here
+    trackFileChanges: (file: FileData) => handleFileChanges(file), // Your dynamic file handler
+
+    // Dynamic stroke settings based on user preferences
+    stroke: {
+      width: userPreferences.strokeWidth || 1, // Default to 1 if undefined
+      color: userPreferences.strokeColor || "black" // Default to "black" if undefined
+    },
+    strokeWidth: userPreferences.strokeWidth || 2, // Default value if undefined
+    fillColor: userPreferences.fillColor || "blue", // Default value if undefined
+    flippedX: userPreferences.isFlippedX || false, // Set dynamically based on user preferences
+    flippedY: userPreferences.isFlippedY || false, // Set dynamically based on user preferences
+    x: userPreferences.position?.x || 0, // Dynamic X-coordinate (default to 0)
+    y: userPreferences.position?.y || 0  // Dynamic Y-coordinate (default to 0)
+  };
+};
+
   // Example usage of userPreferences.modules, userPreferences.actions, and userPreferences.reducers
   const renderModuleContent = (userPreferences: typeof UserPreferences) => {
     switch (userPreferences.modules) {
@@ -92,8 +119,19 @@ const ApiConfigComponent: React.FC = () => {
               name: "task-tracker",
               id: "taskId",
               phases: {} as Phase[],
-              trackFileChanges: (file: FileData) => file,
-              trackFolderChanges(
+          trackFileChanges: (file: FileData) => file,
+              // Updated key-value pairs
+              stroke: {
+                width: 0,
+                color: "black"
+              }, 
+              strokeWidth: 2,   // Replace with actual stroke width value
+              fillColor: "blue", // Replace with actual fill color
+              flippedX: false,   // Set flippedX as true/false based on condition
+              flippedY: false,   // Set flippedY as true/false based on condition
+              x: 10,             // X-coordinate (replace with actual value)
+              y: 20,             // Y-coordinate (replace with actual value)
+          trackFolderChanges(
                 content: FileData,
                 fileLoader?: FileData,
               ) {
@@ -125,7 +163,8 @@ const ApiConfigComponent: React.FC = () => {
                 console.log("Sending notification:", notification, userData);
                 return notification;
               },
-            }}
+            }
+            }
           />
         );
       // Add cases for other module types

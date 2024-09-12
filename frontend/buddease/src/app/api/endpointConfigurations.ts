@@ -53,6 +53,80 @@ interface EndpointConfigurations {
     deleteHighlight: EndpointConfig;
     uploadData: EndpointConfig;
   };
+
+  documents: {
+    list: EndpointConfig;
+    single: (documentId: string) => EndpointConfig;
+    add: EndpointConfig;
+    remove: (documentId: string) => EndpointConfig;
+    update: (documentId: string) => EndpointConfig;
+    download: (documentId: string) => EndpointConfig;
+    search: EndpointConfig;
+    filter: EndpointConfig;
+    upload: EndpointConfig;
+    share: EndpointConfig;
+    lock: EndpointConfig;
+    unlock: EndpointConfig;
+    archive: EndpointConfig;
+    restore: EndpointConfig;
+    move: EndpointConfig;
+    copy: EndpointConfig;
+    rename: EndpointConfig;
+    changePermissions: EndpointConfig;
+    merge: EndpointConfig;
+    split: EndpointConfig;
+    validate: EndpointConfig;
+    encrypt: EndpointConfig;
+    decrypt: EndpointConfig;
+    trackChanges: EndpointConfig;
+    compare: EndpointConfig;
+    tag: EndpointConfig;
+    categorize: EndpointConfig;
+    customizeView: EndpointConfig;
+    comment: EndpointConfig;
+    mentionUser: EndpointConfig;
+    assignTask: EndpointConfig;
+    requestReview: EndpointConfig;
+    approve: EndpointConfig;
+    reject: EndpointConfig;
+    requestFeedback: EndpointConfig;
+    provideFeedback: EndpointConfig;
+    resolveFeedback: EndpointConfig;
+    collaborativeEditing: EndpointConfig;
+    smartTagging: EndpointConfig;
+    annotation: EndpointConfig;
+    activityLogging: EndpointConfig;
+    intelligentSearch: EndpointConfig;
+    createVersion: EndpointConfig;
+    revertVersion: EndpointConfig;
+    viewHistory: EndpointConfig;
+    compareVersions: EndpointConfig;
+    grantAccess: EndpointConfig;
+    revokeAccess: EndpointConfig;
+    managePermissions: EndpointConfig;
+    initiateWorkflow: EndpointConfig;
+    automateTasks: EndpointConfig;
+    triggerEvents: EndpointConfig;
+    approvalWorkflow: EndpointConfig;
+    lifecycleManagement: EndpointConfig;
+    connectExternalSystem: EndpointConfig;
+    synchronizeStorage: EndpointConfig;
+    importFromExternal: EndpointConfig;
+    exportToExternal: EndpointConfig;
+    generateReport: EndpointConfig;
+    exportReport: EndpointConfig;
+    scheduleReport: EndpointConfig;
+    customizeReport: EndpointConfig;
+    manageSubscriptions: EndpointConfig;
+    handleSubscriptions: EndpointConfig;
+    notificationSettings: EndpointConfig
+    notifyChanges: EndpointConfig
+    backup: EndpointConfig;
+    retrieveBackup: EndpointConfig;
+    redact: EndpointConfig;
+    accessControls: EndpointConfig;
+    templates: EndpointConfig;
+  };
   delegates: {
     list: EndpointConfig;
     single: (delegateId: number) => EndpointConfig;
@@ -211,6 +285,170 @@ const endpointConfigurations: EndpointConfigurations = {
     deleteHighlight: { path: "/api/highlights/{highlightId}", method: "DELETE" },
     uploadData: { path: "/api/data/upload", method: "POST" },
   },
+
+  documents: {
+    // List all documents
+    list: { path: `${BASE_URL}/api/documents`, method: "GET" },
+    // Get a single document by its ID
+    single: (documentId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/documents/${documentId}`,
+      method: "GET",
+    }),
+  
+    // Add a new document
+    add: { path: `${BASE_URL}/api/documents`, method: "POST" },
+
+    // Remove a document by its ID
+    remove: (documentId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/documents/${documentId}`,
+      method: "DELETE",
+    }),
+  
+    // Update a document by its ID
+    update: (documentId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/documents/${documentId}`,
+      method: "PUT",
+    }),
+  
+    // Download a document by its ID
+    download: (documentId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/documents/downloadDocument/${documentId}`,
+      method: "GET",
+    }),
+   
+    // Search for documents
+    search: { path: `${BASE_URL}/api/documents/search`, method: "POST" },
+    // Filter documents
+    filter: { path: `${BASE_URL}/api/documents/filter`, method: "POST" },
+    // Upload a document
+    upload: { path: `${BASE_URL}/api/documents/upload`, method: "POST" },
+    // Share a document
+    share: { path: `${BASE_URL}/api/documents/share`, method: "POST" },
+    // Lock a document
+    lock: { path: `${BASE_URL}/api/documents/lock`, method: "POST" },
+    // Unlock a document
+    unlock: { path: `${BASE_URL}/api/documents/unlock`, method: "POST" },
+    // Archive a document
+    archive: { path: `${BASE_URL}/api/documents/archive`, method: "POST" },
+    // Restore a document
+    restore: { path: `${BASE_URL}/api/documents/restore`, method: "POST" },
+    // Move a document
+    move: { path: `${BASE_URL}/api/documents/move`, method: "POST" },
+    // Copy a document
+    copy: { path: `${BASE_URL}/api/documents/copy`, method: "POST" },
+    // Rename a document
+    rename: { path: `${BASE_URL}/api/documents/rename`, method: "PUT" },
+    // Change permissions on a document
+    changePermissions: { path: `${BASE_URL}/api/documents/changePermissions`, method: "POST" },
+    // Merge documents
+    merge: { path: `${BASE_URL}/api/documents/merge`, method: "POST" },
+    // Split a document
+    split: { path: `${BASE_URL}/api/documents/split`, method: "POST" },
+    // Validate a document
+    validate: { path: `${BASE_URL}/api/documents/validate`, method: "POST" },
+    // Encrypt a document
+    encrypt: { path: `${BASE_URL}/api/documents/encrypt`, method: "POST" },
+    // Decrypt a document
+    decrypt: { path: `${BASE_URL}/api/documents/decrypt`, method: "POST" },
+    // Track changes in a document
+    trackChanges: { path: `${BASE_URL}/api/documents/trackChanges`, method: "POST" },
+    // Compare two documents
+    compare: { path: `${BASE_URL}/api/documents/compare`, method: "POST" },
+    // Tag a document
+    tag: { path: `${BASE_URL}/api/documents/tag`, method: "POST" },
+    // Categorize a document
+    categorize: { path: `${BASE_URL}/api/documents/categorize`, method: "POST" },
+    // Customize the view for a document
+    customizeView: { path: `${BASE_URL}/api/documents/customizeView`, method: "POST" },
+    // Comment on a document
+    comment: { path: `${BASE_URL}/api/documents/comment`, method: "POST" },
+    // Mention a user in a document
+    mentionUser: { path: `${BASE_URL}/api/documents/mentionUser`, method: "POST" },
+    // Assign a task in a document
+    assignTask: { path: `${BASE_URL}/api/documents/assignTask`, method: "POST" },
+    // Request a review of a document
+    requestReview: { path: `${BASE_URL}/api/documents/requestReview`, method: "POST" },
+    // Approve a document
+    approve: { path: `${BASE_URL}/api/documents/approve`, method: "POST" },
+    // Reject a document
+    reject: { path: `${BASE_URL}/api/documents/reject`, method: "POST" },
+    // Request feedback on a document
+    requestFeedback: { path: `${BASE_URL}/api/documents/requestFeedback`, method: "POST" },
+    // Provide feedback on a document
+    provideFeedback: { path: `${BASE_URL}/api/documents/provideFeedback`, method: "POST" },
+    // Resolve feedback on a document
+    resolveFeedback: { path: `${BASE_URL}/api/documents/resolveFeedback`, method: "POST" },
+    // Collaborative editing of a document
+    collaborativeEditing: { path: `${BASE_URL}/api/documents/collaborativeEditing`, method: "POST" },
+    // Smart tagging of documents
+    smartTagging: { path: `${BASE_URL}/api/documents/smartTagging`, method: "POST" },
+    // Annotate a document
+    annotation: { path: `${BASE_URL}/api/documents/annotation`, method: "POST" },
+    // Log document activity
+    activityLogging: { path: `${BASE_URL}/api/documents/activityLogging`, method: "POST" },
+    // Intelligent search for documents
+    intelligentSearch: { path: `${BASE_URL}/api/documents/intelligentSearch`, method: "POST" },
+    // Create a new version of a document
+    createVersion: { path: `${BASE_URL}/api/documents/createVersion`, method: "POST" },
+    // Revert to a previous version of a document
+    revertVersion: { path: `${BASE_URL}/api/documents/revertVersion`, method: "POST" },
+    // View the history of a document
+    viewHistory: { path: `${BASE_URL}/api/documents/viewHistory`, method: "GET" },
+    // Compare versions of a document
+    compareVersions: { path: `${BASE_URL}/api/documents/compareVersions`, method: "POST" },
+    // Grant access to a document
+    grantAccess: { path: `${BASE_URL}/api/documents/grantAccess`, method: "POST" },
+    // Revoke access to a document
+    revokeAccess: { path: `${BASE_URL}/api/documents/revokeAccess`, method: "POST" },
+    // Manage permissions for a document
+    managePermissions: { path: `${BASE_URL}/api/documents/managePermissions`, method: "POST" },
+    // Initiate a workflow for a document
+    initiateWorkflow: { path: `${BASE_URL}/api/documents/initiateWorkflow`, method: "POST" },
+    // Automate tasks related to a document
+    automateTasks: { path: `${BASE_URL}/api/documents/automateTasks`, method: "POST" },
+    // Trigger events related to a document
+    triggerEvents: { path: `${BASE_URL}/api/documents/triggerEvents`, method: "POST" },
+    // Manage the document approval workflow
+    approvalWorkflow: { path: `${BASE_URL}/api/documents/approvalWorkflow`, method: "POST" },
+    // Manage the document lifecycle
+    lifecycleManagement: { path: `${BASE_URL}/api/documents/lifecycleManagement`, method: "POST" },
+    // Connect a document to an external system
+    connectExternalSystem: { path: `${BASE_URL}/api/documents/connectExternalSystem`, method: "POST" },
+    // Synchronize a document with cloud storage
+    synchronizeStorage: { path: `${BASE_URL}/api/documents/synchronizeStorage`, method: "POST" },
+    // Import a document from an external source
+    importFromExternal: { path: `${BASE_URL}/api/documents/importFromExternal`, method: "POST" },
+    // Export a document to an external system
+    exportToExternal: { path: `${BASE_URL}/api/documents/exportToExternal`, method: "POST" },
+    // Generate a report for a document
+    generateReport: { path: `${BASE_URL}/api/documents/generateReport`, method: "POST" },
+    // Export a report for a document
+    exportReport: { path: `${BASE_URL}/api/documents/exportReport`, method: "POST" },
+    // Schedule a report generation for a document
+    scheduleReport: { path: `${BASE_URL}/api/documents/scheduleReport`, method: "POST" },
+    // Customize the report for a document
+    customizeReport: { path: `${BASE_URL}/api/documents/customizeReport`, method: "POST" },
+    // Manage subscriptions to document updates
+    manageSubscriptions: { path: `${BASE_URL}/api/documents/manageSubscriptions`, method: "POST" },
+    // Handle document subscriptions
+    handleSubscriptions: { path: `${BASE_URL}/api/documents/handleSubscriptions`, method: "POST" },
+    // Notify users of document changes
+    notifyChanges: { path: `${BASE_URL}/api/documents/notifyChanges`, method: "POST" },
+    // Retrieve notification settings for documents
+    notificationSettings: { path: `${BASE_URL}/api/documents/notificationSettings`, method: "POST" },
+    // Backup documents
+    backup: { path: `${BASE_URL}/api/documents/backup`, method: "POST" },
+    // Retrieve a backup
+    retrieveBackup: { path: `${BASE_URL}/api/documents/retrieveBackup`, method: "GET" },
+    // Redact a document
+    redact: { path: `${BASE_URL}/api/documents/redact`, method: "PUT" },
+    // Access controls for documents
+    accessControls: { path: `${BASE_URL}/api/documents/accessControls`, method: "POST" },
+    // Get document templates
+    templates: { path: `${BASE_URL}/api/documents/templates`, method: "GET" },
+
+  },  
+  
   delegates: {
     list: { path: "/api/delegates", method: "GET" },
     single: (delegateId: number) => ({ path: `/api/delegates/${delegateId}`, method: "GET" }),
@@ -451,6 +689,79 @@ const updatedEndpoints = {
     publish: (newsId: number) => generateEndpointUrl("news", `publish/${newsId}`),
     unpublish: (newsId: number) => generateEndpointUrl("news", `unpublish/${newsId}`),
   }),
+
+
+
+  documents: mergeConfigurations(endpointConfigurations.documents, {
+    list: generateEndpointUrl("documents", "list"),
+    single: (documentId: string) => generateEndpointUrl("documents", `single/${documentId}`),
+    add: generateEndpointUrl("documents", "add"),
+    remove: (documentId: string) => generateEndpointUrl("documents", `remove/${documentId}`),
+    update: (documentId: string) => generateEndpointUrl("documents", `update/${documentId}`),
+    download: (documentId: string) => generateEndpointUrl("documents", `download/${documentId}`),
+    search: generateEndpointUrl("documents", "search"),
+    filter: generateEndpointUrl("documents", "filter"),
+    upload: generateEndpointUrl("documents", "upload"),
+    share: generateEndpointUrl("documents", "share"),
+    lock: generateEndpointUrl("documents", "lock"),
+    unlock: generateEndpointUrl("documents", "unlock"),
+    archive: generateEndpointUrl("documents", "archive"),
+    restore: generateEndpointUrl("documents", "restore"),
+    move: generateEndpointUrl("documents", "move"),
+    copy: generateEndpointUrl("documents", "copy"),
+    rename: generateEndpointUrl("documents", "rename"),
+    changePermissions: generateEndpointUrl("documents", "changePermissions"),
+    merge: generateEndpointUrl("documents", "merge"),
+    split: generateEndpointUrl("documents", "split"),
+    validate: generateEndpointUrl("documents", "validate"),
+    encrypt: generateEndpointUrl("documents", "encrypt"),
+    decrypt: generateEndpointUrl("documents", "decrypt"),
+    trackChanges: generateEndpointUrl("documents", "trackChanges"),
+    compare: generateEndpointUrl("documents", "compare"),
+    tag: generateEndpointUrl("documents", "tag"),
+    categorize: generateEndpointUrl("documents", "categorize"),
+    customizeView: generateEndpointUrl("documents", "customizeView"),
+    comment: generateEndpointUrl("documents", "comment"),
+    mentionUser: generateEndpointUrl("documents", "mentionUser"),
+    assignTask: generateEndpointUrl("documents", "assignTask"),
+    requestReview: generateEndpointUrl("documents", "requestReview"),
+    approve: generateEndpointUrl("documents", "approve"),
+    reject: generateEndpointUrl("documents", "reject"),
+    requestFeedback: generateEndpointUrl("documents", "requestFeedback"),
+    provideFeedback: generateEndpointUrl("documents", "provideFeedback"),
+    resolveFeedback: generateEndpointUrl("documents", "resolveFeedback"),
+    collaborativeEditing: generateEndpointUrl("documents", "collaborativeEditing"),
+    smartTagging: generateEndpointUrl("documents", "smartTagging"),
+    annotation: generateEndpointUrl("documents", "annotation"),
+    activityLogging: generateEndpointUrl("documents", "activityLogging"),
+    intelligentSearch: generateEndpointUrl("documents", "intelligentSearch"),
+    createVersion: generateEndpointUrl("documents", "createVersion"),
+    revertVersion: generateEndpointUrl("documents", "revertVersion"),
+    viewHistory: generateEndpointUrl("documents", "viewHistory"),
+    compareVersions: generateEndpointUrl("documents", "compareVersions"),
+    grantAccess: generateEndpointUrl("documents", "grantAccess"),
+    revokeAccess: generateEndpointUrl("documents", "revokeAccess"),
+    managePermissions: generateEndpointUrl("documents", "managePermissions"),
+    initiateWorkflow: generateEndpointUrl("documents", "initiateWorkflow"),
+    automateTasks: generateEndpointUrl("documents", "automateTasks"),
+    triggerEvents: generateEndpointUrl("documents", "triggerEvents"),
+    approvalWorkflow: generateEndpointUrl("documents", "approvalWorkflow"),
+    lifecycleManagement: generateEndpointUrl("documents", "lifecycleManagement"),
+    connectExternalSystem: generateEndpointUrl("documents", "connectExternalSystem"),
+    synchronizeStorage: generateEndpointUrl("documents", "synchronizeStorage"),
+    importFromExternal: generateEndpointUrl("documents", "importFromExternal"),
+    exportToExternal: generateEndpointUrl("documents", "exportToExternal"),
+    generateReport: generateEndpointUrl("documents", "generateReport"),
+    exportReport: generateEndpointUrl("documents", "exportReport"),
+    scheduleReport: generateEndpointUrl("documents", "scheduleReport"),
+    customizeReport: generateEndpointUrl("documents", "customizeReport"),
+    backup: generateEndpointUrl("documents", "backup"),
+    retrieveBackup: generateEndpointUrl("documents", "retrieveBackup"),
+    redact: generateEndpointUrl("documents", "redact"),
+    accessControls: generateEndpointUrl("documents", "accessControls"),
+    templates: generateEndpointUrl("documents", "templates"),
+  }),
+  
 
   sorting: mergeConfigurations(endpointConfigurations.sorting, {
     sortEvents: generateEndpointUrl("sorting", "sortEvents"),

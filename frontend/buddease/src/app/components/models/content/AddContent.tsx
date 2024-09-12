@@ -1,6 +1,6 @@
 // AddContent.tsx
 
-import ContentItemComponent from '@/app/components/models/content/ContentItem';
+import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
 import { Persona } from "@/app/pages/personas/Persona";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
@@ -20,6 +20,7 @@ interface Content<T extends Data> {
   categoryProperties: string | CategoryProperties | undefined,
   timestamp: string | number | Date,
   length: 0,
+  items: ContentItem[],
   data: T | SnapshotWithCriteria<T, Data> | CustomSnapshotData | null | undefined,
 }
 
@@ -55,6 +56,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
       length: 0,
       data: undefined,
       categoryProperties: undefined,
+      items: []
     };
 
     // Send new content to server or perform other actions
@@ -481,9 +483,10 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               role: UserRoles.Administrator,
               persona: {} as Persona,
               snapshots: [],
-              token: null
+              token: null,
+              followers: [],
+              preferences: {},
               // other properties
-              ,
 
 
               avatarUrl: null,
@@ -499,7 +502,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               settings: null,
               interests: [],
               privacySettings: undefined,
-              notifications: undefined,
+              notificationSettings: undefined,
               activityLog: [],
               socialLinks: undefined,
               relationshipStatus: null,

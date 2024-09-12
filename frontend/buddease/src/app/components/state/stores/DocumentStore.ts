@@ -1,18 +1,19 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { useNotification } from '@/app/components/support/NotificationContext';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Comment } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
+import { TagsRecord } from "../../snapshots";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
 import { userService } from "../../users/ApiUser";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { AxiosError } from "axios";
-import { TagsRecord } from "../../snapshots";
+import { UserRoleEnum } from "../../users/UserRoles";
 
 
 
@@ -28,15 +29,18 @@ interface DocumentBase {
   title: string;
   content: string;
   description?: string | null | undefined;
-  tags?: TagsRecord;
+   tags?: TagsRecord | string[] | undefined; 
   createdAt: string | Date | undefined;
   updatedAt?: string | Date;
-  createdBy: string;
+  createdBy: string | undefined;
   updatedBy: string;
   visibility: AllTypes;
+
+  documentData?: DocumentData;
   comments?: Comment[];
-  selectedDocument: DocumentData | null;
+  // selectedDocument: DocumentData | null;
   selectedDocuments?: DocumentData[];
+  
 }
 
 interface DocumentMetadata {
@@ -90,8 +94,6 @@ interface DocumentAdditionalProps {
   onfullscreenchange?: ((this: Document, ev: Event) => any) | null;
   onfullscreenerror?: ((this: Document, ev: Event) => any) | null;
 
-
-
   onpointerlockerror?: ((this: Document, ev: Event) => any) | null;
   onpointerlockchange?: ((this: Document, ev: Event) => any) | null
   onreadystatechange?: ((this: Document, ev: Event) => any) | null;
@@ -104,7 +106,6 @@ interface DocumentAdditionalProps {
   scripts?: any;
   visibilityState?: string;
   vliinkColor?: string;
-
 }
 
 
@@ -119,9 +120,11 @@ interface DocumentAdditionalProps {
   doctype: DocumentType | null;
   ownerDocument: Document | null;
   scrollingElement: Element | null;
+  requiredRole?: UserRoleEnum;
   timeline: DocumentTimeline | undefined;
   filePath?: DocumentPath;
   documentData?: DocumentData;
+  isPrivate?: boolean;
   _rev: string | undefined;
   _attachments?: Record<string, any> | undefined;
   _links?: Record<string, any> | undefined;
@@ -132,7 +135,7 @@ interface DocumentAdditionalProps {
   _shards?: Record<string, any> | undefined;
   _size?: number;
   _version?: number;
-  _version_conflicts?: number;
+    _version_conflicts?: number;
   _seq_no?: number;
   _primary_term?: number;
   _routing?: string;
@@ -159,13 +162,13 @@ interface DocumentAdditionalProps {
 export interface DocumentStore {
   documents: Record<string, Document>;
   fetchDocuments: () => void;
-  getSnapshotDataKey: (documentId: string, eventId: string, userId: string) => string;
-  updateDocumentReleaseStatus: (id: string, status: string, isReleased: boolean) => void;
+  getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
+  updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
   getData: (id: string) => Document | undefined;
   addDocument: (document: Document) => void;
-  setDocumentReleaseStatus: (id: string, status: string, isReleased: boolean) => void;
+  setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
   updateDocument: (id: number, updatedDocument: Document) => void;
-  deleteDocument: (id: string) => void;
+  deleteDocument: (id: number) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
   selectedDocument: Document | undefined;
   selectedDocuments: Document[] | undefined;
@@ -211,13 +214,13 @@ const useDocumentStore = (): DocumentStore => {
     );
   };
 
-  const deleteDocument = async (id: string) => {
+  const deleteDocument = async (id: number) => {
     setDocuments((prevDocuments) => {
       const updatedDocuments = { ...prevDocuments };
       delete updatedDocuments[id];
       return updatedDocuments;
     });
-    const documentId = await axiosInstance.delete(endpoints.documents.deleteDocument + id);
+    const documentId = await axiosInstance.delete(`${endpoints.documents.deleteDocument}/${id}`);
     notify(
       "deletedDocumentSuccess",
       `You have successfully deleted the document ${documentId}`,
@@ -226,7 +229,6 @@ const useDocumentStore = (): DocumentStore => {
       NotificationTypeEnum.OperationSuccess
     ); // Notify success
   };
-
 
   
 
@@ -256,18 +258,15 @@ const useDocumentStore = (): DocumentStore => {
     return Object.values(documents).find((document) => document.id === selectedDocumentId);
   }, [documents, selectedDocumentId]);
   
-
   const selectedDocuments = useMemo(() => {
     return Object.values(documents).filter((document) => document.id === selectedDocumentId);
   }, [documents, selectedDocumentId]);
+
+  const getSnapshotDataKey = (documentId: string, eventId: number, userId: string): string => {
+    // Generate a unique key for snapshot data using documentId, eventId, and userId
+    return `documents.${userId}.${documentId}.event.${eventId}`;
+  };
   
-
-  const getSnapshotDataKey = (documentId: string, userId: string): string => {
-    // Generate a unique key for snapshot data using documentId and userId
-    return `documents.${userId}.${documentId}`;
-  }
-
-
   const getUserIdAndSnapshotDataKey = async (userId: string, documentId: string) => {
     try {
       const fetchedUserId = await userService.fetchUserById(userId);
@@ -338,6 +337,65 @@ const useDocumentStore = (): DocumentStore => {
     }
   };
 
+
+
+  const updateDocumentReleaseStatus = async (
+    id: number, 
+    eventId: number,
+    status: string, 
+    isReleased: boolean
+  ) => {
+    try {
+      const response = await fetch(endpoints.documents.updateDocumentReleaseStatus.toString(), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          status,
+          isReleased,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update document release status");
+      }
+  
+      const data = await response.json();
+      updateDocument(id, data); // Assuming updateDocument is a function that handles the updated data
+    } catch (error) {
+      handleError(error, "updating document release status");
+    } finally {
+      setIsLoading(false); // Assuming setIsLoading is a state setter to indicate loading status
+    }
+  };
+  
+
+  const setDocumentReleaseStatus = async (id: number, eventId: number, releaseStatus: string) => {
+    try {
+      const response = await fetch(endpoints.documents.updateDocumentReleaseStatus.toString(), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          releaseStatus,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update document release status");
+      }
+      const data = await response.json();
+      updateDocument(id, data);
+    } catch (error) {
+      handleError(error, "updating document release status");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const store: DocumentStore = makeAutoObservable({
     documents,
     isLoading,
@@ -352,7 +410,9 @@ const useDocumentStore = (): DocumentStore => {
     selectedDocument,
     selectedDocuments,
     getSnapshotDataKey,
-    getData
+    getData,
+    updateDocumentReleaseStatus,
+    setDocumentReleaseStatus
     // Add more methods as needed
   });
 

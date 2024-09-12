@@ -10,9 +10,10 @@ import { LanguageEnum } from '../components/communications/LanguageEnum';
 import useErrorHandling from '../components/hooks/useErrorHandling';
 import { Data } from '../components/models/data/Data';
 import determineFileType from './DetermineFileType';
+import { BaseConfig } from './BaseConfig';
 
 // Define interfaces for metadata structures
-interface StructuredMetadata {
+interface StructuredMetadata extends BaseConfig {
   metadataEntries: {
     [fileOrFolderId: string]: {
       originalPath: string;
@@ -69,7 +70,7 @@ function transformProjectToStructured(projectMetadata: ProjectMetadata): Structu
 }
 
 
-const projectMetadata: ProjectMetadata= {
+const projectMetadata: ProjectMetadata = {
   startDate: new Date(),
   endDate: new Date(),
   budget: 0,
@@ -141,7 +142,15 @@ const useUndoRedo = <T>(initialState: T) => {
 
 
 // Example usage
-const initialState: StructuredMetadata = {metadataEntries: {}}; // Initial state for metadata structure
+const initialState: StructuredMetadata = {
+  metadataEntries: {},
+  apiEndpoint: '',
+  apiKey: '',
+  timeout: 0,
+  retryAttempts: 0
+};
+
+// Initial state for metadata structure
 const { state, setState, undo, redo } = useUndoRedo(initialState);
 
 // Define your metadata structure using 'state' and update it using 'setState'
@@ -161,10 +170,15 @@ const readMetadata = (filename: string): StructuredMetadata => {
   } catch (error: any) {
     const { handleError } = useErrorHandling(); // Use useErrorHandling hook
     handleError(`Error reading metadata file: ${error.message}`); // Handle error
-    return {metadataEntries: {}};
+    return {
+      metadataEntries: {},
+      apiEndpoint: '',
+      apiKey: '',
+      timeout: 0,
+      retryAttempts: 0
+    };
   }
 };
-
 // Define function to write metadata to file
 const writeMetadata = (filename: string, metadata: StructuredMetadata): void => {
   try {
@@ -185,8 +199,8 @@ const trackStructureChanges = (
 ): void => {
   let metadata = readMetadata(filename);
 
-  
-const traverseDirectory = (dir: string) => {
+
+  const traverseDirectory = (dir: string) => {
     const files = fs.readdirSync(dir);
 
     for (const file of files) {
@@ -198,10 +212,8 @@ const traverseDirectory = (dir: string) => {
         const filePath = path.join(dir, file);
         const isDirectory = fs.statSync(filePath).isDirectory();
         const fileOrFolderId = Buffer.from(filePath).toString("base64");
-    
-        if (!metadata.metadataEntries[fileOrFolderId]) {
-          const fileType = determineFileType(filePath);
-    
+        const fileType = determineFileType({ filePath });
+
         metadata.metadataEntries[fileOrFolderId] = {
           author: "",
           timestamp: new Date(),
@@ -233,6 +245,7 @@ const traverseDirectory = (dir: string) => {
   traverseDirectory(basePath);
   writeMetadata(filename, metadata);
 };
+
 
 // Example usage
 const metadataFilePath = 'structure-metadata.json';

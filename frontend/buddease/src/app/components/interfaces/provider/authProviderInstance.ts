@@ -58,9 +58,26 @@ const authProvider: CustomAuthProvider  = {
     const permissions = await store.getUserPermissions(); // Implement this in your store
     return permissions;
   },
+  
   getIdentity: async () => {
-    const store = useAuthStore();
-    const user = store.getAccessToken.getUser(); // Implement this in your store
+    const store = useAuthStore(); // Get an instance of AuthStore
+
+    // Ensure that you first get the access token
+    const token = store.getAccessToken();
+
+    if (!token) {
+      // Handle the case where the token is not available
+      throw new Error('Access token is not available');
+    }
+
+    // If the token is available, then get the user
+    const user = store.setUser.getUser();
+
+    if (!user) {
+      // Handle the case where the user is not available
+      throw new Error('User is not available');
+    }
+
     return user;
   },
 };

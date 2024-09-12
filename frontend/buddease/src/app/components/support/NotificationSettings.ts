@@ -2,7 +2,7 @@ import { NotificationChannels, NotificationTypes } from '../../components/settin
 
 interface BaseNotificationSettings {
   enabled: boolean; // Common to all notifications
-  notificationType: 'email' | 'push' | 'sms' | 'chat' | 'calendar' | 'audioCall' | 'videoCall' | 'screenShare'; // Common notification types
+  notificationType: 'all' | 'email' | 'push' | 'sms' | 'chat' | 'calendar' | 'audioCall' | 'videoCall' | 'screenShare'; // Common notification types
 }
 
 

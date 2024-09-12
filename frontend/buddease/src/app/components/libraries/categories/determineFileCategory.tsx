@@ -5,7 +5,6 @@ import { FileCategory } from "../../documents/FileType";
 import { BaseData, Data } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import { snapshot } from "../../snapshots/snapshot";
 import * as snapshotApi from '@/app/api/SnapshotApi'
 
 // Utility function to determine file category based on categoryName

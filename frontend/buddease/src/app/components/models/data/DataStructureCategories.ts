@@ -69,7 +69,8 @@ const communityCategories = {
 const projectsCategories = {
     projects: [
         // Add project-specific data structures here
-        // For example: 'projectDetails', 'projectTasks', 'projectMilestones', etc.
+        // For example: 
+        'projectDetails', 'projectTasks', 'projectMilestones', 
     ]
 };
 
@@ -98,7 +99,27 @@ const developerCategories = {
     ]
 };
 
+// Define a type for categories when the user is not a developer
+type AllCategoryValuesWithoutDeveloper = 
+    typeof dataCategories[keyof typeof dataCategories][number] |
+    typeof boardCategories[keyof typeof boardCategories][number] |
+    typeof taskCategories[keyof typeof taskCategories][number] |
+    typeof teamCategories[keyof typeof teamCategories][number] |
+    typeof communityCategories[keyof typeof communityCategories][number] |
+    typeof projectsCategories[keyof typeof projectsCategories][number];
+
+// Define a type for categories when the user is a developer
+type DeveloperCategoryValues = typeof developerCategories[keyof typeof developerCategories][number];
+
 const userIsDeveloper = true;
+// Conditionally select the type based on `userIsDeveloper`
+type AllCategoryValues = typeof userIsDeveloper extends true 
+    ? AllCategoryValuesWithoutDeveloper | DeveloperCategoryValues 
+    : AllCategoryValuesWithoutDeveloper;
+
+
+
+
 // Merge all categories
 export const allCategories = {
     ...dataCategories,
@@ -109,3 +130,4 @@ export const allCategories = {
     ...projectsCategories,
     ...(userIsDeveloper ? developerCategories : {}),
 };
+export type {AllCategoryValues}

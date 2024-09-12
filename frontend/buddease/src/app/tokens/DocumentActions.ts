@@ -1,7 +1,7 @@
 // DocumentActions.ts
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { createAction } from "@reduxjs/toolkit";
-import { DocumentEditingPermissions } from "../components/communications/chat/ChatSettingsModal";
+import { DocumentEditingPermissions } from "../components/users/Permission";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { DocumentStatus } from "../components/documents/types";
 import { UserIdea } from "../components/users/Ideas";

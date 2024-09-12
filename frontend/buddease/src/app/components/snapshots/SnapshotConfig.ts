@@ -59,9 +59,9 @@ import {
   Snapshot,
   Snapshots,
   SnapshotsArray,
+  SnapshotUnion,
   UpdateSnapshotPayload
 } from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotContainer } from "./SnapshotContainer";
 import {
@@ -74,13 +74,16 @@ import {
   handleSnapshotSuccess,
 } from "./snapshotHandlers";
 import SnapshotList, { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { CreateSnapshotsPayload } from "../database/Payload";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { CustomSnapshotData } from "./SnapshotData";
+import Version from "../versions/Version";
+import ProjectMetadata, { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 
 export type T = Snapshot<BaseData, BaseData>;
 export type K = T; // K could be the same as T or a different specialized type
@@ -92,8 +95,8 @@ interface RetentionPolicy {
 }
 
 
-interface ConfigureSnapshotStorePayload<T extends Data> {
-  snapshotStore: SnapshotStore<BaseData, Data>;
+interface ConfigureSnapshotStorePayload<T extends Data, K extends Data> {
+  snapshotStore: SnapshotStore<T, K>;
   snapshotId: string;
   snapshotData: T;
   timestamp: Date;
@@ -110,19 +113,26 @@ interface ConfigureSnapshotStorePayload<T extends Data> {
 }
 
 
+type TagsRecord = Record<string, string>;
+
+
+
 
 interface SnapshotConfig<T extends Data, K extends Data> extends Snapshot<T, K> {
   id: string;
   description?: string;
   category: string;
-  metadata?: Record<string, any>;
+  metadata?: StructuredMetadata | ProjectMetadata
+  
+  criteria: CriteriaType;
   priority?: string;
   version?: Version;
   data: T;
   subscribers: SubscriberCollection<T, K>;
-  storeConfig: SnapshotStoreConfig<T, K>;
-  additionalData: CustomSnapshotData
+  storeConfig: SnapshotStoreConfig<T, K> | undefined;
+  additionalData: CustomSnapshotData | undefined
 }
+
 
 
 // Example of asynchronous function using async/await
@@ -173,7 +183,7 @@ const updateSubscribersAndSnapshots = async (
           return {
             ...snapshot,
             data: snapshot.data,
-            snapshots: filteredSnapshots,
+            snapshots: filteredSnapshots as unknown as Snapshots<BaseData>,
             compareSnapshotState: snapshot.compareSnapshotState,
             eventRecords: snapshot.eventRecords ? snapshot.eventRecords : null,
             getParentId: snapshot.getParentId,
@@ -183,7 +193,7 @@ const updateSubscribersAndSnapshots = async (
             getChildren: () => { },
             hasChildren: () => false,
             isDescendantOf: (parentSnapshot: Snapshot<BaseData, K>, childSnapshot: Snapshot<BaseData, K>) => snapshot.isDescendantOf(parentSnapshot, childSnapshot),
-    
+
             dataItems: snapshot.dataItems,
             newData: snapshot.newData,
             stores: snapshot.stores,
@@ -238,7 +248,7 @@ const updateSubscribersAndSnapshots = async (
               },
               onSnapshotUpdated: (
                 snapshotId: string,
-                snapshot: Snapshot<T, K>,
+                snapshot: Snapshot<BaseData, K>,
                 data: Map<string, Snapshot<BaseData, K>>,
                 events: Record<string, CalendarManagerStoreClass<BaseData, K>[]>,
                 snapshotStore: SnapshotStore<BaseData, K>,

@@ -1,6 +1,7 @@
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { BaseData } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots";
+import { CategoryKeys } from "./CategoryManager";
 
 
 type CategoryIdentifier = string | symbol;
@@ -90,23 +91,26 @@ function generateCategoryProperties(area: string): CategoryProperties {
 }
 
 
-function getCategoryLabelForSnapshot(context: string): string {
+
+
+function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
+
   switch (context) {
     case "team":
-      return "Team Category";
+      return "teams";
     case "user":
-      return "User Category";
+      return "notes"; // Map to 'notes' or any other CategoryKeys
     case "component":
-      return "Component Category";
+      return "files";
     case "project":
-      return "Project Category";
+      return "projects";
     case "developer":
-      return "Developer Category";
+      return "developerTasks"; // Example
     case "board":
-      return "Board Category";
-    // Add more cases as needed
+      return "boardItems";
+    // Add more mappings if necessary
     default:
-      return "Default Category";
+      return null; // Or handle the default case however you need
   }
 }
 
@@ -151,13 +155,14 @@ function getOrSetCategoryForSnapshot<T extends BaseData, K extends BaseData>(
   }
   
   // No category provided, set a default one based on the context
-  const defaultCategory = getCategoryLabelForSnapshot(type);
 
+  const defaultCategory: CategoryIdentifier = getCategoryLabelForSnapshot(type) || 'defaultCategory';
+ 
   // If categoryProps is provided and it's a string or symbol, use it; otherwise, use the default category
   const categoryIdentifier: CategoryIdentifier = 
     typeof categoryProps === 'string' || typeof categoryProps === 'symbol'
     ? categoryProps
-    : defaultCategory;
+    : defaultCategory; // Provide a fallback value if defaultCategory is null
 
   snapshot.category = categoryIdentifier;
 
@@ -171,8 +176,16 @@ function getOrSetCategoryForSnapshot<T extends BaseData, K extends BaseData>(
   return snapshot.categoryProperties;
 }
 
-
-
 export {getOrSetCategoryForSnapshot, getCategoryLabelForSnapshot};
 
 export type {Category, CategoryIdentifier};
+
+
+
+
+
+
+
+
+
+

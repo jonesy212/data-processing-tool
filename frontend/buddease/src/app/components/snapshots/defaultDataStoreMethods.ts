@@ -1,4 +1,3 @@
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotWithCriteria } from '../../components/snapshots/SnapshotWithCriteria';
 import { SnapshotManager } from '../hooks/useSnapshotManager';
 import { mapToSnapshotStore } from '../mappings/mapToSnapshotStore';
@@ -329,7 +328,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                             snapshot(
                                 id: string,
                                 snapshotData: SnapshotStoreConfig<any, K>[],
-                                category: string | CategoryProperties,
+                                category: string | Category,
                                 dataStoreMethods: DataStore<T, K>
                             ): Promise<{ snapshot: SnapshotStore<T, K>; }> {
                                 return new Promise(async (resolve, reject) => {
@@ -359,7 +358,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                             },
                             getSnapshot: function (
                                 snapshot: () => Promise<{
-                                    category: string | CategoryProperties | undefined;
+                                    category: string | Category | undefined;
 
                                     timestamp: any;
                                     id: any;
@@ -601,7 +600,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                             },
                             fetchSnapshot: function (snapshotId: string, category: symbol | string | Category | undefined, timestamp: Date, snapshot: Snapshot<T, K>, data: BaseData, delegate: SnapshotWithCriteria<T, K>[]): Promise<{
                                 id: any;
-                                category: string | CategoryProperties | undefined;
+                                category: string | Category | undefined;
                                 timestamp: any;
                                 snapshot: Snapshot<T, K>;
                                 data: BaseData;
@@ -788,7 +787,7 @@ const defaultDataStoreMethods = <T extends Data, K extends Data>(): DataStore<T,
                                 throw new Error("Function not implemented.");
                             },
                             getSnapshot: function (snapshot: (id: string) => Promise<{
-                                category: string | CategoryProperties | undefined;
+                                category: string | Category | undefined;
 
                                 timestamp: any;
                                 id: any;

@@ -1,7 +1,7 @@
 // subscribeToSnapshotsImplementation.ts
 import { BaseData } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
-import { Snapshot, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 
 type Callback<T> = (snapshot: T) => void;
@@ -14,6 +14,8 @@ type SingleEventCallbacks<T> = {
 type MultipleEventsCallbacks<T> = {
   [event: string]: Callback<T>[];
 };
+
+
 const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
   new Map();
 
@@ -50,7 +52,7 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
       snapshotSubscribers.set(snapshotId, []);
     }
 
-    const typedCallback = addSubscriptionMethods<Snapshot<T, K>>((snapshot) => {
+    const typedCallback = addSubscriptionMethods<SnapshotUnion<T>>((snapshot) => {
       snapshotCallback([snapshot as unknown as SnapshotStore<T, K>] as unknown as Snapshots<T>);
     }, snapshotId);
 
@@ -73,9 +75,8 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
           dataStore: snap.dataStore,
           events: snap.events ?? [],
           meta: snap.meta,
-          data: snap.data ?? ({} as T
-
-          )} as Snapshot<T, K>);
+          data: snap.data ?? ({} as T)
+        } as SnapshotUnion<T>);
       }
     });
   };
@@ -110,14 +111,14 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
   };
 
 // Function to trigger callbacks when a snapshot is updated
-// export const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>) => {
-//   const subscribers = snapshotSubscribers.get(snapshotId);
-//   if (subscribers) {
-//     subscribers.forEach((callback: Callback<Snapshot<any, any>>) =>
-//       callback(snapshot)
-//     );
-//   }
-// };
+export const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>) => {
+  const subscribers = snapshotSubscribers.get(snapshotId);
+  if (subscribers) {
+    subscribers.forEach((callback: Callback<Snapshot<any, any>>) =>
+      callback(snapshot)
+    );
+  }
+};
 
 export { subscribeToSnapshotImpl, subscribeToSnapshotsImpl };
 export type { Callback, MultipleEventsCallbacks, SingleEventCallbacks };

@@ -13,6 +13,7 @@ export const getFileType = async (file: string) => {
   }
 };
 
+
 export const fetchFiles = async () => {
   try {
     const endpoint =

@@ -1,44 +1,44 @@
 // DetailsListStore.ts
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { FC } from "react";
 import { makeAutoObservable } from "mobx";
+import { FC } from "react";
 import { BaseData, Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import {
-  DataStatus,
-  PriorityTypeEnum,
-  ProductStatus,
-  StatusType,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    DataStatus,
+    PriorityTypeEnum,
+    ProductStatus,
+    StatusType,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { Tag } from "../../models/tracker/Tag";
-import { Project } from "../../projects/Project";
-import { AllTypes } from "../../typings/PropTypes";
-import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { createSnapshotStoreOptions, snapshotType } from "../../typings/YourSpecificSnapshotType";
-import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { snapshotStoreConfig, SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
-import { SnapshotOperation, SnapshotOperationType } from "../../snapshots/SnapshotActions";
-import { snapshot } from "../../snapshots/snapshot";
-import * as snapshotApi from '@/app/api/SnapshotApi'
+import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
+import { Project } from "../../projects/Project";
 import { TagsRecord } from "../../snapshots";
+import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
+import { SnapshotOperation, SnapshotOperationType } from "../../snapshots/SnapshotActions";
+import { snapshotStoreConfig, SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { snapshot } from "../../snapshots/snapshot";
+import { AllTypes } from "../../typings/PropTypes";
+import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -105,7 +105,7 @@ interface DetailsItemExtended extends DataDetails{
   endDate?: Date;
   phase?: Phase | null;
   isActive?: boolean;
-  tags?: TagsRecord | undefined
+  tags?: TagsRecord | string[] | undefined
   subtitle?: string;
   date?: Date;
   author?: string;
@@ -525,3 +525,4 @@ const useDetailsListStore = (): DetailsListStore => {
 
 export { useDetailsListStore };
 export type { DetailsItem, DetailsItemExtended };
+

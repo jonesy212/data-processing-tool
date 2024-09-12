@@ -4,7 +4,6 @@ import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { Todo } from "@/app/components/todos/Todo";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import React, { useState } from "react";
 import * as snapshotApi from '../../api/SnapshotApi';
 import { DocumentOptions } from "../documents/DocumentOptions";
@@ -333,7 +332,8 @@ const CalendarApp = async <T extends Data, K extends Data>() => {
       snapshotStore: SnapshotStore<T, K>,
       snapshotContainer: SnapshotContainer<T, K>,
       snapshotId: string,
-      criteria: CriteriaType,
+      criteria: 
+      ,
       snapshot: Snapshot<T, K>,
       type: string,
       event: Event
@@ -372,7 +372,7 @@ const CalendarApp = async <T extends Data, K extends Data>() => {
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -384,7 +384,7 @@ const CalendarApp = async <T extends Data, K extends Data>() => {
         storeIds: number[],
         snapshotId: string,
         category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties,
+        categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K>,
         timestamp: string | number | Date | undefined,
         type: string,

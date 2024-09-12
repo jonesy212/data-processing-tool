@@ -4,6 +4,7 @@ import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
 import { VersionHistory } from "@/app/components/versions/VersionData";
+import { hashString } from "@/app/generators/HashUtils";
 
 export default class FrontendStructure implements AppStructureItem {
 
@@ -97,6 +98,8 @@ export default class FrontendStructure implements AppStructureItem {
             execute: true,
           },
           content: fileContent,
+          versions: undefined,
+          versionData: []
         };
         items.push(fileItem);
       }
@@ -129,7 +132,7 @@ export default class FrontendStructure implements AppStructureItem {
     const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
     const frontendStructureItems = await frontendStructure.getStructureAsArray();
     const frontendStructureItemsWithVersions = frontendStructureItems.map((item) => {
-      const { id, name, type, items, path, draft, content, permissions } = item;
+      const { id, name, type, items, path, draft, content, permissions, versions, versionData } = item;
       return {
         id,
         name,
@@ -139,7 +142,8 @@ export default class FrontendStructure implements AppStructureItem {
         draft,
         content,
         permissions,
-        versions: [],
+        versions,
+        versionData
       };
     });
     return frontendStructureItemsWithVersions;
@@ -151,6 +155,31 @@ export default class FrontendStructure implements AppStructureItem {
   public async getStructureAsArray(): Promise<AppStructureItem[]> {
     return Object.values(this.structure || {});
   }
+
+
+
+  // New method to calculate and return the checksum of the structure
+  public async getStructureChecksum(): Promise<string> {
+    try {
+      // Step 1: Retrieve the structure and convert it to an array
+      const structureArray = this.getStructureAsArray();
+      
+      // Step 2: Convert the structure array to a JSON string
+      const structureString = JSON.stringify(structureArray);
+      
+      // Step 3: Generate a checksum/hash from the structure string
+      const checksum = hashString(structureString);
+      
+      // Optional: Log or return the checksum
+      console.log('Structure Checksum:', checksum);
+      
+      return checksum;
+    } catch (error) {
+      console.error("Error generating structure checksum:", error);
+      throw error;
+    }
+  }
+  
 
 
   public async traverseDirectoryPublic?(

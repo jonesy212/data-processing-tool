@@ -5,9 +5,11 @@ const ClipboardData = {
   onCopy: (content: string) => {},
   onPaste: (content: string) => {},
 };
+
 export interface CustomClipboardEvent extends BaseCustomEvent {
   getClipboardData(): void;
 }
+
 // Define interfaces for events
 export interface BaseCustomEvent
   extends EventTarget,
@@ -36,10 +38,41 @@ export interface BaseCustomEvent
 
 interface CustomEventExtension extends CustomEvent {
   id: string;
+  title: string;
   dispatchEvent?(event: Event): boolean;
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 
+  // Standard Event properties
+  bubbles: boolean;
+  cancelBubble: boolean;
+  cancelable: boolean;
+  composed: boolean;
+  currentTarget: EventTarget | null;
+  defaultPrevented: boolean;
+  eventPhase: number;
+  isTrusted: boolean;
+  returnValue: boolean;
+  srcElement: EventTarget | null;
+  target: EventTarget | null;
+  timeStamp: number;
+  type: string;
+  composedPath(): EventTarget[];
+  initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void;
+  preventDefault(): void;
+  stopImmediatePropagation(): void;
+  stopPropagation(): void;
+
+
+    // CustomEvent-specific properties
+    detail: any; // Detail is typically used in CustomEvent
+    initCustomEvent: (type: string, bubbles?: boolean, cancelable?: boolean, detail?: any) => void;
+    
+    // Event phases
+    NONE: 0;
+    CAPTURING_PHASE: 1;
+    AT_TARGET: 2;
+    BUBBLING_PHASE: 3;
 }
 
 // Type assertion for compatibility

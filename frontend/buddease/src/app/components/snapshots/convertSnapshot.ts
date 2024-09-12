@@ -5,13 +5,13 @@ import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder"
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData } from "../models/data/Data";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { convertSnapshotData } from "../typings/YourSpecificSnapshotType";
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
 import { SnapshotStoreConfig, SnapshotStoreMethod } from "./index";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 
 
@@ -37,7 +37,7 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
           ...method,
           snapshot: (
             id: string | number | undefined,
-            snapshotId: number | null,
+            snapshotId: string | null,
             snapshotData: Snapshot<T, K>,
             category: Category | undefined,
             categoryProprties: CategoryProperties | undefined,
@@ -71,10 +71,10 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
                 ...method,
                 snapshot: (
                   id: string,
-                  snapshotId: number | null,
+                  snapshotId: string | null,
                   snapshotData: Snapshot<T, K>,
                   category: symbol | string | Category | undefined,
-                  categoryProperties: CategoryProperties,
+                  categoryProperties: CategoryProperties | undefined,
                   callback: (snapshotStore: SnapshotStore<T, K>) => void,
                   dataStoreMethods: DataStore<T, K>,
                   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,

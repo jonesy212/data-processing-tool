@@ -3,12 +3,11 @@ import { FC } from "react";
 import { Lesson } from "../documents/CourseBuilder";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import { CommonData } from "../models/CommonData";
-import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
-import { DetailsItem } from "../state/stores/DetailsListStore";
 import { TagsRecord } from "../snapshots";
+import { DetailsItem } from "../state/stores/DetailsListStore";
 
 // Define a type for a phase
 export interface Phase extends CommonData {
@@ -80,7 +79,7 @@ export class PhaseImpl implements Phase {
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
   metadata?: StructuredMetadata | undefined;
-  details?: DetailsItem<any> | undefined;  tags?: TagsRecord | undefined;
+  details?: DetailsItem<any> | undefined;  tags?: TagsRecord | string[] | undefined;
   categories?: string[] | undefined;
   documentType?: string | undefined;
   documentStatus?: string | undefined;

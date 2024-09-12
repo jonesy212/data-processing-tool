@@ -8,9 +8,14 @@ import * as path from "path";
 import getAppPath from "../../../../appPath";
 import { AppStructureItem } from "./AppStructure";
 import { VersionHistory } from "@/app/components/versions/VersionData";
+import { hashString } from "@/app/generators/HashUtils";
+
+// structureHash, setStructureHash, updateStructureHash, getStructureHashAndUpdateIfNeeded, backendVersions
+
 
 export default class BackendStructure {
   private structure?: Record<string, AppStructureItem> = {};
+  private structureHash: string = '';
 
   constructor(projectPath: string) {
     this.traverseDirectory!(projectPath).then((items) => {
@@ -21,6 +26,70 @@ export default class BackendStructure {
       });
     });
   }
+
+  public async getStructure(): Promise<Record<string, AppStructureItem>> {
+    return { ...this.structure };
+  }
+
+
+  public getStructureAsArray(): AppStructureItem[] {
+    return Object.values(this.structure || {});
+  }
+
+  public async traverseDirectoryPublic(
+    dir: string,
+    fs: typeof import("fs")
+  ): Promise<AppStructureItem[]> {
+    return this.traverseDirectory ? this.traverseDirectory(dir) : [];
+  }
+
+
+  // Getter for structureHash
+  public getStructureHash(): Promise<string> {
+    return Promise.resolve(this.structureHash);
+  }
+
+  // Setter for structureHash
+  private setStructureHash(hash: string): void {
+    this.structureHash = hash;
+  }
+
+
+
+  public async updateStructureHash(): Promise<void> {
+    try {
+      const structureArray = this.getStructureAsArray();
+      const structureString = JSON.stringify(structureArray);
+      const newStructureHash = hashString(structureString);
+      
+      // Update the private structureHash
+      this.setStructureHash(newStructureHash);
+      
+      // Generate or obtain a uniqueID
+      const uniqueID = UniqueIDGenerator.generateID('structureHashUpdate', newStructureHash, NotificationTypeEnum.OperationUpdate);
+
+      Logger.logWithOptions(
+        "Structure Hash Update",
+        `Structure hash updated to ${newStructureHash}.`,
+        uniqueID
+      );
+    } catch (error) {
+      console.error("Error updating structure hash:", error);
+      throw error;
+    }
+  }
+
+  public async getStructureHashAndUpdateIfNeeded(): Promise<string> {
+    try {
+      const currentHash = this.getStructureHash();
+      await this.updateStructureHash(); // Update hash if needed
+      return this.getStructureHash();
+    } catch (error) {
+      console.error("Error getting or updating structure hash:", error);
+      throw error;
+    }
+  }
+
 
   async traverseDirectory?(dir: string): Promise<AppStructureItem[]> {
     const result: AppStructureItem[] = [];
@@ -57,6 +126,8 @@ export default class BackendStructure {
               execute: true,
               share: true,
             },
+            versions: undefined,
+            versionData: []
           };
           if (this.structure) {
             this.structure[uniqueID] = appStructureItem;
@@ -76,22 +147,7 @@ export default class BackendStructure {
       throw error;
     }
   }
-
-  public async getStructure(): Promise<Record<string, AppStructureItem>> {
-    return { ...this.structure };
-  }
-
-  public getStructureAsArray(): AppStructureItem[] {
-    return Object.values(this.structure || {});
-  }
-
-  public async traverseDirectoryPublic(
-    dir: string,
-    fs: typeof import("fs")
-  ): Promise<AppStructureItem[]> {
-    return this.traverseDirectory ? this.traverseDirectory(dir) : [];
-  }
-
+  
   backendVersions(): VersionHistory[] {
     const { versionNumber, appVersion } = getCurrentAppInfo();
     const projectPath = getAppPath(versionNumber, appVersion);
@@ -109,6 +165,7 @@ export default class BackendStructure {
         content,
         permissions,
         versions: [],
+        versionData: []
       };
     });
     return backendStructureItemsWithVersions;
@@ -123,9 +180,9 @@ export { backendStructure };
 
 export const backend = {
   ...backendStructure,
-  items: await backendStructure.getStructure(),
+  items: backendStructure.getStructure(),
   getStructureAsArray: backendStructure.getStructureAsArray.bind(backendStructure),
   traverseDirectoryPublic: backendStructure.traverseDirectoryPublic?.bind(backendStructure),
   getStructure: () => backendStructure.getStructure(),
+  getStructureHash: backendStructure.getStructureHash.bind(backendStructure), // Bind the getStructureHash method
 }
-

@@ -2,7 +2,10 @@
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { allCategories } from '../../models/data/DataStructureCategories';
 
-function getCategoryProperties(category: keyof typeof allCategories): CategoryProperties {
+
+type CategoryKeys = keyof typeof allCategories; 
+
+function getCategoryProperties(category: CategoryKeys): CategoryProperties {
     const propertiesMap: { [key: string]: CategoryProperties } = {
         assignedNotes: {
             name: "Notes",
@@ -32,12 +35,21 @@ function getCategoryProperties(category: keyof typeof allCategories): CategoryPr
     };
 
     const subCategories = allCategories[category];
-    if (!subCategories) {
-        throw new Error(`Invalid category: ${category}`);
+    if (!subCategories || subCategories.length === 0) {
+        throw new Error(`Invalid or empty subcategory for category: ${category}`);
     }
 
-    return propertiesMap[subCategories[0]]; // Assuming the first sub-category dictates the main properties
+    // Map the first sub-category to the properties
+    const subCategory = subCategories[0];
+    const properties = propertiesMap[subCategory];
+
+    if (!properties) {
+        throw new Error(`No properties found for subcategory: ${subCategory}`);
+    }
+
+    return properties;
 }
 
 
 export {getCategoryProperties}
+export type {CategoryKeys}

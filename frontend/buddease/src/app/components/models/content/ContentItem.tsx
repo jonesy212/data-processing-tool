@@ -25,6 +25,7 @@ interface ContentItem {
   footer?: React.ReactNode;
   status: StatusType | undefined;
   userId: string | undefined;
+  data: T
   // Add more properties as needed
 }
 
@@ -95,3 +96,4 @@ const ContentItemComponent: React.FC<ContentItemProps> = ({
 
 export default ContentItemComponent;
 export type { ContentItem };
+export {isTagObject}

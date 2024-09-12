@@ -40,12 +40,21 @@ import { getSnapshotConfig } from "@/app/api/SnapshotApi";
 import { useDispatch } from "react-redux";
 import { EventActions } from "../../actions/EventActions";
 import { CalendarEvent } from "../../calendar/CalendarEvent";
+import {
+  AddEventPayload,
+  CalendarActionPayload,
+  CalendarActionType,
+  RemoveEventPayload,
+  SetEventStatusPayload,
+  UpdateEventPayload,
+} from "../../database/CalendarActionPayload";
 import { combinedEvents } from "../../event/Event";
+import { EventStore } from "../../event/EventStore";
 import {
   useSnapshotManager,
 } from "../../hooks/useSnapshotManager";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
-import {  SnapshotContainer, snapshotContainer, SnapshotData } from "../../snapshots";
+import { SnapshotContainer, snapshotContainer, SnapshotData } from "../../snapshots";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import {
   SnapshotOperation,
@@ -57,7 +66,7 @@ import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
-import { EventStore } from "../../event/EventStore";
+import { getCurrentSnapshotConfigOptions } from "../../snapshots/getCurrentSnapshotConfigOptions";
 
 
 const dispatch = useDispatch()
@@ -121,6 +130,23 @@ interface CommonCalendarManagerMethods<T extends Data, K extends Data> {
   setDynamicNotificationMessage: (message: string) => void;
 }
 
+export type ActionType =
+  | "CREATE_EVENT"
+  | "UPDATE_EVENT"
+  | "DELETE_EVENT"
+  | "TOGGLE_EVENT_STATUS"
+  | "NAVIGATE_TO_DATE";
+
+
+interface ActionPayload {
+  type: ActionType;
+  payload: {
+    eventId?: number;
+    date?: string;
+    eventData?: any;  // Replace with a proper event type
+    status?: string;
+  };
+}
 
 export interface CalendarManagerStore<
   T extends Data = BaseData,
@@ -130,9 +156,10 @@ export interface CalendarManagerStore<
   openScheduleEventModal: (content: JSX.Element) => void;
   openCalendarSettingsPage: () => void;
     getData: (id: string) => Promise<Snapshot<T, K>>
-  updateDocumentReleaseStatus: (eventId: string, released: boolean) => void;
+  updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
   getState: () => MobXRootState; // Add getState method
-
+  // Logic for handling actions
+  action: (actionPayload: ActionPayload) => void;
   events: Record<string, CalendarEvent<T, K>[]>;
   eventTitle: string;
   eventDescription: string;
@@ -175,7 +202,9 @@ export interface CalendarManagerStore<
   completeAllEventsFailure: (payload: { error: string }) => void;
   setDynamicNotificationMessage: (message: string) => void;
   handleRealtimeUpdate: (
-    eventId: string,
+    storeId: number,
+    documentId: number,
+    eventId: number,
     userId: string,
     events: Record<string, CalendarEvent<T, K>[]>,
     snapshotStore: 
@@ -186,7 +215,7 @@ export interface CalendarManagerStore<
   ) => void;
   getSnapshotDataKey: (
     documenttId: string,
-    eventId: string,
+    eventId: number,
     userId: string
   ) => void
 
@@ -214,7 +243,11 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
   
   private documentManager: DocumentStore;
   
+  // public action: CalendarActionType;
+  public timestamp: Date;
+
   constructor(category: symbol | string | Category | undefined, documentManager: DocumentStore) {
+    this.timestamp = new Date(); // Initialize default value
     this.category = category;
     this.entities = {
       events: [],
@@ -231,8 +264,14 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     this.assignedEventStore = useAssignEventStore();
     this.setDocumentReleaseStatus = store.setDocumentReleaseStatus.bind(this);
     this.updateDocumentReleaseStatus = store.updateDocumentReleaseStatus.bind(this);
+      // Initialize the new properties
+    this.action = store.action.bind(this); // Example initial value (adjust based on your needs)
+    this.timestamp = new Date();
+
     this.handleRealtimeUpdate = async (
-      eventId: string,
+      storeId: number,
+      documentId: number,
+      eventId: number,
       userId: string,
       events: Record<string, CalendarEvent<T, K>[]>,
       snapshotStore:
@@ -242,7 +281,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
         | undefined
     ) => {
       try {
-        const key = this.getSnapshotDataKey(eventId, userId)
+        const key = this.getSnapshotDataKey(documentId, eventId, userId)
         const snapshotManager = await useSnapshotManager<T, K>(storeId);
         const snapshotId = await snapshotManager?.snapshotStore?.getSnapshotId(key);
 
@@ -251,11 +290,35 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
           return;
         }
 
+        const snapshot = getCurrentSnapshot()
+        const criteria =  snapshotApi.extractCriteria(snapshot, properties)
         const snapshotIdNumber = parseInt(snapshotId, 10);
-        const config = await snapshotApi.getSnapshotConfig<T, K>(
+        const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
+        const config = snapshotApi.getSnapshotConfig<T, K>(
           snapshotIdNumber,
           snapshotContainer,
-          criteria
+          criteria,
+          this.category ? this.category : undefined,
+          categoryProperties,
+          delegate,
+          snapshot
+          
+        );
+
+        const options = getCurrentSnapshotConfigOptions(
+          snapshotId,
+          snapshotContainer,
+          criteria,
+          category,
+          categoryProperties,
+          delegate,
+          snapshotData,
+          snapshot,
+          initSnapshot,
+          subscribeToSnapshots,
+          createSnapshot,
+          createSnapshotStore,
+          configureSnapshot
         );
 
         if (!config || !options) {
@@ -270,7 +333,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
           category,
           config,
           operation
-        ) as EventStore<T, K>;
+        )
       } catch (error) {
         console.error("Failed to handle real-time update:", error);
       }
@@ -284,6 +347,48 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     makeAutoObservable(this);
   }
 
+  // Method to handle various actions
+  action(type: CalendarActionType, payload: CalendarActionPayload<T, K>): void {
+    switch (type) {
+      case 'ADD_EVENT': {
+        const { event } = payload as AddEventPayload<T, K>;
+        this.events.scheduled.push(event);
+        console.log(`Event added: ${event.title}`);
+        break;
+      }
+      case 'UPDATE_EVENT': {
+        const { eventId, updatedEvent } = payload as UpdateEventPayload<T, K>;
+        const event = this.events.scheduled.find(e => e.id === eventId);
+        if (event) {
+          Object.assign(event, updatedEvent);
+          console.log(`Event updated: ${eventId}`);
+        } else {
+          console.error(`Event with ID ${eventId} not found.`);
+        }
+        break;
+      }
+      case 'REMOVE_EVENT': {
+        const { eventId } = payload as RemoveEventPayload;
+        this.events.scheduled = this.events.scheduled.filter(e => e.id !== eventId);
+        console.log(`Event removed: ${eventId}`);
+        break;
+      }
+      case 'SET_EVENT_STATUS': {
+        const { eventId, status } = payload as SetEventStatusPayload;
+        const event = this.events.scheduled.find(e => e.id === eventId);
+        if (event) {
+          event.status = status;
+          console.log(`Status updated for event ${eventId}: ${status}`);
+        } else {
+          console.error(`Event with ID ${eventId} not found.`);
+        }
+        break;
+      }
+      default:
+        console.error(`Unknown action type: ${type}`);
+    }
+  }
+
   async initialize(storeId: number) {
     const options = await useSnapshotManager(storeId) 
       ? new SnapshotManagerOptions<T, K>().get() 
@@ -294,35 +399,51 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
       snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
       snapshot
     );
+
     const snapshotId = await snapshotApi.getSnapshotId(criteria);
-    const config = await snapshotApi.getSnapshotStoreConfig(snapshotId)
-    const storeConfig = getSnapshotConfig(
-      Number(snapshotId),
+    const config = await snapshotApi.getSnapshotStoreConfig(Number(snapshotId),
+      snapshotContainer,
+      criteria,
+      storeId
+    )
+
+    const category = await snapshotApi.getSnapshotCategory(snapshotContainer, snapshot);
+    const categoryProperties = await snapshotApi.getSnapshotCategoryProperties(snapshotContainer, snapshot);
+    const delegate = await snapshotApi.getSnapshotDelegate(snapshotContainer, snapshot);
+
+    const snapConfig = getSnapshotConfig(
+      String(snapshotId),
       snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
-      criteria
+      criteria,
+      category,
+      categoryProperties,
+      delegate,
+      config,
     )
     // const config = storeConfig as unknown as SnapshotStoreConfig<T, K>;
     const operation: SnapshotOperation = {
       // Provide the required operation details
       operationType: SnapshotOperationType.FindSnapshot,
     };
-    this.snapshotStore = new SnapshotStore<T, K>(storeId, options, this.category, config, operation);
+    this.snapshotStore = new SnapshotStore<T, K>(storeId, name, version, schema, options, this.category, config, operation);
   }
 
 
   callback: (snapshot: Snapshot<T, K>) => void;
-  setDocumentReleaseStatus: (eventId: string, released: boolean) => void;
-  updateDocumentReleaseStatus: (eventId: string, released: boolean) => void;
+  setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
+  updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
   snapshotStore: SnapshotStore<T, K> = {} as SnapshotStore<T, K>;
   useRealtimeDataInstance: ReturnType<typeof useRealtimeData>;
   handleRealtimeUpdate: (
-    eventId: string,
+    storeId: number,
+    documentId: number,
+    eventId: number,
     userId: string,
     events: Record<string, CalendarEvent<T, K>[]>,
     snapshotStore: string | SnapshotStoreConfig<T, K> | null | undefined
   ) => void;
   openCalendarSettingsPage: () => void;
-  getSnapshotDataKey: (documentId: string, eventId: string, userId: string) => string;
+  getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
   getData: (id: string) => Promise<Snapshot<T, K>> = (id: string) => {
     return new Promise((resolve, reject) => {
       try {
@@ -346,18 +467,35 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
 
   // Example conversion function, adjust as needed
   private convertDocumentToSnapshot(document: Document): Snapshot<T, K> {
-    // Implement actual conversion logic here
    
+    // Utility function to ensure documentData matches type T
+    function castDocumentData<T extends Data>(documentData: any): T {
+        return documentData as T;
+      }
+
      
   // Create a snapshot object using the properties of Document
   const snapshot: Snapshot<T, K> = {
+   
     id: document.id,
-    initialState: document.data as T, // Ensure document.data matches type T
+    initialState: castDocumentData<T>(document.documentData), // Ensure document.data matches type T
+
     isCore: true, // Default value or derive from document if needed
     initialConfig: {} as K, // Initialize as empty or derive from document if applicable
     createdAt: document.createdAt,
     updatedAt: document.updatedAt,
     version: document.version,
+    removeSubscriber: document.removeSubscriber,
+    onInitialize: document.onInitialize,
+    onError: document.onError,
+    taskIdToAssign: document.taskIdToAssign,
+   
+    schema: document.schema,
+    currentCategory: document.currentCategory,
+    mappedSnapshotData: document.mappedSnapshotData,
+    snapshot: document.snapshot,
+    setCategory, applyStoreConfig, generateId, snapshotData,
+
     // Map any additional properties from Document to Snapshot if necessary
   };
     return snapshot;

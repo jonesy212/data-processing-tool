@@ -11,6 +11,7 @@ import { User } from "../components/users/User";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
+import { NotificationSettings } from "../components/support/NotificationSettings";
 
 const API_BASE_URL = endpoints.projectOwner.base;
 

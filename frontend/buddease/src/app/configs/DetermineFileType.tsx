@@ -5,17 +5,22 @@ interface DetermineFileTypeProps {
   filePath: string;
 }
 
-// Function to determine the file type based on the file path
 const determineFileType = (filePath: string): FileTypeEnum => {
-  if (filePath.includes("DataVersionsConfig")) {
-    return FileTypeEnum.DataVersionsConfig;
-  } else if (filePath.includes("FrontendStructure")) {
-    return FileTypeEnum.FrontendStructure;
-  } else {
-    return FileTypeEnum.UnknownType;
+  // Example logic to determine the file type based on the file path
+  const extension = filePath.split('.').pop() || "";
+  switch (extension) {
+    case "tsx":
+    case "ts":
+      return FileTypeEnum.UI;
+    case "md":
+      return FileTypeEnum.MD;
+    case "pdf":
+      return FileTypeEnum.PDF;
+    // Add more cases as needed
+    default:
+      return FileTypeEnum.UnknownType;
   }
-}
-
+};
 
 const DetermineFileType: React.FC<DetermineFileTypeProps> = ({ filePath }) => {
   // Determine the file type

@@ -333,13 +333,14 @@ export const fetchAnalysisResults = (): Promise<any> => {
         mapSnapshots: analysisResults.mapSnapshots,
         updateSnapshot: analysisResults.updateSnapshot,
 
+        items: analysisResults.items,
+        getSnapshotById: analysisResults.getSnapshotById,
+       
         subscribers: analysisResults.subscribers,
 
         batchTakeSnapshotsRequest: analysisResults.batchTakeSnapshotsRequest,
 
         compareSnapshotState: analysisResults.compareSnapshotState,
-
-
         getData: analysisResults.getData,
         setData: analysisResults.setData,
         addData: analysisResults.addData,

@@ -26,6 +26,14 @@ interface GeneralNotificationTypes {
   file: boolean;
   meeting: boolean;
   directMessage: boolean;
+
+
+  audioCall: boolean,
+  videoCall: boolean,
+  screenShare: boolean,
+  chat: boolean,
+  calendar: boolean,
+
   announcement: boolean;
   reminder: boolean;
   project: boolean;

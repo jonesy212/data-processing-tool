@@ -57,36 +57,38 @@ import { Callback } from "./subscribeToSnapshotsImplementation";
 import { RealtimeDataItem } from "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData";
 import CalendarManagerStoreClass from "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/state/stores/CalendarEvent";
 
-import { SnapshotContainer, snapshotContainer } from './SnapshotContainer';
+import { SnapshotContainer, snapshotContainer, SnapshotDataType } from './SnapshotContainer';
 
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { SnapshotActionType } from './SnapshotActionType';
 import { SnapshotMethods } from './SnapshotMethods';
 import useSubscription from '../hooks/useSubscription';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { SchemaField } from '../database/SchemaField';
 
 const SNAPSHOT_URL = endpoints.snapshots;
 
 
-type SnapshotUnion<T extends Data> =
-  Snapshot<T, BaseData> |
-  (SnapshotWithCriteria<T, BaseData> & T);
+  type SnapshotUnion<T extends Data> =
+    Snapshot<T, BaseData> |
+    (SnapshotWithCriteria<T, BaseData> & T);
 
-type SnapshotStoreUnion<T extends BaseData> = 
-  | SnapshotStoreObject<T, any>
-  | SnapshotStoreObject<T, BaseData>
-  | Snapshots<T>;
+  type SnapshotStoreUnion<T extends BaseData> = 
+    | SnapshotStoreObject<T, any>
+    | SnapshotStoreObject<T, BaseData>
+    | Snapshots<T>;
 
-//Snapshots type to include the union of the Snapshot types
-type Snapshots<T extends BaseData> = SnapshotsArray<T> | SnapshotsObject<T>;
+  //Snapshots type to include the union of the Snapshot types
+  type Snapshots<T extends BaseData> = SnapshotsArray<T> | SnapshotsObject<T>;
 
-//SnapshotsObject to use SnapshotUnion
-type SnapshotsObject<T extends BaseData> = { [key: string]: SnapshotUnion<T> };
+  //SnapshotsObject to use SnapshotUnion
+  type SnapshotsObject<T extends BaseData> = { [key: string]: SnapshotUnion<T> };
 
-//SnapshotsArray to use SnapshotUnion
-type SnapshotsArray<T extends BaseData> = Array<SnapshotUnion<T>>;
+  //SnapshotsArray to use SnapshotUnion
+  type SnapshotsArray<T extends BaseData> = Array<SnapshotUnion<T>>;
 
-//SnapshotStoreObject to use SnapshotUnion
-type SnapshotStoreObject<T extends BaseData, K> = { [key: string]: SnapshotUnion<T> };
+  //SnapshotStoreObject to use SnapshotUnion
+   type SnapshotStoreObject<T extends BaseData, K> = { [key: string]: SnapshotStoreUnion<T> };
 
 
 const snapshot = ""
@@ -99,7 +101,7 @@ const criteria = await snapshotApi.getSnapshotCriteria(
 const snapshotObj = {} as Snapshot<Data, Data>
 const options = createSnapshotOptions(snapshotObj, snapshot);
 const snapshotId = await snapshotApi.getSnapshotId(criteria);
-const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
+const storeId = await snapshotApi.getSnapshotStoreId(String(snapshotId));
 const snapshotStoreConfig = snapshotApi.getSnapshotStoreConfig(null, {} as SnapshotContainer<Data, Data>, {}, storeId)
 const SNAPSHOT_STORE_CONFIG: SnapshotStoreConfig<Data, Data> = await snapshotStoreConfig as SnapshotStoreConfig<Data, Data>
 
@@ -115,13 +117,13 @@ interface Snapshot<T extends Data, K extends Data = T>
     onError: any;
     categories?: Category[];
     taskIdToAssign: string | undefined
-    
+  schema: Record<string, SchemaField>;
     currentCategory: Category;
     mappedSnapshotData:  Map<string, Snapshot<T, K>>
     snapshot: (
       id: string | number | undefined,
       snapshotId: number,
-      snapshotData: SnapshotData<T, K>,
+      snapshotData: SnapshotDataType<T, K>,
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       dataStoreMethods: DataStore<T, K>[]
@@ -343,7 +345,7 @@ interface Snapshot<T extends Data, K extends Data = T>
       initialData: T,
       snapshotStoreConfig: SnapshotStoreConfig<T, K>,
       category: Category
-    ) => Promise<Snapshot<Data, K>> ;
+    ) => Promise<Snapshot<T, K>> ;
 
     addStoreConfig: (config: SnapshotStoreConfig<T, any>) => void;
 
@@ -409,9 +411,9 @@ interface Snapshot<T extends Data, K extends Data = T>
 
     setSnapshot: (snapshot: Snapshot<T, K>) => void;
 
-    transformSnapshotConfig: <T extends BaseData>(
-      config: SnapshotStoreConfig<T, T>
-    ) => SnapshotStoreConfig<T, T>;
+  transformSnapshotConfig: <U extends BaseData>(
+    config: SnapshotStoreConfig<U, U>
+  ) => SnapshotStoreConfig<U, U>;
 
     setSnapshots: (snapshots: Snapshots<T>) => void;
     clearSnapshot: () => void;
@@ -437,7 +439,7 @@ interface Snapshot<T extends Data, K extends Data = T>
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -449,7 +451,7 @@ interface Snapshot<T extends Data, K extends Data = T>
         storeIds: number[],
         snapshotId: string,
         category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties,
+        categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K>,
         timestamp: string | number | Date | undefined,
         type: string,
@@ -576,17 +578,23 @@ const snapshotType = <T extends BaseData, K extends BaseData = T>(
   const getCriteriaAndData = async (): Promise<{
     snapshotId: number,
     snapshotData: Snapshot<T, K>,
-    criteria: any;
+    criteria: CriteriaType
     snapshotContainerData: SnapshotContainer<T, K>
   }> => {
-    const criteria = await snapshotApi.getSnapshotCriteria(newSnapshot, snapshot);
+    let criteria = await snapshotApi.getSnapshotCriteria(newSnapshot, snapshot);
     const tempSnapshotId = await snapshotApi.getSnapshotId(criteria);
     if (tempSnapshotId === undefined) {
       throw new Error("Failed to get snapshot ID");
     }
 
     // Retrieve snapshot data here; assuming you have a function to fetch it
-    const snapshotData = await snapshotApi.getSnapshotData(tempSnapshotId);
+    let snapshotData = await snapshotApi.getSnapshotData(tempSnapshotId).then((snapshotData) => {
+      if (snapshotData) {
+        return snapshotData;
+      }
+      return null;
+      })
+    
     if (!snapshotData) {
       throw new Error("Failed to get snapshot data");
     }
@@ -624,7 +632,6 @@ const snapshotType = <T extends BaseData, K extends BaseData = T>(
   // Return the newSnapshot as a Promise<Snapshot<T, K>>
   return Promise.resolve({ ...newSnapshot, ...completeSnapshotContainerData, ...snapshotData });
 };
-
 
 
 

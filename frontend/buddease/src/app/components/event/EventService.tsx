@@ -339,11 +339,11 @@ class EventService {
       description,
       startDate,
       endDate,
+      
       // Add other properties and methods as needed
       status: "pending", // Example status value, adjust as needed
       rsvpStatus: "notResponded", // Example RSVP status value, adjust as needed
       priority: "low", // Example priority value, adjust as needed
-
 
       // Initialize other properties with default values
       participants: [], // Example empty array, adjust as needed
@@ -359,7 +359,23 @@ class EventService {
       analysisType: {} as AnalysisTypeEnum,
       analysisResults: {} as DataAnalysisResult[],
       videoData: {} as VideoData,
-      timestamp: undefined
+      timestamp: undefined,
+      meta: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: "",
+        updatedBy: "",
+        deletedAt: undefined,
+        deletedBy: "",
+        deleted: false,
+        deletedReason: "",
+        deletedReasonDetails: "",
+        restoredAt: new Date(),        // Timestamp of restoration (optional, if the item is restored)
+        restoredBy: "",       // ID or name of the user who restored the item
+        version: 0,          // Version number of the item (optional for versioning control)
+        lastModifiedBySystem: false, // Flag indicating if the system made the last modification
+        isArchived: false,
+      } 
     };
 
     return customEvent;

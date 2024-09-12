@@ -626,7 +626,7 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
       snapshot: T | null, 
       snapshotData: T, 
       category: symbol | string | Category | undefined, 
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T>,
       type: string,

@@ -3,6 +3,12 @@ import { UserPreferences } from "@/app/configs/UserPreferences";
 import { makeAutoObservable } from "mobx";
 import { NFT } from "../../nft/NFT";
 import { Permission } from "../../users/Permission";
+import  * as jwt from 'jsonwebtoken'; // Assuming JWT is used for tokens
+import { User } from "../../users/User";
+import { UserRoleEnum } from "../../users/UserRoles";
+import { verifyTokenScopes } from "../../database/JwtPayload";
+import { Scope } from "./Scopes";
+import { hasTokenExpired } from "../../database/hasTokenExpired";
 
 interface UserContactInfo {
   phone: string;
@@ -26,11 +32,16 @@ interface UserSession {
   lastAccessed: string;
 }
 
+// Check if user roles include a specific role
+const userHasRole = (user: User, role: UserRoleEnum): boolean => {
+  return user.roles.some(userRole => userRole.role === role);
+};
+
+
 export class AuthStore {
   isAuthenticated: boolean = false;
   accessToken: string | null = null;
   userId: string | null = null;
-  user: any = null;
   roles: string[] = [];
   nfts: NFT[] = [];
   userPreferences: UserPreferences | null = null;
@@ -44,6 +55,9 @@ export class AuthStore {
   userSessions: UserSession[] = [];
   userSubscriptionPlan: SubscriptionPlan | null = null;
   dispatch: (action: any) => void = () => {};
+
+  private user: User | null = null;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -77,6 +91,48 @@ export class AuthStore {
     this.accessToken = accessToken;
   }
 
+
+
+  
+// Usage in your function
+  async verifyUserAndToken(requiredScopes: Scope[]): Promise<boolean> {
+    const token = this.getAccessToken();
+    const user = this.getUser();
+
+    if (!token || !user) {
+      return false; // Token or user is not present
+    }
+
+    try {
+      // Verify the token's validity
+      const secret = process.env.JWT_SECRET || 'your-default-secret';
+      const decodedToken = jwt.verify(token, secret) as jwt.JwtPayload;
+
+      // Check if the token has expired
+      if (hasTokenExpired(decodedToken.exp)) {
+        return false; // Token has expired
+      }
+
+      // Optionally, you might want to validate the token's claims
+      // For example, check if the token has required scopes or permissions
+      
+      // Validate token scopes
+      if (!verifyTokenScopes(decodedToken, requiredScopes)) {
+        return false; // Token does not have required scopes
+      }
+
+      // Check if the user exists and is active
+      if (!user.isActive || !userHasRole(user, UserRoleEnum.Verified_User)) {
+        return false; // User is not active or does not have the required role
+      }
+
+      return true; // Token is valid and user is active
+    } catch (error) {
+      console.error('Token verification failed:', error);
+      return false; // Token verification failed
+    }
+  }
+
   clearAccessToken() {
     this.accessToken = null;
   }
@@ -91,6 +147,9 @@ export class AuthStore {
 
   isLoggedIn(): boolean {
     return !!this.accessToken;
+  }
+  getUser(): User | null {
+    return this.user;
   }
 
   setUser(user: any) {

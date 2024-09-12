@@ -1,5 +1,5 @@
 // DocumentSlice.tsx
-import { fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
+import { fetchDocumentById, fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, {
   DocumentData,
@@ -32,15 +32,16 @@ import BackendStructure, { backend, backendStructure } from "@/app/configs/appSt
 import { DocumentSize } from "@/app/components/models/data/StatusType";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import { Document } from "../../stores/DocumentStore";
-import getAppPath from "appPath";
+import getAppPath from "../../appPath";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()
 const API_BASE_URL = getAppPath(versionNumber, appVersion);
 
 interface DocumentSliceState {
-  documentList: WritableDraft<DocumentObject>[];
+  documentList: DocumentObject[];
   selectedDocument: DocumentData | null;
   filteredDocuments: DocumentData[];
   searchResults: DocumentData[];
@@ -63,9 +64,10 @@ const initialDocumentSliceState: DocumentSliceState = {
 
 interface DocumentObject extends Document, DocumentData, DocumentSliceState {
   // Optionally add additional fields here if needed
-  documents: DocumentObject[];
   description?: string | null; // Reintroduce with the original name
-  createdBy?: string | undefined; // Reintroduce with the original name
+  createdBy: string | undefined; // Reintroduce with the original name
+  alinkColor: string
+  subtasks?: WritableDraft<TodoImpl<Todo, any>>[];
 }
 
 interface ViewTransition {
@@ -83,7 +85,7 @@ function toObject(document: DocumentObject): object {
 
 
 const initialState: DocumentObject = {
-  _id: uuidv4(),
+  // _id: uuidv4(),
   id: "",
   title: "New Document",
 
@@ -233,8 +235,9 @@ const initialState: DocumentObject = {
           execute: false
         },
         getStructure: function (): Record<string, AppStructureItem> {
-  throw new Error("Function not implemented.")
-},        getStructureAsArray: function (): Promise<AppStructureItem[]> {
+          throw new Error("Function not implemented.")
+        },
+        getStructureAsArray: function (): Promise<AppStructureItem[]> {
           throw new Error("Function not implemented.");
         }
       },
@@ -246,13 +249,16 @@ const initialState: DocumentObject = {
     },
     getVersion: async () => "1.0",
     versionHistory: {
-      versions: [],
+      versionData: []
     },
-    mergeAndHashStructures: async (baseStructure, additionalStructure) => {
+    mergeAndHashStructures: async (
+      baseStructure, 
+      additionalStructure
+    ) => {
       return "merged_structure_hash";
     },
     getVersionNumber: () => "1.0",
-    updateVersionNumber: (newVersionNumber) => {
+    updateVersionNumber: (newVersionNumber: string) => {
       console.log(`Updating version number to ${newVersionNumber}`);
     },
     getVersionData: (): VersionData => {
@@ -330,7 +336,7 @@ const initialState: DocumentObject = {
     },
   },
   permissions: new DocumentPermissions(false, false),
-  tags: [],
+  tags: {},
   createdAt: "",
   createdBy: "",
   updatedBy: "",
@@ -410,7 +416,7 @@ const initialState: DocumentObject = {
 
 function createNewDocument(documentId: string): DocumentObject {
   const newDocument: DocumentObject = {
-    _id: uuidv4(),
+    // _id: uuidv4(),
     id: documentId,
     title: "New Document",
     content: "This is a new document",
@@ -493,13 +499,16 @@ function createNewDocument(documentId: string): DocumentObject {
       },
       getVersion: async () => "1.0",
       versionHistory: {
-        versions: [],
+        versionData: []
+        // draft: false,
+        // frontendStructure: Promise.resolve([]),
+        // backendStructure: Promise.resolve([]),
       },
       mergeAndHashStructures: async (baseStructure, additionalStructure) => {
         return "merged_structure_hash";
       },
       getVersionNumber: () => "1.0",
-      updateVersionNumber: (newVersionNumber) => {
+      updateVersionNumber: (newVersionNumber: number) => {
         console.log(`Updating version number to ${newVersionNumber}`);
       },
       getVersionData: (): VersionData => {
@@ -545,46 +554,10 @@ function createNewDocument(documentId: string): DocumentObject {
             timestamp: new Date(),
             revisionNotes: undefined, // Adjust as per your application logic
           },
-          versions: {
-            data: {
-              frontend: {
-                versionNumber: "1.0",
-              },
-              backend: {
-                versionNumber: "1.0",
-              },
-            },
-            backend: {
-              traverseDirectory: traverseBackendDirectory,
-              getStructure: () => {
-                return (
-                  options?.backendStructure?.getStructure() ||
-                  Promise.resolve({})
-                );
-              },
-              getStructureAsArray: getStructureAsArray,
-              traverseDirectoryPublic: traverseBackendDirectory, // Added this line
-            },
-            frontend: {
-              id: "frontend",
-              name: "Frontend",
-              type: "folder",
-              path: "./frontend",
-              content: "",
-              draft: false,
-              permissions: {
-                read: true,
-                write: true,
-                delete: true,
-                share: true,
-                execute: true,
-              },
-              items: {},
-              getStructureAsArray: async () => [],
-              traverseDirectoryPublic: async () => [],
-              getStructure: () => ({} as Record<string, AppStructureItem>),
-            },
-          },
+          changes: [],
+          backend: {}, 
+          frontend: {}, 
+          versionData: []
         };
       },
     },
@@ -675,9 +648,11 @@ function createNewDocument(documentId: string): DocumentObject {
             execute: true,
           },
           items: {},
+          frontendVersions: [], 
           getStructureAsArray: async () => [],
           traverseDirectoryPublic: async () => [],
-          getStructure:  () => ({} as Record<string, AppStructureItem>),
+          getStructure:  async () => ({} as Record<string, AppStructureItem>),
+          getStructureChecksum: async () => ""
         } as FrontendStructure,
       },
     },
@@ -1198,19 +1173,6 @@ export const deleteDocumentAsync = createAsyncThunk(
   }
 );
 
-// Define an async thunk action creator to fetch document by ID
-export const fetchDocumentById = createAsyncThunk(
-  'documents/fetchDocumentById',
-  async (documentId: number) => {
-    try {
-      const response = await fetch(`${`${API_BASE_URL}`}/documents/${documentId}`);
-      const data = await response.json();
-      return data; // Assuming data is of type DocumentObject
-    } catch (error) {
-      throw error;
-    }
-  }
-);
 
 // Define async function to fetch documents data by IDs
 export const fetchDocumentsByIds = async (documentIds: number[]) => {
@@ -1232,6 +1194,7 @@ export const fetchDocumentsByIds = async (documentIds: number[]) => {
   }
 };
 
+ 
 export const downloadDocument = createAsyncThunk(
   "document/downloadDocument",
   async (documentId: number, { rejectWithValue }) => {
@@ -1571,63 +1534,63 @@ const transformations = {
   },
 
   importFromExternalSource: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     externalSource: string
   ) => {
     document.content = `${externalSource} Imported: ${document.content}`;
   },
 
   exportToExternalSystem: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObject>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Exported: ${document.content}`;
   },
 
-  generateReport: (document: WritableDraft<DocumentData>, report: string) => {
+  generateReport: (document: WritableDraft<DocumentObject>, report: string) => {
     document.content = `${report} Generated: ${document.content}`;
   },
 
-  exportReport: (document: WritableDraft<DocumentData>, report: string) => {
+  exportReport: (document: WritableDraft<DocumentObject>, report: string) => {
     document.content = `${report} Exported: ${document.content}`;
   },
 
   scheduleReportGeneration: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObjectt>,
     report: string
   ) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
   customizeReportSettings: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObjectt>,
     report: string
   ) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: WritableDraft<DocumentData>, backup: string) => {
+  backupDocuments: (document: WritableDraft<DocumentObjectt>, backup: string) => {
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: WritableDraft<DocumentData>, backup: string) => {
+  retrieveBackup: (document: WritableDraft<DocumentObjectt>, backup: string) => {
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: WritableDraft<DocumentData>, redaction: string) => {
+  redaction: (document: WritableDraft<DocumentObjectt>, redaction: string) => {
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: WritableDraft<DocumentData>, access: string) => {
+  accessControls: (document: WritableDraft<DocumentObjectt>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: WritableDraft<DocumentData>, template: string) => {
+  templates: (document: WritableDraft<DocumentObjectt>, template: string) => {
     document.content = `${template} Templates: ${document.content}`;
   },
 
   updateDocumentVersion: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentObjectt>,
     version: string
   ) => {
     document.content = `${version} Version updated: ${document.content}`;
@@ -1974,7 +1937,7 @@ export const useDocumentManagerSlice = createSlice({
     createDocument: {
       reducer: (state, action: PayloadAction<WritableDraft<DocumentObject>>) => {
         state.selectedDocument = action.payload;
-        state.documents?.push(action.payload);
+        state.documentList?.push(action.payload);
       },
       prepare: () => {
         // Generate a new document with default values
@@ -1986,8 +1949,12 @@ export const useDocumentManagerSlice = createSlice({
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
-
-
+          createdAt: new Date(), 
+          updatedBy: "Mattt Smooth", 
+          documentPhase: "",
+          createdByRenamed: "",
+          document: {} as WritableDraft<DocumentObject>,
+          documentList: [],
 
           // Add other properties as needed
           keywords: [],
@@ -2065,7 +2032,7 @@ export const useDocumentManagerSlice = createSlice({
           documentURI: "",
           domain: "",
           embeds: undefined,
-          fgColor: "",
+          // fgColor: "",
           forms: undefined,
           fullscreen: false,
           fullscreenEnabled: false,
@@ -2095,353 +2062,353 @@ export const useDocumentManagerSlice = createSlice({
           timeline: undefined,
           visibilityState: "hidden",
           vlinkColor: "",
-          adoptNode: function <T extends Node>(node: T): T {
-            throw new Error("Function not implemented.");
-          },
-          captureEvents: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          caretRangeFromPoint: function (x: number, y: number): Range | null {
-            throw new Error("Function not implemented.");
-          },
-          clear: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          close: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          createAttribute: function (localName: string): Attr {
-            throw new Error("Function not implemented.");
-          },
-          createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
-            throw new Error("Function not implemented.");
-          },
-          createCDATASection: function (data: string): CDATASection {
-            throw new Error("Function not implemented.");
-          },
-          createComment: function (data: string): Comment {
-            throw new Error("Function not implemented.");
-          },
-          createDocumentFragment: function (): DocumentFragment {
-            throw new Error("Function not implemented.");
-          },
-          createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
-            throw new Error("Function not implemented.");
-          },
-          createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
-            throw new Error("Function not implemented.");
-          },
-          createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
-            throw new Error("Function not implemented.");
-          },
-          createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
-            throw new Error("Function not implemented.");
-          },
-          createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
-            throw new Error("Function not implemented.");
-          },
-          createRange: function (): Range {
-            throw new Error("Function not implemented.");
-          },
-          createTextNode: function (data: string): Text {
-            throw new Error("Function not implemented.");
-          },
-          createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
-            throw new Error("Function not implemented.");
-          },
-          execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
-            throw new Error("Function not implemented.");
-          },
-          exitFullscreen: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          exitPictureInPicture: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          exitPointerLock: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          getElementById: function (elementId: string): HTMLElement | null {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
-            throw new Error("Function not implemented.");
-          },
-          getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
-            throw new Error("Function not implemented.");
-          },
-          getSelection: function (): Selection | null {
-            throw new Error("Function not implemented.");
-          },
-          hasFocus: function (): boolean {
-            throw new Error("Function not implemented.");
-          },
-          hasStorageAccess: function (): Promise<boolean> {
-            throw new Error("Function not implemented.");
-          },
-          importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
-            throw new Error("Function not implemented.");
-          },
-          open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandEnabled: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandIndeterm: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandState: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandSupported: function (commandId: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          queryCommandValue: function (commandId: string): string {
-            throw new Error("Function not implemented.");
-          },
-          releaseEvents: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          requestStorageAccess: function (): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          write: function (...text: string[]): void {
-            throw new Error("Function not implemented.");
-          },
-          writeln: function (...text: string[]): void {
-            throw new Error("Function not implemented.");
-          },
-          addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
-            throw new Error("Function not implemented.");
-          },
-          removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
-            throw new Error("Function not implemented.");
-          },
-          startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
-            throw new Error("Function not implemented.");
-          },
-          baseURI: "",
-          childNodes: undefined,
-          firstChild: null,
-          isConnected: false,
-          lastChild: null,
-          nextSibling: null,
-          nodeName: "",
-          nodeType: 0,
-          nodeValue: null,
-          parentElement: null,
-          parentNode: null,
-          previousSibling: null,
-          textContent: null,
-          appendChild: function <T extends Node>(node: T): T {
-            throw new Error("Function not implemented.");
-          },
-          cloneNode: function (deep?: boolean | undefined): Node {
-            throw new Error("Function not implemented.");
-          },
-          compareDocumentPosition: function (other: Node): number {
-            throw new Error("Function not implemented.");
-          },
-          contains: function (other: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
-            throw new Error("Function not implemented.");
-          },
-          hasChildNodes: function (): boolean {
-            throw new Error("Function not implemented.");
-          },
-          insertBefore: function <T extends Node>(node: T, child: Node | null): T {
-            throw new Error("Function not implemented.");
-          },
-          isDefaultNamespace: function (namespace: string | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isEqualNode: function (otherNode: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isSameNode: function (otherNode: Node | null): boolean {
-            throw new Error("Function not implemented.");
-          },
-          lookupNamespaceURI: function (prefix: string | null): string | null {
-            throw new Error("Function not implemented.");
-          },
-          lookupPrefix: function (namespace: string | null): string | null {
-            throw new Error("Function not implemented.");
-          },
-          normalize: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          removeChild: function <T extends Node>(child: T): T {
-            throw new Error("Function not implemented.");
-          },
-          replaceChild: function <T extends Node>(node: Node, child: T): T {
-            throw new Error("Function not implemented.");
-          },
-          ELEMENT_NODE: 1,
-          ATTRIBUTE_NODE: 2,
-          TEXT_NODE: 3,
-          CDATA_SECTION_NODE: 4,
-          ENTITY_REFERENCE_NODE: 5,
-          ENTITY_NODE: 6,
-          PROCESSING_INSTRUCTION_NODE: 7,
-          COMMENT_NODE: 8,
-          DOCUMENT_NODE: 9,
-          DOCUMENT_TYPE_NODE: 10,
-          DOCUMENT_FRAGMENT_NODE: 11,
-          NOTATION_NODE: 12,
-          DOCUMENT_POSITION_DISCONNECTED: 1,
-          DOCUMENT_POSITION_PRECEDING: 2,
-          DOCUMENT_POSITION_FOLLOWING: 4,
-          DOCUMENT_POSITION_CONTAINS: 8,
-          DOCUMENT_POSITION_CONTAINED_BY: 16,
-          DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
-          dispatchEvent: function (event: Event): boolean {
-            throw new Error("Function not implemented.");
-          },
-          activeElement: null,
-          adoptedStyleSheets: [],
-          fullscreenElement: null,
-          pictureInPictureElement: null,
-          pointerLockElement: null,
-          styleSheets: undefined,
-          elementFromPoint: function (x: number, y: number): Element | null {
-            throw new Error("Function not implemented.");
-          },
-          elementsFromPoint: function (x: number, y: number): Element[] {
-            throw new Error("Function not implemented.");
-          },
-          getAnimations: function (): Animation[] {
-            throw new Error("Function not implemented.");
-          },
-          fonts: undefined,
-          onabort: null,
-          onanimationcancel: null,
-          onanimationend: null,
-          onanimationiteration: null,
-          onanimationstart: null,
-          onauxclick: null,
-          onbeforeinput: null,
-          onbeforetoggle: null,
-          onblur: null,
-          oncancel: null,
-          oncanplay: null,
-          oncanplaythrough: null,
-          onchange: null,
-          onclick: null,
-          onclose: null,
-          oncontextmenu: null,
-          oncopy: null,
-          oncuechange: null,
-          oncut: null,
-          ondblclick: null,
-          ondrag: null,
-          ondragend: null,
-          ondragenter: null,
-          ondragleave: null,
-          ondragover: null,
-          ondragstart: null,
-          ondrop: null,
-          ondurationchange: null,
-          onemptied: null,
-          onended: null,
-          onerror: null,
-          onfocus: null,
-          onformdata: null,
-          ongotpointercapture: null,
-          oninput: null,
-          oninvalid: null,
-          onkeydown: null,
-          onkeypress: null,
-          onkeyup: null,
-          onload: null,
-          onloadeddata: null,
-          onloadedmetadata: null,
-          onloadstart: null,
-          onlostpointercapture: null,
-          onmousedown: null,
-          onmouseenter: null,
-          onmouseleave: null,
-          onmousemove: null,
-          onmouseout: null,
-          onmouseover: null,
-          onmouseup: null,
-          onpaste: null,
-          onpause: null,
-          onplay: null,
-          onplaying: null,
-          onpointercancel: null,
-          onpointerdown: null,
-          onpointerenter: null,
-          onpointerleave: null,
-          onpointermove: null,
-          onpointerout: null,
-          onpointerover: null,
-          onpointerup: null,
-          onprogress: null,
-          onratechange: null,
-          onreset: null,
-          onresize: null,
-          onscroll: null,
-          onscrollend: null,
-          onsecuritypolicyviolation: null,
-          onseeked: null,
-          onseeking: null,
-          onselect: null,
-          onselectionchange: null,
-          onselectstart: null,
-          onslotchange: null,
-          onstalled: null,
-          onsubmit: null,
-          onsuspend: null,
-          ontimeupdate: null,
-          ontoggle: null,
-          ontransitioncancel: null,
-          ontransitionend: null,
-          ontransitionrun: null,
-          ontransitionstart: null,
-          onvolumechange: null,
-          onwaiting: null,
-          onwebkitanimationend: null,
-          onwebkitanimationiteration: null,
-          onwebkitanimationstart: null,
-          onwebkittransitionend: null,
-          onwheel: null,
-          childElementCount: 0,
-          children: undefined,
-          firstElementChild: null,
-          lastElementChild: null,
-          append: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          prepend: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
-            throw new Error("Function not implemented.");
-          },
-          querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
-            throw new Error("Function not implemented.");
-          },
-          replaceChildren: function (...nodes: (string | Node)[]): void {
-            throw new Error("Function not implemented.");
-          },
-          createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
-            throw new Error("Function not implemented.");
-          },
-          createNSResolver: function (nodeResolver: Node): Node {
-            throw new Error("Function not implemented.");
-          },
-          evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
-            throw new Error("Function not implemented.");
-          },
+          // adoptNode: function <T extends Node>(node: T): T {
+          //   throw new Error("Function not implemented.");
+          // },
+          // captureEvents: function (): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // caretRangeFromPoint: function (x: number, y: number): Range | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // clear: function (): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // close: function (): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createAttribute: function (localName: string): Attr {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createAttributeNS: function (namespace: string | null, qualifiedName: string): Attr {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createCDATASection: function (data: string): CDATASection {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createComment: function (data: string): Comment {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createDocumentFragment: function (): DocumentFragment {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createElement: function <K extends keyof HTMLElementTagNameMap>(tagName: K, options?: ElementCreationOptions | undefined): HTMLElementTagNameMap[K] {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createElementNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", qualifiedName: string): HTMLElement {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createEvent: function (eventInterface: "AnimationEvent"): AnimationEvent {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createNodeIterator: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): NodeIterator {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createProcessingInstruction: function (target: string, data: string): ProcessingInstruction {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createRange: function (): Range {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createTextNode: function (data: string): Text {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createTreeWalker: function (root: Node, whatToShow?: number | undefined, filter?: NodeFilter | null | undefined): TreeWalker {
+          //   throw new Error("Function not implemented.");
+          // },
+          // execCommand: function (commandId: string, showUI?: boolean | undefined, value?: string | undefined): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // exitFullscreen: function (): Promise<void> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // exitPictureInPicture: function (): Promise<void> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // exitPointerLock: function (): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getElementById: function (elementId: string): HTMLElement | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getElementsByClassName: function (classNames: string): HTMLCollectionOf<Element> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getElementsByName: function (elementName: string): NodeListOf<HTMLElement> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getElementsByTagName: function <K extends keyof HTMLElementTagNameMap>(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getElementsByTagNameNS: function (namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getSelection: function (): Selection | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // hasFocus: function (): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // hasStorageAccess: function (): Promise<boolean> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // importNode: function <T extends Node>(node: T, deep?: boolean | undefined): T {
+          //   throw new Error("Function not implemented.");
+          // },
+          // open: function (unused1?: string | undefined, unused2?: string | undefined): Document {
+          //   throw new Error("Function not implemented.");
+          // },
+          // queryCommandEnabled: function (commandId: string): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // queryCommandIndeterm: function (commandId: string): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // queryCommandState: function (commandId: string): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // queryCommandSupported: function (commandId: string): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // queryCommandValue: function (commandId: string): string {
+          //   throw new Error("Function not implemented.");
+          // },
+          // releaseEvents: function (): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // requestStorageAccess: function (): Promise<void> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // write: function (...text: string[]): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // writeln: function (...text: string[]): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // addEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // removeEventListener: function <K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
+          //   throw new Error("Function not implemented.");
+          // },
+          // baseURI: "",
+          // childNodes: undefined,
+          // firstChild: null,
+          // isConnected: false,
+          // lastChild: null,
+          // nextSibling: null,
+          // nodeName: "",
+          // nodeType: 0,
+          // nodeValue: null,
+          // parentElement: null,
+          // parentNode: null,
+          // previousSibling: null,
+          // textContent: null,
+          // appendChild: function <T extends Node>(node: T): T {
+          //   throw new Error("Function not implemented.");
+          // },
+          // cloneNode: function (deep?: boolean | undefined): Node {
+          //   throw new Error("Function not implemented.");
+          // },
+          // compareDocumentPosition: function (other: Node): number {
+          //   throw new Error("Function not implemented.");
+          // },
+          // contains: function (other: Node | null): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getRootNode: function (options?: GetRootNodeOptions | undefined): Node {
+          //   throw new Error("Function not implemented.");
+          // },
+          // hasChildNodes: function (): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // insertBefore: function <T extends Node>(node: T, child: Node | null): T {
+          //   throw new Error("Function not implemented.");
+          // },
+          // isDefaultNamespace: function (namespace: string | null): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // isEqualNode: function (otherNode: Node | null): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // isSameNode: function (otherNode: Node | null): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // lookupNamespaceURI: function (prefix: string | null): string | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // lookupPrefix: function (namespace: string | null): string | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // normalize: function (): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // removeChild: function <T extends Node>(child: T): T {
+          //   throw new Error("Function not implemented.");
+          // },
+          // replaceChild: function <T extends Node>(node: Node, child: T): T {
+          //   throw new Error("Function not implemented.");
+          // },
+          // ELEMENT_NODE: 1,
+          // ATTRIBUTE_NODE: 2,
+          // TEXT_NODE: 3,
+          // CDATA_SECTION_NODE: 4,
+          // ENTITY_REFERENCE_NODE: 5,
+          // ENTITY_NODE: 6,
+          // PROCESSING_INSTRUCTION_NODE: 7,
+          // COMMENT_NODE: 8,
+          // DOCUMENT_NODE: 9,
+          // DOCUMENT_TYPE_NODE: 10,
+          // DOCUMENT_FRAGMENT_NODE: 11,
+          // NOTATION_NODE: 12,
+          // DOCUMENT_POSITION_DISCONNECTED: 1,
+          // DOCUMENT_POSITION_PRECEDING: 2,
+          // DOCUMENT_POSITION_FOLLOWING: 4,
+          // DOCUMENT_POSITION_CONTAINS: 8,
+          // DOCUMENT_POSITION_CONTAINED_BY: 16,
+          // DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: 32,
+          // dispatchEvent: function (event: Event): boolean {
+          //   throw new Error("Function not implemented.");
+          // },
+          // activeElement: null,
+          // adoptedStyleSheets: [],
+          // fullscreenElement: null,
+          // pictureInPictureElement: null,
+          // pointerLockElement: null,
+          // styleSheets: undefined,
+          // elementFromPoint: function (x: number, y: number): Element | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // elementsFromPoint: function (x: number, y: number): Element[] {
+          //   throw new Error("Function not implemented.");
+          // },
+          // getAnimations: function (): Animation[] {
+          //   throw new Error("Function not implemented.");
+          // },
+          // fonts: undefined,
+          // onabort: null,
+          // onanimationcancel: null,
+          // onanimationend: null,
+          // onanimationiteration: null,
+          // onanimationstart: null,
+          // onauxclick: null,
+          // onbeforeinput: null,
+          // onbeforetoggle: null,
+          // onblur: null,
+          // oncancel: null,
+          // oncanplay: null,
+          // oncanplaythrough: null,
+          // onchange: null,
+          // onclick: null,
+          // onclose: null,
+          // oncontextmenu: null,
+          // oncopy: null,
+          // oncuechange: null,
+          // oncut: null,
+          // ondblclick: null,
+          // ondrag: null,
+          // ondragend: null,
+          // ondragenter: null,
+          // ondragleave: null,
+          // ondragover: null,
+          // ondragstart: null,
+          // ondrop: null,
+          // ondurationchange: null,
+          // onemptied: null,
+          // onended: null,
+          // onerror: null,
+          // onfocus: null,
+          // onformdata: null,
+          // ongotpointercapture: null,
+          // oninput: null,
+          // oninvalid: null,
+          // onkeydown: null,
+          // onkeypress: null,
+          // onkeyup: null,
+          // onload: null,
+          // onloadeddata: null,
+          // onloadedmetadata: null,
+          // onloadstart: null,
+          // onlostpointercapture: null,
+          // onmousedown: null,
+          // onmouseenter: null,
+          // onmouseleave: null,
+          // onmousemove: null,
+          // onmouseout: null,
+          // onmouseover: null,
+          // onmouseup: null,
+          // onpaste: null,
+          // onpause: null,
+          // onplay: null,
+          // onplaying: null,
+          // onpointercancel: null,
+          // onpointerdown: null,
+          // onpointerenter: null,
+          // onpointerleave: null,
+          // onpointermove: null,
+          // onpointerout: null,
+          // onpointerover: null,
+          // onpointerup: null,
+          // onprogress: null,
+          // onratechange: null,
+          // onreset: null,
+          // onresize: null,
+          // onscroll: null,
+          // onscrollend: null,
+          // onsecuritypolicyviolation: null,
+          // onseeked: null,
+          // onseeking: null,
+          // onselect: null,
+          // onselectionchange: null,
+          // onselectstart: null,
+          // onslotchange: null,
+          // onstalled: null,
+          // onsubmit: null,
+          // onsuspend: null,
+          // ontimeupdate: null,
+          // ontoggle: null,
+          // ontransitioncancel: null,
+          // ontransitionend: null,
+          // ontransitionrun: null,
+          // ontransitionstart: null,
+          // onvolumechange: null,
+          // onwaiting: null,
+          // onwebkitanimationend: null,
+          // onwebkitanimationiteration: null,
+          // onwebkitanimationstart: null,
+          // onwebkittransitionend: null,
+          // onwheel: null,
+          // childElementCount: 0,
+          // children: undefined,
+          // firstElementChild: null,
+          // lastElementChild: null,
+          // append: function (...nodes: (string | Node)[]): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // prepend: function (...nodes: (string | Node)[]): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // querySelector: function <K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null {
+          //   throw new Error("Function not implemented.");
+          // },
+          // querySelectorAll: function <K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]> {
+          //   throw new Error("Function not implemented.");
+          // },
+          // replaceChildren: function (...nodes: (string | Node)[]): void {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createExpression: function (expression: string, resolver?: XPathNSResolver | null | undefined): XPathExpression {
+          //   throw new Error("Function not implemented.");
+          // },
+          // createNSResolver: function (nodeResolver: Node): Node {
+          //   throw new Error("Function not implemented.");
+          // },
+          // evaluate: function (expression: string, contextNode: Node, resolver?: XPathNSResolver | null | undefined, type?: number | undefined, result?: XPathResult | null | undefined): XPathResult {
+          //   throw new Error("Function not implemented.");
+          // },
           documents: [],
           selectedDocument: null,
           filteredDocuments: [],
@@ -2455,11 +2422,11 @@ export const useDocumentManagerSlice = createSlice({
 
     setDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData[]>>
+      action: PayloadAction<WritableDraft<DocumentObject[]>>
     ) => {
-      state.documents = action.payload;
+      state.documentList = action.payload;
       // TODO: Add logic to filter documents
-      state.filteredDocuments = state.documents;
+      state.filteredDocuments = state.documentList;
       state.loading = false;
       state.error = null;
       return { payload: state };
@@ -2477,55 +2444,65 @@ export const useDocumentManagerSlice = createSlice({
       state,
       action: PayloadAction<WritableDraft<DocumentObject>>
     ) => {
-      state.documents?.push(action.payload);
+      state.documentList?.push(action.payload);
     },
 
-    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string }>) => {
-      const documentIndex = state.documents?.findIndex(doc => doc.id === action.payload.id);
+    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string; documentList: WritableDraft<DocumentObject>[]  }>) => {
+      const documentIndex = state.documentList?.findIndex(doc => doc.id === action.payload.id);
       if (documentIndex !== -1) {
-        state.documents![documentIndex!].title = action.payload.title;
+        state.documentList![documentIndex!].title = action.payload.title;
       } else {
         // Optionally handle case where document is not found
-        state.documents?.push({
-          id: action.payload.id, title: action.payload.title,
-          _id: "",
-          content: "",
-          permissions: undefined,
-          folders: [],
-          options: undefined,
-          folderPath: "",
-          previousMetadata: undefined,
-          currentMetadata: undefined,
-          accessHistory: [],
-          lastModifiedDate: undefined,
-          versionData: undefined,
-          version: undefined,
-          visibility: undefined,
-          documentSize: DocumentSize.A4,
-          lastModifiedBy: "",
-          name: "",
-          description: "",
-          createdBy: "",
-          createdDate: undefined,
-          documentType: "",
-          _rev: "",
-          _attachments: undefined,
-          _links: undefined,
-          _etag: "",
-          _local: false,
-          _revs: [],
-          _source: undefined,
-          _shards: undefined,
-          _size: 0,
-          _version: 0,
-          _version_conflicts: 0,
-          _seq_no: 0,
-          _primary_term: 0,
-          _routing: "",
-          _parent: "",
-          _parent_as_child: false,
-          _slices: [],
-          _highlight: undefined,
+        state.documentList?.push({
+          id: action.payload.id,
+          title: action.payload.title,
+          _id: action.payload._id,
+          documentList: action.payload.documentList,
+          createdBy, _rev, createdAt,
+
+          content: action.payload.content,
+          permissions: action.payload.permissions,
+          folders: action.payload.folders,
+          options: action.payload.options,
+          folderPath: action.payload.folderPath,
+          previousMetadata: action.payload.previousMetadata,
+          currentMetadata: action.payload.currentMetadata,
+          accessHistory: action.payload.accessHistory,
+          createdAt: action.payload.createdAt,
+          updatedBy: action.payload.updatedBy,
+          documentPhase: action.payload.documentPhase,
+          createdByRenamed: action.payload.createdByRenamed,
+          lastModifiedDate: action.payload.lastModifiedDate,
+          versionData: action.payload.versionData,
+          version: action.payload.version,
+          document: action.payload.document,
+          // documentList: action.payload.documentList,
+          visibility: action.payload.visibility,
+          documentSize: action.payload.documentListize,
+          lastModifiedBy: action.payload.lastModifiedBy,
+          name: action.payload.name,
+          // description: action.payload.description,
+          // createdBy: action.payload.createdBy,
+          createdDate: action.payload.createdDate,
+          documentType: action.payload.documentType,
+          // _rev: action.payload._rev,
+          // _attachments: action.payload._attachments,
+          // _links: action.payload._links,
+          // _etag: action.payload._etag,
+          // _local: action.payload._local,
+          // _revs: action.payload._revs,
+          // _source: action.payload._source,
+          // _shards: action.payload._shards,
+          // _size: action.payload._size,
+          // _version: action.payload._version,
+          // _version_conflicts: action.payload._version_conflicts,
+          // _seq_no: action.payload._seq_no,
+          // _primary_term: action.payload._primary_term,
+          // _routing: action.payload._routing,
+          // _parent: action.payload._parent,
+          // _parent_as_child: action.payload._parent_as_child,
+          // _slices: action.payload._slices,
+          // _highlight: action.payload._highlight,
           _highlight_inner_hits: undefined,
           _source_as_doc: false,
           _source_includes: [],
@@ -2564,7 +2541,7 @@ export const useDocumentManagerSlice = createSlice({
           documentURI: "",
           domain: "",
           embeds: undefined,
-          fgColor: "",
+          // fgColor: "",
           forms: undefined,
           fullscreen: false,
           fullscreenEnabled: false,
@@ -2607,7 +2584,7 @@ export const useDocumentManagerSlice = createSlice({
 
     selectDocument: (state, action: PayloadAction<number>) => {
       state.selectedDocument =
-        state.documents?.find((doc) => doc.id === action.payload.toString()) ||
+        state.documentList?.find((doc) => doc.id === action.payload.toString()) ||
         null;
     },
 
@@ -2617,9 +2594,9 @@ export const useDocumentManagerSlice = createSlice({
 
     setExportedDocuments: (
       state,
-      action: PayloadAction<WritableDraft<DocumentData[]>>
+      action: PayloadAction<WritableDraft<DocumentObject[]>>
     ) => {
-      state.documents = action.payload;
+      state.documentList = action.payload;
     },
 
     setFilteredDocuments: (
@@ -2634,9 +2611,9 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ id: string; status: DocumentStatus }>
     ) => {
       const { id, status } = action.payload;
-      const documentIndex = state.documents?.findIndex((doc) => doc.id === id);
+      const documentIndex = state.documentList?.findIndex((doc) => doc.id === id);
       if (documentIndex !== -1) {
-        state.documents?[documentIndex].status = status;
+        state.documentList?[documentIndex].status = status;
       } else {
         console.log("Document not found");
       }
@@ -2646,7 +2623,7 @@ export const useDocumentManagerSlice = createSlice({
 
     updateDocument: (state, action: PayloadAction<Partial<DocumentData>>) => {
       const { id, ...updates } = action.payload;
-      const existingDocument = state.documents?.find((doc) => doc.id === id);
+      const existingDocument = state.documentList?.find((doc) => doc.id === id);
       if (existingDocument) {
         Object.assign(existingDocument, updates);
       } else {
@@ -2657,11 +2634,11 @@ export const useDocumentManagerSlice = createSlice({
     },
 
     deleteDocument: (state, action: PayloadAction<string>) => {
-      const documentIndex = state.documents?.findIndex(
+      const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload
       );
       if (documentIndex !== -1) {
-        state.documents?.splice(documentIndex!, 1);
+        state.documentList?.splice(documentIndex!, 1);
         useNotification().notify(
           "deleteDocumentSuccess",
           "Document deleted successfully",
@@ -2684,7 +2661,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document filtering functionality
         const filterKeyword = action.payload.toLowerCase();
-        state.filteredDocuments = state.documents?.filter(
+        state.filteredDocuments = state.documentList?.filter(
           (doc) =>
             (typeof doc.title === "string" &&
               doc.title.toLowerCase().includes(filterKeyword)) ||
@@ -2714,14 +2691,14 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document sorting functionality
         const sortKey = action.payload as keyof DocumentData; // Type assertion
-        state.documents?.sort((a, b) => {
+        state.documentList?.sort((a, b) => {
           if (a[sortKey]! < b[sortKey]!) return -1; // Use optional chaining (!) to handle possible null or undefined values
           if (a[sortKey]! > b[sortKey]!) return 1; // Use optional chaining (!) to handle possible null or undefined values
           return 0;
         });
         useNotification().notify(
           "sortDocumentsSuccess",
-          `Sorting documents by sort key: ${sortKey} success`,
+          `Sorting documents by sort key: ${String(sortKey)} success`,
           NOTIFICATION_MESSAGES.Document.SORT_DOCUMENT_SUCCESS,
           new Date(),
           NotificationTypeEnum.OperationSuccess
@@ -2745,7 +2722,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         // Implement document sharing functionality
         const { documentId, recipients } = action.payload;
-        const documentToShare = state.documents?.find(
+        const documentToShare = state.documentList?.find(
           (doc) => doc.id === documentId.toString()
         );
         if (documentToShare) {
@@ -2782,7 +2759,7 @@ export const useDocumentManagerSlice = createSlice({
 
     downloadDocument: (state, action: PayloadAction<number>) => {
       // Implement document download functionality
-      const documentIndex = state.documents?.findIndex(
+      const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload.toString()
       );
       if (documentIndex !== -1) {
@@ -2808,7 +2785,7 @@ export const useDocumentManagerSlice = createSlice({
 
     exportDocument: (state, action: PayloadAction<number>) => {
       // Implement document export functionality
-      const documentIndex = state.documents?.findIndex(
+      const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload.toString()
       );
       if (documentIndex !== -1) {
@@ -2837,11 +2814,11 @@ export const useDocumentManagerSlice = createSlice({
     ) => {
       try {
         // Implement document export functionality
-        const { documents, selectedDocument } = state;
+        const { documentList, selectedDocument } = state;
         const { payload } = action; // Destructure payload from action
 
         if (typeof payload === "number") {
-          const documentIndex = documents.findIndex(
+          const documentIndex = documentList.findIndex(
             (doc) => doc.id === payload
           );
 
@@ -2853,7 +2830,7 @@ export const useDocumentManagerSlice = createSlice({
               new Date(),
               NotificationTypeEnum.OperationSuccess
             );
-            // Additional logic for exporting documents...
+            // Additional logic for exporting documentList...
             return;
           } else {
             useNotification().notify(
@@ -2867,7 +2844,7 @@ export const useDocumentManagerSlice = createSlice({
         }
         // If selectedDocument is a number, export the document with that ID
         if (typeof selectedDocument === "number") {
-          const documentIndex = documents.findIndex(
+          const documentIndex = documentList.findIndex(
             (doc) => doc.id === selectedDocument
           );
 
@@ -2879,7 +2856,7 @@ export const useDocumentManagerSlice = createSlice({
               new Date(),
               NotificationTypeEnum.OperationSuccess
             );
-            // Additional logic for exporting documents...
+            // Additional logic for exporting documentList...
             return;
           } else {
             useNotification().notify(
@@ -2890,7 +2867,7 @@ export const useDocumentManagerSlice = createSlice({
               NotificationTypeEnum.Error
             );
           }
-          // Additional logic for exporting documents...
+          // Additional logic for exporting documentList...
         }
 
         // Assuming implementation here...
@@ -2965,7 +2942,7 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const documentId = action.payload;
         // Update state with the fetched document
-        state.documents?.push({
+        state.documentList?.push({
           _id: "fetchedArchive",
           id: documentId.toString(),
           title: "",
@@ -3464,7 +3441,7 @@ export const useDocumentManagerSlice = createSlice({
 //     // Implement document restoring functionality
 //     const newDocument = createNewDocument(String(documentId));
 //     const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
-//     state.documents?.push(newDocumentObject as WritableDraft<DocumentObject>); // Add the new document object to the state array
+//     state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject>); // Add the new document object to the state array
 
 //     // Notify success
 //     useNotification().notify(
@@ -3494,16 +3471,16 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const { documentId, destinationId } = action.payload;
         // Implement document moving functionality
-        const documentIndex = state.documents?.findIndex(
+        const documentIndex = state.documentList?.findIndex(
           (doc) => doc.id === documentId.toString()
         );
         if (documentIndex !== -1) {
-          const movedDocument = state.documents?.splice(documentIndex!, 1)[0];
-          const destinationIndex = state.documents?.findIndex(
+          const movedDocument = state.documentList?.splice(documentIndex!, 1)[0];
+          const destinationIndex = state.documentList?.findIndex(
             (doc) => doc.id === destinationId.toString()
           );
           if (destinationIndex !== -1) {
-            state.documents?.splice(destinationIndex!, 0, movedDocument!);
+            state.documentList?.splice(destinationIndex!, 0, movedDocument!);
             // Notify success
             useNotification().notify(
               "moveDocumentSuccess",
@@ -3553,10 +3530,10 @@ export const useDocumentManagerSlice = createSlice({
         const { sourceId, destinationId } = action.payload;
 
         // Find the source document and destination document in the state
-        const sourceDocumentIndex = state.documents?.findIndex(
+        const sourceDocumentIndex = state.documentList?.findIndex(
           (doc) => doc.id === sourceId
         );
-        const destinationDocumentIndex = state.documents?.findIndex(
+        const destinationDocumentIndex = state.documentList?.findIndex(
           (doc) => doc.id === destinationId
         );
 
@@ -3565,11 +3542,11 @@ export const useDocumentManagerSlice = createSlice({
         }
 
         // Merge the content of the source document into the destination document
-        state.documents![destinationDocumentIndex!].content +=
-          state.documents![sourceDocumentIndex!].content;
+        state.documentList![destinationDocumentIndex!].content +=
+          state.documentList![sourceDocumentIndex!].content;
 
         // Remove the source document from the state
-        state.documents?.splice(sourceDocumentIndex!, 1);
+        state.documentList?.splice(sourceDocumentIndex!, 1);
 
         // Notify success
         useNotification().notify(
@@ -3594,7 +3571,7 @@ export const useDocumentManagerSlice = createSlice({
 
     splitDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToSplit = state.documents?.find(
+      const documentToSplit = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToSplit) {
@@ -3608,8 +3585,8 @@ export const useDocumentManagerSlice = createSlice({
           .join(" ");
         // Update the original document and add the new document
         documentToSplit.content = firstHalf;
-        state.documents?.push({
-          id: state.documents?.length + 1,
+        state.documentList?.push({
+          id: state.documentList?.length + 1,
           title: `${documentToSplit.title} - Split`,
           content: secondHalf,
           topics: [],
@@ -3736,7 +3713,7 @@ export const useDocumentManagerSlice = createSlice({
 
     validateDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToValidate = state.documents?.find(
+      const documentToValidate = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
 
@@ -3777,7 +3754,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; encryptionType: string }>
     ) => {
       const { documentId, encryptionType } = action.payload;
-      const documentToEncrypt = state.documents?.find(
+      const documentToEncrypt = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
 
@@ -3802,7 +3779,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; encryptionType: string }>
     ) => {
       const { documentId, encryptionType } = action.payload;
-      const documentToDecrypt = state.documents?.find(
+      const documentToDecrypt = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
 
@@ -3824,7 +3801,7 @@ export const useDocumentManagerSlice = createSlice({
 
     lockDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToLock = state.documents?.find(
+      const documentToLock = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToLock) {
@@ -3834,7 +3811,7 @@ export const useDocumentManagerSlice = createSlice({
 
     unlockDocument: (state, action: PayloadAction<number>) => {
       const documentId = action.payload;
-      const documentToUnlock = state.documents?.find(
+      const documentToUnlock = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToUnlock) {
@@ -3848,7 +3825,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; changes: string }>
     ) => {
       const { documentId, changes } = action.payload;
-      const documentToTrack = state.documents?.find(
+      const documentToTrack = state.documentList?.find(
         (doc) => doc.id === documentId.toString()
       );
       if (documentToTrack) {
@@ -3860,15 +3837,14 @@ export const useDocumentManagerSlice = createSlice({
         documentToTrack.changes.push(changes);
       }
     },
-    
-
+  
     compareDocuments: (
       state,
       action: PayloadAction<{ documentId1: number; documentId2: number }>
     ) => {
       const { documentId1, documentId2 } = action.payload;
-      const document1 = state.documents?.find((doc) => doc.id === documentId1);
-      const document2 = state.documents?.find((doc) => doc.id === documentId2);
+      const document1 = state.documentList?.find((doc) => doc.id === documentId1);
+      const document2 = state.documentList?.find((doc) => doc.id === documentId2);
       if (document1 && document2) {
         // Example: Compare the content of the two documents
         const document1Content = document1.content.split(" ");
@@ -3888,7 +3864,7 @@ export const useDocumentManagerSlice = createSlice({
 
     searchDocuments: (state, action: PayloadAction<string>) => {
       const searchTerm = action.payload;
-      const searchResults = state.documents?.filter((doc) =>
+      const searchResults = state.documentList?.filter((doc) =>
         doc.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
       console.log(
@@ -3901,7 +3877,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; query: string }>
     ) => {
       const { documentId, query } = action.payload;
-      const documentToSearch = state.documents?.find(
+      const documentToSearch = state.documentList?.find(
         (doc) => doc.id === documentId
       );
 
@@ -3912,7 +3888,7 @@ export const useDocumentManagerSlice = createSlice({
       }
 
       // Perform search within the document content or any other necessary logic
-      const searchResults = state.documents?.filter((doc) =>
+      const searchResults = state.documentList?.filter((doc) =>
         performSearch(doc.content, query)
       );
 
@@ -3930,7 +3906,7 @@ export const useDocumentManagerSlice = createSlice({
       }>
     ) => {
       const { document, documentId, tag } = action.payload;
-      const documentToTag = state.documents?.find(
+      const documentToTag = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTag) {
@@ -3947,7 +3923,7 @@ export const useDocumentManagerSlice = createSlice({
     ) => {
       const { documentIds, tag } = action.payload;
       documentIds.forEach((documentId) => {
-        const documentToTag = state.documents?.find(
+        const documentToTag = state.documentList?.find(
           (doc) => doc.id === documentId
         );
         if (documentToTag) {
@@ -3961,7 +3937,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; category: string }>
     ) => {
       const { documentId, category } = action.payload;
-      const documentToCategorize = state.documents?.find(
+      const documentToCategorize = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCategorize) {
@@ -3980,7 +3956,7 @@ export const useDocumentManagerSlice = createSlice({
     ) => {
       const { documentIds, category } = action.payload;
       documentIds.forEach((documentId) => {
-        const documentToCategorize = state.documents?.find(
+        const documentToCategorize = state.documentList?.find(
           (doc) => doc.id === documentId
         );
         if (documentToCategorize) {
@@ -3999,7 +3975,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; view: string }>
     ) => {
       const { documentId, view } = action.payload;
-      const documentToCustomize = state.documents?.find(
+      const documentToCustomize = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCustomize) {
@@ -4017,7 +3993,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; comment: string }>
     ) => {
       const { documentId, comment } = action.payload;
-      const documentToComment = state.documents?.find(
+      const documentToComment = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToComment) {
@@ -4035,7 +4011,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToMention = state.documents?.find(
+      const documentToMention = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToMention) {
@@ -4053,7 +4029,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; task: string }>
     ) => {
       const { documentId, task } = action.payload;
-      const documentToAssign = state.documents?.find(
+      const documentToAssign = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToAssign) {
@@ -4071,7 +4047,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents?.find(
+      const documentToReview = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4089,7 +4065,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; approver: string }>
     ) => {
       const { documentId, approver } = action.payload;
-      const documentToApprove = state.documents?.find(
+      const documentToApprove = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToApprove) {
@@ -4107,7 +4083,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; rejector: string }>
     ) => {
       const { documentId, rejector } = action.payload;
-      const documentToReject = state.documents?.find(
+      const documentToReject = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReject) {
@@ -4125,7 +4101,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents?.find(
+      const documentToReview = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4143,7 +4119,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents?.find(
+      const documentToReview = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4161,7 +4137,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; reviewer: string }>
     ) => {
       const { documentId, reviewer } = action.payload;
-      const documentToReview = state.documents?.find(
+      const documentToReview = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToReview) {
@@ -4179,7 +4155,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; collaborator: string }>
     ) => {
       const { documentId, collaborator } = action.payload;
-      const documentToCollaborate = state.documents?.find(
+      const documentToCollaborate = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCollaborate) {
@@ -4197,7 +4173,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; tag: string }>
     ) => {
       const { documentId, tag } = action.payload;
-      const documentToTag = state.documents?.find(
+      const documentToTag = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTag) {
@@ -4215,7 +4191,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; annotation: string }>
     ) => {
       const { documentId, annotation } = action.payload;
-      const documentToAnnotate = state.documents?.find(
+      const documentToAnnotate = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToAnnotate) {
@@ -4233,7 +4209,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; activity: string }>
     ) => {
       const { documentId, activity } = action.payload;
-      const documentToLog = state.documents?.find(
+      const documentToLog = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToLog) {
@@ -4251,7 +4227,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; search: string }>
     ) => {
       const { documentId, search } = action.payload;
-      const documentToSearch = state.documents?.find(
+      const documentToSearch = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToSearch) {
@@ -4269,7 +4245,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToVersion = state.documents?.find(
+      const documentToVersion = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToVersion) {
@@ -4287,7 +4263,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToRevert = state.documents?.find(
+      const documentToRevert = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRevert) {
@@ -4305,7 +4281,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToView = state.documents?.find(
+      const documentToView = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToView) {
@@ -4323,7 +4299,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; version: string }>
     ) => {
       const { documentId, version } = action.payload;
-      const documentToCompare = state.documents?.find(
+      const documentToCompare = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCompare) {
@@ -4341,7 +4317,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToGrant = state.documents?.find(
+      const documentToGrant = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToGrant) {
@@ -4359,7 +4335,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToRevoke = state.documents?.find(
+      const documentToRevoke = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRevoke) {
@@ -4377,7 +4353,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToManage = state.documents?.find(
+      const documentToManage = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToManage) {
@@ -4395,7 +4371,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToInitiate = state.documents?.find(
+      const documentToInitiate = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToInitiate) {
@@ -4413,7 +4389,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToAutomate = state.documents?.find(
+      const documentToAutomate = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToAutomate) {
@@ -4431,7 +4407,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToTrigger = state.documents?.find(
+      const documentToTrigger = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTrigger) {
@@ -4449,7 +4425,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToApprove = state.documents?.find(
+      const documentToApprove = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToApprove) {
@@ -4467,7 +4443,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToManage = state.documents?.find(
+      const documentToManage = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToManage) {
@@ -4485,7 +4461,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToConnect = state.documents?.find(
+      const documentToConnect = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToConnect) {
@@ -4503,7 +4479,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToSynchronize = state.documents?.find(
+      const documentToSynchronize = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToSynchronize) {
@@ -4521,7 +4497,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToImport = state.documents?.find(
+      const documentToImport = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToImport) {
@@ -4539,7 +4515,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToExport = state.documents?.find(
+      const documentToExport = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToExport) {
@@ -4557,7 +4533,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToGenerate = state.documents?.find(
+      const documentToGenerate = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToGenerate) {
@@ -4575,7 +4551,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToExport = state.documents?.find(
+      const documentToExport = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToExport) {
@@ -4593,7 +4569,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToSchedule = state.documents?.find(
+      const documentToSchedule = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToSchedule) {
@@ -4611,7 +4587,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToCustomize = state.documents?.find(
+      const documentToCustomize = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToCustomize) {
@@ -4629,7 +4605,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToBackup = state.documents?.find(
+      const documentToBackup = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToBackup) {
@@ -4647,7 +4623,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToRetrieve = state.documents?.find(
+      const documentToRetrieve = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRetrieve) {
@@ -4665,7 +4641,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToRedact = state.documents?.find(
+      const documentToRedact = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToRedact) {
@@ -4683,7 +4659,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToControl = state.documents?.find(
+      const documentToControl = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToControl) {
@@ -4701,7 +4677,7 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; user: string }>
     ) => {
       const { documentId, user } = action.payload;
-      const documentToTemplate = state.documents?.find(
+      const documentToTemplate = state.documentList?.find(
         (doc) => doc.id === documentId
       );
       if (documentToTemplate) {
@@ -4714,7 +4690,6 @@ export const useDocumentManagerSlice = createSlice({
       }
     },
   },
-
   extraReducers: (builder) => {
     builder.addCase(deleteDocumentAsync.pending, (state) => {
       // Handle pending state if needed
@@ -4724,11 +4699,11 @@ export const useDocumentManagerSlice = createSlice({
 
     builder.addCase(deleteDocumentAsync.fulfilled, (state, action) => {
       // Handle fulfilled state
-      const documentIndex = state.documents?.findIndex(
+      const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload
       );
       if (documentIndex !== -1) {
-        state.documents?.splice(documentIndex, 1);
+        state.documentList?.splice(documentIndex, 1);
         useNotification().notify(
           "deleteDocumentSuccess",
           "Document deleted",
@@ -4766,24 +4741,32 @@ export const useDocumentManagerSlice = createSlice({
         state.error = null;
       })
 
-      .addCase(fetchDocumentById.fulfilled, (state, action) => {
+      builder.addCase(fetchDocumentById.fulfilled, (
+        state,
+        action
+      ) => {
         state.loading = false;
-        state.selectedDocument = action.payload;
+        state.selectedDocument = action.payload as WritableDraft<DocumentData>;
       })
-      .addCase(fetchDocumentById.rejected, (state, action) => {
+
+      builder.addCase(fetchDocumentById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as WritableDraft<Error>;
       });
 
     // Add a case to handle the fulfilled action
-    builder
-      .addCase(fetchDocumentById.fulfilled, (state, action) => {
+    builder.addCase(fetchDocumentById.fulfilled, (
+        state, 
+        action
+      ) => {
         // Handle successful document fetch
-        state.selectedDocument = action.payload;
+        state.selectedDocument = action.payload as WritableDraft<DocumentData>;
       })
-      .addCase(deleteDocumentAsync.fulfilled, (state, action) => {
+
+    
+    builder.addCase(deleteDocumentAsync.fulfilled, (state, action) => {
         // Handle successful document deletion
-        state.documents = state.documents?.filter(
+        state.documentList = state.documentList?.filter(
           (doc) => doc.id !== action.payload
         );
       });
@@ -4923,7 +4906,7 @@ export const {
 } = useDocumentManagerSlice.actions;
 // Define selectors for accessing document-related state
 export const selectDocuments = (state: RootState) =>
-  state.documentManager.documents;
+  state.documentManager.documentList;
 export const selectSelectedDocument = (state: RootState) =>
   state.documentManager.selectedDocument;
 
@@ -4936,44 +4919,49 @@ export type { DocumentSliceState, DocumentObject };
 
 
 // Example usage
+  
 const baseStructure: StructuredMetadata = {
-  document1: {
-    author: 'Author 1',
-    timestamp: new Date(),
-    originalPath: '/path/to/document1',
-    alternatePaths: [],
-    fileType: 'txt',
-    title: 'Document 1',
-    description: 'Description of Document 1',
-    keywords: ['keyword1', 'keyword2'],
-    authors: ['Author 1', 'Author 2'],
-    contributors: [],
-    publisher: 'Publisher',
-    copyright: 'Copyright',
-    license: 'License',
-    links: [],
-    tags: [],
-  },
+  metadataEntries: {
+    document1: {
+      author: 'Author 1',
+      timestamp: new Date(),
+      originalPath: '/path/to/document1',
+      alternatePaths: [],
+      fileType: 'txt',
+      title: 'Document 1',
+      description: 'Description of Document 1',
+      keywords: ['keyword1', 'keyword2'],
+      authors: ['Author 1', 'Author 2'],
+      contributors: [],
+      publisher: 'Publisher',
+      copyright: 'Copyright',
+      license: 'License',
+      links: [],
+      tags: [],
+    },
+  }  
 };
 
 const additionalStructure: StructuredMetadata = {
-  document2: {
-    author: 'Author 2',
-    timestamp: new Date(),
-    originalPath: '/path/to/document2',
-    alternatePaths: [],
-    fileType: 'pdf',
-    title: 'Document 2',
-    description: 'Description of Document 2',
-    keywords: ['keyword3', 'keyword4'],
-    authors: [],
-    contributors: ['Contributor 1'],
-    publisher: 'Publisher 2',
-    copyright: 'Copyright 2',
-    license: 'License 2',
-    links: [],
-    tags: [],
-  },
+  metadataEntries: {
+    document2: {
+      author: 'Author 2',
+      timestamp: new Date(),
+      originalPath: '/path/to/document2',
+      alternatePaths: [],
+      fileType: 'pdf',
+      title: 'Document 2',
+      description: 'Description of Document 2',
+      keywords: ['keyword3', 'keyword4'],
+      authors: [],
+      contributors: ['Contributor 1'],
+      publisher: 'Publisher 2',
+      copyright: 'Copyright 2',
+      license: 'License 2',
+      links: [],
+      tags: [],
+    },
+  }
 };
 
 const merged = mergeStructures(baseStructure, additionalStructure);

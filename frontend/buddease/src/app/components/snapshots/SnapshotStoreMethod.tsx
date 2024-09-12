@@ -1,18 +1,18 @@
 // // SnapshotStoreMethod.tsx
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 
 // Define the necessary types
 interface SnapshotStoreMethod<T extends Data, K extends Data> {
   snapshot: (
     id: string | number | undefined,
-    snapshotId: number | null,
+    snapshotId: string | null,
     snapshotData: Snapshot<T, K>,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,

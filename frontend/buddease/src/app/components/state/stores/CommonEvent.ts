@@ -1,28 +1,28 @@
-import { snapshotStoreConfig } from '.';
-import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
 import { snapshotContainer } from '@/app/api/SnapshotApi';
+import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
 // CommonEvent.ts
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { StatusType } from '@/app/components/models/data/StatusType';
-import ProjectMetadata, { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { UnsubscribeDetails } from '../../event/DynamicEventHandlerExample';
+import { EventStore } from '../../event/EventStore';
+import { Category } from '../../libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { SnapshotData, SnapshotStoreConfig } from '../../snapshots';
+import { SnapshotStoreConfig } from '../../snapshots';
 import { FetchSnapshotPayload } from '../../snapshots/FetchSnapshotPayload';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
+import { Snapshot, SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import { SnapshotWithCriteria, TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
+import { convertToDataSnapshot } from '../../typings/YourSpecificSnapshotType';
 import { Subscriber } from '../../users/Subscriber';
-import { VideoData } from "../../video/Video";
-import { Category } from '../../libraries/categories/generateCategoryProperties';
-import { EventStore } from '../../event/EventStore';
 import { ExtendedVersionData } from '../../versions/VersionData';
-import { UnsubscribeDetails } from '../../event/DynamicEventHandlerExample';
-import { InitializedState } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { VideoData } from "../../video/Video";
+import { snapshotStoreConfigInstance } from '../../snapshots/snapshotStoreConfigInstance';
 
 interface CommonEvent extends Data {
   title: string;
@@ -33,7 +33,7 @@ interface CommonEvent extends Data {
   // Shared time properties
   startTime?: string;
   endTime?: string;
-  tags?:  TagsRecord
+  tags?: TagsRecord | string[] | undefined;
 
   // Recurrence properties
   recurring?: boolean;
@@ -45,7 +45,7 @@ interface CommonEvent extends Data {
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata?: StructuredMetadata | ProjectMetadata;
+  metadata?: UnifiedMetaDataOptions
   // Implement the `then` function using the reusable function
   then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
@@ -84,6 +84,7 @@ export function implementThen<T extends BaseData, K extends BaseData>(
       categoryProperties: undefined,
       timestamp: new Date(),
       length: 0,
+      items: [],
       data: {} as T,
     },
     store: undefined,
@@ -148,7 +149,7 @@ export function implementThen<T extends BaseData, K extends BaseData>(
         snapshotStore: SnapshotStore<T, K>,
         payloadData: T | Data,
         category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties,
+        categoryProperties: CategoryProperties | undefined,
         timestamp: Date,
         data: T,
         delegate: SnapshotWithCriteria<T, K>[]
@@ -177,7 +178,7 @@ export function implementThen<T extends BaseData, K extends BaseData>(
       }
       return Promise.resolve(undefined);
     },
-    snapshotStoreConfig: snapshotStoreConfig,
+    snapshotStoreConfig: snapshotStoreConfigInstance,
     getSnapshotItems: () => [],
     defaultSubscribeToSnapshots: () => { },
     versionInfo: {} as ExtendedVersionData,
@@ -188,7 +189,7 @@ export function implementThen<T extends BaseData, K extends BaseData>(
       snapshot: Snapshot<T, K> | null,  // <-- Change the type here
       snapshotData: T,
       category: Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T>,
       type: string,
@@ -256,25 +257,7 @@ const commonEvent: CommonEvent = {
   language: "",
   agenda: "",
   collaborationTool: "",
-  metadata: {
-    structuredMetadata: {
-      originalPath: "originalPath",
-      fileType: "fileType",
-      alternatePaths: [],
-      title: '',
-      description: '',
-      keywords: [],
-      authors: [],
-      contributors: [],
-      publisher: '',
-      copyright: '',
-      license: '',
-      links: [],
-      tags: [],
-      author: '',
-      timestamp: undefined
-    },
-  },
+  metadata: {},
 
   status: StatusType.Scheduled,
   isActive: false,
@@ -287,6 +270,5 @@ const commonEvent: CommonEvent = {
   analysisResults: [],
   videoData: {} as VideoData,
 };
-
 export default CommonEvent;
 export { commonEvent };

@@ -15,7 +15,7 @@ import { retrieveSnapshotData } from "../snapshots/RetrieveSnapshotData";
 import { ConfigureSnapshotStorePayload, K } from "../snapshots/SnapshotConfig";
 import { default as defaultCategory, default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
-import { SnapshotConfig } from "../snapshots/snapshot";
+
 import { delegate, initSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 import {
   Callback
@@ -34,33 +34,8 @@ class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
   id: string;
   data: Map<string, Snapshot<T, K>>;
   meta: Map<string, Snapshot<T, K>>;
-  events: {
-    // initialConfig, onSnapshotAdded, onSnapshotRemoved, removeSubscriber,
-    callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
-    eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | undefined;
-    subscribers: Subscriber<T, K>[];
-    eventIds: string[];
-    on: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-    off: (event: string, ccallback: (snapshot: Snapshot<T, K>) => void) => void;
-    subscribe: (
-      event: string,
-      callback: (snapshot: Snapshot<T, K>) => void
-    ) => void;
-    unsubscribe: (
-      event: string,
-      callback: (snapshot: Snapshot<T, K>) => void
-
-
-    ) => void;
-    trigger: (
-      event: string,
-      snapshot: Snapshot<T, K>
-    ) => void;
-    eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
-    initialConfig, onSnapshotAdded, onSnapshotRemoved, removeSubscriber, 
-    onError, onInitialize, onSnapshotUpdated, emit,
-  }
-
+  events: CombinedEvents<T, K>
+  
   constructor(
     id: string,
     data: Map<string, Snapshot<T, K>>,
@@ -640,13 +615,18 @@ const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
     meta: store.meta,
     configOption: store.configOption,
     getSnapshotId,
-    getParentId: () => store.id.toString(), // Convert to string
+    getParentId: () =>  store.id ? store.id.toString(): undefined, // Convert to string
     getChildIds: () => [], // Example implementation
     addChild: () => { }, // Example implementation
     removeChild: () => { }, // Example implementation
-    getChildren: () => { },
+    getChildren: (id: string, childSnapshot: Snapshot<T, K>) => { 
+      return []
+    },
     hasChildren: () => false,
-    isDescendantOf: (snapshot: Snapshot<T, K>) => false,
+    isDescendantOf: (childId: string, 
+      parentId: string, 
+      parentSnapshot: Snapshot<T, K>, 
+      childSnapshot: Snapshot<T, K>) => false,
     dataItems: [],
     compareSnapshotState: store.compareSnapshotState,
     eventRecords: store.eventRecords,
@@ -817,7 +797,9 @@ const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotSto
   newSnapshotStore.subscription = snapshotStore.subscription || null;
   newSnapshotStore.config = snapshotStore.config || null;
   newSnapshotStore.status = snapshotStore.status || undefined;
-  newSnapshotStore.metadata = snapshotStore.metadata || {};
+  newSnapshotStore.metadata = snapshotStore.metadata || {
+    metadataEntries: {}
+  };
   newSnapshotStore.delegate = snapshotStore.getDelegate(context)
     ? snapshotStore.getDelegate(snapshotStoreDelegate).map((delegateConfig: any) => ({
       ...delegateConfig,

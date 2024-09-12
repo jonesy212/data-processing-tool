@@ -1,17 +1,17 @@
-import * as snapshotApi from '@/app/api/SnapshotApi';
+import * as snapshotApi from "@/app/api/SnapshotApi";
 import { addSnapshot } from "@/app/api/SnapshotApi";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { config } from 'process';
-import { SubscriptionActions } from '../actions/SubscriptionActions';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { config } from "process";
+import { SubscriptionActions } from "../actions/SubscriptionActions";
 import { ModifiedDate } from "../documents/DocType";
 import {
   CombinedEvents,
   SnapshotStoreOptions,
-  convertSnapshotToContent
+  convertSnapshotToContent,
 } from "../hooks/useSnapshotManager";
-import { Category } from '../libraries/categories/generateCategoryProperties';
-import { Content } from '../models/content/AddContent';
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import {
   NotificationStatus,
@@ -19,8 +19,15 @@ import {
   SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { CustomSnapshotData, K, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria } from '../snapshots';
-import {FetchSnapshotPayload} from '../snapshots/FetchSnapshotPayload';
+import {
+  Callback,
+  CustomSnapshotData,
+  K,
+  SnapshotItem,
+  SnapshotStoreConfig,
+  SnapshotWithCriteria,
+} from "../snapshots";
+import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import {
   Payload,
   Snapshot,
@@ -30,7 +37,6 @@ import {
   createSnapshotOptions,
 } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import { SnapshotConfig, snapshot } from "../snapshots/snapshot";
 import {
   addSnapshotSuccess,
   createInitSnapshot,
@@ -40,14 +46,19 @@ import {
   updateSnapshotFailure,
   updateSnapshotSuccess,
   updateSnapshots,
-  updateSnapshotsSuccess
+  updateSnapshotsSuccess,
 } from "../snapshots/snapshotHandlers";
 import {
   clearSnapshots,
   removeSnapshot,
 } from "../state/redux/slices/SnapshotSlice";
-import CalendarManagerStoreClass, { CalendarEvent } from "../state/stores/CalendarEvent";
-import { FetchSnapshotByIdCallback, Subscription } from "../subscriptions/Subscription";
+import CalendarManagerStoreClass, {
+  CalendarEvent,
+} from "../state/stores/CalendarEvent";
+import {
+  FetchSnapshotByIdCallback,
+  Subscription,
+} from "../subscriptions/Subscription";
 import {
   NotificationType,
   NotificationTypeEnum,
@@ -55,17 +66,20 @@ import {
 import {
   YourSpecificSnapshotType,
   convertMapToSnapshot,
-  convertSnapshotToStore
+  convertSnapshotToStore,
 } from "../typings/YourSpecificSnapshotType";
-import { isSnapshotStoreConfig } from '../utils/snapshotUtils';
+import { isSnapshotStoreConfig } from "../utils/snapshotUtils";
 import { sendNotification } from "./UserSlice";
+import apiNotificationsService from "@/app/api/NotificationsService";
 
 type SnapshotStoreDelegate<T extends BaseData, K extends BaseData> = (
   snapshot: Snapshot<T, K>,
   initialState: Snapshot<T, K>,
-  snapshotConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>[]
+  snapshotConfig: SnapshotStoreConfig<
+    SnapshotWithCriteria<any, BaseData>,
+    Data
+  >[]
 ) => void;
-
 
 type Subscribers = Subscriber<CustomSnapshotData, Data>[];
 interface AuditRecord {
@@ -75,22 +89,20 @@ interface AuditRecord {
   details: string;
 }
 
-
 type SnapshotCallback<T> = (data: T) => void;
-
 
 const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData, Data> = (
   snapshot: Snapshot<CustomSnapshotData>,
   initialState: Snapshot<CustomSnapshotData>,
-  snapshotConfig: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>[]
+  snapshotConfig: SnapshotStoreConfig<
+    SnapshotWithCriteria<any, BaseData>,
+    Data
+  >[]
 ) => {
   console.log("Delegate function called with snapshot:", snapshot);
   console.log("Initial state:", initialState);
   console.log("Snapshot config:", snapshotConfig);
 };
-
-
-
 
 function convertSnapshotToSpecificType<T extends BaseData, K extends BaseData>(
   snapshot: Snapshot<T, K>
@@ -99,42 +111,41 @@ function convertSnapshotToSpecificType<T extends BaseData, K extends BaseData>(
 
   if (snapshot.data instanceof Map) {
     snapshot.data.forEach((value: Snapshot<T, K>, key: string) => {
-      if (typeof value === 'object' && value !== null) {
+      if (typeof value === "object" && value !== null) {
         newData.set(key, value);
       }
     });
   }
 
-  const newStore = snapshot.store ? convertSnapshotStore<T, K>(snapshot.store as SnapshotStore<T, K>) : null;
+  const newStore = snapshot.store
+    ? convertSnapshotStore<T, K>(snapshot.store as SnapshotStore<T, K>)
+    : null;
 
   const snapshotItems = snapshot.snapshotItems ?? [];
-  const mappedSnapshotItems = snapshotItems.map(
-    (item: SnapshotItem<T, K>) => {
-      return convertSnapshotItem(item);
-    }
-  );
+  const mappedSnapshotItems = snapshotItems.map((item: SnapshotItem<T, K>) => {
+    return convertSnapshotItem(item);
+  });
 
   return {
     ...snapshot,
     data: newData,
     store: newStore,
-    snapshotItems: mappedSnapshotItems,  // Ensure this matches the expected type
+    snapshotItems: mappedSnapshotItems, // Ensure this matches the expected type
   };
 }
-
 
 function convertSnapshotItem<T extends BaseData, K extends BaseData>(
   item: SnapshotItem<T, K>
 ): SnapshotItem<T, K> {
   // Ensure that `message` is a string and not undefined
-  if (typeof item.message === 'undefined') {
-    throw new Error('Message is required and cannot be undefined');
+  if (typeof item.message === "undefined") {
+    throw new Error("Message is required and cannot be undefined");
   }
   // Convert SnapshotItem to Snapshot with necessary logic
   // This is a placeholder logic; adapt as needed based on your actual SnapshotItem structure
   return {
     ...item, // Make sure SnapshotItem can be spread into Snapshot
-    message: item.message ? item.message : '',
+    message: item.message ? item.message : "",
     parentId: item.parentId,
     childIds: item.childIds,
     taskIdToAssign: item.taskIdToAssign,
@@ -309,18 +320,20 @@ function convertSnapshotItem<T extends BaseData, K extends BaseData>(
     meta: item.meta,
     subscribers: item.subscribers,
     // Add additional properties or conversions if needed
-  } as Snapshot<T, K>
+  } as Snapshot<T, K>;
 }
 function convertSnapshotStore<T extends BaseData, K extends BaseData = T>(
   store: SnapshotStore<T, K>
 ): SnapshotStorePublicMethods<T, K> {
   // Get the snapshot items array using the public method
   const snapshotItems = store.getSnapshotItems();
-  
+
   // Convert items in the snapshot items array
-  const newSnapshotItems = snapshotItems.map(item => {
+  const newSnapshotItems = snapshotItems.map((item) => {
     if (isSnapshotStoreConfig(item)) {
-      return convertSnapshotStoreConfig(item  as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>)
+      return convertSnapshotStoreConfig(
+        item as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
+      );
     } else {
       return item as unknown as Snapshot<T, K>;
     }
@@ -334,7 +347,8 @@ function convertSnapshotStore<T extends BaseData, K extends BaseData = T>(
 
     saveSnapshotStore: store.getSaveSnapshotStore.bind(store),
     addSnapshotToStore: store.addSnapshotToStore.bind(store),
-    determineSnapshotStoreCategory: store.determineSnapshotStoreCategory.bind(store),
+    determineSnapshotStoreCategory:
+      store.determineSnapshotStoreCategory.bind(store),
     getSnapshotStoreData: store.getSnapshotStoreData.bind(store),
 
     // Public methods that are part of SnapshotStorePublicMethods
@@ -459,13 +473,13 @@ function convertSnapshotStore<T extends BaseData, K extends BaseData = T>(
   } as SnapshotStorePublicMethods<T, K>;
 }
 
-
-
 const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
   snapshotStore: SnapshotStore<T, K>,
   snapshotContent?: Snapshot<T, K>
 ): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K> => {
-  const content = snapshotContent ? convertSnapshotToContent(snapshotContent) : undefined;
+  const content = snapshotContent
+    ? convertSnapshotToContent(snapshotContent)
+    : undefined;
 
   return {
     snapshotStore,
@@ -481,7 +495,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       snapshotId: string,
       snapshot: Snapshot<T, K> | null,
       snapshots: Snapshots<T>,
-      type: string, 
+      type: string,
       event: Event
     ) => {
       if (snapshot) {
@@ -503,19 +517,25 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       category: symbol | string | Category | undefined,
       callback: (snapshot: Snapshot<T, K>) => void,
       snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
-      snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
-    ): Promise<{ snapshot: Snapshot<T, K> | null}> => {
-      const snapshot: Snapshot<T, K> | null = snapshotStoreConfigData?.createSnapshot?.(
-        id,
-        snapshotData,
-        category,
-        callback
-      ) ?? null;
+      snapshotStoreConfigData?: SnapshotStoreConfig<
+        SnapshotWithCriteria<any, BaseData>,
+        K
+      >
+    ): Promise<{ snapshot: Snapshot<T, K> | null }> => {
+      const snapshot: Snapshot<T, K> | null =
+        snapshotStoreConfigData?.createSnapshot?.(
+          id,
+          snapshotData,
+          category,
+          callback
+        ) ?? null;
 
       if (snapshot) {
         callback(snapshot);
         const snapshotStore = convertSnapshotToStore(snapshot);
-        const options: SnapshotStoreOptions<T, K> = createSnapshotOptions<T, K>(snapshotStore);
+        const options: SnapshotStoreOptions<T, K> = createSnapshotOptions<T, K>(
+          snapshotStore
+        );
         const config = Array.isArray(options.snapshotStoreConfig)
           ? options.snapshotStoreConfig[0]
           : options.snapshotStoreConfig;
@@ -525,7 +545,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
           snapshotStore: newSnapshotStore,
         };
       } else {
-        console.error('Failed to create snapshot');
+        console.error("Failed to create snapshot");
         return {
           snapshot: null,
         };
@@ -537,14 +557,17 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       category?: string | CategoryProperties,
       callback?: (snapshot: Snapshot<T, K>) => void,
       snapshotDataStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
+      snapshotStoreConfig?: SnapshotStoreConfig<
+        SnapshotWithCriteria<any, BaseData>,
+        K
+      >
     ): Snapshot<T, K> | null => {
       const newSnapshot: Snapshot<T, K> = {
         id: id,
         data: new Map<string, Snapshot<T, K>>(),
         timestamp: new Date(),
-        category: typeof category === 'string' ? category : 'default-category',
-        subscriberId: 'default-subscriber-id',
+        category: typeof category === "string" ? category : "default-category",
+        subscriberId: "default-subscriber-id",
         meta: new Map<string, Snapshot<T, K>>(),
         events: {} as CombinedEvents<T, K>,
         snapshotStoreConfig: snapshotStoreConfig || null,
@@ -559,10 +582,9 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       }
 
       return newSnapshot;
-    }
+    },
   };
 };
-
 
 function convertSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
   config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
@@ -576,26 +598,27 @@ function convertSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
   };
 }
 
-
 interface SubscriberCallback<T extends BaseData, K extends BaseData> {
   id: string;
   _id: string;
   handleCallback: (data: Snapshot<T, K>) => void;
   snapshotCallback: (data: Snapshot<T, K>) => void; // Ensure this is a function type
-} 
- 
+}
 
 class Subscriber<T extends BaseData, K extends BaseData> {
-   
+  public data: Partial<SnapshotStore<T, K>> | null = {};
+  // public callback: Callback<Snapshot<T, K>>,
   private _id: string | undefined;
   private readonly name: string;
   private subscription: Subscription<T, K>;
 
   private subscriberId: string;
-  private subscribersById: Map<string, Subscriber<T, K>> | undefined = new Map();
+  private subscribersById: Map<string, Subscriber<T, K>> | undefined =
+    new Map();
   private subscribers: SubscriberCallback<T, K>[] = []; // Use the SubscriberCallback type here
   private onSnapshotCallbacks: SubscriberCallback<T, K>[] = []; // Updated to SubscriberCallback
-
+  private internalState: Map<string, Snapshot<T, K>> = new Map();
+  private internalCache: Map<string, T>;
 
   private onErrorCallbacks: ((error: Error) => void)[] = [];
   private onUnsubscribeCallbacks: ((data: Snapshot<T, K>) => void)[] = [];
@@ -607,17 +630,17 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   private logActivity: Function | undefined;
   private triggerIncentives: Function | undefined;
   private optionalData: CustomSnapshotData | null;
-  public data: Partial<SnapshotStore<T, K>> | undefined = {};
+
   private email: string = "";
-  private enabled= false;
-  private tags: string[] = []
+  private enabled = false;
+  private tags: string[] = [];
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
   getTransformSubscriber: any;
   private async fetchSnapshotIds(): Promise<string[]> {
     // Simulate an asynchronous operation to fetch snapshot IDs
     return new Promise<string[]>((resolve, reject) => {
-      setTimeout(async() => {
+      setTimeout(async () => {
         // Example: Fetching snapshot IDs from an API or database
         const fetchedSnapshotIds = await snapshotApi.fetchSnapshotIds(this.id!);
 
@@ -630,21 +653,242 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   private callback: (data: Snapshot<T, K>) => void = (data: Snapshot<T, K>) => {
     if (data.data instanceof Map) {
       // Handle the case where data.data is a Map
-      console.error('Unexpected data type: Map');
+      console.error("Unexpected data type: Map");
       return;
     }
 
     this.state = data.data as T; // Type assertion to ensure type safety
- 
+
     this.callbackFunction && this.callbackFunction(data);
-    this.onSnapshotCallbacks.forEach((subscriber) => subscriber.handleCallback(data));
+    this.onSnapshotCallbacks.forEach((subscriber) =>
+      subscriber.handleCallback(data)
+    );
     this.triggerIncentives && this.triggerIncentives(data);
     this.logActivity && this.logActivity(data);
     this.updateProjectState && this.updateProjectState(data);
     this.notifyEventSystem && this.notifyEventSystem(data);
     this.triggerIncentives && this.triggerIncentives(data);
+  };
+
+  // Define a getter method to access the sendNotification method
+  public get sentNotification(): (
+    eventType: string,
+    eventData: any,
+    date: Date,
+    type: NotificationTypeEnum
+  ) => Promise<void> {
+    return async (
+      eventType: string,
+      eventData: any,
+      date: Date,
+      type: NotificationTypeEnum
+    ) => {
+      return this.sendNotification(eventType, eventData, date, type);
+    };
   }
 
+  // Define the sendNotification method that uses the external API service
+  public async sendNotification(
+    eventType: string,
+    eventData: any,
+    date: Date,
+    type: NotificationTypeEnum
+  ): Promise<void> {
+    // Implement the notification logic using the API service
+    console.log(
+      `Notification sent: EventType - ${eventType}, EventData - ${eventData}, Date - ${date}, Type - ${type}`
+    );
+
+    // You could also integrate the real notification service here:
+    await apiNotificationsService.sentNotification(
+      eventType,
+      eventData,
+      date,
+      type
+    );
+  }
+
+  /**
+   * Handles the update of the subscriber with a new snapshot.
+   *
+   * @param snapshot - The snapshot to update with.
+   */
+  update(snapshot: Snapshot<T, K>): void {
+    // Log the snapshot details
+    console.log("Subscriber updated with snapshot:", snapshot);
+    console.log("Snapshot ID:", snapshot.id);
+    console.log("Snapshot Data:", snapshot.data);
+
+    // Update internal state with the new snapshot if ID is valid
+    if (snapshot.id) {
+      this.internalState.set(snapshot.id.toString(), snapshot);
+      console.log(`Internal state updated with snapshot ID: ${snapshot.id}`);
+    } else {
+      console.error("Snapshot ID is undefined. Cannot update internal state.");
+    }
+
+    // Process the snapshot data if available
+    if (snapshot.data) {
+      this.processData(snapshot.data);
+    } else {
+      console.error("Snapshot data is undefined or null. Cannot process data.");
+    }
+
+    // Notify about the update if notify method exists
+    if (this.notify && snapshot.id) {
+      const callback = (data: Snapshot<T, K>) =>
+        console.log("Callback invoked with data:", data);
+      const subscribers: Subscriber<T, K>[] = []; // Use actual subscribers if available
+      this.notify(snapshot, callback, subscribers);
+    } else {
+      console.error(
+        "Notify method or snapshot ID is undefined. Cannot send notification."
+      );
+    }
+  }
+
+  /**
+   * Processes the data from the snapshot.
+   *
+   * @param data - The data to process.
+   */
+
+  private processData(
+    data: T | Map<string, Snapshot<T, K>> | null | undefined
+  ): void {
+    // Log the start of data processing
+    console.log("Starting data processing for:", data);
+
+    // Ensure data is not null or undefined
+    if (data == null) {
+      console.error("Cannot process null or undefined data.");
+      return;
+    }
+
+    // Check if the data is a Map or a single data object
+    if (data instanceof Map) {
+      // Handle the Map case
+      data.forEach((snapshot, key) => {
+        console.log(`Processing snapshot with key: ${key}`);
+
+        // Ensure snapshot data is not null or undefined
+        if (!snapshot.data) {
+          console.error(`Snapshot data is null or undefined for key: ${key}`);
+          return;
+        }
+
+        // 1. Validate the snapshot data
+        if (this.validateData(snapshot.data)) {
+          console.log(`Data validation successful for key: ${key}`);
+        } else {
+          console.error(`Data validation failed for key: ${key}`);
+          return;
+        }
+
+        // 2. Transform the snapshot data using transformData (only if it's of type T)
+        const transformedData = this.transformData(snapshot.data as T);
+        console.log(`Transformed data for key: ${key}:`, transformedData);
+
+        // 3. Store or update internal data structures with the processed data
+        this.updateInternalStore(transformedData);
+
+        // 4. Optionally, trigger additional actions based on the processed data
+        this.triggerActions(transformedData);
+      });
+    } else {
+      // Handle the case where data is of type T
+
+      // Ensure data is not null or undefined
+      if (!data) {
+        console.error("Data is null or undefined.");
+        return;
+      }
+
+      // 1. Validate the data
+      if (this.validateData(data)) {
+        console.log("Data validation successful.");
+      } else {
+        console.error("Data validation failed.");
+        return;
+      }
+
+      // 2. Transform or manipulate the data if needed
+      const transformedData = this.transformData(data);
+      console.log("Transformed data:", transformedData);
+
+      // 3. Store or update internal data structures with the processed data
+      this.updateInternalStore(transformedData);
+
+      // 4. Optionally, trigger additional actions based on the processed data
+      this.triggerActions(transformedData);
+    }
+  }
+
+  /**
+   * Validates the given data.
+   *
+   * @param data - The data to validate.
+   * @returns - True if data is valid, false otherwise.
+   */
+  private validateData(data: T | Map<string, Snapshot<T, K>>): boolean {
+    // Check if the data is not null or undefined
+    if (!data) {
+      console.error("Data is null or undefined.");
+      return false;
+    }
+
+    // Example: Check if 'requiredProperty' exists in the data
+    if (!("requiredProperty" in data)) {
+      console.error("'requiredProperty' is missing from data.");
+      return false;
+    }
+
+    // Data is valid
+    return true;
+  }
+
+  /**
+   * Transforms or manipulates the given data.
+   *
+   * @param data - The data to transform.
+   * @returns - The transformed data.
+   */
+
+  private transformData(data: T): T {
+    // Example transformation: Add a timestamp to the data if it doesn't exist
+    if (!(data as any).timestamp) {
+      (data as any).timestamp = new Date().toISOString();
+    }
+
+    // Example: Convert data values to uppercase (assuming 'data' has a 'name' field)
+    if ("name" in data) {
+      (data as any).name = (data as any).name.toUpperCase();
+    }
+
+    // Return the transformed data
+    return data;
+  }
+
+  /**
+   * Triggers additional actions based on the processed data.
+   *
+   * @param data - The processed data.
+   */
+
+  // Implement the triggerActions method
+  private async triggerActions(data: T): Promise<void> {
+    // Example: Send notification if data meets certain conditions
+    if ("status" in data && (data as any).status === "COMPLETED") {
+      // Prepare notification details
+      const eventType = "DataCompleted";
+      const eventData = { id: (data as any).id };
+      const date = new Date();
+      const type = NotificationTypeEnum.Info; // Example notification type
+
+      // Use the sentNotification getter to send the notification
+      await this.sentNotification(eventType, eventData, date, type);
+    }
+  }
 
   constructor(
     id: string,
@@ -668,28 +912,92 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     this.logActivity = logActivity;
     this.triggerIncentives = triggerIncentives;
     this.optionalData = optionalData;
+    // Initialize the internal cache as a Map
+    this.internalCache = new Map<string, T>();
     // this.data = data;
     this.payload = payload !== null ? payload : (optionalData as unknown as T);
+  }
+
+  /**
+   * Updates internal data structures with the processed data.
+   *
+   * @param data - The processed data to store.
+   */
+  private updateInternalStore(data: T): void {
+    // Get the ID from the data (assuming it has an 'id' field)
+    const id = (data as any).id; // You should ensure the data has an ID field
+
+    if (!id) {
+      console.error("Data does not contain an 'id' field.");
+      return;
+    }
+
+    // Store the data in the internal cache with its ID as the key
+    this.internalCache.set(id, data);
+    console.log(`Internal store updated for ID: ${id}`);
+  }
+
+  /**
+   * Retrieves data from the internal cache based on the ID.
+   *
+   * @param id - The ID of the data to retrieve.
+   * @returns - The data associated with the ID, or undefined if not found.
+   */
+  public getFromInternalCache(id: string): T | undefined {
+    // Retrieve data from the cache using the ID as the key
+    const data = this.internalCache.get(id);
+
+    if (!data) {
+      console.warn(`Data with ID: ${id} not found in the internal cache.`);
+      return undefined;
+    }
+
+    return data;
+  }
+
+  /**
+   * Clears the internal cache.
+   */
+  public clearInternalCache(): void {
+    // Clear all data from the internal cache
+    this.internalCache.clear();
+    console.log("Internal cache cleared.");
+  }
+
+  /**
+   * Removes a specific item from the internal cache based on the ID.
+   *
+   * @param id - The ID of the data to remove.
+   */
+  public removeFromInternalCache(id: string): void {
+    if (this.internalCache.has(id)) {
+      this.internalCache.delete(id);
+      console.log(`Data with ID: ${id} removed from internal cache.`);
+    } else {
+      console.warn(`Data with ID: ${id} not found in internal cache.`);
+    }
   }
 
   private isDataType(data: any): data is T {
     // Implement your own logic to check if data is of type T
     // For example, if T has a specific property, you can check for that
     // Here is a simple example assuming T has a property `id`
-    return data && typeof data === 'object' && 'id' in data;
+    return data && typeof data === "object" && "id" in data;
   }
-  
+
   newData(data: Snapshot<T, K>): Snapshot<T, K> {
     // Ensure data.data is of type T
     if (this.isDataType(data.data)) {
       this.state = data.data; // Safe to assign as T
     } else {
-      console.error('Unexpected data type:', data.data);
+      console.error("Unexpected data type:", data.data);
       // Handle the case where data.data is not of type T
       this.state = null; // Or some other appropriate default value or handling
     }
     this.callbackFunction && this.callbackFunction(data);
-    this.onSnapshotCallbacks.forEach((callback) => callback.handleCallback(data));
+    this.onSnapshotCallbacks.forEach((callback) =>
+      callback.handleCallback(data)
+    );
     // this.triggerIncentives && this.triggerIncentives(data);
     // this.logActivity && this.logActivity(data);
     // this.updateProjectState && this.updateProjectState(data);
@@ -697,19 +1005,18 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return data;
   }
 
-  
-  getId(): string | undefined{
-    return this.id
+  getId(): string | undefined {
+    return this.id;
   }
-  
-  get getUniqueId(): string | undefined{
-    return this._id
+
+  get getUniqueId(): string | undefined {
+    return this._id;
   }
-  
+
   set id(value: string | undefined) {
     this.id = value;
   }
-  
+
   get getEnabled(): boolean {
     return this.enabled;
   }
@@ -717,8 +1024,8 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   get getTags(): string[] {
     if (this.tags.length === 0) {
       return this.tags;
-     }
-     return this.tags;
+    }
+    return this.tags;
   }
 
   get getCallback(): ((data: Snapshot<T, K>) => void) | undefined {
@@ -741,7 +1048,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.subscribers;
   }
 
-  get transformSubscribers(): SubscriberCallback<T, K>[]{
+  get transformSubscribers(): SubscriberCallback<T, K>[] {
     return this.subscribers;
   }
 
@@ -754,11 +1061,9 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.onSnapshotCallbacks;
   }
 
-  set setOnSnapshotCallbacks(callbacks: SubscriberCallback<T, K>[] ) {
+  set setOnSnapshotCallbacks(callbacks: SubscriberCallback<T, K>[]) {
     this.onSnapshotCallbacks = callbacks;
   }
-
-
 
   get getOnErrorCallbacks(): ((error: Error) => void)[] {
     return this.onErrorCallbacks;
@@ -784,29 +1089,21 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     this.updateProjectState = func;
   }
 
-  
-
   set setLogActivity(func: Function | undefined) {
     this.logActivity = func;
   }
-
-  
 
   set setTriggerIncentives(func: Function | undefined) {
     this.triggerIncentives = func;
   }
 
-
   set setOptionalData(data: CustomSnapshotData | null) {
     this.optionalData = data;
   }
 
-
   set setEmail(email: string) {
     this.email = email;
   }
-
-  
 
   set setSnapshotIds(ids: string[]) {
     this.snapshotIds = ids;
@@ -817,20 +1114,20 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   }
 
   handleSnapshot(data: T): void {
-    if (typeof this.callbackFunction === 'function') {
+    if (typeof this.callbackFunction === "function") {
       this.callbackFunction(data);
     }
     this.onSnapshotCallbacks.forEach((callback) => callback(data));
-    if (typeof this.triggerIncentives === 'function') {
+    if (typeof this.triggerIncentives === "function") {
       this.triggerIncentives(data);
     }
-    if (typeof this.logActivity === 'function') {
+    if (typeof this.logActivity === "function") {
       this.logActivity(data);
     }
-    if (typeof this.updateProjectState === 'function') {
+    if (typeof this.updateProjectState === "function") {
       this.updateProjectState(data);
     }
-    if (typeof this.notifyEventSystem === 'function') {
+    if (typeof this.notifyEventSystem === "function") {
       this.notifyEventSystem(data);
     }
   }
@@ -844,120 +1141,129 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     }
   }
 
-
   // Static method to transform Subscriber
-  static transformSubscriber<T extends BaseData, K extends BaseData>(sub: Subscriber<T, K>): Subscriber<BaseData, BaseData> {
-      const transformedSub = new Subscriber<BaseData, BaseData>(
-          sub.getUniqueId!,
-          sub.name,
-          sub.subscription as Subscription<BaseData, BaseData>,
-          sub.subscriberId,
-          sub.notifyEventSystem ? sub.notifyEventSystem : SubscriptionActions,
-          sub.updateProjectState ? sub.updateProjectState : SubscriptionActions,
-          sub.logActivity ? sub.logActivity : SubscriptionActions,
-          sub.triggerIncentives ? sub.triggerIncentives : SubscriptionActions,
-          sub.optionalData as unknown as CustomSnapshotData,
-          sub.payload as unknown as BaseData
-      );
+  static transformSubscriber<T extends BaseData, K extends BaseData>(
+    sub: Subscriber<T, K>
+  ): Subscriber<BaseData, BaseData> {
+    const transformedSub = new Subscriber<BaseData, BaseData>(
+      sub.getUniqueId!,
+      sub.name,
+      sub.subscription as Subscription<BaseData, BaseData>,
+      sub.subscriberId,
+      sub.notifyEventSystem ? sub.notifyEventSystem : SubscriptionActions,
+      sub.updateProjectState ? sub.updateProjectState : SubscriptionActions,
+      sub.logActivity ? sub.logActivity : SubscriptionActions,
+      sub.triggerIncentives ? sub.triggerIncentives : SubscriptionActions,
+      sub.optionalData as unknown as CustomSnapshotData,
+      sub.payload as unknown as BaseData
+    );
 
-      // Copy methods and properties
-      transformedSub.notifyEventSystem = sub.notifyEventSystem;
-      transformedSub.updateProjectState = sub.updateProjectState;
-      transformedSub.logActivity = sub.logActivity;
-      transformedSub.triggerIncentives = sub.triggerIncentives;
-      transformedSub.optionalData = sub.optionalData;
-      transformedSub.subscriberId = sub.subscriberId;
+    // Copy methods and properties
+    transformedSub.notifyEventSystem = sub.notifyEventSystem;
+    transformedSub.updateProjectState = sub.updateProjectState;
+    transformedSub.logActivity = sub.logActivity;
+    transformedSub.triggerIncentives = sub.triggerIncentives;
+    transformedSub.optionalData = sub.optionalData;
+    transformedSub.subscriberId = sub.subscriberId;
 
-      // Copy any other methods and properties as needed...
-      transformedSub.subscription = sub.subscription as Subscription<BaseData, BaseData>;
+    // Copy any other methods and properties as needed...
+    transformedSub.subscription = sub.subscription as Subscription<
+      BaseData,
+      BaseData
+    >;
 
-      transformedSub.subscribersById = sub.getSubscribersById?.() ?? {};
-      transformedSub.subscribers = sub.getSubscribers?.() ?? [];
-      transformedSub.onSnapshotCallbacks = sub.getOnSnapshotCallbacks?.() ?? [];
-      transformedSub.onErrorCallbacks = sub.getOnErrorCallbacks?.() ?? [];
-      transformedSub.onUnsubscribeCallbacks = sub.getOnUnsubscribeCallbacks?.() ?? [];
-      transformedSub.notifyEventSystem = sub.notifyEventSystem;
-      transformedSub.updateProjectState = sub.updateProjectState;
-      transformedSub.logActivity = sub.getLogActivity?.() || undefined;
-      transformedSub.triggerIncentives = sub.getTriggerIncentives?.() || undefined;
-      transformedSub.optionalData = sub.getOptionalData?.();
-      transformedSub.data = sub.data;
-      transformedSub.email = "";
-      transformedSub.enabled = false;
-      transformedSub.tags = [];
-      transformedSub.snapshotIds = [];
-      transformedSub.payload = sub.payload;
-      transformedSub.getTransformSubscriber = sub.getTransformSubscriber;
-      transformedSub.fetchSnapshotIds = sub.getFetchSnapshotIds;
-      transformedSub.getId = sub.getId;
-      transformedSub.get_Id = sub.getUniqueId?.();
-      transformedSub.id = sub.id;
-      transformedSub.getEnabled = sub.getEnabled;
-      transformedSub.getTags = sub.getTags;
-      transformedSub.defaultSubscribeToSnapshots = sub.defaultSubscribeToSnapshots;
-      transformedSub.subscribeToSnapshots = sub.subscribeToSnapshots;
-      transformedSub.getSubscribers = sub.getSubscribers;
-      transformedSub.transformSubscribers = sub.transformSubscribers;
-      transformedSub.setSubscribers = sub.setSubscribers;
-      transformedSub.getOnSnapshotCallbacks = sub.getOnSnapshotCallbacks;
-      transformedSub.setOnSnapshotCallbacks = sub.setOnSnapshotCallbacks;
-      transformedSub.getOnErrorCallbacks = sub.getOnErrorCallbacks;
-      transformedSub.setOnErrorCallbacks = sub.setOnErrorCallbacks;
-      transformedSub.getOnUnsubscribeCallbacks = sub.getOnUnsubscribeCallbacks;
-      transformedSub.setOnUnsubscribeCallbacks = sub.setOnUnsubscribeCallbacks;
-      transformedSub.setNotifyEventSystem = sub.setNotifyEventSystem;
-      transformedSub.setUpdateProjectState = sub.setUpdateProjectState;
-      transformedSub.setLogActivity = sub.setLogActivity;
-      transformedSub.setTriggerIncentives = sub.setTriggerIncentives;
-      transformedSub.setOptionalData = sub.setOptionalData;
-      transformedSub.setEmail = sub.setEmail;
-      transformedSub.setSnapshotIds = sub.setSnapshotIds;
-      transformedSub.getPayload = sub.getPayload;
-      transformedSub.handleCallback = sub.handleCallback;
-      transformedSub.snapshotCallback = sub.snapshotCallback;
-      transformedSub.getEmail = sub.getEmail;
-      transformedSub.subscribe = sub.subscribe;
-      transformedSub.unsubscribe = sub.unsubscribe;
-      transformedSub.getOptionalData = sub.getOptionalData;
-      transformedSub.getFetchSnapshotIds = sub.getFetchSnapshotIds;
-      transformedSub.getSnapshotIds = sub.getSnapshotIds;
-      transformedSub.getData = sub.getData;
-      transformedSub.getInitialData = sub.getInitialData;
-      transformedSub.getNewData = sub.getNewData;
-      transformedSub.getDefaultSubscribeToSnapshots = sub.getDefaultSubscribeToSnapshots;
-      transformedSub.getSubscribeToSnapshots = sub.getSubscribeToSnapshots;
-      transformedSub.fetchTransformSubscribers = sub.fetchTransformSubscribers;
-      transformedSub.getTransformSubscribers = sub.getTransformSubscribers;
-      transformedSub.setTransformSubscribers = sub.setTransformSubscribers;
-      transformedSub.getNotifyEventSystem = sub.getNotifyEventSystem;
-      transformedSub.getUpdateProjectState = sub.getUpdateProjectState;
-      transformedSub.getLogActivity = sub.getLogActivity;
-      transformedSub.getTriggerIncentives = sub.getTriggerIncentives;
-      transformedSub.initialData = sub.initialData;
-      transformedSub.getName = sub.getName;
-      transformedSub.getDetermineCategory = sub.getDetermineCategory;
-      transformedSub.fetchSnapshotById = sub.fetchSnapshotById;
-      transformedSub.snapshots = sub.snapshots;
-      transformedSub.toSnapshotStore = sub.toSnapshotStore;
-      transformedSub.determineCategory = sub.determineCategory;
-      transformedSub.getDeterminedCategory = sub.getDeterminedCategory;
-      transformedSub.processNotification = sub.processNotification;
-      transformedSub.receiveSnapshot = sub.receiveSnapshot;
-      transformedSub.getState = sub.getState;
-      transformedSub.setEvent = sub.setEvent;
-      transformedSub.onError = sub.onError;
-      transformedSub.getSubscriberId = sub.getSubscriberId;
-      transformedSub.getSubscribersById = sub.getSubscribersById;
-      transformedSub.getSubscribersWithSubscriptionPlan = sub.getSubscribersWithSubscriptionPlan;
-      transformedSub.getSubscription = sub.getSubscription;
-      transformedSub.onUnsubscribe = sub.onUnsubscribe;
-      transformedSub.onSnapshot = sub.onSnapshot;
-      transformedSub.onSnapshotError = sub.onSnapshotError;
-      transformedSub.onSnapshotUnsubscribe = sub.onSnapshotUnsubscribe;
-      transformedSub.triggerOnSnapshot = sub.triggerOnSnapshot;
-  
-      return transformedSub;
-    }
+    transformedSub.subscribersById = sub.getSubscribersById?.() ?? {};
+    transformedSub.subscribers = sub.getSubscribers?.() ?? [];
+    transformedSub.onSnapshotCallbacks = sub.getOnSnapshotCallbacks?.() ?? [];
+    transformedSub.onErrorCallbacks = sub.getOnErrorCallbacks?.() ?? [];
+    transformedSub.onUnsubscribeCallbacks =
+      sub.getOnUnsubscribeCallbacks?.() ?? [];
+    transformedSub.notifyEventSystem = sub.notifyEventSystem;
+    transformedSub.updateProjectState = sub.updateProjectState;
+    transformedSub.logActivity = sub.getLogActivity?.() || undefined;
+    transformedSub.triggerIncentives =
+      sub.getTriggerIncentives?.() || undefined;
+    transformedSub.optionalData = sub.getOptionalData?.();
+    transformedSub.data = sub.data;
+    transformedSub.email = "";
+    transformedSub.enabled = false;
+    transformedSub.tags = [];
+    transformedSub.snapshotIds = [];
+    transformedSub.payload = sub.payload;
+    transformedSub.getTransformSubscriber = sub.getTransformSubscriber;
+    transformedSub.fetchSnapshotIds = sub.getFetchSnapshotIds;
+    transformedSub.getId = sub.getId;
+    transformedSub.get_Id = sub.getUniqueId?.();
+    transformedSub.id = sub.id;
+    transformedSub.getEnabled = sub.getEnabled;
+    transformedSub.getTags = sub.getTags;
+    transformedSub.defaultSubscribeToSnapshots =
+      sub.defaultSubscribeToSnapshots;
+    transformedSub.subscribeToSnapshots = sub.subscribeToSnapshots;
+    transformedSub.getSubscribers = sub.getSubscribers;
+    transformedSub.transformSubscribers = sub.transformSubscribers;
+    transformedSub.setSubscribers = sub.setSubscribers;
+    transformedSub.getOnSnapshotCallbacks = sub.getOnSnapshotCallbacks;
+    transformedSub.setOnSnapshotCallbacks = sub.setOnSnapshotCallbacks;
+    transformedSub.getOnErrorCallbacks = sub.getOnErrorCallbacks;
+    transformedSub.setOnErrorCallbacks = sub.setOnErrorCallbacks;
+    transformedSub.getOnUnsubscribeCallbacks = sub.getOnUnsubscribeCallbacks;
+    transformedSub.setOnUnsubscribeCallbacks = sub.setOnUnsubscribeCallbacks;
+    transformedSub.setNotifyEventSystem = sub.setNotifyEventSystem;
+    transformedSub.setUpdateProjectState = sub.setUpdateProjectState;
+    transformedSub.setLogActivity = sub.setLogActivity;
+    transformedSub.setTriggerIncentives = sub.setTriggerIncentives;
+    transformedSub.setOptionalData = sub.setOptionalData;
+    transformedSub.setEmail = sub.setEmail;
+    transformedSub.setSnapshotIds = sub.setSnapshotIds;
+    transformedSub.getPayload = sub.getPayload;
+    transformedSub.handleCallback = sub.handleCallback;
+    transformedSub.snapshotCallback = sub.snapshotCallback;
+    transformedSub.getEmail = sub.getEmail;
+    transformedSub.subscribe = sub.subscribe;
+    transformedSub.unsubscribe = sub.unsubscribe;
+    transformedSub.getOptionalData = sub.getOptionalData;
+    transformedSub.getFetchSnapshotIds = sub.getFetchSnapshotIds;
+    transformedSub.getSnapshotIds = sub.getSnapshotIds;
+    transformedSub.getData = sub.getData;
+    transformedSub.getInitialData = sub.getInitialData;
+    transformedSub.getNewData = sub.getNewData;
+    transformedSub.getDefaultSubscribeToSnapshots =
+      sub.getDefaultSubscribeToSnapshots;
+    transformedSub.getSubscribeToSnapshots = sub.getSubscribeToSnapshots;
+    transformedSub.fetchTransformSubscribers = sub.fetchTransformSubscribers;
+    transformedSub.getTransformSubscribers = sub.getTransformSubscribers;
+    transformedSub.setTransformSubscribers = sub.setTransformSubscribers;
+    transformedSub.getNotifyEventSystem = sub.getNotifyEventSystem;
+    transformedSub.getUpdateProjectState = sub.getUpdateProjectState;
+    transformedSub.getLogActivity = sub.getLogActivity;
+    transformedSub.getTriggerIncentives = sub.getTriggerIncentives;
+    transformedSub.initialData = sub.initialData;
+    transformedSub.getName = sub.getName;
+    transformedSub.getDetermineCategory = sub.getDetermineCategory;
+    transformedSub.fetchSnapshotById = sub.fetchSnapshotById;
+    transformedSub.snapshots = sub.snapshots;
+    transformedSub.toSnapshotStore = sub.toSnapshotStore;
+    transformedSub.determineCategory = sub.determineCategory;
+    transformedSub.getDeterminedCategory = sub.getDeterminedCategory;
+    transformedSub.processNotification = sub.processNotification;
+    transformedSub.receiveSnapshot = sub.receiveSnapshot;
+    transformedSub.getState = sub.getState;
+    transformedSub.setEvent = sub.setEvent;
+    transformedSub.onError = sub.onError;
+    transformedSub.getSubscriberId = sub.getSubscriberId;
+    transformedSub.getSubscribersById = sub.getSubscribersById;
+    transformedSub.getSubscribersWithSubscriptionPlan =
+      sub.getSubscribersWithSubscriptionPlan;
+    transformedSub.getSubscription = sub.getSubscription;
+    transformedSub.onUnsubscribe = sub.onUnsubscribe;
+    transformedSub.onSnapshot = sub.onSnapshot;
+    transformedSub.onSnapshotError = sub.onSnapshotError;
+    transformedSub.onSnapshotUnsubscribe = sub.onSnapshotUnsubscribe;
+    transformedSub.triggerOnSnapshot = sub.triggerOnSnapshot;
+
+    return transformedSub;
+  }
 
   snapshotCallback(data: Snapshot<T, K>): void {
     console.log("Snapshot callback called with data:", data);
@@ -1026,10 +1332,10 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.data;
   }
 
-  getInitialData(): Partial<SnapshotStore<T, K>> | undefined {
+  getInitialData(): Partial<SnapshotStore<T, K>> | null {
     return this.initialData;
   }
- 
+
   // New method to fetch and process new data
   async getNewData(): Promise<Partial<SnapshotStore<T, K>> | null> {
     try {
@@ -1042,7 +1348,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
       // Optionally, fetch and process the latest snapshots based on the new IDs
       const newSnapshots: Snapshot<T, K>[] = await Promise.all(
         newSnapshotIds.map((id): Promise<Snapshot<T, K>> => {
-          return  snapshotApi.fetchSnapshotById(id)
+          return snapshotApi.fetchSnapshotById(id);
         })
       );
 
@@ -1067,22 +1373,23 @@ class Subscriber<T extends BaseData, K extends BaseData> {
       const newSnapshotIds = await this.fetchSnapshotIds();
       console.log("newSnapshotIds", newSnapshotIds);
       console.log("this.snapshotIds", this.snapshotIds);
-  
+
       // Assuming you process newSnapshotIds and this.snapshotIds to form the result
       const result: Partial<SnapshotStore<T, K>> = {
         snapshotIds: newSnapshotIds, // Example property
         // Add other properties as necessary
       };
-  
+
       return result;
     } catch (error) {
       console.error("Failed to fetch new data:", error);
       return null;
     }
   }
-  
 
-  async getSubscribeToSnapshots(): Promise<Partial<SnapshotStore<T, K>> | null> {
+  async getSubscribeToSnapshots(): Promise<Partial<
+    SnapshotStore<T, K>
+  > | null> {
     try {
       // Fetch the latest snapshot IDs
       const newSnapshotIds = await this.fetchSnapshotIds();
@@ -1093,7 +1400,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
       // Optionally, fetch and process the latest snapshots based on the new IDs
       const newSnapshots: Snapshot<T, K>[] = await Promise.all(
         newSnapshotIds.map((id): Promise<Snapshot<T, K>> => {
-          return snapshotApi.fetchSnapshotById(id)
+          return snapshotApi.fetchSnapshotById(id);
         })
       );
       // Update the subscriber's data with the new snapshots
@@ -1108,7 +1415,6 @@ class Subscriber<T extends BaseData, K extends BaseData> {
       return null;
     }
     // Return the processed new data
-    
   }
 
   // Fetch transform subscribers asynchronously
@@ -1136,13 +1442,17 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     } else {
       // If transformSubscribers is a promise, handle it accordingly
       // This could be changed based on your specific needs
-      console.warn("Transform subscribers are currently being fetched asynchronously.");
+      console.warn(
+        "Transform subscribers are currently being fetched asynchronously."
+      );
       return [];
     }
   }
 
   // Method to initialize or set transformSubscribers
-  setTransformSubscribers(subscribers: SubscriberCallback<T, K>[] | Promise<BaseDatabase>): void {
+  setTransformSubscribers(
+    subscribers: SubscriberCallback<T, K>[] | Promise<BaseDatabase>
+  ): void {
     (this as any).transformSubscribers = subscribers;
   }
 
@@ -1161,8 +1471,8 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   getTriggerIncentives(): Function | undefined {
     return this.triggerIncentives;
   }
-   // Example method for adding callbacks
-   addSnapshotCallback(callback: SnapshotCallback<T>): void {
+  // Example method for adding callbacks
+  addSnapshotCallback(callback: SnapshotCallback<T>): void {
     this.onSnapshotCallbacks.push(callback);
   }
 
@@ -1184,41 +1494,45 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.subscription.determineCategory(data);
   }
 
- 
-// Assuming the fetchSnapshotById on `this.subscription` accepts a single object argument
-fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
-  return new Promise((resolve, reject) => {
-    if (this.subscription && typeof this.subscription.fetchSnapshotById === 'function') {
-      const callback: FetchSnapshotByIdCallback = {
-        onSuccess: (snapshot: Snapshot<Data, any>) => {
-          const specificSnapshot = convertSnapshotToSpecificType<T, K>(snapshot as unknown as Snapshot<T, K>);
-          resolve(specificSnapshot);
-        },
-        onError: (error: any) => reject(error),
-      };
-      try {
-        this.subscription.fetchSnapshotById({ userId, snapshotId });
-        this.subscription.fetchSnapshotByIdCallback?.({ userId, snapshotId }, callback);
-      } catch (error) {
-        reject(error);
+  // Assuming the fetchSnapshotById on `this.subscription` accepts a single object argument
+  fetchSnapshotById(
+    userId: string,
+    snapshotId: string
+  ): Promise<Snapshot<T, K>> {
+    return new Promise((resolve, reject) => {
+      if (
+        this.subscription &&
+        typeof this.subscription.fetchSnapshotById === "function"
+      ) {
+        const callback: FetchSnapshotByIdCallback = {
+          onSuccess: (snapshot: Snapshot<Data, any>) => {
+            const specificSnapshot = convertSnapshotToSpecificType<T, K>(
+              snapshot as unknown as Snapshot<T, K>
+            );
+            resolve(specificSnapshot);
+          },
+          onError: (error: any) => reject(error),
+        };
+        try {
+          this.subscription.fetchSnapshotById({ userId, snapshotId });
+          this.subscription.fetchSnapshotByIdCallback?.(
+            { userId, snapshotId },
+            callback
+          );
+        } catch (error) {
+          reject(error);
+        }
+      } else {
+        reject(new Error("fetchSnapshotById is not defined or not a function"));
       }
-    } else {
-      reject(new Error("fetchSnapshotById is not defined or not a function"));
-    }
-  });
-}
-  
-
-  
-  
-  
-
+    });
+  }
 
   async snapshots(): Promise<SnapshotConfig<BaseData, K>[]> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
-  
+
       // Fetch snapshot data based on the IDs
       const snapshotData = await Promise.all(
         snapshotIds.map(async (id: string) => {
@@ -1229,10 +1543,10 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
             // Ensure fetchSnapshotById method returns a valid promise
             const snapshot = this.fetchSnapshotById(this.email, id);
             return snapshot;
-          })
+          });
         })
       );
-  
+
       return snapshotData as SnapshotConfig<BaseData, K>[]; // Ensure the correct type is returned
     } catch (error) {
       console.error("Error fetching snapshot IDs:", error);
@@ -1244,7 +1558,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
-  
+
       // Fetch snapshot data based on the IDs
       const snapshotData = await Promise.all(
         snapshotIds.map(async (id: string) => {
@@ -1255,10 +1569,10 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
             // Ensure fetchSnapshotById method returns a valid promise
             const snapshot = this.fetchSnapshotById(this.email, id);
             return snapshot;
-          })
+          });
         })
       );
-  
+
       return snapshotData as SnapshotStoreConfig<BaseData, Data>[]; // Ensure the correct type is returned
     } catch (error) {
       console.error("Error fetching snapshot IDs:", error);
@@ -1279,14 +1593,18 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
       // Ensure initialState is defined
       const category = this.determineCategory(initialState);
       // Retrieve options for SnapshotStore initialization using the helper function
-      const options: SnapshotStoreOptions<T, K> = createSnapshotOptions(snapshotObj, snapshot);
+      const options: SnapshotStoreOptions<T, K> = createSnapshotOptions(
+        snapshotObj,
+        snapshot
+      );
 
       const delegateFunction: SnapshotStoreSubset<T, K> = {
-        onSnapshot: (snapshot: Snapshot<T, K>,
+        onSnapshot: (
+          snapshot: Snapshot<T, K>,
           config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]
         ) => {
-        delegate(snapshot, initialState, config);
-  },
+          delegate(snapshot, initialState, config);
+        },
         snapshotId: "",
         taskIdToAssign: undefined,
         addSnapshot: addSnapshot,
@@ -1299,7 +1617,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
           dataItems: RealtimeDataItem[],
           newData: T | Data,
           payload: UpdateSnapshotPayload<any>
-        ) => void,
+        ) => Promise<{ snapshot: Snapshot<any, Data> }>,
         removeSnapshot: removeSnapshot,
         clearSnapshots: clearSnapshots,
         createInitSnapshot: createInitSnapshot,
@@ -1372,7 +1690,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
     const category = this.subscription.determineCategory(data);
     if (category === undefined || category === null) {
       // Provide a fallback value in case category is undefined or null
-      return 'defaultCategory'; // Or provide a default CategoryProperties object
+      return "defaultCategory"; // Or provide a default CategoryProperties object
     }
     return category;
   }
@@ -1396,8 +1714,12 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
         initialState: content,
         date: date,
         category: "subscriberCategory",
-        content: content ? (content.content as string | Content<T> | undefined) : undefined,
-        data: content ? content.data as T | Map<string, Snapshot<T, K>> | null | undefined : new Map<string, Snapshot<T, K>>(),
+        content: content
+          ? (content.content as string | Content<T> | undefined)
+          : undefined,
+        data: content
+          ? (content.data as T | Map<string, Snapshot<T, K>> | null | undefined)
+          : new Map<string, Snapshot<T, K>>(),
         type,
         store: store,
         unsubscribe: () => {
@@ -1406,7 +1728,7 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
         fetchSnapshot: (
           callback: (
             snapshotId: string,
-             payload: FetchSnapshotPayload<K>, 
+            payload: FetchSnapshotPayload<K>,
             snapshotStore: SnapshotStore<T, K>,
             payloadData: Data | T
           ) => void
@@ -1425,35 +1747,78 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
           type: string,
           event: Event,
           snapshotContainer?: T,
-          snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
-        ): Promise<Snapshot<T, K> | null>  => {
+          snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null
+        ): Promise<Snapshot<T, K> | null> => {
           console.log("handleSnapshot");
           return Promise.resolve(null);
         },
-        meta: content ? content.meta as  Map<string, Snapshot<StructuredMetadata, K>> | {} : {},
-        events: content ? {
-          eventRecords: (content.events as { eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | null }).eventRecords,
-          callbacks: {}, // Initialize empty or based on your logic
-          subscribers: new SubscriberCollection<T, K>(), // Replace with actual logic or initialization
-          eventIds: [], // Initialize or populate based on your logic
-          onSnapshotAdded: () => { /* Implement the function */ },
-          onSnapshotRemoved: () => { /* Implement the function */ },
-          initialConfig: {} as SnapshotConfig<T, K>, // Replace with actual config
-          removeSubscriber: () => { /* Implement the function */ },
-          onError: () => { /* Implement the function */ },
-          onInitialize: () => { /* Implement the function */ },
-          onSnapshotUpdated: () => { /* Implement the function */ },
-          on: () => { /* Implement the function */ },
-          off: () => { /* Implement the function */ },
-          emit: () => { /* Implement the function */ },
-          once: () => { /* Implement the function */ },
-          addRecord: () => { /* Implement the function */ },
-          removeAllListeners: () => { /* Implement the function */ },
-          subscribe: () => { /* Implement the function */ },
-          unsubscribe: () => { /* Implement the function */ },
-          trigger: () => { /* Implement the function */ },
-          eventsDetails: content.events as CalendarManagerStoreClass<T, K>[] | undefined
-        } : undefined,
+        meta: content
+          ? (content.meta as Map<string, Snapshot<StructuredMetadata, K>> | {})
+          : {},
+        events: content
+          ? {
+              eventRecords: (
+                content.events as {
+                  eventRecords: Record<
+                    string,
+                    CalendarManagerStoreClass<T, K>[]
+                  > | null;
+                }
+              ).eventRecords,
+              callbacks: {}, // Initialize empty or based on your logic
+              subscribers: new SubscriberCollection<T, K>(), // Replace with actual logic or initialization
+              eventIds: [], // Initialize or populate based on your logic
+              onSnapshotAdded: () => {
+                /* Implement the function */
+              },
+              onSnapshotRemoved: () => {
+                /* Implement the function */
+              },
+              initialConfig: {} as SnapshotConfig<T, K>, // Replace with actual config
+              removeSubscriber: () => {
+                /* Implement the function */
+              },
+              onError: () => {
+                /* Implement the function */
+              },
+              onInitialize: () => {
+                /* Implement the function */
+              },
+              onSnapshotUpdated: () => {
+                /* Implement the function */
+              },
+              on: () => {
+                /* Implement the function */
+              },
+              off: () => {
+                /* Implement the function */
+              },
+              emit: () => {
+                /* Implement the function */
+              },
+              once: () => {
+                /* Implement the function */
+              },
+              addRecord: () => {
+                /* Implement the function */
+              },
+              removeAllListeners: () => {
+                /* Implement the function */
+              },
+              subscribe: () => {
+                /* Implement the function */
+              },
+              unsubscribe: () => {
+                /* Implement the function */
+              },
+              trigger: () => {
+                /* Implement the function */
+              },
+              eventsDetails: content.events as
+                | CalendarManagerStoreClass<T, K>[]
+                | undefined,
+            }
+          : undefined,
       };
 
       // Handle the promise resolution
@@ -1495,7 +1860,6 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
     this.notifyEventSystem?.({
       type: "EVENT_SET",
       subscriberId: this.subscriberId,
-
     });
   }
 
@@ -1549,37 +1913,34 @@ fetchSnapshotById(userId: string, snapshotId: string): Promise<Snapshot<T, K>> {
     this.onErrorCallbacks.push(callback);
   }
 
-    onSnapshotUnsubscribe(
-      callback: (data: Snapshot<T, K>) => Snapshot<T, K>
-    ) {
-      this.onUnsubscribeCallbacks.push(callback);
-    }
+  onSnapshotUnsubscribe(callback: (data: Snapshot<T, K>) => Snapshot<T, K>) {
+    this.onUnsubscribeCallbacks.push(callback);
+  }
 
-    triggerOnSnapshot(snapshot: Snapshot<T, K>) {
-      this.onSnapshotCallbacks.forEach((callback) => callback(snapshot));
-    }
+  triggerOnSnapshot(snapshot: Snapshot<T, K>) {
+    this.onSnapshotCallbacks.forEach((callback) => callback(snapshot));
+  }
 
   notify?(
     data: Snapshot<T, K>,
     callback: (data: Snapshot<T, K>) => void,
     subscribers: Subscriber<T, K>[]
   ) {
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       callback(data);
     }
     subscribers.forEach((subscriber) => {
       subscriber.triggerOnSnapshot(data);
     });
-    if (typeof sendNotification === 'function') {
-      (sendNotification as (type: NotificationTypeEnum) => void)(NotificationTypeEnum.DataLoading);
+    if (typeof sendNotification === "function") {
+      (sendNotification as (type: NotificationTypeEnum) => void)(
+        NotificationTypeEnum.DataLoading
+      );
     }
     return subscribers;
   }
 
-  static createSubscriber<
-    T extends Data,
-    K extends Data,
-  >(
+  static createSubscriber<T extends Data, K extends Data>(
     id: string,
     name: string,
     subscription: Subscription<T, K>,
@@ -1692,8 +2053,6 @@ const sampleSnapshot: CustomSnapshotData = {
   timestamp: new Date().toISOString(),
   value: "42",
 };
-
-
 
 subscriber.receiveSnapshot(sampleSnapshot);
 

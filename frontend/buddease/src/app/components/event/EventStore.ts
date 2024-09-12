@@ -128,3 +128,36 @@ export type EventStore<T extends Data, K extends Data> = {
   
 
   
+
+
+  // Define the default event store
+const defaultEventStore = <T extends Data, K extends Data>(): EventStore<T, K> => ({
+  initialConfig: {
+      // Provide a default initialConfig or modify according to your needs
+      criteria: {}, 
+      subscribers: {} as SubscriberCollection<T, K>,
+  },
+  eventRecords: {},
+  callbacks: {},
+  subscribers: {} as SubscriberCollection<T, K>,
+  eventIds: [],
+  onSnapshotAdded: () => { /* default implementation */ },
+  onSnapshotRemoved: () => { /* default implementation */ },
+  removeSubscriber: () => { /* default implementation */ },
+  onError: () => { /* default implementation */ },
+  onInitialize: () => { /* default implementation */ },
+  onSnapshotUpdated: () => { /* default implementation */ },
+  on: () => { /* default implementation */ },
+  off: () => { /* default implementation */ },
+  emit: () => { /* default implementation */ },
+  once: () => { /* default implementation */ },
+  addRecord: () => { /* default implementation */ },
+  removeAllListeners: () => { /* default implementation */ },
+  subscribe: () => { /* default implementation */ },
+  unsubscribe: () => { /* default implementation */ },
+  trigger: () => { /* default implementation */ },
+  eventsDetails: [], // or undefined if you don't have a default value
+});
+
+
+export { defaultEventStore }

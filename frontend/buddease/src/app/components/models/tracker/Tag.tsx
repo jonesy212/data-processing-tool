@@ -1,6 +1,6 @@
 import React from 'react';
-import { Data } from '../data/Data';
 import { TagsRecord } from '../../snapshots';
+import { Data } from '../data/Data';
 
 // Define the Tag interface and TagOptions interface
 interface Tag extends Data {
@@ -17,7 +17,7 @@ interface TagOptions {
   description: string;
   enabled: boolean;
   type: string;
-  tags?: TagsRecord;
+   tags?: TagsRecord | string[] | undefined; 
   createdAt?: Date;
   updatedAt?: Date;
   createdBy: string;

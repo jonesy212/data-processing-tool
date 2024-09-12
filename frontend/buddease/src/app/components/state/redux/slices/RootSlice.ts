@@ -1,7 +1,8 @@
 // rootSlice.ts
 import { combineReducers, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Task } from "../../../models/tasks/Task";
-import { Tracker } from "../../../models/tracker/Tracker";
+import { TrackerProps } from "../../../models/tracker/Tracker";
+import * as snapshotApi from '@/app/api/SnapshotApi'
 import { userManagerSlice } from "../../../users/UserSlice";
 import { useDataAnalysisManagerSlice } from "./DataAnalysisSlice";
 import { useTodoManagerSlice } from "./TodoSlice";
@@ -12,9 +13,8 @@ import { Data } from "@/app/components/models/data/Data";
 import { useRealtimeDataSlice } from "@/app/components/state/redux/slices/RealtimeDataSlice";
 import { useProjectOwnerSlice } from "@/app/components/users/ProjectOwnerSlice";
 
-import useSnapshotManager from "@/app/components/hooks/useSnapshotManager";
+import {useSnapshotManager} from "@/app/components/hooks/useSnapshotManager";
 import {
-  PriorityStatus,
   PriorityTypeEnum,
   StatusType,
 } from "@/app/components/models/data/StatusType";
@@ -56,6 +56,10 @@ import { useAuthorizationSlice } from "./AuthorizationSlice";
 import { useParticipantSlice } from "./participantSlice";
 import {useTagManagerSlice} from "./useTagManagerSlice";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { convertSnapshotStoreToStorage, convertStorageToSnapshotStore } from "@/app/components/snapshots/convertSnapshotStoreToStorage";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { snapshotConfigOptions, snapshotStorageOptions } from "@/app/components/snapshots/snapshotStorageOptionsInstance";
+import { snapshotContainer } from "@/app/components/snapshots";
 const randomTaskId = uuidv4().toString();
 
 // Define your custom entity state
@@ -267,14 +271,39 @@ const rootReducerSlice = createSlice({
         completionDate: new Date(),
         endDate: new Date(),
         isActive: false,
-        tags: [],
+        tags: {},
         dependencies: [],
-        then: function (onFulfill: (newData: Snapshot<Data>) => void): unknown {
+        then:  function (onFulfill: (newData: Snapshot<Data, Data>) => void): unknown {
           setTimeout(() => {
-            onFulfill({
+            const criteria = snapshotApi.getSnapshotCriteria(
+              snapshotContainer, 
+              snapshot
+            ); 
+            const snapshotId = snapshotApi.getSnapshotId(criteria);
+            const snapshotStoreId = snapshotApi.getSnapshotStoreId(snapshotId)
+            const snapshotStore = convertStorageToSnapshotStore(
+              window.localStorage,
+              snapshotStoreId,
+              "someTopic",
+              new Date(),
+              snapshotStorageOptions, // Use specific options
+              "someCategory",
+              snapshotConfigOptions, // Use specific snapshot config
+              { /* Snapshot operation */ }
+            );
+
+            const snapshot: Snapshot<Data, Data> = {
+              // Ensure all required properties are included
               data: this as Data,
-              store: window.localStorage,
-            }); // using window.localStorage instead of 'store'
+              store: snapshotStore,
+              initialState: {} as InitializedState<Data, Data>, // Provide the actual initialState
+              isCore: true, // Example property, adjust as needed
+              initialConfig: {}, // Provide the actual initialConfig
+              removeSubscriber: () => {}, // Example method, adjust as needed
+              // Include all other required properties
+            };
+        
+            onFulfill(snapshot);// using window.localStorage instead of 'store'
           }, 1000);
           return this;
         },
@@ -350,7 +379,7 @@ const rootReducerSlice = createSlice({
         dueDate: new Date(),
         priority: PriorityTypeEnum.Medium,
         isActive: false,
-        tags: [],
+        tags: {},
         previouslyAssignedTo: [],
         done: false,
         analysisType: AnalysisTypeEnum.TASK,
@@ -393,8 +422,8 @@ const rootReducerSlice = createSlice({
       state.taskManager.tasks.push(newTask as WritableDraft<Task>);
       state.taskManager.taskTitle = "";
       state.taskManager.taskDescription = "";
-      state.taskManager.taskStatus = PriorityStatus.PendingReview;
-      state.taskManager.priority = PriorityStatus.Medium;
+      state.taskManager.taskStatus = PriorityTypeEnum.PendingReview;
+      state.taskManager.priority = PriorityTypeEnum.Medium;
       state.taskManager.dueDate = new Date();
     });
 

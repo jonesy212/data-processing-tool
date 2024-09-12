@@ -1,8 +1,11 @@
 // AuthService.ts
+// import JWT_SECRET from "@/app/configs/JwtConfig";
 import { DatabaseConfig, DatabaseService } from "@/app/configs/DatabaseConfig";
 import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
 import UserService from "../users/ApiUser";
- 
+import { generateToken } from "@/app/generators/GenerateTokens";
+ import * as jwt  from 'jsonwebtoken'
+import { JWT_SECRET } from "../snapshots/JwtConfig";
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
 
 class AuthService {
@@ -69,6 +72,85 @@ class AuthService {
       throw new Error("Admin login failed");
     }
   }
+
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
+    try {
+      // Verify the refresh token
+      const payload = jwt.verify(refreshToken, JWT_SECRET) as jwt.JwtPayload;
+  
+      // Ensure the payload contains the user ID and scopes
+      if (typeof payload.sub !== 'string' || !Array.isArray(payload.scopes)) {
+        throw new Error("Invalid refresh token payload");
+      }
+  
+      // You may need to fetch user data and scopes from your database if not included in the token
+      const user = { _id: payload.sub 
+
+
+        
+      }; // Replace with actual user retrieval logic
+      const scopes = payload.scopes; // Replace with actual scopes if necessary
+  
+      // Generate a new access token
+      const newPayload = {
+        username: payload.username,
+        roles: payload.roles,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        email: payload.email,
+        tier: payload.tier,
+       
+        token: payload.token,
+        uploadQuota: payload.uploadQuota,
+        avatarUrl: payload.avatarUrl,
+        createdAt: payload.createdAt,
+       
+        updatedAt: payload.updatedAt,
+        fullName: payload.fullName,
+        bio: payload.bio,
+        userType: payload.userType,
+       
+        hasQuota: payload.hasQuota,
+        profilePicture: payload.profilePicture,
+        processingTasks: payload.processingTasks,
+        role:  payload.role,
+        persona: payload.persona,
+        friends: payload.friends,
+        blockedUsers: payload.blockedUsers,
+        settings: payload.settings,
+       
+        interests: payload.interests,
+        followers: payload.followers,
+        privacySettings: payload.privacySettings,
+        notifications: payload.notifications,
+       
+        activityLog: payload.activityLog,
+        socialLinks: payload.socialLinks,
+        relationshipStatus: payload.relationshipStatus,
+        hobbies: payload.hobbies,
+       
+        skills: payload.skills,
+        achievements: payload.achievements,
+        profileVisibility: payload.profileVisibility,
+        profileAccessControl: payload.profileAccessControl,
+       
+        activityStatus: payload.activityStatus,
+        isAuthorized: payload.isAuthorized,
+        preferences: payload.preferences,
+        storeId: payload.storeId,
+       
+
+        // Add other claims as needed
+      };
+      
+      const newAccessToken = generateToken(newPayload,scopes,{ expiresIn: '1h' });
+  
+      return { accessToken: newAccessToken };
+    } catch (error) {
+      throw new Error("Invalid refresh token");
+    }
+  }
+  
   
   // Simulate a logout request (replace with actual implementation)
   async logout(): Promise<void> {

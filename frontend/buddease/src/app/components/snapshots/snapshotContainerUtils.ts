@@ -1,6 +1,7 @@
 // snapshotContainerUtils.ts
 
 import { dataStoreMethods } from "../models/data/dataStoreMethods";
+import { createSnapshotStoreConfig } from "../typings/YourSpecificSnapshotType";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
 
@@ -27,7 +28,7 @@ const delegate = {
     console.log(`Executing operation: ${operation}`);
   }
 };
-
+const snapshotManager = snapshotStoreConfigInstance.getSnapshotManager()
 const snapshotStore = snapshotManager?.state
 const snapshotConfig = createSnapshotStoreConfig(snapshotStore)
 const getDelegate = () => delegate;
@@ -42,15 +43,17 @@ const getDataStoreMethods = () => dataStoreMethods;
 const snapshotMethods = {
   create: async () => {
     console.log("Creating snapshot...");
-    return {} as Snapshot<T, K>;
+    return Promise.resolve({} as Snapshot<T, K>);
   },
   update: async () => {
     console.log("Updating snapshot...");
-    return {} as Snapshot<T, K>;
+        return Promise.resolve({} as Snapshot<T, K>);
+
   },
   delete: async () => {
     console.log("Deleting snapshot...");
-    return {} as Snapshot<T, K>;
+        return Promise.resolve({} as Snapshot<T, K>);
+
   }
 };
 

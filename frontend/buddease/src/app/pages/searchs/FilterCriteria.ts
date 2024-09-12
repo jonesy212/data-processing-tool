@@ -361,6 +361,10 @@ const events: CalendarEvent[] = [
     rsvpStatus: "yes",
     host: {
       id: "",
+      roles: [], 
+      followers: [],
+      preferences: {}, 
+      storeId: 0,
       username: "",
       memberName: "",
       avatarUrl: "",

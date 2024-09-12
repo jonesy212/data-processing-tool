@@ -5,12 +5,11 @@ import { BaseData, Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
 import SnapshotStore, {
 } from "../../snapshots/SnapshotStore";
-import { snapshot } from "../../snapshots/snapshot";
 import {
   deleteSnapshot,
   updateSnapshot,
 } from "../../snapshots/snapshotHandlers";
-import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
+import { Snapshot, snapshots, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 import { SnapshotContainer, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig } from "../../snapshots";
 import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import * as snapshotApi from '@/app/api/SnapshotApi'
@@ -39,6 +38,7 @@ const ProjectManager: React.FC = async () => {
 
 
 
+  
   const criteria = await snapshotApi.getSnapshotCriteria(
     snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
     snapshot

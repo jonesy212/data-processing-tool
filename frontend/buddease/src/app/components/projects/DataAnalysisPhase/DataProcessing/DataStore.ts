@@ -3,11 +3,12 @@ import SnapshotStore, { SubscriberCollection } from '@/app/components/snapshots/
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { currentAppVersion } from '@/app/api/headers/authenticationHeaders';
 import { SnapshotManager } from '@/app/components/hooks/useSnapshotManager';
+import { getCategoryProperties } from '@/app/components/libraries/categories/CategoryManager';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { NotificationPosition, StatusType } from '@/app/components/models/data/StatusType';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotItem, SnapshotStoreMethod } from '@/app/components/snapshots';
+import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethod } from '@/app/components/snapshots';
 import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
@@ -41,7 +42,8 @@ export interface DataStore<T extends Data, K extends Data> {
   storage?: SnapshotStore<T, K>[] | undefined;
   config: SnapshotStoreConfig<T, K> | null;
   mapSnapshot: (
-    storeId: number,
+    id: number, 
+    storeId: string,
     snapshotStore: SnapshotStore<T, K>,
     snapshotContainer: SnapshotContainer<T, K>,
     snapshotId: string,
@@ -63,7 +65,7 @@ export interface DataStore<T extends Data, K extends Data> {
     storeIds: number[],
     snapshotId: string,
     category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K>,
     timestamp: string | number | Date | undefined,
     type: string,
@@ -75,7 +77,7 @@ export interface DataStore<T extends Data, K extends Data> {
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -193,8 +195,8 @@ export interface DataStore<T extends Data, K extends Data> {
 
   getDelegate: (context: {
     useSimulatedDataSource: boolean;
-    simulatedDataSource: SnapshotStoreConfig<T, any>[]
-  }) => Promise<SnapshotStoreConfig<T, K>[]>;
+    simulatedDataSource: SnapshotStoreConfig<T,any>[]
+  }) => Promise<SnapshotStoreConfig<T, any>[]>;
 
 
   updateDelegate: (
@@ -289,9 +291,11 @@ interface CallbackItem<T extends Data, K extends Data> extends SnapshotItem<T, K
 }
 
 type InitializedState<T extends BaseData, K extends BaseData> = 
-  Snapshot<T, K> 
+  T
+  | Snapshot<T, K> 
   | SnapshotStore<T, K> 
   | Map<string, Snapshot<T, K>> 
+  | Snapshot<T, K>[]  // Include arrays of snapshots
   | null | undefined;
 
 const initializeState = <T extends Data, K extends Data>(
@@ -457,17 +461,26 @@ const useDataStore = <T extends Data, K extends Data>(
     for (const item of newData) {
       if ('id' in item && item.id) {
         try {
-          const snapshot = await snapshotApi.getSnapshot(item.id);
+          const snapshot = snapshotApi.getSnapshot(item.id);
   
           if (snapshot) {
             const { id, versionNumber, appVersion, content, ...rest } = snapshot as Record<string, any>;
             const newSnapshot = rest as Snapshot<T, K>;
             data.set(item.id.toString(), newSnapshot);
-            
+            const category = process.argv[3] as keyof CategoryProperties;
+            const categoryProperties = getCategoryProperties(category)
             // Ensure snapshotConfig and criteria are defined
             const numericId = typeof item.id === 'string' ? parseInt(item.id, 10) : item.id;
             if (numericId !== null && !isNaN(numericId)) {
-              const snapshotConfig = await snapshotApi.getSnapshotConfig(numericId, snapshotApi.snapshotContainer, criteria);
+              const snapshotConfig = snapshotApi.getSnapshotConfig(
+                numericId,
+                snapshotContainer, 
+                category, 
+                categoryProperties, 
+                delegate, 
+                snapshot, 
+                criteria
+              );
               const snapshotItem: Snapshot<T, K> = transformDataToSnapshot(item, snapshotConfig, snapshotStoreConfig);
               
               if (snapshotItem.data instanceof Map) {
@@ -785,10 +798,10 @@ const useDataStore = <T extends Data, K extends Data>(
     {
       snapshot: (
         id: string | number | undefined,
-        snapshotId: number | null,
+        snapshotId: string | null,
         snapshotData: Snapshot<T, K>,
         category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties,
+        categoryProperties: CategoryProperties | undefined,
         callback: (snapshotStore: SnapshotStore<T, K>) => void,
         dataStoreMethods: DataStore<T, K>,
         snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
@@ -1054,7 +1067,7 @@ const useDataStore = <T extends Data, K extends Data>(
                 snapshotData: SnapshotStore<T, K>, // Ensure snapshotData matches SnapshotStore<T, K>
                 category: symbol | string | Category | undefined,
                 categoryProperties: CategoryProperties | undefined,
-                categoryProperties: CategoryProperties,
+                categoryProperties: CategoryProperties | undefined,
                 snapshotConfig: SnapshotStoreConfig<T, K>, // Use K instead of T for snapshotConfig
                 callback: (snapshotStore: SnapshotStore<any, any>) => void
               ): void {
@@ -1106,7 +1119,7 @@ const useDataStore = <T extends Data, K extends Data>(
                 snapshot: T | null,
                 snapshotData: T,
                 category: Category | undefined,
-                categoryProperties: CategoryProperties,
+                categoryProperties: CategoryProperties | undefined,
                 callback: (snapshot: T) => void,
                 snapshots: SnapshotsArray<T>,
                 type: string,
@@ -1161,7 +1174,7 @@ const useDataStore = <T extends Data, K extends Data>(
                 storeIds: number[],
     snapshotId: string,
     category: Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K>,
     timestamp: string | number | Date | undefined,
     type: string,
@@ -1173,7 +1186,7 @@ const useDataStore = <T extends Data, K extends Data>(
       storeIds: number[],
       snapshotId: string,
       category: Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,

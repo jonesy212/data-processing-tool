@@ -14,7 +14,7 @@ interface BookmarkData {
     endDate?: Date;
     createdAt?: Date;
     isActive?: boolean;
-    tags?: string[];
+     tags?: TagsRecord | string[] | undefined; 
     phase?: Phase | null;
     phaseType?: ProjectPhaseTypeEnum;
     status?: AllStatus;

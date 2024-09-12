@@ -607,7 +607,8 @@ export const SnapshotProvider = <T extends Data, K extends Data>({ children }: {
     snapshot,
     snapshots,
     createSnapshot,
-    fetchSnapshot
+    fetchSnapshot,
+    snapshotStore
   };
 
   return (

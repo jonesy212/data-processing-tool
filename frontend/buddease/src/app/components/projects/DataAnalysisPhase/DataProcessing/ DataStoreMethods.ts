@@ -1,7 +1,7 @@
 //  DataStoreMethods.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData } from "@/app/components/models/data/Data";
-import { Snapshot, Snapshots, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore, { SubscriberCollection } from "@/app/components/snapshots/SnapshotStore";
 import { Subscriber } from "@/app/components/users/Subscriber";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -32,7 +32,7 @@ extends DataStoreWithSnapshotMethods<T, K> {
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -42,7 +42,7 @@ extends DataStoreWithSnapshotMethods<T, K> {
       data: K,
       index: number
     ) => SnapshotsObject<T>
-  )=> SnapshotsObject<T>
+  )=> Promise<SnapshotsArray<T>>
 
   addSnapshot: ( snapshot: Snapshot<T, K>,
     snapshotId: string,

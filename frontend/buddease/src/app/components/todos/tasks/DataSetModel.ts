@@ -33,7 +33,7 @@ interface DatasetModel extends DocumentBase {
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath;
   tags?: TagsRecord
-  createdBy: string;
+  createdBy: string | undefined;
   updatedBy: string;
   documents: WritableDraft<DocumentObject>[];
   createdAt: string | Date | undefined;
@@ -63,7 +63,7 @@ const dataset: DatasetModel = {
     isModified: false,
   } as ModifiedDate,
   lastModifiedBy: "user1",
-  tags: [],
+  tags: {},
   createdBy: "",
   updatedBy: "",
   selectedDocument: null,

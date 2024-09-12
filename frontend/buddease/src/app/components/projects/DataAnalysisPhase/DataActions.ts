@@ -5,7 +5,21 @@ import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProce
 import { StatusType } from "../../models/data/StatusType";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { CustomSnapshotData } from "../../snapshots/SnapshotData";
+
 export const DataActions = <T extends Data, K extends Data>() => ({  // Actions for data processing
+   
+
+   updateDataFrame: createAction<{ id: string; frame: any }>('data/updateDataFrame'),
+   deleteDataFrame: createAction<{ id: string }>('data/deleteDataFrame'),
+   updateDataTitle: createAction<{ id: string; title: string }>('data/updateDataTitle'),
+   updateDataDescription: createAction<{ id: string; description: string }>('data/updateDataDescription'),
+   updateDataStatus: createAction<{ id: string; status: string }>('data/updateDataStatus'),
+   updateDataDetails: createAction<{ id: string; details: any }>('data/updateDataDetails'),
+   removeData: createAction<{ id: string }>('data/removeData'),
+   fetchDataFrame: createAction<{ id: string }>('data/fetchDataFrame'),
+   setDataFrame: createAction<{ id: string; frame: any }>('data/setDataFrame'),
+   
+   
    loadDataAndProcessRequest: createAction<T>("loadDataAndProcessRequest"),
    loadDataAndProcessSuccess: createAction<DataProcessingResult>("loadDataAndProcessSuccess"),
    loadDataAndProcessFailure: createAction<{ error: string }>("loadDataAndProcessFailure"),

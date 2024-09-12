@@ -1,12 +1,14 @@
 // BaseConfig.ts
-// Base configuration type that all modules might share
-interface BaseConfig {
+
+import { BaseMetadataConfig, BaseRetryConfig, BaseCacheConfig, } from "./ConfigurationService";
+
+// Combine the base interfaces into a single interface
+interface BaseConfig extends BaseRetryConfig, BaseCacheConfig, BaseMetadataConfig {
   apiEndpoint: string;
   apiKey: string;
   timeout: number;
   retryAttempts: number;
 }
-
 // Specific configuration for project management features
 interface ProjectManagementConfig extends BaseConfig {
   taskPhases: string[];
@@ -25,4 +27,4 @@ interface CryptoConfig extends BaseConfig {
 }
 
 
-export type {BaseConfig, ProjectManagementConfig, CryptoConfig}
+export type { BaseConfig, ProjectManagementConfig, CryptoConfig}

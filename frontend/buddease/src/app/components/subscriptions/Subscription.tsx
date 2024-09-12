@@ -1,3 +1,4 @@
+import * as snapshotApi from '@/app/api/SnapshotApi'
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { useEffect, useState } from "react";
 import { ModifiedDate } from "../documents/DocType";
@@ -7,15 +8,15 @@ import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusT
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { K, T } from "../snapshots/SnapshotConfig";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import { useSnapshotStore } from "../snapshots/useSnapshotStore";
+
+import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 import { TriggerIncentivesParams } from "../utils/applicationUtils";
 import { userId } from "../users/ApiUser";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 
 import { Data } from "../models/data/Data";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Callback } from "../snapshots";
+import { Callback, snapshotContainer } from "../snapshots";
 
 
 type FetchSnapshotByIdCallback = {
@@ -24,7 +25,7 @@ type FetchSnapshotByIdCallback = {
 };
 
 type Subscription<T extends Data, K extends Data> = {
-  name: string;
+  name?: string;
   subscriberId?: string;
   subscriptionId?: string;
   subscriberType?: SubscriberTypeEnum;
@@ -38,7 +39,6 @@ type Subscription<T extends Data, K extends Data> = {
       unsubscribeReason: string;
       unsubscribeData: any;
     },
-    callback: Callback<Snapshot<T, K>> | null
   ) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
@@ -156,7 +156,9 @@ const SubscriptionComponent = (
 
     // Ensure subscriptionUsage is defined before accessing unsubscribe
     if (subscriptionUsage) {
-      const criteria = await snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot);
+      const criteria = snapshotApi.getSnapshotCriteria(
+        await snapshotContainer(snapshotId, storeId), snapshot
+      );
       const snapshotId = getSnapshotId(criteria).toString()
       // Cleanup: Unsubscribe when the component unmounts
       return () => {

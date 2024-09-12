@@ -56,7 +56,7 @@
 //     snapshotId: string | null,
 //     snapshotData: Snapshot<SnapshotWithCriteria<BaseData, any>, Data> | null,
 //     category: symbol | string | Category | undefined,
-//     categoryProperties: CategoryProperties,
+//     categoryProperties: CategoryProperties | undefined,
 //     callback: (snapshotData: Snapshot<SnapshotWithCriteria<any, BaseData>, Data>) => void,
 //     snapshotContainer?: Snapshot<SnapshotWithCriteria<any, BaseData>, Data> | null,
 //     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>

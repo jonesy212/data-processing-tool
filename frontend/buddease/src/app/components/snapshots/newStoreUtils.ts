@@ -13,7 +13,7 @@ import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
 
 
 
-const snapConfig: SnapshotConfig | undefined = /* your snapshot configuration logic here */;
+const snapConfig: SnapshotConfig<T, K> | undefined = /* your snapshot configuration logic here */;
 
 
 // newStoreUtils.ts

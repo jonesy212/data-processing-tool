@@ -327,8 +327,9 @@ const cleanupState = (subscription: any) => {
   clearResources(adjustedSocket, subscription);
 };
 
-const cleanupSubscriptions = (subscription: Subscription<T, K> | null,
-  unsubscribeDetails?: UnsubscribeDetails
+const cleanupSubscriptions = (
+  subscription: Subscription<T, K> | null,
+  unsubscribeDetails?: UnsubscribeDetails,
 ) => {
   // Clean up any subscriptions
   if (subscription && unsubscribeDetails) {

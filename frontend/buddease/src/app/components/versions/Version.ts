@@ -12,6 +12,7 @@ import { TagsRecord } from "../snapshots/SnapshotWithCriteria";
 import { Attachment } from "../documents/Attachment/attachment";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Member } from "../models/teams/TeamMembers";
+import DocumentPermissions from "../documents/DocumentPermissions";
 
 interface ExtendedVersion extends Version {
   name: string;
@@ -251,7 +252,7 @@ class Version {
      userId: versionInfo.userId ?? '',
      content: versionInfo.content ?? '',
      metadata: versionInfo.metadata ?? { author: '', timestamp: undefined },
-     versionData: versionInfo.versionData ?? '',
+     versionData: versionInfo.versionData ?? null,
      checksum: versionInfo.checksum ?? '',
      parentType: versionInfo.parentType ?? '',
      parentVersion: versionInfo.parentVersion ?? '',
@@ -452,23 +453,25 @@ class Version {
     // Assuming you have a fileOrFolderId variable
     const fileOrFolderId = "fileOrFolderId";
     const metadata: StructuredMetadata = {
-      [fileOrFolderId]: {
-        originalPath: "",
-        alternatePaths: [],
-        author: name,
-        timestamp: new Date(),
-        fileType: "",
-        title: "",
-        description: "",
-        keywords: [],
-        authors: [],
-        contributors: [],
-        publisher: "",
-        copyright: "",
-        license: "",
-        links: [],
-        tags: [],
-      },
+      metadataEntries: {
+        [fileOrFolderId]: {
+          originalPath: "",
+          alternatePaths: [],
+          author: name,
+          timestamp: new Date(),
+          fileType: "",
+          title: "",
+          description: "",
+          keywords: [],
+          authors: [],
+          contributors: [],
+          publisher: "",
+          copyright: "",
+          license: "",
+          links: [],
+          tags: [],
+        },
+      }
     };
 
     // Function to create a Version object from ExtendedVersion data
@@ -552,6 +555,7 @@ class Version {
         updatedAt,
         versionHistory,
         data,
+        _structure,
         name, // Set appropriately based on your application logic
         url: "", // Set appropriately based on your application logic
         versionNumber: "", // Set appropriately based on your application logic

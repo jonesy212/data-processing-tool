@@ -82,16 +82,17 @@ export const baseStore = (): BaseHistoryStore => {
     // Implement importHistory logic here
   };
 
-  const navigateHistory = () => {
-    let direction: "backward" | "forward" = "backward"; // Assign a default value to direction
-    // Implement navigateHistory logic here to move backward/forward in history array
-    // Check if direction is 'backward' or 'forward'
+
+  const navigateHistory = (direction: "backward" | "forward") => {
+    // Use the useUndoRedoStore hook for undo/redo actions based on direction
+    const store = useUndoRedoStore();
     if (direction === "backward") {
-      useUndoRedoStore().undo();
+      store.undo();
     } else {
-      useUndoRedoStore().redo();
+      store.redo();
     }
   };
+
 
   const persistHistory = () => {
     // Implement persistHistory logic here to save history to localStorage/indexedDB
@@ -103,7 +104,7 @@ export const baseStore = (): BaseHistoryStore => {
   };
 
   const redoHistory = () => {
-    // Implement redoHistory logic here
+    useUndoRedoStore().redo();
   };
 
   return {
@@ -127,7 +128,7 @@ export const baseStore = (): BaseHistoryStore => {
 
 const historyManagerStore = (): HistoryStore => {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const undoRedoStore = new UndoRedoStore(); // Create an instance of UndoRedoStore
+  const undoRedoStore = useUndoRedoStore(); // Use the hook to get the undoRedoStore instance
 
   const addHistoryEntry = (data: any) => {
     // Add a new history entry with a unique ID and timestamp
@@ -314,7 +315,9 @@ const historyManagerStore = (): HistoryStore => {
 
           interests: profile.interests,
           privacySettings: profile.privacySettings,
-          notifications: profile.notifications,
+          followers: profile.followers, 
+          notifications: profile.notifications, 
+          preferences: profile.preferences,
           activityLog: profile.activityLog,
 
           socialLinks: profile.socialLinks,

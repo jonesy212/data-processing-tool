@@ -11,31 +11,65 @@ import {
   updateQuota,
 } from "../../users/UserSlice";
 import FileData from "../data/FileData";
-export interface Tracker {
+import { Stroke } from "../../state/redux/slices/DrawingSlice";
+import { Payment } from "../../subscriptions/SubscriptionPlan";
+
+
+// Define a common interface for tracker properties
+interface CommonTrackerProps {
   id: string;
   name: string;
   phases: Phase[];
-  getUserProfile?: (userData: User) => void; // New method to get user profile
-  trackFileChanges: (file: FileData) => void;
-  trackFolderChanges: (fileLoader: FileData) => void;
-  getName?: (trackerName: string) => string;
-  updateUserProfile?: (userData: User) => void; // New method to update user profile
-  sendNotification?: (notification: string, userData: User) => void; // New method to send notification
-  payments?: Payment[] 
-  
-  // Add more properties as needed
+  trackFileChanges: (file: FileData) => FileData;
+  stroke: {
+    width: number;
+    color: string;
+  };
+  strokeWidth: number;
+  fillColor: string;
+  flippedX: boolean;
+  flippedY: boolean;
+  x: number;
+  y: number;
+  updateAppearance:
+}
+
+interface TrackerProps extends CommonTrackerProps {
+  // Additional properties specific to TrackerProps, if any
 }
 
 const userData = {} as User;
-class TrackerClass implements Tracker {
+class TrackerClass implements TrackerProps {
   id: string;
   name: string;
   phases: Phase[];
-
-  constructor(id: string, name: string, phases: Phase[]) {
+  stroke: Stroke;
+  strokeWidth: number;
+  fillColor: string;
+  flippedX: boolean;
+  flippedY: boolean;
+  x: number;
+  y: number;
+  payments?: Payment[];
+  constructor(id: string, name: string, phases: Phase[],
+    stroke: Stroke,
+    strokeWidth: number,
+    fillColor: string,
+    flippedX: boolean,
+    flippedY: boolean,
+    x: number,
+    y: number,
+  ) {
     this.id = id;
     this.name = name;
     this.phases = phases;
+    this.stroke = stroke;
+    this.strokeWidth = strokeWidth;
+    this.fillColor = fillColor;
+    this.flippedX = flippedX;
+    this.flippedY = flippedY;
+    this.x = x;
+    this.y = y;
   }
 
   // Method to track changes for a file
@@ -241,9 +275,6 @@ class TrackerClass implements Tracker {
 
     console.log("Handling authentication actions:", authSlice);
   }
-
-
-
   
   updateUserProfile(userData: User): void {
     // Access dispatch function from AuthContext
@@ -278,3 +309,4 @@ class TrackerClass implements Tracker {
 }
 
 export default TrackerClass;
+export type { CommonTrackerProps, TrackerProps}

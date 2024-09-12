@@ -9,6 +9,7 @@ import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuen
 import { myPhaseHook } from "../phaseHooks/EnhancePhase";
 import useAsyncHookLinker, { LibraryAsyncHook } from "../useAsyncHookLinker";
 import createDynamicHook from "./dynamicHookGenerator";
+import Web3Provider from '../../web3/Web3Provider';
 
 interface AsyncHook {
   condition: (idleTimeoutDuration: number) => Promise<boolean>;

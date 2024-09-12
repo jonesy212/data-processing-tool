@@ -475,7 +475,9 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     ownerId: '',
     permissions: [],
     settings: {},
-    metadata: {},
+    metadata: {
+      metadataEntries: {}
+    },
     references: [],
     history: [],
     labels: [],
@@ -622,7 +624,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
           snapshotStore: SnapshotStore<T, K>,
           payloadData: T | Data,
           category: Category | undefined,
-          categoryProperties: CategoryProperties,
+          categoryProperties: CategoryProperties | undefined,
           timestamp: Date,
           data: T,
           delegate: SnapshotWithCriteria<T, K>[]

@@ -12,6 +12,8 @@ import { ReassignEventResponse } from './AssignEventStore';
 import SnapshotStoreConfig from '../../snapshots/SnapshotConfig';
 import { resolve } from 'path';
 import { SnapshotWithCriteria } from '../../routing/SearchCriteria';
+import { useSecureDocumentId } from '../../utils/useSecureDocumentId';
+import { useSecureStoreId } from '../../utils/useSecureStoreId';
 const eventIds: string[] = [];
 const events: Record<string, CalendarEvent[]> = {};
 interface PartialFakeDataEvent extends FakeDataPartial, CalendarEvent {
@@ -411,11 +413,20 @@ describe("CalendarManagerStoreClass", () => {
       // You can add more actions here based on the notification type or content
     };
 
+    const storeId = useSecureStoreId()
+    const documentId = useSecureDocumentId()
+    const eventId = useSecureEventId()
     const events: Record<string, CalendarEvent[]> = {}; // Mocked events data
     const snapshotData: SnapshotStore<Snapshot<Data>> = new SnapshotStore<
       Snapshot<Data>
     >(mockConfig, notify); // Mocked snapshot data
-    calendarManagerStore.handleRealtimeUpdate(events, snapshotData);
+    calendarManagerStore.handleRealtimeUpdate(
+      storeId,
+      Number(documentId),
+      eventId,
+      events,
+      snapshotData
+    );
     calendarManagerStore.handleRealtimeUpdate(events, snapshotData);
 
     // Check if the events and snapshot data are updated correctly in the store

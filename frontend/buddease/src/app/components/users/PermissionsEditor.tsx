@@ -16,7 +16,7 @@ const PermissionsEditor: React.FC = () => {
       <button onClick={assignNFT}>Assign NFT</button>
       <h3>User Roles</h3>
       <ul>
-        {UserRoles.map((role: UserRole) => (
+        {Object.values(UserRoles).map((role: UserRole) => (
           <li key={role.role}>
             <strong>{role.role}</strong>
             <ul>
@@ -29,5 +29,4 @@ const PermissionsEditor: React.FC = () => {
     </div>
   );
 };
-
 export { PermissionsEditor }; // Export PermissionsEditor as a named export

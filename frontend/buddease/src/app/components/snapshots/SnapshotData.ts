@@ -9,14 +9,15 @@ import { Subscription } from "../subscriptions/Subscription";
 import { AuditRecord } from "../users/Subscriber";
 import Version from "../versions/Version";
 import { VersionHistory } from "../versions/VersionData";
-import { Snapshot, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { CoreSnapshot, Snapshot, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { SnapshotMethods } from "./SnapshotMethods";
 import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-import { SnapshotConfig } from "./snapshot";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { ContentItem } from "../cards/DummyCardLoader";
+import { SnapshotConfig } from "./SnapshotConfig";
 
 interface CustomSnapshotData extends Data {
   timestamp?: string | number | Date | undefined
@@ -25,14 +26,14 @@ interface CustomSnapshotData extends Data {
 }
 
 interface SnapshotRelationships<T extends Data, K extends Data = T> {
-  parentId: string | null;
+  parentId?: string | null;
   childIds: string[] | null;
   getParentId(id: string, snapshot: Snapshot<BaseData, T>): string | null;
-  getChildIds(id: string, childSnapshot: Snapshot<BaseData, K>): string[];
+  getChildIds(id: string, childSnapshot: Snapshot<BaseData, K>): (string | number | undefined)[]
 
   addChild(parentId: string, childId: string, childSnapshot: Snapshot<T, K>): void;
   removeChild(parentId: string, childId: string, childSnapshot: Snapshot<T, K>): void;
-  getChildren(id: string, childSnapshot: Snapshot<T, K>): Snapshot<T, K>[];
+  getChildren(id: string, childSnapshot: Snapshot<T, K>): CoreSnapshot<Data, BaseData>[];
   hasChildren(id: string): boolean;
   isDescendantOf(
     childId: string, 
@@ -40,20 +41,26 @@ interface SnapshotRelationships<T extends Data, K extends Data = T> {
     parentSnapshot: Snapshot<T, K>,
     childSnapshot: Snapshot<T, K>
   ): boolean;
+  getSnapshotById: (
+    id: string,
+    // snapshotStore: SnapshotStore<T, K>
+  ) => Snapshot<T, K> | null
 }
 
 
 interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMethods<T, K> {
   _id?: string;
   snapshotIds?: string[];
+  items: ContentItem[];
   title?: string;
   description?: string | null;
-  tags?: TagsRecord
+  tags?: TagsRecord | string[] | undefined
   key?: string;
   state?: Snapshot<T, K>[] | null;
   topic?: string;
   configOption?:
     | string
+    | SnapshotConfig<T, K>
     | SnapshotStoreConfig<T, K>
     | null;
   priority?: string | PriorityTypeEnum;
@@ -61,7 +68,7 @@ interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMetho
   version?: Version 
   versionHistory?: VersionHistory
   config: SnapshotStoreConfig<T, K>| null
-  metadata?: StructuredMetadata;
+  metadata?: StructuredMetadata | {};
   isExpired?: boolean;
   isCompressed?: boolean;
   isEncrypted?: boolean;

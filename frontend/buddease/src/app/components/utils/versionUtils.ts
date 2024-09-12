@@ -13,7 +13,7 @@ interface DataWithTimestamp {
     // other properties...
 }
 
-type SnapshotDataType<T> = T & DataWithVersion;
+type SnapshotDataTypeVersion<T> = T & DataWithVersion;
 
 interface DataWithPriority {
     priority?: string;
@@ -51,4 +51,4 @@ export {
     processSnapshotData
 };
 
-export type {SnapshotDataType, DataWithPriority, DataWithVersion, DataWithTimestamp}
+export type {SnapshotDataTypeVersion, DataWithPriority, DataWithVersion, DataWithTimestamp}

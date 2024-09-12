@@ -40,7 +40,7 @@ const contentNotificationMessages: ContentNotificationMessages = {
 };
 
 // Function to handle API errors and notify
-export const handleContentApiErrorAndNotify = (
+const handleContentApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   errorMessageId: string
@@ -61,8 +61,31 @@ export const handleContentApiErrorAndNotify = (
   }
 };
 
+
+
+
+// Function to fetch contentId from API based on contentState
+const fetchContentIdFromAPI = async (contentState: ContentState): Promise<string> => {
+  try {
+    // Make an API call to fetch the content ID
+    const response = await axiosInstance.post(`${API_BASE_URL}/getContentId`, {
+      contentState, // Send the contentState as part of the request body
+    });
+
+    // Check if response contains the contentId
+    if (response.data && response.data.contentId) {
+      return response.data.contentId;
+    } else {
+      throw new Error('Content ID not found in the response.');
+    }
+  } catch (error) {
+    console.error("Error fetching content ID:", error);
+    throw error; // Propagate the error to the caller
+  }
+};
+
 // Fetch content data
-export const fetchContent = (): Promise<YourResponseType> => {
+const fetchContent = (): Promise<YourResponseType> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
@@ -102,7 +125,7 @@ export const fetchContent = (): Promise<YourResponseType> => {
 };
 
 // Update an existing content
-export const updateContent = async (
+const updateContent = async (
   contentId: number,
   updatedContentData: any
 ): Promise<void> => {
@@ -132,7 +155,7 @@ export const updateContent = async (
 
 
 // Create a new content
-export const createContent = async (newContentData: any): Promise<void> => {
+const createContent = async (newContentData: any): Promise<void> => {
   try {
     const createContentEndpoint = `${API_BASE_URL}/create`; // Adjust the endpoint as needed
     await axiosInstance.post(createContentEndpoint, newContentData, {
@@ -158,7 +181,7 @@ export const createContent = async (newContentData: any): Promise<void> => {
 };
 
 // Delete a content
-export const deleteContent = async (contentId: number): Promise<void> => {
+const deleteContent = async (contentId: number): Promise<void> => {
   try {
     const deleteContentEndpoint = `${API_BASE_URL}/delete/${contentId}`; // Adjust the endpoint as needed
     await axiosInstance.delete(deleteContentEndpoint, {
@@ -184,7 +207,7 @@ export const deleteContent = async (contentId: number): Promise<void> => {
 };
 
 
-export const saveTaskHistoryToDatabase = async (
+const saveTaskHistoryToDatabase = async (
     taskId: string,
     previousState: any
   ): Promise<void> => {
@@ -202,7 +225,7 @@ export const saveTaskHistoryToDatabase = async (
     }
 };
   
-export const createContentStateFromText = (text: string): any => {
+const createContentStateFromText = (text: string): any => {
   // Create a new content state object with the text and the current date/time
   
     return {
@@ -213,7 +236,7 @@ export const createContentStateFromText = (text: string): any => {
 };
 
  
-export const getMetadataForContent = async (
+const getMetadataForContent = async (
   contentId: string,
   contentState: ContentState // Include contentState in the function parameters
 ): Promise<StructuredMetadata> => {
@@ -231,7 +254,7 @@ export const getMetadataForContent = async (
 };
 
 
-export const getTaskHistoryFromDatabase = async (
+const getTaskHistoryFromDatabase = async (
     taskId: string
 ): Promise<any> => {
     try {
@@ -246,7 +269,7 @@ export const getTaskHistoryFromDatabase = async (
 }
 
 
-export const fetchContentDataFromAPI = async (
+const fetchContentDataFromAPI = async (
   contentId: string,
 ): Promise<any> => {
   try {
@@ -260,7 +283,7 @@ export const fetchContentDataFromAPI = async (
   }
 };
 
-export const fetchContentId = async (contentId: string): Promise<any> => {
+const fetchContentId = async (contentId: string): Promise<any> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/fetch/${contentId}`
@@ -272,8 +295,23 @@ export const fetchContentId = async (contentId: string): Promise<any> => {
   }
 }
 
-export const getContentIdFromURL = (url: string): string => {
+const getContentIdFromURL = (url: string): string => {
   const urlParts = url.split("/");
   const contentId = urlParts[urlParts.length - 1];
   return contentId;
   };
+
+  export {handleContentApiErrorAndNotify,
+    fetchContentIdFromAPI,
+    fetchContent,
+    updateContent,
+    createContent,
+    deleteContent,
+    saveTaskHistoryToDatabase,
+    createContentStateFromText,
+    getMetadataForContent,
+    getTaskHistoryFromDatabase,
+    fetchContentDataFromAPI,
+    fetchContentId,
+  getContentIdFromURL,
+}

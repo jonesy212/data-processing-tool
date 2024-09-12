@@ -19,6 +19,22 @@ import userSettings from "./UserSettings";
 import { VersionHistory } from '../components/versions/VersionData';
 
 
+interface BaseRetryConfig {
+  maxRetries?: number;
+  retryDelay?: number;
+}
+
+interface BaseCacheConfig {
+  maxAge?: number;
+  staleWhileRevalidate?: number;
+}
+
+interface BaseMetadataConfig {
+  enableSnapshot?: boolean;
+}
+
+
+
 export interface RetryConfig {
   enabled: boolean;
   maxRetries: number;
@@ -413,5 +429,5 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
 const configurationService = ConfigurationService.getInstance();
 
 export default configurationService;
-export type { ConfigurationOptions };
+export type { ConfigurationOptions, BaseRetryConfig, BaseCacheConfig, BaseMetadataConfig  };
 

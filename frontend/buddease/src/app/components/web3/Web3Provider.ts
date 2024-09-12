@@ -46,12 +46,14 @@ class Web3Provider {
       return this.with_credentials;
     }
   
-  // Add a method to connect to the web3 provider
-  connectWeb3Provider() {
-    // Implement your logic to connect to the web3 provider
-    console.log("Connecting to web3 provider...");
+    // Add a method to connect to the web3 provider
+    connectWeb3Provider() {
+      // Implement your logic to connect to the web3 provider
+      console.log("Connecting to web3 provider...");
+    }
   }
-  }
+
+  export default Web3Provider;
   
   // Example usage:
   const provider = new Web3Provider('https://example.com/web3', 'your-api-key', 5000);

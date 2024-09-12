@@ -56,6 +56,7 @@ export interface User extends UserData {
   isAdmin?: boolean;
   isSubscribed?: boolean,
 
+  roles: UserRole[];
   bio: string | null;
   userType: string;
   hasQuota: boolean;
@@ -74,7 +75,7 @@ export interface User extends UserData {
   interests: string[];
   followers: User[];
   privacySettings: PrivacySettings | undefined;
-  notificationSettings: NotificationSettings | undefined;
+  notifications: NotificationSettings | undefined;
   activityLog: ActivityLogEntry[]
   projects?: Project[]; // Define the type explicitly as an array of Project objects
   socialLinks: SocialLinks | undefined;
@@ -150,6 +151,7 @@ export interface UserData {
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;
   projects?: Project[];
+  storeId: number
   
   teams?: Team[];
   
@@ -426,6 +428,7 @@ export interface DocumentNode {
 // Example usage:
 const userData: UserData = {
   id: 1,
+  storeId: 0,
   yourDocuments: {
     public: {} as DocumentNode,
     private: {} as DocumentNode,
@@ -541,9 +544,12 @@ export const usersDataSource: Record<string, User> = {
     accessFailedCount: 0, 
     settings: null, 
     followers: [],
+    storeId: 0,
+    roles: [],
     preferences: {} as UserPreferences,
     data: {
       role: UserRoles.Guest,
+      storeId: 0,
       deletedAt: null,
       lastLogin: new Date(),
       lastLogout: new Date(),
@@ -663,7 +669,7 @@ export const usersDataSource: Record<string, User> = {
     blockedUsers: [],
     interests: [],
     privacySettings: undefined,
-    notificationSettings: undefined,
+    notifications: undefined,
     activityLog: [],
     projects: undefined,
     socialLinks: undefined,

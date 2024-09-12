@@ -1,7 +1,7 @@
 import {
   clearFilteredEvents as clearFilteredEventsAction,
   selectFilteredEvents,
-} from "@/app/components/state/redux/slices/FilteredEventsSlice";
+} from "../../app/components/state/redux/slices/FilteredEventsSlice";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector and useDispatch
@@ -9,7 +9,14 @@ import { FilterActions } from "../../actions/FilterActions";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "../../documents/screenFunctionality/HighlightEvent";
 import { CalendarEvent } from "./CalendarEvent";
+
+
+interface FilteredEventsState {
+  payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];
+}
 class FilterStore {
+  filteredEvents: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[] = [];
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -19,11 +26,11 @@ class FilterStore {
 
   // Define methods to interact with filtered events
   applyFilter = () => {
-    // Implement logic to apply filtering
-    // Implement logic to apply filtering
-    const filtered = useSelector(selectFilteredEvents);
-    const filteredEvents = filtered.payload; // Extracting the payload
-    this.setFilteredEvents(filteredEvents); // Pass the extracted filtered events to setFilteredEvents
+     // Use useSelector with the correct type
+      const filtered = useSelector<FilteredEventsState>(selectFilteredEvents);
+      const filteredEvents = filtered.payload; // Extracting the payload
+      this.setFilteredEvents(filteredEvents); // Pass the extracted filtered events to setFilteredEvents
+  
   };
 
   clearFilter = () => {
@@ -39,10 +46,7 @@ class FilterStore {
 
   // Other methods as needed
 
-  // Optionally, define local state
-  filteredEvents: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[] =
-    [];
-
+ 
   setFilteredEvents = (
     events: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[]
   ) => {

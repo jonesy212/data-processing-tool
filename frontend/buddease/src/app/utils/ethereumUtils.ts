@@ -8,20 +8,27 @@ import {
 import { ContractAbi, default as Web3 } from "web3";
 import { Contract, EventLog } from "web3-eth-contract";
 
-
 interface EventData {
-  args: any[]; // Define the structure of your event data's arguments
-  // Add other properties if needed based on your event structure
+  eventId: string; // Event ID from the args
+  args?: any[];     // Define the structure of your event data's arguments (you may want to specify the types here)
+  timestamp?: string | number | Date | undefined; // Optional timestamp for the event
+  blockNumber: string | number | bigint | undefined;    // Block number in which the event was emitted
+  transactionHash: string | undefined; // Transaction hash of the event
+  event: string;          // Name of the event
+  signature: string | undefined; // Signature of the event (can be null)
+  
+  // Add other properties you may expect in your events
+  [key: string]: any; // Catch-all for additional dynamic properties
 }
 
 // web3 is a global variable that is initialized in the index.html file
-export const initializeWeb3 = (): Web3 => {
+const initializeWeb3 = (): Web3 => {
   // Implement Web3 initialization logic
   const web3 = new Web3("your-provider-url");
   return web3;
 };
 
-export const deployContract = async (
+const deployContract = async (
   web3: Web3,
   contractData: any
 ): Promise<string | undefined> => {
@@ -39,7 +46,7 @@ export const deployContract = async (
 };
 
 
-export const callContractMethod = async <Abi extends ContractAbi>(
+const callContractMethod = async <Abi extends ContractAbi>(
   contract: Contract<Abi>,
   methodName: string,
   params: any[]
@@ -49,17 +56,31 @@ export const callContractMethod = async <Abi extends ContractAbi>(
   return result;
 };
 
+
+
 // Function to listen for events emitted by a smart contract using Web3
-export const listenForContractEvents = <Abi extends ContractAbi>(
+const listenForContractEvents = <Abi extends ContractAbi>(
   contract: Contract<Abi>,
   eventName: string,
   callback: (eventData: EventData) => void
 ): void => {
   try {
     contract.events[eventName]().on("data", (eventLog: EventLog) => {
-      // Check if 'EventLog' has 'args' property
+      // Check if 'eventLog' has 'args' and required properties
       if ('args' in eventLog) {
-        const eventData: EventData = eventLog as EventData;
+        const eventLogArgs = eventLog.args as Record<string, unknown>; // Ensure type-safety here
+        
+        // Manually construct the EventData by extracting required fields from 'eventLog' and 'eventLogArgs'
+        const eventData: EventData = {
+          eventId: eventLogArgs['eventId'] as string, // Extract 'eventId' from 'args'
+          // Add other required properties here from 'eventLogArgs' as needed
+          ...eventLogArgs, // Spread the remaining args if necessary
+          blockNumber: eventLog.blockNumber,
+          transactionHash: eventLog.transactionHash,
+          event: eventLog.event,
+          signature: eventLog.signature,
+        };
+        
         callback(eventData); // Call the provided callback function with event data
       } else {
         console.error("EventLog does not contain 'args' property.");
@@ -73,9 +94,8 @@ export const listenForContractEvents = <Abi extends ContractAbi>(
 
 
 
-
 // Function to interact with a smart contract using ethers.js
-export const interactWithContract = async (
+const interactWithContract = async (
   contract: Contract<ContractAbi>,
   methodName: string,
   ...args: any[]
@@ -104,24 +124,24 @@ export const interactWithContract = async (
 
 
 
-export const createWallet = (): ethers.Wallet => {
+const createWallet = (): ethers.Wallet => {
   // Implement logic to create a new wallet
   const wallet = ethers.Wallet.createRandom() as unknown as ethers.Wallet;
 
   return wallet;
 };
 
-export const getWalletAddress = (wallet: Wallet): string => {
+const getWalletAddress = (wallet: Wallet): string => {
   // Implement logic to retrieve wallet address
   return wallet.address;
 };
 
-export const getWalletPrivateKey = (wallet: Wallet): string => {
+const getWalletPrivateKey = (wallet: Wallet): string => {
   // Implement logic to retrieve wallet private key
   return wallet.privateKey;
 };
 
-export const getWalletBalance = async (
+const getWalletBalance = async (
   web3: Web3,
   wallet: Wallet
 ): Promise<string> => {
@@ -130,7 +150,7 @@ export const getWalletBalance = async (
   return web3.utils.fromWei(balance, "ether");
 };
 
-export const getAccountBalance = async (
+const getAccountBalance = async (
   web3: Web3,
   address: string
 ): Promise<string> => {
@@ -139,7 +159,7 @@ export const getAccountBalance = async (
   return web3.utils.fromWei(balance, "ether");
 };
 
-export const signTransaction = async (
+const signTransaction = async (
   wallet: Wallet,
   transaction: TransactionRequest
 ): Promise<string> => {
@@ -157,10 +177,8 @@ export const signTransaction = async (
 };
 
 
-
-
 // Function to send a transaction using ethers.js
-export const sendTransaction = async (
+const sendTransaction = async (
   wallet: Wallet,
   to: string,
   value: ethers.BigNumberish
@@ -182,7 +200,7 @@ export const sendTransaction = async (
 
 
 // Function to check if an Ethereum wallet address is valid
-export const isValidEthereumAddress = (walletAddress: string): boolean => {
+const isValidEthereumAddress = (walletAddress: string): boolean => {
   // Regular expression pattern for Ethereum wallet address validation
   const ethereumAddressPattern = /^(0x)?[0-9a-fA-F]{40}$/;
 
@@ -196,3 +214,24 @@ console.log(
   "Is valid Ethereum address:",
   isValidEthereumAddress(walletAddress)
 );
+
+
+
+
+export {initializeWeb3,
+  deployContract,
+  callContractMethod,
+  listenForContractEvents,
+  interactWithContract,
+  createWallet,
+  getWalletAddress,
+  getWalletPrivateKey,
+  getWalletBalance,
+  getAccountBalance,
+  signTransaction,
+  sendTransaction,
+  isValidEthereumAddress,
+}
+
+
+export type {EventData}

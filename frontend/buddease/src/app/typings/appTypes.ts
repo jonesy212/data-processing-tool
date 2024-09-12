@@ -1,18 +1,17 @@
 import { Subscription } from "react-redux";
 import { Post } from "../components/community/DiscussionForumComponent";
+import { Task } from "../components/models/tasks/Task";
+import { Member } from "../components/models/teams/TeamMembers";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../components/snapshots/SnapshotConfig";
 import SnapshotStore from "../components/snapshots/SnapshotStore";
-import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
-import { Task } from "../components/models/tasks/Task";
-import { Member } from "../components/models/teams/TeamMembers";
 
 interface CommunicationType {
   id: string;
   title: string;
   timestamp: Date;
   subscriberId: string;
-  category: string | CategoryProperties;
+  category: string | Category;
   length: number;
   content: string;
   data: any; // Example, replace with actual data structure
@@ -101,13 +100,14 @@ interface BlockchainCapability {
 }
 
 export type {
-  BlockchainCapability,
-  CollaborationOption,
-  CommunicationType,
-  CreationPhase,
-  CryptoAction,
-  CryptoCommunity,
-  CryptoFeature,
-  CryptoInformation,
-  Task,
+    BlockchainCapability,
+    CollaborationOption,
+    CommunicationType,
+    CreationPhase,
+    CryptoAction,
+    CryptoCommunity,
+    CryptoFeature,
+    CryptoInformation,
+    Task
 };
+

@@ -125,25 +125,25 @@ const MultimediaContentCustomization: React.FC<
         <h2>Content Renderer:</h2>
         <ContentRenderer
           dynamicContent={[]}
-          handleTaskClick={(task: Task) => {
+          handleTaskClick={ async (task: Task) => {
             if (isTask(task)) {
                 // Handle task click logic
                 // For example, you can navigate to the task details page
                 history(`/tasks/${task.id}`);
-            }
-        }}
+              }
+          }}
         
-          handleProjectClick={(project: Project) => {
+          handleProjectClick={ async (project: Project) => {
             if (isProject(project)) {
                 // Handle project click logic
                 history(`/projects/${project.id}`)
             }
           }}
-                  handleTodoClick={(todo: Todo) => {
-              if(isTodo(todo)){
-              // Handle todo click logic
-                  history(`/todos/${todo.id}`)
-              }
+          handleTodoClick={async (todoId: string, todo: Todo) => {
+            if(isTodo(todo)){
+            // Handle todo click logic
+                history(`/todos/${todo.id}`)
+            }
           }}
         />
       </div>

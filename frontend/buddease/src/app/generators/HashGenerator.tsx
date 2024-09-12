@@ -24,6 +24,9 @@ class HashGenerator {
     }
   }
 }
+
+
+export default HashGenerator
 // Example usage:
 const input = "exampleInput";
 const hash = HashGenerator.generateHash(input);

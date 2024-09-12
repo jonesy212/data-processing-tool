@@ -45,6 +45,20 @@ class UniqueIDGenerator {
     );
   }
 
+  static generateTrackerID( 
+    name: string,
+    type: NotificationTypeEnum,
+    id?: string,
+  ): string{
+    return UniqueIDGenerator.generateID(
+      "TRK",
+      name,
+      type,
+      id,
+      NotificationTypeEnum.GeneratedID
+    );
+  }
+
    // New static method for generating snapshot data key
    static generateSnapshotDataKey(documentId: string, userId: string): string {
     // Generate a unique key for snapshot data using documentId and userId
@@ -187,6 +201,54 @@ class UniqueIDGenerator {
     return `chatThread_${chatThreadName}`;
   }
 
+
+  static generateParentID(name: string): string {
+    return `parent_${name}`;
+  }
+
+  static generateChildID(name: string, index: number): string {
+    return `child_${name}_${index}`;
+  }
+
+  static generateAddChildID(parentID: string, childName: string): string {
+    return `add_child_${parentID}_${childName}`;
+  }
+
+  static generateRemoveChildID(parentID: string, childName: string): string {
+    return `remove_child_${parentID}_${childName}`;
+  }
+
+  static generateGetChildrenID(parentID: string): string {
+    return `get_children_${parentID}`;
+  }
+
+  static generateHasChildrenID(parentID: string): string {
+    return `has_children_${parentID}`;
+  }
+
+
+  static generateSnapshotByID(snapshotID: string): string {
+    return `snapshot_${snapshotID}`;
+  }
+  
+  // Method for handling snapshot logic
+  static handleSnapshot(snapshotID: string): string {
+    // Example logic for handling snapshot
+    return `handled_snapshot_${snapshotID}`;
+  }
+
+  // Method for mapping snapshots
+  static mapSnapshots(snapshotList: string[]): string[] {
+    return snapshotList.map((snapshotID) => `mapped_${snapshotID}`);
+  }
+
+  // Method for clearing snapshot failures
+  static clearSnapshotFailure(snapshotID: string): string {
+    // Example logic for clearing snapshot failure
+    return `cleared_failure_${snapshotID}`;
+  }
+
+
   static generateID(
     prefix: string,
     name: string,
@@ -250,6 +312,9 @@ class UniqueIDGenerator {
         return UniqueIDGenerator.generateAnalyticsID();
       case NotificationTypeEnum.AppStructureID:
         return UniqueIDGenerator.generateAppStructureID();
+      case NotificationTypeEnum.SnapshotID:
+        return UniqueIDGenerator.generateSnapshotID();
+       
       case NotificationTypeEnum.ChatMessageID:
         return UniqueIDGenerator.generateChatMessageID(
           String(chatThreadId)
@@ -272,7 +337,7 @@ const videoDataDetails: DataDetails = {
   description: "Video Description",
   status: "pending",
   isActive: false,
-  tags: [],
+  tags: {},
   type: NotificationTypeEnum.GeneratedID,
   createdAt: new Date(),
   uploadedAt: new Date(),

@@ -1,4 +1,6 @@
+import ProjectMetadata, { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from '../models/data/Data';
 import { DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
@@ -6,8 +8,6 @@ import { MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, S
 import SnapshotStore from '../snapshots/SnapshotStore';
 import CalendarEvent from '../state/stores/CalendarEvent';
 import { Subscriber } from '../users/Subscriber';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import ProjectMetadata, { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 type MetaDataOptions = StructuredMetadata | ProjectMetadata
 interface SnapshotStoreOptions<T extends Data, K extends Data> {
@@ -79,16 +79,16 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
   ) => CategoryProperties | undefined;
 
   getSnapshotConfig: (
-    snapshotId: number | null,
+    snapshotId: string | null,
     snapshotContainer: SnapshotContainer<T, K>,
     criteria: CriteriaType,
     category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties,
+    categoryProperties: CategoryProperties | undefined,
     delegate: any,
     snapshotData: SnapshotStore<T, K>,
     snapshot: (
       id: string,
-      snapshotId: number | null,
+      snapshotId: string | null,
       snapshotData: Snapshot<T, K>,
       category: symbol | string | Category | undefined,
       callback: (snapshotStore: Snapshot<T, K>) => void,
@@ -188,4 +188,4 @@ interface SnapshotStoreOptions<T extends Data, K extends Data> {
   simulatedDataSource: any;
 }
 export default SnapshotStoreOptions;
-export type {MetaDataOptions}
+export type { MetaDataOptions };

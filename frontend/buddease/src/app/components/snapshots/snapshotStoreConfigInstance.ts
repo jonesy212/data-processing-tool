@@ -1,6 +1,9 @@
 // snapshotStoreConfigInstance.ts
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
+
+
+
 const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     // {
     //   id: null,
@@ -1297,7 +1300,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //           ) => void
     //         ): Promise<{
     //           id: any;
-    //           category: string | CategoryProperties | undefined;
+    //           category: string | Category | undefined;
     //           timestamp: any;
     //           snapshot: Snapshot<BaseData, BaseData>;
     //           data: BaseData;
@@ -1412,7 +1415,7 @@ const snapshotStoreConfigInstance: SnapshotStoreConfig<any, any>[] = [
     //     delegate: SnapshotStoreConfig<BaseData, any>[]
     //   ): Promise<{
     //     id: any;
-    //     category: string | CategoryProperties | undefined;
+    //     category: string | Category | undefined;
     //     timestamp: any;
     //     snapshot: Snapshot<T, K>;
     //     data: T;

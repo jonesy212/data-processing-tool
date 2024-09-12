@@ -18,7 +18,6 @@ enum UserRoleEnum {
   UXUIDesigner = 'UXUIDesigner',
   Member = 'Member',
   Verified_User = 'Verified_User',
-  Coodinator = 'Coordinator',
 }
 
 const UserRoles: { [key in UserRoleEnum]: UserRole } = {
@@ -42,7 +41,6 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     includes: []
   },
   
-
   Developer: {
     role: UserRoleEnum.Developer,
     responsibilities: [
@@ -223,7 +221,7 @@ type AdminRoleKey = CheckRoleExists<'Administrator'>; // This would resolve to '
 type ModeratorRoleKey = CheckRoleExists<'Moderator'>; // This would resolve to 'Moderator'
 
 export default UserRoles;
-export type {UserRoleEnum}
+export {UserRoleEnum}
 
 // Use the AdminRoleKey and ModeratorRoleKey types to define variables
 

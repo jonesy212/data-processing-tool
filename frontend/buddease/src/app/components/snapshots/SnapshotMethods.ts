@@ -1,4 +1,4 @@
-import { Callback, ConfigureSnapshotStorePayload, SnapshotData } from '@/app/components/snapshots';
+import { Callback, ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
 
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotWithCriteria, SubscriberCollection } from ".";
@@ -15,9 +15,11 @@ import { NotificationType, NotificationTypeEnum } from "../support/NotificationC
 import { Subscriber } from "../users/Subscriber";
 import { FetchSnapshotPayload } from './FetchSnapshotPayload';
 import { Snapshot, SnapshotUnion, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./snapshot";
+
+
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotEvents } from './SnapshotEvents';
 
 // SnapshotMethods.ts
 interface SnapshotMethods<T extends Data, K extends Data>
@@ -104,7 +106,7 @@ interface SnapshotMethods<T extends Data, K extends Data>
       snapshotId: number, 
       snapshotData: SnapshotData<T, K>,
        category: symbol | string | Category | undefined, 
-     categoryProperties: CategoryProperties,
+     categoryProperties: CategoryProperties | undefined,
       dataStoreMethods: DataStore<T,K>[]
     ) => void,
   
@@ -160,9 +162,10 @@ interface SnapshotMethods<T extends Data, K extends Data>
     event: Event,
     callback: (snapshot: Snapshot<T, K>) => void
   ) => SnapshotWithData<T, K> |  null;
-  removeStore: (storeId: number,
+  removeStore: (
+    storeId: number,
     store: SnapshotStore<T, K>,
-    snapshotId: number,
+    snapshotId: string,
     snapshot: Snapshot<T, K>,
     type: string,
     event: Event
@@ -179,12 +182,12 @@ interface SnapshotMethods<T extends Data, K extends Data>
   ) => void;
     fetchSnapshot: ( 
       callback: (
-        snapshotId: number,
+        snapshotId: string,
         payload: FetchSnapshotPayload<K> | undefined,
         snapshotStore: SnapshotStore<T, K>,
         payloadData: T | Data,
         category: Category | undefined,
-        categoryProperties: CategoryProperties,
+        categoryProperties: CategoryProperties | undefined,
         timestamp: Date,
         data: T,
         delegate: SnapshotWithCriteria<T, K>[]
@@ -202,26 +205,34 @@ interface SnapshotMethods<T extends Data, K extends Data>
 
   updateSnapshotFailure: (
     snapshotId: number,
-    snapshotStore: SnapshotStore<T, K>,
-    payload: { error: Error; }
+    snapshotManager: SnapshotManager<T, K>,
+    snapshot: Snapshot<T, K>,
+    date: Date | undefined,
+    payload: { error: Error }
   ) => void
 
   fetchSnapshotFailure: (
     snapshotId: number,
-    snapshotStore: SnapshotStore<T, K>,
-    payload: { error: Error; }
+    snapshotManager: SnapshotManager<T, K>,
+    snapshot: Snapshot<T, K>,
+    date: Date | undefined,
+    payload: { error: Error }
   ) => void
 
   addSnapshotFailure: (
-    date: Date, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }) => void;
-  configureSnapshotStore: (
+    date: Date, snapshotManager: SnapshotManager<T, K>,
+     snapshot: Snapshot<T, K>, payload: { error: Error; }) => void;
+  
+  
+  
+    configureSnapshotStore: (
     snapshotStore: SnapshotStore<T, K>,
     storeId: number,
     data: Map<string, Snapshot<T, K>>,
     events: Record<string, CalendarManagerStoreClass<T, K>[]>,
     dataItems: RealtimeDataItem[],
     newData: Snapshot<T, K>,
-    payload: ConfigureSnapshotStorePayload<T>,
+    payload: ConfigureSnapshotStorePayload<T, K>,
     store: SnapshotStore<any, K>,
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
     config: SnapshotStoreConfig<T, K>
@@ -271,112 +282,8 @@ interface SnapshotMethods<T extends Data, K extends Data>
     event: Event,
     callback: (snapshots: Snapshots<T>) => void
   ) => void;
-  events:
-  | {
-        initialConfig: SnapshotConfig<T, K>,
-        eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
-        callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
-        subscribers: SubscriberCollection<T, K>; // Ensure this is correct
-        eventIds: string[];
-        onInitialize: () => void
-        onSnapshotAdded: (
-          event: string,
-          snapshot: Snapshot<T, K>,
-          snapshotId: number,
-          subscribers: SubscriberCollection<T, K>,
-          snapshotStore: SnapshotStore<T, K>, 
-          dataItems: RealtimeDataItem[],
-          subscriberId: string,
-          criteria: SnapshotWithCriteria<T, K>,
-          category: Category
-        ) => void;
-        onSnapshotRemoved: (
-          event: string,
-          snapshot: Snapshot<T, K>,
-          snapshotId: number, 
-          subscribers: SubscriberCollection<T, K>,
-          snapshotStore: SnapshotStore<T, K>, 
-          dataItems: RealtimeDataItem[],
-          criteria: SnapshotWithCriteria<T, K>,
-          category: Category
-        ) => void;
+  events: SnapshotEvents<T, K> | undefined;
 
-        removeSubscriber: (
-          event: string,
-          snapshotId: number,
-          snapshot: Snapshot<T, K>,
-          snapshotStore: SnapshotStore<T, K>,
-          dataItems: RealtimeDataItem[],
-          criteria: SnapshotWithCriteria<T, K>,
-          category: Category
-        ) => void
-        onError: (
-          event: string,
-          error: Error,
-          snapshot: Snapshot<T, K>,
-          snapshotId: number,
-          snapshotStore: SnapshotStore<T, K>,
-          dataItems: RealtimeDataItem[],
-          criteria: SnapshotWithCriteria<T, K>,
-          category: Category
-        ) => void;
-        onSnapshotUpdated: (
-          event: string,
-          snapshotId: number,
-          snapshot: Snapshot<T, K>,
-          data: Map<string, Snapshot<T, K>>,
-          events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-          snapshotStore: SnapshotStore<T, K>,
-          dataItems: RealtimeDataItem[],
-          newData: Snapshot<T, K>,
-          payload: UpdateSnapshotPayload<T>,
-          store: SnapshotStore<any, K>
-        ) => void;
-        on: (
-          event: string,
-          callback: (snapshot: Snapshot<T, K>) => void
-        ) => void;
-        off: (
-          event: string,
-          callback: (snapshot: Snapshot<T, K>) => void
-        ) => void;
-        emit: (
-          event: string,
-          snapshot: Snapshot<T, K>,
-          snapshotId: number, 
-          subscribers: SubscriberCollection<T, K>,
-          snapshotStore: SnapshotStore<T, K>, 
-          dataItems: RealtimeDataItem[],
-          criteria: SnapshotWithCriteria<T, K>,
-          category: Category
-        ) => void;
-        once: (
-          event: string,
-          callback: (snapshot: Snapshot<T, K>) => void
-        ) => void;
-        addRecord: (
-          event: string,
-          record: CalendarManagerStoreClass<T, K>,
-          callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
-        ) => void;
-        removeAllListeners: (event?: string) => void;
-        subscribe: (
-          event: string,
-          callback: (snapshot: Snapshot<T, K>) => void
-        ) => void;
-        unsubscribe: (
-          event: string,
-          callback: (snapshot: Snapshot<T, K>) => void
-        ) => void;
-        trigger: (
-          event: string, 
-          snapshot: Snapshot<T, K>, 
-          snapshotId: number,
-          subscribers: SubscriberCollection<T, K>
-        ) => void;
-        eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
-      }
-    | undefined;
 }
 
 export type { SnapshotMethods };
